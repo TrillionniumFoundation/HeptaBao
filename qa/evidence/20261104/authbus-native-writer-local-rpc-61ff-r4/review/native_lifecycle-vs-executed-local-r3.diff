@@ -1,0 +1,170 @@
+--- a/native_lifecycle.mjs
++++ b/native_lifecycle.mjs
+@@ -81,6 +81,9 @@
+     twoReadyLeasesObserved:false, singleWriterInvariantPassed:null,
+     harnessCleanupUsedAsRetirementProof:false, cleanup:{ attempted:false, allOwnedStopped:false } };
+   const clock = () => Number(process.hrtime.bigint() / 1000000n);
++  need(n.envRealpath === fs.realpathSync('/usr/bin/env')
++    && hash(fs.readFileSync(n.envRealpath)) === n.envSha256, 'pinned_shebang_env_identity');
++  report.envRealpath=n.envRealpath;report.envSha256=n.envSha256;
+   function event(kind, detail={}) {
+     const record = {sequence:report.events.length + 1,monotonicMs:clock(),kind,...detail};
+     report.events.push(record); journal('native_event', {event:record});
+@@ -145,8 +148,8 @@
+   let sharedEntryCaptureFailed = false;
+   const lifecycleAbort = new AbortController();
+   let callbackRetirement = null, cleanupStarted = false, closed = false;
+-  function acquire(label) {
+-    const state = {label,settled:false,client:null,released:false,promise:null,sharedStartup:null,
++  function acquire(label, absoluteDeadline=clock()+15000) {
++    const state = {label,absoluteDeadline,settled:false,client:null,released:false,promise:null,sharedStartup:null,
+       initialBarrier:n.patched&&label==='new'?globalThis[STATE]?.retiring?.get(oldKey):null};
+     acquires.push(state);
+     let promise;
+@@ -244,10 +247,17 @@
+     const sharedStartup=sharedStartupBeforeActualSpawn();
+     const child = originalSpawn(command, args, options); children.push(child);
+     // Register the actual child before any onStarted assertion can fail.
+-    const owned = {child,ordinal:children.length,initialWrapper:identity(child.pid),native:null,sharedStartup};
++    const owned = {child,ordinal:children.length,initialWrapper:null,native:null,sharedStartup};
+     ownedSpawns.push(owned);
++    // Record the actual child before any procfs read or identity predicate can fail.
++    owned.initialWrapper=identity(child.pid);
+     event('actual_wrapper_spawn_returned',{ordinal:owned.ordinal,pid:child.pid??null,
+       initialWrapper:owned.initialWrapper});
++    need(owned.initialWrapper && owned.initialWrapper.ppid===process.pid
++      && owned.initialWrapper.pgid===process.pid && owned.initialWrapper.session===process.pid,
++      'actual_spawn_owned_incarnation');
++    need([n.envRealpath,n.nodeRealpath].includes(owned.initialWrapper.executable),
++      'actual_spawn_executable_is_pinned_env_or_node');
+     if (children.length === 2) { report.secondProcessSpawned = true;
+       report.secondSpawnPriorNativeAlive = priorNativeAlive; }
+     if (children.length === 1 && n.scenario === 'pending-before-client') {
+@@ -264,15 +274,51 @@
+     return child;
+   };
+   syncBuiltinESMExports();
++  function sameOwnedIncarnation(saved,current) {
++    return !!saved && !!current && saved.pid===current.pid && saved.startTicks===current.startTicks
++      && saved.ppid===process.pid && current.ppid===saved.ppid
++      && saved.pgid===process.pid && current.pgid===saved.pgid
++      && saved.session===process.pid && current.session===saved.session;
++  }
++  function ensureWrapperNode(rec) {
++    if(rec.wrapperReady)return rec.wrapperReady;
++    rec.wrapperReady=(async()=>{
++      let priorStage;
++      while(clock()<rec.acquireOwner.absoluteDeadline){
++        need(!closed,'wrapper_exec_observation_after_close_refused');
++        const current=identity(rec.client.child.pid);
++        const stage=current?.executable===n.nodeRealpath?'node':current?.executable===n.envRealpath?'env':current?'unknown':'absent';
++        if(stage!==priorStage){event('actual_wrapper_exec_stage',{ordinal:rec.ordinal,stage,identity:current});priorStage=stage;}
++        need(sameOwnedIncarnation(rec.owned.initialWrapper,current),'actual_wrapper_same_owned_incarnation');
++        need(stage==='env'||stage==='node','actual_wrapper_unknown_executable_refused');
++        if(stage==='node'){
++          rec.wrapper=current;rec.owned.confirmedWrapper=current;
++          event('actual_wrapper_node_identity_confirmed',{ordinal:rec.ordinal,wrapper:current,
++            absoluteDeadlineMonotonicMs:rec.acquireOwner.absoluteDeadline});
++          return current;
++        }
++        await delay(Math.min(20,Math.max(1,rec.acquireOwner.absoluteDeadline-clock())));
++      }
++      throw Object.assign(new Error('actual_wrapper_node_exec_deadline'),{safeCode:'actual_wrapper_node_exec_deadline'});
++    })();
++    rec.wrapperReady.catch(()=>{});
++    return rec.wrapperReady;
++  }
+   function observe(client) {
+     const ordinal = tracked.length + 1;
+     need(ordinal <= 2 && client.child && children[ordinal-1] === client.child,
+       'real_started_client_and_observed_spawn_identity');
+-    const rec = {client,ordinal,wrapper:identity(client.child.pid),native:null,lease:false,
++    const owned=ownedSpawns.find(own=>own.child===client.child);
++    const acquireOwner=acquires.find(a=>a.sharedStartup===owned?.sharedStartup);
++    const rec = {client,ordinal,owned,acquireOwner,wrapper:null,wrapperReady:null,native:null,lease:false,
+       initializeDispatched:false,initializeCompleted:false};
+-    need(rec.wrapper && rec.wrapper.executable === n.nodeRealpath, 'actual_wrapper_node_identity');
+     tracked.push(rec);
+-    event('factory_onStarted', {ordinal,wrapper:rec.wrapper});
++    const observedWrapper=identity(client.child.pid);
++    event('factory_onStarted', {ordinal,observedWrapper});
++    need(owned && acquireOwner && sameOwnedIncarnation(owned.initialWrapper,observedWrapper),
++      'actual_onStarted_same_owned_incarnation');
++    need([n.envRealpath,n.nodeRealpath].includes(observedWrapper.executable),
++      'actual_onStarted_executable_is_pinned_env_or_node');
+     client.addRequestHandler(async request => {
+       report.serverRequestsRefused.push({ordinal,method:request.method === 'account/chatgptAuthTokens/refresh'
+         ? request.method : 'other'});
+@@ -285,7 +331,8 @@
+       else need(method === 'thread/loaded/list' && digest(params) === digest({limit:1}),
+         'only_local_loaded_thread_list_after_initialize');
+       const item = {ordinal,method,completed:false}; report.rpc.push(item);
+-      const dispatch = () => {
++      const dispatch = () => ensureWrapperNode(rec).then(() => {
++        need(!closed,'native_rpc_after_lifecycle_close_refused');
+         if (method === 'initialize') { rec.initializeDispatched = true; event('initialize_dispatched',{ordinal}); }
+         // Preserve the actual argument objects and actual native response.
+         return originalRequest(method,params,options).then(response => {
+@@ -293,7 +340,7 @@
+           if (method === 'initialize') { rec.initializeCompleted = true; event('initialize_completed',{ordinal}); }
+           return response;
+         });
+-      };
++      });
+       if (ordinal === 1 && method === 'initialize' && n.scenario.startsWith('pending-')) {
+         event('original_initialize_held_before_dispatch',{ordinal});
+         return gate.then(dispatch);
+@@ -308,6 +355,7 @@
+     if (ordinal === 1) { first=rec; startedResolve(rec); } else second=rec;
+   }
+   async function attachNative(rec, deadline) {
++    await ensureWrapperNode(rec);
+     rec.native = await waitFor(() => nativeFor(rec.wrapper.pid),Math.min(5000, Math.max(1, (deadline ?? clock()+5000)-clock())),'real_native_child_identity_timeout');
+     ownedSpawns.find(own=>own.child===rec.client.child).native = rec.native;
+     need(rec.native.pgid === process.pid && rec.wrapper.pgid === process.pid,
+@@ -341,7 +389,7 @@
+     // The existing factory uses this supported lifetime flag only; no auth override.
+     const deadline = clock()+15000;
+     event('old_acquire_started',{absoluteDeadlineMonotonicMs:deadline});
+-    oldPromise = acquire('old');
++    oldPromise = acquire('old',deadline);
+     const beforeStartedFailure = oldPromise.then(() => {
+       need(first,'factory_completed_without_onStarted'); return first;
+     });
+@@ -460,6 +508,20 @@
+     if(!gateReleased){gateReleased=true;gateResolve();}
+     if(first&&n.scenario==='abnormal-wrapper'&&living(first.native)&&identity(first.native.pid)?.state==='T')
+       exactSignal(first.native,'SIGCONT','cleanup_native_resume');
++    // Capture already visible owned identities before close can erase parentage.
++    for(const own of ownedSpawns){
++      const current=identity(own.child.pid),rec=tracked.find(r=>r.client.child===own.child);
++      if(sameOwnedIncarnation(own.initialWrapper,current)
++        &&[n.envRealpath,n.nodeRealpath].includes(current.executable)){
++        own.cleanupWrapper=current;
++        if(current.executable===n.nodeRealpath){
++          if(rec)rec.wrapper=current;
++          const native=rec?.native??own.native??nativeFor(current.pid);
++          if(native){need(native.pgid===process.pid,'cleanup_observed_native_owned_group');own.native=native;if(rec)rec.native=native;
++            event('cleanup_owned_native_identity_observed',{ordinal:own.ordinal,native});}
++        }
++      }
++    }
+     for(const rec of tracked){
+       if(rec.lease){try{release(rec,'cleanup_original_lease_release');}catch{}}
+       try{factory.s(rec.client);}catch{}
+@@ -468,12 +530,11 @@
+     const ownedIdentities=[];
+     for(const own of ownedSpawns) {
+       const rec=tracked.find(r=>r.client.child===own.child), current=identity(own.child.pid), initial=own.initialWrapper;
+-      let wrapper=rec?.wrapper??null;
++      let wrapper=rec?.wrapper??own.cleanupWrapper??null;
+       // An exact child may exec /usr/bin/env -> the pinned Node wrapper. Keep
+       // PID/startTicks/parent/group/session ownership while observing that exec.
+-      if(!wrapper&&initial&&current&&initial.pid===current.pid&&initial.startTicks===current.startTicks
+-        &&current.ppid===process.pid&&current.pgid===process.pid&&current.session===process.pid
+-        &&[n.nodeRealpath,'/usr/bin/env'].includes(current.executable)) wrapper=current;
++      if(sameOwnedIncarnation(initial,current)
++        &&[n.nodeRealpath,n.envRealpath].includes(current.executable)) wrapper=current;
+       let native=rec?.native??own.native;
+       if(!native&&wrapper&&living(wrapper))native=nativeFor(wrapper.pid);
+       if(native)need(native.pgid===process.pid,'unobserved_native_owned_group');

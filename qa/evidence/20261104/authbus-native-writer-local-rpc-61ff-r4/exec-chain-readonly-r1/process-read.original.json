@@ -1,0 +1,20 @@
+{
+  "audit_recorded": true,
+  "job_id": "1a1a80e02d9-fc05-2d7e",
+  "stderr": {
+    "bytes_hex": "202046696c6520223c737472696e673e222c206c696e652031370a20202020652c5f3d696e737065637428656e762c3637313038383634293b772c66697273743d696e737065637428777261707065722c3635353336290a53796e7461784572726f723a206578706563746564202765786365707427206f72202766696e616c6c792720626c6f636b0a",
+    "eof": true,
+    "next_offset": 138,
+    "offset": 0,
+    "size": 138,
+    "text": "  File \"<string>\", line 17\n    e,_=inspect(env,67108864);w,first=inspect(wrapper,65536)\nSyntaxError: expected 'except' or 'finally' block\n"
+  },
+  "stdout": {
+    "bytes_hex": "",
+    "eof": true,
+    "next_offset": 0,
+    "offset": 0,
+    "size": 0,
+    "text": ""
+  }
+}

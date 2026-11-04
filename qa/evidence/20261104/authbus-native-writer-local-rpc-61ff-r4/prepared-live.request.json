@@ -1,0 +1,16 @@
+{
+  "host": "rog",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4/control/launcher.py"
+  ],
+  "idempotency_key": "authbus61ff-native-baseline-local-r4-live-20261104-r1",
+  "timeout_seconds": 480,
+  "env": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/qian-qi"
+  }
+}

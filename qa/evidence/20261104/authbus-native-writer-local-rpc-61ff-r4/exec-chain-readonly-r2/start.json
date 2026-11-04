@@ -1,0 +1,39 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import os,pathlib,hashlib,json,stat\nenv=pathlib.Path('/usr/bin/env').resolve(strict=True)\nassert str(env)=='/usr/lib/cargo/bin/coreutils/env'\nwrapper=pathlib.Path('/home/qian-qi/.openclaw/runtime/openai-codex-0.159.2/node_modules/@openai/codex/bin/codex.js')\ndef inspect(p,maximum):\n fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW)\n try:\n  a=os.fstat(fd);assert stat.S_ISREG(a.st_mode)and a.st_size<=maximum\n  h=hashlib.sha256();first=b''\n  while True:\n   b=os.read(fd,1048576)\n   if not b:break\n   if not first:first=b[:128]\n   h.update(b)\n  z=os.fstat(fd);assert(a.st_dev,a.st_ino,a.st_size,a.st_mtime_ns,a.st_ctime_ns)==(z.st_dev,z.st_ino,z.st_size,z.st_mtime_ns,z.st_ctime_ns)\n  return {'realpath':str(p),'bytes':a.st_size,'sha256':h.hexdigest(),'uid':a.st_uid,'mode':oct(a.st_mode&0o7777)},first\n finally:os.close(fd)\ne,_=inspect(env,67108864);w,first=inspect(wrapper,65536)\nassert w['sha256']=='61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70'\nassert first.split(b'\\n',1)[0]==b'#!/usr/bin/env node'\nprint(json.dumps({'schema':'heptabao.native-wrapper-shebang-exec-chain-readonly.v1','nativeStarted':False,'providerCalled':False,'productionChanged':False,'env':e,'wrapper':w,'wrapperShebangExact':True,'knownIntermediateExecutableFromOriginalSpawnReceipt':True},sort_keys=True))\n"
+    ],
+    "created_unix_ms": 1793821010787,
+    "cwd": null,
+    "env_keys": [
+      "HOME",
+      "PATH"
+    ],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "rog",
+    "id": "1a1a8106b63-fc05-2d88",
+    "idempotency_key": "authbus61ff-native-wrapper-exec-chain-readonly-20261104-r2",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1a8106b63-fc05-2d88",
+    "request_digest": "3c140106469a4a5317673a8a4aa8a587ead73dccb5fab4f187cff22c809b4f95",
+    "request_fingerprint": 4329086268275837400,
+    "ssh_target": "rog-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1a8106b63-fc05-2d88"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1a8106b63-fc05-2d88"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

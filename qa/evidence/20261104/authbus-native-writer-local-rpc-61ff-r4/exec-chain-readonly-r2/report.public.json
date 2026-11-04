@@ -1,0 +1,22 @@
+{
+  "env": {
+    "bytes": 11807104,
+    "mode": "0o755",
+    "realpath": "/usr/lib/cargo/bin/coreutils/env",
+    "sha256": "f84e76ea4da1e0c4e92254bd0d7dccdabe2c8b3098e734f27997dae3ee5d8e02",
+    "uid": 0
+  },
+  "knownIntermediateExecutableFromOriginalSpawnReceipt": true,
+  "nativeStarted": false,
+  "productionChanged": false,
+  "providerCalled": false,
+  "schema": "heptabao.native-wrapper-shebang-exec-chain-readonly.v1",
+  "wrapper": {
+    "bytes": 8790,
+    "mode": "0o775",
+    "realpath": "/home/qian-qi/.openclaw/runtime/openai-codex-0.159.2/node_modules/@openai/codex/bin/codex.js",
+    "sha256": "61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70",
+    "uid": 1000
+  },
+  "wrapperShebangExact": true
+}

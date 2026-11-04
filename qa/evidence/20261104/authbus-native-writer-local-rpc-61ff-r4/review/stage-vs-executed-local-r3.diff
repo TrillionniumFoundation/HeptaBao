@@ -1,0 +1,25 @@
+--- a/stage.py
++++ b/stage.py
+@@ -1,11 +1,11 @@
+ import os,sys,pathlib,json,hashlib,stat
+ os.umask(0o077)
+-root=pathlib.Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r3')
++root=pathlib.Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4')
+ raw=sys.stdin.buffer.read(1048577);assert len(raw)<=1048576
+ x=json.loads(raw);assert x['schema']=='heptabao.native-retirement-isolated-stage-input.v1' and x['candidateMode']=='baseline'
+ assert set(x['files'])=={'consumer.mjs','native_lifecycle.mjs','driver.py','launcher.py','provider-proof.public.json'}
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+-EXPECTED_INPUT_SHA256='086c0babfca2eb1a2ff06aa86965da93f58e4895acc0ef706f8bf23a430ff158'
++EXPECTED_INPUT_SHA256='10dfae8d1f295df7d3cfda659f3cb254cdc0b5f02f2e0ec1ad365aac95395376'
+ assert sha(raw)==EXPECTED_INPUT_SHA256
+ assert not root.exists()
+ def file_sha(p):
+@@ -18,6 +18,8 @@
+ for p,h in x['sourcePins'].items():assert file_sha(p)==h,p
+ for name,b in x['files'].items():assert sha(b.encode())==x['filePins'][name]
+ assert str(pathlib.Path('/usr/bin/node').resolve(strict=True))==x['native']['nodeRealpath']
++assert str(pathlib.Path('/usr/bin/env').resolve(strict=True))==x['native']['envRealpath']
++assert x['sourcePins'][x['native']['envRealpath']]==x['native']['envSha256']
+ root.mkdir(mode=0o700);control=root/'control';control.mkdir(mode=0o700)
+ def put(p,b):
+  fd=os.open(p,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
