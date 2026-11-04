@@ -1,0 +1,1 @@
+{"ok": true, "caseId": "managed2-r1", "httpStatus": 200, "requestCount": 1, "result": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-managed2-61ff8bef-r1/managed2-r1/outer-result.public.json", "resultSha256": "9d00efa408fe1592aefa718f6c8ebd30d7c82dd11479682fe1f7a717931e0dd4"}

@@ -1,0 +1,8 @@
+{
+  "job_id": "1a1a771eaeb-fc05-2b75",
+  "request_digest": "4e63dbae84f296922f4710382dd3a22a3578f9d74a4e85b8d156f97009b7f46f",
+  "created_unix_ms": 1793810623211,
+  "idempotency_key": "authbus61ff-managed2-current-sdk-offline-resolve-20261104-r1",
+  "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1a771eaeb-fc05-2b75",
+  "unit": "hepta-runtime-job-1a1a771eaeb-fc05-2b75"
+}

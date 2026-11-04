@@ -1,0 +1,30 @@
+{
+  "agentReviewSha256": "93ef0242e3fadda725a4e8e30287d013fb7f1f898859f042f30f2945bdbf31cd",
+  "checks": 33,
+  "exactOriginalMembersRecovered": 20,
+  "missingDiffsAreNotLiveFeatureEvidence": true,
+  "missingOriginalMembers": [
+    {
+      "bytes": 1173,
+      "relative": "read_dependencies.py.review.diff",
+      "sha256": "da26252dec74478869ab0d70a545a007a2732cc1f6c4b86e55732d94fdd2cf6b"
+    },
+    {
+      "bytes": 2572,
+      "relative": "source/desktop-vs-rog-shared-client.diff",
+      "sha256": "daebad411e312d84525e037af88f13d81501431c70c03ef0f366237d7cd0999c"
+    },
+    {
+      "bytes": 20075,
+      "path": "/workspace/scratch/61ff8bef4cc9/authbus-desktop-source-61ff-r1/evidence/syntax-failure.public.json",
+      "sha256": "4387d9cc062e7484015e6d797ee34769951e20096dbfd9eb6cf0e4cd4837d2eb"
+    }
+  ],
+  "originalAgentReviewRecomputedExact": true,
+  "originalManifestSha256": "16d00ed4dfb1d5f06c74c77b4ae138b94335a95ea40c0a855af0ff1e6fd6f859",
+  "originalMembersIncludingManifest": 23,
+  "originalReaderSyntaxFailureFactsRetained": true,
+  "productionChanged": false,
+  "providerCalledDuringRecovery": false,
+  "schema": "heptabao.desktop-original-input-recovery-status.v1"
+}

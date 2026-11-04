@@ -1,0 +1,436 @@
+{
+  "baseCommit": "d8652477fdf81504696fbb1b87ee1a52eb7919c8",
+  "files": [
+    {
+      "bytes": 15000,
+      "origin": "exact cached stage-input source, verified against executed stage pins",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/fresh_usage_read.mjs",
+      "sha256": "966efa4778aa7ca0fd23df84870f0b34015a03ff43ab62453e0401b4bd5f329c"
+    },
+    {
+      "bytes": 4990,
+      "origin": "exact cached stage-input source, verified against executed stage pins",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/launcher.py",
+      "sha256": "c3a64a977bf889ff7fe0246ea6336f680d2dacbb5496dc11f70529b7c3055089"
+    },
+    {
+      "bytes": 9450,
+      "origin": "exact cached stage-input source, verified against executed stage pins",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/resolve_sdk.mjs",
+      "sha256": "f9d932a4098fdfa87cd47d00bfb9dccf7b75cd680084b7dc528f7d5aed410233"
+    },
+    {
+      "bytes": 30186,
+      "origin": "exact cached stdin of original stage job 2b74",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/stage-input.json",
+      "sha256": "68a88330bd458a96c12a981d758e24138f35673bf6741930a22aa4fdac0226a9"
+    },
+    {
+      "bytes": 3790,
+      "origin": "exact cached original stage command source",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/stage_prepare.py",
+      "sha256": "6180f3d3f02e27785e95c2b60695bc524a25d0fa4dcf9c7c447ffd5ed3b7575f"
+    },
+    {
+      "bytes": 3656,
+      "origin": "exact cached original usage-stage command source",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/stage_usage.py",
+      "sha256": "07de35e34f79b65153b1eccd275c98dfa892248f6f00fb1bc4125ad304491526"
+    },
+    {
+      "bytes": 1662,
+      "origin": "exact cached original read-only export command source",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/read_provider_receipts.py",
+      "sha256": "0b585bcdef8845938dd87afcca2ac0feee643070e377c10cb28a6b8890c20ca0"
+    },
+    {
+      "bytes": 21814,
+      "origin": "original zlib capsule, checked byte length + SHA256",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/evidence/prepare-capsule.public.json",
+      "sha256": "180eddd9b833b983c16b562cf2d92bf956412b1aa2d4c1fabc38b1283ac796f5"
+    },
+    {
+      "bytes": 2828,
+      "origin": "exact original embedded file, also independently re-read from ROG original path",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/raw/control/resolve-stage.public.json",
+      "sha256": "740e79d7da02834481c08840eb8a7b59045e325f53db2b61dec9986e4cd8fa7b"
+    },
+    {
+      "bytes": 2624,
+      "origin": "exact original embedded file, also independently re-read from ROG original path",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/raw/control/resolve-r1.plan.json",
+      "sha256": "f7d97f34630bd07c804b03bc3b494b1605d118791143812262def3bdd7932df6"
+    },
+    {
+      "bytes": 4595,
+      "origin": "exact original embedded file, also independently re-read from ROG original path",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/raw/resolve-r1/result.public.json",
+      "sha256": "d6695979321543cab8271f9e66bdf63b2ea4acb2e76f37992f777c66094a04ed"
+    },
+    {
+      "bytes": 986,
+      "origin": "exact original embedded file, also independently re-read from ROG original path",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/raw/resolve-r1/outer-result.public.json",
+      "sha256": "c58636c0e3fd31337c2fa8cc6cb65ebe89aa5ffae60052c92770ddcf78a84c08"
+    },
+    {
+      "bytes": 4221,
+      "origin": "exact original embedded file, also independently re-read from ROG original path",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/raw/resolve-r1/intent.public.json",
+      "sha256": "f16071b74438c2bcd3ee7511a20ae4b158ace1bb2b7171ff0ef9bfd318ac2522"
+    },
+    {
+      "bytes": 530,
+      "origin": "exact original embedded file, also independently re-read from ROG original path",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/raw/control/managed2-r1.plan.json",
+      "sha256": "6e839d14d8c283328cd10af7b67ae0899f5de14148f546c675287261ab0cbe2d"
+    },
+    {
+      "bytes": 3622,
+      "origin": "exact original embedded file, also independently re-read from ROG original path",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/raw/control/usage-stage.public.json",
+      "sha256": "18d136c248703722fdfadc76f7a7bd5eab1a52024ae2e8f92dfa935231db8fbb"
+    },
+    {
+      "bytes": 10944,
+      "origin": "original zlib capsule, checked byte length + SHA256",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/evidence/provider-capsule.public.json",
+      "sha256": "b623c8d609523f9cddfed6ab34c8f0cfb33d71fc6a35b7ea29261363329b5e78"
+    },
+    {
+      "bytes": 2679,
+      "origin": "exact original embedded file, also independently re-read from ROG original path",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/raw/managed2-r1/result.public.json",
+      "sha256": "5715a487fd8bee4d004539ca9e6830199bea72de33b1d78b06eabe3dd471a75c"
+    },
+    {
+      "bytes": 986,
+      "origin": "exact original embedded file, also independently re-read from ROG original path",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/raw/managed2-r1/outer-result.public.json",
+      "sha256": "9d00efa408fe1592aefa718f6c8ebd30d7c82dd11479682fe1f7a717931e0dd4"
+    },
+    {
+      "bytes": 1009,
+      "origin": "exact original embedded file, also independently re-read from ROG original path",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/raw/managed2-r1/request-started.public.json",
+      "sha256": "051623b9ecac2dcc6b76d03390b4c240f2c36cb5eddcb14f46e9235024c241df"
+    },
+    {
+      "bytes": 4948,
+      "origin": "exact original embedded file, also independently re-read from ROG original path",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/raw/managed2-r1/intent.public.json",
+      "sha256": "f5de7df0b9f4350f20cc8d33b35dd1df7f5135f71d7495888574b54567e76fb7"
+    },
+    {
+      "bytes": 34774,
+      "origin": "original exact typed request recovered from functions cache",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/stage.request.public.json",
+      "sha256": "1422b0ac42366f7a2937fb70a70357e7a3f1210260fc995e42ba13b8abe5bbed"
+    },
+    {
+      "bytes": 730,
+      "origin": "controller authoritative result; JSON reserialization; no replay",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/stage.terminal.public.json",
+      "sha256": "b48cabcb43b83602103d376f404704ff3a7a028edf8c6b1c21d292f27ba90fb7"
+    },
+    {
+      "bytes": 255,
+      "origin": "exact original durable stdout bytes",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/stage.stdout.public.txt",
+      "sha256": "fca902033378d45a199cad3a152061117950b1144b29cc3d6dff9c7432350fd9"
+    },
+    {
+      "bytes": 394,
+      "origin": "safe exact metadata projection excluding JS-unsafe numeric request_fingerprint",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/stage.identity.public.json",
+      "sha256": "9e79c8cf9ad0b6f0294b863a409076feefb572ce61414a66d418b01c25e52b26"
+    },
+    {
+      "bytes": 411,
+      "origin": "original exact typed request recovered from functions cache",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/resolve.request.public.json",
+      "sha256": "531b989170d1ce8ce0b58666e78a7172d2ba9492fd217b1c9dbb6ddfddf826ae"
+    },
+    {
+      "bytes": 730,
+      "origin": "controller authoritative result; JSON reserialization; no replay",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/resolve.terminal.public.json",
+      "sha256": "f498b16394de4318d7432fb75386b58f827ac3b60cbf264f752888e0c79e87f4"
+    },
+    {
+      "bytes": 290,
+      "origin": "exact original durable stdout bytes",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/resolve.stdout.public.txt",
+      "sha256": "832d442d82ffcda0ab0b459fbd2044b537d279887a814cb9d9be34a397e7cc91"
+    },
+    {
+      "bytes": 404,
+      "origin": "safe exact metadata projection excluding JS-unsafe numeric request_fingerprint",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/resolve.identity.public.json",
+      "sha256": "e1ad7ddda0788146234621627420c2621f40fa5981eb4661240e8266bf404f60"
+    },
+    {
+      "bytes": 3983,
+      "origin": "original exact typed request recovered from functions cache",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/usage_stage.request.public.json",
+      "sha256": "1f3a0d668270a75f149d4fc544eb897ba50303f688c9cf149380272212994271"
+    },
+    {
+      "bytes": 732,
+      "origin": "controller authoritative result; JSON reserialization; no replay",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/usage_stage.terminal.public.json",
+      "sha256": "d37e221126dd7774e5ac35813e76c5da4f9422a375634cf214315ca381a50688"
+    },
+    {
+      "bytes": 5460,
+      "origin": "exact original durable stdout bytes",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/usage_stage.stdout.public.txt",
+      "sha256": "c9f562a8eb10c11e96124614eb2a68178f51a24eedc232874a662523e887e2fa"
+    },
+    {
+      "bytes": 393,
+      "origin": "safe exact metadata projection excluding JS-unsafe numeric request_fingerprint",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/usage_stage.identity.public.json",
+      "sha256": "4bea60f7b81c5089cb3f1d2e76f3beca907edb508eea7c884942e6e90935852d"
+    },
+    {
+      "bytes": 401,
+      "origin": "original exact typed request recovered from functions cache",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/get.request.public.json",
+      "sha256": "ff47652e894ecaa1fcb832dc74d8d2d5f46cd88ddfecd7079063cb86a62e4e37"
+    },
+    {
+      "bytes": 730,
+      "origin": "controller authoritative result; JSON reserialization; no replay",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/get.terminal.public.json",
+      "sha256": "f698235e059830d496af8347684a56d5d7f526d3220e2c815a27d4f413eb30ef"
+    },
+    {
+      "bytes": 291,
+      "origin": "exact original durable stdout bytes",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/get.stdout.public.txt",
+      "sha256": "ee7baefa5fc37c36a74bcedfd9f23d7f4e9a4a741b23ef7bb1c29b723186073d"
+    },
+    {
+      "bytes": 393,
+      "origin": "safe exact metadata projection excluding JS-unsafe numeric request_fingerprint",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/get.identity.public.json",
+      "sha256": "c2ed3441973439d873b0bbea00949018d1b3e6cfe9f9f47c1c058013aeaf4662"
+    },
+    {
+      "bytes": 2166,
+      "origin": "original exact typed request recovered from functions cache",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/export.request.public.json",
+      "sha256": "0e5f1176ca5b8db83686807c987897b97c62e1c7ae3f61bd599234449f54927c"
+    },
+    {
+      "bytes": 732,
+      "origin": "controller authoritative result; JSON reserialization; no replay",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/export.terminal.public.json",
+      "sha256": "28b4f985770177234b4d4831c716c87154d56656df5f67a8fe0330c0f10b5403"
+    },
+    {
+      "bytes": 4768,
+      "origin": "exact original durable stdout bytes",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/export.stdout.public.txt",
+      "sha256": "7861e3d6e39aaa7f72e25f65fac21401219db9999b60090854aa4eac1c8db261"
+    },
+    {
+      "bytes": 402,
+      "origin": "safe exact metadata projection excluding JS-unsafe numeric request_fingerprint",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/jobs/export.identity.public.json",
+      "sha256": "41640f33e26b46c26b57510c814948180412c6987d6fcb4483e60e5043ebc977"
+    },
+    {
+      "bytes": 910,
+      "origin": "exact immutable operation result payload, verified result SHA256",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/evidence/export-original-sdk-payload-0.public.json",
+      "sha256": "75b494221f032dcc4805577cd0efb1440caf3633b302cbae8ab3dc9dee8a93df"
+    },
+    {
+      "bytes": 14811,
+      "origin": "exact immutable operation result payload, verified result SHA256",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/evidence/export-original-sdk-payload-1.public.json",
+      "sha256": "77c92d94ec86cb3ace101f8dd9b24cfd1259407a1759e1aa30e343adfefe313b"
+    },
+    {
+      "bytes": 7505,
+      "origin": "new reproducible recovery verifier; distinct from unavailable original local reviewer",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/review_recovered.mjs",
+      "sha256": "b54425d9b73cfb8d038c1cf9fd16fdfec51498dd9a400f9bc5355c774785f4ea"
+    },
+    {
+      "bytes": 4747,
+      "origin": "new 49-condition integrity/source/cleanup review; executed against recovered exact inputs",
+      "path": "qa/evidence/20261104/authbus-fresh-managed2-61ff-r1/recovery/recovery-review.public.json",
+      "sha256": "0262d4d2ab4072619ad1074fef3b2343273bf826ec155fe0573ce8c5bf9d5d78"
+    },
+    {
+      "bytes": 5841,
+      "origin": "exact original manifest member, SHA256 and byte length match original pin",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r2/evidence/agent-review.public.json",
+      "sha256": "93ef0242e3fadda725a4e8e30287d013fb7f1f898859f042f30f2945bdbf31cd"
+    },
+    {
+      "bytes": 60355,
+      "origin": "exact original manifest member, SHA256 and byte length match original pin",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r2/evidence/dependencies.public.json",
+      "sha256": "a1f895b46e6d9b7bf36698f9a586eb9eb27a31d95a02dddb757251de60d6fe41"
+    },
+    {
+      "bytes": 27772,
+      "origin": "exact original manifest member, SHA256 and byte length match original pin",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r2/evidence/ownership-supplement-envelope.public.json",
+      "sha256": "945653418d04d3ff2d624c95c7b948d4be256623c7a0542855e45eca4a17cdf4"
+    },
+    {
+      "bytes": 734,
+      "origin": "exact original manifest member, SHA256 and byte length match original pin",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r2/evidence/ownership-supplement-terminal.public.json",
+      "sha256": "ec37a3fb926d96ba94c89bd65b26a62a5c976d876eb286e21f53f70e8f800e03"
+    },
+    {
+      "bytes": 89363,
+      "origin": "exact original manifest member, SHA256 and byte length match original pin",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r2/evidence/ownership-supplement.public.json",
+      "sha256": "2ffce32cb6e522bcbd00813013569923b00a43f883a92c2df7ffd2c8956d3029"
+    },
+    {
+      "bytes": 18336,
+      "origin": "exact original manifest member, SHA256 and byte length match original pin",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r2/evidence/request.public.json",
+      "sha256": "f633e97b6df82ab29b48c3ad7576d593b231d6ab174e16a1084f735314aa3a80"
+    },
+    {
+      "bytes": 732,
+      "origin": "exact original manifest member, SHA256 and byte length match original pin",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r2/evidence/sdk-pins-terminal.public.json",
+      "sha256": "03472c74ae4ed34fdf4968437c938786cfadf6a9ec0812dadaa05f85ba2c2659"
+    },
+    {
+      "bytes": 1622,
+      "origin": "exact original manifest member, SHA256 and byte length match original pin",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r2/evidence/sdk-pins.public.json",
+      "sha256": "e35cc5b0d8f284e17baeeabcd2ca4eddd63575c2daca8a95ce661bec05b45772"
+    },
+    {
+      "bytes": 15679,
+      "origin": "exact original manifest member, SHA256 and byte length match original pin",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r2/evidence/stdout-envelope.public.json",
+      "sha256": "21cc6beaa0d2fe5180aad993471d9dbb630caad8354e6243b2dfe1f40a187c85"
+    },
+    {
+      "bytes": 734,
+      "origin": "exact original manifest member, SHA256 and byte length match original pin",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r2/evidence/terminal.public.json",
+      "sha256": "6f171251b2a62e1c4793f67a999cbb675f8593831747256965874e9a0a25903e"
+    },
+    {
+      "bytes": 17612,
+      "origin": "exact original manifest member, SHA256 and byte length match original pin",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r2/read_dependencies.py",
+      "sha256": "edb7c896bd767fa253de828be437916d47d0a09b0562c55c72fa79adfe53b596"
+    },
+    {
+      "bytes": 4719,
+      "origin": "exact original manifest member, SHA256 and byte length match original pin",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r2/read_ownership_supplement.py",
+      "sha256": "002d72ef48167fc715e6f4f54ace087f8631aaacce13c7e3b206eea820cf2637"
+    },
+    {
+      "bytes": 7369,
+      "origin": "exact original manifest member, SHA256 and byte length match original pin",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r2/review_dependencies.py",
+      "sha256": "6d73c241a22d27c2ca38ef53f020f664edea8d9680f019b954d4b03cd02f6c2c"
+    },
+    {
+      "bytes": 78538,
+      "origin": "exact original manifest member, SHA256 and byte length match original pin",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r2/source/desktop-shared-client-4ICy3U6d.js",
+      "sha256": "08769a5a75dfd8f426e8e6f70bc1201e90027c273f8fa247ef3b6549a617de7c"
+    },
+    {
+      "bytes": 4435,
+      "origin": "exact original manifest recovered by parent; retained without deleting missing members",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r2/evidence/manifest.public.json",
+      "sha256": "16d00ed4dfb1d5f06c74c77b4ae138b94335a95ea40c0a855af0ff1e6fd6f859"
+    },
+    {
+      "bytes": 17611,
+      "origin": "exact original dependency, SHA256 and byte length match original manifest",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r1/read_dependencies.py",
+      "sha256": "53fdf360b883fb85ccdd7a0f6b283b10c60c20d1632ef7a582c7b92496e758f7"
+    },
+    {
+      "bytes": 19513,
+      "origin": "exact original dependency, SHA256 and byte length match original manifest",
+      "path": "qa/evidence/20261104/authbus-route-audit-61ff-r1/source/agent-runtime.js",
+      "sha256": "7831532d17eeaddd62889b2e8bb7b65ea7a7851901f69ceec23607a8c579dd95"
+    },
+    {
+      "bytes": 40383,
+      "origin": "exact original dependency, SHA256 and byte length match original manifest",
+      "path": "qa/evidence/20261104/authbus-route-audit-61ff-r1/source/store-DH33UrUj.js",
+      "sha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf"
+    },
+    {
+      "bytes": 8580,
+      "origin": "exact original dependency, SHA256 and byte length match original manifest",
+      "path": "qa/evidence/20261104/authbus-route-audit-61ff-r1/source/profiles-DyU-YCq2.js",
+      "sha256": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5"
+    },
+    {
+      "bytes": 2674,
+      "origin": "exact original dependency, SHA256 and byte length match original manifest",
+      "path": "qa/evidence/20261104/authbus-fresh-source-61ff-r3/evidence/managed1-r1/result.public.json",
+      "sha256": "697042efa3f085926dc8ea9382f6f3c4ffa9262d79f85d98f0e5ac2e08c230ab"
+    },
+    {
+      "bytes": 1189,
+      "origin": "new explicit recovery completeness record",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r2/evidence/recovery-status.public.json",
+      "sha256": "754bc57ec3d54927e637145c6250425ad8f3584a835ec0093baf1785d281213f"
+    },
+    {
+      "bytes": 727,
+      "origin": "original failed job terminal, new filename; not claimed as missing original wrapper",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r1/evidence/recovered-terminal.public.json",
+      "sha256": "4957916985fc5b918d2e16076ae329e557954b5781d19846245d2eef4e9aabf9"
+    },
+    {
+      "bytes": 522,
+      "origin": "exact original durable SyntaxError stderr",
+      "path": "qa/evidence/20261104/authbus-desktop-source-61ff-r1/evidence/recovered-stderr.public.txt",
+      "sha256": "41cae5c71a1145b7170873271a24900c281e57d5300bd5e95826216a604ee63a"
+    },
+    {
+      "bytes": 1717,
+      "origin": "original helper-only failure before native startup",
+      "path": "qa/evidence/20261104/authbus-native-writer-61ff-r1/read_native_command.py",
+      "sha256": "00a587c956b313a1e2758f901dbdaeaa87f7dc7d494fc8c1ae9eeca364280df2"
+    },
+    {
+      "bytes": 727,
+      "origin": "original helper-only failure before native startup",
+      "path": "qa/evidence/20261104/authbus-native-writer-61ff-r1/terminal.public.json",
+      "sha256": "b4fcee8f34a40f575d2769da4151acd683fa5f21c56a7a3ac557b081c86c4621"
+    },
+    {
+      "bytes": 328,
+      "origin": "original helper-only failure before native startup",
+      "path": "qa/evidence/20261104/authbus-native-writer-61ff-r1/stderr.public.txt",
+      "sha256": "6352f653c05eb28e3d5151d37efe5939b415e1b2e2182d642730911dc1334886"
+    },
+    {
+      "bytes": 4762,
+      "origin": "new recovery scope and findings",
+      "path": "qa/evidence/20261104/authbus-controller-recovery-61ff-r1/README.md",
+      "sha256": "4727273da71484801c7ef25ef9212f9498e98616c29685d82670ac89e71800c1"
+    }
+  ],
+  "managed2OriginalLocalManifestRecovered": false,
+  "originalDesktopManifestRetained": true,
+  "productionChanged": false,
+  "providerInvokedDuringRecovery": false,
+  "schema": "heptabao.authbus-controller-recovered-files.v1"
+}

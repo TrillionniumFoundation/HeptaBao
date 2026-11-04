@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "<string>", line 15, in <module>
+    candidates=sorted(set(base.glob('node_modules/@openai/codex*/vendor/*/codex/codex')));assert 1<=len(candidates)<=8
+                                                                                                 ^^^^^^^^^^^^^^^^^^^^^
+AssertionError

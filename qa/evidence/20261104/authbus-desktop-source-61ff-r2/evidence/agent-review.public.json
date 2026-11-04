@@ -1,0 +1,215 @@
+{
+  "checks": [
+    {
+      "name": "dependencies.public.json.nativeRawBinding",
+      "ok": true
+    },
+    {
+      "name": "ownership-supplement.public.json.nativeRawBinding",
+      "ok": true
+    },
+    {
+      "name": "evidence/terminal.public.json.job",
+      "ok": true
+    },
+    {
+      "name": "evidence/terminal.public.json.durable",
+      "ok": true
+    },
+    {
+      "name": "evidence/ownership-supplement-terminal.public.json.job",
+      "ok": true
+    },
+    {
+      "name": "evidence/ownership-supplement-terminal.public.json.durable",
+      "ok": true
+    },
+    {
+      "name": "evidence/sdk-pins-terminal.public.json.job",
+      "ok": true
+    },
+    {
+      "name": "evidence/sdk-pins-terminal.public.json.durable",
+      "ok": true
+    },
+    {
+      "name": "scope",
+      "ok": true
+    },
+    {
+      "name": "exactConfig",
+      "ok": true
+    },
+    {
+      "name": "eightConfiguredSixExisting",
+      "ok": true
+    },
+    {
+      "name": "tenRowsFourDistinct",
+      "ok": true
+    },
+    {
+      "name": "threeJwtExpiredRows",
+      "ok": true
+    },
+    {
+      "name": "existingDesktopLocalProvider",
+      "ok": true
+    },
+    {
+      "name": "followerScope",
+      "ok": true
+    },
+    {
+      "name": "roleSidContentsNotRead",
+      "ok": true
+    },
+    {
+      "name": "systemProviderActive",
+      "ok": true
+    },
+    {
+      "name": "renewalTimerActive",
+      "ok": true
+    },
+    {
+      "name": "userManagerProbeDenied",
+      "ok": true
+    },
+    {
+      "name": "configurationPermissionBoundary",
+      "ok": true
+    },
+    {
+      "name": "providerBinary270Path",
+      "ok": true
+    },
+    {
+      "name": "localStatusPendingTwo",
+      "ok": true
+    },
+    {
+      "name": "twoLocalAppliedDigestDivergences",
+      "ok": true
+    },
+    {
+      "name": "nativeDistinctFromAllSdkRows",
+      "ok": true
+    },
+    {
+      "name": "sameIdentityAsRogManaged1DifferentGeneration",
+      "ok": true
+    },
+    {
+      "name": "threeHeldConditionsPreserved",
+      "ok": true
+    },
+    {
+      "name": "gatewayMarkerAbsentAuxiliaryMarkersPresent",
+      "ok": true
+    },
+    {
+      "name": "actualStateMainOrder4213",
+      "ok": true
+    },
+    {
+      "name": "stateDistinctFromRawSecretsStore",
+      "ok": true
+    },
+    {
+      "name": "fixedSource.desktop-shared-client-4ICy3U6d.js",
+      "ok": true
+    },
+    {
+      "name": "desktopSdkMatchesReviewedRog.agent-runtime.js",
+      "ok": true
+    },
+    {
+      "name": "desktopSdkMatchesReviewedRog.store-DH33UrUj.js",
+      "ok": true
+    },
+    {
+      "name": "desktopSdkMatchesReviewedRog.profiles-DyU-YCq2.js",
+      "ok": true
+    }
+  ],
+  "checksPassed": 33,
+  "checksTotal": 33,
+  "evidenceConsistent": true,
+  "findings": {
+    "causalRefreshWriterIdentified": false,
+    "configuredAgents": 8,
+    "currentProviderValidityQualified": false,
+    "distinctCredentialGenerations": 4,
+    "existingAgentDatabases": 6,
+    "existingProviderEndpoint": "https://127.0.0.1:18200",
+    "existingProviderUnitBinaryPathVersion": "2.7.0",
+    "jwtExpiredRowsAtObservation": 3,
+    "localManifestGeneration": 1,
+    "localPendingRuntimeRefreshes": 2,
+    "nativeCurrentGenerationDistinctFromEveryStoredSdkRow": true,
+    "oauthRows": 10,
+    "sharedAccountIdentityWithRogManaged1": true
+  },
+  "inputPins": {
+    "evidence/dependencies.public.json": {
+      "bytes": 60355,
+      "sha256": "a1f895b46e6d9b7bf36698f9a586eb9eb27a31d95a02dddb757251de60d6fe41"
+    },
+    "evidence/ownership-supplement-envelope.public.json": {
+      "bytes": 27772,
+      "sha256": "945653418d04d3ff2d624c95c7b948d4be256623c7a0542855e45eca4a17cdf4"
+    },
+    "evidence/ownership-supplement-terminal.public.json": {
+      "bytes": 734,
+      "sha256": "ec37a3fb926d96ba94c89bd65b26a62a5c976d876eb286e21f53f70e8f800e03"
+    },
+    "evidence/ownership-supplement.public.json": {
+      "bytes": 89363,
+      "sha256": "2ffce32cb6e522bcbd00813013569923b00a43f883a92c2df7ffd2c8956d3029"
+    },
+    "evidence/sdk-pins-terminal.public.json": {
+      "bytes": 732,
+      "sha256": "03472c74ae4ed34fdf4968437c938786cfadf6a9ec0812dadaa05f85ba2c2659"
+    },
+    "evidence/sdk-pins.public.json": {
+      "bytes": 1622,
+      "sha256": "e35cc5b0d8f284e17baeeabcd2ca4eddd63575c2daca8a95ce661bec05b45772"
+    },
+    "evidence/stdout-envelope.public.json": {
+      "bytes": 15679,
+      "sha256": "21cc6beaa0d2fe5180aad993471d9dbb630caad8354e6243b2dfe1f40a187c85"
+    },
+    "evidence/terminal.public.json": {
+      "bytes": 734,
+      "sha256": "6f171251b2a62e1c4793f67a999cbb675f8593831747256965874e9a0a25903e"
+    },
+    "read_dependencies.py": {
+      "bytes": 17612,
+      "sha256": "edb7c896bd767fa253de828be437916d47d0a09b0562c55c72fa79adfe53b596"
+    },
+    "read_ownership_supplement.py": {
+      "bytes": 4719,
+      "sha256": "002d72ef48167fc715e6f4f54ace087f8631aaacce13c7e3b206eea820cf2637"
+    },
+    "source/desktop-shared-client-4ICy3U6d.js": {
+      "bytes": 78538,
+      "sha256": "08769a5a75dfd8f426e8e6f70bc1201e90027c273f8fa247ef3b6549a617de7c"
+    }
+  },
+  "limitations": {
+    "allClientsMigrated": false,
+    "canonicalServerManifestRead": false,
+    "crossAgentAtomicSnapshot": false,
+    "defaultGatewaySelectionQualified": false,
+    "factoryRecyclerBypassIsStaticReachabilityFindingOnly": true,
+    "liveRefreshOwnershipQualified": false,
+    "namespaceOwnerIdsMustNotBeReadAsHostUidForUnmappedRoot": true,
+    "nativeWriterOverlapObservedLive": false,
+    "rawStoreOrderIsNotSdkMaterializedOrder": true,
+    "rootOnlyProviderConfigRead": false,
+    "userManagerEffectiveStateQualifiedByThisProbe": false
+  },
+  "qualifiedScope": "Read-only existing Desktop client/provider/source dependency projection; no provider request, migration, restart, renewal or cutover.",
+  "schema": "heptabao.desktop-existing-dependencies-evidence-review.v1"
+}

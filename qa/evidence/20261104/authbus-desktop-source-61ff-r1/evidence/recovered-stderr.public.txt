@@ -1,0 +1,4 @@
+  File "<string>", line 131
+    j=json.loads(b);item['topLevelKeys']=[k for k in ['storage','listener','api_addr','cluster_addr','disable_mlock','data_dir','bind','port','tls']if k in j];item['configStructureSha256']=sha(canon({k:type(v).__name__for k,v in j.items()}))
+                                                                                                                                                                                                                              ^
+SyntaxError: invalid syntax

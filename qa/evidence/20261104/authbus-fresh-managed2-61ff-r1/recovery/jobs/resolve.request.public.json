@@ -1,0 +1,17 @@
+{
+  "host": "rog",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-managed2-61ff8bef-r1/control/launcher.py",
+    "resolve-r1"
+  ],
+  "idempotency_key": "authbus61ff-managed2-current-sdk-offline-resolve-20261104-r1",
+  "timeout_seconds": 50,
+  "env": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/qian-qi"
+  }
+}

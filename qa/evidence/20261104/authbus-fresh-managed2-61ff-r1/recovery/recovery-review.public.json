@@ -1,0 +1,219 @@
+{
+  "authbusMigrationQualifiedByThisRun": false,
+  "checks": [
+    {
+      "name": "executed_source_fresh_usage_read.mjs",
+      "ok": true
+    },
+    {
+      "name": "executed_source_launcher.py",
+      "ok": true
+    },
+    {
+      "name": "executed_source_resolve_sdk.mjs",
+      "ok": true
+    },
+    {
+      "name": "original_file_control/resolve-stage.public.json",
+      "ok": true
+    },
+    {
+      "name": "original_file_control/resolve-r1.plan.json",
+      "ok": true
+    },
+    {
+      "name": "original_file_resolve-r1/result.public.json",
+      "ok": true
+    },
+    {
+      "name": "original_file_resolve-r1/outer-result.public.json",
+      "ok": true
+    },
+    {
+      "name": "original_file_resolve-r1/intent.public.json",
+      "ok": true
+    },
+    {
+      "name": "original_file_control/managed2-r1.plan.json",
+      "ok": true
+    },
+    {
+      "name": "original_file_control/usage-stage.public.json",
+      "ok": true
+    },
+    {
+      "name": "original_file_managed2-r1/result.public.json",
+      "ok": true
+    },
+    {
+      "name": "original_file_managed2-r1/outer-result.public.json",
+      "ok": true
+    },
+    {
+      "name": "original_file_managed2-r1/request-started.public.json",
+      "ok": true
+    },
+    {
+      "name": "original_file_managed2-r1/intent.public.json",
+      "ok": true
+    },
+    {
+      "name": "prepare_capsule_original_hash",
+      "ok": true
+    },
+    {
+      "name": "provider_capsule_original_hash",
+      "ok": true
+    },
+    {
+      "name": "original_terminal_stage",
+      "ok": true
+    },
+    {
+      "name": "request_identity_stage",
+      "ok": true
+    },
+    {
+      "name": "complete_durable_output_stage",
+      "ok": true
+    },
+    {
+      "name": "original_terminal_resolve",
+      "ok": true
+    },
+    {
+      "name": "request_identity_resolve",
+      "ok": true
+    },
+    {
+      "name": "complete_durable_output_resolve",
+      "ok": true
+    },
+    {
+      "name": "original_terminal_usage_stage",
+      "ok": true
+    },
+    {
+      "name": "request_identity_usage_stage",
+      "ok": true
+    },
+    {
+      "name": "complete_durable_output_usage_stage",
+      "ok": true
+    },
+    {
+      "name": "original_terminal_get",
+      "ok": true
+    },
+    {
+      "name": "request_identity_get",
+      "ok": true
+    },
+    {
+      "name": "complete_durable_output_get",
+      "ok": true
+    },
+    {
+      "name": "original_terminal_export",
+      "ok": true
+    },
+    {
+      "name": "request_identity_export",
+      "ok": true
+    },
+    {
+      "name": "complete_durable_output_export",
+      "ok": true
+    },
+    {
+      "name": "stage_original_payload",
+      "ok": true
+    },
+    {
+      "name": "single_get_stage",
+      "ok": true
+    },
+    {
+      "name": "actual_sdk_69_checks",
+      "ok": true
+    },
+    {
+      "name": "actual_sdk_source_generation",
+      "ok": true
+    },
+    {
+      "name": "actual_sdk_no_network_or_child",
+      "ok": true
+    },
+    {
+      "name": "full_auth_rows_conserved",
+      "ok": true
+    },
+    {
+      "name": "selection_private_exact_hash",
+      "ok": true
+    },
+    {
+      "name": "resolver_custody",
+      "ok": true
+    },
+    {
+      "name": "one_fresh_get200",
+      "ok": true
+    },
+    {
+      "name": "tls_and_durable_sdk_parse",
+      "ok": true
+    },
+    {
+      "name": "private_body_hash_rechecked",
+      "ok": true
+    },
+    {
+      "name": "request_ledger_exact",
+      "ok": true
+    },
+    {
+      "name": "current_generation_before_after",
+      "ok": true
+    },
+    {
+      "name": "native_unmanaged_generation_preserved",
+      "ok": true
+    },
+    {
+      "name": "owned_cleanup_resolver",
+      "ok": true
+    },
+    {
+      "name": "owned_cleanup_provider",
+      "ok": true
+    },
+    {
+      "name": "provider_result_chain",
+      "ok": true
+    },
+    {
+      "name": "scope_preserved",
+      "ok": true
+    }
+  ],
+  "checksPassed": 49,
+  "checksTotal": 49,
+  "evidenceConsistent": true,
+  "managed1Current401Overridden": false,
+  "nativeOriginal4Adopted": false,
+  "originalLocalManifestRecovered": false,
+  "originalLocalReviewerRecovered": false,
+  "originalSdkDynamicChecks": 69,
+  "productionGatewayCutoverQualified": false,
+  "providerResult": {
+    "credentialSha256": "131b8515d48433365dd84555e7659297d4d62de631f9a526a8a4293f03396175",
+    "httpStatus": 200,
+    "requests": 1,
+    "responseBodyPublished": false,
+    "sourceKind": "managed-profile2-current-sdk-explicit"
+  },
+  "schema": "heptabao.managed2-controller-recovery-review.v1",
+  "scope": "Original actual installed SDK explicit managed profile 2 selection and one read-only provider GET; source conservation and owned namespace cleanup. No new provider invocation or production action during recovery."
+}

@@ -1,0 +1,1 @@
+{"ok": true, "stage": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-managed2-61ff8bef-r1/control/resolve-stage.public.json", "sha256": "740e79d7da02834481c08840eb8a7b59045e325f53db2b61dec9986e4cd8fa7b", "pins": 19, "providerCalled": false}
