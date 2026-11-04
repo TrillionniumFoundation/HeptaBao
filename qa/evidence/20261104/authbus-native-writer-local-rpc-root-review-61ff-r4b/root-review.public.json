@@ -1,0 +1,77 @@
+{
+  "schema": "heptabao.root.authbus-local-r4b-review.v1",
+  "review_commit": "834b544c178ebbc924df89d42d2aa092c0c5b054",
+  "previous_unexecuted_revision": "3e49a9eb65aa7a10dcd11505d7d8701165e0bec4",
+  "lifecycle_sha256": "ee1a7d26d9c329fbf16a4205895ee72708b0ac6148a476021a62ecb1687102e1",
+  "stage_request_sha256": "9c820f9d06860f9f749902d03768388db8b9b7a25635ff0f430f3ca440c26fa7",
+  "live_request_sha256": "2c19ff91aeec0e21b6bae41fe165f54f14992520f6e43ab12eb7a0a46a635eaf",
+  "stage_payload_sha256": "807b084575bb06d5ba9d5a006992b0cced01474ec82160c6ad55fd00965c2875",
+  "checks": [
+    {
+      "label": "lifecycle-two-deadline-checks",
+      "ok": true
+    },
+    {
+      "label": "launcher-fresh-root-only",
+      "ok": true
+    },
+    {
+      "label": "stage-fresh-root-and-payload-only",
+      "ok": true
+    },
+    {
+      "label": "exact-stage-source",
+      "ok": true
+    },
+    {
+      "label": "exact-payload-sha",
+      "ok": true
+    },
+    {
+      "label": "exact-payload-file-pins",
+      "ok": true
+    },
+    {
+      "label": "exact-new-lifecycle",
+      "ok": true
+    },
+    {
+      "label": "exact-new-launcher",
+      "ok": true
+    },
+    {
+      "label": "original-driver-unchanged",
+      "ok": true
+    },
+    {
+      "label": "original-consumer-unchanged",
+      "ok": true
+    },
+    {
+      "label": "baseline-mode",
+      "ok": true
+    },
+    {
+      "label": "pinned-env-in-source-manifest",
+      "ok": true
+    },
+    {
+      "label": "original480-supervisor",
+      "ok": true
+    }
+  ],
+  "source_pin_count": 42,
+  "private_source_identity_and_callback_capture_preserved": true,
+  "original_acquire_absolute_deadline_rechecked_before_node_return_and_initialize_call": true,
+  "unknown_executable_refused": true,
+  "child_registered_before_identity_checks": true,
+  "failed_started_client_registered_before_assertion": true,
+  "ready_rpc_method": "thread/loaded/list",
+  "ready_rpc_timeout_ms": 8000,
+  "original_worker_seconds": 440,
+  "original_supervisor_seconds": 480,
+  "scope": "two initialized native RPC channels sharing a private writable credential directory; no account/provider/credential-overwrite or production gateway qualification",
+  "pure_compile_reported_job_suffix": "2dbd",
+  "pure_compile_reported_exit_code": 0,
+  "execution_approved_for_exact_unique_r4b_requests": true
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.native-cli-supervise-real-regression-control.v1",
+  "source": "exact complete original/fixed openbao271_kv2_native_large_migrate.py plus exact adjacent legacy/decoder",
+  "source_refs": {
+    "original": "c71b405970544682e7b9b25c91214f66351a767b",
+    "fixed": "e54a3e9f1d3fc71244681ae1e6ff151bfc2c76a9"
+  },
+  "source_pins": {
+    "baseline": "4df0d5eaf069905e5a5bfd9e0e699391ba104ac27d54c5cbb18a79a9d8b1284d",
+    "fixed": "8043bce5e2443ca10f09d88dc854fc1a850ae4ac8b904763fbfc1ae3fa2de52a",
+    "legacy": "7d49451fc876040ad1887de5170b6255a0a569d79894141e34c201d6d369f607",
+    "decoder": "633470fd47ca5d402fb2e175ecf57aaf43d9fa6c27b8ba4885d9fc43d4a989d2"
+  },
+  "controller_sha256": "0d228aa910a022a61c09d127a4b7df5370b02794fd9a2df0257771a64e0b1e19",
+  "controller_bytes": 11185,
+  "run_request_sha256": "01bac346b696111dfd939e2218128b938ec3fd0bc47ef8815696ee5a53288636",
+  "envelope_sha256": "dbf07e6a13a8a5d8f4f7fc917b6170231ed47dc4a911911b15e3a9060818703b",
+  "packet_sha256": "0ea28c8d0d32e3a28aa7b86839ddf3cbdaae7ac9359b8f17c9a8dedc42f94760",
+  "reused_regression_cleanup_source_sha256": "13f0992359ed65ef14123b45ccd2a33de36c3a405ebcbe640b93c1211a3e2ae4",
+  "cases": [
+    "baseline-success",
+    "baseline-nonzero7",
+    "baseline-timeout",
+    "fixed-success",
+    "fixed-nonzero7",
+    "fixed-timeout"
+  ],
+  "test_only_deadline_seconds": {
+    "success": 2,
+    "nonzero": 2,
+    "timeout": 0.25
+  },
+  "real_worker_deadline_constant_360_unchanged": true,
+  "real_worker_popen": true,
+  "real_original_wait": true,
+  "signals_to_already_reaped_pid_blocked_before_actual_dispatch": true,
+  "owned_dummy_workers_only": true,
+  "full34_or_http_executed": false,
+  "production_changed": false,
+  "full_replacement_qualified": false,
+  "pure_compile": {
+    "job": "1a1a8208422-fc05-2dc2",
+    "authoritative_exit_code": 0,
+    "executed": false,
+    "stdout_bytes": 132,
+    "stderr_bytes": 0
+  }
+}
