@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.root.authbus-local-r4-source-review.v1",
+  "commit": "3e49a9eb65aa7a10dcd11505d7d8701165e0bec4",
+  "reconstruction": [
+    {
+      "key": "lifecycle",
+      "base_sha256": "cf681291cfd46cae5caaa096b891dfbf1b37833c7a8890ab96d749c0db7ed7d6",
+      "candidate_sha256": "0b8c2ca7495db32ea20b199c23f0571a1af6d24618677c39d9576137b2db6b83",
+      "reconstructs_exact": true
+    },
+    {
+      "key": "launcher",
+      "base_sha256": "b770d3f2cc5c049331cd5bd7e0c8f302a9319de49de3bf5dbb468020392ff528",
+      "candidate_sha256": "412dd127cfda154333e1cb975253ed0a52ca4c864336cea516b920e5744994a0",
+      "reconstructs_exact": true
+    },
+    {
+      "key": "stage",
+      "base_sha256": "fa70d64883b8062fb0e85e0e3ca356501489cc9e146cf36857d2d4c9e20d219f",
+      "candidate_sha256": "78625a44bd53ce1c18bb4a92b9fc0d7725f0590c60aa9a05ff9ec084d8d20d54",
+      "reconstructs_exact": true
+    }
+  ],
+  "status": "requires_two_terminal_checks_before_execution",
+  "required_change": "Recheck the same acquire deadline before returning confirmed Node identity and immediately before initialize RPC dispatch; no new deadline, no change to later local 8-second RPCs",
+  "staged_or_executed": false,
+  "account_or_provider_qualification": false
+}

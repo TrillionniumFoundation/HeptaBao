@@ -1,0 +1,158 @@
+{
+  "schema": "heptabao.root.x230-normal-7071-full34-actual-verification.v1",
+  "status": "component_qualified",
+  "actual_job": "1a1a813f218-fc05-2d94",
+  "authoritative_exit_code": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "source_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "source_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "binary_sha256": "199e2b6a91346db2b61a6066827a0b4ee658991758926ed9c6b50a8f1ea98a71",
+  "binary_bytes": 110846072,
+  "stage_receipt_sha256": "bd6b9842dc5f58a21df9c0adf0b463e20ca544ffb7225e748eaab495ff225f1b",
+  "controller_sha256": "a7b97a452d4064c02dd64c52a1e3e99e8af120598506a215d8fabde9e06399d8",
+  "derived_helper_sha256": "d9e9f2a379f1fa326a61b8fa29585751223a669424ffe28f6b171b18526a4b68",
+  "original_business_helper_sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+  "result": {
+    "sha256": "3e4e7063c24a180fb7bab7be56b9d78613b2c247d4c04ff2422d4f29793f0cc7",
+    "bytes": 176117,
+    "pages": [
+      {
+        "offset": 0,
+        "bytes": 65536,
+        "sha256": "594a0472675e97cf4c1c22c7317a3567e896b1c030e3a350d65a3318dabdfac2"
+      },
+      {
+        "offset": 65536,
+        "bytes": 65536,
+        "sha256": "29ab5f7a60d631440a52c86e3105b04b0682c76d95cb8d4dab56067d8232035f"
+      },
+      {
+        "offset": 131072,
+        "bytes": 45045,
+        "sha256": "ea31fc48a93ee29584bfe05ca40876e5ce2b11fd05addd3467f6ddf032bf3f10"
+      }
+    ]
+  },
+  "summary": {
+    "sha256": "4b2bea8ef8626fa308317984c88c301222edd27b05d1e75685410a39fc4327b5",
+    "bytes": 90674,
+    "pages": [
+      {
+        "offset": 0,
+        "bytes": 65536,
+        "sha256": "a983bb9a54367b766ee1788c51200be7b55938e08cbc7928b8ec4d333497e455"
+      },
+      {
+        "offset": 65536,
+        "bytes": 25138,
+        "sha256": "1c4e448893c1041de1db75406e070b22ccc7a8d83490e8f5346a3c3a2610b212"
+      }
+    ]
+  },
+  "root_independent_checks": {
+    "exact31NamesAllPassed": true,
+    "sourceAndBinaryBeforeAfterExact": true,
+    "summaryDigestMatchesController": true,
+    "actualAll408ChildrenWaitedAndGroupsEmpty": true,
+    "exportAndImportEachExactlyOnce": true,
+    "allRecordedRequestsKnownUnreplayed": true,
+    "normalConfiguredNativeFile": true,
+    "full34PayloadExact": true,
+    "originalBusinessBudgets": true,
+    "controllerWithinNew1800": true
+  },
+  "checks_passed": 31,
+  "checks_total": 31,
+  "exact_required_names": [
+    "official_271_pins_and_live_identity",
+    "two_distinct_owned_processes",
+    "source_api_oracle_captured",
+    "source_retained_deleted_destroyed_seeded",
+    "source_metadata_cas_seeded",
+    "source_cold_restart_exact",
+    "target_pristine_before_import",
+    "source_export_once",
+    "source_raw_history_exact",
+    "exported_soft_deleted_payload_preserved",
+    "source_unchanged_after_export",
+    "target_import_once",
+    "target_active_native_v6",
+    "target_full_history_exact",
+    "target_storage_full_history_exact",
+    "target_cold_restart_exact",
+    "target_storage_cold_history_exact",
+    "snapshot_download",
+    "post_snapshot_mutation_once",
+    "snapshot_restore_once",
+    "restored_cold_history_exact",
+    "restored_storage_history_exact",
+    "soft_deleted_payload_undelete_exact",
+    "destroyed_payload_remains_absent",
+    "data_cas_denied_without_effect",
+    "metadata_cas_denied_without_effect",
+    "metadata_cas_success_counter_exact",
+    "source_unchanged_after_target_mutations",
+    "source_and_binary_unchanged",
+    "owned_processes_stopped",
+    "report_excludes_runtime_credentials"
+  ],
+  "elapsed_seconds": 143.40419909683987,
+  "owned_children": 408,
+  "child_returncodes": {
+    "0": 405,
+    "-9": 3
+  },
+  "outer_forced_cleanup": false,
+  "group_signals_observed": 0,
+  "source_export_once": true,
+  "target_import_once": true,
+  "retained_live_payload_bytes": 35651584,
+  "retained_live_versions": 17,
+  "target_storage_precision_qualified": true,
+  "api_history_qualified": true,
+  "full34_qualified": true,
+  "official_openbao_version": "2.7.1",
+  "official_artifact": {
+    "archive_member_matches_executable": true,
+    "artifact_sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+    "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+    "cluster_id": "bdef85bf-60f1-b06b-7f28-4ccf0dda5cc4",
+    "endpoint": "https://127.0.0.1:55651",
+    "launcher_source_sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6",
+    "product": "OpenBao",
+    "provenance_url": "https://github.com/openbao/openbao/releases/tag/v2.7.1",
+    "server_mode": "server_not_dev",
+    "storage": "pebbledb",
+    "synthetic_only": true,
+    "tls_verified": true,
+    "version": "2.7.1"
+  },
+  "candidate_startup": {
+    "activation_path": "sys/storage/native-v6/activate",
+    "argv": [
+      "/home/qian/heptabao-kv2-formal34-61ff-7071-20261104-r1/artifacts/heptabao-server",
+      "--config",
+      "/home/qian/heptabao-kv2-formal34-61ff-7071-20261104-r1/evidence/full34-r1/private-run/candidate/server.json"
+    ],
+    "config_path": "/home/qian/heptabao-kv2-formal34-61ff-7071-20261104-r1/evidence/full34-r1/private-run/candidate/server.json",
+    "config_sha256": "cb5d728d1ab3a19a37938b2b77dca9b3118adf16b90faa767495248b27ef2529",
+    "fixture_options": false,
+    "storage_profile": "native_v6_file"
+  },
+  "snapshot": {
+    "archive_bytes": 9018315,
+    "archive_sha256": "b0f721788cd447f5a5acb2df8baae717336137c3e03b64460f032dcaaf385f70",
+    "status": 200
+  },
+  "source_bytes_unchanged": true,
+  "synthetic_only": true,
+  "v6_ha_qualified": false,
+  "production_changed": false,
+  "full_replacement_qualified": false,
+  "limitations": [
+    "This is the exact normal 7071 component result; its complete workspace still has eight separately retained failures.",
+    "It is not qualification of the later snapshot ACL/routing source, physical multi-host HA, real client traffic, cross-product snapshot format interoperability or whole OpenBao replacement.",
+    "Full child and storage observations are in the complete original result and summary; root independently verifies their hash, inventory, lineage and consistency without publishing private runtime credentials."
+  ]
+}
