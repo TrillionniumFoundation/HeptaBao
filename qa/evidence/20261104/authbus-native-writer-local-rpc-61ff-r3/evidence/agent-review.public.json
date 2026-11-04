@@ -1,0 +1,188 @@
+{
+  "schema": "heptabao.native-local-r3-retained-incomplete-baseline.v1",
+  "sourceCommit": "ba5502fa2cffecd6f858c96f58446814900bced6",
+  "liveJob": "1a1a809f771-fc05-2d69",
+  "terminal": "failed",
+  "exitCode": 1,
+  "timedOut": false,
+  "elapsedSeconds": 5.213,
+  "actualFailure": {
+    "safeCode": "actual_wrapper_node_identity",
+    "sourceFrame": [
+      [
+        "native_lifecycle.mjs",
+        "12",
+        "54"
+      ],
+      [
+        "native_lifecycle.mjs",
+        "273",
+        "5"
+      ],
+      [
+        "shared-client-4ICy3U6d.js",
+        "1623",
+        "31"
+      ],
+      [
+        "shared-client-4ICy3U6d.js",
+        "1669",
+        "27"
+      ]
+    ],
+    "privateErrorSha256": "1460f7104193ee8cdef11e2fc8429ab68bfe4ee5e504a8c13c97b934c5801300",
+    "origin": "test observer onStarted callback; callback exception rejects the original SDK acquire",
+    "onStartedExecutableValueWasRecorded": false,
+    "envTransitionExplanationIsInference": true
+  },
+  "observations": {
+    "originalInitializeCompleted": true,
+    "firstOriginalLocalRpcCompleted": true,
+    "actualManaged2ImportCompleted": true,
+    "actualSdkExplicitProfileSelectionQualified": true,
+    "originalRecycler": {
+      "available": true,
+      "closeErrors": 0,
+      "closed": 0,
+      "deferred": 1,
+      "invalid": 0,
+      "retired": 1
+    },
+    "sharedEntryRemoved": true,
+    "secondWrapperSpawned": true,
+    "secondWrapperSpawnWhileOldNativeAlive": true,
+    "secondWrapperInitialIdentity": {
+      "executable": "/usr/lib/cargo/bin/coreutils/env",
+      "pgid": 41,
+      "pid": 158,
+      "ppid": 41,
+      "session": 41,
+      "startTicks": "15080093",
+      "state": "R"
+    },
+    "secondNativeIdentityObserved": false,
+    "secondFactoryInitialized": false,
+    "twoInitializedNativeRpcChannelsObserved": false,
+    "singleWriterInvariantPassed": null,
+    "credentialOverwriteObserved": false
+  },
+  "originalAccountReadFailurePreserved": {
+    "coreSha256": "7d81725c63acda7c8da77107f8fe4dfc0766f4a97980fc8860a4e16be5fb65fb",
+    "job": "1a1a7e670f5-fc05-2cd4",
+    "timeoutMs": 8000
+  },
+  "nativeAccountReadQualified": false,
+  "providerAvailabilityQualified": false,
+  "defaultGatewayQualified": false,
+  "fullReplacementQualified": false,
+  "counts": {
+    "core": {
+      "checks": 26,
+      "passed": 25
+    },
+    "consumer": {
+      "checks": 63,
+      "passed": 63,
+      "overallPassed": false
+    },
+    "rollback": {
+      "checks": 51,
+      "passed": 51,
+      "overallPassed": true
+    }
+  },
+  "rollback": {
+    "outcome": "success",
+    "actualOriginalSdk": true,
+    "sameRunWholeLogicalCas": true,
+    "rawSha256": "2ed95984af92b084e074414a021369b64a0effd409d9489d3f27f87cfe65fb80"
+  },
+  "cleanup": {
+    "acquirePromisesSettled": true,
+    "actualSpawnCount": 2,
+    "allOwnedLeasesReleased": true,
+    "allOwnedStopped": false,
+    "attempted": true,
+    "closed": true,
+    "everySpawnTracked": false,
+    "identities": [
+      {
+        "exitCode": null,
+        "nativeGone": true,
+        "nativeObserved": true,
+        "ordinal": 1,
+        "signalCode": "SIGKILL",
+        "wrapperGone": true,
+        "wrapperObserved": true
+      },
+      {
+        "exitCode": 0,
+        "nativeGone": false,
+        "nativeObserved": false,
+        "ordinal": 2,
+        "signalCode": null,
+        "wrapperGone": false,
+        "wrapperObserved": false
+      }
+    ],
+    "ownerRegistryCount": 2,
+    "sharedStartupCoverage": [
+      {
+        "covered": true,
+        "label": "old",
+        "originalStartupCaptured": true,
+        "originalStartupSettled": true,
+        "retainedBarrierOnly": false
+      },
+      {
+        "covered": true,
+        "label": "new",
+        "originalStartupCaptured": true,
+        "originalStartupSettled": true,
+        "retainedBarrierOnly": false
+      }
+    ],
+    "sharedStartupPromises": [
+      {
+        "entryKeySha256": "98c61655cf00eff1e3dd2982528e1e036c2a3be9352d85972b4cdf0b6ad7788c",
+        "observationFailed": false,
+        "ordinal": 1,
+        "outcome": "fulfilled",
+        "promiseCaptured": true,
+        "replaced": false,
+        "settled": true
+      },
+      {
+        "entryKeySha256": "98c61655cf00eff1e3dd2982528e1e036c2a3be9352d85972b4cdf0b6ad7788c",
+        "observationFailed": false,
+        "ordinal": 2,
+        "outcome": "rejected",
+        "promiseCaptured": true,
+        "replaced": false,
+        "settled": true
+      }
+    ],
+    "startupPromisesSettled": true
+  },
+  "ownedNamespaceProcessExited": true,
+  "pidNamespaceTeardownEnforced": true,
+  "ownedServerStopped": true,
+  "perProcessCleanupQualification": false,
+  "schedulingHandoffReliesOnActualNamespaceWaitAndKernelTeardown": true,
+  "harnessCleanupUsedAsRetirementProof": false,
+  "nativeGenerationsUnchanged": true,
+  "productionUnitUnchanged": true,
+  "protectedInputsUnchanged": true,
+  "frozenInputsUnchanged": true,
+  "kernelProductionRootsReadOnly": true,
+  "productionSdkSourceRowsAfterRunGateReached": false,
+  "productionChanged": false,
+  "productionTrafficCutover": false,
+  "remaining": [
+    "A second wrapper spawn was observed; two initialized native RPC channels were not proven.",
+    "The onStarted Node identity predicate failed before recording that predicate's actual executable; the env-to-Node explanation remains an inference.",
+    "The second native identity was not captured; cleanup.allOwnedStopped=false is retained verbatim.",
+    "The same-run full logical SDK rollback succeeded; it does not qualify the failed native concurrency scenario.",
+    "A fresh reviewed helper revision is required; this run must not be replayed."
+  ]
+}

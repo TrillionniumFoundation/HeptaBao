@@ -1,0 +1,3 @@
+{"stage":"consumer_scope_validated","sequence":1,"monotonicMs":150802138}
+{"stage":"before_original_sdk_import","sequence":2,"monotonicMs":150802140}
+{"nativeOwnedStopped":null,"stage":"consumer_cleanup_finished","sequence":3,"monotonicMs":150803331}

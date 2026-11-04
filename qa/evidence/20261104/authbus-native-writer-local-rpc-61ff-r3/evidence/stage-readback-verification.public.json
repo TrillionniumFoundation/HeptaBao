@@ -1,0 +1,36 @@
+{
+  "verified": [
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r3/control/stage.public.json",
+      "bytes": 8960,
+      "sha256": "58656b68d29cce7306e1c43dbb574606c394459d51d0d7b028aae6a4eb234225"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r3/control/consumer.mjs",
+      "bytes": 19889,
+      "sha256": "6a044d41ad31526f23e9448f37968924b836521f0a20e71d2adfd7231d32ae07"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r3/control/native_lifecycle.mjs",
+      "bytes": 34198,
+      "sha256": "cf681291cfd46cae5caaa096b891dfbf1b37833c7a8890ab96d749c0db7ed7d6"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r3/control/driver.py",
+      "bytes": 25542,
+      "sha256": "9b79996b1beaf4ea7f469819dacc6aa7634d0ab41986a02902c5864a93ccd42a"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r3/control/launcher.py",
+      "bytes": 6171,
+      "sha256": "b770d3f2cc5c049331cd5bd7e0c8f302a9319de49de3bf5dbb468020392ff528"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r3/control/provider-proof.public.json",
+      "bytes": 2679,
+      "sha256": "5715a487fd8bee4d004539ca9e6830199bea72de33b1d78b06eabe3dd471a75c"
+    }
+  ],
+  "sourcePinsExact": true,
+  "pinCount": 46
+}

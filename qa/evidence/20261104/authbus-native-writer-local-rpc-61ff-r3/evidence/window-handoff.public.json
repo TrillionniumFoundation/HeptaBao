@@ -1,0 +1,17 @@
+{
+  "source": "/root/bao_acceptance",
+  "peerJob": "1a1a7e9ec36-fc05-2cea",
+  "peerTerminal": "failed",
+  "peerExitCode": 1,
+  "peerTimedOut": false,
+  "peerOutputComplete": true,
+  "peerOutputDurable": true,
+  "peerElapsedSeconds": 1798.1,
+  "peerOwnedPgid": 3217160,
+  "peerOwnedRemaining": [],
+  "peerWillNotStartRuntimeTests": true,
+  "workerSeconds": 440,
+  "controllerCleanupDeliveryCeilingSeconds": 480,
+  "rootX230TransferWaitsForOwnedCleanup": true,
+  "hostExclusive": false
+}
