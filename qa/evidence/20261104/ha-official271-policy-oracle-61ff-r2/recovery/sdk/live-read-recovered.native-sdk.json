@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1a75f341d-fc05-2b2d\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b22616c6c5f6f776e65645f73746f70706564223a20747275652c2022687474705f696e74656e7473223a2037302c2022687474705f6f7574636f6d6573223a2037302c2022687474705f756e6b6e6f776e223a20302c2022726573756c74223a20222f686f6d652f7169616e2d71692f686570746162616f2d68612d636c6f737572652d32303236313130332d72312f6f6666696369616c3237312d7374616e6462792d706f6c6963792d6f7261636c652d6c6976652d363166662d72322f726573756c742e7075626c69632e6a736f6e222c2022726573756c745f736861323536223a202265666336623966363061613063616131633036616661353035373237373035303437333433336631333631623637306562303866326362366562626338346565222c2022737461747573223a2022636f6d706c657465645f6f62736572766174696f6e227d0a\",\n    \"eof\": true,\n    \"next_offset\": 333,\n    \"offset\": 0,\n    \"size\": 333,\n    \"text\": \"{\\\"all_owned_stopped\\\": true, \\\"http_intents\\\": 70, \\\"http_outcomes\\\": 70, \\\"http_unknown\\\": 0, \\\"result\\\": \\\"/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-policy-oracle-live-61ff-r2/result.public.json\\\", \\\"result_sha256\\\": \\\"efc6b9f60aa0caa1c06afa5057277050473433f1361b670eb08f2cb6ebbc84ee\\\", \\\"status\\\": \\\"completed_observation\\\"}\\n\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

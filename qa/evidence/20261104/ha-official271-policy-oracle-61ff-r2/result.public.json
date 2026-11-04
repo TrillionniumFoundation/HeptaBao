@@ -1,0 +1,829 @@
+{
+  "all_owned_stopped": true,
+  "checks": [
+    {
+      "name": "node_1_official_version",
+      "passed": true
+    },
+    {
+      "name": "node_2_official_version",
+      "passed": true
+    },
+    {
+      "name": "node_3_original_header_sealed_refusal",
+      "passed": true
+    },
+    {
+      "name": "node_3_official_version",
+      "passed": true
+    },
+    {
+      "name": "initialize_complete",
+      "passed": true
+    },
+    {
+      "name": "node1_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "node_1_official_version",
+      "passed": true
+    },
+    {
+      "name": "node2_joined",
+      "passed": true
+    },
+    {
+      "name": "node2_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "node_2_official_version",
+      "passed": true
+    },
+    {
+      "name": "node3_joined",
+      "passed": true
+    },
+    {
+      "name": "node3_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "node_3_official_version",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_1_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_2_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_3_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_before_single_actual_leader",
+      "passed": true
+    },
+    {
+      "name": "roles_before_all_report_same_leader",
+      "passed": true
+    },
+    {
+      "name": "actual_initial_leader",
+      "passed": true
+    },
+    {
+      "name": "owned_kv_mount_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "owned_kv_write_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "ttl-default_token_created",
+      "passed": true
+    },
+    {
+      "name": "ttl-default_lookup_before_bounded_result",
+      "passed": true
+    },
+    {
+      "name": "ttl_root_unlimited_actual",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node2_root_1_exact_kv_value",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node2_root_false_exact_kv_value",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node2_ttl-default_1_exact_kv_value",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node2_ttl-default_false_exact_kv_value",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node3_root_1_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node3_root_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node3_ttl-default_1_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node3_ttl-default_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_policy_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_actual_non_root_policy_token",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_actual_standby_authentication",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_node1_snapshot_complete_actual_archive",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_node2_snapshot_complete_actual_archive",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_node3_snapshot_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_node2_snapshot_no_forward_false_complete_actual_archive",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_policy_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_actual_non_root_policy_token",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_actual_standby_authentication",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_node1_snapshot_complete_actual_archive",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_node2_snapshot_complete_actual_archive",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_node3_snapshot_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_node2_snapshot_no_forward_false_complete_actual_archive",
+      "passed": true
+    },
+    {
+      "name": "consistency_read_node2_explicit_policy_false_exact_kv_value",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_node2_explicit_policy_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_exact_effect_node2_explicit_policy_false",
+      "passed": true
+    },
+    {
+      "name": "consistency_read_node3_explicit_policy_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_node3_explicit_policy_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_exact_effect_node3_explicit_policy_false",
+      "passed": true
+    },
+    {
+      "name": "consistency_read_node3_explicit_policy_true_exact_kv_value",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_node3_explicit_policy_true_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_exact_effect_node3_explicit_policy_true",
+      "passed": true
+    },
+    {
+      "name": "ttl-default_revocation_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_revocation_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_revocation_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "roles_after_node_1_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_after_node_2_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_after_node_3_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_after_single_actual_leader",
+      "passed": true
+    },
+    {
+      "name": "roles_after_all_report_same_leader",
+      "passed": true
+    },
+    {
+      "name": "actual_leader_unchanged",
+      "passed": true
+    }
+  ],
+  "client_cleanup": [
+    {
+      "owned_stopped": true,
+      "pid": 3041850,
+      "remaining": [],
+      "start_ticks": 88711313,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041840,
+      "remaining": [],
+      "start_ticks": 88711283,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041832,
+      "remaining": [],
+      "start_ticks": 88711252,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041825,
+      "remaining": [],
+      "start_ticks": 88711200,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041815,
+      "remaining": [],
+      "start_ticks": 88711149,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041796,
+      "remaining": [],
+      "start_ticks": 88711090,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041788,
+      "remaining": [],
+      "start_ticks": 88711060,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041698,
+      "remaining": [],
+      "start_ticks": 88711017,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041632,
+      "remaining": [],
+      "start_ticks": 88710974,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041549,
+      "remaining": [],
+      "start_ticks": 88710940,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041489,
+      "remaining": [],
+      "start_ticks": 88710908,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041441,
+      "remaining": [],
+      "start_ticks": 88710874,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041433,
+      "remaining": [],
+      "start_ticks": 88710840,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041420,
+      "remaining": [],
+      "start_ticks": 88710807,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041400,
+      "remaining": [],
+      "start_ticks": 88710781,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041387,
+      "remaining": [],
+      "start_ticks": 88710743,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041382,
+      "remaining": [],
+      "start_ticks": 88710708,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041381,
+      "remaining": [],
+      "start_ticks": 88710674,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041359,
+      "remaining": [],
+      "start_ticks": 88710639,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041255,
+      "remaining": [],
+      "start_ticks": 88710603,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041244,
+      "remaining": [],
+      "start_ticks": 88710573,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041236,
+      "remaining": [],
+      "start_ticks": 88710547,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041235,
+      "remaining": [],
+      "start_ticks": 88710514,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041225,
+      "remaining": [],
+      "start_ticks": 88710460,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041221,
+      "remaining": [],
+      "start_ticks": 88710419,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041215,
+      "remaining": [],
+      "start_ticks": 88710384,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041205,
+      "remaining": [],
+      "start_ticks": 88710351,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041189,
+      "remaining": [],
+      "start_ticks": 88710311,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041180,
+      "remaining": [],
+      "start_ticks": 88710277,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041144,
+      "remaining": [],
+      "start_ticks": 88710223,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041105,
+      "remaining": [],
+      "start_ticks": 88710049,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3041092,
+      "remaining": [],
+      "start_ticks": 88709936,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040949,
+      "remaining": [],
+      "start_ticks": 88709689,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040937,
+      "remaining": [],
+      "start_ticks": 88709636,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040932,
+      "remaining": [],
+      "start_ticks": 88709606,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040823,
+      "remaining": [],
+      "start_ticks": 88709572,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040746,
+      "remaining": [],
+      "start_ticks": 88709539,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040741,
+      "remaining": [],
+      "start_ticks": 88709509,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040738,
+      "remaining": [],
+      "start_ticks": 88709477,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040730,
+      "remaining": [],
+      "start_ticks": 88709440,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040725,
+      "remaining": [],
+      "start_ticks": 88709405,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040690,
+      "remaining": [],
+      "start_ticks": 88709372,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040682,
+      "remaining": [],
+      "start_ticks": 88709338,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040679,
+      "remaining": [],
+      "start_ticks": 88709287,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040669,
+      "remaining": [],
+      "start_ticks": 88709243,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040668,
+      "remaining": [],
+      "start_ticks": 88709201,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040626,
+      "remaining": [],
+      "start_ticks": 88709161,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040623,
+      "remaining": [],
+      "start_ticks": 88709125,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040621,
+      "remaining": [],
+      "start_ticks": 88709092,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040613,
+      "remaining": [],
+      "start_ticks": 88709059,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040583,
+      "remaining": [],
+      "start_ticks": 88709017,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040581,
+      "remaining": [],
+      "start_ticks": 88708972,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040525,
+      "remaining": [],
+      "start_ticks": 88708936,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040518,
+      "remaining": [],
+      "start_ticks": 88708899,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040517,
+      "remaining": [],
+      "start_ticks": 88708869,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040493,
+      "remaining": [],
+      "start_ticks": 88708826,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040458,
+      "remaining": [],
+      "start_ticks": 88708783,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040449,
+      "remaining": [],
+      "start_ticks": 88708745,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040444,
+      "remaining": [],
+      "start_ticks": 88708709,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040376,
+      "remaining": [],
+      "start_ticks": 88708677,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040263,
+      "remaining": [],
+      "start_ticks": 88708633,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3040230,
+      "remaining": [],
+      "start_ticks": 88708600,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3039962,
+      "remaining": [],
+      "start_ticks": 88707240,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3039942,
+      "remaining": [],
+      "start_ticks": 88707200,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3039939,
+      "remaining": [],
+      "start_ticks": 88707166,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3039928,
+      "remaining": [],
+      "start_ticks": 88707126,
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3039894,
+      "remaining": [],
+      "start_ticks": 88707054,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3039890,
+      "remaining": [],
+      "start_ticks": 88707012,
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3039794,
+      "remaining": [],
+      "start_ticks": 88706920,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3039736,
+      "remaining": [],
+      "start_ticks": 88706802,
+      "wait_returncode": 2
+    }
+  ],
+  "cold_restart_tested": false,
+  "failure_code": null,
+  "formal_heptabao_qualification": false,
+  "http_intents": 70,
+  "http_outcomes": 70,
+  "http_unknown": 0,
+  "missing_outcome_sequences": [],
+  "operation_replayed": false,
+  "original_deadlines_preserved": true,
+  "pinned_files_unchanged": true,
+  "prepared": {
+    "api_ports": {
+      "1": 48710,
+      "2": 48712,
+      "3": 48714
+    },
+    "binary": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+    "binary_bytes": 181760103,
+    "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+    "cluster_ports": {
+      "1": 48711,
+      "2": 48713,
+      "3": 48715
+    },
+    "controller_sha256": "8fa4d740f3e0a7cddc3b27391ce2d46308c19e519f078fc9f3afb0e47039ccec",
+    "http_seconds": 15.0,
+    "loopback_only": true,
+    "max_response_bytes": 16777216,
+    "node3_local_setup_and_role_control": "X-Vault-Inconsistent: fail; business cases retain their declared headers",
+    "node_consistency_missing_header_forward": {
+      "1": false,
+      "2": false,
+      "3": true
+    },
+    "node_disable_standby_reads_config": {
+      "1": "omitted",
+      "2": "omitted",
+      "3": "omitted"
+    },
+    "official_source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "official_tag": "v2.7.1",
+    "old_generations_reopened": false,
+    "readiness_seconds": 45.0,
+    "redirect_following": false,
+    "valid_restore_bodies": 0,
+    "version_stdout_sha256": "caddfa04794e5e3cdda1564951a2e184bb22ac4ffced9e631fcbf7ec8e94759f",
+    "work_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-policy-oracle-live-61ff-r2"
+  },
+  "production_services_touched": false,
+  "redirect_following": false,
+  "schema": "official271_scoped_acl_and_consistency_61ff_r2",
+  "server_cleanup": [
+    {
+      "owned_stopped": true,
+      "pid": 3039911,
+      "remaining": [],
+      "start_ticks": 88707122,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3039873,
+      "remaining": [],
+      "start_ticks": 88707008,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3039709,
+      "remaining": [],
+      "start_ticks": 88706712,
+      "wait_returncode": 0
+    }
+  ],
+  "status": "completed_observation",
+  "terminal_unix_ns": 1793809455533805870
+}

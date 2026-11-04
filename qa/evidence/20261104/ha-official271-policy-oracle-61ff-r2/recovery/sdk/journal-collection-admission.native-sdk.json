@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"-c\",\n      \"import sys,hashlib; raw=sys.stdin.buffer.read(1048577); assert len(raw)<=1048576 and hashlib.sha256(raw).hexdigest()=='c22808157dbe649c1d5e87e37c20020c94acf76ae58dfb30b2daa311b2c4ed1e'; exec(compile(raw,'owned-public-journal-recovery','exec'),{'__name__':'__main__','SOURCE_BYTES':raw})\"\n    ],\n    \"created_unix_ms\": 1793812396521,\n    \"cwd\": null,\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"desktop\",\n    \"id\": \"1a1a78cf9e9-fc05-2bba\",\n    \"idempotency_key\": \"ha70-public-journal-recovery-61ff-r1-c22808157dbe649c\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1a78cf9e9-fc05-2bba\",\n    \"request_digest\": \"0f512951cb92f9b690c6c4c118e0cac196c0ad557ef37c2c0ab71bda25fd4bfc\",\n    \"request_fingerprint\": 1103708814966978998,\n    \"ssh_target\": \"desktop-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1a78cf9e9-fc05-2bba\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1a78cf9e9-fc05-2bba\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

@@ -1,0 +1,108 @@
+{
+  "schema": "exact-recovered-evidence-files-v1",
+  "files": [
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/source/official_271_scoped_policy_oracle_61ff_r2b.py",
+      "bytes": 44347,
+      "sha256": "8fa4d740f3e0a7cddc3b27391ce2d46308c19e519f078fc9f3afb0e47039ccec",
+      "git_blob": "58658ad63badc57ed99db03e902ce05579868322"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/result.public.json",
+      "bytes": 18457,
+      "sha256": "efc6b9f60aa0caa1c06afa5057277050473433f1361b670eb08f2cb6ebbc84ee",
+      "git_blob": "091134ffca9e391ba486f3df0b0350d052885368"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/wire-observations.public.json",
+      "bytes": 55294,
+      "sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "git_blob": "09e4134c78049fc597628416537390f229ad2723"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/setup-red-r1/result.public.json",
+      "bytes": 13069,
+      "sha256": "3ef5b52796dc6c09baf001b466ad6cf988b8cb74423c73d879efc47d6ad9267f",
+      "git_blob": "177fe00fba1a9d6f8a185c4e4f714b10ae863ebf"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/recovery/review.public.json",
+      "bytes": 4405,
+      "sha256": "25502466750b3fb9f9689ac4231d8da31386e52566b549a27e54962aed51d3f8",
+      "git_blob": "32e441614b6240e43a9bdfa6f23acb1a25fea611"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/README.md",
+      "bytes": 2797,
+      "sha256": "db204932a2f5ccd17cce52d745488f2b5657f72c903157ebbe8e6a28028f8085",
+      "git_blob": "a3717306a82dea1335073f1d28b3f005b6d68f83"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/recovery/source/collect_public_journal.py",
+      "bytes": 3976,
+      "sha256": "c22808157dbe649c1d5e87e37c20020c94acf76ae58dfb30b2daa311b2c4ed1e",
+      "git_blob": "24f1b92a7ef93804562c013dbb5a60ee5c524b3f"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/recovery/sdk/result-binary-read.native-sdk.json",
+      "bytes": 25107,
+      "sha256": "c270720a16995ee0d455a261e8f59420b873a5022d0d3955c76e2ed1850c9205",
+      "git_blob": "16d03396164fbcf2e8fec56b92f24f687c0aebb9"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/recovery/sdk/wire-binary-read.native-sdk.json",
+      "bytes": 74234,
+      "sha256": "1cf358346a66b9f527a79612ca444909e84ca932d0251c8d8b8326489b6ec547",
+      "git_blob": "0e8d34547ea646ebd7456f3179b66af71660ebc8"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/recovery/sdk/source-binary-read.native-sdk.json",
+      "bytes": 59657,
+      "sha256": "93c222ed060851ac9a1b3aed09ec931cc8492ff6a993d161b7d47f21d131c4cc",
+      "git_blob": "1b36184f28de33ba6acee0f3439018528cbd1acd"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/recovery/sdk/setup-red-binary-read.native-sdk.json",
+      "bytes": 17923,
+      "sha256": "1a8faf5d41b2e32714ded896aef4ebbc0e87f1248d61a26ddbadc2eab08ecd60",
+      "git_blob": "47976756f3cd28ed44b59c588aa2c6d533f8163c"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/recovery/sdk/live-status-recovered.native-sdk.json",
+      "bytes": 952,
+      "sha256": "1996b6b6431c430ad3a06c6659ecca800445fc57b2fd5b7f35137bf14f5365a7",
+      "git_blob": "9d91ff21ca72367ad84bf6be09fd9ff4a6040165"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/recovery/sdk/live-read-recovered.native-sdk.json",
+      "bytes": 1566,
+      "sha256": "18088d7f080e16f040d1885f839aa4e49d091c978af32196e267c8dbda3575e6",
+      "git_blob": "6f2b5532a8c34fd90ef5c175f33e51a9a6f353a4"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/recovery/sdk/journal-collection-admission.native-sdk.json",
+      "bytes": 1544,
+      "sha256": "b6b5567ae96fd305081c4d143a915354ee831930be309f0dd99cbd6eae2cafad",
+      "git_blob": "cfcc2c166fd996fdb63257c41e8d659f9022bb2e"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/recovery/sdk/journal-collection-status-timeout.native-sdk.json",
+      "bytes": 246,
+      "sha256": "4acea1454590028e8e78144a8752c56cd58964a660169e5207f68eb94aee1561",
+      "git_blob": "939f2f3a38613f3a3bebefbf590c4f1a2e5e9a1f"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/recovery/sdk/journal-collection-read-timeout.native-sdk.json",
+      "bytes": 244,
+      "sha256": "f808244acbbc8fd2d84b33883db42513da143f3de26985ee5122a2420b16739f",
+      "git_blob": "bd4adcef657e5dc2c3f85a86bf81411a31620a56"
+    },
+    {
+      "path": "qa/evidence/20261104/ha-official271-policy-oracle-61ff-r2/recovery/sdk/reconciliation-path-read-error.native-sdk.json",
+      "bytes": 317,
+      "sha256": "676ae7584f86977bfd005ec335a10ef9b3553435b07ebf5e538056ea0ced6434",
+      "git_blob": "bcab1b440a0bcacf55939366af52b76c3ae566d3"
+    }
+  ],
+  "not_product_qualification": true
+}
