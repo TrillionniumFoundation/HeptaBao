@@ -1,0 +1,18 @@
+{
+  "change": "Explicit actual SDK producer canonical C ACK before D; unacknowledged rotation remains a separate proven blocker. Fresh control/work/unit.",
+  "files": {
+    "controller.py": "83bce736149f9e18ebe83eb99869e2f060a627fc8c3918bdbd75ef3931abcd45",
+    "manager-system-plan.public.json": "4639629453be97064a34f643df3bc32e50bc3bd83ec55f26a3c05b9151d8d2a1",
+    "qa/openbao-acceptance/authbus_coordinator_installed_supervisor_live.py": "15ea12db58325c4edf8878f31b8a0a1e7efc00595fb9feaac7147fb65b2a9302",
+    "qa/openbao-acceptance/authbus_manager_sdk_adapter.py": "8ca82e6c260b6734500e1799579676b13532aeee332b36cb92ac6a1dd197ca11",
+    "qa/openbao-acceptance/authbus_owned_proc_runtime_observer.py": "35aef07cd212a759efb4ac38eed55ab45d0db37f52ec487397b05bef208a35ff",
+    "qa/openbao-acceptance/native_v6_authbus_coordinator_consumer.mjs": "069ac45973b28918dfe970e628ab3a56d8253ee697b09bb16e92452fbb7966e4",
+    "qa/openbao-acceptance/native_v6_authbus_coordinator_live.py": "c5ca6a80fa1becd0be69d33d8f55ee0212ef80bde3910711036204c2c42de835",
+    "tools/authbus/authbus_coordinator.py": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+    "tools/authbus/authbus_coordinator_installed.py": "16204429b78d370e58aa1332aa17ae1a295eae94e59bceb08c9144d7e991891b",
+    "tools/authbus/authbus_system_unit_runtime.py": "b2fcca5d9e7432ab20063e4b25608e2717fef6cbeff786dbb0dc4e1d7c514958"
+  },
+  "live_started": false,
+  "prior_failed_result_sha256": "c7ad8209728f442533aab453867e94fdd45204c89d56ecc70b06bf767ab9db1d",
+  "schema": "heptabao.manager-sdk-source-candidate.v1"
+}

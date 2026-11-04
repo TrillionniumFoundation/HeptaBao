@@ -1,0 +1,29 @@
+--- r2/candidate/qa/openbao-acceptance/native_v6_authbus_coordinator_live.py
++++ r3/candidate/qa/openbao-acceptance/native_v6_authbus_coordinator_live.py
+@@ -556,6 +556,16 @@
+         check('same_fixture.sdk_follower_exact_c',
+               manager_follower_c['cycles'][0]['before']['profiles'].get(PROFILE) == digest_b
+               and manager_follower_c['cycles'][0]['after']['profiles'].get(PROFILE) == digest_c)
++        # Keep the existing producer ACK protocol explicit. The preserved r2
++        # receipt proves the unacknowledged D overwrite risk in the original
++        # plugin; this serial path does not claim that separate risk is fixed.
++        ack_c = client('same_fixture_original_producer_accept_c', PRODUCER)
++        check('same_fixture.sdk_producer_canonical_c_ack',
++              ack_c['cycles'][0]['before']['profiles'].get(PROFILE) == digest_c
++              and ack_c['cycles'][0]['after']['profiles'].get(PROFILE) == digest_c
++              and ack_c['cycles'][0]['plugin']['manifestGeneration'] == 3
++              and ack_c['cycles'][0]['plugin']['pendingRuntimeRefreshes'] == 0
++              and ack_c['cycles'][0]['plugin']['publishedEvents'] == 0)
+         manager_fixture.assert_active('same_fixture_owner_continuous_through_sdk_read_c')
+         manager_fixture.stop('same_fixture_stop_before_fault')
+         manager_fixture.authorize(grant(credential_d, digest_c), 'same_fixture_authorize_d')
+@@ -657,6 +667,9 @@
+               'installed_entry_sdk_same_fixture_qualified': False,
+               'actual_manager_qualified_in_this_scope': False,
+               'installed_manager_sdk_same_fixture_qualified': False,
++              'rotation_protocol': 'producer_canonical_ack_before_next_source_rotation',
++              'unacknowledged_successive_rotation_qualified': False,
++              'original_plugin_known_loss_evidence_sha256': 'c7ad8209728f442533aab453867e94fdd45204c89d56ecc70b06bf767ab9db1d',
+               'original_worker_seconds': 75, 'original_http_seconds': 10,
+               'original_readiness_seconds': 12, 'formal_activation_route': 'sys/storage/native-v6/activate'}
+     try:

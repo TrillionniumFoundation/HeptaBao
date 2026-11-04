@@ -1,0 +1,26 @@
+{
+  "actor": {
+    "gid": 1000,
+    "group": "qian-qi",
+    "uid": 1000,
+    "user": "qian-qi"
+  },
+  "actorEvidenceSha256": "e9db10b21586b5d3c94c0885846b76fe8371090f18f1c53a0ab0f6509ed8c20f",
+  "coreSha256": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+  "entrySha256": "16204429b78d370e58aa1332aa17ae1a295eae94e59bceb08c9144d7e991891b",
+  "helperSha256": "b2fcca5d9e7432ab20063e4b25608e2717fef6cbeff786dbb0dc4e1d7c514958",
+  "runId": "57a617d4bbcd",
+  "runtimeObserverSha256": "35aef07cd212a759efb4ac38eed55ab45d0db37f52ec487397b05bef208a35ff",
+  "schema": "heptabao.installed-supervisor-system-plan.v1",
+  "units": [
+    {
+      "name": "heptabao-authbus-installed-qa-57a617d4bbcd-1.service",
+      "ordinal": 1,
+      "proposal": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-manager-sdk-live-r3/installation-a/heptabao-authbus-installed-qa-57a617d4bbcd-1.service",
+      "runtime": "/run/systemd/system/heptabao-authbus-installed-qa-57a617d4bbcd-1.service",
+      "unitSha256": "30fc0f6ea94b13005353b916d2cf5aa119c8796d51b8f82f54629eea5bc63776",
+      "unitText": "[Unit]\nDescription=HeptaBao AuthBus single-owner inbox coordinator\nAfter=network-online.target\nWants=network-online.target\nConditionPathExists=/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-manager-sdk-live-r3/installation-a/installation.private.json\nConditionPathExists=/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-manager-sdk-live-r3/installation-a/binding-pin.env\n\n[Service]\nUser=qian-qi\nGroup=qian-qi\nType=simple\nWorkingDirectory=/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-manager-sdk-live-r3/code\nUMask=0077\nEnvironmentFile=/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-manager-sdk-live-r3/installation-a/binding-pin.env\nExecStart=/usr/bin/python3 -I -S -B /home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-manager-sdk-live-r3/code/authbus_coordinator_installed.py service serve --binding /home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-manager-sdk-live-r3/installation-a/installation.private.json --binding-sha256 ${HEPTABAO_BINDING_SHA256}\nRestart=on-failure\nRestartSec=5s\nRestartPreventExitStatus=2 3\nTimeoutStopSec=15s\nKillMode=control-group\nNoNewPrivileges=yes\nPrivateUsers=yes\nPrivateTmp=yes\nProtectSystem=strict\nProtectHome=read-only\nReadOnlyPaths=/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-manager-sdk-live-r3/code /home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-manager-sdk-live-r3/installation-a\nReadWritePaths=/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-manager-sdk-live-r3/owner-state-a\nRestrictAddressFamilies=AF_UNIX AF_INET AF_INET6\n\n[Install]\nWantedBy=multi-user.target\n"
+    }
+  ],
+  "workDir": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-manager-sdk-live-r3"
+}

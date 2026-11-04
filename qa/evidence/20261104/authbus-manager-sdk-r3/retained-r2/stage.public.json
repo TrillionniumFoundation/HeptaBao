@@ -1,0 +1,52 @@
+{
+  "boundary": {
+    "binary_sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+    "build_receipts": {
+      "native-build.public.json": "2fa263744917e1d71658daa4f34e09ea448fe77ec0b2c0f8ec22c01e2cd84e8e",
+      "result.public.json": "7fa76585e94fe2e60bbc3ce754f37e4d9d433e4cf576fcc2e39a1e95771f3f42"
+    },
+    "commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "plugin_sha256": {
+      "bad-refresh-quarantine.js": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+      "codex-client-recycler.js": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+      "index.js": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b",
+      "lease-assignments.js": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+      "order-policy.js": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301",
+      "provider-error-classifier.js": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+      "runtime-refresh-policy.js": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547"
+    },
+    "sdk_source_sha256": {
+      "dist/plugin-sdk/agent-runtime.js": "7831532d17eeaddd62889b2e8bb7b65ea7a7851901f69ceec23607a8c579dd95",
+      "dist/profiles-DyU-YCq2.js": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+      "dist/store-DH33UrUj.js": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf"
+    },
+    "sdk_version": "2026.7.1-2",
+    "source_clean": true,
+    "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+  },
+  "controller_sha256": "64c45003501bd7b35035658d9639ce35be5a6888cf4027660f257f532351db04",
+  "helpers": {
+    "qa/openbao-acceptance/cert_auth_live.py": "17da3c53ccb5379b6b63790fb34dc0502666662ae5528dfad97eccfb3ac1acc9",
+    "qa/openbao-acceptance/fixture_mounts.py": "55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5",
+    "qa/openbao-acceptance/kv2_271_lossless_native_live.py": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+    "qa/openbao-acceptance/native_v6_authbus_client_live.py": "2357c3486d9312da65617705b13e42b70434231efe5b3812c6131f71d3735a0e",
+    "qa/openbao-acceptance/native_v6_openclaw_authbus_live.py": "6d785c4d69ad800b7c9ac5f8510397031362ff5bca9947be024700e91235c98a",
+    "qa/openbao-acceptance/owned_process.py": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0",
+    "qa/single-node/smoke.py": "ced4e40a825d3d98a285598d40b58c61083cfc397d0859a783958d855a161971"
+  },
+  "inputs": {
+    "controller.py": "64c45003501bd7b35035658d9639ce35be5a6888cf4027660f257f532351db04",
+    "manager-system-plan.public.json": "3fa460395962a5de53ddd3294cc5eb3ddef3011e68fd66efe8dc5f3a0396b31b",
+    "qa/openbao-acceptance/authbus_coordinator_installed_supervisor_live.py": "15ea12db58325c4edf8878f31b8a0a1e7efc00595fb9feaac7147fb65b2a9302",
+    "qa/openbao-acceptance/authbus_manager_sdk_adapter.py": "8ca82e6c260b6734500e1799579676b13532aeee332b36cb92ac6a1dd197ca11",
+    "qa/openbao-acceptance/authbus_owned_proc_runtime_observer.py": "35aef07cd212a759efb4ac38eed55ab45d0db37f52ec487397b05bef208a35ff",
+    "qa/openbao-acceptance/native_v6_authbus_coordinator_consumer.mjs": "069ac45973b28918dfe970e628ab3a56d8253ee697b09bb16e92452fbb7966e4",
+    "qa/openbao-acceptance/native_v6_authbus_coordinator_live.py": "899b44752098e0e35e840a9eb59799df21dacec9676fdde97779c76cd49cc0ba",
+    "tools/authbus/authbus_coordinator.py": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+    "tools/authbus/authbus_coordinator_installed.py": "16204429b78d370e58aa1332aa17ae1a295eae94e59bceb08c9144d7e991891b",
+    "tools/authbus/authbus_system_unit_runtime.py": "b2fcca5d9e7432ab20063e4b25608e2717fef6cbeff786dbb0dc4e1d7c514958"
+  },
+  "production_changed": false,
+  "schema": "heptabao.authbus-manager-sdk-stage.v1",
+  "server_started": false
+}

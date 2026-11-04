@@ -1,0 +1,148 @@
+{
+  "actual_manager_restart": {
+    "exactOriginalUnitAndBinding": true,
+    "newInvocationId": "622a9ab07f3749a286399e54b229bf8d",
+    "newPid": 2848267,
+    "oldIdentityAbsent": true,
+    "oldInvocationId": "453ba1559bc541f3b6f1046811dc9bae",
+    "oldPid": 2848201
+  },
+  "adapter_sha256": "8ca82e6c260b6734500e1799579676b13532aeee332b36cb92ac6a1dd197ca11",
+  "binary_sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+  "captured_tokens_revoked_and_still_denied_after_cold_restart": 27,
+  "controller_sha256": "83bce736149f9e18ebe83eb99869e2f060a627fc8c3918bdbd75ef3931abcd45",
+  "core_sha256": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+  "driver_sha256": "c5ca6a80fa1becd0be69d33d8f55ee0212ef80bde3910711036204c2c42de835",
+  "dynamic_checks": {
+    "all_original_330_check_names_preserved_and_passed": true,
+    "manager": 689,
+    "observed": 1107,
+    "passed": 1107
+  },
+  "elapsed_seconds": 58.938706275002914,
+  "evidence": {
+    "outer-result.public.json": {
+      "bytes": 5127,
+      "path": "/workspace/scratch/f86faac821c4/rog-installed-manager-sdk-review-r3/evidence/outer-result.public.json",
+      "sha256": "247ebfc2ad290218024bb24a00c2727ca7989422f29b7bc21b2fa3d972699866"
+    },
+    "public-receipt.json": {
+      "bytes": 335452,
+      "path": "/workspace/scratch/f86faac821c4/rog-installed-manager-sdk-review-r3/evidence/public-receipt.json",
+      "sha256": "223a2ba21c5cf448e3aa4479a11fe8daf86151fb93f536466b521176d541b68e"
+    },
+    "stage.public.json": {
+      "bytes": 3887,
+      "path": "/workspace/scratch/f86faac821c4/rog-installed-manager-sdk-review-r3/evidence/stage.public.json",
+      "sha256": "fb310ee1ea360a61d9a11775c7bc26505f43d750543967fe5dd4b6f666c6d2a0"
+    }
+  },
+  "exit_code": 0,
+  "installed_entry_sha256": "16204429b78d370e58aa1332aa17ae1a295eae94e59bceb08c9144d7e991891b",
+  "live_job": "1a1a68f04ec-fc05-26de",
+  "manager_actual_protected_runtime_paths": {
+    "code_readonly": true,
+    "config_readonly": true,
+    "state_writable": true
+  },
+  "manager_pending_recovered_without_manifest_replay": true,
+  "manager_revoked_sid_cold_start": {
+    "exit_code": 3,
+    "kv_dispatch_or_pending_journal": false,
+    "no_automatic_retry_observed_seconds": 6,
+    "original_transport_error": "mutation_outcome_unknown",
+    "unknown_outcome": true
+  },
+  "manager_same_original_owner_and_locks": true,
+  "ok": true,
+  "owned_cleanup_complete": true,
+  "owned_server_sigkill_cold_restarts": 3,
+  "preserved_failed_runs": {
+    "r1": "ab260275950dc956ecdf69051b680f5f8a9a50ff47eb6c1e0d5b1059c35c60d3",
+    "r2": "c7ad8209728f442533aab453867e94fdd45204c89d56ecc70b06bf767ab9db1d"
+  },
+  "protected_production_files_unchanged": true,
+  "remaining_concrete_work": [
+    {
+      "id": "unacknowledged_rotation_overwrites_D",
+      "local_path": "/workspace/scratch/f86faac821c4/rog-installed-manager-sdk-review-r2/evidence/public-receipt.json",
+      "result_sha256": "c7ad8209728f442533aab453867e94fdd45204c89d56ecc70b06bf767ab9db1d",
+      "status": "reproduced_on_original_plugin; isolated_fix_in_progress"
+    },
+    {
+      "id": "manager_daemon_bearer_revocation",
+      "status": "normal candidate supports accessor inventory/lookup/revoke; exact issuance difference design in progress"
+    }
+  ],
+  "remaining_owned_processes": 0,
+  "reviewed_at_utc": "2026-11-04T12:41:57.590507+00:00",
+  "reviewer": "authbus child; root independent receipt review requested",
+  "runtime_unit_terminal": [
+    {
+      "exit_code": 0,
+      "fields": {
+        "ActiveState": "inactive",
+        "LoadState": "not-found",
+        "MainPID": "0"
+      },
+      "name": "heptabao-authbus-installed-qa-57a617d4bbcd-1.service",
+      "runtime_file_absent": true
+    }
+  ],
+  "schema": "heptabao.authbus-manager-sdk-agent-review.v1",
+  "scope": {
+    "enforced_scheduler_qualified": false,
+    "full_replacement_qualified": false,
+    "manager_daemon_bearer_revocation_coverage": false,
+    "oauth_refresh_owner_qualified": false,
+    "original_plugin_unacknowledged_successive_rotation_qualified": false,
+    "production_changed": false,
+    "provider_called": false,
+    "real_provider_credentials": false,
+    "same_fixture_installed_system_manager_and_real_sdk": true
+  },
+  "sdk_negative_cases": [
+    "follower_bad_binding",
+    "original_follower_sid_revoked",
+    "same_fixture_follower_revoked_after_cold_start"
+  ],
+  "sdk_positive_fresh_verified_tls_requests": 80,
+  "sdk_positive_runs": 13,
+  "sdk_runs": 16,
+  "secret_ids_destroyed": 3,
+  "source_and_dependency_boundary_unchanged": true,
+  "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "stage_job": "1a1a68eb047-fc05-26d9",
+  "unit_install_and_remove_exact_original_identity": [
+    {
+      "action": "install",
+      "identity": {
+        "device": 28,
+        "gid": 0,
+        "inode": 248516,
+        "mode": 420,
+        "uid": 0
+      },
+      "ok": true,
+      "path": "/run/systemd/system/heptabao-authbus-installed-qa-57a617d4bbcd-1.service",
+      "schema": "heptabao.installed-supervisor-root-unit-file.v1",
+      "sha256": "30fc0f6ea94b13005353b916d2cf5aa119c8796d51b8f82f54629eea5bc63776"
+    },
+    {
+      "action": "remove",
+      "ok": true,
+      "path": "/run/systemd/system/heptabao-authbus-installed-qa-57a617d4bbcd-1.service",
+      "removed": true,
+      "removedIdentity": {
+        "device": 28,
+        "gid": 0,
+        "inode": 248516,
+        "mode": 420,
+        "uid": 0
+      },
+      "schema": "heptabao.installed-supervisor-root-unit-file.v1",
+      "sha256": "30fc0f6ea94b13005353b916d2cf5aa119c8796d51b8f82f54629eea5bc63776"
+    }
+  ]
+}
