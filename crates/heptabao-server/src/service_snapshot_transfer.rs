@@ -471,8 +471,10 @@ impl Service {
         #[cfg(feature = "native-v6-ha")]
         let (mut standby_actor, mut standby_observation) = (None, None);
         #[cfg(not(feature = "native-v6-ha"))]
-        let (standby_actor, standby_observation): (Option<Principal>, Option<(Instant, Duration)>) =
-            (None, None);
+        let (standby_actor, standby_observation): (
+            Option<Principal>,
+            Option<(Instant, Duration)>,
+        ) = (None, None);
         // This is before authentication/finite-use persistence, staging and
         // JSON HA forwarding. The receiving leader independently authorizes
         // the original request; observing a leader never grants authority.

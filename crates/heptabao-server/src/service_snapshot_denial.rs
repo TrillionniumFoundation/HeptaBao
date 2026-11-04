@@ -104,7 +104,9 @@ impl Service {
                 spool
             }
         };
-        let seal_bytes = spool.read_seal_metadata(deadline).map_err(|_| unavailable())?;
+        let seal_bytes = spool
+            .read_seal_metadata(deadline)
+            .map_err(|_| unavailable())?;
         let seal_metadata: SealMetadata =
             serde_json::from_slice(&seal_bytes).map_err(|_| unavailable())?;
         if self.seal.as_ref() != Some(&seal_metadata) {
@@ -148,7 +150,10 @@ impl Service {
         denied: &StandbySnapshotDenial,
         expected: StateIdentity,
     ) -> Result<(), Response> {
-        if !self.ha.as_ref().is_some_and(|ha| Arc::ptr_eq(ha, &denied.ha))
+        if !self
+            .ha
+            .as_ref()
+            .is_some_and(|ha| Arc::ptr_eq(ha, &denied.ha))
             || self.recovery_required
             || self.audit_failed
             || self.barrier_key.is_none()
@@ -298,9 +303,13 @@ impl Service {
                     return Err(unavailable());
                 }
                 if completion.successor().is_some() {
-                    denied.original.check_snapshot_terminal_successor(self, &current)?;
+                    denied
+                        .original
+                        .check_snapshot_terminal_successor(self, &current)?;
                 } else {
-                    denied.original.check_with(self, Service::check_native_installed)?;
+                    denied
+                        .original
+                        .check_with(self, Service::check_native_installed)?;
                     current.check_warm(self)?;
                 }
                 let checkpoint = (
@@ -324,7 +333,9 @@ impl Service {
                 {
                     return Err(unavailable());
                 }
-                denied.original.check_with(self, Service::check_native_installed)?;
+                denied
+                    .original
+                    .check_with(self, Service::check_native_installed)?;
                 self.check_standby_snapshot_denial_environment(&denied, denied.base)?;
                 self.check_standby_snapshot_actor_is_denied(&mut denied)?;
             }

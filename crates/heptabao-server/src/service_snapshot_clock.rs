@@ -66,13 +66,8 @@ impl Service {
         actor
             .bind_request_clock(Some(clock))
             .map_err(|error| Response::error(error.status, &error.message))?;
-        let admission = Self::authorize_snapshot_clock_actor(
-            state,
-            &mut actor,
-            request,
-            capability,
-            time,
-        );
+        let admission =
+            Self::authorize_snapshot_clock_actor(state, &mut actor, request, capability, time);
         let denied_before_floor = match admission {
             Ok(()) => false,
             Err(error) if error.status == 403 => true,
@@ -345,7 +340,8 @@ impl Service {
             }
         };
         let mut admitted = admitted?;
-        let disposition = self.finish_snapshot_clock_actor(&mut admitted, request, capability, clock)?;
+        let disposition =
+            self.finish_snapshot_clock_actor(&mut admitted, request, capability, clock)?;
         self.check_snapshot_clock_leader(request)?;
         if self.current_state_identity()? != after.0
             || self.external_effect_generation()? != after.1

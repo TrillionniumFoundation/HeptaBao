@@ -36,7 +36,10 @@ fn wire(
         path,
         token,
         body,
-        WireRouting { no_forward, ..WireRouting::default() },
+        WireRouting {
+            no_forward,
+            ..WireRouting::default()
+        },
     )
 }
 

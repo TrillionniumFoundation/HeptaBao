@@ -452,8 +452,7 @@ impl Service {
                 self.sync_from_ha_with_anchor(false)?;
                 let expected = terminal.successor().unwrap_or(source);
                 self.check_native_ha_snapshot_owner_before_identity(plan)?;
-                if self.current_state_identity()?
-                    != StateIdentity::RecordsV6(expected.root_digest)
+                if self.current_state_identity()? != StateIdentity::RecordsV6(expected.root_digest)
                     || self.current_snapshot_seal_identity_for_plan(plan)? != plan.seal_identity
                 {
                     return Err(unavailable());

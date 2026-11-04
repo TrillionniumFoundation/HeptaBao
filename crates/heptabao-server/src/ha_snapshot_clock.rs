@@ -899,7 +899,6 @@ mod tests {
         assert!(!SnapshotClockOperation::ValidateForceUpload.accepts(ClockMethod::Get));
     }
 
-
     #[test]
     fn snapshot_clock_denied_requires_original_binding_exact_successor_and_only_status_403() {
         let original = original();
@@ -968,10 +967,13 @@ mod tests {
         wrong_source.auth_sha256[0] ^= 1;
         for (before, after) in [
             (wrong_source, None),
-            (source(), Some(SharedSnapshotClockState {
-                logical_generation: 11,
-                ..successor
-            })),
+            (
+                source(),
+                Some(SharedSnapshotClockState {
+                    logical_generation: 11,
+                    ..successor
+                }),
+            ),
         ] {
             let mut reply = response();
             reply.outcome = OutcomeWire::Denied {
