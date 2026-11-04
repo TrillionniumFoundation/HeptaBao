@@ -1,0 +1,66 @@
+{
+  "cases": 34,
+  "differences": 16,
+  "files": [
+    {
+      "bytes": 78294,
+      "path": "qa/evidence/20261104/mac-normal-standby-compat-61ff-r1/execution/wire-observations.public.json",
+      "sha256": "da20bb9c76fcc435af625d703c081114375314b8ad06de450f697c06cc66f68b"
+    },
+    {
+      "bytes": 49374,
+      "path": "qa/evidence/20261104/mac-normal-standby-compat-61ff-r1/execution/result.public.json",
+      "sha256": "dd66db757e8c08c8168cab8f2c28efa4ae59a7f148edba46be7c4fe51341ca20"
+    },
+    {
+      "bytes": 1774,
+      "path": "qa/evidence/20261104/mac-normal-standby-compat-61ff-r1/execution/normal-observer-r4-stage.public.json",
+      "sha256": "c845d196467e305dfd17e9991fb4387560a59997f36bed01091a95fdf69ec3c3"
+    },
+    {
+      "bytes": 6191,
+      "path": "qa/evidence/20261104/mac-normal-standby-compat-61ff-r1/execution/start.original-sdk.json",
+      "sha256": "b491779c08cfce30325c43869b8cde84cec1a504aa84660c68923547644b1d16"
+    },
+    {
+      "bytes": 9787,
+      "path": "qa/evidence/20261104/mac-normal-standby-compat-61ff-r1/execution/read.original-sdk.json",
+      "sha256": "d360ce4c3ad5e664b1eabd6878e96ea681e8f19e5e7d44da6bcc2031357d1274"
+    },
+    {
+      "bytes": 958,
+      "path": "qa/evidence/20261104/mac-normal-standby-compat-61ff-r1/execution/status.original-sdk.json",
+      "sha256": "303398b43596b1d4529995b254600ebc33b3e88bb47e13ca7f2805a8c5430d55"
+    },
+    {
+      "bytes": 697,
+      "path": "qa/evidence/20261104/mac-normal-standby-compat-61ff-r1/execution/wire-info.original-sdk.json",
+      "sha256": "5f408d0e0b64f65a2f0adecffea407b4eb7618104da7a1d6a6e4ae12f643006c"
+    },
+    {
+      "bytes": 105516,
+      "path": "qa/evidence/20261104/mac-normal-standby-compat-61ff-r1/execution/wire-pages.original-sdk.json",
+      "sha256": "0555402eab35dc62cbe6b950c18e0acfb025e1228a252af2fb01b95c57f96c63"
+    },
+    {
+      "bytes": 66439,
+      "path": "qa/evidence/20261104/mac-normal-standby-compat-61ff-r1/execution/files.original-sdk.json",
+      "sha256": "d5efbce50ed07e9a945b935d3f6b59a4408609d67f8e882100aaac017c3c66ec"
+    },
+    {
+      "bytes": 4901,
+      "path": "qa/evidence/20261104/mac-normal-standby-compat-61ff-r1/execution/root-review.public.json",
+      "sha256": "c430628e64a2761aa93a0f157ab8c1784c8065dbbbb719174474ce35f4f15f12"
+    },
+    {
+      "bytes": 2794,
+      "path": "qa/evidence/20261104/ha-snapshot-acl-denial-root-review-61ff-r1/root-review.public.json",
+      "sha256": "9cfd7eea7c1c6e6106b62236145051d209792789c99b7b2434b3c9c8bde6d7c9"
+    }
+  ],
+  "full_replacement_qualified": false,
+  "matched": 18,
+  "schema": "heptabao.mac-normal-compat-execution-manifest.v1",
+  "status": "observation_complete_compatibility_failed",
+  "unknown": 0
+}

@@ -1,0 +1,150 @@
+{
+  "all_owned_stopped": true,
+  "authoritative_exit_code": 0,
+  "binary_sha256": "976776d4183d76e6adf06dc0e765d30f59d0d433adea42aeed8a57a9877c1f26",
+  "complete_http_responses": 134,
+  "definite_preconnect_failures": 34,
+  "elapsed_ms": 41267.921875,
+  "expected_status_cases": 34,
+  "full_replacement_qualified": false,
+  "http_intents": 168,
+  "http_outcomes": 168,
+  "job_id": "1a1a7db0220-fc05-2cb5",
+  "matching_statuses": 18,
+  "non_root_snapshot_differences": 10,
+  "observation_completed": true,
+  "observation_invariants_are_not_compatibility_passes": true,
+  "observation_invariants_passed": 98,
+  "observed_once_each": 34,
+  "observer_sha256": "d1bf471e9cdae039750c20249313c372c7d95bdbb27c9e5c62a1425fe0f16096",
+  "official_reference_complete": true,
+  "ordinary_kv_and_consistency_differences": 6,
+  "owned_client_cleanup_records": 168,
+  "owned_server_cleanup_records": 4,
+  "product_source_changed": false,
+  "production_services_touched": false,
+  "recorded_helper_warning": "Python 3.14 SyntaxWarning: return in finally at the existing cleanup-return boundary; preserved in original stderr.",
+  "reported_result_schema": "heptabao-normal-standby-scoped-observer-r3",
+  "result_sha256": "dd66db757e8c08c8168cab8f2c28efa4ae59a7f148edba46be7c4fe51341ca20",
+  "root_comparator_note": "Initial comparison expected the historical official_observed_status field. The exact r4 source/wire uses expected_status plus official_reference_verified; corrected only that schema lookup and retained all actual-vs-official assertions.",
+  "schema": "heptabao.root-normal-standby-compat-review.v1",
+  "scoped_status_compatibility_passed": false,
+  "source": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "status_differences": [
+    {
+      "expected_status": 200,
+      "group": "ordinary_kv_and_consistency",
+      "label": "ttl_kv_node2_root_1",
+      "observed_status": 307,
+      "sequence": 111
+    },
+    {
+      "expected_status": 200,
+      "group": "ordinary_kv_and_consistency",
+      "label": "ttl_kv_node2_root_false",
+      "observed_status": 307,
+      "sequence": 112
+    },
+    {
+      "expected_status": 200,
+      "group": "ordinary_kv_and_consistency",
+      "label": "ttl_kv_node2_ttl-default_1",
+      "observed_status": 307,
+      "sequence": 113
+    },
+    {
+      "expected_status": 200,
+      "group": "ordinary_kv_and_consistency",
+      "label": "ttl_kv_node2_ttl-default_false",
+      "observed_status": 307,
+      "sequence": 114
+    },
+    {
+      "expected_status": 200,
+      "group": "non_root_snapshot",
+      "label": "snapshot-read_node1_snapshot",
+      "observed_status": 403,
+      "sequence": 122
+    },
+    {
+      "expected_status": 200,
+      "group": "non_root_snapshot",
+      "label": "snapshot-read_node2_snapshot",
+      "observed_status": 307,
+      "sequence": 123
+    },
+    {
+      "expected_status": 200,
+      "group": "non_root_snapshot",
+      "label": "snapshot-read_node2_snapshot_no_forward_false",
+      "observed_status": 307,
+      "sequence": 125
+    },
+    {
+      "expected_status": 403,
+      "group": "non_root_snapshot",
+      "label": "snapshot-read_node2_invalid_restore",
+      "observed_status": 307,
+      "sequence": 127
+    },
+    {
+      "expected_status": 200,
+      "group": "non_root_snapshot",
+      "label": "snapshot-update_node1_snapshot",
+      "observed_status": 403,
+      "sequence": 131
+    },
+    {
+      "expected_status": 200,
+      "group": "non_root_snapshot",
+      "label": "snapshot-update_node2_snapshot",
+      "observed_status": 307,
+      "sequence": 132
+    },
+    {
+      "expected_status": 200,
+      "group": "non_root_snapshot",
+      "label": "snapshot-update_node2_snapshot_no_forward_false",
+      "observed_status": 307,
+      "sequence": 134
+    },
+    {
+      "expected_status": 500,
+      "group": "non_root_snapshot",
+      "label": "snapshot-update_node1_invalid_restore",
+      "observed_status": 403,
+      "sequence": 135
+    },
+    {
+      "expected_status": 500,
+      "group": "non_root_snapshot",
+      "label": "snapshot-update_node2_invalid_restore",
+      "observed_status": 307,
+      "sequence": 136
+    },
+    {
+      "expected_status": 500,
+      "group": "non_root_snapshot",
+      "label": "snapshot-update_node2_invalid_force_restore",
+      "observed_status": 307,
+      "sequence": 137
+    },
+    {
+      "expected_status": 200,
+      "group": "ordinary_kv_and_consistency",
+      "label": "consistency_read_node2_explicit_policy_false",
+      "observed_status": 307,
+      "sequence": 138
+    },
+    {
+      "expected_status": 200,
+      "group": "ordinary_kv_and_consistency",
+      "label": "consistency_read_node3_explicit_policy_true",
+      "observed_status": 307,
+      "sequence": 144
+    }
+  ],
+  "tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "unknown_outcomes": 0,
+  "wire_sha256": "da20bb9c76fcc435af625d703c081114375314b8ad06de450f697c06cc66f68b"
+}

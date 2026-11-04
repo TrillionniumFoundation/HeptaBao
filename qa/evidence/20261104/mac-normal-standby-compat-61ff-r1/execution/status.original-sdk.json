@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "text": "{\n  \"at_unix_ms\": 1793817552045,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1a7db0220-fc05-2cb5\",\n  \"launch_nonce\": \"a141133627f0985d5db7e28af653baa4\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 194,\n      \"stored\": 194\n    },\n    \"stdout\": {\n      \"seen\": 2688,\n      \"stored\": 2688\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}",
+      "type": "text"
+    }
+  ],
+  "isError": false,
+  "structuredContent": null
+}

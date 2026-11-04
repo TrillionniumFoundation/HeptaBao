@@ -1,0 +1,1983 @@
+{
+  "all_owned_stopped": true,
+  "artifacts_after": {
+    "binary_sha256": "976776d4183d76e6adf06dc0e765d30f59d0d433adea42aeed8a57a9877c1f26",
+    "build_result_sha256": "1213701925f1be075e5d538104cbc25f8b132054f61602fcb27eebf4a820b763",
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "native_receipt_sha256": "22cfeed88871a0a5cb4fd7ffccce6e04a4ba5773c6d2d71cebbba0b8a2266444",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": false
+    }
+  },
+  "checks": [
+    {
+      "name": "seed_initialize_complete",
+      "passed": true
+    },
+    {
+      "name": "seed_exact_single_unseal_share",
+      "passed": true
+    },
+    {
+      "name": "seed_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "seed_mount_kv2_created",
+      "passed": true
+    },
+    {
+      "name": "seed_version_1_acknowledged_once",
+      "passed": true
+    },
+    {
+      "name": "seed_version_2_acknowledged_once",
+      "passed": true
+    },
+    {
+      "name": "actual_v5_seed",
+      "passed": true
+    },
+    {
+      "name": "fresh_cluster_identity",
+      "passed": true
+    },
+    {
+      "name": "seed_reaped_before_cold_copy",
+      "passed": true
+    },
+    {
+      "name": "node2_stopped_seed_exact_clone",
+      "passed": true
+    },
+    {
+      "name": "node3_stopped_seed_exact_clone",
+      "passed": true
+    },
+    {
+      "name": "stopped_seed_source_unchanged",
+      "passed": true
+    },
+    {
+      "name": "node1_native_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "node2_native_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "node3_native_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "native_v6_activate_complete",
+      "passed": true
+    },
+    {
+      "name": "actual_normal_native_v6",
+      "passed": true
+    },
+    {
+      "name": "node1_actual_native_seed_version_1",
+      "passed": true
+    },
+    {
+      "name": "node1_actual_native_seed_version_2",
+      "passed": true
+    },
+    {
+      "name": "node2_actual_native_seed_version_1",
+      "passed": true
+    },
+    {
+      "name": "node2_actual_native_seed_version_2",
+      "passed": true
+    },
+    {
+      "name": "node3_actual_native_seed_version_1",
+      "passed": true
+    },
+    {
+      "name": "node3_actual_native_seed_version_2",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_1_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_1_unsealed_ha",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_2_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_2_unsealed_ha",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_3_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_3_unsealed_ha",
+      "passed": true
+    },
+    {
+      "name": "roles_before_single_actual_leader",
+      "passed": true
+    },
+    {
+      "name": "roles_before_all_report_same_leader",
+      "passed": true
+    },
+    {
+      "name": "roles_before_health_agrees_with_actual_roles",
+      "passed": true
+    },
+    {
+      "name": "actual_initial_leader",
+      "passed": true
+    },
+    {
+      "name": "owned_kv_mount_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "owned_kv_write_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "ttl-default_token_created",
+      "passed": true
+    },
+    {
+      "name": "ttl-default_lookup_before_bounded_result",
+      "passed": true
+    },
+    {
+      "name": "ttl_root_unlimited_actual",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node2_root_1_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node2_root_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node2_ttl-default_1_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node2_ttl-default_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node3_root_1_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node3_root_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node3_ttl-default_1_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node3_ttl-default_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_policy_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_actual_non_root_policy_token",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_actual_standby_authentication",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_node2_snapshot_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_node3_snapshot_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_node2_snapshot_no_forward_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_node2_invalid_restore_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_policy_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_actual_non_root_policy_token",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_actual_standby_authentication",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_node2_snapshot_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_node3_snapshot_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_node2_snapshot_no_forward_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_node2_invalid_restore_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_node2_invalid_force_restore_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "consistency_read_node2_explicit_policy_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_node2_explicit_policy_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_exact_effect_node2_explicit_policy_false",
+      "passed": true
+    },
+    {
+      "name": "consistency_read_node3_explicit_policy_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_node3_explicit_policy_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_exact_effect_node3_explicit_policy_false",
+      "passed": true
+    },
+    {
+      "name": "consistency_read_node3_explicit_policy_true_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_node3_explicit_policy_true_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_exact_effect_node3_explicit_policy_true",
+      "passed": true
+    },
+    {
+      "name": "ttl_root_default_standby_snapshot_bounded_archive_shape",
+      "passed": true
+    },
+    {
+      "name": "finite1-default_token_created",
+      "passed": true
+    },
+    {
+      "name": "finite1-default_lookup_before_bounded_result",
+      "passed": true
+    },
+    {
+      "name": "finite1-default_actual_finite_uses_before",
+      "passed": true
+    },
+    {
+      "name": "finite1_default_snapshot_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "finite1-default_lookup_after_bounded_result",
+      "passed": true
+    },
+    {
+      "name": "finite1-default_not_spent_by_standby_redirect",
+      "passed": true
+    },
+    {
+      "name": "finite2-default_token_created",
+      "passed": true
+    },
+    {
+      "name": "finite2-default_lookup_before_bounded_result",
+      "passed": true
+    },
+    {
+      "name": "finite2-default_actual_finite_uses_before",
+      "passed": true
+    },
+    {
+      "name": "finite2_default_snapshot_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "finite2-default_lookup_after_bounded_result",
+      "passed": true
+    },
+    {
+      "name": "finite2-default_not_spent_by_standby_redirect",
+      "passed": true
+    },
+    {
+      "name": "ttl-default_revocation_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_revocation_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_revocation_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "finite1-default_revocation_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "finite2-default_revocation_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "roles_after_node_1_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_after_node_1_unsealed_ha",
+      "passed": true
+    },
+    {
+      "name": "roles_after_node_2_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_after_node_2_unsealed_ha",
+      "passed": true
+    },
+    {
+      "name": "roles_after_node_3_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_after_node_3_unsealed_ha",
+      "passed": true
+    },
+    {
+      "name": "roles_after_single_actual_leader",
+      "passed": true
+    },
+    {
+      "name": "roles_after_all_report_same_leader",
+      "passed": true
+    },
+    {
+      "name": "roles_after_health_agrees_with_actual_roles",
+      "passed": true
+    },
+    {
+      "name": "actual_leader_unchanged",
+      "passed": true
+    }
+  ],
+  "checks_are_dynamic_observation_invariants_not_a_qualification_denominator": true,
+  "checks_passed": 98,
+  "checks_total": 98,
+  "client_cleanup": [
+    {
+      "owned_stopped": true,
+      "pid": 39645,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:09 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39642,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:09 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39639,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:09 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39636,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:08 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39633,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:08 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39630,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:08 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39627,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:08 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39613,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:07 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39610,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:07 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39607,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:06 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39602,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:05 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39599,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:04 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39596,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:04 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39593,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:04 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39590,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:03 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39581,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:02 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39578,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:02 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39575,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:02 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39570,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:01 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39551,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:00 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39548,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:39:00 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39545,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:59 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39542,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:59 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39539,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:59 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39536,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:59 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39533,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:58 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39530,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:58 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39525,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:58 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39522,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:57 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39519,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:57 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39508,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:57 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39505,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:57 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39502,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:56 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39491,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:56 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39488,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:56 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39485,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:56 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39482,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:56 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39479,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:55 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39476,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:54 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39473,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:54 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39468,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:53 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39465,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:53 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39462,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:52 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39459,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:52 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39456,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:52 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39453,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:52 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39450,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:51 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39439,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:51 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39436,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:50 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39431,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:49 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39428,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:49 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39425,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:49 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39422,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:49 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39419,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:49 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39416,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:49 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39413,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:49 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39410,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:48 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39399,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:48 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39396,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:48 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39393,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:47 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39390,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:47 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39387,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:47 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39384,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:47 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39381,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:47 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39378,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:46 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39375,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:46 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39372,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:46 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39369,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:46 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39366,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:46 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39363,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:46 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39360,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:46 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39355,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:45 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39352,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:45 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39349,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:45 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39346,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:45 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39343,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:45 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39340,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:45 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39337,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:45 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39334,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:44 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39331,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:44 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39328,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:44 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39325,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:44 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39322,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:44 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39319,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:44 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39316,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:44 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39313,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:44 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39302,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:43 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39299,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:43 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39296,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:43 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39293,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:43 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39290,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:43 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39287,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:43 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39284,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:43 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39281,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:42 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39278,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:42 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39275,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:42 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39272,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:42 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39269,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:42 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39266,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:42 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39263,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:42 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39258,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:41 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39255,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:41 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39252,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:41 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39249,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:41 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39246,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:41 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39243,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:41 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39240,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:41 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39237,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:41 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39234,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:40 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39231,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:40 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39228,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:40 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39225,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:40 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39214,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:40 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39211,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:40 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39208,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:40 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39205,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:40 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39202,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:39 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39199,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:39 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39196,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:39 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39191,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:39 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39187,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:39 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39184,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:39 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39181,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:39 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39178,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:39 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39175,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:38 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39172,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:38 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39155,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:38 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39152,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:38 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39149,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:38 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39146,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:38 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39143,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:38 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39140,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:38 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39132,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:37 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39121,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:37 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39118,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:37 2026",
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39115,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:37 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39112,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:37 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39109,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:36 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39106,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:36 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39103,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:36 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39100,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:36 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39097,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:36 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39094,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:35 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39091,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:35 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39088,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:35 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39085,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:35 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39082,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:35 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39079,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:34 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39076,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:34 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39073,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:34 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39070,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:34 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39067,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:34 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39062,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:33 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39059,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:33 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39056,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:33 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39053,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:33 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39050,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:33 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39047,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:32 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39044,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:32 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39041,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:32 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39038,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:32 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39035,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:32 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39032,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:31 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39029,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:31 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39025,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:31 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39022,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:31 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39019,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:31 2026",
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39013,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:30 2026",
+      "wait_returncode": 2
+    }
+  ],
+  "cold_restart_tested": false,
+  "compatibility_status_differences": [
+    {
+      "expected_status": 200,
+      "label": "ttl_kv_node2_root_1",
+      "observed_status": 307,
+      "sequence": 111
+    },
+    {
+      "expected_status": 200,
+      "label": "ttl_kv_node2_root_false",
+      "observed_status": 307,
+      "sequence": 112
+    },
+    {
+      "expected_status": 200,
+      "label": "ttl_kv_node2_ttl-default_1",
+      "observed_status": 307,
+      "sequence": 113
+    },
+    {
+      "expected_status": 200,
+      "label": "ttl_kv_node2_ttl-default_false",
+      "observed_status": 307,
+      "sequence": 114
+    },
+    {
+      "expected_status": 200,
+      "label": "snapshot-read_node1_snapshot",
+      "observed_status": 403,
+      "sequence": 122
+    },
+    {
+      "expected_status": 200,
+      "label": "snapshot-read_node2_snapshot",
+      "observed_status": 307,
+      "sequence": 123
+    },
+    {
+      "expected_status": 200,
+      "label": "snapshot-read_node2_snapshot_no_forward_false",
+      "observed_status": 307,
+      "sequence": 125
+    },
+    {
+      "expected_status": 403,
+      "label": "snapshot-read_node2_invalid_restore",
+      "observed_status": 307,
+      "sequence": 127
+    },
+    {
+      "expected_status": 200,
+      "label": "snapshot-update_node1_snapshot",
+      "observed_status": 403,
+      "sequence": 131
+    },
+    {
+      "expected_status": 200,
+      "label": "snapshot-update_node2_snapshot",
+      "observed_status": 307,
+      "sequence": 132
+    },
+    {
+      "expected_status": 200,
+      "label": "snapshot-update_node2_snapshot_no_forward_false",
+      "observed_status": 307,
+      "sequence": 134
+    },
+    {
+      "expected_status": 500,
+      "label": "snapshot-update_node1_invalid_restore",
+      "observed_status": 403,
+      "sequence": 135
+    },
+    {
+      "expected_status": 500,
+      "label": "snapshot-update_node2_invalid_restore",
+      "observed_status": 307,
+      "sequence": 136
+    },
+    {
+      "expected_status": 500,
+      "label": "snapshot-update_node2_invalid_force_restore",
+      "observed_status": 307,
+      "sequence": 137
+    },
+    {
+      "expected_status": 200,
+      "label": "consistency_read_node2_explicit_policy_false",
+      "observed_status": 307,
+      "sequence": 138
+    },
+    {
+      "expected_status": 200,
+      "label": "consistency_read_node3_explicit_policy_true",
+      "observed_status": 307,
+      "sequence": 144
+    }
+  ],
+  "complete_http_responses": 134,
+  "controller_sha256_after": "d1bf471e9cdae039750c20249313c372c7d95bdbb27c9e5c62a1425fe0f16096",
+  "coverage": {
+    "coverage_complete": true,
+    "duplicate_labels": {},
+    "expected_case_count": 34,
+    "expected_labels": [
+      "consistency_read_node2_explicit_policy_false",
+      "consistency_read_node3_explicit_policy_false",
+      "consistency_read_node3_explicit_policy_true",
+      "consistency_write_effect_node2_explicit_policy_false",
+      "consistency_write_effect_node3_explicit_policy_false",
+      "consistency_write_effect_node3_explicit_policy_true",
+      "consistency_write_node2_explicit_policy_false",
+      "consistency_write_node3_explicit_policy_false",
+      "consistency_write_node3_explicit_policy_true",
+      "finite1_default_snapshot",
+      "finite2_default_snapshot",
+      "snapshot-read_node1_invalid_restore",
+      "snapshot-read_node1_snapshot",
+      "snapshot-read_node2_invalid_restore",
+      "snapshot-read_node2_snapshot",
+      "snapshot-read_node2_snapshot_no_forward_false",
+      "snapshot-read_node3_snapshot",
+      "snapshot-update_node1_invalid_restore",
+      "snapshot-update_node1_snapshot",
+      "snapshot-update_node2_invalid_force_restore",
+      "snapshot-update_node2_invalid_restore",
+      "snapshot-update_node2_snapshot",
+      "snapshot-update_node2_snapshot_no_forward_false",
+      "snapshot-update_node3_snapshot",
+      "ttl_kv_node2_root_1",
+      "ttl_kv_node2_root_false",
+      "ttl_kv_node2_ttl-default_1",
+      "ttl_kv_node2_ttl-default_false",
+      "ttl_kv_node3_root_1",
+      "ttl_kv_node3_root_false",
+      "ttl_kv_node3_ttl-default_1",
+      "ttl_kv_node3_ttl-default_false",
+      "ttl_root_default_standby_invalid_restore",
+      "ttl_root_default_standby_snapshot"
+    ],
+    "missing_labels": [],
+    "observed_case_count": 34,
+    "observed_labels": [
+      "consistency_read_node2_explicit_policy_false",
+      "consistency_read_node3_explicit_policy_false",
+      "consistency_read_node3_explicit_policy_true",
+      "consistency_write_effect_node2_explicit_policy_false",
+      "consistency_write_effect_node3_explicit_policy_false",
+      "consistency_write_effect_node3_explicit_policy_true",
+      "consistency_write_node2_explicit_policy_false",
+      "consistency_write_node3_explicit_policy_false",
+      "consistency_write_node3_explicit_policy_true",
+      "finite1_default_snapshot",
+      "finite2_default_snapshot",
+      "snapshot-read_node1_invalid_restore",
+      "snapshot-read_node1_snapshot",
+      "snapshot-read_node2_invalid_restore",
+      "snapshot-read_node2_snapshot",
+      "snapshot-read_node2_snapshot_no_forward_false",
+      "snapshot-read_node3_snapshot",
+      "snapshot-update_node1_invalid_restore",
+      "snapshot-update_node1_snapshot",
+      "snapshot-update_node2_invalid_force_restore",
+      "snapshot-update_node2_invalid_restore",
+      "snapshot-update_node2_snapshot",
+      "snapshot-update_node2_snapshot_no_forward_false",
+      "snapshot-update_node3_snapshot",
+      "ttl_kv_node2_root_1",
+      "ttl_kv_node2_root_false",
+      "ttl_kv_node2_ttl-default_1",
+      "ttl_kv_node2_ttl-default_false",
+      "ttl_kv_node3_root_1",
+      "ttl_kv_node3_root_false",
+      "ttl_kv_node3_ttl-default_1",
+      "ttl_kv_node3_ttl-default_false",
+      "ttl_root_default_standby_invalid_restore",
+      "ttl_root_default_standby_snapshot"
+    ],
+    "official_reference_complete": true,
+    "scoped_status_compatibility_passed": false,
+    "status_differences": [
+      {
+        "expected_status": 200,
+        "label": "ttl_kv_node2_root_1",
+        "observed_status": 307,
+        "sequence": 111
+      },
+      {
+        "expected_status": 200,
+        "label": "ttl_kv_node2_root_false",
+        "observed_status": 307,
+        "sequence": 112
+      },
+      {
+        "expected_status": 200,
+        "label": "ttl_kv_node2_ttl-default_1",
+        "observed_status": 307,
+        "sequence": 113
+      },
+      {
+        "expected_status": 200,
+        "label": "ttl_kv_node2_ttl-default_false",
+        "observed_status": 307,
+        "sequence": 114
+      },
+      {
+        "expected_status": 200,
+        "label": "snapshot-read_node1_snapshot",
+        "observed_status": 403,
+        "sequence": 122
+      },
+      {
+        "expected_status": 200,
+        "label": "snapshot-read_node2_snapshot",
+        "observed_status": 307,
+        "sequence": 123
+      },
+      {
+        "expected_status": 200,
+        "label": "snapshot-read_node2_snapshot_no_forward_false",
+        "observed_status": 307,
+        "sequence": 125
+      },
+      {
+        "expected_status": 403,
+        "label": "snapshot-read_node2_invalid_restore",
+        "observed_status": 307,
+        "sequence": 127
+      },
+      {
+        "expected_status": 200,
+        "label": "snapshot-update_node1_snapshot",
+        "observed_status": 403,
+        "sequence": 131
+      },
+      {
+        "expected_status": 200,
+        "label": "snapshot-update_node2_snapshot",
+        "observed_status": 307,
+        "sequence": 132
+      },
+      {
+        "expected_status": 200,
+        "label": "snapshot-update_node2_snapshot_no_forward_false",
+        "observed_status": 307,
+        "sequence": 134
+      },
+      {
+        "expected_status": 500,
+        "label": "snapshot-update_node1_invalid_restore",
+        "observed_status": 403,
+        "sequence": 135
+      },
+      {
+        "expected_status": 500,
+        "label": "snapshot-update_node2_invalid_restore",
+        "observed_status": 307,
+        "sequence": 136
+      },
+      {
+        "expected_status": 500,
+        "label": "snapshot-update_node2_invalid_force_restore",
+        "observed_status": 307,
+        "sequence": 137
+      },
+      {
+        "expected_status": 200,
+        "label": "consistency_read_node2_explicit_policy_false",
+        "observed_status": 307,
+        "sequence": 138
+      },
+      {
+        "expected_status": 200,
+        "label": "consistency_read_node3_explicit_policy_true",
+        "observed_status": 307,
+        "sequence": 144
+      }
+    ],
+    "unexpected_labels": [],
+    "unverified_reference_labels": []
+  },
+  "elapsed_ms": 41267.921875,
+  "failure_code": null,
+  "full_replacement_qualification": false,
+  "http_intents": 168,
+  "http_outcomes": 168,
+  "http_unknown": 0,
+  "intent_sequences_without_terminal_outcome": [],
+  "operation_boundary_complete": true,
+  "original_deadlines_preserved": true,
+  "owned_cleanup": [
+    {
+      "owned_stopped": true,
+      "pid": 39168,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:38 2026",
+      "wait_returncode": -15
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39164,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:38 2026",
+      "wait_returncode": -15
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39160,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:38 2026",
+      "wait_returncode": -15
+    },
+    {
+      "owned_stopped": true,
+      "pid": 39004,
+      "remaining": [],
+      "start_identity": "Thu Nov 5 02:38:30 2026",
+      "wait_returncode": -15
+    }
+  ],
+  "physical_hosts": 1,
+  "preconnect_failures": 34,
+  "prepared": {
+    "api_ports": {
+      "1": 48680,
+      "2": 48682,
+      "3": 48684
+    },
+    "artifacts": {
+      "binary_sha256": "976776d4183d76e6adf06dc0e765d30f59d0d433adea42aeed8a57a9877c1f26",
+      "build_result_sha256": "1213701925f1be075e5d538104cbc25f8b132054f61602fcb27eebf4a820b763",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "native_receipt_sha256": "22cfeed88871a0a5cb4fd7ffccce6e04a4ba5773c6d2d71cebbba0b8a2266444",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      }
+    },
+    "binary": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-unified-normal-61ff-r1/normal-default-r1/artifacts/heptabao-server",
+    "binary_bytes": 92186736,
+    "binary_sha256": "976776d4183d76e6adf06dc0e765d30f59d0d433adea42aeed8a57a9877c1f26",
+    "cluster_ports": {
+      "1": 48681,
+      "2": 48683,
+      "3": 48685
+    },
+    "controller_sha256": "d1bf471e9cdae039750c20249313c372c7d95bdbb27c9e5c62a1425fe0f16096",
+    "election_seconds": 60.0,
+    "fixture_product_features": false,
+    "http_seconds": 15.0,
+    "loopback_only": true,
+    "max_response_bytes": 16777216,
+    "old_generations_reopened": false,
+    "openssl_sha256": "103fc7706cf6646f226d96f29242d81890363499afc730e7ef1fadd64b3a123c",
+    "physical_hosts": 1,
+    "production_services_touched": false,
+    "readiness_seconds": 45.0,
+    "redirect_following": false,
+    "source_clean": true,
+    "source_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+    "source_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+    "stable_leader_seconds": 2.2,
+    "valid_restore_bodies": 0,
+    "work_root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-unified-normal-61ff-r1/http-compat-standby-live-r1"
+  },
+  "production_services_touched": false,
+  "schema": "heptabao-normal-standby-scoped-observer-r3",
+  "scoped_status_compatibility_passed": false,
+  "source_and_fences_after": {
+    "source_clean": true,
+    "source_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+    "source_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f"
+  },
+  "started_unix_ns": 1793817510710321000,
+  "status": "completed_observation",
+  "terminal_unix_ns": 1793817551978811000,
+  "valid_restore_bodies": 0,
+  "verification_error": null,
+  "wire_archive_error": null,
+  "wire_observations_sha256": "da20bb9c76fcc435af625d703c081114375314b8ad06de450f697c06cc66f68b"
+}

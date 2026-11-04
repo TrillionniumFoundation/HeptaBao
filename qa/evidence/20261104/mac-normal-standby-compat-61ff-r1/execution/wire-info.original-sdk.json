@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":20,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":384,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-unified-normal-61ff-r1/http-compat-standby-live-r1/wire-observations.public.json\",\"sha256\":\"da20bb9c76fcc435af625d703c081114375314b8ad06de450f697c06cc66f68b\",\"size\":78294,\"version\":\"16777244:72498009:78294:1793817549786475707:1793817549786475707\"}",
+      "type": "text"
+    }
+  ],
+  "isError": false,
+  "structuredContent": null
+}

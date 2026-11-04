@@ -1,0 +1,51 @@
+{
+  "compiled": false,
+  "findings": [
+    "Public non-root admission remains limited to the two exact snapshot routes, empty request fields and root namespace; real read/update ACL still authorizes the original actor.",
+    "The denial capsule holds actor, request clock, deadline, actual A proof, held physical seal and original HA activation; it has no transfer lease, archive or resource-write capability.",
+    "Mandatory response audit precedes the one leader terminal-clock observation. The actual local successor is synchronized and ReadIndex-proved before the denial is delivered.",
+    "The independent denial path rechecks physical seal, original actor refusal, state identity and effect generation after B proof; closed Denied completion is consumed.",
+    "The historical public upload guard permits exact POST/PUT snapshot routes while retaining actual original update authorization and deadline."
+  ],
+  "format_checked": false,
+  "full_replacement_qualified": false,
+  "inspection": {
+    "complete_new_denial_module_read": true,
+    "declared_patches_mechanically_applied_to_pinned_bases": true,
+    "historical_restore_actor_guard_and_calls_read": true,
+    "service_hunks_with_surrounding_admission_read": true
+  },
+  "later_revision": "7f69e4a0311747d7ea2a904f22bdac4fe0829768",
+  "no_additional_blocker_in_reviewed_scope": true,
+  "ordinary_kv_clock_authority_not_covered": true,
+  "original_candidate": "34cf2c69b71db2ebf0674ea8745f000fc95d38dd",
+  "peer_found_separate_issue": {
+    "finding": "Actor 403 could short-circuit the trailing physical-seal check after B.",
+    "resolution_reported": "revision 7f69 places the physical-seal check before the actor result; independent author/peer verification owns this separate scope.",
+    "reviewer": "/root/bao_acceptance",
+    "scope": "ordinary pending snapshot plan completion in service_snapshot_v6_ha.rs"
+  },
+  "reviewed_scope": [
+    {
+      "declared_diff_exactly_reconstructs_candidate": true,
+      "key": "service",
+      "path": "crates/heptabao-server/src/service.rs",
+      "sha256": "cc47d4241ce43b6bae0b78ea29b643e357c696b8795624514f7289bd03d3492b"
+    },
+    {
+      "declared_diff_exactly_reconstructs_candidate": true,
+      "key": "denial",
+      "path": "crates/heptabao-server/src/service_snapshot_denial.rs",
+      "sha256": "c3273310c926cd68a489fb0b111b29f4e194b973718effa670b6b5d3afa82496"
+    },
+    {
+      "declared_diff_exactly_reconstructs_candidate": true,
+      "key": "ha-restore",
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "sha256": "7b420b0e859c7cd7376687a9404b3ae37678c3dd98eb55e55e0f51187a7f812d"
+    }
+  ],
+  "runtime_tested": false,
+  "same_three_files_in_later_revision": true,
+  "schema": "heptabao.root-snapshot-denial-source-review.v1"
+}
