@@ -159,7 +159,7 @@ fn pki_acme99_nonce_single_use_exact_90s_and_process_owner() -> TestResult {
 fn pki_acme99_real_jws_accounts_replay_encrypted_reopen_and_deactivation_floor() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (unseal, admin) = bootstrap(&mut service)?;
+    let (unseal, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     setup(&mut service, &admin)?;
     let (key, jwk) = key()?;
     let base = "https://acme.example.test/v1/acmeca/acme/";
@@ -485,6 +485,8 @@ fn pki_acme99_namespace_retirement_uses_actual_catalog_frontier_and_retains_root
     setup(&mut service, &admin)?;
     let original_nonce = nonce(&mut service)?;
     let before = service.state.as_ref().ok_or("state")?.clone();
+    assert!(before.auth.has_namespace_factory_state());
+    assert_eq!(before.schema, NAMESPACE_FACTORY_STATE_SCHEMA);
     let deleted = call(
         &mut service,
         "DELETE",
@@ -497,7 +499,7 @@ fn pki_acme99_namespace_retirement_uses_actual_catalog_frontier_and_retains_root
     let retired = service.state.as_ref().ok_or("state")?;
     assert!(
         Service::validate_snapshot_protected_floor(retired, &before).is_err(),
-        "actual namespace retirement cannot be restored even with the same99 floor"
+        "actual namespace retirement cannot be restored even with the same namespace factory floor"
     );
     assert_eq!(
         call(
@@ -526,7 +528,10 @@ fn pki_acme99_namespace_retirement_uses_actual_catalog_frontier_and_retains_root
         )?,
     );
     assert_eq!(created.status, 201);
-    assert_eq!(service.state.as_ref().ok_or("state")?.schema, 99);
+    let state = service.state.as_ref().ok_or("state")?;
+    assert!(state.engines.has_pki_acme_state());
+    assert!(state.auth.has_namespace_factory_state());
+    assert_eq!(state.schema, NAMESPACE_FACTORY_STATE_SCHEMA);
     Ok(())
 }
 
@@ -670,7 +675,7 @@ fn pki_acme99_actual_issuer_selection_role_override_and_policy_rejection() -> Te
 fn pki_acme99_retired_allowlist_reference_reopens_without_rebinding_another_issuer() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (unseal, admin) = bootstrap(&mut service)?;
+    let (unseal, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     setup(&mut service, &admin)?;
     let second = call(
         &mut service,
@@ -830,7 +835,7 @@ fn order_account(service: &mut Service, key: &PKey<Private>, jwk: &Value) -> Tes
 fn pki_acme99_pending_orders_real_jws_challenges_encrypted_reopen_and_deactivation() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (unseal, admin) = bootstrap(&mut service)?;
+    let (unseal, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     setup(&mut service, &admin)?;
     let (key, jwk) = key()?;
     let kid = order_account(&mut service, &key, &jwk)?;

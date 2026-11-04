@@ -153,9 +153,19 @@ fn public_origin_real_meta_and_service_issue_stamp_survive_process_reopen() -> T
             }
         }
     }
-    assert_eq!(
-        service.state.as_ref().ok_or("state")?.schema,
-        NAMESPACE_BATCH_STATE_SCHEMA
+    // The real child creation also owns the current default-policy factory.
+    // Public origin cannot discard that independent, higher reader floor.
+    let state = service.state.as_ref().ok_or("state")?;
+    assert!(state.auth.has_namespace_factory_state());
+    assert_eq!(state.schema, NAMESPACE_FACTORY_STATE_SCHEMA);
+    assert_eq!(state.writer_schema(), NAMESPACE_FACTORY_STATE_SCHEMA);
+    let mut below_factory = state.clone();
+    below_factory.schema = AUTH_SECURITY_CONTRACT_STATE_SCHEMA;
+    assert!(below_factory.validate_format().is_err());
+    assert!(
+        below_factory
+            .validate_publication_schema(Some(state))
+            .is_err()
     );
     assert!(
         service
@@ -199,6 +209,9 @@ fn public_origin_real_meta_and_service_issue_stamp_survive_process_reopen() -> T
         assert_eq!(lookup.body["data"]["meta"], metadata);
         assert_eq!(lookup.body["data"]["issue_time"], stamp);
     }
+    let reopened = service.state.as_ref().ok_or("reopened origin state")?;
+    assert!(reopened.auth.has_namespace_factory_state());
+    assert_eq!(reopened.schema, NAMESPACE_FACTORY_STATE_SCHEMA);
     Ok(())
 }
 
@@ -347,7 +360,8 @@ fn public_origin_floor_is_sticky_after_retirement_and_rejects_old_snapshot_witho
 -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (key, admin) = bootstrap_unmounted(&mut service)?;
+    // Preserve the independent public-origin reader floor on a historical root.
+    let (key, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     let old_backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
     let issued = realtime(
         &mut service,
@@ -583,7 +597,8 @@ fn public_origin_retired_floor_received_without_previous_state_is_rejected_after
 -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, admin) = bootstrap_unmounted(&mut service)?;
+    // Preserve the independent public-origin reader floor on a historical root.
+    let (_, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     assert_eq!(
         call(
             &mut service,

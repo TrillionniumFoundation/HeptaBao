@@ -87,7 +87,9 @@ fn native_redirect_uses_configured_current_leader_without_consuming_uses_or_stag
         before
     );
     assert!(crate::request_deadline::current().is_none());
-    // The same ordinary JSON route still uses its bounded forwarding path.
+    // The ordinary JSON route first synchronizes the active quota/mount
+    // registry. This fixture has no committed application envelope, so that
+    // admission must fail before a forwarding attempt can be authorized.
     let json = call(
         &mut service,
         "GET",
@@ -96,7 +98,12 @@ fn native_redirect_uses_configured_current_leader_without_consuming_uses_or_stag
         json!({}),
     );
     assert_eq!(json.status, 503);
-    assert_eq!(json.body["errors"][0], "HA leader forwarding failed");
+    assert_eq!(
+        json.body["errors"][0],
+        "HA committed application state is absent"
+    );
+    assert!(service.snapshot_spool.is_none());
+    assert!(service.pending_snapshot_transfer.is_none());
     service.ha = None;
     assert_eq!(
         call(

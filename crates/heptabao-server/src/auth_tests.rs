@@ -4058,7 +4058,12 @@ fn token_lookup_reports_standard_expiry_for_all_selectors_and_after_renewal() {
         ),
     ] {
         let actor = state.authenticate(caller, 105).unwrap();
-        let info = call(&mut state, &actor, "", "GET", path, body, 105);
+        let method = if path == "auth/token/lookup-accessor" {
+            "POST"
+        } else {
+            "GET"
+        };
+        let info = call(&mut state, &actor, "", method, path, body, 105);
         assert_eq!(info.body["data"]["expire_time"], "1970-01-01T00:02:40Z");
         assert_eq!(info.body["data"]["ttl"], 55);
     }

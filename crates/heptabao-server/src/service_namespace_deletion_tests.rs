@@ -33,18 +33,28 @@ fn clock() -> TestResult<RequestClock> {
     )?)
 }
 fn populate(service: &mut Service, root: &str, path: &str) -> TestResult<String> {
-    assert_eq!(
+    populate_with_pre144_namespace(service, root, path, false)
+}
+
+fn populate_with_pre144_namespace(
+    service: &mut Service,
+    root: &str,
+    path: &str,
+    historical: bool,
+) -> TestResult<String> {
+    let created = if historical {
+        service.create_pre144_namespace_fixture(path, root)?
+    } else {
         native(
             service,
             "POST",
             &format!("sys/namespaces/{path}"),
             "",
             root,
-            json!({})
+            json!({}),
         )
-        .status,
-        200
-    );
+    };
+    assert_eq!(created.status, 200);
     assert_eq!(
         native(
             service,
@@ -135,8 +145,8 @@ fn begin(service: &mut Service, root: &str, leaf: &str) {
 fn native_leaf_delete_taints_issued_login_and_retires_actual_kv_owner() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, actor) = bootstrap_unmounted(&mut service)?;
-    let issued = populate(&mut service, &actor, "retire")?;
+    let (_, actor) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
+    let issued = populate_with_pre144_namespace(&mut service, &actor, "retire", true)?;
     let old_binding = service
         .state
         .as_ref()
@@ -252,6 +262,12 @@ fn native_leaf_delete_taints_issued_login_and_retires_actual_kv_owner() -> TestR
         404
     );
     let fresh = populate(&mut service, &actor, "retire")?;
+    let recreated = service
+        .state
+        .as_ref()
+        .ok_or("current recreated namespace")?;
+    assert_eq!(recreated.schema, NAMESPACE_FACTORY_STATE_SCHEMA);
+    assert!(recreated.auth.has_namespace_factory_state());
     assert_eq!(
         native(
             &mut service,
@@ -292,8 +308,8 @@ fn native_leaf_delete_taints_issued_login_and_retires_actual_kv_owner() -> TestR
 fn pending_native_leaf_deletion_reopens_and_old_backup_cannot_remove_taint() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (key, actor) = bootstrap_unmounted(&mut service)?;
-    let issued = populate(&mut service, &actor, "retire")?;
+    let (key, actor) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
+    let issued = populate_with_pre144_namespace(&mut service, &actor, "retire", true)?;
     let archive = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
     begin(&mut service, &actor, "retire");
     assert!(service.prepare_snapshot_restore(&archive).is_err());

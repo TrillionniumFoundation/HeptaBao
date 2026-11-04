@@ -1,8 +1,21 @@
 use base64::{Engine as _, engine::general_purpose::STANDARD};
+use heptabao_ha_service::{
+    MAX_NATIVE_INDEX_RESPONSE_BODY_BYTES, MAX_NATIVE_INDEX_RESPONSE_FRAME_BYTES,
+    MAX_NATIVE_INDEX_RESPONSE_METADATA_BYTES, MAX_NATIVE_KV2_WRITE_BODY_BYTES,
+    MAX_NATIVE_KV2_WRITE_FRAME_BYTES, MAX_NATIVE_KV2_WRITE_METADATA_BYTES,
+    NATIVE_INDEX_REQUEST_MAGIC, NATIVE_INDEX_RESPONSE_MAGIC, NATIVE_KV2_WRITE_REQUEST_MAGIC,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::fmt;
 use zeroize::{Zeroize, Zeroizing};
+
+#[cfg(test)]
+#[path = "ha_forward_native_index_tests.rs"]
+mod native_index_tests;
+
+#[path = "ha_forward_native_kv2_write.rs"]
+mod native_kv2_write;
 
 const REQUEST_MAGIC: &[u8; 5] = b"HBFQ1";
 const WRAPPED_REQUEST_MAGIC: &[u8; 5] = b"HBFQ2";
@@ -79,6 +92,9 @@ pub(crate) struct ForwardRequest {
     pub index_response: bool,
     #[serde(skip)]
     pub unwrap_response: bool,
+    /// Derived solely from Q9 or N1 after strict frame/nonce validation. Never JSON input.
+    #[serde(skip)]
+    pub native_index_response: bool,
 }
 
 impl fmt::Debug for ForwardRequest {
@@ -183,6 +199,8 @@ struct ForwardRequestRef<'a> {
 #[serde(rename_all = "kebab-case")]
 pub(crate) enum UnwrapFramingWire {
     StoredJson,
+    // Only an admitted KV1 registry producer or its completed peer reply owns this.
+    StaticKv1Lease { projection: crate::auth::StaticKv1LeaseProjection },
     // Produced locally only by evaluated workflow output, or recovered from
     // an original completed-forward MAC. No public request carrier creates it.
     WorkflowJsonFailure {
@@ -215,6 +233,32 @@ pub(crate) struct ForwardResponse {
     pub completion: Option<crate::ha_forward_completion::CompletionWire>,
 }
 
+// Q9/S7's response body has its own admitted 32 MiB decode entry. Borrowing the
+// original RawValue avoids an unbounded secret copy and measures actual body
+// tokens (including internal whitespace/escapes), not a normalized projection.
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct NativeIndexResponseWire<'a> {
+    #[serde(default)]
+    unwrapped_json: Option<UnwrapFramingWire>,
+    cluster_id: String,
+    source: u64,
+    target: u64,
+    status: u16,
+    #[serde(borrow)]
+    body: &'a serde_json::value::RawValue,
+    #[serde(default)]
+    response_headers: crate::service::ResponseHeaders,
+    #[serde(default)]
+    consistency_index: Option<u64>,
+    #[serde(default)]
+    completion: Option<crate::ha_forward_completion::CompletionWire>,
+}
+
+const _: () = assert!(
+    heptabao_domain::json::MAX_BOUNDED_HA_RESPONSE_BYTES == MAX_NATIVE_INDEX_RESPONSE_BODY_BYTES
+);
+
 impl fmt::Debug for ForwardResponse {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter
@@ -238,6 +282,8 @@ pub(crate) fn is_forward_request(encoded: &[u8]) -> bool {
         || encoded.starts_with(WRAPPED_REQUEST_MAGIC)
         || encoded.starts_with(PEER_REQUEST_MAGIC)
         || encoded.starts_with(INDEX_REQUEST_MAGIC)
+        || encoded.starts_with(NATIVE_INDEX_REQUEST_MAGIC)
+        || encoded.starts_with(NATIVE_KV2_WRITE_REQUEST_MAGIC)
         || encoded.starts_with(UNWRAP_REQUEST_MAGIC)
         || encoded.starts_with(FORM_INDEX_REQUEST_MAGIC)
         || encoded.starts_with(FORM_UNWRAP_REQUEST_MAGIC)
@@ -491,6 +537,16 @@ pub(crate) fn encode_completed_index_request_for_cluster(
     context: &ForwardContext<'_>,
     completion_nonce: Option<[u8; 32]>,
 ) -> Result<Vec<u8>, String> {
+    encode_completed_request_for_profile(cluster_id, direction, context, completion_nonce, false)
+}
+
+fn encode_completed_request_for_profile(
+    cluster_id: &str,
+    direction: (u64, u64),
+    context: &ForwardContext<'_>,
+    completion_nonce: Option<[u8; 32]>,
+    native_capacity: bool,
+) -> Result<Vec<u8>, String> {
     let method = context.method;
     let path = context.path;
     let namespace = context.namespace;
@@ -530,6 +586,34 @@ pub(crate) fn encode_completed_index_request_for_cluster(
     let approle_form = logical_data
         .as_ref()
         .is_some_and(crate::request_metadata::DataFrame::is_approle_form);
+    let request = ForwardRequestRef {
+        cluster_id,
+        source: direction.0,
+        target: direction.1,
+        method,
+        path,
+        namespace,
+        token,
+        body,
+        wrap_ttl_seconds,
+        client_certificates,
+        origin_peer,
+        completion_nonce,
+        logical_data: logical_data.as_ref(),
+        wrapped_reply_ingress: if full_reply {
+            wrapped_reply_ingress
+        } else {
+            None
+        },
+        wrapped_reply_lexical: if full_reply {
+            wrapped_reply_lexical
+        } else {
+            None
+        },
+    };
+    if native_capacity && !approle_form && !full_reply {
+        return native_kv2_write::encode(&request);
+    }
     encode(
         match (approle_form, full_reply) {
             (true, true) => FORM_UNWRAP_REQUEST_MAGIC,
@@ -537,32 +621,24 @@ pub(crate) fn encode_completed_index_request_for_cluster(
             (false, true) => UNWRAP_REQUEST_MAGIC,
             (false, false) => INDEX_REQUEST_MAGIC,
         },
-        &ForwardRequestRef {
-            cluster_id,
-            source: direction.0,
-            target: direction.1,
-            method,
-            path,
-            namespace,
-            token,
-            body,
-            wrap_ttl_seconds,
-            client_certificates,
-            origin_peer,
-            completion_nonce,
-            logical_data: logical_data.as_ref(),
-            wrapped_reply_ingress: if full_reply {
-                wrapped_reply_ingress
-            } else {
-                None
-            },
-            wrapped_reply_lexical: if full_reply {
-                wrapped_reply_lexical
-            } else {
-                None
-            },
-        },
+        &request,
     )
+}
+
+/// Ordinary Q4 completed requests negotiate Q9 responses. Only a bounded
+/// canonical KV2 POST/PUT which exceeds the old frame uses the separate N1
+/// request profile. Dedicated original-byte, workflow and AppRole form
+/// protocols retain their existing versions and request bounds.
+pub(crate) fn encode_completed_request_with_native_index_capacity(
+    cluster_id: &str,
+    direction: (u64, u64),
+    context: &ForwardContext<'_>,
+    completion_nonce: Option<[u8; 32]>,
+) -> Result<Vec<u8>, String> {
+    if completion_nonce.is_none() {
+        return Err("HA native index capacity requires original completion nonce".into());
+    }
+    encode_completed_request_for_profile(cluster_id, direction, context, completion_nonce, true)
 }
 
 pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
@@ -572,14 +648,21 @@ pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
     if encoded.starts_with(LEGACY_UNWRAP_REQUEST_MAGIC) {
         return Err("HA original stored reply requires Q7 before consumption".into());
     }
+    let native_kv2_write = encoded.starts_with(NATIVE_KV2_WRITE_REQUEST_MAGIC);
+    let native_index_response = native_kv2_write || encoded.starts_with(NATIVE_INDEX_REQUEST_MAGIC);
     let form_index = encoded.starts_with(FORM_INDEX_REQUEST_MAGIC);
     let form_unwrap = encoded.starts_with(FORM_UNWRAP_REQUEST_MAGIC);
     let approle_form_framing = form_index || form_unwrap;
     let unwrap_response = encoded.starts_with(UNWRAP_REQUEST_MAGIC) || form_unwrap;
-    let index_response = encoded.starts_with(INDEX_REQUEST_MAGIC) || form_index || unwrap_response;
+    let index_response = native_index_response
+        || encoded.starts_with(INDEX_REQUEST_MAGIC)
+        || form_index
+        || unwrap_response;
     let with_peer = encoded.starts_with(PEER_REQUEST_MAGIC);
     let wrapped = encoded.starts_with(WRAPPED_REQUEST_MAGIC);
-    let magic = if form_unwrap {
+    let magic = if native_index_response {
+        NATIVE_INDEX_REQUEST_MAGIC
+    } else if form_unwrap {
         FORM_UNWRAP_REQUEST_MAGIC
     } else if form_index {
         FORM_INDEX_REQUEST_MAGIC
@@ -594,12 +677,20 @@ pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
     } else {
         REQUEST_MAGIC
     };
-    let mut request: ForwardRequest = decode(magic, encoded)?;
+    let mut request: ForwardRequest = if native_kv2_write {
+        native_kv2_write::decode(encoded)?
+    } else {
+        decode(magic, encoded)?
+    };
     if request.completion_nonce.is_some() && !index_response {
         return Err("HA completion nonce requires negotiated version".into());
     }
     request.index_response = index_response;
     request.unwrap_response = unwrap_response;
+    request.native_index_response = native_index_response;
+    if native_index_response && request.completion_nonce.is_none() {
+        return Err("HA native index framing requires original completion nonce".into());
+    }
     if unwrap_response && request.completion_nonce.is_none() {
         return Err("HA unwrap framing requires original completion nonce".into());
     }
@@ -733,6 +824,7 @@ pub(crate) fn decode_request_for_cluster_compatible(
                 legacy_v1: true,
                 index_response: false,
                 unwrap_response: false,
+                native_index_response: false,
                 completion_nonce: None,
                 wrapped_reply_ingress: None,
                 wrapped_reply_lexical: None,
@@ -800,7 +892,7 @@ pub(crate) fn encode_completed_index_response_for_cluster(
     completion: Option<crate::ha_forward_completion::CompletionWire>,
 ) -> Result<Vec<u8>, String> {
     encode_completed_framed_response_for_cluster(
-        cluster_id, source, target, response, completion, false,
+        cluster_id, source, target, response, completion, false, false,
     )
 }
 
@@ -812,7 +904,19 @@ pub(crate) fn encode_completed_unwrap_response_for_cluster(
     completion: Option<crate::ha_forward_completion::CompletionWire>,
 ) -> Result<Vec<u8>, String> {
     encode_completed_framed_response_for_cluster(
-        cluster_id, source, target, response, completion, true,
+        cluster_id, source, target, response, completion, true, false,
+    )
+}
+
+pub(crate) fn encode_completed_native_index_response_for_cluster(
+    cluster_id: &str,
+    source: u64,
+    target: u64,
+    response: &crate::Response,
+    completion: Option<crate::ha_forward_completion::CompletionWire>,
+) -> Result<Vec<u8>, String> {
+    encode_completed_framed_response_for_cluster(
+        cluster_id, source, target, response, completion, false, true,
     )
 }
 
@@ -823,11 +927,14 @@ fn encode_completed_framed_response_for_cluster(
     response: &crate::Response,
     completion: Option<crate::ha_forward_completion::CompletionWire>,
     unwrap_response: bool,
+    native_index_response: bool,
 ) -> Result<Vec<u8>, String> {
+    let static_kv1 = response.unwrapped_json.as_ref()
+        .is_some_and(|origin| origin.static_kv1_lease().is_some());
     if response.unwrapped_json.is_some()
-        && (!unwrap_response || response.status != 200 || !response.body.is_object())
+        && ((!unwrap_response && !static_kv1) || response.status != 200 || !response.body.is_object())
     {
-        return Err("HA trusted unwrap origin requires successful negotiated framing".into());
+        return Err("HA trusted origin requires its successful negotiated framing".into());
     }
     if let Some(stored) = response
         .unwrapped_json
@@ -852,66 +959,85 @@ fn encode_completed_framed_response_for_cluster(
                 .ok_or_else(|| "HA response index cluster or value is invalid".to_owned())
         })
         .transpose()?;
-    encode(
-        if unwrap_response {
-            UNWRAP_RESPONSE_MAGIC
-        } else {
-            INDEX_RESPONSE_MAGIC
-        },
-        &ForwardResponse {
-            cluster_id: cluster_id.to_owned(),
-            source,
-            target,
-            status: response.status,
-            body: response.body.clone(),
-            unwrapped_json: response
-                .unwrapped_json
-                .as_ref()
-                .map(|origin| origin.framing_wire(&response.body))
-                .transpose()
-                .map_err(|_| "HA private response origin rejected")?,
-            raw_wrapped_reply: response
-                .unwrapped_json
-                .as_ref()
-                .and_then(|origin| origin.stored_reply().cloned()),
-            response_headers: response.response_headers.copy_for_forward(),
-            consistency_index,
-            completion,
-        },
-    )
+    let wire = ForwardResponse {
+        cluster_id: cluster_id.to_owned(),
+        source,
+        target,
+        status: response.status,
+        body: response.body.clone(),
+        unwrapped_json: response
+            .unwrapped_json
+            .as_ref()
+            .map(|origin| origin.framing_wire(&response.body))
+            .transpose()
+            .map_err(|_| "HA private response origin rejected")?,
+        raw_wrapped_reply: response
+            .unwrapped_json
+            .as_ref()
+            .and_then(|origin| origin.stored_reply().cloned()),
+        response_headers: response.response_headers.copy_for_forward(),
+        consistency_index,
+        completion,
+    };
+    if native_index_response {
+        encode_native_index_response(&wire)
+    } else {
+        encode(
+            if unwrap_response {
+                UNWRAP_RESPONSE_MAGIC
+            } else {
+                INDEX_RESPONSE_MAGIC
+            },
+            &wire,
+        )
+    }
 }
 
 pub(crate) fn decode_index_response_for_cluster(
     encoded: &[u8],
     expected_cluster_id: &str,
 ) -> Result<ForwardResponse, String> {
-    decode_framed_response_for_cluster(encoded, expected_cluster_id, false)
+    decode_framed_response_for_cluster(encoded, expected_cluster_id, false, false)
 }
 
 pub(crate) fn decode_unwrap_response_for_cluster(
     encoded: &[u8],
     expected_cluster_id: &str,
 ) -> Result<ForwardResponse, String> {
-    decode_framed_response_for_cluster(encoded, expected_cluster_id, true)
+    decode_framed_response_for_cluster(encoded, expected_cluster_id, true, false)
+}
+
+pub(crate) fn decode_native_index_response_for_cluster(
+    encoded: &[u8],
+    expected_cluster_id: &str,
+) -> Result<ForwardResponse, String> {
+    decode_framed_response_for_cluster(encoded, expected_cluster_id, false, true)
 }
 
 fn decode_framed_response_for_cluster(
     encoded: &[u8],
     expected_cluster_id: &str,
     unwrap_response: bool,
+    native_index_response: bool,
 ) -> Result<ForwardResponse, String> {
-    let response: ForwardResponse = decode(
-        if unwrap_response {
-            UNWRAP_RESPONSE_MAGIC
-        } else {
-            INDEX_RESPONSE_MAGIC
-        },
-        encoded,
-    )?;
+    let response: ForwardResponse = if native_index_response {
+        decode_native_index_response(encoded)?
+    } else {
+        decode(
+            if unwrap_response {
+                UNWRAP_RESPONSE_MAGIC
+            } else {
+                INDEX_RESPONSE_MAGIC
+            },
+            encoded,
+        )?
+    };
+    let static_kv1 = matches!(response.unwrapped_json,
+        Some(UnwrapFramingWire::StaticKv1Lease { .. }));
     if response.unwrapped_json.is_some()
-        && (!unwrap_response || response.status != 200 || !response.body.is_object())
+        && ((!unwrap_response && !static_kv1) || response.status != 200 || !response.body.is_object())
     {
-        return Err("HA unwrapped JSON origin is outside negotiated successful reply".into());
+        return Err("HA typed origin is outside its negotiated successful reply".into());
     }
     if let Some(stored) = &response.raw_wrapped_reply {
         if !unwrap_response || response.unwrapped_json.is_none() || response.status != 200 {
@@ -920,6 +1046,11 @@ fn decode_framed_response_for_cluster(
         stored
             .validate(&response.body)
             .map_err(|_| "HA stored reply representation rejected")?;
+    }
+    if let Some(UnwrapFramingWire::StaticKv1Lease { projection }) = response.unwrapped_json {
+        if response.raw_wrapped_reply.is_some() || projection.validate(&response.body).is_err() {
+            return Err("HA signed KV1 static reply projection differs".into());
+        }
     }
     if let Some(UnwrapFramingWire::WorkflowJsonFailure { logical_digest, .. }) =
         response.unwrapped_json
@@ -1089,6 +1220,101 @@ fn encode<T: Serialize>(magic: &[u8; 5], value: &T) -> Result<Vec<u8>, String> {
     let length = u32::try_from(json.len()).map_err(|_| "HA forward frame is oversized")?;
     let mut encoded = Vec::with_capacity(9 + json.len());
     encoded.extend_from_slice(magic);
+    encoded.extend_from_slice(&length.to_be_bytes());
+    encoded.extend_from_slice(&json);
+    Ok(encoded)
+}
+
+fn native_index_body_size(value: &Value) -> Result<usize, String> {
+    struct Counter {
+        bytes: usize,
+    }
+    impl std::io::Write for Counter {
+        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+            self.bytes = self
+                .bytes
+                .checked_add(bytes.len())
+                .filter(|size| *size <= MAX_NATIVE_INDEX_RESPONSE_BODY_BYTES)
+                .ok_or_else(|| std::io::Error::other("native index body exceeds response bound"))?;
+            Ok(bytes.len())
+        }
+        fn flush(&mut self) -> std::io::Result<()> {
+            Ok(())
+        }
+    }
+    // Count the actual JSON representation, including escapes and Base64 text;
+    // decoded string/record length is not a wire-capacity proof.
+    let mut counter = Counter { bytes: 0 };
+    serde_json::to_writer(&mut counter, value)
+        .map_err(|_| "HA native index body exceeds response bound")?;
+    Ok(counter.bytes)
+}
+
+fn decode_native_index_response(encoded: &[u8]) -> Result<ForwardResponse, String> {
+    if encoded.len() < 9
+        || encoded.len() > MAX_NATIVE_INDEX_RESPONSE_FRAME_BYTES
+        || &encoded[..5] != NATIVE_INDEX_RESPONSE_MAGIC
+    {
+        return Err("HA native index frame is invalid".into());
+    }
+    let json_length = u32::from_be_bytes(
+        encoded[5..9]
+            .try_into()
+            .map_err(|_| "HA native index frame length is invalid")?,
+    ) as usize;
+    if encoded.len() != 9 + json_length {
+        return Err("HA native index frame length does not match payload".into());
+    }
+    let wire: NativeIndexResponseWire<'_> = serde_json::from_slice(&encoded[9..])
+        .map_err(|_| "HA native index frame JSON is invalid")?;
+    let raw_body_bytes = wire.body.get().len();
+    if raw_body_bytes > MAX_NATIVE_INDEX_RESPONSE_BODY_BYTES
+        || encoded
+            .len()
+            .checked_sub(raw_body_bytes)
+            .is_none_or(|metadata| metadata > MAX_NATIVE_INDEX_RESPONSE_METADATA_BYTES)
+    {
+        return Err("HA native index raw body or metadata exceeds response bound".into());
+    }
+    // Keep a typed zeroizing owner before checking canonical output growth.
+    // The old ForwardResponse serde entry remains 16 MiB for every old protocol.
+    let response = ForwardResponse {
+        cluster_id: wire.cluster_id,
+        source: wire.source,
+        target: wire.target,
+        status: wire.status,
+        body: heptabao_domain::json::decode_bounded_ha_response_raw(wire.body)
+            .map_err(|_| "HA native index body JSON is invalid")?,
+        response_headers: wire.response_headers,
+        consistency_index: wire.consistency_index,
+        completion: wire.completion,
+        unwrapped_json: wire.unwrapped_json,
+        raw_wrapped_reply: None,
+    };
+    if response.unwrapped_json.is_some()
+        && !matches!(response.unwrapped_json, Some(UnwrapFramingWire::StaticKv1Lease { .. }))
+    {
+        return Err("HA native index forbids non-static-KV1 private origins".into());
+    }
+    native_index_body_size(&response.body)?;
+    Ok(response)
+}
+
+fn encode_native_index_response(response: &ForwardResponse) -> Result<Vec<u8>, String> {
+    let body_bytes = native_index_body_size(&response.body)?;
+    // The bounded serializer wipes every grown allocation, including on failure.
+    let json = crate::secret_serde::to_vec(response, MAX_NATIVE_INDEX_RESPONSE_FRAME_BYTES - 9)
+        .map_err(|_| "HA native index frame exceeds response bound")?;
+    let wire_bytes = 9 + json.len();
+    if wire_bytes
+        .checked_sub(body_bytes)
+        .is_none_or(|metadata| metadata > MAX_NATIVE_INDEX_RESPONSE_METADATA_BYTES)
+    {
+        return Err("HA native index metadata exceeds response bound".into());
+    }
+    let length = u32::try_from(json.len()).map_err(|_| "HA native index frame is oversized")?;
+    let mut encoded = Vec::with_capacity(wire_bytes);
+    encoded.extend_from_slice(NATIVE_INDEX_RESPONSE_MAGIC);
     encoded.extend_from_slice(&length.to_be_bytes());
     encoded.extend_from_slice(&json);
     Ok(encoded)

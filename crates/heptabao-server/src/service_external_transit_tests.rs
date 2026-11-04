@@ -940,6 +940,11 @@ impl RemoteTransit {
     fn fixture(&self) -> TestResult<(Root, Service, String, String)> {
         self.fixture_kms(None)
     }
+    // Historical storage tests must choose the predecessor factory before
+    // the first publication, without downgrading a current policy owner.
+    fn fixture_pre141(&self) -> TestResult<(Root, Service, String, String)> {
+        self.fixture_with_bootstrap(None, None, super::tests::bootstrap_pre141)
+    }
     fn fixture_kms(&self, enabled: Option<bool>) -> TestResult<(Root, Service, String, String)> {
         self.fixture_kms_capabilities(enabled, None)
     }
@@ -947,6 +952,14 @@ impl RemoteTransit {
         &self,
         enabled: Option<bool>,
         capabilities: Option<Vec<String>>,
+    ) -> TestResult<(Root, Service, String, String)> {
+        self.fixture_with_bootstrap(enabled, capabilities, bootstrap)
+    }
+    fn fixture_with_bootstrap(
+        &self,
+        enabled: Option<bool>,
+        capabilities: Option<Vec<String>>,
+        initialize: fn(&mut Service) -> TestResult<(String, String)>,
     ) -> TestResult<(Root, Service, String, String)> {
         let root = Root::new();
         let mut service = root.service()?;
@@ -958,7 +971,7 @@ impl RemoteTransit {
             }
             service.install_kms_plugins(vec![binding])?;
         }
-        let (unseal, admin) = bootstrap(&mut service)?;
+        let (unseal, admin) = initialize(&mut service)?;
         for (path, body, status) in [
             ("sys/mounts/consumer", json!({"type":"transit"}), 204),
             (
@@ -1511,7 +1524,7 @@ fn external_transit270_synthetic_verification_ack_is_never_crypto_success() -> T
 #[test]
 fn external_transit270_schema_owner_contains_references_and_no_local_material() -> TestResult {
     let remote = RemoteTransit::new()?;
-    let (_root, mut service, _unseal, admin) = remote.fixture()?;
+    let (_root, mut service, _unseal, admin) = remote.fixture_pre141()?;
     let state = service.state.as_ref().ok_or("state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     let encoded = serde_json::to_value(&state.engines)?;

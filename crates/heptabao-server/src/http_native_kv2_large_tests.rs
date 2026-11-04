@@ -1,5 +1,5 @@
 use super::*;
-use crate::engines::kv2_native_large::{PATH, MEDIA_TYPE};
+use crate::engines::kv2_native_large::{MEDIA_TYPE, PATH};
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 
 struct HeaderOnly {
@@ -34,14 +34,25 @@ fn native_large_kv2_http_defers_body_and_preserves_ordinary_json_limits() -> Tes
     assert!(request.native_snapshot.is_some());
     assert_eq!(input.body_reads, 0);
     assert_eq!(MAX_BODY, 2 * 1024 * 1024);
-    assert_eq!(json_ingress_body_limit("POST", PATH, Some("application/json")), MAX_BODY);
-    let mut legacy = header("sys/migration/openbao/kv2", "application/json", "Content-Length: 35660000\r\n");
-    let rejected = read_request_mode(&mut legacy, Duration::from_secs(5), true).err()
+    assert_eq!(
+        json_ingress_body_limit("POST", PATH, Some("application/json")),
+        MAX_BODY
+    );
+    let mut legacy = header(
+        "sys/migration/openbao/kv2",
+        "application/json",
+        "Content-Length: 35660000\r\n",
+    );
+    let rejected = read_request_mode(&mut legacy, Duration::from_secs(5), true)
+        .err()
         .ok_or("legacy limit must reject")?;
     assert_eq!(rejected.status, 413);
     assert_eq!(legacy.body_reads, 0);
-    for (query, mount) in [("mount=123", "123"), ("mount=true", "true"),
-        ("mount=parent%2Fchild", "parent/child")] {
+    for (query, mount) in [
+        ("mount=123", "123"),
+        ("mount=true", "true"),
+        ("mount=parent%2Fchild", "parent/child"),
+    ] {
         let mut input = header_query(PATH, query, MEDIA_TYPE, "Content-Length: 35660000\r\n");
         let request = read_request_mode(&mut input, Duration::from_secs(5), true)
             .map_err(|_| "native-large mount query rejected")?;
@@ -65,49 +76,96 @@ fn native_large_kv2_http_rejects_ambiguous_or_excessive_framing_without_body() -
         assert!(read_request_mode(&mut input, Duration::from_secs(5), true).is_err());
         assert_eq!(input.body_reads, 0);
     }
-    for route in ["sys/migration/openbao/kv2/native-large/", "sys/migration/openbao/kv2/native-large-extra"] {
+    for route in [
+        "sys/migration/openbao/kv2/native-large/",
+        "sys/migration/openbao/kv2/native-large-extra",
+    ] {
         let mut input = header(route, MEDIA_TYPE, "Content-Length: 35660000\r\n");
         assert!(read_request_mode(&mut input, Duration::from_secs(5), true).is_err());
         assert_eq!(input.body_reads, 0);
     }
-    for query in ["mount=secret&mount=secret", "mount=secret&%6dount=other",
-        "mount=secret&version=1", "version=1&mount=secret", "other=secret", "mount="] {
+    for query in [
+        "mount=secret&mount=secret",
+        "mount=secret&%6dount=other",
+        "mount=secret&version=1",
+        "version=1&mount=secret",
+        "other=secret",
+        "mount=",
+    ] {
         let mut input = header_query(PATH, query, MEDIA_TYPE, "Content-Length: 35660000\r\n");
         assert!(read_request_mode(&mut input, Duration::from_secs(5), true).is_err());
         assert_eq!(input.body_reads, 0);
     }
-    for (method, path) in [("GET", PATH), ("POST", "sys/migration/openbao/kv2"),
-        ("POST", "secret/data/item")] {
+    for (method, path) in [
+        ("GET", PATH),
+        ("POST", "sys/migration/openbao/kv2"),
+        ("POST", "secret/data/item"),
+    ] {
         assert!(merge_query_fields(method, path, "mount=secret", &mut json!({})).is_err());
     }
     Ok(())
 }
 
 #[test]
-fn native_large_kv2_http_length_reader_retains_original_deadline_and_detects_truncation() -> TestResult {
+fn native_large_kv2_http_length_reader_retains_original_deadline_and_detects_truncation()
+-> TestResult {
     let deadline = Instant::now() + Duration::from_secs(5);
     let mut source = b"bc".as_slice();
-    let mut reader = BodyReader::new(&mut source, snapshot::NativeBody {
-        framing: snapshot::Framing::Length(3), prefix: Zeroizing::new(b"a".to_vec()),
-    }, deadline)?;
-    let mut bytes = Vec::new(); reader.read_to_end(&mut bytes)?;
+    let mut reader = BodyReader::new(
+        &mut source,
+        snapshot::NativeBody {
+            framing: snapshot::Framing::Length(3),
+            prefix: Zeroizing::new(b"a".to_vec()),
+        },
+        deadline,
+    )?;
+    let mut bytes = Vec::new();
+    reader.read_to_end(&mut bytes)?;
     assert_eq!(bytes, b"abc");
     let mut source = b"b".as_slice();
-    let mut reader = BodyReader::new(&mut source, snapshot::NativeBody {
-        framing: snapshot::Framing::Length(3), prefix: Zeroizing::new(b"a".to_vec()),
-    }, deadline)?;
+    let mut reader = BodyReader::new(
+        &mut source,
+        snapshot::NativeBody {
+            framing: snapshot::Framing::Length(3),
+            prefix: Zeroizing::new(b"a".to_vec()),
+        },
+        deadline,
+    )?;
     assert!(reader.read_to_end(&mut Vec::new()).is_err());
-    let mut source = HeaderOnly { header: io::Cursor::new(Vec::new()), body_reads: 0 };
-    let mut reader = BodyReader::new(&mut source, snapshot::NativeBody {
-        framing: snapshot::Framing::Length(1), prefix: Zeroizing::new(Vec::new()),
-    }, Instant::now() - Duration::from_millis(1))?;
-    assert_eq!(reader.read(&mut [0; 1]).err().ok_or("expired read")?.kind(), io::ErrorKind::TimedOut);
-    drop(reader); assert_eq!(source.body_reads, 0);
-    for framing in [snapshot::Framing::Chunked, snapshot::Framing::Length(0),
-        snapshot::Framing::Length(MAX_BUNDLE_BYTES as u64 + 1)] {
-        assert!(BodyReader::new(&mut io::empty(), snapshot::NativeBody {
-            framing, prefix: Zeroizing::new(Vec::new()),
-        }, deadline).is_err());
+    let mut source = HeaderOnly {
+        header: io::Cursor::new(Vec::new()),
+        body_reads: 0,
+    };
+    let mut reader = BodyReader::new(
+        &mut source,
+        snapshot::NativeBody {
+            framing: snapshot::Framing::Length(1),
+            prefix: Zeroizing::new(Vec::new()),
+        },
+        Instant::now() - Duration::from_millis(1),
+    )?;
+    assert_eq!(
+        reader.read(&mut [0; 1]).err().ok_or("expired read")?.kind(),
+        io::ErrorKind::TimedOut
+    );
+    drop(reader);
+    assert_eq!(source.body_reads, 0);
+    for framing in [
+        snapshot::Framing::Chunked,
+        snapshot::Framing::Length(0),
+        snapshot::Framing::Length(MAX_BUNDLE_BYTES as u64 + 1),
+    ] {
+        assert!(
+            BodyReader::new(
+                &mut io::empty(),
+                snapshot::NativeBody {
+                    framing,
+                    prefix: Zeroizing::new(Vec::new()),
+                },
+                deadline
+            )
+            .is_err()
+        );
     }
     Ok(())
 }

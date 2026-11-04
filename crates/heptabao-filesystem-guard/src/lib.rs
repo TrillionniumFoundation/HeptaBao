@@ -33,11 +33,16 @@ use std::os::unix::fs::MetadataExt;
 
 mod immutable;
 pub use immutable::{
-    ImmutableBatchEntry, ImmutablePublication, ImmutablePublicationCheckedError,
-    ImmutablePublicationError, MAX_IMMUTABLE_BATCH_OBJECTS,
+    ImmutableBatchEntry, ImmutableFileSyncWitness, ImmutablePublication,
+    ImmutablePublicationCheckedError, ImmutablePublicationError, MAX_IMMUTABLE_BATCH_OBJECTS,
+    SynchronizedImmutablePublication,
 };
 mod relative;
 pub use relative::FileAccess;
+mod mutation;
+pub use mutation::FileMutationWitness;
+mod retirement;
+pub use retirement::{FileRetirementError, MAX_IMMUTABLE_RETIREMENT_FILES, PreparedFileRetirement};
 
 pub const MAX_GUARDED_LEAF_BYTES: usize = 240;
 
@@ -72,6 +77,7 @@ pub struct ExclusiveDirectory {
     access_path: PathBuf,
     handle: File,
     identity: DirectoryIdentity,
+    mutation_monitor: mutation::MutationMonitor,
 }
 
 impl fmt::Debug for ExclusiveDirectory {
@@ -201,6 +207,7 @@ impl ExclusiveDirectory {
             access_path,
             handle,
             identity: before_identity,
+            mutation_monitor: mutation::MutationMonitor::new(),
         };
         guard.verify()?;
         Ok(guard)

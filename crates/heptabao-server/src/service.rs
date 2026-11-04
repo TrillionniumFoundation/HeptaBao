@@ -72,7 +72,23 @@ use crate::state_record_root::RecordStateRoot;
 // Ordinary writers retain the exact schema-65 durable contract. Explicit
 // AAD-bound convergent material activates schema 66 irreversibly for this store.
 const RATE_LIMIT_QUOTA_STATE_SCHEMA: u32 = crate::auth::rate_limit_quotas::STATE_SCHEMA;
+const EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA: u32 =
+    crate::auth::rate_limit_quotas::EXTENDED_STATE_SCHEMA;
+const SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA: u32 =
+    crate::auth::rate_limit_quotas::SCOPED_STATE_SCHEMA;
+const NATIVE_FLAT_NAMESPACE_RETIREMENT_STATE_SCHEMA: u32 = 140;
+const NATIVE_PLAIN_NAMESPACE_TREE_STATE_SCHEMA: u32 = 145;
 const APPROLE_NO_DEFAULT_STATE_SCHEMA: u32 = crate::auth::approle_no_default::STATE_SCHEMA;
+const AUTH_SECURITY_CONTRACT_STATE_SCHEMA: u32 = crate::auth::security_contract::STATE_SCHEMA;
+const APPROLE_LOCAL_STATE_SCHEMA: u32 = crate::auth::approle_local::STATE_SCHEMA;
+const POLICY_EXPIRATION_STATE_SCHEMA: u32 = crate::auth::policy_expiration::STATE_SCHEMA;
+const NAMESPACE_FACTORY_STATE_SCHEMA: u32 = crate::auth::namespace_factory::STATE_SCHEMA;
+const KV_MOUNT_CONFIGURATION_STATE_SCHEMA: u32 = 146;
+#[cfg(test)]
+#[path = "service_policy_expiration_tests.rs"]
+mod policy_expiration_tests;
+#[path = "service_rate_limit_quota_catalog.rs"]
+mod rate_limit_quota_catalog;
 #[path = "service_rate_limit_quotas.rs"]
 mod rate_limit_quotas;
 const CURRENT_STATE_SCHEMA: u32 = 65;
@@ -150,13 +166,13 @@ mod kv2_import;
 #[cfg(test)]
 #[path = "service_kv2_import_tests.rs"]
 mod kv2_import_tests;
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 #[path = "service_native_kv2_import.rs"]
 mod native_kv2_import;
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 #[path = "service_native_kv2_large.rs"]
 mod native_kv2_large;
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 #[path = "service_native_kv2_storage_witness.rs"]
 mod native_kv2_storage_witness;
 const WORKFLOW_PROFILE_STATE_SCHEMA: u32 = 121;
@@ -183,8 +199,10 @@ mod control_groups;
 mod pki_acme_eab;
 #[path = "service_request_normalization.rs"]
 mod request_normalization;
-#[cfg(test)]
-const MAX_SUPPORTED_STATE_SCHEMA: u32 = APPROLE_NO_DEFAULT_STATE_SCHEMA;
+const PKI_BATCH_LEASE_STATE_SCHEMA: u32 = 136;
+const NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA: u32 = 138;
+#[cfg(any(test, feature = "native-v6-storage"))]
+const MAX_SUPPORTED_STATE_SCHEMA: u32 = KV_MOUNT_CONFIGURATION_STATE_SCHEMA;
 
 fn supported_reader_schema(schema: u32) -> bool {
     schema > 0 && schema <= TOKEN_ROLE_STATE_SCHEMA
@@ -241,7 +259,18 @@ fn supported_reader_schema(schema: u32) -> bool {
                 | IDENTITY_MFA_STATE_SCHEMA
                 | WORKFLOW_INPUT_STATE_SCHEMA
                 | RATE_LIMIT_QUOTA_STATE_SCHEMA
+                | EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+                | SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+                | NATIVE_FLAT_NAMESPACE_RETIREMENT_STATE_SCHEMA
+                | NATIVE_PLAIN_NAMESPACE_TREE_STATE_SCHEMA
+                | NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA
                 | APPROLE_NO_DEFAULT_STATE_SCHEMA
+                | AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+                | APPROLE_LOCAL_STATE_SCHEMA
+                | POLICY_EXPIRATION_STATE_SCHEMA
+                | NAMESPACE_FACTORY_STATE_SCHEMA
+                | KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+                | PKI_BATCH_LEASE_STATE_SCHEMA
                 | USERPASS_ISSUANCE_STATE_SCHEMA
                 | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
         )
@@ -263,6 +292,10 @@ mod database;
 mod epoch_activation;
 #[path = "service_external_pki.rs"]
 mod external_pki;
+#[path = "service_policy_retirement.rs"]
+mod policy_retirement;
+#[path = "service_policy_startup.rs"]
+mod policy_startup;
 
 /// Read-only access to the original trusted clock scope, never an authority.
 pub(crate) fn public_origin_observation() -> Option<Duration> {
@@ -300,6 +333,8 @@ mod lifecycle;
 mod local_unseal;
 #[path = "service_lossless_json_state.rs"]
 mod lossless_json_state;
+#[path = "service_missing_token_lookup.rs"]
+mod missing_token_lookup;
 #[path = "service_namespace_assets.rs"]
 mod namespace_assets;
 #[path = "service_namespace_closed_auth.rs"]
@@ -375,28 +410,46 @@ mod owner_store;
 pub(crate) use owner_store::OwnerPublicationBinding;
 #[cfg(test)]
 pub(crate) use owner_store::OwnerWritePlan;
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 #[path = "service_native_auth.rs"]
 mod native_auth;
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 #[path = "service_native_blob_source.rs"]
 mod native_blob_source;
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_controlgroups.rs"]
+mod native_controlgroups;
+#[cfg(feature = "native-v6-storage")]
 #[path = "service_native_paged_dispatch.rs"]
 mod native_paged_dispatch;
-#[cfg(feature = "experimental-native-v6-ha")]
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_raft_observation.rs"]
+mod native_raft_observation;
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_response_wrapping.rs"]
+mod native_response_wrapping;
+#[cfg(all(unix, feature = "native-v6-storage"))]
+#[path = "service_native_seed.rs"]
+pub mod native_seed;
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_storage.rs"]
+mod native_storage;
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_transit_lifecycle.rs"]
+mod native_transit_lifecycle;
+#[cfg(feature = "native-v6-ha")]
 #[path = "service_native_v6_ha_install.rs"]
 pub(crate) mod native_v6_ha_install;
-#[cfg(feature = "experimental-native-v6-ha")]
+#[cfg(feature = "native-v6-ha")]
 #[path = "service_native_v6_ha_objects.rs"]
 pub(crate) mod native_v6_ha_objects;
-#[cfg(feature = "experimental-native-v6-ha")]
+#[cfg(feature = "native-v6-ha")]
 #[path = "service_native_v6_ha_writer.rs"]
 mod native_v6_ha_writer;
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 #[path = "service_native_v6_reader.rs"]
 mod native_v6_reader;
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 #[path = "service_native_v6_writer.rs"]
 mod native_v6_writer;
 #[path = "service_raft_admin.rs"]
@@ -1211,7 +1264,7 @@ enum ExternalEffectPlan {
     KubernetesToken(Box<kubernetes_secret::KubernetesTokenEffectPlan>),
     OpenLdap(openldap_secret::OpenLdapEffectPlan),
     SnapshotTransfer(Box<snapshot_transfer::SnapshotTransferPlan>),
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     NativeKv2Large(Box<native_kv2_large::TransferPlan>),
     #[cfg(target_os = "linux")]
     WrapperBarrierInit(Box<openbao_wrapper::barrier::InitializationPlan>),
@@ -1237,7 +1290,7 @@ pub(crate) enum ExternalEffectResult {
     KubernetesToken(Result<crate::engines::kubernetes::TokenMetadata, Response>),
     OpenLdap(Result<(), Response>),
     SnapshotTransfer(Result<snapshot_transfer::Observation, Response>),
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     NativeKv2Large(Result<crate::engines::kv2_native_records::NativeKv2GraphImport, Response>),
     #[cfg(target_os = "linux")]
     WrapperBarrierInit(
@@ -1250,6 +1303,7 @@ pub(crate) enum ExternalEffectResult {
 
 pub(crate) struct PendingExternalRequest {
     raw_reply_ingress: Option<crate::auth::IngressReplyContext>,
+    quota_response_headers: Option<rate_limit_quotas::AcceptedHeaders>,
     fingerprint: String,
     now: u64,
     token_clock: Option<RequestClock>,
@@ -1346,7 +1400,7 @@ impl PendingExternalRequest {
             ExternalEffectPlan::SnapshotTransfer(_) => ExternalEffectResult::SnapshotTransfer(Err(
                 Response::error(501, "native snapshot requires typed HTTP transport"),
             )),
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             ExternalEffectPlan::NativeKv2Large(_) => {
                 ExternalEffectResult::NativeKv2Large(Err(Response::error(
                     501,
@@ -1384,6 +1438,14 @@ fn classify_request_effect(
 
 #[cfg(test)]
 type NativeRecordRoleHook = Box<dyn FnOnce(&HaProcess) + Send>;
+
+// The production initialization wrapper always selects Current. The only
+// alternative exists in unit builds for explicit unpublished historical inputs.
+enum InitialAuthFactory {
+    Current,
+    #[cfg(test)]
+    Pre141Fixture,
+}
 
 pub struct Service {
     rate_limit_quotas: rate_limit_quotas::Runtime,
@@ -1432,19 +1494,25 @@ pub struct Service {
     pending_kubernetes_token: Option<kubernetes_secret::KubernetesTokenEffectPlan>,
     pending_openldap_effect: Option<openldap_secret::OpenLdapEffectPlan>,
     pending_snapshot_transfer: Option<snapshot_transfer::SnapshotTransferPlan>,
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     pending_native_kv2_large: Option<native_kv2_large::TransferPlan>,
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     pending_native_kv2_witness: Option<native_kv2_storage_witness::WitnessDelivery>,
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
+    pending_native_file_gc: Option<native_storage::file_gc::GcDelivery>,
+    #[cfg(feature = "native-v6-ha")]
+    pending_native_ha_gc: Option<native_storage::ha_gc::GcDelivery>,
+    #[cfg(feature = "native-v6-storage")]
     native_kv2_large_transport: bool,
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     native_kv2_large_flight: Arc<std::sync::atomic::AtomicBool>,
     pending_workflow_external_hold: Option<Box<PendingExternalRequest>>,
     pending_ordinary_kv_authority: Option<ordinary_kv_delivery::OrdinaryKvAuthority>,
     pending_token_api_authority: Option<plugin::PluginResponseAuthority>,
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     pending_native_auth_delivery: Option<native_auth::NativeAuthDelivery>,
+    #[cfg(feature = "native-v6-storage")]
+    pending_native_cg_delivery: Option<native_controlgroups::NativeCgDelivery>,
     pending_ha_step_down: Option<ha_step_down::StepDownPlan>,
     pending_forward_delivery: Option<forward_delivery::PendingForwardDelivery>,
     pending_help_authority: Option<help_delivery::HelpResponseAuthority>,
@@ -1501,23 +1569,28 @@ pub struct Service {
     namespace_runtime: namespace_runtime::Runtime,
     state_digest: Option<[u8; 32]>,
     record_root: Option<RecordStateRoot>,
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     native_root: Option<crate::state_record_root_v6::RecordStateRootV6>,
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     native_payload_observations: Arc<native_blob_source::PayloadObservations>,
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     native_candidate_profile: Option<native_v6_reader::NativeCandidateProfile>,
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
+    native_storage_profile: Option<crate::configuration::NativeStorageProfile>,
+    #[cfg(feature = "native-v6-storage")]
     native_request_binding: Option<native_v6_writer::NativeRequestBinding>,
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     native_failure_notice: Option<native_v6_writer::NativeFailureNotice>,
     record_writes_since_gc: u64,
     ha_read_cache: Option<ha_read::HaReadCache>,
     ha_activation: Option<ha_activation::LeaderActivation>,
+    policy_default_activation: Option<policy_startup::Activation>,
     kv_read_only_dispatches: u64,
     seal: Option<SealMetadata>,
     unseal_shares: BTreeMap<u8, SecretShare>,
     unseal_nonce: String,
+    #[cfg(feature = "native-v6-storage")]
+    unseal_nonce_attempt: u64,
     barrier_key: Option<Zeroizing<[u8; 32]>>,
     disable_unauthed_rekey_endpoints: bool,
     rekey: Option<RekeyState>,
@@ -1886,19 +1959,25 @@ impl Service {
             pending_kubernetes_token: None,
             pending_openldap_effect: None,
             pending_snapshot_transfer: None,
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             pending_native_kv2_large: None,
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             pending_native_kv2_witness: None,
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
+            pending_native_file_gc: None,
+            #[cfg(feature = "native-v6-ha")]
+            pending_native_ha_gc: None,
+            #[cfg(feature = "native-v6-storage")]
             native_kv2_large_transport: false,
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             native_kv2_large_flight: Arc::new(std::sync::atomic::AtomicBool::new(false)),
             pending_workflow_external_hold: None,
             pending_ordinary_kv_authority: None,
             pending_token_api_authority: None,
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             pending_native_auth_delivery: None,
+            #[cfg(feature = "native-v6-storage")]
+            pending_native_cg_delivery: None,
             pending_ha_step_down: None,
             pending_forward_delivery: None,
             pending_help_authority: None,
@@ -1955,25 +2034,30 @@ impl Service {
             namespace_runtime: namespace_runtime::Runtime::default(),
             state_digest: None,
             record_root: None,
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             native_root: None,
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             native_payload_observations: Arc::new(
                 native_blob_source::PayloadObservations::default(),
             ),
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             native_candidate_profile: None,
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
+            native_storage_profile: None,
+            #[cfg(feature = "native-v6-storage")]
             native_request_binding: None,
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             native_failure_notice: None,
             record_writes_since_gc: 0,
             ha_read_cache: None,
             ha_activation: None,
+            policy_default_activation: None,
             kv_read_only_dispatches: 0,
             seal,
             unseal_shares: BTreeMap::new(),
             unseal_nonce,
+            #[cfg(feature = "native-v6-storage")]
+            unseal_nonce_attempt: 0,
             barrier_key: None,
             disable_unauthed_rekey_endpoints: true,
             rekey,
@@ -2016,7 +2100,17 @@ impl Service {
         {
             return Response::error(503, "wire rejection audit unavailable");
         }
-        let response = Response::error(status, message);
+        let mut response = Response::error(status, message);
+        // Retry-After belongs to the admission decision, not to the numeric
+        // status. A quota refusal with response headers disabled, or a standby
+        // health response, must not acquire the listener's one-second hint.
+        if matches!(rejection, WireRejection::RateLimited) && status == 429 {
+            response.response_headers = ResponseHeaders::from_sdk(
+                Some(&json!({"Retry-After":["1"]})),
+                &["Retry-After".into()],
+            )
+            .unwrap_or_default();
+        }
         if self
             .audit_event("wire-response", &fingerprint, now, Some(status))
             .is_err()
@@ -2064,7 +2158,24 @@ impl Service {
             Err(_) => return Response::error(503, "trusted token clock is unavailable"),
         };
         let _publication_clock = external_pki::PublicationClockScope::enter(observed, started);
-        self.handle_request_clock(request, observed.as_secs(), true, Some(clock))
+        #[cfg(all(test, feature = "native-v6-storage"))]
+        {
+            let actor_lifetime_diagnostic = crate::auth::actor_lifetime_diagnostic::Scope::enter(
+                self.native_root.is_some(),
+                (request.method, request.path, request.namespace),
+                request.token,
+                self.state.as_ref().map(|state| &*state.auth),
+                clock.admitted_at(),
+            );
+            let response =
+                self.handle_request_clock(request, observed.as_secs(), true, Some(clock));
+            actor_lifetime_diagnostic.finish(response.status);
+            response
+        }
+        #[cfg(not(all(test, feature = "native-v6-storage")))]
+        {
+            self.handle_request_clock(request, observed.as_secs(), true, Some(clock))
+        }
     }
 
     pub fn handle_request_at(&mut self, request: ServiceRequest<'_>, now: u64) -> Response {
@@ -2125,7 +2236,7 @@ impl Service {
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         {
             self.native_root = None;
         }
@@ -2173,11 +2284,32 @@ impl Service {
                 "service request deadline exceeded",
             ));
         }
-        if forwarded {
+        #[cfg(feature = "native-v6-ha")]
+        let timing = self.ha.as_ref().map(|_| {
+            let request_class = if request.path == "sys/health" {
+                "health"
+            } else {
+                "ordinary"
+            };
+            crate::ha::NativeV6RequestObservation::start(
+                crate::request_deadline::current().unwrap_or(deadline),
+                request_class,
+                forwarded,
+            )
+        });
+        let execution = if forwarded {
             self.begin_forwarded(request)
         } else {
             self.begin_request(request)
+        };
+        #[cfg(feature = "native-v6-ha")]
+        if let Some(timing) = timing {
+            timing.finish(match &execution {
+                RequestExecution::Complete(response) => Some(response.status),
+                RequestExecution::External(_) => None,
+            });
         }
+        execution
     }
 
     /// Start a network request while holding the Service writer. A database
@@ -2338,6 +2470,18 @@ impl Service {
 
     pub(crate) fn finish_external_request(
         &mut self,
+        mut pending: PendingExternalRequest,
+        result: ExternalEffectResult,
+    ) -> Response {
+        let headers = pending.quota_response_headers.take();
+        let fingerprint = pending.fingerprint.clone();
+        let now = pending.now;
+        let response = self.finish_external_request_without_quota_headers(pending, result);
+        self.finish_rate_limit_quota_headers(headers, response, Some((&fingerprint, now)))
+    }
+
+    fn finish_external_request_without_quota_headers(
+        &mut self,
         pending: PendingExternalRequest,
         result: ExternalEffectResult,
     ) -> Response {
@@ -2349,7 +2493,7 @@ impl Service {
             ExternalEffectPlan::SnapshotTransfer(plan) => Some(
                 crate::request_deadline::RequestDeadlineScope::enter(plan.original_deadline()),
             ),
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             ExternalEffectPlan::NativeKv2Large(plan) => Some(
                 crate::request_deadline::RequestDeadlineScope::enter(plan.original_deadline()),
             ),
@@ -2545,7 +2689,7 @@ impl Service {
                     (pending.now, pending.token_clock),
                 );
             }
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             (
                 ExternalEffectPlan::NativeKv2Large(plan),
                 ExternalEffectResult::NativeKv2Large(result),
@@ -2570,7 +2714,7 @@ impl Service {
             pending.token_clock,
             response,
         );
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         self.retire_native_external_binding(&pending.fingerprint, pending.token_clock);
         response
     }
@@ -2612,20 +2756,75 @@ impl Service {
         retain_clock_receipt: bool,
     ) -> (Response, Option<token_precision::TerminalClockReceipt>) {
         let (now, token_clock) = request_clock;
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let native_auth_deadline = self.native_auth_terminal_deadline();
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
+        let native_cg_deadline = self.native_cg_terminal_deadline();
+        #[cfg(feature = "native-v6-storage")]
+        let native_kv_output_deadline = self.native_wrapped_kv_terminal_deadline();
+        #[cfg(feature = "native-v6-storage")]
+        let _native_kv_output_deadline =
+            native_kv_output_deadline.map(crate::request_deadline::RequestDeadlineScope::enter);
+        #[cfg(feature = "native-v6-storage")]
+        let native_kv_output_terminal = native_kv_output_deadline.is_some();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_kv_output_terminal = false;
+        #[cfg(feature = "native-v6-storage")]
+        let _native_cg_deadline =
+            native_cg_deadline.map(crate::request_deadline::RequestDeadlineScope::enter);
+        #[cfg(feature = "native-v6-storage")]
+        let native_cg_terminal = native_cg_deadline.is_some();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_cg_terminal = false;
+        #[cfg(feature = "native-v6-storage")]
         let _native_auth_deadline =
             native_auth_deadline.map(crate::request_deadline::RequestDeadlineScope::enter);
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let native_auth_terminal = native_auth_deadline.is_some();
-        #[cfg(not(feature = "fixture-native-v6-service"))]
+        #[cfg(not(feature = "native-v6-storage"))]
         let native_auth_terminal = false;
-        #[cfg(feature = "fixture-native-v6-service")]
-        let terminal_owner = self.check_pending_native_auth_before_terminal();
-        #[cfg(not(feature = "fixture-native-v6-service"))]
+        #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
+        let phase = self
+            .native_root
+            .as_ref()
+            .and_then(|_| crate::request_deadline::current())
+            .map(|until| {
+                native_v6_ha_install::NativeHaPhaseTimer::start("terminal_owner", until, 0, 0, 0)
+            });
+        #[cfg(feature = "native-v6-storage")]
+        let terminal_owner = self
+            .check_pending_native_auth_before_terminal()
+            .and_then(|()| self.check_pending_native_cg_before_terminal())
+            .and_then(|()| self.check_pending_native_wrapped_kv_before_terminal());
+        #[cfg(not(feature = "native-v6-storage"))]
         let terminal_owner: Result<(), Response> = Ok(());
+        #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
+        if let Some(phase) = phase {
+            phase.finish(terminal_owner.is_ok());
+        }
+        #[cfg(feature = "native-v6-ha")]
+        let pre_admission_refusal =
+            self.take_native_pre_admission_refusal(fingerprint, token_clock, &response);
+        #[cfg(not(feature = "native-v6-ha"))]
+        let pre_admission_refusal: Option<Response> = None;
+        #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
+        let phase = self
+            .native_root
+            .as_ref()
+            .and_then(|_| crate::request_deadline::current())
+            .map(|until| {
+                native_v6_ha_install::NativeHaPhaseTimer::start(
+                    "terminal_clock_floor",
+                    until,
+                    0,
+                    0,
+                    0,
+                )
+            });
         let terminal_floor = terminal_owner.and_then(|()| {
+            if let Some(refusal) = pre_admission_refusal {
+                return Err(refusal);
+            }
             if self.pending_forward_delivery.is_some() {
                 self.check_pending_forward_delivery(&response)
                     .map(|()| None)
@@ -2633,38 +2832,80 @@ impl Service {
                 self.persist_terminal_token_clock_with_receipt(
                     token_clock,
                     now,
-                    retain_clock_receipt || native_auth_terminal,
+                    retain_clock_receipt
+                        || native_auth_terminal
+                        || native_cg_terminal
+                        || native_kv_output_terminal,
                 )
             }
         });
+        #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
+        if let Some(phase) = phase {
+            phase.finish(terminal_floor.is_ok());
+        }
+        #[cfg(all(test, feature = "native-v6-storage"))]
+        self.record_pending_missing_route_stage(
+            "terminal-floor-after",
+            terminal_floor.as_ref().err().map(|error| error.status),
+        );
         if let Err(error) = &terminal_floor {
             crate::ha_forward_completion::diagnostic_response("terminal_floor_veto", error);
         }
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let native_failure = self.take_native_failure_response(fingerprint, token_clock);
         let terminal_floor_succeeded = terminal_floor.is_ok();
         let receipt = match terminal_floor {
             Ok(receipt) => receipt,
             Err(cause) => {
                 erase_json(&mut response.body);
-                #[cfg(feature = "fixture-native-v6-service")]
+                #[cfg(feature = "native-v6-storage")]
                 {
                     response = native_failure.unwrap_or(cause);
                 }
-                #[cfg(not(feature = "fixture-native-v6-service"))]
+                #[cfg(not(feature = "native-v6-storage"))]
                 {
                     response = cause;
                 }
                 None
             }
         };
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let (receipt, terminal_floor_succeeded) =
             if native_auth_terminal && terminal_floor_succeeded {
                 // The original NativeAuth capsule consumes the one exact terminal
                 // self-write receipt. Only then, before the mandatory response
                 // audit below, can it bind its sole real HA read proof.
                 match self.bind_pending_native_auth_before_audit(receipt) {
+                    Ok(()) => (None, true),
+                    Err(cause) => {
+                        erase_json(&mut response.body);
+                        response.consistency_index = None;
+                        response = cause;
+                        (None, false)
+                    }
+                }
+            } else {
+                (receipt, terminal_floor_succeeded)
+            };
+        #[cfg(feature = "native-v6-storage")]
+        let (receipt, terminal_floor_succeeded) = if native_cg_terminal && terminal_floor_succeeded
+        {
+            match self.bind_pending_native_cg_before_audit(receipt) {
+                Ok(()) => (None, true),
+                Err(cause) => {
+                    erase_json(&mut response.body);
+                    response.consistency_index = None;
+                    response = cause;
+                    (None, false)
+                }
+            }
+        } else {
+            (receipt, terminal_floor_succeeded)
+        };
+        #[cfg(feature = "native-v6-storage")]
+        let (receipt, terminal_floor_succeeded) =
+            if native_kv_output_terminal && terminal_floor_succeeded {
+                match self.bind_pending_native_wrapped_kv_before_audit(receipt) {
                     Ok(()) => (None, true),
                     Err(cause) => {
                         erase_json(&mut response.body);
@@ -2731,6 +2972,8 @@ impl Service {
         if let Some(authority) = self.pending_ordinary_kv_authority.as_mut() {
             authority.mark_response_audited(fingerprint);
         }
+        #[cfg(feature = "native-v6-storage")]
+        self.mark_native_cg_audited(fingerprint);
         after_audit();
         (response, receipt)
     }
@@ -2764,6 +3007,46 @@ impl Service {
         admission_started: std::time::Instant,
         token_clock: Option<RequestClock>,
     ) -> RequestExecution {
+        let fingerprint = self.request_fingerprint(
+            request.method,
+            request.path,
+            request.namespace,
+            request.token,
+        );
+        let now = request.now;
+        let public_probe = request.path == "sys/leader"
+            || (request.path == "sys/health" && matches!(request.method, "GET" | "HEAD"));
+        let mut quota_headers = None;
+        let execution = self.begin_at_mode_started_clock_with_quota(
+            request,
+            admission_started,
+            token_clock,
+            &mut quota_headers,
+        );
+        match execution {
+            RequestExecution::Complete(response) => {
+                RequestExecution::Complete(self.finish_rate_limit_quota_headers(
+                    quota_headers,
+                    response,
+                    (!public_probe).then_some((fingerprint.as_str(), now)),
+                ))
+            }
+            RequestExecution::External(mut pending) => {
+                // The original plan retains this same admission observation
+                // while its external work releases the Service writer lock.
+                pending.quota_response_headers = quota_headers;
+                RequestExecution::External(pending)
+            }
+        }
+    }
+
+    fn begin_at_mode_started_clock_with_quota(
+        &mut self,
+        request: RequestDispatch<'_>,
+        admission_started: std::time::Instant,
+        token_clock: Option<RequestClock>,
+        quota_headers: &mut Option<rate_limit_quotas::AcceptedHeaders>,
+    ) -> RequestExecution {
         let RequestDispatch {
             method,
             path,
@@ -2781,6 +3064,27 @@ impl Service {
         // namespace resolution, HA forwarding or synchronization. In particular,
         // a standby must report its own observation without contacting a leader.
         if path == "sys/leader" {
+            if let Some(response) = self.rate_limit_quota_response(
+                &RequestView {
+                    method,
+                    path,
+                    namespace,
+                    token,
+                    body: &body,
+                    now,
+                    admission_started,
+                    token_clock,
+                    allow_forward,
+                    enforce_namespace,
+                    wrap_ttl_seconds: None,
+                    origin_peer,
+                    client_certificates: client_certificates.as_deref(),
+                },
+                quota_headers,
+            ) {
+                erase_json(&mut body);
+                return RequestExecution::Complete(response);
+            }
             erase_json(&mut body);
             return RequestExecution::Complete(self.leader_response(method));
         }
@@ -2791,15 +3095,22 @@ impl Service {
             || self.pending_sdk_credential_list.is_some();
         #[cfg(not(any(target_os = "linux", target_os = "macos")))]
         let sdk_pending = false;
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let native_auth_pending = self.pending_native_auth_delivery.is_some()
+            || self.pending_native_cg_delivery.is_some()
             || self.pending_native_kv2_large.is_some()
-            || self.pending_native_kv2_witness.is_some();
-        #[cfg(not(feature = "fixture-native-v6-service"))]
+            || self.pending_native_kv2_witness.is_some()
+            || self.pending_native_file_gc.is_some();
+        #[cfg(not(feature = "native-v6-storage"))]
         let native_auth_pending = false;
+        #[cfg(feature = "native-v6-ha")]
+        let native_ha_gc_pending = self.pending_native_ha_gc.is_some();
+        #[cfg(not(feature = "native-v6-ha"))]
+        let native_ha_gc_pending = false;
         if sdk_pending
             || self.rate_limit_quotas.has_pending_ingress()
             || native_auth_pending
+            || native_ha_gc_pending
             || self.pending_database_effect.is_some()
             || self.pending_database_config_effect.is_some()
             || self.pending_database_rotation_effect.is_some()
@@ -2845,23 +3156,26 @@ impl Service {
                 // restore the read authority which that failure fenced.
                 Response::error(503, "audit unavailable before entry")
             } else {
-                self.handle_inner(RequestView {
-                    method,
-                    path,
-                    namespace,
-                    token,
-                    body: &body,
-                    now,
-                    admission_started,
-                    token_clock,
-                    allow_forward,
-                    enforce_namespace,
-                    // The dedicated health diagnostic ignores wrapping TTL.
-                    // It never publishes a wrapped response or bearer token.
-                    wrap_ttl_seconds: None,
-                    origin_peer,
-                    client_certificates: client_certificates.as_deref(),
-                })
+                self.handle_inner_with_quota(
+                    RequestView {
+                        method,
+                        path,
+                        namespace,
+                        token,
+                        body: &body,
+                        now,
+                        admission_started,
+                        token_clock,
+                        allow_forward,
+                        enforce_namespace,
+                        // The dedicated health diagnostic ignores wrapping TTL.
+                        // It never publishes a wrapped response or bearer token.
+                        wrap_ttl_seconds: None,
+                        origin_peer,
+                        client_certificates: client_certificates.as_deref(),
+                    },
+                    quota_headers,
+                )
             };
             erase_json(&mut body);
             return RequestExecution::Complete(response);
@@ -3000,6 +3314,34 @@ impl Service {
                 return RequestExecution::Complete(response);
             }
         }
+        if path == "sys/init"
+            && let Some(response) = self.rate_limit_quota_response(
+                &RequestView {
+                    method,
+                    path,
+                    namespace,
+                    token,
+                    body: &body,
+                    now,
+                    admission_started,
+                    token_clock,
+                    allow_forward,
+                    enforce_namespace,
+                    wrap_ttl_seconds,
+                    origin_peer,
+                    client_certificates: client_certificates.as_deref(),
+                },
+                quota_headers,
+            )
+        {
+            erase_json(&mut body);
+            return RequestExecution::Complete(self.audit_completed_response(
+                &fingerprint,
+                now,
+                token_clock,
+                response,
+            ));
+        }
         if path == "sys/init" && matches!(method, "PUT" | "POST") {
             #[cfg(target_os = "linux")]
             if self.wrapper_barrier_selected()
@@ -3019,6 +3361,7 @@ impl Service {
                 return match plan {
                     Ok(plan) => RequestExecution::External(Box::new(PendingExternalRequest {
                         raw_reply_ingress: crate::auth::current_ingress(),
+                        quota_response_headers: None,
                         fingerprint,
                         now,
                         token_clock,
@@ -3057,7 +3400,7 @@ impl Service {
             }
             return RequestExecution::Complete(response);
         }
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         {
             if self.native_request_binding.is_some() || self.native_failure_notice.is_some() {
                 self.recovery_required = true;
@@ -3069,23 +3412,30 @@ impl Service {
             self.bind_native_request_failure(&fingerprint, token_clock, admission_started, path);
         }
         self.stage_quota_ingress(
-            &fingerprint, now, admission_started, token_clock, allow_forward,
-        );
-        let response = self.handle_inner(RequestView {
-            method,
-            path,
-            namespace,
-            token,
-            body: &body,
+            &fingerprint,
             now,
             admission_started,
             token_clock,
             allow_forward,
-            enforce_namespace,
-            wrap_ttl_seconds,
-            origin_peer,
-            client_certificates: client_certificates.as_deref(),
-        });
+        );
+        let response = self.handle_inner_with_quota(
+            RequestView {
+                method,
+                path,
+                namespace,
+                token,
+                body: &body,
+                now,
+                admission_started,
+                token_clock,
+                allow_forward,
+                enforce_namespace,
+                wrap_ttl_seconds,
+                origin_peer,
+                client_certificates: client_certificates.as_deref(),
+            },
+            quota_headers,
+        );
         crate::ha_forward_completion::diagnostic_response("route_complete", &response);
         erase_json(&mut body);
         let standby_quota_rejection = self.rate_limit_quotas.take_standby_rejection();
@@ -3119,25 +3469,43 @@ impl Service {
         let kubernetes_token = self.pending_kubernetes_token.take();
         let openldap = self.pending_openldap_effect.take();
         let snapshot_transfer = self.pending_snapshot_transfer.take();
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let native_kv2_large = self.pending_native_kv2_large.take();
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let native_kv2_large_staged = usize::from(native_kv2_large.is_some());
-        #[cfg(not(feature = "fixture-native-v6-service"))]
+        #[cfg(not(feature = "native-v6-storage"))]
         let native_kv2_large_staged = 0;
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let native_kv2_witness = self.pending_native_kv2_witness.take();
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let native_kv2_witness_expected = native_kv2_witness.is_some();
-        #[cfg(not(feature = "fixture-native-v6-service"))]
+        #[cfg(not(feature = "native-v6-storage"))]
         let native_kv2_witness_expected = false;
+        #[cfg(feature = "native-v6-storage")]
+        let native_file_gc = self.pending_native_file_gc.take();
+        #[cfg(feature = "native-v6-storage")]
+        let native_file_gc_expected = native_file_gc.is_some();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_file_gc_expected = false;
+        #[cfg(feature = "native-v6-ha")]
+        let native_ha_gc = self.pending_native_ha_gc.take();
+        #[cfg(feature = "native-v6-ha")]
+        let native_ha_gc_expected = native_ha_gc.is_some();
+        #[cfg(not(feature = "native-v6-ha"))]
+        let native_ha_gc_expected = false;
         let ordinary_kv_authority = self.pending_ordinary_kv_authority.take();
         let token_api_authority = self.pending_token_api_authority.take();
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let native_auth_delivery = self.pending_native_auth_delivery.take();
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let native_auth_expected = native_auth_delivery.is_some();
-        #[cfg(not(feature = "fixture-native-v6-service"))]
+        #[cfg(feature = "native-v6-storage")]
+        let native_cg_delivery = self.pending_native_cg_delivery.take();
+        #[cfg(feature = "native-v6-storage")]
+        let native_cg_expected = native_cg_delivery.is_some();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_cg_expected = false;
+        #[cfg(not(feature = "native-v6-storage"))]
         let native_auth_expected = false;
         let step_down = self.pending_ha_step_down.take();
         let help_authority = self.pending_help_authority.take();
@@ -3167,7 +3535,10 @@ impl Service {
         let delivery_capsules = usize::from(ordinary_kv_authority.is_some())
             + usize::from(standby_quota_rejection.is_some())
             + usize::from(native_auth_expected)
+            + usize::from(native_cg_expected)
             + usize::from(native_kv2_witness_expected)
+            + usize::from(native_file_gc_expected)
+            + usize::from(native_ha_gc_expected)
             + usize::from(external_pki_no_effect.is_some())
             + usize::from(token_api_authority.is_some())
             + usize::from(help_authority.is_some())
@@ -3192,9 +3563,13 @@ impl Service {
         }
         if let Some(rejection) = standby_quota_rejection {
             let response = self.complete_standby_quota_rejection(
-                rejection, response, &fingerprint, now, token_clock,
+                rejection,
+                response,
+                &fingerprint,
+                now,
+                token_clock,
             );
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             {
                 self.native_request_binding = None;
             }
@@ -3225,13 +3600,14 @@ impl Service {
         let effect = effect
             .or_else(|| sdk_request.map(ExternalEffectPlan::SdkBackend))
             .or_else(|| sdk_auth.map(|plan| ExternalEffectPlan::SdkAuth(Box::new(plan))));
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let effect = effect.or_else(|| {
             native_kv2_large.map(|plan| ExternalEffectPlan::NativeKv2Large(Box::new(plan)))
         });
         if let Some(effect) = effect {
             return RequestExecution::External(Box::new(PendingExternalRequest {
                 raw_reply_ingress: crate::auth::current_ingress(),
+                quota_response_headers: None,
                 fingerprint,
                 now,
                 token_clock,
@@ -3246,7 +3622,25 @@ impl Service {
                 now,
             ));
         }
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-ha")]
+        if let Some(plan) = native_ha_gc {
+            return RequestExecution::Complete(self.complete_native_ha_gc(
+                plan,
+                response,
+                &fingerprint,
+                (now, token_clock),
+            ));
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if let Some(plan) = native_file_gc {
+            return RequestExecution::Complete(self.complete_native_file_gc(
+                plan,
+                response,
+                &fingerprint,
+                (now, token_clock),
+            ));
+        }
+        #[cfg(feature = "native-v6-storage")]
         if let Some(plan) = native_kv2_witness {
             return RequestExecution::Complete(self.complete_native_kv2_storage_witness(
                 plan,
@@ -3274,9 +3668,10 @@ impl Service {
             self.pending_sdk_control_authority = sdk_control;
         }
         self.pending_token_api_authority = token_api_authority;
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         {
             self.pending_native_auth_delivery = native_auth_delivery;
+            self.pending_native_cg_delivery = native_cg_delivery;
         }
         self.pending_help_authority = help_authority;
         self.pending_namespace_deletion = namespace_deletion;
@@ -3310,9 +3705,11 @@ impl Service {
         };
         let response =
             self.complete_pending_token_api_delivery(token_expected, response, &fingerprint);
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let response =
             self.complete_native_auth_delivery(native_auth_expected, response, &fingerprint);
+        #[cfg(feature = "native-v6-storage")]
+        let response = self.complete_native_cg_delivery(native_cg_expected, response, &fingerprint);
         let response = self.complete_pending_external_pki_no_effect_delivery(
             external_pki_no_effect_expected,
             response,
@@ -3337,21 +3734,43 @@ impl Service {
             response,
             &fingerprint,
         );
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         {
             self.native_request_binding = None;
         }
         RequestExecution::Complete(response)
     }
 
+    fn handle_inner_with_quota(
+        &mut self,
+        request: RequestView<'_>,
+        quota_headers: &mut Option<rate_limit_quotas::AcceptedHeaders>,
+    ) -> Response {
+        self.handle_inner_control_group_with_quota(request, None, quota_headers)
+    }
+
+    // Existing direct-inner tests deliberately inspect staged delivery
+    // capsules before the outer completion/audit boundary. Keep that entry
+    // point and delegate to the same route implementation; real requests use
+    // the affine metadata out-parameter through begin/finish above.
+    #[cfg(test)]
     fn handle_inner(&mut self, request: RequestView<'_>) -> Response {
-        self.handle_inner_control_group(request, None)
+        self.handle_inner_with_quota(request, &mut None)
     }
 
     fn handle_inner_control_group(
         &mut self,
         request: RequestView<'_>,
         resume: Option<control_groups::ControlGroupResume>,
+    ) -> Response {
+        self.handle_inner_control_group_with_quota(request, resume, &mut None)
+    }
+
+    fn handle_inner_control_group_with_quota(
+        &mut self,
+        request: RequestView<'_>,
+        resume: Option<control_groups::ControlGroupResume>,
+        quota_headers: &mut Option<rate_limit_quotas::AcceptedHeaders>,
     ) -> Response {
         let quota_ingress = self.rate_limit_quotas.take_ingress_entry();
         let logical_data = match crate::request_metadata::current(
@@ -3398,7 +3817,7 @@ impl Service {
         {
             return Response::error(400, "invalid canonical namespace or path");
         }
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         if path == native_kv2_storage_witness::PATH && self.ha.is_some() {
             // This read-only profile has no forwarding contract. The normal
             // request/terminal audit chain still records this local refusal.
@@ -3491,9 +3910,18 @@ impl Service {
             {
                 return Response::error(404, "namespace not found");
             }
+            // Health is a public early route, but it is exempt only when the
+            // configured quota exemption list says so. The current HA state
+            // has already completed the ordinary readiness catch-up above.
+            if let Some(response) = self.rate_limit_quota_response(&request, quota_headers) {
+                return response;
+            }
             let initialized = self.initialized();
             let sealed = self.state.is_none();
             let (ha_enabled, standby, ha_active, application_ready, _, _) = observation;
+            let default_activation_pending =
+                (!ha_enabled || ha_active) && self.default_policy_activation_pending();
+            let application_ready = application_ready && !default_activation_pending;
             let status = health_status_with_codes(
                 HealthObservation::new(
                     initialized,
@@ -3506,6 +3934,14 @@ impl Service {
                 standby_ok,
                 health_codes,
             );
+            // An elected/read-index-verified leader still awaits the closed
+            // default startup step. Keep the existing health budget and body,
+            // including for a single node between barrier and startup finish.
+            let status = if default_activation_pending {
+                503
+            } else {
+                status
+            };
             return Response {
                 unwrapped_json: None,
                 response_headers: Default::default(),
@@ -3519,13 +3955,56 @@ impl Service {
         if path == "sys/init" && method == "GET" {
             return Response::ok(json!({"initialized":self.initialized()}));
         }
+        if !resumed_control_group
+            && matches!(path, "sys/seal-status" | "sys/unseal")
+            && let Some(response) = self.rate_limit_quota_response(&request, quota_headers)
+        {
+            return response;
+        }
         if path == "sys/seal-status" && method == "GET" {
             return self.seal_status();
         }
         if path == "sys/unseal" && matches!(method, "PUT" | "POST") {
             let original_deadline = crate::request_deadline::current();
-            let response = self.unseal(body);
-            self.capture_local_unseal_completion(&response, token_clock, original_deadline);
+            #[cfg(feature = "native-v6-storage")]
+            let fresh_native_transition = self.state.is_none()
+                && self.native_candidate_profile.is_some()
+                && self.ha.is_none();
+            #[cfg(not(feature = "native-v6-storage"))]
+            let fresh_native_transition = false;
+            #[cfg(feature = "native-v6-storage")]
+            let mut cold_handoff = None;
+            let mut response = self.unseal_with_cold_handoff(
+                body,
+                #[cfg(feature = "native-v6-storage")]
+                Some(&mut cold_handoff),
+            );
+            #[cfg(feature = "native-v6-storage")]
+            if response.status == 200
+                && let Some(handoff) = cold_handoff.as_mut()
+                && let Err(error) = handoff.check_before_policy(self)
+            {
+                response = error;
+            }
+            if response.status == 200
+                && let Err(error) = self.complete_default_policy_activation(token_clock)
+            {
+                #[cfg(feature = "native-v6-storage")]
+                if cold_handoff.is_some() {
+                    self.fence_cold_unseal_handoff();
+                }
+                response = error;
+            }
+            // The completion is bound to the root after active initialization.
+            // An unsuccessful initialization never captures a success owner.
+            self.capture_local_unseal_completion_with_handoff(
+                &response,
+                token_clock,
+                original_deadline,
+                fresh_native_transition,
+                #[cfg(feature = "native-v6-storage")]
+                cold_handoff,
+            );
             eprintln!(
                 "HBHA-DIAG-UNSEAL route_status={} state_loaded={} recovery_required={} barrier_loaded={} record_root={} activation={} original_deadline_present={}",
                 response.status,
@@ -3541,7 +4020,7 @@ impl Service {
         if self.state.is_none() {
             return Response::error(503, "server is sealed");
         }
-        #[cfg(feature = "experimental-native-v6-ha")]
+        #[cfg(feature = "native-v6-ha")]
         if self.native_snapshot_transport && path == snapshot_transfer::NATIVE_HA_REPAIR_PATH {
             return self.admit_native_ha_snapshot_repair(&request);
         }
@@ -3564,6 +4043,14 @@ impl Service {
                 let Some(_) = leader else {
                     return Response::error(503, "HA cluster has no elected leader");
                 };
+                #[cfg(feature = "native-v6-storage")]
+                if self.native_kv2_large_transport && path == crate::engines::kv2_native_large::PATH
+                {
+                    return Response::error(
+                        503,
+                        "native-large KV2 requires the leader; standby upload forwarding is unsupported",
+                    );
+                }
                 if self.native_snapshot_transport {
                     // Native files cannot be carried by the bounded JSON peer
                     // frame. HTTP snapshot redirects are not implemented yet.
@@ -3572,11 +4059,13 @@ impl Service {
                         "native snapshot requires the leader; standby streaming is unsupported",
                     );
                 }
-                if namespace.is_empty() && path.starts_with("auth/") {
+                if !resumed_control_group {
                     // A stale local rule must not keep rejecting after the
                     // leader deletes or revises it. Catch up even when this
                     // node's old registry has no matching quota or mount.
-                    if let Err(error) = self.sync_from_ha_with_anchor(false) {
+                    if let Err(error) =
+                        self.sync_from_ha_before_request_admission(false, !resumed_control_group)
+                    {
                         return error;
                     }
                     // OpenBao applies its node-local HTTP bucket before
@@ -3584,7 +4073,11 @@ impl Service {
                     // The receiving active node independently charges its hop.
                     if let Some(response) = self.standby_rate_limit_quota_response(
                         &request,
-                        if resumed_control_group { None } else { quota_ingress },
+                        if resumed_control_group {
+                            None
+                        } else {
+                            quota_ingress
+                        },
                     ) {
                         return response;
                     }
@@ -3598,6 +4091,12 @@ impl Service {
                 }
                 self.pending_forward_delivery =
                     Some(forward_delivery::PendingForwardDelivery::Rejected);
+                #[cfg(feature = "native-v6-ha")]
+                let forward_timing = crate::ha::NativeV6TimingSpan::start(
+                    "forward_delivery",
+                    "exchange_and_applied",
+                    None,
+                );
                 let forwarded = match ha.lock_for_request() {
                     Ok(process) => {
                         process.forward_request_completed(crate::ha_forward::ForwardContext {
@@ -3614,6 +4113,10 @@ impl Service {
                     }
                     Err(_) => return Response::error(503, "HA process lock is unavailable"),
                 };
+                #[cfg(feature = "native-v6-ha")]
+                if let Some(timing) = forward_timing {
+                    timing.finish(forwarded.is_ok());
+                }
                 return match forwarded {
                     Ok((response, receipt)) => {
                         if path == "sys/step-down" {
@@ -3669,8 +4172,28 @@ impl Service {
                     }
                 };
             }
-            if let Err(error) = self.sync_from_ha() {
+            #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
+            let phase = self
+                .native_root
+                .as_ref()
+                .and_then(|_| crate::request_deadline::current())
+                .map(|until| {
+                    native_v6_ha_install::NativeHaPhaseTimer::start(
+                        "request_pre_sync",
+                        until,
+                        0,
+                        0,
+                        0,
+                    )
+                });
+            if let Err(error) =
+                self.sync_from_ha_before_request_admission(true, !resumed_control_group)
+            {
                 return error;
+            }
+            #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
+            if let Some(phase) = phase {
+                phase.finish(true);
             }
         }
         // HA forwards the authenticated transport body above. Interpret this
@@ -3780,8 +4303,17 @@ impl Service {
             return Response::error(400, "AppRole form requires an actual AppRole login mount");
         }
 
-        if let Some(response) = self.rate_limit_quota_response(&request) {
+        if !resumed_control_group
+            && !matches!(path, "sys/init" | "sys/seal-status" | "sys/unseal")
+            && let Some(response) = self.rate_limit_quota_response(&request, quota_headers)
+        {
             return response;
+        }
+        // A newly activated leader finishes the same closed startup transition
+        // before immutable owners or admission are captured. The activation stamp
+        // prevents later ordinary reads from recreating an expired default.
+        if let Err(error) = self.complete_default_policy_activation(request.token_clock) {
+            return error;
         }
         if let Some(response) = self.immutable_approle_lookup_response(&request) {
             return response;
@@ -3811,47 +4343,72 @@ impl Service {
         // token can be rejected/consumed. Observed expiry cannot be undone by
         // a later clock rollback, process restart, or HA leader change.
         if !owner_manifest_migration {
-            let time = match request.token_time() {
-                Ok(time) => time,
-                Err(error) => return error,
-            };
-            let changed = match Self::reconcile_lease_owners_observed(&mut admitted, time) {
-                Ok(changed) => changed,
-                Err(error) => return error,
-            };
-            if changed {
-                admitted.schema = admitted.writer_schema();
-                #[cfg(feature = "fixture-native-v6-service")]
-                let publication = if self.native_root.is_some() {
-                    let source_floor = self
-                        .state
-                        .as_ref()
-                        .map_or(0, |state| state.engines.lease_clock());
-                    let clock = match request
-                        .token_clock
-                        .and_then(|clock| clock.with_seconds_floor(now.max(source_floor)).ok())
-                    {
-                        Some(clock) => clock,
-                        None => return Response::error(503, "trusted token clock is required"),
-                    };
-                    let fixed = match time.with_seconds_floor(source_floor) {
-                        Ok(time) => time,
-                        Err(_) => {
-                            return Response::error(503, "trusted token clock is unavailable");
-                        }
-                    };
-                    // This candidate must be the exact observation-only delta.
-                    // Real lease retirement or CRL changes remain unsupported.
-                    self.commit_native_terminal_clock_floor(&mut admitted, clock, fixed)
-                } else {
-                    self.commit_state(&mut admitted)
+            #[cfg(feature = "native-v6-storage")]
+            let native_pki_maintenance =
+                self.native_root.is_some() && admitted.engines.has_native_local_pki();
+            #[cfg(not(feature = "native-v6-storage"))]
+            let native_pki_maintenance = false;
+            #[cfg(feature = "native-v6-storage")]
+            if native_pki_maintenance
+                && let Err(error) = self.reconcile_native_pki_owners(&mut admitted, &request)
+            {
+                return error;
+            }
+            if !native_pki_maintenance {
+                let time = match request.token_time() {
+                    Ok(time) => time,
+                    Err(error) => return error,
                 };
-                #[cfg(not(feature = "fixture-native-v6-service"))]
-                let publication = self.commit_state(&mut admitted);
-                if let Err(error) = publication {
-                    return error;
+                let changed = match Self::reconcile_lease_owners_observed(&mut admitted, time) {
+                    Ok(changed) => changed,
+                    Err(error) => return error,
+                };
+                if changed {
+                    admitted.schema = admitted.writer_schema();
+                    #[cfg(feature = "native-v6-storage")]
+                    let publication = if self.native_root.is_some() {
+                        let source_floor = self
+                            .state
+                            .as_ref()
+                            .map_or(0, |state| state.engines.lease_clock());
+                        let clock = match request
+                            .token_clock
+                            .and_then(|clock| clock.with_seconds_floor(now.max(source_floor)).ok())
+                        {
+                            Some(clock) => clock,
+                            None => return Response::error(503, "trusted token clock is required"),
+                        };
+                        let fixed = match time.with_seconds_floor(source_floor) {
+                            Ok(time) => time,
+                            Err(_) => {
+                                return Response::error(503, "trusted token clock is unavailable");
+                            }
+                        };
+                        // Reconciliation advances Token API/lease observations. The
+                        // native clock writer also binds the CG observation at this
+                        // same fixed time; include it in the exact private candidate.
+                        let observed = match admitted.engines.kubernetes_artifact_time(fixed) {
+                            Ok(observed) => observed,
+                            Err(error) => return Response::error(error.status, &error.message),
+                        };
+                        let observed = admitted.auth.token_api_observed_time(observed);
+                        if let Err(error) = admitted.auth.advance_control_group_observed(observed) {
+                            return Response::error(error.status, &error.message);
+                        }
+                        admitted.schema = admitted.writer_schema();
+                        // This candidate must be the exact observation-only delta.
+                        // Real lease retirement or CRL changes remain unsupported.
+                        self.commit_native_terminal_clock_floor(&mut admitted, clock, fixed)
+                    } else {
+                        self.commit_state(&mut admitted)
+                    };
+                    #[cfg(not(feature = "native-v6-storage"))]
+                    let publication = self.commit_state(&mut admitted);
+                    if let Err(error) = publication {
+                        return error;
+                    }
+                    admitted = self.install_committed_namespace_view(admitted);
                 }
-                admitted = self.install_committed_namespace_view(admitted);
             }
         }
         // HeaderOperation is unsupported by this public responder. A GET to
@@ -3865,7 +4422,16 @@ impl Service {
         {
             return Response::error(405, "unsupported operation");
         }
-        if let Some(response) = self.handle_pki_acme(&request, &mut admitted) {
+        // Local native PKI never enters the separate ACME protocol/effect
+        // dispatcher. Its exact request owner below either executes the local
+        // domain or refuses a provider/protocol selector before any effect.
+        #[cfg(feature = "native-v6-storage")]
+        let native_pki_mounted = self.native_root.is_some()
+            && admitted.engines.native_local_pki_mounted(namespace, path);
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_pki_mounted = false;
+        if !native_pki_mounted && let Some(response) = self.handle_pki_acme(&request, &mut admitted)
+        {
             return response;
         }
         let help_projection = if method == "HELP" {
@@ -3880,6 +4446,15 @@ impl Service {
             None
         };
         if help_projection.as_ref().is_some_and(|help| help.anonymous) {
+            #[cfg(feature = "native-v6-storage")]
+            if native_pki_mounted {
+                return self.dispatch_native_pki_request(
+                    admitted,
+                    None,
+                    &request,
+                    pki_role_fields.as_ref(),
+                );
+            }
             return Response {
                 unwrapped_json: None,
                 response_headers: Default::default(),
@@ -3896,6 +4471,17 @@ impl Service {
         if wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
             && admitted.engines.is_public_pki_read(namespace, method, path)
         {
+            #[cfg(feature = "native-v6-storage")]
+            if native_pki_mounted {
+                // Original public semantics ignore a supplied bearer. No
+                // authentication or finite-use consumption occurs here.
+                return self.dispatch_native_pki_request(
+                    admitted,
+                    None,
+                    &request,
+                    pki_role_fields.as_ref(),
+                );
+            }
             return match admitted
                 .engines
                 .handle_public_pki_read(namespace, method, path, body, now)
@@ -3922,10 +4508,37 @@ impl Service {
         let public_otp_verify = admitted
             .engines
             .is_ssh_verification(namespace, method, path);
+        #[cfg(feature = "native-v6-storage")]
+        let native_cg_ingress = self.native_root.is_some()
+            && (path.starts_with("sys/control-group/")
+                || self.native_cg_unwrap(&admitted, &request));
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_cg_ingress = false;
+        #[cfg(feature = "native-v6-storage")]
+        let native_wrapping_observation = self.native_root.is_some()
+            && !native_cg_ingress
+            && (path.starts_with("sys/wrapping/") || admitted.auth.is_wrapping_token(token));
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_wrapping_observation = false;
+        #[cfg(feature = "native-v6-storage")]
+        if !owner_manifest_migration && native_wrapping_observation {
+            let Some(clock) = request.token_clock else {
+                return Response::error(503, "trusted token clock is required");
+            };
+            if let Err(error) = self.observe_native_wrapping(clock) {
+                return error;
+            }
+            admitted = match self.state.as_ref().cloned() {
+                Some(state) => state,
+                None => return Response::error(503, "native wrapping source unavailable"),
+            };
+        }
         // A request to CREATE a wrapper has not observed an existing wrapper's
         // expiry. Its clock and payload are published together by wrap_response.
         // Access to an existing wrapper still fences time before admission below.
         if !owner_manifest_migration
+            && !native_cg_ingress
+            && !native_wrapping_observation
             && (path.starts_with("sys/wrapping/") || admitted.auth.is_wrapping_token(token))
             && admitted.auth.advance_wrapping_clock(now)
         {
@@ -3935,7 +4548,22 @@ impl Service {
             }
             admitted = self.install_committed_namespace_view(admitted);
         }
-        if !owner_manifest_migration
+        if native_cg_ingress {
+            #[cfg(feature = "native-v6-storage")]
+            {
+                let Some(clock) = request.token_clock else {
+                    return Response::error(503, "trusted token clock is required");
+                };
+                if let Err(error) = self.observe_native_cg(clock) {
+                    return error;
+                }
+                admitted = match self.state.as_ref().cloned() {
+                    Some(state) => state,
+                    None => return Response::error(503, "native CG source unavailable"),
+                };
+            }
+        } else if !owner_manifest_migration
+            && !native_wrapping_observation
             && (path.starts_with("sys/wrapping/")
                 || path.starts_with("sys/control-group/")
                 || admitted.auth.is_control_group_token(token))
@@ -3982,8 +4610,11 @@ impl Service {
         if recovery_keys::legacy_recovery_path(path).is_some() {
             return self.legacy_recovery_route(admitted, method, path, namespace, body, now);
         }
-        let mount_metadata =
-            path == "sys/internal/ui/mounts" || path.starts_with("sys/internal/ui/mounts/");
+        // Both public discovery endpoints validate a supplied bearer without
+        // spending a use. MountMetadata remains barred from data authorization.
+        let mount_metadata = path == "sys/internal/ui/mounts"
+            || path.starts_with("sys/internal/ui/mounts/")
+            || path == "sys/internal/specs/openapi";
         let public_login =
             admitted.auth.is_public_login(namespace, method, path) || path == "sys/mfa/validate";
         let authenticate_bearer = !token.is_empty()
@@ -4021,6 +4652,12 @@ impl Service {
                     .auth
                     .authenticate_from_observed(token, time, origin_peer)
             };
+            #[cfg(all(test, feature = "native-v6-storage"))]
+            crate::auth::actor_lifetime_diagnostic::admission_result(
+                authenticated
+                    .as_ref()
+                    .map_or_else(|error| error.status, |_| 200),
+            );
             match authenticated {
                 Ok(principal) => Some(principal),
                 Err(error) => return Response::error(error.status, &error.message),
@@ -4036,9 +4673,11 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
-        if principal.as_ref().is_some_and(Principal::consumed_use) {
+        if principal.as_ref().is_some_and(Principal::consumed_use)
+            && !(native_cg_ingress && path == "sys/wrapping/unwrap")
+        {
             admitted.schema = admitted.writer_schema();
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             let consumption = if self.native_root.is_some() {
                 match principal.as_ref() {
                     Some(actor) => {
@@ -4052,7 +4691,7 @@ impl Service {
             } else {
                 self.commit_state(&mut admitted)
             };
-            #[cfg(not(feature = "fixture-native-v6-service"))]
+            #[cfg(not(feature = "native-v6-storage"))]
             let consumption = self.commit_state(&mut admitted);
             if let Err(error) = consumption {
                 return error;
@@ -4092,8 +4731,30 @@ impl Service {
         let resources_unloaded = namespace_resource_route
             && admitted.namespaces.inherited_owner(namespace).is_some()
             && !self.namespace_runtime.is_loaded(namespace);
+        // A disabled entity still observes its policies in the ordinary
+        // CheckToken path. This terminal branch can publish only that fixed
+        // retirement and always refuses dispatch; normal Identity binding
+        // below and foreign capability subjects retain their own checks.
+        if let Some(actor) = principal.as_mut()
+            && let Some(response) =
+                self.disabled_identity_policy_response(&mut admitted, actor, &request)
+        {
+            return response;
+        }
         if let Some(principal) = principal.as_mut()
             && let Err(error) = Self::bind_identity_principal(&admitted, principal, namespace)
+        {
+            return error;
+        }
+        // GetPolicy's lazy deletion is an admission effect. Publish the exact
+        // observed batch even if the subsequent resource ACL denies access.
+        // HELP for an unloaded owner has only the terminal metadata response
+        // below, so it does not consult that owner's resource ACL. Keep bearer
+        // validity, Identity, finite-use persistence and carrier checks in
+        // their original order without adding a foreign namespace ACL check.
+        if !(method == "HELP" && resources_unloaded)
+            && let Some(actor) = principal.as_ref()
+            && let Err(error) = self.retire_actor_policies(&mut admitted, actor, &request)
         {
             return error;
         }
@@ -4171,21 +4832,132 @@ impl Service {
         {
             return Response::error(error.status, &error.message);
         }
-        #[cfg(feature = "fixture-native-v6-service")]
-        let native_kv2_mount =
-            self.native_root.is_some() && namespace.is_empty() && path.starts_with("sys/mounts/");
-        #[cfg(feature = "fixture-native-v6-service")]
+        // Foreign inspection has its own checked subject. Its fixed policy
+        // deletion must precede capture of an immutable native source owner.
+        if let Err(error) = self.retire_capabilities_target_policies(
+            &mut admitted,
+            principal.as_ref(),
+            &request,
+            token_fields.as_ref(),
+        ) {
+            return error;
+        }
+        #[cfg(feature = "native-v6-storage")]
+        let native_local_transit = self.native_root.is_some()
+            && namespace.is_empty()
+            && (admitted.engines.native_local_transit_route(namespace, path)
+                || admitted
+                    .engines
+                    .native_transit_registry_route(method, path, request.body));
+        #[cfg(feature = "native-v6-storage")]
+        let native_local_totp = self.native_root.is_some()
+            && namespace.is_empty()
+            && (admitted.engines.native_local_totp_route(namespace, path)
+                || admitted
+                    .engines
+                    .native_totp_registry_route(method, path, request.body));
+        #[cfg(feature = "native-v6-storage")]
+        let native_local_pki = self.native_root.is_some()
+            && namespace.is_empty()
+            && (admitted.engines.native_local_pki_route(namespace, path)
+                || admitted
+                    .engines
+                    .native_pki_registry_route(method, path, request.body)
+                || admitted.engines.native_pki_lease_route(namespace, path));
+        #[cfg(feature = "native-v6-storage")]
+        let native_metadata_read = self.native_root.is_some()
+            && (namespace.is_empty()
+                || native_auth::is_native_openapi_metadata(path)
+                || matches!(
+                    path,
+                    "sys/mounts" | "sys/mounts/" | "sys/auth" | "sys/auth/"
+                ))
+            && native_auth::is_native_metadata_read(method, path);
+        #[cfg(feature = "native-v6-storage")]
+        let native_raft_observation = self.native_root.is_some()
+            && namespace.is_empty()
+            && native_raft_observation::is_read(method, path);
+        #[cfg(feature = "native-v6-storage")]
+        let native_kv1_mount = self.native_root.is_some()
+            && admitted
+                .engines
+                .is_native_kv1_registry_route(namespace, path, request.body);
+        #[cfg(feature = "native-v6-storage")]
+        let native_kv2_mount = self.native_root.is_some()
+            && !native_kv1_mount
+            && path.starts_with("sys/mounts/")
+            && !native_local_transit
+            && !native_local_totp
+            && !native_local_pki
+            && !native_metadata_read;
+        #[cfg(feature = "native-v6-storage")]
+        let native_capabilities = self.native_root.is_some()
+            && namespace.is_empty()
+            && native_auth::is_native_capabilities_route(path);
+        #[cfg(feature = "native-v6-storage")]
+        let native_local_identity =
+            self.native_root.is_some() && native_auth::is_native_identity_route(method, path);
+        #[cfg(feature = "native-v6-storage")]
+        let native_local_wrapping = self.native_root.is_some()
+            && namespace.is_empty()
+            && !native_cg_ingress
+            && crate::auth::NativeWrappingOwner::route(path);
+        #[cfg(feature = "native-v6-storage")]
+        let native_missing_route = self.native_root.is_some()
+            && admitted
+                .engines
+                .native_missing_mount_read(namespace, method, path);
+        #[cfg(feature = "native-v6-storage")]
         let native_local_auth = self.native_root.is_some()
             && admitted
                 .auth
                 .native_v6_local_auth_route(namespace, method, path, request.body);
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
+        let native_remount = self.native_root.is_some()
+            && self.native_remount_handles(&admitted, &request)
+            && (path == "sys/remount" || path.starts_with("sys/remount/status/"));
+        #[cfg(feature = "native-v6-storage")]
         {
+            if matches!(
+                path,
+                native_storage::file_gc::PATH | native_storage::file_gc::RECONCILE_PATH
+            ) {
+                return self.stage_native_file_gc(admitted, principal.take(), &request);
+            }
+            #[cfg(feature = "native-v6-ha")]
+            if matches!(
+                path,
+                native_storage::ha_gc::PATH
+                    | native_storage::ha_gc::RECONCILE_PATH
+                    | native_storage::ha_gc::INTENTS_PATH
+                    | native_storage::ha_gc::INTENTS_RECONCILE_PATH
+                    | native_storage::ha_gc::LOCAL_PATH
+                    | native_storage::ha_gc::LOCAL_RECONCILE_PATH
+                    | native_storage::ha_gc::LOCAL_MARK_PATH
+                    | native_storage::ha_gc::ROOTS_ACTIVATE_PATH
+            ) {
+                return self.stage_native_ha_gc(admitted, principal.take(), &request);
+            }
+            if path == native_storage::ACTIVATE_PATH {
+                return self.activate_configured_native_v6_route(
+                    admitted,
+                    principal.take(),
+                    &request,
+                );
+            }
+            #[cfg(any(test, feature = "fixture-native-v6-service"))]
             if path == "sys/internal/native-v6/activate" {
                 return self.activate_native_v6_route(admitted, principal.take(), &request);
             }
             if self.native_root.is_some() && request.token_clock.is_none() {
                 return Response::error(503, "trusted token clock is required");
+            }
+            if self.native_root.is_some() && namespaces::owns(path) {
+                return self.dispatch_native_empty_namespace_request(
+                    admitted,
+                    principal.take(),
+                    &request,
+                );
             }
             let native_snapshot_route = self.native_snapshot_transport
                 && (self.ha.is_none() || self.native_ha_snapshot_transport_enabled())
@@ -4195,12 +4967,45 @@ impl Service {
                     "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
                 );
             if self.native_root.is_some()
+                && !namespace.is_empty()
+                && !(native_cg_ingress
+                    || native_local_auth
+                    || native_local_identity
+                    || native_kv2_mount
+                    || native_kv1_mount
+                    || native_metadata_read
+                    || native_remount
+                    || native_missing_route
+                    || admitted
+                        .engines
+                        .ordinary_kv_mount_binding(namespace, path)
+                        .is_some())
+            {
+                return Response::error(
+                    501,
+                    "native child namespace route has no closed operation owner",
+                );
+            }
+            if self.native_root.is_some()
+                && !native_cg_ingress
                 && !native_snapshot_route
                 && !native_local_auth
+                && !native_local_wrapping
+                && !native_local_identity
+                && !native_capabilities
+                && !native_missing_route
+                && !native_metadata_read
+                && !native_raft_observation
+                && !native_local_transit
+                && !native_local_totp
+                && !native_local_pki
                 && !native_kv2_mount
+                && !native_kv1_mount
+                && !native_remount
                 && path != "sys/migration/openbao/kv2"
                 && path != crate::engines::kv2_native_large::PATH
                 && path != native_kv2_storage_witness::PATH
+                && path != crate::engines::kv2_lossless_export::PATH
                 && admitted
                     .engines
                     .ordinary_kv_mount_binding(namespace, path)
@@ -4220,22 +5025,32 @@ impl Service {
             {
                 return Response::error(
                     501,
-                    "native candidate supports root ordinary KV and local seal observations",
+                    "native candidate supports root ordinary KV, local Transit, local authentication and seal observations",
                 );
             }
             if self.native_root.is_some()
-                && (!namespace.is_empty()
-                    || namespaces::owns(path)
-                    || path.starts_with("sys/remount")
+                && let Err(error) =
+                    namespaces::native_plain::PlainNamespaceScope::capture(&admitted, namespace)
+            {
+                return error;
+            }
+            if self.native_root.is_some()
+                && (namespaces::owns(path)
+                    || (path.starts_with("sys/remount") && !native_remount)
                     || path.starts_with("sys/restore")
                     || path.starts_with("sys/replication")
                     || path.starts_with("sys/raft")
-                    || (path.starts_with("sys/storage/raft") && !native_snapshot_route)
+                    || (path.starts_with("sys/storage/raft")
+                        && !native_snapshot_route
+                        && !native_raft_observation)
                     || path.starts_with("sys/rekey")
                     || path.starts_with("sys/raw")
                     || path.starts_with("sys/migrate"))
             {
-                return Response::error(501, "native candidate requires root single-node custody");
+                return Response::error(
+                    501,
+                    "native candidate requires an admitted namespace and storage owner",
+                );
             }
         }
         // Ordinary closure removes the actual resource owners. A valid actor
@@ -4261,32 +5076,126 @@ impl Service {
                 return Response::error(cause.status, &cause.message);
             }
         }
-        if let Some(response) = self.control_group_route(
-            &mut admitted,
-            principal.as_ref(),
-            &request,
-            original_transport,
-            resumed_control_group,
-        ) {
+        #[cfg(feature = "native-v6-storage")]
+        if self.native_root.is_some() {
+            let controlled = match principal.as_ref() {
+                Some(actor) => match control_groups::selected_policy(
+                    &admitted,
+                    actor,
+                    &request,
+                    match request.token_time() {
+                        Ok(t) => t,
+                        Err(e) => return e,
+                    },
+                ) {
+                    Ok(policy) => policy.is_some(),
+                    Err(error) => return error,
+                },
+                None => false,
+            };
+            if native_cg_ingress || controlled {
+                return self.dispatch_native_cg(
+                    admitted,
+                    principal.take(),
+                    &request,
+                    original_transport,
+                );
+            }
+        }
+        #[cfg(feature = "native-v6-storage")]
+        let legacy_control_groups = self.native_root.is_none();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let legacy_control_groups = true;
+        if legacy_control_groups
+            && let Some(response) = self.control_group_route(
+                &mut admitted,
+                principal.as_ref(),
+                &request,
+                original_transport,
+                resumed_control_group,
+            )
+        {
             return response;
         }
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
+        if path == crate::engines::kv2_lossless_export::PATH {
+            return self.stage_native_kv2_lossless_export(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
         if path == crate::engines::kv2_native_large::PATH {
             return self.stage_native_kv2_large(admitted, principal.take(), &request);
         }
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         if path == native_kv2_storage_witness::PATH {
             return self.stage_native_kv2_storage_witness(admitted, principal.take(), &request);
         }
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         if self.native_root.is_some() && path == "sys/migration/openbao/kv2" {
             return self.dispatch_native_kv2_import(admitted, principal.take(), &request);
         }
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
+        if native_kv1_mount {
+            return self.dispatch_native_kv1_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
         if native_kv2_mount {
             return self.dispatch_native_kv2_mount_request(admitted, principal.take(), &request);
         }
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
+        if native_local_transit {
+            return self.dispatch_native_transit_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_local_totp {
+            return self.dispatch_native_totp_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_local_pki {
+            return self.dispatch_native_pki_request(
+                admitted,
+                principal.take(),
+                &request,
+                pki_role_fields.as_ref(),
+            );
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_metadata_read {
+            return self.dispatch_native_metadata_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_local_identity {
+            return self.dispatch_native_identity_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_capabilities {
+            return self.dispatch_native_capabilities_request(
+                admitted,
+                principal.take(),
+                &request,
+                token_fields.as_ref(),
+            );
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_missing_route {
+            return self.dispatch_native_missing_route_request(
+                admitted,
+                principal.take(),
+                &request,
+            );
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_raft_observation {
+            return self.dispatch_native_raft_observation_request(
+                admitted,
+                principal.take(),
+                &request,
+            );
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_local_wrapping {
+            return self.dispatch_native_wrapping_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
         if native_local_auth {
             return self.dispatch_native_auth_request(
                 admitted,
@@ -4563,7 +5472,7 @@ impl Service {
             self.state = None;
             self.ha_activation = None;
             self.record_root = None;
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             {
                 self.native_root = None;
             }
@@ -4618,7 +5527,7 @@ impl Service {
         // but never enter the native resource publisher merely to return 403.
         // A real bearer has already followed authentication/finite-use handling;
         // neither this negative response nor missing credentials grant a writer.
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         if self.native_root.is_some()
             && principal.is_none()
             && admitted
@@ -4640,8 +5549,21 @@ impl Service {
         let wrapping_rollback = wrap_ttl_seconds
             .filter(|ttl| *ttl > 0)
             .map(|_| admitted.clone());
+        #[cfg(feature = "native-v6-storage")]
+        let mut wrapping_rollback = wrapping_rollback;
         let mut transaction = admitted;
-        let mut ordinary_kv_authority = if wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+        #[cfg(feature = "native-v6-storage")]
+        let native_kv_output_wrap = self.native_root.is_some()
+            && namespace.is_empty()
+            && wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
+            && transaction
+                .engines
+                .ordinary_kv_mount_binding(namespace, path)
+                .is_some();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_kv_output_wrap = false;
+        let mut ordinary_kv_authority = if (wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+            || native_kv_output_wrap)
             && transaction
                 .engines
                 .ordinary_kv_mount_binding(namespace, path)
@@ -4658,6 +5580,23 @@ impl Service {
                     Err(error) => return error,
                 },
                 None => None,
+            }
+        } else {
+            None
+        };
+        #[cfg(feature = "native-v6-storage")]
+        let mut native_kv_wrapping = if native_kv_output_wrap {
+            let Some(authority) = ordinary_kv_authority.as_mut() else {
+                return Response::error(403, "missing ordinary KV actor");
+            };
+            match native_response_wrapping::NativeWrappedKvDelivery::prepare(
+                self,
+                authority,
+                &transaction,
+                &request,
+            ) {
+                Ok(owner) => Some(owner),
+                Err(error) => return error,
             }
         } else {
             None
@@ -4725,13 +5664,26 @@ impl Service {
                 Response::error(403, "missing client token")
             }
         } else if let Some(authority) = ordinary_kv_authority.as_mut() {
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             if self.native_root.is_some()
                 && transaction
                     .engines
                     .has_paged_native_request(namespace, path)
             {
-                self.dispatch_native_paged_request(&mut transaction, authority, &request)
+                if native_kv_wrapping.is_some() {
+                    // The wrapper receives only an actual dispatched outcome.
+                    // A rejected payload admission is not a domain operation,
+                    // independently of the HTTP error code it returned.
+                    match self.dispatch_native_paged_outcome(&mut transaction, authority, &request)
+                    {
+                        native_paged_dispatch::NativePagedOutcome::Dispatched(response) => response,
+                        native_paged_dispatch::NativePagedOutcome::AdmissionRejected(response) => {
+                            return response;
+                        }
+                    }
+                } else {
+                    self.dispatch_native_paged_request(&mut transaction, authority, &request)
+                }
             } else {
                 Self::dispatch_authorized_subrequest(
                     &mut transaction,
@@ -4749,7 +5701,7 @@ impl Service {
                     &mut approle_secret_consumption,
                 )
             }
-            #[cfg(not(feature = "fixture-native-v6-service"))]
+            #[cfg(not(feature = "native-v6-storage"))]
             Self::dispatch_authorized_subrequest(
                 &mut transaction,
                 Some(authority.principal()),
@@ -4865,14 +5817,43 @@ impl Service {
                 &response.body,
             )
         });
-        if let Some(ttl) = wrap_ttl_seconds.filter(|ttl| *ttl > 0)
+        if native_kv_output_wrap {
+            #[cfg(feature = "native-v6-storage")]
+            {
+                let Some(owner) = native_kv_wrapping.take() else {
+                    return Response::error(503, "native KV output owner missing");
+                };
+                let Some(rollback) = wrapping_rollback.take() else {
+                    return Response::error(503, "native KV output rollback missing");
+                };
+                if approle_secret_consumption.is_some() {
+                    return Response::error(503, "ordinary KV cannot own an AppRole transition");
+                }
+                match self.compose_native_wrapped_kv_output(owner, transaction, rollback, response)
+                {
+                    Ok((candidate, wrapped)) => {
+                        admitted = candidate;
+                        response = wrapped;
+                    }
+                    Err(error) => return error,
+                }
+            }
+            #[cfg(not(feature = "native-v6-storage"))]
+            return Response::error(503, "native KV output composition is unavailable");
+        } else if let Some(ttl) = wrap_ttl_seconds.filter(|ttl| *ttl > 0)
             && (raw_pki_reply.is_some()
                 || ((200..300).contains(&response.status)
                     && response.status != 204
                     && !response.body.is_null()))
             && response.body.get("wrap_info").is_none_or(Value::is_null)
         {
-            let wrapped = if let Some(transport) = &raw_pki_reply {
+            let wrapped = if let Some(projection) = response.unwrapped_json.as_ref()
+                .and_then(|origin| origin.static_kv1_lease())
+            {
+                transaction.auth.wrap_static_kv1_response(
+                    namespace, path, ttl, &response.body, now, projection,
+                )
+            } else if let Some(transport) = &raw_pki_reply {
                 transaction.auth.wrap_pki_raw_response(
                     namespace,
                     path,
@@ -5011,6 +5992,8 @@ impl Service {
         }
         if admitted.auth.has_rate_limit_quota_state()
             || admitted.auth.has_approle_no_default_policy()
+            || admitted.auth.has_security_contract_state()
+            || admitted.auth.has_policy_expiration_state()
             || admitted.engines.has_pki_acme_state()
             || admitted.engines.has_kubernetes_opaque_artifact_state()
             || admitted.has_token_api_precision_state()
@@ -5055,8 +6038,26 @@ impl Service {
         {
             admitted.schema = admitted.writer_schema();
         }
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         if self.native_root.is_some() {
+            #[cfg(test)]
+            if self
+                .pending_ordinary_kv_authority
+                .as_ref()
+                .is_some_and(|authority| authority.native_response_wrapping.is_some())
+            {
+                self.before_response_composition_publication();
+            }
+            #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
+            let phase = crate::request_deadline::current().map(|until| {
+                native_v6_ha_install::NativeHaPhaseTimer::start(
+                    "request_native_plan",
+                    until,
+                    0,
+                    0,
+                    0,
+                )
+            });
             let plan = match self.prepare_native_live_root(&admitted) {
                 Ok(plan) => plan,
                 Err(error) => {
@@ -5064,6 +6065,19 @@ impl Service {
                     return error;
                 }
             };
+            if let Some(owner) = self
+                .pending_ordinary_kv_authority
+                .as_ref()
+                .and_then(|authority| authority.native_response_wrapping.as_ref())
+                && let Err(error) = owner.admit_candidate(&plan.candidate)
+            {
+                erase_json(&mut response.body);
+                return error;
+            }
+            #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
+            if let Some(phase) = phase {
+                phase.finish(true);
+            }
             let identity = match plan.root.identity() {
                 Ok(identity) => identity,
                 Err(_) => return Response::error(503, "native candidate identity rejected"),
@@ -5078,6 +6092,10 @@ impl Service {
                     return error;
                 }
                 self.state = Some(admitted);
+            }
+            if let Err(error) = self.stage_pending_native_wrapped_kv() {
+                erase_json(&mut response.body);
+                return error;
             }
             return response;
         }
@@ -5169,6 +6187,9 @@ impl Service {
         let state = self.state.as_ref()?;
         if request.wrap_ttl_seconds.is_some()
             || state.has_token_api_precision_state()
+            // GetPolicy expiry may publish a lazy retirement even for a read.
+            // Continue through ordinary admission while 143 owners are present.
+            || state.auth.has_policy_expiration_state()
             || state.engines.has_kubernetes_opaque_artifact_state()
             || state
                 .engines
@@ -5240,9 +6261,11 @@ impl Service {
             Ok(authority) => authority,
             Err(error) => return Some(error),
         };
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let mut authority = authority;
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
+        let mut native_completed_read = None;
+        #[cfg(feature = "native-v6-storage")]
         let result = if self.native_root.is_some()
             && state
                 .engines
@@ -5297,7 +6320,7 @@ impl Service {
                         return Some(Response::error(503, "native point source custody rejected"));
                     }
                 };
-            let result = state.engines.read_native_paged(
+            let result = state.engines.read_native_paged_completion(
                 request.namespace,
                 request.method,
                 request.path,
@@ -5314,7 +6337,10 @@ impl Service {
             if let Err(error) = authority.check(state, &state.auth, &nonce) {
                 return Some(error);
             }
-            result
+            result.map(|(response, completed)| {
+                native_completed_read = completed;
+                response
+            })
         } else {
             match time.exact() {
                 Some(at) => state.engines.handle_immutable_kv_read_precise(
@@ -5333,7 +6359,7 @@ impl Service {
                 ),
             }
         };
-        #[cfg(not(feature = "fixture-native-v6-service"))]
+        #[cfg(not(feature = "native-v6-storage"))]
         let result = match time.exact() {
             Some(at) => state.engines.handle_immutable_kv_read_precise(
                 request.namespace,
@@ -5360,16 +6386,23 @@ impl Service {
             },
             Err(error) => Response::error(error.status, &error.message),
         };
-        if let Err(error) = Self::project_kv1_read_lease(
-            state,
-            request.namespace,
-            request.method,
-            request.path,
-            request.body,
-            &mut response.body,
-            response.status,
+        response.unwrapped_json = match Self::project_kv1_read_lease(
+            state, request.namespace, request.method, request.path, request.body,
+            &mut response.body, response.status,
         ) {
-            return Some(error);
+            Ok(origin) => origin,
+            Err(error) => return Some(error),
+        };
+        // The immutable path has already authenticated and authorized its
+        // original Principal, read the actual payload once, and completed its
+        // existing final source/Actor check. Retain only that actual read's
+        // affine observation; this creates no new request or Actor admission.
+        #[cfg(feature = "native-v6-storage")]
+        if request.method == "GET"
+            && request.wrap_ttl_seconds.is_none()
+            && let Some(completed) = native_completed_read
+        {
+            crate::ha_forward_completion::native_data_read_completed(completed, &response);
         }
         self.pending_ordinary_kv_authority = Some(authority);
         Some(response)
@@ -5383,7 +6416,7 @@ impl Service {
         body: &Value,
         response: &mut Value,
         status: u16,
-    ) -> Result<(), Response> {
+    ) -> Result<Option<crate::auth::UnwrappedJson>, Response> {
         if status == 200
             && method == "GET"
             && path.starts_with("sys/mounts/")
@@ -5394,12 +6427,30 @@ impl Service {
                 .auth
                 .secret_lease_defaults()
                 .map_err(|_| Response::error(503, "secret lease defaults unavailable"))?;
-            for (field, inherited) in [
-                ("default_lease_ttl", default_ttl),
-                ("max_lease_ttl", max_ttl),
-            ] {
-                if data.get(field).and_then(Value::as_u64) == Some(0) {
-                    data.insert(field.into(), json!(inherited));
+            if let Some((default_ns, max_ns)) =
+                state.engines.kv_mount_tune_duration_nanos(namespace, path)
+            {
+                for (field, configured, inherited) in [
+                    ("default_lease_ttl", default_ns, default_ttl),
+                    ("max_lease_ttl", max_ns, max_ttl),
+                ] {
+                    data.insert(
+                        field.into(),
+                        if configured == 0 {
+                            json!(inherited)
+                        } else {
+                            json!(configured / 1_000_000_000)
+                        },
+                    );
+                }
+            } else {
+                for (field, inherited) in [
+                    ("default_lease_ttl", default_ttl),
+                    ("max_lease_ttl", max_ttl),
+                ] {
+                    if data.get(field).and_then(Value::as_u64) == Some(0) {
+                        data.insert(field.into(), json!(inherited));
+                    }
                 }
             }
             data.entry("force_no_cache").or_insert(json!(false));
@@ -5413,13 +6464,23 @@ impl Service {
                 .auth
                 .secret_default_lease_ttl()
                 .map_err(|_| Response::error(503, "secret lease defaults unavailable"))?;
-            response["lease_duration"] = json!(ttl);
+            let configured = state
+                .engines
+                .kv1_default_lease_duration_nanos(namespace, path)
+                .ok_or_else(|| Response::error(503, "KV1 lease metadata owner unavailable"))?;
+            response["lease_duration"] = if configured == 0 {
+                json!(ttl)
+            } else {
+                json!(configured / 1_000_000_000)
+            };
             response["renewable"] = json!(false);
             if let Some(warning) = crate::http::ocsp::kv1_read_ignored_parameter_warning(body) {
                 response["warnings"] = warning;
             }
         }
-        Ok(())
+        crate::auth::UnwrappedJson::from_native_kv1_read(
+            &state.engines, namespace, method, path, body, response, status,
+        ).map_err(|error| Response::error(error.status, &error.message))
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -5511,6 +6572,76 @@ impl Service {
         client_certificates: Option<&[Vec<u8>]>,
         origin_peer: Option<std::net::IpAddr>,
         approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
+    ) -> Response {
+        Self::dispatch_authorized_subrequest_inner(
+            state,
+            principal,
+            namespace,
+            method,
+            path,
+            body,
+            token_fields,
+            pki_role_fields,
+            now,
+            token_clock,
+            client_certificates,
+            origin_peer,
+            approle_secret_consumption,
+            false,
+        )
+    }
+
+    #[cfg(feature = "native-v6-storage")]
+    #[allow(clippy::too_many_arguments)]
+    fn dispatch_native_authorized_subrequest(
+        state: &mut State,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        token_fields: Option<&crate::http::token_fields::Carrier<'_>>,
+        pki_role_fields: Option<&crate::http::pki_role_fields::Carrier<'_>>,
+        now: u64,
+        token_clock: Option<RequestClock>,
+        client_certificates: Option<&[Vec<u8>]>,
+        origin_peer: Option<std::net::IpAddr>,
+        approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
+    ) -> Response {
+        Self::dispatch_authorized_subrequest_inner(
+            state,
+            principal,
+            namespace,
+            method,
+            path,
+            body,
+            token_fields,
+            pki_role_fields,
+            now,
+            token_clock,
+            client_certificates,
+            origin_peer,
+            approle_secret_consumption,
+            true,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn dispatch_authorized_subrequest_inner(
+        state: &mut State,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        token_fields: Option<&crate::http::token_fields::Carrier<'_>>,
+        pki_role_fields: Option<&crate::http::pki_role_fields::Carrier<'_>>,
+        now: u64,
+        token_clock: Option<RequestClock>,
+        client_certificates: Option<&[Vec<u8>]>,
+        origin_peer: Option<std::net::IpAddr>,
+        approle_secret_consumption: &mut Option<Box<crate::auth::AppRoleSecretIdConsumption>>,
+        defer_mount_quota_retirement: bool,
     ) -> Response {
         if path == "sys/internal/ui/mounts" || path.starts_with("sys/internal/ui/mounts/") {
             return Self::ui_mounts_route(state, principal, namespace, method, path, now);
@@ -5674,17 +6805,42 @@ impl Service {
             );
         }
         let mut auth = state.auth.clone();
-        match auth.handle_with_connection_clock(
-            principal,
-            namespace,
-            method,
-            path,
-            auth_body,
-            time,
-            token_clock,
-            client_certificates,
-            origin_peer,
-        ) {
+        // Coarse backend grants use the same observed, durable-floor-bound
+        // second inside handle_with_connection_clock. Retain that issuance
+        // observation for Identity/batch finalization; ingress `now` may be an
+        // earlier second after the original HA proof. Completion below still
+        // checks the continuing original clock without extending the grant.
+        let auth_dispatch_seconds = auth.token_api_observed_time(time).seconds();
+        let auth_result = if path == "sys/quotas/config"
+            || path == "sys/quotas/rate-limit"
+            || path.starts_with("sys/quotas/rate-limit/")
+        {
+            let target = state.rate_limit_quota_target(namespace, auth_body);
+            auth.rate_limit_quota_catalog_route(
+                principal,
+                namespace,
+                method,
+                path,
+                auth_body,
+                auth_dispatch_seconds,
+                target,
+            )
+            .map(Some)
+        } else {
+            auth.handle_with_connection_clock_for_cluster(
+                principal,
+                namespace,
+                method,
+                path,
+                auth_body,
+                time,
+                token_clock,
+                client_certificates,
+                origin_peer,
+                Some(&state.cluster_id),
+            )
+        };
+        match auth_result {
             Ok(Some(mut response)) => {
                 *approle_secret_consumption = response.approle_secret_consumption.take();
                 // Native Core refreshes the existing alias before rejecting a
@@ -5757,13 +6913,25 @@ impl Service {
                             &state.namespace_leases,
                             &response,
                         )?;
+                        // This is the actual successful Auth backend response,
+                        // after its route, method, ACL and target admission.
+                        if Self::finish_missing_token_lookup_identity(
+                            &auth,
+                            &engines,
+                            &mut response,
+                            namespace,
+                            method,
+                            path,
+                        )? {
+                            return Ok(());
+                        }
                         Self::finish_identity_response_observed(
                             &mut auth,
                             &mut engines,
                             &mut response,
                             &namespaces,
                             namespace,
-                            now,
+                            auth_dispatch_seconds,
                             completion,
                         )
                     })()
@@ -5894,6 +7062,22 @@ impl Service {
         if at.seconds() < now {
             return Response::error(503, "KV2 accepted request clock precedes its floor");
         }
+        // Legacy publication retires quota metadata alongside the actual
+        // successful mount removal. Native owners defer this exact removal
+        // until their real Engine candidate has been admitted; they then pair
+        // it with the affine Auth proof before publishing the same root.
+        let quota_mount_to_retire = if !defer_mount_quota_retirement && method == "DELETE" {
+            path.strip_prefix("sys/mounts/")
+                .map(|mount| format!("{}/", mount.trim_end_matches('/')))
+                .filter(|mount| {
+                    state
+                        .engines
+                        .ui_secret_mounts(namespace)
+                        .contains_key(mount)
+                })
+        } else {
+            None
+        };
         let engine_result =
             match engines.handle_identity_api(&identity_scope, method, path, engine_body, now) {
                 Ok(Some(response)) => Ok(Some(response)),
@@ -5918,22 +7102,22 @@ impl Service {
                     path,
                     &mut response.body,
                 );
-                if let Err(error) = Self::project_kv1_read_lease(
-                    state,
-                    namespace,
-                    method,
-                    path,
-                    body,
-                    &mut response.body,
-                    response.status,
+                let static_kv1_origin = match Self::project_kv1_read_lease(
+                    state, namespace, method, path, body, &mut response.body, response.status,
                 ) {
-                    return error;
-                }
+                    Ok(origin) => origin,
+                    Err(error) => return error,
+                };
                 if response.mutated {
+                    if let Some(mount) = quota_mount_to_retire
+                        && !engines.ui_secret_mounts(namespace).contains_key(&mount)
+                    {
+                        state.auth.prune_rate_limit_quotas_mount(namespace, &mount);
+                    }
                     state.engines = engines;
                 }
                 Response {
-                    unwrapped_json: None,
+                    unwrapped_json: static_kv1_origin,
                     response_headers: Default::default(),
                     consistency_index: None,
                     status: response.status,
@@ -6170,7 +7354,7 @@ impl Service {
     }
 
     fn commit_state(&mut self, state: &mut State) -> Result<(), Response> {
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         if self.native_root.is_some() {
             let plan = self.prepare_native_live_root(state)?;
             return self.commit_ordinary_native_kv_plan(state, plan);
@@ -6229,7 +7413,7 @@ impl Service {
         next_digest: [u8; 32],
         allow_legacy_migration: bool,
     ) -> Result<(), Response> {
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         if self.native_root.is_some() {
             if allow_legacy_migration {
                 return Err(Response::error(
@@ -6375,11 +7559,33 @@ impl Service {
         body: &Value,
         now: u64,
         response_fingerprint: &str,
+        import: impl FnMut(
+            &PgStorageConfig,
+            &BackendBundle,
+        ) -> Result<Box<dyn DurableBackend>, BackendError>,
+        wrapper: Option<openbao_wrapper::barrier::PreparedMaterial>,
+    ) -> (Response, bool) {
+        self.initialize_with_wrapper_material_and_auth_factory(
+            body,
+            now,
+            response_fingerprint,
+            import,
+            wrapper,
+            InitialAuthFactory::Current,
+        )
+    }
+
+    fn initialize_with_wrapper_material_and_auth_factory(
+        &mut self,
+        body: &Value,
+        now: u64,
+        response_fingerprint: &str,
         mut import: impl FnMut(
             &PgStorageConfig,
             &BackendBundle,
         ) -> Result<Box<dyn DurableBackend>, BackendError>,
         wrapper: Option<openbao_wrapper::barrier::PreparedMaterial>,
+        auth_factory: InitialAuthFactory,
     ) -> (Response, bool) {
         let wrapper_deadline = wrapper.as_ref().and_then(|material| material.deadline);
         let wrapper_mode =
@@ -6651,7 +7857,14 @@ impl Service {
                 );
             }
         };
-        let (mut auth, root_token) = match AuthState::bootstrap(now) {
+        let initial_auth = match auth_factory {
+            InitialAuthFactory::Current => {
+                AuthState::bootstrap_current_root_with_default_policy(AuthorityTime::Coarse(now))
+            }
+            #[cfg(test)]
+            InitialAuthFactory::Pre141Fixture => AuthState::bootstrap(now),
+        };
+        let (mut auth, root_token) = match initial_auth {
             Ok((auth, token)) => (auth, Zeroizing::new(token)),
             Err(error) => return (Response::error(error.status, &error.message), false),
         };
@@ -6997,7 +8210,7 @@ impl Service {
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         {
             self.native_root = None;
         }
@@ -7188,7 +8401,7 @@ impl Service {
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         {
             self.native_root = None;
         }
@@ -7386,7 +8599,22 @@ impl Service {
         }
     }
 
+    #[cfg(test)]
     fn unseal(&mut self, body: &Value) -> Response {
+        self.unseal_with_cold_handoff(
+            body,
+            #[cfg(feature = "native-v6-storage")]
+            None,
+        )
+    }
+
+    fn unseal_with_cold_handoff(
+        &mut self,
+        body: &Value,
+        #[cfg(feature = "native-v6-storage")] mut cold_handoff: Option<
+            &mut Option<native_v6_reader::ColdUnsealHandoff>,
+        >,
+    ) -> Response {
         if self.seal.as_ref().is_some_and(|seal| seal.is_wrapper()) {
             return Response::error(
                 501,
@@ -7478,7 +8706,7 @@ impl Service {
                     self.state = None;
                     self.ha_activation = None;
                     self.record_root = None;
-                    #[cfg(feature = "fixture-native-v6-service")]
+                    #[cfg(feature = "native-v6-storage")]
                     {
                         self.native_root = None;
                     }
@@ -7497,7 +8725,7 @@ impl Service {
                 self.state = None;
                 self.ha_activation = None;
                 self.record_root = None;
-                #[cfg(feature = "fixture-native-v6-service")]
+                #[cfg(feature = "native-v6-storage")]
                 {
                     self.native_root = None;
                 }
@@ -7536,20 +8764,36 @@ impl Service {
                     return Response::error(400, "unseal failed");
                 }
             };
-        if let Err(error) = self.activate_barrier(&barrier_key) {
+        if let Err(error) = self.activate_barrier_with_cold_handoff(
+            &barrier_key,
+            crate::request_deadline::current(),
+            #[cfg(feature = "native-v6-storage")]
+            cold_handoff.as_deref_mut(),
+        ) {
             self.unseal_shares.clear();
             let _ = self.rotate_unseal_nonce();
             return error;
         }
         self.unseal_shares.clear();
-        if self.rotate_unseal_nonce().is_err() {
+        #[cfg(feature = "native-v6-storage")]
+        let rotation = match cold_handoff.and_then(Option::as_mut) {
+            Some(handoff) => handoff.rotate_once(self),
+            None => self
+                .rotate_unseal_nonce()
+                .map_err(|_| Response::error(503, "operating system randomness unavailable")),
+        };
+        #[cfg(not(feature = "native-v6-storage"))]
+        let rotation = self
+            .rotate_unseal_nonce()
+            .map_err(|_| Response::error(503, "operating system randomness unavailable"));
+        if let Err(error) = rotation {
             self.namespace_runtime.clear();
             #[cfg(any(target_os = "linux", target_os = "macos"))]
             self.retire_sdk_hosts();
             self.state = None;
             self.ha_activation = None;
             self.record_root = None;
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             {
                 self.native_root = None;
             }
@@ -7557,7 +8801,7 @@ impl Service {
             self.ha_read_cache = None;
             self.durable = None;
             self.barrier_key = None;
-            return Response::error(503, "operating system randomness unavailable");
+            return error;
         }
         self.seal_status()
     }
@@ -7572,10 +8816,29 @@ impl Service {
         key: &[u8; 32],
         deadline: Option<std::time::Instant>,
     ) -> Result<recovery_keys::AdmittedRecoverySeal, Response> {
+        self.activate_barrier_with_cold_handoff(
+            key,
+            deadline,
+            #[cfg(feature = "native-v6-storage")]
+            None,
+        )
+    }
+
+    fn activate_barrier_with_cold_handoff(
+        &mut self,
+        key: &[u8; 32],
+        deadline: Option<std::time::Instant>,
+        #[cfg(feature = "native-v6-storage")] cold_handoff: Option<
+            &mut Option<native_v6_reader::ColdUnsealHandoff>,
+        >,
+    ) -> Result<recovery_keys::AdmittedRecoverySeal, Response> {
+        #[cfg(feature = "native-v6-storage")]
+        let mut cold_proof = None;
         if deadline.is_some_and(|deadline| std::time::Instant::now() >= deadline) {
             return Err(Response::error(503, "barrier admission deadline expired"));
         }
         let wrapper_activation = self.begin_openbao_wrapper_activation();
+        self.policy_default_activation = None;
         self.rate_limit_quotas.begin_barrier_activation();
         self.durable = None;
         self.namespace_runtime.clear();
@@ -7584,7 +8847,7 @@ impl Service {
         self.state = None;
         self.ha_activation = None;
         self.record_root = None;
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         {
             self.native_root = None;
         }
@@ -7627,17 +8890,26 @@ impl Service {
             None => DurableService::reopen(&self.data_dir, barrier, MAX_OPERATIONS)
                 .map_err(|_| Response::error(400, "unseal or recovery failed"))?,
         };
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let cold_native = if let Some(profile) = self.native_candidate_profile.as_ref() {
             let original = crate::v6_native_custody::OriginalDeadline::capture()
                 .map_err(|_| Response::error(503, "native unseal requires original deadline"))?;
-            native_v6_reader::load_cold_root(self, profile, &mut durable, key, original)?
-                .map(|cold| (cold.metadata, cold.native, cold.root))
+            native_v6_reader::load_cold_root(self, profile, &mut durable, key, original)?.map(
+                |cold| {
+                    if cold_handoff.is_some() {
+                        cold_proof = Some(cold.proof);
+                    }
+                    (cold.metadata, cold.native, cold.root)
+                },
+            )
         } else {
             None
         };
-        #[cfg(feature = "experimental-native-v6-ha")]
-        let cold_native = if self.ha.is_some() {
+        #[cfg(feature = "native-v6-ha")]
+        let cold_native = if self.ha.as_ref().is_some_and(|ha| {
+            ha.lock_for_request()
+                .is_ok_and(|process| process.native_v6_enabled())
+        }) {
             let original = crate::v6_native_custody::OriginalDeadline::capture()
                 .map_err(|_| Response::error(503, "native HA unseal requires original deadline"))?;
             native_v6_ha_install::load_cold_native_ha(self, &mut durable, key, original)?
@@ -7645,7 +8917,7 @@ impl Service {
         } else {
             cold_native
         };
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let (state, bytes, state_rewrite_required, record_root, native_root) =
             if let Some((mut metadata, native, root)) = cold_native {
                 metadata
@@ -7672,12 +8944,13 @@ impl Service {
                     .map_err(|_| Response::error(503, "native cold identity rejected"))?;
                 (metadata, bytes, false, None, Some(root))
             } else {
+                native_storage::reject_unconfigured_native_root(&durable)?;
                 let (state, bytes, rewrite) = Self::load_state_from_durable(&durable)?;
                 let root = records::decode_root(&bytes)?;
                 self.validate_loaded_capacity(&state, root.as_ref())?;
                 (state, bytes, rewrite, root, None)
             };
-        #[cfg(not(feature = "fixture-native-v6-service"))]
+        #[cfg(not(feature = "native-v6-storage"))]
         let (state, bytes, state_rewrite_required, record_root) = {
             let (state, bytes, rewrite) = Self::load_state_from_durable(&durable)?;
             let root = records::decode_root(&bytes)?;
@@ -7786,12 +9059,12 @@ impl Service {
         self.durable = Some(durable);
         self.state = Some(state);
         self.record_root = record_root;
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         {
             self.native_root = native_root;
         }
         self.state_digest = Some(
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             if let Some(root) = &self.native_root {
                 root.identity()
                     .map_err(|_| Response::error(503, "native identity rejected"))?
@@ -7805,7 +9078,7 @@ impl Service {
                     None => crypto::digest(&bytes),
                 }
             },
-            #[cfg(not(feature = "fixture-native-v6-service"))]
+            #[cfg(not(feature = "native-v6-storage"))]
             match &self.record_root {
                 Some(root) => root
                     .identity()
@@ -7853,6 +9126,24 @@ impl Service {
                 503,
                 "Wrapper lifecycle publication unavailable",
             ));
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if let (Some(output), Some(proof)) = (cold_handoff, cold_proof) {
+            // Fixed eligibility precedes policy startup. HA, historical absence,
+            // any time-dependent default and every admitted seal repair use the
+            // unchanged full capture route. A selected authority failure is Err.
+            if self.ha.is_none()
+                && self.state.as_ref().is_some_and(|state| {
+                    state.auth.cold_unseal_has_stable_default()
+                        && !state.auth.default_policy_activation_needs_clock()
+                })
+                && admitted_seal.0.as_ref()
+                    == Some(native_v6_reader::ColdUnsealHandoff::original_seal(&proof))
+            {
+                *output = Some(native_v6_reader::ColdUnsealHandoff::prepare(
+                    self, key, proof,
+                )?);
+            }
         }
         Ok(admitted_seal)
     }
@@ -7919,9 +9210,27 @@ impl Service {
         Err(Response::error(503, "HA linearizable state is unavailable"))
     }
 
+    #[cfg(feature = "native-v6-storage")]
+    fn advance_unseal_nonce_attempt(attempt: &mut u64) {
+        // Infallible even on a post-commit install. MAX poisons every capsule;
+        // it never wraps into an earlier accepted lifecycle observation.
+        *attempt = attempt.saturating_add(1);
+    }
+
     fn rotate_unseal_nonce(&mut self) -> Result<(), &'static str> {
+        self.rotate_unseal_nonce_with(crypto::random::<16>)
+    }
+
+    fn rotate_unseal_nonce_with(
+        &mut self,
+        random: impl FnOnce() -> Result<[u8; 16], &'static str>,
+    ) -> Result<(), &'static str> {
+        #[cfg(feature = "native-v6-storage")]
+        {
+            Self::advance_unseal_nonce_attempt(&mut self.unseal_nonce_attempt);
+        }
         self.ha_read_cache = None;
-        self.unseal_nonce = hex(&crypto::random::<16>()?);
+        self.unseal_nonce = hex(&random()?);
         Ok(())
     }
 
@@ -8360,9 +9669,9 @@ impl Service {
             Ok(value) => value,
             Err(_) => return Response::error(503, "durable capacity unavailable"),
         };
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let native = self.native_root.as_ref();
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let storage_format = if native.is_some() {
             crate::state_record_root_v6::STORAGE_FORMAT
         } else if self.record_root.is_some() {
@@ -8370,13 +9679,13 @@ impl Service {
         } else {
             owner_store::STATE_STORAGE_FORMAT
         };
-        #[cfg(not(feature = "fixture-native-v6-service"))]
+        #[cfg(not(feature = "native-v6-storage"))]
         let storage_format = if self.record_root.is_some() {
             crate::state_record_root::STORAGE_FORMAT
         } else {
             owner_store::STATE_STORAGE_FORMAT
         };
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let state_limit = if native.is_some() {
             MAX_STATE_BYTES
                 + 2 * crate::state_records::MAX_GRAPH_BYTES
@@ -8390,13 +9699,13 @@ impl Service {
         } else {
             MAX_STATE_BYTES
         };
-        #[cfg(not(feature = "fixture-native-v6-service"))]
+        #[cfg(not(feature = "native-v6-storage"))]
         let state_limit = if self.record_root.is_some() {
             MAX_STATE_BYTES + crate::state_records::MAX_GRAPH_BYTES
         } else {
             MAX_STATE_BYTES
         };
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let logical_payload_bytes = if let Some(root) = native {
             let owner = root
                 .owners
@@ -8424,7 +9733,7 @@ impl Service {
         } else {
             capacity.logical_payload_bytes as u64
         };
-        #[cfg(not(feature = "fixture-native-v6-service"))]
+        #[cfg(not(feature = "native-v6-storage"))]
         let logical_payload_bytes = capacity.logical_payload_bytes as u64;
         let response = Response::ok(json!({"data": {
             "scope": "local_node_bounded_runtime",
@@ -8447,7 +9756,7 @@ impl Service {
             "retired_through_generation": durable.retired_through_generation(),
             "replay_retirement": if self.ha.is_some() { "raft-coordinated" } else { "local-epoch" }
         }}));
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let response = if let Some(root) = native {
             // All components belong to this exact local root/generation.
             // Audited HTTP requests can advance the private Auth clock between
@@ -9053,6 +10362,47 @@ impl Service {
         }
     }
 
+    // Only the two ordinary ingress synchronization sites use this boundary.
+    // Health, resume, publication, final proof and terminal-clock sync keep the
+    // original path and cannot mint a pre-admission refusal.
+    fn sync_from_ha_before_request_admission(
+        &mut self,
+        allow_initial_anchor: bool,
+        fresh_request: bool,
+    ) -> Result<(), Response> {
+        #[cfg(feature = "native-v6-ha")]
+        self.arm_native_pre_admission_read(fresh_request);
+        #[cfg(not(feature = "native-v6-ha"))]
+        let _ = fresh_request;
+        let result = (|| {
+            #[cfg(feature = "native-v6-ha")]
+            let ingress = if fresh_request {
+                match self.take_native_fresh_ingress_binding() {
+                    Some(binding) => {
+                        let ha = self.ha.as_ref().cloned().ok_or_else(|| {
+                            Response::error(503, "fresh native ingress HA owner absent")
+                        })?;
+                        Some(native_v6_ha_install::NativeIngressSelectionPermit::capture(
+                            self, binding, &ha,
+                        )?)
+                    }
+                    None => None,
+                }
+            } else {
+                None
+            };
+            self.sync_from_ha_with_anchor_progress_in_ingress(
+                allow_initial_anchor,
+                #[cfg(feature = "native-v6-ha")]
+                ingress,
+            )?
+            .into_result()
+        })();
+        #[cfg(feature = "native-v6-ha")]
+        self.disarm_native_pre_admission_read();
+        result
+    }
+
     fn sync_from_ha(&mut self) -> Result<(), Response> {
         self.sync_from_ha_with_anchor(true)
     }
@@ -9066,8 +10416,26 @@ impl Service {
         &mut self,
         allow_initial_anchor: bool,
     ) -> Result<ha_received::HaSyncProgress, Response> {
+        self.sync_from_ha_with_anchor_progress_in_ingress(
+            allow_initial_anchor,
+            #[cfg(feature = "native-v6-ha")]
+            None,
+        )
+    }
+
+    fn sync_from_ha_with_anchor_progress_in_ingress(
+        &mut self,
+        allow_initial_anchor: bool,
+        #[cfg(feature = "native-v6-ha")] ingress: Option<
+            native_v6_ha_install::NativeIngressSelectionPermit,
+        >,
+    ) -> Result<ha_received::HaSyncProgress, Response> {
         let before = self.local_activation_key();
-        let result = self.sync_from_ha_with_anchor_inner(allow_initial_anchor);
+        let result = self.sync_from_ha_with_anchor_inner(
+            allow_initial_anchor,
+            #[cfg(feature = "native-v6-ha")]
+            ingress,
+        );
         if let Err(error) = &result {
             eprintln!(
                 "heptabao-r72-sync: stage=sync_inner_error status={} loaded={} recovery={} record_root={}",
@@ -9090,11 +10458,14 @@ impl Service {
     fn sync_from_ha_with_anchor_inner(
         &mut self,
         allow_initial_anchor: bool,
+        #[cfg(feature = "native-v6-ha")] mut ingress: Option<
+            native_v6_ha_install::NativeIngressSelectionPermit,
+        >,
     ) -> Result<ha_received::HaSyncProgress, Response> {
         let Some(ha) = self.ha.as_ref().cloned() else {
             return Ok(ha_received::HaSyncProgress::Current);
         };
-        #[cfg(feature = "experimental-native-v6-ha")]
+        #[cfg(feature = "native-v6-ha")]
         {
             let selected = {
                 let process = ha
@@ -9105,15 +10476,26 @@ impl Service {
                         crate::v6_native_custody::OriginalDeadline::capture().map_err(|_| {
                             Response::error(503, "native HA read requires original deadline")
                         })?;
-                    let observed = if self.native_root.is_some() {
-                        process.native_v6_committed_read_for_local_root(
+                    let observed = if let Some(permission) = ingress.as_ref() {
+                        process.native_v6_committed_fresh_ingress_read(
                             deadline,
                             self.current_state_identity()?.digest(),
+                            permission,
                         )
+                    } else if self.native_root.is_some() {
+                        process
+                            .native_v6_committed_read_for_local_root(
+                                deadline,
+                                self.current_state_identity()?.digest(),
+                            )
+                            .map(|value| value.map(crate::ha::NativeV6IngressRead::Ready))
                     } else {
-                        process.native_v6_committed_read(deadline)
+                        process
+                            .native_v6_committed_read(deadline)
+                            .map(|value| value.map(crate::ha::NativeV6IngressRead::Ready))
                     };
                     observed.map_err(|_| {
+                        self.record_native_pre_admission_read_refusal();
                         Response::error(503, "native HA committed root is unavailable")
                     })?
                 } else {
@@ -9121,6 +10503,23 @@ impl Service {
                 }
             };
             if let Some(selected) = selected {
+                let selected = match selected {
+                    crate::ha::NativeV6IngressRead::Ready(read) => {
+                        if let Some(permission) = ingress.as_ref() {
+                            permission.check(self)?;
+                        }
+                        read
+                    }
+                    crate::ha::NativeV6IngressRead::Superseded(source) => ingress
+                        .take()
+                        .ok_or_else(|| {
+                            Response::error(503, "fresh native ingress permission absent")
+                        })?
+                        .finish(self, &ha, source)?,
+                };
+                // No ingress permission survives into installation, Actor
+                // admission, a writer, audit, terminal delivery or migration.
+                drop(ingress);
                 return self.sync_native_v6_from_ha(&ha, selected);
             }
             if self.native_root.is_some() {
@@ -10363,7 +11762,20 @@ fn collect_seal_key(
     crypto::combine_shares(&selected).map(Some)
 }
 
+fn decode_seal_metadata(encoded: &[u8]) -> Result<SealMetadata, &'static str> {
+    let metadata: SealMetadata =
+        serde_json::from_slice(encoded).map_err(|_| "invalid seal metadata")?;
+    metadata.validate()?;
+    Ok(metadata)
+}
+
 fn load_seal_metadata(data_dir: &Path) -> Result<Option<SealMetadata>, &'static str> {
+    read_seal_metadata_bytes(data_dir)?
+        .map(|encoded| decode_seal_metadata(&encoded))
+        .transpose()
+}
+
+fn read_seal_metadata_bytes(data_dir: &Path) -> Result<Option<Zeroizing<Vec<u8>>>, &'static str> {
     let path = data_dir.join(SEAL_METADATA_FILE);
     let mut options = OpenOptions::new();
     options.read(true);
@@ -10393,10 +11805,7 @@ fn load_seal_metadata(data_dir: &Path) -> Result<Option<SealMetadata>, &'static 
     if encoded.len() as u64 > SEAL_METADATA_LIMIT {
         return Err("seal metadata exceeds the supported bound");
     }
-    let metadata: SealMetadata =
-        serde_json::from_slice(&encoded).map_err(|_| "invalid seal metadata")?;
-    metadata.validate()?;
-    Ok(Some(metadata))
+    Ok(Some(encoded))
 }
 
 fn load_durable_profile(data_dir: &Path) -> Result<Option<DurableProfile>, &'static str> {
@@ -11075,6 +12484,10 @@ mod approle_batch_tests;
 mod approle_cidrs_tests;
 
 #[cfg(test)]
+#[path = "service_approle_local_tests.rs"]
+mod approle_local_tests;
+
+#[cfg(test)]
 #[path = "service_cert_batch_tests.rs"]
 mod cert_batch_tests;
 
@@ -11182,6 +12595,6 @@ mod transit_cache_tests;
 #[path = "service_transit_derivation_tests.rs"]
 mod transit_derivation_tests;
 
-#[cfg(all(test, feature = "experimental-native-v6-ha"))]
+#[cfg(all(test, feature = "native-v6-ha"))]
 #[path = "service_native_v6_ha_pipeline_tests.rs"]
 mod native_v6_ha_pipeline_tests;

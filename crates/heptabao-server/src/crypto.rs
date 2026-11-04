@@ -69,10 +69,21 @@ impl Barrier for AeadBarrier {
                 aead::Aad::from(context),
                 &mut data,
             )
-            .map(|plain| plain.to_vec())
+            .map(|plain| plain.len())
             .map_err(|_| BarrierError);
-        data.zeroize();
-        result
+        match result {
+            Ok(plaintext_len) => {
+                // ring returns authenticated plaintext in this buffer's prefix.
+                // Erase the tag before transferring the sole plaintext owner.
+                data[plaintext_len..].zeroize();
+                data.truncate(plaintext_len);
+                Ok(data)
+            }
+            Err(error) => {
+                data.zeroize();
+                Err(error)
+            }
+        }
     }
 }
 

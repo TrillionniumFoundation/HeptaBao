@@ -357,38 +357,38 @@ fn native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs() -> Test
         deadline: graph_deadline,
         actor: &mut original_actor,
     });
-    let source = CipherSource {
-        codec: &codec,
-        store: &target,
-        closure: received.cipher_closure(),
-        gate: &original_gate,
-    };
-    let (mount, view) = received
-        .native
-        .iter()
-        .find(|(mount, _)| mount.mount == "secret/")
-        .ok_or("KV2 history")?;
-    assert_eq!(view.counts(), (1, 17, 17));
-    let graph_reader = DomainReader {
-        source: &source,
-        domain: ObjectDomain::Kv2(mount.clone()),
-    };
-    for version in [1, 9, 17] {
-        let response = view.read_with_source(
-            "GET",
-            "data/cipher-history",
-            &json!({"version":version}),
-            crate::auth::Timestamp::whole(200)?,
-            &graph_reader,
-        )?;
-        assert_eq!(response.status, 200);
-        assert_eq!(
-            response.body["data"]["data"]["blob"].as_str(),
-            Some(unique_payload(version).as_str())
-        );
+    {
+        let source = CipherSource {
+            codec: &codec,
+            store: &target,
+            closure: received.cipher_closure(),
+            gate: &original_gate,
+        };
+        let (mount, view) = received
+            .native
+            .iter()
+            .find(|(mount, _)| mount.mount == "secret/")
+            .ok_or("KV2 history")?;
+        assert_eq!(view.counts(), (1, 17, 17));
+        let graph_reader = DomainReader {
+            source: &source,
+            domain: ObjectDomain::Kv2(mount.clone()),
+        };
+        for version in [1, 9, 17] {
+            let response = view.read_with_source(
+                "GET",
+                "data/cipher-history",
+                &json!({"version":version}),
+                crate::auth::Timestamp::whole(200)?,
+                &graph_reader,
+            )?;
+            assert_eq!(response.status, 200);
+            assert_eq!(
+                response.body["data"]["data"]["blob"].as_str(),
+                Some(unique_payload(version).as_str())
+            );
+        }
     }
-    drop(graph_reader);
-    drop(source);
     drop(received);
     drop(graph_scope);
 
@@ -561,3 +561,6 @@ fn native_ha_archive_real_34mib_dual_pack_roundtrip_and_hostile_inputs() -> Test
     );
     Ok(())
 }
+
+#[path = "ha_native_v6_backup_cold_tests.rs"]
+mod cold_dr_tests;

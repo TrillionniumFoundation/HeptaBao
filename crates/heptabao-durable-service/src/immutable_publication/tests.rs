@@ -1,5 +1,8 @@
 use super::*;
 use crate::tests::{TestBarrier, TestRoot, serial_test};
+
+#[path = "separate_root_tests.rs"]
+mod separate_root_tests;
 fn request<'a>(
     epoch: u64,
     op: &'a str,

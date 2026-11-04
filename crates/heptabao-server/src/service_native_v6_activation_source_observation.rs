@@ -21,7 +21,9 @@ pub(crate) fn arm() -> Result<ObservationGuard, &'static str> {
             return Err("activation source observation already armed");
         }
         *slot = Some(None);
-        Ok(ObservationGuard { _same_thread: PhantomData })
+        Ok(ObservationGuard {
+            _same_thread: PhantomData,
+        })
     })
 }
 pub(super) fn record(service: &Service) {
@@ -30,24 +32,33 @@ pub(super) fn record(service: &Service) {
         let Some(observed) = slot.as_mut() else {
             return;
         };
-        assert!(observed.is_none(), "one activation observation cannot record two requests");
-        let identity = match service.current_state_identity() {
-            Ok(identity) => identity,
-            Err(_) => panic!("actual admitted activation source is unavailable"),
-        };
-        assert!(matches!(identity, StateIdentity::RecordsV5(_)));
-        assert!(service.native_root.is_none());
-        *observed = Some(identity);
+        assert!(
+            observed.is_none(),
+            "one activation observation cannot record two requests"
+        );
+        let identity = service.current_state_identity();
+        assert!(
+            identity.is_ok(),
+            "actual admitted activation source is unavailable"
+        );
+        if let Ok(identity) = identity {
+            assert!(matches!(identity, StateIdentity::RecordsV5(_)));
+            assert!(service.native_root.is_none());
+            *observed = Some(identity);
+        }
     });
 }
 impl ObservationGuard {
     pub(crate) fn take(self) -> Result<StateIdentity, &'static str> {
-        OBSERVED.with(|slot| slot.borrow_mut().take().flatten())
+        OBSERVED
+            .with(|slot| slot.borrow_mut().take().flatten())
             .ok_or("actual activation boundary was not observed")
     }
 }
 impl Drop for ObservationGuard {
     fn drop(&mut self) {
-        OBSERVED.with(|slot| { slot.borrow_mut().take(); });
+        OBSERVED.with(|slot| {
+            slot.borrow_mut().take();
+        });
     }
 }

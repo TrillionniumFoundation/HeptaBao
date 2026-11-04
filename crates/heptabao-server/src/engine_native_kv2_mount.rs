@@ -1,4 +1,4 @@
-//! One root KV2 registry operation, independently bound to its real engine owner.
+//! One namespace-bound KV2 registry operation, independently bound to its real engine owner.
 //! This is a change constraint, never authentication or publication authority.
 use super::*;
 use crate::state_record_root_v6::{MountScope, OwnerDomain, RecordStateRootV6};
@@ -14,6 +14,7 @@ enum Change {
 }
 
 pub(crate) struct NativeKv2MountOwner {
+    namespace: String,
     mount: String,
     change: Change,
     source: EngineState,
@@ -84,8 +85,9 @@ fn metadata_digest(state: &EngineState, live: &impl Fn() -> bool) -> Result<[u8;
 impl EngineState {
     // Called only after the real actor's operation ACL and sudo check. Looking
     // up a mount here does not disclose its presence to an unauthorized caller.
-    pub(crate) fn capture_native_kv2_mount_owner(
+    pub(crate) fn capture_native_scoped_kv2_mount_owner(
         &self,
+        namespace: &str,
         method: &str,
         path: &str,
         body: &Value,
@@ -97,7 +99,7 @@ impl EngineState {
             .map_or((requested, false), |mount| (mount, true));
         let requested = canonical_secret_mount(requested)?;
         let mount = format!("{requested}/");
-        let owner = self.namespaces.get("").ok_or_else(denied)?;
+        let owner = self.namespaces.get(namespace).ok_or_else(denied)?;
         let prior = owner.mounts.get(&mount);
         if prior.is_some_and(
             |prior| !matches!(&prior.backend, Backend::Kv2Native(view) if view.is_paged()),
@@ -128,6 +130,7 @@ impl EngineState {
             _ => return Err(unsupported()),
         };
         Ok(NativeKv2MountOwner {
+            namespace: namespace.to_owned(),
             mount,
             change,
             source: self.clone(),
@@ -187,8 +190,15 @@ impl NativeKv2MountOwner {
         {
             return Err(denied());
         }
-        let prior = self.source.namespaces.get("").ok_or_else(denied)?;
-        let next = candidate.namespaces.get("").ok_or_else(denied)?;
+        let prior = self
+            .source
+            .namespaces
+            .get(&self.namespace)
+            .ok_or_else(denied)?;
+        let next = candidate
+            .namespaces
+            .get(&self.namespace)
+            .ok_or_else(denied)?;
         let before = prior.mounts.get(&self.mount);
         let after = next.mounts.get(&self.mount);
         self.succeeded = status < 300;
@@ -215,7 +225,7 @@ impl NativeKv2MountOwner {
                         return Err(denied());
                     }
                     self.new_scope = Some(MountScope {
-                        namespace: String::new(),
+                        namespace: self.namespace.clone(),
                         mount: self.mount.clone(),
                         incarnation,
                     });
@@ -267,7 +277,10 @@ impl NativeKv2MountOwner {
             // Every other engine/namespace/identity/lease/clock field remains
             // exact. Only this mount and its checked tombstone may differ.
             let mut normalized = candidate.clone();
-            let owner = normalized.namespaces.get_mut("").ok_or_else(denied)?;
+            let owner = normalized
+                .namespaces
+                .get_mut(&self.namespace)
+                .ok_or_else(denied)?;
             match before {
                 Some(before) => {
                     owner.mounts.insert(self.mount.clone(), before.clone());
@@ -298,6 +311,31 @@ impl NativeKv2MountOwner {
         next: &RecordStateRootV6,
         live: &impl Fn() -> bool,
     ) -> Result<()> {
+        self.admit_root_inner(prior, next, None, live)
+    }
+
+    pub(crate) fn disabled_mount(&self) -> Option<(&str, &str)> {
+        (self.succeeded && self.change == Change::Disable && self.expected_metadata.is_some())
+            .then_some((self.namespace.as_str(), self.mount.as_str()))
+    }
+
+    pub(crate) fn admit_root_with_quota_retirement(
+        &mut self,
+        prior: &RecordStateRootV6,
+        next: &RecordStateRootV6,
+        retirement: crate::auth::rate_limit_quotas::MountRetirement,
+        live: &impl Fn() -> bool,
+    ) -> Result<()> {
+        self.admit_root_inner(prior, next, Some(retirement), live)
+    }
+
+    fn admit_root_inner(
+        &mut self,
+        prior: &RecordStateRootV6,
+        next: &RecordStateRootV6,
+        retirement: Option<crate::auth::rate_limit_quotas::MountRetirement>,
+        live: &impl Fn() -> bool,
+    ) -> Result<()> {
         if self.expected_metadata.is_none()
             || self.expected_root.is_some()
             || !live()
@@ -309,6 +347,12 @@ impl NativeKv2MountOwner {
             return Err(denied());
         }
         let mut normalized = next.clone();
+        if let Some(retirement) = retirement {
+            let (namespace, mount) = self.disabled_mount().ok_or_else(denied)?;
+            retirement
+                .normalize_owned_disable(namespace, mount, prior, &mut normalized, live)
+                .map_err(|_| denied())?;
+        }
         if self.succeeded && self.change == Change::Enable {
             let scope = self.new_scope.as_ref().ok_or_else(denied)?;
             let added = normalized
@@ -326,7 +370,9 @@ impl NativeKv2MountOwner {
             normalized.kv2.retain(|graph| &graph.scope != scope);
         } else if self.succeeded && self.change == Change::Disable {
             let mut retained = prior.kv2.clone();
-            retained.retain(|graph| graph.scope.namespace != "" || graph.scope.mount != self.mount);
+            retained.retain(|graph| {
+                graph.scope.namespace != self.namespace || graph.scope.mount != self.mount
+            });
             if normalized.kv2 != retained {
                 return Err(denied());
             }
@@ -342,9 +388,9 @@ impl NativeKv2MountOwner {
                 *new = old.clone();
             }
         }
-        // Auth, namespace, database, Raft, KV1, epoch and all reader floors are
-        // untouched by a mount operation. The original Auth route guard is not
-        // reused or weakened to admit this different owner transition.
+        // The only optional Auth difference was consumed above through its
+        // exact quota-removal proof for this actual disabled mount. Namespace,
+        // database, Raft, KV1, epoch and all remaining reader fields stay exact.
         if normalized.encode().map_err(|_| denied())?.as_slice()
             != prior.encode().map_err(|_| denied())?.as_slice()
             || !live()

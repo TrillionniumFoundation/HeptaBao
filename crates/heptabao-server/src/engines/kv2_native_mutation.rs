@@ -10,7 +10,7 @@ pub(super) struct PendingPaths(Vec<PathBaseline>);
 #[derive(Clone)]
 struct PathBaseline {
     path: Zeroizing<String>,
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     entry: Option<Entry>,
 }
 
@@ -33,16 +33,16 @@ impl PendingPaths {
         let position = self.0.len();
         self.0.push(PathBaseline {
             path: Zeroizing::new(path.to_owned()),
-            #[cfg(any(test, feature = "fixture-native-v6-service"))]
+            #[cfg(any(test, feature = "native-v6-storage"))]
             entry: _owner.entries.get(path).cloned(),
         });
         Ok(Some(position))
     }
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     pub(super) fn paths(&self) -> impl Iterator<Item = &str> {
         self.0.iter().map(|baseline| baseline.path.as_str())
     }
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     pub(super) fn erase_payloads(&mut self) {
         for baseline in &mut self.0 {
             if let Some(entry) = &mut baseline.entry {
@@ -59,7 +59,7 @@ impl PendingPaths {
     }
 }
 
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 fn edit(
     index: &mut Kv1Index,
     record: Kv1Key,
@@ -71,7 +71,7 @@ fn edit(
     check()
 }
 
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 impl NativeGraph {
     pub(super) fn with_updates(
         &self,

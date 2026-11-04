@@ -115,7 +115,10 @@ fn timed_leaf_delivery(
 }
 
 fn pki_fixture(remote: &RemoteTransit) -> TestResult<(Root, Service, String, String)> {
-    let (root, mut service, unseal, admin) = remote.fixture()?;
+    // These retained PKI fixtures exercise the exact 65/66 -> 88/99 reader
+    // transitions. Select their historical Auth factory before initialization;
+    // the ordinary remote Transit fixture still uses the current factory.
+    let (root, mut service, unseal, admin) = remote.fixture_pre141()?;
     for (path, body, status) in [
         ("sys/mounts/external-ca", json!({"type":"pki"}), 204),
         (

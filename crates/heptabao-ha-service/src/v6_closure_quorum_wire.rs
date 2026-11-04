@@ -22,6 +22,8 @@ pub(super) enum Kind {
     StageBatch = 5,
     FsyncExistingBatch = 6,
     EnsureBatch = 7,
+    // Explicit extension: old kind 5 still has its original three-leaf cap.
+    PackedStageBatch = 8,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -146,6 +148,7 @@ pub(super) fn parse(bytes: &[u8]) -> Result<Request<'_>, HaError> {
         5 => Kind::StageBatch,
         6 => Kind::FsyncExistingBatch,
         7 => Kind::EnsureBatch,
+        8 => Kind::PackedStageBatch,
         _ => return Err(HaError::InvalidFrame),
     };
     if kind == Kind::EnsureBatch && bytes.len() > HEADER_BYTES + batch::MAX_ENSURE_PAYLOAD {
@@ -186,10 +189,10 @@ pub(super) fn parse(bytes: &[u8]) -> Result<Request<'_>, HaError> {
 }
 
 pub(super) fn reply(request: &Request<'_>, payload: &[u8]) -> Result<Vec<u8>, HaError> {
-    let maximum = if request.kind == Kind::EnsureBatch {
-        batch::MAX_ENSURE_PAYLOAD
-    } else {
-        batch::MAX_ACK
+    let maximum = match request.kind {
+        Kind::EnsureBatch => batch::MAX_ENSURE_PAYLOAD,
+        Kind::PackedStageBatch => batch::MAX_PACKED_ACK,
+        _ => batch::MAX_ACK,
     };
     if payload.len() > maximum {
         return Err(HaError::InvalidFrame);
@@ -315,7 +318,7 @@ pub(super) fn parse_manifest_page(bytes: &[u8]) -> Result<(usize, Vec<RecordObje
         return Err(HaError::InvalidFrame);
     }
     let mut references = Vec::with_capacity(count);
-    for entry in bytes[8..].chunks_exact(40) {
+    for entry in bytes[8..].as_chunks::<40>().0 {
         let length = u64::from_be_bytes(
             entry[32..40]
                 .try_into()

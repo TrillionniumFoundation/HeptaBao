@@ -513,7 +513,7 @@ fn aad_bound_convergent_backups_preserve_versions_floor_and_invocation_counters(
 fn aad_bound_schema66_backup_cannot_restore65_after_last_safe_mount_is_deleted() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, token) = bootstrap(&mut service)?;
+    let (_, token) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let legacy = archive(&service)?;
     assert!(service.state.as_ref().ok_or("state")?.schema == CURRENT_STATE_SCHEMA);
     assert!(

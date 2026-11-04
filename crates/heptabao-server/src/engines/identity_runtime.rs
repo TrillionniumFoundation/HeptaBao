@@ -543,6 +543,14 @@ impl IdentityState {
     }
 
     pub(crate) fn project(&self, id: &str) -> Result<IdentityProjection> {
+        self.project_if_present(id)?
+            .ok_or_else(|| error(403, "identity unavailable"))
+    }
+
+    /// Only an absent direct record and absent merge successor yield None.
+    /// Invalid input, ambiguous lineage and projection failures retain their
+    /// existing errors; callers must not infer absence from an HTTP status.
+    pub(crate) fn project_if_present(&self, id: &str) -> Result<Option<IdentityProjection>> {
         valid_identifier(id, "entity id")?;
         let entity = if let Some(entity) = self.entities.get(id) {
             entity
@@ -552,9 +560,9 @@ impl IdentityState {
                 .entities
                 .values()
                 .filter(|entity| entity.merged_entity_ids.contains(id));
-            let entity = successors
-                .next()
-                .ok_or_else(|| error(403, "identity unavailable"))?;
+            let Some(entity) = successors.next() else {
+                return Ok(None);
+            };
             if successors.next().is_some() {
                 return Err(error(503, "ambiguous identity merge lineage"));
             }
@@ -600,12 +608,12 @@ impl IdentityState {
         {
             return Err(error(403, "identity policy set is not admissible"));
         }
-        Ok(IdentityProjection {
+        Ok(Some(IdentityProjection {
             entity_id: entity.id.clone(),
             policies: expansion.policies,
             group_ids: expansion.visited.into_iter().map(str::to_owned).collect(),
             disabled: entity.disabled,
-        })
+        }))
     }
 }
 
@@ -781,6 +789,107 @@ mod tests {
             serde_json::to_value(&state).map_err(|_| bad("serialize"))?,
             before
         );
+        Ok(())
+    }
+}
+
+#[cfg(test)]
+mod presence_tests {
+    use super::*;
+
+    #[test]
+    fn identity143_optional_projection_distinguishes_absence_and_merge_lineage() -> Result<()> {
+        let mut state = IdentityState::default();
+        assert!(state.project_if_present("e-absent143")?.is_none());
+        assert_eq!(
+            state.project("e-absent143").err().map(|error| error.status),
+            Some(403)
+        );
+        assert_eq!(
+            state.project_if_present("").err().map(|error| error.status),
+            Some(400)
+        );
+        let id = state.bind_login("auth_test", "present143", 100)?.entity_id;
+        let entity = state.entities.get_mut(&id).ok_or_else(not_found)?;
+        entity.policies.insert("present143".into());
+        entity.disabled = true;
+        entity.merged_entity_ids.insert("e-former143".into());
+        let before = serde_json::to_value(&state).map_err(|_| bad("serialize"))?;
+        for requested in [&id[..], "e-former143"] {
+            let projection = state.project_if_present(requested)?.ok_or_else(not_found)?;
+            let strict = state.project(requested)?;
+            assert_eq!(projection.entity_id, id);
+            assert_eq!(projection.entity_id, strict.entity_id);
+            assert_eq!(projection.policies, BTreeSet::from(["present143".into()]));
+            assert_eq!(projection.policies, strict.policies);
+            assert_eq!(projection.group_ids, strict.group_ids);
+            assert!(projection.disabled && strict.disabled);
+        }
+        assert_eq!(
+            serde_json::to_value(&state).map_err(|_| bad("serialize"))?,
+            before
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn identity143_optional_projection_keeps_ambiguous_lineage_and_policy_errors() -> Result<()> {
+        let mut state = IdentityState::default();
+        let a = state.bind_login("auth_test", "a143", 100)?.entity_id;
+        let b = state.bind_login("auth_test", "b143", 100)?.entity_id;
+        for id in [&a, &b] {
+            state
+                .entities
+                .get_mut(id)
+                .ok_or_else(not_found)?
+                .merged_entity_ids
+                .insert("e-former143".into());
+        }
+        let before = serde_json::to_value(&state).map_err(|_| bad("serialize"))?;
+        assert_eq!(
+            state
+                .project_if_present("e-former143")
+                .err()
+                .map(|error| error.status),
+            Some(503)
+        );
+        assert_eq!(
+            state.project("e-former143").err().map(|error| error.status),
+            Some(503)
+        );
+        assert_eq!(
+            serde_json::to_value(&state).map_err(|_| bad("serialize"))?,
+            before
+        );
+        let group = upsert_group(
+            &mut state,
+            None,
+            &json!({"name":"guard143","member_entity_ids":[a]}),
+            100,
+        )?;
+        let group_id = group.body["data"]["id"]
+            .as_str()
+            .ok_or_else(|| bad("missing group"))?
+            .to_owned();
+        state
+            .groups
+            .get_mut(&group_id)
+            .ok_or_else(not_found)?
+            .member_group_ids
+            .insert(group_id.clone());
+        assert_eq!(
+            state.project_if_present(&a).err().map(|error| error.status),
+            Some(503)
+        );
+        assert_eq!(state.project(&a).err().map(|error| error.status), Some(503));
+        let group = state.groups.get_mut(&group_id).ok_or_else(not_found)?;
+        group.member_group_ids.clear();
+        group.policies.insert("root".into());
+        assert_eq!(
+            state.project_if_present(&a).err().map(|error| error.status),
+            Some(403)
+        );
+        assert_eq!(state.project(&a).err().map(|error| error.status), Some(403));
         Ok(())
     }
 }

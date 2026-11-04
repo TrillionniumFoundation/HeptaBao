@@ -12,13 +12,13 @@ use std::time::Instant;
 
 pub(super) const NATIVE_HA_REPAIR_PATH: &str = "sys/storage/raft/snapshot-repair";
 
-#[cfg(feature = "experimental-native-v6-ha")]
+#[cfg(feature = "native-v6-ha")]
 #[derive(Clone, Copy)]
 enum PendingRestoreRequest {
     Inspect,
     Cancel([u8; 32]),
 }
-#[cfg(feature = "experimental-native-v6-ha")]
+#[cfg(feature = "native-v6-ha")]
 impl PendingRestoreRequest {
     fn operation(self) -> Option<[u8; 32]> {
         match self {
@@ -28,8 +28,11 @@ impl PendingRestoreRequest {
     }
 }
 
-#[cfg(feature = "experimental-native-v6-ha")]
-fn pending_restore_query(body: &Value, enabled: bool) -> Result<Option<PendingRestoreRequest>, Response> {
+#[cfg(feature = "native-v6-ha")]
+fn pending_restore_query(
+    body: &Value,
+    enabled: bool,
+) -> Result<Option<PendingRestoreRequest>, Response> {
     let invalid = || Response::error(400, "unsupported native snapshot query fields");
     let fields = body.as_object().ok_or_else(invalid)?;
     if fields.is_empty() {
@@ -41,16 +44,21 @@ fn pending_restore_query(body: &Value, enabled: bool) -> Result<Option<PendingRe
     if fields.get("inspect_pending_restore") == Some(&Value::Bool(true)) {
         return Ok(Some(PendingRestoreRequest::Inspect));
     }
-    let raw = fields.get("cancel_pending_restore").and_then(Value::as_str)
+    let raw = fields
+        .get("cancel_pending_restore")
+        .and_then(Value::as_str)
         .and_then(|value| value.strip_prefix("native-v6-restore-"))
         .ok_or_else(invalid)?;
-    if raw.len() != 64 || !raw.bytes().all(|byte| matches!(byte, b'0'..=b'9' | b'a'..=b'f')) {
+    if raw.len() != 64
+        || !raw
+            .bytes()
+            .all(|byte| matches!(byte, b'0'..=b'9' | b'a'..=b'f'))
+    {
         return Err(invalid());
     }
     let mut operation = [0; 32];
     for (index, byte) in operation.iter_mut().enumerate() {
-        *byte = u8::from_str_radix(&raw[index * 2..index * 2 + 2], 16)
-            .map_err(|_| invalid())?;
+        *byte = u8::from_str_radix(&raw[index * 2..index * 2 + 2], 16).map_err(|_| invalid())?;
     }
     if operation == [0; 32] {
         return Err(invalid());
@@ -58,7 +66,10 @@ fn pending_restore_query(body: &Value, enabled: bool) -> Result<Option<PendingRe
     Ok(Some(PendingRestoreRequest::Cancel(operation)))
 }
 
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_snapshot_lossless_export.rs"]
+mod lossless_export;
+#[cfg(feature = "native-v6-storage")]
 #[path = "service_snapshot_v6.rs"]
 mod v6;
 
@@ -93,28 +104,32 @@ pub(super) struct SnapshotTransferPlan {
     seal_bytes_at_admission: Zeroizing<Vec<u8>>,
     ha: Option<Arc<Mutex<HaProcess>>>,
     base: StateIdentity,
+    #[cfg(feature = "native-v6-storage")]
+    native_root_contents: Option<crate::state_record_root_v6::NativeRootContentIdentity>,
     deadline: Instant,
     started: Instant,
     now: Duration,
     lease: Arc<SnapshotLease>,
     download: Option<DownloadSource>,
+    #[cfg(feature = "native-v6-storage")]
+    lossless_download: Option<SnapshotFile>,
     is_download: bool,
     // Native negative-outcome custody belongs to this pending request, not
     // the idle Service. Dropping a cancelled transfer must not poison the
     // next unrelated request; finalization restores exactly the original one.
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     native_request_binding: Option<native_v6_writer::NativeRequestBinding>,
-    #[cfg(feature = "experimental-native-v6-ha")]
+    #[cfg(feature = "native-v6-ha")]
     native_ha_source: Option<native_v6_ha_install::NativeHaReadProof>,
-    #[cfg(feature = "experimental-native-v6-ha")]
+    #[cfg(feature = "native-v6-ha")]
     native_ha_repair: Option<native_v6_ha_install::NativeHaArchiveRepairSource>,
-    #[cfg(feature = "experimental-native-v6-ha")]
+    #[cfg(feature = "native-v6-ha")]
     native_ha_restore_source: Option<native_v6_ha_install::NativeHaArchiveRepairSource>,
-    #[cfg(feature = "experimental-native-v6-ha")]
+    #[cfg(feature = "native-v6-ha")]
     native_ha_pending_restore: Option<PendingRestoreRequest>,
-    #[cfg(feature = "experimental-native-v6-ha")]
+    #[cfg(feature = "native-v6-ha")]
     native_ha_restore_attempt: Option<([u8; 32], bool)>,
-    #[cfg(feature = "experimental-native-v6-ha")]
+    #[cfg(feature = "native-v6-ha")]
     native_ha_restored: Option<v6::NativeHaHistoricalReceipt>,
 }
 impl SnapshotTransferPlan {
@@ -138,7 +153,9 @@ impl VerifiedNativeRestore {
     }
 }
 
-fn canonical_seal_identity(seal: &SealMetadata) -> Result<[u8; 32], &'static str> {
+pub(in crate::service) fn canonical_seal_identity(
+    seal: &SealMetadata,
+) -> Result<[u8; 32], &'static str> {
     seal.validate()?;
     let associated = seal.associated_data();
     let wrapped = Zeroizing::new(
@@ -158,7 +175,7 @@ fn canonical_seal_identity(seal: &SealMetadata) -> Result<[u8; 32], &'static str
 pub(crate) enum Observation {
     Download,
     Upload(Import),
-    #[cfg(feature = "experimental-native-v6-ha")]
+    #[cfg(feature = "native-v6-ha")]
     PendingRestore,
 }
 
@@ -170,6 +187,12 @@ fn snapshot_observed_time(wall_anchor: Duration, elapsed: Duration) -> u64 {
 }
 
 impl PendingExternalRequest {
+    #[cfg(feature = "native-v6-storage")]
+    pub(crate) fn has_lossless_download(&self) -> bool {
+        matches!(&self.effect, ExternalEffectPlan::SnapshotTransfer(plan)
+            if plan.is_download && plan.lossless_download.is_some())
+    }
+
     pub(crate) fn execute_snapshot_transfer(
         &mut self,
         reader: &mut impl Read,
@@ -183,6 +206,22 @@ impl PendingExternalRequest {
                 None,
             );
         };
+        #[cfg(feature = "native-v6-storage")]
+        if plan.is_download && plan.path == crate::engines::kv2_lossless_export::PATH {
+            return match plan.lossless_download.take() {
+                Some(file) => (
+                    ExternalEffectResult::SnapshotTransfer(Ok(Observation::Download)),
+                    Some(file),
+                ),
+                None => (
+                    ExternalEffectResult::SnapshotTransfer(Err(Response::error(
+                        503,
+                        "lossless export already consumed",
+                    ))),
+                    None,
+                ),
+            };
+        }
         let result = if plan.is_download {
             match plan
                 .download
@@ -200,19 +239,26 @@ impl PendingExternalRequest {
             }
         } else {
             (|| {
-                #[cfg(feature = "experimental-native-v6-ha")]
+                #[cfg(feature = "native-v6-ha")]
                 if plan.native_ha_pending_restore.is_some() {
                     if Instant::now() >= plan.deadline {
                         return Err(Response::error(503, "snapshot transfer deadline exceeded"));
                     }
                     let mut byte = [0; 1];
-                    let count = reader.read(&mut byte)
+                    let count = reader
+                        .read(&mut byte)
                         .map_err(|_| Response::error(400, "incomplete snapshot body"))?;
                     if Instant::now() >= plan.deadline {
                         return Err(Response::error(503, "snapshot transfer deadline exceeded"));
                     }
-                    return if count == 0 { Ok(Observation::PendingRestore) }
-                        else { Err(Response::error(400, "pending restore reconciliation requires an empty body")) };
+                    return if count == 0 {
+                        Ok(Observation::PendingRestore)
+                    } else {
+                        Err(Response::error(
+                            400,
+                            "pending restore reconciliation requires an empty body",
+                        ))
+                    };
                 }
                 let mut archive = plan
                     .lease
@@ -284,6 +330,26 @@ impl Service {
             .map_err(|_| Response::error(503, "snapshot seal metadata is invalid"))
     }
 
+    #[cfg(feature = "native-v6-storage")]
+    fn current_identity_matches_snapshot_plan(
+        &self,
+        plan: &SnapshotTransferPlan,
+        target: StateIdentity,
+    ) -> bool {
+        let same_contents = self.state.is_some()
+            && self.record_root.is_none()
+            && plan.native_root_contents.as_ref().is_some_and(|contents| {
+                self.native_root.as_ref().is_some_and(|root| {
+                    self.current_state_digest().ok().is_some_and(|digest| {
+                        contents
+                            .matches_current(root, target, digest)
+                            .unwrap_or(false)
+                    })
+                })
+            });
+        same_contents || self.current_state_identity().ok() == Some(target)
+    }
+
     fn current_snapshot_seal_identity_for_plan(
         &self,
         plan: &SnapshotTransferPlan,
@@ -317,10 +383,15 @@ impl Service {
                 "snapshot admission deadline exceeded",
             )));
         }
-        if !matches!(
+        let accepted = matches!(
             request.path,
             "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force" | NATIVE_HA_REPAIR_PATH
-        ) {
+        );
+        #[cfg(feature = "native-v6-storage")]
+        let accepted = accepted
+            || (request.path == crate::engines::kv2_lossless_export::PATH
+                && matches!(request.method, "GET" | "HEAD"));
+        if !accepted {
             erase_json(&mut request.body);
             return NativeSnapshotAdmission::Execute(RequestExecution::Complete(Response::error(
                 400,
@@ -421,9 +492,26 @@ impl Service {
                 "native snapshot requires the root namespace and no query fields",
             );
         }
-        #[cfg(feature = "experimental-native-v6-ha")]
+        #[cfg(feature = "native-v6-storage")]
+        let lossless_mount = if request.path == crate::engines::kv2_lossless_export::PATH {
+            match lossless_export::mount_query(request) {
+                Ok(mount) => Some(mount),
+                Err(response) => return response,
+            }
+        } else {
+            None
+        };
+        #[cfg(not(feature = "native-v6-storage"))]
+        let lossless_mount: Option<&str> = None;
+        let empty_query = json!({});
+        let snapshot_query = if lossless_mount.is_some() {
+            &empty_query
+        } else {
+            request.body
+        };
+        #[cfg(feature = "native-v6-ha")]
         let native_ha_pending_restore = match pending_restore_query(
-            request.body,
+            snapshot_query,
             self.native_ha_snapshot_transport_enabled()
                 && request.path == "sys/storage/raft/snapshot"
                 && matches!(request.method, "POST" | "PUT"),
@@ -431,9 +519,15 @@ impl Service {
             Ok(operation) => operation,
             Err(response) => return response,
         };
-        #[cfg(not(feature = "experimental-native-v6-ha"))]
-        if request.body.as_object().is_none_or(|object| !object.is_empty()) {
-            return Response::error(400, "native snapshot requires the root namespace and no query fields");
+        #[cfg(not(feature = "native-v6-ha"))]
+        if snapshot_query
+            .as_object()
+            .is_none_or(|object| !object.is_empty())
+        {
+            return Response::error(
+                400,
+                "native snapshot requires the root namespace and no query fields",
+            );
         }
         let Some((started, now)) = self.native_snapshot_clock else {
             return Response::error(503, "snapshot admission clock unavailable");
@@ -441,13 +535,14 @@ impl Service {
         if now.as_secs() != request.now {
             return Response::error(503, "snapshot admission clock differs");
         }
-        let download =
-            request.path == "sys/storage/raft/snapshot" && matches!(request.method, "GET" | "HEAD");
+        let download = matches!(request.method, "GET" | "HEAD")
+            && (request.path == "sys/storage/raft/snapshot" || lossless_mount.is_some());
         let repair = request.path == NATIVE_HA_REPAIR_PATH;
         if !download && !matches!(request.method, "POST" | "PUT") {
             return Response::error(405, "snapshot restore requires POST or PUT");
         }
-        if !download && !repair
+        if !download
+            && !repair
             && self.state.as_ref().is_some_and(|state| {
                 !state.database.is_empty() || state.engines.has_openldap_mount()
             })
@@ -464,6 +559,22 @@ impl Service {
         let base = match self.current_state_identity() {
             Ok(value) => value,
             Err(error) => return error,
+        };
+        #[cfg(feature = "native-v6-storage")]
+        let native_root_contents = if lossless_mount.is_some() && self.ha.is_none() {
+            match self
+                .native_root
+                .as_ref()
+                .map(|root| {
+                    crate::state_record_root_v6::NativeRootContentIdentity::capture(root, base)
+                })
+                .transpose()
+            {
+                Ok(value) => value,
+                Err(_) => return Response::error(503, "native identity rejected"),
+            }
+        } else {
+            None
         };
         let spool = match self.snapshot_spool.as_ref() {
             Some(value) => Arc::clone(value),
@@ -497,34 +608,46 @@ impl Service {
             seal_bytes_at_admission,
             ha: self.ha.clone(),
             base,
+            #[cfg(feature = "native-v6-storage")]
+            native_root_contents,
             deadline,
             started,
             now,
             lease: Arc::clone(&lease),
             download: None,
+            #[cfg(feature = "native-v6-storage")]
+            lossless_download: None,
             is_download: download,
-            #[cfg(feature = "fixture-native-v6-service")]
+            #[cfg(feature = "native-v6-storage")]
             native_request_binding: None,
-            #[cfg(feature = "experimental-native-v6-ha")]
+            #[cfg(feature = "native-v6-ha")]
             native_ha_source: None,
-            #[cfg(feature = "experimental-native-v6-ha")]
+            #[cfg(feature = "native-v6-ha")]
             native_ha_repair: None,
-            #[cfg(feature = "experimental-native-v6-ha")]
+            #[cfg(feature = "native-v6-ha")]
             native_ha_restore_source: None,
-            #[cfg(feature = "experimental-native-v6-ha")]
+            #[cfg(feature = "native-v6-ha")]
             native_ha_pending_restore,
-            #[cfg(feature = "experimental-native-v6-ha")]
+            #[cfg(feature = "native-v6-ha")]
             native_ha_restore_attempt: None,
-            #[cfg(feature = "experimental-native-v6-ha")]
+            #[cfg(feature = "native-v6-ha")]
             native_ha_restored: None,
         };
-        let source = if download {
+        #[cfg(feature = "native-v6-storage")]
+        if let Some(mount) = lossless_mount {
+            plan.lossless_download =
+                match self.prepare_native_kv2_lossless_download(&mut plan, mount) {
+                    Ok(file) => Some(file),
+                    Err(error) => return error,
+                };
+        }
+        let source = if download && lossless_mount.is_none() {
             let result = (|| -> Result<DownloadSource, Response> {
-                #[cfg(feature = "fixture-native-v6-service")]
+                #[cfg(feature = "native-v6-storage")]
                 if self.native_root.is_some() {
                     return self.prepare_v6_snapshot_download(&mut plan);
                 }
-                #[cfg(feature = "fixture-native-v6-service")]
+                #[cfg(feature = "native-v6-storage")]
                 self.repair_unreachable_native_migration_slots_before_v5_snapshot(&plan)?;
                 let durable = self
                     .durable
@@ -575,14 +698,18 @@ impl Service {
             None
         };
         plan.download = source;
-        #[cfg(feature = "experimental-native-v6-ha")]
-        if !download && self.native_ha_snapshot_transport_enabled()
-            && plan.path == "sys/storage/raft/snapshot"
+        #[cfg(feature = "native-v6-ha")]
+        if !download
+            && self.native_ha_snapshot_transport_enabled()
+            && matches!(
+                plan.path.as_str(),
+                "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+            )
             && let Err(error) = self.prepare_native_ha_historical_upload(&mut plan)
         {
             return error;
         }
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         {
             plan.native_request_binding = self.native_request_binding.take();
         }
@@ -626,48 +753,63 @@ impl Service {
         clock: (u64, Option<RequestClock>),
     ) -> Response {
         let response = self.finalize_snapshot_transfer(&mut plan, result);
-        #[cfg(feature = "experimental-native-v6-ha")]
+        #[cfg(feature = "native-v6-ha")]
         let mut response = if plan.native_ha_restored.is_some() {
             self.complete_native_ha_historical_delivery(&plan, response, fingerprint, clock)
         } else if plan.native_ha_source.is_some() {
             self.complete_native_ha_snapshot_delivery(&plan, response, fingerprint, clock)
+        } else if plan.path == crate::engines::kv2_lossless_export::PATH {
+            self.complete_native_kv2_lossless_delivery(&plan, response, fingerprint, clock)
         } else {
             self.audit_completed_response(fingerprint, clock.0, clock.1, response)
         };
-        #[cfg(not(feature = "experimental-native-v6-ha"))]
+        #[cfg(all(feature = "native-v6-storage", not(feature = "native-v6-ha")))]
+        let response = if plan.path == crate::engines::kv2_lossless_export::PATH {
+            self.complete_native_kv2_lossless_delivery(&plan, response, fingerprint, clock)
+        } else {
+            self.audit_completed_response(fingerprint, clock.0, clock.1, response)
+        };
+        #[cfg(not(feature = "native-v6-storage"))]
         let response = self.audit_completed_response(fingerprint, clock.0, clock.1, response);
-        #[cfg(feature = "experimental-native-v6-ha")]
+        #[cfg(feature = "native-v6-ha")]
         if let Some((operation, root_attempted)) = plan.native_ha_restore_attempt {
             // A committed Begin or uncertain root CAS remains identifiable
             // even if the generic failure audit overwrites its first response.
             // These bytes grant no restore, retry or current-read authority.
             if let Some(body) = response.body.as_object_mut() {
-                body.insert("recovery_reference".into(),
-                    json!(format!("native-v6-restore-{}", hex(&operation))));
+                body.insert(
+                    "recovery_reference".into(),
+                    json!(format!("native-v6-restore-{}", hex(&operation))),
+                );
                 body.insert("root_attempted".into(), json!(root_attempted));
                 body.insert("retry_allowed".into(), json!(false));
             }
         }
-        #[cfg(feature = "experimental-native-v6-ha")]
-        if let Some(operation) = plan.native_ha_pending_restore.and_then(PendingRestoreRequest::operation) {
+        #[cfg(feature = "native-v6-ha")]
+        if let Some(operation) = plan
+            .native_ha_pending_restore
+            .and_then(PendingRestoreRequest::operation)
+        {
             // Cancellation delivery can also be uncertain after an actual
             // Raft write. Retain its exact query reference even when terminal
             // clock or mandatory audit replaces the original response.
             if let Some(body) = response.body.as_object_mut() {
-                body.insert("recovery_reference".into(),
-                    json!(format!("native-v6-restore-{}", hex(&operation))));
+                body.insert(
+                    "recovery_reference".into(),
+                    json!(format!("native-v6-restore-{}", hex(&operation))),
+                );
                 body.insert("restore_performed".into(), json!(false));
                 body.insert("retry_allowed".into(), json!(false));
             }
         }
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         self.retire_native_external_binding(fingerprint, clock.1);
         response
     }
 
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     pub(super) fn native_ha_snapshot_transport_enabled(&self) -> bool {
-        #[cfg(feature = "experimental-native-v6-ha")]
+        #[cfg(feature = "native-v6-ha")]
         if self.native_root.is_some()
             && self.native_candidate_profile.is_none()
             && self.ha.as_ref().is_some_and(|ha| {
@@ -685,7 +827,7 @@ impl Service {
         plan: &mut SnapshotTransferPlan,
         result: Result<Observation, Response>,
     ) -> Response {
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         {
             if self.native_request_binding.is_some() || self.native_failure_notice.is_some() {
                 self.recovery_required = true;
@@ -715,18 +857,18 @@ impl Service {
         {
             return Response::error(409, "snapshot transfer authority changed");
         }
-        #[cfg(feature = "experimental-native-v6-ha")]
+        #[cfg(feature = "native-v6-ha")]
         if plan.native_ha_repair.is_some() {
             // Normal HA synchronization first pulls the missing shared leaves.
             // This dedicated owner independently verifies the actual selection
             // and its complete local Auth graph before repairing those leaves.
             return self.finish_native_ha_snapshot_repair(plan, result);
         }
-        #[cfg(feature = "experimental-native-v6-ha")]
+        #[cfg(feature = "native-v6-ha")]
         if plan.native_ha_pending_restore.is_some() {
             return self.finish_native_ha_pending_restore_reconciliation(plan, result);
         }
-        #[cfg(feature = "experimental-native-v6-ha")]
+        #[cfg(feature = "native-v6-ha")]
         if plan.native_ha_restore_source.is_some() {
             // Restore owns the original exact local/Actor/ReadIndex anchor.
             // The new epoch is derived by actual Raft; it is not a local
@@ -775,14 +917,14 @@ impl Service {
         };
         match observation {
             Observation::Download if plan.is_download => {
-                #[cfg(feature = "experimental-native-v6-ha")]
+                #[cfg(feature = "native-v6-ha")]
                 if plan.native_ha_source.is_some() {
                     return self.finish_native_ha_snapshot_download(plan);
                 }
                 Response::ok(Value::Null)
             }
             Observation::Upload(mut imported) if !plan.is_download => {
-                #[cfg(feature = "fixture-native-v6-service")]
+                #[cfg(feature = "native-v6-storage")]
                 if self.native_root.is_some() && !imported.metadata.is_v6() {
                     // The V5 installer cannot retire V6 external-object custody.
                     return Response::error(
@@ -790,7 +932,7 @@ impl Service {
                         "active V6 requires an object-complete V6 snapshot",
                     );
                 }
-                #[cfg(feature = "fixture-native-v6-service")]
+                #[cfg(feature = "native-v6-storage")]
                 if imported.metadata.is_v6() {
                     return self.finish_v6_snapshot_upload(imported, plan, live_seal);
                 }

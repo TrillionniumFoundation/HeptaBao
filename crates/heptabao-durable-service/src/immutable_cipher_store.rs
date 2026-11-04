@@ -5,8 +5,9 @@
 //! does not authenticate the bytes supplied to or read from the backend.
 use super::{BackendError, FileBackend};
 use heptabao_filesystem_guard::{
-    ExclusiveDirectory, FileAccess, ImmutableBatchEntry, ImmutablePublication as FilePublication,
-    ImmutablePublicationCheckedError, ImmutablePublicationError, MAX_IMMUTABLE_BATCH_OBJECTS,
+    ExclusiveDirectory, FileAccess, ImmutableBatchEntry, ImmutableFileSyncWitness,
+    ImmutablePublication as FilePublication, ImmutablePublicationCheckedError,
+    ImmutablePublicationError, MAX_IMMUTABLE_BATCH_OBJECTS,
 };
 use std::cell::Cell;
 use std::{
@@ -20,8 +21,13 @@ use std::{
 };
 use zeroize::Zeroizing;
 
+#[path = "immutable_cipher_new_batch.rs"]
+mod new_batch;
+#[path = "immutable_cipher_retirement.rs"]
+mod retirement;
 #[path = "immutable_cipher_reuse.rs"]
 mod reuse;
+pub use retirement::{PreparedImmutableReconciliation, PreparedImmutableRetirement};
 
 /// A per-object physical bound. Existing snapshot/journal limits are unchanged.
 pub const MAX_IMMUTABLE_CIPHERTEXT_BYTES: usize = 512 * 1024;
@@ -281,14 +287,18 @@ struct PinnedObject {
     identity: ObjectIdentity,
     directory_identity: [u8; 16],
     lease: Weak<ImmutableLease>,
-    // Only existing-leaf reuse pins carry this pre-sync wire commitment. A
+    // Existing-leaf reuse and strict new-only pins carry this commitment. A
     // dev/ino/length check cannot detect same-inode, same-length rewriting.
     // Actual checked reads must still read every byte and match this digest.
     synchronized_ciphertext_digest: Option<[u8; 32]>,
-    // Reuse only: retained from before its first full read through both real
+    // Reuse: retained from before its first full read through both real
     // synchronization boundaries and the final checked read/AEAD gate.
+    // Strict new pins additionally retain the lower layer's ORIGINAL witness
+    // below, so this local observation can never rebase a completed sync.
     // Ordinary pins keep None and retain their original read semantics.
     synchronized_metadata: Option<ObjectMetadataWitness>,
+    reuse_mutation_witness: Option<heptabao_filesystem_guard::FileMutationWitness>,
+    synchronized_publication_witness: Option<ImmutableFileSyncWitness>,
 }
 
 /// An owned read-only physical ciphertext pin. It keeps the object descriptor
@@ -318,6 +328,16 @@ impl ImmutableBlobReadPin {
     pub(crate) fn has_synchronized_ciphertext(&self) -> bool {
         self.0.synchronized_ciphertext_digest.is_some()
             && self.0.synchronized_metadata.is_some()
+            && (self.0.reuse_mutation_witness.is_some()
+                || self.0.synchronized_publication_witness.is_some())
+    }
+    fn reuse_mutations(
+        &self,
+    ) -> Result<&heptabao_filesystem_guard::FileMutationWitness, BackendError> {
+        self.0
+            .reuse_mutation_witness
+            .as_ref()
+            .ok_or(BackendError::Corrupt)
     }
     fn check(&self) -> Result<Arc<ImmutableLease>, BackendError> {
         let lease = self.0.lease.upgrade().ok_or(BackendError::Unavailable)?;
@@ -325,10 +345,20 @@ impl ImmutableBlobReadPin {
         if object_identity(&self.0.file, self.0.identity.length)? != self.0.identity {
             return Err(BackendError::Corrupt);
         }
-        if let Some(expected) = self.0.synchronized_metadata {
-            if object_metadata_witness(&self.0.file, self.0.identity.length)? != expected {
-                return Err(BackendError::Corrupt);
-            }
+        if let Some(expected) = self.0.synchronized_metadata
+            && object_metadata_witness(&self.0.file, self.0.identity.length)? != expected
+        {
+            return Err(BackendError::Corrupt);
+        }
+        if let Some(witness) = &self.0.reuse_mutation_witness {
+            witness
+                .verify_file(&self.0.file)
+                .map_err(|_| BackendError::Corrupt)?;
+        }
+        if let Some(witness) = &self.0.synchronized_publication_witness {
+            witness
+                .verify_file(&self.0.file)
+                .map_err(|_| BackendError::Corrupt)?;
         }
         lease.check()?;
         Ok(lease)
@@ -430,10 +460,14 @@ impl ImmutableBlobReadPin {
         gate().map_err(PinReadError::Gate)?;
         self.check().map_err(PinReadError::Backend)?;
         lease.check().map_err(PinReadError::Backend)?;
-        if self.0.synchronized_ciphertext_digest.is_some_and(|expected| {
-            crate::digest32(b"heptabao.immutable-reuse-ciphertext.v1", bytes.as_slice())
-                != expected
-        }) {
+        if self
+            .0
+            .synchronized_ciphertext_digest
+            .is_some_and(|expected| {
+                crate::digest32(b"heptabao.immutable-reuse-ciphertext.v1", bytes.as_slice())
+                    != expected
+            })
+        {
             return Err(PinReadError::Backend(BackendError::Corrupt));
         }
         gate().map_err(PinReadError::Gate)?;
@@ -520,6 +554,8 @@ impl FileBackend {
             lease: Arc::downgrade(&self.immutable_lease),
             synchronized_ciphertext_digest: None,
             synchronized_metadata: None,
+            reuse_mutation_witness: None,
+            synchronized_publication_witness: None,
         })))
     }
 
@@ -720,8 +756,11 @@ impl FileBackend {
         gate: &mut dyn FnMut() -> Result<(), BackendError>,
         after_publication: impl FnOnce() -> Result<(), BackendError>,
     ) -> Result<ImmutableBlobStage, BackendError> {
-        // Ordinary staging shares the reserved single-file temporary; force
-        // the next multi-object batch to recover all names conservatively.
+        // This live owner shares the same reserved names with batch staging.
+        // A successful prior publication consumed every temporary it created;
+        // only an interrupted or failed attempt needs another full recovery.
+        // Clear the private hint before any fallible work, including the gate.
+        let cleanup_needed = !self.immutable_batch_temps_known_clean;
         self.immutable_batch_temps_known_clean = false;
         let mut rejected_by_gate = false;
         let result = {
@@ -737,7 +776,9 @@ impl FileBackend {
                 length_check(ciphertext.len())?;
                 self.immutable_blob_profile()?;
                 checked_gate()?;
-                cleanup_temporary(&self.directory)?;
+                if cleanup_needed {
+                    cleanup_temporary(&self.directory)?;
+                }
                 checked_gate()?;
                 let mut temporary = self
                     .directory
@@ -799,6 +840,12 @@ impl FileBackend {
                 Ok(staged)
             })()
         };
+        if result.is_ok() {
+            // Published and AlreadyExists both consumed the single temporary.
+            // Its strong file/directory syncs, read pin and final caller gate
+            // all succeeded. Failure or unwinding keeps the hint cleared.
+            self.immutable_batch_temps_known_clean = true;
+        }
         if !rejected_by_gate && matches!(&result, Err(BackendError::OutcomeUnknown)) {
             self.immutable_lease.revoke();
         }

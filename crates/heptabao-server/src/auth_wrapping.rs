@@ -2,6 +2,18 @@
 //! AuthState transaction, not an in-memory side store or a second secret server.
 use super::*;
 
+#[cfg(feature = "native-v6-storage")]
+#[path = "auth_native_wrapping.rs"]
+mod native;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native::{NativeWrappingObservation, NativeWrappingOwner};
+
+#[cfg(feature = "native-v6-storage")]
+#[path = "auth_native_response_wrapping.rs"]
+mod native_output;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_output::NativeResponseWrappingOwner;
+
 /// Private, response-only origin. Local construction occurs only after an
 /// actual wrapper was consumed, including the admitted affine final-use view.
 /// Neither user JSON, a header, an SDK response nor the URL constructs it.
@@ -12,6 +24,9 @@ pub(crate) use raw_reply::{
     encode_http_envelope, logical_envelope,
 };
 pub(super) use raw_reply::{RawReplyReaderFloor, RawReplyTokenCustody};
+#[path = "auth_kv1_static_lease.rs"]
+mod static_kv1_lease;
+pub(crate) use static_kv1_lease::StaticKv1LeaseProjection;
 
 enum WorkflowOutputFailure {
     Local(Box<crate::workflow_runtime::FailedOutput>),
@@ -48,6 +63,9 @@ pub(crate) struct UnwrappedJson {
     state: Box<UnwrappedJsonState>,
 }
 struct UnwrappedJsonState {
+    // Ephemeral, affine native delivery identity; never serialized or exposed.
+    #[cfg(feature = "native-v6-storage")]
+    native_owner: Option<[u8; 32]>,
     // Keep the secret-bearing owner affine without inflating every Response result.
     // Box destruction still runs StoredWrappedReply's zeroizing destructor.
     stored_reply: Option<Box<StoredWrappedReply>>,
@@ -55,20 +73,62 @@ struct UnwrappedJsonState {
     selected_json_http: Option<Zeroizing<Vec<u8>>>,
     // Prepared from the actual consumed owner before mandatory response audit.
     selected_response: Option<Box<raw_reply::SelectedResponseProjection>>,
+    static_kv1_lease: Option<StaticKv1LeaseProjection>,
     workflow_output_failure: Option<WorkflowOutputFailure>,
     workflow_failure_audited: bool,
 }
 impl UnwrappedJson {
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn from_native_kv1_read(
+        engines: &crate::engines::EngineState,
+        namespace: &str, method: &str, path: &str, request: &Value,
+        logical: &Value, status: u16,
+    ) -> Result<Option<Self>, AuthError> {
+        let Some(projection) = StaticKv1LeaseProjection::capture(
+            engines, namespace, method, path, request, logical, status,
+        )? else { return Ok(None); };
+        Ok(Some(Self {
+            state: Box::new(UnwrappedJsonState {
+                #[cfg(feature = "native-v6-storage")]
+                native_owner: None,
+                stored_reply: None,
+                selected_json_http: None,
+                selected_response: None,
+                workflow_output_failure: None,
+                workflow_failure_audited: false,
+                static_kv1_lease: Some(projection),
+            }),
+        }))
+    }
+    pub(crate) fn static_kv1_lease(&self) -> Option<&StaticKv1LeaseProjection> {
+        self.state.static_kv1_lease.as_ref()
+    }
+    pub(crate) fn project_static_kv1_envelope(
+        &self, logical: &Value, request_id: &str, namespace: &str, path: &str,
+    ) -> Result<Option<Value>, AuthError> {
+        let Some(projection) = self.state.static_kv1_lease.as_ref() else {
+            return Ok(None);
+        };
+        if self.state.stored_reply.is_some() || self.state.workflow_output_failure.is_some()
+            || !projection.matches_scope(namespace, path)
+        {
+            return Err(err(503, "signed KV1 reply differs from actual HTTP route"));
+        }
+        raw_reply::logical_envelope_static_kv1(logical, request_id, projection).map(Some)
+    }
     pub(crate) fn from_workflow_output_failure(
         value: crate::workflow_runtime::FailedOutput,
     ) -> Self {
         Self {
             state: Box::new(UnwrappedJsonState {
+                #[cfg(feature = "native-v6-storage")]
+                native_owner: None,
                 stored_reply: None,
                 selected_json_http: None,
                 selected_response: None,
                 workflow_output_failure: Some(WorkflowOutputFailure::Local(Box::new(value))),
                 workflow_failure_audited: false,
+                static_kv1_lease: None,
             }),
         }
     }
@@ -82,6 +142,13 @@ impl UnwrappedJson {
         &self,
         logical: &Value,
     ) -> Result<crate::ha_forward::UnwrapFramingWire, AuthError> {
+        if let Some(projection) = &self.state.static_kv1_lease {
+            if self.state.stored_reply.is_some() || self.state.workflow_output_failure.is_some() {
+                return Err(bad("signed KV1 response has conflicting origins"));
+            }
+            projection.validate(logical)?;
+            return Ok(crate::ha_forward::UnwrapFramingWire::StaticKv1Lease { projection: *projection });
+        }
         if let Some(value) = &self.state.workflow_output_failure {
             if self.state.stored_reply.is_some() || !value.matches(logical) {
                 return Err(bad("workflow private output projection differs"));
@@ -111,11 +178,14 @@ impl UnwrappedJson {
         }
         Ok(Self {
             state: Box::new(UnwrappedJsonState {
+                #[cfg(feature = "native-v6-storage")]
+                native_owner: None,
                 stored_reply: Some(Box::new(stored)),
                 selected_json_http: None,
                 selected_response: None,
                 workflow_output_failure: None,
                 workflow_failure_audited: false,
+                static_kv1_lease: None,
             }),
         })
     }
@@ -132,6 +202,16 @@ impl UnwrappedJson {
                 .validate(&response.body)
                 .map_err(|_| "HA stored reply projection rejected")?;
         }
+        let static_kv1_lease = match response.unwrapped_json {
+            Some(crate::ha_forward::UnwrapFramingWire::StaticKv1Lease { projection }) => {
+                if response.status != 200 || response.raw_wrapped_reply.is_some() {
+                    return Err("HA signed KV1 completion has conflicting origins".into());
+                }
+                projection.validate(&response.body).map_err(|_| "HA signed KV1 completion differs")?;
+                Some(projection)
+            }
+            _ => None,
+        };
         let workflow_output_failure = match response.unwrapped_json {
             Some(crate::ha_forward::UnwrapFramingWire::WorkflowJsonFailure {
                 output_digest,
@@ -153,16 +233,20 @@ impl UnwrappedJson {
         };
         Ok(Self {
             state: Box::new(UnwrappedJsonState {
+                #[cfg(feature = "native-v6-storage")]
+                native_owner: None,
                 stored_reply: response.raw_wrapped_reply.clone().map(Box::new),
                 selected_json_http: None,
                 selected_response: None,
                 workflow_output_failure,
                 workflow_failure_audited: false,
+                static_kv1_lease,
             }),
         })
     }
     pub(crate) fn has_native_http_projection(&self) -> bool {
         self.has_stored_reply() || self.state.workflow_output_failure.is_some()
+            || self.state.static_kv1_lease.is_some()
     }
     pub(crate) fn has_stored_reply(&self) -> bool {
         self.state.stored_reply.is_some()
@@ -271,6 +355,9 @@ impl UnwrappedJson {
         Ok(())
     }
     pub(crate) fn raw_bytes<'a>(&'a self, logical: &Value) -> Result<Option<&'a [u8]>, AuthError> {
+        if self.state.static_kv1_lease.is_some() {
+            return Err(bad("signed KV1 reply requires actual scoped HTTP projection"));
+        }
         if let Some(value) = &self.state.workflow_output_failure {
             if !value.matches(logical) || !self.state.workflow_failure_audited {
                 return Err(bad("workflow output lacks mandatory audit"));
@@ -470,8 +557,31 @@ impl AuthState {
     ) -> Result<AuthResponse, AuthError> {
         let stored_reply = current_ingress()
             .map(|context| StoredWrappedReply::capture(response, &context, path))
-            .transpose()?;
+            .transpose()
+            .map_err(|error| {
+                // The transport-specific encoder may enforce the same bound
+                // before the logical wrapper does. Keep its public failure
+                // independent of which private representation reached it first.
+                if error.status == 413 {
+                    err(413, "wrapped response exceeds supported bounds")
+                } else {
+                    error
+                }
+            })?;
         self.wrap_response_with_stored(namespace, path, ttl, response, now, stored_reply)
+    }
+
+    pub(crate) fn wrap_static_kv1_response(
+        &mut self, namespace: &str, path: &str, ttl: u64, response: &Value,
+        now: u64, projection: &StaticKv1LeaseProjection,
+    ) -> Result<AuthResponse, AuthError> {
+        if !projection.matches_scope(namespace, path) {
+            return Err(err(503, "signed KV1 wrapper scope differs"));
+        }
+        projection.validate(response)?;
+        let context = current_ingress().ok_or_else(|| err(503, "signed KV1 wrapper requires original ingress"))?;
+        let stored = StoredWrappedReply::capture_static_kv1(response, &context, projection, path)?;
+        self.wrap_response_with_stored(namespace, path, ttl, response, now, Some(stored))
     }
 
     pub(crate) fn wrap_sdk_response(
@@ -562,6 +672,7 @@ impl AuthState {
     ) -> Result<AuthResponse, AuthError> {
         if let Some(stored) = &stored_reply {
             stored.validate_owner(response, path)?;
+            stored.validate_namespace_owner(namespace)?;
         }
         validate_namespace(namespace)?;
         validate_path(path, false)?;
@@ -657,6 +768,11 @@ impl AuthState {
             token.raw_wrapped_reply_custody = Some(RawReplyTokenCustody::live(&token)?);
         }
         self.wrapping_clock = now;
+        if token.wrapping.as_ref().and_then(|owner| owner.stored_reply.as_ref())
+            .is_some_and(StoredWrappedReply::is_static_kv1_reply)
+        {
+            self.raw_wrapped_reply_floor.observe_static_kv1();
+        }
         if token
             .wrapping
             .as_ref()
@@ -833,10 +949,13 @@ impl AuthState {
         Ok(AuthResponse {
             unwrapped_json: Some(UnwrappedJson {
                 state: Box::new(UnwrappedJsonState {
+                    #[cfg(feature = "native-v6-storage")]
+                    native_owner: None,
                     selected_json_http: None,
                     selected_response: None,
                     workflow_output_failure: None,
                     workflow_failure_audited: false,
+                    static_kv1_lease: None,
                     stored_reply: wrapped.stored_reply.clone().map(Box::new),
                 }),
             }),

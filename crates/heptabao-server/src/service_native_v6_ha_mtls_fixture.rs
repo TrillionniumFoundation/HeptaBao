@@ -1,22 +1,28 @@
 //! Disposable real CA/leaf certificates and actual pinned mTLS receivers.
 //! Adapted from the already exercised HA quorum test fixture. Only voter 3's
 //! ciphertext listener is absent; this fixture does not disconnect Raft RPC.
-use super::*;
 use heptabao_ha_service::{
     HaError, MutualTlsPeerTransport, NativeV6ClosureReceiver, NodeId, RAFT_ALPN_PROTOCOL,
     TlsPeerEndpoint,
 };
+use heptabao_raft_runtime::{LocalV6BlobStage, NativeV6PeerEnrollment, ProcessRaftNode};
 use ring::digest::{SHA256, digest};
 use rustls::pki_types::{CertificateDer, PrivateKeyDer};
 use rustls::server::WebPkiClientVerifier;
 use rustls::{ClientConfig, RootCertStore, ServerConfig};
-use std::fs::File;
+use std::collections::BTreeMap;
+use std::fs::{self, File};
 use std::io::BufReader;
 use std::net::TcpListener;
+use std::path::Path;
 use std::process::{Command, Stdio};
+use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
+use std::time::Duration;
 use tokio::runtime::Handle;
+
+type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
 fn certificates(path: &Path) -> TestResult<Vec<CertificateDer<'static>>> {
     Ok(

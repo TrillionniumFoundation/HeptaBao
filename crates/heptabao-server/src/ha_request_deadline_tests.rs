@@ -62,7 +62,7 @@ pub(crate) fn process_with_api(
         Duration::from_millis(50),
     )?;
     Ok(HaProcess {
-        #[cfg(feature = "experimental-native-v6-ha")]
+        #[cfg(feature = "native-v6-ha")]
         native_v6: None,
         storage_dir: path.to_path_buf(),
         record_commits_since_gc: AtomicU64::new(0),
@@ -71,7 +71,7 @@ pub(crate) fn process_with_api(
         bootstrap_admission: None,
         bootstrap_history_complete: AtomicBool::new(true),
         bootstrap_owner: false,
-        runtime,
+        runtime: Arc::new(runtime),
         node: Some(Arc::new(node)),
         codec: ClusterStateCodec::new("request-deadline", [9; 32])?,
         cluster_id: "request-deadline".into(),

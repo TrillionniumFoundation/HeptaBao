@@ -6,9 +6,7 @@ use super::*;
 use heptabao_ha_service::replicate_native_v6_closure_to_quorum;
 use heptabao_raft_runtime::with_read_index_deadline;
 
-#[path = "service_native_v6_ha_mtls_fixture.rs"]
-mod fixture;
-use fixture::{LiveReceivers, tls_fixture};
+use crate::native_v6_ha_mtls_fixture::{LiveReceivers, tls_fixture};
 
 const REQUEST_BUDGET: Duration = Duration::from_secs(15);
 
@@ -248,9 +246,11 @@ fn native_ha_actual_34mib_history_pinned_mtls_two_voters_original_15s_and_cold_r
         cluster.runtime.handle(),
         &transport,
         &live.routes,
-        &sender,
-        proposal.references(),
-        &proposal.intent(),
+        heptabao_ha_service::NativeV6ClosureSource {
+            source: &sender,
+            references: proposal.references(),
+            intent: &proposal.intent(),
+        },
         original.instant(),
     );
     if quorum.is_err() {

@@ -4,6 +4,9 @@
 use super::*;
 use std::os::unix::fs::MetadataExt;
 
+#[path = "v6_replica_blobs_existing_batch.rs"]
+mod bounded_batch;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct ExistingIdentity {
     device: u64,
@@ -22,9 +25,7 @@ struct ExistingIdentity {
 impl ExistingIdentity {
     fn read(file: &File, expected: &RecordObjectRef) -> Result<Self, LocalV6BlobError> {
         let metadata = file.metadata()?;
-        if !metadata.is_file()
-            || metadata.nlink() != 1
-            || metadata.len() != expected.payload_bytes
+        if !metadata.is_file() || metadata.nlink() != 1 || metadata.len() != expected.payload_bytes
         {
             return Err(LocalV6BlobError::CorruptOrChanged);
         }
@@ -41,6 +42,96 @@ impl ExistingIdentity {
             changed_seconds: metadata.ctime(),
             changed_nanos: metadata.ctime_nsec(),
         })
+    }
+}
+
+/// A private held descriptor, never a wire receipt. A physical batch retains
+/// the exact descriptor and its observed metadata until every later callback
+/// has completed. It must not reopen an equal-content replacement and call it
+/// the file that was synchronized.
+pub(super) struct HeldSynchronizedCiphertext {
+    reference: RecordObjectRef,
+    destination: String,
+    file: File,
+    identity: ExistingIdentity,
+    reuse_mutation_witness: Option<heptabao_filesystem_guard::FileMutationWitness>,
+    original_new_sync_witness: Option<heptabao_filesystem_guard::ImmutableFileSyncWitness>,
+}
+
+impl HeldSynchronizedCiphertext {
+    pub(super) fn published(
+        reference: &RecordObjectRef,
+        publication: heptabao_filesystem_guard::SynchronizedImmutablePublication,
+    ) -> Result<Self, LocalV6BlobError> {
+        let (file, original_new_sync_witness) = publication.into_parts();
+        original_new_sync_witness
+            .verify_file(&file)
+            .map_err(|_| LocalV6BlobError::CorruptOrChanged)?;
+        let identity = ExistingIdentity::read(&file, reference)?;
+        original_new_sync_witness
+            .verify_file(&file)
+            .map_err(|_| LocalV6BlobError::CorruptOrChanged)?;
+        Ok(Self {
+            reference: reference.clone(),
+            destination: LocalV6BlobStage::leaf(reference)?,
+            file,
+            identity,
+            reuse_mutation_witness: None,
+            original_new_sync_witness: Some(original_new_sync_witness),
+        })
+    }
+
+    pub(super) fn authenticate(
+        &mut self,
+        ciphertext: &[u8],
+        gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
+    ) -> Result<(), LocalV6BlobError> {
+        self.verify_mutations(&self.file)?;
+        read_exact_existing(&mut self.file, &self.reference, ciphertext, gate)?;
+        self.verify_mutations(&self.file)
+    }
+
+    fn verify_mutations(&self, file: &File) -> Result<(), LocalV6BlobError> {
+        if let Some(witness) = &self.reuse_mutation_witness {
+            witness
+                .verify_file(file)
+                .map_err(|_| LocalV6BlobError::CorruptOrChanged)?;
+        }
+        if let Some(witness) = &self.original_new_sync_witness {
+            witness
+                .verify_file(file)
+                .map_err(|_| LocalV6BlobError::CorruptOrChanged)?;
+        }
+        Ok(())
+    }
+
+    /// No caller callback is allowed after the complete batch's final pass.
+    /// This checks the original descriptor and the actual current leaf name;
+    /// the same kernel watch and metadata span synchronization and callbacks.
+    pub(super) fn check_without_callback(
+        &self,
+        store: &LocalV6BlobStage,
+    ) -> Result<(), LocalV6BlobError> {
+        store.directory.verify()?;
+        let current = store
+            .directory
+            .open_file(&self.destination, FileAccess::Read)?;
+        self.verify_mutations(&self.file)?;
+        self.verify_mutations(&current)?;
+        if ExistingIdentity::read(&self.file, &self.reference)? != self.identity
+            || ExistingIdentity::read(&current, &self.reference)? != self.identity
+        {
+            return Err(LocalV6BlobError::CorruptOrChanged);
+        }
+        store.directory.verify()?;
+        self.verify_mutations(&self.file)?;
+        Ok(())
+    }
+
+    pub(super) fn into_receipt(self) -> LocalV6BlobReceipt {
+        LocalV6BlobReceipt {
+            reference: self.reference,
+        }
     }
 }
 
@@ -96,10 +187,12 @@ fn read_exact_existing(
         return Err(LocalV6BlobError::CorruptOrChanged);
     }
     gate()?;
-    let verified = SealedRecordObject::new_native_v6_ciphertext_chunk(bytes)
+    let verified = SealedRecordObject::new(reference.clone(), Vec::new(), bytes)
         .map_err(|_| LocalV6BlobError::CorruptOrChanged)?;
     gate()?;
-    if verified.reference() != reference {
+    if verified.reference() != reference
+        || verified.reference().kind != RecordObjectKind::NativeV6CiphertextChunk
+    {
         return Err(LocalV6BlobError::CorruptOrChanged);
     }
     Ok(())
@@ -122,8 +215,12 @@ impl LocalV6BlobStage {
         destination: &str,
         identity: ExistingIdentity,
         gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
+        mutations: &heptabao_filesystem_guard::FileMutationWitness,
     ) -> Result<(), LocalV6BlobError> {
         gate()?;
+        mutations
+            .verify_file(file)
+            .map_err(|_| LocalV6BlobError::CorruptOrChanged)?;
         self.directory.verify()?;
         gate()?;
         let held = ExistingIdentity::read(file, reference);
@@ -156,6 +253,9 @@ impl LocalV6BlobStage {
             return Err(LocalV6BlobError::CorruptOrChanged);
         }
         gate()?;
+        mutations
+            .verify_file(file)
+            .map_err(|_| LocalV6BlobError::CorruptOrChanged)?;
         Ok(())
     }
 
@@ -166,6 +266,18 @@ impl LocalV6BlobStage {
         gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
         hook: &mut impl FnMut(ExistingStageEvent) -> Result<(), LocalV6BlobError>,
     ) -> Result<Option<LocalV6BlobReceipt>, LocalV6BlobError> {
+        Ok(self
+            .hold_existing_exact_with_hook(reference, ciphertext, gate, hook)?
+            .map(HeldSynchronizedCiphertext::into_receipt))
+    }
+
+    fn hold_existing_exact_with_hook(
+        &self,
+        reference: &RecordObjectRef,
+        ciphertext: &[u8],
+        gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
+        hook: &mut impl FnMut(ExistingStageEvent) -> Result<(), LocalV6BlobError>,
+    ) -> Result<Option<HeldSynchronizedCiphertext>, LocalV6BlobError> {
         gate()?;
         let destination = Self::leaf(reference)?;
         gate()?;
@@ -180,14 +292,15 @@ impl LocalV6BlobStage {
             }
             Err(error) => return Err(error.into()),
         };
+        let mutations = self.directory.watch_file_mutations(&file)?;
         let identity = ExistingIdentity::read(&file, reference);
         gate()?;
         let identity = identity?;
         hook(ExistingStageEvent::Opened)?;
-        self.verify_existing_binding(&file, reference, &destination, identity, gate)?;
+        self.verify_existing_binding(&file, reference, &destination, identity, gate, &mutations)?;
         read_exact_existing(&mut file, reference, ciphertext, gate)?;
         hook(ExistingStageEvent::Authenticated)?;
-        self.verify_existing_binding(&file, reference, &destination, identity, gate)?;
+        self.verify_existing_binding(&file, reference, &destination, identity, gate, &mutations)?;
 
         // The original descriptor, not a newly opened equal-content leaf, is
         // strongly synced. Every rejection keeps the exact existing bytes and
@@ -197,21 +310,26 @@ impl LocalV6BlobStage {
         gate()?;
         synced?;
         hook(ExistingStageEvent::FileSynced)?;
-        self.verify_existing_binding(&file, reference, &destination, identity, gate)?;
+        self.verify_existing_binding(&file, reference, &destination, identity, gate, &mutations)?;
         gate()?;
         let synced = self.directory.sync_all();
         gate()?;
         synced?;
         hook(ExistingStageEvent::DirectorySynced)?;
-        self.verify_existing_binding(&file, reference, &destination, identity, gate)?;
+        self.verify_existing_binding(&file, reference, &destination, identity, gate, &mutations)?;
 
         // Reauthenticate the same held descriptor after both real barriers.
-        // Timestamps bind mutation windows; they never replace this final full
+        // The retained event watch and metadata never replace this final full
         // ciphertext/ref verification or the caller's original live gate.
         read_exact_existing(&mut file, reference, ciphertext, gate)?;
-        self.verify_existing_binding(&file, reference, &destination, identity, gate)?;
-        Ok(Some(LocalV6BlobReceipt {
+        self.verify_existing_binding(&file, reference, &destination, identity, gate, &mutations)?;
+        Ok(Some(HeldSynchronizedCiphertext {
             reference: reference.clone(),
+            destination,
+            file,
+            identity,
+            reuse_mutation_witness: Some(mutations),
+            original_new_sync_witness: None,
         }))
     }
 }

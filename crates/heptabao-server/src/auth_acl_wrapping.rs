@@ -96,6 +96,7 @@ impl AuthState {
         namespace: &str,
         path: &str,
         policies: &BTreeSet<String>,
+        time: AuthorityTime,
     ) -> Result<bool, AuthError> {
         let mut decision = acl::Decision::default();
         for name in policies.iter().chain(&principal.identity_policies) {
@@ -104,9 +105,15 @@ impl AuthState {
                 .get(namespace)
                 .and_then(|entries| entries.get(name))
             {
+                if !policy.live(time)? {
+                    continue;
+                }
                 for rule in &policy.rules {
+                    if !rule.live(time)? {
+                        continue;
+                    }
                     let Some(rendered) =
-                        acl_template::render(&rule.path, &principal.identity_templates)?
+                        policy.render(&rule.path, &principal.identity_templates)?
                     else {
                         continue;
                     };

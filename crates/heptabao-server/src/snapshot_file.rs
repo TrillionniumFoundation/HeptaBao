@@ -15,25 +15,26 @@ use std::{
     time::Instant,
 };
 
+#[path = "snapshot_seal_reader.rs"]
+mod seal_reader;
+pub(crate) use seal_reader::SnapshotSealReader;
+
 pub(crate) const MAX_NATIVE_STATE: u64 = 130 * 1024 * 1024;
 // Legacy HBB2 state remains bounded to 130 MiB. Only the explicit native-V6
 // build accepts the separately bounded external-object pack transport.
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 pub(crate) const MAX_V6_SNAPSHOT_STATE: u64 =
     MAX_NATIVE_STATE + 1024 * 1024 * 1024 + 65_536 * 4 + 4132;
 // HA carries both the independent local pack and shared-key typed closure.
 // Keep this explicit transport bound below the 8 GiB ustar size-field limit;
 // each constituent retains its own stricter validation and source limit.
-#[cfg(feature = "experimental-native-v6-ha")]
+#[cfg(feature = "native-v6-ha")]
 pub(crate) const MAX_V6_HA_SNAPSHOT_STATE: u64 = 2 * MAX_V6_SNAPSHOT_STATE + 64 * 1024 * 1024;
-#[cfg(feature = "experimental-native-v6-ha")]
+#[cfg(feature = "native-v6-ha")]
 pub(crate) const MAX_SNAPSHOT_ENTRY: u64 = MAX_V6_HA_SNAPSHOT_STATE;
-#[cfg(all(
-    feature = "fixture-native-v6-service",
-    not(feature = "experimental-native-v6-ha")
-))]
+#[cfg(all(feature = "native-v6-storage", not(feature = "native-v6-ha")))]
 pub(crate) const MAX_SNAPSHOT_ENTRY: u64 = MAX_V6_SNAPSHOT_STATE;
-#[cfg(not(feature = "fixture-native-v6-service"))]
+#[cfg(not(feature = "native-v6-storage"))]
 pub(crate) const MAX_SNAPSHOT_ENTRY: u64 = MAX_NATIVE_STATE;
 pub(crate) const MAX_NATIVE_ARCHIVE: u64 = MAX_SNAPSHOT_ENTRY + 1024 * 1024;
 #[cfg(unix)]
@@ -42,6 +43,10 @@ const DIRECTORY: &str = ".snapshot-transfer";
 pub(crate) struct SnapshotSpool {
     #[cfg(unix)]
     parent: File,
+    // A private held directory descriptor cannot change its device/inode.
+    // This is its immutable identity, never a cached UID, mode or path result.
+    #[cfg(unix)]
+    parent_identity: (u64, u64),
     #[cfg(unix)]
     original: PathBuf,
     directory: ExclusiveDirectory,
@@ -50,6 +55,49 @@ pub(crate) struct SnapshotSpool {
 
 fn invalid() -> io::Error {
     io::Error::other("snapshot transfer storage is unavailable")
+}
+
+#[cfg(unix)]
+const SEAL_METADATA_LIMIT: usize = 64 * 1024;
+
+// The stat size is only an allocation hint: a concurrent length change still
+// gets the same bounded physical read. Grow by replacing a Zeroizing owner so
+// no old secret allocation is discarded by Vec's implicit reallocation.
+#[cfg(unix)]
+fn read_seal_bytes(
+    mut reader: impl Read,
+    length_hint: u64,
+) -> io::Result<zeroize::Zeroizing<Vec<u8>>> {
+    let maximum = SEAL_METADATA_LIMIT + 1;
+    let initial = usize::try_from(length_hint)
+        .unwrap_or(maximum)
+        .saturating_add(1)
+        .min(maximum);
+    let mut bytes = zeroize::Zeroizing::new(Vec::with_capacity(initial));
+    loop {
+        let start = bytes.len();
+        if start == maximum {
+            return Ok(bytes);
+        }
+        if start == bytes.capacity() {
+            let capacity = bytes.capacity().saturating_mul(2).min(maximum);
+            let mut grown = zeroize::Zeroizing::new(Vec::with_capacity(capacity));
+            grown.extend_from_slice(&bytes);
+            bytes = grown;
+        }
+        let end = bytes.capacity().min(maximum);
+        bytes.resize(end, 0);
+        match reader.read(&mut bytes[start..]) {
+            Ok(count) => {
+                bytes.truncate(start + count);
+                if count == 0 {
+                    return Ok(bytes);
+                }
+            }
+            Err(error) if error.kind() == io::ErrorKind::Interrupted => bytes.truncate(start),
+            Err(error) => return Err(error),
+        }
+    }
 }
 fn guard(error: impl std::fmt::Display) -> io::Error {
     let _ = error;
@@ -83,9 +131,8 @@ impl SnapshotSpool {
                 Mode::empty(),
             )?);
             let anchored_child = child.metadata()?;
-            if anchored_child.mode() & 0o077 != 0
-                || anchored_child.uid() != parent.metadata()?.uid()
-            {
+            let parent_metadata = parent.metadata()?;
+            if anchored_child.mode() & 0o077 != 0 || anchored_child.uid() != parent_metadata.uid() {
                 return Err(invalid());
             }
             // The separately locked spool must be the exact child opened from
@@ -98,6 +145,7 @@ impl SnapshotSpool {
                 return Err(invalid());
             }
             let spool = Arc::new(Self {
+                parent_identity: (parent_metadata.dev(), parent_metadata.ino()),
                 parent,
                 original: path.to_owned(),
                 directory,
@@ -126,20 +174,30 @@ impl SnapshotSpool {
     }
 
     fn verify(&self) -> io::Result<()> {
-        self.directory.verify().map_err(guard)?;
         #[cfg(unix)]
         {
-            let held = self.parent.metadata()?;
-            let current = fs::symlink_metadata(&self.original)?;
-            if !current.is_dir()
-                || current.file_type().is_symlink()
-                || held.dev() != current.dev()
-                || held.ino() != current.ino()
-            {
-                return Err(invalid());
-            }
+            self.verify_with_parent().map(|_| ())
         }
-        Ok(())
+        #[cfg(not(unix))]
+        {
+            self.directory.verify().map_err(guard)
+        }
+    }
+
+    #[cfg(unix)]
+    fn verify_with_parent(&self) -> io::Result<fs::Metadata> {
+        self.directory.verify().map_err(guard)?;
+        let current = fs::symlink_metadata(&self.original)?;
+        if !current.is_dir()
+            || current.file_type().is_symlink()
+            || self.parent_identity != (current.dev(), current.ino())
+        {
+            return Err(invalid());
+        }
+        // This is a fresh name observation of the same held parent inode.
+        // Callers may use its current UID without a redundant fstat, but no
+        // observation is retained across a read or authorization boundary.
+        Ok(current)
     }
 
     pub(crate) fn lease(self: &Arc<Self>) -> io::Result<Arc<SnapshotLease>> {
@@ -180,7 +238,6 @@ impl SnapshotLease {
         }
         #[cfg(unix)]
         {
-            const LIMIT: usize = 64 * 1024;
             self.spool.verify()?;
             if Instant::now() >= deadline {
                 return Err(io::Error::new(
@@ -202,13 +259,12 @@ impl SnapshotLease {
                 || metadata.nlink() != 1
                 || metadata.mode() & 0o077 != 0
                 || metadata.uid() != self.spool.parent.metadata()?.uid()
-                || metadata.len() > LIMIT as u64
+                || metadata.len() > SEAL_METADATA_LIMIT as u64
             {
                 return Err(invalid());
             }
-            let mut bytes = zeroize::Zeroizing::new(Vec::with_capacity(LIMIT + 1));
-            file.take((LIMIT + 1) as u64).read_to_end(&mut bytes)?;
-            if bytes.len() > LIMIT {
+            let bytes = read_seal_bytes(file, metadata.len())?;
+            if bytes.len() > SEAL_METADATA_LIMIT {
                 return Err(invalid());
             }
             self.spool.verify()?;
@@ -277,6 +333,113 @@ impl SnapshotFile {
         }
         Ok(())
     }
+
+    /// Coalesce only private export output. The exclusive borrow prevents any
+    /// other seek/write while the logical cursor differs from the descriptor.
+    /// Every logical write retains this file's original deadline and bound.
+    #[cfg(feature = "native-v6-storage")]
+    pub(crate) fn buffered_writer(&mut self) -> io::Result<SnapshotBufferedWriter<'_>> {
+        self.check()?;
+        let position = self.file.stream_position()?;
+        Ok(SnapshotBufferedWriter {
+            inner: self,
+            pending: zeroize::Zeroizing::new(Vec::with_capacity(EXPORT_WRITE_BUFFER)),
+            position,
+            failed: false,
+        })
+    }
+}
+
+#[cfg(feature = "native-v6-storage")]
+const EXPORT_WRITE_BUFFER: usize = 64 * 1024;
+
+/// This buffer has no Drop flush. A failed/cancelled export erases its pending
+/// plaintext without attempting more I/O or releasing any response authority.
+#[cfg(feature = "native-v6-storage")]
+pub(crate) struct SnapshotBufferedWriter<'a> {
+    inner: &'a mut SnapshotFile,
+    pending: zeroize::Zeroizing<Vec<u8>>,
+    position: u64,
+    failed: bool,
+}
+
+#[cfg(feature = "native-v6-storage")]
+impl SnapshotBufferedWriter<'_> {
+    fn ready(&mut self) -> io::Result<()> {
+        if self.failed {
+            return Err(invalid());
+        }
+        if let Err(error) = self.inner.check() {
+            self.failed = true;
+            return Err(error);
+        }
+        Ok(())
+    }
+
+    fn drain(&mut self) -> io::Result<()> {
+        self.ready()?;
+        if let Err(error) = self.inner.write_all(self.pending.as_slice()) {
+            self.failed = true;
+            return Err(error);
+        }
+        // Erase initialized bytes BEFORE clear: Vec's unused capacity must
+        // never retain an earlier plaintext fragment after a successful flush.
+        use zeroize::Zeroize;
+        self.pending.as_mut_slice().zeroize();
+        self.pending.clear();
+        Ok(())
+    }
+
+    pub(crate) fn finish(mut self) -> io::Result<()> {
+        self.flush()
+    }
+}
+
+#[cfg(feature = "native-v6-storage")]
+impl Write for SnapshotBufferedWriter<'_> {
+    fn write(&mut self, bytes: &[u8]) -> io::Result<usize> {
+        self.ready()?;
+        let Some(end) = self.position.checked_add(bytes.len() as u64) else {
+            self.failed = true;
+            return Err(invalid());
+        };
+        if end > self.inner.maximum {
+            self.failed = true;
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "snapshot transfer bound exceeded",
+            ));
+        }
+        if bytes.len() >= EXPORT_WRITE_BUFFER {
+            self.drain()?;
+            return match self.inner.write(bytes) {
+                Ok(count) => {
+                    self.position += count as u64;
+                    Ok(count)
+                }
+                Err(error) => {
+                    self.failed = true;
+                    Err(error)
+                }
+            };
+        }
+        if self.pending.len() + bytes.len() > EXPORT_WRITE_BUFFER {
+            self.drain()?;
+        }
+        self.ready()?;
+        self.pending.extend_from_slice(bytes);
+        self.position = end;
+        Ok(bytes.len())
+    }
+
+    fn flush(&mut self) -> io::Result<()> {
+        self.drain()?;
+        if let Err(error) = self.inner.flush() {
+            self.failed = true;
+            return Err(error);
+        }
+        Ok(())
+    }
 }
 impl Read for SnapshotFile {
     fn read(&mut self, bytes: &mut [u8]) -> io::Result<usize> {
@@ -312,3 +475,11 @@ impl Seek for SnapshotFile {
         self.file.seek(from)
     }
 }
+
+#[cfg(all(test, unix, feature = "native-v6-storage"))]
+#[path = "snapshot_file_buffer_tests.rs"]
+mod buffer_tests;
+
+#[cfg(all(test, unix, feature = "native-v6-storage"))]
+#[path = "snapshot_seal_read_tests.rs"]
+mod seal_read_tests;

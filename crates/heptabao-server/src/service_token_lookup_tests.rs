@@ -53,6 +53,10 @@ fn token_lookup_echoes_only_authorized_presented_credentials_and_preserves_stora
         assert_eq!(response.status, 200);
         assert_eq!(response.body["data"]["id"], child);
         assert_eq!(response.body["data"]["accessor"], accessor);
+    }
+    // Accessor lookup uses Update (POST/PUT), while the bearer lookup and
+    // self lookup above retain their GET/POST contract.
+    for method in ["POST", "PUT"] {
         let response = call(
             &mut service,
             method,
@@ -63,6 +67,28 @@ fn token_lookup_echoes_only_authorized_presented_credentials_and_preserves_stora
         assert_eq!(response.status, 200);
         assert_eq!(response.body["data"]["id"], "");
         assert_eq!(response.body["data"]["accessor"], accessor);
+    }
+    for (actor, target, expected) in [
+        (token.as_str(), accessor, 405),
+        (token.as_str(), "invalid-target", 405),
+        ("", accessor, 403),
+        (child, accessor, 403),
+    ] {
+        let response = call(
+            &mut service,
+            "GET",
+            "auth/token/lookup-accessor",
+            actor,
+            json!({"accessor":target}),
+        );
+        assert_eq!(response.status, expected);
+        assert!(response.body.get("data").is_none());
+        assert!(response.body.get("auth").is_none());
+        assert!(response.unwrapped_json.is_none());
+        assert!(response.response_headers.is_empty());
+        if expected == 405 {
+            assert_eq!(response.body["errors"], json!(["unsupported operation"]));
+        }
     }
     for (actor, body) in [
         (child, json!({"token":token})),

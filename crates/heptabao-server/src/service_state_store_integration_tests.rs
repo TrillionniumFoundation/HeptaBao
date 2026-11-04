@@ -59,7 +59,7 @@ fn large_engine_owner_round_trips_through_owner_chunks_and_restart()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
-    let (key, token) = bootstrap(&mut service)?;
+    let (key, token) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     let payload = "x".repeat(900 * 1024);
     let response = legacy_owner_write(
         &mut service,

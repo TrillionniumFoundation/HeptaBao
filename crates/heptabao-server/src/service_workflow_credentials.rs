@@ -57,23 +57,26 @@ impl Service {
         let _ingress = crate::auth::IngressReplyScope::restore(
             crate::auth::current_ingress().map(|context| context.logical_subrequest()),
         );
-        let execution = self.begin_at_mode_started_clock(
-            RequestDispatch {
-                method: &step.method,
-                path: &step.path,
-                namespace: outer.namespace,
-                token,
-                body: step.body.clone(),
-                now: outer.now,
-                allow_forward: false,
-                enforce_namespace: true,
-                wrap_ttl_seconds: None,
-                origin_peer: outer.origin_peer,
-                client_certificates: outer.client_certificates.map(<[Vec<u8>]>::to_vec),
-            },
-            outer.admission_started,
-            outer.token_clock,
-        );
+        let execution = {
+            let _quota_subrequest = rate_limit_quotas::LogicalSubrequestScope::enter();
+            self.begin_at_mode_started_clock(
+                RequestDispatch {
+                    method: &step.method,
+                    path: &step.path,
+                    namespace: outer.namespace,
+                    token,
+                    body: step.body.clone(),
+                    now: outer.now,
+                    allow_forward: false,
+                    enforce_namespace: true,
+                    wrap_ttl_seconds: None,
+                    origin_peer: outer.origin_peer,
+                    client_certificates: outer.client_certificates.map(<[Vec<u8>]>::to_vec),
+                },
+                outer.admission_started,
+                outer.token_clock,
+            )
+        };
         match execution {
             RequestExecution::Complete(response) => {
                 if let Some(current) = &self.state {

@@ -5,11 +5,11 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use crate::state_machine::StateMachine as MemStoreStateMachine;
+#[cfg(feature = "native-v6-raft-objects")]
+use openraft::EntryPayload;
 #[cfg(test)]
 use openraft::ReadPolicy;
 use openraft::{Config, Instant, SnapshotPolicy, storage::RaftStateMachine};
-#[cfg(feature = "experimental-v6-raft-objects")]
-use openraft::{EntryPayload, storage::RaftLogReader};
 use openraft_memstore::ClientRequest;
 use tokio::task::spawn_blocking;
 
@@ -18,21 +18,36 @@ use crate::network::DurableRaft;
 use crate::store::{DurableLogStore, DurableStateMachine};
 use crate::{CommitReceipt, RaftRuntimeError, ReplicatedEnvelope};
 
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 #[path = "v6_closure_admission.rs"]
 mod v6_closure_admission;
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 pub use v6_closure_admission::NativeV6ClosureAdmission;
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 #[path = "v6_committed_root_read.rs"]
 mod v6_committed_root_read;
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 pub use v6_committed_root_read::NativeV6CommittedRootRead;
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 #[path = "v6_epoch_restore.rs"]
 mod v6_epoch_restore;
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 pub use v6_epoch_restore::NativeV6EpochRestoreRead;
+#[cfg(feature = "native-v6-raft-objects")]
+#[path = "v6_checkpoint_reselection.rs"]
+mod v6_checkpoint_reselection;
+#[cfg(feature = "native-v6-raft-objects")]
+#[path = "v6_retention.rs"]
+mod v6_retention;
+#[cfg(feature = "native-v6-raft-objects")]
+pub use v6_retention::NativeV6IntentRetirementOutcome;
+#[cfg(feature = "native-v6-raft-objects")]
+#[path = "v6_retirement_recovery.rs"]
+mod v6_retirement_recovery;
+#[cfg(feature = "native-v6-raft-objects")]
+pub use v6_retirement_recovery::{
+    NativeV6IntentRetirementObservation, NativeV6PreparedIntentRetirement,
+};
 
 const PRODUCTION_CLIENT_ID: &str = "heptabao-production-ha";
 const PRODUCTION_CHUNK_CLIENT_PREFIX: &str = "heptabao-production-ha-chunk";
@@ -76,6 +91,14 @@ impl CommittedApplicationPrefix {
 }
 
 impl ApplicationReadWitness {
+    /// The original opaque witness's absolute bound, never a renewed lease.
+    /// Exposing it permits a later, independent read to retain a shorter bound;
+    /// no caller can change the witness or construct new quorum evidence.
+    #[cfg(feature = "native-v6-raft-objects")]
+    pub fn deadline(&self) -> std::time::Instant {
+        self.deadline.into_std()
+    }
+
     /// Caller first authenticates the selected application and validates this
     /// opaque witness under its original quorum deadline.
     pub fn completed_prefix(&self) -> CommittedApplicationPrefix {
@@ -141,7 +164,7 @@ pub struct ProcessRaftNode {
     pub(super) state_machine: DurableStateMachine,
     // Feature-only read-only access to the SAME persisted Raft log store.
     // The clone retains the original Arc; it does not reopen a different store.
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     v6_intent_log_reader: DurableLogStore,
     rpc_service: RaftRpcService,
     pub(super) peer_network: RemoteNetworkFactory,
@@ -183,7 +206,17 @@ impl ProcessRaftNode {
             return Err(RemoteRaftError::InvalidTopology);
         }
         let stores = spawn_blocking(move || {
-            std::fs::create_dir_all(&root)?;
+            // A fresh Raft parent must be private independently of the SSH,
+            // shell or service manager's ambient umask. Existing roots retain
+            // their permissions; opening a store does not rewrite custody.
+            let mut directory = std::fs::DirBuilder::new();
+            directory.recursive(true);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::DirBuilderExt;
+                directory.mode(0o700);
+            }
+            directory.create(&root)?;
             let log_root = root.join("log");
             let state_root = root.join("state-machine");
             if create {
@@ -211,7 +244,7 @@ impl ProcessRaftNode {
                 RemoteRaftError::Io("recovered Raft membership is unavailable".into())
             })?)
         };
-        #[cfg(feature = "experimental-v6-raft-objects")]
+        #[cfg(feature = "native-v6-raft-objects")]
         let v6_intent_log_reader = log_store.clone();
         let rpc_factory = network.clone();
         let raft = DurableRaft::new(
@@ -252,7 +285,7 @@ impl ProcessRaftNode {
             id,
             raft,
             state_machine,
-            #[cfg(feature = "experimental-v6-raft-objects")]
+            #[cfg(feature = "native-v6-raft-objects")]
             v6_intent_log_reader,
             rpc_service,
             peer_network: rpc_factory,
@@ -455,7 +488,7 @@ impl ProcessRaftNode {
     /// This does NOT establish the originating Actor/ACL, real local ciphertext
     /// custody on each voter, V6 root publication, or client write authority.
     /// Feature default OFF; no service or production caller invokes it.
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub async fn reconcile_exact_staged_v6_intent(
         &self,
         expected: &crate::NativeV6CommitIntent,
@@ -505,17 +538,16 @@ impl ProcessRaftNode {
         {
             return Err(deny());
         }
-        let end = receipt.log_index.checked_add(1).ok_or_else(deny)?;
-        let mut reader = self.v6_intent_log_reader.clone();
-        let entries = tokio::time::timeout_at(
+        let slot = tokio::time::timeout_at(
             quorum.deadline,
-            reader.try_get_log_entries(receipt.log_index..end),
+            self.v6_intent_log_reader
+                .native_v6_log_slot(receipt.log_index),
         )
         .await
         .map_err(|_| deny())?
         .map_err(|_| deny())?;
-        match entries.as_slice() {
-            [entry] => {
+        match slot.entry.as_ref() {
+            Some(entry) => {
                 if entry.log_id.index != receipt.log_index
                     || entry.log_id.committed_leader_id().node_id != receipt.leader_id
                 {
@@ -532,36 +564,41 @@ impl ProcessRaftNode {
                     _ => return Err(deny()),
                 }
             }
-            [] => {
-                // Empty entry results do not imply compaction. Require an
-                // independent actual Raft purged frontier, plus the original
-                // applied LogId inside the *persisted snapshot*, not a cached
-                // application object or caller-supplied receipt.
-                if membership
-                    .purged_index
-                    .is_none_or(|purged| purged < receipt.log_index)
+            None => {
+                // Missing is not compaction. Consult the actual log owner,
+                // then independently authenticate the persisted snapshot.
+                if slot
+                    .last_purged
+                    .is_none_or(|purged| purged.index < receipt.log_index)
                 {
                     return Err(deny());
                 }
-                let observed = self
-                    .state_machine
-                    .durable_snapshot_v6_intent_log_id(&object.reference().id, receipt.log_index)
-                    .await
-                    .map_err(|_| deny())?;
+                let observed = tokio::time::timeout_at(
+                    quorum.deadline,
+                    self.state_machine.durable_snapshot_v6_intent_log_id(
+                        &object.reference().id,
+                        receipt.log_index,
+                    ),
+                )
+                .await
+                .map_err(|_| deny())?
+                .map_err(|_| deny())?;
                 if observed.is_none_or(|log| {
                     log.index != receipt.log_index
                         || log.committed_leader_id().node_id != receipt.leader_id
+                        || !slot.compacted_through(log)
                 }) {
                     return Err(deny());
                 }
             }
-            _ => return Err(deny()),
         }
-        if self
-            .state_machine
-            .record_object(object.reference())
-            .await
-            .map_err(|_| deny())?
+        if tokio::time::timeout_at(
+            quorum.deadline,
+            self.state_machine.record_object(object.reference()),
+        )
+        .await
+        .map_err(|_| deny())?
+        .map_err(|_| deny())?
             != Some(object)
         {
             return Err(deny());
@@ -747,7 +784,7 @@ impl ProcessRaftNode {
     /// Raft binds the exact membership LogId. The caller must authenticate the
     /// source of this enrollment; arbitrary network clients must not reach it.
     /// This slice deliberately forbids changing enrollment after V6 activation.
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub async fn enroll_native_v6_peers(
         &self,
         serial: u64,
@@ -810,7 +847,7 @@ impl ProcessRaftNode {
     /// snapshots without original publication provenance require an explicit
     /// successful unchanged-root Publish before starting native migration.
     /// This observation alone grants no writer or linearizable business read.
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub async fn native_v6_migration_source(
         &self,
     ) -> Option<([u8; 32], openraft::alias::LogIdOf<crate::TypeConfig>)> {
@@ -824,7 +861,7 @@ impl ProcessRaftNode {
     /// do not meet that precondition. This API never returns an HTTP/client ACK.
     /// A timeout can follow a real commit: reconcile the same operation, do not
     /// manufacture a new intent or conclude that the root was unchanged.
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub async fn publish_native_v6_root(
         &self,
         serial: u64,
@@ -877,7 +914,7 @@ impl ProcessRaftNode {
     /// Read-only current committed root. Pair with a fresh ReadIndex before a
     /// business read, and reopen/validate the complete external closure before
     /// activating a server. A Raft snapshot by itself contains no ciphertext.
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub async fn native_v6_root_at_generation(
         &self,
     ) -> (u64, Option<crate::NativeV6PublishedRoot>) {
@@ -894,7 +931,7 @@ impl ProcessRaftNode {
     /// external-closure fsync, barrier/Actor/ACL or HTTP delivery authority.
     /// The caller must validate the typed graph and recheck the same witness
     /// before using it. No original deadline is extended.
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub async fn native_v6_application_read_witness(
         &self,
         deadline: std::time::Instant,
@@ -975,7 +1012,7 @@ impl ProcessRaftNode {
     /// Reconcile the exact published root and original full publication LogId
     /// from durable state, including after compaction/restart. If superseded,
     /// this bounded current-root API returns unavailable, never a false denial.
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub async fn reconcile_native_v6_root(
         &self,
         intent: &crate::NativeV6CommitIntent,

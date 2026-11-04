@@ -9,6 +9,9 @@ use std::{
     sync::atomic::{AtomicU64, Ordering},
 };
 
+#[path = "immutable_source_batch_tests.rs"]
+mod batch;
+
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 const SOURCE: &[u8] = b"typed-root-fixture";
 const CONTEXT: &[u8] = b"typed-object-context-fixture";

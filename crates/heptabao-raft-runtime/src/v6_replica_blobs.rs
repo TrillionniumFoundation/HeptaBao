@@ -24,12 +24,29 @@ static NEXT_TEMPORARY: AtomicU64 = AtomicU64::new(1);
 
 #[path = "v6_replica_blobs_checked.rs"]
 mod checked;
+#[path = "v6_blob_quiescence.rs"]
+mod quiescence;
+pub use quiescence::{NativeV6BlobOperation, NativeV6BlobQuiescence};
+
+#[path = "v6_shared_retirement.rs"]
+mod shared_retirement;
+#[cfg(test)]
+pub(crate) use shared_retirement::observe_shared_retirement_reads;
+pub use shared_retirement::{
+    NativeV6SharedRetirementError, NativeV6SharedRetirementOutcome, NativeV6SharedRetirementPlan,
+    NativeV6SharedRetirementReceipt, NativeV6SharedRetirementSelection,
+};
+
+#[path = "v6_retained_root_closure.rs"]
+mod retained_root_closure;
+pub use retained_root_closure::NativeV6RetainedClosure;
 
 #[derive(Debug)]
 pub enum LocalV6BlobError {
     InvalidCiphertext,
     InvalidClosure,
     InvalidRoot,
+    RetentionBusy,
     CorruptOrChanged,
     Guard(DirectoryGuardError),
     Io(io::Error),
@@ -41,6 +58,7 @@ impl fmt::Display for LocalV6BlobError {
             Self::InvalidCiphertext => "invalid or unbounded V6 ciphertext",
             Self::InvalidClosure => "empty, duplicate or oversized local V6 closure",
             Self::InvalidRoot => "V6 staging requires an existing private real directory",
+            Self::RetentionBusy => "native ciphertext operation or retention owner is busy",
             Self::CorruptOrChanged => "V6 ciphertext bytes or identity do not match",
             Self::Guard(_) => "V6 staging directory identity/owner fence unavailable",
             Self::Io(_) => "V6 staging file I/O failed",
@@ -115,6 +133,7 @@ impl LocalV6ClosureReceipt {
 #[derive(Debug)]
 pub struct LocalV6BlobStage {
     directory: ExclusiveDirectory,
+    operations: std::sync::Arc<quiescence::OperationState>,
 }
 impl LocalV6BlobStage {
     pub fn open_existing(root: &Path) -> Result<Self, LocalV6BlobError> {
@@ -131,6 +150,7 @@ impl LocalV6BlobStage {
         }
         Ok(Self {
             directory: ExclusiveDirectory::open(root)?,
+            operations: std::sync::Arc::new(quiescence::OperationState::default()),
         })
     }
 
@@ -162,20 +182,24 @@ impl LocalV6BlobStage {
         if bytes.len() != reference.encoded_bytes as usize {
             return Err(LocalV6BlobError::CorruptOrChanged);
         }
-        // Authenticate both the exact bytes and all immutable reference fields
-        // by reconstructing the domain-separated record object.
-        let verified = SealedRecordObject::new_native_v6_ciphertext_chunk(bytes.clone())
+        // Authenticate the exact declared reference through the existing full
+        // validator. Reconstructing a fresh reference first would hash the same
+        // immutable bytes twice: once to make its id and again in validation.
+        let verified = SealedRecordObject::new(reference.clone(), Vec::new(), bytes)
             .map_err(|_| LocalV6BlobError::CorruptOrChanged)?;
-        if verified.reference() != reference {
+        if verified.reference() != reference
+            || verified.reference().kind != RecordObjectKind::NativeV6CiphertextChunk
+        {
             return Err(LocalV6BlobError::CorruptOrChanged);
         }
-        Ok(bytes)
+        Ok(verified.into_sealed())
     }
 
     /// Stage a local copy. A late I/O or fsync failure is NEVER interpreted as
     /// an uncommitted/no-effect result and must not automatically be retried.
     /// This function never touches Raft or native V6 root publication.
     pub fn stage_local(&self, ciphertext: &[u8]) -> Result<LocalV6BlobReceipt, LocalV6BlobError> {
+        let _operation = self.begin_native_operation()?;
         let object = SealedRecordObject::new_native_v6_ciphertext_chunk(ciphertext.to_vec())
             .map_err(|_| LocalV6BlobError::InvalidCiphertext)?;
         let reference = object.reference().clone();
@@ -224,6 +248,7 @@ impl LocalV6BlobStage {
         expected: &RecordObjectRef,
         ciphertext: &[u8],
     ) -> Result<LocalV6BlobReceipt, LocalV6BlobError> {
+        let _operation = self.begin_native_operation()?;
         Self::leaf(expected)?;
         if u64::try_from(ciphertext.len()).ok() != Some(expected.payload_bytes) {
             return Err(LocalV6BlobError::CorruptOrChanged);
@@ -239,6 +264,7 @@ impl LocalV6BlobStage {
     /// Physically reopen and authenticate a local ciphertext copy; no read
     /// authority or verified Raft root is implied by this staging operation.
     pub fn read_local(&self, reference: &RecordObjectRef) -> Result<Vec<u8>, LocalV6BlobError> {
+        let _operation = self.begin_native_operation()?;
         let destination = Self::leaf(reference)?;
         let mut file = self.directory.open_file(&destination, FileAccess::Read)?;
         Self::read_checked(&mut file, reference)
@@ -253,6 +279,7 @@ impl LocalV6BlobStage {
         reference: &RecordObjectRef,
         gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
     ) -> Result<Option<Vec<u8>>, LocalV6BlobError> {
+        let _operation = self.begin_native_operation()?;
         gate()?;
         self.directory.verify()?;
         let destination = Self::leaf(reference)?;
@@ -285,6 +312,7 @@ impl LocalV6BlobStage {
         reference: &RecordObjectRef,
         gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
     ) -> Result<Vec<u8>, LocalV6BlobError> {
+        let _operation = self.begin_native_operation()?;
         gate()?;
         let destination = Self::leaf(reference)?;
         gate()?;
@@ -329,13 +357,15 @@ impl LocalV6BlobStage {
         if bytes.len() != expected {
             return Err(LocalV6BlobError::CorruptOrChanged);
         }
-        let verified = SealedRecordObject::new_native_v6_ciphertext_chunk(bytes.clone())
+        let verified = SealedRecordObject::new(reference.clone(), Vec::new(), bytes)
             .map_err(|_| LocalV6BlobError::CorruptOrChanged)?;
-        if verified.reference() != reference {
+        if verified.reference() != reference
+            || verified.reference().kind != RecordObjectKind::NativeV6CiphertextChunk
+        {
             return Err(LocalV6BlobError::CorruptOrChanged);
         }
         gate()?;
-        Ok(bytes)
+        Ok(verified.into_sealed())
     }
 
     /// Compare a *declared* Raft-stage V6 intent with a fresh physical read
@@ -351,6 +381,7 @@ impl LocalV6BlobStage {
         intent: &crate::NativeV6CommitIntent,
         references: &[RecordObjectRef],
     ) -> Result<LocalV6ClosureReceipt, LocalV6BlobError> {
+        let _operation = self.begin_native_operation()?;
         intent
             .encode()
             .map_err(|_| LocalV6BlobError::InvalidClosure)?;
@@ -378,6 +409,7 @@ impl LocalV6BlobStage {
         &self,
         references: &[RecordObjectRef],
     ) -> Result<LocalV6ClosureReceipt, LocalV6BlobError> {
+        let _operation = self.begin_native_operation()?;
         if references.is_empty() {
             return Err(LocalV6BlobError::InvalidClosure);
         }

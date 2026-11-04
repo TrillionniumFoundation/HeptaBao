@@ -1,5 +1,5 @@
 //! Real Linux durable owner lifecycle, using disposable synthetic state only.
-use super::tests::{Root, bootstrap, call};
+use super::tests::{Root, call};
 use super::*;
 use base64::engine::general_purpose::STANDARD;
 type TestResult = Result<(), Box<dyn std::error::Error>>;
@@ -8,7 +8,7 @@ type TestResult = Result<(), Box<dyn std::error::Error>>;
 fn mldsa270_service_promotes_only_on_write_fences_legacy_and_reopens_signatures() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap(&mut service)?;
+    let (unseal, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -201,7 +201,7 @@ fn asymmetric270_service_promotes_schema65_fences_disguised64_and_reopens_true_s
 -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap(&mut service)?;
+    let (unseal, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     assert_eq!(
         call(
             &mut service,

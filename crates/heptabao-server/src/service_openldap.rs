@@ -834,7 +834,7 @@ impl Service {
 
 #[cfg(test)]
 mod completion_tests {
-    use super::super::tests::{Root, bootstrap, call};
+    use super::super::tests::{Root, bootstrap_pre141, call};
     use super::*;
     type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
@@ -848,7 +848,9 @@ mod completion_tests {
     fn fixture_with_batch_identity(parented: Option<bool>, identity: bool) -> TestResult<Fixture> {
         let root = Root::new();
         let mut service = root.service()?;
-        let (key, token) = bootstrap(&mut service)?;
+        // Keep the public-origin 86 floor independently observable in this
+        // historical completion/recovery fixture.
+        let (key, token) = bootstrap_pre141(&mut service)?;
         assert_eq!(
             call(
                 &mut service,

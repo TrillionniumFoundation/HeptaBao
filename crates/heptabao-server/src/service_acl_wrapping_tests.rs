@@ -503,7 +503,20 @@ fn acl_wrapping_retained_actor_rechecks_current_bounds_before_late_delivery() ->
 
 #[test]
 fn acl_wrapping_schema61_is_independent_and_schema60_promotes_only_on_mutation() -> TestResult {
-    let (root, mut service, key, admin) = fresh()?;
+    let root = Root::new();
+    let mut service = root.service()?;
+    let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "secret/data/item",
+            &admin,
+            json!({"data":{"synthetic":"original"}})
+        )
+        .status,
+        200
+    );
     let mut legacy = service.state.clone().ok_or("state")?;
     legacy.schema = 60;
     assert!(!legacy.auth.has_acl_wrapping_ttl_state());
@@ -527,10 +540,13 @@ fn acl_wrapping_schema61_is_independent_and_schema60_promotes_only_on_mutation()
     );
     let token = issue(&mut service, &admin, &["persisted"], false, 0)?;
     let state = service.state.as_ref().ok_or("state")?;
-    assert_eq!(state.schema, AUTH_PUBLIC_ORIGIN_STATE_SCHEMA);
+    assert_eq!(state.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     assert!(state.auth.has_acl_wrapping_ttl_state());
     assert!(!state.auth.has_acl_template_state());
     let mut disguised = state.clone();
+    disguised
+        .auth
+        .restore_pre141_security_owners_for_format_test();
     disguised
         .auth
         .omit_unwrapped_public_origin_for_legacy_fixture();

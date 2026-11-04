@@ -3,6 +3,30 @@ use super::*;
 use crate::auth::rate_limit_quotas::{Definition, Registry};
 use std::net::IpAddr;
 const MAX_CLIENTS: usize = 8192;
+
+// Only the trusted workflow dispatcher can enter this local scope. Forwarding
+// permission is not request provenance: HTTP fixtures and authenticated HA
+// ingress may both disallow another forward while still owning a quota charge.
+thread_local! {
+    static LOGICAL_SUBREQUEST: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+pub(super) struct LogicalSubrequestScope {
+    previous: bool,
+    _not_send: std::marker::PhantomData<std::rc::Rc<()>>,
+}
+impl LogicalSubrequestScope {
+    pub(super) fn enter() -> Self {
+        Self {
+            previous: LOGICAL_SUBREQUEST.with(|slot| slot.replace(true)),
+            _not_send: std::marker::PhantomData,
+        }
+    }
+}
+impl Drop for LogicalSubrequestScope {
+    fn drop(&mut self) {
+        LOGICAL_SUBREQUEST.with(|slot| slot.set(self.previous));
+    }
+}
 #[derive(Default)]
 pub(super) struct Runtime {
     buckets: BTreeMap<(String, u64, IpAddr), Bucket>,
@@ -54,7 +78,67 @@ struct Bucket {
     blocked_until: Option<Instant>,
 }
 struct Rejected {
-    retry_after: u64,
+    retry_at: Instant,
+}
+struct Counters {
+    limit: u64,
+    remaining: u64,
+    reset_at: Instant,
+}
+struct Decision {
+    rejected: Option<Rejected>,
+    counters: Option<Counters>,
+}
+// This is moved with one request, including a split external effect. It is
+// never stored in the Runtime, cloned, persisted, or recreated from a status.
+pub(super) struct AcceptedHeaders(ResponseHeaders);
+impl Decision {
+    fn headers(&self) -> Result<ResponseHeaders, ()> {
+        let now = Instant::now();
+        let mut fields = serde_json::Map::new();
+        if let Some(counters) = &self.counters {
+            fields.insert(
+                "X-RateLimit-Limit".into(),
+                json!([counters.limit.to_string()]),
+            );
+            fields.insert(
+                "X-RateLimit-Remaining".into(),
+                json!([counters.remaining.to_string()]),
+            );
+            fields.insert(
+                "X-RateLimit-Reset".into(),
+                json!([counters
+                    .reset_at
+                    .saturating_duration_since(now)
+                    .as_secs()
+                    .to_string()]),
+            );
+        }
+        if let Some(rejected) = &self.rejected {
+            fields.insert(
+                "Retry-After".into(),
+                json!([rejected
+                    .retry_at
+                    .saturating_duration_since(now)
+                    .as_secs()
+                    .to_string()]),
+            );
+        }
+        ResponseHeaders::from_sdk(
+            Some(&Value::Object(fields)),
+            &[
+                "X-RateLimit-Limit".into(),
+                "X-RateLimit-Remaining".into(),
+                "X-RateLimit-Reset".into(),
+                "Retry-After".into(),
+            ],
+        )
+    }
+}
+impl AcceptedHeaders {
+    fn apply(self, response: &mut Response) -> Result<(), ()> {
+        crate::ha_forward_completion::merge_quota_headers(response, self.0)
+    }
 }
 impl Runtime {
     pub(super) fn begin_barrier_activation(&mut self) {
@@ -70,7 +154,11 @@ impl Runtime {
         self.standby_rejection = standby_rejection;
     }
     fn synchronize_owner(&mut self, owner: RuntimeOwner) {
-        if self.owner.as_ref().is_none_or(|current| !current.same(&owner)) {
+        if self
+            .owner
+            .as_ref()
+            .is_none_or(|current| !current.same(&owner))
+        {
             self.buckets.clear();
             self.sweep.clear();
             self.owner = Some(owner);
@@ -116,12 +204,12 @@ impl Runtime {
             bucket.limiter.is_some() || bucket.blocked_until.is_some_and(|until| swept_at < until)
         });
     }
-    fn take_at(
+    fn decide_at(
         &mut self,
         definition: &Definition,
         peer: IpAddr,
         now: Instant,
-    ) -> Result<Option<Rejected>, ()> {
+    ) -> Result<Decision, ()> {
         self.purge_at(definition, now);
         self.buckets.retain(|(name, revision, _), _| {
             name != &definition.name || *revision == definition.revision
@@ -138,9 +226,10 @@ impl Runtime {
         // idle limiter sweep cannot shorten a configured block interval.
         if let Some(until) = bucket.blocked_until {
             if now < until {
-                return Ok(Some(Rejected {
-                    retry_after: until.saturating_duration_since(now).as_secs(),
-                }));
+                return Ok(Decision {
+                    rejected: Some(Rejected { retry_at: until }),
+                    counters: None,
+                });
             }
             bucket.blocked_until = None;
         }
@@ -155,21 +244,52 @@ impl Runtime {
             limiter.last_tick = tick;
             limiter.remaining = definition.tokens();
         }
+        let next_tick = tick
+            .checked_add(1)
+            .and_then(|next| next.checked_mul(definition.interval))
+            .ok_or(())?;
+        let reset_at = limiter
+            .start
+            .checked_add(Duration::from_secs(next_tick))
+            .ok_or(())?;
         if limiter.remaining > 0 {
             limiter.remaining -= 1;
-            return Ok(None);
+            return Ok(Decision {
+                rejected: None,
+                counters: Some(Counters {
+                    limit: definition.tokens(),
+                    remaining: limiter.remaining,
+                    reset_at,
+                }),
+            });
         }
-        let retry_after = if definition.block_interval > 0 {
+        let retry_at = if definition.block_interval > 0 {
             let until = now
                 .checked_add(Duration::from_secs(definition.block_interval))
                 .ok_or(())?;
             bucket.blocked_until = Some(until);
-            definition.block_interval.saturating_sub(1)
+            until
         } else {
-            let next = Duration::from_secs((tick + 1).checked_mul(definition.interval).ok_or(())?);
-            next.saturating_sub(elapsed).as_secs()
+            reset_at
         };
-        Ok(Some(Rejected { retry_after }))
+        Ok(Decision {
+            rejected: Some(Rejected { retry_at }),
+            counters: Some(Counters {
+                limit: definition.tokens(),
+                remaining: 0,
+                reset_at,
+            }),
+        })
+    }
+    #[cfg(test)]
+    fn take_at(
+        &mut self,
+        definition: &Definition,
+        peer: IpAddr,
+        now: Instant,
+    ) -> Result<Option<Rejected>, ()> {
+        self.decide_at(definition, peer, now)
+            .map(|decision| decision.rejected)
     }
     fn synchronize(&mut self, registry: &Registry, owner: RuntimeOwner) {
         self.synchronize_owner(owner);
@@ -188,6 +308,38 @@ impl Runtime {
     }
 }
 impl Service {
+    pub(super) fn finish_rate_limit_quota_headers(
+        &mut self,
+        headers: Option<AcceptedHeaders>,
+        mut response: Response,
+        audit_context: Option<(&str, u64)>,
+    ) -> Response {
+        let Some(headers) = headers else {
+            return response;
+        };
+        if headers.apply(&mut response).is_ok() {
+            return response;
+        }
+        // Metadata cannot invalidate an already checked delivery capsule and
+        // then release its body under a new status. Withhold it and invalidate
+        // any future HA completion; a mutation may already have committed.
+        erase_json(&mut response.body);
+        crate::ha_forward_completion::audited(None);
+        if let Some((fingerprint, now)) = audit_context
+            && self
+                .audit_event("quota_response_metadata_veto", fingerprint, now, Some(503))
+                .is_err()
+        {
+            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
+            self.recovery_required = true;
+            self.ha_activation = None;
+        }
+        Response::error(
+            503,
+            "quota response metadata capacity exhausted; outcome may be committed",
+        )
+    }
+
     fn rate_limit_quota_ha_session(&self) -> Option<HaSession> {
         if !self.ha_activation_permitted() {
             return None;
@@ -209,20 +361,30 @@ impl Service {
         if !self.ha_activation_permitted() {
             return Err(unavailable());
         }
-        let process = self.ha.as_ref().ok_or_else(unavailable)?
-            .lock_for_request().map_err(|_| unavailable())?;
+        let process = self
+            .ha
+            .as_ref()
+            .ok_or_else(unavailable)?
+            .lock_for_request()
+            .map_err(|_| unavailable())?;
         let state = self.state.as_ref().ok_or_else(unavailable)?;
         if !process.bootstrap_ready() || process.cluster_id() != state.cluster_id {
             return Err(unavailable());
         }
         let observed = process.leader_status().map_err(|_| unavailable())?;
         if let Some(key) = ha_activation::ActivationKey::from_observation(observed) {
-            if self.ha_activation.as_ref().is_none_or(|event| !event.matches(key)) {
+            if self
+                .ha_activation
+                .as_ref()
+                .is_none_or(|event| !event.matches(key))
+            {
                 return Err(unavailable());
             }
             Ok(HaRole::Active(key))
         } else if !observed.local_is_leader
-            && observed.leader.is_some_and(|leader| leader != observed.local_id)
+            && observed
+                .leader
+                .is_some_and(|leader| leader != observed.local_id)
         {
             Ok(HaRole::Standby)
         } else {
@@ -230,34 +392,43 @@ impl Service {
         }
     }
 
-    pub(super) fn record_rate_limit_quota_activation(
-        &mut self,
-        key: ha_activation::ActivationKey,
-    ) {
+    pub(super) fn record_rate_limit_quota_activation(&mut self, key: ha_activation::ActivationKey) {
         let Some(session) = self.rate_limit_quota_ha_session() else {
             return;
         };
-        self.rate_limit_quotas.synchronize_owner(RuntimeOwner::Ha(session));
+        self.rate_limit_quotas
+            .synchronize_owner(RuntimeOwner::Ha(session));
         self.rate_limit_quotas.observe_ha_role(HaRole::Active(key));
     }
 
     pub(super) fn rate_limit_quota_response(
         &mut self,
         request: &RequestView<'_>,
+        accepted_headers: &mut Option<AcceptedHeaders>,
     ) -> Option<Response> {
-        self.rate_limit_quota_response_with_ingress(request, None)
+        self.rate_limit_quota_response_with_ingress(request, None, accepted_headers)
     }
 
     fn rate_limit_quota_response_with_ingress(
         &mut self,
         request: &RequestView<'_>,
         ingress: Option<QuotaIngressEntry>,
+        accepted_headers: &mut Option<AcceptedHeaders>,
     ) -> Option<Response> {
+        // A workflow step reuses its outer HTTP admission. This private local
+        // scope is never selected by a request header, body or forwarding frame.
+        // Control-group resume is excluded by its existing typed caller guard.
+        if LOGICAL_SUBREQUEST.with(std::cell::Cell::get) {
+            return None;
+        }
         let state = self.state.as_ref()?;
         let registry = state.auth.rate_limit_quota_registry()?;
         let owner = if self.ha.is_some() {
             let Some(session) = self.rate_limit_quota_ha_session() else {
-                return Some(Response::error(503, "HA rate limit quota session is unavailable"));
+                return Some(Response::error(
+                    503,
+                    "HA rate limit quota session is unavailable",
+                ));
             };
             RuntimeOwner::Ha(session)
         } else {
@@ -266,36 +437,41 @@ impl Service {
         // Keep deleted and revised rule pruning even for exempt/nonmatching
         // requests. Only committed current definitions reach this boundary.
         self.rate_limit_quotas.synchronize(registry, owner);
-        if registry.definitions.is_empty() || registry.config.exempt(request.path) {
+        if registry.definitions.is_empty() || registry.exempt(request.path) {
             return None;
         }
-        let (mount, role) = match state.auth.rate_limit_approle_scope(
-            request.namespace,
-            request.method,
-            request.path,
-            request.body,
-        ) {
-            Ok(Some(scope)) => scope,
-            Ok(None) => return None,
-            Err(e) => return Some(Response::error(e.status, &e.message)),
+        let factors = state.rate_limit_quota_routing_factors(request.namespace, request.path);
+        let mount_path = factors.mount.as_deref();
+        let requires_role = match mount_path
+            .map(|mount| registry.has_role_scope(factors.namespace, mount))
+            .transpose()
+        {
+            Ok(required) => required.unwrap_or(false),
+            Err(error) => return Some(Response::error(error.status, &error.message)),
         };
-        let selected = registry
-            .definitions
-            .values()
-            .find(|d| !role.is_empty() && d.path == mount && d.role == role)
-            .or_else(|| {
-                registry
-                    .definitions
-                    .values()
-                    .find(|d| d.role.is_empty() && d.path == request.path)
-            })
-            .or_else(|| {
-                registry
-                    .definitions
-                    .values()
-                    .find(|d| d.role.is_empty() && d.path == mount)
-            });
+        // 2.7.1 resolves login-role metadata for any request on a mount with
+        // role quotas. It does not authenticate or consume the secret ID here.
+        let role = if requires_role {
+            let time = match request.token_time() {
+                Ok(time) => time,
+                Err(response) => return Some(response),
+            };
+            state.auth.rate_limit_quota_login_role(
+                factors.namespace,
+                mount_path.unwrap_or(""),
+                request.body,
+                time,
+                request.client_certificates,
+            )
+        } else {
+            String::new()
+        };
+        let selected = match registry.select(factors.namespace, mount_path, request.path, &role) {
+            Ok(selected) => selected,
+            Err(error) => return Some(Response::error(error.status, &error.message)),
+        };
         let definition = selected?;
+        let headers_enabled = registry.config.enable_rate_limit_response_headers;
         let actual_standby = if self.ha.is_some() {
             let role = match self.rate_limit_quota_ha_role() {
                 Ok(role) => role,
@@ -312,30 +488,43 @@ impl Service {
                 "rate limit quota requires an observed transport peer",
             ));
         };
-        match self
+        let decision = match self
             .rate_limit_quotas
-            .take_at(definition, peer, Instant::now())
+            .decide_at(definition, peer, Instant::now())
         {
-            Ok(None) => None,
-            Ok(Some(rejected)) => {
-                let mut response = Response::error(429, "rate limit quota exceeded");
-                response.response_headers = ResponseHeaders::from_sdk(
-                    Some(&json!({"Retry-After":[rejected.retry_after.to_string()]})),
-                    &["Retry-After".into()],
-                )
-                .unwrap_or_default();
-                if actual_standby && let Some(entry) = ingress {
-                    match StandbyQuotaRejection::capture(self, request, entry, &response) {
-                        Ok(rejection) => self.rate_limit_quotas.standby_rejection = Some(rejection),
-                        Err(error) => return Some(error),
-                    }
-                }
-                Some(response)
+            Ok(decision) => decision,
+            Err(()) => {
+                return Some(Response::error(
+                    503,
+                    "rate limit quota client capacity exhausted",
+                ));
             }
-            Err(()) => Some(Response::error(
-                503,
-                "rate limit quota client capacity exhausted",
-            )),
+        };
+        let headers = if headers_enabled {
+            match decision.headers() {
+                Ok(headers) => headers,
+                Err(()) => {
+                    return Some(Response::error(503, "quota response metadata unavailable"));
+                }
+            }
+        } else {
+            ResponseHeaders::default()
+        };
+        if decision.rejected.is_some() {
+            let mut response = Response::error(429, "rate limit quota exceeded");
+            response.response_headers = headers;
+            if actual_standby && let Some(entry) = ingress {
+                match StandbyQuotaRejection::capture(self, request, entry, &response) {
+                    Ok(rejection) => self.rate_limit_quotas.standby_rejection = Some(rejection),
+                    Err(error) => return Some(error),
+                }
+            }
+            Some(response)
+        } else {
+            if headers_enabled {
+                *accepted_headers = Some(AcceptedHeaders(headers));
+            }
+            None
         }
     }
 }
@@ -383,8 +572,6 @@ impl Runtime {
 impl QuotaIngressEntry {
     fn same_request(&self, request: &RequestView<'_>) -> bool {
         request.allow_forward
-            && request.namespace.is_empty()
-            && request.path.starts_with("auth/")
             && request.admission_started == self.clock.started()
             && request.now == self.now
             && request.token_clock.is_some_and(|clock| {
@@ -426,20 +613,34 @@ impl StandbyQuotaRejection {
         let rejection = Self {
             entry,
             owner: RuntimeOwner::Ha(
-                service.rate_limit_quota_ha_session().ok_or_else(ingress_unavailable)?,
+                service
+                    .rate_limit_quota_ha_session()
+                    .ok_or_else(ingress_unavailable)?,
             ),
             identity: service.current_state_identity()?,
-            generation: service.durable.as_ref().ok_or_else(ingress_unavailable)?.generation(),
+            generation: service
+                .durable
+                .as_ref()
+                .ok_or_else(ingress_unavailable)?
+                .generation(),
             token_floor: state.auth.terminal_token_clock_floor(),
             barrier_digest: crypto::digest(
-                service.barrier_key.as_ref().ok_or_else(ingress_unavailable)?.as_slice(),
+                service
+                    .barrier_key
+                    .as_ref()
+                    .ok_or_else(ingress_unavailable)?
+                    .as_slice(),
             ),
             response_digest: crate::ha_forward_completion::response_digest(response)
                 .map_err(|_| ingress_unavailable())?,
         };
         rejection.check(
-            service, response, &rejection.entry.fingerprint,
-            request.now, request.token_clock, false,
+            service,
+            response,
+            &rejection.entry.fingerprint,
+            request.now,
+            request.token_clock,
+            false,
         )?;
         Ok(rejection)
     }
@@ -465,16 +666,20 @@ impl StandbyQuotaRejection {
             || response.unwrapped_json.is_some()
             || response.consistency_index.is_some()
             || crate::ha_forward_completion::response_digest(response)
-                .map_err(|_| ingress_unavailable())? != self.response_digest
+                .map_err(|_| ingress_unavailable())?
+                != self.response_digest
         {
             return Err(ingress_unavailable());
         }
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         if service.native_failure_notice.is_some() {
             return Err(ingress_unavailable());
         }
         let expected_sequence = if after_audit {
-            self.entry.audit_sequence.checked_add(1).ok_or_else(ingress_unavailable)?
+            self.entry
+                .audit_sequence
+                .checked_add(1)
+                .ok_or_else(ingress_unavailable)?
         } else {
             self.entry.audit_sequence
         };
@@ -488,26 +693,41 @@ impl StandbyQuotaRejection {
             return Err(ingress_unavailable());
         }
         let owner = RuntimeOwner::Ha(
-            service.rate_limit_quota_ha_session().ok_or_else(ingress_unavailable)?,
+            service
+                .rate_limit_quota_ha_session()
+                .ok_or_else(ingress_unavailable)?,
         );
         if !self.owner.same(&owner)
-            || service.rate_limit_quotas.owner.as_ref().is_none_or(|live| !live.same(&owner))
+            || service
+                .rate_limit_quotas
+                .owner
+                .as_ref()
+                .is_none_or(|live| !live.same(&owner))
             || service.rate_limit_quotas.active.is_some()
             || !matches!(service.rate_limit_quota_ha_role()?, HaRole::Standby)
             || service.current_state_identity()? != self.identity
-            || service.state.as_ref().ok_or_else(ingress_unavailable)?
-                .auth.terminal_token_clock_floor() != self.token_floor
+            || service
+                .state
+                .as_ref()
+                .ok_or_else(ingress_unavailable)?
+                .auth
+                .terminal_token_clock_floor()
+                != self.token_floor
             || crypto::digest(
-                service.barrier_key.as_ref().ok_or_else(ingress_unavailable)?.as_slice(),
+                service
+                    .barrier_key
+                    .as_ref()
+                    .ok_or_else(ingress_unavailable)?
+                    .as_slice(),
             ) != self.barrier_digest
         {
             return Err(ingress_unavailable());
         }
         let durable = service.durable.as_mut().ok_or_else(ingress_unavailable)?;
-        durable.verify_live_ownership().map_err(|_| ingress_unavailable())?;
-        if durable.generation() != self.generation
-            || !self.entry.clock_live(now, clock)
-        {
+        durable
+            .verify_live_ownership()
+            .map_err(|_| ingress_unavailable())?;
+        if durable.generation() != self.generation || !self.entry.clock_live(now, clock) {
             return Err(ingress_unavailable());
         }
         Ok(())
@@ -553,7 +773,9 @@ impl Service {
         request: &RequestView<'_>,
         ingress: Option<QuotaIngressEntry>,
     ) -> Option<Response> {
-        self.rate_limit_quota_response_with_ingress(request, ingress)
+        // A forwarded successful response keeps the active node's signed
+        // header metadata. This hop still owns and enforces its local bucket.
+        self.rate_limit_quota_response_with_ingress(request, ingress, &mut None)
     }
 
     // Only the exclusive top-level completion branch consumes this private
@@ -568,12 +790,17 @@ impl Service {
     ) -> Response {
         // A local refusal must never mint a peer completion from this call.
         crate::ha_forward_completion::audited(None);
-        let admissible = rejection.check(self, &response, fingerprint, now, clock, false).is_ok();
+        let admissible = rejection
+            .check(self, &response, fingerprint, now, clock, false)
+            .is_ok();
         if !admissible {
             erase_json(&mut response.body);
             response = ingress_unavailable();
         }
-        if self.audit_event("response", fingerprint, now, Some(response.status)).is_err() {
+        if self
+            .audit_event("response", fingerprint, now, Some(response.status))
+            .is_err()
+        {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
@@ -583,15 +810,21 @@ impl Service {
                 self.fence_wrapper_barrier_delivery();
             }
             return Response::error(
-                503, "quota rejection response audit failed; authoritative recovery required",
+                503,
+                "quota rejection response audit failed; authoritative recovery required",
             );
         }
         if admissible
-            && rejection.check(self, &response, fingerprint, now, clock, true).is_err()
+            && rejection
+                .check(self, &response, fingerprint, now, clock, true)
+                .is_err()
         {
             erase_json(&mut response.body);
             response = ingress_unavailable();
-            if self.audit_event("quota_rejection_veto", fingerprint, now, Some(503)).is_err() {
+            if self
+                .audit_event("quota_rejection_veto", fingerprint, now, Some(503))
+                .is_err()
+            {
                 crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
                 self.recovery_required = true;
                 self.ha_activation = None;
@@ -600,7 +833,8 @@ impl Service {
                     self.fence_wrapper_barrier_delivery();
                 }
                 return Response::error(
-                    503, "quota rejection veto audit failed; authoritative recovery required",
+                    503,
+                    "quota rejection veto audit failed; authoritative recovery required",
                 );
             }
         }
@@ -621,6 +855,7 @@ mod tests {
             interval,
             block_interval: block,
             revision: 1,
+            inheritable: false,
         }
     }
     #[test]
@@ -1011,9 +1246,41 @@ mod service_tests {
             .body["data"]["keys"],
             json!(["managed"])
         );
+        // Actual 2.7.1 catalog-backed secret mounts are valid quota targets.
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/quotas/rate-limit/secret-mount",
+                &manager,
+                json!({"path":"secret/","rate":2})
+            )
+            .status,
+            204
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "GET",
+                "sys/quotas/rate-limit/secret-mount",
+                &manager,
+                json!({})
+            )
+            .body["data"]["path"],
+            "secret/"
+        );
+        assert_eq!(
+            call(
+                &mut service,
+                "DELETE",
+                "sys/quotas/rate-limit/secret-mount",
+                &manager,
+                json!({})
+            )
+            .status,
+            204
+        );
         for body in [
-            json!({"path":"","rate":2}),
-            json!({"path":"secret/","rate":2}),
             json!({"path":"auth/forms/","rate":0}),
             json!({"path":"auth/forms/","rate":2,"inheritable":true}),
             json!({"path":"auth/forms/login","role":"r","rate":2}),
@@ -1030,22 +1297,17 @@ mod service_tests {
                 400
             );
         }
-        for field in [
-            "enable_rate_limit_audit_logging",
-            "enable_rate_limit_response_headers",
-        ] {
-            assert_eq!(
-                call(
-                    &mut service,
-                    "POST",
-                    "sys/quotas/config",
-                    &manager,
-                    json!({field:true})
-                )
-                .status,
-                400
-            );
-        }
+        assert_eq!(
+            call(
+                &mut service,
+                "POST",
+                "sys/quotas/config",
+                &manager,
+                json!({"enable_rate_limit_audit_logging":true})
+            )
+            .status,
+            400
+        );
         assert_eq!(
             call(
                 &mut service,
@@ -1064,7 +1326,7 @@ mod service_tests {
     {
         let root = Root::new();
         let mut service = root.service()?;
-        let (key, admin) = bootstrap(&mut service)?;
+        let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
         assert_eq!(
             call(
                 &mut service,
@@ -1098,23 +1360,79 @@ mod service_tests {
                 .is_err()
         );
         {
-            // Match the actual listener deadline. Missing ingress authority is
-            // a separate 503 guard and must not stand in for quota rejection.
+            // Keep this existing five-second ingress bound. A quota-bound
+            // remount now requires a real queued ACK and one completed task;
+            // accepting the ACK alone cannot prove the definition was moved.
+            let started = Instant::now();
             let _deadline = crate::request_deadline::RequestDeadlineScope::enter(
-                Instant::now() + Duration::from_secs(5),
+                started + Duration::from_secs(5),
             );
-            let rejected = call(
+            // The old generic helper is handle_at(...,100), whose token
+            // clock is deliberately absent. The real accepted Task requires
+            // one precise original clock; keep the fixture's same time100
+            // and this exact five-second ingress/worker deadline.
+            let clock = RequestClock::anchored(Duration::new(100, 1), started)?;
+            let precise =
+                |service: &mut Service, method: &str, path: &str, token: &str, body: Value| {
+                    let execution = service.begin_at_mode_precise(
+                        RequestDispatch {
+                            method,
+                            path,
+                            namespace: "",
+                            token,
+                            body,
+                            now: 100,
+                            allow_forward: true,
+                            enforce_namespace: true,
+                            wrap_ttl_seconds: None,
+                            origin_peer: None,
+                            client_certificates: None,
+                        },
+                        clock,
+                    );
+                    service.finish_synchronous_request(execution)
+                };
+            let accepted = precise(
                 &mut service,
                 "POST",
                 "sys/remount",
                 &admin,
                 json!({"from":"auth/forms/","to":"auth/moved/"}),
             );
-            assert_eq!(
-                rejected.status, 400,
-                "remount rejection errors: {:?}",
-                rejected.body["errors"]
+            assert_eq!(accepted.status, 200);
+            let id = accepted.body["data"]["migration_id"]
+                .as_str()
+                .ok_or("actual remount migration id absent")?
+                .to_owned();
+            assert_eq!(service.native_remount_jobs.len(), 1);
+            assert!(service.maintain_native_remounts());
+            assert!(!service.maintain_native_remounts());
+            let completed = precise(
+                &mut service,
+                "GET",
+                &format!("sys/remount/status/{id}"),
+                &admin,
+                json!({}),
             );
+            assert_eq!(completed.status, 200);
+            assert_eq!(
+                completed.body["data"]["migration_info"]["status"],
+                "success"
+            );
+            let moved_quota = call(
+                &mut service,
+                "GET",
+                "sys/quotas/rate-limit/retained",
+                &admin,
+                json!({}),
+            );
+            assert_eq!(moved_quota.status, 200);
+            assert_eq!(moved_quota.body["data"]["path"], "auth/moved/login");
+            assert_eq!(moved_quota.body["data"]["interval"], 3600);
+            let moved = service.state.as_ref().ok_or("actual moved state absent")?;
+            assert_eq!(moved.schema, RATE_LIMIT_QUOTA_STATE_SCHEMA);
+            assert!(Service::validate_snapshot_protected_floor(moved, &previous).is_err());
+            assert!(previous.validate_publication_schema(Some(moved)).is_err());
         }
         drop(current);
         drop(previous);
@@ -1124,19 +1442,18 @@ mod service_tests {
             call(&mut reopened, "POST", "sys/unseal", "", json!({"key":key})).status,
             200
         );
-        assert_eq!(
-            call(
-                &mut reopened,
-                "GET",
-                "sys/quotas/rate-limit/retained",
-                &admin,
-                json!({})
-            )
-            .body["data"]["interval"],
-            3600
+        let cold_quota = call(
+            &mut reopened,
+            "GET",
+            "sys/quotas/rate-limit/retained",
+            &admin,
+            json!({}),
         );
+        assert_eq!(cold_quota.status, 200);
+        assert_eq!(cold_quota.body["data"]["interval"], 3600);
+        assert_eq!(cold_quota.body["data"]["path"], "auth/moved/login");
         assert_eq!(
-            call(&mut reopened, "DELETE", "sys/auth/forms", &admin, json!({})).status,
+            call(&mut reopened, "DELETE", "sys/auth/moved", &admin, json!({})).status,
             204
         );
         assert_eq!(
@@ -1211,3 +1528,15 @@ mod service_tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "service_rate_limit_quota_137_tests.rs"]
+mod extended_tests;
+
+#[cfg(test)]
+#[path = "service_rate_limit_quota_ingress_tests.rs"]
+mod ingress_tests;
+
+#[cfg(all(test, feature = "native-v6-storage"))]
+#[path = "service_rate_limit_quota_139_tests.rs"]
+mod scoped_tests;

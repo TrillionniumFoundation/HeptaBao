@@ -12,10 +12,14 @@ use heptabao_durable_service::{
 use std::cell::RefCell;
 use std::sync::atomic::{AtomicU64, Ordering};
 
-#[cfg(feature = "experimental-native-v6-ha")]
+#[path = "service_native_blob_source_parallel.rs"]
+mod parallel;
+pub(super) use parallel::NativeFileSource;
+
+#[cfg(feature = "native-v6-ha")]
 #[path = "service_native_v6_ha_local_stage.rs"]
 pub(super) mod ha_local_stage;
-#[cfg(feature = "experimental-native-v6-ha")]
+#[cfg(feature = "native-v6-ha")]
 pub(super) use ha_local_stage::stage_verified_received;
 
 // One owned unit-test thread may pause its actual payload AEAD observation.
@@ -224,8 +228,14 @@ pub(super) fn validate_archive_slot(
 }
 
 fn context(domain: &ObjectDomain, reference: &ObjectRef) -> Vec<u8> {
-    let mut aad = b"HeptaBao/native-v6/typed-object-file/v1\0".to_vec();
-    aad.extend_from_slice(v6_records::native_resource(domain, reference).as_bytes());
+    context_for_resource(&v6_records::native_resource(domain, reference))
+}
+
+fn context_for_resource(resource: &str) -> Vec<u8> {
+    let prefix = b"HeptaBao/native-v6/typed-object-file/v1\0";
+    let mut aad = Vec::with_capacity(prefix.len() + resource.len());
+    aad.extend_from_slice(prefix);
+    aad.extend_from_slice(resource.as_bytes());
     aad
 }
 
@@ -248,6 +258,10 @@ fn note_staging_outcome(reused: bool) {
 pub(super) fn staging_outcomes() -> (u64, u64) {
     STAGING_OUTCOMES.with(std::cell::Cell::get)
 }
+
+#[path = "service_native_blob_source_batch.rs"]
+mod batch;
+pub(super) use batch::stage_batch;
 
 pub(super) fn stage(
     durable: &mut DurableService<AeadBarrier>,
@@ -463,8 +477,9 @@ impl NativeSource<'_> {
             .durable
             .try_borrow_mut()
             .map_err(|_| RecordError::Corrupt)?;
+        let resource = v6_records::native_resource(domain, reference);
         let stored = durable
-            .get("system", &v6_records::native_resource(domain, reference))
+            .get("system", &resource)
             .map_err(|_| RecordError::Corrupt)?
             .ok_or(RecordError::Missing)?;
         self.deadline.check().map_err(|_| RecordError::Invalid)?;
@@ -503,7 +518,7 @@ impl NativeSource<'_> {
             .read_immutable_object_before_delivery_observed(
                 &self.session,
                 &pin,
-                &context(domain, reference),
+                &context_for_resource(&resource),
                 &mut before,
                 &mut |event| {
                     #[cfg(test)]

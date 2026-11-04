@@ -99,7 +99,7 @@ fn kv2_lossless_import_keeps_subsecond_deadlines_and_persistent_timestamps() -> 
         reopened
             .handle_read("GET", "metadata/scheduled", &json!({}), 121)?
             .body["data"]["delete_version_after"],
-        "7200.5s"
+        "2h0m0.5s"
     );
     Ok(())
 }
@@ -411,8 +411,17 @@ fn kv2_lossless_json_keeps_big_numbers_and_private_tag_objects_without_coercion(
     reopened.validate_lossless_state()?;
     assert_eq!(serde_json::to_vec(&reopened)?, stored);
     assert_eq!(
-        reopened.entries.get("scheduled").ok_or("scheduled")?
-            .versions.get(&1).ok_or("version")?.data.as_ref().ok_or("payload")?.expose(),
+        reopened
+            .entries
+            .get("scheduled")
+            .ok_or("scheduled")?
+            .versions
+            .get(&1)
+            .ok_or("version")?
+            .data
+            .as_ref()
+            .ok_or("payload")?
+            .expose(),
         &payload
     );
     let expected_api = lossless::decode_lossless_json(br#"{"big":1.8446744073709552e+31,"decimal":0.12345678901234568,"exponent":1.2345678901234569e+100,"fake":{"$serde_json::private::Number":"123","x":"keep"},"rawfake":{"$serde_json::private::RawValue":"null"}}"#)?;
@@ -500,8 +509,17 @@ fn kv2_lossless_kv1_conversion_stamps_format_for_nonlegacy_payloads() -> TestRes
     assert!(converted.has_lossless_import_state());
     converted.validate_lossless_state()?;
     assert_eq!(
-        converted.entries.get("item").ok_or("item")?
-            .versions.get(&1).ok_or("version")?.data.as_ref().ok_or("payload")?.expose(),
+        converted
+            .entries
+            .get("item")
+            .ok_or("item")?
+            .versions
+            .get(&1)
+            .ok_or("version")?
+            .data
+            .as_ref()
+            .ok_or("payload")?
+            .expose(),
         &payload
     );
     let expected_api = lossless::decode_lossless_json(
@@ -615,8 +633,17 @@ fn kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent() 
     let reopened: Kv2 = serde_json::from_value(trusted_wire)?;
     reopened.validate_lossless_state()?;
     assert_eq!(
-        reopened.entries.get("item").ok_or("item")?
-            .versions.get(&5).ok_or("version")?.data.as_ref().ok_or("payload")?.expose(),
+        reopened
+            .entries
+            .get("item")
+            .ok_or("item")?
+            .versions
+            .get(&5)
+            .ok_or("version")?
+            .data
+            .as_ref()
+            .ok_or("payload")?
+            .expose(),
         &payload
     );
     let expected_api = lossless::decode_lossless_json(br#"{"big":1.844674407370955e+23,"decimal":0.12345678901234568,"fake":{"$serde_json::private::Number":"7"},"raw":{"$serde_json::private::RawValue":"[1]"}}"#)?;
@@ -627,5 +654,169 @@ fn kv2_lossless_secret_json_value_deserializer_and_text_tokens_are_equivalent() 
         expected_api
     );
     assert_eq!(serde_json::to_vec(&reopened)?, serde_json::to_vec(&engine)?);
+    Ok(())
+}
+
+#[test]
+fn kv2_lossless_native_writes_preserve_scheduled_source_time_and_floor() -> TestResult {
+    let mut engine = Kv2::default();
+    engine.handle(
+        "POST",
+        "metadata/scheduled",
+        &json!({"delete_version_after":"10s"}),
+        90,
+    )?;
+    for (method, number, seconds, nanos) in [
+        ("POST", 1_u64, 100, 0),
+        ("PUT", 2, 101, 0),
+        ("PATCH", 3, 102, 113),
+    ] {
+        let response = engine.handle_precise(
+            method,
+            "data/scheduled",
+            &json!({"data":{"value":number},"options":{"cas":number - 1}}),
+            at(seconds, nanos)?,
+        )?;
+        assert_eq!(response.status, 200);
+        assert_eq!(response.body["data"]["version"], number);
+        assert_eq!(
+            response.body["data"]["deletion_time"],
+            wire(seconds + 10, nanos)?
+        );
+        assert_eq!(
+            engine
+                .entries
+                .get("scheduled")
+                .ok_or("scheduled")?
+                .version_precision(number)
+                .source_deletion_at,
+            Some(at(seconds + 10, nanos)?)
+        );
+        // Whole-second schedules also require the existing persisted floor.
+        assert_eq!(engine.lossless_format, Some(1));
+        engine.validate_lossless_state()?;
+        let persisted = serde_json::to_vec(&engine)?;
+        let reopened: Kv2 = serde_json::from_slice(&persisted)?;
+        reopened.validate_lossless_state()?;
+        assert_eq!(serde_json::to_vec(&reopened)?, persisted);
+    }
+    Ok(())
+}
+
+#[test]
+fn kv2_lossless_native_source_time_survives_metadata_changes_and_failed_cas() -> TestResult {
+    let mut engine = Kv2::default();
+    engine.handle(
+        "POST",
+        "metadata/scheduled",
+        &json!({"delete_version_after":"10s"}),
+        90,
+    )?;
+    engine.handle(
+        "POST",
+        "data/scheduled",
+        &json!({"data":{"value":1},"options":{"cas":0}}),
+        100,
+    )?;
+    let before = serde_json::to_vec(&engine)?;
+    assert!(
+        engine
+            .handle(
+                "POST",
+                "data/scheduled",
+                &json!({"data":{"value":2},"options":{"cas":0}}),
+                101,
+            )
+            .is_err_and(|failure| failure.status == 400)
+    );
+    assert_eq!(serde_json::to_vec(&engine)?, before);
+    engine.handle(
+        "POST",
+        "metadata/scheduled",
+        &json!({"delete_version_after":"20s"}),
+        102,
+    )?;
+    engine.handle("DELETE", "data/scheduled", &json!({}), 103)?;
+    assert_eq!(
+        engine
+            .handle_read("GET", "metadata/scheduled", &json!({}), 103)?
+            .body["data"]["versions"]["1"]["deletion_time"],
+        wire(103, 0)?
+    );
+    engine.handle("POST", "undelete/scheduled", &json!({"versions":[1]}), 104)?;
+    assert_eq!(
+        engine
+            .handle_read("GET", "metadata/scheduled", &json!({}), 104)?
+            .body["data"]["versions"]["1"]["deletion_time"],
+        wire(124, 0)?
+    );
+    assert_eq!(
+        engine
+            .entries
+            .get("scheduled")
+            .ok_or("scheduled")?
+            .version_precision(1)
+            .source_deletion_at,
+        Some(at(110, 0)?)
+    );
+    engine.handle("POST", "destroy/scheduled", &json!({"versions":[1]}), 105)?;
+    let entry = engine.entries.get("scheduled").ok_or("scheduled")?;
+    assert_eq!(
+        entry.version_precision(1).source_deletion_at,
+        Some(at(110, 0)?)
+    );
+    let destroyed = entry.versions.get(&1).ok_or("version 1")?;
+    assert!(destroyed.destroyed && destroyed.data.is_none());
+    engine.validate_lossless_state()?;
+    let persisted = serde_json::to_vec(&engine)?;
+    let reopened: Kv2 = serde_json::from_slice(&persisted)?;
+    reopened.validate_lossless_state()?;
+    assert_eq!(serde_json::to_vec(&reopened)?, persisted);
+    Ok(())
+}
+
+#[test]
+fn kv2_lossless_missing_source_time_is_not_inferred_from_later_metadata() -> TestResult {
+    let mut engine = Kv2::default();
+    engine.handle(
+        "POST",
+        "data/unscheduled",
+        &json!({"data":{"value":1}}),
+        100,
+    )?;
+    assert_eq!(engine.lossless_format, None);
+    engine.handle(
+        "POST",
+        "metadata/unscheduled",
+        &json!({"delete_version_after":"86400s"}),
+        101,
+    )?;
+    engine.handle("POST", "delete/unscheduled", &json!({"versions":[1]}), 102)?;
+    engine.handle(
+        "POST",
+        "undelete/unscheduled",
+        &json!({"versions":[1]}),
+        103,
+    )?;
+    assert_eq!(
+        engine
+            .handle_read("GET", "metadata/unscheduled", &json!({}), 104)?
+            .body["data"]["versions"]["1"]["deletion_time"],
+        wire(86503, 0)?
+    );
+    assert_eq!(
+        engine
+            .entries
+            .get("unscheduled")
+            .ok_or("unscheduled")?
+            .version_precision(1)
+            .source_deletion_at,
+        None
+    );
+    engine.validate_lossless_state()?;
+    let persisted = serde_json::to_vec(&engine)?;
+    let reopened: Kv2 = serde_json::from_slice(&persisted)?;
+    reopened.validate_lossless_state()?;
+    assert_eq!(serde_json::to_vec(&reopened)?, persisted);
     Ok(())
 }

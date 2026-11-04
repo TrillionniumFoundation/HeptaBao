@@ -1003,3 +1003,36 @@ async fn transfer_broadcast_preserves_peer_direction_and_other_voter_lease_reset
     std::fs::remove_dir_all(path)?;
     result
 }
+
+#[cfg(unix)]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn fresh_raft_parent_is_private_and_cold_reopen_retains_its_identity()
+-> Result<(), Box<dyn std::error::Error>> {
+    use std::os::unix::fs::{MetadataExt, PermissionsExt};
+    let path = std::env::temp_dir().join(format!(
+        "heptabao-private-raft-parent-{}",
+        std::process::id()
+    ));
+    let router = Arc::new(Router::default());
+    let factory =
+        || RemoteNetworkFactory::new(1, BTreeSet::from([1, 2, 3]), Arc::new(Arc::clone(&router)));
+    let node = ProcessRaftNode::create(&path, 1, factory()?).await?;
+    let original = std::fs::metadata(&path)?;
+    assert_eq!(original.permissions().mode() & 0o777, 0o700);
+    node.initialize_single().await?;
+    leader(&node, 1).await?;
+    node.ensure_linearizable().await?;
+    node.shutdown().await?;
+    let node = ProcessRaftNode::reopen(&path, 1, factory()?).await?;
+    let reopened = std::fs::metadata(&path)?;
+    assert_eq!(reopened.permissions().mode() & 0o777, 0o700);
+    assert_eq!(
+        (reopened.dev(), reopened.ino()),
+        (original.dev(), original.ino())
+    );
+    leader(&node, 1).await?;
+    node.ensure_linearizable().await?;
+    node.shutdown().await?;
+    std::fs::remove_dir_all(path)?;
+    Ok(())
+}

@@ -68,6 +68,9 @@ use local_intermediate::{LocalCaChain, LocalIntermediateState};
 #[path = "pki_local_ocsp.rs"]
 pub(crate) mod local_ocsp;
 
+#[cfg(feature = "native-v6-storage")]
+#[path = "pki_native.rs"]
+mod native;
 #[path = "pki_precise_time.rs"]
 pub(in crate::engines) mod precise_time;
 use precise_time::PkiInstant;
@@ -326,6 +329,10 @@ pub(super) struct IssuedCertificate {
     pub(super) path: String,
     pub(super) issued: u64,
     pub(super) expires: u64,
+    // Certificate validity and batch lease authority are independent. Older
+    // records omit this field because their DER was already owner-capped.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    lease_expires: Option<crate::auth::Timestamp>,
     pub(super) revoked_at: Option<u64>,
     common_name: String,
     // A real leaf producer captures wildcard CN/SAN ownership before its
@@ -333,6 +340,15 @@ pub(super) struct IssuedCertificate {
     #[serde(default, skip_serializing_if = "role_false")]
     wildcard_names: bool,
     certificate_der: Vec<u8>,
+}
+
+impl IssuedCertificate {
+    fn lease_deadline(&self) -> std::time::Duration {
+        self.lease_expires.map_or_else(
+            || std::time::Duration::from_secs(self.expires),
+            crate::auth::Timestamp::duration_since_epoch,
+        )
+    }
 }
 
 impl Drop for IssuedCertificate {
@@ -545,8 +561,22 @@ impl Pki {
                     .owner
                     .validate_scope(namespace, ServiceOwnerProfile::DigestAlphabet)
                     .is_err()
+                || issued.lease_expires.is_some_and(|end| {
+                    !issued.leased
+                        || issued.owner.batch_claims().is_none()
+                        || end.duration_since_epoch()
+                            <= std::time::Duration::from_secs(issued.issued)
+                        || end.duration_since_epoch()
+                            >= std::time::Duration::from_secs(issued.expires)
+                })
                 || issued.owner.batch_claims().is_some_and(|claims| {
-                    issued.issued < claims.issued_at() || issued.expires > claims.expires_at()
+                    let end = claims.precision().map_or_else(
+                        || std::time::Duration::from_secs(claims.expires_at()),
+                        |lease| lease.expires_at.duration_since_epoch(),
+                    );
+                    issued.issued < claims.issued_at()
+                        || std::time::Duration::from_secs(issued.issued) >= end
+                        || issued.leased && issued.lease_deadline() > end
                 })
                 || !(if issued.path.starts_with(&prefix) {
                     !issued.path[prefix.len()..].contains('/')
@@ -592,6 +622,18 @@ impl Pki {
         })
     }
 
+    // Inspect retained records as well as live ones: revocation, expiry and
+    // last-mount retirement cannot authorize an older lease interpretation.
+    pub(super) fn has_batch_lease_state(&self) -> bool {
+        self.issued.values().any(|issued| {
+            issued.lease_expires.is_some()
+                || issued
+                    .owner
+                    .batch_claims()
+                    .is_some_and(|claims| issued.expires > claims.expires_at())
+        })
+    }
+
     pub(super) fn has_live_leases(&self, clock: u64) -> bool {
         self.issued
             .values()
@@ -615,15 +657,19 @@ impl Pki {
     pub(super) fn reconcile(
         &mut self,
         clock: u64,
+        observed: Option<crate::auth::Timestamp>,
         namespace: &str,
         live: &BTreeSet<(String, LeaseOwner)>,
     ) -> bool {
+        let at = std::time::Duration::from_secs(clock)
+            .max(observed.map_or(std::time::Duration::ZERO, |at| at.duration_since_epoch()));
         let mut changed = false;
         for issued in self.issued.values_mut() {
             if issued.leased
                 && issued.revoked_at.is_none()
                 && issued.expires > clock
-                && !live.contains(&(namespace.to_owned(), issued.owner.clone()))
+                && (issued.lease_deadline() <= at
+                    || !live.contains(&(namespace.to_owned(), issued.owner.clone())))
             {
                 issued.revoked_at = Some(clock);
                 changed = true;
@@ -642,19 +688,28 @@ impl Pki {
             .map(|(serial, _)| serial.clone())
     }
 
-    pub(super) fn lease_lookup(&self, serial: &str, clock: u64) -> Result<Value> {
+    pub(super) fn lease_lookup(
+        &self,
+        serial: &str,
+        clock: u64,
+        observed: Option<crate::auth::Timestamp>,
+    ) -> Result<Value> {
         let lease = self.issued.get(serial).ok_or_else(not_found)?;
-        if !lease.leased || lease.revoked_at.is_some() || lease.expires <= clock {
+        let at = std::time::Duration::from_secs(clock)
+            .max(observed.map_or(std::time::Duration::ZERO, |at| at.duration_since_epoch()));
+        let deadline = lease.lease_deadline();
+        if !lease.leased || lease.revoked_at.is_some() || deadline <= at {
             return Err(not_found());
         }
         Ok(json!({
             "id": lease.lease_id,
             "path": lease.path,
             "issue_time": timestamp(lease.issued),
-            "expire_time": timestamp(lease.expires),
+            "expire_time": lease.lease_expires.map_or_else(
+                || timestamp(lease.expires), crate::auth::Timestamp::rfc3339),
             "last_renewal": Value::Null,
             "renewable": false,
-            "ttl": lease.expires.saturating_sub(clock),
+            "ttl": deadline.saturating_sub(at).as_secs(),
         }))
     }
 
@@ -662,7 +717,10 @@ impl Pki {
         let Some(lease) = self.issued.get_mut(serial) else {
             return Ok(false);
         };
-        if !lease.leased || lease.revoked_at.is_some() || lease.expires <= clock {
+        if !lease.leased
+            || lease.revoked_at.is_some()
+            || lease.lease_deadline() <= std::time::Duration::from_secs(clock)
+        {
             return Ok(false);
         }
         lease.revoked_at = Some(clock.max(lease.issued));
@@ -677,7 +735,7 @@ impl Pki {
             if lease.leased
                 && (lease.lease_id == prefix || lease.lease_id.starts_with(&boundary))
                 && lease.revoked_at.is_none()
-                && lease.expires > clock
+                && lease.lease_deadline() > std::time::Duration::from_secs(clock)
             {
                 lease.revoked_at = Some(clock.max(lease.issued));
                 changed = true;
@@ -1542,7 +1600,9 @@ impl Pki {
         } = authority;
         let time = precise_time::observe(time, clock, time.seconds())?;
         let now = time.seconds();
-        if precise_owner_expires.is_some_and(|end| time.exact().is_none_or(|at| at > end)) {
+        if precise_owner_expires.is_some_and(|end| time.exact().is_none_or(|at| at > end))
+            || precise_owner_expires.is_none() && owner_expires.is_some_and(|end| now >= end)
+        {
             return Err(error(403, "issuer no longer has a live PKI lease window"));
         }
         reject_unknown(
@@ -1707,24 +1767,21 @@ impl Pki {
             .clone()
             .unwrap_or_default()
             .validate_final_not_after(not_after)?;
-        let owner_boundary = precise_owner_expires
-            .map(crate::auth::Timestamp::seconds)
-            .or(owner_expires);
-        let not_after_seconds = not_after.positive_seconds()?;
-        let expires = not_after_seconds.min(owner_boundary.unwrap_or(u64::MAX));
-        if expires <= now {
+        // OpenBao gives the certificate its role/CA validity independently of
+        // the caller's lifetime. The caller still owns every signing and
+        // publication frontier; a batch lease gets its own bounded deadline.
+        let expires = not_after.positive_seconds()?;
+        if expires <= now
+            || precise_owner_expires.is_some_and(|end| time.exact().is_none_or(|at| at > end))
+            || precise_owner_expires.is_none() && owner_expires.is_some_and(|end| now >= end)
+        {
             return Err(error(403, "issuer no longer has a live PKI lease window"));
         }
-        let private_after = if owner_boundary.is_some_and(|end| end < not_after_seconds) {
-            PkiInstant::whole(expires)?
-        } else {
-            not_after
-        };
-        if resolved.not_before > private_after {
+        if resolved.not_before > not_after {
             return Err(bad(&format!(
                 "The certificate's Not Before ({}) is later than the certificate's Not After ({})",
                 resolved.not_before.render(),
-                private_after.render()
+                not_after.render()
             )));
         }
         let serial = random_serial()?;
@@ -1976,7 +2033,53 @@ impl Pki {
         }
         let certificate = public::stored_pem("CERTIFICATE", &certificate_der);
         let issuing_ca = public::stored_pem("CERTIFICATE", &root.certificate_der);
-        let ttl = prepared.expires.saturating_sub(prepared.issued);
+        let certificate_end = crate::auth::Timestamp::whole(prepared.expires)
+            .map_err(|_| bad("invalid PKI certificate expiry"))?;
+        let lease_expires = if prepared.leased {
+            if let Some(claims) = owner.batch_claims() {
+                let claimed = match claims.precision() {
+                    Some(lease) => lease.expires_at,
+                    None => crate::auth::Timestamp::whole(claims.expires_at())
+                        .map_err(|_| bad("invalid PKI batch lease expiry"))?,
+                };
+                let retained = match prepared.precise_owner_expires {
+                    Some(end) => end,
+                    None => crate::auth::Timestamp::whole(
+                        prepared.owner_expires.unwrap_or(claims.expires_at()),
+                    )
+                    .map_err(|_| bad("invalid retained PKI batch lease expiry"))?,
+                };
+                let end = certificate_end.min(claimed).min(retained);
+                if end.duration_since_epoch() <= std::time::Duration::from_secs(prepared.issued) {
+                    return Err(error(403, "issuer no longer has a live PKI lease window"));
+                }
+                (end < certificate_end).then_some(end)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+        let ttl = if prepared.leased && owner.batch_claims().is_some() {
+            let time = precise_time::observe(
+                prepared.publication_time,
+                prepared.publication_clock,
+                prepared.issued,
+            )?;
+            let at = time.exact().map_or_else(
+                || std::time::Duration::from_secs(time.seconds()),
+                crate::auth::Timestamp::duration_since_epoch,
+            );
+            let end = lease_expires
+                .unwrap_or(certificate_end)
+                .duration_since_epoch();
+            if end <= at {
+                return Err(error(403, "issuer no longer has a live PKI lease window"));
+            }
+            end.saturating_sub(at).as_secs()
+        } else {
+            prepared.expires.saturating_sub(prepared.issued)
+        };
         let mut data = json!({"certificate":certificate, "issuing_ca":issuing_ca,
             "serial_number":prepared.serial, "expiration":prepared.expires});
         if prepared.csr_public_key.is_none() {
@@ -2038,6 +2141,7 @@ impl Pki {
                 path: prepared.path,
                 issued: prepared.issued,
                 expires: prepared.expires,
+                lease_expires,
                 revoked_at: None,
                 wildcard_names: prepared.common_name.contains('*')
                     || prepared.alt_names.iter().any(|name| name.contains('*')),

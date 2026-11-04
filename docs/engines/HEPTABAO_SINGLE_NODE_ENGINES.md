@@ -13,7 +13,11 @@ state-format rules are in [the Service format contract](../architecture/HEPTABAO
 authenticated publication. Its opaque owner is serializable; after the schema 36
 transition, KV1 payloads instead live in the authenticated immutable record graph.
 Serialized `Kv1Records` mount metadata is unusable without that graph/root.
-KV2 and the other engine payloads remain in the opaque owner. It does not listen on a socket, authenticate a caller, decide whether a
+Legacy KV2 and the other engine payloads remain in the opaque owner. An explicitly
+activated native V6 KV2 mount instead uses the authenticated immutable KV2 graph;
+its `Kv2Native` read view is never serializable as inline fallback data. It must
+remain bound to its admitted native root and storage witness. `EngineState` does
+not listen on a socket, authenticate a caller, decide whether a
 caller is an administrator, or save an unencrypted file. Those responsibilities
 belong to `Service`, `AuthState`, the TLS listener and the durable storage adapter.
 
@@ -73,9 +77,10 @@ The identity hierarchy is represented by nested maps:
 ```text
 EngineState.namespaces[namespace]
   .mounts[mount_path_with_trailing_slash]
-  .backend.{Database | RabbitMq | Kubernetes | PluginSecret | OpenLdap | Kv1 | Kv1Records | Kv2 | Transit | Pki | Ssh | Totp}
+  .backend.{Database | RabbitMq | Kubernetes | PluginSecret | OpenLdap | Kv1 | Kv1Records | Kv2 | Kv2Native | Transit | Pki | Ssh | Totp}
   .entries[resource] or .keys[key_name]  (opaque-owner backends)
   Kv1Records -> authenticated KV1 graph scoped by namespace/mount/incarnation
+  Kv2Native -> admitted native V6 KV2 graph and its bound read view
 ```
 
 The expression above is a schema path, not a concatenated storage key. Namespace,

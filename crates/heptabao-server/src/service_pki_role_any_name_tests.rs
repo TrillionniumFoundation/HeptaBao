@@ -1,13 +1,13 @@
 //! Actual PKI role semantics, signed issuance, encrypted reopen and reader floor.
 use super::*;
-use crate::service::tests::bootstrap_unmounted;
+use crate::service::tests::bootstrap_pre141_unmounted;
 use openssl::x509::X509;
 
 #[test]
 fn pki_role_any_name_signs_actual_unlisted_dns_names_and_reopens() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    let (unseal, admin) = bootstrap_pre141_unmounted(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -124,7 +124,7 @@ fn pki_role_any_name_signs_actual_unlisted_dns_names_and_reopens() -> TestResult
 fn pki_role_any_name_preserves_dns_ip_constraints_and_false_legacy_bytes() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, admin) = bootstrap_unmounted(&mut service)?;
+    let (_, admin) = bootstrap_pre141_unmounted(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -261,16 +261,11 @@ fn pki_role_any_name_preserves_dns_ip_constraints_and_false_legacy_bytes() -> Te
 fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    let (unseal, admin) = bootstrap_pre141_unmounted(&mut service)?;
     assert_eq!(
-        call(
-            &mut service,
-            "POST",
-            "sys/namespaces/team",
-            &admin,
-            json!({})
-        )
-        .status,
+        service
+            .create_pre144_namespace_fixture("team", &admin)?
+            .status,
         200
     );
     assert_eq!(
@@ -397,7 +392,7 @@ fn pki_role_any_name_raises_all_namespace_floor_and_retirement_rejects_restore()
 fn pki_role_default_ip_sans_signs_ipv4_ipv6_and_retains_explicit_false_on_reopen() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    let (unseal, admin) = bootstrap_pre141_unmounted(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -588,7 +583,7 @@ fn pki_role_default_ip_sans_signs_ipv4_ipv6_and_retains_explicit_false_on_reopen
 fn pki_role_bare_domain_default_denies_base_and_explicit_permission_reopens() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    let (unseal, admin) = bootstrap_pre141_unmounted(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -744,7 +739,7 @@ fn pki_role_bare_domain_default_denies_base_and_explicit_permission_reopens() ->
 fn pki_wildcard_actual_signed_cn_san_and_explicit_disabled_precedence() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, admin) = bootstrap_unmounted(&mut service)?;
+    let (_, admin) = bootstrap_pre141_unmounted(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -893,7 +888,7 @@ fn pki_wildcard_actual_signed_cn_san_and_explicit_disabled_precedence() -> TestR
 fn pki_profile_real_owner_schema88_keeps_historical83_84_85_and_retired_fences() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    let (unseal, admin) = bootstrap_pre141_unmounted(&mut service)?;
     assert_eq!(
         call(
             &mut service,

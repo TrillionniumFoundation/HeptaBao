@@ -90,10 +90,10 @@ fn fresh_userpass_case_variants_share_identity_and_survive_reopen() -> TestResul
         response.body["auth"]["entity_id"].as_str(),
         entity.as_deref()
     );
-    assert_eq!(
-        service.state.as_ref().ok_or("state")?.schema,
-        USERPASS_ISSUANCE_STATE_SCHEMA
-    );
+    let state = service.state.as_ref().ok_or("state")?;
+    assert!(state.auth.has_userpass_issuance_state());
+    assert!(state.auth.has_security_contract_state());
+    assert_eq!(state.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     Ok(())
 }
 
@@ -250,7 +250,7 @@ fn new_namespace_has_only_token_default_and_explicit_userpass_requires_owned_cle
 fn schema38_and39_accept_absent_name_modes_without_adopting_legacy_accounts() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
+    let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let mut old = service.state.clone().ok_or("state")?;
     old.auth.prior_native_auth_defaults_for_format_test();
     old.auth

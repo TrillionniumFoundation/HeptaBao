@@ -15,6 +15,8 @@ use super::{
     HaError, MutualTlsPeerTransport, NodeId, PinnedClientCertificateMap,
     serve_one_mtls_authenticated_peer_frame,
 };
+#[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+use crate::closure_phase_diagnostic as diagnostic;
 use heptabao_raft_runtime::{
     LocalV6BlobError, LocalV6BlobStage, NativeV6ClosureAdmission, NativeV6CommitIntent,
     NativeV6PeerEnrollment, ProcessRaftNode, RecordObjectRef,
@@ -28,7 +30,7 @@ use std::sync::{Arc, Mutex, OnceLock};
 use std::task::Poll;
 use std::time::{Duration, Instant};
 use tokio::runtime::Handle;
-use tokio::sync::{Semaphore, oneshot};
+use tokio::sync::{Semaphore, SemaphorePermit, oneshot};
 
 #[path = "v6_closure_quorum_wire.rs"]
 mod wire;
@@ -41,8 +43,11 @@ pub use ingress::is_native_v6_closure_frame;
 #[path = "v6_committed_root_pull.rs"]
 mod committed_pull;
 pub use committed_pull::{
-    NativeV6CommittedRootSource, RecoveredNativeV6LocalClosure, is_native_v6_root_pull_frame,
-    read_or_recover_native_v6_committed_closure, recover_native_v6_committed_closure,
+    NATIVE_V6_ROOT_PULL_GLOBAL_FRAMES, NATIVE_V6_ROOT_PULL_REQUESTS_PER_DONOR,
+    NativeV6CommittedRootSource, NativeV6IngressClosureRead, NativeV6IngressSupersededRead,
+    RecoveredNativeV6LocalClosure, is_native_v6_root_pull_frame,
+    read_native_v6_fresh_ingress_closure, read_or_recover_native_v6_committed_closure,
+    recover_native_v6_committed_closure,
 };
 
 fn unknown() -> HaError {
@@ -70,6 +75,12 @@ fn require_blocking_worker() -> Result<(), HaError> {
 // ends. It owns no borrowed store, consensus owner, Actor, or closure payload.
 const MAX_INFLIGHT_CLOSURE_FRAMES: usize = 8;
 static CLOSURE_FRAME_CAPACITY: OnceLock<Arc<Semaphore>> = OnceLock::new();
+// A transfer may overlap two independently authenticated packed frames, but
+// its receiver still performs only ONE physical batch at a time. The second
+// frame may wait briefly after its own fresh admission; it cannot consume an
+// entire original frame budget behind another worker's slow filesystem I/O.
+const PACKED_FRAME_WINDOW: usize = 2;
+const MAX_PACKED_STORAGE_HANDOFF: Duration = Duration::from_millis(100);
 
 struct CancelSocketJob(Arc<AtomicBool>);
 impl Drop for CancelSocketJob {
@@ -173,6 +184,13 @@ pub struct NativeV6ClosureReceiver {
     // One bounded manifest, at most MAX_OBJECTS, per receiver. It is merely a
     // transfer cache; a restart or a different admitted operation discards it.
     incoming: Mutex<Option<IncomingClosure>>,
+    // One executing storage batch and at most one bounded packed-frame waiter.
+    // Keeping physical batches serial preserves the existing Darwin object-FD
+    // budget and the storage layer's four-worker fsync bound.
+    incoming_storage: Semaphore,
+    incoming_waiter: Semaphore,
+    #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+    diagnostic: Arc<diagnostic::Stats>,
 }
 
 impl fmt::Debug for NativeV6ClosureReceiver {
@@ -211,6 +229,10 @@ impl NativeV6ClosureReceiver {
             voter_by_peer,
             initial_enrollment: enrollment.clone(),
             incoming: Mutex::new(None),
+            incoming_storage: Semaphore::new(1),
+            incoming_waiter: Semaphore::new(1),
+            #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+            diagnostic: diagnostic::Stats::new("receiver"),
         })
     }
 
@@ -225,6 +247,8 @@ impl NativeV6ClosureReceiver {
         timeout: Duration,
     ) -> Result<(), HaError> {
         require_blocking_worker()?;
+        #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+        let _diagnostic = diagnostic::Scope::enter(self.diagnostic.clone(), None);
         serve_one_mtls_authenticated_peer_frame(
             listener,
             server,
@@ -235,16 +259,74 @@ impl NativeV6ClosureReceiver {
         )
     }
 
+    // Read-only private failure classification. Preserve every original
+    // result, consensus observation, filesystem operation and deadline.
+    fn observe_receive_result<T, E>(
+        &self,
+        phase: &'static str,
+        deadline: Instant,
+        result: Result<T, E>,
+    ) -> Result<T, E> {
+        #[cfg(feature = "private-forward-stage-diagnostic")]
+        if result.is_err() {
+            eprintln!(
+                "HBHA-PRIVATE-CLOSURE-FAIL phase={} voter={} original_remaining_ns={}",
+                phase,
+                self.raft.id(),
+                deadline
+                    .saturating_duration_since(Instant::now())
+                    .as_nanos(),
+            );
+        }
+        let _ = (phase, deadline);
+        result
+    }
+
     fn verify(
         &self,
         admission: &NativeV6ClosureAdmission,
         deadline: Instant,
     ) -> Result<(), HaError> {
         check_deadline(deadline)?;
-        self.runtime
-            .block_on(self.raft.verify_native_v6_closure_admission(admission))
-            .map_err(|_| unknown())?;
+        self.observe_receive_result(
+            "verify_original_admission",
+            deadline,
+            observe_closure_phase!(
+                ReceiverVerify,
+                self.runtime
+                    .block_on(self.raft.verify_native_v6_closure_admission(admission))
+            ),
+        )
+        .map_err(|_| unknown())?;
         check_deadline(deadline)
+    }
+
+    fn enter_storage(&self, kind: Kind, deadline: Instant) -> Result<SemaphorePermit<'_>, HaError> {
+        check_deadline(deadline)?;
+        if let Ok(permit) = self.incoming_storage.try_acquire() {
+            return Ok(permit);
+        }
+        // Manifest, Ensure and Finalize retain their immediate busy rejection.
+        // Only packed ciphertext frames need a short storage handoff.
+        if kind != Kind::PackedStageBatch {
+            return Err(unknown());
+        }
+        let _waiter = self.incoming_waiter.try_acquire().map_err(|_| unknown())?;
+        let handoff = Instant::now()
+            .checked_add(MAX_PACKED_STORAGE_HANDOFF)
+            .ok_or_else(unknown)?
+            .min(deadline);
+        let permit = self.runtime.block_on(async {
+            tokio::time::timeout_at(
+                tokio::time::Instant::from_std(handoff),
+                self.incoming_storage.acquire(),
+            )
+            .await
+            .map_err(|_| unknown())?
+            .map_err(|_| unknown())
+        })?;
+        check_deadline(deadline)?;
+        Ok(permit)
     }
 
     fn receive(
@@ -255,8 +337,12 @@ impl NativeV6ClosureReceiver {
         timeout: Duration,
     ) -> Result<Vec<u8>, HaError> {
         let deadline = accepted_at.checked_add(timeout).ok_or(HaError::Transport)?;
+        #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+        let _diagnostic = diagnostic::Scope::enter(self.diagnostic.clone(), Some(deadline));
         check_deadline(deadline)?;
         let request = wire::parse(bytes)?;
+        #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+        diagnostic::frame(request.kind as u8, request.payload.len());
         let sender = self
             .voter_by_peer
             .get(actual_peer)
@@ -266,10 +352,16 @@ impl NativeV6ClosureReceiver {
             return Err(HaError::PeerAuthenticationFailed);
         }
         let admission = self
-            .runtime
-            .block_on(
-                self.raft
-                    .admit_native_v6_closure(&request.binding.intent, deadline),
+            .observe_receive_result(
+                "admit_committed_intent",
+                deadline,
+                observe_closure_phase!(
+                    ReceiverAdmission,
+                    self.runtime.block_on(
+                        self.raft
+                            .admit_native_v6_closure(&request.binding.intent, deadline)
+                    )
+                ),
             )
             .map_err(|_| unknown())?;
         if Binding::observed(&admission) != request.binding
@@ -281,9 +373,29 @@ impl NativeV6ClosureReceiver {
             return Err(HaError::PeerAuthenticationFailed);
         }
         self.verify(&admission, deadline)?;
+        // Both frames performed their own fresh quorum admission above. A
+        // queued frame rechecks that same original witness after acquiring the
+        // sole physical-storage slot; the wait creates no authority or clock.
+        // Declare this permit before the mutex guard so the guard drops first.
+        let _storage = self.enter_storage(request.kind, deadline)?;
+        self.verify(&admission, deadline)?;
         // A different transfer worker cannot consume this request's whole
         // deadline while holding the manifest owner during slow filesystem I/O.
-        let mut incoming = self.incoming.try_lock().map_err(|_| unknown())?;
+        let mut incoming = observe_closure_phase!(ReceiverOwnerLock, self.incoming.try_lock()).map_err(|error| {
+            #[cfg(feature = "private-forward-stage-diagnostic")]
+            eprintln!(
+                "HBHA-PRIVATE-CLOSURE-ADMISSION gate={} voter={} request_kind={} original_remaining_ns={}",
+                match &error {
+                    std::sync::TryLockError::WouldBlock => "incoming_owner_busy",
+                    std::sync::TryLockError::Poisoned(_) => "incoming_owner_poisoned",
+                },
+                self.raft.id(),
+                request.kind as u8,
+                deadline.saturating_duration_since(Instant::now()).as_nanos(),
+            );
+            let _ = error;
+            unknown()
+        })?;
         let payload = match request.kind {
             Kind::Manifest => {
                 let (offset, references) = wire::parse_manifest_page(request.payload)?;
@@ -354,12 +466,27 @@ impl NativeV6ClosureReceiver {
                     .as_mut()
                     .filter(|state| state.binding == request.binding)
                     .ok_or(HaError::InvalidFrame)?;
-                self.receive_batch(
-                    state,
-                    &admission,
+                self.observe_receive_result(
+                    "receive_stage_batch",
                     deadline,
-                    request.payload,
-                    request.kind == Kind::StageBatch,
+                    self.receive_batch(
+                        state,
+                        &admission,
+                        deadline,
+                        request.payload,
+                        request.kind == Kind::StageBatch,
+                    ),
+                )?
+            }
+            Kind::PackedStageBatch => {
+                let state = incoming
+                    .as_mut()
+                    .filter(|state| state.binding == request.binding)
+                    .ok_or(HaError::InvalidFrame)?;
+                self.observe_receive_result(
+                    "receive_packed_stage_batch",
+                    deadline,
+                    self.receive_packed_stage(state, &admission, deadline, request.payload),
                 )?
             }
             Kind::EnsureBatch => {
@@ -367,7 +494,14 @@ impl NativeV6ClosureReceiver {
                     .as_mut()
                     .filter(|state| state.binding == request.binding)
                     .ok_or(HaError::InvalidFrame)?;
-                self.receive_ensure_batch(state, &admission, deadline, request.payload)?
+                self.observe_receive_result(
+                    "receive_ensure_batch",
+                    deadline,
+                    observe_closure_phase!(
+                        ReceiverEnsure,
+                        self.receive_ensure_batch(state, &admission, deadline, request.payload)
+                    ),
+                )?
             }
             Kind::Finalize => {
                 if !request.payload.is_empty() {
@@ -391,8 +525,15 @@ impl NativeV6ClosureReceiver {
                 // canonical manifest's no-replace file and directory fsync.
                 // Only preceding actual stage/fsync calls populated fsynced.
                 let persisted = self
-                    .storage
-                    .persist_local_closure(&state.references, &mut gate)
+                    .observe_receive_result(
+                        "final_manifest_persist",
+                        deadline,
+                        observe_closure_phase!(
+                            FinalizeManifest,
+                            self.storage
+                                .persist_local_closure(&state.references, &mut gate)
+                        ),
+                    )
                     .map_err(|_| unknown())?;
                 if persisted.manifest_sha256() != request.binding.intent.closure_manifest_sha256
                     || persisted.object_count() as u64 != request.binding.intent.object_count
@@ -459,6 +600,24 @@ impl NativeV6ClosureQuorum {
     }
 }
 
+/// Borrowed immutable-source inputs for one closure collection. This groups
+/// the local ciphertext store, its exact reference list and proposed intent;
+/// construction grants no admission, durability receipt or publication right.
+/// The collector still validates every reference and obtains fresh Raft gates.
+pub struct NativeV6ClosureSource<'a> {
+    pub source: &'a LocalV6BlobStage,
+    pub references: &'a [RecordObjectRef],
+    pub intent: &'a NativeV6CommitIntent,
+}
+
+impl fmt::Debug for NativeV6ClosureSource<'_> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("NativeV6ClosureSource")
+            .field("object_count", &self.references.len())
+            .finish_non_exhaustive()
+    }
+}
+
 /// Copy exact ciphertext references and obtain final fsync receipts on a
 /// majority. Routing names are transport hints only: every socket is pinned to
 /// the leaf in the actual committed numeric-voter enrollment. Include the local
@@ -469,14 +628,10 @@ pub fn replicate_native_v6_closure_to_quorum(
     runtime: &Handle,
     transport: &MutualTlsPeerTransport,
     routes: &BTreeMap<u64, NodeId>,
-    source: &LocalV6BlobStage,
-    references: &[RecordObjectRef],
-    intent: &NativeV6CommitIntent,
+    closure: NativeV6ClosureSource<'_>,
     deadline: Instant,
 ) -> Result<NativeV6ClosureQuorum, HaError> {
-    collect(
-        raft, runtime, transport, routes, source, references, intent, deadline, true,
-    )
+    collect(raft, runtime, transport, routes, closure, deadline, true)
 }
 
 /// Reconcile a lost final response without transferring ciphertext. Existing
@@ -487,14 +642,10 @@ pub fn reconcile_native_v6_closure_quorum(
     runtime: &Handle,
     transport: &MutualTlsPeerTransport,
     routes: &BTreeMap<u64, NodeId>,
-    source: &LocalV6BlobStage,
-    references: &[RecordObjectRef],
-    intent: &NativeV6CommitIntent,
+    closure: NativeV6ClosureSource<'_>,
     deadline: Instant,
 ) -> Result<NativeV6ClosureQuorum, HaError> {
-    collect(
-        raft, runtime, transport, routes, source, references, intent, deadline, false,
-    )
+    collect(raft, runtime, transport, routes, closure, deadline, false)
 }
 
 fn collect(
@@ -502,17 +653,27 @@ fn collect(
     runtime: &Handle,
     transport: &MutualTlsPeerTransport,
     routes: &BTreeMap<u64, NodeId>,
-    source: &LocalV6BlobStage,
-    references: &[RecordObjectRef],
-    intent: &NativeV6CommitIntent,
+    closure: NativeV6ClosureSource<'_>,
     deadline: Instant,
     transfer: bool,
 ) -> Result<NativeV6ClosureQuorum, HaError> {
+    let NativeV6ClosureSource {
+        source,
+        references,
+        intent,
+    } = closure;
+    let _native_operation = source
+        .begin_native_operation()
+        .map_err(|_| HaError::Transport)?;
+    #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+    let _diagnostic = diagnostic::Scope::enter(diagnostic::Stats::new("collector"), Some(deadline));
     require_blocking_worker()?;
     check_deadline(deadline)?;
-    let admission = runtime
-        .block_on(raft.admit_native_v6_closure(intent, deadline))
-        .map_err(|_| unknown())?;
+    let admission = observe_closure_phase!(
+        CollectorAdmission,
+        runtime.block_on(raft.admit_native_v6_closure(intent, deadline))
+    )
+    .map_err(|_| unknown())?;
     if admission.leader_id() != raft.id()
         || routes.keys().copied().collect::<BTreeSet<_>>()
             != admission
@@ -531,9 +692,15 @@ fn collect(
     let mut ordered = references.to_vec();
     ordered.sort_unstable_by_key(|reference| reference.id);
     wire::exact_manifest(&ordered, intent)?;
+    #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+    let source_timing = diagnostic::Span::start(diagnostic::Phase::SourcePreflight);
     for reference in &ordered {
         check_deadline(deadline)?;
         drop(source.read_local(reference).map_err(|_| unknown())?);
+    }
+    #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+    if let Some(timing) = source_timing {
+        timing.finish(true);
     }
     check_deadline(deadline)?;
     // All counted voters, including self, pass through exactly the same TLS
@@ -551,14 +718,16 @@ fn collect(
                 (
                     target,
                     Box::pin(transfer_one(
-                        transport,
-                        route,
-                        target,
-                        pins[&target],
+                        ClosurePeer {
+                            transport,
+                            route,
+                            target,
+                            pin: pins[&target],
+                            binding: &binding,
+                            deadline,
+                        },
                         source,
                         &ordered,
-                        &binding,
-                        deadline,
                         transfer,
                     )),
                 )
@@ -600,15 +769,19 @@ fn collect(
     // A fresh final quorum must still describe exactly the same enrollment,
     // original intent/full LogId and leader term. Earlier socket responses do
     // not renew a consensus witness or the original operation deadline.
-    let after = runtime
-        .block_on(raft.admit_native_v6_closure(intent, deadline))
-        .map_err(|_| unknown())?;
+    let after = observe_closure_phase!(
+        FinalAdmission,
+        runtime.block_on(raft.admit_native_v6_closure(intent, deadline))
+    )
+    .map_err(|_| unknown())?;
     if Binding::observed(&after) != binding || after.leader_id() != raft.id() {
         return Err(unknown());
     }
-    runtime
-        .block_on(raft.verify_native_v6_closure_admission(&after))
-        .map_err(|_| unknown())?;
+    observe_closure_phase!(
+        FinalVerify,
+        runtime.block_on(raft.verify_native_v6_closure_admission(&after))
+    )
+    .map_err(|_| unknown())?;
     check_deadline(deadline)?;
     voters.sort_unstable();
     Ok(NativeV6ClosureQuorum {
@@ -618,21 +791,37 @@ fn collect(
     })
 }
 
-async fn exchange_reply(
-    transport: &MutualTlsPeerTransport,
-    route: &NodeId,
+// One transfer's fixed routing and original request scope. This borrows the
+// actual collector inputs; it does not cache an ACK or renew the admission.
+struct ClosurePeer<'a> {
+    transport: &'a MutualTlsPeerTransport,
+    route: &'a NodeId,
     target: u64,
     pin: [u8; 32],
-    binding: &Binding,
+    binding: &'a Binding,
+    deadline: Instant,
+}
+
+async fn exchange_reply(
+    peer: &ClosurePeer<'_>,
     kind: Kind,
     payload: impl FnOnce() -> Result<Vec<u8>, HaError>,
     expected: &[u8],
-    deadline: Instant,
 ) -> Result<Vec<RecordObjectRef>, HaError> {
+    let &ClosurePeer {
+        transport,
+        route,
+        target,
+        pin,
+        binding,
+        deadline,
+    } = peer;
     check_deadline(deadline)?;
     let capacity = CLOSURE_FRAME_CAPACITY
         .get_or_init(|| Arc::new(Semaphore::new(MAX_INFLIGHT_CLOSURE_FRAMES)))
         .clone();
+    #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+    let capacity_timing = diagnostic::Span::start(diagnostic::Phase::FrameCapacity);
     let permit = tokio::time::timeout_at(
         tokio::time::Instant::from_std(deadline),
         capacity.acquire_owned(),
@@ -640,10 +829,19 @@ async fn exchange_reply(
     .await
     .map_err(|_| unknown())?
     .map_err(|_| unknown())?;
+    #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+    if let Some(timing) = capacity_timing {
+        timing.finish(true);
+    }
     check_deadline(deadline)?;
     // Build/read only one bounded payload AFTER obtaining actual capacity.
     // The borrowed local store remains on the synchronous collector thread.
-    let request = wire::encode(binding, target, kind, &payload()?)?;
+    let request = observe_closure_phase!(
+        FramePayload,
+        wire::encode(binding, target, kind, &payload()?)
+    )?;
+    #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+    diagnostic::frame(kind as u8, request.len().saturating_sub(wire::HEADER_BYTES));
     check_deadline(deadline)?;
     let transport = transport.clone();
     let route = route.clone();
@@ -651,9 +849,21 @@ async fn exchange_reply(
     let cancelled = Arc::new(AtomicBool::new(false));
     let cancel = CancelSocketJob(cancelled.clone());
     let (send, received) = oneshot::channel();
+    #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+    let diagnostic_context = diagnostic::capture();
+    #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+    let diagnostic_queued = Instant::now();
     let worker = std::thread::Builder::new()
         .name("hb-v6-peer-frame".into())
         .spawn(move || {
+            #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+            let _diagnostic = diagnostic::Scope::attach(diagnostic_context);
+            #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+            if let Some(timing) =
+                diagnostic::Span::since(diagnostic::Phase::WorkerQueue, diagnostic_queued)
+            {
+                timing.finish(true);
+            }
             // Capacity stays charged on panic, cancellation and unknown I/O until
             // this real OS worker exits; no unbounded detached worker accumulation.
             let _permit = permit;
@@ -672,9 +882,15 @@ async fn exchange_reply(
                 // This private response came from the above actual pinned socket,
                 // and must echo its unpredictable nonce and complete binding.
                 if kind == Kind::EnsureBatch {
-                    wire::verify_missing_reply(&request, &response, &expected)
+                    observe_closure_phase!(
+                        ReplyVerify,
+                        wire::verify_missing_reply(&request, &response, &expected)
+                    )
                 } else {
-                    wire::verify_reply(&request, &response, &expected)?;
+                    observe_closure_phase!(
+                        ReplyVerify,
+                        wire::verify_reply(&request, &response, &expected)
+                    )?;
                     Ok(Vec::new())
                 }
             })();
@@ -682,10 +898,16 @@ async fn exchange_reply(
         })
         .map_err(|_| unknown())?;
     drop(worker);
+    #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+    let wait_timing = diagnostic::Span::start(diagnostic::Phase::FrameWait);
     let result = tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), received)
         .await
         .map_err(|_| unknown())?
         .map_err(|_| unknown())?;
+    #[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+    if let Some(timing) = wait_timing {
+        timing.finish(result.is_ok());
+    }
     check_deadline(deadline)?;
     drop(cancel);
     result
@@ -694,90 +916,58 @@ async fn exchange_reply(
 // Keep the original exact-payload exchange interface for every existing
 // frame kind, including reconciliation and final whole-closure custody.
 async fn exchange(
-    transport: &MutualTlsPeerTransport,
-    route: &NodeId,
-    target: u64,
-    pin: [u8; 32],
-    binding: &Binding,
+    peer: &ClosurePeer<'_>,
     kind: Kind,
     payload: impl FnOnce() -> Result<Vec<u8>, HaError>,
     expected: &[u8],
-    deadline: Instant,
 ) -> Result<(), HaError> {
     if kind == Kind::EnsureBatch {
         return Err(HaError::InvalidFrame);
     }
-    exchange_reply(
-        transport, route, target, pin, binding, kind, payload, expected, deadline,
-    )
-    .await
-    .map(|_| ())
+    exchange_reply(peer, kind, payload, expected)
+        .await
+        .map(|_| ())
 }
 
 async fn transfer_one(
-    transport: &MutualTlsPeerTransport,
-    route: &NodeId,
-    target: u64,
-    pin: [u8; 32],
+    peer: ClosurePeer<'_>,
     source: &LocalV6BlobStage,
     references: &[RecordObjectRef],
-    binding: &Binding,
-    deadline: Instant,
     transfer: bool,
 ) -> Result<(), HaError> {
+    let deadline = peer.deadline;
+    let binding = peer.binding;
     for (page, references) in references.chunks(wire::PAGE_OBJECTS).enumerate() {
         let offset = page * wire::PAGE_OBJECTS;
         exchange(
-            transport,
-            route,
-            target,
-            pin,
-            binding,
+            &peer,
             Kind::Manifest,
             || wire::manifest_page(offset, references),
             &((offset + references.len()) as u64).to_be_bytes(),
-            deadline,
         )
         .await?;
     }
     if transfer {
-        // Reference-only inventory must not inherit the much smaller frame
-        // bound for ciphertext. Each exact missing subset is still staged in
-        // the original three-leaf frames under the same operation deadline.
+        // Reference-only inventory retains its separate bound. Pack each
+        // authenticated missing subset by actual encoded bytes and at most
+        // eight leaves, under the SAME original frame and operation deadlines.
         for references in references.chunks(batch::ENSURE_OBJECTS) {
             check_deadline(deadline)?;
             let requested = batch::ensure_expected(references)?;
             let missing = exchange_reply(
-                transport,
-                route,
-                target,
-                pin,
-                binding,
+                &peer,
                 Kind::EnsureBatch,
                 || Ok(requested.clone()),
                 &requested,
-                deadline,
             )
             .await?;
             check_deadline(deadline)?;
             // This exact authenticated response is the sole permission to
             // transfer a subset. Lost ACKs, corrupt leaves and stale admission
             // return above; none is converted into an automatic payload retry.
-            for missing in missing.chunks(batch::OBJECTS) {
-                let expected = batch::expected(missing)?;
-                exchange(
-                    transport,
-                    route,
-                    target,
-                    pin,
-                    binding,
-                    Kind::StageBatch,
-                    || batch::payload(source, missing, true, deadline),
-                    &expected,
-                    deadline,
-                )
-                .await?;
-            }
+            // Unknown kinds/replies are terminal here. In particular this
+            // new kind never falls back to replaying a mutation as kind 5.
+            transfer_packed_frames(&peer, source, &batch::packed_batches(&missing)?).await?;
         }
     } else {
         for references in references.chunks(batch::OBJECTS) {
@@ -786,31 +976,74 @@ async fn transfer_one(
             // absent. It never borrows the new missing-transfer permission.
             let expected = batch::expected(references)?;
             exchange(
-                transport,
-                route,
-                target,
-                pin,
-                binding,
+                &peer,
                 Kind::FsyncExistingBatch,
                 || batch::payload(source, references, false, deadline),
                 &expected,
-                deadline,
             )
             .await?;
         }
     }
     exchange(
-        transport,
-        route,
-        target,
-        pin,
-        binding,
+        &peer,
         Kind::Finalize,
         || Ok(Vec::new()),
         &wire::final_payload(&binding.intent),
-        deadline,
     )
     .await
+}
+
+async fn transfer_packed_frames(
+    peer: &ClosurePeer<'_>,
+    source: &LocalV6BlobStage,
+    batches: &[&[RecordObjectRef]],
+) -> Result<(), HaError> {
+    // The original authenticated missing set is partitioned without changing
+    // its objects, frame bounds or canonical order within a frame. Each frame
+    // acquires the original
+    // global socket capacity before reading its own payload, and independently
+    // validates the real pinned TLS response, nonce and complete binding.
+    for window in batches.chunks(PACKED_FRAME_WINDOW) {
+        let mut pending: Vec<_> = window
+            .iter()
+            .map(|references| {
+                Box::pin(async move {
+                    let expected = batch::packed_expected(references)?;
+                    exchange(
+                        peer,
+                        Kind::PackedStageBatch,
+                        || batch::packed_payload(source, references, peer.deadline),
+                        &expected,
+                    )
+                    .await
+                })
+            })
+            .collect();
+        while !pending.is_empty() {
+            check_deadline(peer.deadline)?;
+            let (index, result) = tokio::time::timeout_at(
+                tokio::time::Instant::from_std(peer.deadline),
+                poll_fn(|cx| {
+                    for (index, operation) in pending.iter_mut().enumerate() {
+                        if let Poll::Ready(result) = operation.as_mut().poll(cx) {
+                            return Poll::Ready((index, result));
+                        }
+                    }
+                    Poll::Pending
+                }),
+            )
+            .await
+            .map_err(|_| unknown())?;
+            check_deadline(peer.deadline)?;
+            drop(pending.swap_remove(index));
+            // Any failed or unknown frame ends this transfer. Dropping the
+            // other future cancels its next work; an already running socket
+            // retains its charged permit until its real bounded I/O exits.
+            // No mutation is replayed and no Finalize follows this error.
+            result?;
+        }
+    }
+    Ok(())
 }
 
 #[cfg(all(test, unix))]

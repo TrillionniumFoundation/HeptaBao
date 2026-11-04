@@ -11,6 +11,7 @@ pub(crate) struct AppRoleSecretIdConsumption {
     role_name: String,
     role_id: String,
     secret_hash: String,
+    secret_owner_cluster: Option<String>,
     old: SecretId,
     next: Option<SecretId>,
 }
@@ -45,7 +46,9 @@ impl AppRoleSecretIdConsumption {
             .roles_at(scope)
             .and_then(|roles| roles.get(&self.role_name))
             .ok_or_else(|| err(409, "AppRole changed during credential consumption"))?;
-        if role.role_id != self.role_id || role.secret_ids.get(&self.secret_hash) != Some(&self.old)
+        if role.role_id != self.role_id
+            || role.approle_secret_owner() != self.secret_owner_cluster.as_deref()
+            || role.approle_secrets()?.get(&self.secret_hash) != Some(&self.old)
         {
             return Err(err(409, "AppRole credential changed during consumption"));
         }
@@ -54,9 +57,10 @@ impl AppRoleSecretIdConsumption {
             .get_mut(&self.role_name)
             .ok_or_else(|| err(409, "AppRole changed during credential consumption"))?;
         if let Some(next) = self.next.as_ref() {
-            role.secret_ids
+            role.approle_secrets_mut()?
                 .insert(self.secret_hash.clone(), next.clone());
-        } else if let Some((mut key, mut secret)) = role.secret_ids.remove_entry(&self.secret_hash)
+        } else if let Some((mut key, mut secret)) =
+            role.approle_secrets_mut()?.remove_entry(&self.secret_hash)
         {
             key.zeroize();
             secret.accessor.zeroize();
@@ -204,6 +208,11 @@ impl AuthState {
             role_name: role_name.into(),
             role_id: role_id.into(),
             secret_hash: secret_hash.into(),
+            secret_owner_cluster: self
+                .roles_at(scope)
+                .and_then(|roles| roles.get(role_name))
+                .and_then(Role::approle_secret_owner)
+                .map(str::to_owned),
             old,
             next,
         })

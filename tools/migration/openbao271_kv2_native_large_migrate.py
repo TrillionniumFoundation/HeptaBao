@@ -34,6 +34,11 @@ DecodeError, need = decoder.DecodeError, decoder.need
 DEADLINE = 360
 REQUEST_SECONDS = 5
 CONTENT_TYPE = "application/vnd.heptabao.kv2-lossless+json"
+HTTP_INPUT_MAGIC = b"HBKV2HTTP1\n"
+HTTP_INPUT_HEADER_BYTES = 128 * 1024
+MAX_IMPORT_PATHS = 50000
+MAX_NATIVE_RECORDS = 100000
+MAX_BUNDLE_JSON_NODES = 4194304
 
 
 @dataclass(frozen=True)
@@ -83,11 +88,18 @@ class Client:
                    "Content-Type": CONTENT_TYPE if native_import else "application/json"}
         if self.namespace:
             headers["X-Vault-Namespace"] = self.namespace
-        packet = json.dumps({
+        # Keep preparation inside the original absolute five-second deadline.
+        # The owned leaf receives a bounded JSON header followed by the exact
+        # byte body. Large payloads no longer undergo base64/JSON copies and
+        # decoding before the TLS request can begin.
+        metadata = json.dumps({
             "address": self.address, "headers": headers, "ca_file": self.ca_file,
             "method": method, "path": path,
-            "body": None if body is None else base64.b64encode(body).decode("ascii"),
+            "body_bytes": None if body is None else len(body),
+            "body_sha256": None if body is None else hashlib.sha256(body).hexdigest(),
         }, separators=(",", ":")).encode()
+        need(len(metadata) + 1 <= HTTP_INPUT_HEADER_BYTES, "native-large HTTP header bound")
+        packet = HTTP_INPUT_MAGIC + metadata + b"\n" + (body if body is not None else b"")
         need(len(packet) <= self.limits.input_bytes, "native-large HTTP input bound")
         legacy.check_deadline(request_end)
         process = subprocess.Popen(
@@ -157,7 +169,7 @@ def acquire(client, uuid):
         data = response.get("data")
         need(isinstance(data, dict), "raw list data missing")
         keys = data.get("keys")
-        need(isinstance(keys, list) and len(keys) <= decoder.MAX_RECORDS, "raw list bound")
+        need(isinstance(keys, list) and len(keys) <= client.limits.raw.record_count, "raw list bound")
         children = set()
         for key in keys:
             legacy.check_deadline(client.end)
@@ -172,7 +184,7 @@ def acquire(client, uuid):
             if directory:
                 queue.append((full, depth + 1))
                 continue
-            need(full not in records and len(records) < decoder.MAX_RECORDS, "raw record count")
+            need(full not in records and len(records) < client.limits.raw.record_count, "raw record count")
             response = client.request(
                 "GET", "sys/raw/" + urllib.parse.quote(full, safe="/")
                 + "?encoding=base64&compressed=false")
@@ -211,11 +223,19 @@ def export_bundle(client, mount):
 def import_bundle(client, mount, raw):
     legacy.canonical_path(mount, "invalid mount")
     need(not client.namespace, "native-large import requires root namespace")
-    value = legacy.parse_json(raw, client.limits.bundle_bytes)
+    value = legacy.parse_json(raw, client.limits.bundle_bytes,
+                              maximum_nodes=MAX_BUNDLE_JSON_NODES)
     need(isinstance(value, dict) and set(value) == {"schema", "config", "entries"}
          and value["schema"] == "openbao270-kv2-lossless-v1"
          and isinstance(value["config"], dict) and isinstance(value["entries"], dict)
-         and len(value["entries"]) <= decoder.MAX_RECORDS, "invalid native KV2 bundle")
+         and len(value["entries"]) <= MAX_IMPORT_PATHS, "invalid native KV2 bundle")
+    records = 1 + len(value["entries"])
+    for entry in value["entries"].values():
+        legacy.check_deadline(client.end)
+        need(isinstance(entry, dict) and isinstance(entry.get("versions"), dict),
+             "invalid native KV2 entry")
+        records += len(entry["versions"])
+        need(records <= MAX_NATIVE_RECORDS, "native KV2 joint record bound")
     # Raw closed bundle, no mount/bundle aggregate envelope. The server owns
     # strict graph validation and one publication after pre-body admission.
     result = client.request(

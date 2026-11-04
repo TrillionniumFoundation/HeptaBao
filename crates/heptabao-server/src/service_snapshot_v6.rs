@@ -10,10 +10,10 @@ use heptabao_durable_service::PreparedV6Restore;
 use std::cell::RefCell;
 use std::io::{Read, Seek};
 
-#[cfg(feature = "experimental-native-v6-ha")]
+#[cfg(feature = "native-v6-ha")]
 #[path = "service_snapshot_v6_ha.rs"]
 mod ha;
-#[cfg(feature = "experimental-native-v6-ha")]
+#[cfg(feature = "native-v6-ha")]
 pub(super) use ha::NativeHaHistoricalReceipt;
 #[path = "service_native_v6_staging_repair.rs"]
 mod staging_repair;
@@ -128,7 +128,18 @@ struct IncomingNative {
 }
 
 impl Service {
-    fn check_v6_snapshot_owner(&self, plan: &SnapshotTransferPlan) -> Result<(), Response> {
+    pub(in crate::service::snapshot_transfer) fn check_v6_snapshot_owner(
+        &self,
+        plan: &SnapshotTransferPlan,
+    ) -> Result<(), Response> {
+        self.check_v6_snapshot_owner_at(plan, plan.base)
+    }
+
+    pub(in crate::service::snapshot_transfer) fn check_v6_snapshot_owner_at(
+        &self,
+        plan: &SnapshotTransferPlan,
+        identity: StateIdentity,
+    ) -> Result<(), Response> {
         if Instant::now() >= plan.deadline
             || self.audit_failed
             || self.recovery_required
@@ -136,7 +147,7 @@ impl Service {
             || self.unseal_nonce != plan.activation
             || self.ha.is_some()
             || plan.ha.is_some()
-            || self.current_state_identity().ok() != Some(plan.base)
+            || !self.current_identity_matches_snapshot_plan(plan, identity)
         {
             return Err(unavailable());
         }
@@ -180,7 +191,7 @@ impl Service {
         &mut self,
         plan: &mut SnapshotTransferPlan,
     ) -> Result<DownloadSource, Response> {
-        #[cfg(feature = "experimental-native-v6-ha")]
+        #[cfg(feature = "native-v6-ha")]
         if self.ha.is_some() || plan.ha.is_some() {
             return self.prepare_native_ha_snapshot_download(plan);
         }
@@ -338,10 +349,11 @@ impl Service {
         if root.reader_floor.native_kv2_format != 2
             || root.cluster_id != current.cluster_id
             || root.replay_epoch != archive.state().metadata().replay_epoch
-            || root
-                .kv2
-                .iter()
-                .any(|graph| !graph.scope.namespace.is_empty())
+            || (root.state_schema < NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA
+                && root
+                    .kv2
+                    .iter()
+                    .any(|graph| !graph.scope.namespace.is_empty()))
         {
             return Err(invalid());
         }
@@ -405,6 +417,22 @@ impl Service {
             .map_err(Response::from_engine_error)?;
         self.require_native_root_candidate(&state)?;
         state.validate_format()?;
+        // This ordinary single-node restore must retain the archive's own
+        // protected producer formats before live clocks can be copied. A newer
+        // sticky clock owner cannot certify an archive that never carried it.
+        // HA cold recovery has its separate authenticated force-restore path.
+        if current.auth.has_token_api_precision_state()
+            && !state.auth.has_token_api_precision_state()
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would retire Token API precise ownership",
+            ));
+        }
+        state
+            .auth
+            .validate_public_origin_successor(&current.auth)
+            .map_err(|_| Response::error(400, "snapshot would retire public origin ownership"))?;
         // A real admitted request can advance the live monotone clock after
         // the snapshot was exported. Inherit ONLY the existing clock facts;
         // formats, token/credential catalogs, retirement, revocation and every
@@ -417,6 +445,16 @@ impl Service {
             .engines
             .inherit_native_snapshot_clocks(&current.engines)
             .map_err(Response::from_engine_error)?;
+        // An authenticated config-only graph has no historical KV2 value to
+        // relabel. Keep the actual live producer floor without changing any
+        // KV graph, credentials or retired owner; all old guards still run.
+        let retained_empty_floor = v6_records::retain_empty_snapshot_kv2_floor(
+            &root,
+            &mut state,
+            current,
+            deadline,
+            &mut || self.check_v6_snapshot_owner(plan),
+        )?;
         Self::validate_snapshot_protected_floor(current, &state)?;
         if !state.database.is_empty() || state.engines.has_openldap_mount() {
             return Err(Response::error(
@@ -457,6 +495,7 @@ impl Service {
             v6_records::project_snapshot_native_root(
                 &root,
                 state,
+                retained_empty_floor,
                 target.1,
                 deadline,
                 &objects,
@@ -494,10 +533,12 @@ impl Service {
                 &mut archive,
                 target,
                 &root_bytes,
-                Secret::new(projected.bytes.to_vec())
-                    .map_err(|error| self.v6_storage_failure(plan, error))?,
-                Secret::new(next_cursor.encode()?.to_vec())
-                    .map_err(|error| self.v6_storage_failure(plan, error))?,
+                (
+                    Secret::new(projected.bytes.to_vec())
+                        .map_err(|error| self.v6_storage_failure(plan, error))?,
+                    Secret::new(next_cursor.encode()?.to_vec())
+                        .map_err(|error| self.v6_storage_failure(plan, error))?,
+                ),
                 objects,
                 &mut gate,
             )
@@ -560,6 +601,7 @@ impl Service {
         if let Err(error) = self.check_v6_snapshot_owner(plan) {
             return error;
         }
+        Self::advance_unseal_nonce_attempt(&mut self.unseal_nonce_attempt);
         let next_activation = match crypto::random::<16>() {
             Ok(value) => hex(&value),
             Err(_) => return unavailable(),

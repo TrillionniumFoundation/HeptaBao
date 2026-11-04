@@ -243,19 +243,12 @@ fn consistency270_http_response_projects_only_server_encoded_index()
     assert_eq!(text.matches("X-Vault-Index:").count(), 1);
     assert!(text.contains(&format!("X-Vault-Index: {wire_index}\r\n")));
     let mut bytes = Vec::new();
-    write_response(
-        &mut bytes,
-        Response {
-            status: 429,
-            body: json!({"errors":[]}),
-            unwrapped_json: None,
-            response_headers: Default::default(),
-            consistency_index: None,
-        },
-        true,
-    )?;
+    // Use the actual middleware producer: generic quota 429s deliberately
+    // retain their own delay/header policy instead of inheriting this one.
+    write_response(&mut bytes, consistency::rejection_response(), true)?;
     let text = String::from_utf8(bytes)?;
     assert!(text.contains("Retry-After: 1\r\n"));
+    assert_eq!(text.matches("Retry-After:").count(), 1);
     assert!(!text.contains("X-Vault-Index:"));
     assert!(text.ends_with("\r\n\r\n"));
     Ok(())

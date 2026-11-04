@@ -83,6 +83,30 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         &self,
         publication: ImmutablePublication<'_>,
     ) -> Result<ImmutablePublicationCapacity, ServiceError> {
+        self.preflight_immutable_publication_packing(publication, false)
+    }
+
+    /// Admit all missing immutable objects in batches of at most 96, followed
+    /// by a separate root-only batch. Even an entirely reused graph reserves
+    /// its root batch. This permits complete local graph verification after
+    /// object staging and before the sole authoritative root replacement.
+    ///
+    /// The caller uses `{operation}-objects-{0..}` for every object batch and
+    /// `{operation}-root` for the final root-only batch, with compaction enabled.
+    /// All other admission, epoch and custody requirements of
+    /// `preflight_immutable_publication` are unchanged. No artifacts are written.
+    pub fn preflight_immutable_publication_with_separate_root(
+        &self,
+        publication: ImmutablePublication<'_>,
+    ) -> Result<ImmutablePublicationCapacity, ServiceError> {
+        self.preflight_immutable_publication_packing(publication, true)
+    }
+
+    fn preflight_immutable_publication_packing(
+        &self,
+        publication: ImmutablePublication<'_>,
+        separate_root: bool,
+    ) -> Result<ImmutablePublicationCapacity, ServiceError> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
@@ -183,11 +207,18 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             return Err(ServiceError::RequestCapacityExhausted);
         }
         let new_objects = missing.len();
-        let batches = new_objects / MAX_ATOMIC_MUTATIONS + 1;
+        let object_batches = if separate_root {
+            new_objects.div_ceil(MAX_ATOMIC_MUTATIONS)
+        } else {
+            new_objects / MAX_ATOMIC_MUTATIONS
+        };
+        let batches = object_batches + 1;
         let mut final_snapshot = snapshot_peak;
         for batch_index in 0..batches {
             let is_root = batch_index + 1 == batches;
-            let start = batch_index * MAX_ATOMIC_MUTATIONS;
+            // The separate final root is beyond a partial object batch. Clamp
+            // its empty slice to the actual object count, including zero.
+            let start = (batch_index * MAX_ATOMIC_MUTATIONS).min(new_objects);
             let end = (start + MAX_ATOMIC_MUTATIONS).min(new_objects);
             let mut batch = missing[start..end].to_vec();
             let request_id = if is_root {

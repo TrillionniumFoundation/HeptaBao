@@ -29,7 +29,21 @@ fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::err
     Ok(())
 }
 
+// Current behavioral regressions keep the normal first-publication factory.
 fn fixture(root: &Root) -> TestResult<(Service, String, String, String)> {
+    fixture_with_bootstrap(root, bootstrap)
+}
+
+// Historical wire-format regressions choose their old input before publication;
+// no already-published current security contract is erased or relabelled.
+fn historical_fixture(root: &Root) -> TestResult<(Service, String, String, String)> {
+    fixture_with_bootstrap(root, super::tests::bootstrap_pre141)
+}
+
+fn fixture_with_bootstrap(
+    root: &Root,
+    initialize: fn(&mut Service) -> TestResult<(String, String)>,
+) -> TestResult<(Service, String, String, String)> {
     let mut service = root.service()?;
     let mut engines = EngineState::default();
     engines.handle("", "POST", "sys/mounts/pki", &json!({"type":"pki"}), 100)?;
@@ -53,7 +67,7 @@ fn fixture(root: &Root) -> TestResult<(Service, String, String, String)> {
         path_prefix: "/".into(),
         shared_secret: String::new(),
     }])?;
-    let (key, admin) = bootstrap(&mut service)?;
+    let (key, admin) = initialize(&mut service)?;
     for (path, body) in [
         ("sys/auth/kubernetes", json!({"type":"kubernetes"})),
         (
@@ -323,7 +337,7 @@ fn kubernetes_renewal_obeys_live_identity_and_capacity_without_extending_lease()
 #[test]
 fn kubernetes_schema_twenty_fences_new_authority_and_preserves_legacy_tokens() -> TestResult {
     let root = Root::new();
-    let (service, _, _, token) = fixture(&root)?;
+    let (service, _, _, token) = historical_fixture(&root)?;
     let mut state = service.state.clone().ok_or("state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     restore_legacy_engine_owner(&mut state)?;
@@ -550,7 +564,35 @@ fn native_kubernetes_config_needs_no_endpoint_and_redacts_optional_reviewer() ->
     assert!(read.body["data"].get("token_reviewer_jwt").is_none());
     let state = service.state.as_ref().ok_or("state")?;
     assert!(state.auth.has_kubernetes_api_https_state());
-    let mut downgraded = state.clone();
+    // The live Current fixture above keeps its real schema141 metadata. Build
+    // the independent schema28 input from the old unpublished factory instead.
+    let historical_root = Root::new();
+    let mut historical = historical_root.service()?;
+    let (_, historical_admin) = super::tests::bootstrap_pre141(&mut historical)?;
+    assert_eq!(
+        call(
+            &mut historical,
+            "POST",
+            "sys/auth/kubernetes",
+            &historical_admin,
+            json!({"type":"kubernetes"})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut historical,
+            "POST",
+            "auth/kubernetes/config",
+            &historical_admin,
+            body.clone()
+        )
+        .status,
+        204
+    );
+    let mut downgraded = historical.state.clone().ok_or("historical state")?;
+    assert!(!downgraded.auth.has_security_contract_state());
     restore_legacy_engine_owner(&mut downgraded)?;
     downgraded.auth.remove_name_modes_for_legacy_format_test();
     downgraded.schema = 28;
@@ -601,7 +643,7 @@ fn native_kubernetes_config_needs_no_endpoint_and_redacts_optional_reviewer() ->
 #[test]
 fn schema_twenty_eight_admits_legacy_kubernetes_enrollment_without_api_authority() -> TestResult {
     let root = Root::new();
-    let (service, _, _, _) = fixture(&root)?;
+    let (service, _, _, _) = historical_fixture(&root)?;
     let mut state = service.state.clone().ok_or("state")?;
     let mut auth = serde_json::to_value(&state.auth)?;
     auth["kubernetes_mounts"][""]["kubernetes"]["config"]
@@ -738,7 +780,7 @@ fn kubernetes_cidr_checks_source_before_tokenreview_and_stale_role_cannot_wrap()
 fn kubernetes_cidr_wrapper_is_unbound_but_inner_snapshot_persists_and_admin_can_renew() -> TestResult
 {
     let root = Root::new();
-    let (mut service, key, admin, old) = fixture(&root)?;
+    let (mut service, key, admin, old) = historical_fixture(&root)?;
     let mut admission = service.state.as_ref().ok_or("state")?.clone();
     restore_legacy_engine_owner(&mut admission)?;
     admission.auth.remove_name_modes_for_legacy_format_test();

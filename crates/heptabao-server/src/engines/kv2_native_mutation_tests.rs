@@ -522,10 +522,26 @@ fn installed_native_backend_dispatches_and_proves_exact_roots_without_inline_jso
         live.stage_openbao_kv2_import("", "secret", b"{}")
             .is_err_and(|error| error.status == 501)
     );
+    // The formal remount task may capture catalog metadata, but that does
+    // not grant either catalog-only entry permission to rebind a native graph.
+    let owner = live
+        .native_remount_owner("", "secret", "other")?
+        .ok_or("native remount source owner")?;
+    assert_eq!(owner.kind, "kv2-native");
     assert!(
-        live.native_remount_owner("", "secret", "other")
-            .is_err_and(|error| error.status == 501)
+        live.remount("", "secret", "other", None)
+            .is_err_and(|error| error.status == 503)
     );
+    assert!(
+        live.remount_native_accepted("", "secret", "other", None, &owner)
+            .is_err_and(|error| error.status == 503)
+    );
+    assert!(live.native_remount_owner("", "secret", "other")?.as_ref() == Some(&owner));
+    assert!(
+        live.ordinary_kv_mount_binding("", "other/data/hot")
+            .is_none()
+    );
+    live.validate_native_roots(&base(), &next_roots, &|| Ok(()))?;
     Ok(())
 }
 

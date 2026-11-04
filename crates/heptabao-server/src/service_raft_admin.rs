@@ -137,6 +137,51 @@ impl Service {
                 | "sys/storage/raft/migrate-owner-state"
         )
     }
+    /// Pure projection of an already owned consensus observation. The caller
+    /// retains authentication, actual ReadIndex custody, and response delivery.
+    pub(super) fn raft_admin_read_observation_response(
+        &self,
+        state: &State,
+        o: &MembershipObservation,
+        path: &str,
+        enrolled: impl Fn(u64) -> bool,
+    ) -> Result<Response, Response> {
+        match path {
+            "sys/storage/raft/autopilot/configuration" => Ok(Response::ok(
+                json!({"data":config_body(&state.raft_admin.config)}),
+            )),
+            "sys/storage/raft/autopilot/state" => {
+                let mut value = Self::autopilot_body(o, &state.raft_admin);
+                if let Some(servers) = value.get_mut("servers").and_then(Value::as_object_mut) {
+                    for (id, server) in servers {
+                        let stabilized = id.parse::<u64>().ok().is_some_and(|id| {
+                            self.raft_stabilization.index == o.membership_index
+                                && self.raft_stabilization.term == Some(o.term)
+                                && self.raft_stabilization.configuration.as_ref()
+                                    == Some(&state.raft_admin.config)
+                                && healthy(o, id, &state.raft_admin.config)
+                                && self.raft_stabilization.stabilized(
+                                    id,
+                                    &state.raft_admin.config,
+                                    Instant::now(),
+                                )
+                        });
+                        server["stabilized"] = json!(stabilized);
+                    }
+                }
+                Ok(Response::ok(json!({"data":value})))
+            }
+            "sys/storage/raft/configuration" => Ok(Response::ok(
+                json!({"data":{"config":{"index":o.membership_index,"committed":o.committed,"joint":o.joint,"servers":o.nodes.iter().map(|id|json!({"node_id":id.to_string(),"leader":o.leader==Some(*id),"voter":o.voters.contains(id),"enrolled":enrolled(*id)})).collect::<Vec<_>>()}}}),
+            )),
+            "sys/storage/raft/snapshot-status" => Ok(Response::ok(
+                json!({"data":{"applied_index":o.applied_index,"snapshot_index":o.snapshot_index,"purged_index":o.purged_index,"membership_index":o.membership_index}}),
+            )),
+            "sys/storage/raft/linearizable-read" => Ok(Self::linearizable_read_body(o)),
+            _ => Err(Response::error(405, "Raft mutation requires POST or PUT")),
+        }
+    }
+
     pub(super) fn raft_admin_route(
         &mut self,
         mut state: State,
@@ -221,42 +266,8 @@ impl Service {
                 if !object.is_empty() {
                     return Err(Response::error(400, "read operation has no body fields"));
                 }
-                return match *path {
-                    "sys/storage/raft/autopilot/configuration" => Ok(Response::ok(
-                        json!({"data":config_body(&state.raft_admin.config)}),
-                    )),
-                    "sys/storage/raft/autopilot/state" => {
-                        let mut value = Self::autopilot_body(&o, &state.raft_admin);
-                        if let Some(servers) =
-                            value.get_mut("servers").and_then(Value::as_object_mut)
-                        {
-                            for (id, server) in servers {
-                                let stabilized = id.parse::<u64>().ok().is_some_and(|id| {
-                                    self.raft_stabilization.index == o.membership_index
-                                        && self.raft_stabilization.term == Some(o.term)
-                                        && self.raft_stabilization.configuration.as_ref()
-                                            == Some(&state.raft_admin.config)
-                                        && healthy(&o, id, &state.raft_admin.config)
-                                        && self.raft_stabilization.stabilized(
-                                            id,
-                                            &state.raft_admin.config,
-                                            Instant::now(),
-                                        )
-                                });
-                                server["stabilized"] = json!(stabilized);
-                            }
-                        }
-                        Ok(Response::ok(json!({"data":value})))
-                    }
-                    "sys/storage/raft/configuration" => Ok(Response::ok(
-                        json!({"data":{"config":{"index":o.membership_index,"committed":o.committed,"joint":o.joint,"servers":o.nodes.iter().map(|id|json!({"node_id":id.to_string(),"leader":o.leader==Some(*id),"voter":o.voters.contains(id),"enrolled":ha.enrolled(*id)})).collect::<Vec<_>>()}}}),
-                    )),
-                    "sys/storage/raft/snapshot-status" => Ok(Response::ok(
-                        json!({"data":{"applied_index":o.applied_index,"snapshot_index":o.snapshot_index,"purged_index":o.purged_index,"membership_index":o.membership_index}}),
-                    )),
-                    "sys/storage/raft/linearizable-read" => Ok(Self::linearizable_read_body(&o)),
-                    _ => Err(Response::error(405, "Raft mutation requires POST or PUT")),
-                };
+                return self
+                    .raft_admin_read_observation_response(&state, &o, path, |id| ha.enrolled(id));
             }
             if !matches!(*method, "POST" | "PUT") {
                 return Err(Response::error(405, "unsupported Raft method"));

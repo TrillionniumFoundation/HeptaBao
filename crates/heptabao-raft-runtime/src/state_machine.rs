@@ -7,7 +7,7 @@ use crate::records::{
 };
 use openraft::alias::{LogIdOf, StoredMembershipOf};
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 use std::collections::BTreeMap;
 use std::collections::HashMap;
 use std::fmt;
@@ -15,11 +15,12 @@ use std::fmt;
 #[derive(Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ApplicationRequest {
-    RecordsV5(RecordRequest),
+    // Heap ownership does not change the untagged durable JSON shape.
+    RecordsV5(Box<RecordRequest>),
     Legacy(LegacyRequest),
 }
 
-#[cfg(all(test, not(feature = "experimental-v6-raft-objects")))]
+#[cfg(all(test, not(feature = "native-v6-raft-objects")))]
 mod native_format_refusal_tests {
     use super::*;
 
@@ -36,11 +37,18 @@ mod native_format_refusal_tests {
             "ordinary V5 snapshots remain readable"
         );
         let mut bytes: serde_json::Value = serde_json::from_slice(&old)?;
-        for version in [4, 5] {
+        for version in [4, 5, 6, 7] {
             bytes["format_version"] = serde_json::json!(version);
             assert!(StateMachine::from_snapshot(&serde_json::to_vec(&bytes)?).is_err());
         }
-        for field in ["v6_root", "v6_enrollment", "v6_epoch_protocol", "v6_pending_epoch_restore"] {
+        for field in [
+            "v6_root",
+            "v6_enrollment",
+            "v6_epoch_protocol",
+            "v6_pending_epoch_restore",
+            "v6_retention_protocol",
+            "v6_retained_root_protocol",
+        ] {
             let mut bytes: serde_json::Value = serde_json::from_slice(&old)?;
             bytes["state"][field] = serde_json::json!({"must_not_be_ignored":true});
             assert!(StateMachine::from_snapshot(&serde_json::to_vec(&bytes)?).is_err());
@@ -143,38 +151,51 @@ pub struct StateMachine {
     /// Only the original *applied* Raft log may create this identity.
     /// Retained in the authenticated-by-Raft local snapshot state; this is not
     /// a quorum certificate, root CAS, read grant or client acknowledgment.
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     pub(crate) v6_intent_log_provenance: BTreeMap<String, LogIdOf<TypeConfig>>,
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) v5_root_log: Option<LogIdOf<TypeConfig>>,
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) v6_enrollment: Option<crate::v6_root_publication::NativeV6EnrollmentState>,
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) v6_root: Option<crate::v6_root_publication::NativeV6RootState>,
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) v6_epoch_protocol: Option<u8>,
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub(crate) v6_pending_epoch_restore: Option<crate::v6_epoch_restore::NativeV6PendingEpochRestore>,
+    pub(crate) v6_pending_epoch_restore:
+        Option<crate::v6_epoch_restore::NativeV6PendingEpochRestore>,
+    #[cfg(feature = "native-v6-raft-objects")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) v6_retention_protocol: Option<u8>,
+    #[cfg(feature = "native-v6-raft-objects")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) v6_retained_root_protocol: Option<u8>,
     // Old/default builds must not silently discard an enrolled or published
     // V6 state even if an input falsely labels its enclosing format as V3.
-    #[cfg(not(feature = "experimental-v6-raft-objects"))]
+    #[cfg(not(feature = "native-v6-raft-objects"))]
     #[serde(default, skip_serializing, rename = "v6_enrollment")]
     unsupported_v6_enrollment: Option<serde::de::IgnoredAny>,
-    #[cfg(not(feature = "experimental-v6-raft-objects"))]
+    #[cfg(not(feature = "native-v6-raft-objects"))]
     #[serde(default, skip_serializing, rename = "v6_root")]
     unsupported_v6_root: Option<serde::de::IgnoredAny>,
-    #[cfg(not(feature = "experimental-v6-raft-objects"))]
+    #[cfg(not(feature = "native-v6-raft-objects"))]
     #[serde(default, skip_serializing, rename = "v6_epoch_protocol")]
     unsupported_v6_epoch_protocol: Option<serde::de::IgnoredAny>,
-    #[cfg(not(feature = "experimental-v6-raft-objects"))]
+    #[cfg(not(feature = "native-v6-raft-objects"))]
     #[serde(default, skip_serializing, rename = "v6_pending_epoch_restore")]
     unsupported_v6_pending_epoch_restore: Option<serde::de::IgnoredAny>,
+    #[cfg(not(feature = "native-v6-raft-objects"))]
+    #[serde(default, skip_serializing, rename = "v6_retention_protocol")]
+    unsupported_v6_retention_protocol: Option<serde::de::IgnoredAny>,
+    #[cfg(not(feature = "native-v6-raft-objects"))]
+    #[serde(default, skip_serializing, rename = "v6_retained_root_protocol")]
+    unsupported_v6_retained_root_protocol: Option<serde::de::IgnoredAny>,
     #[serde(skip)]
     legacy_json_bytes: Option<usize>,
 }
@@ -188,10 +209,10 @@ impl fmt::Debug for StateMachine {
 }
 impl ApplicationRequest {
     pub(crate) fn records(serial: u64, command: RecordCommand) -> Result<Self, RecordRejection> {
-        let request = Self::RecordsV5(RecordRequest {
+        let request = Self::RecordsV5(Box::new(RecordRequest {
             serial,
             records_v5: command,
-        });
+        }));
         request.validate_size()?;
         Ok(request)
     }
@@ -263,16 +284,27 @@ impl StateMachine {
         }
     }
     pub(crate) fn validate(&self) -> Result<(), RecordRejection> {
-        #[cfg(not(feature = "experimental-v6-raft-objects"))]
-        if self.unsupported_v6_enrollment.is_some() || self.unsupported_v6_root.is_some()
+        #[cfg(not(feature = "native-v6-raft-objects"))]
+        if self.unsupported_v6_enrollment.is_some()
+            || self.unsupported_v6_root.is_some()
             || self.unsupported_v6_epoch_protocol.is_some()
             || self.unsupported_v6_pending_epoch_restore.is_some()
+            || self.unsupported_v6_retention_protocol.is_some()
+            || self.unsupported_v6_retained_root_protocol.is_some()
         {
             return Err(RecordRejection::Invalid);
         }
-        #[cfg(feature = "experimental-v6-raft-objects")]
+        #[cfg(feature = "native-v6-raft-objects")]
         {
             self.validate_native_v6_state()?;
+            self.validate_native_v6_retained_roots()?;
+            if self
+                .v6_retention_protocol
+                .is_some_and(|version| version != crate::v6_retention::RETENTION_PROTOCOL)
+                || (self.v6_retention_protocol.is_some() && self.v6_root.is_none())
+            {
+                return Err(RecordRejection::Invalid);
+            }
             if self.v6_intent_log_provenance.len() > 4096 {
                 return Err(RecordRejection::Budget);
             }
@@ -316,7 +348,7 @@ impl StateMachine {
         Ok(())
     }
     /// Read-only original applied log identity, not a grant of quorum.
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub(crate) fn v6_intent_log_id(&self, digest: &[u8; 32]) -> Option<LogIdOf<TypeConfig>> {
         let mut key = String::with_capacity(64);
         crate::append_hex(&mut key, digest);
@@ -406,7 +438,7 @@ impl StateMachine {
     }
 
     pub(crate) fn apply(&mut self, request: &ApplicationRequest) -> ApplicationResponse {
-        #[cfg(feature = "experimental-v6-raft-objects")]
+        #[cfg(feature = "native-v6-raft-objects")]
         if let Some(result) = self.apply_native_v6_command(request) {
             return match result {
                 Ok(()) => ApplicationResponse::Records(RecordResponse {
@@ -416,7 +448,7 @@ impl StateMachine {
                 Err(error) => ApplicationResponse::rejected(error),
             };
         }
-        #[cfg(feature = "experimental-v6-raft-objects")]
+        #[cfg(feature = "native-v6-raft-objects")]
         let v6_applied_provenance = match request {
             ApplicationRequest::RecordsV5(data) => match &data.records_v5 {
                 RecordCommand::Stage { object }
@@ -428,6 +460,9 @@ impl StateMachine {
                     let Ok(intent) = crate::NativeV6CommitIntent::decode(object.sealed()) else {
                         return ApplicationResponse::rejected(RecordRejection::Invalid);
                     };
+                    if let Err(error) = self.validate_native_v6_retention_stage(&intent) {
+                        return ApplicationResponse::rejected(error);
+                    }
                     if let Err(error) = self.validate_native_v6_epoch_intent_stage(&intent) {
                         return ApplicationResponse::rejected(error);
                     }
@@ -574,7 +609,7 @@ impl StateMachine {
         };
         match result {
             Ok(()) => {
-                #[cfg(feature = "experimental-v6-raft-objects")]
+                #[cfg(feature = "native-v6-raft-objects")]
                 if matches!(request, ApplicationRequest::RecordsV5(data)
                     if matches!(data.records_v5, RecordCommand::Publish { .. }))
                 {
@@ -582,7 +617,7 @@ impl StateMachine {
                     // unchanged-root refresh after an upgrade from old snapshots.
                     self.v5_root_log = self.last_applied_log;
                 }
-                #[cfg(feature = "experimental-v6-raft-objects")]
+                #[cfg(feature = "native-v6-raft-objects")]
                 if let Some((key, log, intent)) = v6_applied_provenance {
                     // Immutable first-apply identity survives duplicate Stage.
                     let first = *self.v6_intent_log_provenance.entry(key).or_insert(log);
@@ -597,22 +632,30 @@ impl StateMachine {
         }
     }
     pub(crate) fn records_format_version(&self) -> Option<u16> {
-        #[cfg(feature = "experimental-v6-raft-objects")]
+        #[cfg(feature = "native-v6-raft-objects")]
+        if self.v6_retained_root_protocol.is_some() {
+            return Some(7);
+        }
+        #[cfg(feature = "native-v6-raft-objects")]
+        if self.v6_retention_protocol.is_some() {
+            return Some(6);
+        }
+        #[cfg(feature = "native-v6-raft-objects")]
         if self.v6_epoch_protocol.is_some() {
             return Some(5);
         }
-        #[cfg(feature = "experimental-v6-raft-objects")]
+        #[cfg(feature = "native-v6-raft-objects")]
         if self.v6_enrollment.is_some() || self.v6_root.is_some() {
             return Some(4);
         }
         self.records_v5.as_ref().map(|_| 3)
     }
     pub(crate) fn native_v6_is_published(&self) -> bool {
-        #[cfg(feature = "experimental-v6-raft-objects")]
+        #[cfg(feature = "native-v6-raft-objects")]
         {
             self.v6_root.is_some()
         }
-        #[cfg(not(feature = "experimental-v6-raft-objects"))]
+        #[cfg(not(feature = "native-v6-raft-objects"))]
         {
             false
         }

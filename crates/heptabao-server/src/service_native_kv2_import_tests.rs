@@ -19,7 +19,10 @@ fn call(service: &mut Service, method: &str, path: &str, token: &str, body: Valu
     );
     let response = service.handle(method, path, "", token, body);
     if response.status >= 500 {
-        eprintln!("native KV2 graph import: path={path} status={}", response.status);
+        eprintln!(
+            "native KV2 graph import: path={path} status={}",
+            response.status
+        );
     }
     response
 }
@@ -89,65 +92,125 @@ fn initialized() -> TestResult<(Root, Service, Zeroizing<String>, Zeroizing<Stri
     };
     // Real unrelated persisted state forces a V5 source while secret/ remains
     // pristine. Its contents must survive every successful and failed import.
-    assert_eq!(call(&mut service,"POST","sys/mounts/keep",&token,
-        json!({"type":"kv","options":{"version":"2"}})).status,204);
-    assert_eq!(call(&mut service,"POST","keep/data/sentinel",&token,
-        json!({"data":{"kept":"unrelated-root"}})).status,200);
-    Ok((files,service,Zeroizing::new(key),Zeroizing::new(token)))
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/mounts/keep",
+            &token,
+            json!({"type":"kv","options":{"version":"2"}})
+        )
+        .status,
+        204
+    );
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "keep/data/sentinel",
+            &token,
+            json!({"data":{"kept":"unrelated-root"}})
+        )
+        .status,
+        200
+    );
+    Ok((files, service, Zeroizing::new(key), Zeroizing::new(token)))
 }
 
 fn activate(service: &mut Service, token: &str) {
-    assert_eq!(call(service,"POST","sys/internal/native-v6/activate",token,json!({})).status,204);
-    assert!(service.native_root.as_ref().is_some_and(|root| root.reader_floor.native_kv2_format==2));
+    assert_eq!(
+        call(
+            service,
+            "POST",
+            "sys/internal/native-v6/activate",
+            token,
+            json!({})
+        )
+        .status,
+        204
+    );
+    assert!(
+        service
+            .native_root
+            .as_ref()
+            .is_some_and(|root| root.reader_floor.native_kv2_format == 2)
+    );
     assert!(service.record_root.is_none());
 }
 
 fn reopen(files: &Root, key: &str) -> TestResult<Service> {
     let mut service = files.service()?;
     service.configure_native_v6_candidate()?;
-    assert_eq!(call(&mut service,"POST","sys/unseal","",json!({"key":key})).status,200);
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
     assert!(!service.recovery_required);
     Ok(service)
 }
 
 fn imported(service: &mut Service, token: &str, bulk: bool) -> TestResult {
-    assert_eq!(call(service,"POST",IMPORT,token,
-        json!({"mount":"secret","bundle":fixture_bundle(bulk)?})).status,204);
+    assert_eq!(
+        call(
+            service,
+            "POST",
+            IMPORT,
+            token,
+            json!({"mount":"secret","bundle":fixture_bundle(bulk)?})
+        )
+        .status,
+        204
+    );
     Ok(())
 }
 
 fn selected_graph(service: &Service) -> TestResult<crate::state_record_root_v6::Kv2GraphRef> {
-    Ok(service.native_root.as_ref().ok_or("native root")?.kv2.iter()
-        .find(|graph| graph.scope.namespace.is_empty() && graph.scope.mount=="secret/")
-        .ok_or("secret graph")?.clone())
+    Ok(service
+        .native_root
+        .as_ref()
+        .ok_or("native root")?
+        .kv2
+        .iter()
+        .find(|graph| graph.scope.namespace.is_empty() && graph.scope.mount == "secret/")
+        .ok_or("secret graph")?
+        .clone())
 }
 
 fn same_graph(
     left: &crate::state_record_root_v6::Kv2GraphRef,
     right: &crate::state_record_root_v6::Kv2GraphRef,
 ) -> bool {
-    left.scope == right.scope && left.graph_format == right.graph_format
-        && left.root == right.root && left.logical_payload_bytes == right.logical_payload_bytes
+    left.scope == right.scope
+        && left.graph_format == right.graph_format
+        && left.root == right.root
+        && left.logical_payload_bytes == right.logical_payload_bytes
 }
 
 fn sentinel(service: &mut Service, token: &str) {
-    let response=call(service,"GET","keep/data/sentinel",token,json!({}));
-    assert_eq!(response.status,200);
-    assert_eq!(response.body["data"]["data"],json!({"kept":"unrelated-root"}));
+    let response = call(service, "GET", "keep/data/sentinel", token, json!({}));
+    assert_eq!(response.status, 200);
+    assert_eq!(
+        response.body["data"]["data"],
+        json!({"kept":"unrelated-root"})
+    );
 }
 
-fn observed(service: &mut Service, token: &str) -> TestResult<Vec<(u16,Value)>> {
-    let mut output=Vec::new();
-    for (path,body) in [
-        ("secret/config",json!({})),("secret/metadata/item",json!({})),
-        ("secret/metadata/scheduled",json!({})),("secret/metadata/metadata-only",json!({})),
-        ("secret/data/item",json!({"version":3})),("secret/data/item",json!({"version":4})),
-        ("secret/data/item",json!({"version":5})),("secret/data/scheduled",json!({"version":1})),
-        ("secret/subkeys/item",json!({"version":5})),
+fn observed(service: &mut Service, token: &str) -> TestResult<Vec<(u16, Value)>> {
+    let mut output = Vec::new();
+    for (path, body) in [
+        ("secret/config", json!({})),
+        ("secret/metadata/item", json!({})),
+        ("secret/metadata/scheduled", json!({})),
+        ("secret/metadata/metadata-only", json!({})),
+        ("secret/data/item", json!({"version":3})),
+        ("secret/data/item", json!({"version":4})),
+        ("secret/data/item", json!({"version":5})),
+        ("secret/data/scheduled", json!({"version":1})),
+        ("secret/subkeys/item", json!({"version":5})),
     ] {
-        let mut response=call(service,"GET",path,token,body);
-        assert!(matches!(response.status,200|404));
-        output.push((response.status,response.body.take()));
+        let mut response = call(service, "GET", path, token, body);
+        assert!(matches!(response.status, 200 | 404));
+        output.push((response.status, response.body.take()));
     }
     Ok(output)
 }
@@ -156,84 +219,170 @@ fn observed(service: &mut Service, token: &str) -> TestResult<Vec<(u16,Value)>> 
 // payload, including soft deletion. Expected bytes come from the unchanged
 // exact input fixture; no production API projector computes this oracle.
 fn assert_storage_version(
-    service: &mut Service, token: &str, path: &str, version: u64, original: &Value,
+    service: &mut Service,
+    token: &str,
+    path: &str,
+    version: u64,
+    original: &Value,
 ) -> TestResult {
-    let before=service.native_payload_observations.snapshot();
-    let witness=call(service,"POST","sys/internal/storage/kv2-version-witness",token,
-        json!({"mount":"secret","path":path,"version":version}));
-    assert_eq!(witness.status,200,"actual storage witness {path} version {version}");
-    let after=service.native_payload_observations.snapshot();
-    let data=&witness.body["data"];
-    assert_eq!(data["schema"],"heptabao-native-kv2-storage-witness-v1");
-    assert_eq!(data["canonical_profile"],"heptabao-lossless-json-v1");
-    assert_eq!(data["mount"],"secret"); assert_eq!(data["path"],path);
-    assert_eq!(data["version"],version);
-    for field in ["created_time","deletion_time","destroyed"] {
-        assert_eq!(data[field],original[field]);
+    let before = service.native_payload_observations.snapshot();
+    let witness = call(
+        service,
+        "POST",
+        "sys/internal/storage/kv2-version-witness",
+        token,
+        json!({"mount":"secret","path":path,"version":version}),
+    );
+    assert_eq!(
+        witness.status, 200,
+        "actual storage witness {path} version {version}"
+    );
+    let after = service.native_payload_observations.snapshot();
+    let data = &witness.body["data"];
+    assert_eq!(data["schema"], "heptabao-native-kv2-storage-witness-v1");
+    assert_eq!(data["canonical_profile"], "heptabao-lossless-json-v1");
+    assert_eq!(data["mount"], "secret");
+    assert_eq!(data["path"], path);
+    assert_eq!(data["version"], version);
+    for field in ["created_time", "deletion_time", "destroyed"] {
+        assert_eq!(data[field], original[field]);
     }
-    let destroyed=original["destroyed"].as_bool().ok_or("destroyed")?;
-    assert_eq!(data["payload_present"],!destroyed);
+    let destroyed = original["destroyed"].as_bool().ok_or("destroyed")?;
+    assert_eq!(data["payload_present"], !destroyed);
     if destroyed {
         assert!(original["data"].is_null());
         assert!(data["payload_canonical_sha256"].is_null());
-        assert_eq!(data["payload_canonical_bytes"],0);
-        assert_eq!(after[1],before[1],"destroyed history cannot open a substituted payload");
+        assert_eq!(data["payload_canonical_bytes"], 0);
+        assert_eq!(
+            after[1], before[1],
+            "destroyed history cannot open a substituted payload"
+        );
     } else {
         // These fixtures' serde maps use their existing canonical key order.
         // The independently supplied 134-byte cross-language vector separately
         // fixes the profile; this comparison binds each full retained value.
-        let expected=crate::secret_serde::to_vec(&original["data"],
-            crate::MAX_APPLICATION_STATE_BYTES).map_err(|_| "exact fixture encoding")?;
-        let hash=crate::crypto::digest(&expected).iter()
-            .map(|byte| format!("{byte:02x}")).collect::<String>();
-        assert_eq!(data["payload_canonical_sha256"],hash);
-        assert_eq!(data["payload_canonical_bytes"],expected.len());
-        assert!(after[1]>before[1],"actual encrypted retained payload read is required");
+        let expected =
+            crate::secret_serde::to_vec(&original["data"], crate::MAX_APPLICATION_STATE_BYTES)
+                .map_err(|_| "exact fixture encoding")?;
+        let hash = crate::crypto::digest(&expected)
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>();
+        assert_eq!(data["payload_canonical_sha256"], hash);
+        assert_eq!(data["payload_canonical_bytes"], expected.len());
+        assert!(
+            after[1] > before[1],
+            "actual encrypted retained payload read is required"
+        );
     }
     assert!(data.get("data").is_none() && data.get("payload").is_none());
     Ok(())
 }
 
 fn assert_imported(service: &mut Service, token: &str, bulk: bool) -> TestResult {
-    sentinel(service,token);
-    let metadata=call(service,"GET","secret/metadata/item",token,json!({}));
-    assert_eq!(metadata.status,200);
-    assert_eq!(metadata.body["data"]["current_version"],5);
-    assert_eq!(metadata.body["data"]["oldest_version"],3);
-    assert_eq!(metadata.body["data"]["current_metadata_version"],7);
-    assert_eq!(metadata.body["data"]["created_time"],"1970-01-01T00:01:30.000000113Z");
-    assert_eq!(metadata.body["data"]["updated_time"],"1970-01-01T00:01:35.000000113Z");
-    assert_eq!(metadata.body["data"]["custom_metadata"],json!({"owner":"exact-import"}));
-    assert_eq!(metadata.body["data"]["versions"]["3"]["destroyed"],true);
-    for number in [3,4] {
-        assert_eq!(call(service,"GET","secret/data/item",token,json!({"version":number})).status,404);
+    sentinel(service, token);
+    let metadata = call(service, "GET", "secret/metadata/item", token, json!({}));
+    assert_eq!(metadata.status, 200);
+    assert_eq!(metadata.body["data"]["current_version"], 5);
+    assert_eq!(metadata.body["data"]["oldest_version"], 3);
+    assert_eq!(metadata.body["data"]["current_metadata_version"], 7);
+    assert_eq!(
+        metadata.body["data"]["created_time"],
+        "1970-01-01T00:01:30.000000113Z"
+    );
+    assert_eq!(
+        metadata.body["data"]["updated_time"],
+        "1970-01-01T00:01:35.000000113Z"
+    );
+    assert_eq!(
+        metadata.body["data"]["custom_metadata"],
+        json!({"owner":"exact-import"})
+    );
+    assert_eq!(metadata.body["data"]["versions"]["3"]["destroyed"], true);
+    for number in [3, 4] {
+        assert_eq!(
+            call(
+                service,
+                "GET",
+                "secret/data/item",
+                token,
+                json!({"version":number})
+            )
+            .status,
+            404
+        );
     }
-    let current=call(service,"GET","secret/data/item",token,json!({"version":5}));
-    assert_eq!(current.status,200);
+    let current = call(
+        service,
+        "GET",
+        "secret/data/item",
+        token,
+        json!({"version":5}),
+    );
+    assert_eq!(current.status, 200);
     let expected_api=crate::engines::decode_lossless_json(
         br#"{"big":1.844674407370955e+23,"decimal":0.12345678901234568,"fake":{"$serde_json::private::Number":"7"},"payload":"kept"}"#,
     )?;
-    assert_eq!(current.body["data"]["data"],expected_api);
-    let exact=fixture_bundle(false)?;
-    assert_eq!(exact["entries"]["item"]["versions"]["5"]["data"]["big"]
-        .as_number().ok_or("exact fixture integer")?.to_string(),"184467440737095516160001");
-    assert_eq!(exact["entries"]["item"]["versions"]["5"]["data"]["decimal"]
-        .as_number().ok_or("exact fixture decimal")?.to_string(),"0.12345678901234567890123456789");
-    for version in [3_u64,4,5] {
-        assert_storage_version(service,token,"item",version,
-            &exact["entries"]["item"]["versions"][version.to_string()])?;
+    assert_eq!(current.body["data"]["data"], expected_api);
+    let exact = fixture_bundle(false)?;
+    assert_eq!(
+        exact["entries"]["item"]["versions"]["5"]["data"]["big"]
+            .as_number()
+            .ok_or("exact fixture integer")?
+            .to_string(),
+        "184467440737095516160001"
+    );
+    assert_eq!(
+        exact["entries"]["item"]["versions"]["5"]["data"]["decimal"]
+            .as_number()
+            .ok_or("exact fixture decimal")?
+            .to_string(),
+        "0.12345678901234567890123456789"
+    );
+    for version in [3_u64, 4, 5] {
+        assert_storage_version(
+            service,
+            token,
+            "item",
+            version,
+            &exact["entries"]["item"]["versions"][version.to_string()],
+        )?;
     }
-    let scope=selected_graph(service)?.scope;
-    assert_eq!(service.state.as_ref().ok_or("state")?.engines.native_paged_view(&scope)
-        .ok_or("native view")?.counts(),(if bulk {BULK+3} else {3},if bulk {BULK+4} else {4},if bulk {BULK+3} else {3}));
-    assert!(crate::secret_serde::to_vec(&*service.state.as_ref().ok_or("state")?.engines,
-        crate::MAX_APPLICATION_STATE_BYTES).is_err());
+    let scope = selected_graph(service)?.scope;
+    assert_eq!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .engines
+            .native_paged_view(&scope)
+            .ok_or("native view")?
+            .counts(),
+        (
+            if bulk { BULK + 3 } else { 3 },
+            if bulk { BULK + 4 } else { 4 },
+            if bulk { BULK + 3 } else { 3 }
+        )
+    );
+    assert!(
+        crate::secret_serde::to_vec(
+            &*service.state.as_ref().ok_or("state")?.engines,
+            crate::MAX_APPLICATION_STATE_BYTES
+        )
+        .is_err()
+    );
     if bulk {
-        for index in [0,BULK/2,BULK-1] {
-            let response=call(service,"GET",&format!("secret/data/bulk/{index:03}"),token,json!({}));
-            assert_eq!(response.status,200);
-            assert_eq!(response.body["data"]["data"]["index"],index);
-            assert_eq!(response.body["data"]["metadata"]["version"],1);
+        for index in [0, BULK / 2, BULK - 1] {
+            let response = call(
+                service,
+                "GET",
+                &format!("secret/data/bulk/{index:03}"),
+                token,
+                json!({}),
+            );
+            assert_eq!(response.status, 200);
+            assert_eq!(response.body["data"]["data"]["index"], index);
+            assert_eq!(response.body["data"]["metadata"]["version"], 1);
         }
     }
     Ok(())
@@ -241,80 +390,171 @@ fn assert_imported(service: &mut Service, token: &str, bulk: bool) -> TestResult
 
 #[test]
 fn native_kv2_graph_import_service_matches_legacy_history_and_cold_cas() -> TestResult {
-    let (_reference_files,mut reference,_reference_key,reference_token)=initialized()?;
-    imported(&mut reference,&reference_token,false)?;
-    let expected=observed(&mut reference,&reference_token)?;
-    let (files,mut native,key,token)=initialized()?;
-    activate(&mut native,&token);
+    let (_reference_files, mut reference, _reference_key, reference_token) = initialized()?;
+    imported(&mut reference, &reference_token, false)?;
+    let expected = observed(&mut reference, &reference_token)?;
+    let (files, mut native, key, token) = initialized()?;
+    activate(&mut native, &token);
     {
-        let _scope=crate::request_deadline::RequestDeadlineScope::enter(
-            Instant::now()+Duration::from_secs(30));
-        let mut detached=native.state.as_ref().ok_or("state")?.clone();
-        let parent=native.native_root.as_ref().ok_or("root")?.kv2_parent_key().map_err(|_| "root key")?;
-        let bytes=crate::secret_serde::to_vec(&fixture_bundle(false)?,
-            crate::MAX_APPLICATION_STATE_BYTES).map_err(|_| "encoding")?;
-        let objects=detached.engines.stage_openbao_kv2_native_import(
-            "", "secret", &bytes, &parent, &|| Ok(()),
+        let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+            Instant::now() + Duration::from_secs(30),
+        );
+        let mut detached = native.state.as_ref().ok_or("state")?.clone();
+        let parent = native
+            .native_root
+            .as_ref()
+            .ok_or("root")?
+            .kv2_parent_key()
+            .map_err(|_| "root key")?;
+        let bytes = crate::secret_serde::to_vec(
+            &fixture_bundle(false)?,
+            crate::MAX_APPLICATION_STATE_BYTES,
+        )
+        .map_err(|_| "encoding")?;
+        let objects = detached.engines.stage_openbao_kv2_native_import(
+            "",
+            "secret",
+            &bytes,
+            &parent,
+            &|| Ok(()),
         )?;
-        detached.schema=detached.writer_schema();
+        detached.schema = detached.writer_schema();
         drop(objects);
         // The metadata-only candidate cannot fabricate its absent imported
         // payload closure by falling back to the old pristine mount.
-        assert!(native.prepare_native_live_root_checked(&detached,&mut |_| Ok(())).is_err());
+        assert!(
+            native
+                .prepare_native_live_root_checked(&detached, &mut |_| Ok(()))
+                .is_err()
+        );
     }
-    imported(&mut native,&token,false)?;
-    assert_eq!(observed(&mut native,&token)?,expected);
-    assert_imported(&mut native,&token,false)?;
-    let graph=selected_graph(&native)?;
+    imported(&mut native, &token, false)?;
+    assert_eq!(observed(&mut native, &token)?, expected);
+    assert_imported(&mut native, &token, false)?;
+    let graph = selected_graph(&native)?;
     drop(native);
-    let mut native=reopen(&files,&key)?;
+    let mut native = reopen(&files, &key)?;
     assert!(same_graph(&selected_graph(&native)?, &graph));
-    assert_eq!(observed(&mut native,&token)?,expected);
-    assert_eq!(call(&mut native,"POST","secret/data/item",&token,
-        json!({"options":{"cas":4},"data":{"rejected":true}})).status,400);
-    assert_eq!(call(&mut native,"POST","secret/metadata/item",&token,
-        json!({"metadata_cas":6,"custom_metadata":{"rejected":"true"}})).status,400);
+    assert_eq!(observed(&mut native, &token)?, expected);
+    assert_eq!(
+        call(
+            &mut native,
+            "POST",
+            "secret/data/item",
+            &token,
+            json!({"options":{"cas":4},"data":{"rejected":true}})
+        )
+        .status,
+        400
+    );
+    assert_eq!(
+        call(
+            &mut native,
+            "POST",
+            "secret/metadata/item",
+            &token,
+            json!({"metadata_cas":6,"custom_metadata":{"rejected":"true"}})
+        )
+        .status,
+        400
+    );
     assert!(same_graph(&selected_graph(&native)?, &graph));
-    assert_eq!(call(&mut native,"POST","secret/data/item",&token,
-        json!({"options":{"cas":5},"data":{"after":"native-import"}})).status,200);
-    assert_eq!(call(&mut native,"GET","secret/metadata/item",&token,json!({}))
-        .body["data"]["current_version"],6);
+    assert_eq!(
+        call(
+            &mut native,
+            "POST",
+            "secret/data/item",
+            &token,
+            json!({"options":{"cas":5},"data":{"after":"native-import"}})
+        )
+        .status,
+        200
+    );
+    assert_eq!(
+        call(
+            &mut native,
+            "GET",
+            "secret/metadata/item",
+            &token,
+            json!({})
+        )
+        .body["data"]["current_version"],
+        6
+    );
     Ok(())
 }
 
 #[test]
-fn native_kv2_graph_import_service_rejects_unauthorized_malformed_and_replayed_import() -> TestResult {
-    let (_files,mut native,_key,token)=initialized()?;
-    assert_eq!(call(&mut native,"PUT","sys/policies/acl/import-no-sudo",&token,
-        json!({"policy":r#"path "sys/migration/openbao/kv2" { capabilities=["update"] }"#})).status,204);
-    let issued=call(&mut native,"POST","auth/token/create",&token,
-        json!({"policies":["import-no-sudo"],"no_default_policy":true,"ttl":"1h"}));
-    assert_eq!(issued.status,200);
-    let actor=Zeroizing::new(issued.body["auth"]["client_token"].as_str()
-        .ok_or("fresh actual-clock limited actor")?.to_owned());
-    activate(&mut native,&token);
-    let graph=selected_graph(&native)?;
-    let body=json!({"mount":"secret","bundle":fixture_bundle(false)?});
-    assert_eq!(call(&mut native,"POST",IMPORT,&actor,body.clone()).status,403);
-    assert_eq!(call(&mut native,"POST",IMPORT,"",body.clone()).status,403);
-    let mut bad=body.clone();
-    bad["bundle"]["entries"]["scheduled"]["versions"]["1"]["destroyed"]=json!(true);
-    assert_eq!(call(&mut native,"POST",IMPORT,&token,bad).status,400);
-    let mut bad=body.clone();
-    bad["mount"]=json!("secret//");
-    assert_eq!(call(&mut native,"POST",IMPORT,&token,bad).status,400);
-    assert_eq!(call(&mut native,"GET",IMPORT,&token,body.clone()).status,405);
+fn native_kv2_graph_import_service_rejects_unauthorized_malformed_and_replayed_import() -> TestResult
+{
+    let (_files, mut native, _key, token) = initialized()?;
+    assert_eq!(
+        call(
+            &mut native,
+            "PUT",
+            "sys/policies/acl/import-no-sudo",
+            &token,
+            json!({"policy":r#"path "sys/migration/openbao/kv2" { capabilities=["update"] }"#})
+        )
+        .status,
+        204
+    );
+    let issued = call(
+        &mut native,
+        "POST",
+        "auth/token/create",
+        &token,
+        json!({"policies":["import-no-sudo"],"no_default_policy":true,"ttl":"1h"}),
+    );
+    assert_eq!(issued.status, 200);
+    let actor = Zeroizing::new(
+        issued.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("fresh actual-clock limited actor")?
+            .to_owned(),
+    );
+    activate(&mut native, &token);
+    let graph = selected_graph(&native)?;
+    let body = json!({"mount":"secret","bundle":fixture_bundle(false)?});
+    assert_eq!(
+        call(&mut native, "POST", IMPORT, &actor, body.clone()).status,
+        403
+    );
+    assert_eq!(
+        call(&mut native, "POST", IMPORT, "", body.clone()).status,
+        403
+    );
+    let mut bad = body.clone();
+    bad["bundle"]["entries"]["scheduled"]["versions"]["1"]["destroyed"] = json!(true);
+    assert_eq!(call(&mut native, "POST", IMPORT, &token, bad).status, 400);
+    let mut bad = body.clone();
+    bad["mount"] = json!("secret//");
+    assert_eq!(call(&mut native, "POST", IMPORT, &token, bad).status, 400);
+    assert_eq!(
+        call(&mut native, "GET", IMPORT, &token, body.clone()).status,
+        405
+    );
     assert!(same_graph(&selected_graph(&native)?, &graph));
-    sentinel(&mut native,&token);
-    imported(&mut native,&token,false)?;
-    let committed=selected_graph(&native)?;
-    assert_eq!(call(&mut native,"POST",IMPORT,&token,body).status,409);
+    sentinel(&mut native, &token);
+    imported(&mut native, &token, false)?;
+    let committed = selected_graph(&native)?;
+    assert_eq!(call(&mut native, "POST", IMPORT, &token, body).status, 409);
     assert!(same_graph(&selected_graph(&native)?, &committed));
-    let mut empty=fixture_bundle(false)?;
-    empty["entries"]=json!({});
-    empty["config"]=json!({"max_versions":0,"cas_required":false,"metadata_cas_required":false,"delete_version_after":"0s"});
-    assert_eq!(call(&mut native,"POST",IMPORT,&token,json!({"mount":"keep","bundle":empty})).status,409);
-    sentinel(&mut native,&token);
+    let mut empty = fixture_bundle(false)?;
+    empty["entries"] = json!({});
+    empty["config"] = json!({"max_versions":0,"cas_required":false,"metadata_cas_required":false,"delete_version_after":"0s"});
+    assert_eq!(
+        call(
+            &mut native,
+            "POST",
+            IMPORT,
+            &token,
+            json!({"mount":"keep","bundle":empty})
+        )
+        .status,
+        409
+    );
+    sentinel(&mut native, &token);
     Ok(())
 }
 
@@ -369,9 +609,7 @@ impl LoseImportApplyAck {
             let value = std::str::from_utf8(plain.get(length_end..end).ok_or_else(invalid)?)
                 .map_err(|_| invalid())?;
             if field_index == 2 {
-                return Ok(
-                    value.starts_with("native6-kv2-import-") && value.ends_with(self.suffix)
-                );
+                return Ok(value.starts_with("native6-kv2-import-") && value.ends_with(self.suffix));
             }
             offset = end;
         }
@@ -402,6 +640,30 @@ impl heptabao_durable_service::DurableBackend for LoseImportApplyAck {
     {
         self.inner
             .stage_immutable_ciphertext_checked(locator, ciphertext, gate)
+    }
+    // Keep this fault owner on the same physical batch path as FileBackend;
+    // only the selected durable Apply acknowledgement is intercepted below.
+    fn stage_new_immutable_ciphertext_batch_checked(
+        &mut self,
+        objects: &[(heptabao_durable_service::BlobLocator, &[u8])],
+        gate: &mut dyn FnMut() -> Result<(), heptabao_durable_service::BackendError>,
+    ) -> Result<
+        Option<Vec<heptabao_durable_service::ImmutableBlobReadPin>>,
+        heptabao_durable_service::BackendError,
+    > {
+        self.inner
+            .stage_new_immutable_ciphertext_batch_checked(objects, gate)
+    }
+    fn reuse_immutable_ciphertext_batch_checked(
+        &mut self,
+        objects: &[(heptabao_durable_service::BlobLocator, usize)],
+        gate: &mut dyn FnMut() -> Result<(), heptabao_durable_service::BackendError>,
+    ) -> Result<
+        Vec<Option<heptabao_durable_service::ImmutableBlobReadPin>>,
+        heptabao_durable_service::BackendError,
+    > {
+        self.inner
+            .reuse_immutable_ciphertext_batch_checked(objects, gate)
     }
     fn pin_immutable_ciphertext(
         &self,
@@ -455,106 +717,238 @@ impl heptabao_durable_service::DurableBackend for LoseImportApplyAck {
     }
 }
 
-
 fn lose_ack(service: &mut Service, suffix: &'static str) -> TestResult<Arc<AtomicBool>> {
-    let barrier=Zeroizing::new(**service.barrier_key.as_ref().ok_or("barrier")?);
+    let barrier = Zeroizing::new(**service.barrier_key.as_ref().ok_or("barrier")?);
     drop(service.durable.take().ok_or("durable")?);
-    let fired=Arc::new(AtomicBool::new(false));
-    let backend=LoseImportApplyAck {
-        inner:heptabao_durable_service::FileBackend::open(&service.data_dir)?,
-        barrier:AeadBarrier::new(*barrier)?,
-        fired:Arc::clone(&fired),suffix,
+    let fired = Arc::new(AtomicBool::new(false));
+    let backend = LoseImportApplyAck {
+        inner: heptabao_durable_service::FileBackend::open(&service.data_dir)?,
+        barrier: AeadBarrier::new(*barrier)?,
+        fired: Arc::clone(&fired),
+        suffix,
     };
-    service.durable=Some(DurableService::reopen_with_backend(
+    service.durable = Some(DurableService::reopen_with_backend(
         Box::new(backend) as Box<dyn heptabao_durable_service::DurableBackend>,
-        AeadBarrier::new(*barrier)?,MAX_OPERATIONS,
+        AeadBarrier::new(*barrier)?,
+        MAX_OPERATIONS,
     )?);
     Ok(fired)
 }
 
 #[test]
 fn native_kv2_graph_import_service_locator_ack_loss_keeps_old_root_then_retries() -> TestResult {
-    let (files,mut native,key,token)=initialized()?;
-    activate(&mut native,&token);
-    let old=selected_graph(&native)?;
-    let fired=lose_ack(&mut native,"-locators-0")?;
-    let response=call(&mut native,"POST",IMPORT,&token,
-        json!({"mount":"secret","bundle":fixture_bundle(true)?}));
-    assert_eq!(response.status,503);
-    assert!(fired.load(Ordering::SeqCst),"fixture must exceed one real 96-object atomic Apply");
+    let (files, mut native, key, token) = initialized()?;
+    activate(&mut native, &token);
+    let old = selected_graph(&native)?;
+    let fired = lose_ack(&mut native, "-locators-0")?;
+    let response = call(
+        &mut native,
+        "POST",
+        IMPORT,
+        &token,
+        json!({"mount":"secret","bundle":fixture_bundle(true)?}),
+    );
+    assert_eq!(response.status, 503);
+    assert!(
+        fired.load(Ordering::SeqCst),
+        "fixture must exceed one real 96-object atomic Apply"
+    );
     assert!(native.recovery_required);
-    assert_eq!(call(&mut native,"GET","secret/data/item",&token,json!({})).status,503);
+    assert_eq!(
+        call(&mut native, "GET", "secret/data/item", &token, json!({})).status,
+        503
+    );
     drop(native);
-    let mut native=reopen(&files,&key)?;
+    let mut native = reopen(&files, &key)?;
     assert!(same_graph(&selected_graph(&native)?, &old));
-    assert_eq!(call(&mut native,"GET","secret/metadata/item",&token,json!({})).status,404);
-    sentinel(&mut native,&token);
-    imported(&mut native,&token,true)?;
-    assert_imported(&mut native,&token,true)?;
+    assert_eq!(
+        call(
+            &mut native,
+            "GET",
+            "secret/metadata/item",
+            &token,
+            json!({})
+        )
+        .status,
+        404
+    );
+    sentinel(&mut native, &token);
+    imported(&mut native, &token, true)?;
+    assert_imported(&mut native, &token, true)?;
     drop(native);
-    let mut native=reopen(&files,&key)?;
-    assert_imported(&mut native,&token,true)?;
+    let mut native = reopen(&files, &key)?;
+    assert_imported(&mut native, &token, true)?;
     Ok(())
 }
 
 #[test]
 fn native_kv2_graph_import_service_root_ack_loss_cold_selects_complete_import_once() -> TestResult {
-    let (files,mut native,key,token)=initialized()?;
-    activate(&mut native,&token);
-    let old=selected_graph(&native)?;
-    let fired=lose_ack(&mut native,"-root")?;
-    let response=call(&mut native,"POST",IMPORT,&token,
-        json!({"mount":"secret","bundle":fixture_bundle(true)?}));
-    assert_eq!(response.status,503);
+    let (files, mut native, key, token) = initialized()?;
+    activate(&mut native, &token);
+    let old = selected_graph(&native)?;
+    let fired = lose_ack(&mut native, "-root")?;
+    let response = call(
+        &mut native,
+        "POST",
+        IMPORT,
+        &token,
+        json!({"mount":"secret","bundle":fixture_bundle(true)?}),
+    );
+    assert_eq!(response.status, 503);
     assert!(fired.load(Ordering::SeqCst));
     assert!(native.recovery_required);
     drop(native);
-    let mut native=reopen(&files,&key)?;
+    let mut native = reopen(&files, &key)?;
     assert!(!same_graph(&selected_graph(&native)?, &old));
-    assert_imported(&mut native,&token,true)?;
-    let graph=selected_graph(&native)?;
-    assert_eq!(call(&mut native,"POST",IMPORT,&token,
-        json!({"mount":"secret","bundle":fixture_bundle(true)?})).status,409);
+    assert_imported(&mut native, &token, true)?;
+    let graph = selected_graph(&native)?;
+    assert_eq!(
+        call(
+            &mut native,
+            "POST",
+            IMPORT,
+            &token,
+            json!({"mount":"secret","bundle":fixture_bundle(true)?})
+        )
+        .status,
+        409
+    );
     assert!(same_graph(&selected_graph(&native)?, &graph));
-    assert_imported(&mut native,&token,true)?;
+    assert_imported(&mut native, &token, true)?;
     Ok(())
 }
 
-fn snapshot_request(service:&mut Service,token:&str,method:&str)
-    -> TestResult<Box<PendingExternalRequest>> {
+fn snapshot_request(
+    service: &mut Service,
+    token: &str,
+    method: &str,
+) -> TestResult<Box<PendingExternalRequest>> {
     match service.begin_native_snapshot_before(
-        ServiceRequest::new(method,"sys/storage/raft/snapshot","",token,json!({})),
-        Instant::now()+Duration::from_secs(30),
+        ServiceRequest::new(method, "sys/storage/raft/snapshot", "", token, json!({})),
+        Instant::now() + Duration::from_secs(30),
     ) {
-        NativeSnapshotAdmission::Execute(RequestExecution::External(plan))=>Ok(plan),
-        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response))=>
-            Err(format!("snapshot admission status={}",response.status).into()),
-        NativeSnapshotAdmission::Redirect(_)=>Err("unexpected isolated redirect".into()),
+        NativeSnapshotAdmission::Execute(RequestExecution::External(plan)) => Ok(plan),
+        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {
+            Err(format!("snapshot admission status={}", response.status).into())
+        }
+        NativeSnapshotAdmission::Redirect(_) => Err("unexpected isolated redirect".into()),
     }
 }
 
 #[test]
-fn native_kv2_graph_import_service_snapshot_restore_and_cold_recovery_preserve_history() -> TestResult {
-    let (files,mut native,key,token)=initialized()?;
-    activate(&mut native,&token);
-    imported(&mut native,&token,true)?;
-    let expected=observed(&mut native,&token)?;
-    let mut request=snapshot_request(&mut native,&token,"GET")?;
-    let (result,file)=request.execute_snapshot_transfer(&mut io::empty());
-    assert_eq!(native.finish_external_request(*request,result).status,200);
-    let mut archive=Zeroizing::new(Vec::new());
+fn native_kv2_graph_import_service_snapshot_restore_and_cold_recovery_preserve_history()
+-> TestResult {
+    let (files, mut native, key, token) = initialized()?;
+    activate(&mut native, &token);
+    imported(&mut native, &token, true)?;
+    let expected = observed(&mut native, &token)?;
+    let mut request = snapshot_request(&mut native, &token, "GET")?;
+    let (result, file) = request.execute_snapshot_transfer(&mut io::empty());
+    assert_eq!(native.finish_external_request(*request, result).status, 200);
+    let mut archive = Zeroizing::new(Vec::new());
     file.ok_or("snapshot file")?.read_to_end(&mut archive)?;
-    assert_eq!(call(&mut native,"POST","secret/data/item",&token,
-        json!({"options":{"cas":5},"data":{"discarded":"after-export"}})).status,200);
-    let mut request=snapshot_request(&mut native,&token,"POST")?;
-    let (result,file)=request.execute_snapshot_transfer(&mut &archive[..]);
+    assert_eq!(
+        call(
+            &mut native,
+            "POST",
+            "secret/data/item",
+            &token,
+            json!({"options":{"cas":5},"data":{"discarded":"after-export"}})
+        )
+        .status,
+        200
+    );
+    let mut request = snapshot_request(&mut native, &token, "POST")?;
+    let (result, file) = request.execute_snapshot_transfer(&mut &archive[..]);
     assert!(file.is_none());
-    assert_eq!(native.finish_external_request(*request,result).status,200);
-    assert_eq!(observed(&mut native,&token)?,expected);
-    assert_imported(&mut native,&token,true)?;
+    assert_eq!(native.finish_external_request(*request, result).status, 200);
+    assert_eq!(observed(&mut native, &token)?, expected);
+    assert_imported(&mut native, &token, true)?;
     drop(native);
-    let mut native=reopen(&files,&key)?;
-    assert_eq!(observed(&mut native,&token)?,expected);
-    assert_imported(&mut native,&token,true)?;
+    let mut native = reopen(&files, &key)?;
+    assert_eq!(observed(&mut native, &token)?, expected);
+    assert_imported(&mut native, &token, true)?;
+    Ok(())
+}
+
+#[test]
+fn native_kv2_graph_import_payload_memo_spans_live_plan_and_staged_install() -> TestResult {
+    let (_files, mut native, _key, token) = initialized()?;
+    activate(&mut native, &token);
+    let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+        Instant::now() + Duration::from_secs(30),
+    );
+    let identity = native.current_state_identity().map_err(|_| "identity")?;
+    let generation = native.durable.as_ref().ok_or("durable")?.generation();
+    let mut detached = native.state.as_ref().ok_or("state")?.clone();
+    let parent = native
+        .native_root
+        .as_ref()
+        .ok_or("root")?
+        .kv2_parent_key()
+        .map_err(|_| "root key")?;
+    let bytes =
+        crate::secret_serde::to_vec(&fixture_bundle(false)?, crate::MAX_APPLICATION_STATE_BYTES)
+            .map_err(|_| "encoding")?;
+    let objects =
+        detached
+            .engines
+            .stage_openbao_kv2_native_import("", "secret", &bytes, &parent, &|| Ok(()))?;
+    detached.schema = detached.writer_schema();
+    let gates = std::cell::Cell::new(0usize);
+    let mut original = |_: &AuthState| {
+        gates.set(gates.get() + 1);
+        Ok(())
+    };
+    let plan = native
+        .prepare_native_kv2_import_root_checked(&detached, objects, &mut original)
+        .map_err(|_| "prepare import plan")?;
+    let first = plan.payload_validation.borrow().test_observations();
+    assert!(
+        first.0 > 0,
+        "the first live-plan validation must learn actual staged payload semantics"
+    );
+    assert_eq!(first.1, 0);
+    let first_gates = gates.get();
+    let installed = native
+        .install_prepared_native_candidate(&plan, &mut original)
+        .map_err(|_| "install prepared candidate")?;
+    assert!(
+        gates.get() > first_gates,
+        "the repeated stage retains actual original authority checks"
+    );
+    assert_eq!(
+        plan.payload_validation.borrow().test_observations(),
+        (first.0, first.0)
+    );
+    installed
+        .validate_format()
+        .map_err(|_| "installed format")?;
+    assert_eq!(
+        native
+            .current_state_identity()
+            .map_err(|_| "current identity")?,
+        identity
+    );
+    assert_eq!(
+        native.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+    let warm = plan.payload_validation.borrow().test_observations();
+    assert!(matches!(
+        native.install_prepared_native_candidate(&plan, &mut |_| Err(Response::error(403, "test Actor revoked"))),
+        Err(response) if response.status == 403
+    ));
+    assert_eq!(plan.payload_validation.borrow().test_observations(), warm);
+    assert_eq!(
+        native
+            .current_state_identity()
+            .map_err(|_| "current identity")?,
+        identity
+    );
+    assert_eq!(
+        native.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
     Ok(())
 }

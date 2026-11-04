@@ -2,12 +2,16 @@
 //! Fresh consensus observations do not renew that Actor, local source or clock.
 //! An attempted root command is never reported as definitely uncommitted.
 use super::*;
-use crate::ha_state::native_v6::{CodecResult, NativeV6CipherClosure, NativeV6CodecError};
+use crate::ha_state::native_v6::{CodecResult, NativeV6CipherRead, NativeV6CodecError};
 use crate::service::native_v6_ha_objects::PreparedNativeV6HaObjects;
 use crate::state_record_root::StateIdentity;
 use heptabao_ha_service::replicate_native_v6_closure_to_quorum;
 use heptabao_raft_runtime::{NativeV6CommitIntent, SealedRecordObject, with_read_index_deadline};
 use ring::rand::{SecureRandom, SystemRandom};
+
+#[cfg(test)]
+#[path = "ha_native_v6_checkpoint_reselection_probe.rs"]
+mod checkpoint_reselection_probe;
 
 // Opt-in phase observations only: no payload, credential, source admission or
 // new deadline is created. Drop also records the phase that returned an error.
@@ -119,15 +123,9 @@ pub(crate) enum NativeHaPublicationError {
     /// Includes success followed by lost source/Actor/read/install authority.
     /// The caller must fence/reconcile and must not mint another operation.
     RootOutcomeUnknown {
-        recovery: NativeHaRecoveryReference,
+        recovery: Box<NativeHaRecoveryReference>,
         reason: String,
     },
-}
-
-impl NativeHaPublicationError {
-    pub(crate) fn root_attempted(&self) -> bool {
-        matches!(self, Self::RootOutcomeUnknown { .. })
-    }
 }
 
 impl fmt::Display for NativeHaPublicationError {
@@ -170,7 +168,7 @@ enum PublicationSource {
         digest: [u8; 32],
         publication: [u64; 3],
     },
-    V6(NativeV6PublishedRoot),
+    V6(Box<NativeV6PublishedRoot>),
 }
 impl PublicationSource {
     fn prior_generation(&self) -> u64 {
@@ -191,6 +189,7 @@ struct SourceObservation {
     source: PublicationSource,
     enrollment: Option<NativeV6PeerEnrollment>,
     term: u64,
+    checkpoint_read_until: Option<std::time::Instant>,
 }
 
 impl HaProcess {
@@ -202,6 +201,18 @@ impl HaProcess {
         expected: StateIdentity,
         epoch: u64,
         deadline: OriginalDeadline,
+    ) -> Result<SourceObservation, String> {
+        self.observe_native_publication_source_inner(expected, epoch, deadline, None)
+    }
+
+    // Only the already acknowledged Stage path supplies this context. All
+    // pre-Stage and post-quorum source observations retain strict rejection.
+    fn observe_native_publication_source_inner(
+        &self,
+        expected: StateIdentity,
+        epoch: u64,
+        deadline: OriginalDeadline,
+        staged: Option<(&NativeV6CommitIntent, &CommitReceipt)>,
     ) -> Result<SourceObservation, String> {
         deadline.check().map_err(|error| error.to_string())?;
         let node = self.node.as_ref().ok_or("HA process is shut down")?;
@@ -216,89 +227,172 @@ impl HaProcess {
                     .native_v6_application_read_witness(deadline.instant())
                     .await
                     .map_err(|error| error.to_string())?;
-                if let Some(enrollment) = enrollment.as_ref() {
-                    native.validate_enrollment(&self.codec, enrollment)?;
-                    if enrollment.epoch() != epoch {
-                        return Err("native HA source replay epoch changed".into());
+                let selected = self
+                    .select_native_publication_source(
+                        node, native, expected, epoch, enrollment, root,
+                    )
+                    .await?;
+                #[cfg(test)]
+                checkpoint_reselection_probe::at_source_verification(
+                    self,
+                    node,
+                    &witness,
+                    &selected.source,
+                    selected.enrollment.as_ref(),
+                    selected.term,
+                    deadline,
+                )
+                .await?;
+                match node.verify_application_read_witness(&witness).await {
+                    Ok(()) => {
+                        deadline.check().map_err(|error| error.to_string())?;
+                        Ok(selected)
                     }
-                }
-                let source = match (expected, root) {
-                    (StateIdentity::RecordsV6(digest), Some(root))
-                        if root.root_digest() == digest && root.intent().epoch == epoch =>
-                    {
-                        if enrollment.is_none() {
-                            return Err("native HA source enrollment absent".into());
-                        }
-                        PublicationSource::V6(root)
-                    }
-                    (StateIdentity::RecordsV5(digest), None) => {
-                        let (source_digest, log) = node.native_v6_migration_source().await.ok_or(
-                            "native migration requires original V5 publication provenance",
-                        )?;
-                        let (_, published) = node
-                            .record_root_at_generation()
-                            .await
-                            .map_err(|error| error.to_string())?;
-                        let published = published.ok_or("native migration V5 source absent")?;
-                        let envelope = published.envelope();
-                        let CommittedStateDescriptor::RecordsV5(decoded) = self
-                            .codec
-                            .open_committed_descriptor(
-                                envelope.operation_id(),
-                                envelope.digest(),
-                                envelope.sealed(),
-                            )
-                            .map_err(|error| error.to_string())?
-                        else {
-                            return Err("native migration source is not authenticated V5".into());
+                    Err(error) => {
+                        let Some((intent, receipt)) = staged else {
+                            return Err(error.to_string());
                         };
-                        if source_digest != digest
-                            || envelope.digest() != digest
-                            || decoded.root.cluster_id != self.cluster_id
-                            || decoded.root.replay_epoch != epoch
-                            || decoded.base != published.base()
-                            || decoded
-                                .root
-                                .references()
-                                .map(crate::ha_state::runtime_reference)
-                                .collect::<Vec<_>>()
-                                != published.direct_refs()
+                        // Classification is typed private store provenance,
+                        // never the error text or a caller's numeric hint. No
+                        // read can adopt a different Stage/root/source here.
+                        if witness.completed_prefix().index() != receipt.log_index
+                            || receipt.leader_id != node.id()
+                            || intent.prior_root_digest != expected.digest()
+                            || intent.epoch != epoch
+                            || intent.prior_generation != selected.source.prior_generation()
+                            || intent.expected_previous_commit_index
+                                != selected.source.previous_commit_index()
                         {
-                            return Err(
-                                "native migration source differs from current V5 publication"
-                                    .into(),
-                            );
+                            return Err(error.to_string());
                         }
-                        let leader = log.committed_leader_id();
-                        if leader.term == 0 || leader.node_id == 0 || log.index == 0 {
-                            return Err("native migration original full LogId unavailable".into());
-                        }
-                        PublicationSource::V5 {
-                            digest,
-                            publication: [leader.term, leader.node_id, log.index],
-                        }
+                        let read_until = witness.deadline().min(deadline.instant());
+                        with_read_index_deadline(read_until, async {
+                            let (fresh, enrollment, root) = node
+                                .native_v6_read_after_generated_checkpoint(&witness, read_until)
+                                .await
+                                .map_err(|error| error.to_string())?;
+                            // Authenticate the entire V5 descriptor/full
+                            // original LogId or V6 root and enrollment again.
+                            let mut current = self
+                                .select_native_publication_source(
+                                    node, native, expected, epoch, enrollment, root,
+                                )
+                                .await?;
+                            if current.source != selected.source
+                                || current.enrollment != selected.enrollment
+                                || current.term != selected.term
+                            {
+                                return Err("native checkpoint source changed on fresh read".into());
+                            }
+                            node.verify_application_read_witness(&fresh)
+                                .await
+                                .map_err(|error| error.to_string())?;
+                            deadline.check().map_err(|error| error.to_string())?;
+                            #[cfg(test)]
+                            checkpoint_reselection_probe::record_reselection(
+                                self,
+                                read_until,
+                                fresh.deadline(),
+                            )?;
+                            current.checkpoint_read_until = Some(read_until);
+                            Ok(current)
+                        })
+                        .await
                     }
-                    _ => return Err("native HA source identity changed".into()),
-                };
-                // This observation only rejects obvious non-leaders. The actual
-                // OpenRaft engine must still enforce its independent write lease.
-                // A ReadIndex is never promoted into writable-leader authority.
-                let role = node
-                    .local_leader_observation()
-                    .map_err(|error| error.to_string())?;
-                if !role.local_is_leader || role.leader != Some(node.id()) || role.term == 0 {
-                    return Err("native HA publication requires the actual current leader".into());
                 }
-                node.verify_application_read_witness(&witness)
+            }))
+    }
+
+    // The same selection code is used before and after a proven checkpoint;
+    // this does not create or validate read authority by itself.
+    async fn select_native_publication_source(
+        &self,
+        node: &ProcessRaftNode,
+        native: &native_v6_runtime::NativeV6Runtime,
+        expected: StateIdentity,
+        epoch: u64,
+        enrollment: Option<NativeV6PeerEnrollment>,
+        root: Option<NativeV6PublishedRoot>,
+    ) -> Result<SourceObservation, String> {
+        if let Some(enrollment) = enrollment.as_ref() {
+            native.validate_enrollment(&self.codec, enrollment)?;
+            if enrollment.epoch() != epoch {
+                return Err("native HA source replay epoch changed".into());
+            }
+        }
+        let source = match (expected, root) {
+            (StateIdentity::RecordsV6(digest), Some(root))
+                if root.root_digest() == digest && root.intent().epoch == epoch =>
+            {
+                if enrollment.is_none() {
+                    return Err("native HA source enrollment absent".into());
+                }
+                PublicationSource::V6(Box::new(root))
+            }
+            (StateIdentity::RecordsV5(digest), None) => {
+                let (source_digest, log) = node
+                    .native_v6_migration_source()
+                    .await
+                    .ok_or("native migration requires original V5 publication provenance")?;
+                let (_, published) = node
+                    .record_root_at_generation()
                     .await
                     .map_err(|error| error.to_string())?;
-                deadline.check().map_err(|error| error.to_string())?;
-                Ok(SourceObservation {
-                    source,
-                    enrollment,
-                    term: role.term,
-                })
-            }))
+                let published = published.ok_or("native migration V5 source absent")?;
+                let envelope = published.envelope();
+                let CommittedStateDescriptor::RecordsV5(decoded) = self
+                    .codec
+                    .open_committed_descriptor(
+                        envelope.operation_id(),
+                        envelope.digest(),
+                        envelope.sealed(),
+                    )
+                    .map_err(|error| error.to_string())?
+                else {
+                    return Err("native migration source is not authenticated V5".into());
+                };
+                if source_digest != digest
+                    || envelope.digest() != digest
+                    || decoded.root.cluster_id != self.cluster_id
+                    || decoded.root.replay_epoch != epoch
+                    || decoded.base != published.base()
+                    || decoded
+                        .root
+                        .references()
+                        .map(crate::ha_state::runtime_reference)
+                        .collect::<Vec<_>>()
+                        != published.direct_refs()
+                {
+                    return Err(
+                        "native migration source differs from current V5 publication".into(),
+                    );
+                }
+                let leader = log.committed_leader_id();
+                if leader.term == 0 || leader.node_id == 0 || log.index == 0 {
+                    return Err("native migration original full LogId unavailable".into());
+                }
+                PublicationSource::V5 {
+                    digest,
+                    publication: [leader.term, leader.node_id, log.index],
+                }
+            }
+            _ => return Err("native HA source identity changed".into()),
+        };
+        // This observation only rejects obvious non-leaders. The actual
+        // OpenRaft engine must still enforce its independent write lease.
+        // A ReadIndex is never promoted into writable-leader authority.
+        let role = node
+            .local_leader_observation()
+            .map_err(|error| error.to_string())?;
+        if !role.local_is_leader || role.leader != Some(node.id()) || role.term == 0 {
+            return Err("native HA publication requires the actual current leader".into());
+        }
+        Ok(SourceObservation {
+            source,
+            enrollment,
+            term: role.term,
+            checkpoint_read_until: None,
+        })
     }
 
     fn check_native_publication_source(
@@ -333,7 +427,7 @@ impl HaProcess {
             &ClusterStateCodec,
             &NativeV6PeerEnrollment,
             &LocalV6BlobStage,
-            Option<&NativeV6CipherClosure>,
+            Option<&NativeV6CipherRead>,
             &mut dyn FnMut() -> CodecResult<()>,
         ) -> CodecResult<PreparedNativeV6HaObjects>,
         original_gate: &mut dyn FnMut() -> CodecResult<()>,
@@ -352,6 +446,7 @@ impl HaProcess {
             .storage
             .get()
             .ok_or_else(|| before("native ciphertext store absent"))?;
+        let _native_operation = storage.begin_native_operation().map_err(before)?;
         #[cfg(feature = "private-ha-forward-diagnostic")]
         let phase =
             NativeHaPhaseTimer::start("publication_source_enrollment", deadline.instant(), 0, 0, 0);
@@ -412,12 +507,12 @@ impl HaProcess {
                 .native_v6_committed_read_for_local_root(deadline, previous.root_digest())
                 .map_err(before)?
                 .ok_or_else(|| before("native HA previous committed root absent"))?;
-            if selected.published() != previous || selected.enrollment() != &enrollment {
+            if selected.published() != previous.as_ref() || selected.enrollment() != &enrollment {
                 return Err(before("native HA previous closure selection changed"));
             }
             let closure = self
                 .codec
-                .open_native_v6_committed_closure(&enrollment, previous, storage, &mut || {
+                .open_native_v6_committed_read(&enrollment, previous, storage, &mut || {
                     original(deadline, original_gate)?;
                     self.verify_native_v6_committed_read(&selected)
                         .map_err(|_| NativeV6CodecError::Gate)
@@ -518,19 +613,45 @@ impl HaProcess {
             .map_err(|_| before("native HA staged intent outcome unknown; root was not invoked"))?
             .map_err(before)?;
         original(deadline, original_gate).map_err(before)?;
+        #[cfg(test)]
+        checkpoint_reselection_probe::record_actual_stage(self, &intent, &intent_receipt)
+            .map_err(before)?;
         // Intent staging legitimately invalidated the prior generation witness.
         // Obtain a NEW actual read and compare the original root/provenance.
-        self.check_native_publication_source(expected, epoch, deadline, &source, &enrollment, term)
+        // Only this post-Stage window may reselect after a proved local
+        // generated checkpoint. No mutation is repeated; a failed fresh read
+        // remains BeforeRoot under the original operation and read bounds.
+        let after_stage = self
+            .observe_native_publication_source_inner(
+                expected,
+                epoch,
+                deadline,
+                Some((&intent, &intent_receipt)),
+            )
             .map_err(before)?;
+        if after_stage.source != source
+            || after_stage.enrollment.as_ref() != Some(&enrollment)
+            || after_stage.term != term
+        {
+            return Err(before(
+                "native HA source, full provenance, enrollment or term changed",
+            ));
+        }
+        let admission_until = after_stage
+            .checkpoint_read_until
+            .unwrap_or(deadline.instant());
         self.runtime
             .block_on(with_read_index_deadline(
-                deadline.instant(),
+                admission_until,
                 node.reconcile_exact_staged_v6_intent(&intent, &intent_receipt),
             ))
             .map_err(before)?;
         let admission = self
             .runtime
-            .block_on(node.admit_native_v6_closure(&intent, deadline.instant()))
+            .block_on(with_read_index_deadline(
+                admission_until,
+                node.admit_native_v6_closure(&intent, admission_until),
+            ))
             .map_err(before)?;
         if admission.enrollment() != &enrollment
             || admission.leader_id() != node.id()
@@ -562,9 +683,11 @@ impl HaProcess {
             self.runtime.handle(),
             &native.transport,
             &self.peers,
-            storage,
-            proposal.references(),
-            &intent,
+            heptabao_ha_service::NativeV6ClosureSource {
+                source: storage,
+                references: proposal.references(),
+                intent: &intent,
+            },
             deadline.instant(),
         )
         .map_err(before)?;
@@ -608,6 +731,8 @@ impl HaProcess {
             intent.object_count,
             intent.ciphertext_bytes,
         );
+        #[cfg(test)]
+        checkpoint_reselection_probe::record_root_call(self).map_err(before)?;
         let published = match self.runtime.block_on(node.publish_native_v6_root(
             root_serial,
             recovery.intent(),
@@ -619,7 +744,7 @@ impl HaProcess {
             Ok(published) => published,
             Err(error) => {
                 return Err(NativeHaPublicationError::RootOutcomeUnknown {
-                    recovery,
+                    recovery: Box::new(recovery),
                     reason: error.to_string(),
                 });
             }
@@ -637,11 +762,8 @@ impl HaProcess {
                 intent.ciphertext_bytes,
             );
             original(deadline, original_gate).map_err(|error| error.to_string())?;
-            let read = self.native_v6_committed_read_for_published_proposal(
-                deadline,
-                &proposal,
-                &published,
-            )?;
+            let read = self
+                .native_v6_committed_read_for_published_proposal(deadline, &proposal, &published)?;
             if read.published() != &published
                 || read.enrollment() != &enrollment
                 || read.published().intent() != intent
@@ -654,7 +776,9 @@ impl HaProcess {
             phase.finish(true);
             Ok(read)
         };
-        after_commit()
-            .map_err(|reason| NativeHaPublicationError::RootOutcomeUnknown { recovery, reason })
+        after_commit().map_err(|reason| NativeHaPublicationError::RootOutcomeUnknown {
+            recovery: Box::new(recovery),
+            reason,
+        })
     }
 }

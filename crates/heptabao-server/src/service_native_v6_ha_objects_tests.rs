@@ -201,6 +201,20 @@ fn stage(path: &Path) -> TestResult<LocalV6BlobStage> {
     Ok(LocalV6BlobStage::open_existing(path)?)
 }
 
+#[cfg(unix)]
+fn cipher_directory_identity(path: &Path) -> TestResult<(u64, u64, i64, i64, i64, i64)> {
+    use std::os::unix::fs::MetadataExt as _;
+    let metadata = fs::metadata(path)?;
+    Ok((
+        metadata.dev(),
+        metadata.ino(),
+        metadata.mtime(),
+        metadata.mtime_nsec(),
+        metadata.ctime(),
+        metadata.ctime_nsec(),
+    ))
+}
+
 fn enroll_and_anchor(
     cluster: &Cluster,
     codec: &ClusterStateCodec,
@@ -294,6 +308,15 @@ impl<S: ObjectSource> RecordReader for DomainReader<'_, S> {
 #[test]
 fn native_ha_shared_codec_real_34mib_history_three_raft_cold_recovery_and_missing_blob()
 -> TestResult {
+    // Diagnostic-only fixed stages: no request clock or timeout is changed.
+    let diagnostic_started = Instant::now();
+    let diagnostic_phase = |phase: &str, node: u64| {
+        eprintln!(
+            "HBHA-COLD34-DIAGNOSTIC phase={phase} node={node} elapsed_ms={}",
+            diagnostic_started.elapsed().as_millis()
+        );
+    };
+    diagnostic_phase("started", 0);
     let (files, mut service, key, token) = initialized()?;
     assert_eq!(
         call(
@@ -334,6 +357,7 @@ fn native_ha_shared_codec_real_34mib_history_three_raft_cold_recovery_and_missin
         assert_eq!(call(&mut service, "POST", "secret/data/cipher-history", &token,
             json!({"options":{"cas":version-1},"data":{"version":version,"blob":unique_payload(version)}})).status, 200);
     }
+    diagnostic_phase("history_seeded", 0);
     let actual_local = service
         .current_state_identity()
         .map_err(|_| "source identity")?;
@@ -364,6 +388,7 @@ fn native_ha_shared_codec_real_34mib_history_three_raft_cold_recovery_and_missin
             },
         )?
     };
+    diagnostic_phase("typed_sender_prepared", 0);
     assert!(checks > 500, "original gate surrounds actual object work");
     assert!(prepared.local_closure().ciphertext_bytes() >= 34 * 1024 * 1024);
     assert!(
@@ -389,6 +414,7 @@ fn native_ha_shared_codec_real_34mib_history_three_raft_cold_recovery_and_missin
         assert_eq!(local.manifest_sha256(), intent.closure_manifest_sha256);
         replicas.push(target);
     }
+    diagnostic_phase("three_cipher_replicas_persisted", 0);
     let published = cluster.runtime.block_on(async {
         let node = &cluster.nodes[0];
         let object = SealedRecordObject::new_native_v6_commit_intent(proposal.intent())?;
@@ -405,10 +431,14 @@ fn native_ha_shared_codec_real_34mib_history_three_raft_cold_recovery_and_missin
         )
         .await
     })?;
+    diagnostic_phase("native_root_published", 0);
     let committed_index = published.publication_log_id().index;
     for node in &cluster.nodes {
+        diagnostic_phase("warm_readindex_enter", node.id());
         cluster.runtime.block_on(node.ensure_linearizable())?;
+        diagnostic_phase("warm_readindex_complete", node.id());
         let observed = cluster.runtime.block_on(node.snapshot_observed())?;
+        diagnostic_phase("warm_snapshot_complete", node.id());
         assert!(observed.persisted_index >= committed_index);
         assert!(
             observed.byte_count < 1024 * 1024,
@@ -432,14 +462,18 @@ fn native_ha_shared_codec_real_34mib_history_three_raft_cold_recovery_and_missin
         original,
     ));
     fs::remove_dir_all(files.path.join("data"))?;
+    diagnostic_phase("cold_reopen_enter", 0);
     cluster.cold_reopen()?;
+    diagnostic_phase("cold_reopen_complete", 0);
     drop(replicas);
     for (position, node) in cluster.nodes.iter().enumerate() {
         let _scope = scope();
         let deadline = OriginalDeadline::capture()?;
+        diagnostic_phase("cold_witness_enter", node.id());
         let (witness, enrollment, published) = cluster
             .runtime
             .block_on(node.native_v6_application_read_witness(deadline.instant()))?;
+        diagnostic_phase("cold_witness_complete", node.id());
         let enrollment = enrollment.ok_or("cold enrollment")?;
         let published = published.ok_or("cold root")?;
         assert_eq!(published.root_digest(), expected);
@@ -455,6 +489,13 @@ fn native_ha_shared_codec_real_34mib_history_three_raft_cold_recovery_and_missin
             maximum_state_schema: schema,
             reader_format: 6,
         };
+        // Receiving authenticates a previously durable closure. It must not
+        // publish another manifest or alter that ciphertext directory while
+        // minting the separately checked local-barrier installation input.
+        #[cfg(unix)]
+        let replica_path = files.path.join(format!("replication-{}", position + 1));
+        #[cfg(unix)]
+        let directory_before = cipher_directory_identity(&replica_path)?;
         let received = open_native_v6_ha_objects(
             &codec,
             &enrollment,
@@ -464,6 +505,13 @@ fn native_ha_shared_codec_real_34mib_history_three_raft_cold_recovery_and_missin
             deadline,
             &mut || Ok(()),
         )?;
+        diagnostic_phase("cold_typed_receive_complete", node.id());
+        #[cfg(unix)]
+        assert_eq!(
+            cipher_directory_identity(&replica_path)?,
+            directory_before,
+            "typed receiving must not republish the selected manifest"
+        );
         assert_eq!(
             received.root().identity().map_err(|_| "typed identity")?,
             StateIdentity::RecordsV6(expected)
@@ -504,12 +552,17 @@ fn native_ha_shared_codec_real_34mib_history_three_raft_cold_recovery_and_missin
                     == Some(unique_payload(version).as_str())
             );
         }
+        diagnostic_phase("cold_selected_payload_reads_complete", node.id());
         if position == 0 {
+            diagnostic_phase("local_rewrap_exercise_enter", node.id());
             local_target.exercise(&received, &codec, &replica)?;
+            diagnostic_phase("local_rewrap_exercise_complete", node.id());
         }
+        diagnostic_phase("cold_original_witness_verify_enter", node.id());
         cluster
             .runtime
             .block_on(node.verify_application_read_witness(&witness))?;
+        diagnostic_phase("cold_original_witness_verify_complete", node.id());
         let wrong_key = ClusterStateCodec::new(&cluster_id, [60; 32])?;
         assert!(
             open_native_v6_ha_objects(
@@ -563,9 +616,11 @@ fn native_ha_shared_codec_real_34mib_history_three_raft_cold_recovery_and_missin
                 )
                 .is_err()
             );
+            diagnostic_phase("missing_blob_same_deadline_readindex_enter", node.id());
             let (_, _, still) = cluster
                 .runtime
                 .block_on(node.native_v6_application_read_witness(deadline.instant()))?;
+            diagnostic_phase("missing_blob_same_deadline_readindex_complete", node.id());
             assert_eq!(
                 still.ok_or("root retained on missing blob")?.root_digest(),
                 expected
@@ -573,6 +628,7 @@ fn native_ha_shared_codec_real_34mib_history_three_raft_cold_recovery_and_missin
             replica.stage_received_replica_checked(selected, &bytes, &mut || Ok(()))?;
         }
     }
+    diagnostic_phase("all_cold_nodes_complete", 0);
     cluster.shutdown()?;
     Ok(())
 }

@@ -358,7 +358,7 @@ pub(super) fn verify_received_record_graph(
 impl Service {
     pub(super) fn current_state_identity(&self) -> Result<StateIdentity, Response> {
         let digest = self.current_state_digest()?;
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         if let Some(root) = &self.native_root {
             let identity = root
                 .identity()
@@ -1626,7 +1626,7 @@ mod tests {
     -> TestResult {
         let directory = Root::new();
         let mut service = directory.service()?;
-        let (_key, token) = bootstrap(&mut service)?;
+        let (_key, token) = crate::service::tests::bootstrap_pre141(&mut service)?;
         mount(&mut service, &token);
         let mut candidate = service.state.as_ref().ok_or("state")?.clone();
         candidate.schema = KUBERNETES_OPAQUE_ARTIFACT_STATE_SCHEMA;

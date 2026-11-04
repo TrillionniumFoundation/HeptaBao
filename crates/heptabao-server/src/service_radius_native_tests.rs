@@ -140,7 +140,7 @@ fn fixture(root: &Root) -> TestResult<(Service, String, String, String, String)>
 fn native_radius_partial_profile_schema_restart_and_unenrolled_config() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (key, root_token) = bootstrap(&mut service)?;
+    let (key, root_token) = crate::service::tests::bootstrap_pre141(&mut service)?;
     assert_eq!(
         call(
             &mut service,

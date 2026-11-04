@@ -132,7 +132,8 @@ fn stage_external_key(
 fn external_keys270_registry_is_durable_and_schema_fenced() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap(&mut service)?;
+    // Isolate the historical schema floor; the current root policy requires schema 141.
+    let (unseal, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let empty = call(
         &mut service,
         "LIST",

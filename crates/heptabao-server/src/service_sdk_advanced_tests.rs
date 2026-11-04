@@ -82,7 +82,7 @@ fn sdk126_actual_identity_and_encrypted_reopen_keep_reader_floor_and_retired_mar
 {
     let files = Root::new();
     let mut service = files.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let previous = service.state.clone().ok_or("state")?;
     let old_backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
     let mut candidate = previous.clone();
@@ -321,7 +321,7 @@ fn sdk126_actual_external_group_projection_renews_original_alias_and_removes_mem
         200
     );
     let current = service.state.as_ref().ok_or("final reopen")?;
-    assert_eq!(current.schema, SDK_ADVANCED_STATE_SCHEMA);
+    assert_eq!(current.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     assert!(
         !current
             .engines
@@ -337,7 +337,7 @@ fn sdk126_sdk_batch_secret_registration_wrap_reopen_and_native_mount_retirement_
 -> TestResult {
     let files = Root::new();
     let mut service = files.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let mut candidate = service.state.clone().ok_or("state")?;
     let auth_binding = mount(&mut candidate, &admin)?;
     let original = clock(100, 200_000_000)?;
@@ -560,7 +560,7 @@ fn sdk126_precise_batch_seal_installs_actual_observation_floor_only_after_native
 -> TestResult {
     let files = Root::new();
     let mut service = files.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let previous = service.state.clone().ok_or("actual state")?;
     assert!(!previous.auth.has_token_api_precision_state());
     let mut candidate = previous.clone();

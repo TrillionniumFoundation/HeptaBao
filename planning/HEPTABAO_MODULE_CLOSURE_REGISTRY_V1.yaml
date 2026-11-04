@@ -7,6 +7,13 @@ required_sections:
 - Acceptance evidence
 - Known gaps and evolution
 modules:
+- crate: heptabao-darwin-vnode-events
+  dossier: docs/module-closure/heptabao-darwin-vnode-events.md
+  guide: docs/modules/heptabao-darwin-vnode-events.md
+  source: crates/heptabao-darwin-vnode-events/src
+  test_anchor: vnode_real_events_and_receipted_removal_preserve_caller_file
+  test_anchor_path: crates/heptabao-darwin-vnode-events/src/lib.rs
+  state: IMPLEMENTED_REVIEW_REQUIRED
 - crate: heptabao-linux-parent-death
   dossier: docs/module-closure/heptabao-linux-parent-death.md
   guide: docs/modules/heptabao-linux-parent-death.md

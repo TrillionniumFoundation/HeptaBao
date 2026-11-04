@@ -30,7 +30,7 @@ fn ca(service: &mut Service, admin: &str) -> Response {
 fn ssh115_encrypted_reopen_real_signature_and_deleted_ca_sticky_restore_floor() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    let (unseal, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     mount(&mut service, &admin);
     let before = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
     let created = ca(&mut service, &admin);

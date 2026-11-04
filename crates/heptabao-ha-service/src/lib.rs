@@ -20,6 +20,49 @@ use std::sync::Arc;
 use std::time::{Duration, Instant};
 use zeroize::Zeroize;
 
+#[cfg(all(
+    feature = "native-v6-peer-ingress",
+    any(test, feature = "private-forward-stage-diagnostic")
+))]
+mod closure_phase_diagnostic;
+
+// Expand the original Result expression exactly once. Default production
+// builds retain no timing state, observer callback, or additional I/O.
+macro_rules! observe_closure_phase {
+    ($phase:ident, $operation:expr) => {{
+        #[cfg(all(
+            feature = "native-v6-peer-ingress",
+            any(test, feature = "private-forward-stage-diagnostic")
+        ))]
+        let timing = crate::closure_phase_diagnostic::Span::start(
+            crate::closure_phase_diagnostic::Phase::$phase,
+        );
+        let result = $operation;
+        #[cfg(all(
+            feature = "native-v6-peer-ingress",
+            any(test, feature = "private-forward-stage-diagnostic")
+        ))]
+        if let Some(timing) = timing {
+            timing.finish(result.is_ok());
+        }
+        result
+    }};
+}
+
+mod native_index_response;
+use native_index_response::ResponseFrameProfile;
+pub use native_index_response::{
+    MAX_NATIVE_INDEX_RESPONSE_BODY_BYTES, MAX_NATIVE_INDEX_RESPONSE_FRAME_BYTES,
+    MAX_NATIVE_INDEX_RESPONSE_METADATA_BYTES, NATIVE_INDEX_REQUEST_MAGIC,
+    NATIVE_INDEX_RESPONSE_MAGIC,
+};
+
+mod native_kv2_write_request;
+pub use native_kv2_write_request::{
+    MAX_NATIVE_KV2_WRITE_BODY_BYTES, MAX_NATIVE_KV2_WRITE_FRAME_BYTES,
+    MAX_NATIVE_KV2_WRITE_METADATA_BYTES, NATIVE_KV2_WRITE_REQUEST_MAGIC,
+};
+
 mod authenticated_peer_frame;
 pub use authenticated_peer_frame::{
     AuthenticatedPeerFrame, serve_one_mtls_authenticated_peer_frame,
@@ -27,24 +70,29 @@ pub use authenticated_peer_frame::{
 
 // Opt-in private V6 ciphertext transport admission. Existing production HA
 // request dispatch and all V6/HA mutually exclusive writer fences are unchanged.
-#[cfg(feature = "experimental-v6-peer-ingress")]
+#[cfg(feature = "native-v6-peer-ingress")]
 mod v6_closure_quorum;
-#[cfg(feature = "experimental-v6-peer-ingress")]
+#[cfg(feature = "native-v6-peer-ingress")]
 mod v6_replica_fanout;
-#[cfg(feature = "experimental-v6-peer-ingress")]
+#[cfg(feature = "native-v6-peer-ingress")]
 mod v6_replica_ingress;
-#[cfg(feature = "experimental-v6-peer-ingress")]
+#[cfg(feature = "native-v6-peer-ingress")]
+mod v6_root_pull_transport;
+#[cfg(feature = "native-v6-peer-ingress")]
 pub use v6_closure_quorum::{
-    NativeV6ClosureQuorum, NativeV6ClosureReceiver, NativeV6CommittedRootSource,
+    NATIVE_V6_ROOT_PULL_GLOBAL_FRAMES, NATIVE_V6_ROOT_PULL_REQUESTS_PER_DONOR,
+    NativeV6ClosureQuorum, NativeV6ClosureReceiver, NativeV6ClosureSource,
+    NativeV6CommittedRootSource, NativeV6IngressClosureRead, NativeV6IngressSupersededRead,
     RecoveredNativeV6LocalClosure, is_native_v6_closure_frame, is_native_v6_root_pull_frame,
-    read_or_recover_native_v6_committed_closure, reconcile_native_v6_closure_quorum,
-    recover_native_v6_committed_closure, replicate_native_v6_closure_to_quorum,
+    read_native_v6_fresh_ingress_closure, read_or_recover_native_v6_committed_closure,
+    reconcile_native_v6_closure_quorum, recover_native_v6_committed_closure,
+    replicate_native_v6_closure_to_quorum,
 };
-#[cfg(feature = "experimental-v6-peer-ingress")]
+#[cfg(feature = "native-v6-peer-ingress")]
 pub use v6_replica_fanout::{
     V6ReplicaCopyTarget, V6ReplicaCustodyFanout, V6ReplicaCustodyObservation,
 };
-#[cfg(feature = "experimental-v6-peer-ingress")]
+#[cfg(feature = "native-v6-peer-ingress")]
 pub use v6_replica_ingress::{
     AuthenticatedV6ReplicaReceiver, encode_v6_replica_probe, encode_v6_replica_request,
     verify_v6_local_receipt,
@@ -784,7 +832,7 @@ impl MutualTlsPeerTransport {
     ///
     /// The pinned hash must come from independently authenticated membership,
     /// not from a peer response or a caller-supplied unauthenticated frame.
-    #[cfg(feature = "experimental-v6-peer-ingress")]
+    #[cfg(feature = "native-v6-peer-ingress")]
     pub fn exchange_before_pinned_server(
         &self,
         peer: &NodeId,
@@ -799,12 +847,20 @@ impl MutualTlsPeerTransport {
             return Err(HaError::InvalidFrame);
         }
         let deadline = caller_deadline.min(Instant::now() + self.timeout);
+        #[cfg(all(
+            feature = "native-v6-peer-ingress",
+            any(test, feature = "private-forward-stage-diagnostic")
+        ))]
+        let _diagnostic_bound = closure_phase_diagnostic::Scope::original_bound(deadline);
         let endpoint = self.peers.get(peer).ok_or(HaError::UnknownPeer)?;
         let server_name = rustls::pki_types::ServerName::try_from(endpoint.server_name.clone())
             .map_err(|_| HaError::InvalidCluster)?;
         let remaining = forward_remaining(deadline).map_err(|_| HaError::Transport)?;
-        let stream = TcpStream::connect_timeout(&endpoint.address, remaining)
-            .map_err(|_| HaError::Transport)?;
+        let stream = observe_closure_phase!(
+            ClientConnect,
+            TcpStream::connect_timeout(&endpoint.address, remaining)
+        )
+        .map_err(|_| HaError::Transport)?;
         stream.set_nodelay(true).map_err(|_| HaError::Transport)?;
         let stream = ForwardDeadlineStream { stream, deadline };
         let connection = rustls::ClientConnection::new(self.client_config.clone(), server_name)
@@ -812,11 +868,15 @@ impl MutualTlsPeerTransport {
         let mut tls = rustls::StreamOwned::new(connection, stream);
 
         // Finish the authenticated TLS handshake BEFORE sending any V6 frame.
-        tls.conn
-            .complete_io(&mut tls.sock)
-            .map_err(|error| forward_io_error_as(
-                "pinned_client_tls_handshake", &error, HaError::PeerAuthenticationFailed,
-            ))?;
+        observe_closure_phase!(ClientHandshake, tls.conn.complete_io(&mut tls.sock)).map_err(
+            |error| {
+                forward_io_error_as(
+                    "pinned_client_tls_handshake",
+                    &error,
+                    HaError::PeerAuthenticationFailed,
+                )
+            },
+        )?;
         if tls.conn.alpn_protocol() != Some(RAFT_ALPN_PROTOCOL) {
             return Err(HaError::PeerAuthenticationFailed);
         }
@@ -857,9 +917,8 @@ impl MutualTlsPeerTransport {
         frame: &[u8],
         caller_deadline: Instant,
     ) -> Result<Vec<u8>, HaError> {
-        if frame.is_empty() || frame.len() > MAX_PAYLOAD_BYTES + 4096 {
-            return Err(HaError::InvalidFrame);
-        }
+        native_kv2_write_request::validate_authenticated_request(frame)?;
+        let response_profile = ResponseFrameProfile::for_request(frame)?;
         let deadline = caller_deadline.min(Instant::now() + self.timeout);
         let endpoint = self.peers.get(peer).ok_or(HaError::UnknownPeer)?;
         let server_name = rustls::pki_types::ServerName::try_from(endpoint.server_name.clone())
@@ -879,26 +938,38 @@ impl MutualTlsPeerTransport {
                 HaError::Transport
             })?;
         let mut tls = rustls::StreamOwned::new(connection, stream);
-        write_bounded_frame(&mut tls, frame)
-            .map_err(|error| {
+        if response_profile.is_native_index() {
+            // Neither response capacity nor the separate N1 write request is
+            // available through the rolling missing-ALPN exception. Complete
+            // the original-budget handshake before sending Q9 or N1 bytes.
+            tls.conn.complete_io(&mut tls.sock).map_err(|error| {
+                forward_io_error_as(
+                    "native_index_client_tls_handshake",
+                    &error,
+                    HaError::PeerAuthenticationFailed,
+                )
+            })?;
+            response_profile.require_alpn(tls.conn.alpn_protocol())?;
+        }
+        native_kv2_write_request::write_authenticated_request(&mut tls, frame).map_err(
+            |error| {
                 #[cfg(feature = "private-forward-stage-diagnostic")]
                 eprintln!(
                     "HBHA-PRIVATE-STAGE phase=client_frame_write_tls_state handshaking={}",
                     tls.conn.is_handshaking()
                 );
                 forward_transport_frame_error("tls_frame_write", error)
-            })?;
-        let mut response = zeroize::Zeroizing::new(
-            read_bounded_frame(&mut tls)
-                .map_err(|error| {
-                    #[cfg(feature = "private-forward-stage-diagnostic")]
-                    eprintln!(
-                        "HBHA-PRIVATE-STAGE phase=client_frame_read_tls_state handshaking={}",
-                        tls.conn.is_handshaking()
-                    );
-                    forward_transport_frame_error("tls_frame_read", error)
-                })?,
-        );
+            },
+        )?;
+        let mut response =
+            zeroize::Zeroizing::new(response_profile.read(&mut tls).map_err(|error| {
+                #[cfg(feature = "private-forward-stage-diagnostic")]
+                eprintln!(
+                    "HBHA-PRIVATE-STAGE phase=client_frame_read_tls_state handshaking={}",
+                    tls.conn.is_handshaking()
+                );
+                forward_transport_frame_error("tls_frame_read", error)
+            })?);
         // Buffered TLS plaintext must not bypass the final deadline check, and
         // a rejected late response must erase its plaintext before deallocation.
         forward_remaining(deadline)
@@ -953,12 +1024,23 @@ impl Write for ForwardDeadlineStream {
             .set_write_timeout(Some(forward_remaining(self.deadline)?))?;
         self.stream.write(buffer)
     }
+    fn write_vectored(&mut self, buffers: &[io::IoSlice<'_>]) -> io::Result<usize> {
+        // rustls offers several already-bounded TLS records together. Preserve
+        // that vector while refreshing this actual syscall's original bound.
+        self.stream
+            .set_write_timeout(Some(forward_remaining(self.deadline)?))?;
+        self.stream.write_vectored(buffers)
+    }
     fn flush(&mut self) -> io::Result<()> {
         self.stream
             .set_write_timeout(Some(forward_remaining(self.deadline)?))?;
         self.stream.flush()
     }
 }
+
+#[cfg(test)]
+#[path = "forward_deadline_vectored_tests.rs"]
+mod forward_deadline_vectored_tests;
 
 impl fmt::Debug for MutualTlsPeerTransport {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -1045,11 +1127,13 @@ where
     let connection =
         rustls::ServerConnection::new(server_config).map_err(|_| HaError::Transport)?;
     let mut tls = rustls::StreamOwned::new(connection, stream);
-    tls.conn
-        .complete_io(&mut tls.sock)
-        .map_err(|error| forward_io_error_as(
-            "legacy_receiver_tls_handshake", &error, HaError::PeerAuthenticationFailed,
-        ))?;
+    tls.conn.complete_io(&mut tls.sock).map_err(|error| {
+        forward_io_error_as(
+            "legacy_receiver_tls_handshake",
+            &error,
+            HaError::PeerAuthenticationFailed,
+        )
+    })?;
     require_raft_alpn(tls.conn.alpn_protocol(), allow_missing_raft_alpn)?;
     let certificates = tls
         .conn
@@ -1057,6 +1141,11 @@ where
         .ok_or(HaError::PeerAuthenticationFailed)?;
     let peer = identify_peer_certificate_chain(identities, certificates)?;
     let request = read_bounded_frame(&mut tls)?;
+    // This legacy callback has no Q9/S7 negotiation contract. Refuse before
+    // dispatch; callers must not replay through another version after failure.
+    if ResponseFrameProfile::for_request(&request)?.is_native_index() {
+        return Err(HaError::InvalidFrame);
+    }
     let response = handler(peer, request, accepted_at)?;
     write_bounded_frame(&mut tls, &response)
 }
@@ -1541,29 +1630,27 @@ fn write_bounded_frame(writer: &mut impl Write, frame: &[u8]) -> Result<(), HaEr
         return Err(HaError::InvalidFrame);
     }
     let length = u32::try_from(frame.len()).map_err(|_| HaError::InvalidFrame)?;
-    writer
-        .write_all(&length.to_be_bytes())
+    observe_closure_phase!(FrameWriteHeader, writer.write_all(&length.to_be_bytes()))
         .map_err(|error| forward_transport_io_error("frame_write_length", &error))?;
-    writer
-        .write_all(frame)
+    observe_closure_phase!(FrameWriteBody, writer.write_all(frame))
         .map_err(|error| forward_transport_io_error("frame_write_payload", &error))?;
-    writer
-        .flush()
+    observe_closure_phase!(FrameFlush, writer.flush())
         .map_err(|error| forward_transport_io_error("frame_flush", &error))
 }
 
 fn read_bounded_frame(reader: &mut impl Read) -> Result<Vec<u8>, HaError> {
     let mut length = [0_u8; 4];
-    reader
-        .read_exact(&mut length)
+    observe_closure_phase!(FrameReadHeader, reader.read_exact(&mut length))
         .map_err(|error| forward_transport_io_error("frame_read_length", &error))?;
     let length = u32::from_be_bytes(length) as usize;
     if length == 0 || length > MAX_PAYLOAD_BYTES + 4096 {
-        return Err(forward_transport_frame_error("frame_read_length_invalid", HaError::InvalidFrame));
+        return Err(forward_transport_frame_error(
+            "frame_read_length_invalid",
+            HaError::InvalidFrame,
+        ));
     }
     let mut frame = zeroize::Zeroizing::new(vec![0_u8; length]);
-    reader
-        .read_exact(&mut frame)
+    observe_closure_phase!(FrameReadBody, reader.read_exact(&mut frame))
         .map_err(|error| forward_transport_io_error("frame_read_payload", &error))?;
     Ok(std::mem::take(&mut *frame))
 }
@@ -2124,7 +2211,10 @@ mod tests {
         assert_eq!(
             forward_io_error_as(
                 "receiver_tls_handshake",
-                &io::Error::new(io::ErrorKind::InvalidData, "synthetic-error-text-must-not-be-logged"),
+                &io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "synthetic-error-text-must-not-be-logged"
+                ),
                 HaError::PeerAuthenticationFailed,
             ),
             HaError::PeerAuthenticationFailed,
@@ -2142,7 +2232,8 @@ mod tests {
                 self.calls += 1;
                 if self.calls == self.fail_at {
                     return Err(io::Error::new(
-                        io::ErrorKind::BrokenPipe, "synthetic-private-write-error",
+                        io::ErrorKind::BrokenPipe,
+                        "synthetic-private-write-error",
                     ));
                 }
                 Ok(buffer.len())
@@ -2151,7 +2242,8 @@ mod tests {
                 self.calls += 1;
                 if self.calls == self.fail_at {
                     return Err(io::Error::new(
-                        io::ErrorKind::TimedOut, "synthetic-private-flush-error",
+                        io::ErrorKind::TimedOut,
+                        "synthetic-private-flush-error",
                     ));
                 }
                 Ok(())
@@ -2159,13 +2251,22 @@ mod tests {
         }
         for fail_at in 1..=3 {
             let mut writer = FailAt { calls: 0, fail_at };
-            assert_eq!(write_bounded_frame(&mut writer, b"fixture"), Err(HaError::Transport));
-            assert_eq!(writer.calls, fail_at, "no I/O after the original failing operation");
+            assert_eq!(
+                write_bounded_frame(&mut writer, b"fixture"),
+                Err(HaError::Transport)
+            );
+            assert_eq!(
+                writer.calls, fail_at,
+                "no I/O after the original failing operation"
+            );
         }
         let mut wire = Vec::new();
         assert_eq!(write_bounded_frame(&mut wire, b"fixture"), Ok(()));
         assert_eq!(wire, [7_u32.to_be_bytes().as_slice(), b"fixture"].concat());
-        assert_eq!(read_bounded_frame(&mut io::Cursor::new(&wire)), Ok(b"fixture".to_vec()));
+        assert_eq!(
+            read_bounded_frame(&mut io::Cursor::new(&wire)),
+            Ok(b"fixture".to_vec())
+        );
         for end in [2, wire.len() - 1] {
             assert_eq!(
                 read_bounded_frame(&mut io::Cursor::new(&wire[..end])),

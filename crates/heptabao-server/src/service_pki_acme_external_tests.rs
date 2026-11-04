@@ -899,6 +899,15 @@ fn pki_acme_external_public_account_and_possession_revoke_seven_real_crl_signers
 
 #[test]
 fn pki_acme_external_global_vault_leaf_possession_owns_real_remote_revocation() -> TestResult {
+    global_vault_leaf_possession_revocation(100)
+}
+
+#[test]
+fn pki_acme_external_global_vault_leaf_possession_keeps_durable_clock_floor() -> TestResult {
+    global_vault_leaf_possession_revocation(120)
+}
+
+fn global_vault_leaf_possession_revocation(issued_at: u64) -> TestResult {
     let remote = RemoteTransit::new_kind("ed25519")?;
     let (root, mut service, unseal, admin) = leaf_fixture(&remote)?;
     setup_remote(&mut service, &admin)?;
@@ -918,14 +927,26 @@ fn pki_acme_external_global_vault_leaf_possession_owns_real_remote_revocation() 
     let (leaf, leaf_jwk) = key()?;
     let raw = csr_with_key("global.acme.example.test", &leaf)?;
     let request = X509Req::from_der(&raw)?.to_pem()?;
-    let issued = call(
-        &mut service,
+    let issued = service.handle_at(
         "POST",
         "external-ca/sign/possession",
+        "",
         &admin,
         json!({"csr":String::from_utf8(request)?,"ttl":"10m"}),
+        issued_at,
     );
     assert_eq!(issued.status, 200);
+    if issued_at > 100 {
+        let engines = &service.state.as_ref().ok_or("state")?.engines;
+        assert!(engines.lease_clock() >= issued_at);
+        assert!(
+            engines
+                .acme_observed_time(crate::auth::Timestamp::whole(100)?)
+                .seconds()
+                < engines.lease_clock(),
+            "ordinary issuance advances the durable floor beyond the ACME observation"
+        );
+    }
     let der = X509::from_pem(
         issued.body["data"]["certificate"]
             .as_str()
@@ -1006,6 +1027,7 @@ fn pki_acme_external_global_vault_leaf_possession_owns_real_remote_revocation() 
         revoked.body.get("errors")
     );
     assert_eq!(remote.calls()?, calls + 3);
+    assert!(service.state.as_ref().ok_or("state")?.engines.lease_clock() >= issued_at);
     let public = call(
         &mut service,
         "GET",
@@ -1017,7 +1039,7 @@ fn pki_acme_external_global_vault_leaf_possession_owns_real_remote_revocation() 
     assert!(
         public.body["data"]["revocation_time"]
             .as_u64()
-            .is_some_and(|at| at > 0)
+            .is_some_and(|at| at >= issued_at)
     );
     assert!(
         public.body["data"]["issuer_id"]
@@ -1041,6 +1063,7 @@ fn pki_acme_external_global_vault_leaf_possession_owns_real_remote_revocation() 
             .is_ok()
     );
     let crl = call(&mut service, "GET", "external-ca/crl", "", json!({}));
+    assert_eq!(crl.status, 200);
     let original = BASE64.decode(
         crl.body["__heptabao_pki_crl"]
             .as_str()
@@ -1060,7 +1083,17 @@ fn pki_acme_external_global_vault_leaf_possession_owns_real_remote_revocation() 
         .status,
         200
     );
+    assert!(
+        reopened
+            .state
+            .as_ref()
+            .ok_or("reopened state")?
+            .engines
+            .lease_clock()
+            >= issued_at
+    );
     let reread = call(&mut reopened, "GET", "external-ca/crl", "", json!({}));
+    assert_eq!(reread.status, 200);
     assert_eq!(
         BASE64.decode(
             reread.body["__heptabao_pki_crl"]

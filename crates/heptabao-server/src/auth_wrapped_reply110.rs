@@ -121,6 +121,7 @@ enum ReplyKind {
 #[serde(rename_all = "kebab-case")]
 enum LogicalProjection {
     Ordinary,
+    StaticKv1Lease { projection: super::StaticKv1LeaseProjection },
     TokenLookup,
     MountTune,
     MountTable,
@@ -181,7 +182,7 @@ impl LogicalProjection {
                     }
                 }
             }
-            Self::Ordinary => {}
+            Self::Ordinary | Self::StaticKv1Lease { .. } => {}
         }
     }
 }
@@ -194,6 +195,19 @@ pub(in crate::auth) enum RawReplyReaderFloor {
     Legacy(bool),
     PkiHttp(PkiHttpReader),
     GeneralHttp(GeneralHttpReader),
+    StaticKv1(StaticKv1ReplyReader),
+}
+#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+#[serde(deny_unknown_fields)]
+pub(in crate::auth) struct StaticKv1ReplyReader {
+    static_kv1_reply: StaticKv1ReplyFormat,
+    pki_http: bool,
+    general: bool,
+}
+#[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
+pub(in crate::auth) enum StaticKv1ReplyFormat {
+    #[serde(rename = "signed-static-kv1-v1")]
+    V1,
 }
 #[derive(Clone, Copy, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(rename_all = "kebab-case")]
@@ -223,15 +237,28 @@ impl RawReplyReaderFloor {
             self,
             Self::PkiHttp(PkiHttpReader::PkiRawHttpV1)
                 | Self::GeneralHttp(GeneralHttpReader::PkiAndGeneralWrappedReplyV1)
-        )
+        ) || matches!(self, Self::StaticKv1(reader) if reader.pki_http)
     }
     fn has_general(&self) -> bool {
         matches!(self, Self::GeneralHttp(_))
+            || matches!(self, Self::StaticKv1(reader) if reader.general)
+    }
+    fn has_static_kv1(&self) -> bool {
+        matches!(self, Self::StaticKv1(_))
+    }
+    pub(in crate::auth) fn observe_static_kv1(&mut self) {
+        *self = Self::StaticKv1(StaticKv1ReplyReader {
+            static_kv1_reply: StaticKv1ReplyFormat::V1,
+            pki_http: self.has_pki_http(), general: self.has_general(),
+        });
     }
     pub(in crate::auth) fn observe(&mut self, pki_http: bool, general: bool) {
         let pki_http = self.has_pki_http() || pki_http;
         let general = self.has_general() || general;
-        if general {
+        if let Self::StaticKv1(reader) = self {
+            reader.pki_http = pki_http;
+            reader.general = general;
+        } else if general {
             *self = Self::GeneralHttp(if pki_http {
                 GeneralHttpReader::PkiAndGeneralWrappedReplyV1
             } else {
@@ -303,6 +330,14 @@ pub(crate) fn logical_envelope(
 ) -> Result<Value, AuthError> {
     logical_envelope_for_projection(response, request_id, &LogicalProjection::for_path(path))
 }
+pub(super) fn logical_envelope_static_kv1(
+    response: &Value, request_id: &str, projection: &super::StaticKv1LeaseProjection,
+) -> Result<Value, AuthError> {
+    projection.validate(response)?;
+    logical_envelope_for_projection(response, request_id,
+        &LogicalProjection::StaticKv1Lease { projection: *projection })
+}
+
 fn logical_envelope_for_projection(
     response: &Value,
     request_id: &str,
@@ -311,6 +346,10 @@ fn logical_envelope_for_projection(
     if !response.is_object() || !valid_request_id(request_id) {
         return Err(bad("invalid stored logical reply projection"));
     }
+    let signed_static_kv1 = if let LogicalProjection::StaticKv1Lease { projection } = logical_projection {
+        projection.validate(response)?;
+        true
+    } else { false };
     let mut auth = field(response, "auth", Value::Null);
     if let Some(object) = auth.as_object_mut() {
         object.entry("mfa_requirement").or_insert(Value::Null);
@@ -374,7 +413,7 @@ fn logical_envelope_for_projection(
     ]));
     if projection["lease_id"].as_str().is_none()
         || projection["renewable"].as_bool().is_none()
-        || projection["lease_duration"].as_u64().is_none()
+        || (!signed_static_kv1 && projection["lease_duration"].as_u64().is_none())
         || !(projection["data"].is_null() || projection["data"].is_object())
         || !(projection["warnings"].is_null()
             || projection["warnings"]
@@ -942,13 +981,57 @@ fn general_raw_projection(
 }
 
 impl StoredWrappedReply {
+    pub(super) fn capture_static_kv1(
+        response: &Value, context: &IngressReplyContext,
+        selected: &super::StaticKv1LeaseProjection,
+        path: &str,
+    ) -> Result<Self, AuthError> {
+        selected.validate(response)?;
+        if !selected.matches_path(path) || context.wrapping_body().is_some() {
+            return Err(bad("signed KV1 wrapper has a different actual ingress"));
+        }
+        let logical_projection = LogicalProjection::StaticKv1Lease { projection: *selected };
+        if has_special_presentation(response) {
+            return Self::capture_general_raw(response, context, path, logical_projection);
+        }
+        let request_id = context.request_id();
+        let mut projection = logical_envelope_for_projection(response, &request_id, &logical_projection)?;
+        let bytes = encode_envelope(&projection);
+        crate::service::erase_json(&mut projection);
+        let bytes = bytes?;
+        let stored = Self {
+            kind: ReplyKind::JsonEnvelopeV1,
+            logical_projection,
+            media_type: "application/json".into(),
+            byte_count: bytes.len(),
+            digest: crate::ha_forward_completion::digest(&bytes),
+            request_id,
+            bytes: bytes.to_vec(),
+        };
+        stored.validate(response)?;
+        Ok(stored)
+    }
+
+    pub(in crate::auth) fn is_static_kv1_reply(&self) -> bool {
+        matches!(self.logical_projection, LogicalProjection::StaticKv1Lease { .. })
+    }
+
+    pub(super) fn validate_namespace_owner(&self, namespace: &str) -> Result<(), AuthError> {
+        if let LogicalProjection::StaticKv1Lease { projection } = &self.logical_projection
+            && !projection.matches_namespace(namespace)
+        {
+            return Err(bad("stored signed KV1 namespace owner differs"));
+        }
+        Ok(())
+    }
+
     pub(super) fn capture(
         response: &Value,
         context: &IngressReplyContext,
         path: &str,
     ) -> Result<Self, AuthError> {
         if has_special_presentation(response) {
-            return Self::capture_general_raw(response, context, path);
+            return Self::capture_general_raw(response, context, path, LogicalProjection::for_path(path));
         }
         if let Some(lexical_data) = context.wrapping_body() {
             return Self::capture_lexical(response, context, path, lexical_data);
@@ -977,13 +1060,14 @@ impl StoredWrappedReply {
         response: &Value,
         context: &IngressReplyContext,
         path: &str,
+        logical_projection: LogicalProjection,
     ) -> Result<Self, AuthError> {
         let lexical_data = context.wrapping_body();
         if lexical_data.is_some() && path != "sys/wrapping/wrap" {
             return Err(bad("lexical raw owner is outside wrapping endpoint"));
         }
         if selected_ordinary_data(response, lexical_data)?.is_some() {
-            return Self::capture_selected_json(response, context, path);
+            return Self::capture_selected_json(response, context, logical_projection);
         }
         let (presentation, media_type, bytes) = general_raw_projection(response, lexical_data)?;
         let result = Self {
@@ -991,7 +1075,7 @@ impl StoredWrappedReply {
                 lexical_data: lexical_data.cloned(),
                 presentation,
             },
-            logical_projection: LogicalProjection::for_path(path),
+            logical_projection,
             media_type,
             byte_count: bytes.len(),
             digest: crate::ha_forward_completion::digest(&bytes),
@@ -1004,7 +1088,7 @@ impl StoredWrappedReply {
     fn capture_selected_json(
         response: &Value,
         context: &IngressReplyContext,
-        path: &str,
+        logical_projection: LogicalProjection,
     ) -> Result<Self, AuthError> {
         let lexical_data = context.wrapping_body();
         if selected_ordinary_data(response, lexical_data)?.is_none() {
@@ -1013,7 +1097,6 @@ impl StoredWrappedReply {
             ));
         }
         let request_id = context.request_id();
-        let logical_projection = LogicalProjection::for_path(path);
         let generated;
         let data = if let Some(data) = lexical_data {
             data
@@ -1183,12 +1266,19 @@ impl StoredWrappedReply {
         }
     }
     pub(super) fn validate_owner(&self, logical: &Value, path: &str) -> Result<(), AuthError> {
-        if self.logical_projection != LogicalProjection::for_path(path) {
+        let owner_matches = match &self.logical_projection {
+            LogicalProjection::StaticKv1Lease { projection } => projection.matches_path(path),
+            other => *other == LogicalProjection::for_path(path),
+        };
+        if !owner_matches {
             return Err(bad("stored logical projection owner differs"));
         }
         self.validate(logical)
     }
     pub(crate) fn validate(&self, logical: &Value) -> Result<(), AuthError> {
+        if let LogicalProjection::StaticKv1Lease { projection } = &self.logical_projection {
+            projection.validate(logical)?;
+        }
         if let ReplyKind::GeneralSelectedJsonV1 { lexical_data } = &self.kind {
             if selected_ordinary_data(logical, lexical_data.as_ref())?.is_none() {
                 return Err(bad(
@@ -1444,6 +1534,12 @@ impl RawReplyTokenCustody {
 }
 
 impl AuthState {
+    pub(crate) fn has_static_kv1_wrapped_reply_state(&self) -> bool {
+        self.raw_wrapped_reply_floor.has_static_kv1()
+            || self.tokens.values().any(|token| token.wrapping.as_ref()
+                .and_then(|owner| owner.stored_reply.as_ref())
+                .is_some_and(StoredWrappedReply::is_static_kv1_reply))
+    }
     pub(crate) fn has_raw_wrapped_reply_state(&self) -> bool {
         self.raw_wrapped_reply_floor.has_original()
             || self.tokens.values().any(|t| {
@@ -1515,7 +1611,11 @@ impl AuthState {
                 if stored.is_general_reply() && !self.raw_wrapped_reply_floor.has_general() {
                     return Err(bad("general reply permanent reader floor missing"));
                 }
+                if stored.is_static_kv1_reply() && !self.raw_wrapped_reply_floor.has_static_kv1() {
+                    return Err(bad("signed static KV1 permanent reader floor missing"));
+                }
                 stored.validate_owner(&owner.response, &owner.creation_path)?;
+                stored.validate_namespace_owner(&token.namespace)?;
             }
         }
         Ok(())
@@ -1525,6 +1625,11 @@ impl AuthState {
         previous: &Self,
     ) -> Result<(), AuthError> {
         self.validate_raw_wrapped_reply_state()?;
+        if previous.raw_wrapped_reply_floor.has_static_kv1()
+            && !self.raw_wrapped_reply_floor.has_static_kv1()
+        {
+            return Err(bad("signed static KV1 reply reader floor cannot retire"));
+        }
         if previous.raw_wrapped_reply_floor.has_general()
             && !self.raw_wrapped_reply_floor.has_general()
         {
@@ -1703,6 +1808,12 @@ impl RawAuthProbe {
             })
     }
     fn validate_schema(&self, schema: u32) -> Result<(), AuthError> {
+        // An actual signed KV1 mount already requires the schema146 owner.
+        // The closed object marker separately refuses every prior reader,
+        // including prior schema146 readers after the last wrapper retires.
+        if schema < 146 && self.raw_wrapped_reply_floor.has_static_kv1() {
+            return Err(bad("signed static KV1 incoming header is downgraded"));
+        }
         if schema < 113 && self.raw_wrapped_reply_floor.has_general() {
             return Err(bad("general reply incoming header is downgraded"));
         }

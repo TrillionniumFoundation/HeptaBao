@@ -59,6 +59,15 @@ fn canonical_name(name: &str) -> String {
         .collect()
 }
 impl Headers {
+    /// Transport metadata for a local retry decision. A u64 decimal value is
+    /// bounded to twenty digits and cannot introduce additional header lines.
+    pub(crate) fn retry_after_seconds(seconds: u64) -> Self {
+        Self(BTreeMap::from([(
+            "Retry-After".to_owned(),
+            vec![Zeroizing::new(seconds.to_string())],
+        )]))
+    }
+
     pub(crate) fn from_sdk(value: Option<&Value>, allowed: &[String]) -> Result<Self, ()> {
         Self::from_bounded_map(value, allowed, 32)
     }
@@ -162,6 +171,45 @@ impl Headers {
                 .collect(),
         )
     }
+    /// Add only locally computed numeric quota metadata. Existing logical
+    /// headers retain their custody; a quota field replaces its own name so
+    /// the listener cannot emit duplicate Retry-After or rate-limit values.
+    pub(crate) fn merge_quota(&mut self, mut quota: Self) -> Result<(), ()> {
+        for (name, values) in &quota.0 {
+            if !matches!(
+                name.as_str(),
+                "Retry-After" | "X-Ratelimit-Limit" | "X-Ratelimit-Remaining" | "X-Ratelimit-Reset"
+            ) || values.len() != 1
+                || values[0].is_empty()
+                || values[0].len() > 20
+                || !values[0].bytes().all(|byte| byte.is_ascii_digit())
+            {
+                return Err(());
+            }
+        }
+        let names = self
+            .0
+            .keys()
+            .filter(|name| !quota.0.contains_key(*name))
+            .count()
+            + quota.0.len();
+        let mut bytes = 0usize;
+        for (name, values) in self
+            .0
+            .iter()
+            .filter(|(name, _)| !quota.0.contains_key(*name))
+            .chain(quota.0.iter())
+        {
+            for value in values {
+                bytes = bytes.checked_add(name.len() + value.len() + 4).ok_or(())?;
+            }
+        }
+        if names > 64 || bytes > 32 * 1024 {
+            return Err(());
+        }
+        self.0.append(&mut quota.0);
+        Ok(())
+    }
     pub(crate) fn clear(&mut self) {
         *self = Self::default();
     }
@@ -220,3 +268,7 @@ impl<'de> serde::Deserialize<'de> for Headers {
             .map_err(|()| serde::de::Error::custom("HA response header metadata rejected"))
     }
 }
+
+#[cfg(test)]
+#[path = "service_response_quota_headers_tests.rs"]
+mod quota_tests;

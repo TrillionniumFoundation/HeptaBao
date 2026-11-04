@@ -304,6 +304,72 @@ fn transition_fixture() -> CodecResult<(NativeReadView, NativeReadView, GraphObj
     Ok((prior, candidate, staged))
 }
 
+#[test]
+fn paged_cloned_snapshots_isolate_both_writers_and_keep_actual_source_checks() -> CodecResult<()> {
+    let key = AddressKey::from_bytes([79; 32]);
+    let initial = NativeCellGraph::encode_paged(&owner()?, &key, scope(), &|| Ok(()))?;
+    let mut source = objects(&initial)?;
+    let snapshot = NativeReadView::open_paged(&key, scope(), initial.root(), &source)?;
+    let mut append = snapshot.clone();
+    let mut destroy = snapshot.clone();
+    append
+        .mutate(
+            "POST",
+            "data/history",
+            &json!({"data":{"n":4,"branch":"append"},"options":{"cas":3}}),
+            time()?,
+        )
+        .map_err(|_| RecordError::Corrupt)?;
+    destroy
+        .mutate("POST", "destroy/history", &json!({"versions":[1]}), time()?)
+        .map_err(|_| RecordError::Corrupt)?;
+    let appended = append.encode_paged(&key, scope(), &|| Ok(()))?;
+    let destroyed = destroy.encode_paged(&key, scope(), &|| Ok(()))?;
+    source.0.extend(objects(&appended)?.0);
+    source.0.extend(objects(&destroyed)?.0);
+    let appended = NativeReadView::open_paged(&key, scope(), appended.root(), &source)?;
+    let destroyed = NativeReadView::open_paged(&key, scope(), destroyed.root(), &source)?;
+
+    assert!(snapshot.matches_authenticated_root(&key, scope(), &initial.root(), &|| Ok(()))?);
+    for view in [&snapshot, &appended] {
+        let read = view
+            .read_with_source(
+                "GET",
+                "data/history",
+                &json!({"version":1}),
+                time()?,
+                &source,
+            )
+            .map_err(|_| RecordError::Corrupt)?;
+        assert_eq!(read.status, 200);
+        assert_eq!(read.body["data"]["data"]["n"], 1);
+    }
+    let deleted = destroyed
+        .read_with_source(
+            "GET",
+            "data/history",
+            &json!({"version":1}),
+            time()?,
+            &source,
+        )
+        .map_err(|_| RecordError::Corrupt)?;
+    assert_eq!(deleted.status, 404);
+    assert!(deleted.body["data"]["metadata"]["destroyed"] == true);
+    assert_eq!(snapshot.owner.entries["history"].current_version, 3);
+    assert_eq!(appended.owner.entries["history"].current_version, 4);
+    assert_eq!(destroyed.owner.entries["history"].current_version, 3);
+
+    // Shared decoded data never replaces the actual selected payload source.
+    let missing = *payload_ids(&initial)
+        .iter()
+        .next()
+        .ok_or(RecordError::Missing)?;
+    source.0.remove(&missing).ok_or(RecordError::Missing)?;
+    assert!(snapshot.verify_paged_payloads(&source, &|| Ok(())).is_err());
+    assert!(appended.verify_paged_payloads(&source, &|| Ok(())).is_err());
+    Ok(())
+}
+
 fn view_payload_ids(view: &NativeReadView) -> CodecResult<BTreeSet<ObjectId>> {
     Ok(view
         .graph
@@ -507,5 +573,123 @@ fn paged_transition_reused_closure_cannot_drop_prior_lossless_floor() -> CodecRe
             .verify_paged_transition(Some(&prior), &GraphObjects::default(), &|| Ok(()))
             .is_err()
     );
+    Ok(())
+}
+
+#[test]
+fn precise_history_clock_same_second_delete_destroy_and_cold_reopen_boundaries() -> CodecResult<()>
+{
+    // Build actual paged records through the existing KV mutation and cold-open
+    // paths. These explicit clocks exercise read semantics without any sleeps.
+    let key = AddressKey::from_bytes([29; 32]);
+    let mut original = owner()?;
+    let deletion = Timestamp::checked(100, 418_352_420).map_err(|_| RecordError::Invalid)?;
+    original
+        .handle_precise("POST", "delete/history", &json!({"versions":[2]}), deletion)
+        .map_err(|_| RecordError::Invalid)?;
+    original
+        .handle_precise(
+            "POST",
+            "destroy/history",
+            &json!({"versions":[1]}),
+            deletion,
+        )
+        .map_err(|_| RecordError::Invalid)?;
+    let graph = NativeCellGraph::encode_paged(&original, &key, scope(), &|| Ok(()))?;
+    let source = objects(&graph)?;
+    let counted = Counting {
+        source: &source,
+        payloads: payload_ids(&graph),
+        blocks: Cell::new(0),
+    };
+    let cold = NativeReadView::open_paged(&key, scope(), graph.root(), &counted)?;
+    assert_eq!(counted.blocks.get(), 0);
+    for (wall, expected_deleted_status) in [
+        (std::time::Duration::new(100, 0), 200),
+        (std::time::Duration::new(100, 418_352_419), 200),
+        (std::time::Duration::new(100, 418_352_420), 404),
+        (std::time::Duration::new(100, 418_352_421), 404),
+        (std::time::Duration::new(100, 883_013_756), 404),
+        (std::time::Duration::new(101, 0), 404),
+    ] {
+        // The same conversion as the repaired HA fixture retains nanoseconds.
+        // The deliberately whole-second row is a positive reproduction control.
+        let now = Timestamp::from_wall(wall).map_err(|_| RecordError::Invalid)?;
+        counted.blocks.set(0);
+        let soft_deleted = cold
+            .read_with_source("GET", "data/history", &json!({"version":2}), now, &counted)
+            .map_err(|_| RecordError::Corrupt)?;
+        assert_eq!(
+            soft_deleted.status, expected_deleted_status,
+            "soft deletion must use the complete supplied timestamp at {wall:?}",
+        );
+        if expected_deleted_status == 200 {
+            assert_eq!(soft_deleted.body["data"]["data"]["n"], 2);
+            assert!(counted.blocks.get() > 0);
+        } else {
+            assert_eq!(counted.blocks.get(), 0, "deleted data must not be opened");
+        }
+        counted.blocks.set(0);
+        let destroyed = cold
+            .read_with_source("GET", "data/history", &json!({"version":1}), now, &counted)
+            .map_err(|_| RecordError::Corrupt)?;
+        assert_eq!(destroyed.status, 404, "destroy is independent of read time");
+        assert_eq!(counted.blocks.get(), 0, "destroyed data must not be opened");
+        counted.blocks.set(0);
+        let retained = cold
+            .read_with_source("GET", "data/history", &json!({"version":3}), now, &counted)
+            .map_err(|_| RecordError::Corrupt)?;
+        assert_eq!(retained.status, 200);
+        assert_eq!(retained.body["data"]["data"]["n"], 3);
+        assert!(counted.blocks.get() > 0);
+    }
+    assert!(
+        cold.owner
+            .entries
+            .values()
+            .flat_map(|entry| entry.versions.values())
+            .all(|version| version.data.is_none()),
+        "point reads must leave the cold metadata owner without retained payloads",
+    );
+    Ok(())
+}
+
+#[test]
+fn paged_transition_memo_keeps_prior_custody_and_fresh_changed_reads() -> CodecResult<()> {
+    let (prior, candidate, staged) = transition_fixture()?;
+    let memo = RefCell::new(PagedPayloadValidationMemo::default());
+    let counted = Counting {
+        source: &staged,
+        payloads: view_payload_ids(&candidate)?,
+        blocks: Cell::new(0),
+    };
+    candidate.verify_paged_transition_with_memo(Some(&prior), &counted, &|| Ok(()), Some(&memo))?;
+    assert_eq!(counted.blocks.get(), 3);
+    assert_eq!(memo.borrow().test_observations(), (1, 0));
+    candidate.verify_paged_transition_with_memo(Some(&prior), &counted, &|| Ok(()), Some(&memo))?;
+    assert_eq!(
+        counted.blocks.get(),
+        6,
+        "a hit still reads every changed block"
+    );
+    assert_eq!(memo.borrow().test_observations(), (1, 1));
+    assert!(
+        candidate
+            .verify_paged_transition_with_memo(
+                Some(&prior),
+                &GraphObjects::default(),
+                &|| Ok(()),
+                Some(&memo)
+            )
+            .is_err(),
+        "a warm semantic fact cannot replace the actual staged source"
+    );
+    assert!(
+        candidate
+            .verify_paged_transition_with_memo(None, &staged, &|| Ok(()), Some(&memo))
+            .is_err(),
+        "a warm semantic fact cannot create the missing admitted prior closure"
+    );
+    assert_eq!(memo.borrow().test_observations(), (1, 1));
     Ok(())
 }

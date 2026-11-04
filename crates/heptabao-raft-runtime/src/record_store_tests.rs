@@ -475,7 +475,7 @@ async fn replacement_admission_is_read_only_cas_and_capacity_checked_before_stag
     std::fs::remove_dir_all(path).expect("cleanup");
 }
 
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 #[tokio::test]
 async fn native_v6_ciphertext_chunk_raft_stage_reopens_and_installs_follower_snapshot_without_root()
 {
@@ -549,7 +549,7 @@ async fn native_v6_ciphertext_chunk_raft_stage_reopens_and_installs_follower_sna
     fs::remove_dir_all(follower_path).expect("cleanup isolated follower");
 }
 
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 #[test]
 fn native_v6_ciphertext_chunks_reject_tamper_metadata_children_and_v5_root_publication() {
     let chunk = crate::SealedRecordObject::new_native_v6_ciphertext_chunk(vec![0x85; 1024])

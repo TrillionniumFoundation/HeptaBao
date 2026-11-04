@@ -303,8 +303,8 @@ fn namespace_catalog_seal_state_and_nonempty_delete() -> Result<(), Box<dyn std:
     );
     let state = service.state.as_ref().ok_or("missing state")?;
     assert_eq!(
-        state.schema, 81,
-        "independent namespace ciphertext requires its explicit reader floor"
+        state.schema, NAMESPACE_FACTORY_STATE_SCHEMA,
+        "independent namespace ciphertext retains its actual child factory reader floor"
     );
     let mut downgraded = state.clone();
     downgraded.auth.remove_name_modes_for_legacy_format_test();

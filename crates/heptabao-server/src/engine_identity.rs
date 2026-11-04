@@ -240,6 +240,18 @@ impl EngineState {
             .identity
             .project(id)
     }
+
+    pub(crate) fn identity_projection_if_present(
+        &self,
+        namespace: &str,
+        id: &str,
+    ) -> Result<Option<IdentityProjection>> {
+        self.namespaces
+            .get(namespace)
+            .ok_or_else(|| error(403, "identity unavailable"))?
+            .identity
+            .project_if_present(id)
+    }
 }
 
 impl EngineState {

@@ -1,5 +1,5 @@
 //! Format gates run on the authenticated graph, not merely its root tag.
-use super::super::tests::{Root, bootstrap, call};
+use super::super::tests::{Root, call};
 use super::*;
 use crate::state_records::ObjectKind;
 
@@ -34,7 +34,7 @@ fn mount(service: &mut Service, token: &str) {
 fn schema36_read_reopen_noop_and_rejection_do_not_upgrade_but_mutation_does() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, token) = bootstrap(&mut service)?;
+    let (key, token) = crate::service::tests::bootstrap_pre141(&mut service)?;
     mount(&mut service, &token);
     // Referenced values retain the exact pre-packed shape. Merely reading them
     // must not repack the tree or raise the persisted reader requirement.
@@ -126,7 +126,7 @@ fn schema36_read_reopen_noop_and_rejection_do_not_upgrade_but_mutation_does() ->
 fn authenticated_deep_packed_graph_cannot_hide_under_schema36_on_any_load_path() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, token) = bootstrap(&mut service)?;
+    let (key, token) = crate::service::tests::bootstrap_pre141(&mut service)?;
     mount(&mut service, &token);
     let mut next = service.state.clone().ok_or("state")?;
     // Byte-bounded pages force multiple Branch levels, independently of the

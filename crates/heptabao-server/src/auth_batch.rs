@@ -760,6 +760,12 @@ impl BatchKeyAuthority {
     }
 }
 
+#[cfg(feature = "native-v6-storage")]
+#[path = "auth_native_batch_issuer.rs"]
+mod native_issuer;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_issuer::NativeBatchIssuerOwner;
+
 #[cfg(test)]
 #[path = "auth_batch_tests.rs"]
 mod tests;

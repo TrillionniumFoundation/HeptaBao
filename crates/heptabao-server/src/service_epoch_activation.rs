@@ -17,6 +17,8 @@ impl Service {
         already_committed: bool,
         random: impl FnOnce() -> Result<[u8; 16], &'static str>,
     ) -> Result<Option<String>, Response> {
+        #[cfg(feature = "native-v6-storage")]
+        Self::advance_unseal_nonce_attempt(&mut self.unseal_nonce_attempt);
         let current = self
             .state
             .as_ref()
@@ -41,6 +43,8 @@ impl Service {
     }
 
     pub(super) fn install_epoch_activation(&mut self, activation: Option<String>) {
+        #[cfg(feature = "native-v6-storage")]
+        Self::advance_unseal_nonce_attempt(&mut self.unseal_nonce_attempt);
         if let Some(activation) = activation {
             self.ha_read_cache = None;
             self.unseal_nonce = activation;

@@ -1,15 +1,21 @@
-//! Opt-in, root-namespace single-node candidate writer. No HA or default admission.
+//! Explicit root-namespace native writer, using actual file or Raft custody.
+//! A compiled capability never activates or migrates the selected storage owner.
 use super::native_v6_reader::{
     ACTIVE_CURSOR_RESOURCE, ACTIVE_SOURCE_ROOT_RESOURCE, NativeActiveCursor,
 };
 use super::*;
 
-#[cfg(test)]
-#[path = "service_native_v6_migration_tests.rs"]
-mod migration_tests;
+#[path = "service_native_file_clock_profile.rs"]
+pub(super) mod file_clock_profile;
+
 #[cfg(test)]
 #[path = "service_native_v6_activation_source_observation.rs"]
 pub(super) mod activation_source_observation;
+#[cfg(test)]
+#[path = "service_native_v6_migration_tests.rs"]
+mod migration_tests;
+#[path = "service_native_v6_source_promotion.rs"]
+mod source_promotion;
 use crate::state_records::RecordError;
 use crate::v6_native_custody::OriginalDeadline;
 
@@ -22,7 +28,89 @@ pub(super) struct NativeRequestBinding {
     deadline: OriginalDeadline,
     nonce: String,
     data_dir: std::path::PathBuf,
+    #[cfg(feature = "native-v6-ha")]
+    pre_admission_read: NativePreAdmissionRead,
+    #[cfg(feature = "native-v6-ha")]
+    ingress_selection_issued: bool,
 }
+
+#[cfg(feature = "native-v6-ha")]
+pub(super) struct NativeFreshIngressBinding {
+    fingerprint: Zeroizing<String>,
+    clock: RequestClock,
+    started: std::time::Instant,
+    deadline: OriginalDeadline,
+    nonce: Zeroizing<String>,
+    data_dir: PathBuf,
+    identity: crate::state_record_root::StateIdentity,
+    generation: u64,
+}
+#[cfg(feature = "native-v6-ha")]
+impl NativeFreshIngressBinding {
+    pub(super) fn deadline(&self) -> OriginalDeadline {
+        self.deadline
+    }
+    pub(super) fn identity(&self) -> crate::state_record_root::StateIdentity {
+        self.identity
+    }
+    pub(super) fn check(&self, service: &Service) -> Result<(), Response> {
+        self.deadline.check().map_err(|_| rejected())?;
+        let binding = service
+            .native_request_binding
+            .as_ref()
+            .ok_or_else(rejected)?;
+        if binding.fingerprint != *self.fingerprint
+            || binding.clock.started() != self.clock.started()
+            || binding.clock.admitted_at() != self.clock.admitted_at()
+            || binding.admission_started != self.started
+            || self.started != self.clock.started()
+            || binding.deadline.instant() != self.deadline.instant()
+            || crate::request_deadline::current() != Some(self.deadline.instant())
+            || binding.nonce != *self.nonce
+            || service.unseal_nonce != *self.nonce
+            || binding.data_dir != self.data_dir
+            || service.data_dir != self.data_dir
+            || !binding.ingress_selection_issued
+            || !matches!(binding.pre_admission_read, NativePreAdmissionRead::Reading { identity, generation }
+                if identity == self.identity && generation == self.generation)
+            || service.current_state_identity().ok() != Some(self.identity)
+            || service.native_root.is_none()
+            || service.record_root.is_some()
+            || service
+                .durable
+                .as_ref()
+                .is_none_or(|d| d.generation() != self.generation || d.recovery_required())
+            || service.recovery_required
+            || service.audit_failed
+            || service.native_failure_notice.is_some()
+            || service.pending_forward_delivery.is_some()
+            || service.pending_ordinary_kv_authority.is_some()
+            || service.pending_token_api_authority.is_some()
+            || service.pending_native_auth_delivery.is_some()
+            || service.pending_native_cg_delivery.is_some()
+        {
+            return Err(rejected());
+        }
+        Ok(())
+    }
+}
+
+// A negative observation at the first quorum-selection boundary only. It is
+// never armed for a resumed actor, a publication or terminal-clock write.
+#[cfg(feature = "native-v6-ha")]
+enum NativePreAdmissionRead {
+    Fresh,
+    Closed,
+    Reading {
+        identity: crate::state_record_root::StateIdentity,
+        generation: u64,
+    },
+    Refused {
+        identity: crate::state_record_root::StateIdentity,
+        generation: u64,
+    },
+}
+
 pub(super) struct NativeFailureNotice {
     fingerprint: String,
     clock: RequestClock,
@@ -42,7 +130,10 @@ impl Service {
         admission_started: std::time::Instant,
         path: &str,
     ) {
-        if self.native_root.is_none() && path != "sys/internal/native-v6/activate" {
+        if self.native_root.is_none()
+            && path != "sys/internal/native-v6/activate"
+            && path != native_storage::ACTIVATE_PATH
+        {
             return;
         }
         let (Some(clock), Ok(deadline)) = (clock, OriginalDeadline::capture()) else {
@@ -58,6 +149,10 @@ impl Service {
             deadline,
             nonce: self.unseal_nonce.clone(),
             data_dir: self.data_dir.clone(),
+            #[cfg(feature = "native-v6-ha")]
+            pre_admission_read: NativePreAdmissionRead::Fresh,
+            #[cfg(feature = "native-v6-ha")]
+            ingress_selection_issued: false,
         });
     }
     pub(super) fn retire_native_external_binding(
@@ -77,6 +172,139 @@ impl Service {
         if matching {
             self.native_request_binding = None;
         }
+    }
+
+    #[cfg(feature = "native-v6-ha")]
+    pub(super) fn arm_native_pre_admission_read(&mut self, fresh_request: bool) {
+        if !fresh_request || self.native_root.is_none() || self.ha.is_none() {
+            return;
+        }
+        let Ok(identity) = self.current_state_identity() else {
+            return;
+        };
+        let Some(generation) = self.durable.as_ref().map(|durable| durable.generation()) else {
+            return;
+        };
+        if let Some(binding) = self.native_request_binding.as_mut()
+            && matches!(binding.pre_admission_read, NativePreAdmissionRead::Fresh)
+        {
+            binding.pre_admission_read = NativePreAdmissionRead::Reading {
+                identity,
+                generation,
+            };
+        }
+    }
+
+    #[cfg(feature = "native-v6-ha")]
+    pub(super) fn take_native_fresh_ingress_binding(
+        &mut self,
+    ) -> Option<NativeFreshIngressBinding> {
+        let original = self.native_request_binding.as_mut()?;
+        let NativePreAdmissionRead::Reading {
+            identity,
+            generation,
+        } = original.pre_admission_read
+        else {
+            return None;
+        };
+        if std::mem::replace(&mut original.ingress_selection_issued, true) {
+            return None;
+        }
+        let captured = NativeFreshIngressBinding {
+            fingerprint: Zeroizing::new(original.fingerprint.clone()),
+            clock: original.clock,
+            started: original.admission_started,
+            deadline: original.deadline,
+            nonce: Zeroizing::new(original.nonce.clone()),
+            data_dir: original.data_dir.clone(),
+            identity,
+            generation,
+        };
+        captured.check(self).ok()?;
+        Some(captured)
+    }
+
+    #[cfg(feature = "native-v6-ha")]
+    pub(super) fn record_native_pre_admission_read_refusal(&mut self) {
+        if let Some(binding) = self.native_request_binding.as_mut()
+            && let NativePreAdmissionRead::Reading {
+                identity,
+                generation,
+            } = binding.pre_admission_read
+        {
+            binding.pre_admission_read = NativePreAdmissionRead::Refused {
+                identity,
+                generation,
+            };
+        }
+    }
+
+    #[cfg(feature = "native-v6-ha")]
+    pub(super) fn disarm_native_pre_admission_read(&mut self) {
+        if let Some(binding) = self.native_request_binding.as_mut()
+            && !matches!(
+                binding.pre_admission_read,
+                NativePreAdmissionRead::Refused { .. }
+            )
+        {
+            // Once the first ingress synchronization returns, later nested
+            // dispatches/publications can never re-arm this request binding.
+            binding.pre_admission_read = NativePreAdmissionRead::Closed;
+        }
+    }
+
+    #[cfg(feature = "native-v6-ha")]
+    pub(super) fn take_native_pre_admission_refusal(
+        &mut self,
+        fingerprint: &str,
+        clock: Option<RequestClock>,
+        response: &Response,
+    ) -> Option<Response> {
+        let binding = self.native_request_binding.as_mut()?;
+        let refused = std::mem::replace(
+            &mut binding.pre_admission_read,
+            NativePreAdmissionRead::Closed,
+        );
+        let NativePreAdmissionRead::Refused {
+            identity,
+            generation,
+        } = refused
+        else {
+            return None;
+        };
+        let clock = clock?;
+        // Matching a status alone grants no exemption. The private refusal can
+        // only be minted by the armed first ReadIndex returning Err, before any
+        // synchronized request authentication or application publication.
+        if response.status != 503
+            || response.unwrapped_json.is_some()
+            || response.consistency_index.is_some()
+            || binding.fingerprint != fingerprint
+            || binding.clock.started() != clock.started()
+            || binding.clock.admitted_at() != clock.admitted_at()
+            || binding.admission_started != clock.started()
+            || crate::request_deadline::current() != Some(binding.deadline.instant())
+            || binding.nonce != self.unseal_nonce
+            || binding.data_dir != self.data_dir
+            || self.native_failure_notice.is_some()
+            || self.recovery_required
+            || self.audit_failed
+            || self.pending_forward_delivery.is_some()
+        {
+            return None;
+        }
+        if self.current_state_identity().ok() != Some(identity)
+            || self.durable.as_ref().map(|durable| durable.generation()) != Some(generation)
+        {
+            return None;
+        }
+        // An unavailable pre-admission attempt carries neither a successful
+        // terminal floor nor completion authority. Its ordinary response audit
+        // still runs; no fresh ReadIndex or clock observation write is attempted.
+        Some(Response::error(
+            503,
+            "native HA committed root is unavailable",
+        ))
     }
 
     pub(super) fn capture_native_failure_notice(&mut self, error: &ServiceError) {
@@ -143,7 +371,28 @@ impl Service {
     }
 }
 
+#[cfg_attr(test, track_caller)]
 fn rejected() -> Response {
+    // The rejection has already been selected. Observe only its original
+    // deadline and static source site; do not mint or extend any authority.
+    #[cfg(test)]
+    {
+        use std::io::Write as _;
+        let caller = std::panic::Location::caller();
+        let observed = std::time::Instant::now();
+        let until = crate::request_deadline::current();
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "HBV6-FILE-REJECT source={}:{}:{} deadline_present={} expired_at_diagnostic={:?} remaining_us_at_diagnostic={:?} thread={:?}",
+            caller.file(),
+            caller.line(),
+            caller.column(),
+            until.is_some(),
+            until.map(|deadline| observed >= deadline),
+            until.map(|deadline| deadline.saturating_duration_since(observed).as_micros()),
+            std::thread::current().id(),
+        );
+    }
     Response::error(503, "native V6 Service candidate publication rejected")
 }
 fn conditions_copy(
@@ -159,6 +408,7 @@ fn conditions_copy(
 }
 
 impl Service {
+    #[cfg(any(test, feature = "fixture-native-v6-service"))]
     pub fn configure_native_v6_candidate(&mut self) -> Result<(), String> {
         if self.native_candidate_profile.is_some() {
             return Err("native candidate already configured".into());
@@ -171,7 +421,7 @@ impl Service {
     }
 
     pub(super) fn require_native_root_candidate(&self, state: &State) -> Result<(), Response> {
-        #[cfg(feature = "experimental-native-v6-ha")]
+        #[cfg(feature = "native-v6-ha")]
         if self.ha.is_some() {
             self.require_native_ha_environment()?;
         } else {
@@ -180,7 +430,7 @@ impl Service {
                 .ok_or_else(rejected)?
                 .check_environment(self)?;
         }
-        #[cfg(not(feature = "experimental-native-v6-ha"))]
+        #[cfg(not(feature = "native-v6-ha"))]
         self.native_candidate_profile
             .as_ref()
             .ok_or_else(rejected)?
@@ -190,20 +440,15 @@ impl Service {
             || self.openbao_wrapper_owner.is_some()
             || self.recovery_required
             || self.audit_failed
-            || state.namespace_protected.is_some()
-            || state
-                .engines
-                .v6_namespace_paths()
-                .any(|path| !path.is_empty())
-            || !state.namespaces.is_empty()
-            || !state.namespace_leases.is_empty()
         {
             return Err(rejected());
         }
+        namespaces::native_empty::require_catalog_profile(state)?;
+        self.require_native_storage_state(state)?;
         Ok(())
     }
 
-    #[cfg(feature = "experimental-native-v6-ha")]
+    #[cfg(feature = "native-v6-ha")]
     pub(super) fn require_native_ha_environment(&self) -> Result<(), Response> {
         let ha = self.ha.as_ref().ok_or_else(rejected)?;
         let seal = self.seal.as_ref().ok_or_else(rejected)?;
@@ -282,20 +527,6 @@ impl Service {
         if deadline.check().is_err() {
             return rejected();
         }
-        // Test observation only: after the actual ordinary Auth/clock prelude,
-        // before planning or publishing any native migration. No authority or
-        // clock is replaced, and release builds contain no observer.
-        #[cfg(test)]
-        activation_source_observation::record(self);
-        let plan = match self.prepare_native_root_migration_paged(&|| {
-            deadline.check().map_err(|_| RecordError::Invalid)
-        }) {
-            Ok(plan) => plan,
-            Err(error) => return error,
-        };
-        let Some(state) = self.state.as_ref().cloned() else {
-            return rejected();
-        };
         let mut authority = |auth: &AuthState| {
             deadline.check().map_err(|_| rejected())?;
             auth.authorize_request_parameters_observed(
@@ -309,6 +540,24 @@ impl Service {
             .map_err(|error| Response::error(error.status, &error.message))?;
             deadline.check().map_err(|_| rejected())
         };
+        let promoted = match self.promote_configured_native_file_source(deadline, &mut authority) {
+            Ok(promoted) => promoted,
+            Err(error) => return error,
+        };
+        // Test observation only: the actual authenticated V5 source after the
+        // ordinary Auth/clock prelude and any formal source promotion, before
+        // planning V6. No authority/clock replacement exists in release builds.
+        #[cfg(test)]
+        activation_source_observation::record(self);
+        let plan = match self.prepare_native_root_migration_paged(&|| {
+            deadline.check().map_err(|_| RecordError::Invalid)
+        }) {
+            Ok(plan) => plan,
+            Err(error) => return self.after_native_source_promotion_failure(error, promoted),
+        };
+        let Some(state) = self.state.as_ref().cloned() else {
+            return rejected();
+        };
         match self.commit_native_root_plan(&state, plan, true, "migration", &mut authority) {
             Ok(installed) => {
                 self.state = Some(installed);
@@ -320,7 +569,7 @@ impl Service {
                     consistency_index: None,
                 }
             }
-            Err(error) => error,
+            Err(error) => self.after_native_source_promotion_failure(error, promoted),
         }
     }
 
@@ -334,7 +583,7 @@ impl Service {
         purpose: &'static str,
         before_publish: &mut impl FnMut(&AuthState) -> Result<(), Response>,
     ) -> Result<State, Response> {
-        #[cfg(feature = "experimental-native-v6-ha")]
+        #[cfg(feature = "native-v6-ha")]
         if self.ha.is_some() {
             return self.commit_native_ha_root_plan(state, plan, migration, before_publish);
         }
@@ -356,7 +605,14 @@ impl Service {
         }
         let actual_auth = self.state.as_ref().ok_or_else(rejected)?.auth.clone();
         before_publish(&actual_auth)?;
+        let install_sample = file_clock_profile::Span::begin(file_clock_profile::Phase::Install);
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let diagnostic_install =
+            crate::engines::kv2_native_large::diagnostic::Span::new("install_prepared_candidate");
         let installed = self.install_prepared_native_candidate(&plan, before_publish)?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        drop(diagnostic_install);
+        drop(install_sample);
         self.require_native_root_candidate(&installed)?;
         let identity = plan.root.identity().map_err(|_| rejected())?;
         before_publish(&actual_auth)?;
@@ -450,26 +706,89 @@ impl Service {
                 check().map_err(|_| ServiceError::BarrierFailure)
             };
             (|| -> Result<(), ServiceError> {
+                let stage_sample =
+                    file_clock_profile::Span::begin(file_clock_profile::Phase::ObjectStage);
+                #[cfg(feature = "private-ha-forward-diagnostic")]
+                let diagnostic_stage = crate::engines::kv2_native_large::diagnostic::Span::new(
+                    "stage_immutable_objects",
+                );
                 let mut missing = Vec::new();
                 let blob_session = super::native_blob_source::session(durable, current.expose())?;
-                for ((domain, _), object) in &plan.objects {
+                // Large local imports use the already proven bounded physical
+                // batch barrier. Ordinary small writes keep their existing path.
+                // No locator/root is published until every member is read back.
+                let batch_limit = if purpose == "kv2-import"
+                    && plan.objects.len() > heptabao_filesystem_guard::MAX_IMMUTABLE_BATCH_OBJECTS
+                {
+                    heptabao_filesystem_guard::MAX_IMMUTABLE_BATCH_OBJECTS
+                } else {
+                    1
+                };
+                let mut pending = plan.objects.iter().peekable();
+                let mut _object_ordinal = 0usize;
+                while pending.peek().is_some() {
                     gate()?;
-                    let resource = v6_records::native_resource(domain, object.reference());
-                    let marker = super::native_blob_source::stage(
-                        durable,
-                        &blob_session,
-                        domain,
-                        object,
-                        &mut gate,
-                    )?;
-                    gate()?;
-                    match durable.get("system", &resource)? {
-                        Some(value) if value.expose() == marker.expose() => {}
-                        Some(value) if migration && value.expose() == object.bytes() => {
-                            missing.push((resource, marker))
+                    let mut batch = Vec::new();
+                    let mut ciphertext_bytes = 0usize;
+                    while let Some(&((domain, _), object)) = pending.peek() {
+                        let next_bytes = ciphertext_bytes
+                            .checked_add(object.bytes().len())
+                            .and_then(|n| n.checked_add(32))
+                            .ok_or(ServiceError::RequestCapacityExhausted)?;
+                        if batch.len() == batch_limit
+                            || next_bytes > heptabao_durable_service::ImmutableSourceSession::MAX_BATCH_CIPHERTEXT_BYTES
+                        {
+                            break;
                         }
-                        Some(_) => return Err(ServiceError::CorruptState),
-                        None => missing.push((resource, marker)),
+                        ciphertext_bytes = next_bytes;
+                        batch.push((domain, object.as_ref()));
+                        pending.next();
+                    }
+                    if batch.is_empty() {
+                        return Err(ServiceError::RequestCapacityExhausted);
+                    }
+                    for _ in &batch {
+                        file_clock_profile::object_attempt();
+                    }
+                    let markers = if batch.len() == 1 {
+                        vec![super::native_blob_source::stage(
+                            durable,
+                            &blob_session,
+                            batch[0].0,
+                            batch[0].1,
+                            &mut gate,
+                        )?]
+                    } else {
+                        super::native_blob_source::stage_batch(
+                            durable,
+                            &blob_session,
+                            &batch,
+                            &mut gate,
+                        )?
+                    };
+                    if markers.len() != batch.len() {
+                        return Err(ServiceError::CorruptState);
+                    }
+                    for ((domain, object), marker) in batch.into_iter().zip(markers) {
+                        file_clock_profile::object_completed();
+                        _object_ordinal += 1;
+                        #[cfg(feature = "private-ha-forward-diagnostic")]
+                        if _object_ordinal == 1 || _object_ordinal.is_multiple_of(1024) {
+                            crate::engines::kv2_native_large::diagnostic::metric(
+                                "staged_objects",
+                                _object_ordinal,
+                            );
+                        }
+                        gate()?;
+                        let resource = v6_records::native_resource(domain, object.reference());
+                        match durable.get("system", &resource)? {
+                            Some(value) if value.expose() == marker.expose() => {}
+                            Some(value) if migration && value.expose() == object.bytes() => {
+                                missing.push((resource, marker))
+                            }
+                            Some(_) => return Err(ServiceError::CorruptState),
+                            None => missing.push((resource, marker)),
+                        }
                     }
                 }
                 // All ciphertext was read back under the original source session.
@@ -478,6 +797,9 @@ impl Service {
                 // in bounded batches while preserving the exact old root,
                 // cursor and retained-source conditions on every append.
                 drop(blob_session);
+                drop(stage_sample);
+                #[cfg(feature = "private-ha-forward-diagnostic")]
+                drop(diagnostic_stage);
                 let root_slots = if migration { 3 } else { 2 };
                 let mut mutations = missing
                     .into_iter()
@@ -499,6 +821,9 @@ impl Service {
                             break;
                         }
                         gate()?;
+                        let locator_sample = file_clock_profile::Span::begin(
+                            file_clock_profile::Phase::LocatorPublication,
+                        );
                         durable.apply_batch_conditionally_before_publish(
                             heptabao_durable_service::BatchPublication {
                                 replay_epoch: plan.root.replay_epoch,
@@ -511,6 +836,7 @@ impl Service {
                             conditions_copy(&conditions),
                             &mut gate,
                         )?;
+                        drop(locator_sample);
                         gate()?;
                         batch_index += 1;
                     }
@@ -518,10 +844,13 @@ impl Service {
                     // session at the actual new generation. The typed closure
                     // must authenticate from durable bytes before the old root
                     // can be replaced; staged memory is not recovery evidence.
+                    let readback_sample =
+                        file_clock_profile::Span::begin(file_clock_profile::Phase::DurableReadback);
                     v6_records::verify_durable_native_candidate(
                         &plan.root, durable, deadline, &mut gate,
                     )
                     .map_err(|_| ServiceError::CorruptState)?;
+                    drop(readback_sample);
                     gate()?;
                 }
                 gate()?;
@@ -553,6 +882,8 @@ impl Service {
                         Some(Secret::new(current.expose().to_vec())?),
                     ));
                 }
+                let publication_sample =
+                    file_clock_profile::Span::begin(file_clock_profile::Phase::RootPublication);
                 durable.apply_batch_conditionally_before_publish(
                     heptabao_durable_service::BatchPublication {
                         replay_epoch: plan.root.replay_epoch,
@@ -566,6 +897,9 @@ impl Service {
                     &mut gate,
                 )?;
                 root_committed = true;
+                drop(publication_sample);
+                let readback_sample =
+                    file_clock_profile::Span::begin(file_clock_profile::Phase::DurableReadback);
                 gate()?;
                 durable.verify_live_ownership()?;
                 gate()?;
@@ -616,6 +950,7 @@ impl Service {
                 )
                 .map_err(|_| ServiceError::CorruptState)?;
                 gate()?;
+                drop(readback_sample);
                 Ok(())
             })()
         };
@@ -819,6 +1154,8 @@ impl Service {
             return Err(rejected());
         };
         let deadline = OriginalDeadline::capture().map_err(|_| rejected())?;
+        let delta_sample =
+            file_clock_profile::Span::begin(file_clock_profile::Phase::DeltaValidation);
         let live = || {
             deadline.check().map_err(|_| rejected())?;
             let observed = clock.observed_at().map_err(|_| rejected())?;
@@ -844,6 +1181,10 @@ impl Service {
             .engines
             .observe_kubernetes_artifact_time(time)
             .map_err(|error| Response::error(503, &error.message))?;
+        changed |= expected
+            .auth
+            .advance_control_group_observed(time)
+            .map_err(|error| Response::error(error.status, &error.message))?;
         if !changed {
             return Err(rejected());
         }
@@ -932,7 +1273,24 @@ impl Service {
         live()?;
         let source_auth = owner_store::serialize_owner(&source.auth).map_err(|_| rejected())?;
         let expected_auth = owner_store::serialize_owner(&expected.auth).map_err(|_| rejected())?;
+        // Retain this exact source allocation. A write through another CowOwner
+        // must copy it; an equal but separately reconstructed owner is not a hit.
+        let source_auth_owner = source.auth.clone();
+        let project_fixed_delta = |auth: &AuthState| -> Result<Zeroizing<Vec<u8>>, Response> {
+            let mut checked = auth.clone();
+            checked
+                .observe_token_api_time(time)
+                .map_err(|error| Response::error(503, &error.message))?;
+            // The expected Auth owner includes the same control-group clock
+            // observation under the original fixed time, including retirement.
+            checked
+                .advance_control_group_observed(time)
+                .map_err(|error| Response::error(error.status, &error.message))?;
+            owner_store::serialize_owner(&checked).map_err(|_| rejected())
+        };
+        let mut source_projection: Option<Zeroizing<Vec<u8>>> = None;
         let mut original_gate = |auth: &AuthState| {
+            let _gate_sample = file_clock_profile::Span::begin(file_clock_profile::Phase::AuthGate);
             live()?;
             if owner_store::serialize_owner(auth)
                 .map_err(|_| rejected())?
@@ -941,22 +1299,30 @@ impl Service {
             {
                 return Err(rejected());
             }
-            let mut checked = auth.clone();
-            checked
-                .observe_token_api_time(time)
-                .map_err(|error| Response::error(503, &error.message))?;
-            if owner_store::serialize_owner(&checked)
-                .map_err(|_| rejected())?
-                .as_slice()
-                != expected_auth.as_slice()
-            {
+            // Only the held immutable source and fixed delta may be reused.
+            // The actual owner bytes and original live clock are still checked
+            // on every invocation; other allocations take the original path.
+            let uncached_projection;
+            let projected = if std::ptr::eq(auth, &*source_auth_owner) {
+                if source_projection.is_none() {
+                    source_projection = Some(project_fixed_delta(&source_auth_owner)?);
+                }
+                source_projection.as_ref().ok_or_else(rejected)?.as_slice()
+            } else {
+                uncached_projection = project_fixed_delta(auth)?;
+                uncached_projection.as_slice()
+            };
+            if projected != expected_auth.as_slice() {
                 return Err(rejected());
             }
             live()
         };
         #[cfg(test)]
         let clock_witness = tests::start_native_clock_witness(self)?;
+        drop(delta_sample);
+        let plan_sample = file_clock_profile::Span::begin(file_clock_profile::Phase::Plan);
         let plan = self.prepare_native_live_root_checked(candidate, &mut original_gate)?;
+        drop(plan_sample);
         let installed = self.commit_native_root_plan(
             candidate,
             plan,
@@ -972,7 +1338,7 @@ impl Service {
 }
 
 #[cfg(test)]
-mod tests {
+pub(super) mod tests {
     use super::*;
     use std::collections::BTreeSet;
     type TestResult = Result<(), Box<dyn std::error::Error>>;
@@ -1608,7 +1974,21 @@ mod tests {
             .status,
             204
         );
-        assert_eq!(quota_request(&mut service).status, 400);
+        let baseline = quota_request(&mut service);
+        assert_eq!(baseline.status, 400);
+        let baseline_errors = baseline.body["errors"]
+            .as_array()
+            .ok_or("V5 AppRole refusal errors")?
+            .clone();
+        assert!(!baseline_errors.is_empty());
+        assert!(
+            baseline_errors
+                .iter()
+                .all(|error| error.as_str().is_some_and(|text| !text.is_empty()))
+        );
+        for field in ["auth", "data", "wrap_info"] {
+            assert!(baseline.body.get(field).is_none_or(Value::is_null));
+        }
         let original = std::sync::Arc::clone(
             &service
                 .state
@@ -1719,9 +2099,15 @@ mod tests {
                 .ok_or("reopened quota")?
                 .runtime_owner
         ));
-        // The cold RAM bucket is fresh; current native auth dispatch remains
-        // intentionally closed, after consuming this one fallback allowance.
-        assert_eq!(quota_request(&mut reopened).status, 501);
+        // The cold RAM bucket is fresh. Native AppRole dispatch is admitted,
+        // so its one fresh allowance must reach the same genuine bad-credential
+        // refusal as V5, without returning any successful credential or data.
+        let cold = quota_request(&mut reopened);
+        assert_eq!(cold.status, baseline.status);
+        assert_eq!(cold.body["errors"].as_array(), Some(&baseline_errors));
+        for field in ["auth", "data", "wrap_info"] {
+            assert!(cold.body.get(field).is_none_or(Value::is_null));
+        }
         assert_eq!(quota_request(&mut reopened).status, 429);
         Ok(())
     }
@@ -2243,11 +2629,11 @@ mod tests {
         }
         Ok(())
     }
-    struct LostApplyAck {
-        inner: heptabao_durable_service::FileBackend,
-        barrier: AeadBarrier,
-        lost: Arc<std::sync::atomic::AtomicBool>,
-        purpose: &'static str,
+    pub(in crate::service) struct LostApplyAck {
+        pub(in crate::service) inner: heptabao_durable_service::FileBackend,
+        pub(in crate::service) barrier: AeadBarrier,
+        pub(in crate::service) lost: Arc<std::sync::atomic::AtomicBool>,
+        pub(in crate::service) purpose: &'static str,
     }
     impl LostApplyAck {
         // Inspect only this owned fixture's real barrier-authenticated journal.

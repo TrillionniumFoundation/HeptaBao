@@ -3,8 +3,52 @@
 use super::*;
 use crate::state_record_root_v6::{Kv2GraphRef, MountScope};
 
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 impl EngineState {
+    pub(crate) fn capture_paged_syntax_hints(
+        &self,
+        roots: &[Kv2GraphRef],
+        check: &impl Fn() -> CodecResult<()>,
+    ) -> CodecResult<BTreeMap<MountScope, PagedSyntaxHint>> {
+        let mut hints = BTreeMap::new();
+        if roots.len() > crate::state_record_root_v6::MAX_KV2_MOUNTS {
+            return Ok(hints);
+        }
+        let mut bytes = 0_usize;
+        let mut records = 0_usize;
+        for root in roots {
+            check()?;
+            let Some(mount) = self
+                .namespaces
+                .get(&root.scope.namespace)
+                .and_then(|owner| owner.mounts.get(&root.scope.mount))
+            else {
+                continue;
+            };
+            if mount.incarnation != root.scope.incarnation {
+                continue;
+            }
+            let Backend::Kv2Native(view) = &mount.backend else {
+                continue;
+            };
+            if let Some(hint) = view.capture_paged_syntax_hint(check)? {
+                let (next_bytes, next_records) = hint.budget();
+                bytes = bytes.checked_add(next_bytes).ok_or(RecordError::TooLarge)?;
+                records = records
+                    .checked_add(next_records)
+                    .ok_or(RecordError::TooLarge)?;
+                if bytes > crate::state_records::MAX_GRAPH_BYTES
+                    || records > crate::engines::kv2_native_records::MAX_RECORDS
+                {
+                    return Ok(BTreeMap::new());
+                }
+                hints.insert(root.scope.clone(), hint);
+            }
+        }
+        check()?;
+        Ok(hints)
+    }
+
     pub(crate) fn install_native_views(
         &mut self,
         views: BTreeMap<MountScope, NativeReadView>,

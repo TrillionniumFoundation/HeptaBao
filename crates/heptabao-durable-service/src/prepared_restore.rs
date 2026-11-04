@@ -139,6 +139,12 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
+        self.ensure_no_pending_immutable_retirement()?;
+        self.ensure_no_pending_ha_shared_retirement()?;
+        self.ensure_no_pending_ha_intent_retirement()?;
+        Self::ensure_retirement_restore_complete(prepared)?;
+        Self::ensure_ha_shared_retirement_restore_complete(prepared)?;
+        Self::ensure_ha_intent_retirement_restore_complete(prepared)?;
         self.backend.verify().map_err(map_backend_error)?;
         if !Arc::ptr_eq(&self.restore_instance, &prepared.instance)
             || self.restore_frontier() != prepared.frontier
@@ -155,13 +161,20 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
+        self.ensure_no_pending_immutable_retirement()?;
+        self.ensure_no_pending_ha_shared_retirement()?;
+        self.ensure_no_pending_ha_intent_retirement()?;
         self.backend.verify().map_err(map_backend_error)?;
         let components = decode_backup(&self.barrier, backup, self.max_retained_requests)?;
-        Ok(PreparedRestore {
+        let prepared = PreparedRestore {
             instance: Arc::clone(&self.restore_instance),
             frontier: self.restore_frontier(),
             components,
-        })
+        };
+        Self::ensure_retirement_restore_complete(&prepared)?;
+        Self::ensure_ha_shared_retirement_restore_complete(&prepared)?;
+        Self::ensure_ha_intent_retirement_restore_complete(&prepared)?;
+        Ok(prepared)
     }
 
     /// Authenticate a precisely bounded HBB2 file/stream without first copying
@@ -175,6 +188,9 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
+        self.ensure_no_pending_immutable_retirement()?;
+        self.ensure_no_pending_ha_shared_retirement()?;
+        self.ensure_no_pending_ha_intent_retirement()?;
         self.backend.verify().map_err(map_backend_error)?;
         let components =
             backup_stream::decode_from(&self.barrier, reader, length, self.max_retained_requests)?;
@@ -183,6 +199,9 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             frontier: self.restore_frontier(),
             components,
         };
+        Self::ensure_retirement_restore_complete(&prepared)?;
+        Self::ensure_ha_shared_retirement_restore_complete(&prepared)?;
+        Self::ensure_ha_intent_retirement_restore_complete(&prepared)?;
         self.reject_incomplete_legacy_restore(&prepared)?;
         Ok(prepared)
     }
@@ -201,6 +220,12 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
+        self.ensure_no_pending_immutable_retirement()?;
+        self.ensure_no_pending_ha_shared_retirement()?;
+        self.ensure_no_pending_ha_intent_retirement()?;
+        Self::ensure_retirement_restore_complete(&prepared)?;
+        Self::ensure_ha_shared_retirement_restore_complete(&prepared)?;
+        Self::ensure_ha_intent_retirement_restore_complete(&prepared)?;
         self.backend.verify().map_err(map_backend_error)?;
         if !Arc::ptr_eq(&self.restore_instance, &prepared.instance)
             || self.restore_frontier() != prepared.frontier

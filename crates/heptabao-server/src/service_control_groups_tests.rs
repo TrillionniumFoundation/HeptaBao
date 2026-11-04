@@ -1,8 +1,17 @@
 //! Actual ordinary Service boundaries; every credential and payload is synthetic.
 use super::*;
+use crate::service::kv2_import_tests::assert_stored_kv2_payload;
 use crate::service::tests::{Root, bootstrap};
 use zeroize::Zeroizing;
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_controlgroups_resource_draft.rs"]
+mod native_resource_draft;
+
+#[cfg(all(unix, feature = "native-v6-storage"))]
+#[path = "service_native_controlgroups_tests.rs"]
+mod native_publication;
 
 struct Login {
     token: Zeroizing<String>,
@@ -694,7 +703,7 @@ fn cg270_userpass_quorum_defers_update_and_preapproval_preserves_single_claim() 
     );
     read(&mut f, 2, "after", 100);
     let completed = f.service.state.as_ref().ok_or("state")?;
-    assert_eq!(completed.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(completed.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     assert!(completed.auth.has_control_group_state());
     assert!(completed.auth.has_userpass_issuance_state());
     completed
@@ -1209,7 +1218,7 @@ fn cg270_encrypted_restart_expiry_and_irreversible118_reader_snapshot_floor() ->
     create(&mut f);
     let (wrapper, accessor) = pending(&mut f)?;
     let closed_state = f.service.state.as_ref().ok_or("state")?;
-    assert_eq!(closed_state.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(closed_state.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     assert!(supported_reader_schema(116));
     assert!(!supported_reader_schema(MAX_SUPPORTED_STATE_SCHEMA + 1));
     assert!(supported_reader_schema(118));
@@ -1267,7 +1276,7 @@ fn cg270_encrypted_restart_expiry_and_irreversible118_reader_snapshot_floor() ->
     );
     read(&mut f, 1, "before", 160);
     let current = f.service.state.as_ref().ok_or("state")?;
-    assert_eq!(current.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(current.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     assert!(current.auth.has_control_group_state());
     drop(f.service);
     f.service = f.root.service()?;
@@ -3209,7 +3218,7 @@ fn cg270_hcl_workflow_current_policy_and_approval_membership_veto_inner_effect()
         read(&mut f, 1, "before", 100);
         assert_eq!(
             f.service.state.as_ref().ok_or("state")?.schema,
-            USERPASS_ISSUANCE_STATE_SCHEMA
+            AUTH_SECURITY_CONTRACT_STATE_SCHEMA
         );
     }
     Ok(())
@@ -3219,7 +3228,7 @@ fn cg270_hcl_workflow_current_policy_and_approval_membership_veto_inner_effect()
 fn workflow121_profile_reader_publication_and_snapshot_floor_survives_retirement() -> TestResult {
     let mut f = profile_fixture()?;
     let active = f.service.state.as_ref().ok_or("state")?.clone();
-    assert_eq!(active.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(active.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     assert!(active.validate_format().is_ok());
     let encoded = serde_json::to_value(&active)?;
     let decoded: State = serde_json::from_value(encoded.clone())?;
@@ -3253,8 +3262,8 @@ fn workflow121_profile_reader_publication_and_snapshot_floor_survives_retirement
     );
     let retired = f.service.state.as_ref().ok_or("retired")?.clone();
     assert!(!retired.namespaces.workflows.has_profiles());
-    assert_eq!(retired.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
-    assert_eq!(retired.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(retired.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
+    assert_eq!(retired.writer_schema(), AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     let mut downgraded = retired.clone();
     downgraded.schema = CONTROL_GROUP_STATE_SCHEMA;
     assert!(
@@ -3483,7 +3492,7 @@ fn cg122_fractional_http_quorum_restart_exact_expiry_and_sticky_floor_veto_effec
         );
         assert_eq!(
             f.service.state.as_ref().ok_or("state")?.schema,
-            USERPASS_ISSUANCE_STATE_SCHEMA
+            AUTH_SECURITY_CONTRACT_STATE_SCHEMA
         );
         read(&mut f, 1, "before", 100);
         // Truncated ttl=0 is a projection, not an immediately dead capability.
@@ -3613,8 +3622,8 @@ fn cg122_fractional_http_quorum_restart_exact_expiry_and_sticky_floor_veto_effec
         read(&mut f, 2, "after", exact.expires_at.seconds());
         let retired = f.service.state.as_ref().ok_or("retired")?.clone();
         assert_eq!(retired.auth.control_group_request_count_for_test(), 0);
-        assert_eq!(retired.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
-        assert_eq!(retired.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
+        assert_eq!(retired.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
+        assert_eq!(retired.writer_schema(), AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
         assert!(current.validate_publication_schema(Some(&retired)).is_err());
         assert!(Service::validate_snapshot_protected_floor(&retired, &current).is_err());
         f = restart(f, 100)?;
@@ -3653,6 +3662,9 @@ fn cg_lossless_encrypted_pending_body_and_approval_context_survive_durable_resta
     let mut f = setup()?;
     create(&mut f);
     let value = heptabao_domain::json::decode(br#"{"value":"after","big":184467440737095516160001,"decimal":0.12345678901234567890123456789,"fake":{"$serde_json::private::Number":"7"}}"#)?;
+    // Fixed OpenBao 2.7.1 float64 response values, independent of the
+    // implementation's projector. The stored owner is checked separately.
+    let api_value = heptabao_domain::json::decode(br#"{"value":"after","big":1.844674407370955e+23,"decimal":0.12345678901234568,"fake":{"$serde_json::private::Number":"7"}}"#)?;
     let request = json!({"data":value});
     let pending = observed_call(
         &mut f.service,
@@ -3691,6 +3703,7 @@ fn cg_lossless_encrypted_pending_body_and_approval_context_survive_durable_resta
     );
     assert_eq!(executed.status, 200);
     assert_eq!(executed.body["data"]["version"], 2);
+    assert_stored_kv2_payload(&f.service, "cg/key", 2, &value)?;
     let read = call(
         &mut f.service,
         &f.admin,
@@ -3700,8 +3713,23 @@ fn cg_lossless_encrypted_pending_body_and_approval_context_survive_durable_resta
         100,
     );
     assert_eq!(read.status, 200);
-    assert_eq!(read.body["data"]["data"], value);
+    assert_eq!(read.body["data"]["data"], api_value);
     assert!(read.body["data"]["data"]["fake"].is_object());
+    assert_stored_kv2_payload(&f.service, "cg/key", 2, &value)?;
+    f = restart(f, 100)?;
+    assert_stored_kv2_payload(&f.service, "cg/key", 2, &value)?;
+    let reopened = call(
+        &mut f.service,
+        &f.admin,
+        "GET",
+        "secret/data/cg/key",
+        json!({}),
+        100,
+    );
+    assert_eq!(reopened.status, 200);
+    assert_eq!(reopened.body["data"]["metadata"]["version"], 2);
+    assert_eq!(reopened.body["data"]["data"], api_value);
+    assert_stored_kv2_payload(&f.service, "cg/key", 2, &value)?;
     assert_eq!(
         call(
             &mut f.service,
@@ -3783,6 +3811,7 @@ fn workflow123_typed_inputs_prior_sources_and_conditions_use_actual_dispatch() -
     assert_eq!(installed.body["data"]["version"], 1);
     let mut input = dynamic_input123();
     let payload = heptabao_domain::json::decode(br#"{"value":"after","large":184467440737095516160001,"fake":{"$serde_json::private::Number":"7"}}"#)?;
+    let api_payload = heptabao_domain::json::decode(br#"{"value":"after","large":1.844674407370955e+23,"fake":{"$serde_json::private::Number":"7"}}"#)?;
     input["payload"] = payload.clone();
     let result = call(
         &mut f.service,
@@ -3793,8 +3822,11 @@ fn workflow123_typed_inputs_prior_sources_and_conditions_use_actual_dispatch() -
         100,
     );
     assert_eq!(result.status, 200);
-    assert_eq!(result.body["data"]["stored"], payload);
+    // The workflow's read provider sees the real KV2 API projection, while
+    // its original input and the independently inspected owner stay exact.
+    assert_eq!(result.body["data"]["stored"], api_payload);
     assert_eq!(result.body["data"]["original"], payload);
+    assert_stored_kv2_payload(&f.service, "cg/key", 2, &payload)?;
     assert!(result.body["data"]["stored"]["fake"].is_object());
     assert_eq!(result.body["data"]["tags"], json!(["alpha", "beta"]));
     assert_eq!(result.body["data"]["mode"], "safe");
@@ -3809,7 +3841,8 @@ fn workflow123_typed_inputs_prior_sources_and_conditions_use_actual_dispatch() -
     );
     assert_eq!(stored.status, 200);
     assert_eq!(stored.body["data"]["metadata"]["version"], 2);
-    assert_eq!(stored.body["data"]["data"], payload);
+    assert_eq!(stored.body["data"]["data"], api_payload);
+    assert_stored_kv2_payload(&f.service, "cg/key", 2, &payload)?;
     assert_eq!(
         call(
             &mut f.service,
@@ -3858,6 +3891,7 @@ fn workflow123_typed_inputs_prior_sources_and_conditions_use_actual_dispatch() -
         .body["data"]["metadata"]["version"],
         2
     );
+    assert_stored_kv2_payload(&f.service, "cg/key", 2, &payload)?;
     Ok(())
 }
 
@@ -4174,7 +4208,7 @@ fn workflow123_resolved_controlled_body_survives_restart_once_and_live_policy_ve
 fn workflow123_full_reader_publication_snapshot_and_retirement_keep_old121_shape() -> TestResult {
     let mut legacy = profile_fixture()?;
     let old = legacy.service.state.as_ref().ok_or("old state")?.clone();
-    assert_eq!(old.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(old.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     let mut encoded = serde_json::to_value(&old)?;
     let definition =
         &mut encoded["namespaces"]["workflows"]["by_namespace"][""]["cg-wire"]["definition"];
@@ -4194,7 +4228,7 @@ fn workflow123_full_reader_publication_snapshot_and_retirement_keep_old121_shape
     let mut decoded: State = serde_json::from_value(encoded)?;
     assert!(decoded.validate_format().is_ok());
     assert!(!decoded.namespaces.workflows.has_dynamic_profiles());
-    assert_eq!(decoded.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(decoded.writer_schema(), AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     // Runtime record handles are authenticated by the existing Service and
     // deliberately excluded from the old durable JSON owner wire.
     let persisted_engines = serde_json::to_value(&decoded.engines)?;
@@ -4206,7 +4240,7 @@ fn workflow123_full_reader_publication_snapshot_and_retirement_keep_old121_shape
     assert!(serde_json::to_value(&decoded.engines)? == persisted_engines);
     assert!(decoded.validate_format().is_ok());
     assert!(!decoded.namespaces.workflows.has_dynamic_profiles());
-    assert_eq!(decoded.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(decoded.writer_schema(), AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     // An actual old persisted literal object is reopened and dispatched without
     // treating its eval_source key as a new dynamic source.
     legacy
@@ -4248,8 +4282,8 @@ fn workflow123_full_reader_publication_snapshot_and_retirement_keep_old121_shape
         200
     );
     let active = legacy.service.state.as_ref().ok_or("active")?.clone();
-    assert_eq!(active.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
-    assert_eq!(active.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(active.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
+    assert_eq!(active.writer_schema(), AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     assert!(active.namespaces.workflows.has_dynamic_profiles());
     assert!(active.validate_format().is_ok());
     assert!(supported_reader_schema(WORKFLOW_DYNAMIC_STATE_SCHEMA));
@@ -4300,7 +4334,7 @@ fn workflow123_full_reader_publication_snapshot_and_retirement_keep_old121_shape
     legacy = restart(legacy, 100)?;
     assert_eq!(
         legacy.service.state.as_ref().ok_or("reload")?.schema,
-        USERPASS_ISSUANCE_STATE_SCHEMA
+        AUTH_SECURITY_CONTRACT_STATE_SCHEMA
     );
     assert_eq!(
         call(
@@ -4330,8 +4364,8 @@ fn workflow123_full_reader_publication_snapshot_and_retirement_keep_old121_shape
     let retired = legacy.service.state.as_ref().ok_or("retired")?.clone();
     assert!(!retired.namespaces.workflows.has_dynamic_profiles());
     assert!(!retired.namespaces.workflows.has_profiles());
-    assert_eq!(retired.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
-    assert_eq!(retired.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(retired.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
+    assert_eq!(retired.writer_schema(), AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     assert!(retired.validate_format().is_ok());
     let mut downgraded = retired.clone();
     downgraded.schema = WORKFLOW_PROFILE_STATE_SCHEMA;
@@ -4367,7 +4401,7 @@ fn workflow123_full_reader_publication_snapshot_and_retirement_keep_old121_shape
             .as_ref()
             .ok_or("retired reload")?
             .schema,
-        USERPASS_ISSUANCE_STATE_SCHEMA
+        AUTH_SECURITY_CONTRACT_STATE_SCHEMA
     );
     assert_eq!(
         call(

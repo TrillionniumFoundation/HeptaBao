@@ -109,7 +109,7 @@ fn native_ha_snapshot_service_export_binds_both_closures_and_rejects_changed_roo
     let mut seal_digest = [0u8; 32];
     for (slot, pair) in seal_digest
         .iter_mut()
-        .zip(hex_digest.as_bytes().chunks_exact(2))
+        .zip(hex_digest.as_bytes().as_chunks::<2>().0)
     {
         *slot = u8::from_str_radix(std::str::from_utf8(pair)?, 16)?;
     }
@@ -191,7 +191,7 @@ fn native_ha_snapshot_metadata_does_not_change_local_or_legacy_limits() -> TestR
     assert!(
         !Metadata::new_v6_ha(1, crate::snapshot_file::MAX_V6_HA_SNAPSHOT_STATE + 1, &seal).valid()
     );
-    assert!(crate::snapshot_file::MAX_V6_HA_SNAPSHOT_STATE < 1 << 33);
+    const { assert!(crate::snapshot_file::MAX_V6_HA_SNAPSHOT_STATE < 1 << 33) };
     let mut encoded = serde_json::to_value(ha)?;
     encoded["state_format"] = json!("heptabao-encrypted-object-backup/HBV6PK01");
     assert!(!serde_json::from_value::<Metadata>(encoded)?.valid());
@@ -303,7 +303,7 @@ fn native_ha_snapshot_terminal_clock_keeps_archive_a_and_checks_actual_successor
     let mut expected_seal = [0u8; 32];
     for (slot, pair) in expected_seal
         .iter_mut()
-        .zip(digest.as_bytes().chunks_exact(2))
+        .zip(digest.as_bytes().as_chunks::<2>().0)
     {
         *slot = u8::from_str_radix(std::str::from_utf8(pair)?, 16)?;
     }
@@ -319,3 +319,6 @@ fn native_ha_snapshot_terminal_clock_keeps_archive_a_and_checks_actual_successor
     process_guard.verify_native_v6_committed_read(&current)?;
     Ok(())
 }
+
+#[path = "service_native_v6_ha_snapshot_borrowed_tests.rs"]
+mod borrowed_export_tests;

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -16,6 +17,13 @@ BOUNDARY_DOC = ROOT / "docs" / "security" / "HEPTABAO_REQUEST_CAPABILITY_BOUNDAR
 
 
 class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
+    def test_native_storage_capability_boundary_is_in_the_default_product(self) -> None:
+        manifest = tomllib.loads((SERVER.parent / "Cargo.toml").read_text(encoding="utf-8"))
+        features = manifest["features"]
+        self.assertIn("native-v6-storage", features["default"])
+        self.assertIn("native-v6-ha", features["default"])
+        self.assertNotIn("fixture-native-v6-service", features["default"])
+
     def test_raw_auth_module_is_not_public(self) -> None:
         text = LIB_RS.read_text(encoding="utf-8")
         self.assertEqual(1, len(re.findall(r"(?m)^mod auth;$", text)))
@@ -79,7 +87,7 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
             r"fn dispatch_authorized_subrequest\(\s*state:\s*&mut State,\s*principal:\s*Option<&Principal>",
         )
         self.assertEqual(
-            4,
+            5,
             len(
                 re.findall(
                     r"Self::dispatch_authorized_subrequest\(",
@@ -87,20 +95,37 @@ class AuthenticationCapabilityBoundaryTests(unittest.TestCase):
                 )
             ),
         )
-        # KV and token APIs borrow the one Principal held by their original
-        # final-delivery capsule; ordinary dispatch and workflow own the other
-        # two call sites. Neither capsule reauthenticates or clones authority.
-        for capsule in ("ordinary_kv_authority", "token_api_authority"):
-            branch = re.search(
-                rf"else if let Some\(authority\) = {capsule}\.as_ref\(\) \{{(.*?)\n\s*\}}",
-                text,
-                re.S,
-            )
-            self.assertIsNotNone(branch)
-            self.assertEqual(1, branch.group(1).count("Self::dispatch_authorized_subrequest("))
-            self.assertIn("Some(authority.principal())", branch.group(1))
-            self.assertIn("request.token_clock", branch.group(1))
-            self.assertNotIn("principal.clone()", branch.group(1))
+        # The KV feature/non-feature alternatives each borrow the same affine
+        # capsule. Only one alternative is compiled. The token branch, ordinary
+        # dispatch and workflow retain their one call each.
+        ordinary_start = text.index("} else if let Some(authority) = ordinary_kv_authority.as_mut() {")
+        token_start = text.index("} else if let Some(authority) = token_api_authority.as_ref() {", ordinary_start)
+        ordinary_end = text.index("} else {\n            Self::dispatch(", token_start)
+        kv_branch = text[ordinary_start:token_start]
+        token_branch = text[token_start:ordinary_end]
+        self.assertEqual(1, kv_branch.count('#[cfg(feature = "native-v6-storage")]'))
+        self.assertEqual(1, kv_branch.count('#[cfg(not(feature = "native-v6-storage"))]'))
+        self.assertNotIn("fixture-native-v6-service", kv_branch)
+        kv_compact = re.sub(r"\s+", "", kv_branch)
+        self.assertIn(
+            'ifself.native_root.is_some()&&transaction.engines.has_paged_native_request(namespace,path)'
+            '{',
+            kv_compact,
+        )
+        # Wrapped and ordinary paged dispatch borrow the same affine authority.
+        # Rejected native admission returns before a wrapper can capture it.
+        self.assertEqual(1, kv_compact.count(
+            'self.dispatch_native_paged_request(&muttransaction,authority,&request)'))
+        self.assertEqual(1, kv_compact.count(
+            'self.dispatch_native_paged_outcome(&muttransaction,authority,&request)'))
+        self.assertIn('NativePagedOutcome::AdmissionRejected(response)=>{returnresponse;}', kv_compact)
+        for branch, expected_calls in ((kv_branch, 2), (token_branch, 1)):
+            self.assertEqual(expected_calls, branch.count("Self::dispatch_authorized_subrequest("))
+            self.assertEqual(expected_calls, branch.count("Some(authority.principal())"))
+            self.assertEqual(expected_calls, branch.count("request.token_clock"))
+            self.assertNotIn("principal.clone()", branch)
+            self.assertNotIn("authority.clone()", branch)
+            self.assertNotIn(".authenticate", branch)
         self.assertEqual(
             1,
             len(re.findall(r"Self::dispatch_authorized_subrequest\(", workflows)),

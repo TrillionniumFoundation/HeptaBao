@@ -1,6 +1,6 @@
 # Current crate, runtime, route and test map
 
-This map describes the current source, bound by `planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json`, not a target architecture or a test-pass receipt. There are **48 workspace packages**, of which **11** are in the normal path-dependency closure of `heptabao-server`. The other **37** remain independently useful contracts, models, prototypes or tooling; their tests do not establish that the corresponding feature is integrated into the running service. Dev dependencies are not runtime edges. Dependencies external to the workspace are omitted here and remain pinned by Cargo.lock.
+This map describes the current source, bound by `planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json`, not a target architecture or a test-pass receipt. There are **49 workspace packages**, of which **12** appear in the normal and target-specific path-dependency closure of `heptabao-server`. The other **37** remain independently useful contracts, models, prototypes or tooling; their tests do not establish that the corresponding feature is integrated into the running service. Dev dependencies are not runtime edges. Dependencies external to the workspace are omitted here and remain pinned by Cargo.lock.
 
 The architecture and current owner boundaries are in [the current runtime architecture](../architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md). The current HTTP interface is described by [server](heptabao-server.md), [authentication](../auth/HEPTABAO_SINGLE_NODE_AUTH.md) and [engines](../engines/HEPTABAO_SINGLE_NODE_ENGINES.md). Paths below omit `/v1/`. A package's guide gives additional concrete negative/recovery tests; the one source anchor in each row is an executable starting point, not complete coverage.
 
@@ -12,6 +12,7 @@ The architecture and current owner boundaries are in [the current runtime archit
 | `heptabao-cli-contracts` | no | Command classification/output contract; bounded real Python CLI is separate and not full OpenBao CLI parity | `crates/heptabao-cli-contracts/src/lib.rs::secret_bearing_arguments_fail_closed` |
 | `heptabao-client-contracts` | no | Client retry/request-ID model; real Python HTTPS SDK lives separately in clients/python | `crates/heptabao-client-contracts/src/lib.rs::unknown_after_entry_never_becomes_automatic_retry` |
 | `heptabao-compatibility` | no | Oracle comparison/normalization tooling; no server route | `crates/heptabao-compatibility/src/lib.rs::repository_cannot_self_admit_compatibility` |
+| `heptabao-darwin-vnode-events` | yes | macOS-only owned vnode queue for filesystem mutation observations; no independent route | `crates/heptabao-darwin-vnode-events/src/lib.rs::vnode_real_events_and_receipted_removal_preserve_caller_file` |
 | `heptabao-domain` | yes | Bounded plugin identifiers, paths and secret buffers for the server read-only plugin runtime | `crates/heptabao-domain/src/lib.rs::identifier_and_path_validation_are_fail_closed` |
 | `heptabao-durable-core` | no | Inherited generation-store/barrier composition; no server route | `crates/heptabao-durable-core/src/lib.rs::prepared_mutation_binds_target_before_authoritative_commit` |
 | `heptabao-durable-service` | yes | Current encrypted persistence, replay ledger, compaction and backup; reached by Service mutations and sys/storage/raft maintenance | `crates/heptabao-durable-service/src/lib.rs::put_restart_read_and_duplicate_are_durable` |
@@ -69,7 +70,7 @@ corpus status is not advanced by standalone profile success.
 
 ## Additional current server-owned routes
 
-The server's internal `service_database.rs` and `postgres_wire.rs` implement the bounded PostgreSQL provider/renewable-lease path; `auth_remote.rs` and `outbound.rs` implement remote JWT keys; `service_raft_admin.rs` composes native `process/admin.rs` membership/snapshot observations and guarded Autopilot. These extend existing server/runtime package rows without adding a separate database package or changing the 48-package denominator. See [PostgreSQL](../engines/HEPTABAO_POSTGRESQL_PROVIDER.md), [JWT](../auth/HEPTABAO_REMOTE_JWT_KEYS.md), and [Raft](../operations/HEPTABAO_RAFT_ADMINISTRATION.md) for exact current limits and unexecuted qualification boundaries.
+The server's internal `service_database.rs` and `postgres_wire.rs` implement the bounded PostgreSQL provider/renewable-lease path; `auth_remote.rs` and `outbound.rs` implement remote JWT keys; `service_raft_admin.rs` composes native `process/admin.rs` membership/snapshot observations and guarded Autopilot. These extend existing server/runtime package rows without adding a separate database package or changing the 49-package denominator. See [PostgreSQL](../engines/HEPTABAO_POSTGRESQL_PROVIDER.md), [JWT](../auth/HEPTABAO_REMOTE_JWT_KEYS.md), and [Raft](../operations/HEPTABAO_RAFT_ADMINISTRATION.md) for exact current limits and unexecuted qualification boundaries.
 
 ## Online authentication: actual internal owners
 

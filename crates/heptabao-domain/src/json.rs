@@ -10,6 +10,9 @@ use zeroize::{Zeroize, Zeroizing};
 
 const MAX_BYTES: usize = 16 * 1024 * 1024;
 const MAX_NODES: usize = MAX_BYTES;
+/// Explicit ordinary HA response owner; ordinary JSON entry points stay at 16 MiB.
+/// This larger byte budget never increases the shared depth or node budget.
+pub const MAX_BOUNDED_HA_RESPONSE_BYTES: usize = 32 * 1024 * 1024;
 const MAX_DEPTH: usize = 128;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -155,6 +158,26 @@ pub fn decode_with_policy(bytes: &[u8], duplicates: DuplicatePolicy) -> Result<V
         0,
     )
 }
+/// Decode only a previously framed, borrowed HA response body. The caller must
+/// independently bound response metadata and the eventual canonical output.
+/// There is no caller-selected size or duplicate policy: this entry fixes 32 MiB,
+/// rejects duplicate keys, and reuses every original depth/node/token check.
+pub fn decode_bounded_ha_response_raw(
+    raw: &serde_json::value::RawValue,
+) -> Result<Value, JsonError> {
+    if raw.get().len() > MAX_BOUNDED_HA_RESPONSE_BYTES {
+        return Err(JsonError);
+    }
+    value(
+        raw,
+        &mut Budget {
+            nodes: 0,
+            duplicates: DuplicatePolicy::Reject,
+        },
+        0,
+    )
+}
+
 /// Capture the actual text tokens before serde's generic Value representation.
 /// serde_json's maintained ValueDeserializer also preserves this RawValue
 /// newtype by serializing its already trusted Value without map coercion.
@@ -229,3 +252,7 @@ pub fn requires_lossless_format(value: &Value) -> bool {
 #[cfg(test)]
 #[path = "json_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "json_ha_response_tests.rs"]
+mod ha_response_tests;

@@ -14,6 +14,52 @@ pub(crate) struct NativeKv2GraphImport {
 }
 
 impl NativeKv2GraphImport {
+    /// Retain the complete freshly readdressed graph until the actual native
+    /// root planner has consumed every object. This does not admit a remount,
+    /// publish a root, or grant a durable source session.
+    pub(super) fn from_readdressed_graph(
+        parent: &AddressKey,
+        input: NativeScope<'_>,
+        graph: &NativeCellGraph,
+        check: &impl Fn() -> CodecResult<()>,
+    ) -> CodecResult<Self> {
+        check()?;
+        let scope = Scope::new(input)?;
+        let key = graph_key(parent, &scope)?;
+        if graph.0.format != PAGED_NATIVE_FORMAT
+            || !graph.0.scope.matches(&scope)
+            || graph.0.key.expose() != key.expose()
+        {
+            return Err(RecordError::Corrupt);
+        }
+        let mut objects = BTreeMap::<ObjectId, Arc<StagedObject>>::new();
+        graph.visit_objects(
+            |object| {
+                let id = object.reference().id;
+                if let Some(prior) = objects.get(&id) {
+                    if prior.reference() != object.reference() || prior.bytes() != object.bytes() {
+                        return Err(RecordError::Corrupt);
+                    }
+                } else {
+                    objects.insert(id, Arc::clone(object));
+                }
+                Ok(())
+            },
+            check,
+        )?;
+        check()?;
+        Ok(Self {
+            scope: MountScope {
+                namespace: input.namespace.into(),
+                mount: input.mount.into(),
+                incarnation: input.incarnation,
+            },
+            root: graph.root(),
+            logical_bytes: graph.logical_payload_bytes()?,
+            objects,
+        })
+    }
+
     pub(crate) fn visit_for(
         &self,
         roots: &[Kv2GraphRef],
@@ -51,10 +97,12 @@ impl NativeReadView {
         input: NativeScope<'_>,
         check: &impl Fn() -> CodecResult<()>,
     ) -> Result<(Self, NativeKv2GraphImport)> {
-        self.prepare_graph_import(parent, input, check, || Kv2::from_lossless_import_json(bundle))
+        self.prepare_graph_import(parent, input, check, || {
+            Kv2::from_lossless_import_json(bundle)
+        })
     }
 
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     pub(in crate::engines) fn prepare_native_large_graph_import(
         &self,
         bundle: &crate::engines::kv2_native_large::NativeLargeBundle,
@@ -62,7 +110,9 @@ impl NativeReadView {
         input: NativeScope<'_>,
         check: &impl Fn() -> CodecResult<()>,
     ) -> Result<(Self, NativeKv2GraphImport)> {
-        self.prepare_graph_import(parent, input, check, || Kv2::from_native_large_import(bundle, check))
+        self.prepare_graph_import(parent, input, check, || {
+            Kv2::from_native_large_import(bundle, check)
+        })
     }
 
     pub(in crate::engines) fn check_graph_import_destination(
@@ -79,7 +129,9 @@ impl NativeReadView {
             incarnation: input.incarnation,
         };
         if !self.is_paged()
-            || !self.cached_scope_matches(scope.borrowed()).map_err(|_| rejected())?
+            || !self
+                .cached_scope_matches(scope.borrowed())
+                .map_err(|_| rejected())?
         {
             return Err(rejected());
         }
@@ -89,9 +141,14 @@ impl NativeReadView {
         // Re-encode the empty selected cache under the actual parent/scope.
         // An invented scope, pending edit, or foreign graph key cannot become
         // the owner of otherwise valid imported objects.
-        let prior = self.encode_paged(parent, scope.borrowed(), check)
+        let prior = self
+            .encode_paged(parent, scope.borrowed(), check)
             .map_err(|_| rejected())?;
-        if self.graph.as_ref().is_none_or(|graph| graph.index.root() != prior.root()) {
+        if self
+            .graph
+            .as_ref()
+            .is_none_or(|graph| graph.index.root() != prior.root())
+        {
             return Err(rejected());
         }
         check().map_err(|_| rejected())?;
@@ -112,41 +169,72 @@ impl NativeReadView {
             mount: input.mount.into(),
             incarnation: input.incarnation,
         };
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let diagnostic_decode =
+            crate::engines::kv2_native_large::diagnostic::Span::new("domain_decode");
         let owner = decode()?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        drop(diagnostic_decode);
         check().map_err(|_| rejected())?;
         let mut candidate = Self {
-            owner: DetachedOwner(owner),
+            owner: DetachedOwner(owner).into(),
             graph: None,
             pending: mutation::PendingPaths::default(),
         };
-        let graph = candidate.encode_paged(parent, scope.borrowed(), check)
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let diagnostic_graph =
+            crate::engines::kv2_native_large::diagnostic::Span::new("paged_graph_encode");
+        let graph = candidate
+            .encode_paged(parent, scope.borrowed(), check)
             .map_err(|cause| match cause {
                 RecordError::TooLarge => error(507, "native KV2 import graph exceeds capacity"),
                 _ => rejected(),
             })?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        drop(diagnostic_graph);
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let _diagnostic_detach =
+            crate::engines::kv2_native_large::diagnostic::Span::new("collect_objects_and_detach");
         let root = graph.root();
         let logical_bytes = graph.logical_payload_bytes().map_err(|_| rejected())?;
         let mut objects = BTreeMap::<ObjectId, Arc<StagedObject>>::new();
-        graph.visit_objects(|object| {
-            let id = object.reference().id;
-            if let Some(prior) = objects.get(&id) {
-                if prior.reference() != object.reference() || prior.bytes() != object.bytes() {
-                    return Err(RecordError::Corrupt);
-                }
-            } else {
-                objects.insert(id, Arc::clone(object));
-            }
-            Ok(())
-        }, check).map_err(|_| rejected())?;
+        graph
+            .visit_objects(
+                |object| {
+                    let id = object.reference().id;
+                    if let Some(prior) = objects.get(&id) {
+                        if prior.reference() != object.reference()
+                            || prior.bytes() != object.bytes()
+                        {
+                            return Err(RecordError::Corrupt);
+                        }
+                    } else {
+                        objects.insert(id, Arc::clone(object));
+                    }
+                    Ok(())
+                },
+                check,
+            )
+            .map_err(|_| rejected())?;
         candidate.graph = Some(graph.0);
         candidate.clear_hydrated_payloads()?;
-        candidate.graph.as_mut()
+        candidate
+            .graph
+            .as_mut()
             .and_then(|graph| graph.paged.as_mut())
             .ok_or_else(rejected)?
             .clear_new_blocks();
         candidate.validate_lossless_state()?;
         check().map_err(|_| rejected())?;
-        Ok((candidate, NativeKv2GraphImport { scope, root, logical_bytes, objects }))
+        Ok((
+            candidate,
+            NativeKv2GraphImport {
+                scope,
+                root,
+                logical_bytes,
+                objects,
+            },
+        ))
     }
 }
 

@@ -4,13 +4,41 @@
 use super::*;
 use crate::auth::Timestamp;
 
-const IMPORT_SCHEMA: &str = "openbao270-kv2-lossless-v1";
+pub(super) const IMPORT_SCHEMA: &str = "openbao270-kv2-lossless-v1";
 const MAX_IMPORT_BYTES: usize = 16 * 1024 * 1024;
 const MAX_IMPORT_ENTRIES: usize = 10_000;
 const MAX_IMPORT_VERSIONS: usize = 100_000;
 const NANOS: u64 = 1_000_000_000;
 
-#[cfg(feature = "fixture-native-v6-service")]
+// Only the native-large syntax proof selects the larger path profile. Legacy
+// import retains its original byte, entry and ordinary JSON limits.
+#[derive(Clone, Copy)]
+enum ImportProfile {
+    Legacy,
+    #[cfg(feature = "native-v6-storage")]
+    NativeLarge,
+}
+
+impl ImportProfile {
+    fn counts_fit(self, entries: usize, versions: usize) -> bool {
+        if versions > MAX_IMPORT_VERSIONS {
+            return false;
+        }
+        match self {
+            Self::Legacy => entries <= MAX_IMPORT_ENTRIES,
+            #[cfg(feature = "native-v6-storage")]
+            Self::NativeLarge => {
+                entries <= super::native_records::MAX_PATHS
+                    && 1_usize
+                        .checked_add(entries)
+                        .and_then(|records| records.checked_add(versions))
+                        .is_some_and(|records| records <= super::native_records::MAX_RECORDS)
+            }
+        }
+    }
+}
+
+#[cfg(feature = "native-v6-storage")]
 #[path = "kv_lossless_native_large.rs"]
 pub(crate) mod native_large;
 
@@ -351,19 +379,21 @@ impl Kv2 {
         }
         let validated = SecretJson(decode_lossless_json(bytes)?);
         drop(validated);
-        Self::from_validated_lossless_import_json(bytes, &|| Ok(()))
+        Self::from_validated_lossless_import_json(bytes, ImportProfile::Legacy, &|| Ok(()))
     }
 
     // Only the legacy bounded decoder above and the explicit native-large
     // token-profile proof below may enter this closed-schema projection.
     fn from_validated_lossless_import_json(
         bytes: &[u8],
+        profile: ImportProfile,
         check: &impl Fn() -> Result<()>,
     ) -> Result<Self> {
         check()?;
         let input: Import<'_> =
             serde_json::from_slice(bytes).map_err(|_| bad("KV2 import closed schema rejected"))?;
-        if input.schema != IMPORT_SCHEMA || input.entries.len() > MAX_IMPORT_ENTRIES {
+        let entry_count = input.entries.len();
+        if input.schema != IMPORT_SCHEMA || !profile.counts_fit(entry_count, 0) {
             return Err(bad("KV2 import schema or entry bound rejected"));
         }
         let config = input.config.into_config()?;
@@ -379,7 +409,7 @@ impl Kv2 {
             total_versions = total_versions
                 .checked_add(source.versions.len())
                 .ok_or_else(|| bad("KV2 import version bound exceeded"))?;
-            if total_versions > MAX_IMPORT_VERSIONS
+            if !profile.counts_fit(entry_count, total_versions)
                 || source.versions.len() > MAX_RETAINED_VERSIONS as usize
             {
                 return Err(bad("KV2 import version bound exceeded"));

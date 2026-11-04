@@ -17,7 +17,7 @@ pub(super) struct TransportRequest<'a> {
     pub(super) body: &'a Value,
 }
 
-fn auth_error(error: crate::auth::AuthError) -> Response {
+pub(super) fn auth_error(error: crate::auth::AuthError) -> Response {
     Response::error(error.status, &error.message)
 }
 fn sudo_requirement(method: &str, path: &str) -> Option<bool> {
@@ -74,7 +74,7 @@ fn sudo_requirement(method: &str, path: &str) -> Option<bool> {
     // shared with its actual handler; grants alone never select a sudo factor.
     None
 }
-fn capability(state: &State, request: &RequestView<'_>) -> &'static str {
+pub(super) fn capability(state: &State, request: &RequestView<'_>) -> &'static str {
     operation_capability(
         state,
         request.namespace,
@@ -109,7 +109,7 @@ fn operation_capability(
             _ => "update",
         })
 }
-fn selected_policy(
+pub(super) fn selected_policy(
     state: &State,
     actor: &Principal,
     request: &RequestView<'_>,
@@ -139,7 +139,7 @@ fn selected_policy(
     })?;
     Ok(Some((policy, required)))
 }
-fn authorize_action(
+pub(super) fn authorize_action(
     state: &State,
     actor: &Principal,
     request: &RequestView<'_>,
@@ -169,7 +169,7 @@ fn authorize_action(
         )
         .map_err(auth_error)
 }
-fn validate_transport(state: &State, owner: &DeferredRequest) -> Result<(), Response> {
+pub(super) fn validate_transport(state: &State, owner: &DeferredRequest) -> Result<(), Response> {
     let invalid = || Response::error(503, "control group transport ownership mismatch");
     let method = owner.transport_method.as_str();
     let path = owner.transport_path.as_str();
@@ -272,7 +272,7 @@ impl State {
         Ok(())
     }
 }
-fn resource_binding(
+pub(super) fn resource_binding(
     state: &State,
     namespace: &str,
     path: &str,
@@ -303,7 +303,7 @@ fn resource_binding(
         }))
 }
 
-fn resolved_factors(
+pub(super) fn resolved_factors(
     state: &State,
     namespace: &str,
     policy: &PolicyControl,
@@ -325,7 +325,7 @@ fn resolved_factors(
         })
         .collect()
 }
-fn namespace_id(state: &State, namespace: &str) -> Result<String, Response> {
+pub(super) fn namespace_id(state: &State, namespace: &str) -> Result<String, Response> {
     Ok(state
         .namespaces
         .identity_namespace(namespace)?
@@ -333,7 +333,7 @@ fn namespace_id(state: &State, namespace: &str) -> Result<String, Response> {
         .unwrap_or("root")
         .to_owned())
 }
-fn entity(state: &State, namespace: &str, id: &str) -> Result<Value, Response> {
+pub(super) fn entity(state: &State, namespace: &str, id: &str) -> Result<Value, Response> {
     let namespace_id = namespace_id(state, namespace)?;
     state
         .engines
@@ -342,9 +342,48 @@ fn entity(state: &State, namespace: &str, id: &str) -> Result<Value, Response> {
         })
         .map_err(Response::from_engine_error)
 }
-fn eligible(state: &State, owner: &DeferredRequest, factor: &ResolvedFactor, id: &str) -> bool {
-    if !factor.self_authorization && id == owner.actor_entity_id {
-        return false;
+pub(super) fn eligible(
+    state: &State,
+    owner: &DeferredRequest,
+    factor: &ResolvedFactor,
+    id: &str,
+    time: AuthorityTime,
+) -> bool {
+    if id == owner.actor_entity_id {
+        if !factor.self_authorization {
+            return false;
+        }
+        // A restored pre-fix owner may contain true derived only from the
+        // ignored nested field. Do not count or publish that self approval.
+        // Reuse the live original actor and canonical source projection; leave
+        // owner bytes and sealed credential contexts unchanged. Non-self
+        // approvals retain their existing authority and expiry checks.
+        let Ok(mut actor) = state.auth.control_group_actor(owner, time) else {
+            return false;
+        };
+        actor.bind_request_wrapping_ttl(owner.wrap_ttl_seconds);
+        if Service::bind_identity_principal(state, &mut actor, &owner.namespace).is_err() {
+            return false;
+        }
+        let Ok(Some(policy)) = state.auth.control_group_policy_with_sudo(
+            &actor,
+            &owner.namespace,
+            &owner.path,
+            &owner.capability,
+            owner.requires_sudo,
+            time,
+        ) else {
+            return false;
+        };
+        let Ok(duration) = policy.duration() else {
+            return false;
+        };
+        if owner.duration().ok() != Some(duration)
+            || !resolved_factors(state, &owner.namespace, &policy)
+                .is_ok_and(|current| current == owner.factors)
+        {
+            return false;
+        }
     }
     state
         .engines
@@ -388,19 +427,20 @@ fn approval_live(
             )
             .is_ok()
 }
-fn approved(state: &State, owner: &DeferredRequest, time: AuthorityTime) -> bool {
+pub(super) fn approved(state: &State, owner: &DeferredRequest, time: AuthorityTime) -> bool {
     owner.factors.iter().all(|factor| {
         owner
             .authorizations
             .values()
             .filter(|a| {
-                approval_live(state, owner, a, time) && eligible(state, owner, factor, &a.entity_id)
+                approval_live(state, owner, a, time)
+                    && eligible(state, owner, factor, &a.entity_id, time)
             })
             .count()
             >= factor.approvals
     })
 }
-fn review(state: &State, owner: &DeferredRequest, time: AuthorityTime) -> Value {
+pub(super) fn review(state: &State, owner: &DeferredRequest, time: AuthorityTime) -> Value {
     let authorizations = owner
         .authorizations
         .values()
@@ -409,7 +449,7 @@ fn review(state: &State, owner: &DeferredRequest, time: AuthorityTime) -> Value 
                 && owner
                     .factors
                     .iter()
-                    .any(|f| eligible(state, owner, f, &a.entity_id))
+                    .any(|f| eligible(state, owner, f, &a.entity_id, time))
         })
         .map(|a| json!({"entity_id":a.entity_id,"entity_name":a.entity_name}))
         .collect::<Vec<_>>();
@@ -418,7 +458,7 @@ fn review(state: &State, owner: &DeferredRequest, time: AuthorityTime) -> Value 
         "request_operation":owner.capability,
         "request_path":owner.path})
 }
-fn wrapping_raw<'a>(request: &'a RequestView<'a>) -> Result<&'a str, Response> {
+pub(super) fn wrapping_raw<'a>(request: &'a RequestView<'a>) -> Result<&'a str, Response> {
     let object = request
         .body
         .as_object()
@@ -667,12 +707,12 @@ impl Service {
                 if !owner
                     .factors
                     .iter()
-                    .any(|f| eligible(admitted, &owner, f, &entity_id))
+                    .any(|f| eligible(admitted, &owner, f, &entity_id, time))
                 {
                     if entity_id == owner.actor_entity_id {
                         return Err(Response::error(
                             500,
-                            "self authorization is not allowed for this request",
+                            "1 error occurred:\n\t* token owner cannot be approver\n\n",
                         ));
                     }
                     return Ok(Some(Response {
@@ -970,7 +1010,7 @@ impl Service {
             body: std::mem::take(&mut response.body),
         }))
     }
-    fn validate_control_group_scope(
+    pub(super) fn validate_control_group_scope(
         state: &State,
         owner: &DeferredRequest,
     ) -> Result<(), Response> {

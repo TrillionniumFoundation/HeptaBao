@@ -1,5 +1,5 @@
 //! Reader-version regressions, not historical-binary upgrade evidence.
-use super::tests::{Root, bootstrap, call};
+use super::tests::{Root, call};
 use super::*;
 
 type TestResult = Result<(), Box<dyn std::error::Error>>;
@@ -42,7 +42,7 @@ fn kerberos_schema50_rejects_mount_only_and_config_hidden_under_schema48() -> Te
     for configured in [false, true] {
         let root = Root::new();
         let mut service = root.service()?;
-        let (_, admin) = bootstrap(&mut service)?;
+        let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
         enroll(&mut service, &admin, configured)?;
         let state = service.state.as_ref().ok_or("state")?;
         assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
@@ -68,7 +68,7 @@ fn kerberos_schema50_preserves_legacy48_workflow49_oidc51_and_lockout52_and_reje
 -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, _) = bootstrap(&mut service)?;
+    let (_, _) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let mut state = service.state.clone().ok_or("state")?;
     assert!(!state.auth.has_kerberos_state());
     state.schema = 48;
@@ -99,7 +99,8 @@ fn kerberos_schema50_preserves_legacy48_workflow49_oidc51_and_lockout52_and_reje
 fn userpass_lockout_state_requires_schema52() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, admin) = super::tests::bootstrap_userpass(&mut service)?;
+    let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
+    crate::service::tests::enable_fixture_auth_mount(&mut service, "", &admin, "userpass");
     assert_eq!(
         call(
             &mut service,
@@ -158,7 +159,7 @@ fn userpass_lockout_state_requires_schema52() -> TestResult {
 fn kerberos_schema50_reader_fence_and_mount_configuration_survive_reopen() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     enroll(&mut service, &admin, true)?;
     let before = serde_json::to_vec(service.state.as_ref().ok_or("state")?)?;
     drop(service);

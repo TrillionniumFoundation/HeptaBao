@@ -119,6 +119,126 @@ fn control_duration_nanos(raw: &str) -> Result<DurationNanos, AuthError> {
     DurationNanos::checked(nanos).map_err(|_| bad("control group TTL exceeds bounds"))
 }
 
+// Legacy44 exists only to verify the complete derived projection serialized
+// by that writer. It never supplies effective request or approval authority.
+#[derive(Clone, Copy)]
+enum SelfAuthorizationProjection {
+    OpenBao271,
+    Legacy44,
+}
+
+// OpenBao 2.7.1 sdk/logical/request.go at a5db72cef75c24b920ade02065b18dd8eb666bac:
+// ValidateOperation checks AllOperations, not the ACL capability vocabulary.
+fn valid_control_operation(operation: &str) -> bool {
+    matches!(
+        operation,
+        "create"
+            | "read"
+            | "update"
+            | "patch"
+            | "delete"
+            | "list"
+            | "scan"
+            | "help"
+            | "alias-lookahead"
+            | "resolve-role"
+            | "resolve-path"
+            | "header"
+            | "revoke"
+            | "renew"
+            | "rollback"
+    )
+}
+
+// These values are decoded only to validate a stanza that is about to be
+// discarded. Keep the pinned HCL slice's order, duplicates and empty strings;
+// the live owner's bounded, unique name sets have different responsibilities.
+fn expired_control_strings(
+    value: Option<&Value>,
+    json_source: bool,
+) -> Result<Vec<String>, AuthError> {
+    let Some(value) = value else {
+        return Ok(Vec::new());
+    };
+    let values = value
+        .as_array()
+        .ok_or_else(|| bad("control group field must be a string array"))?;
+    let mut decoded = Vec::new();
+    for value in values {
+        let value = match value {
+            Value::String(value) => value.clone(),
+            // The pinned JSON list parser drops BOOL tokens before decoding;
+            // its NULL tokens are errors. HCL keeps BOOL for typed rejection.
+            Value::Bool(_) if json_source => continue,
+            Value::Number(value) => {
+                let spelling = value.to_string();
+                if spelling
+                    .bytes()
+                    .any(|byte| matches!(byte, b'.' | b'e' | b'E'))
+                {
+                    return Err(bad("control group string array cannot contain floats"));
+                }
+                spelling
+            }
+            _ => return Err(bad("control group field must be a string array")),
+        };
+        decoded.push(value);
+    }
+    Ok(decoded)
+}
+
+fn validate_expired_control_ttl(value: Option<&Value>, json_source: bool) -> Result<(), AuthError> {
+    let invalid = || bad("invalid control group TTL duration");
+    match value {
+        None => Ok(()),
+        Some(Value::Null) if json_source => Ok(()),
+        Some(Value::String(value)) => token_duration::parse_duration(value)
+            .map(|_| ())
+            .map_err(|_| invalid()),
+        Some(Value::Number(value)) => {
+            let spelling = value.to_string();
+            let seconds = if spelling
+                .bytes()
+                .any(|byte| matches!(byte, b'.' | b'e' | b'E'))
+            {
+                // HCL decodes FLOAT into float64; ParseDurationSecond casts
+                // it to time.Duration before checked multiplication by 1s.
+                let value = value
+                    .as_f64()
+                    .filter(|value| value.is_finite())
+                    .ok_or_else(invalid)?;
+                let truncated = value.trunc();
+                if truncated < i64::MIN as f64 || truncated >= -(i64::MIN as f64) {
+                    return Err(invalid());
+                }
+                truncated as i64
+            } else {
+                token_duration::signed_int(&spelling, true).map_err(|_| invalid())?
+            };
+            seconds
+                .checked_mul(1_000_000_000)
+                .map(|_| ())
+                .ok_or_else(invalid)
+        }
+        _ => Err(invalid()),
+    }
+}
+
+fn validate_expired_control_approvals(value: Option<&Value>) -> Result<(), AuthError> {
+    let spelling = match value {
+        Some(Value::String(value)) => value.clone(),
+        Some(Value::Number(value)) => value.to_string(),
+        _ => return Err(bad("control group requires positive approvals")),
+    };
+    // The pinned HCL int decoder accepts NUMBER/STRING via ParseInt(base=0).
+    let approvals = token_duration::signed_int(&spelling, true)
+        .map_err(|_| bad("invalid control group approvals"))?;
+    if approvals <= 0 {
+        return Err(bad("control group requires positive approvals"));
+    }
+    Ok(())
+}
+
 impl PolicyControl {
     pub(crate) fn duration(&self) -> Result<DurationNanos, AuthError> {
         match self.precise_ttl {
@@ -141,10 +261,60 @@ impl PolicyControl {
         }
     }
     pub(super) fn parse(value: &Value, capabilities: &BTreeSet<String>) -> Result<Self, AuthError> {
+        Self::parse_projection(value, capabilities, SelfAuthorizationProjection::OpenBao271)
+    }
+
+    fn validate_expired_stanza(value: &Value, json_source: bool) -> Result<(), AuthError> {
         reject_unknown(value, &["ttl", "factor", "self_auth_allowed"])?;
-        // OpenBao 2.7.1 admits this flag on the control_group stanza. Resolve
-        // it into each existing factor owner so persistence and live identity
-        // checks retain the same authority boundary as factor-local policies.
+        if value
+            .get("self_auth_allowed")
+            .is_some_and(|value| !value.is_boolean())
+        {
+            return Err(bad("self_auth_allowed must be boolean"));
+        }
+        validate_expired_control_ttl(value.get("ttl"), json_source)?;
+        let factors = value
+            .get("factor")
+            .and_then(Value::as_object)
+            .filter(|factors| !factors.is_empty())
+            .ok_or_else(|| bad("control group requires named factors"))?;
+        for factor in factors.values() {
+            reject_unknown(factor, &["identity", "controlled_capabilities"])?;
+            let operations =
+                expired_control_strings(factor.get("controlled_capabilities"), json_source)?;
+            if operations.is_empty()
+                || operations
+                    .iter()
+                    .any(|operation| !valid_control_operation(operation))
+            {
+                return Err(bad("invalid or missing control group operations"));
+            }
+            let identity = factor
+                .get("identity")
+                .and_then(Value::as_object)
+                .ok_or_else(|| bad("control group identity factor is required"))?;
+            // ControlGroupIdentity decodes only group_names and approvals.
+            // Its other keys are unused, including the old live-owner fields
+            // group_ids, ttl and self_authorization. They cannot create grants
+            // here: this stanza is discarded after these official checks.
+            let groups = expired_control_strings(identity.get("group_names"), json_source)?;
+            if groups.is_empty() {
+                return Err(bad("control group identity needs group names"));
+            }
+            validate_expired_control_approvals(identity.get("approvals"))?;
+        }
+        Ok(())
+    }
+
+    fn parse_projection(
+        value: &Value,
+        capabilities: &BTreeSet<String>,
+        projection: SelfAuthorizationProjection,
+    ) -> Result<Self, AuthError> {
+        reject_unknown(value, &["ttl", "factor", "self_auth_allowed"])?;
+        // The v2.7.1 implementation grants self-authorization only through
+        // control_group.self_auth_allowed. The documented nested field is
+        // ignored by that implementation and must not broaden migrated ACLs.
         let inherited_self_authorization = match value.get("self_auth_allowed") {
             None => None,
             Some(Value::Bool(value)) => Some(*value),
@@ -208,10 +378,15 @@ impl PolicyControl {
                 .filter(|n| *n > 0 && *n <= MAX_GROUPS as u64)
                 .ok_or_else(|| bad("control group approvals must be a positive bounded integer"))?
                 as usize;
-            let self_authorization = match identity.get("self_authorization") {
-                None => inherited_self_authorization.unwrap_or(false),
-                Some(Value::Bool(value)) => inherited_self_authorization.unwrap_or(*value),
-                _ => return Err(bad("self_authorization must be boolean")),
+            let self_authorization = match projection {
+                SelfAuthorizationProjection::OpenBao271 => {
+                    inherited_self_authorization.unwrap_or(false)
+                }
+                SelfAuthorizationProjection::Legacy44 => match identity.get("self_authorization") {
+                    None => inherited_self_authorization.unwrap_or(false),
+                    Some(Value::Bool(value)) => inherited_self_authorization.unwrap_or(*value),
+                    _ => return Err(bad("self_authorization must be boolean")),
+                },
             };
             let controlled_capabilities = factor
                 .get("controlled_capabilities")
@@ -293,25 +468,72 @@ pub(crate) struct StanzaControl {
     pub(crate) rule_index: usize,
     pub(crate) control: PolicyControl,
 }
-pub(super) fn collect(
+pub(super) fn collect_observed(
     source: &str,
     rules: &[Rule],
+    at: Option<Timestamp>,
+) -> Result<BTreeMap<String, Vec<StanzaControl>>, AuthError> {
+    collect_projection_observed(source, rules, SelfAuthorizationProjection::OpenBao271, at)
+}
+
+#[cfg(test)]
+fn collect_projection(
+    source: &str,
+    rules: &[Rule],
+    projection: SelfAuthorizationProjection,
+) -> Result<BTreeMap<String, Vec<StanzaControl>>, AuthError> {
+    collect_projection_observed(source, rules, projection, None)
+}
+
+fn collect_projection_observed(
+    source: &str,
+    rules: &[Rule],
+    projection: SelfAuthorizationProjection,
+    at: Option<Timestamp>,
 ) -> Result<BTreeMap<String, Vec<StanzaControl>>, AuthError> {
     let mut result: BTreeMap<String, Vec<StanzaControl>> = BTreeMap::new();
     let mut rule_index = 0;
+    let json_source = source.trim().starts_with('{');
     {
         let mut bind = |path: String,
-                        capabilities: BTreeSet<String>,
+                        capabilities: Option<BTreeSet<String>>,
+                        expiration: Option<policy_expiration::Deadline>,
                         control: Option<Value>|
          -> Result<(), AuthError> {
+            // The pinned parser validates control structure and logical
+            // operations before skipping an expired stanza. There is no live
+            // path grant to bind to in that branch; keep the existing subset
+            // checks only for a stanza whose ACL rule will be retained.
+            if policy_expiration::expired_at_compile(expiration, at)? {
+                if let Some(value) = control {
+                    PolicyControl::validate_expired_stanza(&value, json_source)?;
+                }
+                return Ok(());
+            }
+            let parsed_control = control
+                .map(|value| {
+                    let caps = capabilities.clone().unwrap_or_default();
+                    match projection {
+                        SelfAuthorizationProjection::OpenBao271 => {
+                            PolicyControl::parse(&value, &caps)
+                        }
+                        SelfAuthorizationProjection::Legacy44 => {
+                            PolicyControl::parse_projection(&value, &caps, projection)
+                        }
+                    }
+                })
+                .transpose()?;
+            let capabilities = capabilities.ok_or_else(|| bad("capabilities array is required"))?;
             let rule = rules
                 .get(rule_index)
                 .ok_or_else(|| bad("control group stanza has no ACL rule"))?;
             if rule.path != path || rule.capabilities != capabilities {
                 return Err(bad("control group stanza capability ownership mismatch"));
             }
-            if let Some(value) = control {
-                let control = PolicyControl::parse(&value, &capabilities)?;
+            if rule.expiration != expiration {
+                return Err(bad("policy path expiration source ownership mismatch"));
+            }
+            if let Some(control) = parsed_control {
                 result.entry(path).or_default().push(StanzaControl {
                     rule_index,
                     control,
@@ -327,14 +549,14 @@ pub(super) fn collect(
                 .and_then(Value::as_object)
                 .ok_or_else(|| bad("policy path object is required"))?;
             for (path, config) in paths {
-                let capabilities = parse_capability_array(
-                    config
-                        .get("capabilities")
-                        .ok_or_else(|| bad("capabilities array is required"))?,
-                )?;
+                let capabilities = config
+                    .get("capabilities")
+                    .map(parse_capability_array)
+                    .transpose()?;
                 bind(
                     path.clone(),
                     capabilities,
+                    policy_expiration::path(config.get("expiration"))?,
                     config.get("control_group").cloned(),
                 )?;
             }
@@ -347,6 +569,7 @@ pub(super) fn collect(
                 take(&tokens, &mut cursor, Lex::Symbol('{'))?;
                 let mut capabilities = None;
                 let mut control = None;
+                let mut expiration = None;
                 let mut seen = BTreeSet::new();
                 while tokens.get(cursor) != Some(&Lex::Symbol('}')) {
                     let field = take_word(&tokens, &mut cursor)?;
@@ -359,17 +582,17 @@ pub(super) fn collect(
                             capabilities = Some(parse_hcl_capabilities(&tokens, &mut cursor)?)
                         }
                         "control_group" => control = Some(hcl_value(&tokens, &mut cursor)?),
+                        "expiration" => {
+                            let value = parse_hcl_value_at_depth(&tokens, &mut cursor, 0)?;
+                            expiration = policy_expiration::path(Some(&value))?;
+                        }
                         _ => {
                             let _ = parse_hcl_value_at_depth(&tokens, &mut cursor, 0)?;
                         }
                     }
                 }
                 take(&tokens, &mut cursor, Lex::Symbol('}'))?;
-                bind(
-                    path,
-                    capabilities.ok_or_else(|| bad("capabilities array is required"))?,
-                    control,
-                )?;
+                bind(path, capabilities, expiration, control)?;
             }
         }
     }
@@ -377,6 +600,34 @@ pub(super) fn collect(
         return Err(bad("control group stanza/rule count ownership mismatch"));
     }
     Ok(result)
+}
+
+// Authenticate the complete saved derived representation against its source.
+// Keeping the old bytes intact preserves record/capsule custody during recovery;
+// callers always receive the canonical projection for enforcement.
+#[cfg(test)]
+pub(super) fn canonical_policy_projection(
+    source: &str,
+    rules: &[Rule],
+    saved: &BTreeMap<String, Vec<StanzaControl>>,
+) -> Result<BTreeMap<String, Vec<StanzaControl>>, AuthError> {
+    canonical_policy_projection_observed(source, rules, saved, None)
+}
+
+pub(super) fn canonical_policy_projection_observed(
+    source: &str,
+    rules: &[Rule],
+    saved: &BTreeMap<String, Vec<StanzaControl>>,
+    at: Option<Timestamp>,
+) -> Result<BTreeMap<String, Vec<StanzaControl>>, AuthError> {
+    let canonical = collect_observed(source, rules, at)?;
+    if &canonical != saved
+        && &collect_projection_observed(source, rules, SelfAuthorizationProjection::Legacy44, at)?
+            != saved
+    {
+        return Err(bad("control group policy source ownership mismatch"));
+    }
+    Ok(canonical)
 }
 
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -556,11 +807,11 @@ impl DeferredRequest {
 #[derive(Clone, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct Registry {
-    floor: bool,
-    clock: u64,
+    pub(in crate::auth) floor: bool,
+    pub(in crate::auth) clock: u64,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     precise_clock: Option<Timestamp>,
-    requests: BTreeMap<String, DeferredRequest>,
+    pub(in crate::auth) requests: BTreeMap<String, DeferredRequest>,
 }
 impl Registry {
     pub(super) fn is_absent(&self) -> bool {
@@ -827,7 +1078,7 @@ impl AuthState {
         requires_sudo: bool,
         time: AuthorityTime,
     ) -> Result<Option<PolicyControl>, AuthError> {
-        let time = self.control_group_authority_time(time)?;
+        let time = actor.request_authority_time(self.control_group_authority_time(time)?)?;
         let token = self.check_principal_observed(actor, namespace, time)?;
         if token.is_root() {
             return Ok(None);
@@ -844,9 +1095,22 @@ impl AuthState {
             let Some(policy) = self.policies.get(namespace).and_then(|p| p.get(&name)) else {
                 continue;
             };
+            if !policy.live(time)? {
+                continue;
+            }
+            // Empty projections were already checked during state validation.
+            // Do not reparse ordinary policies on every request. Controlled
+            // policies must derive authority from source, including old saves.
+            let canonical = if policy.control_groups.is_empty() {
+                None
+            } else {
+                Some(policy.control_group_projection()?)
+            };
             for (rule_index, rule) in policy.rules.iter().enumerate() {
-                let Some(rendered) = acl_template::render(&rule.path, &actor.identity_templates)?
-                else {
+                if !rule.live(time)? {
+                    continue;
+                }
+                let Some(rendered) = policy.render(&rule.path, &actor.identity_templates)? else {
                     continue;
                 };
                 if !path_matches(&rendered, path) {
@@ -860,11 +1124,15 @@ impl AuthState {
                         controls.clear();
                     }
                 }
-                if let Some(stanza) = policy.control_groups.get(&rule.path).and_then(|stanzas| {
-                    stanzas
-                        .iter()
-                        .find(|stanza| stanza.rule_index == rule_index)
-                }) {
+                if let Some(stanza) = canonical
+                    .as_ref()
+                    .and_then(|controls| controls.get(&rule.path))
+                    .and_then(|stanzas| {
+                        stanzas
+                            .iter()
+                            .find(|stanza| stanza.rule_index == rule_index)
+                    })
+                {
                     let control = &stanza.control;
                     let factors = control
                         .factors
@@ -1053,10 +1321,10 @@ impl AuthState {
             return Err(denied());
         }
         token_cidrs::check(&token.bound_cidrs, owner.origin_peer)?;
-        Ok(Self::request_principal(
+        Ok(Self::request_principal_observed(
             owner.actor_digest.clone(),
             token.clone(),
-            time.seconds(),
+            time,
             owner.origin_peer,
             PrincipalAdmission::Operation {
                 finite_use_consumed: false,
@@ -1100,10 +1368,10 @@ impl AuthState {
             return Err(denied());
         }
         token_cidrs::check(&token.bound_cidrs, approval.origin_peer)?;
-        Ok(Self::request_principal(
+        Ok(Self::request_principal_observed(
             approval.token_digest.clone(),
             token.clone(),
-            time.seconds(),
+            time,
             approval.origin_peer,
             PrincipalAdmission::Operation {
                 finite_use_consumed: false,
@@ -1247,7 +1515,10 @@ impl AuthState {
             .get_mut(&id)
             .ok_or_else(|| bad("control group request is unavailable"))?;
         if owner.authorizations.contains_key(&approval.entity_id) {
-            return Err(err(500, "entity has already authorized this request"));
+            return Err(err(
+                500,
+                "1 error occurred:\n\t* approver has already authorized\n\n",
+            ));
         }
         owner
             .authorizations
@@ -1467,10 +1738,7 @@ impl AuthState {
         }
         Ok(())
     }
-    #[cfg(any(
-        feature = "fixture-native-v6-service",
-        feature = "experimental-native-v6-ha"
-    ))]
+    #[cfg(any(feature = "native-v6-storage", feature = "native-v6-ha"))]
     pub(super) fn inherit_native_snapshot_control_group_clock(
         &mut self,
         current: &AuthState,
@@ -1503,9 +1771,7 @@ impl AuthState {
             }
         }
         for policy in self.policies.values().flat_map(|p| p.values()) {
-            if collect(&policy.source, &policy.rules)? != policy.control_groups {
-                return Err(bad("control group policy source ownership mismatch"));
-            }
+            policy.control_group_projection()?;
         }
         let registry = &self.control_groups;
         registry.validate_precise_clock()?;
@@ -1732,6 +1998,9 @@ impl DeferredRequest {
         Ok(())
     }
 }
+#[cfg(test)]
+#[path = "auth_control_groups_271_projection_tests.rs"]
+mod compatibility_projection_tests;
 #[cfg(test)]
 #[path = "auth_control_groups_tests.rs"]
 mod tests;

@@ -554,8 +554,8 @@ mod tests {
             "scoped token authority unloads while root credential stays root owned"
         );
         assert!(
-            closed.schema == AUTH_PUBLIC_ORIGIN_STATE_SCHEMA,
-            "typed ciphertext and actual native Token API facts require reader floor 86"
+            closed.schema == NAMESPACE_FACTORY_STATE_SCHEMA,
+            "typed ciphertext retains current child factory provenance reader floor144"
         );
         let mut lower = closed.clone();
         lower.schema = NAMESPACE_CUSTODY_STATE_SCHEMA - 1;
@@ -606,7 +606,7 @@ mod tests {
         )
         .map_err(|_| "actual protected V5 reopen")?;
         assert!(
-            persisted.schema == AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+            persisted.schema == NAMESPACE_FACTORY_STATE_SCHEMA
                 && persisted.engines.record_root() == closed.engines.record_root()
                 && persisted
                     .auth

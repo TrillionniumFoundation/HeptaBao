@@ -422,13 +422,19 @@ fn pinned_bao_neutral_tune_defaults_convert_legacy_and_record_mounts() -> TestRe
 }
 
 #[test]
-fn kv_nondefault_or_malformed_tune_defaults_cannot_publish_conversion() -> TestResult {
+fn kv_malformed_tune_defaults_cannot_publish_conversion() -> TestResult {
     let mut state = populate()?.migrate_kv1_records(AddressKey::from_bytes([72; 32]))?;
     let stable = crate::secret_serde::to_vec(&state, crate::MAX_APPLICATION_STATE_BYTES)
         .map_err(|_| "serialize")?;
     let root = state.record_root();
-    for field in ["default_lease_ttl", "max_lease_ttl", "force_no_cache"] {
-        for value in [json!("1h"), json!("0"), json!(0), json!(null), json!(true)] {
+    for field in ["default_lease_ttl", "max_lease_ttl"] {
+        for value in [
+            json!("not-a-duration"),
+            json!(1.5),
+            json!(true),
+            json!([]),
+            json!({}),
+        ] {
             let mut request = json!({"options":{"version":"2"}});
             request[field] = value;
             assert_eq!(

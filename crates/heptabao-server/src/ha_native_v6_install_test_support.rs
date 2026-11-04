@@ -22,6 +22,7 @@ impl HaProcess {
             receiver: OnceLock::new(),
             root_source: OnceLock::new(),
             configured_pins: BTreeMap::from([(1, [21; 32]), (2, [22; 32]), (3, [23; 32])]),
+            configured_nodes: (*self.peers).clone(),
             transport: self.forward_transport.clone(),
             eligible: true,
         });
@@ -134,6 +135,13 @@ impl HaProcess {
             .ok_or("fixture native runtime absent")?;
         let store = native.storage.get().ok_or("fixture native store absent")?;
         Ok(f(&self.codec, store))
+    }
+
+    // Persist an actual checkpoint; do not alter witness fields or clocks.
+    pub(crate) fn native_install_test_checkpoint(&self) -> TestResult {
+        let node = self.node.as_ref().ok_or("fixture node absent")?;
+        self.runtime.block_on(node.snapshot_observed())?;
+        Ok(())
     }
 
     pub(crate) fn native_install_test_store(&self) -> TestResult<Arc<LocalV6BlobStage>> {

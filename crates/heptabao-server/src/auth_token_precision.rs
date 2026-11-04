@@ -356,6 +356,69 @@ impl AuthorityTime {
 }
 
 impl super::AuthState {
+    // The caller invokes this only after the original issued-token validation
+    // returned an error. Reuse that exact AuthorityTime; do not sample a new
+    // wall/monotonic authority, authenticate, consume a use or change state.
+    #[cfg(all(test, feature = "native-v6-storage"))]
+    pub(crate) fn record_service_token_delivery_failure_for_test(
+        &self,
+        raw: &str,
+        supplied: AuthorityTime,
+    ) {
+        use std::io::Write as _;
+        let service_format = raw.len() <= 256 && raw.starts_with("hvs.");
+        let verifier = service_format.then(|| zeroize::Zeroizing::new(super::hash(raw)));
+        let token = verifier
+            .as_ref()
+            .and_then(|key| self.tokens.get(key.as_str()));
+        let token_time = self.token_api_observed_time(supplied);
+        let effective = self.control_group_authority_time(token_time).ok();
+        let exact = effective.and_then(AuthorityTime::exact);
+        let lease = token.and_then(|value| value.token_api_precision.as_ref());
+        let token_floor_advanced = supplied
+            .exact()
+            .zip(token_time.exact())
+            .map(|(before, after)| after > before);
+        let control_floor_advanced = token_time
+            .exact()
+            .zip(exact)
+            .map(|(before, after)| after > before);
+        let effective_live = token.zip(effective).map(|(value, time)| {
+            time.service_live(value.token_api_precision.as_ref(), value.expires_at)
+        });
+        let expired = lease
+            .zip(exact)
+            .map(|(lease, at)| lease.expires_at.is_some_and(|end| at > end));
+        let before_issue = lease.zip(exact).map(|(lease, at)| at < lease.issued_at);
+        let grant_age_ns = lease.zip(exact).and_then(|(lease, at)| {
+            at.elapsed(lease.grant_started_at)
+                .ok()
+                .map(DurationNanos::nanoseconds)
+        });
+        let grant_duration_ns = lease.map(|lease| lease.previous_grant.nanoseconds());
+        let finite_exhausted = token.map(|value| value.uses_remaining == Some(0));
+        let direct_parent_present = token
+            .and_then(|value| value.parent.as_deref())
+            .map(|key| self.tokens.contains_key(key));
+        let direct_parent_live = token
+            .and_then(|value| value.parent.as_deref())
+            .and_then(|key| self.tokens.get(key))
+            .zip(effective)
+            .map(|(value, time)| {
+                time.service_live(value.token_api_precision.as_ref(), value.expires_at)
+                    && value.uses_remaining != Some(0)
+            });
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "HBHA-DIAG-SERVICE-CREATE-LEASE service_format={service_format} token_present={} precise_lease={} supplied_precise={} effective_clock_available={} token_floor_advanced={token_floor_advanced:?} control_floor_advanced={control_floor_advanced:?} effective_live={effective_live:?} expired_at_original_check={expired:?} before_issue_at_original_check={before_issue:?} grant_age_ns_at_original_check={grant_age_ns:?} grant_duration_ns={grant_duration_ns:?} finite_exhausted={finite_exhausted:?} direct_parent_present={direct_parent_present:?} direct_parent_live={direct_parent_live:?} thread={:?}",
+            token.is_some(),
+            lease.is_some(),
+            supplied.exact().is_some(),
+            effective.is_some(),
+            std::thread::current().id(),
+        );
+    }
+
     pub(crate) fn terminal_token_clock_floor(&self) -> Option<Timestamp> {
         self.token_api_observed_at
     }

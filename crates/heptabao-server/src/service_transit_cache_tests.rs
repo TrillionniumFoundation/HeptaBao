@@ -25,7 +25,8 @@ fn cache130_service_wire_current_authority_acl_namespace_and_restart_activate_pe
 -> TestResult {
     let root = Root::new();
     let mut service = root.service().map_err(|_| "cache service")?;
-    let (unseal, admin) = bootstrap(&mut service).map_err(|_| "cache bootstrap")?;
+    let (unseal, admin) =
+        crate::service::tests::bootstrap_pre141(&mut service).map_err(|_| "cache bootstrap")?;
     let unseal = Zeroizing::new(unseal);
     let admin = Zeroizing::new(admin);
     assert!(
@@ -124,15 +125,9 @@ fn cache130_service_wire_current_authority_acl_namespace_and_restart_activate_pe
         );
     }
     assert!(
-        call(
-            &mut service,
-            "",
-            "POST",
-            "sys/namespaces/team",
-            &admin,
-            json!({})
-        )
-        .status
+        service
+            .create_pre144_namespace_fixture("team", &admin)?
+            .status
             == 200
     );
     assert!(
@@ -451,7 +446,8 @@ fn cache130_service_reader_previous_publication_snapshot_decoder_and_retired_flo
 -> TestResult {
     let root = Root::new();
     let mut service = root.service().map_err(|_| "cache service")?;
-    let (unseal, admin) = bootstrap(&mut service).map_err(|_| "cache bootstrap")?;
+    let (unseal, admin) =
+        crate::service::tests::bootstrap_pre141(&mut service).map_err(|_| "cache bootstrap")?;
     let unseal = Zeroizing::new(unseal);
     let admin = Zeroizing::new(admin);
     assert!(

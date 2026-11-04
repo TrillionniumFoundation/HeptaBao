@@ -14,7 +14,11 @@ fn lookup_all(state: &mut AuthState, root: &Principal, raw: &str, now: u64) -> V
             state,
             actor,
             "",
-            "GET",
+            if route == "lookup-accessor" {
+                "POST"
+            } else {
+                "GET"
+            },
             &format!("auth/token/{route}"),
             body,
             now,

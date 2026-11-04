@@ -2,8 +2,10 @@
 //! terminal clock/audit write can hide a missing restore-time floor.
 use super::*;
 
+type CommitObserver = Box<dyn FnOnce(&Service)>;
+
 thread_local! {
-    static COMMITTED: RefCell<Option<Box<dyn FnOnce(&Service)>>> = RefCell::new(None);
+    static COMMITTED: RefCell<Option<CommitObserver>> = RefCell::new(None);
 }
 
 pub(in crate::service) struct SnapshotCommitObservation;

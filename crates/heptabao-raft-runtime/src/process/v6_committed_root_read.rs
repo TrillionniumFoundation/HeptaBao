@@ -11,6 +11,7 @@ pub struct NativeV6CommittedRootRead {
     enrollment: NativeV6PeerEnrollment,
     root: NativeV6PublishedRoot,
     operation_deadline: std::time::Instant,
+    continuation_read_bound: Option<std::time::Instant>,
 }
 
 impl std::fmt::Debug for NativeV6CommittedRootRead {
@@ -42,6 +43,11 @@ impl NativeV6CommittedRootRead {
     pub fn application_generation(&self) -> u64 {
         self.witness.generation
     }
+    /// Read-only applied frontier of this actual quorum observation. It is
+    /// not a reconstructed commit receipt or a new submission authority.
+    pub fn applied_log_index(&self) -> u64 {
+        self.witness.applied_log.index
+    }
     /// The original operation bound can outlast this witness's capped
     /// ReadIndex bound. A later read is a NEW actual ReadIndex, not a renewal.
     pub fn operation_deadline(&self) -> std::time::Instant {
@@ -58,6 +64,22 @@ impl NativeV6CommittedRootRead {
     pub fn into_application_witness(self) -> ApplicationReadWitness {
         self.witness
     }
+    /// A later application observation can invalidate a read while leaving
+    /// the complete published root unchanged (for example a staged intent or
+    /// durable checkpoint). This relation grants no authority: the caller must
+    /// obtain and verify the new real ReadIndex within the OLD read bound.
+    fn same_root_after_application_progress(&self, previous: &Self) -> bool {
+        self.witness.store.same_instance(&previous.witness.store)
+            && self.witness.generation > previous.witness.generation
+            && self.witness.applied_log.index >= previous.witness.applied_log.index
+            && self.witness.leader == previous.witness.leader
+            && self.witness.term == previous.witness.term
+            && self.enrollment == previous.enrollment
+            && self.root == previous.root
+            && self.operation_deadline == previous.operation_deadline
+            && self.witness.deadline <= previous.witness.deadline
+    }
+
     /// Equality of two actual selections grants no authority by itself. The
     /// caller must verify the new handle. In particular this deliberately does
     /// not revive the old witness after its original ReadIndex bound expires.
@@ -71,10 +93,67 @@ impl NativeV6CommittedRootRead {
             && self.enrollment == other.enrollment
             && self.root == other.root
             && self.operation_deadline == other.operation_deadline
+            && self.continuation_read_bound == other.continuation_read_bound
     }
 }
 
 impl ProcessRaftNode {
+    /// A NEW read-only observation for the dedicated pre-business ingress
+    /// caller. This does not repair, publish, authenticate a caller, or revive
+    /// the previous handle. Existing same-root/selection APIs stay strict.
+    pub async fn native_v6_fresh_ingress_selection_read(
+        &self,
+        previous: &NativeV6CommittedRootRead,
+    ) -> Result<NativeV6CommittedRootRead, RemoteRaftError> {
+        let until = previous
+            .read_index_deadline()
+            .min(previous.operation_deadline);
+        if std::time::Instant::now() >= until {
+            return Err(RemoteRaftError::Consensus(
+                "original native ingress bound expired".into(),
+            ));
+        }
+        super::super::with_read_index_deadline(until, async {
+            let mut fresh = self
+                .native_v6_committed_root_read(until)
+                .await?
+                .ok_or_else(|| {
+                    RemoteRaftError::Consensus("native ingress selection absent".into())
+                })?;
+            fresh.operation_deadline = previous.operation_deadline;
+            fresh.continuation_read_bound = Some(until);
+            let same_root = fresh.root == previous.root;
+            // A different root must be a later actual publication in this same
+            // epoch/retained origin. Neither a rewind nor online restore can be
+            // selected as ordinary ingress application progress.
+            let publication = same_root
+                || (fresh.witness.generation > previous.witness.generation
+                    && fresh.root.publication_log_id().index
+                        > previous.root.publication_log_id().index
+                    && fresh.root.generation() > previous.root.generation());
+            if !fresh.witness.store.same_instance(&previous.witness.store)
+                || fresh.witness.generation < previous.witness.generation
+                || fresh.witness.applied_log.index < previous.witness.applied_log.index
+                || fresh.witness.leader != previous.witness.leader
+                || fresh.witness.term != previous.witness.term
+                || fresh.enrollment != previous.enrollment
+                || fresh.root.intent().epoch != previous.root.intent().epoch
+                || fresh.root.migration_source() != previous.root.migration_source()
+                || fresh.root.native_origin_epoch() != previous.root.native_origin_epoch()
+                || fresh.operation_deadline != previous.operation_deadline
+                || fresh.read_index_deadline() > previous.read_index_deadline()
+                || !publication
+            {
+                return Err(RemoteRaftError::Consensus(
+                    "native ingress successor changed original owner or bound".into(),
+                ));
+            }
+            self.verify_native_v6_committed_root_read(&fresh).await?;
+            Ok(fresh)
+        })
+        .await
+    }
+
     /// A cold process obtains the enrollment and root from the same actual
     /// applied snapshot as its fresh quorum read. Before first V6 activation,
     /// the successful native observation returns None; it never fabricates a
@@ -106,11 +185,76 @@ impl ProcessRaftNode {
                 enrollment,
                 root,
                 operation_deadline,
+                continuation_read_bound: None,
             };
             self.verify_native_v6_committed_root_read(&selected).await?;
             Ok(Some(selected))
         })
         .await
+    }
+
+    /// Obtain a new actual read after application-only progress, keeping both
+    /// original deadlines and the complete selected publication exact. This
+    /// cannot adopt a new root, epoch, membership, leader, term or store owner.
+    pub async fn native_v6_same_root_progress_read(
+        &self,
+        previous: &NativeV6CommittedRootRead,
+    ) -> Result<NativeV6CommittedRootRead, RemoteRaftError> {
+        let until = previous
+            .read_index_deadline()
+            .min(previous.operation_deadline);
+        super::super::with_read_index_deadline(until, async {
+            let mut fresh = self
+                .native_v6_committed_root_read(until)
+                .await?
+                .ok_or_else(|| {
+                    RemoteRaftError::Consensus("native progressed root absent".into())
+                })?;
+            // Only this genuine previous handle supplies the original operation
+            // bound. The fresh witness remains capped by the old ReadIndex.
+            fresh.operation_deadline = previous.operation_deadline;
+            fresh.continuation_read_bound = Some(until);
+            if !fresh.same_root_after_application_progress(previous) {
+                return Err(RemoteRaftError::Consensus(
+                    "native application progress changed the selected root or owner".into(),
+                ));
+            }
+            self.verify_native_v6_committed_root_read(&fresh).await?;
+            Ok(fresh)
+        })
+        .await
+    }
+
+    /// A terminal fresh read of an authenticated physical closure preserves
+    /// any explicit continuation cap. Ordinary reads retain their existing
+    /// operation-bound phase behavior; a capped continuation never gains time.
+    pub async fn native_v6_fresh_same_selection_read(
+        &self,
+        previous: &NativeV6CommittedRootRead,
+    ) -> Result<NativeV6CommittedRootRead, RemoteRaftError> {
+        let mut fresh = if let Some(until) = previous.continuation_read_bound {
+            super::super::with_read_index_deadline(until, self.native_v6_committed_root_read(until))
+                .await?
+        } else {
+            self.native_v6_committed_root_read(previous.operation_deadline)
+                .await?
+        }
+        .ok_or_else(|| RemoteRaftError::Consensus("native fresh same root absent".into()))?;
+        if previous.continuation_read_bound.is_some() {
+            fresh.operation_deadline = previous.operation_deadline;
+        }
+        fresh.continuation_read_bound = previous.continuation_read_bound;
+        if !fresh.same_selection(previous)
+            || previous
+                .continuation_read_bound
+                .is_some_and(|until| fresh.read_index_deadline() > until)
+        {
+            return Err(RemoteRaftError::Consensus(
+                "native fresh read changed the selected root or bound".into(),
+            ));
+        }
+        self.verify_native_v6_committed_root_read(&fresh).await?;
+        Ok(fresh)
     }
 
     /// Recheck the same store, generation, leader, term and original capped
@@ -123,6 +267,37 @@ impl ProcessRaftNode {
         super::super::with_read_index_deadline(selected.operation_deadline, async {
             self.verify_application_read_witness(&selected.witness)
                 .await
+        })
+        .await
+    }
+
+    /// Return the retained V5 predecessor selected by this exact native root.
+    /// This does not turn historical V5 into a current application observation,
+    /// create a second witness, or extend either original deadline.
+    pub async fn native_v6_retained_migration_source(
+        &self,
+        selected: &NativeV6CommittedRootRead,
+    ) -> Result<crate::PublishedRecordRoot, RemoteRaftError> {
+        super::super::with_read_index_deadline(selected.operation_deadline, async {
+            self.verify_native_v6_committed_root_read(selected).await?;
+            let source = tokio::time::timeout_at(
+                selected.witness.deadline,
+                self.state_machine
+                    .native_v6_retained_migration_source(&selected.root),
+            )
+            .await
+            .map_err(|_| {
+                RemoteRaftError::Consensus(
+                    "native migration source observation deadline elapsed".into(),
+                )
+            })?
+            .ok_or_else(|| {
+                RemoteRaftError::Consensus(
+                    "native migration source differs from selected native provenance".into(),
+                )
+            })?;
+            self.verify_native_v6_committed_root_read(selected).await?;
+            Ok(source)
         })
         .await
     }
@@ -141,17 +316,25 @@ impl ProcessRaftNode {
             let pending = tokio::time::timeout_at(
                 selected.witness.deadline,
                 self.state_machine.native_v6_pending_epoch_restore(),
-            ).await.map_err(|_| RemoteRaftError::Consensus(
-                "native pending restore observation deadline elapsed".into(),
-            ))?;
+            )
+            .await
+            .map_err(|_| {
+                RemoteRaftError::Consensus(
+                    "native pending restore observation deadline elapsed".into(),
+                )
+            })?;
             if let Some(pending) = &pending {
-                pending.matches_current(&selected.enrollment.0, &selected.root.0)
-                    .map_err(|_| RemoteRaftError::Consensus(
-                        "native pending restore differs from selected current root".into(),
-                    ))?;
+                pending
+                    .matches_current(&selected.enrollment.0, &selected.root.0)
+                    .map_err(|_| {
+                        RemoteRaftError::Consensus(
+                            "native pending restore differs from selected current root".into(),
+                        )
+                    })?;
             }
             self.verify_native_v6_committed_root_read(selected).await?;
             Ok(pending.map(|pending| pending.command.operation_digest))
-        }).await
+        })
+        .await
     }
 }

@@ -6,6 +6,13 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Instant;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
+type InitializedWitness = (
+    Root,
+    Service,
+    Zeroizing<String>,
+    Zeroizing<String>,
+    Zeroizing<String>,
+);
 const HASH: &str = "8f55c32f8c1f2f2a8d0e5cc14f08b7007ae6ca496782cdc2ae84143879b40395";
 
 struct AuditHookGuard;
@@ -56,13 +63,7 @@ fn bundle() -> TestResult<Value> {
         }}
     }))
 }
-fn initialized() -> TestResult<(
-    Root,
-    Service,
-    Zeroizing<String>,
-    Zeroizing<String>,
-    Zeroizing<String>,
-)> {
+fn initialized() -> TestResult<InitializedWitness> {
     let files = Root::new();
     let mut service = files.service()?;
     service.configure_native_v6_candidate()?;
@@ -448,19 +449,17 @@ fn native_kv2_storage_witness_service_import_cold_and_snapshot_keep_exact_payloa
     let admitted_epoch = service.state.as_ref().ok_or("admitted epoch")?.replay_epoch;
     let committed = Arc::new(AtomicBool::new(false));
     let observed = Arc::clone(&committed);
-    let _observer = Service::observe_next_native_snapshot_commit_for_test(move |service| {
-        let durable = service.durable.as_ref().expect("committed Durable");
+    let observe = move |service: &Service| -> TestResult {
+        let durable = service.durable.as_ref().ok_or("committed Durable")?;
         let stored = durable
             .get("system", "state")
-            .expect("committed root read")
-            .expect("committed root");
+            .map_err(|_| "committed root read")?
+            .ok_or("committed root")?;
         let root = crate::state_record_root_v6::RecordStateRootV6::decode(stored.expose())
-            .map_err(|_| "committed typed root")
-            .expect("committed typed root");
-        let state = service.state.as_ref().expect("committed State");
-        let auth = owner_store::serialize_owner(&state.auth)
-            .map_err(|_| "committed Auth encoding")
-            .expect("committed Auth encoding");
+            .map_err(|_| "committed typed root")?;
+        let state = service.state.as_ref().ok_or("committed State")?;
+        let auth =
+            owner_store::serialize_owner(&state.auth).map_err(|_| "committed Auth encoding")?;
         assert_eq!(
             state.auth.terminal_token_clock_floor(),
             Some(admitted_floor)
@@ -475,11 +474,10 @@ fn native_kv2_storage_witness_service_import_cold_and_snapshot_keep_exact_payloa
             .owners
             .iter()
             .find(|owner| owner.domain == domain)
-            .expect("Auth owner");
+            .ok_or("Auth owner")?;
         assert_eq!(
             root.owner_digest(domain, &auth)
-                .map_err(|_| "Auth digest")
-                .expect("Auth digest"),
+                .map_err(|_| "Auth digest")?,
             owner.owner.digest,
             "persisted root must select the inherited Auth bytes before terminal audit"
         );
@@ -488,6 +486,15 @@ fn native_kv2_storage_witness_service_import_cold_and_snapshot_keep_exact_payloa
         assert_eq!(root.replay_epoch, durable.replay_epoch());
         assert_eq!(state.replay_epoch, durable.replay_epoch());
         observed.store(true, Ordering::SeqCst);
+        Ok(())
+    };
+    let _observer = Service::observe_next_native_snapshot_commit_for_test(move |service| {
+        let result = observe(service);
+        assert!(
+            result.is_ok(),
+            "actual committed restore observation failed: {:?}",
+            result.err()
+        );
     })?;
     let (result, file) = restore.execute_snapshot_transfer(&mut &archive[..]);
     assert!(file.is_none());

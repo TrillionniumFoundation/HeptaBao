@@ -153,6 +153,54 @@ impl Service {
         if request.enforce_namespace && current.namespace_is_sealed(namespace) {
             return Response::error(503, "namespace is sealed");
         }
+        // The private policy lookup has its own fixed publication after the
+        // original finite-use candidate above. It never widens that candidate
+        // or loads the closed namespace's resources/key into the runtime.
+        let retirement = match admission.policy_retirement(
+            &self.namespace_runtime,
+            current,
+            namespace,
+            match authority_time(request) {
+                Ok(time) => time,
+                Err(response) => return response,
+            },
+        ) {
+            Ok(retirement) => retirement,
+            Err(response) => return response,
+        };
+        if let Some(retirement) = retirement {
+            let mut candidate = retirement.candidate();
+            if let Err(response) = gate(self, current) {
+                return response;
+            }
+            let time = match authority_time(request) {
+                Ok(time) => time,
+                Err(response) => return response,
+            };
+            if let Err(response) = retirement.check_candidate(current, &candidate, time) {
+                return response;
+            }
+            if let Err(response) = self.commit_state(&mut candidate) {
+                return response;
+            }
+            self.state = Some(candidate);
+            let Some(current) = self.state.as_ref() else {
+                return unavailable();
+            };
+            if let Err(response) = gate(self, current) {
+                return response;
+            }
+            let time = match authority_time(request) {
+                Ok(time) => time,
+                Err(response) => return response,
+            };
+            if let Err(response) = retirement.check_committed(current, time) {
+                return response;
+            }
+        }
+        let Some(current) = self.state.as_ref() else {
+            return unavailable();
+        };
         let resource_route = namespaces::owns(request.path)
             || request.path == "sys/mounts"
             || request.path.starts_with("sys/mounts/")

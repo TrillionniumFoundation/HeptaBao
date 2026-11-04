@@ -7,8 +7,19 @@ use ring::signature::{Ed25519KeyPair, KeyPair};
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
 fn fixture(root: &Root) -> TestResult<(Service, String, String, String)> {
+    fixture_with_bootstrap(root, bootstrap)
+}
+
+fn historical_fixture(root: &Root) -> TestResult<(Service, String, String, String)> {
+    fixture_with_bootstrap(root, crate::service::tests::bootstrap_pre141)
+}
+
+fn fixture_with_bootstrap(
+    root: &Root,
+    initialize: fn(&mut Service) -> TestResult<(String, String)>,
+) -> TestResult<(Service, String, String, String)> {
     let mut service = root.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    let (key, admin) = initialize(&mut service)?;
     let pair = Ed25519KeyPair::from_seed_unchecked(&[72; 32]).map_err(|_| "test key")?;
     for (path, body) in [
         ("sys/auth/jwt", json!({"type":"jwt"})),
@@ -76,7 +87,7 @@ fn jwt_schema44_role_and_mount_types_independently_reject_schema43_before_any_lo
 {
     for path in ["auth/jwt/role/first", "sys/auth/jwt/tune"] {
         let root = Root::new();
-        let (mut service, _, admin, _) = fixture(&root)?;
+        let (mut service, _, admin, _) = historical_fixture(&root)?;
         let mut old = service.state.clone().ok_or("state")?;
         old.schema = 43;
         assert!(old.validate_format().is_ok());
@@ -118,7 +129,7 @@ fn jwt_schema44_role_and_mount_types_independently_reject_schema43_before_any_lo
 #[test]
 fn jwt_backend_alias_metadata_persists_and_is_gated_after_mount_removal() -> TestResult {
     let root = Root::new();
-    let (mut service, key, admin, jwt) = fixture(&root)?;
+    let (mut service, key, admin, jwt) = historical_fixture(&root)?;
     let issued = login(&mut service, &jwt, "first", None);
     assert_eq!(issued.status, 200);
     let entity = issued.body["auth"]["entity_id"]

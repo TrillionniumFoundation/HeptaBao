@@ -41,7 +41,11 @@ MAX_RESPONSE = 2 * MAX_RECORD
 TIMEOUT = 5
 DEADLINE = 360
 
-def parse_json(raw, maximum):
+def parse_json(raw, maximum, *, maximum_nodes=1000000):
+    # Only a code-selected profile may widen the aggregate token budget. The
+    # ordinary CLI's callers retain the original million-node default.
+    need(type(maximum_nodes) is int and maximum_nodes in (1000000, 4194304),
+         "invalid JSON structural profile")
     need(isinstance(raw, bytes) and len(raw) <= maximum, "JSON byte bound")
     try:
         value = json.loads(raw.decode("utf-8"), object_pairs_hook=unique_object,
@@ -55,7 +59,7 @@ def parse_json(raw, maximum):
     while pending:
         current, depth = pending.pop()
         nodes += 1
-        need(depth <= 128 and nodes <= 1000000, "JSON structural bound")
+        need(depth <= 128 and nodes <= maximum_nodes, "JSON structural bound")
         if isinstance(current, dict):
             pending.extend((v, depth + 1) for v in current.values())
         elif isinstance(current, list):

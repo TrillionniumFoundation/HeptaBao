@@ -159,6 +159,16 @@
       "file": "workflow-trust-boundary.yml",
       "location": "workflow.jobs.verify.steps[3]",
       "path": "${{ runner.temp }}/heptabao-exact-source.bundle\n${{ runner.temp }}/heptabao-exact-source.bundle.sha256\n${{ runner.temp }}/source-binding.txt\n"
+    },
+    {
+      "file": "native-historical-restore-recovery.yml",
+      "location": "workflow.jobs.scoped-recovery-linux.steps[8]",
+      "path": "${{ runner.temp }}/heptabao-native-recovery-reports/"
+    },
+    {
+      "file": "native-historical-restore-recovery.yml",
+      "location": "workflow.jobs.scoped-recovery-macos.steps[8]",
+      "path": "${{ runner.temp }}/heptabao-native-recovery-reports/"
     }
   ]
 }

@@ -3,12 +3,52 @@
 //! cannot supply that proof or authorize a restore publication.
 use super::*;
 
+#[path = "service_snapshot_v6_ha_lossless_export.rs"]
+mod lossless_export;
+
 #[path = "service_snapshot_v6_ha_repair.rs"]
 mod repair;
 
 #[path = "service_snapshot_v6_ha_restore.rs"]
 mod restore;
 pub(in crate::service::snapshot_transfer) use restore::NativeHaHistoricalReceipt;
+
+// This proof is confined to one historical prepare. Its shared Service and
+// plan borrows keep the ordinary root identity fixed. Actor, clock, actual
+// seal file, deadline and the original custody checks remain live at every
+// gate; the complete identity is authenticated at entry and completion.
+struct BorrowedNativeHaSnapshotOwner<'a> {
+    service: &'a Service,
+    plan: &'a SnapshotTransferPlan,
+}
+
+impl<'a> BorrowedNativeHaSnapshotOwner<'a> {
+    fn capture(service: &'a Service, plan: &'a SnapshotTransferPlan) -> Result<Self, Response> {
+        service.check_native_ha_snapshot_owner(plan)?;
+        Ok(Self { service, plan })
+    }
+
+    fn check(&self) -> Result<(), Response> {
+        self.service
+            .check_native_ha_snapshot_owner_before_identity(self.plan)?;
+        self.service
+            .check_native_ha_snapshot_owner_after_identity(self.plan)
+    }
+
+    // This callback surrounds bounded seek/read operations within one object.
+    // The shared Service/plan borrow keeps the admitted in-memory identity
+    // fixed. Full Actor and physical seal checks still surround the selected
+    // object's authenticated read; no plaintext is returned after a late
+    // refusal. Reopening seal.json for each I/O chunk adds no authority here.
+    fn check_io(&self) -> Result<(), Response> {
+        self.service
+            .check_native_ha_snapshot_owner_before_identity(self.plan)
+    }
+
+    fn check_complete(&self) -> Result<(), Response> {
+        self.service.check_native_ha_snapshot_owner(self.plan)
+    }
+}
 
 impl Service {
     fn check_native_ha_snapshot_owner(&self, plan: &SnapshotTransferPlan) -> Result<(), Response> {
@@ -20,6 +60,17 @@ impl Service {
         plan: &SnapshotTransferPlan,
         expected: StateIdentity,
     ) -> Result<(), Response> {
+        self.check_native_ha_snapshot_owner_before_identity(plan)?;
+        if self.current_state_identity().ok() != Some(expected) {
+            return Err(unavailable());
+        }
+        self.check_native_ha_snapshot_owner_after_identity(plan)
+    }
+
+    fn check_native_ha_snapshot_owner_before_identity(
+        &self,
+        plan: &SnapshotTransferPlan,
+    ) -> Result<(), Response> {
         let same_ha = match (&self.ha, &plan.ha) {
             (Some(current), Some(admitted)) => Arc::ptr_eq(current, admitted),
             _ => false,
@@ -30,8 +81,17 @@ impl Service {
             || self.recovery_required
             || self.barrier_key.is_none()
             || self.unseal_nonce != plan.activation
-            || self.current_state_identity().ok() != Some(expected)
-            || self.native_root.is_none()
+        {
+            return Err(unavailable());
+        }
+        Ok(())
+    }
+
+    fn check_native_ha_snapshot_owner_after_identity(
+        &self,
+        plan: &SnapshotTransferPlan,
+    ) -> Result<(), Response> {
+        if self.native_root.is_none()
             || self.record_root.is_some()
             || self.postgres_durable.is_some()
             || self.durable_profile.is_some()

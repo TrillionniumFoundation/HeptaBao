@@ -55,10 +55,18 @@ impl NamespaceAssets {
         if let Some(control_groups) = &self.control_groups {
             control_groups.validate_namespace(actual)?;
         }
-        for policy in self.policies.iter().flat_map(|p| p.values()) {
-            if control_groups::collect(&policy.source, &policy.rules)? != policy.control_groups {
-                return Err(err(503, "namespace control group policy owner rejected"));
+        for (name, policy) in self.policies.iter().flat_map(|policies| policies.iter()) {
+            policy.validate_namespace_factory(actual, name)?;
+            if policy.expired_default && name != "default" {
+                return Err(err(503, "namespace expired default owner rejected"));
             }
+            policy.validate_expiration()?;
+            // Detached namespace parcels obey the same exact source-bound
+            // legacy/canonical projection admission as loaded AuthState.
+            // Reading a legacy parcel does not rewrite its custody bytes.
+            policy
+                .control_group_projection()
+                .map_err(|_| err(503, "namespace control group policy owner rejected"))?;
         }
         for token in self.tokens.values() {
             token.validate_userpass_creation_ttl()?;

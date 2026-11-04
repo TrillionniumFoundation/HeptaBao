@@ -1,8 +1,8 @@
 # HeptaBao module documentation index
 
-Current executable ownership and route/test mapping: `docs/modules/CURRENT_RUNTIME_MAP.md` and `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md`. Ten packages are in the current server runtime dependency closure; the remaining guides describe separate models, contracts, prototypes and tools.
+Current executable ownership and route/test mapping: `docs/modules/CURRENT_RUNTIME_MAP.md` and `docs/architecture/HEPTABAO_CURRENT_RUNTIME_ARCHITECTURE.md`. Twelve packages appear in the normal and target-specific server runtime dependency closure; the remaining guides describe separate models, contracts, prototypes and tools.
 
-Current status: `V2.1 / 48 WORKSPACE PACKAGES`
+Current status: `V2.1 / 49 WORKSPACE PACKAGES`
 
 Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
@@ -26,6 +26,7 @@ Run `python scripts/validate_module_closure.py` to check the closed set.
 | `heptabao-cli-contracts` | secret-safe CLI invocation contracts | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-cli-contracts.md` |
 | `heptabao-client-contracts` | client retry classification | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-client-contracts.md` |
 | `heptabao-compatibility` | differential compatibility admission | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-compatibility.md` |
+| `heptabao-darwin-vnode-events` | owned macOS vnode event boundary | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-darwin-vnode-events.md` |
 | `heptabao-domain` | shared bounded domain values | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-domain.md` |
 | `heptabao-durable-core` | durable commit contracts | V2 | `INHERITED_IMPLEMENTED` | `docs/modules/heptabao-durable-core.md` |
 | `heptabao-durable-service` | restart-safe sealed durable mutation runtime | V3 | `IMPLEMENTED_REVIEW_REQUIRED` | `docs/modules/heptabao-durable-service.md` |

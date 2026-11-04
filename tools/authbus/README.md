@@ -161,8 +161,8 @@ The suite uses the actual service implementation and real private fsynced
 journals with a synthetic key/value transport. It covers path ownership,
 exact operator grants, immutable collisions, receipt/dedup recovery, known
 CAS races, committed/uncommitted unknown replies, pruned history, revocation
-fencing, original request deadlines, conservative token leases, and inbox
-capacity refusal. It qualifies no actual SDK, HTTPS connection, or physical
+fencing, original request deadlines, conservative token leases, bounded inbox
+pagination, durable scan recovery, and host/deferred-event fairness. It qualifies no actual SDK, HTTPS connection, or physical
 HA behavior.
 
 The separate live driver starts an owned new native V6 HTTPS server and
@@ -201,14 +201,64 @@ revocation. ACL rejection checks include immediate successful reads with
 the same bearers so expired tokens cannot produce false positive results.
 The actual driver must pass on a real host before those results are claimed.
 
+## Bounded legacy inbox scanning
+
+The coordinator uses KV2's existing `LIST ?after=<exclusive-key>&limit=<positive>`
+interface. Each response contains at most 32 UUIDs, and a whole cycle scans at
+most 32 events across all configured source hosts. Already recorded, unsupported
+and not-yet-authorized events count toward that bound. The next cycle starts with
+the next host, so an active or deferred backlog on one host cannot monopolize
+all cycles. Responses that exceed the requested bound, repeat the cursor,
+contain duplicate keys or violate order fail closed.
+
+`inbox-scan.private.json` retains the exact owner UUID, configured source list,
+per-host exclusive cursor and next host. It is written with the same owner-only
+mode, file fsync and directory fsync as the other local state. An existing cursor
+with a different owner, source list or invalid position is rejected. Migrate
+this file with the existing complete state directory. A pre-upgrade state with
+no scan file begins at the start; it reconciles existing immutable receipts.
+
+At a short/empty page the cursor returns to the beginning for the next sweep.
+This revisits newly inserted smaller UUIDs and events that receive authorization
+later. The cursor controls scheduling only: it never proves that a mutation
+committed, grants rotation authority, or replaces an immutable receipt. Pending
+publication recovery runs before scanning. A failing or unknown cycle does not
+publish a new cursor, and a crash before cursor fsync merely causes a bounded
+rescan with the original identity and receipt checks.
+
+The actual service probe is:
+
+```bash
+python3 qa/openbao-acceptance/authbus_inbox_pagination_live.py \
+  --binary /absolute/path/to/verified/heptabao-server \
+  --work-dir /absolute/path/to/a/new/private/inbox-canary
+```
+
+It creates a new `native_v6_file` service with ordinary startup configuration,
+real HTTPS and AppRole policies, and 1057 synthetic report events. It runs each
+cycle as a new coordinator process, cold-restarts the service, inserts a smaller
+UUID after the first page, tests authorization/revocation and actual token
+renewal/revocation, and retains all inbox objects. It does not call a provider,
+load the installed SDK, prove production inventory, or switch any production
+client. The separate production fixed-slot adapter has its own protocol and
+qualification; this change does not replace that adapter.
+
+For a terminated long-inbox fixture, `authbus_inbox_resume_live.py` continues
+that same private dataset only after the original loopback listener is absent.
+It requires the exact binary and coordinator SHA-256 values, the original CA,
+server configuration, owner/source binding and private recovery material. It
+compares retained receipt identities with the declared synthetic event set;
+the scan cursor is never completion evidence. It preserves the original budget
+failure and reports continuation separately. This helper is only for the new
+isolated fixture; it is not a production recovery or credential bootstrap tool.
+
 ## Remaining production gates
 
-- **Inbox capacity:** a source LIST is bounded to 1024 children and a cycle
-  processes at most 32 new events. A larger LIST fails closed. Existing
-  inbox entries are never deleted, and there is no qualified pagination,
-  persistent scan cursor, or garbage collection. Repeated reports will
-  eventually reach this capacity. This is an explicit unattended-service
-  limitation, not an event retention policy. No DELETE permission is given.
+- **Retained data:** legacy inbox entries, immutable receipts and completed
+  publication journals remain retained. The paginated scan below removes the
+  1024-child enumeration limit and bounds each cycle; it does not bound total
+  server or journal storage. A retention/backup policy and capacity monitoring
+  are still required. No DELETE permission is given.
 - **Single owner:** the local operation lock is not a distributed ownership
   lease. Before production transfer, fence the old canonical writer and
   prove exclusive ownership; do not run independent writers with copied

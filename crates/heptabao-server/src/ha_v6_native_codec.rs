@@ -13,14 +13,15 @@ use crate::state_record_root_v6::{ObjectDomain, OwnerDomain, RecordStateRootV6};
 use crate::state_records::{BLOCK_BYTES, ObjectId, ObjectKind, ObjectRef};
 use heptabao_raft_runtime::{
     LocalV6BlobError, LocalV6BlobStage, LocalV6ClosureReceipt, NativeV6CommitIntent,
-    NativeV6PeerEnrollment, NativeV6PublishedRoot, RecordObjectKind, RecordObjectRef,
+    NativeV6PeerEnrollment, NativeV6PublishedRoot, NativeV6RetainedClosure, RecordObjectKind,
+    RecordObjectRef, SealedRecordObject,
 };
 use ring::{
     aead, digest,
     rand::{SecureRandom, SystemRandom},
 };
 use std::collections::{BTreeMap, BTreeSet};
-use zeroize::Zeroizing;
+use zeroize::{Zeroize, Zeroizing};
 
 const OBJECT_MAGIC: &[u8; 5] = b"HBVO6";
 const PAGE_MAGIC: &[u8; 5] = b"HBVP6";
@@ -73,9 +74,18 @@ struct ObjectMapping {
     parts: Vec<RecordObjectRef>,
 }
 
-/// Local, authenticated ciphertext mapping. Its private fields have no wire
-/// constructor. Full typed graph validation belongs to the Service adapter.
-pub(crate) struct NativeV6CipherClosure<Custody = LocalV6ClosureReceipt> {
+/// Authenticated read mapping with no durability receipt or sealing API.
+/// Its private fields have no wire constructor. Full typed graph validation
+/// belongs to the Service adapter; the original consensus/request gate remains.
+pub(crate) struct NativeV6CipherRead {
+    _operation: heptabao_raft_runtime::NativeV6BlobOperation,
+    mapping: NativeV6CipherMapping,
+}
+
+// Shared authenticated DATA only. Normal reads retain their own operation;
+// retained-history reads will borrow the original guard/exclusive owner. No
+// mapping constructor, fsync receipt or publication method is exposed.
+pub(crate) struct NativeV6CipherMapping {
     root: RecordStateRootV6,
     root_bytes: Zeroizing<Vec<u8>>,
     root_digest: [u8; 32],
@@ -83,17 +93,65 @@ pub(crate) struct NativeV6CipherClosure<Custody = LocalV6ClosureReceipt> {
     anchor: RecordObjectRef,
     objects: BTreeMap<(u16, ObjectId), ObjectMapping>,
     references: Vec<RecordObjectRef>,
-    local: Custody,
 }
 
-/// Authenticated read mapping with no local durability receipt or sealing API.
-/// The caller retains its actual consensus witness and original request gate.
-pub(crate) type NativeV6CipherRead = NativeV6CipherClosure<()>;
+impl std::ops::Deref for NativeV6CipherRead {
+    type Target = NativeV6CipherMapping;
+    fn deref(&self) -> &Self::Target {
+        &self.mapping
+    }
+}
+
+/// Historical authenticated mapping borrowed from the actual complete guard
+/// and exclusive store owner. It has no normal read operation, committed-root
+/// constructor, fsync receipt, installation or publication API.
+pub(crate) struct NativeV6RetainedCipherRead<'a> {
+    retained: NativeV6RetainedClosure<'a>,
+    mapping: NativeV6CipherMapping,
+}
+
+enum CipherSource<'a, 'guard> {
+    Ordinary(&'a LocalV6BlobStage),
+    Retained(&'a NativeV6RetainedClosure<'guard>),
+}
+impl CipherSource<'_, '_> {
+    fn read(
+        &self,
+        reference: &RecordObjectRef,
+        gate: &mut impl FnMut() -> CodecResult<()>,
+    ) -> CodecResult<Vec<u8>> {
+        gate()?;
+        let bytes = match self {
+            Self::Ordinary(store) => store.read_local(reference),
+            Self::Retained(closure) => closure.read_local(reference, &mut store_gate(gate)),
+        }
+        .map_err(|_| NativeV6CodecError::Storage)?;
+        gate()?;
+        Ok(bytes)
+    }
+}
+
+/// A read mapping coupled to an actual local fsync receipt. Only the original
+/// persistence paths can construct this type; read-only consumers cannot seal
+/// a proposal or manufacture a durability/quorum witness.
+pub(crate) struct NativeV6CipherClosure {
+    read: NativeV6CipherRead,
+    local: LocalV6ClosureReceipt,
+}
+
+impl std::ops::Deref for NativeV6CipherClosure {
+    type Target = NativeV6CipherRead;
+
+    fn deref(&self) -> &Self::Target {
+        &self.read
+    }
+}
 
 /// A builder is deliberately not a typed closure certificate. It may stage
 /// orphan ciphertext before a later graph or Actor check fails. Nothing here
 /// changes either the local Service root or the consensus root.
 pub(crate) struct NativeV6CipherBuilder<'a> {
+    operation: heptabao_raft_runtime::NativeV6BlobOperation,
     codec: &'a ClusterStateCodec,
     store: &'a LocalV6BlobStage,
     root: &'a RecordStateRootV6,
@@ -102,6 +160,12 @@ pub(crate) struct NativeV6CipherBuilder<'a> {
     enrollment_digest: [u8; 32],
     objects: BTreeMap<(u16, ObjectId), ObjectMapping>,
     references: BTreeMap<[u8; 32], RecordObjectRef>,
+    // Private bounded ciphertext, not a storage or typed-closure receipt.
+    // Reads of pending mappings flush first; finish flushes before directory
+    // publication and the original complete physical closure observation.
+    pending: Vec<SealedRecordObject>,
+    pending_bytes: usize,
+    publication_failed: bool,
 }
 
 fn store_gate(
@@ -413,15 +477,20 @@ impl ClusterStateCodec {
             .try_into()
             .map_err(|_| ReplicatedStateError::InvalidEnvelope)?;
         let mut ciphertext = Zeroizing::new(sealed[SEAL_HEADER..].to_vec());
-        let opened = self
+        let plaintext_len = self
             .key
             .open_in_place(
                 aead::Nonce::assume_unique_for_key(nonce),
                 aead::Aad::from(aad),
                 ciphertext.as_mut_slice(),
             )
-            .map_err(|_| ReplicatedStateError::AuthenticationFailed)?;
-        Ok(Zeroizing::new(opened.to_vec()))
+            .map_err(|_| ReplicatedStateError::AuthenticationFailed)?
+            .len();
+        // ring returns the authenticated plaintext in this buffer's prefix.
+        // Erase the tag before retaining the same zeroizing allocation.
+        ciphertext[plaintext_len..].zeroize();
+        ciphertext.truncate(plaintext_len);
+        Ok(ciphertext)
     }
 
     pub(crate) fn native_v6_builder<'a>(
@@ -439,6 +508,9 @@ impl ClusterStateCodec {
             .map_err(|_| ReplicatedStateError::InvalidState)?
             .digest();
         Ok(NativeV6CipherBuilder {
+            operation: store
+                .begin_native_operation()
+                .map_err(|_| NativeV6CodecError::Storage)?,
             codec: self,
             store,
             root,
@@ -447,43 +519,9 @@ impl ClusterStateCodec {
             enrollment_digest: enrollment.digest(),
             objects: BTreeMap::new(),
             references: BTreeMap::new(),
-        })
-    }
-
-    /// Opens only the closure selected by an opaque, actually committed native
-    /// root. No directory scan or caller-provided manifest is accepted. The
-    /// caller must still perform the complete typed reader and recheck its fresh
-    /// ReadIndex witness and original Actor before installation or delivery.
-    pub(crate) fn open_native_v6_committed_closure(
-        &self,
-        enrollment: &NativeV6PeerEnrollment,
-        published: &NativeV6PublishedRoot,
-        store: &LocalV6BlobStage,
-        gate: &mut impl FnMut() -> CodecResult<()>,
-    ) -> CodecResult<NativeV6CipherClosure> {
-        let read = self.open_native_v6_committed_read(enrollment, published, store, gate)?;
-        // Installation and publication callers still obtain an actual local
-        // durability receipt through the original immutable fsync path.
-        let local = store
-            .persist_local_closure(&read.references, &mut store_gate(gate))
-            .map_err(|_| NativeV6CodecError::Storage)?;
-        let intent = published.intent();
-        if local.manifest_sha256() != intent.closure_manifest_sha256
-            || local.object_count() as u64 != intent.object_count
-            || local.ciphertext_bytes() != intent.ciphertext_bytes
-        {
-            return Err(NativeV6CodecError::Directory);
-        }
-        gate()?;
-        Ok(NativeV6CipherClosure {
-            root: read.root,
-            root_bytes: read.root_bytes,
-            root_digest: read.root_digest,
-            enrollment_digest: read.enrollment_digest,
-            anchor: read.anchor,
-            objects: read.objects,
-            references: read.references,
-            local,
+            pending: Vec::with_capacity(LocalV6BlobStage::MAX_CHECKED_BATCH_OBJECTS),
+            pending_bytes: 0,
+            publication_failed: false,
         })
     }
 
@@ -497,6 +535,21 @@ impl ClusterStateCodec {
         store: &LocalV6BlobStage,
         gate: &mut impl FnMut() -> CodecResult<()>,
     ) -> CodecResult<NativeV6CipherRead> {
+        crate::ha::observe_native_v6_timing("codec", "open_committed_read", None, || {
+            self.open_native_v6_committed_read_inner(enrollment, published, store, gate)
+        })
+    }
+
+    fn open_native_v6_committed_read_inner(
+        &self,
+        enrollment: &NativeV6PeerEnrollment,
+        published: &NativeV6PublishedRoot,
+        store: &LocalV6BlobStage,
+        gate: &mut impl FnMut() -> CodecResult<()>,
+    ) -> CodecResult<NativeV6CipherRead> {
+        let operation = store
+            .begin_native_operation()
+            .map_err(|_| NativeV6CodecError::Storage)?;
         gate()?;
         let intent = published.intent();
         if enrollment.digest() != published.enrollment_digest()
@@ -510,7 +563,55 @@ impl ClusterStateCodec {
             .reopen_root_closure(published, &mut store_gate(gate))
             .map_err(|_| NativeV6CodecError::Storage)?;
         gate()?;
-        let sealed = published.sealed_root();
+        let mapping = self.open_native_v6_mapping(
+            intent,
+            enrollment.digest(),
+            published.sealed_root(),
+            actual,
+            CipherSource::Ordinary(store),
+            gate,
+        )?;
+        Ok(NativeV6CipherRead {
+            _operation: operation,
+            mapping,
+        })
+    }
+
+    pub(crate) fn open_native_v6_retained_read<'a>(
+        &self,
+        retained: NativeV6RetainedClosure<'a>,
+        gate: &mut impl FnMut() -> CodecResult<()>,
+    ) -> CodecResult<NativeV6RetainedCipherRead<'a>> {
+        gate()?;
+        retained.verify().map_err(|_| NativeV6CodecError::Storage)?;
+        let root = retained.root();
+        let mapping = self.open_native_v6_mapping(
+            root.intent(),
+            root.enrollment_digest(),
+            root.sealed_root(),
+            retained.references().to_vec(),
+            CipherSource::Retained(&retained),
+            gate,
+        )?;
+        retained.verify().map_err(|_| NativeV6CodecError::Storage)?;
+        gate()?;
+        Ok(NativeV6RetainedCipherRead { retained, mapping })
+    }
+
+    fn open_native_v6_mapping(
+        &self,
+        intent: NativeV6CommitIntent,
+        enrollment_digest: [u8; 32],
+        sealed: &[u8],
+        actual: Vec<RecordObjectRef>,
+        source: CipherSource<'_, '_>,
+        gate: &mut impl FnMut() -> CodecResult<()>,
+    ) -> CodecResult<NativeV6CipherMapping> {
+        gate()?;
+        if intent.cluster_digest != self.native_v6_cluster_digest() || enrollment_digest == [0; 32]
+        {
+            return Err(ReplicatedStateError::InvalidCluster.into());
+        }
         if !sealed.starts_with(ROOT_MAGIC)
             || !(ROOT_HEADER + TAG_BYTES + 1..=ROOT_HEADER + TAG_BYTES + MAX_ROOT_BYTES)
                 .contains(&sealed.len())
@@ -524,7 +625,7 @@ impl ClusterStateCodec {
         let anchor = decoder.cipher()?;
         decoder.finish()?;
         let mut aad = self.native_aad(ROOT_MAGIC, intent.epoch);
-        aad.extend_from_slice(&enrollment.digest());
+        aad.extend_from_slice(&enrollment_digest);
         aad.extend_from_slice(&intent.encode().map_err(|_| NativeV6CodecError::Directory)?);
         cipher_reference(&mut aad, &anchor)?;
         let mut frame = Vec::with_capacity(sealed.len() - CIPHER_REF_BYTES);
@@ -534,7 +635,11 @@ impl ClusterStateCodec {
         gate()?;
         let root = RecordStateRootV6::decode(&root_bytes)
             .map_err(|_| ReplicatedStateError::InvalidState)?;
-        self.binding(&root, enrollment)?;
+        root.validate()
+            .map_err(|_| ReplicatedStateError::InvalidState)?;
+        if root.cluster_id != self.cluster_id || root.replay_epoch != intent.epoch {
+            return Err(ReplicatedStateError::InvalidCluster.into());
+        }
         let root_digest = root
             .identity()
             .map_err(|_| ReplicatedStateError::InvalidState)?
@@ -547,28 +652,23 @@ impl ClusterStateCodec {
             .map(|reference| (reference.id, reference))
             .collect();
         let mut used = BTreeMap::new();
-        let mut read_directory =
-            |reference: &RecordObjectRef, magic, ordinal| -> CodecResult<Zeroizing<Vec<u8>>> {
-                if actual.get(&reference.id) != Some(reference) {
-                    return Err(NativeV6CodecError::Directory);
-                }
-                include_reference(&mut used, reference)?;
-                gate()?;
-                let sealed = store
-                    .read_local(reference)
-                    .map_err(|_| NativeV6CodecError::Storage)?;
-                gate()?;
-                let aad = self.directory_aad(
-                    magic,
-                    intent.epoch,
-                    root_digest,
-                    enrollment.digest(),
-                    ordinal,
-                );
-                let plain = self.open_native_frame(magic, &aad, &sealed, MAX_PAGE_PLAIN)?;
-                gate()?;
-                Ok(plain)
-            };
+        let mut read_directory = |reference: &RecordObjectRef,
+                                  magic,
+                                  ordinal|
+         -> CodecResult<Zeroizing<Vec<u8>>> {
+            if actual.get(&reference.id) != Some(reference) {
+                return Err(NativeV6CodecError::Directory);
+            }
+            include_reference(&mut used, reference)?;
+            gate()?;
+            let sealed = source.read(reference, gate)?;
+            gate()?;
+            let aad =
+                self.directory_aad(magic, intent.epoch, root_digest, enrollment_digest, ordinal);
+            let plain = self.open_native_frame(magic, &aad, &sealed, MAX_PAGE_PLAIN)?;
+            gate()?;
+            Ok(plain)
+        };
         let index = read_directory(&anchor, INDEX_MAGIC, 0)?;
         let mut index_decoder = Decoder {
             bytes: &index,
@@ -639,7 +739,6 @@ impl ClusterStateCodec {
             }
             decoder.finish()?;
         }
-        drop(read_directory);
         if objects.len() != object_count {
             return Err(NativeV6CodecError::Directory);
         }
@@ -657,15 +756,14 @@ impl ClusterStateCodec {
         // The selected manifest and all ciphertext were reopened above.
         // Reading grants no new local fsync receipt and never republishes it.
         gate()?;
-        Ok(NativeV6CipherClosure {
+        Ok(NativeV6CipherMapping {
             root,
             root_bytes,
             root_digest,
-            enrollment_digest: enrollment.digest(),
+            enrollment_digest,
             anchor,
             objects,
             references,
-            local: (),
         })
     }
 }
@@ -675,14 +773,99 @@ impl NativeV6CipherBuilder<'_> {
         self.objects.len()
     }
 
+    fn flush_pending(&mut self, gate: &mut impl FnMut() -> CodecResult<()>) -> CodecResult<()> {
+        if self.publication_failed {
+            return Err(NativeV6CodecError::Storage);
+        }
+        if self.pending.is_empty() {
+            return gate();
+        }
+        // Unknown publication must not be retried even if a caller were to
+        // retain this private builder after an error. Only success clears it.
+        self.publication_failed = true;
+        gate()?;
+        let ciphertexts: Vec<_> = self.pending.iter().map(|object| object.sealed()).collect();
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let started = std::time::Instant::now();
+        let result = self
+            .store
+            .stage_local_batch_checked(&ciphertexts, &mut store_gate(gate));
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        {
+            use std::io::Write as _;
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "HBHA-PRIVATE-PREPARE-BATCH objects={} bytes={} elapsed_us={} completed={}",
+                self.pending.len(),
+                self.pending_bytes,
+                started.elapsed().as_micros(),
+                result.is_ok()
+            );
+        }
+        let receipts = result.map_err(|_| NativeV6CodecError::Storage)?;
+        if receipts.len() != self.pending.len()
+            || receipts
+                .iter()
+                .zip(&self.pending)
+                .any(|(receipt, object)| receipt.reference() != object.reference())
+        {
+            return Err(NativeV6CodecError::Storage);
+        }
+        gate()?;
+        self.pending.clear();
+        self.pending_bytes = 0;
+        self.publication_failed = false;
+        Ok(())
+    }
+
+    fn queue_ciphertext(
+        &mut self,
+        ciphertext: &[u8],
+        gate: &mut impl FnMut() -> CodecResult<()>,
+    ) -> CodecResult<RecordObjectRef> {
+        if self.publication_failed {
+            return Err(NativeV6CodecError::Storage);
+        }
+        gate()?;
+        let object = SealedRecordObject::new_native_v6_ciphertext_chunk(ciphertext.to_vec())
+            .map_err(|_| NativeV6CodecError::Directory)?;
+        let reference = object.reference().clone();
+        if self
+            .pending
+            .iter()
+            .any(|prior| prior.reference().id == reference.id)
+        {
+            return Err(NativeV6CodecError::Directory);
+        }
+        if self.pending.len() == LocalV6BlobStage::MAX_CHECKED_BATCH_OBJECTS
+            || self
+                .pending_bytes
+                .checked_add(ciphertext.len())
+                .is_none_or(|bytes| bytes > LocalV6BlobStage::MAX_CHECKED_BATCH_CIPHERTEXT_BYTES)
+        {
+            self.flush_pending(gate)?;
+        }
+        self.pending_bytes = self
+            .pending_bytes
+            .checked_add(ciphertext.len())
+            .filter(|bytes| *bytes <= LocalV6BlobStage::MAX_CHECKED_BATCH_CIPHERTEXT_BYTES)
+            .ok_or(NativeV6CodecError::TooLarge)?;
+        self.pending.push(object);
+        gate()?;
+        Ok(reference)
+    }
+
     pub(crate) fn stage_object(
         &mut self,
         domain: &ObjectDomain,
         reference: &ObjectRef,
         plaintext: &[u8],
-        reuse: Option<&NativeV6CipherClosure>,
+        reuse: Option<&NativeV6CipherRead>,
         gate: &mut impl FnMut() -> CodecResult<()>,
     ) -> CodecResult<()> {
+        if self.publication_failed {
+            return Err(NativeV6CodecError::Storage);
+        }
         gate()?;
         let index = domain_index(self.root, domain)?;
         if plaintext.len() != reference.encoded_bytes as usize
@@ -691,11 +874,20 @@ impl NativeV6CipherBuilder<'_> {
         {
             return Err(NativeV6CodecError::Directory);
         }
-        if let Some(existing) = self.objects.get(&(index, reference.id)) {
+        if let Some(existing) = self.objects.get(&(index, reference.id)).cloned() {
             if existing.reference != *reference {
                 return Err(NativeV6CodecError::Directory);
             }
-            let opened = self.read_mapping(domain, existing, gate)?;
+            if existing.parts.iter().any(|reference| {
+                self.pending
+                    .iter()
+                    .any(|object| object.reference() == reference)
+            }) {
+                self.flush_pending(gate)?;
+            }
+            // Repeated typed reads still open the actual persisted ciphertext.
+            // A private pending buffer never substitutes for this read path.
+            let opened = self.read_mapping(domain, &existing, gate)?;
             if opened.as_slice() != plaintext {
                 return Err(ReplicatedStateError::DigestMismatch.into());
             }
@@ -737,12 +929,9 @@ impl NativeV6CipherBuilder<'_> {
             let mut parts = Vec::with_capacity(2);
             for part in sealed.chunks(width) {
                 gate()?;
-                let receipt = self
-                    .store
-                    .stage_local_checked(part, &mut store_gate(gate))
-                    .map_err(|_| NativeV6CodecError::Storage)?;
+                let reference = self.queue_ciphertext(part, gate)?;
                 gate()?;
-                parts.push(receipt.reference().clone());
+                parts.push(reference);
             }
             ObjectMapping {
                 reference: reference.clone(),
@@ -793,9 +982,46 @@ impl NativeV6CipherBuilder<'_> {
         );
         let sealed = self.codec.seal_native_frame(magic, &aad, plaintext)?;
         gate()?;
-        let reference = self
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let (started, phase) = {
+            use std::io::Write as _;
+            let phase = if magic == PAGE_MAGIC {
+                "page_stage"
+            } else if magic == INDEX_MAGIC {
+                "index_stage"
+            } else {
+                "directory_stage"
+            };
+            let started = std::time::Instant::now();
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "HBHA-PRIVATE-PREPARE-STAGE event=start phase={} typed_objects={} page_ordinal={} ciphertext_bytes={}",
+                phase,
+                self.objects.len(),
+                ordinal,
+                sealed.len()
+            );
+            (started, phase)
+        };
+        let result = self
             .store
-            .stage_local_checked(&sealed, &mut store_gate(gate))
+            .stage_local_checked(&sealed, &mut store_gate(gate));
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        {
+            use std::io::Write as _;
+            let elapsed = started.elapsed().as_micros();
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "HBHA-PRIVATE-PREPARE-STAGE event=end phase={} typed_objects={} page_ordinal={} ciphertext_bytes={} elapsed_us={} completed={}",
+                phase,
+                self.objects.len(),
+                ordinal,
+                sealed.len(),
+                elapsed,
+                result.is_ok()
+            );
+        }
+        let reference = result
             .map_err(|_| NativeV6CodecError::Storage)?
             .reference()
             .clone();
@@ -812,6 +1038,7 @@ impl NativeV6CipherBuilder<'_> {
         if self.objects.is_empty() {
             return Err(NativeV6CodecError::Directory);
         }
+        self.flush_pending(gate)?;
         let mut pages = Vec::new();
         let mut page = Zeroizing::new(Vec::with_capacity(MAX_PAGE_PLAIN));
         page.extend_from_slice(PAGE_BODY);
@@ -866,19 +1093,49 @@ impl NativeV6CipherBuilder<'_> {
         }
         let anchor = self.stage_directory(INDEX_MAGIC, 0, &index, gate)?;
         let references: Vec<_> = self.references.into_values().collect();
-        let local = self
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let started = {
+            use std::io::Write as _;
+            let started = std::time::Instant::now();
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "HBHA-PRIVATE-PREPARE-STAGE event=start phase=closure_persist cipher_objects={} directory_pages={}",
+                references.len(),
+                pages.len()
+            );
+            started
+        };
+        let result = self
             .store
-            .persist_local_closure(&references, &mut store_gate(gate))
-            .map_err(|_| NativeV6CodecError::Storage)?;
+            .persist_local_closure(&references, &mut store_gate(gate));
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        {
+            use std::io::Write as _;
+            let elapsed = started.elapsed().as_micros();
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "HBHA-PRIVATE-PREPARE-STAGE event=end phase=closure_persist cipher_objects={} directory_pages={} elapsed_us={} completed={}",
+                references.len(),
+                pages.len(),
+                elapsed,
+                result.is_ok()
+            );
+        }
+        let local = result.map_err(|_| NativeV6CodecError::Storage)?;
         gate()?;
         Ok(NativeV6CipherClosure {
-            root: self.root.clone(),
-            root_bytes: self.root_bytes,
-            root_digest: self.root_digest,
-            enrollment_digest: self.enrollment_digest,
-            anchor,
-            objects: self.objects,
-            references,
+            read: NativeV6CipherRead {
+                _operation: self.operation,
+                mapping: NativeV6CipherMapping {
+                    root: self.root.clone(),
+                    root_bytes: self.root_bytes,
+                    root_digest: self.root_digest,
+                    enrollment_digest: self.enrollment_digest,
+                    anchor,
+                    objects: self.objects,
+                    references,
+                },
+            },
             local,
         })
     }
@@ -887,6 +1144,24 @@ impl NativeV6CipherBuilder<'_> {
 fn read_mapping(
     codec: &ClusterStateCodec,
     store: &LocalV6BlobStage,
+    epoch: u64,
+    domain: &ObjectDomain,
+    mapping: &ObjectMapping,
+    gate: &mut impl FnMut() -> CodecResult<()>,
+) -> CodecResult<Zeroizing<Vec<u8>>> {
+    read_mapping_from(
+        codec,
+        CipherSource::Ordinary(store),
+        epoch,
+        domain,
+        mapping,
+        gate,
+    )
+}
+
+fn read_mapping_from(
+    codec: &ClusterStateCodec,
+    source: CipherSource<'_, '_>,
     epoch: u64,
     domain: &ObjectDomain,
     mapping: &ObjectMapping,
@@ -901,9 +1176,7 @@ fn read_mapping(
     let mut sealed = Vec::with_capacity(expected);
     for reference in &mapping.parts {
         gate()?;
-        let part = store
-            .read_local(reference)
-            .map_err(|_| NativeV6CodecError::Storage)?;
+        let part = source.read(reference, gate)?;
         gate()?;
         if sealed
             .len()
@@ -926,13 +1199,57 @@ fn read_mapping(
     Ok(plain)
 }
 
-impl NativeV6CipherRead {
+impl NativeV6RetainedCipherRead<'_> {
     pub(crate) fn root(&self) -> &RecordStateRootV6 {
-        &self.root
+        &self.mapping.root
+    }
+    pub(crate) fn root_digest(&self) -> [u8; 32] {
+        self.mapping.root_digest
+    }
+    pub(crate) fn object_count(&self) -> usize {
+        self.mapping.objects.len()
+    }
+    pub(crate) fn verify(&self) -> CodecResult<()> {
+        self.retained
+            .verify()
+            .map_err(|_| NativeV6CodecError::Storage)
+    }
+    pub(crate) fn read_object(
+        &self,
+        codec: &ClusterStateCodec,
+        domain: &ObjectDomain,
+        expected: &ObjectRef,
+        gate: &mut impl FnMut() -> CodecResult<()>,
+    ) -> CodecResult<Zeroizing<Vec<u8>>> {
+        gate()?;
+        self.verify()?;
+        if self.mapping.root.cluster_id != codec.cluster_id {
+            return Err(ReplicatedStateError::InvalidCluster.into());
+        }
+        let index = domain_index(&self.mapping.root, domain)?;
+        let mapping = self
+            .mapping
+            .objects
+            .get(&(index, expected.id))
+            .ok_or(NativeV6CodecError::Directory)?;
+        if mapping.reference != *expected {
+            return Err(ReplicatedStateError::DigestMismatch.into());
+        }
+        let bytes = read_mapping_from(
+            codec,
+            CipherSource::Retained(&self.retained),
+            self.mapping.root.replay_epoch,
+            domain,
+            mapping,
+            gate,
+        )?;
+        self.verify()?;
+        gate()?;
+        Ok(bytes)
     }
 }
 
-impl NativeV6CipherClosure {
+impl NativeV6CipherRead {
     pub(crate) fn root(&self) -> &RecordStateRootV6 {
         &self.root
     }
@@ -948,10 +1265,6 @@ impl NativeV6CipherClosure {
     pub(crate) fn references(&self) -> &[RecordObjectRef] {
         &self.references
     }
-    pub(crate) fn local_closure(&self) -> LocalV6ClosureReceipt {
-        self.local
-    }
-
     pub(crate) fn visit_objects(
         &self,
         codec: &ClusterStateCodec,
@@ -966,6 +1279,57 @@ impl NativeV6CipherClosure {
             gate()?;
             visit(&domain, &mapping.reference, &bytes)?;
             gate()?;
+        }
+        gate()
+    }
+
+    /// Keep at most one physical publication batch of actual opened objects.
+    /// The mapping remains authenticated by the selected complete directory;
+    /// every member is freshly read and AEAD-opened under the original gate.
+    /// This bounded plaintext borrow grants no typed graph or fsync authority.
+    pub(crate) fn visit_object_batches(
+        &self,
+        codec: &ClusterStateCodec,
+        store: &LocalV6BlobStage,
+        maximum_plaintext_bytes: usize,
+        gate: &mut impl FnMut() -> CodecResult<()>,
+        visit: &mut impl FnMut(&[(ObjectDomain, ObjectRef, Zeroizing<Vec<u8>>)]) -> CodecResult<()>,
+    ) -> CodecResult<()> {
+        let mut batch = Vec::with_capacity(heptabao_filesystem_guard::MAX_IMMUTABLE_BATCH_OBJECTS);
+        let mut batch_plaintext_bytes = 0usize;
+        for ((index, _), mapping) in &self.objects {
+            gate()?;
+            let object_bytes = mapping.reference.encoded_bytes as usize;
+            if object_bytes > maximum_plaintext_bytes {
+                return Err(NativeV6CodecError::TooLarge);
+            }
+            let next_bytes = batch_plaintext_bytes
+                .checked_add(object_bytes)
+                .ok_or(NativeV6CodecError::TooLarge)?;
+            if !batch.is_empty() && next_bytes > maximum_plaintext_bytes {
+                visit(&batch)?;
+                gate()?;
+                batch.clear();
+                batch_plaintext_bytes = 0;
+            }
+            let domain = indexed_domain(&self.root, *index)?;
+            let bytes = self.read_object(codec, store, &domain, &mapping.reference, gate)?;
+            gate()?;
+            if bytes.len() != object_bytes {
+                return Err(ReplicatedStateError::DigestMismatch.into());
+            }
+            batch_plaintext_bytes += bytes.len();
+            batch.push((domain, mapping.reference.clone(), bytes));
+            if batch.len() == heptabao_filesystem_guard::MAX_IMMUTABLE_BATCH_OBJECTS {
+                visit(&batch)?;
+                gate()?;
+                batch.clear();
+                batch_plaintext_bytes = 0;
+            }
+        }
+        if !batch.is_empty() {
+            gate()?;
+            visit(&batch)?;
         }
         gate()
     }
@@ -991,6 +1355,12 @@ impl NativeV6CipherClosure {
             return Err(ReplicatedStateError::DigestMismatch.into());
         }
         read_mapping(codec, store, self.root.replay_epoch, domain, mapping, gate)
+    }
+}
+
+impl NativeV6CipherClosure {
+    pub(crate) fn local_closure(&self) -> LocalV6ClosureReceipt {
+        self.local
     }
 
     pub(crate) fn seal_root(

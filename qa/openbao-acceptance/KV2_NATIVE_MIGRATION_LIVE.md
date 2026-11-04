@@ -129,8 +129,13 @@ a known-blocked profile needs a concrete implementation change first.
 
 The pinned official fixture is stopped and restarted with
 `raw_storage_endpoint: true` only in its new private configuration.
-The candidate starts with `--config <private/server.json>` and
-`--fixture-native-v6-service`. Existing service roots are not admitted.
+The candidate starts through the normal `--config <private/server.json>` entry
+with `storage.native_v6_file.path` bound to its fresh private `data_dir`. The
+default native binary needs no fixture feature or fixture command-line option.
+Selection does not initialize, unseal or activate V6; the original explicit
+lifecycle requests and the public `POST sys/storage/native-v6/activate` remain
+required. The internal activation route belongs to fixture builds. The report records
+the actual argv and configuration digest. Existing service roots are not admitted.
 
 The controller requires all 31 fixed named checks in its source:
 

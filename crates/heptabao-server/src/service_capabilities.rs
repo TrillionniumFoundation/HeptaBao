@@ -12,11 +12,53 @@ impl Service {
         body: &Value,
         now: u64,
     ) -> Response {
+        let (mut response, observation) = Self::capabilities_route_observed(
+            state,
+            principal,
+            namespace,
+            method,
+            path,
+            body,
+            AuthorityTime::Coarse(now),
+        );
+        if let Some(observation) = observation {
+            let checked = principal
+                .ok_or_else(|| Response::error(403, "missing client token"))
+                .and_then(|actor| {
+                    actor
+                        .request_authority_time(AuthorityTime::Coarse(now))
+                        .map_err(|error| Response::error(error.status, &error.message))
+                })
+                .and_then(|time| {
+                    observation
+                        .check_at(time)
+                        .map_err(|error| Response::error(error.status, &error.message))
+                });
+            if let Err(error) = checked {
+                erase_json(&mut response.body);
+                return error;
+            }
+        }
+        response
+    }
+
+    pub(super) fn capabilities_route_observed(
+        state: &State,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        time: AuthorityTime,
+    ) -> (Response, Option<crate::auth::InspectionObservation>) {
         let result = (|| {
             let actor = principal.ok_or_else(|| Response::error(403, "missing client token"))?;
+            let time = actor
+                .request_authority_time(time)
+                .map_err(|error| Response::error(error.status, &error.message))?;
             state
                 .auth
-                .authorize_request(actor, namespace, path, "update", now)
+                .authorize_request_observed(actor, namespace, path, "update", time)
                 .map_err(|e| Response::error(e.status, &e.message))?;
             if !matches!(method, "POST" | "PUT") {
                 return Err(Response::error(405, "method not allowed"));
@@ -38,24 +80,25 @@ impl Service {
             } else {
                 "token"
             };
-            let mut target_body = body.clone();
-            if let Some(value) = object.get(selector) {
-                let spelling = capabilities_scalar(value).ok_or_else(|| {
-                    let kind=if value.is_object(){"map[string]interface {}"}else{"[]interface {}"};
-                    Response::error(400,&format!("Field validation failed: error converting input for field \"{selector}\": '' expected type 'string', got unconvertible type '{kind}'"))
-                })?;
-                target_body[selector] = Value::String(spelling);
-            }
-            let target: crate::auth::InspectionTarget = state
-                .auth
-                .inspection_target(actor, namespace, path, &target_body, now)
-                .map_err(|e| Response::error(e.status, &e.message))?;
+            let target = Self::capabilities_inspection_target_observed(
+                &state.auth,
+                actor,
+                namespace,
+                path,
+                body,
+                time,
+            )?;
             let (policies, disabled, templates) = match target.entity_id.as_deref() {
                 Some(id) => match state.engines.identity_projection(namespace, id) {
                     Ok(projection) if !projection.disabled => {
                         let selectors = state
                             .auth
-                            .inspection_template_selectors(namespace, &target, &projection.policies)
+                            .inspection_template_selectors_observed(
+                                namespace,
+                                &target,
+                                &projection.policies,
+                                time,
+                            )
                             .map_err(|e| Response::error(e.status, &e.message))?;
                         let templates = state
                             .engines
@@ -68,16 +111,14 @@ impl Service {
                             .map_err(|e| Response::error(e.status, &e.message))?;
                         (projection.policies, false, templates)
                     }
-                    Ok(_) => (
-                        BTreeSet::new(),
-                        true,
-                        crate::auth::IdentityTemplateValues::default(),
-                    ),
-                    Err(e) if e.status == 404 || e.status == 403 => (
-                        BTreeSet::new(),
-                        true,
-                        crate::auth::IdentityTemplateValues::default(),
-                    ),
+                    // OpenBao 2.7.1 Core.Capabilities rejects disabled or
+                    // missing target entities before constructing their ACL.
+                    // The public non-self backend masks that denial as an
+                    // invalid token; it is not a successful ["deny"] reply.
+                    Ok(_) => return Err(capabilities_identity_denied(path)),
+                    Err(e) if e.status == 404 || e.status == 403 => {
+                        return Err(capabilities_identity_denied(path));
+                    }
                     Err(e) => return Err(Response::error(e.status, &e.message)),
                 },
                 None => (
@@ -95,8 +136,8 @@ impl Service {
                 }
                 let capabilities = state
                     .auth
-                    .inspect_capabilities(
-                        namespace, requested, &target, &policies, disabled, &templates,
+                    .inspect_capabilities_observed(
+                        namespace, requested, &target, &policies, disabled, &templates, time,
                     )
                     .map_err(|e| Response::error(e.status, &e.message))?;
                 data.insert(requested.clone(), json!(capabilities));
@@ -122,9 +163,73 @@ impl Service {
                     )]),
                 );
             }
-            Ok(Response::ok(Value::Object(envelope)))
+            let observation = state
+                .auth
+                .retain_inspection_observation(namespace, target, &policies, time)
+                .map_err(|error| Response::error(error.status, &error.message))?;
+            Ok((Response::ok(Value::Object(envelope)), observation))
         })();
-        result.unwrap_or_else(|error| error)
+        match result {
+            Ok((response, observation)) => (response, Some(observation)),
+            Err(error) => (error, None),
+        }
+    }
+
+    /// The original field conversion and read-only target selection. This
+    /// never authenticates a target for execution or consumes a target use.
+    pub(super) fn capabilities_inspection_target_observed(
+        auth: &AuthState,
+        actor: &Principal,
+        namespace: &str,
+        path: &str,
+        body: &Value,
+        time: AuthorityTime,
+    ) -> Result<crate::auth::InspectionTarget, Response> {
+        let object = body
+            .as_object()
+            .ok_or_else(|| Response::error(400, "request must be an object"))?;
+        let selector = if path == "sys/capabilities-accessor" {
+            "accessor"
+        } else {
+            "token"
+        };
+        // Only the declared target field is needed by Auth. Retain the public
+        // request separately and erase this temporary credential spelling.
+        let mut target_body = json!({});
+        let result = (|| {
+            if let Some(value) = object.get(selector) {
+                let spelling = capabilities_scalar(value).ok_or_else(|| {
+                    let kind = if value.is_object() {
+                        "map[string]interface {}"
+                    } else {
+                        "[]interface {}"
+                    };
+                    Response::error(400, &format!(
+                        "Field validation failed: error converting input for field \"{selector}\": '' expected type 'string', got unconvertible type '{kind}'"
+                    ))
+                })?;
+                target_body[selector] = Value::String(spelling);
+            }
+            let inspected = match time {
+                AuthorityTime::Coarse(now) => {
+                    auth.inspection_target(actor, namespace, path, &target_body, now)
+                }
+                AuthorityTime::Precise(_) => {
+                    auth.inspection_target_observed(actor, namespace, path, &target_body, time)
+                }
+            };
+            inspected.map_err(|error| Response::error(error.status, &error.message))
+        })();
+        erase_json(&mut target_body);
+        result
+    }
+}
+
+fn capabilities_identity_denied(path: &str) -> Response {
+    if path == "sys/capabilities-self" {
+        Response::error(403, "permission denied")
+    } else {
+        Response::error(400, "invalid token")
     }
 }
 
@@ -165,7 +270,10 @@ fn capabilities_go_value(value: &Value) -> String {
     }
 }
 
-fn capabilities_paths(value: Option<&Value>, field: &str) -> Result<Vec<String>, Response> {
+pub(super) fn capabilities_paths(
+    value: Option<&Value>,
+    field: &str,
+) -> Result<Vec<String>, Response> {
     let values: Vec<&Value> = match value {
         None | Some(Value::Null) => return Ok(Vec::new()),
         Some(Value::Object(map)) if map.is_empty() => return Ok(Vec::new()),
@@ -209,3 +317,7 @@ fn capabilities_paths(value: Option<&Value>, field: &str) -> Result<Vec<String>,
         ),
     ))
 }
+
+#[cfg(test)]
+#[path = "service_capabilities_identity_expiration_tests.rs"]
+mod identity_expiration_tests;

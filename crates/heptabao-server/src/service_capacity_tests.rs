@@ -276,6 +276,13 @@ fn replay_epoch_transition_bypasses_full_ledger_and_restart_preserves_frontier()
             Err(ServiceError::RequestCapacityExhausted)
         ));
 
+        let observed_before_retire = service.capacity_response("GET", &json!({}));
+        assert_eq!(observed_before_retire.status, 200);
+        assert_eq!(
+            observed_before_retire.body["data"]["replay_epoch"].as_u64(),
+            Some(0)
+        );
+
         let retired = service.handle_at(
             "POST",
             "sys/storage/raft/replay-retire",
@@ -286,6 +293,12 @@ fn replay_epoch_transition_bypasses_full_ledger_and_restart_preserves_frontier()
         );
         assert_eq!(retired.status, 200);
         assert_eq!(retired.body["data"]["replay_epoch"], 1);
+        let observed_after_retire = service.capacity_response("GET", &json!({}));
+        assert_eq!(observed_after_retire.status, 200);
+        assert_eq!(
+            observed_after_retire.body["data"]["replay_epoch"].as_u64(),
+            Some(1)
+        );
         assert_eq!(
             service.state.as_ref().ok_or("missing state")?.replay_epoch,
             1
@@ -310,6 +323,12 @@ fn replay_epoch_transition_bypasses_full_ledger_and_restart_preserves_frontier()
                 .ok_or("missing durable")?
                 .replay_epoch(),
             1
+        );
+        let observed_after_reopen = reopened.capacity_response("GET", &json!({}));
+        assert_eq!(observed_after_reopen.status, 200);
+        assert_eq!(
+            observed_after_reopen.body["data"]["replay_epoch"].as_u64(),
+            Some(1)
         );
         Ok(())
     })();
@@ -344,8 +363,15 @@ fn ha_catch_up_epoch_transition_retires_local_ledger_before_state_publication()
             200
         );
         let mut committed = service.state.clone().ok_or("missing state")?;
-        committed.schema = CURRENT_STATE_SCHEMA;
+        // Replay retirement is the subject here. Keep the initialized Auth
+        // owners' actual reader floor instead of constructing a schema downgrade.
+        committed.schema = committed.writer_schema();
         committed.replay_epoch = 1;
+        assert!(
+            committed
+                .validate_publication_schema(service.state.as_ref())
+                .is_ok()
+        );
         let bytes = serde_json::to_vec(&committed)?;
         let before = service
             .durable
@@ -402,8 +428,13 @@ fn ha_catch_up_can_advance_across_multiple_committed_replay_epochs_without_widen
             200
         );
         let mut committed = service.state.clone().ok_or("missing state")?;
-        committed.schema = CURRENT_STATE_SCHEMA;
+        committed.schema = committed.writer_schema();
         committed.replay_epoch = 3;
+        assert!(
+            committed
+                .validate_publication_schema(service.state.as_ref())
+                .is_ok()
+        );
         let bytes = serde_json::to_vec(&committed)?;
 
         // An ordinary local publication must not acquire the authority to skip
@@ -482,8 +513,13 @@ fn failed_state_publication_after_epoch_retirement_fences_service()
             200
         );
         let mut target = service.state.clone().ok_or("missing state")?;
-        target.schema = CURRENT_STATE_SCHEMA;
+        target.schema = target.writer_schema();
         target.replay_epoch = 1;
+        assert!(
+            target
+                .validate_publication_schema(service.state.as_ref())
+                .is_ok()
+        );
         let bytes = serde_json::to_vec(&target)?;
 
         // The invalid request identity is rejected only after the durable epoch

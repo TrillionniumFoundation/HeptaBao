@@ -49,9 +49,23 @@ fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::err
     Ok(())
 }
 
+// Current behavioral regressions keep the normal first-publication factory.
 fn fixture(root: &Root) -> TestResult<(Service, String, String, String)> {
+    fixture_with_bootstrap(root, bootstrap)
+}
+
+// Historical wire-format regressions choose their old input before publication;
+// no already-published current security contract is erased or relabelled.
+fn historical_fixture(root: &Root) -> TestResult<(Service, String, String, String)> {
+    fixture_with_bootstrap(root, super::tests::bootstrap_pre141)
+}
+
+fn fixture_with_bootstrap(
+    root: &Root,
+    initialize: fn(&mut Service) -> TestResult<(String, String)>,
+) -> TestResult<(Service, String, String, String)> {
     let mut service = root.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    let (key, admin) = initialize(&mut service)?;
     let pair = Ed25519KeyPair::from_seed_unchecked(&[59; 32]).map_err(|_| "test key")?;
     for (path, body) in [
         ("sys/auth/jwt", json!({"type":"jwt"})),
@@ -222,7 +236,7 @@ fn jwt_renewal_role_check_echo_and_wrapper_survive_restart() -> TestResult {
 #[test]
 fn jwt_schema_eighteen_fences_new_issuer_semantics_and_admits_real_legacy_records() -> TestResult {
     let root = Root::new();
-    let (mut service, _, admin, token) = fixture(&root)?;
+    let (mut service, _, admin, token) = historical_fixture(&root)?;
     let mut state = service.state.clone().ok_or("state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     restore_legacy_engine_owner(&mut state)?;
@@ -302,7 +316,7 @@ fn jwt_schema_eighteen_fences_new_issuer_semantics_and_admits_real_legacy_record
 #[test]
 fn native_jwt_schema_nineteen_distinguishes_old_limits_new_defaults_and_leeways() -> TestResult {
     let root = Root::new();
-    let (service, _, _, _) = fixture(&root)?;
+    let (service, _, _, _) = historical_fixture(&root)?;
     let mut state = service.state.clone().ok_or("state")?;
     let mut legacy = serde_json::to_value(&state.auth)?;
     restore_v18_jwt_config(&mut legacy)?;

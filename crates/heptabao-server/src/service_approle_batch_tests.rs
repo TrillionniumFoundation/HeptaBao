@@ -291,24 +291,6 @@ fn approle_batch_success_wraps_and_consumes_in_one_application_publication() -> 
 }
 #[test]
 fn approle_batch_role_and_mount_each_require_schema42_but_old_none_admits41() -> TestResult {
-    let root = Root::new();
-    let mut service = root.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
-    super::approle_no_default_tests::create_legacy_approle_role_fixture(
-        &mut service, "", "approle", "legacy", &admin, json!({"token_ttl":60}),
-    )?;
-    let mut legacy = service.state.clone().ok_or("state")?;
-    legacy.auth.restore_legacy_approle_policy_owners_for_format_test();
-    legacy.schema = 41;
-    assert!(legacy.validate_format().is_ok());
-    let before = owner_store::serialize_owner(&legacy.auth).map_err(|_| "auth")?;
-    let reopened: AuthState = serde_json::from_slice(&before)?;
-    assert!(
-        before.as_slice()
-            == owner_store::serialize_owner(&reopened)
-                .map_err(|_| "auth")?
-                .as_slice()
-    );
     for (path, body) in [
         ("auth/approle/role/legacy", json!({"token_type":"default"})),
         (
@@ -316,6 +298,33 @@ fn approle_batch_role_and_mount_each_require_schema42_but_old_none_admits41() ->
             json!({"token_type":"default-service"}),
         ),
     ] {
+        // Each mutation starts from its own retained historical fixture. A
+        // completed current writer must never be relabeled as that predecessor.
+        let root = Root::new();
+        let mut service = root.service()?;
+        let (_, admin) = crate::service::tests::bootstrap_pre141_approle(&mut service)?;
+        super::approle_no_default_tests::create_legacy_approle_role_fixture(
+            &mut service,
+            "",
+            "approle",
+            "legacy",
+            &admin,
+            json!({"token_ttl":60}),
+        )?;
+        let mut legacy = service.state.clone().ok_or("state")?;
+        legacy
+            .auth
+            .restore_legacy_approle_policy_owners_for_format_test();
+        legacy.schema = 41;
+        assert!(legacy.validate_format().is_ok());
+        let before = owner_store::serialize_owner(&legacy.auth).map_err(|_| "auth")?;
+        let reopened: AuthState = serde_json::from_slice(&before)?;
+        assert!(
+            before.as_slice()
+                == owner_store::serialize_owner(&reopened)
+                    .map_err(|_| "auth")?
+                    .as_slice()
+        );
         crate::service::tests::commit_legacy_state_fixture(&mut service, &legacy)
             .map_err(|_| "legacy fixture commit")?;
         service.state = Some(legacy.clone());
@@ -323,8 +332,24 @@ fn approle_batch_role_and_mount_each_require_schema42_but_old_none_admits41() ->
         let mut changed = service.state.clone().ok_or("state")?;
         assert!(changed.auth.has_approle_batch_state());
         assert!(changed.validate_format().is_ok());
+        // Test the independent batch floor on an unpublished format clone.
+        changed
+            .auth
+            .restore_legacy_approle_policy_owners_for_format_test();
+        changed.schema = 42;
+        changed
+            .validate_format()
+            .map_err(|_| "minimum batch format")?;
         changed.schema = 41;
-        assert!(changed.validate_format().is_err());
+        let rejected = changed
+            .validate_format()
+            .err()
+            .ok_or("missing batch gate")?;
+        assert_eq!(rejected.status, 503);
+        assert_eq!(
+            rejected.body["errors"][0],
+            "AppRole batch configuration requires schema 42"
+        );
     }
     Ok(())
 }
@@ -572,7 +597,13 @@ fn metadata_gate_rejects46(
 ) -> Result<(), Box<dyn std::error::Error>> {
     assert_eq!(state.schema, expected_current_schema);
     let mut state = state.clone();
-    state.auth.restore_legacy_approle_policy_owners_for_format_test();
+    state
+        .auth
+        .restore_legacy_approle_policy_owners_for_format_test();
+    // This unpublished clone comes from an explicit historical factory.
+    // Its metadata floor must not be hidden by unrelated current policy owners.
+    assert!(!state.auth.has_security_contract_state());
+    assert!(!state.auth.has_acl_template_state());
     if state.has_namespace_batch_state() {
         assert!(
             state.auth.has_approle_metadata()
@@ -580,7 +611,9 @@ fn metadata_gate_rejects46(
                 || state.engines.has_extended_login_alias_metadata_state()
         );
         state.schema = NAMESPACE_BATCH_STATE_SCHEMA;
-        state.validate_format().map_err(|_| "minimum bound batch format")?;
+        state
+            .validate_format()
+            .map_err(|_| "minimum bound batch format")?;
         state.schema = NAMESPACE_BATCH_STATE_SCHEMA - 1;
         let failure = state
             .validate_format()
@@ -618,15 +651,41 @@ fn approle_sid_metadata_presence_requires47_while_absent46_reopen_and_reads_pres
     for metadata in [Value::Null, json!("{}"), json!(r#"{"env":"one"}"#)] {
         let root = Root::new();
         let mut service = root.service()?;
-        let (key, admin) = bootstrap(&mut service)?;
+        let (key, admin) = crate::service::tests::bootstrap_pre141_approle(&mut service)?;
         super::approle_no_default_tests::create_legacy_approle_role_fixture(
-            &mut service, "", "approle", "example", &admin,
+            &mut service,
+            "",
+            "approle",
+            "example",
+            &admin,
             json!({"token_type":"service","token_ttl":60,"secret_id_num_uses":0}),
         )?;
-        let credentials = credentials(&mut service, &admin, "service", 0)?;
+        // Keep the already constructed historical role. The shared credentials
+        // helper also performs a new public role write and raises its owner.
+        let rid = call(
+            &mut service,
+            "GET",
+            "auth/approle/role/example/role-id",
+            &admin,
+            json!({}),
+        );
+        assert_eq!(rid.status, 200);
+        let sid = call(
+            &mut service,
+            "POST",
+            "auth/approle/role/example/secret-id",
+            &admin,
+            json!({}),
+        );
+        assert_eq!(sid.status, 200);
+        let credentials = json!({
+            "role_id": rid.body["data"]["role_id"].as_str().ok_or("role_id")?,
+            "secret_id": sid.body["data"]["secret_id"].as_str().ok_or("secret_id")?
+        });
         let mut old = service.state.clone().ok_or("state")?;
         assert!(!old.auth.has_approle_metadata());
-        old.auth.restore_legacy_approle_policy_owners_for_format_test();
+        old.auth
+            .restore_legacy_approle_policy_owners_for_format_test();
         old.schema = 46;
         old.validate_format().map_err(|_| "old format")?;
         let before = owner_store::serialize_owner(&old.auth).map_err(|_| "encode")?;
@@ -674,7 +733,7 @@ fn approle_issued_metadata_and_retained_extended_alias_require47() -> TestResult
     for kind in ["service", "batch"] {
         let root = Root::new();
         let mut service = root.service()?;
-        let (_, admin) = bootstrap(&mut service)?;
+        let (_, admin) = crate::service::tests::bootstrap_pre141_approle(&mut service)?;
         let mut creds = credentials(&mut service, &admin, kind, 1)?;
         if kind == "batch" {
             // Native creation validates a fresh alias more narrowly than a
@@ -704,7 +763,7 @@ fn approle_issued_metadata_and_retained_extended_alias_require47() -> TestResult
             state.engines.has_extended_login_alias_metadata_state(),
             kind == "batch"
         );
-        metadata_gate_rejects46(state, APPROLE_NO_DEFAULT_STATE_SCHEMA)?;
+        metadata_gate_rejects46(state, AUTH_SECURITY_CONTRACT_STATE_SCHEMA)?;
         if kind == "batch" {
             assert_eq!(
                 call(
@@ -720,7 +779,7 @@ fn approle_issued_metadata_and_retained_extended_alias_require47() -> TestResult
             let retained = service.state.as_ref().ok_or("state")?;
             assert!(!retained.auth.has_approle_metadata());
             assert!(retained.engines.has_extended_login_alias_metadata_state());
-            metadata_gate_rejects46(retained, APPROLE_NO_DEFAULT_STATE_SCHEMA)?;
+            metadata_gate_rejects46(retained, AUTH_SECURITY_CONTRACT_STATE_SCHEMA)?;
         }
     }
     Ok(())
@@ -730,7 +789,7 @@ fn approle_issued_metadata_and_retained_extended_alias_require47() -> TestResult
 fn approle_issued_metadata_without_identity_state_independently_requires47() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
+    let (_, admin) = crate::service::tests::bootstrap_pre141_approle(&mut service)?;
     let creds = credentials(&mut service, &admin, "service", 1)?;
     let mut fixture = service.state.clone().ok_or("state")?;
     // Isolate the Auth producer: normal Service completion also creates an
@@ -742,7 +801,7 @@ fn approle_issued_metadata_without_identity_state_independently_requires47() -> 
     assert_eq!(accepted.status, 200);
     assert!(fixture.auth.has_approle_metadata());
     assert!(!fixture.engines.has_login_alias_metadata_state());
-    metadata_gate_rejects46(&fixture, APPROLE_NO_DEFAULT_STATE_SCHEMA)?;
+    metadata_gate_rejects46(&fixture, AUTH_SECURITY_CONTRACT_STATE_SCHEMA)?;
     Ok(())
 }
 
@@ -752,7 +811,7 @@ fn approle_small_retained_alias_metadata_requires47_after_credential_cleanup_and
     for kind in ["service", "batch"] {
         let root = Root::new();
         let mut service = root.service()?;
-        let (key, admin) = bootstrap(&mut service)?;
+        let (key, admin) = crate::service::tests::bootstrap_pre141_approle(&mut service)?;
         let creds = credentials(&mut service, &admin, kind, 1)?;
         assert_eq!(login(&mut service, &creds, None).status, 200);
         assert_eq!(secret_info(&mut service, &admin, &creds).status, 204);
@@ -771,7 +830,7 @@ fn approle_small_retained_alias_metadata_requires47_after_credential_cleanup_and
         assert!(!retained.auth.has_approle_metadata());
         assert!(!retained.engines.has_extended_login_alias_metadata_state());
         assert!(retained.engines.has_approle_login_alias_metadata_state());
-        metadata_gate_rejects46(retained, APPROLE_NO_DEFAULT_STATE_SCHEMA)?;
+        metadata_gate_rejects46(retained, AUTH_SECURITY_CONTRACT_STATE_SCHEMA)?;
         let before = owner_store::serialize_owner(&retained.engines).map_err(|_| "encode")?;
         drop(service);
         let mut reopened = root.service()?;
@@ -780,7 +839,7 @@ fn approle_small_retained_alias_metadata_requires47_after_credential_cleanup_and
             200
         );
         let retained = reopened.state.as_ref().ok_or("state")?;
-        metadata_gate_rejects46(retained, APPROLE_NO_DEFAULT_STATE_SCHEMA)?;
+        metadata_gate_rejects46(retained, AUTH_SECURITY_CONTRACT_STATE_SCHEMA)?;
         assert!(
             before.as_slice()
                 == owner_store::serialize_owner(&retained.engines)
@@ -795,7 +854,7 @@ fn approle_small_retained_alias_metadata_requires47_after_credential_cleanup_and
 fn legacy_jwt_backend_and_admin_role_name_custom_metadata_remain_schema46_readable() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    bootstrap(&mut service)?;
+    crate::service::tests::bootstrap_pre141_approle(&mut service)?;
     let mut fixture = service.state.clone().ok_or("state")?;
     fixture
         .engines

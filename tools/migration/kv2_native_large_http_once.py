@@ -1,5 +1,5 @@
 """One native-large HTTP/1.1 request; private input arrives only on stdin."""
-import base64
+import hashlib
 import http.client
 import json
 import ssl
@@ -10,16 +10,37 @@ MAX_INPUT = 96 * 1024 * 1024
 MAX_BODY = 64 * 1024 * 1024
 MAX_RESPONSE = 8 * 1024 * 1024
 CONTENT_TYPE = "application/vnd.heptabao.kv2-lossless+json"
+INPUT_MAGIC = b"HBKV2HTTP1\n"
+MAX_HEADER = 128 * 1024
 
 
 def main():
-    raw = sys.stdin.buffer.read(MAX_INPUT + 1)
-    if len(raw) > MAX_INPUT:
-        raise ValueError("input bound")
-    packet = json.loads(raw)
+    source = sys.stdin.buffer
+    if source.read(len(INPUT_MAGIC)) != INPUT_MAGIC:
+        raise ValueError("input version")
+    header = source.readline(MAX_HEADER + 1)
+    if len(header) > MAX_HEADER or not header.endswith(b"\n"):
+        raise ValueError("header bound")
+    packet = json.loads(header)
     if not isinstance(packet, dict) or set(packet) != {
-            "address", "headers", "ca_file", "method", "path", "body"}:
+            "address", "headers", "ca_file", "method", "path", "body_bytes", "body_sha256"}:
         raise ValueError("input framing")
+    length, expected_digest = packet["body_bytes"], packet["body_sha256"]
+    if length is None:
+        if expected_digest is not None or source.read(1):
+            raise ValueError("absent body framing")
+        body = None
+    else:
+        if (type(length) is not int or not 0 <= length <= MAX_BODY
+                or len(INPUT_MAGIC) + len(header) + length > MAX_INPUT
+                or not isinstance(expected_digest, str) or len(expected_digest) != 64
+                or any(c not in "0123456789abcdef" for c in expected_digest)):
+            raise ValueError("body framing")
+        # Read at most one byte beyond the declared body. This simultaneously
+        # rejects truncation and trailing data before any connection is made.
+        body = source.read(length + 1)
+        if len(body) != length or hashlib.sha256(body).hexdigest() != expected_digest:
+            raise ValueError("body binding")
     url = urllib.parse.urlsplit(packet["address"])
     if (url.scheme != "https" or not url.hostname or url.username or url.password
             or url.query or url.fragment or url.path not in ("", "/")):
@@ -37,9 +58,6 @@ def main():
             or not path or path.startswith("/") or "#" in path
             or any(ord(c) < 32 for c in path)):
         raise ValueError("fixed operation framing")
-    body = None if packet["body"] is None else base64.b64decode(packet["body"], validate=True)
-    if body is not None and len(body) > MAX_BODY:
-        raise ValueError("body bound")
     if method == "POST":
         query = urllib.parse.urlsplit("/" + path)
         pairs = urllib.parse.parse_qsl(query.query, keep_blank_values=True, strict_parsing=True)

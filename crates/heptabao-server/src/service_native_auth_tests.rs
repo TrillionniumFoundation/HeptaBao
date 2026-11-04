@@ -4,6 +4,8 @@ use super::*;
 
 #[path = "service_native_auth_cert_renewal_tests.rs"]
 pub(super) mod cert_renewal_tests;
+#[path = "service_native_auth_local_tests.rs"]
+mod local_tests;
 #[path = "service_native_auth_login_tests.rs"]
 pub(super) mod login_tests;
 #[path = "service_native_auth_renewal_tests.rs"]
@@ -155,8 +157,34 @@ fn assert_consumed(service: &mut Service, role_id: &str, secret_id: &str) {
     assert!(response.body.get("auth").is_none());
 }
 
+fn assert_partition(service: &mut Service, admin: &str, local: bool) -> TestResult {
+    let mut role = call(service, "GET", ROLE, admin, json!({}));
+    assert_eq!(role.status, 200);
+    assert_eq!(role.body["data"]["local_secret_ids"], local);
+    erase_json(&mut role.body);
+    let state = service.state.as_ref().ok_or("partition state")?;
+    assert_eq!(state.auth.has_cluster_local_approle_state(), local);
+    state
+        .auth
+        .validate_cluster_local_approle_state(&state.cluster_id)
+        .map_err(|_| "invalid actual cluster partition owner")?;
+    if local {
+        assert!(state.schema >= APPROLE_LOCAL_STATE_SCHEMA);
+    }
+    Ok(())
+}
+
 #[test]
 fn native_authbus_approle_policy_kv_cas_renew_revoke_and_cold_reopen() -> TestResult {
+    approle_policy_kv_cas_renew_revoke_and_cold_reopen(false)
+}
+
+#[test]
+fn native_approle142_local_policy_kv_cas_renew_revoke_and_cold_reopen() -> TestResult {
+    approle_policy_kv_cas_renew_revoke_and_cold_reopen(true)
+}
+
+fn approle_policy_kv_cas_renew_revoke_and_cold_reopen(local: bool) -> TestResult {
     let (files, mut service, key, admin) = activated()?;
     // The mount, role, policy and credentials are all created after the actual
     // V6 activation, through the same public dispatch used by a local client.
@@ -194,12 +222,14 @@ fn native_authbus_approle_policy_kv_cas_renew_revoke_and_cold_reopen() -> TestRe
                 "token_max_ttl":"20m",
                 "secret_id_ttl":"10m",
                 "secret_id_num_uses":1,
-                "token_type":"service"
+                "token_type":"service",
+                "local_secret_ids":local
             })
         )
         .status,
         204
     );
+    assert_partition(&mut service, &admin, local)?;
     let mut role_response = call(
         &mut service,
         "GET",
@@ -260,6 +290,7 @@ fn native_authbus_approle_policy_kv_cas_renew_revoke_and_cold_reopen() -> TestRe
 
     // Reopen real encrypted storage with no retained Service/State/Root cache.
     let mut service = reopened(&files, &key)?;
+    assert_partition(&mut service, &admin, local)?;
     let persisted = call(&mut service, "GET", SECRET, &first_token, json!({}));
     assert_eq!(persisted.status, 200);
     assert_eq!(persisted.body["data"]["metadata"]["version"], 2);
@@ -343,6 +374,7 @@ fn native_authbus_approle_policy_kv_cas_renew_revoke_and_cold_reopen() -> TestRe
     drop(service);
 
     let mut service = reopened(&files, &key)?;
+    assert_partition(&mut service, &admin, local)?;
     assert_eq!(
         call(&mut service, "GET", SECRET, &first_token, json!({})).status,
         403

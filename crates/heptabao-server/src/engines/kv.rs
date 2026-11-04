@@ -8,6 +8,9 @@ use lossless::{EntryPrecision, VersionPrecision};
 #[path = "kv_api_numbers.rs"]
 mod api_numbers;
 
+#[path = "kv_api_duration.rs"]
+mod api_duration;
+
 #[path = "kv2_native_records.rs"]
 pub mod native_records;
 
@@ -66,7 +69,7 @@ impl Config {
     }
 
     fn json(&self) -> Value {
-        json!({"max_versions":self.max_versions,"cas_required":self.cas_required,"metadata_cas_required":self.metadata_cas_required,"delete_version_after":lossless::display_duration(self.delete_version_after,self.delete_version_after_nanos)})
+        json!({"max_versions":self.max_versions,"cas_required":self.cas_required,"metadata_cas_required":self.metadata_cas_required,"delete_version_after":api_duration::display(self.delete_version_after,self.delete_version_after_nanos)})
     }
 }
 
@@ -596,7 +599,11 @@ impl Kv2 {
             // intermediate json! value would parse the valid -0 token again
             // and turn it into integer zero in serde's value serializer.
             body["data"]["data"] = std::mem::take(&mut projected.0);
-            Ok(EngineResponse { status:200, body, mutated:false })
+            Ok(EngineResponse {
+                status: 200,
+                body,
+                mutated: false,
+            })
         }
     }
 
@@ -661,7 +668,7 @@ impl Kv2 {
             .unwrap_or_default();
         let deadline = lossless::deletion_deadline(now, &key_config, &self.config)?;
         let created_entry = current.is_none();
-        let format_needed = lossless::needs_lossless_number_format(&data);
+        let format_needed = deadline.is_some() || lossless::needs_lossless_number_format(&data);
         let entry = self
             .entries
             .entry(resource.into())
@@ -672,7 +679,9 @@ impl Kv2 {
         let precise = VersionPrecision {
             created_at: lossless::subsecond(now),
             deletion_at: deadline.and_then(lossless::subsecond),
-            source_deletion_at: None,
+            // The payload's creation-time schedule is distinct from mutable
+            // metadata deletion time; later delete/undelete must preserve it.
+            source_deletion_at: deadline,
         };
         let version = Version {
             created_at: now.seconds(),

@@ -31,11 +31,16 @@ mod api_alpn_tests;
 mod h2_transport;
 #[path = "http_logical.rs"]
 mod logical;
+#[path = "http_mutation_profile.rs"]
+mod mutation_profile;
 #[path = "http_sanitized_config.rs"]
 mod sanitized_config;
-#[cfg(all(test, feature = "fixture-native-v6-service"))]
+#[cfg(all(test, feature = "native-v6-storage"))]
 #[path = "http_snapshot_accept_tests.rs"]
 mod snapshot_accept_tests;
+#[cfg(unix)]
+#[path = "http_tls_reload.rs"]
+mod tls_reload;
 use zeroize::{Zeroize, Zeroizing};
 
 #[path = "http_approle_form.rs"]
@@ -45,7 +50,7 @@ mod approle_form;
 mod approle_mount_tests;
 #[path = "http_help.rs"]
 pub(crate) mod help;
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 #[path = "http_native_kv2_large.rs"]
 mod native_kv2_large;
 #[path = "http_ocsp.rs"]
@@ -344,7 +349,7 @@ pub fn serve(config: Config) -> Result<(), String> {
     serve_inner(
         config,
         None,
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         false,
         #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
         None,
@@ -355,7 +360,7 @@ pub fn serve_with_ha(config: Config, ha: Arc<Mutex<HaProcess>>) -> Result<(), St
     serve_inner(
         config,
         Some(ha),
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         false,
         #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))]
         None,
@@ -371,13 +376,16 @@ pub fn serve_with_ha_fixture(
     serve_inner(
         config,
         Some(ha),
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         false,
         Some(fixture),
     )
 }
 
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(all(
+    feature = "native-v6-storage",
+    any(test, feature = "fixture-native-v6-service")
+))]
 pub fn serve_native_v6_candidate(config: Config) -> Result<(), String> {
     serve_inner(
         config,
@@ -395,12 +403,23 @@ fn configure_api_alpn(tls: &mut ServerConfig) {
 fn serve_inner(
     config: Config,
     ha: Option<Arc<Mutex<HaProcess>>>,
-    #[cfg(feature = "fixture-native-v6-service")] native_candidate: bool,
+    #[cfg(feature = "native-v6-storage")] native_candidate: bool,
     #[cfg(all(feature = "fixture-native-restore-faults", target_os = "linux"))] fixture: Option<
         crate::fixture_native_restore::NativeRestoreFaultGate,
     >,
 ) -> Result<(), String> {
     crate::configuration::validate_storage_runtime(&config, ha.is_some())?;
+    #[cfg(feature = "native-v6-storage")]
+    let native_storage = config
+        .storage
+        .as_ref()
+        .and_then(crate::configuration::StorageConfig::native_v6_profile);
+    #[cfg(feature = "native-v6-storage")]
+    if native_candidate && native_storage.is_some() {
+        return Err(
+            "native Service fixture option cannot replace a configured storage profile".into(),
+        );
+    }
     // Only an allowlisted projection survives the ownership transfer below.
     let sanitized_configuration = sanitized_config::project(&config);
     if let Some(ha) = ha.as_ref() {
@@ -487,9 +506,18 @@ fn serve_inner(
         )?),
         None => None,
     };
+    #[cfg(unix)]
+    let leaf_resolver = tls_reload::LeafResolver::new(
+        config.tls_cert_file.clone(),
+        config.tls_key_file.clone(),
+        certificates,
+        key,
+        Arc::clone(&provider),
+    )?;
     let builder = ServerConfig::builder_with_provider(provider)
         .with_protocol_versions(&versions)
         .map_err(|_| "TLS versions unavailable")?;
+    #[cfg(not(unix))]
     let mut tls = match verifier {
         Some(verifier) => builder
             .with_client_cert_verifier(verifier)
@@ -499,6 +527,15 @@ fn serve_inner(
             .with_no_client_auth()
             .with_single_cert(certificates, key)
             .map_err(|_| "TLS key and certificate do not match")?,
+    };
+    #[cfg(unix)]
+    let mut tls = match verifier {
+        Some(verifier) => builder
+            .with_client_cert_verifier(verifier)
+            .with_cert_resolver(leaf_resolver),
+        None => builder
+            .with_no_client_auth()
+            .with_cert_resolver(leaf_resolver),
     };
     configure_api_alpn(&mut tls);
     let tls = Arc::new(tls);
@@ -546,7 +583,17 @@ fn serve_inner(
         }
         service.install_openbao_wrapper(config.openbao_wrapper)?
     };
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
+    if let Some(profile) = native_storage {
+        service
+            .lock()
+            .map_err(|_| "service lock unavailable")?
+            .configure_native_v6_storage(profile)?;
+    }
+    #[cfg(all(
+        feature = "native-v6-storage",
+        any(test, feature = "fixture-native-v6-service")
+    ))]
     if native_candidate {
         service
             .lock()
@@ -720,6 +767,7 @@ fn serve_inner(
         }
     };
     let connections = Arc::new(AtomicUsize::new(0));
+    let mutation_profile_enabled = mutation_profile::enabled();
     eprintln!(
         "HeptaBao {} TLS listener ready at {}",
         if ha_enabled { "HA" } else { "single-node" },
@@ -782,7 +830,8 @@ fn serve_inner(
         let timeout = Duration::from_secs(config.timeout_seconds);
         // One budget from accept, including worker scheduling, TLS/body reads,
         // service lock waiting, forwarding, provider work, and response writes.
-        let deadline = Instant::now() + timeout;
+        let accepted_at = Instant::now();
+        let deadline = accepted_at + timeout;
         if connections
             .fetch_update(Ordering::AcqRel, Ordering::Acquire, |value| {
                 (value < config.max_connections).then_some(value + 1)
@@ -828,11 +877,14 @@ fn serve_inner(
             .spawn(move || {
                 let service = request_service;
                 let _guard = guard;
+                let mutation_profile =
+                    mutation_profile::Scope::begin(mutation_profile_enabled, accepted_at);
                 if stream.set_read_timeout(Some(timeout)).is_err()
                     || stream.set_write_timeout(Some(timeout)).is_err()
                 {
                     return;
                 }
+                mutation_profile.point(mutation_profile::Point::TlsStart);
                 let Some(mut stream) = h2_transport::negotiate(
                     stream,
                     tls,
@@ -847,6 +899,7 @@ fn serve_inner(
                 ) else {
                     return;
                 };
+                mutation_profile.point(mutation_profile::Point::TlsEnd);
                 let attempt_id = match crypto::random::<16>() {
                     Ok(value) => value,
                     Err(_) => return,
@@ -877,12 +930,19 @@ fn serve_inner(
                     .sock
                     .deadline
                     .saturating_duration_since(Instant::now());
+                mutation_profile.point(mutation_profile::Point::ReadStart);
                 let parsed = read_request_with_ui(
                     &mut stream,
                     read_budget,
                     true,
                     request_ui_assets.is_some(),
                 );
+                mutation_profile.point(mutation_profile::Point::ReadEnd);
+                mutation_profile.select_mutation(matches!(
+                    &parsed,
+                    Ok(ParsedRequest::Api(request))
+                        if matches!(request.method.as_str(), "POST" | "PUT" | "DELETE")
+                ));
                 stream.sock.deadline = deadline;
                 let client_certificates = stream.conn.peer_certificates().map(|certificates| {
                     certificates
@@ -890,6 +950,7 @@ fn serve_inner(
                         .map(|certificate| certificate.as_ref().to_vec())
                         .collect()
                 });
+                mutation_profile.point(mutation_profile::Point::DispatchStart);
                 let (reply, head, namespace) = process_parsed_request(
                     &service,
                     request_ui_assets.as_deref(),
@@ -901,6 +962,7 @@ fn serve_inner(
                     consistency_settings,
                     deadline,
                 );
+                mutation_profile.point(mutation_profile::Point::DispatchEnd);
                 write_http1_reply(&mut stream, reply, head, &namespace, deadline);
             });
         if spawn.is_err() {
@@ -1034,7 +1096,7 @@ fn process_parsed_request(
                     false,
                 ))
             };
-            logical::project(&mut reply, attempt_id, &request.path);
+            logical::project_in_namespace(&mut reply, attempt_id, &request.path, &request.namespace);
             (reply, is_head, request.namespace)
         }
         Err(error) => {
@@ -1070,14 +1132,14 @@ fn execute_deferred_native_body(
     source: &mut impl Read,
     deadline: Instant,
 ) -> snapshot::NativeReply {
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     if request.path == crate::engines::kv2_native_large::PATH {
         return native_kv2_large::execute(service, request, native, source, deadline);
     }
     snapshot::execute(service, request, native, source, deadline)
 }
 
-#[cfg(all(test, feature = "fixture-native-v6-service"))]
+#[cfg(all(test, feature = "native-v6-storage"))]
 pub(crate) fn native_large_upload_wire_fixture(
     service: &Arc<Mutex<Service>>,
     source: &mut impl Read,
@@ -1154,7 +1216,12 @@ fn execute_service_request(
 ) -> Response {
     // The caller retains the original deadline for TLS/frame response writes.
     // A negative execution result must not consume the last response byte's time.
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    let forward_observation = forwarded.then(|| (Instant::now(), deadline));
     let deadline = execution_deadline_with_response_reserve(Instant::now(), deadline);
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    let forward_observation =
+        forward_observation.map(|(began, transport_until)| (began, transport_until, deadline));
     let health_probe = request.path == "sys/health" && matches!(request.method, "GET" | "HEAD");
     let deadline = if health_probe {
         deadline.min(Instant::now() + crate::request_deadline::HEALTH_PROBE_BUDGET)
@@ -1171,7 +1238,34 @@ fn execute_service_request(
         }
         response
     };
-    let execution = match lock_until(service, deadline) {
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    let lock_started = forwarded.then(Instant::now);
+    let locked = lock_until(service, deadline);
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    if let (Some((began, transport_until, execution_until)), Some(lock_started)) =
+        (forward_observation, lock_started)
+    {
+        use std::io::Write as _;
+        let observed = Instant::now();
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "HBHA-PRIVATE-FORWARD-ADMISSION phase=service_lock elapsed_us={} lock_elapsed_us={} acquired={} health_probe={} entry_transport_remaining_ns={} entry_execution_remaining_ns={} response_reserve_ns={} transport_remaining_ns={} execution_remaining_ns={}",
+            observed.duration_since(began).as_micros(),
+            observed.duration_since(lock_started).as_micros(),
+            locked.is_ok(),
+            health_probe,
+            transport_until.saturating_duration_since(began).as_nanos(),
+            execution_until.saturating_duration_since(began).as_nanos(),
+            transport_until
+                .saturating_duration_since(execution_until)
+                .as_nanos(),
+            transport_until
+                .saturating_duration_since(observed)
+                .as_nanos(),
+            deadline.saturating_duration_since(observed).as_nanos(),
+        );
+    }
+    let execution = match locked {
         Ok(mut writer) => {
             let execution = writer.begin_request_before(request, deadline, forwarded);
             if let RequestExecution::Complete(response) = &execution {
@@ -1316,7 +1410,7 @@ impl Write for DeadlineStream {
 fn bounded_file(path: &PathBuf, private: bool) -> Result<Zeroizing<Vec<u8>>, String> {
     let mut options = OpenOptions::new();
     options.read(true);
-    #[cfg(target_os = "linux")]
+    #[cfg(unix)]
     {
         use std::os::unix::fs::OpenOptionsExt;
         options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
@@ -1554,6 +1648,43 @@ fn read_request_mode(
     }
 }
 
+/// Use the real parser and exact data scope with a caller-owned Service clock.
+/// This test bridge grants no authentication or native publication authority.
+#[cfg(test)]
+pub(crate) fn logical_data_wire_dispatch_fixture(
+    bytes: &[u8],
+    dispatch: impl FnOnce(crate::service::ServiceRequest<'_>) -> Response,
+) -> Result<Response, &'static str> {
+    let started = Instant::now();
+    let deadline = crate::request_deadline::current().unwrap_or(started + Duration::from_secs(5));
+    let _deadline = RequestDeadlineScope::enter(deadline);
+    let mut reader = bytes;
+    let mut parsed = read_request_mode(
+        &mut reader,
+        deadline.saturating_duration_since(started),
+        false,
+    )
+    .map_err(|error| error.message)?;
+    let body = std::mem::take(&mut parsed.body.0);
+    let _data = crate::request_metadata::Scope::enter(
+        parsed.logical_data.take(),
+        &parsed.method,
+        &parsed.path,
+        &parsed.namespace,
+        &body,
+    )?;
+    Ok(dispatch(crate::service::ServiceRequest {
+        method: &parsed.method,
+        path: &parsed.path,
+        namespace: &parsed.namespace,
+        token: &parsed.token,
+        body,
+        wrap_ttl_seconds: parsed.wrap_ttl_seconds,
+        origin_peer: Some(std::net::IpAddr::from([127, 0, 0, 1])),
+        client_certificates: None,
+    }))
+}
+
 /// Run the actual HTTP parser/data ingress into the ordinary Service boundary.
 /// The fixed fixture time is caller-owned; this does not reset its auth clock.
 #[cfg(test)]
@@ -1640,7 +1771,7 @@ pub(crate) fn workflow_output_wire_fixture(
         now,
     );
     let mut reply = snapshot::NativeReply::Json(response);
-    logical::project(&mut reply, &attempt, &parsed.path);
+    logical::project_in_namespace(&mut reply, &attempt, &parsed.path, &parsed.namespace);
     let snapshot::NativeReply::Json(response) = reply else {
         return Err("workflow returned non-JSON native reply");
     };
@@ -1860,8 +1991,12 @@ fn read_request_with_ui(
             | "sys/storage/raft/snapshot-force"
             | "sys/storage/raft/snapshot-repair"
     );
-    let download =
-        matches!(method.as_str(), "GET" | "HEAD") && route == "sys/storage/raft/snapshot";
+    #[cfg(feature = "native-v6-storage")]
+    let lossless_export = route == crate::engines::kv2_lossless_export::PATH;
+    #[cfg(not(feature = "native-v6-storage"))]
+    let lossless_export = false;
+    let download = matches!(method.as_str(), "GET" | "HEAD")
+        && (route == "sys/storage/raft/snapshot" || lossless_export);
     let json_body = media_type_is(
         map.get("content-type").map(|value| value.as_str()),
         "application/json",
@@ -1872,9 +2007,10 @@ fn read_request_with_ui(
     // Upload representation still follows Content-Type, independently.
     let native_snapshot = native_wire
         && !help_selected
-        && snapshot_route
-        && (download || (matches!(method.as_str(), "POST" | "PUT") && !json_body));
-    #[cfg(feature = "fixture-native-v6-service")]
+        && ((snapshot_route
+            && (download || (matches!(method.as_str(), "POST" | "PUT") && !json_body)))
+            || (lossless_export && download));
+    #[cfg(feature = "native-v6-storage")]
     let native_large = native_wire
         && !help_selected
         && method == "POST"
@@ -1883,7 +2019,7 @@ fn read_request_with_ui(
             map.get("content-type").map(|value| value.as_str()),
             crate::engines::kv2_native_large::MEDIA_TYPE,
         );
-    #[cfg(not(feature = "fixture-native-v6-service"))]
+    #[cfg(not(feature = "native-v6-storage"))]
     let native_large = false;
     let deferred_body = native_snapshot || native_large;
     if native_large && !map.contains_key("content-length") {
@@ -2417,7 +2553,21 @@ fn merge_query_fields(
         let value = Zeroizing::new(
             decode_query(value).map_err(|error| error.with_health_context(method, path))?,
         );
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
+        if path == crate::engines::kv2_lossless_export::PATH {
+            // This selector belongs only to the lossless export route. Keep
+            // mount names as strings; decoding a field grants no method or
+            // owner authority. Typed downloads and Service still require
+            // GET/HEAD, while other methods retain the ordinary refusal lane.
+            if key != "mount" || !object.is_empty() || value.is_empty() || value.len() > 1024 {
+                return Err(invalid_query(
+                    "lossless KV2 export requires one mount query",
+                ));
+            }
+            object.insert(key, Value::String(value.to_string()));
+            continue;
+        }
+        #[cfg(feature = "native-v6-storage")]
         if method == "POST" && path == crate::engines::kv2_native_large::PATH {
             // This private upload selector is not a global query capability.
             // Keep even numeric/boolean-looking mount names as exact strings;
@@ -2448,7 +2598,7 @@ fn merge_query_fields(
             object.insert(key, Value::String(value.to_string()));
             continue;
         }
-        #[cfg(feature = "experimental-native-v6-ha")]
+        #[cfg(feature = "native-v6-ha")]
         if path == "sys/storage/raft/snapshot"
             && matches!(method, "POST" | "PUT")
             && matches!(
@@ -2624,6 +2774,7 @@ fn write_standard_headers_with_date(
     if !namespace.is_empty() {
         write!(writer, "X-Vault-Namespace: {namespace}\r\n")?;
     }
+    mutation_profile::write_header(writer)?;
     Ok(())
 }
 
@@ -2946,11 +3097,6 @@ fn write_response_with_namespace(
     } else {
         reason.to_owned()
     };
-    let retry_after = if status == 429 {
-        "Retry-After: 1\r\n"
-    } else {
-        ""
-    };
     let index = if status == admitted_http_status {
         response
             .consistency_index
@@ -2982,7 +3128,7 @@ fn write_response_with_namespace(
     {
         write!(writer, "X-Vault-Raw-Error: {error}\r\n")?;
     }
-    write!(writer, "{retry_after}{index}")?;
+    writer.write_all(index.as_bytes())?;
     write_standard_headers_with_date(
         writer,
         namespace,
@@ -3011,6 +3157,10 @@ mod unwrap_framing_tests;
 #[cfg(test)]
 #[path = "http_response_framing_tests.rs"]
 mod response_framing_tests;
+
+#[cfg(test)]
+#[path = "http_quota_headers_tests.rs"]
+mod quota_headers_tests;
 
 #[cfg(test)]
 #[path = "http_ocsp_service_tests.rs"]
@@ -5566,3 +5716,21 @@ mod transit_export_query_tests {
 #[cfg(test)]
 #[path = "http_lossless_json_tests.rs"]
 mod lossless_json_tests;
+
+
+/// Tests feed an actual admitted Service response through the unchanged final
+/// HTTP projector and writer. No test marker creates a static-KV1 origin.
+#[cfg(test)]
+pub(crate) fn signed_kv1_wire_projection_fixture(
+    response: Response, namespace: &str, path: &str, attempt: &[u8; 16],
+) -> Result<Zeroizing<Vec<u8>>, &'static str> {
+    let mut reply = snapshot::NativeReply::Json(response);
+    logical::project_in_namespace(&mut reply, attempt, path, namespace);
+    let snapshot::NativeReply::Json(response) = reply else {
+        return Err("signed KV1 returned non-JSON native reply");
+    };
+    let mut writer = Zeroizing::new(Vec::new());
+    write_response(&mut *writer, response, false)
+        .map_err(|_| "actual HTTP output writer rejected")?;
+    Ok(writer)
+}

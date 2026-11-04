@@ -1,7 +1,7 @@
 //! Actual local issuer/subject signatures, durable restart and reader-floor
 //! gates. Assertions contain fixed messages and never format private responses.
 use super::*;
-use crate::service::tests::bootstrap_unmounted;
+use crate::service::tests::bootstrap_pre141_unmounted;
 use ml_dsa::{
     MlDsa44, MlDsa65, MlDsa87, MlDsaParams, Signature, VerifyingKey,
     pkcs8::{
@@ -21,16 +21,11 @@ use openssl::{
 fn pending_local_csr_has_encrypted_namespace_reopen_and_sticky_schema79() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    let (unseal, admin) = bootstrap_pre141_unmounted(&mut service)?;
     assert!(
-        call(
-            &mut service,
-            "POST",
-            "sys/namespaces/team",
-            &admin,
-            json!({})
-        )
-        .status
+        service
+            .create_pre144_namespace_fixture("team", &admin)?
+            .status
             == 200,
         "CSR namespace"
     );
@@ -405,7 +400,7 @@ fn exported_ed_root_requires_sticky_identifier_floor_and_keeps_private_delivery_
 -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    let (unseal, admin) = bootstrap_pre141_unmounted(&mut service)?;
     assert!(
         call(
             &mut service,
@@ -535,7 +530,7 @@ fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() ->
     for (key_type, key_bits) in key_choices() {
         let root = Root::new();
         let mut service = root.service()?;
-        let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+        let (unseal, admin) = bootstrap_pre141_unmounted(&mut service)?;
         assert!(
             call(
                 &mut service,
@@ -668,16 +663,11 @@ fn local_issuers_all_algorithms_issue_revoke_sign_crl_and_encrypted_restart() ->
 fn extended_root_fields_in_child_namespace_raise_sticky_floor_before_preflight() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    let (unseal, admin) = bootstrap_pre141_unmounted(&mut service)?;
     assert!(
-        call(
-            &mut service,
-            "POST",
-            "sys/namespaces/team",
-            &admin,
-            json!({})
-        )
-        .status
+        service
+            .create_pre144_namespace_fixture("team", &admin)?
+            .status
             == 200,
         "extended root namespace"
     );
@@ -803,16 +793,11 @@ fn local_typed_material_has_all_namespace_sticky_floor_and_active_retired_restor
 -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    let (unseal, admin) = bootstrap_pre141_unmounted(&mut service)?;
     assert!(
-        call(
-            &mut service,
-            "POST",
-            "sys/namespaces/team",
-            &admin,
-            json!({})
-        )
-        .status
+        service
+            .create_pre144_namespace_fixture("team", &admin)?
+            .status
             == 200,
         "namespace creation"
     );
@@ -1090,7 +1075,7 @@ fn local_crl_idle_maintenance_commits_signed_delta_and_survives_clock_rollback_r
 -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    let (unseal, admin) = bootstrap_pre141_unmounted(&mut service)?;
     assert!(
         call(
             &mut service,
@@ -1265,16 +1250,11 @@ fn local_crl_idle_maintenance_commits_signed_delta_and_survives_clock_rollback_r
 fn multiple_local_issuers_have_real_namespace_reopen_and_sticky_reader_floor() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    let (unseal, admin) = bootstrap_pre141_unmounted(&mut service)?;
     assert!(
-        call(
-            &mut service,
-            "POST",
-            "sys/namespaces/team",
-            &admin,
-            json!({})
-        )
-        .status
+        service
+            .create_pre144_namespace_fixture("team", &admin)?
+            .status
             == 200,
         "namespace"
     );

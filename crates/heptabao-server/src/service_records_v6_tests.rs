@@ -61,7 +61,7 @@ impl Fixture {
             cluster_id: &self.root.cluster_id,
             replay_epoch: self.root.replay_epoch,
             minimum_state_schema: self.root.state_schema,
-            maximum_state_schema: 132,
+            maximum_state_schema: MAX_SUPPORTED_STATE_SCHEMA,
             reader_format: 6,
         })
     }

@@ -206,7 +206,8 @@ class NativePhysicalOwnershipTests(unittest.TestCase):
                 self.assertEqual(started.returncode, 0, started.stderr)
                 original_pid = int(started.stdout)
                 identity = json.loads((root / "process.identity.json").read_text())
-                self.assertEqual(identity["arguments"][-1], "--experimental-native-v6-ha")
+                self.assertEqual(identity["arguments"], [str(executable), "--config",
+                    str(root / "server.json"), "--ha-config", str(root / "ha.json")])
                 self.assertEqual(identity["pid"], original_pid)
                 self.assertNotEqual(original_pid, foreign.pid)
                 # The exact target is alive; a missing recorded PID still

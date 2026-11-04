@@ -4,6 +4,10 @@ use super::*;
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
 
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_remount_v6.rs"]
+mod v6;
+
 const QUEUED_WARNING: &str = "Mount move has been queued. Progress will be reported in OpenBao's server log, tagged with the returned migration_id";
 
 #[derive(Clone, Copy)]
@@ -51,6 +55,8 @@ pub(in crate::service) struct Task {
     seal: [u8; 32],
     barrier: [u8; 32],
     ha: Option<Arc<Mutex<HaProcess>>>,
+    #[cfg(feature = "native-v6-storage")]
+    native_scope: Option<namespaces::native_plain::PlainNamespaceScope>,
 }
 pub(in crate::service) struct AcceptedMove {
     actor: plugin::PluginResponseAuthority,
@@ -106,6 +112,54 @@ fn no_callback_owners(state: &State) -> Result<(), Response> {
     Ok(())
 }
 impl Task {
+    fn check_move_preview(&self, current: &State) -> Result<(), Response> {
+        #[cfg(feature = "native-v6-storage")]
+        if let Owner::Engine(owner) = &self.owner
+            && current
+                .engines
+                .is_native_kv2_remount(&self.namespace, &self.from)
+        {
+            if self.native_scope.is_none() {
+                return Err(Response::error(
+                    503,
+                    "native remount requires actual native storage",
+                ));
+            }
+            current
+                .engines
+                .check_native_kv2_remount(&self.namespace, &self.from, &self.to, self.cas, owner)
+                .map_err(Response::from_engine_error)?;
+            let mut auth = current.auth.clone();
+            auth.relocate_rate_limit_quotas(
+                &self.namespace,
+                &format!("{}/", self.from),
+                &format!("{}/", self.to),
+            )
+            .map_err(auth_error)?;
+            return self.check_deadline();
+        }
+        let mut preview = current.clone();
+        self.move_current(&mut preview)?;
+        self.check_deadline()
+    }
+
+    #[cfg(feature = "native-v6-storage")]
+    fn resulting_owner(&self, state: &State) -> Result<Owner, Response> {
+        match &self.owner {
+            Owner::Auth(_) => state
+                .auth
+                .native_remount_owner(&self.namespace, &self.to, &self.from)
+                .map_err(auth_error)?
+                .map(Owner::Auth),
+            Owner::Engine(_) => state
+                .engines
+                .native_remount_owner(&self.namespace, &self.to, &self.from)
+                .map_err(Response::from_engine_error)?
+                .map(Owner::Engine),
+        }
+        .ok_or_else(|| Response::error(503, "native move resulting mount owner missing"))
+    }
+
     fn check_deadline(&self) -> Result<(), Response> {
         if Instant::now() >= self.deadline {
             return Err(Response::error(
@@ -140,6 +194,17 @@ impl Task {
         }
         state.namespace_leases.validate()?;
         state.validate_namespace_deletion_state()?;
+        #[cfg(feature = "native-v6-storage")]
+        match (&self.native_scope, &service.native_root) {
+            (Some(scope), Some(_)) => scope.check(state)?,
+            (None, None) => {}
+            _ => {
+                return Err(Response::error(
+                    503,
+                    "native move storage activation changed",
+                ));
+            }
+        }
         match (&self.ha, &service.ha) {
             (None, None) => {}
             (Some(original), Some(current)) if Arc::ptr_eq(original, current) => {
@@ -214,6 +279,14 @@ impl Task {
                     .remount_native_accepted(&self.namespace, &self.from, &self.to, self.cas, owner)
                     .map_err(Response::from_engine_error)?;
                 state
+                    .auth
+                    .relocate_rate_limit_quotas(
+                        &self.namespace,
+                        &format!("{}/", self.from),
+                        &format!("{}/", self.to),
+                    )
+                    .map_err(auth_error)?;
+                state
                     .engines
                     .native_remount_owner(&self.namespace, &self.to, &self.from)
                     .map_err(Response::from_engine_error)?
@@ -276,6 +349,10 @@ impl Task {
             self.check_deadline()?;
             if service.ha.is_some() {
                 service.sync_from_ha_with_anchor(false)?;
+            }
+            #[cfg(feature = "native-v6-storage")]
+            if service.native_root.is_some() {
+                return self.execute_native(service);
             }
             let current = service
                 .state
@@ -348,6 +425,21 @@ impl Task {
             )?;
             Ok(terminal)
         })();
+        #[cfg(all(test, feature = "native-v6-storage"))]
+        if self.native_scope.is_some() {
+            let status = result
+                .as_ref()
+                .map_or_else(|error: &Response| error.status, |_| 200);
+            let error_digest = result.as_ref().err().and_then(|error| {
+                crate::secret_serde::to_vec(&error.body, 64 * 1024)
+                    .ok()
+                    .map(|bytes| hex(&crypto::digest(&bytes)))
+            });
+            eprintln!(
+                "HBREMOUNT stage=original-task-return status={status} error_sha256={}",
+                error_digest.as_deref().unwrap_or("none")
+            );
+        }
         let now = self.clock.observed_at().map_or(0, |at| at.seconds());
         let audit = service.audit_event(
             "native-remount-task-response",
@@ -507,12 +599,6 @@ impl Service {
                     })
                 })
                 .transpose()?;
-            if let Some(mount) = from.strip_prefix("auth/") {
-                current
-                    .auth
-                    .ensure_rate_limit_quotas_allow_remount(request.namespace, mount)
-                    .map_err(|e| Response::error(e.status, &e.message))?;
-            }
             let (from, to, owner) = match (from.strip_prefix("auth/"), to.strip_prefix("auth/")) {
                 (Some(from), Some(to)) => (
                     from,
@@ -584,10 +670,18 @@ impl Service {
                 seal: seal_digest(self)?,
                 barrier: barrier_digest(self)?,
                 ha: self.ha.clone(),
+                #[cfg(feature = "native-v6-storage")]
+                native_scope: if self.native_root.is_some() {
+                    Some(namespaces::native_plain::PlainNamespaceScope::capture(
+                        current,
+                        request.namespace,
+                    )?)
+                } else {
+                    None
+                },
             };
             task.check_source(self, current)?;
-            let mut preview = current.clone();
-            task.move_current(&mut preview)?;
+            task.check_move_preview(current)?;
             let prefix = if matches!(task.owner, Owner::Auth(_)) {
                 "auth/"
             } else {

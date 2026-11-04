@@ -15,6 +15,22 @@ mod snapshot_repair_tests;
 #[path = "service_native_v6_ha_historical_restore_tests.rs"]
 mod historical_restore_tests;
 
+#[path = "service_native_kv2_large_ha_tests.rs"]
+mod native_large_import_tests;
+
+#[path = "service_native_v6_ha_phase_readindex_tests.rs"]
+mod phase_readindex_tests;
+
+#[path = "service_native_v6_ha_same_root_progress_tests.rs"]
+mod same_root_progress_tests;
+
+#[path = "service_native_raft_observation_ha_tests.rs"]
+mod native_raft_observation_tests;
+
+#[cfg(unix)]
+#[path = "service_native_v6_ha_changed_root_read_tests.rs"]
+mod changed_root_read_tests;
+
 use super::*;
 use crate::ha::{HaPeerConfig, HaProcessConfig};
 use crate::request_deadline::{RequestDeadlineScope, lock_until};
@@ -278,10 +294,15 @@ pub(super) struct Pipeline {
     key: Zeroizing<String>,
     admin: Zeroizing<String>,
     seed_identity: crate::state_record_root::StateIdentity,
+    configured_native_storage: bool,
 }
 
 impl Pipeline {
     pub(super) fn start() -> TestResult<Self> {
+        Self::start_with_configured_storage(false)
+    }
+
+    fn start_with_configured_storage(configured_native_storage: bool) -> TestResult<Self> {
         let mut files = Root::new();
         private_directory(&files.path)?;
         files.path = fs::canonicalize(&files.path)?;
@@ -333,6 +354,7 @@ impl Pipeline {
             key,
             admin,
             seed_identity,
+            configured_native_storage,
         };
         // Actual production bootstrap owner starts after the other two real
         // TLS endpoints. No manually initialized router or test-owned log CAS.
@@ -394,11 +416,16 @@ impl Pipeline {
             .as_ref()
             .ok_or("pipeline process absent")?;
         let directory = self.directory(index);
-        let service = Arc::new(Mutex::new(Service::new_with_ha(
+        let mut service = Service::new_with_ha(
             directory.join("data"),
             &directory.join("audit.jsonl"),
             process.clone(),
-        )?));
+        )?;
+        if self.configured_native_storage {
+            service
+                .configure_native_v6_storage(crate::configuration::NativeStorageProfile::Raft)?;
+        }
+        let service = Arc::new(Mutex::new(service));
         // The current process's handler is registered once. The indirection
         // below is not replaced during a request and its weak owner cannot
         // outlive the Service. Reopening a Service uses a new process below.
@@ -459,7 +486,15 @@ impl Pipeline {
             .ok_or("pipeline Service absent")?;
         let mut writer = lock_until(service, began + REQUEST_BUDGET)
             .map_err(|_| "pipeline Service lock deadline")?;
+        // Attach the existing bounded phase recorder to this original direct
+        // test ingress. It observes the already captured request deadline.
+        let timing = crate::ha::NativeV6RequestObservation::start(
+            crate::request_deadline::current().unwrap_or(began + REQUEST_BUDGET),
+            "pipeline_test",
+            false,
+        );
         let response = writer.handle(method, path, "", token, body);
+        timing.finish(Some(response.status));
         errors_only(path, &response);
         if began.elapsed() >= REQUEST_BUDGET {
             return Err(
@@ -491,6 +526,61 @@ impl Pipeline {
             return Err("pipeline Service inspection deadline".into());
         }
         Ok(result)
+    }
+
+    /// Hold the genuine Service writer only for this terminal-delivery test.
+    /// The callback uses production request/receipt gates and cannot extend
+    /// the receipt's independently captured original request deadline.
+    pub(super) fn with_service_mut_for_delivery_test<T>(
+        &self,
+        index: usize,
+        execute: impl FnOnce(&mut Service) -> TestResult<T>,
+    ) -> TestResult<T> {
+        let until = Instant::now() + REQUEST_BUDGET;
+        let _scope = RequestDeadlineScope::enter(until);
+        let service = self.services[index]
+            .as_ref()
+            .ok_or("pipeline Service absent")?;
+        let mut writer = lock_until(service, until)
+            .map_err(|_| "pipeline Service delivery test lock deadline")?;
+        let result = execute(&mut writer)?;
+        if Instant::now() >= until {
+            return Err("pipeline Service delivery test deadline".into());
+        }
+        Ok(result)
+    }
+
+    // Cold start creates the real owner; readiness still requires this node's
+    // fresh committed ReadIndex. Reuse the large-KV2 cold_rejoin setup bound
+    // before the first unseal; a failed unseal is never retried here.
+    fn wait_cold_native_readindex_ready(&self, index: usize) -> TestResult {
+        let until = Instant::now() + Duration::from_secs(8);
+        let _scope = RequestDeadlineScope::enter(until);
+        loop {
+            let ready = {
+                let process = self.processes[index]
+                    .as_ref()
+                    .ok_or("cold process")?
+                    .lock_for_request()
+                    .map_err(|_| "cold observation lock")?;
+                match process.native_v6_committed_read(OriginalDeadline::capture()?) {
+                    Ok(Some(read)) => {
+                        process.verify_native_v6_committed_read(&read)?;
+                        true
+                    }
+                    Ok(None) | Err(_) => false,
+                }
+            };
+            if Instant::now() >= until {
+                return Err("cold ReadIndex readiness exceeded 8 seconds".into());
+            }
+            if ready {
+                break;
+            }
+            thread::sleep(Duration::from_millis(20));
+        }
+        drop(_scope);
+        Ok(())
     }
 
     fn unseal(&self, index: usize) -> TestResult {
@@ -557,10 +647,9 @@ impl Pipeline {
                         role.applied_index
                             .is_some_and(|applied| applied >= committed)
                     })
+                    && active.replace(index).is_some()
                 {
-                    if active.replace(index).is_some() {
-                        return Err("pipeline observed two current writable leaders".into());
-                    }
+                    return Err("pipeline observed two current writable leaders".into());
                 }
             }
             if let Some(index) = active {
@@ -848,6 +937,7 @@ fn native_ha_pipeline_service_activation_kv_auth_mtls_and_cold_leader_rejoin() -
     // select the new committed root, fetch any missing ciphertext through
     // actual pinned peers and install it under the local barrier.
     pipeline.start_process(first)?;
+    pipeline.wait_cold_native_readindex_ready(first)?;
     pipeline.unseal(first)?;
     let current = pipeline.ready_leader()?;
     assert_eq!(pipeline.native_selection(first)?, after_failover);
@@ -879,7 +969,6 @@ fn native_ha_pipeline_service_activation_kv_auth_mtls_and_cold_leader_rejoin() -
     Ok(())
 }
 
-
 // Quota ingress uses the actual Service transport-peer field. Forwarded hops
 // cross this fixture's existing real pinned-mTLS listeners. Public HTTP socket
 // attribution and physical hosts remain separate acceptance gates.
@@ -901,9 +990,7 @@ impl Pipeline {
             .map_err(|_| "quota pipeline Service lock deadline")?;
         let response = writer.handle_request(
             ServiceRequest::new(method, path, "", token, body)
-                .with_origin_peer(std::net::IpAddr::V4(
-                    std::net::Ipv4Addr::new(192, 0, 2, 40),
-                )),
+                .with_origin_peer(std::net::IpAddr::V4(std::net::Ipv4Addr::new(192, 0, 2, 40))),
         );
         errors_only(path, &response);
         if began.elapsed() >= REQUEST_BUDGET {
@@ -913,7 +1000,12 @@ impl Pipeline {
     }
 }
 
-fn quota_login(pipeline: &Pipeline, index: usize, role: &str, secret: &str) -> TestResult<Response> {
+fn quota_login(
+    pipeline: &Pipeline,
+    index: usize,
+    role: &str,
+    secret: &str,
+) -> TestResult<Response> {
     pipeline.quota_call_from_peer(
         index,
         "POST",
@@ -1033,8 +1125,13 @@ fn ha_quota_ingress_catches_up_definitions_without_resetting_live_buckets() -> T
         )?;
         let old_owner = pipeline.with_service(standby, |service| {
             Ok(Arc::clone(
-                &service.state.as_ref().ok_or("quota standby state")?
-                    .auth.rate_limit_quota_registry().ok_or("quota registry")?
+                &service
+                    .state
+                    .as_ref()
+                    .ok_or("quota standby state")?
+                    .auth
+                    .rate_limit_quota_registry()
+                    .ok_or("quota registry")?
                     .runtime_owner,
             ))
         })?;
@@ -1058,8 +1155,13 @@ fn ha_quota_ingress_catches_up_definitions_without_resetting_live_buckets() -> T
         )?;
         let new_owner = pipeline.with_service(standby, |service| {
             Ok(Arc::clone(
-                &service.state.as_ref().ok_or("quota caught-up state")?
-                    .auth.rate_limit_quota_registry().ok_or("quota caught-up registry")?
+                &service
+                    .state
+                    .as_ref()
+                    .ok_or("quota caught-up state")?
+                    .auth
+                    .rate_limit_quota_registry()
+                    .ok_or("quota caught-up registry")?
                     .runtime_owner,
             ))
         })?;
@@ -1141,16 +1243,17 @@ fn ha_quota_sessions_follow_actual_role_changes_reactivation_and_cold_restart() 
     }
     // Each node charges its own role once. Forwarded attempts also charge the
     // active node. The invalid SID has no credential side effect.
-    for index in 0..3 {
+    assert_eq!(roles.len(), 3);
+    for (index, role) in roles.iter().enumerate() {
         expect(
-            quota_login(&pipeline, index, &roles[index], "invalid-synthetic-SID")?,
+            quota_login(&pipeline, index, role, "invalid-synthetic-SID")?,
             400,
             "quota-initial-node-hop",
         )?;
     }
-    for index in 0..3 {
+    for role in &roles {
         expect(
-            quota_login(&pipeline, leader, &roles[index], "invalid-synthetic-SID")?,
+            quota_login(&pipeline, leader, role, "invalid-synthetic-SID")?,
             429,
             "quota-initial-active-hop",
         )?;
@@ -1166,7 +1269,12 @@ fn ha_quota_sessions_follow_actual_role_changes_reactivation_and_cold_restart() 
         .find(|index| *index != leader && *index != successor)
         .ok_or("continuous standby")?;
     expect(
-        quota_login(&pipeline, successor, &roles[successor], "invalid-synthetic-SID")?,
+        quota_login(
+            &pipeline,
+            successor,
+            &roles[successor],
+            "invalid-synthetic-SID",
+        )?,
         400,
         "quota-new-active-session-resets",
     )?;
@@ -1178,7 +1286,12 @@ fn ha_quota_sessions_follow_actual_role_changes_reactivation_and_cold_restart() 
     // The new active has never seen this role in its new session. A 429 here
     // therefore comes from the continuous standby's still-live local bucket.
     expect(
-        quota_login(&pipeline, continuous, &roles[continuous], "invalid-synthetic-SID")?,
+        quota_login(
+            &pipeline,
+            continuous,
+            &roles[continuous],
+            "invalid-synthetic-SID",
+        )?,
         429,
         "quota-continuous-standby-keeps-bucket-across-other-election",
     )?;
@@ -1187,12 +1300,22 @@ fn ha_quota_sessions_follow_actual_role_changes_reactivation_and_cold_restart() 
     pipeline.unseal(continuous)?;
     assert_eq!(pipeline.ready_leader()?, successor);
     expect(
-        quota_login(&pipeline, continuous, &roles[continuous], "invalid-synthetic-SID")?,
+        quota_login(
+            &pipeline,
+            continuous,
+            &roles[continuous],
+            "invalid-synthetic-SID",
+        )?,
         400,
         "quota-real-cold-restart-resets-local-bucket",
     )?;
     expect(
-        quota_login(&pipeline, successor, &roles[successor], "invalid-synthetic-SID")?,
+        quota_login(
+            &pipeline,
+            successor,
+            &roles[successor],
+            "invalid-synthetic-SID",
+        )?,
         429,
         "quota-active-still-exhausted-before-reseal",
     )?;
@@ -1203,13 +1326,17 @@ fn ha_quota_sessions_follow_actual_role_changes_reactivation_and_cold_restart() 
     )?;
     pipeline.unseal(successor)?;
     expect(
-        quota_login(&pipeline, successor, &roles[successor], "invalid-synthetic-SID")?,
+        quota_login(
+            &pipeline,
+            successor,
+            &roles[successor],
+            "invalid-synthetic-SID",
+        )?,
         400,
         "quota-same-Service-barrier-reactivation-resets",
     )?;
     Ok(())
 }
-
 
 #[test]
 fn native_ha_publication_reads_preserve_actual_tls_quorum_and_checked_repair() -> TestResult {
@@ -1254,12 +1381,11 @@ fn native_ha_publication_reads_preserve_actual_tls_quorum_and_checked_repair() -
         .clone();
     let (published, store, references) = {
         let _scope = scope();
-        let process = ha.lock_for_request().map_err(|_| "publication process lock")?;
+        let process = ha
+            .lock_for_request()
+            .map_err(|_| "publication process lock")?;
         let selected = process
-            .native_v6_committed_read_for_local_root(
-                OriginalDeadline::capture()?,
-                written.1,
-            )?
+            .native_v6_committed_read_for_local_root(OriginalDeadline::capture()?, written.1)?
             .ok_or("publication committed root absent")?;
         assert_eq!(selected.published().root_digest(), written.1);
         let published = selected.published().clone();
@@ -1318,7 +1444,6 @@ fn native_ha_publication_reads_preserve_actual_tls_quorum_and_checked_repair() -
     Ok(())
 }
 
-
 // Guard-contract probes use an actual synchronized Service and its real
 // exhausted bucket. The original two quota tests above remain the full-dispatch
 // success gates; these probes do not claim a public HTTP or client restart.
@@ -1332,7 +1457,9 @@ fn quota_real_rejection_fixture(
     RequestClock,
     u64,
 )> {
-    service.sync_from_ha_with_anchor(false).map_err(|_| "quota guard catch-up")?;
+    service
+        .sync_from_ha_with_anchor(false)
+        .map_err(|_| "quota guard catch-up")?;
     let started = Instant::now();
     let wall = SystemTime::now().duration_since(UNIX_EPOCH)?;
     let clock = RequestClock::anchored(wall, started)?;
@@ -1341,30 +1468,35 @@ fn quota_real_rejection_fixture(
     let fingerprint = service.request_fingerprint("POST", path, "", "");
     service.audit_event("request", &fingerprint, now, None)?;
     service.stage_quota_ingress(&fingerprint, now, started, Some(clock), true);
-    let ingress = service.rate_limit_quotas.take_ingress_entry().ok_or("quota entry absent")?;
+    let ingress = service
+        .rate_limit_quotas
+        .take_ingress_entry()
+        .ok_or("quota entry absent")?;
     let body = json!({"role_id":role,"secret_id":"invalid-synthetic-SID"});
-    let response = service.standby_rate_limit_quota_response(
-        &RequestView {
-            method: "POST",
-            path,
-            namespace: "",
-            token: "",
-            body: &body,
-            now,
-            admission_started: started,
-            token_clock: Some(clock),
-            allow_forward: true,
-            enforce_namespace: true,
-            wrap_ttl_seconds: None,
-            origin_peer: Some(std::net::IpAddr::V4(
-                std::net::Ipv4Addr::new(192, 0, 2, 40),
-            )),
-            client_certificates: None,
-        },
-        Some(ingress),
-    ).ok_or("actual exhausted quota did not reject")?;
+    let response = service
+        .standby_rate_limit_quota_response(
+            &RequestView {
+                method: "POST",
+                path,
+                namespace: "",
+                token: "",
+                body: &body,
+                now,
+                admission_started: started,
+                token_clock: Some(clock),
+                allow_forward: true,
+                enforce_namespace: true,
+                wrap_ttl_seconds: None,
+                origin_peer: Some(std::net::IpAddr::V4(std::net::Ipv4Addr::new(192, 0, 2, 40))),
+                client_certificates: None,
+            },
+            Some(ingress),
+        )
+        .ok_or("actual exhausted quota did not reject")?;
     assert_eq!(response.status, 429);
-    let rejection = service.rate_limit_quotas.take_standby_rejection()
+    let rejection = service
+        .rate_limit_quotas
+        .take_standby_rejection()
         .ok_or("actual standby refusal custody absent")?;
     Ok((rejection, response, fingerprint, clock, now))
 }
@@ -1382,36 +1514,58 @@ fn ha_quota_preauth_refusal_custody_is_exact_and_does_not_commit_time() -> TestR
         let role = quota_role(&pipeline, leader, "guard-client")?;
         let mut precise = expect(
             pipeline.call(
-                leader, "POST", "auth/token/create", pipeline.admin(),
+                leader,
+                "POST",
+                "auth/token/create",
+                pipeline.admin(),
                 json!({"policies":["default"],"ttl":"300s"}),
             )?,
-            200, "quota-guard-actual-precise-owner",
+            200,
+            "quota-guard-actual-precise-owner",
         )?;
         erase_json(&mut precise.body);
         expect(
             pipeline.call(
-                leader, "POST", "sys/quotas/rate-limit/guard", pipeline.admin(),
+                leader,
+                "POST",
+                "sys/quotas/rate-limit/guard",
+                pipeline.admin(),
                 json!({"path":"auth/quota-lifecycle/login","rate":1,"interval":"1h"}),
             )?,
-            204, "quota-guard-rule",
+            204,
+            "quota-guard-rule",
         )?;
         expect(
             quota_login(&pipeline, standby, &role, "invalid-synthetic-SID")?,
-            400, "quota-guard-real-hop-charge",
+            400,
+            "quota-guard-real-hop-charge",
         )?;
 
         for variant in ["actual", "response", "clock", "inbound-scope"] {
             let began = Instant::now();
             let deadline = began + REQUEST_BUDGET;
             let _scope = RequestDeadlineScope::enter(deadline);
-            let service = pipeline.services[standby].as_ref().ok_or("quota guard Service")?;
+            let service = pipeline.services[standby]
+                .as_ref()
+                .ok_or("quota guard Service")?;
             let mut service = lock_until(service, deadline).map_err(|_| "quota guard lock")?;
             let (rejection, response, fingerprint, clock, now) =
                 quota_real_rejection_fixture(&mut service, &role)?;
-            let identity = service.current_state_identity().map_err(|_| "quota guard identity")?;
-            let generation = service.durable.as_ref().ok_or("quota guard durable")?.generation();
-            let floor = service.state.as_ref().ok_or("quota guard state")?
-                .auth.terminal_token_clock_floor().ok_or("quota guard precise floor")?;
+            let identity = service
+                .current_state_identity()
+                .map_err(|_| "quota guard identity")?;
+            let generation = service
+                .durable
+                .as_ref()
+                .ok_or("quota guard durable")?
+                .generation();
+            let floor = service
+                .state
+                .as_ref()
+                .ok_or("quota guard state")?
+                .auth
+                .terminal_token_clock_floor()
+                .ok_or("quota guard precise floor")?;
             let sequence = service.audit_sequence;
             let response = if variant == "response" {
                 Response::ok(json!({"auth":{"client_token":"must-not-release"}}))
@@ -1426,27 +1580,66 @@ fn ha_quota_preauth_refusal_custody_is_exact_and_does_not_commit_time() -> TestR
             } else {
                 Some(clock)
             };
-            let completion = (variant == "inbound-scope").then(|| {
-                crate::ha_forward_completion::CompletionScope::enter(
-                    Some([77; 32]), b"quota guard synthetic inbound scope", deadline,
-                    &service.state.as_ref().unwrap().cluster_id, standby as u64 + 1, false,
-                )
-            });
+            let completion = if variant == "inbound-scope" {
+                Some(crate::ha_forward_completion::CompletionScope::enter(
+                    Some([77; 32]),
+                    b"quota guard synthetic inbound scope",
+                    deadline,
+                    &service
+                        .state
+                        .as_ref()
+                        .ok_or("quota guard state")?
+                        .cluster_id,
+                    standby as u64 + 1,
+                    false,
+                ))
+            } else {
+                None
+            };
             let completed = service.complete_standby_quota_rejection(
-                rejection, response, &fingerprint, now, changed_clock,
+                rejection,
+                response,
+                &fingerprint,
+                now,
+                changed_clock,
             );
-            assert_eq!(completed.status, if variant == "actual" { 429 } else { 503 });
+            assert_eq!(
+                completed.status,
+                if variant == "actual" { 429 } else { 503 }
+            );
             assert!(completed.body.get("auth").is_none());
             assert!(completed.unwrapped_json.is_none());
             assert!(completed.consistency_index.is_none());
             assert!(!service.rate_limit_quotas.has_pending_ingress());
             assert_eq!(service.audit_sequence, sequence + 1);
-            assert_eq!(service.current_state_identity().map_err(|_| "quota guard identity")?, identity);
-            assert_eq!(service.durable.as_ref().ok_or("quota guard durable")?.generation(), generation);
-            assert_eq!(service.state.as_ref().ok_or("quota guard state")?
-                .auth.terminal_token_clock_floor(), Some(floor));
+            assert_eq!(
+                service
+                    .current_state_identity()
+                    .map_err(|_| "quota guard identity")?,
+                identity
+            );
+            assert_eq!(
+                service
+                    .durable
+                    .as_ref()
+                    .ok_or("quota guard durable")?
+                    .generation(),
+                generation
+            );
+            assert_eq!(
+                service
+                    .state
+                    .as_ref()
+                    .ok_or("quota guard state")?
+                    .auth
+                    .terminal_token_clock_floor(),
+                Some(floor)
+            );
             if let Some(scope) = &completion {
-                assert!(scope.finish().is_none(), "a local rejection must not mint a peer receipt");
+                assert!(
+                    scope.finish().is_none(),
+                    "a local rejection must not mint a peer receipt"
+                );
             }
             drop(completion);
             assert!(Instant::now() < deadline, "quota guard original deadline");
@@ -1457,13 +1650,17 @@ fn ha_quota_preauth_refusal_custody_is_exact_and_does_not_commit_time() -> TestR
         {
             let deadline = Instant::now() + REQUEST_BUDGET;
             let _scope = RequestDeadlineScope::enter(deadline);
-            let standby_service = pipeline.services[standby].as_ref().ok_or("quota source Service")?;
+            let standby_service = pipeline.services[standby]
+                .as_ref()
+                .ok_or("quota source Service")?;
             let (rejection, response, fingerprint, clock, now, original_identity) = {
                 let mut service = lock_until(standby_service, deadline)
                     .map_err(|_| "quota source original lock")?;
                 let (proof, reply, fingerprint, clock, now) =
                     quota_real_rejection_fixture(&mut service, &role)?;
-                let identity = service.current_state_identity().map_err(|_| "quota source identity")?;
+                let identity = service
+                    .current_state_identity()
+                    .map_err(|_| "quota source identity")?;
                 (proof, reply, fingerprint, clock, now, identity)
             };
             expect(
@@ -1473,51 +1670,108 @@ fn ha_quota_preauth_refusal_custody_is_exact_and_does_not_commit_time() -> TestR
                 )?,
                 204, "quota-source-real-Auth-change",
             )?;
-            let mut service = lock_until(standby_service, deadline)
-                .map_err(|_| "quota source changed lock")?;
-            service.sync_from_ha_with_anchor(false).map_err(|_| "quota source changed catch-up")?;
-            let changed_identity = service.current_state_identity().map_err(|_| "quota changed identity")?;
+            let mut service =
+                lock_until(standby_service, deadline).map_err(|_| "quota source changed lock")?;
+            service
+                .sync_from_ha_with_anchor(false)
+                .map_err(|_| "quota source changed catch-up")?;
+            let changed_identity = service
+                .current_state_identity()
+                .map_err(|_| "quota changed identity")?;
             assert_ne!(changed_identity, original_identity);
-            let generation = service.durable.as_ref().ok_or("quota changed durable")?.generation();
-            let floor = service.state.as_ref().ok_or("quota changed state")?.auth.terminal_token_clock_floor();
+            let generation = service
+                .durable
+                .as_ref()
+                .ok_or("quota changed durable")?
+                .generation();
+            let floor = service
+                .state
+                .as_ref()
+                .ok_or("quota changed state")?
+                .auth
+                .terminal_token_clock_floor();
             let completed = service.complete_standby_quota_rejection(
-                rejection, response, &fingerprint, now, Some(clock),
+                rejection,
+                response,
+                &fingerprint,
+                now,
+                Some(clock),
             );
             assert_eq!(completed.status, 503);
             assert!(completed.body.get("auth").is_none() && completed.consistency_index.is_none());
-            assert_eq!(service.current_state_identity().map_err(|_| "quota changed identity")?, changed_identity);
-            assert_eq!(service.durable.as_ref().ok_or("quota changed durable")?.generation(), generation);
-            assert_eq!(service.state.as_ref().ok_or("quota changed state")?.auth.terminal_token_clock_floor(), floor);
-            assert!(Instant::now() < deadline, "source change must veto before original deadline");
+            assert_eq!(
+                service
+                    .current_state_identity()
+                    .map_err(|_| "quota changed identity")?,
+                changed_identity
+            );
+            assert_eq!(
+                service
+                    .durable
+                    .as_ref()
+                    .ok_or("quota changed durable")?
+                    .generation(),
+                generation
+            );
+            assert_eq!(
+                service
+                    .state
+                    .as_ref()
+                    .ok_or("quota changed state")?
+                    .auth
+                    .terminal_token_clock_floor(),
+                floor
+            );
+            assert!(
+                Instant::now() < deadline,
+                "source change must veto before original deadline"
+            );
         }
 
         // The ordinary precise-token terminal path still advances its durable
         // observation; a local preauth refusal cannot weaken that path.
         let before = pipeline.with_service(leader, |service| {
-            service.state.as_ref().and_then(|state| state.auth.terminal_token_clock_floor())
+            service
+                .state
+                .as_ref()
+                .and_then(|state| state.auth.terminal_token_clock_floor())
                 .ok_or_else(|| "ordinary precise floor absent".into())
         })?;
         let mut lookup = expect(
-            pipeline.call(leader, "GET", "auth/token/lookup-self", pipeline.admin(), json!({}))?,
-            200, "ordinary-precise-terminal-path-retained",
+            pipeline.call(
+                leader,
+                "GET",
+                "auth/token/lookup-self",
+                pipeline.admin(),
+                json!({}),
+            )?,
+            200,
+            "ordinary-precise-terminal-path-retained",
         )?;
         erase_json(&mut lookup.body);
         let after = pipeline.with_service(leader, |service| {
-            service.state.as_ref().and_then(|state| state.auth.terminal_token_clock_floor())
+            service
+                .state
+                .as_ref()
+                .and_then(|state| state.auth.terminal_token_clock_floor())
                 .ok_or_else(|| "ordinary precise floor absent".into())
         })?;
-        assert!(after > before, "ordinary token observation must still be durably committed");
+        assert!(
+            after > before,
+            "ordinary token observation must still be durably committed"
+        );
     }
     Ok(())
 }
-
 
 #[test]
 fn ha_quota_native_administration_uses_auth_owner_and_preserves_denial_boundaries() -> TestResult {
     fn registry(pipeline: &Pipeline, leader: usize) -> TestResult<Value> {
         pipeline.with_service(leader, |service| {
             let state = service.state.as_ref().ok_or("native quota state")?;
-            let registry = state.auth.rate_limit_quota_registry()
+            let registry = state
+                .auth
+                .rate_limit_quota_registry()
                 .ok_or("native quota registry")?;
             Ok(serde_json::to_value(registry)?)
         })
@@ -1536,12 +1790,26 @@ fn ha_quota_native_administration_uses_auth_owner_and_preserves_denial_boundarie
         "enable_rate_limit_response_headers":false
     });
     expect(
-        pipeline.call(leader, "PUT", "sys/quotas/config", pipeline.admin(), config.clone())?,
-        204, "native-quota-config-write",
+        pipeline.call(
+            leader,
+            "PUT",
+            "sys/quotas/config",
+            pipeline.admin(),
+            config.clone(),
+        )?,
+        204,
+        "native-quota-config-write",
     )?;
     let configured = expect(
-        pipeline.call(standby, "GET", "sys/quotas/config", pipeline.admin(), json!({}))?,
-        200, "native-quota-config-forwarded-read",
+        pipeline.call(
+            standby,
+            "GET",
+            "sys/quotas/config",
+            pipeline.admin(),
+            json!({}),
+        )?,
+        200,
+        "native-quota-config-forwarded-read",
     )?;
     assert_eq!(configured.body["data"], config);
 
@@ -1552,39 +1820,57 @@ fn ha_quota_native_administration_uses_auth_owner_and_preserves_denial_boundarie
     });
     expect(
         pipeline.call(leader, "POST", path, pipeline.admin(), rule.clone())?,
-        204, "native-quota-create",
+        204,
+        "native-quota-create",
     )?;
     let listed = expect(
-        pipeline.call(standby, "LIST", "sys/quotas/rate-limit", pipeline.admin(), json!({}))?,
-        200, "native-quota-forwarded-list",
+        pipeline.call(
+            standby,
+            "LIST",
+            "sys/quotas/rate-limit",
+            pipeline.admin(),
+            json!({}),
+        )?,
+        200,
+        "native-quota-forwarded-list",
     )?;
     assert_eq!(listed.body["data"]["keys"], json!(["native-admin"]));
     let observed = expect(
         pipeline.call(standby, "GET", path, pipeline.admin(), json!({}))?,
-        200, "native-quota-forwarded-rule-read",
+        200,
+        "native-quota-forwarded-rule-read",
     )?;
     assert_eq!(observed.body["data"]["path"], "auth/quota-lifecycle/login");
     assert_eq!(observed.body["data"]["rate"].as_f64(), Some(3.0));
 
     expect(
         pipeline.call(
-            leader, "PUT", "sys/policies/acl/native-quota-reader", pipeline.admin(),
+            leader,
+            "PUT",
+            "sys/policies/acl/native-quota-reader",
+            pipeline.admin(),
             json!({"policy":r#"path "sys/quotas/*" { capabilities = ["read", "list"] }"#}),
         )?,
-        204, "native-quota-reader-policy",
+        204,
+        "native-quota-reader-policy",
     )?;
     let mut issued = expect(
         pipeline.call(
-            leader, "POST", "auth/token/create", pipeline.admin(),
+            leader,
+            "POST",
+            "auth/token/create",
+            pipeline.admin(),
             json!({"policies":["native-quota-reader"],"no_default_policy":true,
                 "no_parent":true,"ttl":"10m"}),
         )?,
-        200, "native-quota-reader-token",
+        200,
+        "native-quota-reader-token",
     )?;
     let reader = secret_field(&mut issued, "/auth/client_token")?;
     expect(
         pipeline.call(standby, "GET", path, &reader, json!({}))?,
-        200, "native-quota-authorized-reader",
+        200,
+        "native-quota-authorized-reader",
     )?;
 
     // Observe only the quota registry: ordinary precise-clock publications
@@ -1592,24 +1878,41 @@ fn ha_quota_native_administration_uses_auth_owner_and_preserves_denial_boundarie
     let before_denials = registry(&pipeline, leader)?;
     expect(
         pipeline.call(leader, "PUT", path, &reader, rule.clone())?,
-        403, "native-quota-reader-cannot-write",
+        403,
+        "native-quota-reader-cannot-write",
     )?;
     expect(
         pipeline.call(
-            leader, "POST", path, pipeline.admin(),
+            leader,
+            "POST",
+            path,
+            pipeline.admin(),
             json!({"path":"auth/quota-lifecycle/login","rate":0,"interval":"1h"}),
         )?,
-        400, "native-quota-invalid-update",
-    )?;
-    expect(
-        pipeline.call(leader, "GET", "sys/quotas/rate-limit", pipeline.admin(), json!({}))?,
-        405, "native-quota-real-collection-method-check",
+        400,
+        "native-quota-invalid-update",
     )?;
     expect(
         pipeline.call(
-            leader, "POST", "sys/quotas/unsupported/native-admin", pipeline.admin(), json!({}),
+            leader,
+            "GET",
+            "sys/quotas/rate-limit",
+            pipeline.admin(),
+            json!({}),
         )?,
-        501, "native-quota-other-owners-stay-closed",
+        405,
+        "native-quota-real-collection-method-check",
+    )?;
+    expect(
+        pipeline.call(
+            leader,
+            "POST",
+            "sys/quotas/unsupported/native-admin",
+            pipeline.admin(),
+            json!({}),
+        )?,
+        501,
+        "native-quota-other-owners-stay-closed",
     )?;
     assert_eq!(registry(&pipeline, leader)?, before_denials);
 
@@ -1619,32 +1922,45 @@ fn ha_quota_native_administration_uses_auth_owner_and_preserves_denial_boundarie
     });
     expect(
         pipeline.call(leader, "PUT", path, pipeline.admin(), updated)?,
-        204, "native-quota-update",
+        204,
+        "native-quota-update",
     )?;
     let after_update = registry(&pipeline, leader)?;
     assert!(
-        after_update["definitions"]["native-admin"]["revision"].as_u64()
+        after_update["definitions"]["native-admin"]["revision"]
+            .as_u64()
             .ok_or("updated quota revision")?
-            > before_denials["definitions"]["native-admin"]["revision"].as_u64()
+            > before_denials["definitions"]["native-admin"]["revision"]
+                .as_u64()
                 .ok_or("original quota revision")?
     );
     let observed = expect(
         pipeline.call(standby, "GET", path, &reader, json!({}))?,
-        200, "native-quota-reader-observes-committed-update",
+        200,
+        "native-quota-reader-observes-committed-update",
     )?;
     assert_eq!(observed.body["data"]["rate"].as_f64(), Some(4.0));
 
     expect(
         pipeline.call(leader, "DELETE", path, pipeline.admin(), json!({}))?,
-        204, "native-quota-delete",
+        204,
+        "native-quota-delete",
     )?;
     expect(
         pipeline.call(standby, "GET", path, &reader, json!({}))?,
-        404, "native-quota-deletion-is-visible",
+        404,
+        "native-quota-deletion-is-visible",
     )?;
     expect(
-        pipeline.call(standby, "LIST", "sys/quotas/rate-limit", pipeline.admin(), json!({}))?,
-        404, "native-quota-empty-list-retains-domain-result",
+        pipeline.call(
+            standby,
+            "LIST",
+            "sys/quotas/rate-limit",
+            pipeline.admin(),
+            json!({}),
+        )?,
+        404,
+        "native-quota-empty-list-retains-domain-result",
     )?;
     let empty = registry(&pipeline, leader)?;
     assert_eq!(empty["definitions"], json!({}));
@@ -1656,12 +1972,41 @@ fn ha_quota_native_administration_uses_auth_owner_and_preserves_denial_boundarie
     let selected = pipeline.native_selection(leader)?;
     pipeline.with_service(leader, |service| {
         let root = service.native_root.as_ref().ok_or("native quota root")?;
-        assert_eq!(root.state_schema, APPROLE_NO_DEFAULT_STATE_SCHEMA);
-        assert_eq!(root.reader_floor.minimum_state_schema, APPROLE_NO_DEFAULT_STATE_SCHEMA);
-        assert_eq!(root.identity().map_err(|_| "native quota root identity")?.digest(), selected.1);
+        assert_eq!(root.state_schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
+        assert_eq!(
+            root.reader_floor.minimum_state_schema,
+            AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+        );
+        assert_eq!(
+            root.identity()
+                .map_err(|_| "native quota root identity")?
+                .digest(),
+            selected.1
+        );
         assert!(!service.recovery_required);
         assert!(service.pending_native_auth_delivery.is_none());
         Ok(())
     })?;
     Ok(())
 }
+
+#[path = "service_native_transit_ha_tests.rs"]
+mod transit_tests;
+
+#[path = "service_native_userpass_ha_tests.rs"]
+mod native_userpass_tests;
+
+#[path = "service_native_totp_ha_tests.rs"]
+mod native_totp_tests;
+
+#[path = "service_native_wrapping_ha_tests.rs"]
+mod wrapping_tests;
+
+#[path = "service_native_missing_route_ha_tests.rs"]
+mod native_missing_route_tests;
+
+#[path = "service_native_pki_ha_tests.rs"]
+mod native_pki_tests;
+
+#[path = "service_native_ha_gc_pipeline_tests.rs"]
+mod shared_gc_tests;

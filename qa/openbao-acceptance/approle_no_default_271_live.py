@@ -194,7 +194,9 @@ class Trace:
 
     def lookup(self, case, auth, policies):
         body = self.req(case, "POST", "auth/token/lookup", {"token": auth["client_token"]}, 200)
-        self.check(case + ".shape", (body.get("data") or {}).get("policies") == policies)
+        expected = None if auth.get("token_type") == "batch" and not policies else policies
+        data = body.get("data") or {}
+        self.check(case + ".shape", "policies" in data and data["policies"] == expected)
 
     def renew(self, case, auth, policies, self_request=False):
         path = "auth/token/renew-self" if self_request else "auth/token/renew"

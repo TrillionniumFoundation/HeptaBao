@@ -183,3 +183,98 @@ fn conditional_publication_keeps_exact_conditions_and_owner_gate_across_compacti
     );
     Ok(())
 }
+
+#[test]
+fn conditional_io_gate_full_journal_refuses_without_checkpoint_or_append()
+-> Result<(), ServiceError> {
+    let _serial = serial_test();
+    let root = TestRoot::new("conditional-io-no-compaction")?;
+    let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 16)?;
+    initialize(&mut service)?;
+    // The old API deliberately compacts; this new bounded request must refuse
+    // the very same actual capacity without changing any physical artifact.
+    service.journal_limit = service.journal_bytes;
+    let paths = [
+        root.0.join("state.hbs"),
+        root.0.join("ledger.hbl"),
+        root.0.join("journal.hbj"),
+    ];
+    let before = paths.iter().map(fs::read).collect::<Result<Vec<_>, _>>()?;
+    let generation = service.generation();
+    let retained = service.retained_request_count();
+    assert!(matches!(
+        service.apply_batch_conditionally_with_io_gate(
+            batch("io-full", b"forbidden", b"forbidden-cursor")?,
+            conditions(b"root-A", b"generation-1")?,
+            || Ok(()),
+        ),
+        Err(ServiceError::JournalCapacityExhausted)
+    ));
+    assert_eq!(service.generation(), generation);
+    assert_eq!(service.retained_request_count(), retained);
+    assert_eq!(
+        paths.iter().map(fs::read).collect::<Result<Vec<_>, _>>()?,
+        before
+    );
+    assert!(!service.recovery_required());
+    Ok(())
+}
+
+#[test]
+fn conditional_io_gate_retains_exact_replay_binding_and_current_authority()
+-> Result<(), ServiceError> {
+    let _serial = serial_test();
+    let root = TestRoot::new("conditional-io-replay")?;
+    let mut service = DurableService::create_new(&root.0, TestBarrier::new(), 16)?;
+    initialize(&mut service)?;
+    service.apply_batch_conditionally_with_io_gate(
+        batch("io-live", b"root-B", b"generation-2")?,
+        conditions(b"root-A", b"generation-1")?,
+        || Ok(()),
+    )?;
+    let generation = service.generation();
+    let journal = fs::read(journal_path(&root.0))?;
+    let called = std::cell::Cell::new(false);
+    assert!(matches!(
+        service.apply_batch_conditionally_with_io_gate(
+            batch("io-live", b"root-B", b"generation-2")?,
+            conditions(b"root-A", b"generation-1")?,
+            || {
+                called.set(true);
+                Err(ServiceError::BarrierFailure)
+            },
+        ),
+        Err(ServiceError::BarrierFailure)
+    ));
+    assert!(
+        called.get(),
+        "a cached duplicate cannot grant revoked authority"
+    );
+    assert!(matches!(
+        service.apply_batch_conditionally_with_io_gate(
+            batch("io-live", b"root-B", b"generation-2")?,
+            conditions(b"root-A", b"different-original-cursor")?,
+            || Ok(()),
+        ),
+        Err(ServiceError::RequestBindingConflict)
+    ));
+    assert_eq!(service.generation(), generation);
+    assert_eq!(fs::read(journal_path(&root.0))?, journal);
+    drop(service);
+    let reopened = DurableService::reopen(&root.0, TestBarrier::new(), 16)?;
+    assert_eq!(
+        reopened
+            .get("system", "state")?
+            .ok_or(ServiceError::CorruptState)?
+            .expose(),
+        b"root-B"
+    );
+    assert_eq!(
+        reopened
+            .get("system", "publication-cursor")?
+            .ok_or(ServiceError::CorruptState)?
+            .expose(),
+        b"generation-2"
+    );
+    Ok(())
+}

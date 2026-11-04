@@ -42,6 +42,33 @@ fn precise_dispatch(
     )
 }
 
+// The requested ten-minute certificate retains the role's default 30-second
+// backdating. Its actual signed validity is independent of the two-second
+// service actor, which must still remain live through each original frontier.
+fn assert_original_certificate_validity(response: &Response, actor_base: u64) -> TestResult {
+    let expiration = response.body["data"]["expiration"]
+        .as_u64()
+        .ok_or("actual public certificate expiry")?;
+    let not_before = response.body["data"]["not_before"]
+        .as_u64()
+        .ok_or("actual public certificate notBefore")?;
+    assert_eq!(expiration - not_before, 630);
+    assert!(expiration > actor_base + 3);
+    assert_eq!(response.body["lease_duration"], 600);
+    let certificate = openssl::x509::X509::from_pem(
+        response.body["data"]["certificate"]
+            .as_str()
+            .ok_or("actual signed certificate")?
+            .as_bytes(),
+    )?;
+    let expected = openssl::asn1::Asn1Time::from_unix(i64::try_from(expiration)?)?;
+    assert_eq!(
+        certificate.not_after().compare(&expected)?,
+        std::cmp::Ordering::Equal
+    );
+    Ok(())
+}
+
 fn actor_in_service(service: &mut Service, admin: &str) -> TestResult<(String, u64)> {
     let state = service.state.as_ref().ok_or("issuer fixture state")?;
     let auth_floor = state.auth.terminal_token_clock_floor();
@@ -209,7 +236,7 @@ fn pki_nano_tls_actual_signed_publication_then_post_audit_actor_expiry_withholds
         response.status, 200,
         "actual verified signature durably published"
     );
-    assert_eq!(response.body["data"]["expiration"], base + 2);
+    assert_original_certificate_validity(&response, base)?;
     let certificate = response.body["data"]["certificate"]
         .as_str()
         .ok_or("actual signed certificate")?;
@@ -298,7 +325,7 @@ fn pki_nano_tls_live_precise_actor_delivers_after_actual_terminal_clock_audit() 
         response.status, 200,
         "live precise actor must survive its owned clock-only audit write"
     );
-    assert_eq!(response.body["data"]["expiration"], base + 2);
+    assert_original_certificate_validity(&response, base)?;
     assert!(response.body["data"]["private_key"].as_str().is_some());
     assert_eq!(remote.calls()?, before + 2);
     Ok(())
@@ -433,7 +460,7 @@ fn pki_nano_actual_durable_floor_rejects_prior_actor_and_new_fixture_owns_curren
     );
     let delivered = service.finish_synchronous_request(current);
     assert_eq!(delivered.status, 200);
-    assert_eq!(delivered.body["data"]["expiration"], base + 2);
+    assert_original_certificate_validity(&delivered, base)?;
     let certificate = openssl::x509::X509::from_pem(
         delivered.body["data"]["certificate"]
             .as_str()

@@ -13,6 +13,14 @@ impl Service {
     pub(super) fn maintain_lifetimes_at(&mut self, now: u64) -> Result<bool, &'static str> {
         self.maintain_lifetimes_with_clock(now, None)
     }
+    #[cfg(all(test, feature = "native-v6-storage"))]
+    pub(super) fn maintain_native_transit_with_clock_for_test(
+        &mut self,
+        now: u64,
+        clock: RequestClock,
+    ) -> Result<bool, &'static str> {
+        self.maintain_lifetimes_with_clock(now, Some(clock))
+    }
     fn maintain_lifetimes_with_clock(
         &mut self,
         now: u64,
@@ -60,6 +68,13 @@ impl Service {
             None => AuthorityTime::Coarse(now),
         };
         let now = time.seconds();
+        #[cfg(feature = "native-v6-storage")]
+        if self.native_root.is_some() {
+            if current.engines.has_native_local_pki() {
+                return self.maintain_native_pki_lifetimes(now, clock);
+            }
+            return self.maintain_native_transit_lifetimes(now, clock);
+        }
         let mut next = current.clone();
         let changed = Self::reconcile_lease_owners_observed(&mut next, time)
             .map_err(|_| "lease and PKI CRL maintenance failed")?

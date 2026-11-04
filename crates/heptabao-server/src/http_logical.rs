@@ -46,11 +46,31 @@ fn inject_system_data(path: &str) -> bool {
     })
 }
 
+#[cfg(test)]
 pub(super) fn project(reply: &mut snapshot::NativeReply, random: &[u8; 16], path: &str) {
+    project_in_namespace(reply, random, path, "")
+}
+
+pub(super) fn project_in_namespace(
+    reply: &mut snapshot::NativeReply, random: &[u8; 16], path: &str, namespace: &str,
+) {
     let snapshot::NativeReply::Json(response) = reply else {
         return;
     };
     if response.status != 200 {
+        return;
+    }
+    if let Some(origin) = response.unwrapped_json.as_ref()
+        && origin.static_kv1_lease().is_some()
+    {
+        match origin.project_static_kv1_envelope(&response.body, &request_id(random), namespace, path) {
+            Ok(Some(mut envelope)) => {
+                crate::service::erase_json(&mut response.body);
+                response.body = std::mem::take(&mut envelope);
+                response.unwrapped_json = None;
+            }
+            _ => *response = Response::error(503, "signed KV1 scoped HTTP projection rejected"),
+        }
         return;
     }
     if let Some(origin) = response.unwrapped_json.as_mut()

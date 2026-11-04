@@ -655,7 +655,11 @@ mod tests {
         let mut server_tls = ServerConfig::builder_with_provider(provider.clone())
             .with_safe_default_protocol_versions()?
             .with_client_cert_verifier(
-                WebPkiClientVerifier::builder(Arc::new(roots.clone())).build()?,
+                WebPkiClientVerifier::builder_with_provider(
+                    Arc::new(roots.clone()),
+                    provider.clone(),
+                )
+                .build()?,
             )
             .with_single_cert(
                 certificates(&root.join("server.crt"))?,

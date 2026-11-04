@@ -731,3 +731,6 @@ fn unexpected_external_temp_while_known_clean_refuses_without_following_symlink(
     assert_eq!(fs::read(&protected)?, b"preserve");
     Ok(())
 }
+
+#[path = "immutable_single_clean_tests.rs"]
+mod single_clean;

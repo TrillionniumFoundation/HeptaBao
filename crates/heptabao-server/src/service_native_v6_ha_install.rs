@@ -5,10 +5,13 @@
 //! mutations retain the originally selected state and the same local owner.
 //! The feature and existing single-node gates remain independent and closed.
 use super::*;
-use crate::engines::kv2_native_records::NativeReadView;
-use crate::ha::CommittedNativeV6Read;
+use crate::engines::kv2_native_records::{NativeReadView, PagedPayloadValidationMemo};
+use crate::ha::{CommittedNativeV6Read, NativeV6FailureObservation};
 use crate::ha_state::ClusterStateCodec;
-use crate::service::native_v6_ha_objects::open_native_v6_ha_objects;
+use crate::service::native_v6_ha_objects::{
+    NativeV6ObjectStorage, open_native_v6_ha_objects,
+    open_native_v6_ha_objects_with_payload_validation,
+};
 use crate::service::native_v6_reader::{
     ACTIVE_CURSOR_RESOURCE, ACTIVE_SOURCE_ROOT_RESOURCE, NativeActiveCursor,
 };
@@ -19,12 +22,22 @@ use crate::v6_read_validation::{ReadContext, ReadIdentity};
 use heptabao_durable_service::{BatchPublication, ImmutableSourceSession, PublicationCondition};
 use heptabao_raft_runtime::{LocalV6BlobStage, NativeV6PublishedRoot};
 use std::cell::{Cell, RefCell};
+#[path = "service_native_v6_ha_ingress.rs"]
+mod ingress_selection;
+pub(crate) use ingress_selection::NativeIngressSelectionPermit;
 
 #[path = "service_native_v6_ha_read.rs"]
 mod read;
+pub(in crate::service) use read::BorrowedArchiveRepairSource;
 #[cfg(test)]
 use read::ColdNativeHaRead;
 pub(crate) use read::{NativeHaArchiveRepairSource, NativeHaReadProof, load_cold_native_ha};
+
+#[path = "service_native_v6_ha_migration.rs"]
+mod migration;
+
+#[path = "service_native_v6_ha_seal_syntax.rs"]
+mod seal_syntax;
 
 pub(super) const HA_CURSOR_RESOURCE: &str = "state-native-v6/ha-publication-cursor";
 const HA_CURSOR_FORMAT: &str = "heptabao-native-v6-ha-local-publication-v1";
@@ -67,11 +80,51 @@ pub(in crate::service) fn validate_historical_archive_cursor(
     Ok(())
 }
 
+/// Check the internal relationship of an authenticated cold archive's local
+/// root and cursors. These are old DATA: no surviving enrollment, new quorum
+/// or live source authority is supplied or constructed by this function.
+pub(in crate::service) fn validate_cold_archive_cursor(
+    root: &RecordStateRootV6,
+    retained: &RecordStateRoot,
+    active: &[u8],
+    ha: &[u8],
+    archive_generation: u64,
+    facts: &crate::ha::native_v6_backup::ColdNativeV6ArchiveFacts,
+) -> Result<(), Response> {
+    NativeActiveCursor::decode(active)?.validate(retained, root, archive_generation)?;
+    let cursor = NativeHaCursor::decode(ha)?;
+    let exact = |log: [u64; 3]| ExactLog {
+        term: log[0],
+        node: log[1],
+        index: log[2],
+    };
+    if root.cluster_id != retained.cluster_id
+        || !facts.matches_cluster_id(&root.cluster_id)
+        || root.replay_epoch != facts.replay_epoch()
+        || cursor.cluster_digest != facts.cluster_digest()
+        || cursor.replay_epoch != facts.replay_epoch()
+        || cursor.enrollment_digest != facts.enrollment_digest()
+        || cursor.root_digest != facts.root_digest()
+        || cursor.root_digest != root.identity().map_err(|_| unavailable())?.digest()
+        || cursor.raft_generation != facts.raft_generation()
+        || cursor.migration_digest != facts.migration_digest()
+        || cursor.migration_digest != retained.identity().map_err(|_| unavailable())?.digest()
+        || cursor.publication_log != exact(facts.publication_log())
+        || cursor.intent_log != exact(facts.intent_log())
+        || cursor.migration_log != exact(facts.migration_log())
+        || cursor.local_publication_generation > archive_generation
+        || cursor.local_publication_generation != active_generation(active)?
+    {
+        return Err(unavailable());
+    }
+    Ok(())
+}
+
 // Opt-in phase observations only: no payload, credential, source admission or
 // new deadline is created. Drop also records the phase that returned an error.
 // Diagnostic I/O failure never changes the original result or its custody.
 #[cfg(feature = "private-ha-forward-diagnostic")]
-struct NativeHaPhaseTimer {
+pub(super) struct NativeHaPhaseTimer {
     phase: &'static str,
     started: std::time::Instant,
     original_until: std::time::Instant,
@@ -82,7 +135,7 @@ struct NativeHaPhaseTimer {
 }
 #[cfg(feature = "private-ha-forward-diagnostic")]
 impl NativeHaPhaseTimer {
-    fn start(
+    pub(super) fn start(
         phase: &'static str,
         original_until: std::time::Instant,
         generation: u64,
@@ -99,7 +152,7 @@ impl NativeHaPhaseTimer {
             completed: false,
         }
     }
-    fn finish(mut self, completed: bool) {
+    pub(super) fn finish(mut self, completed: bool) {
         self.completed = completed;
     }
 }
@@ -119,6 +172,48 @@ impl Drop for NativeHaPhaseTimer {
             self.objects,
             self.bytes,
         );
+    }
+}
+
+// Private timing observations retain every existing authority check in order.
+// Only elapsed time and call counts leave this scope; no state or payload does.
+#[cfg(feature = "private-ha-forward-diagnostic")]
+struct NativeHaGateMetrics {
+    samples: [Cell<(u64, u128)>; 4],
+}
+#[cfg(feature = "private-ha-forward-diagnostic")]
+impl NativeHaGateMetrics {
+    fn new() -> Self {
+        Self {
+            samples: std::array::from_fn(|_| Cell::new((0, 0))),
+        }
+    }
+    fn observe<T>(&self, slot: usize, operation: impl FnOnce() -> T) -> T {
+        let started = std::time::Instant::now();
+        let result = operation();
+        let (count, elapsed) = self.samples[slot].get();
+        self.samples[slot].set((
+            count.saturating_add(1),
+            elapsed.saturating_add(started.elapsed().as_nanos()),
+        ));
+        result
+    }
+}
+#[cfg(feature = "private-ha-forward-diagnostic")]
+impl Drop for NativeHaGateMetrics {
+    fn drop(&mut self) {
+        use std::io::Write as _;
+        let names = ["environment", "identity", "actor", "raft_witness"];
+        for (name, slot) in names.into_iter().zip(&self.samples) {
+            let (calls, elapsed) = slot.get();
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "HBHA-PRIVATE-GATE-COST scope=local_install component={} calls={} elapsed_us={}",
+                name,
+                calls,
+                elapsed / 1000
+            );
+        }
     }
 }
 
@@ -368,7 +463,7 @@ impl NativeHaCursor {
 struct LocalHaEnvironment {
     ha: Arc<Mutex<HaProcess>>,
     data_dir: PathBuf,
-    seal: SealMetadata,
+    seal: seal_syntax::SealSyntaxMemo,
     nonce: Zeroizing<String>,
     barrier_digest: [u8; 32],
     deadline: OriginalDeadline,
@@ -398,6 +493,8 @@ impl LocalHaEnvironment {
             return Err(unavailable());
         }
         seal.validate().map_err(|_| unavailable())?;
+        let seal = seal_syntax::SealSyntaxMemo::capture(&service.data_dir, seal)
+            .map_err(|_| unavailable())?;
         let environment = Self {
             ha: Arc::clone(ha),
             data_dir: service.data_dir.clone(),
@@ -410,15 +507,15 @@ impl LocalHaEnvironment {
         Ok(environment)
     }
     fn check_seal(&self) -> Result<(), Response> {
-        live(self.deadline)?;
-        if load_seal_metadata(&self.data_dir)
-            .map_err(|_| unavailable())?
-            .as_ref()
-            != Some(&self.seal)
-        {
-            return Err(unavailable());
+        let result = (|| {
+            live(self.deadline)?;
+            self.seal.check(&self.data_dir).map_err(|_| unavailable())?;
+            live(self.deadline)
+        })();
+        if result.is_err() {
+            self.seal.refuse();
         }
-        live(self.deadline)
+        result
     }
     fn check(&self, service: &Service) -> Result<(), Response> {
         live(self.deadline)?;
@@ -427,7 +524,7 @@ impl LocalHaEnvironment {
             .as_ref()
             .is_none_or(|actual| !Arc::ptr_eq(actual, &self.ha))
             || service.data_dir != self.data_dir
-            || service.seal.as_ref() != Some(&self.seal)
+            || service.seal.as_ref() != Some(self.seal.expected())
             || service.unseal_nonce != *self.nonce
             || service
                 .barrier_key
@@ -450,7 +547,7 @@ impl LocalHaEnvironment {
             .as_ref()
             .is_none_or(|actual| !Arc::ptr_eq(actual, &self.ha))
             || service.data_dir != self.data_dir
-            || service.seal.as_ref() != Some(&self.seal)
+            || service.seal.as_ref() != Some(self.seal.expected())
             || service.unseal_nonce != *self.nonce
             || crypto::digest(key) != self.barrier_digest
             || service.recovery_required
@@ -465,19 +562,50 @@ impl LocalHaEnvironment {
     }
 }
 
+// This borrow validates only the Service's ordinary in-memory fields once.
+// It is confined to one local install attempt: its shared Service reference
+// prevents mutation of those fields while any gate or installer uses it.
+// Filesystem seal state, Actor, Raft authority and the deadline stay live;
+// durable ownership, generation, cursors and graph checks remain independent.
+struct BorrowedLocalHaService<'a> {
+    service: &'a Service,
+    environment: &'a LocalHaEnvironment,
+}
+impl<'a> BorrowedLocalHaService<'a> {
+    fn capture(
+        service: &'a Service,
+        environment: &'a LocalHaEnvironment,
+        identity: StateIdentity,
+    ) -> Result<Self, Response> {
+        environment.check(service)?;
+        if service.current_state_identity()? != identity {
+            return Err(unavailable());
+        }
+        Ok(Self {
+            service,
+            environment,
+        })
+    }
+
+    fn check_seal(&self) -> Result<(), Response> {
+        self.environment.check_seal()
+    }
+
+    fn service(&self) -> &Service {
+        self.service
+    }
+}
+
 fn root_namespace_only(state: &State) -> Result<(), Response> {
-    if state.namespace_protected.is_some()
-        || !state.namespace_leases.is_empty()
-        || !state.namespaces.is_empty()
-        || state
-            .engines
-            .v6_namespace_paths()
-            .any(|namespace| !namespace.is_empty())
-        || state.auth.has_recovery_state()
-    {
+    if state.auth.has_recovery_state() {
         return Err(unavailable());
     }
-    state.validate_format().map_err(|_| unavailable())
+    // Plain child catalogs and graphs stay under the same authenticated root
+    // barrier and committed Raft read. Independent/inherited custody, deletion
+    // history and unpaired batch ledgers remain excluded by this exact profile.
+    // V6 materialization separately enforces the new schema 138 reader floor;
+    // a retained V5 migration source is still authenticated as original data.
+    namespaces::native_empty::require_catalog_profile(state).map_err(|_| unavailable())
 }
 
 // One exact selected local A, including absence conditions for a first move.
@@ -601,11 +729,14 @@ impl LocalSelection {
         if durable.generation() != generation || durable.replay_epoch() != self.local_epoch {
             return Err(ServiceError::PublicationConditionConflict);
         }
-        for condition in self.conditions() {
-            let actual = durable.get("system", &condition.resource)?;
-            if actual.as_ref().map(Secret::expose)
-                != condition.expected.as_ref().map(Secret::expose)
-            {
+        for (resource, expected) in [
+            ("state", Some(&self.root_bytes)),
+            (ACTIVE_CURSOR_RESOURCE, self.active_bytes.as_ref()),
+            (ACTIVE_SOURCE_ROOT_RESOURCE, self.source_bytes.as_ref()),
+            (HA_CURSOR_RESOURCE, self.ha_bytes.as_ref()),
+        ] {
+            let actual = durable.get("system", resource)?;
+            if actual.as_ref().map(Secret::expose) != expected.map(Secret::expose) {
                 return Err(ServiceError::PublicationConditionConflict);
             }
         }
@@ -674,9 +805,28 @@ fn materialize_local(
     deadline: OriginalDeadline,
     gate: &mut impl FnMut() -> Result<(), ServiceError>,
 ) -> Result<(State, BTreeMap<MountScope, NativeReadView>), Response> {
+    materialize_local_with_payload_validation(durable, root, deadline, gate, None)
+}
+
+fn materialize_local_with_payload_validation(
+    durable: &mut DurableService<AeadBarrier>,
+    root: &RecordStateRootV6,
+    deadline: OriginalDeadline,
+    gate: &mut impl FnMut() -> Result<(), ServiceError>,
+    payload_validation: Option<&RefCell<PagedPayloadValidationMemo>>,
+) -> Result<(State, BTreeMap<MountScope, NativeReadView>), Response> {
     let source = native_blob_source::NativeSource::new_checked(durable, deadline, gate)
         .map_err(|_| unavailable())?;
-    v6_records::materialize_for_service(root, context(root)?, &source).map_err(|_| unavailable())
+    let result = match payload_validation {
+        Some(memo) => v6_records::materialize_for_service_with_payload_validation(
+            root,
+            context(root)?,
+            &source,
+            memo,
+        ),
+        None => v6_records::materialize_for_service(root, context(root)?, &source),
+    };
+    result.map_err(|_| unavailable())
 }
 
 fn verify_v5_source(
@@ -775,6 +925,90 @@ fn repair_current_local_objects(
     (shared.borrow_mut())().map_err(storage_rejected)
 }
 
+// The immutable source and its pure JSON-semantics memo share one install
+// call. No source identity, generation, Actor or consensus proof is memoized.
+struct LocalInstallSource<'a> {
+    storage: NativeV6ObjectStorage<'a>,
+    payload_validation: &'a RefCell<PagedPayloadValidationMemo>,
+}
+
+// A same-call borrow of the publisher's actual typed plan. It is DATA, not a
+// source witness or Raft capability: the common installer still obtains its
+// real process read, local selection, owner and every live gate. Neither a
+// follower nor cold recovery constructs this optimization input.
+#[derive(Clone, Copy)]
+struct PublishedLocalPlan<'a> {
+    plan: &'a v6_records::NativeRootMigrationPlan,
+    installed: &'a State,
+}
+
+struct PublishedLocalInstallSource<'a> {
+    prepared: PublishedLocalPlan<'a>,
+    storage: NativeV6ObjectStorage<'a>,
+}
+
+impl PublishedLocalPlan<'_> {
+    fn check_selection(
+        &self,
+        selected: &LocalSelection,
+        read: &CommittedNativeV6Read,
+    ) -> Result<(), Response> {
+        live(read.deadline())?;
+        let plan = self.plan;
+        let previous = selected.native.as_ref().ok_or_else(unavailable)?;
+        v6_records::validate_frontier(
+            &plan.root,
+            ReadContext {
+                expected_identity: ReadIdentity::RecordsV6(read.published().root_digest()),
+                cluster_id: &selected.source.cluster_id,
+                replay_epoch: read.enrollment().epoch(),
+                minimum_state_schema: selected.source.state_schema,
+                maximum_state_schema: MAX_SUPPORTED_STATE_SCHEMA,
+                reader_format: crate::state_record_root_v6::READER_FORMAT,
+            },
+        )
+        .map_err(|_| unavailable())?;
+        if plan.deadline.instant() != read.deadline().instant()
+            || plan.source_generation != selected.initial_generation
+            || plan.root.cluster_id != selected.source.cluster_id
+            || plan.root.cluster_id != previous.cluster_id
+            || plan.root.replay_epoch != selected.local_epoch
+            || plan.root.replay_epoch != read.enrollment().epoch()
+            || plan.root.identity().map_err(|_| unavailable())?.digest()
+                != read.published().root_digest()
+            || plan.root.reader_floor.native_kv2_format != 2
+            || plan.root.encode().map_err(|_| unavailable())?.as_slice() != plan.bytes.as_slice()
+            || plan.conditions.len() != 3
+            || self.installed.cluster_id != plan.root.cluster_id
+            || self.installed.replay_epoch != plan.root.replay_epoch
+        {
+            return Err(unavailable());
+        }
+        let installed_auth =
+            owner_store::serialize_owner(&self.installed.auth).map_err(|_| unavailable())?;
+        let planned_auth =
+            owner_store::serialize_owner(&plan.candidate.auth).map_err(|_| unavailable())?;
+        if installed_auth.as_slice() != planned_auth.as_slice() {
+            return Err(unavailable());
+        }
+        // The three original plan predicates must be the exact current local
+        // selection. The common installer additionally retains/checks its
+        // actual HA cursor as the fourth predicate on every local journal CAS.
+        for (condition, (resource, expected)) in plan.conditions.iter().zip([
+            ("state", Some(&selected.root_bytes)),
+            (ACTIVE_CURSOR_RESOURCE, selected.active_bytes.as_ref()),
+            (ACTIVE_SOURCE_ROOT_RESOURCE, selected.source_bytes.as_ref()),
+        ]) {
+            if condition.resource != resource
+                || condition.expected.as_ref().map(Secret::expose) != expected.map(Secret::expose)
+            {
+                return Err(unavailable());
+            }
+        }
+        live(read.deadline())
+    }
+}
+
 impl Service {
     /// Receive a committed target during serialized process-owned catch-up.
     /// This local installation grants no business permission or response ACK.
@@ -794,7 +1028,195 @@ impl Service {
         committed: CommittedNativeV6Read,
         original_actor: &mut impl FnMut(&AuthState) -> Result<(), Response>,
     ) -> Result<ha_received::HaSyncProgress, Response> {
+        let payload_validation = RefCell::new(PagedPayloadValidationMemo::default());
+        self.sync_native_v6_from_ha_with_payload_validation(
+            ha,
+            committed,
+            original_actor,
+            &payload_validation,
+        )
+    }
+
+    // A caller may retain only deterministic payload semantics from earlier
+    // traversals in this same request. The received and both local graphs still
+    // reopen every real object and validate all current authority and digests.
+    pub(super) fn sync_native_v6_from_ha_with_payload_validation(
+        &mut self,
+        ha: &Arc<Mutex<HaProcess>>,
+        committed: CommittedNativeV6Read,
+        original_actor: &mut impl FnMut(&AuthState) -> Result<(), Response>,
+        payload_validation: &RefCell<PagedPayloadValidationMemo>,
+    ) -> Result<ha_received::HaSyncProgress, Response> {
+        self.sync_native_v6_from_ha_with_local_plan(
+            ha,
+            committed,
+            original_actor,
+            payload_validation,
+            None,
+        )
+    }
+
+    /// A successful real publisher may retain its already authenticated typed
+    /// plan through its own local installation. This never accepts a serialized
+    /// proof and never takes the shortcut for initial migration or cold catch-up.
+    pub(super) fn sync_published_native_v6_local_plan_checked(
+        &mut self,
+        ha: &Arc<Mutex<HaProcess>>,
+        committed: CommittedNativeV6Read,
+        plan: &v6_records::NativeRootMigrationPlan,
+        installed: &State,
+        payload_validation: &RefCell<PagedPayloadValidationMemo>,
+        original_actor: &mut impl FnMut(&AuthState) -> Result<(), Response>,
+    ) -> Result<ha_received::HaSyncProgress, Response> {
+        if self.native_root.is_none() {
+            return Err(unavailable());
+        }
+        self.sync_native_v6_from_ha_with_local_plan(
+            ha,
+            committed,
+            original_actor,
+            payload_validation,
+            Some(PublishedLocalPlan { plan, installed }),
+        )
+    }
+
+    fn sync_native_v6_from_ha_with_local_plan(
+        &mut self,
+        ha: &Arc<Mutex<HaProcess>>,
+        committed: CommittedNativeV6Read,
+        original_actor: &mut impl FnMut(&AuthState) -> Result<(), Response>,
+        payload_validation: &RefCell<PagedPayloadValidationMemo>,
+        published_plan: Option<PublishedLocalPlan<'_>>,
+    ) -> Result<ha_received::HaSyncProgress, Response> {
+        let failure = NativeV6FailureObservation::start(
+            "sync_migration_source",
+            committed.deadline().instant(),
+        );
+        live(committed.deadline())?;
+        // This historical installation publishes no application activation.
+        // Every failure after its root CAS requires a cold reconciliation;
+        // no caller may release the intermediate V5 owner as a current read.
+        let predecessor_installed =
+            self.sync_native_v6_migration_source(ha, &committed, original_actor)?;
+        let result = (|| {
+            // A successful retained-V5 installation is a completed phase,
+            // not a failed native install to replay. Before beginning the V6
+            // phase, obtain a new actual quorum read of that EXACT selection.
+            // Keep the original operation deadline and Actor; the old witness
+            // must still verify. Every refusal remains inside the existing
+            // post-predecessor recovery fence below.
+            let committed = if predecessor_installed {
+                failure.step("sync_predecessor_read_boundary");
+                original_actor(&self.state.as_ref().ok_or_else(unavailable)?.auth)?;
+                let process = ha.lock_for_request().map_err(|_| unavailable())?;
+                process
+                    .recapture_native_v6_same_selection(&committed)
+                    .map_err(|_| unavailable())?
+            } else {
+                committed
+            };
+            failure.step("sync_after_migration");
+            self.sync_native_v6_after_migration_checked(
+                ha,
+                committed,
+                original_actor,
+                payload_validation,
+                published_plan,
+            )
+        })();
+        if predecessor_installed && result.is_err() {
+            self.recovery_required = true;
+            self.ha_activation = None;
+            self.ha_read_cache = None;
+        }
+        if result.is_ok() {
+            failure.complete();
+        }
+        result
+    }
+
+    fn sync_native_v6_after_migration_checked(
+        &mut self,
+        ha: &Arc<Mutex<HaProcess>>,
+        committed: CommittedNativeV6Read,
+        original_actor: &mut impl FnMut(&AuthState) -> Result<(), Response>,
+        payload_validation: &RefCell<PagedPayloadValidationMemo>,
+        published_plan: Option<PublishedLocalPlan<'_>>,
+    ) -> Result<ha_received::HaSyncProgress, Response> {
+        // Only an already-current warm local root may continue one read-only
+        // phase after a concurrent apply invalidated its witness. Capture the
+        // original local owner and journal generation before the first pass;
+        // a repair/publication, changed environment or recovery fence cannot
+        // be adopted by this continuation. Publisher and cold paths stay exact.
+        let continuation = if published_plan.is_none()
+            && self.current_state_identity()?
+                == StateIdentity::RecordsV6(committed.published().root_digest())
+        {
+            let key = Zeroizing::new(**self.barrier_key.as_ref().ok_or_else(unavailable)?);
+            Some((
+                LocalHaEnvironment::capture(self, ha, &key, committed.deadline())?,
+                self.durable.as_ref().ok_or_else(unavailable)?.generation(),
+                self.current_state_identity()?,
+            ))
+        } else {
+            None
+        };
+        let witness_refused = Cell::new(false);
+        let result = self.sync_native_v6_after_migration_attempt(
+            ha,
+            &committed,
+            original_actor,
+            payload_validation,
+            published_plan,
+            &witness_refused,
+        );
+        let Err(original_error) = result else {
+            return result;
+        };
+        let Some((environment, generation, identity)) = continuation else {
+            return Err(original_error);
+        };
+        if !witness_refused.get()
+            || environment.check(self).is_err()
+            || self.current_state_identity().ok() != Some(identity)
+            || self.durable.as_ref().is_none_or(|durable| {
+                durable.generation() != generation || durable.recovery_required()
+            })
+        {
+            return Err(original_error);
+        }
+        let fresh = {
+            let process = ha.lock_for_request().map_err(|_| unavailable())?;
+            match process.recapture_native_v6_same_root_after_progress(&committed) {
+                Ok(fresh) => fresh,
+                Err(_) => return Err(original_error),
+            }
+        };
+        environment.check(self)?;
+        // A new actual ReadIndex of the exact same published graph, bounded
+        // by the FIRST witness, precedes this one final local pass. No HTTP
+        // callback, use consumption, business mutation or audit is replayed.
+        self.sync_native_v6_after_migration_attempt(
+            ha,
+            &fresh,
+            original_actor,
+            payload_validation,
+            None,
+            &Cell::new(false),
+        )
+    }
+
+    fn sync_native_v6_after_migration_attempt(
+        &mut self,
+        ha: &Arc<Mutex<HaProcess>>,
+        committed: &CommittedNativeV6Read,
+        original_actor: &mut impl FnMut(&AuthState) -> Result<(), Response>,
+        payload_validation: &RefCell<PagedPayloadValidationMemo>,
+        published_plan: Option<PublishedLocalPlan<'_>>,
+        witness_refused: &Cell<bool>,
+    ) -> Result<ha_received::HaSyncProgress, Response> {
         let deadline = committed.deadline();
+        let failure = NativeV6FailureObservation::start("sync_environment", deadline.instant());
         live(deadline)?;
         let key = Zeroizing::new(**self.barrier_key.as_ref().ok_or_else(unavailable)?);
         let environment = LocalHaEnvironment::capture(self, ha, &key, deadline)?;
@@ -803,13 +1225,17 @@ impl Service {
         let source_auth = actual.auth.clone();
         original_actor(&source_auth)?;
         let old_identity = self.current_state_identity()?;
+        failure.step("sync_process_witness");
         let process = ha.lock_for_request().map_err(|_| unavailable())?;
         if !process.native_v6_enabled() || process.cluster_id() != actual.cluster_id {
             return Err(unavailable());
         }
         process
-            .verify_native_v6_committed_read(&committed)
-            .map_err(|_| unavailable())?;
+            .verify_native_v6_committed_read(committed)
+            .map_err(|_| {
+                witness_refused.set(true);
+                unavailable()
+            })?;
         // Raft already committed any higher epoch. Allocate the new activation
         // before local publication; an entropy failure fences that authority.
         let next_activation =
@@ -818,7 +1244,8 @@ impl Service {
         let root_committed = Cell::new(false);
         let denial = RefCell::new(None);
         let result = (|| -> Result<State, Response> {
-            let selected = LocalSelection::read(&mut durable, &committed)?;
+            failure.step("sync_local_selection");
+            let selected = LocalSelection::read(&mut durable, committed)?;
             if selected.source.cluster_id != actual.cluster_id
                 || selected.local_epoch != actual.replay_epoch
                 || match selected.native.as_ref() {
@@ -844,16 +1271,39 @@ impl Service {
             {
                 return Err(unavailable());
             }
+            if let Some(prepared) = published_plan {
+                prepared.check_selection(&selected, committed)?;
+            }
+            // This scope owns no mutable Service alias. The guard stays borrowed
+            // by every gate and by the inner installer until the result returns.
+            // A refusal here still follows the outer durable restore/fence path.
+            failure.step("sync_local_guard");
+            let borrowed = BorrowedLocalHaService::capture(self, &environment, old_identity)?;
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            let gate_metrics = NativeHaGateMetrics::new();
             let original = RefCell::new(|| -> Result<(), ServiceError> {
                 let check = (|| {
-                    environment.check(self)?;
-                    if self.current_state_identity()? != old_identity {
-                        return Err(unavailable());
-                    }
-                    original_actor(&source_auth)?;
-                    process
-                        .verify_native_v6_committed_read(&committed)
-                        .map_err(|_| unavailable())?;
+                    // The same real seal-file check remains at every old gate.
+                    // The borrowed in-memory fields cannot change in this scope.
+                    #[cfg(feature = "private-ha-forward-diagnostic")]
+                    let environment_result = gate_metrics.observe(0, || borrowed.check_seal());
+                    #[cfg(not(feature = "private-ha-forward-diagnostic"))]
+                    let environment_result = borrowed.check_seal();
+                    environment_result?;
+                    #[cfg(feature = "private-ha-forward-diagnostic")]
+                    let actor_result = gate_metrics.observe(2, || original_actor(&source_auth));
+                    #[cfg(not(feature = "private-ha-forward-diagnostic"))]
+                    let actor_result = original_actor(&source_auth);
+                    actor_result?;
+                    #[cfg(feature = "private-ha-forward-diagnostic")]
+                    let witness_result = gate_metrics
+                        .observe(3, || process.verify_native_v6_committed_read(committed));
+                    #[cfg(not(feature = "private-ha-forward-diagnostic"))]
+                    let witness_result = process.verify_native_v6_committed_read(committed);
+                    witness_result.map_err(|_| {
+                        witness_refused.set(true);
+                        unavailable()
+                    })?;
                     live(deadline)
                 })();
                 check.map_err(|error| {
@@ -866,41 +1316,51 @@ impl Service {
             let mut gate = || (original.borrow_mut())();
             gate().map_err(storage_rejected)?;
             if selected.native.is_none() {
+                failure.step("sync_v5_source");
                 verify_v5_source(&durable, &selected.source, &actual, &mut gate)?;
                 selected
                     .check(&mut durable, selected.initial_generation)
                     .map_err(storage_rejected)?;
             }
-            // An exact-current local root still reopens the actual typed graph;
-            // neither a cached digest nor the journal cursor admits a reader.
+            // An exact-current warm root reopens its typed metadata and every
+            // real payload locator. Selected point reads retain AEAD/address
+            // authentication; cold loads and new-root installs remain full.
             if old_identity == StateIdentity::RecordsV6(committed.published().root_digest()) {
                 let root = selected.native.as_ref().ok_or_else(unavailable)?;
                 NativeHaCursor::decode(
                     selected.ha_bytes.as_ref().ok_or_else(unavailable)?.expose(),
                 )?
-                .matches_current(&committed)?;
-                let (metadata, native) =
-                    match materialize_local(&mut durable, root, deadline, &mut gate) {
-                        Ok(local) => local,
-                        Err(_) => {
-                            // Repair remains under the original witness/Actor. Its
-                            // actual no-replace readback distinguishes a missing
-                            // file from a corrupt existing one; it never masks the latter.
-                            process
-                                .with_native_v6_source(&committed, |codec, store| {
-                                    repair_current_local_objects(
-                                        &mut durable,
-                                        &selected,
-                                        &committed,
-                                        codec,
-                                        store,
-                                        &mut gate,
-                                    )
-                                })
-                                .map_err(|_| unavailable())??;
-                            materialize_local(&mut durable, root, deadline, &mut gate)?
-                        }
-                    };
+                .matches_current(committed)?;
+                failure.step("sync_current_local_graph");
+                let (metadata, native) = match read::materialize_current_local_request(
+                    &mut durable,
+                    root,
+                    deadline,
+                    &mut gate,
+                ) {
+                    Ok(local) => local,
+                    Err(_) => {
+                        failure.step("sync_current_local_repair");
+                        // Repair remains under the original witness/Actor. Its
+                        // actual no-replace readback distinguishes a missing
+                        // file from a corrupt existing one; it never masks the latter.
+                        process
+                            .with_native_v6_source(committed, |codec, store| {
+                                repair_current_local_objects(
+                                    &mut durable,
+                                    &selected,
+                                    committed,
+                                    codec,
+                                    store,
+                                    &mut gate,
+                                )
+                            })
+                            .map_err(|_| unavailable())??;
+                        failure.step("sync_current_local_graph_after_repair");
+                        materialize_local(&mut durable, root, deadline, &mut gate)?
+                    }
+                };
+                failure.step("sync_current_local_finish");
                 Self::check_native_installed(&actual, &metadata, &native, root, deadline)?;
                 selected
                     .check(&mut durable, selected.initial_generation)
@@ -908,17 +1368,23 @@ impl Service {
                 gate().map_err(storage_rejected)?;
                 return Ok(actual);
             }
+            failure.step("sync_changed_root_install");
             process
-                .with_native_v6_source(&committed, |codec, store| {
-                    self.install_native_v6_replica_inner(
-                        &mut durable,
-                        &selected,
-                        &committed,
-                        codec,
-                        store,
-                        &mut gate,
-                        &root_committed,
-                    )
+                .with_native_v6_source(committed, |codec, store| {
+                    borrowed
+                        .service()
+                        .install_native_v6_replica_inner_with_local_plan(
+                            &mut durable,
+                            &selected,
+                            committed,
+                            LocalInstallSource {
+                                storage: NativeV6ObjectStorage { codec, store },
+                                payload_validation,
+                            },
+                            published_plan,
+                            &mut gate,
+                            &root_committed,
+                        )
                 })
                 .map_err(|_| unavailable())?
         })();
@@ -939,11 +1405,15 @@ impl Service {
                 return Err(denial.into_inner().unwrap_or(error));
             }
         };
+        failure.step("sync_final_environment");
         let final_check = (|| {
             environment.check(self)?;
+            if self.current_state_identity()? != old_identity {
+                return Err(unavailable());
+            }
             original_actor(&source_auth)?;
             process
-                .verify_native_v6_committed_read(&committed)
+                .verify_native_v6_committed_read(committed)
                 .map_err(|_| unavailable())?;
             let root_bytes = self
                 .durable
@@ -967,6 +1437,7 @@ impl Service {
             }
             self.ha_activation = None;
         })?;
+        failure.step("sync_publish_local_state");
         self.state = Some(installed);
         self.state_digest = Some(committed.published().root_digest());
         self.record_root = None;
@@ -977,62 +1448,71 @@ impl Service {
             self.recovery_required = true;
             self.ha_activation = None;
         })?;
+        failure.complete();
         Ok(ha_received::HaSyncProgress::Current)
     }
 
-    fn install_native_v6_replica_inner(
+    // Keep the four validated outputs together at this single install boundary.
+    #[allow(clippy::type_complexity)]
+    fn stage_published_native_v6_local_plan(
         &self,
         durable: &mut DurableService<AeadBarrier>,
         selected: &LocalSelection,
         read: &CommittedNativeV6Read,
-        codec: &ClusterStateCodec,
-        store: &LocalV6BlobStage,
+        input: PublishedLocalInstallSource<'_>,
         gate: &mut impl FnMut() -> Result<(), ServiceError>,
-        root_committed: &Cell<bool>,
-    ) -> Result<State, Response> {
-        let deadline = read.deadline();
-        let shared_gate = RefCell::new(gate);
-        let codec_gate = || {
-            (shared_gate.borrow_mut())()
-                .map_err(|_| crate::ha_state::native_v6::NativeV6CodecError::Storage)
-        };
+    ) -> Result<
+        (
+            RecordStateRootV6,
+            Zeroizing<Vec<u8>>,
+            State,
+            Vec<(String, Option<Secret>)>,
+        ),
+        Response,
+    > {
+        let PublishedLocalInstallSource { prepared, storage } = input;
+        let NativeV6ObjectStorage { codec, store } = storage;
+        gate().map_err(storage_rejected)?;
+        prepared.check_selection(selected, read)?;
+        selected
+            .check(durable, selected.initial_generation)
+            .map_err(storage_rejected)?;
+        let plan = prepared.plan;
         #[cfg(feature = "private-ha-forward-diagnostic")]
-        let phase = NativeHaPhaseTimer::start(
-            "install_received_graph",
-            deadline.instant(),
+        let cipher_phase = NativeHaPhaseTimer::start(
+            "install_published_plan_cipher_graph",
+            read.deadline().instant(),
             selected.initial_generation,
             read.published().intent().object_count,
             read.published().intent().ciphertext_bytes,
         );
-        // The codec obtains the canonical root from the committed small seal.
-        // Its closure/full typed reader rejects missing, extra and wrong-domain data.
-        let received = open_native_v6_ha_objects(
-            codec,
-            read.enrollment(),
-            read.published(),
-            store,
-            ReadContext {
-                expected_identity: ReadIdentity::RecordsV6(read.published().root_digest()),
-                cluster_id: &selected.source.cluster_id,
-                replay_epoch: read.enrollment().epoch(),
-                minimum_state_schema: selected.source.state_schema,
-                maximum_state_schema: APPROLE_NO_DEFAULT_STATE_SCHEMA,
-                reader_format: crate::state_record_root_v6::READER_FORMAT,
-            },
-            deadline,
-            &mut || codec_gate(),
-        )
-        .map_err(|_| unavailable())?;
-        #[cfg(feature = "private-ha-forward-diagnostic")]
-        phase.finish(true);
-        let root = received.root().clone();
-        let root_bytes = Zeroizing::new(received.root_bytes().to_vec());
-        if root.reader_floor.native_kv2_format != 2
-            || root.replay_epoch != read.enrollment().epoch()
+        // Reopen the ACTUAL committed cipher directory and its authenticated
+        // small root under the same process/Actor gate. The original plan is
+        // not evidence that current HA files remain present or unchanged.
+        let cipher = codec
+            .open_native_v6_committed_read(read.enrollment(), read.published(), store, &mut || {
+                gate().map_err(|_| crate::ha_state::native_v6::NativeV6CodecError::Gate)
+            })
+            .map_err(|_| unavailable())?;
+        if cipher.root_bytes() != plan.bytes.as_slice()
+            || cipher.root().identity().map_err(|_| unavailable())?
+                != plan.root.identity().map_err(|_| unavailable())?
         {
             return Err(unavailable());
         }
-        let owner_bytes = root
+        let physical = store
+            .reopen_root_closure(read.published(), &mut || {
+                gate().map_err(|_| heptabao_raft_runtime::LocalV6BlobError::CorruptOrChanged)
+            })
+            .map_err(|_| unavailable())?;
+        gate().map_err(storage_rejected)?;
+        if physical.as_slice() != cipher.references() {
+            return Err(unavailable());
+        }
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        cipher_phase.finish(true);
+        let owner_bytes = plan
+            .root
             .owners
             .iter()
             .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))
@@ -1043,66 +1523,279 @@ impl Service {
                 "native opaque owner capacity exhausted",
             ));
         }
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let phase = NativeHaPhaseTimer::start(
+            "install_published_plan_local_objects",
+            read.deadline().instant(),
+            selected.initial_generation,
+            plan.objects.len() as u64,
+            plan.root.kv2.iter().fold(0u64, |sum, graph| {
+                sum.saturating_add(graph.logical_payload_bytes)
+            }),
+        );
+        // These are the original typed plaintext objects, held immutably from
+        // preparation through the real Raft publication. They cannot substitute
+        // for either store's physical proof: local HBA1 encryption, actual-fd
+        // no-replace/fsync, readback and old-root session are still performed.
+        let session = native_blob_source::session(durable, selected.root_bytes.expose())
+            .map_err(storage_rejected)?;
+        let mut pending = plan.objects.iter().peekable();
+        let mut locators = Vec::new();
+        while pending.peek().is_some() {
+            gate().map_err(storage_rejected)?;
+            selected
+                .check(durable, selected.initial_generation)
+                .map_err(storage_rejected)?;
+            let mut batch = Vec::new();
+            let mut ciphertext_bytes = 0usize;
+            while let Some(&((domain, _), object)) = pending.peek() {
+                let next_bytes = ciphertext_bytes
+                    .checked_add(object.bytes().len())
+                    .and_then(|bytes| bytes.checked_add(32))
+                    .ok_or_else(unavailable)?;
+                if batch.len() == heptabao_filesystem_guard::MAX_IMMUTABLE_BATCH_OBJECTS
+                    || next_bytes > ImmutableSourceSession::MAX_BATCH_CIPHERTEXT_BYTES
+                {
+                    break;
+                }
+                ciphertext_bytes = next_bytes;
+                batch.push((domain, object.as_ref()));
+                pending.next();
+            }
+            if batch.is_empty() {
+                return Err(unavailable());
+            }
+            let markers = native_blob_source::stage_batch(durable, &session, &batch, gate)
+                .map_err(storage_rejected)?;
+            if markers.len() != batch.len() {
+                return Err(unavailable());
+            }
+            for ((domain, object), marker) in batch.into_iter().zip(markers) {
+                gate().map_err(storage_rejected)?;
+                let resource = v6_records::native_resource(domain, object.reference());
+                match durable.get("system", &resource).map_err(storage_rejected)? {
+                    Some(actual) if actual.expose() == marker.expose() => {}
+                    Some(actual) if actual.expose() == object.bytes() => {
+                        locators.push((resource, Some(marker)));
+                    }
+                    Some(_) => return Err(unavailable()),
+                    None => locators.push((resource, Some(marker))),
+                }
+                gate().map_err(storage_rejected)?;
+            }
+        }
+        drop(session);
+        // Keep the same cipher reader/store borrowed through all local fsyncs.
+        // A full physical closure reopen after them must select exactly the
+        // same references; the gate keeps its original process read/deadline.
+        let after = store
+            .reopen_root_closure(read.published(), &mut || {
+                gate().map_err(|_| heptabao_raft_runtime::LocalV6BlobError::CorruptOrChanged)
+            })
+            .map_err(|_| unavailable())?;
+        if after != physical || cipher.root_bytes() != plan.bytes.as_slice() {
+            return Err(unavailable());
+        }
+        selected
+            .check(durable, selected.initial_generation)
+            .map_err(storage_rejected)?;
+        gate().map_err(storage_rejected)?;
+        prepared.check_selection(selected, read)?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        phase.finish(true);
+        // The common installer will freshly authenticate the complete local
+        // closure BEFORE and AFTER the root CAS and compare it with this exact
+        // typed candidate. Unchanged old leaves are not assumed healthy.
+        Ok((
+            plan.root.clone(),
+            Zeroizing::new(plan.bytes.to_vec()),
+            prepared.installed.clone(),
+            locators,
+        ))
+    }
+
+    fn install_native_v6_replica_inner_with_payload_validation(
+        &self,
+        durable: &mut DurableService<AeadBarrier>,
+        selected: &LocalSelection,
+        read: &CommittedNativeV6Read,
+        source: LocalInstallSource<'_>,
+        gate: &mut impl FnMut() -> Result<(), ServiceError>,
+        root_committed: &Cell<bool>,
+    ) -> Result<State, Response> {
+        self.install_native_v6_replica_inner_with_local_plan(
+            durable,
+            selected,
+            read,
+            source,
+            None,
+            gate,
+            root_committed,
+        )
+    }
+
+    // Keep source, proposal, original gate and root-CAS observation explicit.
+    #[allow(clippy::too_many_arguments)]
+    fn install_native_v6_replica_inner_with_local_plan(
+        &self,
+        durable: &mut DurableService<AeadBarrier>,
+        selected: &LocalSelection,
+        read: &CommittedNativeV6Read,
+        source: LocalInstallSource<'_>,
+        published_plan: Option<PublishedLocalPlan<'_>>,
+        gate: &mut impl FnMut() -> Result<(), ServiceError>,
+        root_committed: &Cell<bool>,
+    ) -> Result<State, Response> {
+        let LocalInstallSource {
+            storage,
+            payload_validation,
+        } = source;
+        let NativeV6ObjectStorage { codec, store } = storage;
+        let deadline = read.deadline();
+        let failure =
+            NativeV6FailureObservation::start("install_received_graph", deadline.instant());
+        let shared_gate = RefCell::new(gate);
+        // Received/pre-CAS/post-CAS readers capture their own real source and
+        // generation. Only the exact authenticated bytes' JSON semantics may
+        // also have been checked during this same request or cold recovery call.
+        let codec_gate = || {
+            (shared_gate.borrow_mut())()
+                .map_err(|_| crate::ha_state::native_v6::NativeV6CodecError::Storage)
+        };
+        let (root, root_bytes, installed, locators) = if let Some(prepared) = published_plan {
+            failure.step("install_published_local_plan");
+            self.stage_published_native_v6_local_plan(
+                durable,
+                selected,
+                read,
+                PublishedLocalInstallSource {
+                    prepared,
+                    storage: NativeV6ObjectStorage { codec, store },
+                },
+                &mut || (shared_gate.borrow_mut())(),
+            )?
+        } else {
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            let phase = NativeHaPhaseTimer::start(
+                "install_received_graph",
+                deadline.instant(),
+                selected.initial_generation,
+                read.published().intent().object_count,
+                read.published().intent().ciphertext_bytes,
+            );
+            // The codec obtains the canonical root from the committed small seal.
+            // Its closure/full typed reader rejects missing, extra and wrong-domain data.
+            let received = open_native_v6_ha_objects_with_payload_validation(
+                NativeV6ObjectStorage { codec, store },
+                read.enrollment(),
+                read.published(),
+                ReadContext {
+                    expected_identity: ReadIdentity::RecordsV6(read.published().root_digest()),
+                    cluster_id: &selected.source.cluster_id,
+                    replay_epoch: read.enrollment().epoch(),
+                    minimum_state_schema: selected.source.state_schema,
+                    maximum_state_schema: MAX_SUPPORTED_STATE_SCHEMA,
+                    reader_format: crate::state_record_root_v6::READER_FORMAT,
+                },
+                deadline,
+                &mut || codec_gate(),
+                payload_validation,
+            )
+            .map_err(|_| unavailable())?;
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            phase.finish(true);
+            failure.step("install_root_binding");
+            let root = received.root().clone();
+            let root_bytes = Zeroizing::new(received.root_bytes().to_vec());
+            if root.reader_floor.native_kv2_format != 2
+                || root.replay_epoch != read.enrollment().epoch()
+            {
+                return Err(unavailable());
+            }
+            let owner_bytes = root
+                .owners
+                .iter()
+                .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))
+                .ok_or_else(unavailable)?;
+            if owner_bytes > self.opaque_owner_limit() as u64 {
+                return Err(Response::error(
+                    507,
+                    "native opaque owner capacity exhausted",
+                ));
+            }
+            let epoch_scope =
+                (selected.local_epoch < root.replay_epoch).then_some(EpochInstallScope {
+                    selected,
+                    committed: read,
+                });
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            let phase = NativeHaPhaseTimer::start(
+                "install_local_objects",
+                deadline.instant(),
+                selected.initial_generation,
+                read.published().intent().object_count,
+                read.published().intent().ciphertext_bytes,
+            );
+            failure.step("install_local_objects");
+            let mut locators = Vec::new();
+            let session = native_blob_source::session(durable, selected.root_bytes.expose())
+                .map_err(storage_rejected)?;
+            received
+                .visit_verified_object_batches(codec, store, &mut || codec_gate(), &mut |objects| {
+                    let markers =
+                        native_blob_source::ha_local_stage::stage_verified_received_batch(
+                            durable,
+                            &session,
+                            objects,
+                            epoch_scope.as_ref(),
+                            &mut || (shared_gate.borrow_mut())(),
+                        )
+                        .map_err(|_| crate::ha_state::native_v6::NativeV6CodecError::Storage)?;
+                    if markers.len() != objects.len() {
+                        return Err(crate::ha_state::native_v6::NativeV6CodecError::Storage);
+                    }
+                    for (object, marker) in objects.iter().zip(markers) {
+                        codec_gate()?;
+                        let resource =
+                            v6_records::native_resource(object.domain(), object.reference());
+                        match durable
+                            .get("system", &resource)
+                            .map_err(|_| crate::ha_state::native_v6::NativeV6CodecError::Storage)?
+                        {
+                            Some(actual) if actual.expose() == marker.expose() => {}
+                            Some(actual) if actual.expose() == object.plaintext() => {
+                                locators.push((resource, Some(marker)))
+                            }
+                            Some(_) => {
+                                return Err(
+                                    crate::ha_state::native_v6::NativeV6CodecError::Storage,
+                                );
+                            }
+                            None => locators.push((resource, Some(marker))),
+                        }
+                        codec_gate()?;
+                    }
+                    codec_gate()
+                })
+                .map_err(|_| unavailable())?;
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            phase.finish(true);
+            drop(session);
+            failure.step("install_detached_metadata");
+            let (mut installed, native, _) = received
+                .into_detached_parts(&mut || codec_gate())
+                .map_err(|_| unavailable())?;
+            installed
+                .engines
+                .install_native_views(native)
+                .map_err(Response::from_engine_error)?;
+            (root, root_bytes, installed, locators)
+        };
         let identity = root.identity().map_err(|_| unavailable())?;
         let epoch_scope = (selected.local_epoch < root.replay_epoch).then_some(EpochInstallScope {
             selected,
             committed: read,
         });
-        #[cfg(feature = "private-ha-forward-diagnostic")]
-        let phase = NativeHaPhaseTimer::start(
-            "install_local_objects",
-            deadline.instant(),
-            selected.initial_generation,
-            read.published().intent().object_count,
-            read.published().intent().ciphertext_bytes,
-        );
-        let mut locators = Vec::new();
-        let session = native_blob_source::session(durable, selected.root_bytes.expose())
-            .map_err(storage_rejected)?;
-        received
-            .visit_verified_objects(codec, store, &mut || codec_gate(), &mut |object| {
-                let marker = if let Some(scope) = &epoch_scope {
-                    native_blob_source::ha_local_stage::stage_verified_epoch_received(
-                        durable,
-                        &session,
-                        object,
-                        scope,
-                        &mut || (shared_gate.borrow_mut())(),
-                    )
-                } else {
-                    native_blob_source::stage_verified_received(
-                        durable,
-                        &session,
-                        object,
-                        &mut || (shared_gate.borrow_mut())(),
-                    )
-                }
-                .map_err(|_| crate::ha_state::native_v6::NativeV6CodecError::Storage)?;
-                let resource = v6_records::native_resource(object.domain(), object.reference());
-                match durable
-                    .get("system", &resource)
-                    .map_err(|_| crate::ha_state::native_v6::NativeV6CodecError::Storage)?
-                {
-                    Some(actual) if actual.expose() == marker.expose() => {}
-                    Some(actual) if actual.expose() == object.plaintext() => {
-                        locators.push((resource, Some(marker)))
-                    }
-                    Some(_) => return Err(crate::ha_state::native_v6::NativeV6CodecError::Storage),
-                    None => locators.push((resource, Some(marker))),
-                }
-                codec_gate()
-            })
-            .map_err(|_| unavailable())?;
-        #[cfg(feature = "private-ha-forward-diagnostic")]
-        phase.finish(true);
-        drop(session);
-        let (mut installed, native, _) = received
-            .into_detached_parts(&mut || codec_gate())
-            .map_err(|_| unavailable())?;
-        installed
-            .engines
-            .install_native_views(native)
-            .map_err(Response::from_engine_error)?;
         root_namespace_only(&installed)?;
         if epoch_scope.is_some() {
             if let Some(current) = self.state.as_ref() {
@@ -1147,6 +1840,7 @@ impl Service {
             read.published().intent().object_count,
             read.published().intent().ciphertext_bytes,
         );
+        failure.step("install_locator_batches");
         let mut expected_generation = selected.initial_generation;
         for (batch_index, batch) in locators
             .chunks(heptabao_durable_service::MAX_ATOMIC_MUTATIONS)
@@ -1186,15 +1880,21 @@ impl Service {
             read.published().intent().object_count,
             read.published().intent().ciphertext_bytes,
         );
-        let (metadata, native) = materialize_local(durable, &root, deadline, &mut || {
-            (shared_gate.borrow_mut())()
-        })?;
+        failure.step("install_pre_cas_graph");
+        let (metadata, native) = materialize_local_with_payload_validation(
+            durable,
+            &root,
+            deadline,
+            &mut || (shared_gate.borrow_mut())(),
+            Some(payload_validation),
+        )?;
         Self::check_native_installed(&installed, &metadata, &native, &root, deadline)?;
         #[cfg(feature = "private-ha-forward-diagnostic")]
         phase.finish(true);
         selected
             .check(durable, expected_generation)
             .map_err(storage_rejected)?;
+        failure.step("install_prepare_root_cas");
         let publication_generation = expected_generation.checked_add(1).ok_or_else(unavailable)?;
         let cursor = match &selected.active {
             Some(cursor) => cursor.advance(&root, publication_generation)?,
@@ -1236,6 +1936,7 @@ impl Service {
             read.published().intent().object_count,
             read.published().intent().ciphertext_bytes,
         );
+        failure.step("install_local_root_cas");
         let publication = BatchPublication {
             replay_epoch: root.replay_epoch,
             principal: "heptabao-server".into(),
@@ -1260,6 +1961,7 @@ impl Service {
             )
         }
         .map_err(storage_rejected)?;
+        failure.step("install_local_root_readback");
         root_committed.set(true);
         #[cfg(feature = "private-ha-forward-diagnostic")]
         phase.finish(true);
@@ -1310,13 +2012,19 @@ impl Service {
             read.published().intent().object_count,
             read.published().intent().ciphertext_bytes,
         );
-        let (metadata, native) = materialize_local(durable, &root, deadline, &mut || {
-            (shared_gate.borrow_mut())()
-        })?;
+        failure.step("install_post_cas_graph");
+        let (metadata, native) = materialize_local_with_payload_validation(
+            durable,
+            &root,
+            deadline,
+            &mut || (shared_gate.borrow_mut())(),
+            Some(payload_validation),
+        )?;
         Self::check_native_installed(&installed, &metadata, &native, &root, deadline)?;
         #[cfg(feature = "private-ha-forward-diagnostic")]
         phase.finish(true);
         (shared_gate.borrow_mut())().map_err(storage_rejected)?;
+        failure.complete();
         Ok(installed)
     }
 }

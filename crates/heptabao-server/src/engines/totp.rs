@@ -37,6 +37,13 @@ impl Drop for Key {
 }
 
 impl Totp {
+    #[cfg(all(test, feature = "native-v6-storage"))]
+    pub(super) fn native_replay_observation(&self, name: &str) -> Option<(Option<u64>, u64, u32)> {
+        self.keys
+            .get(name)
+            .map(|key| (key.last_accepted_counter, key.failed_window, key.failures))
+    }
+
     pub(super) fn contains(&self, name: &str) -> bool {
         self.keys.contains_key(name)
     }

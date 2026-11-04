@@ -297,6 +297,19 @@ impl Headers {
     }
 }
 
+/// The consistency middleware owns its Retry-After response. Do not attach a
+/// blanket value to every HTTP 429: quota responses may carry their own delay
+/// or intentionally omit rate-limit response headers.
+pub(super) fn rejection_response() -> Response {
+    Response {
+        unwrapped_json: None,
+        response_headers: crate::service::ResponseHeaders::retry_after_seconds(1),
+        consistency_index: None,
+        status: 429,
+        body: json!({"errors": []}),
+    }
+}
+
 pub(crate) fn admit(
     service: &Arc<Mutex<Service>>,
     headers: &Headers,
@@ -316,15 +329,7 @@ pub(crate) fn admit(
         match headers.decide(observation.as_ref(), settings, Instant::now() >= wait_end) {
             Decision::Continue => return Ok(false),
             Decision::Forward => return Ok(true),
-            Decision::Reject => {
-                return Err(Response {
-                    unwrapped_json: None,
-                    response_headers: Default::default(),
-                    consistency_index: None,
-                    status: 429,
-                    body: json!({"errors": []}),
-                });
-            }
+            Decision::Reject => return Err(rejection_response()),
             Decision::Await => {
                 let remaining = wait_end.saturating_duration_since(Instant::now());
                 // Both locks are dropped before waiting. This consumes no

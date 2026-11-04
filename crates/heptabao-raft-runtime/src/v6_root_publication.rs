@@ -257,7 +257,11 @@ pub(crate) struct NativeV6RootState {
     // the actual committed V5 migration source, rather than inventing genesis.
     pub(crate) migration_source_digest: [u8; 32],
     pub(crate) migration_source_log: LogIdOf<TypeConfig>,
-    #[serde(default, skip_serializing_if = "Vec::is_empty", with = "crate::v6_epoch_restore::lineage_wire")]
+    #[serde(
+        default,
+        skip_serializing_if = "Vec::is_empty",
+        with = "crate::v6_epoch_restore::lineage_wire"
+    )]
     pub(crate) restore_lineage: Vec<crate::v6_epoch_restore::NativeV6EpochRestoreRecord>,
 }
 impl NativeV6RootState {
@@ -310,15 +314,22 @@ impl NativeV6PublishedRoot {
     pub fn migration_source(&self) -> ([u8; 32], LogIdOf<TypeConfig>) {
         (self.0.migration_source_digest, self.0.migration_source_log)
     }
-    pub fn epoch_transitions(&self)
-    -> impl ExactSizeIterator<Item = crate::NativeV6EpochTransition<'_>> + DoubleEndedIterator {
-        self.0.restore_lineage.iter().map(crate::NativeV6EpochTransition)
+    pub fn epoch_transitions(
+        &self,
+    ) -> impl ExactSizeIterator<Item = crate::NativeV6EpochTransition<'_>> + DoubleEndedIterator
+    {
+        self.0
+            .restore_lineage
+            .iter()
+            .map(crate::NativeV6EpochTransition)
     }
     /// The epoch in which this lineage first activated native storage. The
     /// retained V5 source stays tied to that real activation, even after an
     /// online native restore. This is metadata, not permission to change epoch.
     pub fn native_origin_epoch(&self) -> u64 {
-        self.0.restore_lineage.first()
+        self.0
+            .restore_lineage
+            .first()
             .map(|step| step.pending.command.source.enrollment.command.epoch)
             .unwrap_or(self.0.command.intent.epoch)
     }
@@ -340,7 +351,10 @@ impl crate::StateMachine {
             || (self.v6_epoch_protocol.is_some() && self.v6_root.is_none())
             || (self.v6_epoch_protocol != Some(1)
                 && (self.v6_pending_epoch_restore.is_some()
-                    || self.v6_root.as_ref().is_some_and(|root| !root.restore_lineage.is_empty())))
+                    || self
+                        .v6_root
+                        .as_ref()
+                        .is_some_and(|root| !root.restore_lineage.is_empty())))
         {
             return Err(RecordRejection::Invalid);
         }
@@ -395,7 +409,9 @@ impl crate::StateMachine {
         }
         if let Some(pending) = &self.v6_pending_epoch_restore {
             pending.matches_current(
-                self.v6_enrollment.as_ref().ok_or(RecordRejection::Invalid)?,
+                self.v6_enrollment
+                    .as_ref()
+                    .ok_or(RecordRejection::Invalid)?,
                 self.v6_root.as_ref().ok_or(RecordRejection::Invalid)?,
             )?;
             if pending.begin_log.index > last {
@@ -406,8 +422,12 @@ impl crate::StateMachine {
                     .map_err(|_| RecordRejection::Invalid)?;
                 if intent.log.index > last
                     || self.v6_intent_log_id(&object.reference().id) != Some(intent.log)
-                    || self.records_v5.as_ref().ok_or(RecordRejection::Invalid)?
-                        .object(object.reference())? != Some(object)
+                    || self
+                        .records_v5
+                        .as_ref()
+                        .ok_or(RecordRejection::Invalid)?
+                        .object(object.reference())?
+                        != Some(object)
                 {
                     return Err(RecordRejection::Invalid);
                 }
@@ -434,16 +454,29 @@ impl crate::StateMachine {
                         .and_then(|()| self.apply_native_v6_root(root)),
                 ),
                 RecordCommand::BeginNativeV6EpochRestore { pending } => Some(
-                    request.validate_size()
+                    request
+                        .validate_size()
                         .and_then(|()| self.apply_begin_native_v6_epoch_restore(pending)),
                 ),
                 RecordCommand::CancelNativeV6EpochRestore { pending } => Some(
-                    request.validate_size()
+                    request
+                        .validate_size()
                         .and_then(|()| self.apply_cancel_native_v6_epoch_restore(pending)),
                 ),
                 RecordCommand::PublishNativeV6EpochRestore { publication } => Some(
-                    request.validate_size()
+                    request
+                        .validate_size()
                         .and_then(|()| self.apply_publish_native_v6_epoch_restore(publication)),
+                ),
+                RecordCommand::ActivateNativeV6RetainedRoots { activation } => Some(
+                    request
+                        .validate_size()
+                        .and_then(|()| self.apply_native_v6_retained_root_activation(activation)),
+                ),
+                RecordCommand::RetireNativeV6Intents { retirement } => Some(
+                    request
+                        .validate_size()
+                        .and_then(|()| self.apply_native_v6_intent_retirement(retirement)),
                 ),
                 RecordCommand::Stage { object }
                     if self.v6_root.is_some()
@@ -548,8 +581,11 @@ impl crate::StateMachine {
             publication_log: log,
             migration_source_digest: source_digest,
             migration_source_log: source_log,
-            restore_lineage: self.v6_root.as_ref()
-                .map(|root| root.restore_lineage.clone()).unwrap_or_default(),
+            restore_lineage: self
+                .v6_root
+                .as_ref()
+                .map(|root| root.restore_lineage.clone())
+                .unwrap_or_default(),
         };
         candidate.validate()?;
         self.v6_root = Some(candidate);
@@ -621,10 +657,10 @@ mod wire_tests {
             },
             RecordCommand::PublishNativeV6 { root },
         ] {
-            let request = ApplicationRequest::RecordsV5(RecordRequest {
+            let request = ApplicationRequest::RecordsV5(Box::new(RecordRequest {
                 serial: 7,
                 records_v5: command,
-            });
+            }));
             // Both paths use the untagged application decoder, not just the
             // enrollment struct's direct JSON map deserializer.
             let value = serde_json::to_value(&request)?;
@@ -648,12 +684,12 @@ mod wire_tests {
     #[test]
     fn native_v6_enrollment_log_pins_reject_noncanonical_and_unbounded_sequences()
     -> Result<(), Box<dyn std::error::Error>> {
-        let request = ApplicationRequest::RecordsV5(RecordRequest {
+        let request = ApplicationRequest::RecordsV5(Box::new(RecordRequest {
             serial: 7,
             records_v5: RecordCommand::EnrollNativeV6 {
                 enrollment: enrollment(),
             },
-        });
+        }));
         let value = serde_json::to_value(&request)?;
         let pairs = value["records_v5"]["EnrollNativeV6"]["enrollment"]["pins"]
             .as_array()

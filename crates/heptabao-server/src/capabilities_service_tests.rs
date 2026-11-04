@@ -202,33 +202,54 @@ fn capabilities_self_consumes_only_its_normal_affine_admission() -> TestResult {
     let f = Fixture::new()?;
     let mut s = f.service()?;
     let (root, key) = start(&mut s)?;
-    let (token, _) = create_token(&mut s, &root, json!({"policies":["default"],"num_uses":1}))?;
-    assert_eq!(
-        call(
+    // Actual OpenBao 2.7.1: a two-use self actor yields 200, 400, 403. Admission
+    // pays one use; self inspection still requires the target to have uses left.
+    // A one-use actor's first response is therefore 400, never a refunded use.
+    for uses in [1, 2] {
+        let (token, _) = create_token(
+            &mut s,
+            &root,
+            json!({"policies":["default"],"num_uses":uses}),
+        )?;
+        if uses == 2 {
+            let first = call(
+                &mut s,
+                &token,
+                "sys/capabilities-self",
+                json!({"paths":["auth/token/lookup-self"]}),
+            );
+            assert_eq!(first.status, 200);
+            assert_eq!(first.body["capabilities"], json!(["read"]));
+        }
+        let last = call(
             &mut s,
             &token,
             "sys/capabilities-self",
-            json!({"paths":["auth/token/lookup-self"]})
-        )
-        .status,
-        200
-    );
-    drop(s);
-    let mut s = f.service()?;
-    assert_eq!(
-        call(&mut s, "", "sys/unseal", json!({"key":key})).status,
-        200
-    );
-    assert_eq!(
-        call(
-            &mut s,
-            &token,
-            "sys/capabilities-self",
-            json!({"paths":["auth/token/lookup-self"]})
-        )
-        .status,
-        403
-    );
+            json!({"paths":["auth/token/lookup-self"]}),
+        );
+        assert_eq!(last.status, 400);
+        assert_eq!(
+            last.body["errors"],
+            json!(["1 error occurred:\n\t* invalid token\n\n"])
+        );
+        assert!(last.body.get("data").is_none());
+        drop(s);
+        s = f.service()?;
+        assert_eq!(
+            call(&mut s, "", "sys/unseal", json!({"key":key})).status,
+            200
+        );
+        assert_eq!(
+            call(
+                &mut s,
+                &token,
+                "sys/capabilities-self",
+                json!({"paths":["auth/token/lookup-self"]})
+            )
+            .status,
+            403
+        );
+    }
     Ok(())
 }
 
@@ -490,19 +511,21 @@ fn capabilities_live_identity_and_group_revocation_apply_to_foreign_and_self_que
         call(&mut s, &token, "sys/capabilities-self", q.clone()).status,
         403
     );
-    assert_eq!(
-        call(&mut s, &root, "sys/capabilities", foreign.clone()).body["capabilities"],
-        json!(["deny"])
-    );
+    // Official OpenBao 2.7.1 rejects inspection of a disabled target token.
+    let disabled_foreign = call(&mut s, &root, "sys/capabilities", foreign.clone());
+    assert_eq!(disabled_foreign.status, 400);
+    assert_eq!(disabled_foreign.body, json!({"errors":["invalid token"]}));
     drop(s);
     let mut s = f.service()?;
     assert_eq!(
         call(&mut s, "", "sys/unseal", json!({"key":key})).status,
         200
     );
+    let retained_disabled_foreign = call(&mut s, &root, "sys/capabilities", foreign);
+    assert_eq!(retained_disabled_foreign.status, 400);
     assert_eq!(
-        call(&mut s, &root, "sys/capabilities", foreign).body["capabilities"],
-        json!(["deny"])
+        retained_disabled_foreign.body,
+        json!({"errors":["invalid token"]})
     );
     assert_eq!(
         call(

@@ -246,8 +246,38 @@ fn non_snapshot_raft_and_direct_json_paths_remain_closed_for_native_v6() -> Test
     let (_root, mut service, _key, token) = initialized()?;
     put(&mut service, &token, "kept");
     activate(&mut service, &token);
-    for path in [
+    assert!(service.ha.is_none());
+    let before = service
+        .native_root
+        .as_ref()
+        .ok_or("native snapshot root")?
+        .clone();
+    // The new read-only Raft owner preserves the existing ACL-before-HA
+    // diagnostic. A File store has no consensus metadata to return; this
+    // observation neither enables administrative writes nor opens snapshot IO.
+    let configuration = call(
+        &mut service,
+        "GET",
         "sys/storage/raft/configuration",
+        &token,
+        json!({}),
+    );
+    assert_eq!(configuration.status, 400);
+    assert_eq!(configuration.body, json!({"errors":["HA is not enabled"]}));
+    assert!(configuration.unwrapped_json.is_none());
+    assert!(configuration.response_headers.is_empty());
+    assert!(service.pending_native_auth_delivery.is_none());
+    assert!(service.snapshot_spool.is_none());
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("snapshot state")?
+            .raft_admin
+            .is_default()
+    );
+    for path in [
+        "sys/storage/raft/join",
         "sys/storage/raft/snapshot",
         "sys/raw/state",
     ] {
@@ -256,7 +286,26 @@ fn non_snapshot_raft_and_direct_json_paths_remain_closed_for_native_v6() -> Test
             response.status, 501,
             "unrelated path must stay closed: {path}"
         );
+        assert!(response.body.get("data").is_none());
+        assert!(response.unwrapped_json.is_none());
+        assert!(response.response_headers.is_empty());
     }
+    assert!(service.ha.is_none());
+    assert!(service.snapshot_spool.is_none());
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("snapshot state")?
+            .raft_admin
+            .is_default()
+    );
+    crate::service::native_auth::auth_only_root_change(
+        &before,
+        service.native_root.as_ref().ok_or("native snapshot root")?,
+        false,
+    )
+    .map_err(|_| "refused File administration changed a business owner")?;
     assert_eq!(get(&mut service, &token), json!({"value":"kept"}));
     Ok(())
 }

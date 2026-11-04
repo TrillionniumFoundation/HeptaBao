@@ -309,11 +309,10 @@ mod tests {
             &body,
             authority(AuthorityTime::Precise(clock.observed_at()?)),
         )?;
-        assert_eq!(
-            issued.body["data"]["expiration"],
-            now + 2,
-            "actual expiry floors the public DER instead of using ceil owner projection"
-        );
+        let published = pki.issued.values().next().ok_or("actual published leaf")?;
+        assert_eq!(published.expires - published.issued, 300);
+        assert_eq!(issued.body["data"]["expiration"], published.expires);
+        assert!(published.expires > exact_expiry.ceil_seconds()?);
         let cert = X509::from_pem(
             issued.body["data"]["certificate"]
                 .as_str()
@@ -334,7 +333,14 @@ mod tests {
             authority(AuthorityTime::Precise(clock.observed_at()?)),
         )?;
         let before = pki.issued.len();
-        std::thread::sleep(Duration::from_millis(2050));
+        // The old 2050ms wait only crossed an incorrectly owner-capped DER
+        // boundary. Cross this same retained actor's actual precise expiry;
+        // neither the original clock nor its authority is extended.
+        let remaining = exact_expiry
+            .duration_since_epoch()
+            .saturating_sub(clock.observed_at()?.duration_since_epoch());
+        std::thread::sleep(remaining + Duration::from_millis(20));
+        assert!(clock.observed_at()? > exact_expiry);
         assert_eq!(
             prepared
                 .validate_publication(now)

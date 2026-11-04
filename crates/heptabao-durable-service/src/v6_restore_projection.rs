@@ -44,11 +44,11 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         prepared: &mut PreparedV6Restore<R>,
         target: (u64, u64),
         source_root: &[u8],
-        root: Secret,
-        cursor: Secret,
+        root_and_cursor: (Secret, Secret),
         objects: Vec<(String, Secret)>,
         gate: &mut impl FnMut() -> Result<(), ServiceError>,
     ) -> Result<(), ServiceError> {
+        let (root, cursor) = root_and_cursor;
         gate()?;
         if self.v6_restore_projection_target(prepared)? != target
             || prepared.state.get("system", "state")? != Some(source_root)

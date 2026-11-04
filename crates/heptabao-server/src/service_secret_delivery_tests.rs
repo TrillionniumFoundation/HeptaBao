@@ -104,7 +104,9 @@ fn setup(
                 .ok_or("configuration route")?;
         }
     }
-    state.schema = CURRENT_STATE_SCHEMA;
+    // This is current provider custody, not a historical reader fixture. Keep
+    // the current root/namespace default-policy floor through typed setup.
+    state.schema = state.writer_schema();
     state.validate_format().map_err(|_| "fixture format")?;
     service
         .commit_state(&mut state)

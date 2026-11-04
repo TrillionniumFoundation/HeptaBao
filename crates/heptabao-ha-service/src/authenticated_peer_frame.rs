@@ -69,26 +69,33 @@ where
     let (stream, accepted_at) = accept_peer_with_origin(listener)?;
     configure_accepted_peer_stream(&stream, timeout)?;
     let deadline = accepted_at.checked_add(timeout).ok_or(HaError::Transport)?;
+    #[cfg(all(
+        feature = "native-v6-peer-ingress",
+        any(test, feature = "private-forward-stage-diagnostic")
+    ))]
+    let _diagnostic_bound = closure_phase_diagnostic::Scope::original_bound(deadline);
     let stream = ForwardDeadlineStream { stream, deadline };
-    let connection =
-        rustls::ServerConnection::new(server_config).map_err(|_| {
-            forward_transport_frame_error("receiver_tls_setup", HaError::Transport)
-        })?;
+    let connection = rustls::ServerConnection::new(server_config)
+        .map_err(|_| forward_transport_frame_error("receiver_tls_setup", HaError::Transport))?;
     let mut tls = rustls::StreamOwned::new(connection, stream);
-    tls.conn
-        .complete_io(&mut tls.sock)
-        .map_err(|error| forward_io_error_as(
-            "receiver_tls_handshake", &error, HaError::PeerAuthenticationFailed,
-        ))?;
+    observe_closure_phase!(ServerHandshake, tls.conn.complete_io(&mut tls.sock)).map_err(
+        |error| {
+            forward_io_error_as(
+                "receiver_tls_handshake",
+                &error,
+                HaError::PeerAuthenticationFailed,
+            )
+        },
+    )?;
     let strict_raft_alpn = tls.conn.alpn_protocol() == Some(RAFT_ALPN_PROTOCOL);
     require_raft_alpn(tls.conn.alpn_protocol(), allow_missing_raft_alpn)
         .map_err(|error| forward_transport_frame_error("receiver_alpn", error))?;
-    let certificates = tls
-        .conn
-        .peer_certificates()
-        .ok_or_else(|| forward_transport_frame_error(
-            "receiver_certificate_absent", HaError::PeerAuthenticationFailed,
-        ))?;
+    let certificates = tls.conn.peer_certificates().ok_or_else(|| {
+        forward_transport_frame_error(
+            "receiver_certificate_absent",
+            HaError::PeerAuthenticationFailed,
+        )
+    })?;
     let peer = identify_peer_certificate_chain(identities, certificates)
         .map_err(|error| forward_transport_frame_error("receiver_identity", error))?;
     let leaf_sha256 = sha256(
@@ -97,19 +104,31 @@ where
             .ok_or(HaError::PeerAuthenticationFailed)?
             .as_ref(),
     );
-    let payload = read_bounded_frame(&mut tls)
-        .map_err(|error| forward_transport_frame_error("receiver_frame_read", error))?;
+    let payload = native_kv2_write_request::read_authenticated_request(
+        &mut tls,
+        strict_raft_alpn.then_some(RAFT_ALPN_PROTOCOL),
+    )
+    .map_err(|error| forward_transport_frame_error("receiver_frame_read", error))?;
+    let response_profile = ResponseFrameProfile::for_request(&payload)?;
+    response_profile.require_alpn(tls.conn.alpn_protocol())?;
     if Instant::now() >= deadline {
-        return Err(forward_transport_frame_error("receiver_deadline_before_handler", HaError::Transport));
+        return Err(forward_transport_frame_error(
+            "receiver_deadline_before_handler",
+            HaError::Transport,
+        ));
     }
-    let response = handler(AuthenticatedPeerFrame {
-        payload,
-        peer,
-        leaf_sha256,
-        accepted_at,
-        deadline,
-        strict_raft_alpn,
-    }).map_err(|error| forward_transport_frame_error("receiver_handler_result", error))?;
-    write_bounded_frame(&mut tls, &response)
+    let response = zeroize::Zeroizing::new(
+        handler(AuthenticatedPeerFrame {
+            payload,
+            peer,
+            leaf_sha256,
+            accepted_at,
+            deadline,
+            strict_raft_alpn,
+        })
+        .map_err(|error| forward_transport_frame_error("receiver_handler_result", error))?,
+    );
+    response_profile
+        .write(&mut tls, &response)
         .map_err(|error| forward_transport_frame_error("receiver_frame_write", error))
 }

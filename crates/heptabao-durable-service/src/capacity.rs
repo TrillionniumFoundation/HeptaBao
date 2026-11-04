@@ -181,6 +181,37 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             true,
             &mut before_publish,
             Some(&conditions),
+            false,
+        )
+    }
+
+    /// One bounded conditional transaction whose actual condition reads and
+    /// Intent/Apply/Commit appends retain the caller's original I/O gate.
+    /// This entry never compacts implicitly: a full journal refuses before
+    /// publication rather than starting an independently timed checkpoint.
+    pub fn apply_batch_conditionally_with_io_gate(
+        &mut self,
+        request: BatchPublication,
+        conditions: Vec<PublicationCondition>,
+        mut io_gate: impl FnMut() -> Result<(), ServiceError>,
+    ) -> Result<MutationOutcome, ServiceError> {
+        if conditions.is_empty() || conditions.len() > MAX_ATOMIC_MUTATIONS {
+            return Err(ServiceError::InvalidResource);
+        }
+        self.apply_batch_with_policy_gate_conditions(
+            AtomicBatchRequest {
+                replay_epoch: request.replay_epoch,
+                principal: request.principal,
+                namespace: request.namespace,
+                request_id: request.request_id,
+                authorization_digest: request.authorization_digest,
+                mutations: request.mutations,
+            },
+            Failpoint::None,
+            false,
+            &mut io_gate,
+            Some(&conditions),
+            true,
         )
     }
 
@@ -232,6 +263,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             compact_before_entry,
             before_publish,
             None,
+            false,
         )
     }
 
@@ -242,6 +274,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         compact_before_entry: bool,
         before_publish: &mut dyn FnMut() -> Result<(), ServiceError>,
         conditions: Option<&Vec<PublicationCondition>>,
+        gate_physical_io: bool,
     ) -> Result<MutationOutcome, ServiceError> {
         validate_identifier(&request.principal)?;
         validate_namespace(&request.namespace)?;
@@ -423,6 +456,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                     false,
                     before_publish,
                     conditions,
+                    gate_physical_io,
                 );
             }
             return Err(ServiceError::JournalCapacityExhausted);
@@ -431,8 +465,17 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         before_publish()?;
         if let Some(conditions) = conditions {
             self.verify_live_ownership()?;
+            if gate_physical_io {
+                before_publish()?;
+            }
             for condition in conditions {
+                if gate_physical_io {
+                    before_publish()?;
+                }
                 let actual = self.get(&request.namespace, &condition.resource)?;
+                if gate_physical_io {
+                    before_publish()?;
+                }
                 let equal = match (actual.as_ref(), condition.expected.as_ref()) {
                     (None, None) => true,
                     (Some(actual), Some(expected)) => actual.expose() == expected.expose(),
@@ -446,17 +489,35 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
 
         self.unresolved = true;
         let result = (|| {
+            if gate_physical_io {
+                before_publish()?;
+            }
             self.append_frame(&intent)?;
+            if gate_physical_io {
+                before_publish()?;
+            }
             if failpoint == Failpoint::AfterIntent {
                 return Err(ServiceError::RecoveryRequired);
             }
+            if gate_physical_io {
+                before_publish()?;
+            }
             self.append_frame(&apply)?;
+            if gate_physical_io {
+                before_publish()?;
+            }
             apply_journal_mutations(&mut self.snapshot, &marker, &mutations)?;
             self.snapshot_plaintext_bytes = candidate_plaintext_bytes;
             if failpoint == Failpoint::AfterSnapshotPublication {
                 return Err(ServiceError::RecoveryRequired);
             }
+            if gate_physical_io {
+                before_publish()?;
+            }
             self.append_frame(&commit)?;
+            if gate_physical_io {
+                before_publish()?;
+            }
             if failpoint == Failpoint::AfterCommitJournal {
                 return Err(ServiceError::RecoveryRequired);
             }

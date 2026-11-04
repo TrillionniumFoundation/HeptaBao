@@ -283,7 +283,7 @@ fn native_ha_restore_publishes_new_epoch_not_local_rewind_and_fences_old_provide
 -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, token) = bootstrap(&mut service)?;
+    let (_, token) = crate::service::tests::bootstrap_pre141(&mut service)?;
     write(&mut service, &token, "saved");
     assert_eq!(
         call(

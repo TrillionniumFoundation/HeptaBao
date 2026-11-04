@@ -29,6 +29,9 @@ use std::path::Path;
 use std::path::PathBuf;
 
 mod backup_stream;
+#[cfg(test)]
+#[path = "cold_seed_epoch_tests.rs"]
+mod cold_seed_epoch_tests;
 mod v6_object_backup;
 pub use v6_object_backup::{PreparedV6Restore, V6BackupSize, V6BackupSource};
 mod prepared_restore;
@@ -37,7 +40,22 @@ pub use prepared_restore::{PreparedRestore, PreparedRestoreMetadata};
 mod capacity;
 mod immutable_publication;
 mod immutable_source_session;
-pub use immutable_source_session::{ImmutableObjectReadObservation, ImmutableSourceSession};
+pub use immutable_source_session::{
+    FileImmutableSourceReader, IMMUTABLE_RETIREMENT_RESOURCE, ImmutableObjectReadObservation,
+    ImmutableRetirementOutcome, ImmutableRetirementRequest, ImmutableRetirementStatus,
+    ImmutableSourceSession, NativeHaLocalRetentionOwner, NativeHaLocalRetirementBoundary,
+};
+pub use immutable_source_session::{
+    NATIVE_HA_INTENT_RETIREMENT_RESOURCE, NativeHaIntentCommit, NativeHaIntentCompletedOwner,
+    NativeHaIntentOwner, NativeHaIntentReconciliationOutcome, NativeHaIntentReconciliationOwner,
+    NativeHaIntentReconciliationRequest, NativeHaIntentResolution, NativeHaIntentRetirementOutcome,
+    NativeHaIntentRetirementRequest, NativeHaIntentRetirementStatus, NativeHaIntentSelection,
+};
+pub use immutable_source_session::{
+    NATIVE_HA_SHARED_RETIREMENT_RESOURCE, NativeHaSharedCompletedOwner,
+    NativeHaSharedPhysicalOutcome, NativeHaSharedPhysicalOwner, NativeHaSharedRetirementOutcome,
+    NativeHaSharedRetirementRequest, NativeHaSharedRetirementStatus, NativeHaSharedSelection,
+};
 mod negative_current_publication;
 pub use capacity::{BatchPublication, CapacityStatus, PublicationCondition};
 pub use immutable_publication::{ImmutablePublication, ImmutablePublicationCapacity};
@@ -45,7 +63,9 @@ mod backend;
 pub use backend::{
     ArtifactCommitment, BackendBundle, BackendError, BlobLocator, BundleCommitment, DurableBackend,
     FileBackend, ImmutableBlobProfile, ImmutableBlobReadPin, ImmutableBlobStage,
-    MAX_IMMUTABLE_CIPHERTEXT_BYTES, PinReadError, RestoreProfile, StagedRestoreCommitments,
+    ImmutableCiphertextAuthenticator, MAX_BACKEND_ARTIFACT_BYTES, MAX_IMMUTABLE_CIPHERTEXT_BYTES,
+    PinReadError, PreparedImmutableReconciliation, PreparedImmutableRetirement, RestoreProfile,
+    StagedRestoreCommitments,
 };
 
 fn map_backend_error(error: BackendError) -> ServiceError {
@@ -66,6 +86,10 @@ fn map_backend_error(error: BackendError) -> ServiceError {
 
 const SNAPSHOT_MAGIC: &[u8; 4] = b"HBS2";
 const SNAPSHOT_PLAINTEXT_MAGIC: &[u8; 4] = b"HBP2";
+// Atomic reader floor for authenticated native HA intent Pending/closure.
+// Older readers reject HBP3 and Apply tag 6 before they can ignore its hold.
+const HA_INTENT_SNAPSHOT_PLAINTEXT_MAGIC: &[u8; 4] = b"HBP3";
+const HA_INTENT_APPLY_KIND: u8 = 6;
 const JOURNAL_MAGIC: &[u8; 4] = b"HBJ2";
 const LEDGER_MAGIC: &[u8; 4] = b"HBL2";
 const LEGACY_LEDGER_PLAINTEXT_MAGIC: &[u8; 4] = b"HBC2";
@@ -549,10 +573,29 @@ impl<B: Barrier> DurableService<B> {
         barrier: B,
         max_retained_requests: usize,
     ) -> Result<Self, ServiceError> {
+        Self::create_new_at_replay_epoch(root, barrier, max_retained_requests, 0)
+    }
+
+    /// Create a new empty, writer-fenced file owner in an explicitly selected
+    /// replay domain. This never opens or rewrites an existing store and does
+    /// not authenticate an archive, key, Actor or Raft enrollment. A cold seed
+    /// coordinator may use its independently authenticated archive epoch in a
+    /// V5 bootstrap projection without an unbounded sequence of retirements.
+    pub fn create_new_at_replay_epoch(
+        root: impl AsRef<Path>,
+        barrier: B,
+        max_retained_requests: usize,
+        replay_epoch: u64,
+    ) -> Result<Self, ServiceError> {
         validate_capacity(max_retained_requests)?;
         let backend = Box::new(FileBackend::create_new(root.as_ref()).map_err(map_backend_error)?)
             as Box<dyn DurableBackend>;
-        Self::create_new_with_backend(backend, barrier, max_retained_requests)
+        Self::create_new_with_backend_at_replay_epoch(
+            backend,
+            barrier,
+            max_retained_requests,
+            replay_epoch,
+        )
     }
 
     pub fn reopen(
@@ -584,9 +627,18 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
     /// Initialize an empty, exclusively owned backend with sealed artifacts.
     /// The backend must have acquired its writer fence before this call.
     pub fn create_new_with_backend(
+        backend: P,
+        barrier: B,
+        max_retained_requests: usize,
+    ) -> Result<Self, ServiceError> {
+        Self::create_new_with_backend_at_replay_epoch(backend, barrier, max_retained_requests, 0)
+    }
+
+    fn create_new_with_backend_at_replay_epoch(
         mut backend: P,
         barrier: B,
         max_retained_requests: usize,
+        replay_epoch: u64,
     ) -> Result<Self, ServiceError> {
         validate_capacity(max_retained_requests)?;
         backend.verify().map_err(map_backend_error)?;
@@ -598,7 +650,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         let snapshot_plaintext_bytes = snapshot_plaintext_len(&snapshot)?;
         let ledger = BTreeMap::new();
         let snapshot_bytes = sealed_snapshot(&barrier, &snapshot)?;
-        let ledger_bytes = sealed_ledger(&barrier, 0, 0, 0, &ledger)?;
+        let ledger_bytes = sealed_ledger(&barrier, 0, replay_epoch, 0, &ledger)?;
         backend
             .initialize_empty(&BackendBundle {
                 snapshot: snapshot_bytes,
@@ -613,7 +665,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             snapshot_plaintext_bytes,
             ledger_plaintext_bytes: ledger_plaintext_len(&ledger)?,
             ledger,
-            replay_epoch: 0,
+            replay_epoch,
             retired_through_generation: 0,
             reconciliation: BTreeMap::new(),
             journal_sequence: 0,
@@ -1107,6 +1159,9 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         if self.unresolved {
             return Err(ServiceError::RecoveryRequired);
         }
+        self.ensure_no_pending_immutable_retirement()?;
+        self.ensure_no_pending_ha_shared_retirement()?;
+        self.ensure_no_pending_ha_intent_retirement()?;
         self.backend.verify().map_err(map_backend_error)?;
         validate_committed_state(
             &self.snapshot,
@@ -2490,7 +2545,16 @@ fn preflight_snapshot_capacity<B: Barrier>(
 
 fn encode_snapshot(snapshot: &Snapshot) -> Result<Vec<u8>, ServiceError> {
     let mut bytes = Vec::new();
-    bytes.extend_from_slice(SNAPSHOT_PLAINTEXT_MAGIC);
+    bytes.extend_from_slice(
+        if snapshot
+            .entries
+            .contains_key(&("system".into(), NATIVE_HA_INTENT_RETIREMENT_RESOURCE.into()))
+        {
+            HA_INTENT_SNAPSHOT_PLAINTEXT_MAGIC
+        } else {
+            SNAPSHOT_PLAINTEXT_MAGIC
+        },
+    );
     write_u64(&mut bytes, snapshot.generation);
     match &snapshot.last_commit {
         Some(marker) => {
@@ -2512,9 +2576,13 @@ fn encode_snapshot(snapshot: &Snapshot) -> Result<Vec<u8>, ServiceError> {
 }
 
 fn decode_snapshot(bytes: &[u8]) -> Result<Snapshot, ServiceError> {
-    if bytes.len() < 4 || &bytes[..4] != SNAPSHOT_PLAINTEXT_MAGIC {
+    if bytes.len() < 4
+        || (&bytes[..4] != SNAPSHOT_PLAINTEXT_MAGIC
+            && &bytes[..4] != HA_INTENT_SNAPSHOT_PLAINTEXT_MAGIC)
+    {
         return Err(ServiceError::CorruptState);
     }
+    let intent_floor = &bytes[..4] == HA_INTENT_SNAPSHOT_PLAINTEXT_MAGIC;
     let mut cursor = Cursor::new(&bytes[4..]);
     let generation = cursor.read_u64()?;
     let last_commit = match cursor.read_u8()? {
@@ -2542,11 +2610,23 @@ fn decode_snapshot(bytes: &[u8]) -> Result<Snapshot, ServiceError> {
         }
     }
     cursor.finish()?;
+    if intent_floor
+        != entries.contains_key(&("system".into(), NATIVE_HA_INTENT_RETIREMENT_RESOURCE.into()))
+    {
+        return Err(ServiceError::CorruptState);
+    }
     Ok(Snapshot {
         generation,
         entries,
         last_commit,
     })
+}
+
+fn ha_intent_apply_floor(marker: &CommitMarker, mutations: &[JournalMutation]) -> bool {
+    marker.key.namespace == "system"
+        && mutations
+            .iter()
+            .any(|mutation| mutation.resource == NATIVE_HA_INTENT_RETIREMENT_RESOURCE)
 }
 
 fn encode_journal_event(event: &JournalEvent) -> Result<Vec<u8>, ServiceError> {
@@ -2581,7 +2661,14 @@ fn encode_journal_event(event: &JournalEvent) -> Result<Vec<u8>, ServiceError> {
             if mutations.is_empty() || mutations.len() > MAX_ATOMIC_MUTATIONS {
                 return Err(ServiceError::CorruptState);
             }
-            bytes.push(5);
+            // The old-reader veto and actual metadata mutation are in the
+            // SAME AEAD Apply frame. Intent-only/torn-before-Apply prefixes
+            // cannot have authorized the external command.
+            bytes.push(if ha_intent_apply_floor(marker, mutations) {
+                HA_INTENT_APPLY_KIND
+            } else {
+                5
+            });
             encode_marker(&mut bytes, marker)?;
             write_u32(
                 &mut bytes,
@@ -2630,7 +2717,7 @@ fn decode_journal_event(bytes: &[u8]) -> Result<JournalEvent, ServiceError> {
                 ledger_digest,
             })
         }
-        5 => {
+        5 | HA_INTENT_APPLY_KIND => {
             let marker = decode_marker(&mut cursor)?;
             let count =
                 usize::try_from(cursor.read_u32()?).map_err(|_| ServiceError::CorruptState)?;
@@ -2651,6 +2738,9 @@ fn decode_journal_event(bytes: &[u8]) -> Result<JournalEvent, ServiceError> {
                     _ => return Err(ServiceError::CorruptState),
                 };
                 mutations.push(JournalMutation { resource, value });
+            }
+            if (kind == HA_INTENT_APPLY_KIND) != ha_intent_apply_floor(&marker, &mutations) {
+                return Err(ServiceError::CorruptState);
             }
             JournalEvent::Apply { marker, mutations }
         }

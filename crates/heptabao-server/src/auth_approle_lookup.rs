@@ -149,7 +149,7 @@ impl AuthState {
                 return Err(bad("missing secret_id_accessor"));
             }
             match role
-                .secret_ids
+                .approle_secrets()?
                 .values()
                 .find(|secret| secret.accessor == wanted)
             {
@@ -158,11 +158,17 @@ impl AuthState {
                     // The accessor storage owner is this actual namespace and
                     // mount. A live accessor belonging to another role yields
                     // nil/nil; other mounts and namespaces cannot supply it.
-                    let elsewhere = roles.values().any(|other| {
-                        other.secret_ids.values().any(|secret| {
-                            secret.accessor == wanted && secret.uses_remaining != Some(0)
-                        })
-                    });
+                    let mut elsewhere = false;
+                    for other in roles.values() {
+                        if other.approle_secret_owner() == role.approle_secret_owner()
+                            && other.approle_secrets()?.values().any(|secret| {
+                                secret.accessor == wanted && secret.uses_remaining != Some(0)
+                            })
+                        {
+                            elsewhere = true;
+                            break;
+                        }
+                    }
                     return Ok(if elsewhere {
                         empty(false)
                     } else {
@@ -171,7 +177,8 @@ impl AuthState {
                 }
             }
         } else {
-            role.secret_ids.get(&hash(string_field(body, "secret_id")?))
+            role.approle_secrets()?
+                .get(&hash(string_field(body, "secret_id")?))
         };
         let Some(secret) = secret else {
             return Ok(empty(false));

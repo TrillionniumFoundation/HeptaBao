@@ -2,10 +2,28 @@
 //! This codec grants no Actor, physical source session, publication or admission.
 use super::*;
 use crate::state_records::{BLOCK_BYTES, ObjectKind};
+use std::cell::RefCell;
 
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[path = "kv2_native_paged_syntax.rs"]
+pub(super) mod syntax;
+
+#[cfg(any(test, feature = "native-v6-storage"))]
 #[path = "kv2_native_storage_witness.rs"]
 mod storage_witness;
+
+#[cfg(any(test, feature = "native-v6-storage"))]
+#[path = "kv2_native_remount.rs"]
+mod remount;
+
+#[cfg(feature = "native-v6-storage")]
+#[path = "kv2_native_lossless_export.rs"]
+pub(crate) mod lossless_export;
+
+#[cfg(feature = "native-v6-storage")]
+#[path = "kv2_native_retained_read.rs"]
+mod retained_read;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use retained_read::{NativeDataReadWitness, NativeRetainedReadVersion};
 
 pub(crate) const PAGED_NATIVE_FORMAT: &str = "heptabao-kv2-native-paged-v2";
 pub(crate) const MAX_PAGED_LOGICAL_BYTES: u64 = 1024 * 1024 * 1024;
@@ -13,6 +31,29 @@ const PAYLOAD_FORMAT: &str = "heptabao-kv2-native-payload-v2";
 const PAYLOAD_DOMAIN: &[u8] = b"kv2-native-v6-paged-v2/payload";
 const MAX_DESCRIPTOR_BYTES: usize = 32 * 1024;
 const OBJECT_HEADER_BYTES: usize = 25;
+
+// This is a memo of deterministic JSON semantics, never a source or custody
+// receipt. Every hit still follows fresh block reads, keyed ObjectRef checks
+// and the complete payload digest under the caller's original live gates.
+// Its type/domain fixes paged-v2, canonical SharedJson and the lossless-number
+// check. The scoped key, path token, version, digest and length fix the input.
+const PAYLOAD_VALIDATION_DOMAIN: &[u8] =
+    b"heptabao-kv2-native-paged-v2/canonical-shared-json-v1/lossless-number-check-v1";
+type PayloadValidationKey = ([u8; 32], u64, [u8; 32], u64);
+
+#[derive(Default)]
+pub(crate) struct PagedPayloadValidationMemo {
+    needs_lossless: BTreeMap<PayloadValidationKey, bool>,
+    #[cfg(test)]
+    hits: usize,
+}
+
+#[cfg(test)]
+impl PagedPayloadValidationMemo {
+    pub(crate) fn test_observations(&self) -> (usize, usize) {
+        (self.needs_lossless.len(), self.hits)
+    }
+}
 
 #[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -94,6 +135,27 @@ fn preflight_paged_path(bytes: &[u8]) -> CodecResult<()> {
     Ok(())
 }
 
+// Pure canonical metadata bounds only. The hint contains no validation
+// receipt: each matching fresh authenticated input is bounded again from
+// the complete typed fields whose canonical bytes were captured together.
+fn preflight_paged_typed_path(bytes: &[u8], cell: &PathCell<Entry>) -> CodecResult<()> {
+    if bytes.len() > MAX_METADATA_BYTES {
+        return Err(RecordError::TooLarge);
+    }
+    if cell.metadata.versions.len() > MAX_RETAINED_VERSIONS as usize
+        || cell.metadata.precision.versions.len() > MAX_RETAINED_VERSIONS as usize
+        || cell
+            .metadata
+            .custom_metadata
+            .as_ref()
+            .is_some_and(|metadata| metadata.len() > 64)
+        || cell.payload_versions.len() > MAX_RETAINED_VERSIONS as usize
+    {
+        return Err(RecordError::Corrupt);
+    }
+    Ok(())
+}
+
 impl Drop for PayloadDescriptor {
     fn drop(&mut self) {
         self.path_token.zeroize();
@@ -123,7 +185,7 @@ impl PayloadDescriptor {
         }
         Ok(())
     }
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     fn encode(
         key: &AddressKey,
         path: &str,
@@ -171,14 +233,14 @@ impl PayloadDescriptor {
             .fold(0_u8, |x, (a, b)| x | (a ^ b));
         Ok(bytes.len() as u64 == self.logical_bytes && difference == 0)
     }
-    fn read(
+    fn read_authenticated_bytes(
         &self,
         key: &AddressKey,
         path: &str,
         version: u64,
         reader: &impl RecordReader,
         check: &impl Fn() -> CodecResult<()>,
-    ) -> CodecResult<SharedJson> {
+    ) -> CodecResult<Zeroizing<Vec<u8>>> {
         check()?;
         self.validate(key, path, version)?;
         let mut value = Zeroizing::new(Vec::with_capacity(self.logical_bytes as usize));
@@ -217,6 +279,18 @@ impl PayloadDescriptor {
         {
             return Err(RecordError::Corrupt);
         }
+        Ok(value)
+    }
+
+    fn read(
+        &self,
+        key: &AddressKey,
+        path: &str,
+        version: u64,
+        reader: &impl RecordReader,
+        check: &impl Fn() -> CodecResult<()>,
+    ) -> CodecResult<SharedJson> {
+        let value = self.read_authenticated_bytes(key, path, version, reader, check)?;
         let data: SharedJson = canonical(&value, MAX_VALUE_BYTES)?;
         if !data.expose().is_object() {
             return Err(RecordError::Corrupt);
@@ -224,23 +298,102 @@ impl PayloadDescriptor {
         check()?;
         Ok(data)
     }
+
+    fn verify_semantics(
+        &self,
+        key: &AddressKey,
+        path: &str,
+        version: u64,
+        reader: &impl RecordReader,
+        check: &impl Fn() -> CodecResult<()>,
+        memo: &RefCell<PagedPayloadValidationMemo>,
+    ) -> CodecResult<bool> {
+        // Do not consult the memo until the actual current source has supplied
+        // and authenticated every byte. A stale/missing/replaced block, Actor
+        // loss or deadline expiry therefore cannot become a memo hit.
+        let value = self.read_authenticated_bytes(key, path, version, reader, check)?;
+        let memo_key = (
+            key.digest(PAYLOAD_VALIDATION_DOMAIN, self.path_token.as_bytes())?,
+            self.version,
+            self.digest,
+            self.logical_bytes,
+        );
+        let known = memo
+            .try_borrow()
+            .map_err(|_| RecordError::Invalid)?
+            .needs_lossless
+            .get(&memo_key)
+            .copied();
+        let needs_lossless = if let Some(known) = known {
+            #[cfg(test)]
+            {
+                memo.try_borrow_mut()
+                    .map_err(|_| RecordError::Invalid)?
+                    .hits += 1;
+            }
+            known
+        } else {
+            let data: SharedJson = canonical(&value, MAX_VALUE_BYTES)?;
+            if !data.expose().is_object() {
+                return Err(RecordError::Corrupt);
+            }
+            let needs_lossless = lossless::needs_lossless_number_format(data.expose());
+            drop(data);
+            check()?;
+            let mut memo = memo.try_borrow_mut().map_err(|_| RecordError::Invalid)?;
+            // Bound retained metadata independently of the source. Reaching
+            // the bound only disables memoization; it never grants admission.
+            if memo.needs_lossless.len() < MAX_RECORDS {
+                memo.needs_lossless.insert(memo_key, needs_lossless);
+            }
+            needs_lossless
+        };
+        check()?;
+        Ok(needs_lossless)
+    }
 }
 
-#[derive(Clone, Default)]
-pub(super) struct PagedPayloads {
-    descriptors: BTreeMap<String, BTreeMap<u64, PayloadDescriptor>>,
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
-    new_blocks: BTreeMap<ObjectId, Arc<StagedObject>>,
-}
-impl Drop for PagedPayloads {
+#[derive(Clone, Default, Eq, PartialEq)]
+struct DescriptorMap(BTreeMap<String, BTreeMap<u64, PayloadDescriptor>>);
+impl Drop for DescriptorMap {
     fn drop(&mut self) {
-        for (mut path, _) in std::mem::take(&mut self.descriptors) {
+        for (mut path, _) in std::mem::take(&mut self.0) {
             path.zeroize();
         }
     }
 }
+
+// These are pure decoded descriptors and ObjectRefs, never fd/source pins or
+// completed validation. Every physical read and keyed validation is unchanged.
+#[derive(Clone, Default, Eq, PartialEq)]
+struct SharedDescriptors(Arc<DescriptorMap>);
+impl Deref for SharedDescriptors {
+    type Target = BTreeMap<String, BTreeMap<u64, PayloadDescriptor>>;
+    fn deref(&self) -> &Self::Target {
+        &self.0.0
+    }
+}
+impl DerefMut for SharedDescriptors {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut Arc::make_mut(&mut self.0).0
+    }
+}
+impl<'a> IntoIterator for &'a SharedDescriptors {
+    type Item = (&'a String, &'a BTreeMap<u64, PayloadDescriptor>);
+    type IntoIter = std::collections::btree_map::Iter<'a, String, BTreeMap<u64, PayloadDescriptor>>;
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
+    }
+}
+
+#[derive(Clone, Default)]
+pub(super) struct PagedPayloads {
+    descriptors: SharedDescriptors,
+    #[cfg(any(test, feature = "native-v6-storage"))]
+    new_blocks: BTreeMap<ObjectId, Arc<StagedObject>>,
+}
 impl PagedPayloads {
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     pub(super) fn clear_new_blocks(&mut self) {
         self.new_blocks.clear();
     }
@@ -258,7 +411,7 @@ impl PagedPayloads {
                     .ok_or(RecordError::TooLarge)
             })
     }
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     pub(super) fn visit_new_blocks(
         &self,
         visitor: &mut impl FnMut(&Arc<StagedObject>) -> CodecResult<()>,
@@ -302,8 +455,33 @@ impl PagedPayloads {
     }
 }
 
+type InitialPagedRecords = BTreeMap<Kv1Key, Zeroizing<Vec<u8>>>;
+
+// Initial import gathers unique records for one bottom-up build. Ordinary
+// edits keep the persistent path-copy behavior and existing reader pins.
+fn write_paged_record(
+    index: &mut Kv1Index,
+    key: Kv1Key,
+    bytes: Zeroizing<Vec<u8>>,
+    initial: &mut Option<&mut InitialPagedRecords>,
+) -> CodecResult<()> {
+    if let Some(records) = initial.as_deref_mut() {
+        match records.entry(key) {
+            std::collections::btree_map::Entry::Vacant(slot) => {
+                slot.insert(bytes);
+            }
+            std::collections::btree_map::Entry::Occupied(_) => {
+                return Err(RecordError::Corrupt);
+            }
+        }
+    } else {
+        *index = index.edit(key, Some(&bytes))?.next;
+    }
+    Ok(())
+}
+
 impl NativeGraph {
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     fn encode_paged(
         owner: &Kv2,
         base: &AddressKey,
@@ -321,22 +499,30 @@ impl NativeGraph {
             format: PAGED_NATIVE_FORMAT.into(),
             paged: Some(PagedPayloads::default()),
         };
-        next.update_paged_config(owner, check)?;
+        let mut records = InitialPagedRecords::new();
+        next.update_paged_config(owner, check, Some(&mut records))?;
         for (path, entry) in &owner.entries {
-            next.update_paged_path(path, Some(entry), check)?;
+            next.update_paged_path(path, Some(entry), check, Some(&mut records))?;
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            crate::engines::kv2_native_large::diagnostic::graph_path_completed();
         }
         check()?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let _diagnostic_bulk =
+            crate::engines::kv2_native_large::diagnostic::Span::new("bulk_index_build");
+        next.index = Kv1Index::from_records_checked(Arc::clone(&next.key), records, check)?;
         next.paged
             .as_ref()
             .ok_or(RecordError::Corrupt)?
             .logical_bytes()?;
         Ok(next)
     }
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     fn update_paged_config(
         &mut self,
         owner: &Kv2,
         check: &impl Fn() -> CodecResult<()>,
+        mut records: Option<&mut InitialPagedRecords>,
     ) -> CodecResult<()> {
         let mount = MountCell {
             format: PAGED_NATIVE_FORMAT.into(),
@@ -348,17 +534,26 @@ impl NativeGraph {
         let record = self.scope.key("config")?;
         if self.index.get(&record) != Some(bytes.as_slice()) {
             check()?;
-            self.index = self.index.edit(record, Some(&bytes))?.next;
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            let diagnostic_edit = std::time::Instant::now();
+            write_paged_record(&mut self.index, record, bytes, &mut records)?;
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            if records.is_none() {
+                crate::engines::kv2_native_large::diagnostic::index_edit_elapsed(
+                    diagnostic_edit.elapsed(),
+                );
+            }
             check()?;
         }
         Ok(())
     }
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     fn update_paged_path(
         &mut self,
         path: &str,
         entry: Option<&Entry>,
         check: &impl Fn() -> CodecResult<()>,
+        mut records: Option<&mut InitialPagedRecords>,
     ) -> CodecResult<()> {
         check()?;
         let paged = self.paged.as_mut().ok_or(RecordError::Corrupt)?;
@@ -397,7 +592,15 @@ impl NativeGraph {
                 let bytes = serialize(&descriptor, MAX_DESCRIPTOR_BYTES)?;
                 let payload = payload_key(&self.scope, &self.key, path, *number)?;
                 if self.index.get(&payload) != Some(bytes.as_slice()) {
-                    self.index = self.index.edit(payload, Some(&bytes))?.next;
+                    #[cfg(feature = "private-ha-forward-diagnostic")]
+                    let diagnostic_edit = std::time::Instant::now();
+                    write_paged_record(&mut self.index, payload, bytes, &mut records)?;
+                    #[cfg(feature = "private-ha-forward-diagnostic")]
+                    if records.is_none() {
+                        crate::engines::kv2_native_large::diagnostic::index_edit_elapsed(
+                            diagnostic_edit.elapsed(),
+                        );
+                    }
                 }
                 descriptors.insert(*number, descriptor);
                 check()?;
@@ -411,7 +614,15 @@ impl NativeGraph {
             };
             let bytes = serialize(&cell, MAX_METADATA_BYTES)?;
             if self.index.get(&record) != Some(bytes.as_slice()) {
-                self.index = self.index.edit(record, Some(&bytes))?.next;
+                #[cfg(feature = "private-ha-forward-diagnostic")]
+                let diagnostic_edit = std::time::Instant::now();
+                write_paged_record(&mut self.index, record, bytes, &mut records)?;
+                #[cfg(feature = "private-ha-forward-diagnostic")]
+                if records.is_none() {
+                    crate::engines::kv2_native_large::diagnostic::index_edit_elapsed(
+                        diagnostic_edit.elapsed(),
+                    );
+                }
             }
         } else if self.index.get(&record).is_some() {
             self.index = self.index.edit(record, None)?.next;
@@ -430,7 +641,7 @@ impl NativeGraph {
         }
         check()
     }
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     fn with_paged_updates(
         &self,
         owner: &Kv2,
@@ -461,9 +672,9 @@ impl NativeGraph {
             .as_mut()
             .ok_or(RecordError::Corrupt)?
             .clear_new_blocks();
-        next.update_paged_config(owner, check)?;
+        next.update_paged_config(owner, check, None)?;
         for path in pending.paths() {
-            next.update_paged_path(path, owner.entries.get(path), check)?;
+            next.update_paged_path(path, owner.entries.get(path), check, None)?;
         }
         next.paged
             .as_ref()
@@ -472,8 +683,13 @@ impl NativeGraph {
         check()?;
         Ok(next)
     }
-    fn decode_paged(&mut self, check: &impl Fn() -> CodecResult<()>) -> CodecResult<DetachedOwner> {
+    fn decode_paged_with_syntax(
+        &mut self,
+        check: &impl Fn() -> CodecResult<()>,
+        syntax: Option<&syntax::PagedSyntaxHint>,
+    ) -> CodecResult<DetachedOwner> {
         check()?;
+        let syntax = syntax.filter(|hint| hint.same_graph(&self.scope, &self.key));
         let mut keys = BTreeSet::new();
         self.index.visit_keys(|key| {
             check()?;
@@ -509,15 +725,23 @@ impl NativeGraph {
         for record in metadata {
             check()?;
             let cell_bytes = self.index.get(&record).ok_or(RecordError::Missing)?;
-            preflight_paged_path(cell_bytes)?;
-            let mut cell: PathCell = canonical(cell_bytes, MAX_METADATA_BYTES)?;
-            if cell.format != PAGED_NATIVE_FORMAT
-                || !self.scope.matches(&cell.scope)
-                || metadata_key(&self.scope, &self.key, &cell.path)? != record
-                || cell.metadata.versions.len() > MAX_RETAINED_VERSIONS as usize
-                || cell.payload_versions.len() > MAX_RETAINED_VERSIONS as usize
-                || cell
-                    .metadata
+            let cell = match syntax.and_then(|hint| hint.path(&record, cell_bytes)) {
+                Some(value) => {
+                    preflight_paged_typed_path(cell_bytes, value)?;
+                    syntax::PagedPath::SameBytes(value)
+                }
+                None => {
+                    preflight_paged_path(cell_bytes)?;
+                    syntax::PagedPath::Decoded(Box::new(canonical(cell_bytes, MAX_METADATA_BYTES)?))
+                }
+            };
+            let (format, scope, path, metadata, payload_versions) = cell.fields();
+            if format != PAGED_NATIVE_FORMAT
+                || !self.scope.matches(scope)
+                || metadata_key(&self.scope, &self.key, path)? != record
+                || metadata.versions.len() > MAX_RETAINED_VERSIONS as usize
+                || payload_versions.len() > MAX_RETAINED_VERSIONS as usize
+                || metadata
                     .versions
                     .values()
                     .any(|version| version.data.is_some())
@@ -526,32 +750,30 @@ impl NativeGraph {
             }
             keys.remove(&record);
             let mut descriptors = BTreeMap::new();
-            for number in &cell.payload_versions {
+            for number in payload_versions {
                 check()?;
-                let version = cell
-                    .metadata
-                    .versions
-                    .get(number)
-                    .ok_or(RecordError::Corrupt)?;
+                let version = metadata.versions.get(number).ok_or(RecordError::Corrupt)?;
                 if version.destroyed {
                     return Err(RecordError::Corrupt);
                 }
-                let payload = payload_key(&self.scope, &self.key, &cell.path, *number)?;
-                let descriptor: PayloadDescriptor = canonical(
-                    self.index.get(&payload).ok_or(RecordError::Missing)?,
-                    MAX_DESCRIPTOR_BYTES,
-                )?;
-                descriptor.validate(&self.key, &cell.path, *number)?;
+                let payload = payload_key(&self.scope, &self.key, path, *number)?;
+                let descriptor_bytes = self.index.get(&payload).ok_or(RecordError::Missing)?;
+                let descriptor = match syntax
+                    .and_then(|hint| hint.descriptor(&payload, descriptor_bytes, path, *number))
+                {
+                    Some(value) => value.clone(),
+                    None => canonical(descriptor_bytes, MAX_DESCRIPTOR_BYTES)?,
+                };
+                descriptor.validate(&self.key, path, *number)?;
                 if !keys.remove(&payload) {
                     return Err(RecordError::Corrupt);
                 }
                 descriptors.insert(*number, descriptor);
             }
             if !descriptors.is_empty() {
-                paged.descriptors.insert(cell.path.clone(), descriptors);
+                paged.descriptors.insert(path.to_owned(), descriptors);
             }
-            let path = std::mem::take(&mut cell.path);
-            let entry = Entry::from(std::mem::take(&mut cell.metadata));
+            let (path, entry) = cell.into_entry();
             if owner.entries.insert(path, entry).is_some() {
                 return Err(RecordError::Corrupt);
             }
@@ -567,7 +789,7 @@ impl NativeGraph {
     }
 }
 
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 impl NativeCellGraph {
     #[cfg(test)]
     pub(crate) fn graph_format(&self) -> &str {
@@ -579,7 +801,7 @@ impl NativeCellGraph {
             .as_ref()
             .map_or(Ok(0), PagedPayloads::logical_bytes)
     }
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     fn encode_paged(
         owner: &Kv2,
         parent: &AddressKey,
@@ -593,6 +815,67 @@ impl NativeCellGraph {
 }
 
 impl NativeReadView {
+    /// A data-only proof about this unchanged, fully opened config-only graph.
+    /// Zero payload bytes/counts alone are insufficient: deleted or destroyed
+    /// histories, pending deletion and an old cached index must all be absent.
+    #[cfg(any(test, feature = "native-v6-storage"))]
+    pub(crate) fn is_authenticated_empty_for_marker(
+        &self,
+        parent: &AddressKey,
+        scope: NativeScope<'_>,
+        expected: &Kv1Root,
+        check: &impl Fn() -> CodecResult<()>,
+    ) -> CodecResult<bool> {
+        check()?;
+        let Some(graph) = &self.graph else {
+            return Ok(false);
+        };
+        let Some(paged) = &graph.paged else {
+            return Ok(false);
+        };
+        let actual_scope = Scope::new(scope)?;
+        if graph.format != PAGED_NATIVE_FORMAT
+            || !self.owner.entries.is_empty()
+            || self.pending.paths().next().is_some()
+            || !paged.descriptors.is_empty()
+            || !paged.new_blocks.is_empty()
+            || !graph.scope.matches(&actual_scope)
+            || graph.index.root() != *expected
+        {
+            return Ok(false);
+        }
+        self.validate_paged_candidate()?;
+        let config = graph.scope.key("config")?;
+        let mut found = false;
+        graph.index.visit_keys(|key| {
+            check()?;
+            if key != &config || found {
+                return Err(RecordError::Corrupt);
+            }
+            found = true;
+            Ok(())
+        })?;
+        if !found {
+            return Ok(false);
+        }
+        let actual = graph.index.get(&config).ok_or(RecordError::Missing)?;
+        let expected_cell = MountCell {
+            format: PAGED_NATIVE_FORMAT.into(),
+            scope: actual_scope,
+            config: self.owner.config.clone(),
+            lossless_format: self.owner.lossless_format,
+        };
+        if serialize(&expected_cell, MAX_CONFIG_BYTES)?.as_slice() != actual {
+            return Ok(false);
+        }
+        // This additionally binds the caller's independently derived address
+        // key and the decoded owner. It cannot replace the no-pending/index
+        // checks above with a newly encoded prospective empty graph.
+        let matches = self.matches_authenticated_root(parent, scope, expected, check)?;
+        check()?;
+        Ok(matches)
+    }
+
     pub(crate) fn is_paged(&self) -> bool {
         self.graph
             .as_ref()
@@ -642,7 +925,7 @@ impl NativeReadView {
     }
     /// Erase payloads opened from already authenticated old descriptors. Fresh
     /// versions remain present until the candidate's own graph is constructed.
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     pub(crate) fn clear_hydrated_payloads(&mut self) -> Result<()> {
         if !self.is_paged() {
             return Ok(());
@@ -702,6 +985,16 @@ impl NativeReadView {
         reader: &impl RecordReader,
         check: &impl Fn() -> CodecResult<()>,
     ) -> CodecResult<Self> {
+        Self::open_paged_with_syntax(parent, input, root, reader, check, None)
+    }
+    pub(crate) fn open_paged_with_syntax(
+        parent: &AddressKey,
+        input: NativeScope<'_>,
+        root: Kv1Root,
+        reader: &impl RecordReader,
+        check: &impl Fn() -> CodecResult<()>,
+        syntax: Option<&syntax::PagedSyntaxHint>,
+    ) -> CodecResult<Self> {
         check()?;
         let scope = Scope::new(input)?;
         let key = graph_key(parent, &scope)?;
@@ -713,15 +1006,15 @@ impl NativeReadView {
             format: PAGED_NATIVE_FORMAT.into(),
             paged: None,
         };
-        let owner = graph.decode_paged(check)?;
+        let owner = graph.decode_paged_with_syntax(check, syntax)?;
         check()?;
         Ok(Self {
-            owner,
+            owner: owner.into(),
             graph: Some(graph),
             pending: mutation::PendingPaths::default(),
         })
     }
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     pub(crate) fn encode_paged(
         &self,
         parent: &AddressKey,
@@ -739,7 +1032,7 @@ impl NativeReadView {
             _ => NativeCellGraph::encode_paged(&self.owner, parent, scope, check),
         }
     }
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     pub(crate) fn visit_paged_payload_references(
         &self,
         mut visit: impl FnMut(&ObjectRef) -> CodecResult<()>,
@@ -766,14 +1059,27 @@ impl NativeReadView {
         check()
     }
 
+    #[cfg(test)]
     pub(crate) fn verify_paged_payloads(
         &self,
         reader: &impl RecordReader,
         check: &impl Fn() -> CodecResult<()>,
     ) -> CodecResult<()> {
+        self.verify_paged_payloads_with_memo(reader, check, None)
+    }
+
+    pub(crate) fn verify_paged_payloads_with_memo(
+        &self,
+        reader: &impl RecordReader,
+        check: &impl Fn() -> CodecResult<()>,
+        memo: Option<&RefCell<PagedPayloadValidationMemo>>,
+    ) -> CodecResult<()> {
         check()?;
         self.validate_paged_metadata()?;
         let graph = self.graph.as_ref().ok_or(RecordError::Corrupt)?;
+        if graph.format != PAGED_NATIVE_FORMAT {
+            return Err(RecordError::Invalid);
+        }
         for (path, descriptors) in &graph
             .paged
             .as_ref()
@@ -782,13 +1088,19 @@ impl NativeReadView {
         {
             for (number, descriptor) in descriptors {
                 check()?;
-                let value = descriptor.read(&graph.key, path, *number, reader, check)?;
-                if lossless::needs_lossless_number_format(value.expose())
-                    && self.owner.lossless_format != Some(1)
-                {
+                let needs_lossless = match memo {
+                    Some(memo) => descriptor
+                        .verify_semantics(&graph.key, path, *number, reader, check, memo)?,
+                    None => {
+                        let value = descriptor.read(&graph.key, path, *number, reader, check)?;
+                        lossless::needs_lossless_number_format(value.expose())
+                    }
+                };
+                // A memo records the bytes' semantics, never the current
+                // owner's permission to contain lossless numbers.
+                if needs_lossless && self.owner.lossless_format != Some(1) {
                     return Err(RecordError::Corrupt);
                 }
-                drop(value);
                 check()?;
             }
         }
@@ -801,12 +1113,23 @@ impl NativeReadView {
     /// `staged` MUST read only this candidate's staged objects, without fallback
     /// to the prior durable source. A changed descriptor is never inherited.
     /// This codec does not grant Actor, physical-source or publication custody.
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(test)]
     pub(crate) fn verify_paged_transition(
         &self,
         prior: Option<&NativeReadView>,
         staged: &impl RecordReader,
         check: &impl Fn() -> CodecResult<()>,
+    ) -> CodecResult<()> {
+        self.verify_paged_transition_with_memo(prior, staged, check, None)
+    }
+
+    #[cfg(any(test, feature = "native-v6-storage"))]
+    pub(crate) fn verify_paged_transition_with_memo(
+        &self,
+        prior: Option<&NativeReadView>,
+        staged: &impl RecordReader,
+        check: &impl Fn() -> CodecResult<()>,
+        memo: Option<&RefCell<PagedPayloadValidationMemo>>,
     ) -> CodecResult<()> {
         check()?;
         self.validate_paged_metadata()?;
@@ -853,19 +1176,25 @@ impl NativeReadView {
                     check()?;
                     continue;
                 }
-                let value = descriptor.read(&graph.key, path, *number, staged, check)?;
-                if lossless::needs_lossless_number_format(value.expose())
-                    && self.owner.lossless_format != Some(1)
-                {
+                // A semantic hit never supplies this changed staged closure.
+                // Read and authenticate every current block before consulting it.
+                let needs_lossless = match memo {
+                    Some(memo) => descriptor
+                        .verify_semantics(&graph.key, path, *number, staged, check, memo)?,
+                    None => {
+                        let value = descriptor.read(&graph.key, path, *number, staged, check)?;
+                        lossless::needs_lossless_number_format(value.expose())
+                    }
+                };
+                if needs_lossless && self.owner.lossless_format != Some(1) {
                     return Err(RecordError::Corrupt);
                 }
-                drop(value);
                 check()?;
             }
         }
         check()
     }
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     pub(crate) fn read_with_source(
         &self,
         method: &str,
@@ -918,7 +1247,7 @@ impl NativeReadView {
         }
         owner.handle_read_precise(method, path, body, now)
     }
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     pub(crate) fn hydrate_current_for_patch(
         &mut self,
         path: &str,
@@ -960,7 +1289,7 @@ impl NativeReadView {
     }
 }
 
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 impl EngineState {
     pub(crate) fn project_v6_native_paged(
         &self,
@@ -1048,3 +1377,11 @@ impl EngineState {
 #[cfg(test)]
 #[path = "kv2_native_paged_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "kv2_native_empty_snapshot_floor_tests.rs"]
+mod empty_snapshot_floor_tests;
+
+#[cfg(test)]
+#[path = "kv2_native_payload_validation_tests.rs"]
+mod payload_validation_tests;

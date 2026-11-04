@@ -34,7 +34,9 @@ impl State {
         if !supported_reader_schema(self.schema) {
             return self.schema;
         }
-        let required = if self.auth.has_general_wrapped_reply_state() {
+        let required = if self.auth.has_static_kv1_wrapped_reply_state() {
+            KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+        } else if self.auth.has_general_wrapped_reply_state() {
             GENERAL_WRAPPED_REPLY_STATE_SCHEMA
         } else if self.auth.has_pki_raw_http_reply_state() {
             RAW_PKI_HTTP_REPLY_STATE_SCHEMA
@@ -170,6 +172,11 @@ impl State {
         } else {
             required
         };
+        let required = if self.engines.has_kv_mount_configuration() {
+            required.max(KV_MOUNT_CONFIGURATION_STATE_SCHEMA)
+        } else {
+            required
+        };
         let required = if self.has_mount_listing_visibility_state() {
             required.max(MOUNT_LISTING_VISIBILITY_STATE_SCHEMA)
         } else {
@@ -284,11 +291,60 @@ impl State {
         } else {
             required
         };
+        let required = if self.auth.has_extended_rate_limit_quota_state() {
+            required.max(EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.namespaces.has_native_flat_retirement_state() {
+            required.max(NATIVE_FLAT_NAMESPACE_RETIREMENT_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.namespaces.has_native_plain_tree_state() {
+            required.max(NATIVE_PLAIN_NAMESPACE_TREE_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_scoped_rate_limit_quota_state() {
+            required.max(SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_namespace_factory_state() {
+            required.max(NAMESPACE_FACTORY_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_policy_expiration_state() {
+            required.max(POLICY_EXPIRATION_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_cluster_local_approle_state() {
+            required.max(APPROLE_LOCAL_STATE_SCHEMA)
+        } else {
+            required
+        };
+        let required = if self.auth.has_security_contract_state() {
+            required.max(AUTH_SECURITY_CONTRACT_STATE_SCHEMA)
+        } else {
+            required
+        };
         let required = if self.auth.has_approle_no_default_policy() {
             required.max(APPROLE_NO_DEFAULT_STATE_SCHEMA)
         } else {
             required
         };
+        let required = if self.engines.has_pki_batch_lease_state() {
+            required.max(PKI_BATCH_LEASE_STATE_SCHEMA)
+        } else {
+            required
+        };
+        // Child resources in the ordinary owner format do not imply V6
+        // storage. The actual V6 planners raise their private candidate's
+        // reader floor when they publish that representation; self.schema
+        // below preserves the floor after the publication has occurred.
         self.schema.max(required)
     }
 
@@ -296,7 +352,84 @@ impl State {
         &self,
         previous: Option<&State>,
     ) -> Result<(), Response> {
+        self.engines
+            .validate_kv_mount_configuration()
+            .map_err(Response::from_engine_error)?;
+        if self.schema < KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+            && (self.engines.has_kv_mount_configuration()
+                || previous.is_some_and(|old| old.schema >= KV_MOUNT_CONFIGURATION_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "KV mount configuration requires schema 146 and cannot decrease",
+            ));
+        }
         self.validate_global_lossless_json_state(previous)?;
+        self.validate_namespace_factory_state()?;
+        if self.schema < NAMESPACE_FACTORY_STATE_SCHEMA
+            && (self.auth.has_namespace_factory_state()
+                || previous.is_some_and(|state| state.schema >= NAMESPACE_FACTORY_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "namespace factory provenance requires schema 144 and cannot decrease",
+            ));
+        }
+        self.auth
+            .validate_policy_expiration_state()
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < POLICY_EXPIRATION_STATE_SCHEMA
+            && (self.auth.has_policy_expiration_state()
+                || previous.is_some_and(|state| state.schema >= POLICY_EXPIRATION_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "policy expiration requires schema 143 and cannot decrease",
+            ));
+        }
+        self.auth
+            .validate_cluster_local_approle_state(&self.cluster_id)
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < APPROLE_LOCAL_STATE_SCHEMA
+            && (self.auth.has_cluster_local_approle_state()
+                || previous.is_some_and(|state| state.schema >= APPROLE_LOCAL_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "cluster-local AppRole SecretIDs require schema 142 and cannot decrease",
+            ));
+        }
+        self.auth
+            .validate_security_contract_state()
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+            && (self.auth.has_security_contract_state()
+                || previous
+                    .is_some_and(|state| state.schema >= AUTH_SECURITY_CONTRACT_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "Auth security contracts require schema 141 and cannot decrease",
+            ));
+        }
+        self.validate_native_flat_retirement_state(previous)?;
+        if self.schema < NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA
+            && previous.is_some_and(|state| state.schema >= NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA)
+        {
+            return Err(Response::error(
+                503,
+                "native child namespace reader floor cannot decrease",
+            ));
+        }
+        if self.schema < PKI_BATCH_LEASE_STATE_SCHEMA
+            && (self.engines.has_pki_batch_lease_state()
+                || previous.is_some_and(|state| state.schema >= PKI_BATCH_LEASE_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "PKI certificate and batch lease separation requires schema 136",
+            ));
+        }
         self.auth
             .validate_approle_no_default_policy()
             .map_err(|error| Response::error(503, &error.message))?;
@@ -312,6 +445,27 @@ impl State {
         self.auth
             .validate_rate_limit_quota_state(previous.map(|s| &*s.auth))
             .map_err(|e| Response::error(503, &e.message))?;
+        self.validate_rate_limit_quota_catalog()?;
+        if self.schema < SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+            && (self.auth.has_scoped_rate_limit_quota_state()
+                || previous
+                    .is_some_and(|state| state.schema >= SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "scoped quota semantics require schema 139",
+            ));
+        }
+        if self.schema < EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+            && (self.auth.has_extended_rate_limit_quota_state()
+                || previous
+                    .is_some_and(|state| state.schema >= EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA))
+        {
+            return Err(Response::error(
+                503,
+                "extended rate limit quota requires schema 137",
+            ));
+        }
         if self.schema < RATE_LIMIT_QUOTA_STATE_SCHEMA
             && (self.auth.has_rate_limit_quota_state()
                 || previous.is_some_and(|s| s.schema >= RATE_LIMIT_QUOTA_STATE_SCHEMA))
@@ -598,6 +752,11 @@ impl State {
                 .validate_raw_wrapped_reply_state()
                 .map_err(|_| Response::error(503, "invalid original wrapped reply custody"))
         )?;
+        if self.schema < KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+            && protected.auth.has_static_kv1_wrapped_reply_state()
+        {
+            return Err(Response::error(503, "signed static KV1 reply custody requires schema 146"));
+        }
         if self.schema < GENERAL_WRAPPED_REPLY_STATE_SCHEMA
             && (protected.auth.has_general_wrapped_reply_state()
                 || previous.is_some_and(|state| state.schema >= GENERAL_WRAPPED_REPLY_STATE_SCHEMA))
@@ -1348,6 +1507,13 @@ impl State {
 
     pub(super) fn validate_format(&self) -> Result<(), Response> {
         self.validate_global_lossless_json_state(None)?;
+        self.validate_native_flat_retirement_state(None)?;
+        if self.schema < PKI_BATCH_LEASE_STATE_SCHEMA && self.engines.has_pki_batch_lease_state() {
+            return Err(Response::error(
+                503,
+                "PKI certificate and batch lease separation requires schema 136",
+            ));
+        }
         self.engines
             .validate_transit_cache_state(None)
             .map_err(Response::from_engine_error)?;
@@ -1393,6 +1559,17 @@ impl State {
             return Err(Response::error(503, "SSH CA custody requires schema 115"));
         }
 
+        self.engines
+            .validate_kv_mount_configuration()
+            .map_err(Response::from_engine_error)?;
+        if self.schema < KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+            && self.engines.has_kv_mount_configuration()
+        {
+            return Err(Response::error(
+                503,
+                "KV mount configuration requires schema 146",
+            ));
+        }
         if self.schema < MOUNT_LISTING_VISIBILITY_STATE_SCHEMA
             && self.has_mount_listing_visibility_state()
         {
@@ -1417,6 +1594,11 @@ impl State {
         self.auth
             .validate_raw_wrapped_reply_state()
             .map_err(|_| Response::error(503, "invalid original wrapped reply custody"))?;
+        if self.schema < KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+            && self.auth.has_static_kv1_wrapped_reply_state()
+        {
+            return Err(Response::error(503, "signed static KV1 reply custody requires schema 146"));
+        }
         if self.schema < GENERAL_WRAPPED_REPLY_STATE_SCHEMA
             && self.auth.has_general_wrapped_reply_state()
             || self.schema == GENERAL_WRAPPED_REPLY_STATE_SCHEMA
@@ -2124,6 +2306,42 @@ impl State {
         self.auth
             .validate_approle_no_default_policy()
             .map_err(|error| Response::error(503, &error.message))?;
+        self.auth
+            .validate_cluster_local_approle_state(&self.cluster_id)
+            .map_err(|error| Response::error(503, &error.message))?;
+        self.auth
+            .validate_policy_expiration_state()
+            .map_err(|error| Response::error(503, &error.message))?;
+        self.validate_namespace_factory_state()?;
+        if self.schema < NAMESPACE_FACTORY_STATE_SCHEMA && self.auth.has_namespace_factory_state() {
+            return Err(Response::error(
+                503,
+                "namespace factory provenance requires schema 144",
+            ));
+        }
+        if self.schema < POLICY_EXPIRATION_STATE_SCHEMA && self.auth.has_policy_expiration_state() {
+            return Err(Response::error(
+                503,
+                "policy expiration requires schema 143",
+            ));
+        }
+        if self.schema < APPROLE_LOCAL_STATE_SCHEMA && self.auth.has_cluster_local_approle_state() {
+            return Err(Response::error(
+                503,
+                "cluster-local AppRole SecretIDs require schema 142",
+            ));
+        }
+        self.auth
+            .validate_security_contract_state()
+            .map_err(|error| Response::error(503, &error.message))?;
+        if self.schema < AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+            && self.auth.has_security_contract_state()
+        {
+            return Err(Response::error(
+                503,
+                "Auth security contracts require schema 141",
+            ));
+        }
         if self.schema < APPROLE_NO_DEFAULT_STATE_SCHEMA
             && self.auth.has_approle_no_default_policy()
         {
@@ -2197,6 +2415,27 @@ impl State {
         self.auth
             .validate_rate_limit_quota_state(None)
             .map_err(|e| Response::error(503, &e.message))?;
+        self.validate_rate_limit_quota_catalog()?;
+        if self.schema < SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+            && self.auth.has_scoped_rate_limit_quota_state()
+            || self.schema == SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+                && !self.auth.has_scoped_rate_limit_quota_state()
+        {
+            return Err(Response::error(
+                503,
+                "scoped quota reader marker requires schema 139",
+            ));
+        }
+        if self.schema < EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+            && self.auth.has_extended_rate_limit_quota_state()
+            || self.schema == EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+                && !self.auth.has_extended_rate_limit_quota_state()
+        {
+            return Err(Response::error(
+                503,
+                "extended quota reader marker requires schema 137",
+            ));
+        }
         if self.schema < RATE_LIMIT_QUOTA_STATE_SCHEMA && self.auth.has_rate_limit_quota_state()
             || self.schema == RATE_LIMIT_QUOTA_STATE_SCHEMA
                 && !self.auth.has_rate_limit_quota_state()
@@ -2676,7 +2915,18 @@ impl State {
             | IDENTITY_MFA_STATE_SCHEMA
             | WORKFLOW_INPUT_STATE_SCHEMA
             | RATE_LIMIT_QUOTA_STATE_SCHEMA
+            | EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+            | SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+            | NATIVE_FLAT_NAMESPACE_RETIREMENT_STATE_SCHEMA
+            | NATIVE_PLAIN_NAMESPACE_TREE_STATE_SCHEMA
             | APPROLE_NO_DEFAULT_STATE_SCHEMA
+            | AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+            | APPROLE_LOCAL_STATE_SCHEMA
+            | POLICY_EXPIRATION_STATE_SCHEMA
+            | NAMESPACE_FACTORY_STATE_SCHEMA
+            | KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+            | PKI_BATCH_LEASE_STATE_SCHEMA
+            | NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA
             | USERPASS_ISSUANCE_STATE_SCHEMA
             | CONTROL_GROUP_FRACTIONAL_STATE_SCHEMA
             | PKI_URLS_STATE_SCHEMA
@@ -3184,3 +3434,124 @@ mod kubernetes_artifact_floor_tests {
 #[cfg(test)]
 #[path = "service_identity_legacy_api_tests.rs"]
 mod legacy_api_tests;
+
+#[cfg(test)]
+#[allow(clippy::unwrap_used)]
+mod security_contract_state_tests {
+    use super::*;
+
+    fn fixture() -> (State, crate::auth::Principal) {
+        let (mut auth, raw) = AuthState::bootstrap(100).unwrap();
+        let root = auth.authenticate(&raw, 100).unwrap();
+        (
+            State {
+                global_lossless_json_format: None,
+                namespace_protected: None,
+                namespace_leases: namespace_runtime::Leases::default(),
+                schema: CURRENT_STATE_SCHEMA,
+                cluster_id: "security141-test-cluster".into(),
+                replay_epoch: 0,
+                namespaces: namespaces::NamespaceRegistry::default().into(),
+                auth: auth.into(),
+                engines: EngineState::initialized_empty().into(),
+                database: database::DatabaseState::default().into(),
+                raft_admin: raft_admin::RaftAdminState::default().into(),
+            },
+            root,
+        )
+    }
+
+    #[test]
+    fn security141_policy_owner_requires_reader_floor_before_publication_and_load() {
+        let (previous, root) = fixture();
+        let before = owner_store::serialize_owner(&previous.auth).unwrap();
+        let mut candidate = previous.clone();
+        candidate
+            .auth
+            .handle(
+                Some(&root),
+                "",
+                "POST",
+                "sys/policies/acl/security141",
+                &json!({"policy":"path \"secret/*\" { capabilities = [\"read\"] }", "cas":0}),
+                100,
+            )
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            candidate.writer_schema(),
+            AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+        );
+        assert!(candidate.validate_format().is_err());
+        assert!(
+            candidate
+                .validate_publication_schema(Some(&previous))
+                .is_err()
+        );
+        candidate.schema = candidate.writer_schema();
+        assert!(candidate.validate_format().is_ok());
+        assert!(
+            candidate
+                .validate_publication_schema(Some(&previous))
+                .is_ok()
+        );
+        assert!(!OwnerReuseHint::between(Some(&previous), &candidate).auth);
+        assert_eq!(
+            before,
+            owner_store::serialize_owner(&previous.auth).unwrap()
+        );
+        let encoded = crate::secret_serde::to_vec(&candidate, 16 * 1024 * 1024)
+            .map_err(|_| "security141_candidate_secret_serialization_failed")
+            .unwrap();
+        let restored: State = serde_json::from_slice(&encoded).unwrap();
+        assert!(restored.validate_format().is_ok());
+        assert_eq!(
+            restored.writer_schema(),
+            AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+        );
+        let mut lower = restored.clone();
+        lower.schema = 140;
+        assert!(lower.validate_format().is_err());
+        assert!(lower.validate_publication_schema(Some(&restored)).is_err());
+        assert!(Service::validate_snapshot_protected_floor(&previous, &lower).is_err());
+        assert!(Service::validate_snapshot_protected_floor(&restored, &previous).is_err());
+    }
+
+    #[test]
+    fn security141_retired_policy_cannot_authorize_old_snapshot_or_writer_floor() {
+        let (previous, root) = fixture();
+        let mut current = previous.clone();
+        current
+            .auth
+            .handle(
+                Some(&root),
+                "",
+                "POST",
+                "sys/policies/acl/security141",
+                &json!({"policy":"path \"secret/*\" { capabilities = [\"read\"] }"}),
+                100,
+            )
+            .unwrap()
+            .unwrap();
+        current.schema = current.writer_schema();
+        current
+            .auth
+            .handle(
+                Some(&root),
+                "",
+                "DELETE",
+                "sys/policies/acl/security141",
+                &json!({}),
+                100,
+            )
+            .unwrap()
+            .unwrap();
+        assert!(!current.auth.has_security_contract_state());
+        assert_eq!(current.writer_schema(), AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
+        assert!(Service::validate_snapshot_protected_floor(&current, &previous).is_err());
+        let mut lower = current.clone();
+        lower.schema = 140;
+        assert!(lower.validate_publication_schema(Some(&current)).is_err());
+        assert!(Service::validate_snapshot_protected_floor(&current, &lower).is_err());
+    }
+}

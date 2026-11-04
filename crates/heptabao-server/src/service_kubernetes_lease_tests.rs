@@ -1,6 +1,6 @@
 //! Real Service/durable publication with authenticated synthetic batch ownership.
 //! Provider replies are injected typed metadata; these are not kube-apiserver tests.
-use super::super::tests::{Root, bootstrap, call};
+use super::super::tests::{Root, call};
 use super::*;
 use crate::auth::{BatchClaims, BatchKeyAuthority, LeaseOwner};
 use std::collections::{BTreeMap, BTreeSet};
@@ -10,7 +10,7 @@ type Fixture = (Root, Service, String, String, KubernetesTokenEffectPlan);
 fn fixture(parented: bool, identity: bool) -> TestResult<Fixture> {
     let root = Root::new();
     let mut service = root.service()?;
-    let (key, root_token) = bootstrap(&mut service)?;
+    let (key, root_token) = crate::service::tests::bootstrap_pre141(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -610,7 +610,7 @@ fn kube_final_actor_use_executes_once_but_durably_retires_without_returning_cred
 fn schema41_without_typed_kube_owner_reopens_without_migration() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let mut state = service.state.clone().ok_or("state")?;
     state.schema = 41;
     assert!(!state.engines.has_kubernetes_typed_lease_owners());

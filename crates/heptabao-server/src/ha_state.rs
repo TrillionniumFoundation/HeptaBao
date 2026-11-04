@@ -19,7 +19,7 @@ use zeroize::{Zeroize, Zeroizing};
 mod records;
 pub(crate) use records::{CommittedRecordRoot, runtime_reference};
 
-#[cfg(feature = "experimental-native-v6-ha")]
+#[cfg(feature = "native-v6-ha")]
 #[path = "ha_v6_native_codec.rs"]
 pub(crate) mod native_v6;
 

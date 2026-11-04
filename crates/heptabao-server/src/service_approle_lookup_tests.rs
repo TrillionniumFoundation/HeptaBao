@@ -3,6 +3,170 @@ use super::*;
 use crate::service::tests::{Root, bootstrap};
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
+#[test]
+fn approle_lookup_expiration143_legacy_actor_retires_before_denial_and_cold_reopen() -> TestResult {
+    let files = Root::new();
+    let mut service = files.service()?;
+    let (key, admin) = bootstrap(&mut service)?;
+    fixture(&mut service, &admin)?;
+    let pair = issue(&mut service, &admin, "", 0)?;
+    let source = r#"path "auth/lookup/role/owner/secret-id/lookup" { capabilities=["update"] }"#;
+    let policy_path = "sys/policies/acl/lookup-expiration143";
+    assert_eq!(
+        write(
+            &mut service,
+            &admin,
+            "",
+            policy_path,
+            json!({"policy":source})
+        )?
+        .status,
+        204
+    );
+    // A real historical Token API issue keeps the exact old immutable
+    // eligibility. A modern precise token would bypass it for another reason.
+    let issued = service.handle_at(
+        "POST",
+        "auth/token/create",
+        "",
+        &admin,
+        json!({"policies":["lookup-expiration143"],"ttl":600,"no_default_policy":true}),
+        100,
+    );
+    assert_eq!(issued.status, 200, "{}", issued.body);
+    let actor = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("actual legacy actor")?
+        .to_owned();
+    let state = service.state.as_ref().ok_or("actual state")?;
+    assert!(!state.has_token_api_precision_state());
+    assert!(!state.auth.has_policy_expiration_state());
+    assert!(state.auth.legacy_immutable_token_is_non_consuming(&actor));
+    let at = clock(100)?;
+    let projected = fast(&mut service, &actor, &pair, at)?;
+    assert_eq!(projected.status, 200);
+    assert_eq!(finish_fast(&mut service, projected, at)?.status, 200);
+
+    assert_eq!(
+        write(
+            &mut service,
+            &admin,
+            "",
+            policy_path,
+            json!({"policy":source,"expiration":150,"cas":1,"cas_required":true})
+        )?
+        .status,
+        204
+    );
+    let state = service.state.as_ref().ok_or("timed policy state")?;
+    assert!(!state.has_token_api_precision_state());
+    assert!(state.auth.legacy_immutable_token_is_non_consuming(&actor));
+    assert!(state.auth.has_policy_expiration_state());
+    let at = clock(200)?;
+    let body = json!({"secret_id":pair.0});
+    let view = RequestView {
+        method: "POST",
+        path: "auth/lookup/role/owner/secret-id/lookup",
+        namespace: "",
+        token: &actor,
+        body: &body,
+        now: 200,
+        admission_started: at.started(),
+        token_clock: Some(at),
+        allow_forward: true,
+        enforce_namespace: true,
+        wrap_ttl_seconds: None,
+        origin_peer: None,
+        client_certificates: None,
+    };
+    assert!(service.immutable_approle_lookup_response(&view).is_none());
+    assert!(service.pending_ordinary_kv_authority.is_none());
+    assert_eq!(
+        lookup(&mut service, &actor, "", "lookup", "owner", &pair, false)?.status,
+        403
+    );
+    let listed = request(
+        &mut service,
+        200,
+        Operation {
+            namespace: "",
+            token: &admin,
+            method: "LIST",
+            path: "sys/policies/acl",
+            body: json!({}),
+            wrap: None,
+        },
+    )?;
+    assert_eq!(listed.status, 200);
+    assert!(
+        !listed.body["data"]["keys"]
+            .as_array()
+            .ok_or("policy keys")?
+            .contains(&json!("lookup-expiration143"))
+    );
+    drop(service);
+
+    let mut service = files.service()?;
+    assert_eq!(
+        request(
+            &mut service,
+            200,
+            Operation {
+                namespace: "",
+                token: "",
+                method: "POST",
+                path: "sys/unseal",
+                body: json!({"key":key}),
+                wrap: None,
+            }
+        )?
+        .status,
+        200
+    );
+    // LIST cannot cause expiry deletion, and CAS=-1 must see the persisted
+    // absence left by the actor's denied lookup before the cold restart.
+    let listed = request(
+        &mut service,
+        200,
+        Operation {
+            namespace: "",
+            token: &admin,
+            method: "LIST",
+            path: "sys/policies/acl",
+            body: json!({}),
+            wrap: None,
+        },
+    )?;
+    assert_eq!(listed.status, 200);
+    assert!(
+        !listed.body["data"]["keys"]
+            .as_array()
+            .ok_or("reopened policy keys")?
+            .contains(&json!("lookup-expiration143"))
+    );
+    assert_eq!(
+        request(
+            &mut service,
+            200,
+            Operation {
+                namespace: "",
+                token: &admin,
+                method: "POST",
+                path: policy_path,
+                body: json!({"policy":source,"cas":-1}),
+                wrap: None,
+            }
+        )?
+        .status,
+        204
+    );
+    let at = clock(200)?;
+    let projected = fast(&mut service, &actor, &pair, at)?;
+    assert_eq!(projected.status, 200);
+    assert_eq!(finish_fast(&mut service, projected, at)?.status, 200);
+    Ok(())
+}
+
 fn clock(now: u64) -> TestResult<RequestClock> {
     Ok(RequestClock::anchored(
         Duration::new(now, 1),
@@ -799,10 +963,19 @@ fn approle_lookup_historical_owner_retains_legacy_projection_without_record_gran
             .to_owned(),
     );
     erase_json(&mut issued.body);
+    // V4 is the storage envelope, not permission to label modern Auth fields
+    // with an older reader schema. These direct producer calls need the same
+    // writer-floor selection as an ordinary Service publication.
+    historical.schema = historical.writer_schema();
+    assert!(historical.schema >= APPROLE_NO_DEFAULT_STATE_SCHEMA);
+    assert!(historical.engines.record_root().is_none());
     historical
         .validate_format()
         .map_err(|_| "historical V4 format")?;
-    crate::service::tests::commit_legacy_state_fixture(&mut service, &historical)
+    // This current-schema owner needs an ordinary V4 publication. The legacy
+    // downgrade fixture helper correctly refuses its protected Auth schema.
+    service
+        .commit_state(&mut historical)
         .map_err(|_| "historical authenticated V4 publication")?;
     service.state = Some(historical);
     assert!(service.record_root.is_none());

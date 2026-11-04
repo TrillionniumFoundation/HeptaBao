@@ -119,6 +119,7 @@ impl AuthState {
             return Err(bad("resultant ACL discovery does not accept parameters"));
         }
         let principal = self.permission_observed(principal, namespace, path, "read", time)?;
+        let time = principal.request_authority_time(time)?;
         self.ui_discovery_actor(principal, namespace, time)?;
         let token = self.check_principal_observed(principal, namespace, time)?;
         if token.is_root() {
@@ -138,9 +139,14 @@ impl AuthState {
                 None if name == "default" => default_policy::compiled()?,
                 None => continue,
             };
+            if !policy.live(time)? {
+                continue;
+            }
             for rule in &policy.rules {
-                let Some(rendered) =
-                    acl_template::render(&rule.path, &principal.identity_templates)?
+                if !rule.live(time)? {
+                    continue;
+                }
+                let Some(rendered) = policy.render(&rule.path, &principal.identity_templates)?
                 else {
                     continue;
                 };
@@ -178,13 +184,14 @@ impl AuthState {
                 .copied()
                 .filter(|capability| *capability != "deny")
             {
-                if self.policy_allows(
+                if self.policy_allows_observed(
                     namespace,
                     path,
                     capability,
                     token.policies(),
                     &principal.identity_policies,
                     &principal.identity_templates,
+                    time,
                 )? {
                     capabilities.push(capability);
                 }
@@ -212,6 +219,7 @@ mod tests {
     #[test]
     fn deny_and_identical_rule_parameter_merge_follow_existing_acl_semantics() {
         let make = |capabilities: &[&str], values: Vec<Value>, min, max| Rule {
+            expiration: None,
             path: "secret/*".into(),
             capabilities: capabilities.iter().map(|value| (*value).into()).collect(),
             allowed_parameters: BTreeMap::from([("field".into(), values)]),

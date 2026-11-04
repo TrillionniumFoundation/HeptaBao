@@ -17,6 +17,9 @@ use std::time::Instant;
 #[path = "service_native_v6_ha_archive_repair_tests.rs"]
 mod archive_repair_tests;
 
+#[path = "service_native_v6_ha_paged_read_tests.rs"]
+mod paged_read_tests;
+
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 const REQUEST_BUDGET: Duration = Duration::from_secs(15);
 
@@ -317,10 +320,8 @@ fn assert_history_with_real_proof(
                 "GET",
                 "data/install-history",
                 &json!({"version":version}),
-                crate::auth::Timestamp::whole(
-                    std::time::SystemTime::now()
-                        .duration_since(std::time::UNIX_EPOCH)?
-                        .as_secs(),
+                crate::auth::Timestamp::from_wall(
+                    std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)?,
                 )?,
                 &reader,
             );
@@ -538,7 +539,7 @@ fn native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file() ->
     // Restore only the explicit synthetic fault in the authenticated fixture
     // journal, then perform another genuine missing-file recovery.
     let mut durable = DurableService::reopen(
-        &files.path.join("data"),
+        files.path.join("data"),
         AeadBarrier::new(*barrier)?,
         MAX_OPERATIONS,
     )?;
@@ -563,7 +564,7 @@ fn native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file() ->
         "existing bad object was never overwritten"
     );
     let durable = DurableService::reopen(
-        &files.path.join("data"),
+        files.path.join("data"),
         AeadBarrier::new(*barrier)?,
         MAX_OPERATIONS,
     )?;
@@ -598,10 +599,8 @@ fn native_ha_install_original_actor_stale_read_and_cold_catchup_to_later_root() 
         let denied = target.sync_native_v6_from_ha_checked(&ha, read, &mut |_| {
             Err(Response::error(403, "original fixture actor revoked"))
         });
-        match denied {
-            Err(response) => assert_eq!(response.status, 403),
-            Ok(_) => panic!("original Actor must survive receive"),
-        }
+        let response = denied.err().ok_or("original Actor must survive receive")?;
+        assert_eq!(response.status, 403);
     }
     assert_eq!(selected_bytes(&target)?, original_root);
     assert_eq!(
@@ -899,7 +898,7 @@ fn native_ha_install_auth_lookup_retains_preaudit_proof_after_real_root_advance(
         Some(clock),
         response,
         || {
-            advanced = Some((|| -> TestResult<_> {
+            advanced = Some({
                 assert_eq!(
                     call(
                         &mut source,
@@ -919,7 +918,7 @@ fn native_ha_install_auth_lookup_retains_preaudit_proof_after_real_root_advance(
                     first.generation(),
                     first.publication_log_id().index,
                 )
-            })());
+            });
         },
     );
     let (second, _) = advanced.ok_or("audit callback did not execute")??;
@@ -1222,3 +1221,72 @@ fn native_ha_published_proposal_readback_keeps_binding_clock_quorum_and_read_onl
     assert_eq!(publication_readback_directory(&path)?, before_expired);
     Ok(())
 }
+
+#[test]
+fn native_ha_plain_profile_admits_paired_batch_and_fresh_child_but_rejects_retirement() -> TestResult
+{
+    let (_files, mut service, _key, token) = initialized()?;
+    let before = service.state.clone().ok_or("actual pre-batch state")?;
+    assert!(root_namespace_only(&before).is_ok());
+    let mut issued = call(
+        &mut service,
+        "POST",
+        "auth/token/create-orphan",
+        &token,
+        json!({"type":"batch","ttl":"120s","policies":["default"]}),
+    );
+    assert_eq!(issued.status, 200);
+    assert_eq!(issued.body["auth"]["token_type"], "batch");
+    erase_json(&mut issued.body);
+    let actual = service.state.clone().ok_or("actual issued batch state")?;
+    assert!(!actual.namespaces.is_empty());
+    assert!(actual.namespaces.batch_visible_paths().is_empty());
+    actual
+        .validate_namespace_batch_state()
+        .map_err(|_| "actual paired batch lifecycle")?;
+    assert!(root_namespace_only(&actual).is_ok());
+
+    // One owner cannot supply the other owner's lifecycle or cluster binding.
+    let mut unpaired = actual.clone();
+    unpaired.auth = before.auth;
+    assert!(root_namespace_only(&unpaired).is_err());
+    let mut wrong_cluster = actual.clone();
+    wrong_cluster.cluster_id.push_str("-other");
+    assert!(root_namespace_only(&wrong_cluster).is_err());
+
+    // A real fresh plain child is now admitted by the same paired catalog
+    // profile. Retirement still requires its separate lifecycle owner.
+    assert_eq!(
+        call(
+            &mut service,
+            "POST",
+            "sys/namespaces/outside-ha-root",
+            &token,
+            json!({}),
+        )
+        .status,
+        200
+    );
+    let child = service.state.as_ref().ok_or("actual child state")?;
+    assert!(child.validate_format().is_ok());
+    assert!(root_namespace_only(child).is_ok());
+    assert_eq!(
+        call(
+            &mut service,
+            "DELETE",
+            "sys/namespaces/outside-ha-root",
+            &token,
+            json!({}),
+        )
+        .status,
+        200
+    );
+    let retired = service.state.as_ref().ok_or("actual retired child state")?;
+    assert!(retired.namespaces.batch_visible_paths().is_empty());
+    assert!(retired.validate_format().is_ok());
+    assert!(root_namespace_only(retired).is_err());
+    Ok(())
+}
+
+#[path = "service_native_v6_ha_ingress_tests.rs"]
+mod ingress_selection_tests;

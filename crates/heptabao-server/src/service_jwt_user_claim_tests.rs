@@ -502,7 +502,7 @@ fn jwt_user_claim_reopen_role_edit_and_renewal_retain_issued_entity() -> TestRes
 fn jwt_user_claim_schema68_is_conditional_sticky_and_snapshot_protected() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
+    let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let key = PKey::from_rsa(Rsa::generate(2048)?)?;
     configure(&mut service, &admin, "", "jwtcustom", &key)?;
     assert!(

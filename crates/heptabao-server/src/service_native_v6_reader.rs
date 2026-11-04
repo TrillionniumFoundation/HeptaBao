@@ -1,12 +1,14 @@
 //! Explicit single-node root-namespace candidate admission from actual barrier custody.
 //! Profiles, cursors and graph inspection alone never grant a request or writer.
 use super::*;
-use crate::engines::kv2_native_records::NativeReadView;
+use crate::engines::kv2_native_records::{NativeReadView, PagedSyntaxHint};
 use crate::state_record_root::{RecordStateRoot, StateIdentity};
 use crate::state_record_root_v6::{MountScope, ObjectDomain, RecordStateRootV6};
 use crate::state_records::{ObjectRef, RecordError, RecordReader};
 use crate::v6_native_custody::OriginalDeadline;
 use crate::v6_read_validation::{ObjectSource, ReadContext, ReadIdentity};
+use heptabao_durable_service::ImmutableSourceSession;
+use subtle::ConstantTimeEq;
 
 pub(super) const ACTIVE_CURSOR_RESOURCE: &str = "state-native-v6/active-publication-cursor";
 pub(super) const ACTIVE_SOURCE_ROOT_RESOURCE: &str = "state-native-v6/active-source-root";
@@ -47,12 +49,33 @@ impl NativeCandidateProfile {
     }
 
     pub(super) fn check_environment(&self, service: &Service) -> Result<(), Response> {
-        if service.data_dir != self.data_dir
-            || service.ha.is_some()
-            || service.postgres_durable.is_some()
-            || service.durable_profile.is_some()
-            || service.openbao_wrapper_owner.is_some()
-            || service.audit_failed
+        self.check_borrowed_environment(
+            &service.data_dir,
+            service.ha.is_some(),
+            service.postgres_durable.is_some(),
+            service.durable_profile.is_some(),
+            service.openbao_wrapper_owner.is_some(),
+            service.audit_failed,
+        )
+    }
+
+    // The lossless reader passes borrows/presences from the same immutable
+    // Service borrow. No detached profile can authenticate a later owner.
+    pub(super) fn check_borrowed_environment(
+        &self,
+        data_dir: &std::path::Path,
+        ha_present: bool,
+        postgres_present: bool,
+        durable_profile_present: bool,
+        wrapper_present: bool,
+        audit_failed: bool,
+    ) -> Result<(), Response> {
+        if data_dir != self.data_dir.as_path()
+            || ha_present
+            || postgres_present
+            || durable_profile_present
+            || wrapper_present
+            || audit_failed
         {
             return Err(unavailable());
         }
@@ -263,10 +286,19 @@ struct ReaderPermit {
     root_bytes: Zeroizing<Vec<u8>>,
     cursor_bytes: Zeroizing<Vec<u8>>,
     source_bytes: Zeroizing<Vec<u8>>,
+    // Only the take-once local cold handoff populates these. No authority is
+    // cached: every later permit check rechecks the actual weak owner session.
+    handoff_source_session: Option<ImmutableSourceSession>,
+    handoff_nonce_attempt: Option<u64>,
 }
 impl ReaderPermit {
     fn check(&self, durable: &mut DurableService<AeadBarrier>) -> Result<(), Response> {
         live(self.activation.deadline)?;
+        if let Some(session) = &self.handoff_source_session {
+            durable
+                .verify_immutable_source_session(session)
+                .map_err(|_| unavailable())?;
+        }
         self.activation.check_seal()?;
         durable.verify_live_ownership().map_err(|_| unavailable())?;
         live(self.activation.deadline)?;
@@ -295,6 +327,11 @@ impl ReaderPermit {
         self.activation.check_seal()?;
         if durable.generation() != self.generation || durable.replay_epoch() != self.replay_epoch {
             return Err(unavailable());
+        }
+        if let Some(session) = &self.handoff_source_session {
+            durable
+                .verify_immutable_source_session(session)
+                .map_err(|_| unavailable())?;
         }
         live(self.activation.deadline)
     }
@@ -331,17 +368,7 @@ impl ObjectSource for CheckedSource<'_> {
 }
 
 fn root_namespace_only(state: &State) -> Result<(), Response> {
-    if state.namespace_protected.is_some()
-        || !state.namespace_leases.is_empty()
-        || !state.namespaces.is_empty()
-        || state
-            .engines
-            .v6_namespace_paths()
-            .any(|path| !path.is_empty())
-    {
-        return Err(unavailable());
-    }
-    state.validate_format().map_err(|_| unavailable())
+    namespaces::native_empty::require_catalog_profile(state)
 }
 
 // Four bounded owners are compared separately. Native engines must additionally
@@ -380,28 +407,35 @@ pub(super) struct ColdNativeRead {
 // a shared caller interface does not turn a local cursor into a quorum proof.
 pub(super) enum NativeProof {
     Single(Box<NativeSingleProof>),
-    #[cfg(feature = "experimental-native-v6-ha")]
+    #[cfg(feature = "native-v6-ha")]
     Ha(Box<super::native_v6_ha_install::NativeHaReadProof>),
 }
 impl NativeProof {
+    pub(super) fn is_cold_handoff(&self) -> bool {
+        match self {
+            Self::Single(proof) => proof.permit.handoff_source_session.is_some(),
+            #[cfg(feature = "native-v6-ha")]
+            Self::Ha(_) => false,
+        }
+    }
     pub(super) fn generation(&self) -> u64 {
         match self {
             Self::Single(proof) => proof.generation(),
-            #[cfg(feature = "experimental-native-v6-ha")]
+            #[cfg(feature = "native-v6-ha")]
             Self::Ha(proof) => proof.generation(),
         }
     }
     pub(super) fn identity(&self) -> StateIdentity {
         match self {
             Self::Single(proof) => proof.identity(),
-            #[cfg(feature = "experimental-native-v6-ha")]
+            #[cfg(feature = "native-v6-ha")]
             Self::Ha(proof) => proof.identity(),
         }
     }
     pub(super) fn check_warm(&self, service: &Service) -> Result<(), Response> {
         match self {
             Self::Single(proof) => proof.check_warm(service),
-            #[cfg(feature = "experimental-native-v6-ha")]
+            #[cfg(feature = "native-v6-ha")]
             Self::Ha(proof) => proof.check_warm(service),
         }
     }
@@ -418,7 +452,7 @@ impl NativeProof {
     ) -> Result<(), Response> {
         match self {
             Self::Single(proof) => proof.check_with(service, check_installed),
-            #[cfg(feature = "experimental-native-v6-ha")]
+            #[cfg(feature = "native-v6-ha")]
             Self::Ha(proof) => proof.check_with(service, check_installed),
         }
     }
@@ -429,8 +463,15 @@ impl NativeProof {
 pub(super) struct NativeSingleProof {
     permit: ReaderPermit,
     owner_fingerprints: [[u8; 32]; 4],
+    // Pure syntax data only, captured for this sealed->unsealed request and
+    // dropped with its existing affine completion owner after mandatory audit.
+    syntax: Option<BTreeMap<MountScope, PagedSyntaxHint>>,
 }
 impl NativeSingleProof {
+    #[cfg(test)]
+    pub(super) fn syntax_hint_scopes(&self) -> usize {
+        self.syntax.as_ref().map_or(0, BTreeMap::len)
+    }
     pub(super) fn generation(&self) -> u64 {
         self.permit.generation
     }
@@ -448,6 +489,14 @@ impl NativeSingleProof {
         profile.check_environment(service)?;
         let root = service.native_root.as_ref().ok_or_else(unavailable)?;
         if service.recovery_required
+            || self.permit.handoff_nonce_attempt.is_some_and(|attempt| {
+                attempt == u64::MAX
+                    || service.unseal_nonce_attempt != attempt
+                    || !Arc::ptr_eq(
+                        &activation.observations,
+                        &service.native_payload_observations,
+                    )
+            })
             || service.record_root.is_some()
             || service.data_dir != activation.data_dir
             || service.seal.as_ref() != Some(&activation.seal)
@@ -546,9 +595,10 @@ impl NativeSingleProof {
             &key,
             self.permit.activation.deadline,
         )?;
-        let loaded = load_from_environment(
+        let loaded = load_from_environment_with_syntax(
             environment,
             service.durable.as_mut().ok_or_else(unavailable)?,
+            self.syntax.as_ref(),
         )?
         .ok_or_else(unavailable)?;
         if loaded.proof.permit.generation != self.permit.generation
@@ -574,6 +624,188 @@ impl NativeSingleProof {
     }
 }
 
+enum ColdHandoffStage {
+    BeforeNonce,
+    AfterNonce,
+    Poisoned,
+}
+
+// This value exists only on one sys/unseal stack. No Service field, Clone,
+// serde, public constructor, actor, or writer grant. A failed attempted
+// transition stays poisoned; it can never select the ordinary loader fallback.
+pub(super) struct ColdUnsealHandoff {
+    proof: Option<NativeSingleProof>,
+    key: Zeroizing<[u8; 32]>,
+    stage: ColdHandoffStage,
+}
+
+impl ColdUnsealHandoff {
+    pub(super) fn original_seal(proof: &NativeSingleProof) -> &SealMetadata {
+        &proof.permit.activation.seal
+    }
+
+    pub(super) fn prepare(
+        service: &mut Service,
+        key: &[u8; 32],
+        mut proof: NativeSingleProof,
+    ) -> Result<Self, Response> {
+        let result = (|| {
+            // Eligibility (including policy/seal repair) was chosen before this
+            // constructor, never inferred from a failed attempted publication.
+            if service.ha.is_some()
+                || proof.permit.activation.deadline.instant()
+                    != crate::request_deadline::current().ok_or_else(unavailable)?
+                || !Arc::ptr_eq(
+                    &proof.permit.activation.observations,
+                    &service.native_payload_observations,
+                )
+                || service
+                    .barrier_key
+                    .as_ref()
+                    .is_none_or(|installed| !bool::from(installed.as_slice().ct_eq(key.as_slice())))
+            {
+                return Err(unavailable());
+            }
+            proof.permit.handoff_nonce_attempt = Some(service.unseal_nonce_attempt);
+            proof.check_warm(service)?;
+            let durable = service.durable.as_mut().ok_or_else(unavailable)?;
+            proof.permit.handoff_source_session = Some(
+                super::native_blob_source::session(durable, &proof.permit.root_bytes)
+                    .map_err(|_| unavailable())?,
+            );
+            proof.permit.check(durable)?;
+            Ok(Self {
+                proof: Some(proof),
+                key: Zeroizing::new(*key),
+                stage: ColdHandoffStage::BeforeNonce,
+            })
+        })();
+        if result.is_err() {
+            service.fence_cold_unseal_handoff();
+        }
+        result
+    }
+
+    fn check_key_deadline(
+        &self,
+        service: &Service,
+        proof: &NativeSingleProof,
+    ) -> Result<(), Response> {
+        live(proof.permit.activation.deadline)?;
+        if crate::request_deadline::current() != Some(proof.permit.activation.deadline.instant())
+            || service.barrier_key.as_ref().is_none_or(|installed| {
+                !bool::from(installed.as_slice().ct_eq(self.key.as_slice()))
+            })
+        {
+            return Err(unavailable());
+        }
+        proof.check_warm(service)
+    }
+
+    pub(super) fn rotate_once(&mut self, service: &mut Service) -> Result<(), Response> {
+        let result = (|| {
+            // Take and poison before checking or requesting randomness. Err,
+            // unchanged randomness, overflow and a second attempt are all sticky.
+            let stage = std::mem::replace(&mut self.stage, ColdHandoffStage::Poisoned);
+            let mut proof = self.proof.take().ok_or_else(unavailable)?;
+            if !matches!(stage, ColdHandoffStage::BeforeNonce) {
+                return Err(unavailable());
+            }
+            self.check_key_deadline(service, &proof)?;
+            proof
+                .permit
+                .check(service.durable.as_mut().ok_or_else(unavailable)?)?;
+            let before_attempt = service.unseal_nonce_attempt;
+            let old_nonce = Zeroizing::new(service.unseal_nonce.clone());
+            service.rotate_unseal_nonce().map_err(|_| unavailable())?;
+            if before_attempt.checked_add(1) != Some(service.unseal_nonce_attempt)
+                || service.unseal_nonce == *old_nonce
+            {
+                return Err(unavailable());
+            }
+            // Only this actual successful transition can retarget this one proof.
+            proof.permit.activation.nonce = Zeroizing::new(service.unseal_nonce.clone());
+            proof.permit.handoff_nonce_attempt = Some(service.unseal_nonce_attempt);
+            self.check_key_deadline(service, &proof)?;
+            proof
+                .permit
+                .check(service.durable.as_mut().ok_or_else(unavailable)?)?;
+            self.proof = Some(proof);
+            self.stage = ColdHandoffStage::AfterNonce;
+            Ok(())
+        })();
+        if result.is_err() {
+            service.fence_cold_unseal_handoff();
+        }
+        result
+    }
+
+    pub(super) fn check_before_policy(&mut self, service: &mut Service) -> Result<(), Response> {
+        let result = (|| {
+            if !matches!(self.stage, ColdHandoffStage::AfterNonce)
+                || service.state.as_ref().is_none_or(|state| {
+                    !state.auth.cold_unseal_has_stable_default()
+                        || state.auth.default_policy_activation_needs_clock()
+                })
+            {
+                return Err(unavailable());
+            }
+            let proof = self.proof.as_ref().ok_or_else(unavailable)?;
+            self.check_key_deadline(service, proof)?;
+            proof
+                .permit
+                .check(service.durable.as_mut().ok_or_else(unavailable)?)
+        })();
+        if result.is_err() {
+            self.stage = ColdHandoffStage::Poisoned;
+            self.proof = None;
+            service.fence_cold_unseal_handoff();
+        }
+        result
+    }
+
+    pub(super) fn into_native_proof(
+        mut self,
+        service: &mut Service,
+    ) -> Result<NativeProof, Response> {
+        let result = (|| {
+            let stage = std::mem::replace(&mut self.stage, ColdHandoffStage::Poisoned);
+            let mut proof = self.proof.take().ok_or_else(unavailable)?;
+            if !matches!(stage, ColdHandoffStage::AfterNonce) {
+                return Err(unavailable());
+            }
+            self.check_key_deadline(service, &proof)?;
+            proof
+                .permit
+                .check(service.durable.as_mut().ok_or_else(unavailable)?)?;
+            let deadline = proof.permit.activation.deadline;
+            proof.syntax = Some(
+                service
+                    .state
+                    .as_ref()
+                    .ok_or_else(unavailable)?
+                    .engines
+                    .capture_paged_syntax_hints(
+                        &service.native_root.as_ref().ok_or_else(unavailable)?.kv2,
+                        &|| deadline.check().map_err(|_| RecordError::Invalid),
+                    )
+                    .map_err(|_| unavailable())?,
+            );
+            self.check_key_deadline(service, &proof)?;
+            proof
+                .permit
+                .check(service.durable.as_mut().ok_or_else(unavailable)?)?;
+            // Both mandatory audit-side checks still call NativeProof::check_with,
+            // each of which independently reopens and fully authenticates storage.
+            Ok(NativeProof::Single(Box::new(proof)))
+        })();
+        if result.is_err() {
+            service.fence_cold_unseal_handoff();
+        }
+        result
+    }
+}
+
 pub(super) fn load_cold_root(
     service: &Service,
     profile: &NativeCandidateProfile,
@@ -589,7 +821,25 @@ fn load_from_environment(
     activation: ActivationEnvironment,
     durable: &mut DurableService<AeadBarrier>,
 ) -> Result<Option<ColdNativeRead>, Response> {
-    load_from_environment_checked(activation, durable, true, &mut || Ok(()))
+    load_from_environment_with_syntax(activation, durable, None)
+}
+
+fn load_from_environment_with_syntax(
+    activation: ActivationEnvironment,
+    durable: &mut DurableService<AeadBarrier>,
+    syntax: Option<&BTreeMap<MountScope, PagedSyntaxHint>>,
+) -> Result<Option<ColdNativeRead>, Response> {
+    load_from_environment_checked(activation, durable, true, &mut || Ok(()), syntax)
+}
+
+#[cfg(test)]
+std::thread_local! {
+    static FULL_COLD_LOADS: std::cell::Cell<u64> = const { std::cell::Cell::new(0) };
+}
+
+#[cfg(test)]
+pub(super) fn full_cold_loads_for_test() -> u64 {
+    FULL_COLD_LOADS.with(std::cell::Cell::get)
 }
 
 fn load_from_environment_checked(
@@ -597,7 +847,12 @@ fn load_from_environment_checked(
     durable: &mut DurableService<AeadBarrier>,
     full_payloads: bool,
     original_gate: &mut impl FnMut() -> Result<(), Response>,
+    syntax: Option<&BTreeMap<MountScope, PagedSyntaxHint>>,
 ) -> Result<Option<ColdNativeRead>, Response> {
+    #[cfg(test)]
+    if full_payloads {
+        FULL_COLD_LOADS.with(|value| value.set(value.get() + 1));
+    }
     original_gate()?;
     live(activation.deadline)?;
     durable.verify_live_ownership().map_err(|_| unavailable())?;
@@ -628,6 +883,7 @@ fn load_from_environment_checked(
             .kv2
             .iter()
             .any(|graph| !graph.scope.namespace.is_empty())
+            && root.state_schema < NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA
     {
         return Err(unavailable());
     }
@@ -658,6 +914,8 @@ fn load_from_environment_checked(
         root_bytes: Zeroizing::new(root_bytes.expose().to_vec()),
         cursor_bytes: Zeroizing::new(cursor_bytes.expose().to_vec()),
         source_bytes: Zeroizing::new(source_bytes.expose().to_vec()),
+        handoff_source_session: None,
+        handoff_nonce_attempt: None,
     };
     original_gate()?;
     permit.check(durable)?;
@@ -695,7 +953,7 @@ fn load_from_environment_checked(
     let (metadata, native) = if full_payloads && root.reader_floor.native_kv2_format == 1 {
         v6_records::materialize_for_service(&root, context, &source)
     } else {
-        v6_records::materialize_metadata_for_service(&root, context, &source)
+        v6_records::materialize_metadata_for_service_with_syntax(&root, context, &source, syntax)
     }
     .map_err(|_| unavailable())?;
     if full_payloads && root.reader_floor.native_kv2_format == 2 {
@@ -718,6 +976,11 @@ fn load_from_environment_checked(
     drop(source);
     live(permit.activation.deadline)?;
     root_namespace_only(&metadata)?;
+    if namespaces::native_plain::has_child_resources(&metadata)
+        && metadata.schema < NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA
+    {
+        return Err(unavailable());
+    }
     live(permit.activation.deadline)?;
     let owner_fingerprints = bounded_owner_fingerprints(&metadata, permit.activation.deadline)?;
     live(permit.activation.deadline)?;
@@ -730,6 +993,7 @@ fn load_from_environment_checked(
         proof: NativeSingleProof {
             permit,
             owner_fingerprints,
+            syntax: None,
         },
     }))
 }
@@ -742,7 +1006,7 @@ impl Service {
         if self.native_root.is_none() {
             return Ok(None);
         }
-        #[cfg(feature = "experimental-native-v6-ha")]
+        #[cfg(feature = "native-v6-ha")]
         if self.ha.is_some() {
             return self
                 .capture_native_ha_request_proof(original_gate)
@@ -758,9 +1022,14 @@ impl Service {
                 .as_ref()
                 .ok_or_else(unavailable)?;
             let environment = ActivationEnvironment::capture(self, profile, &key, deadline)?;
-            let loaded =
-                load_from_environment_checked(environment, &mut durable, false, original_gate)?
-                    .ok_or_else(unavailable)?;
+            let loaded = load_from_environment_checked(
+                environment,
+                &mut durable,
+                false,
+                original_gate,
+                None,
+            )?
+            .ok_or_else(unavailable)?;
             Self::check_native_installed(
                 self.state.as_ref().ok_or_else(unavailable)?,
                 &loaded.metadata,
@@ -776,11 +1045,14 @@ impl Service {
         result
     }
 
-    pub(super) fn capture_native_unseal_proof(&mut self) -> Result<Option<NativeProof>, Response> {
+    pub(super) fn capture_native_unseal_proof(
+        &mut self,
+        fresh_transition: bool,
+    ) -> Result<Option<NativeProof>, Response> {
         if self.native_root.is_none() {
             return Ok(None);
         }
-        #[cfg(feature = "experimental-native-v6-ha")]
+        #[cfg(feature = "native-v6-ha")]
         if self.ha.is_some() {
             return self
                 .capture_native_ha_unseal_proof()
@@ -795,8 +1067,26 @@ impl Service {
                 .native_candidate_profile
                 .as_ref()
                 .ok_or_else(unavailable)?;
-            let loaded = load_cold_root(self, profile, &mut durable, &key, deadline)?
-                .ok_or_else(unavailable)?;
+            let syntax = if fresh_transition {
+                Some(
+                    self.state
+                        .as_ref()
+                        .ok_or_else(unavailable)?
+                        .engines
+                        .capture_paged_syntax_hints(
+                            &self.native_root.as_ref().ok_or_else(unavailable)?.kv2,
+                            &|| deadline.check().map_err(|_| RecordError::Invalid),
+                        )
+                        .map_err(|_| unavailable())?,
+                )
+            } else {
+                None
+            };
+            let environment = ActivationEnvironment::capture(self, profile, &key, deadline)?;
+            let mut loaded =
+                load_from_environment_with_syntax(environment, &mut durable, syntax.as_ref())?
+                    .ok_or_else(unavailable)?;
+            loaded.proof.syntax = syntax;
             Self::check_native_installed(
                 self.state.as_ref().ok_or_else(unavailable)?,
                 &loaded.metadata,

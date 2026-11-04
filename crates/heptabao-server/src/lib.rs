@@ -38,6 +38,9 @@ pub mod http;
 mod mount_listing_visibility;
 pub mod namespace_custody;
 mod namespace_record_graph;
+#[cfg(all(test, feature = "native-v6-ha"))]
+#[path = "service_native_v6_ha_mtls_fixture.rs"]
+mod native_v6_ha_mtls_fixture;
 pub mod outbound;
 pub mod postgres_durable;
 pub mod postgres_storage;
@@ -53,6 +56,8 @@ mod tls_key_exchange;
 mod valkey_wire;
 mod workflow_runtime;
 pub use service::ServiceRequest;
+#[cfg(all(unix, feature = "native-v6-storage"))]
+pub use service::native_seed;
 pub use service::{AuditConfig, AuditSocketConfig, AuditSyslogConfig};
 #[cfg(target_os = "linux")]
 pub use service::{

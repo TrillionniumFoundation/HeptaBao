@@ -7,12 +7,16 @@ use heptabao_filesystem_guard::ImmutablePublicationCheckedError;
 #[path = "v6_replica_blobs_existing.rs"]
 mod existing;
 
+#[path = "v6_replica_blobs_batch.rs"]
+mod batch;
+
 impl LocalV6BlobStage {
     pub fn stage_local_checked(
         &self,
         ciphertext: &[u8],
         gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
     ) -> Result<LocalV6BlobReceipt, LocalV6BlobError> {
+        let _operation = self.begin_native_operation()?;
         gate()?;
         let object = SealedRecordObject::new_native_v6_ciphertext_chunk(ciphertext.to_vec())
             .map_err(|_| LocalV6BlobError::InvalidCiphertext)?;
@@ -71,6 +75,7 @@ impl LocalV6BlobStage {
         ciphertext: &[u8],
         gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
     ) -> Result<LocalV6BlobReceipt, LocalV6BlobError> {
+        let _operation = self.begin_native_operation()?;
         gate()?;
         Self::leaf(expected)?;
         if u64::try_from(ciphertext.len()).ok() != Some(expected.payload_bytes) {

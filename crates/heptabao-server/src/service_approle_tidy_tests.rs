@@ -632,11 +632,14 @@ fn native_approle_tidy_real_two_batch_cleanup_keeps_original_clock_and_busy_guar
     let mut service = files.service()?;
     let (_, admin) = bootstrap(&mut service)?;
     mount(&mut service, clock(100)?, "", &admin, "build");
-    let initial = clock(100)?;
+    // Each issuance is a separate test ingress at wall time 100. Sharing one
+    // started Instant across 257 requests can put late issuances after the
+    // cleanup cutoff on a slow host. The accepted cleanup task below still
+    // retains its one original clock and deadline across both batches.
     for _ in 0..257 {
-        let _ = issue(&mut service, initial, "", &admin, "build", 1)?;
+        let _ = issue(&mut service, clock(100)?, "", &admin, "build", 1)?;
     }
-    let active = issue(&mut service, initial, "", &admin, "build", 0)?;
+    let active = issue(&mut service, clock(100)?, "", &admin, "build", 0)?;
     assert_eq!(
         tidy(&mut service, clock(200)?, "", &admin, "build", None).status,
         202

@@ -35,7 +35,7 @@ def private(path, raw, mode=0o600):
     path.chmod(mode)
 
 
-def fixture(name, *, exit_after=None, same_group_survivor=False):
+def fixture(name, *, exit_after=None, same_group_survivor=False, startup_delay=0):
     root = ROOT / name
     root.mkdir(mode=0o700)
     private(root / SOURCE.name, SOURCE.read_bytes())
@@ -46,8 +46,9 @@ def fixture(name, *, exit_after=None, same_group_survivor=False):
         body = "import time\ntime.sleep(" + repr(exit_after) + ")\n"
     else:
         body = "import time\ntime.sleep(60)\n"
-    program = ("#!" + str(PYTHON) + "\nfrom pathlib import Path\nimport os\n"
+    program = ("#!" + str(PYTHON) + "\nfrom pathlib import Path\nimport os,time\n"
                "root=Path(__file__).resolve().parent\n"
+               "time.sleep(" + repr(startup_delay) + ")\n"
                "with (root/'native-starts.log').open('a') as out: out.write(str(os.getpid())+'\\n')\n" + body)
     private(root / "heptabao-server", program.encode(), 0o700)
     for name in ("server.json", "ha.json"):
@@ -67,13 +68,37 @@ def fixture(name, *, exit_after=None, same_group_survivor=False):
 
 
 def start_helper(root, payload):
+    startup_until = time.monotonic() + w.START_SECONDS
     stderr = open(root / ("helper-" + payload["launch_id"] + ".stderr"), "xb")
     child = REAL_POPEN([str(PYTHON), "-B", str(root / SOURCE.name), "--serve",
                        base64.b64encode(w.canonical(payload)).decode()],
                       stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=stderr,
                       start_new_session=True)
     stderr.close()
+    child.fixture_startup_until = startup_until
     return child
+
+
+def native_started(root, native_pid, *, until, helper):
+    """Child execution handshake inside the original startup budget."""
+    expected = (str(native_pid) + "\n").encode()
+    while time.monotonic() < until:
+        if w.exit_observation(helper) is not None:
+            raise AssertionError("helper exited before native execution handshake")
+        try:
+            raw = (root / "native-starts.log").read_bytes()
+        except FileNotFoundError:
+            raw = b""
+        if raw.endswith(b"\n"):
+            if raw != expected:
+                raise AssertionError("native execution marker must identify the one owned PID")
+            if time.monotonic() >= until:
+                break
+            return
+        if len(raw) > 128:
+            raise AssertionError("native execution marker exceeded bound")
+        time.sleep(min(0.01, max(0, until - time.monotonic())))
+    raise AssertionError("native execution handshake exceeded original startup deadline")
 
 
 def line(child, *, seconds=7):
@@ -133,7 +158,7 @@ class ProcessTests(unittest.TestCase):
         RESULTS.append({"case": self._testMethodName, "elapsed_seconds": round(time.monotonic()-self.began, 6)})
 
     def test_explicit_sigkill_retains_parent_and_exact_one_spawn(self):
-        root, payload = fixture("sigkill")
+        root, payload = fixture("sigkill", startup_delay=0.8)
         child = start_helper(root, payload)
         try:
             ready = line(child)
@@ -142,6 +167,7 @@ class ProcessTests(unittest.TestCase):
             self.assertEqual(w.exit_observation(child), None)
             native_pid = ready["child_identity"]["ps"]["pid"]
             self.assertEqual(w.ps_rows(native_pid)[0]["ppid"], child.pid)
+            native_started(root, native_pid, until=child.fixture_startup_until, helper=child)
             command(child, payload, "kill")
             terminal = line(child)
             self.assertTrue(terminal["ok"])
@@ -171,7 +197,10 @@ class ProcessTests(unittest.TestCase):
         root, payload = fixture("parent-eof")
         child = start_helper(root, payload)
         try:
-            self.assertTrue(line(child)["ready"])
+            ready = line(child)
+            self.assertTrue(ready["ready"])
+            native_started(root, ready["child_identity"]["ps"]["pid"],
+                           until=child.fixture_startup_until, helper=child)
             child.stdin.close()
             terminal = line(child)
             self.assertFalse(terminal["ok"])
@@ -259,13 +288,53 @@ class ProcessTests(unittest.TestCase):
             time.sleep(0.08)
             return original(*args, **kwargs)
         try:
-            with patch.object(w, "ps_rows", side_effect=delayed), patch.object(w.os, "killpg") as send:
+            with patch.object(w, "ps_rows", side_effect=delayed), \
+                 patch.object(w.subprocess, "run", wraps=w.subprocess.run) as projection, \
+                 patch.object(w.os, "killpg") as send:
                 with self.assertRaisesRegex(w.Refusal, "deadline"):
                     w.stop_unreaped(child, owner, until=time.monotonic()+0.04)
+                projection.assert_not_called()
                 send.assert_not_called()
             self.assertIsNone(w.exit_observation(child))
         finally:
             w.stop_unreaped(child, owner, until=time.monotonic()+5)
+
+    def test_process_projection_timeout_refuses_before_every_signal(self):
+        root, _ = fixture("projection-timeout")
+        child = REAL_POPEN([str(root/"heptabao-server")], stdin=subprocess.DEVNULL,
+                          stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+        owner = w.capture_child(child)
+        try:
+            with patch.object(w.subprocess, "run", side_effect=subprocess.TimeoutExpired("/bin/ps", 0.5)), \
+                 patch.object(w.os, "killpg") as send:
+                with self.assertRaisesRegex(w.Refusal, "process_projection_deadline_expired"):
+                    w.stop_unreaped(child, owner, until=time.monotonic()+5)
+                send.assert_not_called()
+            self.assertIsNone(w.exit_observation(child))
+        finally:
+            w.stop_unreaped(child, owner, until=time.monotonic()+5)
+
+    def test_projection_timeout_returns_refusal(self):
+        with patch.object(w.subprocess, "run", side_effect=subprocess.TimeoutExpired("/bin/ps", 0.5)):
+            with self.assertRaisesRegex(w.Refusal, "process_projection_deadline_expired"):
+                w.ps_rows()
+        with patch.object(w.time, "monotonic", side_effect=[10.0, 10.1]), \
+             patch.object(w.subprocess, "run", side_effect=subprocess.TimeoutExpired("/bin/ps", 0.04)):
+            with self.assertRaisesRegex(w.Refusal, "original_stop_deadline_expired"):
+                w.ps_rows(until=10.04)
+
+    def test_projection_checks_absolute_deadline_before_and_after_observation(self):
+        with patch.object(w.time, "monotonic", return_value=10.1), \
+             patch.object(w.subprocess, "run") as projection:
+            with self.assertRaisesRegex(w.Refusal, "original_stop_deadline_expired"):
+                w.ps_rows(until=10.04)
+            projection.assert_not_called()
+        completed = subprocess.CompletedProcess(["/bin/ps"], 0, stdout=b"", stderr=b"")
+        with patch.object(w.time, "monotonic", side_effect=[10.0, 10.1]), \
+             patch.object(w.subprocess, "run", return_value=completed) as projection:
+            with self.assertRaisesRegex(w.Refusal, "original_stop_deadline_expired"):
+                w.ps_rows(until=10.04)
+            self.assertAlmostEqual(projection.call_args.kwargs["timeout"], 0.04)
 
     def test_local_supervisor_uses_one_foreground_channel_and_reaps_group(self):
         root, payload = fixture("supervisor")
@@ -287,8 +356,10 @@ class ProcessTests(unittest.TestCase):
             return REAL_POPEN(argv, *args, **kwargs)
         try:
             with patch.object(w.subprocess, "Popen", side_effect=local_transport):
+                startup_until = time.monotonic() + w.START_SECONDS
                 pid = session.start()
                 session.assert_running()
+                native_started(root, pid, until=startup_until, helper=session.child)
                 self.assertEqual(session.stop(), pid)
             self.assertEqual(session.receipt["submission_count"], 1)
             self.assertTrue(session.receipt["remote_cleanup"]["leader_reaped"])

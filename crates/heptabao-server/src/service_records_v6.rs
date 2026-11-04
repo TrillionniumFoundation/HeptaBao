@@ -1,24 +1,29 @@
-//! Authenticated V6 kernel with guarded root-only fixture admission and side snapshots.
-//! Default Service, namespace, HA and production migration admission remain closed.
+//! Authenticated V6 kernel with explicit root storage admission and side snapshots.
+//! Compiled support supplies no owner: normal startup must select the checked
+//! file or existing-seed Raft profile. Namespace/provider migration stays closed.
 use super::*;
-use crate::engines::kv2_native_records::NativeReadView;
+use crate::engines::kv2_native_records::{
+    NativeReadView, PagedPayloadValidationMemo, PagedSyntaxHint,
+};
 use crate::state_record_root_v6::{ENGINE_FORMAT, MountScope, ObjectDomain, RecordStateRootV6};
 use crate::state_records::{Kv1Index, ObjectId, ObjectRef, RecordError, RecordReader};
 use crate::v6_read_validation::{ObjectSource, ReadContext, ReadError, ReadReceipt};
 use std::cell::RefCell;
 use std::collections::{BTreeMap, BTreeSet};
 
-#[cfg(feature = "experimental-native-v6-ha")]
+#[cfg(feature = "native-v6-ha")]
 #[path = "service_records_v6_historical.rs"]
 mod historical;
-#[cfg(feature = "experimental-native-v6-ha")]
-pub(super) use historical::prepare_historical_native_root;
+#[cfg(feature = "native-v6-ha")]
+pub(super) use historical::{HistoricalProjectionTarget, prepare_historical_native_root};
 
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 #[path = "service_records_v6_snapshot.rs"]
 mod snapshot_projection;
-#[cfg(feature = "fixture-native-v6-service")]
-pub(super) use snapshot_projection::project_snapshot_native_root;
+#[cfg(feature = "native-v6-storage")]
+pub(super) use snapshot_projection::{
+    project_snapshot_native_root, retain_empty_snapshot_kv2_floor,
+};
 
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -187,9 +192,9 @@ fn owner_bytes(
     Ok(bytes)
 }
 fn canonical(value: &impl Serialize, bytes: &[u8]) -> Result<(), ReadError> {
-    let encoded =
-        crate::secret_serde::to_vec(value, MAX_STATE_BYTES).map_err(|_| ReadError::State)?;
-    if encoded.as_slice() != bytes {
+    let matches = crate::secret_serde::matches_bytes(value, bytes, MAX_STATE_BYTES)
+        .map_err(|_| ReadError::State)?;
+    if !matches {
         return Err(ReadError::Invalid);
     }
     Ok(())
@@ -220,6 +225,17 @@ fn materialize_mode(
     context: ReadContext<'_>,
     source: &impl ObjectSource,
     full_payloads: bool,
+) -> Result<ReadState, ReadError> {
+    materialize_mode_with_payload_validation(root, context, source, full_payloads, None, None)
+}
+
+fn materialize_mode_with_payload_validation(
+    root: &RecordStateRootV6,
+    context: ReadContext<'_>,
+    source: &impl ObjectSource,
+    full_payloads: bool,
+    payload_validation: Option<&RefCell<PagedPayloadValidationMemo>>,
+    syntax: Option<&BTreeMap<MountScope, PagedSyntaxHint>>,
 ) -> Result<ReadState, ReadError> {
     validate_frontier(root, context)?;
     let usage = RefCell::new(Usage {
@@ -267,6 +283,12 @@ fn materialize_mode(
     canonical(&state.auth, &owners[1])?;
     canonical(&state.database, &owners[3])?;
     canonical(&state.raft_admin, &owners[4])?;
+    #[cfg(feature = "native-v6-storage")]
+    if namespaces::native_plain::has_child_resources(&state)
+        && root.state_schema < NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA
+    {
+        return Err(ReadError::ReaderFloor);
+    }
     if state
         .engines
         .v6_namespace_paths()
@@ -296,14 +318,24 @@ fn materialize_mode(
         };
         let view = if graph.graph_format == crate::engines::kv2_native_records::PAGED_NATIVE_FORMAT
         {
-            let view = NativeReadView::open_paged(
-                &parent,
-                graph.scope.borrowed(),
-                graph.root.clone(),
-                &reader,
-            )?;
+            let view = match syntax.and_then(|hints| hints.get(&graph.scope)) {
+                Some(hint) => NativeReadView::open_paged_with_syntax(
+                    &parent,
+                    graph.scope.borrowed(),
+                    graph.root.clone(),
+                    &reader,
+                    &|| Ok(()),
+                    Some(hint),
+                ),
+                None => NativeReadView::open_paged(
+                    &parent,
+                    graph.scope.borrowed(),
+                    graph.root.clone(),
+                    &reader,
+                ),
+            }?;
             if full_payloads {
-                view.verify_paged_payloads(&reader, &|| Ok(()))?;
+                view.verify_paged_payloads_with_memo(&reader, &|| Ok(()), payload_validation)?;
             }
             if view.logical_payload_bytes()? != graph.logical_payload_bytes {
                 return Err(ReadError::Authentication);
@@ -392,7 +424,7 @@ mod tests;
 
 /// Actual Service source projection. Publication and reader admission remain
 /// closed until the guarded publisher and restart path consume this plan.
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 pub(super) struct NativeRootMigrationPlan {
     pub root: RecordStateRootV6,
     pub bytes: Zeroizing<Vec<u8>>,
@@ -401,17 +433,21 @@ pub(super) struct NativeRootMigrationPlan {
     pub source_generation: u64,
     pub deadline: crate::v6_native_custody::OriginalDeadline,
     pub conditions: Vec<heptabao_durable_service::PublicationCondition>,
+    // Owned by this detached plan and dropped with the original request.
+    // Only pure JSON semantics survive; every subsequent source read, keyed
+    // payload check, current lossless permission and custody gate still runs.
+    pub payload_validation: RefCell<PagedPayloadValidationMemo>,
 }
 
 // Fail-closed private prepublication reader. It consumes only this plan's
 // immutable staged objects and never loads loose files or changes Service.
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 struct NativeMigrationObjects<'a> {
     objects: &'a BTreeMap<(ObjectDomain, ObjectId), Arc<crate::state_records::StagedObject>>,
     deadline: crate::v6_native_custody::OriginalDeadline,
     fallback: Option<&'a dyn ObjectSource>,
 }
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 impl ObjectSource for NativeMigrationObjects<'_> {
     fn read(
         &self,
@@ -445,7 +481,7 @@ impl ObjectSource for NativeMigrationObjects<'_> {
 // readable under the signed identity, per-domain keys, source owner schema,
 // or the native KV2 reader. Reopen everything *before* a writer can receive
 // the immutable migration candidate, including on the initial V5->V6 move.
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 fn validate_native_root_migration_plan(
     plan: &NativeRootMigrationPlan,
     fallback: Option<&dyn ObjectSource>,
@@ -487,7 +523,7 @@ impl Service {
         self.prepare_native_root_migration_mode(check, false)
     }
 
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     pub(super) fn prepare_native_root_migration_paged(
         &mut self,
         check: &impl Fn() -> Result<(), RecordError>,
@@ -495,7 +531,7 @@ impl Service {
         self.prepare_native_root_migration_mode(check, true)
     }
 
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     fn prepare_native_root_migration_mode(
         &mut self,
         check: &impl Fn() -> Result<(), RecordError>,
@@ -515,24 +551,14 @@ impl Service {
             return Err(rejected());
         }
         if self.ha.is_some() {
-            #[cfg(feature = "experimental-native-v6-ha")]
+            #[cfg(feature = "native-v6-ha")]
             self.require_native_ha_environment()?;
-            #[cfg(not(feature = "experimental-native-v6-ha"))]
+            #[cfg(not(feature = "native-v6-ha"))]
             return Err(rejected());
         }
         check().map_err(|_| rejected())?;
         let mut candidate = self.state.as_ref().ok_or_else(rejected)?.clone();
-        if candidate.namespace_protected.is_some()
-            || candidate
-                .engines
-                .v6_namespace_paths()
-                .any(|path| !path.is_empty())
-        {
-            return Err(Response::error(
-                503,
-                "native migration requires independent namespace custody",
-            ));
-        }
+        namespaces::native_empty::require_catalog_profile(&candidate)?;
         candidate.validate_format()?;
         let old = self.record_root.as_ref().ok_or_else(rejected)?.clone();
         if old.state_schema != candidate.schema
@@ -618,6 +644,14 @@ impl Service {
         if source_generation == 0 || durable.generation() != source_generation {
             return Err(rejected());
         }
+        if namespaces::native_plain::has_child_resources(&candidate) {
+            // Only this authenticated V5 -> V6 projection introduces the
+            // native child representation. Ordinary source owners keep their
+            // original schema until this distinct candidate is published.
+            candidate.schema = candidate
+                .writer_schema()
+                .max(NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA);
+        }
         use crate::state_record_root::OpaqueOwnerRef;
         use crate::state_record_root_v6::{AddressMaterial, OwnerDomain, ReaderFloor, RoleOwner};
         let mut root = RecordStateRootV6 {
@@ -644,10 +678,40 @@ impl Service {
             kv2: Vec::new(),
             object_address_key: AddressMaterial(crypto::random::<32>().map_err(|_| rejected())?),
         };
-        let recorded = candidate
-            .engines
-            .rekey_root_records_checked(root.kv1_key().map_err(|_| rejected())?, &check)
-            .map_err(|_| rejected())?;
+        // The complete source owners and V5 graph above authenticate these
+        // exact catalog paths. Pristine child metadata owns no KV1 cells and
+        // must not be mistaken for independent namespace record custody.
+        let child_paths = candidate.namespaces.batch_visible_paths();
+        let recorded = if child_paths.is_empty() {
+            candidate
+                .engines
+                .rekey_root_records_checked(root.kv1_key().map_err(|_| rejected())?, &check)
+        } else {
+            #[cfg(not(feature = "native-v6-storage"))]
+            return Err(rejected());
+            #[cfg(feature = "native-v6-storage")]
+            {
+                #[cfg(test)]
+                eprintln!(
+                    "HB140-PRISTINE-MIGRATION stage=authenticated_source child_count={}",
+                    child_paths.len(),
+                );
+                let result = candidate
+                    .engines
+                    .rekey_root_records_with_pristine_namespaces_checked(
+                        root.kv1_key().map_err(|_| rejected())?,
+                        &child_paths,
+                        &check,
+                    );
+                #[cfg(test)]
+                eprintln!(
+                    "HB140-PRISTINE-MIGRATION stage=rekey_return accepted={}",
+                    result.is_ok(),
+                );
+                result
+            }
+        }
+        .map_err(|_| rejected())?;
         root.kv1 = recorded.record_root().ok_or_else(rejected)?;
         let mut objects = BTreeMap::new();
         fn stage(
@@ -742,6 +806,7 @@ impl Service {
             objects,
             source_generation,
             deadline,
+            payload_validation: RefCell::new(PagedPayloadValidationMemo::default()),
             conditions: vec![
                 heptabao_durable_service::PublicationCondition {
                     resource: "state".into(),
@@ -761,7 +826,7 @@ impl Service {
     }
 }
 
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 pub(super) fn native_resource(domain: &ObjectDomain, reference: &ObjectRef) -> String {
     let role = match domain {
         ObjectDomain::Owner(role) => format!("owner/{}", role.name()),
@@ -775,7 +840,7 @@ pub(super) fn native_resource(domain: &ObjectDomain, reference: &ObjectRef) -> S
         reference.resource().trim_start_matches("state-records/v5/")
     )
 }
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 const NATIVE_SIDE_ROOT: &str = "state-native-v6/root";
 
 #[cfg(test)]
@@ -1093,7 +1158,7 @@ fn materialize_native_side_snapshot(
     Ok(state)
 }
 
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 pub(super) fn materialize_for_service(
     root: &RecordStateRootV6,
     context: ReadContext<'_>,
@@ -1103,7 +1168,27 @@ pub(super) fn materialize_for_service(
     Ok((read.protected, read.native))
 }
 
-#[cfg(feature = "fixture-native-v6-service")]
+// The memo is only deterministic payload syntax/lossless information. It does
+// not replace any ObjectSource read or the fresh root/source validation above.
+#[cfg(feature = "native-v6-ha")]
+pub(super) fn materialize_for_service_with_payload_validation(
+    root: &RecordStateRootV6,
+    context: ReadContext<'_>,
+    source: &impl ObjectSource,
+    payload_validation: &RefCell<PagedPayloadValidationMemo>,
+) -> Result<(State, BTreeMap<MountScope, NativeReadView>), ReadError> {
+    let read = materialize_mode_with_payload_validation(
+        root,
+        context,
+        source,
+        true,
+        Some(payload_validation),
+        None,
+    )?;
+    Ok((read.protected, read.native))
+}
+
+#[cfg(feature = "native-v6-storage")]
 pub(super) fn materialize_metadata_for_service(
     root: &RecordStateRootV6,
     context: ReadContext<'_>,
@@ -1113,7 +1198,19 @@ pub(super) fn materialize_metadata_for_service(
     Ok((read.protected, read.native))
 }
 
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
+pub(super) fn materialize_metadata_for_service_with_syntax(
+    root: &RecordStateRootV6,
+    context: ReadContext<'_>,
+    source: &impl ObjectSource,
+    syntax: Option<&BTreeMap<MountScope, PagedSyntaxHint>>,
+) -> Result<(State, BTreeMap<MountScope, NativeReadView>), ReadError> {
+    let read =
+        materialize_mode_with_payload_validation(root, context, source, false, None, syntax)?;
+    Ok((read.protected, read.native))
+}
+
+#[cfg(feature = "native-v6-storage")]
 fn verify_incremental_views(
     plan: &NativeRootMigrationPlan,
     native: &BTreeMap<MountScope, NativeReadView>,
@@ -1144,15 +1241,18 @@ fn verify_incremental_views(
         if view.is_paged() {
             let reader = StagedOnly { plan, scope };
             let prior = prior.engines.native_paged_view(scope);
-            view.verify_paged_transition(prior, &reader, &|| {
-                plan.deadline.check().map_err(|_| RecordError::Invalid)
-            })?;
+            view.verify_paged_transition_with_memo(
+                prior,
+                &reader,
+                &|| plan.deadline.check().map_err(|_| RecordError::Invalid),
+                Some(&plan.payload_validation),
+            )?;
         }
     }
     plan.deadline.check().map_err(|_| ReadError::Invalid)
 }
 
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 fn validate_native_live_plan(
     plan: &NativeRootMigrationPlan,
     fallback: Option<&dyn ObjectSource>,
@@ -1186,7 +1286,7 @@ fn validate_native_live_plan(
     verify_incremental_views(plan, &read.native, prior)
 }
 
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 impl Service {
     pub(super) fn prepare_native_live_root(
         &mut self,
@@ -1243,6 +1343,9 @@ impl Service {
         let check = || deadline.check().map_err(|_| RecordError::Invalid);
         check().map_err(|_| rejected())?;
         self.require_native_root_candidate(candidate)?;
+        // Validate the caller's candidate before deriving the storage-only
+        // floor. In particular, an already-published V6 floor may not be
+        // stripped and then silently repaired by this planner.
         candidate.validate_publication_schema(self.state.as_ref())?;
         candidate.validate_format()?;
         let actual_auth = self.state.as_ref().ok_or_else(rejected)?.auth.clone();
@@ -1252,6 +1355,14 @@ impl Service {
             .ok_or_else(rejected)?;
         proof.check_warm(self)?;
         let mut candidate = candidate.clone();
+        if namespaces::native_plain::has_child_resources(&candidate) {
+            // This is the first native child publication, or a sticky later
+            // one. Raise only the plan's owned copy; the ordinary State
+            // writer and authenticated source remain unchanged.
+            candidate.schema = candidate
+                .writer_schema()
+                .max(NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA);
+        }
         let mut root = self.native_root.as_ref().ok_or_else(rejected)?.clone();
         if root.replay_epoch != candidate.replay_epoch || root.cluster_id != candidate.cluster_id {
             return Err(rejected());
@@ -1386,6 +1497,7 @@ impl Service {
             objects,
             source_generation,
             deadline,
+            payload_validation: RefCell::new(PagedPayloadValidationMemo::default()),
             conditions: vec![
                 heptabao_durable_service::PublicationCondition {
                     resource: "state".into(),
@@ -1479,7 +1591,7 @@ impl Service {
     }
 }
 
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 pub(super) fn verify_durable_native_candidate(
     root: &RecordStateRootV6,
     durable: &mut DurableService<AeadBarrier>,

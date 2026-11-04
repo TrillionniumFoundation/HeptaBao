@@ -222,7 +222,21 @@ class WorkflowReviewTests(unittest.TestCase):
                 policy.check_upload_path(value, {}, "fixture.path", lambda *_: False, {})
 
     def test_upload_registry_is_closed_and_contains_no_unsafe_paths(self):
-        self.assertEqual(30, len(policy.APPROVED_UPLOAD_PATHS))
+        self.assertEqual(32, len(policy.APPROVED_UPLOAD_PATHS))
+        self.assertEqual(
+            "${{ runner.temp }}/heptabao-native-recovery-reports/",
+            policy.APPROVED_UPLOAD_PATHS[(
+                "native-historical-restore-recovery.yml",
+                "workflow.jobs.scoped-recovery-linux.steps[8]",
+            )],
+        )
+        self.assertEqual(
+            "${{ runner.temp }}/heptabao-native-recovery-reports/",
+            policy.APPROVED_UPLOAD_PATHS[(
+                "native-historical-restore-recovery.yml",
+                "workflow.jobs.scoped-recovery-macos.steps[8]",
+            )],
+        )
         for key, value in policy.APPROVED_UPLOAD_PATHS.items():
             with self.subTest(invocation=key):
                 self.assertNotIn("*", value)

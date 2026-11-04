@@ -23,6 +23,75 @@ pub enum StorageConfig {
     },
     #[serde(rename = "postgresql")]
     PostgreSql {},
+    /// Root-namespace V6 over the real sealed local file owner. Selection
+    /// permits explicit activation; it does not migrate or unseal by itself.
+    #[serde(rename = "native_v6_file")]
+    NativeV6File { path: PathBuf },
+    /// The same root profile over the explicitly enrolled native Raft owner.
+    #[serde(rename = "native_v6_raft")]
+    NativeV6Raft {
+        path: PathBuf,
+        #[serde(default)]
+        node_id: Option<String>,
+        cluster_addr: String,
+        #[serde(default)]
+        api_addr: Option<String>,
+    },
+}
+
+/// Configuration eligibility only; this carries no key, actor or publication.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum NativeStorageProfile {
+    File,
+    Raft,
+}
+
+impl StorageConfig {
+    pub(crate) fn native_v6_profile(&self) -> Option<NativeStorageProfile> {
+        match self {
+            Self::NativeV6File { .. } => Some(NativeStorageProfile::File),
+            Self::NativeV6Raft { .. } => Some(NativeStorageProfile::Raft),
+            _ => None,
+        }
+    }
+}
+
+fn validate_native_profile(config: &Config) -> Result<(), String> {
+    let Some(profile) = config
+        .storage
+        .as_ref()
+        .and_then(StorageConfig::native_v6_profile)
+    else {
+        return Ok(());
+    };
+    if !cfg!(feature = "native-v6-storage")
+        || profile == NativeStorageProfile::Raft && !cfg!(feature = "native-v6-ha")
+    {
+        return Err("selected native V6 storage support is absent from this binary".into());
+    }
+    // The supported profile uses the normal Shamir seal and actual local
+    // file custody. Provider enrollment cannot substitute a key or widen it.
+    if config.postgres_durable.is_some()
+        || config.openbao_wrapper.is_some()
+        || !config.plugin_auth.is_empty()
+        || !config.plugin_database.is_empty()
+        || !config.plugin_kms.is_empty()
+        || !config.external_kms.is_empty()
+        || !config.plugin_secrets.is_empty()
+    {
+        return Err(
+            "native V6 storage requires Shamir file custody without provider adapters".into(),
+        );
+    }
+    #[cfg(any(target_os = "linux", target_os = "macos"))]
+    if config.openbao_sdk.is_some() {
+        return Err("native V6 storage does not admit SDK providers".into());
+    }
+    #[cfg(target_os = "linux")]
+    if config.local_control.is_some() {
+        return Err("native V6 storage does not admit Wrapper local control".into());
+    }
+    Ok(())
 }
 
 fn path_checked(path: &Path) -> Result<(), Invalid> {
@@ -57,16 +126,30 @@ fn origin(address: &str) -> Result<String, Invalid> {
 /// Pure enrollment admission; this runs before HaProcess::start creates any files/listeners.
 pub fn validate_storage(config: &Config, ha: Option<&HaProcessConfig>) -> Result<(), String> {
     validate_storage_runtime(config, ha.is_some())?;
-    let Some(StorageConfig::Raft {
-        path,
-        node_id,
-        cluster_addr,
-        api_addr,
-    }) = config.storage.as_ref()
+    let Some(
+        StorageConfig::Raft {
+            path,
+            node_id,
+            cluster_addr,
+            api_addr,
+        }
+        | StorageConfig::NativeV6Raft {
+            path,
+            node_id,
+            cluster_addr,
+            api_addr,
+        },
+    ) = config.storage.as_ref()
     else {
         return Ok(());
     };
     let ha = ha.ok_or("raft storage requires explicit enrolled HA configuration")?;
+    if matches!(
+        config.storage.as_ref(),
+        Some(StorageConfig::NativeV6Raft { .. })
+    ) {
+        ha.validate_native_v6_storage()?;
+    }
     if ha.raft_dir != path.join("raft") {
         return Err("raft storage path disagrees with enrolled HA directory".into());
     }
@@ -102,15 +185,34 @@ pub fn validate_storage(config: &Config, ha: Option<&HaProcessConfig>) -> Result
 
 /// Recheck the immutable running consumer for direct library serve callers.
 pub fn validate_storage_running(config: &Config, ha: &crate::ha::HaProcess) -> Result<(), String> {
-    let Some(StorageConfig::Raft {
-        path,
-        node_id,
-        cluster_addr,
-        api_addr,
-    }) = config.storage.as_ref()
+    let Some(
+        StorageConfig::Raft {
+            path,
+            node_id,
+            cluster_addr,
+            api_addr,
+        }
+        | StorageConfig::NativeV6Raft {
+            path,
+            node_id,
+            cluster_addr,
+            api_addr,
+        },
+    ) = config.storage.as_ref()
     else {
         return Ok(());
     };
+    if matches!(
+        config.storage.as_ref(),
+        Some(StorageConfig::NativeV6Raft { .. })
+    ) {
+        #[cfg(feature = "native-v6-ha")]
+        if !ha.native_v6_enabled() {
+            return Err("native V6 storage requires the running native Raft owner".into());
+        }
+        #[cfg(not(feature = "native-v6-ha"))]
+        return Err("native V6 Raft support is absent from this binary".into());
+    }
     let crate::ha::StorageBinding {
         directory,
         name,
@@ -139,9 +241,10 @@ pub fn validate_storage_running(config: &Config, ha: &crate::ha::HaProcess) -> R
 
 /// Every serve entry, including direct library calls, checks the selected consumer.
 pub fn validate_storage_runtime(config: &Config, ha: bool) -> Result<(), String> {
+    validate_native_profile(config)?;
     match config.storage.as_ref() {
         None => Ok(()),
-        Some(StorageConfig::PebbleDb { path }) => {
+        Some(StorageConfig::PebbleDb { path } | StorageConfig::NativeV6File { path }) => {
             path_checked(path).map_err(|_| "invalid durable storage path")?;
             if config.data_dir != *path || ha || config.postgres_durable.is_some() {
                 return Err(
@@ -150,12 +253,20 @@ pub fn validate_storage_runtime(config: &Config, ha: bool) -> Result<(), String>
             }
             Ok(())
         }
-        Some(StorageConfig::Raft {
-            path,
-            cluster_addr,
-            api_addr,
-            ..
-        }) => {
+        Some(
+            StorageConfig::Raft {
+                path,
+                cluster_addr,
+                api_addr,
+                ..
+            }
+            | StorageConfig::NativeV6Raft {
+                path,
+                cluster_addr,
+                api_addr,
+                ..
+            },
+        ) => {
             path_checked(path).map_err(|_| "invalid raft storage path")?;
             origin(cluster_addr).map_err(|_| "invalid raft cluster address")?;
             if let Some(address) = api_addr {
@@ -298,16 +409,16 @@ pub(super) fn normalize(root: &mut Map<String, Value>) -> Result<(), Invalid> {
     let mut settings = Tree(kinds.remove(&name).ok_or(())?);
     let fields = settings.0.as_object_mut().ok_or(())?;
     let selector = match name.as_str() {
-        "pebbledb" => {
+        "pebbledb" | "native_v6_file" => {
             let path = string(fields, "path")?;
             path_checked(Path::new(path.as_str()))?;
             if optional_listener_bool(fields, "read_only")? == Some(true) || !fields.is_empty() {
                 return Err(());
             }
             unique(root, "data_dir", Value::String(path.as_str().to_owned()))?;
-            Tree(json!({"pebbledb": {"path": path.as_str()}}))
+            Tree(json!({(name.as_str()): {"path": path.as_str()}}))
         }
-        "raft" => {
+        "raft" | "native_v6_raft" => {
             let path = string(fields, "path")?;
             path_checked(Path::new(path.as_str()))?;
             let node_id = fields.remove("node_id");
@@ -336,8 +447,10 @@ pub(super) fn normalize(root: &mut Map<String, Value>) -> Result<(), Invalid> {
                 "data_dir",
                 Value::String(state.to_str().ok_or(())?.to_owned()),
             )?;
-            Tree(json!({"raft": {"path": path.as_str(), "node_id": node_id,
-                                "cluster_addr": cluster_addr.as_str(), "api_addr": api_addr}}))
+            Tree(
+                json!({(name.as_str()): {"path": path.as_str(), "node_id": node_id,
+                                "cluster_addr": cluster_addr.as_str(), "api_addr": api_addr}}),
+            )
         }
         "postgresql" => {
             let mut config = postgres(root, fields)?;

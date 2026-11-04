@@ -1,10 +1,10 @@
 # Current runnable architecture and state ownership
 
-Current plan: `HEPTABAO-PLAN-2026-09-07-V2.1`. This source-level map is for the current runnable candidate. [The complete 47-package map](../modules/CURRENT_RUNTIME_MAP.md) distinguishes the actual server dependencies from separate contracts, prototypes and tools. See [current source binding](../modules/CURRENT_SOURCE_BINDING.md) for content digests and the historical snapshot boundary. No diagram confers qualification or compatibility authority.
+Current plan: `HEPTABAO-PLAN-2026-09-07-V2.1`. This source-level map is for the current runnable candidate. [The complete 49-package map](../modules/CURRENT_RUNTIME_MAP.md) distinguishes the actual server dependencies from separate contracts, prototypes and tools. See [current source binding](../modules/CURRENT_SOURCE_BINDING.md) for content digests and the historical snapshot boundary. No diagram confers qualification or compatibility authority.
 
 ## Actual workspace dependency graph
 
-These are normal Cargo path dependencies, including the transitive directory guard. They are not a plan to rename the other packages into missing layers.
+These are normal and target-specific Cargo path dependencies, including the transitive directory guard; each OS selects its own platform boundary. They are not a plan to rename the other packages into missing layers.
 
 ```mermaid
 flowchart TD
@@ -12,6 +12,8 @@ flowchart TD
     Server --> Transport["heptabao-ha-service"]
     Server --> Raft["heptabao-raft-runtime"]
     Durable --> Guard["heptabao-filesystem-guard"]
+    Guard -->|macOS| Vnode["heptabao-darwin-vnode-events"]
+    Server -->|Linux| OwnerDeath["heptabao-linux-parent-death"]
     Server --> Domain["heptabao-domain"]
     Server --> Contracts["heptabao-plugin-contracts"]
     Server --> Plugin["heptabao-plugin-host"]

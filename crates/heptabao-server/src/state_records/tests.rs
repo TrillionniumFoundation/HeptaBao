@@ -1,6 +1,129 @@
 #![allow(clippy::expect_used, clippy::unwrap_used)]
 use super::*;
 
+fn previous_address_hmac(key: &[u8], domain: &[u8], bytes: &[u8]) -> [u8; 32] {
+    use hmac::{Hmac, Mac};
+    let mut mac = Hmac::<sha2::Sha256>::new_from_slice(key).unwrap();
+    mac.update(b"HeptaBao/v5/keyed-object-address\0");
+    mac.update(&(domain.len() as u64).to_be_bytes());
+    mac.update(domain);
+    mac.update(bytes);
+    mac.finalize().into_bytes().into()
+}
+
+#[test]
+fn address_hmac_preserves_independent_fixed_vectors_and_streamed_bytes() {
+    // Python stdlib hmac/hashlib, with the documented prefix and u64be length.
+    let key = AddressKey::from_bytes([0x69; 32]);
+    let cases = [
+        (
+            Vec::new(),
+            Vec::new(),
+            "557a7bf6192f2993f97c71d4a0cca7535448469b989fed8040410344145941a7",
+        ),
+        (
+            b"object".to_vec(),
+            b"payload\0bytes".to_vec(),
+            "3ee748b1ccc90f17913a2d164ad4c9fd37ff111a50a1c17b34c4af23d518c86d",
+        ),
+        (
+            vec![b'd'; 128],
+            vec![b'Z'; 257],
+            "43a4296064ab16d8362c472bd9ca36ab37b034ea89998b4f2680319199ca0394",
+        ),
+        (
+            b"a\0b".to_vec(),
+            (0_u8..=64).collect(),
+            "87145757927497ba6f27b863ec02cde8691f7e6e8349920ecd2ffee277a58fa8",
+        ),
+    ];
+    for (domain, bytes, expected) in cases {
+        let expected = unhex(expected);
+        assert_eq!(key.digest(&domain, &bytes).unwrap().as_slice(), expected);
+        let mut streamed = key.mac(&domain).unwrap();
+        for chunk in bytes.chunks(17) {
+            streamed.update(chunk);
+        }
+        assert_eq!(streamed.finish().unwrap().as_slice(), expected);
+        let mut verifier = key.mac(&domain).unwrap();
+        for chunk in bytes.chunks(31) {
+            verifier.update(chunk);
+        }
+        assert!(verifier.verify_slice(&expected).is_ok());
+    }
+}
+
+#[test]
+fn address_hmac_matches_previous_backend_at_domain_and_block_boundaries() {
+    for byte in [0_u8, 71, 255] {
+        let raw = [byte; 32];
+        let key = AddressKey::from_bytes(raw);
+        for domain_len in [0, 1, 63, 64, 127, 128] {
+            let domain = vec![byte; domain_len];
+            for length in [0, 1, 55, 56, 63, 64, 65, 1024, BLOCK_BYTES + HEADER_BYTES] {
+                let bytes: Vec<u8> = (0..length)
+                    .map(|index| (index as u8).wrapping_mul(29).wrapping_add(17))
+                    .collect();
+                let expected = previous_address_hmac(&raw, &domain, &bytes);
+                assert_eq!(key.digest(&domain, &bytes).unwrap(), expected);
+                let mut verifier = key.mac(&domain).unwrap();
+                for part in bytes.chunks(63) {
+                    verifier.update(part);
+                }
+                assert!(verifier.verify_slice(&expected).is_ok());
+            }
+        }
+        assert!(matches!(
+            key.digest(&[byte; 129], b"not authenticated"),
+            Err(RecordError::Invalid)
+        ));
+    }
+}
+
+#[test]
+fn address_hmac_rejects_every_changed_mac_byte_and_wrong_length_or_domain() {
+    let key = AddressKey::from_bytes([37; 32]);
+    let body = b"complete typed object body";
+    let expected = previous_address_hmac(key.expose(), b"object", body);
+    for index in 0..32 {
+        let mut altered = expected;
+        altered[index] ^= 0x80;
+        let mut verifier = key.mac(b"object").unwrap();
+        verifier.update(body);
+        assert!(verifier.verify_slice(&altered).is_err());
+    }
+    for length in [0, 1, 15, 31, 33, 64] {
+        let mut verifier = key.mac(b"object").unwrap();
+        verifier.update(body);
+        assert!(verifier.verify_slice(&vec![0; length]).is_err());
+    }
+    let mut verifier = key.mac(b"object\0").unwrap();
+    verifier.update(body);
+    assert!(verifier.verify_slice(&expected).is_err());
+    let mut verifier = key.mac(b"object").unwrap();
+    verifier.update(b"changed typed object body");
+    assert!(verifier.verify_slice(&expected).is_err());
+}
+
+#[test]
+fn address_hmac_shared_key_keeps_concurrent_contexts_independent() {
+    let key = AddressKey::from_bytes([93; 32]);
+    std::thread::scope(|scope| {
+        for worker in 0_u8..8 {
+            let key = Arc::clone(&key);
+            scope.spawn(move || {
+                for length in [0, 63, 64, 65, 1024] {
+                    let bytes = vec![worker; length];
+                    let expected = previous_address_hmac(key.expose(), b"object", &bytes);
+                    for _ in 0..16 {
+                        assert_eq!(key.digest(b"object", &bytes).unwrap(), expected);
+                    }
+                }
+            });
+        }
+    });
+}
+
 #[derive(Default)]
 struct MemoryObjects(BTreeMap<ObjectId, Zeroizing<Vec<u8>>>);
 impl RecordReader for MemoryObjects {

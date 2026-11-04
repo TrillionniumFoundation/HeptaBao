@@ -31,7 +31,6 @@ impl AuthState {
         time: AuthorityTime,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Principal, AuthError> {
-        let now = time.seconds();
         if raw.starts_with("hvb.") {
             let mut principal = self.batch_principal_observed(raw, time, origin_peer)?;
             principal.admission = PrincipalAdmission::MountMetadata;
@@ -43,10 +42,10 @@ impl AuthState {
         let id = hash(raw);
         let token = self.active_token_observed(&id, time, true)?;
         token_cidrs::check(&token.bound_cidrs, origin_peer)?;
-        Ok(Self::request_principal(
+        Ok(Self::request_principal_observed(
             id,
             token.clone(),
-            now,
+            time,
             origin_peer,
             PrincipalAdmission::MountMetadata,
         ))
@@ -75,7 +74,8 @@ impl AuthState {
         now: u64,
     ) -> Result<bool, AuthError> {
         validate_path(mount.trim_end_matches('/'), false)?;
-        let token = self.check_principal(principal, namespace, now)?;
+        let time = principal.request_authority_time(AuthorityTime::Coarse(now))?;
+        let token = self.check_principal_observed(principal, namespace, time)?;
         if token.is_wrapping() {
             // The wrapping policy exposes only its control mounts. This does
             // not authorize their data endpoints or an engine secret read.
@@ -92,9 +92,15 @@ impl AuthState {
                 .get(namespace)
                 .and_then(|entries| entries.get(name))
             {
+                if !policy.live(time)? {
+                    continue;
+                }
                 for rule in &policy.rules {
+                    if !rule.live(time)? {
+                        continue;
+                    }
                     if let Some(pattern) =
-                        acl_template::render(&rule.path, &principal.identity_templates)?
+                        policy.render(&rule.path, &principal.identity_templates)?
                         && intersects_mount(&pattern, mount)
                     {
                         return Ok(true);

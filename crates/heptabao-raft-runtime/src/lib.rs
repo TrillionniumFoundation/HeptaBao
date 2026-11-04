@@ -16,15 +16,21 @@ mod process;
 mod records;
 mod replication_bounds;
 mod state_machine;
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 mod v6_commit_intent;
-#[cfg(feature = "experimental-v6-raft-objects")]
-mod v6_replica_blobs;
-#[cfg(feature = "experimental-v6-raft-objects")]
-mod v6_root_publication;
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 mod v6_epoch_restore;
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
+mod v6_replica_blobs;
+#[cfg(feature = "native-v6-raft-objects")]
+mod v6_retained_roots;
+#[cfg(feature = "native-v6-raft-objects")]
+mod v6_retention;
+#[cfg(feature = "native-v6-raft-objects")]
+pub use v6_retention::{NativeV6IntentRetirementRecovery, NativeV6IntentRetirementResolution};
+#[cfg(feature = "native-v6-raft-objects")]
+mod v6_root_publication;
+#[cfg(feature = "native-v6-raft-objects")]
 pub use v6_epoch_restore::NativeV6EpochTransition;
 
 pub use records::{
@@ -33,18 +39,23 @@ pub use records::{
     RecordUsage, SealedRecordObject,
 };
 pub use state_machine::{ApplicationRequest, ApplicationResponse, StateMachine, TypeConfig};
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 pub use v6_commit_intent::NativeV6CommitIntent;
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 pub use v6_replica_blobs::{
     LocalV6BlobError, LocalV6BlobReceipt, LocalV6BlobStage, LocalV6ClosureReceipt,
+    NativeV6BlobOperation, NativeV6BlobQuiescence, NativeV6RetainedClosure,
+    NativeV6SharedRetirementError, NativeV6SharedRetirementOutcome, NativeV6SharedRetirementPlan,
+    NativeV6SharedRetirementReceipt, NativeV6SharedRetirementSelection,
 };
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 pub use v6_root_publication::{NativeV6PeerEnrollment, NativeV6PublishedRoot};
 // Historical hostile store tests use `expect` for fixture construction only;
 // production store code remains under the workspace lint policy.
 #[allow(clippy::expect_used)]
 mod store;
+#[cfg(feature = "native-v6-raft-objects")]
+pub use store::{NativeV6RetainedRoot, NativeV6RetainedRootCatalog, NativeV6RetentionGuard};
 
 use base64::{Engine as _, engine::general_purpose::STANDARD_NO_PAD};
 use std::collections::BTreeMap;
@@ -60,8 +71,12 @@ pub use process::{
     MembershipObservation, ProcessRaftNode, RaftPeerRpc, RaftRpcKind, RaftRpcService,
     RemoteNetworkFactory, RemoteRaftError, SnapshotObservation,
 };
-#[cfg(feature = "experimental-v6-raft-objects")]
-pub use process::{NativeV6ClosureAdmission, NativeV6CommittedRootRead, NativeV6EpochRestoreRead};
+#[cfg(feature = "native-v6-raft-objects")]
+pub use process::{
+    NativeV6ClosureAdmission, NativeV6CommittedRootRead, NativeV6EpochRestoreRead,
+    NativeV6IntentRetirementObservation, NativeV6IntentRetirementOutcome,
+    NativeV6PreparedIntentRetirement,
+};
 
 const MAX_OPERATION_ID_BYTES: usize = 128;
 const MAX_SEALED_ENVELOPE_BYTES: usize = 1024 * 1024;

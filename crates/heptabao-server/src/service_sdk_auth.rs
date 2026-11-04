@@ -2065,7 +2065,7 @@ mod durable_tests {
     fn sdk_auth100_encrypted_cells_clock_only_commit_protected_backup_and_reopen() -> TestResult {
         let directory = Root::new();
         let mut service = directory.service()?;
-        let (key, root) = bootstrap(&mut service)?;
+        let (key, root) = crate::service::tests::bootstrap_pre141(&mut service)?;
         let old_backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
         let mut candidate = service.state.clone().ok_or("state")?;
         let binding = mount(&mut candidate, &root)?;
@@ -2414,7 +2414,7 @@ mod durable_tests {
     fn sdk_auth100_catalog_retirement_has_independent_epoch_cut_and_sticky_reader() -> TestResult {
         let directory = Root::new();
         let mut service = directory.service()?;
-        let (_, root) = bootstrap(&mut service)?;
+        let (_, root) = crate::service::tests::bootstrap_pre141(&mut service)?;
         let mut candidate = service.state.clone().ok_or("state")?;
         let binding = mount(&mut candidate, &root)?;
         publish(&mut service, candidate)?;

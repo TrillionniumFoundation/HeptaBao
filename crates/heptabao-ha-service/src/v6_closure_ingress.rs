@@ -14,6 +14,10 @@ impl NativeV6ClosureReceiver {
     /// binding selects the native voter, and receive obtains fresh actual
     /// applied intent/membership/leader admission before any fsync or reply.
     pub fn handle_authenticated(&self, frame: AuthenticatedPeerFrame) -> Result<Vec<u8>, HaError> {
+        let _native_operation = self
+            .storage
+            .begin_native_operation()
+            .map_err(|_| HaError::Transport)?;
         require_blocking_worker()?;
         check_deadline(frame.deadline())?;
         if !frame.has_strict_raft_alpn() {

@@ -558,7 +558,7 @@ fn namespace_batch_retained_revoked_pki_binding_requires_matching_91_registry() 
 fn namespace_batch_lazy_init_and_plain_post_preserve_legacy_until_actual_seal() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (_, root) = bootstrap_unmounted(&mut service)?;
+    let (_, root) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     assert!(
         !service
             .state
@@ -567,7 +567,12 @@ fn namespace_batch_lazy_init_and_plain_post_preserve_legacy_until_actual_seal() 
             .has_namespace_batch_state()
     );
     assert!(service.state.as_ref().ok_or("initial state")?.schema < NAMESPACE_BATCH_STATE_SCHEMA);
-    create(&mut service, &root, "child");
+    assert_eq!(
+        service
+            .create_pre144_namespace_fixture("child", &root)?
+            .status,
+        200
+    );
     let plain = service.state.as_ref().ok_or("plain state")?;
     assert!(!plain.has_namespace_batch_state());
     assert!(plain.schema < NAMESPACE_BATCH_STATE_SCHEMA);

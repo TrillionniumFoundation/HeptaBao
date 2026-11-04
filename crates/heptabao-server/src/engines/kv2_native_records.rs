@@ -18,8 +18,11 @@ const KEY_DOMAIN: &[u8] = b"kv2-native-v6-stage-a/scoped-address-key";
 const PATH_DOMAIN: &[u8] = b"kv2-native-v6-stage-a/path-token";
 const MAX_METADATA_BYTES: usize = 4 * 1024 * 1024;
 const MAX_CONFIG_BYTES: usize = 16 * 1024;
-const MAX_PATHS: usize = 10_000;
-const MAX_RECORDS: usize = 100_000;
+// Admission, runtime edits, and both cold readers share these joint limits.
+// One configuration record, every path, and every retained version count
+// toward MAX_RECORDS; the path bound is not an independent record allowance.
+pub(crate) const MAX_PATHS: usize = 50_000;
+pub(crate) const MAX_RECORDS: usize = 100_000;
 
 type CodecResult<T> = std::result::Result<T, RecordError>;
 
@@ -46,6 +49,36 @@ impl Drop for DetachedOwner {
             path.zeroize();
             drop(entry);
         }
+    }
+}
+
+// Only decoded KV2 data is shared. No reader, source session, request clock,
+// validation memo or delivery authority is carried by this allocation. A write
+// detaches the owner, and the final DetachedOwner still erases its path map.
+#[derive(Clone)]
+struct SharedDetachedOwner(Arc<DetachedOwner>);
+impl From<DetachedOwner> for SharedDetachedOwner {
+    fn from(owner: DetachedOwner) -> Self {
+        Self(Arc::new(owner))
+    }
+}
+impl Deref for SharedDetachedOwner {
+    type Target = DetachedOwner;
+    fn deref(&self) -> &DetachedOwner {
+        &self.0
+    }
+}
+impl DerefMut for SharedDetachedOwner {
+    fn deref_mut(&mut self) -> &mut DetachedOwner {
+        Arc::make_mut(&mut self.0)
+    }
+}
+impl Serialize for SharedDetachedOwner {
+    fn serialize<S: serde::Serializer>(
+        &self,
+        serializer: S,
+    ) -> std::result::Result<S::Ok, S::Error> {
+        self.0.as_ref().serialize(serializer)
     }
 }
 
@@ -106,16 +139,16 @@ struct MountCell {
 
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
-struct PathCell {
+struct PathCell<Metadata = EntryState> {
     format: String,
     scope: Scope,
     path: String,
     // EntryState's serde representation is the real runtime metadata schema.
     // Its version data fields must be absent here; headers bind payload presence.
-    metadata: EntryState,
+    metadata: Metadata,
     payload_versions: BTreeSet<u64>,
 }
-impl Drop for PathCell {
+impl<Metadata> Drop for PathCell<Metadata> {
     fn drop(&mut self) {
         self.path.zeroize();
     }
@@ -136,7 +169,12 @@ fn canonical<T: serde::de::DeserializeOwned + Serialize>(
         return Err(RecordError::TooLarge);
     }
     let value: T = serde_json::from_slice(bytes).map_err(|_| RecordError::Corrupt)?;
-    if serialize(&value, limit)?.as_slice() != bytes {
+    let matches =
+        crate::secret_serde::matches_bytes(&value, bytes, limit).map_err(|error| match error {
+            crate::secret_serde::Error::TooLarge => RecordError::TooLarge,
+            crate::secret_serde::Error::Serialization => RecordError::Corrupt,
+        })?;
+    if !matches {
         return Err(RecordError::Corrupt);
     }
     Ok(value)
@@ -365,26 +403,31 @@ struct NativeGraph {
     paged: Option<paged::PagedPayloads>,
 }
 
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 #[path = "kv2_native_import.rs"]
 mod import;
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(feature = "native-v6-storage")]
 pub(crate) use import::NativeKv2GraphImport;
 
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 #[path = "kv2_native_install.rs"]
 mod install;
 #[path = "kv2_native_mutation.rs"]
 mod mutation;
 #[path = "kv2_native_paged.rs"]
 mod paged;
-pub(crate) use paged::{MAX_PAGED_LOGICAL_BYTES, PAGED_NATIVE_FORMAT};
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use paged::lossless_export;
+pub(crate) use paged::syntax::PagedSyntaxHint;
+pub(crate) use paged::{MAX_PAGED_LOGICAL_BYTES, PAGED_NATIVE_FORMAT, PagedPayloadValidationMemo};
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use paged::{NativeDataReadWitness, NativeRetainedReadVersion};
 
 /// A private decoded graph view and its authenticated graph cache. This type
 /// grants no storage writes or authority to install a writable Service owner.
 #[derive(Clone)]
 pub(crate) struct NativeReadView {
-    owner: DetachedOwner,
+    owner: SharedDetachedOwner,
     graph: Option<NativeGraph>,
     pending: mutation::PendingPaths,
 }
@@ -430,7 +473,7 @@ impl NativeReadView {
     pub(crate) fn has_lossless_json_state(&self) -> bool {
         self.owner.has_lossless_json_state()
     }
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     pub(crate) fn matches_authenticated_root(
         &self,
         parent: &AddressKey,
@@ -467,7 +510,7 @@ impl NativeReadView {
         self.pending = mutation::PendingPaths::default();
         check()
     }
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     fn cached_scope_matches(&self, input: NativeScope<'_>) -> CodecResult<bool> {
         let scope = Scope::new(input)?;
         Ok(self
@@ -484,7 +527,7 @@ impl NativeReadView {
         let graph = NativeGraph::open(base, scope, root, reader)?;
         let owner = graph.decode()?;
         Ok(Self {
-            owner,
+            owner: owner.into(),
             graph: Some(graph),
             pending: mutation::PendingPaths::default(),
         })
@@ -546,7 +589,7 @@ impl NativeReadView {
         }
         response
     }
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     pub(crate) fn encode(
         &self,
         parent: &AddressKey,
@@ -572,7 +615,7 @@ impl NativeReadView {
         let owner = Kv2::from_lossless_import_json(bytes).map_err(|_| RecordError::Corrupt)?;
         validate_owner(&owner)?;
         Ok(Self {
-            owner: DetachedOwner(owner),
+            owner: DetachedOwner(owner).into(),
             graph: None,
             pending: mutation::PendingPaths::default(),
         })
@@ -583,7 +626,7 @@ impl NativeReadView {
         let owner: DetachedOwner = canonical(bytes, MAX_GRAPH_BYTES)?;
         validate_owner(&owner)?;
         Ok(Self {
-            owner,
+            owner: owner.into(),
             graph: None,
             pending: mutation::PendingPaths::default(),
         })
@@ -593,9 +636,9 @@ impl NativeReadView {
 /// Actual native codec graph for custody projection. The caller must keep the
 /// graph inside its original key/deadline callback and encrypt every object
 /// before allowing a retained pin to leave that callback.
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 pub(crate) struct NativeCellGraph(NativeGraph);
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 impl NativeCellGraph {
     fn encode(
         owner: &Kv2,
@@ -647,7 +690,7 @@ impl NativeCellGraph {
         };
         let owner = graph.decode_checked(check)?;
         Ok(NativeReadView {
-            owner,
+            owner: owner.into(),
             graph: Some(graph),
             pending: mutation::PendingPaths::default(),
         })
@@ -771,7 +814,7 @@ pub(crate) struct ReaderFixture {
 /// leave only through the caller's checked visitor; no publication is granted.
 /// The caller must encrypt each object before retaining it outside custody.
 impl EngineState {
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     pub(crate) fn project_v6_native(
         &self,
         parent: &AddressKey,

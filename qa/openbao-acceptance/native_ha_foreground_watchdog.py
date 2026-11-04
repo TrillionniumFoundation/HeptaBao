@@ -90,13 +90,24 @@ def owned_file(path, *, limit=MIB, collect=True, executable=False, private=True)
         os.close(fd)
 
 
-def ps_rows(pid=None, *, seconds=0.5):
+def ps_rows(pid=None, *, seconds=0.5, until=None):
+    if until is not None:
+        remaining = until - time.monotonic()
+        need(remaining > 0, "original_stop_deadline_expired")
+        seconds = min(seconds, remaining)
     argv = ["/bin/ps"]
     argv += ["-p", str(pid)] if pid is not None else ["-ax"]
     argv += ["-o", "pid=,ppid=,pgid=,uid=,stat=,lstart="]
-    result = subprocess.run(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE, env=dict(os.environ, LC_ALL="C"),
-                            timeout=seconds)
+    try:
+        result = subprocess.run(argv, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE, env=dict(os.environ, LC_ALL="C"),
+                                timeout=seconds)
+    except subprocess.TimeoutExpired as error:
+        code = ("original_stop_deadline_expired" if until is not None and time.monotonic() >= until
+                else "process_projection_deadline_expired")
+        raise Refusal(code) from error
+    if until is not None:
+        need(time.monotonic() < until, "original_stop_deadline_expired")
     need(len(result.stdout) <= 2 * MIB and len(result.stderr) <= 65536,
          "process_projection_bound")
     if pid is not None and result.returncode == 1 and not result.stdout.strip():
@@ -172,9 +183,9 @@ def capture_child(child):
             "captured_exit": event}
 
 
-def verify_unreaped(child, owner):
+def verify_unreaped(child, owner, *, until=None):
     event = exit_observation(child)
-    rows = ps_rows(child.pid)
+    rows = ps_rows(child.pid, until=until)
     need(len(rows) == 1 and stable(rows[0]) == owner["ps"]
          and rows[0]["ppid"] == os.getpid(), "owned_child_identity_changed_no_signal")
     if event is None and not rows[0]["state"].startswith("Z"):
@@ -191,10 +202,11 @@ def verify_unreaped(child, owner):
 
 def live_group(child, owner, *, until):
     need(time.monotonic() < until, "original_stop_deadline_expired")
-    verify_unreaped(child, owner)
-    rows = ps_rows(seconds=min(0.5, max(0.01, until - time.monotonic())))
+    verify_unreaped(child, owner, until=until)
+    rows = ps_rows(until=until)
     selected = [row for row in rows if row["pgid"] == child.pid and not row["state"].startswith("Z")]
     need(all(row["uid"] == os.geteuid() for row in selected), "owned_group_uid_changed_no_signal")
+    need(time.monotonic() < until, "original_stop_deadline_expired")
     return [stable(row) for row in selected]
 
 
@@ -206,7 +218,7 @@ def stop_unreaped(child, owner, *, until):
                "leader_reaped": False, "owned_live_group_empty": False,
                "live_group_before": before, "signals": []}
     if before:
-        verify_unreaped(child, owner)
+        verify_unreaped(child, owner, until=until)
         need(time.monotonic() < until, "original_stop_deadline_expired")
         os.killpg(child.pid, signal.SIGKILL)
         receipt["signals"].append("SIGKILL")
@@ -220,7 +232,12 @@ def stop_unreaped(child, owner, *, until):
     receipt.update(live_group_before_leader_reap=remaining, retained_exit=event,
                    owned_live_group_empty=True)
     # No group signal or membership inference follows this first reap.
-    child.wait(timeout=max(0.001, until - time.monotonic()))
+    remaining_seconds = until - time.monotonic()
+    need(remaining_seconds > 0, "original_stop_deadline_expired")
+    try:
+        child.wait(timeout=remaining_seconds)
+    except subprocess.TimeoutExpired as error:
+        raise Refusal("original_stop_deadline_expired") from error
     receipt.update(leader_reaped=True, leader_exit_code=child.returncode,
                    within_original_deadline=time.monotonic() < until)
     need(receipt["within_original_deadline"], "original_stop_deadline_expired")
@@ -312,7 +329,7 @@ def serve(payload):
                         "helper_sha256": payload["helper_sha256"]})
     new_file(active_path, active)
     argv = [str(root / "heptabao-server"), "--config", str(root / "server.json"),
-            "--ha-config", str(root / "ha.json"), "--experimental-native-v6-ha"]
+            "--ha-config", str(root / "ha.json")]
     intent = dict(payload, argv=argv, submission_count=1, automatic_restart=False,
                   production_authority=False, python_executable=sys.executable,
                   python_version=platform.python_version(), original_start_seconds=START_SECONDS,
@@ -341,7 +358,8 @@ def serve(payload):
             info = os.fstat(output.fileno())
             need(stat.S_ISREG(info.st_mode) and info.st_uid == os.geteuid() and not info.st_mode & 0o077,
                  "owner_process_log_invalid")
-            # These native argv/env/cwd/session flags match the original daemon.
+            # The ordinary CLI selects native HA through server.json storage;
+            # process custody preserves its environment, cwd and session flags.
             child = subprocess.Popen(argv, stdin=subprocess.DEVNULL, stdout=output, stderr=output,
                                      start_new_session=True, close_fds=True)
         receipt["submission_count"] = 1

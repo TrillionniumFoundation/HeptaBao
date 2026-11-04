@@ -3,6 +3,167 @@ use super::*;
 use crate::service::tests::{Root, bootstrap_legacy_auth_fixture as bootstrap, call};
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
+#[test]
+fn legacy_replica_kv_expiration143_eligibility_tracks_real_policy_publication() -> TestResult {
+    fn precise(
+        service: &mut Service,
+        seconds: u64,
+        method: &str,
+        path: &str,
+        token: &str,
+        body: Value,
+    ) -> TestResult<Response> {
+        let clock = RequestClock::anchored(Duration::ZERO, Instant::now())
+            .map_err(|_| "actual request clock")?
+            .with_timestamp_floor(Timestamp::whole(seconds).map_err(|_| "fixture epoch")?);
+        let _deadline = crate::request_deadline::RequestDeadlineScope::enter(
+            Instant::now() + Duration::from_secs(10),
+        );
+        let _explicit = external_pki::PublicationClockScope::explicit();
+        Ok(service.handle_request_clock(
+            ServiceRequest::new(method, path, "", token, body),
+            seconds,
+            true,
+            Some(clock),
+        ))
+    }
+
+    let root = Root::new();
+    let (mut service, cluster, admin) = prepare(&root)?;
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    let now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
+    let source = r#"path "secret/data/legacy" { capabilities=["read"] }"#;
+    let policy_path = "sys/policies/acl/legacy-expiration143";
+    assert_eq!(
+        service
+            .handle_at(
+                "POST",
+                policy_path,
+                "",
+                &admin,
+                json!({"policy":source}),
+                now
+            )
+            .status,
+        204
+    );
+    let issued = service.handle_at(
+        "POST",
+        "auth/token/create",
+        "",
+        &admin,
+        json!({"policies":["legacy-expiration143"],"ttl":3600,"no_default_policy":true}),
+        now,
+    );
+    assert_eq!(issued.status, 200, "{}", issued.body);
+    let actor = issued.body["auth"]["client_token"]
+        .as_str()
+        .ok_or("actual legacy actor")?
+        .to_owned();
+    service.ha = Some(Arc::clone(&cluster.processes[1]));
+    service
+        .sync_from_ha()
+        .map_err(|_| "actual untimed follower")?;
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("state")?
+            .auth
+            .legacy_immutable_token_is_non_consuming(&actor)
+    );
+    assert_eq!(native(&mut service, "GET", &actor, json!({})).status, 200);
+    let dispatches = service.kv_read_only_dispatches;
+
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    assert_eq!(
+        precise(
+            &mut service,
+            now,
+            "POST",
+            policy_path,
+            &admin,
+            json!({"policy":source,"expiration":now+60,"cas":1,"cas_required":true})
+        )?
+        .status,
+        204
+    );
+    service.ha = Some(Arc::clone(&cluster.processes[1]));
+    service
+        .sync_from_ha()
+        .map_err(|_| "actual timed follower")?;
+    let state = service.state.as_ref().ok_or("timed follower state")?;
+    assert!(!state.has_token_api_precision_state());
+    assert!(state.auth.legacy_immutable_token_is_non_consuming(&actor));
+    assert!(state.auth.has_policy_expiration_state());
+    let before = serde_json::to_vec(state)?;
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    // The historical replica has no completed-forward authority. Timed
+    // policies must use that existing gate, including while still future.
+    let refused = native(&mut service, "GET", &actor, json!({}));
+    assert_eq!(refused.status, 503, "{}", refused.body);
+    assert!(refused.body.get("data").is_none());
+    assert_eq!(service.kv_read_only_dispatches, dispatches);
+    assert!(service.pending_ordinary_kv_authority.is_none());
+    assert!(service.pending_forward_delivery.is_none());
+    assert_eq!(
+        serde_json::to_vec(service.state.as_ref().ok_or("follower state")?)?,
+        before
+    );
+    assert_eq!(
+        service.durable.as_ref().ok_or("durable")?.generation(),
+        generation
+    );
+
+    // The actual leader performs the independent deletion before denial.
+    // Its replicated absence lets the old read route re-evaluate the actor,
+    // which remains valid but no longer has a granting policy.
+    service.ha = Some(Arc::clone(&cluster.processes[0]));
+    assert_eq!(
+        precise(
+            &mut service,
+            now + 61,
+            "GET",
+            "secret/data/legacy",
+            &actor,
+            json!({})
+        )?
+        .status,
+        403
+    );
+    let listed = precise(
+        &mut service,
+        now + 61,
+        "LIST",
+        "sys/policies/acl",
+        &admin,
+        json!({}),
+    )?;
+    assert_eq!(listed.status, 200);
+    assert!(
+        !listed.body["data"]["keys"]
+            .as_array()
+            .ok_or("policy keys")?
+            .contains(&json!("legacy-expiration143"))
+    );
+    service.ha = Some(Arc::clone(&cluster.processes[1]));
+    service
+        .sync_from_ha()
+        .map_err(|_| "actual retired follower")?;
+    assert!(
+        !service
+            .state
+            .as_ref()
+            .ok_or("retired state")?
+            .auth
+            .has_policy_expiration_state()
+    );
+    assert_eq!(native(&mut service, "GET", &actor, json!({})).status, 403);
+    drop(service);
+    drop(cluster);
+    Ok(())
+}
+
 fn native(service: &mut Service, method: &str, token: &str, body: Value) -> Response {
     let execution = service.begin_request_before(
         ServiceRequest {

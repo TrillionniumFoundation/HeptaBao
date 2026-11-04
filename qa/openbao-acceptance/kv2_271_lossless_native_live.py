@@ -624,11 +624,30 @@ class Run:
         run = self
 
         class NativeInstance(smoke.Instance):
+            def __init__(self, binary, root):
+                super().__init__(binary, root)
+                # Select the normal checked File storage consumer explicitly.
+                # Selection permits activation; it does not initialize, unseal,
+                # migrate, or activate the newly allocated target.
+                config_path = self.root / "server.json"
+                config = json.loads(private_read(config_path))
+                need("storage" not in config, "fresh_target_storage_not_already_selected")
+                config["storage"] = {"native_v6_file": {"path": config["data_dir"]}}
+                private_write(config_path, json.dumps(config).encode(), replace=True)
+                run.report["candidate_startup"] = {
+                    "storage_profile": "native_v6_file",
+                    "activation_path": "sys/storage/native-v6/activate",
+                    "fixture_options": False,
+                    "config_path": str(config_path),
+                    "config_sha256": hashlib.sha256(private_read(config_path)).hexdigest(),
+                    "argv": [str(self.binary), "--config", str(config_path)],
+                }
+
             def start(self):
                 self.log = open(self.root / "server.log", "ab")
                 self.process = owned_process.popen(
-                    [str(self.binary), "--config", str(self.root / "server.json"),
-                     "--fixture-native-v6-service"], stdout=self.log, stderr=self.log,
+                    [str(self.binary), "--config", str(self.root / "server.json")],
+                    stdout=self.log, stderr=self.log,
                     label="kv2_271_lossless_native_live", action="KILL", stop_timeout=5)
                 endpoint = Endpoint(self.address, self.root / "ca.crt", self.token, run, "target")
                 deadline = time.monotonic() + HTTP_SECONDS
@@ -674,7 +693,7 @@ class Run:
         need(self.target.call("POST", "sys/mounts/secret",
                               {"type": "kv", "options": {"version": "2"}})[0] == 204, "target_mount")
         if native_first:
-            need(self.target.call("POST", "sys/internal/native-v6/activate", {})[0] == 204,
+            need(self.target.call("POST", "sys/storage/native-v6/activate", {})[0] == 204,
                  "target_activate_before_import")
         self.check("target_pristine_before_import",
                    self.target.call("GET", "secret/metadata/history")[0] == 404
@@ -687,7 +706,7 @@ class Run:
         self.migration("import", self.target, self.candidate.root / "root.token", bundle)
         self.check("target_import_once", True)
         if not native_first:
-            need(self.target.call("POST", "sys/internal/native-v6/activate", {})[0] == 204,
+            need(self.target.call("POST", "sys/storage/native-v6/activate", {})[0] == 204,
                  "target_activate_after_import")
         status, capacity = self.target.call("GET", "sys/internal/capacity")
         capacity = capacity.get("data", capacity)
@@ -705,8 +724,20 @@ class Run:
         status, receipt = self.target.call("GET", "sys/storage/raft/snapshot", archive_out=snapshot)
         self.report["snapshot"] = receipt
         self.check("snapshot_download", status == 200 and receipt.get("archive_bytes", 0) > 0)
-        self.check("post_snapshot_mutation_once", self.target.call("POST", "secret/data/history",
-                   {"data": {"after_snapshot": True}, "options": {"cas": live_count + 2}})[0] == 200)
+        mutation_status, _ = self.target.call("POST", "secret/data/history",
+            {"data": {"after_snapshot": True}, "options": {"cas": live_count + 2}})
+        # Observe the committed effect before restoring; two successful no-op
+        # endpoints must not qualify snapshot rollback.
+        read_status, applied = self.target.call("GET", "secret/data/history")
+        metadata_status, applied_metadata = self.target.call("GET", "secret/metadata/history")
+        self.check("post_snapshot_mutation_once", mutation_status == 200
+                   and read_status == 200 and metadata_status == 200
+                   and isinstance(applied.get("data"), dict)
+                   and isinstance(applied["data"].get("metadata"), dict)
+                   and applied["data"]["metadata"].get("version") == live_count + 3
+                   and same_json_tokens(applied["data"].get("data"), {"after_snapshot": True})
+                   and isinstance(applied_metadata.get("data"), dict)
+                   and applied_metadata["data"].get("current_version") == live_count + 3)
         self.check("snapshot_restore_once", self.target.call(
             "POST", "sys/storage/raft/snapshot", archive_in=snapshot)[0] == 200)
         self.cold_candidate()

@@ -33,6 +33,57 @@ impl Drop for TokenCubbyhole {
 }
 
 impl TokenCubbyhole {
+    #[cfg(feature = "native-v6-storage")]
+    pub(super) fn native_is_empty(&self) -> bool {
+        self.namespaces.values().all(BTreeMap::is_empty)
+    }
+
+    #[cfg(feature = "native-v6-storage")]
+    pub(super) fn supports_native_root(&self) -> bool {
+        self.namespaces
+            .iter()
+            .all(|(namespace, entries)| namespace.is_empty() || entries.is_empty())
+    }
+
+    #[cfg(feature = "native-v6-storage")]
+    pub(super) fn native_root_entries(&self) -> Option<&BTreeMap<String, Value>> {
+        self.entries("")
+    }
+
+    #[cfg(feature = "native-v6-storage")]
+    pub(super) fn native_root_delta(
+        &mut self,
+        method: &str,
+        relative: &str,
+        body: &Value,
+    ) -> Result<(), AuthError> {
+        match method {
+            "POST" | "PUT" => {
+                if let Some(mut value) = self
+                    .namespaces
+                    .entry(String::new())
+                    .or_default()
+                    .insert(relative.to_owned(), body.clone())
+                {
+                    super::erase_parsed_json(&mut value);
+                }
+            }
+            "DELETE" => {
+                if let Some(entries) = self.namespaces.get_mut("") {
+                    if let Some(mut value) = entries.remove(relative) {
+                        super::erase_parsed_json(&mut value);
+                    }
+                    if entries.is_empty() {
+                        self.namespaces.remove("");
+                    }
+                }
+            }
+            "GET" | "HEAD" | "LIST" => {}
+            _ => return Err(bad("native cubbyhole delta method mismatch")),
+        }
+        Ok(())
+    }
+
     fn entries(&self, namespace: &str) -> Option<&BTreeMap<String, Value>> {
         self.namespaces.get(namespace)
     }

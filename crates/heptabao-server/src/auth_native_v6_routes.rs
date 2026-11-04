@@ -54,6 +54,194 @@ fn presented_leaf_lifetime(
 }
 
 impl AuthState {
+    /// A configuration-selected native root may retain only owners that its
+    /// local dispatcher can continue to service. No credential is exported,
+    /// deleted, reissued or considered authenticated by this metadata check.
+    pub(crate) fn supports_native_v6_root_storage(&self) -> bool {
+        self.native_v6_storage_profile(None)
+    }
+
+    pub(crate) fn native_plain_namespace_auth_profile(&self, paths: &BTreeSet<String>) -> bool {
+        self.known_namespaces().is_subset(paths)
+            && paths
+                .iter()
+                .all(|path| !path.is_empty() && self.auth_mounts.contains_key(path))
+            && self.native_v6_storage_profile(Some(paths))
+            && self.roles.iter().all(|(namespace, roles)| {
+                namespace.is_empty()
+                    || roles.is_empty()
+                    || (self.online_mount_enabled(namespace, "approle", "approle")
+                        && roles.values().all(|role| {
+                            !self.approle_uses_batch(
+                                AuthScope {
+                                    namespace,
+                                    mount: "approle",
+                                },
+                                role,
+                            )
+                        }))
+            })
+            && self.mounted_roles.iter().all(|(namespace, mounts)| {
+                namespace.is_empty()
+                    || mounts.iter().all(|(mount, roles)| {
+                        roles.is_empty()
+                            || (self.online_mount_enabled(namespace, mount, "approle")
+                                && roles.values().all(|role| {
+                                    !self.approle_uses_batch(AuthScope { namespace, mount }, role)
+                                }))
+                    })
+            })
+            && self.cert_roles.iter().all(|(namespace, mounts)| {
+                namespace.is_empty()
+                    || mounts.iter().all(|(mount, roles)| {
+                        roles.is_empty()
+                            || (self.online_mount_enabled(namespace, mount, "cert")
+                                && roles.values().all(|role| {
+                                    !self.cert_uses_batch(AuthScope { namespace, mount }, role)
+                                }))
+                    })
+            })
+            && self.token_roles.iter().all(|(namespace, roles)| {
+                namespace.is_empty()
+                    || roles
+                        .values()
+                        .all(|role| role.batch(&json!({})).is_ok_and(|batch| !batch))
+            })
+    }
+
+    fn native_v6_storage_profile(&self, paths: Option<&BTreeSet<String>>) -> bool {
+        let admitted = |namespace: &String| {
+            namespace.is_empty() || paths.is_some_and(|paths| paths.contains(namespace))
+        };
+        self.identity_mfa.is_none()
+            && self.native_wrapping_storage_supported()
+            && self.native_v6_control_groups_supported(paths)
+            && self.sdk_auth_catalog.is_none()
+            && self.sdk_auth_clock.is_none()
+            && self.sdk_advanced_format.is_none()
+            && self.sdk_credential_leases.is_none()
+            && self.sdk_auth_retirements.is_none()
+            && self.sdk_namespace_custody.is_none()
+            && self
+                .namespace_batch_registry
+                .as_ref()
+                .is_none_or(|registry| match paths {
+                    None => registry.native_v6_flat_incarnation_profile(),
+                    Some(paths) => registry.native_v6_plain_incarnation_profile(paths),
+                })
+            && self.namespace_deletions.is_none()
+            && self.native_v6_userpass_state_supported()
+            && self.recovery_attempt.is_none()
+            && self.recovery_intent.is_none()
+            && self.recovery_delivery.is_none()
+            && self.password_policies.values().all(BTreeMap::is_empty)
+            && self.jwt_mounts.values().all(BTreeMap::is_empty)
+            && self.kubernetes_mounts.values().all(BTreeMap::is_empty)
+            && self.oidc_mounts.values().all(BTreeMap::is_empty)
+            && self.ldap_mounts.values().all(BTreeMap::is_empty)
+            && self.ldap_groups.values().all(BTreeMap::is_empty)
+            && self.ldap_native_users.values().all(BTreeMap::is_empty)
+            && self.radius_mounts.values().all(BTreeMap::is_empty)
+            && self.radius_native_users.values().all(BTreeMap::is_empty)
+            && self.kerberos_mounts.values().all(BTreeMap::is_empty)
+            && self.plugin_auth_mounts.values().all(BTreeMap::is_empty)
+            && self.auth_mounts.iter().all(|(namespace, mounts)| {
+                if namespace.is_empty() {
+                    mounts.values().all(|mount| {
+                        matches!(
+                            mount.kind.as_str(),
+                            "token" | "approle" | "cert" | "userpass"
+                        )
+                    })
+                } else if paths.is_some_and(|paths| paths.contains(namespace)) {
+                    mounts.values().all(|mount| {
+                        matches!(mount.kind.as_str(), "token" | "approle" | "cert")
+                            && matches!(
+                                mount.token_type.unwrap_or_default(),
+                                batch_issuance::MountTokenType::DefaultService
+                                    | batch_issuance::MountTokenType::Service
+                            )
+                    })
+                } else {
+                    // Only exact fresh, flat metadata is locally serviceable.
+                    // Service still binds every child to its visible catalog,
+                    // incarnation and paired batch ledger before publication.
+                    !namespace.contains('/')
+                        && self.namespace_is_empty(namespace)
+                        && mounts == &userpass_names::fresh_default_auth_mounts()
+                }
+            })
+            && self.policies.keys().all(admitted)
+            && self.roles.keys().all(admitted)
+            && self.mounted_roles.keys().all(admitted)
+            && self.cert_roles.keys().all(admitted)
+            && self.token_roles.keys().all(admitted)
+            && self.tokens.values().all(|token| {
+                admitted(&token.namespace)
+                    && (token.namespace.is_empty()
+                        || (token.cubbyhole.native_is_empty() && token.wrapping.is_none()))
+                    && token.cubbyhole.supports_native_root()
+                    && (token.namespace.is_empty()
+                        || !matches!(
+                            token.auth_provenance,
+                            Some(TokenAuthProvenance::Userpass { .. })
+                        ))
+                    && matches!(
+                        token.auth_provenance,
+                        None | Some(TokenAuthProvenance::TokenApi { .. })
+                            | Some(TokenAuthProvenance::AppRole { .. })
+                            | Some(TokenAuthProvenance::Cert { .. })
+                            | Some(TokenAuthProvenance::Userpass { .. })
+                    )
+            })
+    }
+
+    // This is only the Auth half of the closed profile. Service additionally
+    // binds every controlled policy/request to its actual namespace KV2 data mount.
+    // Unsupported controlled Auth/workflow/wrapped/batch owners stay blocked.
+    fn native_v6_control_groups_supported(&self, paths: Option<&BTreeSet<String>>) -> bool {
+        self.validate_control_group_state().is_ok()
+            && self.policies.values().flat_map(BTreeMap::values)
+                .flat_map(|p| p.control_groups.values()).flatten()
+                .all(|stanza| stanza.control.factors.iter().all(|factor| {
+                    factor.controlled_capabilities.as_ref().is_some_and(|caps| {
+                        !caps.is_empty() && caps.iter().all(|cap| matches!(cap.as_str(), "create" | "update" | "read"))
+                    })
+                }))
+            && self.control_groups.requests.values().all(|owner| {
+                (if owner.namespace.is_empty() {
+                    owner.namespace_id == "root" && owner.namespace_incarnation == 0
+                } else {
+                    paths.is_some_and(|paths| paths.contains(&owner.namespace))
+                        && owner.namespace_id != "root" && owner.namespace_incarnation > 0
+                }) && owner.credential.is_none()
+                    && owner.logical_data.is_none() && owner.wrap_ttl_seconds.is_none_or(|v| v == 0)
+                    && matches!(
+                        (owner.method.as_str(), owner.capability.as_str()),
+                        ("POST" | "PUT", "create" | "update") | ("GET", "read")
+                    )
+                    && !owner.requires_sudo
+                    && owner.transport_namespace == owner.namespace
+                    && owner.transport_method == owner.method
+                    && owner.transport_path == owner.path && owner.transport_body == owner.body
+                    && matches!(&owner.resource_binding, control_groups::ResourceBinding::Secret { owner: mount } if mount.is_kv(&owner.path))
+                    && owner.authorizations.values().all(|approval| approval.credential.is_none())
+            })
+    }
+
+    pub(crate) fn native_v6_control_group_scoped_policy_paths(
+        &self,
+    ) -> impl Iterator<Item = (&str, &str)> {
+        self.policies.iter().flat_map(|(namespace, policies)| {
+            policies.values().flat_map(move |policy| {
+                policy
+                    .control_groups
+                    .keys()
+                    .map(move |path| (namespace.as_str(), path.as_str()))
+            })
+        })
+    }
+
     /// Recheck only the original AppRole login credential's lifetime against
     /// the caller's current observation of its original request clock. Call
     /// this on the retained source Auth owner, never the already consumed
@@ -91,7 +279,7 @@ impl AuthState {
         if role.bind_secret_id {
             let secret_id = secret_id.ok_or_else(|| bad("invalid role or secret ID"))?;
             let secret = role
-                .secret_ids
+                .approle_secrets()?
                 .get(&hash(secret_id))
                 .ok_or_else(|| bad("invalid role or secret ID"))?;
             let now = self.token_api_observed_time(time).seconds();
@@ -190,9 +378,14 @@ impl AuthState {
         body: &Value,
     ) -> bool {
         if !namespace.is_empty() {
-            return false;
+            return self.native_v6_plain_auth_route(namespace, method, path, body);
+        }
+        if self.native_v6_userpass_route(namespace, method, path, body) {
+            return true;
         }
         if path == "sys/policy"
+            || path == "cubbyhole"
+            || path.starts_with("cubbyhole/")
             || path.starts_with("sys/policy/")
             || path == "sys/policies/acl"
             || path.starts_with("sys/policies/acl/")
@@ -230,6 +423,61 @@ impl AuthState {
                         || suffix == "config"
                         || suffix == "certs"
                         || suffix.starts_with("certs/")
+                }
+                _ => false,
+            }
+        })
+    }
+    pub(crate) fn native_v6_plain_auth_route(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+    ) -> bool {
+        if namespace.is_empty() {
+            return false;
+        }
+        // Admit delivery of the root-only 400 rejection through the same
+        // authenticated flat-namespace scope; this grants no child quota write.
+        if path == "sys/quotas/config"
+            || path == "sys/quotas/rate-limit"
+            || path.starts_with("sys/quotas/rate-limit/")
+        {
+            return true;
+        }
+        if path == "sys/policy"
+            || path.starts_with("sys/policy/")
+            || path == "sys/policies/acl"
+            || path.starts_with("sys/policies/acl/")
+            || path.starts_with("auth/token/")
+        {
+            return true;
+        }
+        let mounts = self.effective_auth_mounts(namespace);
+        if let Some(suffix) = path.strip_prefix("sys/auth/") {
+            let mount = suffix.strip_suffix("/tune").unwrap_or(suffix);
+            return mounts
+                .get(mount)
+                .is_some_and(|entry| matches!(entry.kind.as_str(), "approle" | "cert"))
+                || (matches!(method, "POST" | "PUT")
+                    && !suffix.ends_with("/tune")
+                    && body
+                        .get("type")
+                        .and_then(Value::as_str)
+                        .is_some_and(|kind| matches!(kind, "approle" | "cert")));
+        }
+        let Some(auth_path) = path.strip_prefix("auth/") else {
+            return false;
+        };
+        mounts.iter().any(|(mount, entry)| {
+            let Some(suffix) = auth_path.strip_prefix(&format!("{mount}/")) else {
+                return false;
+            };
+            match entry.kind.as_str() {
+                "approle" => suffix == "login" || suffix == "role" || suffix.starts_with("role/"),
+                "cert" => {
+                    matches!(suffix, "login" | "config" | "certs") || suffix.starts_with("certs/")
                 }
                 _ => false,
             }

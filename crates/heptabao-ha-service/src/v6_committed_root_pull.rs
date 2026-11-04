@@ -3,14 +3,106 @@
 //! Raft write, creates no quorum ACK and grants no Actor or local install right.
 use super::*;
 use crate::{AuthenticatedPeerFrame, serve_one_mtls_authenticated_peer_frame};
-use heptabao_raft_runtime::{LocalV6ClosureReceipt, NativeV6CommittedRootRead};
+use heptabao_raft_runtime::{LocalV6BlobReceipt, LocalV6ClosureReceipt, NativeV6CommittedRootRead};
 use ring::rand::{SecureRandom, SystemRandom};
 use std::pin::Pin;
+use std::sync::RwLock;
 use tokio::sync::OwnedSemaphorePermit;
+
+#[path = "v6_ingress_reselection.rs"]
+mod ingress_reselection;
+#[cfg(test)]
+pub(super) use ingress_reselection::read_native_v6_fresh_ingress_closure_observed;
+pub use ingress_reselection::{
+    NativeV6IngressClosureRead, NativeV6IngressSupersededRead, read_native_v6_fresh_ingress_closure,
+};
 
 #[path = "v6_committed_root_pull_wire.rs"]
 mod pull_wire;
 use pull_wire::{Kind as PullKind, RootBinding};
+
+#[cfg(any(test, feature = "private-forward-stage-diagnostic"))]
+#[path = "v6_root_pull_diagnostic.rs"]
+mod root_diagnostic;
+
+// These macros only observe the original expression. In default production
+// builds no timing state, clock read, counter, or log emission is generated.
+#[cfg(feature = "private-forward-stage-diagnostic")]
+macro_rules! root_phase {
+    ($phase:ident, $work:expr) => {{
+        let phase = root_diagnostic::Span::start(root_diagnostic::Phase::$phase);
+        let result = $work;
+        if let Some(phase) = phase {
+            phase.finish(result.is_ok());
+        }
+        result
+    }};
+    (context $context:expr, $phase:ident, $work:expr) => {{
+        let phase =
+            root_diagnostic::Span::from_context($context.clone(), root_diagnostic::Phase::$phase);
+        let result = $work;
+        if let Some(phase) = phase {
+            phase.finish(result.is_ok());
+        }
+        result
+    }};
+}
+
+#[cfg(feature = "private-forward-stage-diagnostic")]
+macro_rules! root_phase_begin {
+    ($binding:ident, $phase:ident) => {
+        let $binding = root_diagnostic::Span::start(root_diagnostic::Phase::$phase);
+    };
+}
+
+#[cfg(not(feature = "private-forward-stage-diagnostic"))]
+macro_rules! root_phase_begin {
+    ($binding:ident, $phase:ident) => {};
+}
+
+#[cfg(feature = "private-forward-stage-diagnostic")]
+macro_rules! root_phase_finish {
+    ($binding:ident, $work:expr) => {{
+        let result = $work;
+        if let Some(phase) = $binding {
+            phase.finish(result.is_ok());
+        }
+        result
+    }};
+}
+
+#[cfg(not(feature = "private-forward-stage-diagnostic"))]
+macro_rules! root_phase_finish {
+    ($binding:ident, $work:expr) => {
+        $work
+    };
+}
+
+#[cfg(not(feature = "private-forward-stage-diagnostic"))]
+macro_rules! root_phase {
+    ($phase:ident, $work:expr) => {
+        $work
+    };
+    (context $context:expr, $phase:ident, $work:expr) => {
+        $work
+    };
+}
+
+#[cfg(feature = "private-forward-stage-diagnostic")]
+macro_rules! root_count {
+    ($kind:ident, $count:expr, $bytes:expr) => {
+        root_diagnostic::count(
+            root_diagnostic::Counter::$kind,
+            $count as u64,
+            $bytes as u64,
+        )
+    };
+}
+
+#[cfg(not(feature = "private-forward-stage-diagnostic"))]
+macro_rules! root_count {
+    ($kind:ident, $count:expr, $bytes:expr) => {};
+}
 
 /// Classification alone grants no authenticated ingress or selected-root right.
 pub fn is_native_v6_root_pull_frame(bytes: &[u8]) -> bool {
@@ -34,7 +126,7 @@ pub struct NativeV6CommittedRootSource {
     voters: BTreeMap<[u8; 32], u64>,
     initial_enrollment: NativeV6PeerEnrollment,
     // One bounded immutable-reference cache, not a read or fsync capability.
-    manifest: Mutex<Option<SourceManifest>>,
+    manifest: RwLock<Option<Arc<SourceManifest>>>,
 }
 
 impl fmt::Debug for NativeV6CommittedRootSource {
@@ -72,7 +164,7 @@ impl NativeV6CommittedRootSource {
             pinned: PinnedClientCertificateMap::new(pins)?,
             voters,
             initial_enrollment: enrollment.clone(),
-            manifest: Mutex::new(None),
+            manifest: RwLock::new(None),
         })
     }
 
@@ -98,6 +190,14 @@ impl NativeV6CommittedRootSource {
     /// from that client's leaf. The selected root/full LogIds/term must equal
     /// this source's own fresh real ReadIndex observation before bytes leave.
     pub fn handle_authenticated(&self, frame: AuthenticatedPeerFrame) -> Result<Vec<u8>, HaError> {
+        #[cfg(feature = "private-forward-stage-diagnostic")]
+        let _root_observation =
+            root_diagnostic::Scope::enter(root_diagnostic::Side::Donor, frame.deadline());
+        root_phase_begin!(root_total, DonorRequest);
+        let _native_operation = self
+            .storage
+            .begin_native_operation()
+            .map_err(|_| HaError::Transport)?;
         require_blocking_worker()?;
         check_deadline(frame.deadline())?;
         if !frame.has_strict_raft_alpn() {
@@ -109,17 +209,19 @@ impl NativeV6CommittedRootSource {
             .copied()
             .ok_or(HaError::UnknownPeer)?;
         let request = pull_wire::parse(frame.payload())?;
-        if request.requester != actual_voter
-            || request.target != self.raft.id()
-        {
+        if request.requester != actual_voter || request.target != self.raft.id() {
             return Err(HaError::PeerAuthenticationFailed);
         }
-        let read = self
-            .runtime
-            .block_on(self.raft.native_v6_committed_root_read(frame.deadline()))
-            .map_err(|_| unknown())?
-            .ok_or_else(unknown)?;
-        if !read.enrollment().same_peer_configuration(&self.initial_enrollment)
+        let read = root_phase!(
+            ReadIndex,
+            self.runtime
+                .block_on(self.raft.native_v6_committed_root_read(frame.deadline()))
+        )
+        .map_err(|_| unknown())?
+        .ok_or_else(unknown)?;
+        if !read
+            .enrollment()
+            .same_peer_configuration(&self.initial_enrollment)
             || RootBinding::observed(&read) != request.binding
             || read.enrollment().pins().get(&actual_voter) != Some(&frame.actual_leaf_sha256())
         {
@@ -127,31 +229,56 @@ impl NativeV6CommittedRootSource {
         }
         let verify = || {
             check_deadline(frame.deadline())?;
-            self.runtime
-                .block_on(self.raft.verify_native_v6_committed_root_read(&read))
-                .map_err(|_| unknown())?;
+            root_phase!(
+                WitnessVerify,
+                self.runtime
+                    .block_on(self.raft.verify_native_v6_committed_root_read(&read))
+            )
+            .map_err(|_| unknown())?;
             check_deadline(frame.deadline())
         };
         verify()?;
-        let mut manifest = self.manifest.try_lock().map_err(|_| unknown())?;
-        if manifest.as_ref().is_none_or(|cached| {
-            cached.binding != request.binding || cached.generation != read.application_generation()
-        }) {
-            // Rebuilding a cache reopens the actual full manifest/closure under
-            // this new witness; no cached generation ever becomes authority.
-            let mut gate = || verify().map_err(|_| LocalV6BlobError::CorruptOrChanged);
-            let references = self
-                .storage
-                .reopen_root_closure(read.root(), &mut gate)
+        // Concurrent single-object reads share only immutable references. The
+        // cache never holds an authority, and no lock spans per-object payload
+        // I/O or the final fresh-witness check. A cache replacement cannot invalidate
+        // the request's owned reference snapshot or extend its actual witness.
+        let cached = self.manifest.try_read().map_err(|_| unknown())?;
+        let selected = cached
+            .as_ref()
+            .filter(|cached| {
+                cached.binding == request.binding
+                    && cached.generation == read.application_generation()
+            })
+            .cloned();
+        drop(cached);
+        let selected = if let Some(selected) = selected {
+            selected
+        } else {
+            let mut manifest = self.manifest.try_write().map_err(|_| unknown())?;
+            if let Some(selected) = manifest.as_ref().filter(|cached| {
+                cached.binding == request.binding
+                    && cached.generation == read.application_generation()
+            }) {
+                selected.clone()
+            } else {
+                // Rebuilding a cache reopens the actual full manifest/closure under
+                // this new witness; no cached generation ever becomes authority.
+                let mut gate = || verify().map_err(|_| LocalV6BlobError::CorruptOrChanged);
+                let references = root_phase!(
+                    DonorReopen,
+                    self.storage.reopen_root_closure(read.root(), &mut gate)
+                )
                 .map_err(|_| unknown())?;
-            wire::exact_manifest(&references, &request.binding.intent)?;
-            *manifest = Some(SourceManifest {
-                binding: request.binding.clone(),
-                generation: read.application_generation(),
-                references,
-            });
-        }
-        let selected = manifest.as_ref().ok_or_else(unknown)?;
+                wire::exact_manifest(&references, &request.binding.intent)?;
+                let selected = Arc::new(SourceManifest {
+                    binding: request.binding.clone(),
+                    generation: read.application_generation(),
+                    references,
+                });
+                *manifest = Some(selected.clone());
+                selected
+            }
+        };
         let payload = match request.kind {
             PullKind::Manifest => {
                 if request.payload.len() != 4 {
@@ -181,11 +308,12 @@ impl NativeV6CommittedRootSource {
                     return Err(HaError::InvalidFrame);
                 }
                 verify()?;
-                self.storage.read_local(&reference).map_err(|_| unknown())?
+                root_phase!(DonorObjectRead, self.storage.read_local(&reference))
+                    .map_err(|_| unknown())?
             }
         };
         verify()?;
-        pull_wire::reply(&request, &payload)
+        root_phase_finish!(root_total, pull_wire::reply(&request, &payload))
     }
 }
 
@@ -224,16 +352,19 @@ fn fresh_same(
     selected: &NativeV6CommittedRootRead,
 ) -> Result<NativeV6CommittedRootRead, HaError> {
     check_deadline(selected.operation_deadline())?;
-    let fresh = runtime
-        .block_on(raft.native_v6_committed_root_read(selected.operation_deadline()))
-        .map_err(|_| unknown())?
-        .ok_or_else(unknown)?;
+    let fresh = root_phase!(
+        ReadIndex,
+        runtime.block_on(raft.native_v6_fresh_same_selection_read(selected))
+    )
+    .map_err(|_| unknown())?;
     if !fresh.same_selection(selected) {
         return Err(unknown());
     }
-    runtime
-        .block_on(raft.verify_native_v6_committed_root_read(&fresh))
-        .map_err(|_| unknown())?;
+    root_phase!(
+        WitnessVerify,
+        runtime.block_on(raft.verify_native_v6_committed_root_read(&fresh))
+    )
+    .map_err(|_| unknown())?;
     check_deadline(selected.operation_deadline())?;
     Ok(fresh)
 }
@@ -246,6 +377,7 @@ fn finish_local(
     references: &[RecordObjectRef],
     fsynced: &[bool],
 ) -> Result<RecoveredNativeV6LocalClosure, HaError> {
+    root_phase_begin!(root_total, FinishLocal);
     if references.len() != fsynced.len() {
         return Err(HaError::InvalidFrame);
     }
@@ -254,24 +386,52 @@ fn finish_local(
     let mut gate = || {
         check_deadline(selected.operation_deadline())
             .and_then(|()| {
-                runtime
-                    .block_on(raft.verify_native_v6_committed_root_read(&fresh))
-                    .map_err(|_| unknown())
+                root_phase!(
+                    WitnessVerify,
+                    runtime.block_on(raft.verify_native_v6_committed_root_read(&fresh))
+                )
+                .map_err(|_| unknown())
             })
             .map_err(|_| LocalV6BlobError::CorruptOrChanged)
     };
+    let mut pending = Vec::with_capacity(LocalV6BlobStage::MAX_CHECKED_BATCH_OBJECTS);
+    let mut pending_bytes = 0usize;
     for (reference, already_fsynced) in references.iter().zip(fsynced) {
         if !already_fsynced {
+            let expected_bytes =
+                usize::try_from(reference.encoded_bytes).map_err(|_| HaError::InvalidFrame)?;
+            if expected_bytes > LocalV6BlobStage::MAX_CHECKED_BATCH_CIPHERTEXT_BYTES {
+                return Err(HaError::InvalidFrame);
+            }
+            if !pending.is_empty()
+                && (pending.len() == LocalV6BlobStage::MAX_CHECKED_BATCH_OBJECTS
+                    || pending_bytes.checked_add(expected_bytes).is_none_or(|sum| {
+                        sum > LocalV6BlobStage::MAX_CHECKED_BATCH_CIPHERTEXT_BYTES
+                    }))
+            {
+                synchronize_existing_pull_batch(storage, &pending, &mut gate)?;
+                pending.clear();
+                pending_bytes = 0;
+            }
             gate().map_err(|_| unknown())?;
-            let ciphertext = storage.read_local(reference).map_err(|_| unknown())?;
-            storage
-                .stage_received_replica_checked(reference, &ciphertext, &mut gate)
-                .map_err(|_| unknown())?;
+            let ciphertext =
+                root_phase!(FinishRead, storage.read_local(reference)).map_err(|_| unknown())?;
+            if ciphertext.len() != expected_bytes {
+                return Err(unknown());
+            }
+            pending_bytes = pending_bytes
+                .checked_add(ciphertext.len())
+                .filter(|sum| *sum <= LocalV6BlobStage::MAX_CHECKED_BATCH_CIPHERTEXT_BYTES)
+                .ok_or_else(unknown)?;
+            pending.push((reference.clone(), ciphertext));
         }
     }
-    let local = storage
-        .persist_local_closure(references, &mut gate)
-        .map_err(|_| unknown())?;
+    synchronize_existing_pull_batch(storage, &pending, &mut gate)?;
+    let local = root_phase!(
+        PersistClosure,
+        storage.persist_local_closure(references, &mut gate)
+    )
+    .map_err(|_| unknown())?;
     let intent = selected.root().intent();
     if local.manifest_sha256() != intent.closure_manifest_sha256
         || local.object_count() as u64 != intent.object_count
@@ -283,7 +443,113 @@ fn finish_local(
     // This new read may have a new capped ReadIndex deadline, but the old
     // witness is never edited and the original operation deadline is identical.
     let selected = fresh_same(raft, runtime, &selected)?;
-    Ok(RecoveredNativeV6LocalClosure { selected, local })
+    root_phase_finish!(
+        root_total,
+        Ok(RecoveredNativeV6LocalClosure { selected, local })
+    )
+}
+
+fn synchronize_existing_pull_batch(
+    storage: &LocalV6BlobStage,
+    pending: &[(RecordObjectRef, Vec<u8>)],
+    gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
+) -> Result<(), HaError> {
+    root_phase_begin!(root_total, ExistingSyncBatch);
+    if pending.is_empty() {
+        return root_phase_finish!(root_total, Ok(()));
+    }
+    let objects: Vec<_> = pending
+        .iter()
+        .map(|(reference, ciphertext)| (reference, ciphertext.as_slice()))
+        .collect();
+    let receipts = storage
+        .sync_existing_replicas_batch_checked(&objects, gate)
+        .map_err(|_| unknown())?;
+    if receipts.len() != pending.len()
+        || receipts
+            .iter()
+            .zip(pending)
+            .any(|(receipt, (reference, _))| receipt.reference() != reference)
+    {
+        return Err(unknown());
+    }
+    root_phase_finish!(root_total, Ok(()))
+}
+
+// A committed manifest may differ by one small leaf after this voter was
+// offline. Authenticate and physically re-admit its existing exact leaves in
+// bounded batches before asking peers for missing ciphertext. Presence is no
+// receipt: only the original checked fsync path sets a bit, and any error on a
+// present leaf is terminal rather than being reclassified as an absent leaf.
+fn synchronize_available_pull_objects(
+    raft: &ProcessRaftNode,
+    runtime: &Handle,
+    storage: &LocalV6BlobStage,
+    selected: &NativeV6CommittedRootRead,
+    references: &[RecordObjectRef],
+    fsynced: &mut [bool],
+) -> Result<(), HaError> {
+    root_phase_begin!(root_total, AvailableObjects);
+    if references.len() != fsynced.len() || fsynced.iter().any(|done| *done) {
+        return Err(HaError::InvalidFrame);
+    }
+    wire::exact_manifest(references, &selected.root().intent())?;
+    let mut offset = 0;
+    while offset < references.len() {
+        let mut end = offset;
+        let mut batch_bytes = 0usize;
+        while let Some(reference) = references.get(end) {
+            let bytes =
+                usize::try_from(reference.encoded_bytes).map_err(|_| HaError::InvalidFrame)?;
+            if bytes > LocalV6BlobStage::MAX_CHECKED_BATCH_CIPHERTEXT_BYTES {
+                return Err(HaError::InvalidFrame);
+            }
+            if end - offset == LocalV6BlobStage::MAX_CHECKED_BATCH_OBJECTS
+                || batch_bytes.checked_add(bytes).is_none_or(|total| {
+                    total > LocalV6BlobStage::MAX_CHECKED_BATCH_CIPHERTEXT_BYTES
+                })
+            {
+                break;
+            }
+            batch_bytes += bytes;
+            end += 1;
+        }
+        let fresh = fresh_same(raft, runtime, selected)?;
+        let mut gate = || {
+            check_deadline(selected.operation_deadline())
+                .and_then(|()| {
+                    root_phase!(
+                        WitnessVerify,
+                        runtime.block_on(raft.verify_native_v6_committed_root_read(&fresh))
+                    )
+                    .map_err(|_| unknown())
+                })
+                .map_err(|_| LocalV6BlobError::CorruptOrChanged)
+        };
+        let mut pending = Vec::with_capacity(end - offset);
+        let mut indices = Vec::with_capacity(end - offset);
+        for (index, reference) in references.iter().enumerate().take(end).skip(offset) {
+            if let Some(ciphertext) = root_phase!(
+                AvailableRead,
+                storage.read_local_if_present_checked(reference, &mut gate)
+            )
+            .map_err(|_| unknown())?
+            {
+                root_count!(Available, 1, ciphertext.len());
+                pending.push((reference.clone(), ciphertext));
+                indices.push(index);
+            } else {
+                root_count!(Missing, 1, reference.encoded_bytes);
+            }
+        }
+        synchronize_existing_pull_batch(storage, &pending, &mut gate)?;
+        gate().map_err(|_| unknown())?;
+        for index in indices {
+            fsynced[index] = true;
+        }
+        offset = end;
+    }
+    root_phase_finish!(root_total, Ok(()))
 }
 
 // A payload keeps its capacity charge until the sole consumer processes or
@@ -291,8 +557,102 @@ fn finish_local(
 // same eight-frame budget while slow local fsync blocks the controller.
 struct VerifiedPullReply {
     payload: Vec<u8>,
+    #[cfg(test)]
+    _observation: Option<observation::Frame>,
     _permit: OwnedSemaphorePermit,
 }
+
+#[cfg(test)]
+mod observation {
+    use super::*;
+    use std::cell::RefCell;
+
+    #[derive(Clone, Debug, Default)]
+    pub(crate) struct PullTaskCounts {
+        pub(crate) spawned: usize,
+        pub(crate) joined: usize,
+        pub(crate) active_frames: usize,
+        pub(crate) peak_frames: usize,
+        pub(crate) per_donor_peak_frames: BTreeMap<u64, usize>,
+        per_donor_active_frames: BTreeMap<u64, usize>,
+    }
+
+    #[derive(Clone, Debug, Default)]
+    pub(super) struct Observation(Arc<Mutex<PullTaskCounts>>);
+    thread_local! {
+        static CURRENT: RefCell<Option<Observation>> = const { RefCell::new(None) };
+    }
+    pub(super) fn current() -> Option<Observation> {
+        CURRENT.with(|value| value.borrow().clone())
+    }
+    impl Observation {
+        pub(super) fn spawned(&self) {
+            if let Ok(mut counts) = self.0.lock() {
+                counts.spawned += 1;
+            }
+        }
+        pub(super) fn joined(&self) {
+            if let Ok(mut counts) = self.0.lock() {
+                counts.joined += 1;
+            }
+        }
+        pub(super) fn frame(&self, target: u64) -> Frame {
+            if let Ok(mut counts) = self.0.lock() {
+                counts.active_frames += 1;
+                counts.peak_frames = counts.peak_frames.max(counts.active_frames);
+                let active = counts.per_donor_active_frames.entry(target).or_default();
+                *active += 1;
+                let active = *active;
+                let peak = counts.per_donor_peak_frames.entry(target).or_default();
+                *peak = (*peak).max(active);
+            }
+            Frame {
+                observation: self.clone(),
+                target,
+            }
+        }
+    }
+    #[derive(Debug)]
+    pub(super) struct Frame {
+        observation: Observation,
+        target: u64,
+    }
+    impl Drop for Frame {
+        fn drop(&mut self) {
+            if let Ok(mut counts) = self.observation.0.lock() {
+                counts.active_frames -= 1;
+                if let Some(active) = counts.per_donor_active_frames.get_mut(&self.target) {
+                    *active -= 1;
+                }
+            }
+        }
+    }
+    pub(crate) fn observe_pull_tasks<T>(
+        operation: impl FnOnce() -> T,
+    ) -> Result<(T, PullTaskCounts), HaError> {
+        struct Restore(Option<Observation>);
+        impl Drop for Restore {
+            fn drop(&mut self) {
+                CURRENT.with(|value| {
+                    value.replace(self.0.take());
+                });
+            }
+        }
+        let observation = Observation::default();
+        let _scope = Restore(CURRENT.with(|value| value.replace(Some(observation.clone()))));
+        let result = operation();
+        let counts = observation.0.lock().map_err(|_| unknown())?.clone();
+        Ok((result, counts))
+    }
+}
+#[cfg(test)]
+pub(crate) use observation::observe_pull_tasks;
+
+/// Fixed per-donor request capacity for committed-root recovery. This is a
+/// resource bound only; it grants no ingress, freshness or durability authority.
+pub const NATIVE_V6_ROOT_PULL_REQUESTS_PER_DONOR: usize = 4;
+/// All private closure operations share this existing ciphertext-frame charge.
+pub const NATIVE_V6_ROOT_PULL_GLOBAL_FRAMES: usize = MAX_INFLIGHT_CLOSURE_FRAMES;
 
 #[derive(Clone, Copy)]
 enum PullStep {
@@ -303,21 +663,138 @@ enum PullStep {
 struct PendingPull {
     target: u64,
     step: PullStep,
-    operation: Pin<Box<dyn Future<Output = Result<VerifiedPullReply, HaError>> + Send>>,
+    operation: tokio::task::JoinHandle<Result<VerifiedPullReply, HaError>>,
+}
+
+// Own every asynchronous socket task until its actual JoinHandle completes.
+// The controller runs only on a blocking worker. Cancellation drops the task's
+// sole connect/TLS/socket future; joining it does not wait for a blackhole's
+// original deadline or issue another request. No task is detached on ANY exit.
+struct OwnedPulls<'a> {
+    runtime: &'a Handle,
+    pending: Vec<PendingPull>,
+    #[cfg(test)]
+    observation: Option<observation::Observation>,
+}
+
+impl OwnedPulls<'_> {
+    // Poll only already submitted object tasks, exactly once per call. Pending
+    // sockets never delay a ready batch: in particular, no full-window barrier
+    // can let one silent donor hold the other donor's verified replies hostage.
+    fn take_ready_object(&mut self) -> Option<(u64, usize, Result<VerifiedPullReply, HaError>)> {
+        let ready = self.runtime.block_on(poll_fn(|cx| {
+            for (index, pending) in self.pending.iter_mut().enumerate() {
+                let PullStep::Object(object_index) = pending.step else {
+                    continue;
+                };
+                if let Poll::Ready(result) = Pin::new(&mut pending.operation).poll(cx) {
+                    return Poll::Ready(Some((
+                        index,
+                        object_index,
+                        result.map_err(|_| unknown()).flatten(),
+                    )));
+                }
+            }
+            Poll::Ready(None)
+        }));
+        let (index, object_index, result) = ready?;
+        let completed = self.pending.swap_remove(index);
+        #[cfg(test)]
+        if let Some(observation) = &self.observation {
+            observation.joined();
+        }
+        Some((completed.target, object_index, result))
+    }
+
+    fn retire(&mut self, target: u64) {
+        root_count!(
+            RetiredTasks,
+            self.pending
+                .iter()
+                .filter(|entry| entry.target == target)
+                .count(),
+            0
+        );
+        let mut retired = Vec::new();
+        let mut index = 0;
+        while index < self.pending.len() {
+            if self.pending[index].target == target {
+                let operation = self.pending.swap_remove(index).operation;
+                operation.abort();
+                retired.push(operation);
+            } else {
+                index += 1;
+            }
+        }
+        self.runtime.block_on(async {
+            for operation in retired {
+                let _ = operation.await;
+                #[cfg(test)]
+                if let Some(observation) = &self.observation {
+                    observation.joined();
+                }
+            }
+        });
+    }
+
+    fn cancel_and_join(&mut self) {
+        if self.pending.is_empty() {
+            return;
+        }
+        root_count!(CancelledTasks, self.pending.len(), 0);
+        for pending in &self.pending {
+            pending.operation.abort();
+        }
+        self.runtime.block_on(async {
+            for pending in self.pending.drain(..) {
+                let _ = pending.operation.await;
+                #[cfg(test)]
+                if let Some(observation) = &self.observation {
+                    observation.joined();
+                }
+            }
+        });
+    }
+}
+
+impl Drop for OwnedPulls<'_> {
+    fn drop(&mut self) {
+        self.cancel_and_join();
+    }
+}
+
+// Immutable selection and nonce inputs shared by a pull round. This is only
+// a borrowed request scope: every actual wire reply and fresh ReadIndex gate
+// below is still required, under the selected operation's original deadline.
+struct PullRequestContext<'a> {
+    runtime: &'a Handle,
+    transport: &'a MutualTlsPeerTransport,
+    routes: &'a BTreeMap<u64, NodeId>,
+    pins: &'a BTreeMap<u64, [u8; 32]>,
+    binding: &'a RootBinding,
+    requester: u64,
+    round: [u8; 32],
+    deadline: Instant,
+    #[cfg(test)]
+    observation: Option<observation::Observation>,
 }
 
 fn pending_pull(
-    transport: &MutualTlsPeerTransport,
-    route: &NodeId,
+    context: &PullRequestContext<'_>,
     target: u64,
-    pin: [u8; 32],
-    binding: &RootBinding,
-    requester: u64,
-    round: [u8; 32],
     step: PullStep,
     references: &[RecordObjectRef],
-    deadline: Instant,
 ) -> Result<PendingPull, HaError> {
+    let runtime = context.runtime;
+    let transport = context.transport;
+    let routes = context.routes;
+    let pins = context.pins;
+    let binding = context.binding;
+    let requester = context.requester;
+    let round = context.round;
+    let deadline = context.deadline;
+    #[cfg(test)]
+    let observation = context.observation.clone();
     let (kind, payload) = match step {
         PullStep::Manifest(offset) => (
             PullKind::Manifest,
@@ -332,63 +809,219 @@ fn pending_pull(
         ),
     };
     let transport = transport.clone();
-    let route = route.clone();
+    let route = routes.get(&target).ok_or(HaError::UnknownPeer)?.clone();
+    let pin = *pins.get(&target).ok_or(HaError::UnknownPeer)?;
     let binding = binding.clone();
+    #[cfg(feature = "private-forward-stage-diagnostic")]
+    let diagnostic_context = root_diagnostic::capture();
+    let operation = runtime.spawn(async move {
+        check_deadline(deadline)?;
+        let capacity = CLOSURE_FRAME_CAPACITY
+            .get_or_init(|| Arc::new(Semaphore::new(MAX_INFLIGHT_CLOSURE_FRAMES)))
+            .clone();
+        let permit = root_phase!(context diagnostic_context, FrameCapacity, tokio::time::timeout_at(
+            tokio::time::Instant::from_std(deadline),
+            capacity.acquire_owned(),
+        )
+        .await
+        .map_err(|_| unknown())?
+        .map_err(|_| unknown()))?;
+        #[cfg(test)]
+        let frame_observation = observation.as_ref().map(|value| value.frame(target));
+        check_deadline(deadline)?;
+        let request = pull_wire::encode(&binding, requester, target, round, kind, &payload)?;
+        let response = root_phase!(context diagnostic_context, FrameExchange, transport
+            .exchange_root_pull_before_pinned_server(&route, &request, deadline, pin)
+            .await)
+            .map_err(|_| unknown())?;
+        check_deadline(deadline)?;
+        let payload = root_phase!(context diagnostic_context, ReplyVerify, pull_wire::verified_payload(&request, response))?;
+        Ok(VerifiedPullReply {
+            payload,
+            _permit: permit,
+            #[cfg(test)]
+            _observation: frame_observation,
+        })
+    });
+    #[cfg(test)]
+    if let Some(observation) = &context.observation {
+        observation.spawned();
+    }
     Ok(PendingPull {
         target,
         step,
-        operation: Box::pin(async move {
-            check_deadline(deadline)?;
-            let capacity = CLOSURE_FRAME_CAPACITY
-                .get_or_init(|| Arc::new(Semaphore::new(MAX_INFLIGHT_CLOSURE_FRAMES)))
-                .clone();
-            let permit = tokio::time::timeout_at(
-                tokio::time::Instant::from_std(deadline),
-                capacity.acquire_owned(),
-            )
-            .await
-            .map_err(|_| unknown())?
-            .map_err(|_| unknown())?;
-            check_deadline(deadline)?;
-            let request = pull_wire::encode(&binding, requester, target, round, kind, &payload)?;
-            let cancelled = Arc::new(AtomicBool::new(false));
-            let cancel = CancelSocketJob(cancelled.clone());
-            let (send, received) = oneshot::channel();
-            let worker = std::thread::Builder::new()
-                .name("hb-v6-root-pull".into())
-                .spawn(move || {
-                    let result = (|| {
-                        check_deadline(deadline)?;
-                        if cancelled.load(Ordering::Acquire) {
-                            return Err(unknown());
-                        }
-                        let response = transport
-                            .exchange_before_pinned_server(&route, &request, deadline, pin)
-                            .map_err(|_| unknown())?;
-                        check_deadline(deadline)?;
-                        if cancelled.load(Ordering::Acquire) {
-                            return Err(unknown());
-                        }
-                        let payload = pull_wire::verified_payload(&request, response)?;
-                        Ok(VerifiedPullReply {
-                            payload,
-                            _permit: permit,
-                        })
-                    })();
-                    let _ = send.send(result);
-                })
-                .map_err(|_| unknown())?;
-            drop(worker);
-            let result =
-                tokio::time::timeout_at(tokio::time::Instant::from_std(deadline), received)
-                    .await
-                    .map_err(|_| unknown())?
-                    .map_err(|_| unknown())?;
-            check_deadline(deadline)?;
-            drop(cancel);
-            result
-        }),
+        operation,
     })
+}
+
+// Only a donor whose actual manifest reply was authenticated can enter the
+// object window. In-flight objects never set fsynced. Different donors may race
+// an object, preserving the original mandatory duplicate-digest validation.
+fn fill_object_window(
+    pulls: &mut OwnedPulls<'_>,
+    context: &PullRequestContext<'_>,
+    target: u64,
+    references: &[RecordObjectRef],
+    fsynced: &[bool],
+) -> Result<(), HaError> {
+    loop {
+        let active = pulls
+            .pending
+            .iter()
+            .filter(|pending| pending.target == target)
+            .count();
+        if active >= NATIVE_V6_ROOT_PULL_REQUESTS_PER_DONOR {
+            return Ok(());
+        }
+        // Spend the bounded windows on distinct missing objects first. A
+        // second healthy donor must not repeatedly consume capacity for the
+        // same early leaves while unassigned work remains. These assignments
+        // grant no completion: only checked durable receipts set fsynced.
+        let unassigned = fsynced.iter().enumerate().find_map(|(index, done)| {
+            (!*done && !pulls.pending.iter().any(|pending| {
+                matches!(pending.step, PullStep::Object(pending_index) if pending_index == index)
+            })).then_some(index)
+        });
+        // Once every remaining leaf has an outstanding request, retain the
+        // original cross-donor race. A silent donor cannot reserve its leaves
+        // for the rest of the original operation deadline. Every duplicate
+        // still passes the original exact-byte checks before it is discarded.
+        let next = unassigned.or_else(|| {
+            fsynced.iter().enumerate().find_map(|(index, done)| {
+                (!*done && !pulls.pending.iter().any(|pending| {
+                    pending.target == target
+                        && matches!(pending.step, PullStep::Object(pending_index) if pending_index == index)
+                })).then_some(index)
+            })
+        });
+        let Some(index) = next else {
+            return Ok(());
+        };
+        pulls.pending.push(pending_pull(
+            context,
+            target,
+            PullStep::Object(index),
+            references,
+        )?);
+    }
+}
+
+// A reply retains its existing global frame charge until the batch is dropped.
+// Validate every byte against the complete selected reference BEFORE storage,
+// including a duplicate of a durable leaf or another entry in this ready batch.
+fn append_ready_pull_object(
+    ready: &mut Vec<(usize, VerifiedPullReply)>,
+    references: &[RecordObjectRef],
+    fsynced: &[bool],
+    index: usize,
+    response: VerifiedPullReply,
+) -> Result<(), HaError> {
+    root_count!(ObjectReply, 1, response.payload.len());
+    let reference = references.get(index).ok_or(HaError::InvalidFrame)?;
+    if references.len() != fsynced.len()
+        || response.payload.len() != reference.encoded_bytes as usize
+    {
+        return Err(HaError::InvalidFrame);
+    }
+    let object = heptabao_raft_runtime::SealedRecordObject::new_native_v6_ciphertext_chunk(
+        response.payload.clone(),
+    )
+    .map_err(|_| HaError::InvalidFrame)?;
+    if object.reference() != reference {
+        return Err(HaError::InvalidFrame);
+    }
+    if fsynced[index] || ready.iter().any(|(seen, _)| *seen == index) {
+        root_count!(DuplicateObject, 1, response.payload.len());
+        return Ok(());
+    }
+    if ready.len() >= NATIVE_V6_ROOT_PULL_GLOBAL_FRAMES {
+        return Err(HaError::InvalidFrame);
+    }
+    ready.push((index, response));
+    Ok(())
+}
+
+// This final bookkeeping accepts actual opaque local receipts only. Check the
+// entire set before changing any bit, so missing/misordered/duplicate receipts
+// cannot turn physically present bytes into a partial delivery permission.
+fn accept_ready_pull_receipts(
+    references: &[RecordObjectRef],
+    indices: &[usize],
+    receipts: &[LocalV6BlobReceipt],
+    fsynced: &mut [bool],
+) -> Result<(), HaError> {
+    if references.len() != fsynced.len()
+        || indices.is_empty()
+        || indices.len() != receipts.len()
+        || indices.len() > NATIVE_V6_ROOT_PULL_GLOBAL_FRAMES
+        || indices.iter().copied().collect::<BTreeSet<_>>().len() != indices.len()
+        || indices.iter().zip(receipts).any(|(index, receipt)| {
+            references.get(*index) != Some(receipt.reference())
+                || fsynced.get(*index) != Some(&false)
+        })
+    {
+        return Err(HaError::InvalidFrame);
+    }
+    for &index in indices {
+        fsynced[index] = true;
+    }
+    Ok(())
+}
+
+fn persist_ready_pull_batch(
+    raft: &ProcessRaftNode,
+    runtime: &Handle,
+    storage: &LocalV6BlobStage,
+    fresh: &NativeV6CommittedRootRead,
+    references: &[RecordObjectRef],
+    fsynced: &mut [bool],
+    ready: &[(usize, VerifiedPullReply)],
+) -> Result<(), HaError> {
+    root_phase_begin!(root_total, ReadyBatch);
+    if ready.is_empty() {
+        return root_phase_finish!(root_total, Ok(()));
+    }
+    // The original leaf contract is 25..=256KiB; at most eight frame-charged
+    // replies therefore fit the existing 32-object / 4MiB physical batch.
+    if ready.len() > NATIVE_V6_ROOT_PULL_GLOBAL_FRAMES
+        || ready.len() > LocalV6BlobStage::MAX_CHECKED_BATCH_OBJECTS
+        || ready
+            .iter()
+            .try_fold(0usize, |total, (_, reply)| {
+                total.checked_add(reply.payload.len())
+            })
+            .is_none_or(|bytes| bytes > LocalV6BlobStage::MAX_CHECKED_BATCH_CIPHERTEXT_BYTES)
+    {
+        return Err(HaError::InvalidFrame);
+    }
+    let mut gate = || {
+        check_deadline(fresh.operation_deadline())
+            .map_err(|_| LocalV6BlobError::CorruptOrChanged)?;
+        root_phase!(
+            WitnessVerify,
+            runtime.block_on(raft.verify_native_v6_committed_root_read(fresh))
+        )
+        .map_err(|_| LocalV6BlobError::CorruptOrChanged)
+    };
+    let ciphertexts: Vec<_> = ready
+        .iter()
+        .map(|(_, response)| response.payload.as_slice())
+        .collect();
+    let receipts = storage
+        .stage_local_batch_checked(&ciphertexts, &mut gate)
+        .map_err(|_| unknown())?;
+    gate().map_err(|_| unknown())?;
+    let indices: Vec<_> = ready.iter().map(|(index, _)| *index).collect();
+    accept_ready_pull_receipts(references, &indices, &receipts, fsynced)?;
+    root_count!(
+        PersistedReady,
+        ready.len(),
+        ready
+            .iter()
+            .map(|(_, reply)| reply.payload.len())
+            .sum::<usize>()
+    );
+    root_phase_finish!(root_total, Ok(()))
 }
 
 /// Read an existing exact committed closure without issuing a new local
@@ -403,11 +1036,17 @@ pub fn read_or_recover_native_v6_committed_closure(
     storage: &LocalV6BlobStage,
     selected: NativeV6CommittedRootRead,
 ) -> Result<NativeV6CommittedRootRead, HaError> {
+    #[cfg(feature = "private-forward-stage-diagnostic")]
+    let _root_observation = root_diagnostic::Scope::enter(
+        root_diagnostic::Side::Consumer,
+        selected.operation_deadline(),
+    );
+    root_phase_begin!(root_total, ReadOrRecover);
+    let _native_operation = storage
+        .begin_native_operation()
+        .map_err(|_| HaError::Transport)?;
     require_blocking_worker()?;
     check_deadline(selected.operation_deadline())?;
-    runtime
-        .block_on(raft.verify_native_v6_committed_root_read(&selected))
-        .map_err(|_| unknown())?;
     let pins = selected.enrollment().pins();
     if !pins.contains_key(&raft.id())
         || routes.keys().copied().collect::<BTreeSet<_>>() != pins.keys().copied().collect()
@@ -415,16 +1054,61 @@ pub fn read_or_recover_native_v6_committed_closure(
     {
         return Err(HaError::InvalidMembership);
     }
-    if let Some(read) =
-        read_existing_committed_closure(raft, runtime, storage, &selected, || Ok(()))?
-    {
-        return Ok(read);
-    }
+    let selected =
+        match read_existing_with_progress_once(raft, runtime, storage, selected, || Ok(()))? {
+            ExistingLocalRead::Complete(read) => return root_phase_finish!(root_total, Ok(read)),
+            ExistingLocalRead::Repair(selected) => selected,
+        };
     // Reopen errors are not reclassified as "missing". The original repair
     // rejects corrupt existing files through checked no-replace publication.
     let recovered =
         recover_native_v6_committed_closure(raft, runtime, transport, routes, storage, selected)?;
-    Ok(recovered.into_parts().0)
+    root_phase_finish!(root_total, Ok(recovered.into_parts().0))
+}
+
+// Classification comes only from an actual failed opaque witness check.
+// Storage, an injected callback, and missing/corrupt bytes cannot request a
+// new observation. The fresh read must retain both old bounds and the exact
+// root/enrollment/leader/term/store; it never authorizes a changed publication.
+#[derive(Debug)]
+pub(super) enum ExistingLocalRead {
+    Complete(NativeV6CommittedRootRead),
+    Repair(NativeV6CommittedRootRead),
+}
+
+pub(super) fn read_existing_with_progress_once(
+    raft: &ProcessRaftNode,
+    runtime: &Handle,
+    storage: &LocalV6BlobStage,
+    selected: NativeV6CommittedRootRead,
+    after_reopen: impl FnOnce() -> Result<(), HaError>,
+) -> Result<ExistingLocalRead, HaError> {
+    let refused = std::cell::Cell::new(false);
+    let first = read_existing_committed_closure_checked(
+        raft,
+        runtime,
+        storage,
+        &selected,
+        after_reopen,
+        &refused,
+    );
+    if !refused.get() {
+        return first.map(|read| match read {
+            Some(read) => ExistingLocalRead::Complete(read),
+            None => ExistingLocalRead::Repair(selected),
+        });
+    }
+    // One read-only continuation is allowed after actual application progress.
+    // A physical error or a second supersession remains terminal. The original
+    // selected handle remains invalid and is never modified or used for repair.
+    let fresh = runtime
+        .block_on(raft.native_v6_same_root_progress_read(&selected))
+        .map_err(|_| unknown())?;
+    let read = read_existing_committed_closure(raft, runtime, storage, &fresh, || Ok(()))?;
+    Ok(match read {
+        Some(read) => ExistingLocalRead::Complete(read),
+        None => ExistingLocalRead::Repair(fresh),
+    })
 }
 
 // The additional gate permits deterministic real-Raft failure observations in
@@ -436,20 +1120,67 @@ pub(super) fn read_existing_committed_closure(
     selected: &NativeV6CommittedRootRead,
     after_reopen: impl FnOnce() -> Result<(), HaError>,
 ) -> Result<Option<NativeV6CommittedRootRead>, HaError> {
-    let fresh = fresh_same(raft, runtime, selected)?;
+    read_existing_committed_closure_checked(
+        raft,
+        runtime,
+        storage,
+        selected,
+        after_reopen,
+        &std::cell::Cell::new(false),
+    )
+}
+
+fn read_existing_committed_closure_checked(
+    raft: &ProcessRaftNode,
+    runtime: &Handle,
+    storage: &LocalV6BlobStage,
+    selected: &NativeV6CommittedRootRead,
+    after_reopen: impl FnOnce() -> Result<(), HaError>,
+    witness_refused: &std::cell::Cell<bool>,
+) -> Result<Option<NativeV6CommittedRootRead>, HaError> {
+    #[cfg(feature = "private-forward-stage-diagnostic")]
+    let _root_observation = root_diagnostic::Scope::enter(
+        root_diagnostic::Side::Consumer,
+        selected.operation_deadline(),
+    );
+    root_phase_begin!(root_total, ReadExisting);
+    let _native_operation = storage
+        .begin_native_operation()
+        .map_err(|_| HaError::Transport)?;
+    // The caller already obtained this actual ReadIndex selection. Use that
+    // still-live opaque witness for every physical read instead of issuing a
+    // second quorum read before the same I/O. Its capped read bound is never
+    // extended, and the terminal fresh ReadIndex below remains mandatory.
+    check_deadline(selected.operation_deadline())?;
+    root_phase!(
+        WitnessVerify,
+        runtime.block_on(raft.verify_native_v6_committed_root_read(selected))
+    )
+    .map_err(|_| {
+        witness_refused.set(true);
+        unknown()
+    })?;
     let complete = {
         let mut gate = || {
             check_deadline(selected.operation_deadline())
                 .and_then(|()| {
-                    runtime
-                        .block_on(raft.verify_native_v6_committed_root_read(&fresh))
-                        .map_err(|_| unknown())
+                    root_phase!(
+                        WitnessVerify,
+                        runtime.block_on(raft.verify_native_v6_committed_root_read(selected))
+                    )
+                    .map_err(|_| {
+                        witness_refused.set(true);
+                        unknown()
+                    })
                 })
                 .map_err(|_| LocalV6BlobError::CorruptOrChanged)
         };
-        match storage.reopen_root_closure(fresh.root(), &mut gate) {
+        match root_phase!(
+            ExistingReopen,
+            storage.reopen_root_closure(selected.root(), &mut gate)
+        ) {
             Ok(references) => {
-                wire::exact_manifest(&references, &fresh.root().intent())?;
+                wire::exact_manifest(&references, &selected.root().intent())?;
                 gate().map_err(|_| unknown())?;
                 true
             }
@@ -457,12 +1188,20 @@ pub(super) fn read_existing_committed_closure(
         }
     };
     if !complete {
-        return Ok(None);
+        return root_phase_finish!(root_total, Ok(None));
     }
     after_reopen()?;
     // A new ReadIndex must still select this exact process/generation/term/root.
     // Its capped read budget never changes the original operation deadline.
-    Ok(Some(fresh_same(raft, runtime, selected)?))
+    let fresh = fresh_same(raft, runtime, selected).inspect_err(|_| {
+        if runtime
+            .block_on(raft.verify_native_v6_committed_root_read(selected))
+            .is_err()
+        {
+            witness_refused.set(true);
+        }
+    })?;
+    root_phase_finish!(root_total, Ok(Some(fresh)))
 }
 
 /// Consume one selected actual root and repair only that root's exact external
@@ -478,12 +1217,23 @@ pub fn recover_native_v6_committed_closure(
     storage: &LocalV6BlobStage,
     selected: NativeV6CommittedRootRead,
 ) -> Result<RecoveredNativeV6LocalClosure, HaError> {
+    #[cfg(feature = "private-forward-stage-diagnostic")]
+    let _root_observation = root_diagnostic::Scope::enter(
+        root_diagnostic::Side::Consumer,
+        selected.operation_deadline(),
+    );
+    root_phase_begin!(root_total, Recover);
+    let _native_operation = storage
+        .begin_native_operation()
+        .map_err(|_| HaError::Transport)?;
     require_blocking_worker()?;
     let deadline = selected.operation_deadline();
     check_deadline(deadline)?;
-    runtime
-        .block_on(raft.verify_native_v6_committed_root_read(&selected))
-        .map_err(|_| unknown())?;
+    root_phase!(
+        WitnessVerify,
+        runtime.block_on(raft.verify_native_v6_committed_root_read(&selected))
+    )
+    .map_err(|_| unknown())?;
     let pins = selected.enrollment().pins();
     if !pins.contains_key(&raft.id())
         || routes.keys().copied().collect::<BTreeSet<_>>() != pins.keys().copied().collect()
@@ -492,17 +1242,27 @@ pub fn recover_native_v6_committed_closure(
         return Err(HaError::InvalidMembership);
     }
     let mut initial_gate = || {
-        runtime
-            .block_on(raft.verify_native_v6_committed_root_read(&selected))
-            .map_err(|_| LocalV6BlobError::CorruptOrChanged)
+        root_phase!(
+            WitnessVerify,
+            runtime.block_on(raft.verify_native_v6_committed_root_read(&selected))
+        )
+        .map_err(|_| LocalV6BlobError::CorruptOrChanged)
     };
-    if let Ok(references) = storage.reopen_root_closure(selected.root(), &mut initial_gate) {
+    if let Ok(references) = root_phase!(
+        RecoveryReopen,
+        storage.reopen_root_closure(selected.root(), &mut initial_gate)
+    ) {
         let fsynced = vec![false; references.len()];
-        return finish_local(raft, runtime, storage, selected, &references, &fsynced);
+        return root_phase_finish!(
+            root_total,
+            finish_local(raft, runtime, storage, selected, &references, &fsynced)
+        );
     }
-    runtime
-        .block_on(raft.verify_native_v6_committed_root_read(&selected))
-        .map_err(|_| unknown())?;
+    root_phase!(
+        WitnessVerify,
+        runtime.block_on(raft.verify_native_v6_committed_root_read(&selected))
+    )
+    .map_err(|_| unknown())?;
     let binding = RootBinding::observed(&selected);
     let count = usize::try_from(binding.intent.object_count).map_err(|_| HaError::InvalidFrame)?;
     if count == 0 || count > wire::MAX_OBJECTS {
@@ -514,51 +1274,85 @@ pub fn recover_native_v6_committed_closure(
         .map_err(|_| HaError::Transport)?;
     let mut references = Vec::with_capacity(count);
     let mut fsynced = vec![false; count];
-    let mut pending = Vec::new();
-    for (&target, route) in routes.iter().filter(|(id, _)| **id != raft.id()) {
-        pending.push(pending_pull(
-            transport,
-            route,
+    let mut local_examined = false;
+    let mut pulls = OwnedPulls {
+        runtime,
+        pending: Vec::new(),
+        #[cfg(test)]
+        observation: observation::current(),
+    };
+    let mut object_donors = BTreeSet::new();
+    let context = PullRequestContext {
+        runtime,
+        transport,
+        routes,
+        pins,
+        binding: &binding,
+        requester: raft.id(),
+        round,
+        deadline,
+        #[cfg(test)]
+        observation: pulls.observation.clone(),
+    };
+    for &target in routes.keys().filter(|id| **id != raft.id()) {
+        pulls.pending.push(pending_pull(
+            &context,
             target,
-            pins[&target],
-            &binding,
-            raft.id(),
-            round,
             PullStep::Manifest(0),
             &references,
-            deadline,
         )?);
     }
     loop {
         check_deadline(deadline)?;
-        if pending.is_empty() {
+        for &target in &object_donors {
+            fill_object_window(&mut pulls, &context, target, &references, &fsynced)?;
+        }
+        if pulls.pending.is_empty() {
             return Err(unknown());
         }
-        let (index, result) = runtime.block_on(async {
-            tokio::time::timeout_at(
-                tokio::time::Instant::from_std(deadline),
-                poll_fn(|cx| {
-                    for (index, operation) in pending.iter_mut().enumerate() {
-                        if let Poll::Ready(result) = operation.operation.as_mut().poll(cx) {
-                            return Poll::Ready((index, result));
+        let (index, result) = root_phase!(
+            ControllerWait,
+            runtime.block_on(async {
+                tokio::time::timeout_at(
+                    tokio::time::Instant::from_std(deadline),
+                    poll_fn(|cx| {
+                        for (index, operation) in pulls.pending.iter_mut().enumerate() {
+                            if let Poll::Ready(result) = Pin::new(&mut operation.operation).poll(cx)
+                            {
+                                return Poll::Ready((
+                                    index,
+                                    result.map_err(|_| unknown()).flatten(),
+                                ));
+                            }
                         }
-                    }
-                    Poll::Pending
-                }),
-            )
-            .await
-            .map_err(|_| unknown())
-        })?;
-        let completed = pending.swap_remove(index);
+                        Poll::Pending
+                    }),
+                )
+                .await
+                .map_err(|_| unknown())
+            })
+        )?;
+        let completed = pulls.pending.swap_remove(index);
+        #[cfg(test)]
+        if let Some(observation) = &pulls.observation {
+            observation.joined();
+        }
         let target = completed.target;
         let step = completed.step;
+        let completed_object = matches!(step, PullStep::Object(_));
         drop(completed);
         let Ok(response) = result else {
+            // A failed donor is never automatically retried. Cancel and join
+            // its other entries before continuing with another donor. Invalid
+            // authenticated object bytes below remain terminal for the round.
+            object_donors.remove(&target);
+            pulls.retire(target);
             continue;
         };
         check_deadline(deadline)?;
         let next = match step {
             PullStep::Manifest(expected_offset) => {
+                root_count!(ManifestReply, 1, response.payload.len());
                 let (offset, page) = wire::parse_manifest_page(&response.payload)?;
                 let end = offset
                     .checked_add(page.len())
@@ -581,66 +1375,110 @@ pub fn recover_native_v6_committed_closure(
                 } else {
                     return Err(HaError::InvalidFrame);
                 }
-                if references.len() == count {
+                let next = if references.len() == count {
                     wire::exact_manifest(&references, &binding.intent)?;
+                    if !local_examined {
+                        synchronize_available_pull_objects(
+                            raft,
+                            runtime,
+                            storage,
+                            &selected,
+                            &references,
+                            &mut fsynced,
+                        )?;
+                        local_examined = true;
+                    }
                     PullStep::Object(0)
                 } else {
                     PullStep::Manifest(end)
-                }
+                };
+                drop(response);
+                next
             }
             PullStep::Object(index) => {
-                let reference = references.get(index).ok_or(HaError::InvalidFrame)?;
-                if response.payload.len() != reference.encoded_bytes as usize {
-                    return Err(HaError::InvalidFrame);
+                let mut ready = Vec::with_capacity(NATIVE_V6_ROOT_PULL_GLOBAL_FRAMES);
+                append_ready_pull_object(&mut ready, &references, &fsynced, index, response)?;
+                if ready.is_empty() {
+                    // A fully checked durable duplicate adds no receipt or
+                    // progress. The original finish path already handles the
+                    // iteration that sets the last bit; do not spend another
+                    // ReadIndex on this duplicate or retain its frame permit.
+                    continue;
                 }
+                // The first exact new reply already owes this fresh quorum
+                // read. Let the existing window progress during that read,
+                // then drain only replies that are ready, without waiting to
+                // fill a batch. The same opaque witness gates every I/O below.
                 let fresh = fresh_same(raft, runtime, &selected)?;
-                let mut gate = || {
-                    runtime
-                        .block_on(raft.verify_native_v6_committed_root_read(&fresh))
-                        .map_err(|_| LocalV6BlobError::CorruptOrChanged)
-                };
-                storage
-                    .stage_received_replica_checked(reference, &response.payload, &mut gate)
-                    .map_err(|_| unknown())?;
-                gate().map_err(|_| unknown())?;
-                fsynced[index] = true;
+                let mut terminal_error = None;
+                for _ in 1..NATIVE_V6_ROOT_PULL_GLOBAL_FRAMES {
+                    check_deadline(deadline)?;
+                    let Some((ready_target, ready_index, result)) = pulls.take_ready_object()
+                    else {
+                        break;
+                    };
+                    let Ok(response) = result else {
+                        // Preserve the original one-attempt donor retirement.
+                        // Already verified replies retain only immutable bytes;
+                        // no new request is submitted while collecting a batch.
+                        object_donors.remove(&ready_target);
+                        pulls.retire(ready_target);
+                        continue;
+                    };
+                    if let Err(error) = append_ready_pull_object(
+                        &mut ready,
+                        &references,
+                        &fsynced,
+                        ready_index,
+                        response,
+                    ) {
+                        // Preserve the original ordered successful prefix:
+                        // earlier exact replies still owe their real gates and
+                        // fsync before this later invalid reply is refused.
+                        // The invalid bytes never enter the physical batch.
+                        terminal_error = Some(error);
+                        break;
+                    }
+                }
+                persist_ready_pull_batch(
+                    raft,
+                    runtime,
+                    storage,
+                    &fresh,
+                    &references,
+                    &mut fsynced,
+                    &ready,
+                )?;
+                if let Some(error) = terminal_error {
+                    // Never refill, finish a closure, or retry after refusal.
+                    // OwnedPulls still cancels and joins every outstanding task.
+                    return Err(error);
+                }
                 PullStep::Object(0)
             }
         };
-        drop(response);
         // Keep fsync/consensus work outside an entered Tokio runtime. Socket
         // workers own no borrowed Raft, storage, Service or Actor handle.
         if references.len() == count {
-            if let Some(index) = fsynced.iter().position(|done| !done) {
-                pending.push(pending_pull(
-                    transport,
-                    &routes[&target],
-                    target,
-                    pins[&target],
-                    &binding,
-                    raft.id(),
-                    round,
-                    PullStep::Object(index),
-                    &references,
-                    deadline,
-                )?);
-            } else {
-                drop(pending);
-                return finish_local(raft, runtime, storage, selected, &references, &fsynced);
+            if fsynced.iter().all(|done| *done) {
+                pulls.cancel_and_join();
+                check_deadline(deadline)?;
+                return root_phase_finish!(
+                    root_total,
+                    finish_local(raft, runtime, storage, selected, &references, &fsynced)
+                );
+            }
+            if !completed_object {
+                object_donors.insert(target);
             }
         } else {
-            pending.push(pending_pull(
-                transport,
-                &routes[&target],
-                target,
-                pins[&target],
-                &binding,
-                raft.id(),
-                round,
-                next,
-                &references,
-                deadline,
-            )?);
+            pulls
+                .pending
+                .push(pending_pull(&context, target, next, &references)?);
         }
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "v6_committed_root_pull_ready_batch_unit_tests.rs"]
+mod ready_batch_unit_tests;

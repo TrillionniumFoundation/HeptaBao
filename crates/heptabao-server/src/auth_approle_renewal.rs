@@ -99,8 +99,7 @@ impl AuthState {
                 role.token_ttl == 0
                     || role.token_max_ttl == 0
                     || role
-                        .secret_ids
-                        .values()
+                        .all_approle_secrets()
                         .any(|secret| secret.issuance.is_some())
             })
     }
@@ -113,7 +112,7 @@ impl AuthState {
                 .flat_map(|roles| roles.values()),
         ) {
             validate_role_limits(role)?;
-            for secret in role.secret_ids.values() {
+            for secret in role.all_approle_secrets() {
                 if let Some(issued) = &secret.issuance
                     && (issued.ttl > MAX_TTL
                         || issued.last_updated_at < issued.created_at

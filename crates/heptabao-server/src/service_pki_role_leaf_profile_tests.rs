@@ -2,7 +2,7 @@
 //! Typed predecessor fixtures are authenticated inputs, never old-binary claims.
 use super::*;
 use crate::http::ocsp::CarrierBody;
-use crate::service::tests::{bootstrap_unmounted, commit_legacy_state_fixture};
+use crate::service::tests::{bootstrap_pre141_unmounted, commit_legacy_state_fixture};
 use openssl::{pkey::PKey, x509::X509};
 #[path = "service_pki_external_retired_owner_tests.rs"]
 mod retired_owner_tests;
@@ -67,7 +67,7 @@ fn default_profile() -> Value {
 fn local_fixture() -> TestResult<(Root, Service, String, String, X509)> {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    let (unseal, admin) = bootstrap_pre141_unmounted(&mut service)?;
     assert!(
         call(
             &mut service,
@@ -759,16 +759,11 @@ fn install_historical85_role(
 fn pki_profile88_namespace_final_restore_record_gate_and_last_owner_sticky_reopen() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    let (unseal, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     assert!(
-        call(
-            &mut service,
-            "POST",
-            "sys/namespaces/team",
-            &admin,
-            json!({})
-        )
-        .status
+        service
+            .create_pre144_namespace_fixture("team", &admin)?
+            .status
             == 200,
         "actual namespace admission"
     );
@@ -962,7 +957,7 @@ fn pki_profile88_namespace_final_restore_record_gate_and_last_owner_sticky_reope
 fn pki_profile88_received_record_actual85_to88_persists_and_reopens() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    let (unseal, admin) = bootstrap_pre141_unmounted(&mut service)?;
     assert!(
         call(
             &mut service,
@@ -1072,7 +1067,7 @@ fn pki_profile88_legacy_none_get_future_defaults_real_identity_and_old_signature
 -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap_unmounted(&mut service)?;
+    let (unseal, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     assert!(
         call(
             &mut service,

@@ -337,9 +337,61 @@ impl Service {
         incoming: &State,
     ) -> Result<(), Response> {
         incoming
+            .engines
+            .validate_kv_mount_configuration()
+            .map_err(|error| Response::error(400, &error.message))?;
+        if (current.schema >= KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+            || current.engines.has_kv_mount_configuration()
+            || incoming.engines.has_kv_mount_configuration())
+            && incoming.schema < KV_MOUNT_CONFIGURATION_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade KV mount configuration",
+            ));
+        }
+        incoming
+            .auth
+            .validate_security_contract_state()
+            .map_err(|error| Response::error(400, &error.message))?;
+        if (incoming.auth.has_security_contract_state()
+            || current.schema >= AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+            || current.auth.has_security_contract_state())
+            && incoming.schema < AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade Auth security contracts",
+            ));
+        }
+        incoming
             .auth
             .validate_rate_limit_quota_state(Some(&current.auth))
             .map_err(|e| Response::error(400, &e.message))?;
+        incoming
+            .validate_native_flat_retirement_state(Some(current))
+            .map_err(|_| {
+                Response::error(
+                    400,
+                    "snapshot would downgrade native flat namespace retirement",
+                )
+            })?;
+        if current.schema >= SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+            && incoming.schema < SCOPED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade scoped quota ownership",
+            ));
+        }
+        if current.schema >= EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+            && incoming.schema < EXTENDED_RATE_LIMIT_QUOTA_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade extended rate limit quota ownership",
+            ));
+        }
         if current.schema >= RATE_LIMIT_QUOTA_STATE_SCHEMA
             && incoming.schema < RATE_LIMIT_QUOTA_STATE_SCHEMA
         {
@@ -394,6 +446,43 @@ impl Service {
             .auth
             .validate_sdk_namespace_custody_successor(&current.auth)
             .map_err(|e| Response::error(400, &e.message))?;
+        if (current.schema >= NAMESPACE_FACTORY_STATE_SCHEMA
+            || current.auth.has_namespace_factory_state()
+            || incoming.auth.has_namespace_factory_state())
+            && incoming.schema < NAMESPACE_FACTORY_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade namespace factory provenance",
+            ));
+        }
+        incoming.validate_namespace_factory_state()?;
+        if (current.schema >= POLICY_EXPIRATION_STATE_SCHEMA
+            || current.auth.has_policy_expiration_state()
+            || incoming.auth.has_policy_expiration_state())
+            && incoming.schema < POLICY_EXPIRATION_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade policy expiration",
+            ));
+        }
+        incoming
+            .auth
+            .validate_policy_expiration_state()
+            .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= APPROLE_LOCAL_STATE_SCHEMA
+            && incoming.schema < APPROLE_LOCAL_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade cluster-local AppRole ownership",
+            ));
+        }
+        incoming
+            .auth
+            .validate_cluster_local_approle_state(&incoming.cluster_id)
+            .map_err(|error| Response::error(400, &error.message))?;
         incoming
             .auth
             .validate_sdk_credential_state(Some(&current.auth), &incoming.cluster_id, |ns| {
@@ -555,6 +644,15 @@ impl Service {
                 "snapshot would downgrade PKI RSA8192 ownership",
             ));
         }
+        if (current.schema >= PKI_BATCH_LEASE_STATE_SCHEMA
+            || current.engines.has_pki_batch_lease_state())
+            && incoming.schema < PKI_BATCH_LEASE_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade PKI certificate and batch lease separation",
+            ));
+        }
         if current.schema >= PKI_ORDINARY_REVOCATION_STATE_SCHEMA
             && incoming.schema < PKI_ORDINARY_REVOCATION_STATE_SCHEMA
         {
@@ -575,6 +673,14 @@ impl Service {
             .auth
             .validate_token_api_clock_floor(Some(&current.auth))
             .map_err(|error| Response::error(400, &error.message))?;
+        if current.schema >= NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA
+            && incoming.schema < NATIVE_PLAIN_NAMESPACE_STATE_SCHEMA
+        {
+            return Err(Response::error(
+                400,
+                "snapshot would downgrade native child namespace ownership",
+            ));
+        }
         if current.schema >= PKI_URLS_STATE_SCHEMA && incoming.schema < PKI_URLS_STATE_SCHEMA {
             return Err(Response::error(
                 400,
@@ -1109,6 +1215,8 @@ impl Service {
         // provider observations admitted before rollback must not survive it.
         // Prepare randomness before publication, and change the live nonce
         // only after the durable restore succeeds.
+        #[cfg(feature = "native-v6-storage")]
+        Self::advance_unseal_nonce_attempt(&mut self.unseal_nonce_attempt);
         let next_activation = match crypto::random::<16>() {
             Ok(value) => hex(&value),
             Err(error) => return Response::error(503, error),

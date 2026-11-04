@@ -274,12 +274,12 @@ impl EngineState {
         live: &BTreeSet<(String, LeaseOwner)>,
     ) -> Result<bool> {
         if !self.has_kubernetes_opaque_artifact_state() {
-            return Ok(self.reconcile_lease_state(time.seconds(), live));
+            return Ok(self.reconcile_lease_state_at(time.seconds(), time.exact(), live));
         }
         // Obtain a precise observation before any clock or retirement mutation.
         let time = self.kubernetes_artifact_time(time)?;
         let mut changed = self.observe_kubernetes_artifact_time(time)?;
-        changed |= self.reconcile_lease_state(time.seconds(), live);
+        changed |= self.reconcile_lease_state_at(time.seconds(), time.exact(), live);
         for (namespace, state) in &mut self.namespaces {
             for mount in state.mounts.values_mut() {
                 if let Backend::Kubernetes(engine) = &mut mount.backend {
@@ -290,9 +290,19 @@ impl EngineState {
         Ok(changed)
     }
 
+    #[cfg(test)]
     pub(crate) fn reconcile_lease_state(
         &mut self,
         now: u64,
+        live: &BTreeSet<(String, LeaseOwner)>,
+    ) -> bool {
+        self.reconcile_lease_state_at(now, None, live)
+    }
+
+    fn reconcile_lease_state_at(
+        &mut self,
+        now: u64,
+        observed: Option<crate::auth::Timestamp>,
         live: &BTreeSet<(String, LeaseOwner)>,
     ) -> bool {
         let any = self.namespaces.values().any(|state| {
@@ -325,7 +335,7 @@ impl EngineState {
                         changed |= before != engine.leases.len();
                     }
                     Backend::Pki(engine) => {
-                        changed |= engine.reconcile(self.lease_clock, namespace, live);
+                        changed |= engine.reconcile(self.lease_clock, observed, namespace, live);
                     }
                     Backend::Kubernetes(engine) => {
                         changed |= engine.reconcile_owners(self.lease_clock, namespace, live);
@@ -585,10 +595,11 @@ impl EngineState {
         body: &Value,
         time: crate::auth::AuthorityTime,
     ) -> Result<EngineResponse> {
-        if !self.has_kubernetes_opaque_artifact_state() {
-            return self.handle_lease_admin(namespace, method, path, body, time.seconds());
-        }
-        let time = self.kubernetes_artifact_time(time)?;
+        let time = if self.has_kubernetes_opaque_artifact_state() {
+            self.kubernetes_artifact_time(time)?
+        } else {
+            time
+        };
         self.handle_lease_admin_with_observation(
             namespace,
             method,
@@ -599,6 +610,7 @@ impl EngineState {
         )
     }
 
+    #[cfg(test)]
     pub(crate) fn handle_lease_admin(
         &mut self,
         namespace: &str,
@@ -860,7 +872,14 @@ impl EngineState {
                     return Err(not_found());
                 };
                 match action {
-                    "lookup" => Ok(ok(engine.lease_lookup(&serial, clock)?, false)),
+                    "lookup" => Ok(ok(
+                        engine.lease_lookup(
+                            &serial,
+                            clock,
+                            observed.and_then(crate::auth::AuthorityTime::exact),
+                        )?,
+                        false,
+                    )),
                     "renew" => Err(bad("PKI certificate leases are not renewable")),
                     _ => {
                         let changed = engine.revoke_lease(&serial, clock)?;

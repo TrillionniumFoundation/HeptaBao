@@ -3,6 +3,9 @@
 //! same descriptor with its actual local barrier and compare fresh plaintext.
 use super::*;
 
+#[path = "immutable_cipher_reuse_batch.rs"]
+mod batch;
+
 impl FileBackend {
     /// An existing leaf is neither a cache hit nor evidence of an earlier
     /// successful fsync. Sync its actual descriptor and the actual directory
@@ -62,9 +65,13 @@ impl FileBackend {
                     Err(_) => return Err(BackendError::Corrupt),
                 };
                 checked_gate()?;
+                let mutations = self
+                    .directory
+                    .watch_file_mutations(&existing)
+                    .map_err(|_| BackendError::Corrupt)?;
                 let witness = object_metadata_witness(&existing, exact_len)?;
                 let identity = witness.identity;
-                self.check_reused_file_current(locator, &existing, witness, &profile)?;
+                self.check_reused_file_current(locator, &existing, witness, &profile, &mutations)?;
                 checked_gate()?;
 
                 let mut pin = ImmutableBlobReadPin(Arc::new(PinnedObject {
@@ -75,44 +82,82 @@ impl FileBackend {
                     lease: Arc::downgrade(&self.immutable_lease),
                     synchronized_ciphertext_digest: None,
                     synchronized_metadata: Some(witness),
+                    reuse_mutation_witness: Some(mutations),
+                    synchronized_publication_witness: None,
                 }));
                 // Read the actual bounded descriptor before synchronization.
                 // The final local AEAD read must read this descriptor again
                 // and match this exact wire commitment, including its nonce.
                 // Metadata equality alone cannot prove these bytes stayed put.
-                let protected = pin
-                    .read_ciphertext_checked(&mut checked_gate)
-                    .map_err(|error| match error {
+                let protected = pin.read_ciphertext_checked(&mut checked_gate).map_err(
+                    |error| match error {
                         PinReadError::Backend(error) | PinReadError::Gate(error) => error,
-                    })?;
+                    },
+                )?;
                 let synchronized_ciphertext_digest = crate::digest32(
                     b"heptabao.immutable-reuse-ciphertext.v1",
                     protected.as_slice(),
                 );
                 drop(protected);
                 checked_gate()?;
-                self.check_reused_file_current(locator, &pin.0.file, witness, &profile)?;
+                self.check_reused_file_current(
+                    locator,
+                    &pin.0.file,
+                    witness,
+                    &profile,
+                    pin.reuse_mutations()?,
+                )?;
                 checked_gate()?;
-                self.check_reused_file_current(locator, &pin.0.file, witness, &profile)?;
+                self.check_reused_file_current(
+                    locator,
+                    &pin.0.file,
+                    witness,
+                    &profile,
+                    pin.reuse_mutations()?,
+                )?;
 
                 sync_file(&pin.0.file).map_err(|_| BackendError::OutcomeUnknown)?;
                 checked_gate()?;
-                self.check_reused_file_current(locator, &pin.0.file, witness, &profile)
-                    .map_err(|_| BackendError::OutcomeUnknown)?;
+                self.check_reused_file_current(
+                    locator,
+                    &pin.0.file,
+                    witness,
+                    &profile,
+                    pin.reuse_mutations()?,
+                )
+                .map_err(|_| BackendError::OutcomeUnknown)?;
                 checked_gate()?;
-                self.check_reused_file_current(locator, &pin.0.file, witness, &profile)
-                    .map_err(|_| BackendError::OutcomeUnknown)?;
+                self.check_reused_file_current(
+                    locator,
+                    &pin.0.file,
+                    witness,
+                    &profile,
+                    pin.reuse_mutations()?,
+                )
+                .map_err(|_| BackendError::OutcomeUnknown)?;
 
                 sync_directory(&self.directory).map_err(|_| BackendError::OutcomeUnknown)?;
                 checked_gate()?;
-                self.check_reused_file_current(locator, &pin.0.file, witness, &profile)
-                    .map_err(|_| BackendError::OutcomeUnknown)?;
+                self.check_reused_file_current(
+                    locator,
+                    &pin.0.file,
+                    witness,
+                    &profile,
+                    pin.reuse_mutations()?,
+                )
+                .map_err(|_| BackendError::OutcomeUnknown)?;
                 checked_gate()?;
                 // Recheck after the final caller gate as well. A gate may
                 // revoke custody or provoke a name change; neither can turn
                 // the originally opened object into a freshly missing leaf.
-                self.check_reused_file_current(locator, &pin.0.file, witness, &profile)
-                    .map_err(|_| BackendError::OutcomeUnknown)?;
+                self.check_reused_file_current(
+                    locator,
+                    &pin.0.file,
+                    witness,
+                    &profile,
+                    pin.reuse_mutations()?,
+                )
+                .map_err(|_| BackendError::OutcomeUnknown)?;
                 Arc::get_mut(&mut pin.0)
                     .ok_or(BackendError::Corrupt)?
                     .synchronized_ciphertext_digest = Some(synchronized_ciphertext_digest);
@@ -133,7 +178,11 @@ impl FileBackend {
         existing: &File,
         witness: ObjectMetadataWitness,
         profile: &ImmutableBlobProfile,
+        mutations: &heptabao_filesystem_guard::FileMutationWitness,
     ) -> Result<(), BackendError> {
+        mutations
+            .verify_file(existing)
+            .map_err(|_| BackendError::Corrupt)?;
         if self.immutable_blob_profile()? != *profile
             || object_metadata_witness(existing, witness.identity.length)? != witness
         {
@@ -151,6 +200,9 @@ impl FileBackend {
             return Err(BackendError::Corrupt);
         }
         self.verify()?;
+        mutations
+            .verify_file(existing)
+            .map_err(|_| BackendError::Corrupt)?;
         self.immutable_lease.check()
     }
 }

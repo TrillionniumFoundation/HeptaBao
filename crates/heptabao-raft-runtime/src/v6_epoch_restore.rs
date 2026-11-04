@@ -26,7 +26,8 @@ pub(crate) mod lineage_wire {
     use serde::{Deserializer, Serialize, Serializer};
 
     pub(crate) fn serialize<S: Serializer>(
-        records: &[NativeV6EpochRestoreRecord], serializer: S,
+        records: &[NativeV6EpochRestoreRecord],
+        serializer: S,
     ) -> Result<S::Ok, S::Error> {
         records.serialize(serializer)
     }
@@ -39,7 +40,10 @@ pub(crate) mod lineage_wire {
             fn expecting(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 f.write_str("at most 64 native epoch transitions")
             }
-            fn visit_seq<A: SeqAccess<'de>>(self, mut sequence: A) -> Result<Self::Value, A::Error> {
+            fn visit_seq<A: SeqAccess<'de>>(
+                self,
+                mut sequence: A,
+            ) -> Result<Self::Value, A::Error> {
                 let mut records = Vec::new();
                 while let Some(record) = sequence.next_element()? {
                     if records.len() == MAX_NATIVE_EPOCH_TRANSITIONS {
@@ -67,8 +71,10 @@ pub(crate) struct NativeV6EpochRestoreSource {
 }
 
 impl NativeV6EpochRestoreSource {
-    pub(crate) fn from_current(enrollment: &NativeV6EnrollmentState, root: &NativeV6RootState)
-    -> Result<Self, RecordRejection> {
+    pub(crate) fn from_current(
+        enrollment: &NativeV6EnrollmentState,
+        root: &NativeV6RootState,
+    ) -> Result<Self, RecordRejection> {
         enrollment.validate()?;
         root.validate()?;
         if enrollment.digest() != root.command.enrollment_digest
@@ -90,9 +96,11 @@ impl NativeV6EpochRestoreSource {
 
     fn validate(&self) -> Result<(), RecordRejection> {
         self.enrollment.validate()?;
-        if self.root_digest == [0; 32] || self.migration_digest == [0; 32]
+        if self.root_digest == [0; 32]
+            || self.migration_digest == [0; 32]
             || self.generation == 0
-            || !valid_log(self.publication_log) || !valid_log(self.intent_log)
+            || !valid_log(self.publication_log)
+            || !valid_log(self.intent_log)
             || !valid_log(self.migration_log)
             || !follows(self.migration_log, self.intent_log)
             || !follows(self.enrollment.log, self.intent_log)
@@ -116,10 +124,17 @@ pub(crate) struct NativeV6EpochRestoreCommand {
 impl NativeV6EpochRestoreCommand {
     pub(crate) fn validate(&self) -> Result<(), RecordRejection> {
         self.source.validate()?;
-        if self.operation_digest == [0; 32] || self.proposed_root_digest == [0; 32]
+        if self.operation_digest == [0; 32]
+            || self.proposed_root_digest == [0; 32]
             || self.proposed_root_digest == self.source.root_digest
-            || self.next_epoch != self.source.enrollment.command.epoch.checked_add(1)
-                .ok_or(RecordRejection::Invalid)?
+            || self.next_epoch
+                != self
+                    .source
+                    .enrollment
+                    .command
+                    .epoch
+                    .checked_add(1)
+                    .ok_or(RecordRejection::Invalid)?
             || self.source.generation.checked_add(1).is_none()
         {
             return Err(RecordRejection::Invalid);
@@ -127,8 +142,10 @@ impl NativeV6EpochRestoreCommand {
         Ok(())
     }
 
-    pub(crate) fn matches_intent(&self, intent: &NativeV6CommitIntent)
-    -> Result<(), RecordRejection> {
+    pub(crate) fn matches_intent(
+        &self,
+        intent: &NativeV6CommitIntent,
+    ) -> Result<(), RecordRejection> {
         self.validate()?;
         intent.encode()?;
         if intent.cluster_digest != self.source.enrollment.command.cluster_digest
@@ -185,7 +202,9 @@ impl NativeV6PendingEpochRestore {
     }
 
     pub(crate) fn matches_current(
-        &self, enrollment: &NativeV6EnrollmentState, root: &NativeV6RootState,
+        &self,
+        enrollment: &NativeV6EnrollmentState,
+        root: &NativeV6RootState,
     ) -> Result<(), RecordRejection> {
         self.validate()?;
         if self.command.source != NativeV6EpochRestoreSource::from_current(enrollment, root)? {
@@ -207,6 +226,44 @@ pub(crate) struct NativeV6EpochRestorePublication {
 pub(crate) struct NativeV6EpochRestoreRecord {
     pub(crate) pending: NativeV6PendingEpochRestore,
     pub(crate) publication_log: LogIdOf<TypeConfig>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) retained_roots: Option<NativeV6EpochRetainedRoots>,
+}
+
+/// Authenticated-by-Apply historical DATA. The source is copied from the
+/// actual active state and the target from the actual validated publication.
+/// These bytes never construct a public committed-read or publication owner.
+#[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct NativeV6EpochRetainedRoots {
+    pub(crate) source: NativeV6RootCommand,
+    pub(crate) target: NativeV6RootCommand,
+}
+
+impl NativeV6EpochRetainedRoots {
+    fn validate(&self, record: &NativeV6EpochRestoreRecord) -> Result<(), RecordRejection> {
+        self.source.validate()?;
+        self.target.validate()?;
+        let source = &record.pending.command.source;
+        let target = record
+            .pending
+            .intent
+            .as_ref()
+            .ok_or(RecordRejection::MissingDependency)?;
+        if self.source.intent.proposed_root_digest != source.root_digest
+            || self.source.intent.proposed_generation != source.generation
+            || self.source.intent.cluster_digest != source.enrollment.command.cluster_digest
+            || self.source.intent.epoch != source.enrollment.command.epoch
+            || self.source.intent_log != source.intent_log
+            || self.source.enrollment_digest != source.enrollment.digest()
+            || self.target.intent != target.intent
+            || self.target.intent_log != target.log
+            || self.target.enrollment_digest != record.pending.target_enrollment.digest()
+        {
+            return Err(RecordRejection::MissingDependency);
+        }
+        Ok(())
+    }
 }
 
 /// Read-only lineage from an actual published root. This borrowed metadata can
@@ -218,8 +275,12 @@ impl NativeV6EpochTransition<'_> {
     pub fn source_enrollment(&self) -> crate::NativeV6PeerEnrollment {
         crate::NativeV6PeerEnrollment(self.0.pending.command.source.enrollment.clone())
     }
-    pub fn source_root_digest(&self) -> [u8; 32] { self.0.pending.command.source.root_digest }
-    pub fn source_generation(&self) -> u64 { self.0.pending.command.source.generation }
+    pub fn source_root_digest(&self) -> [u8; 32] {
+        self.0.pending.command.source.root_digest
+    }
+    pub fn source_generation(&self) -> u64 {
+        self.0.pending.command.source.generation
+    }
     pub fn source_publication_log_id(&self) -> LogIdOf<TypeConfig> {
         self.0.pending.command.source.publication_log
     }
@@ -229,21 +290,30 @@ impl NativeV6EpochTransition<'_> {
     pub fn target_enrollment(&self) -> crate::NativeV6PeerEnrollment {
         crate::NativeV6PeerEnrollment(self.0.pending.target_enrollment.clone())
     }
-    pub fn operation_digest(&self) -> [u8; 32] { self.0.pending.command.operation_digest }
-    pub fn begin_log_id(&self) -> LogIdOf<TypeConfig> { self.0.pending.begin_log }
+    pub fn operation_digest(&self) -> [u8; 32] {
+        self.0.pending.command.operation_digest
+    }
+    pub fn begin_log_id(&self) -> LogIdOf<TypeConfig> {
+        self.0.pending.begin_log
+    }
     pub fn intent(&self) -> Option<NativeV6CommitIntent> {
         self.0.pending.intent.as_ref().map(|sealed| sealed.intent)
     }
     pub fn intent_log_id(&self) -> Option<LogIdOf<TypeConfig>> {
         self.0.pending.intent.as_ref().map(|sealed| sealed.log)
     }
-    pub fn publication_log_id(&self) -> LogIdOf<TypeConfig> { self.0.publication_log }
+    pub fn publication_log_id(&self) -> LogIdOf<TypeConfig> {
+        self.0.publication_log
+    }
 }
 
 impl std::fmt::Debug for NativeV6EpochTransition<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("NativeV6EpochTransition")
-            .field("source_epoch", &self.0.pending.command.source.enrollment.command.epoch)
+            .field(
+                "source_epoch",
+                &self.0.pending.command.source.enrollment.command.epoch,
+            )
             .field("target_epoch", &self.0.pending.command.next_epoch)
             .field("publication_index", &self.0.publication_log.index)
             .finish_non_exhaustive()
@@ -253,9 +323,16 @@ impl std::fmt::Debug for NativeV6EpochTransition<'_> {
 impl NativeV6EpochRestoreRecord {
     fn validate(&self) -> Result<(), RecordRejection> {
         self.pending.validate()?;
-        let intent = self.pending.intent.as_ref().ok_or(RecordRejection::Invalid)?;
+        let intent = self
+            .pending
+            .intent
+            .as_ref()
+            .ok_or(RecordRejection::Invalid)?;
         if !valid_log(self.publication_log) || !follows(intent.log, self.publication_log) {
             return Err(RecordRejection::Invalid);
+        }
+        if let Some(roots) = &self.retained_roots {
+            roots.validate(self)?;
         }
         Ok(())
     }
@@ -263,8 +340,7 @@ impl NativeV6EpochRestoreRecord {
 
 pub(crate) fn validate_lineage(root: &NativeV6RootState) -> Result<(), RecordRejection> {
     if root.restore_lineage.len() > MAX_NATIVE_EPOCH_TRANSITIONS
-        || crate::records::json_size(&root.restore_lineage)?
-            > MAX_NATIVE_EPOCH_HISTORY_BYTES
+        || crate::records::json_size(&root.restore_lineage)? > MAX_NATIVE_EPOCH_HISTORY_BYTES
     {
         return Err(RecordRejection::Budget);
     }
@@ -272,7 +348,11 @@ pub(crate) fn validate_lineage(root: &NativeV6RootState) -> Result<(), RecordRej
     for record in &root.restore_lineage {
         record.validate()?;
         let source = &record.pending.command.source;
-        let intent = record.pending.intent.as_ref().ok_or(RecordRejection::Invalid)?;
+        let intent = record
+            .pending
+            .intent
+            .as_ref()
+            .ok_or(RecordRejection::Invalid)?;
         if source.migration_digest != root.migration_source_digest
             || source.migration_log != root.migration_source_log
             || record.publication_log.index > root.publication_log.index
@@ -281,25 +361,45 @@ pub(crate) fn validate_lineage(root: &NativeV6RootState) -> Result<(), RecordRej
             return Err(RecordRejection::Invalid);
         }
         if let Some(previous) = previous {
-            let prior_intent = &previous.pending.intent.as_ref()
-                .ok_or(RecordRejection::Invalid)?.intent;
+            let prior_intent = &previous
+                .pending
+                .intent
+                .as_ref()
+                .ok_or(RecordRejection::Invalid)?
+                .intent;
             if source.enrollment != previous.pending.target_enrollment
                 || source.generation < prior_intent.proposed_generation
                 || (source.generation > prior_intent.proposed_generation
                     && !follows(previous.publication_log, source.publication_log))
                 || (source.generation == prior_intent.proposed_generation
                     && (source.publication_log != previous.publication_log
-                        || source.intent_log != previous.pending.intent.as_ref()
-                            .ok_or(RecordRejection::Invalid)?.log
+                        || source.intent_log
+                            != previous
+                                .pending
+                                .intent
+                                .as_ref()
+                                .ok_or(RecordRejection::Invalid)?
+                                .log
                         || source.root_digest != prior_intent.proposed_root_digest))
             {
                 return Err(RecordRejection::Invalid);
+            }
+            if source.publication_log == previous.publication_log
+                && let (Some(current_roots), Some(previous_roots)) =
+                    (&record.retained_roots, &previous.retained_roots)
+                && current_roots.source != previous_roots.target
+            {
+                return Err(RecordRejection::ImmutableConflict);
             }
         }
         previous = Some(record);
     }
     if let Some(last) = previous {
-        let intent = last.pending.intent.as_ref().ok_or(RecordRejection::Invalid)?;
+        let intent = last
+            .pending
+            .intent
+            .as_ref()
+            .ok_or(RecordRejection::Invalid)?;
         if root.command.enrollment_digest != last.pending.target_enrollment.digest()
             || root.command.intent.epoch != last.pending.command.next_epoch
             || root.command.intent.cluster_digest
@@ -313,18 +413,35 @@ pub(crate) fn validate_lineage(root: &NativeV6RootState) -> Result<(), RecordRej
         {
             return Err(RecordRejection::Invalid);
         }
+        if root.publication_log == last.publication_log
+            && last
+                .retained_roots
+                .as_ref()
+                .is_some_and(|roots| roots.target != root.command)
+        {
+            return Err(RecordRejection::ImmutableConflict);
+        }
     }
     Ok(())
 }
 
 impl crate::StateMachine {
     pub(crate) fn apply_begin_native_v6_epoch_restore(
-        &mut self, command: &NativeV6EpochRestoreCommand,
+        &mut self,
+        command: &NativeV6EpochRestoreCommand,
     ) -> Result<(), RecordRejection> {
         command.validate()?;
-        let current = self.v6_root.as_ref().ok_or(RecordRejection::MissingDependency)?;
-        let enrollment = self.v6_enrollment.as_ref().ok_or(RecordRejection::MissingDependency)?;
-        enrollment.command.matches_membership(&self.last_membership)?;
+        let current = self
+            .v6_root
+            .as_ref()
+            .ok_or(RecordRejection::MissingDependency)?;
+        let enrollment = self
+            .v6_enrollment
+            .as_ref()
+            .ok_or(RecordRejection::MissingDependency)?;
+        enrollment
+            .command
+            .matches_membership(&self.last_membership)?;
         if command.source != NativeV6EpochRestoreSource::from_current(enrollment, current)? {
             return Err(RecordRejection::StaleRoot);
         }
@@ -343,7 +460,10 @@ impl crate::StateMachine {
         target_enrollment.command.epoch = command.next_epoch;
         target_enrollment.log = begin_log;
         let pending = NativeV6PendingEpochRestore {
-            command: command.clone(), begin_log, target_enrollment, intent: None,
+            command: command.clone(),
+            begin_log,
+            target_enrollment,
+            intent: None,
         };
         pending.validate()?;
         self.v6_epoch_protocol = Some(1);
@@ -354,7 +474,8 @@ impl crate::StateMachine {
     }
 
     pub(crate) fn apply_cancel_native_v6_epoch_restore(
-        &mut self, expected: &NativeV6PendingEpochRestore,
+        &mut self,
+        expected: &NativeV6PendingEpochRestore,
     ) -> Result<(), RecordRejection> {
         expected.validate()?;
         if self.v6_pending_epoch_restore.as_ref() != Some(expected) {
@@ -365,20 +486,31 @@ impl crate::StateMachine {
     }
 
     pub(crate) fn validate_native_v6_epoch_intent_stage(
-        &self, intent: &NativeV6CommitIntent,
+        &self,
+        intent: &NativeV6CommitIntent,
     ) -> Result<(), RecordRejection> {
-        let Some(root) = &self.v6_root else { return Ok(()); };
-        let enrollment = self.v6_enrollment.as_ref().ok_or(RecordRejection::MissingDependency)?;
+        let Some(root) = &self.v6_root else {
+            return Ok(());
+        };
+        let enrollment = self
+            .v6_enrollment
+            .as_ref()
+            .ok_or(RecordRejection::MissingDependency)?;
         if intent.epoch == enrollment.command.epoch {
             return Ok(());
         }
-        let pending = self.v6_pending_epoch_restore.as_ref()
+        let pending = self
+            .v6_pending_epoch_restore
+            .as_ref()
             .ok_or(RecordRejection::StaleRoot)?;
         pending.matches_current(enrollment, root)?;
         pending.command.matches_intent(intent)?;
         let log = self.last_applied_log.ok_or(RecordRejection::Invalid)?;
         if log.index <= pending.begin_log.index
-            || pending.intent.as_ref().is_some_and(|existing| existing.intent != *intent)
+            || pending
+                .intent
+                .as_ref()
+                .is_some_and(|existing| existing.intent != *intent)
         {
             return Err(RecordRejection::ImmutableConflict);
         }
@@ -386,7 +518,9 @@ impl crate::StateMachine {
     }
 
     pub(crate) fn record_native_v6_epoch_intent_stage(
-        &mut self, intent: NativeV6CommitIntent, log: LogIdOf<TypeConfig>,
+        &mut self,
+        intent: NativeV6CommitIntent,
+        log: LogIdOf<TypeConfig>,
     ) {
         if let Some(pending) = &mut self.v6_pending_epoch_restore
             && pending.command.matches_intent(&intent).is_ok()
@@ -394,12 +528,15 @@ impl crate::StateMachine {
             // Called only after successful Stage and insertion of its actual
             // immutable FIRST applied-log provenance. Duplicate Stage cannot
             // rebind the pending operation to a later log slot.
-            pending.intent.get_or_insert(NativeV6EpochRestoreIntent { intent, log });
+            pending
+                .intent
+                .get_or_insert(NativeV6EpochRestoreIntent { intent, log });
         }
     }
 
     pub(crate) fn apply_publish_native_v6_epoch_restore(
-        &mut self, publication: &NativeV6EpochRestorePublication,
+        &mut self,
+        publication: &NativeV6EpochRestorePublication,
     ) -> Result<(), RecordRejection> {
         let pending = &publication.pending;
         pending.validate()?;
@@ -407,11 +544,22 @@ impl crate::StateMachine {
         if self.v6_pending_epoch_restore.as_ref() != Some(pending) {
             return Err(RecordRejection::StaleRoot);
         }
-        let current = self.v6_root.as_ref().ok_or(RecordRejection::MissingDependency)?;
-        let enrollment = self.v6_enrollment.as_ref().ok_or(RecordRejection::MissingDependency)?;
-        enrollment.command.matches_membership(&self.last_membership)?;
+        let current = self
+            .v6_root
+            .as_ref()
+            .ok_or(RecordRejection::MissingDependency)?;
+        let enrollment = self
+            .v6_enrollment
+            .as_ref()
+            .ok_or(RecordRejection::MissingDependency)?;
+        enrollment
+            .command
+            .matches_membership(&self.last_membership)?;
         pending.matches_current(enrollment, current)?;
-        let admitted = pending.intent.as_ref().ok_or(RecordRejection::MissingDependency)?;
+        let admitted = pending
+            .intent
+            .as_ref()
+            .ok_or(RecordRejection::MissingDependency)?;
         if publication.root.intent != admitted.intent
             || publication.root.intent_log != admitted.log
             || publication.root.enrollment_digest != pending.target_enrollment.digest()
@@ -421,16 +569,30 @@ impl crate::StateMachine {
         let object = crate::SealedRecordObject::new_native_v6_commit_intent(admitted.intent)
             .map_err(|_| RecordRejection::Invalid)?;
         if self.v6_intent_log_id(&object.reference().id) != Some(admitted.log)
-            || self.records_v5.as_ref().ok_or(RecordRejection::MissingDependency)?
-                .object(object.reference())? != Some(object)
+            || self
+                .records_v5
+                .as_ref()
+                .ok_or(RecordRejection::MissingDependency)?
+                .object(object.reference())?
+                != Some(object)
         {
             return Err(RecordRejection::MissingDependency);
         }
         let publication_log = self.last_applied_log.ok_or(RecordRejection::Invalid)?;
         let mut lineage = current.restore_lineage.clone();
-        lineage.push(NativeV6EpochRestoreRecord { pending: pending.clone(), publication_log });
+        lineage.push(NativeV6EpochRestoreRecord {
+            pending: pending.clone(),
+            publication_log,
+            retained_roots: (self.v6_retained_root_protocol
+                == Some(crate::v6_retained_roots::RETAINED_ROOT_PROTOCOL))
+            .then(|| NativeV6EpochRetainedRoots {
+                source: current.command.clone(),
+                target: publication.root.clone(),
+            }),
+        });
         let root = NativeV6RootState {
-            command: publication.root.clone(), publication_log,
+            command: publication.root.clone(),
+            publication_log,
             migration_source_digest: current.migration_source_digest,
             migration_source_log: current.migration_source_log,
             restore_lineage: lineage,

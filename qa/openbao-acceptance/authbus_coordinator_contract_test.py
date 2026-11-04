@@ -31,6 +31,7 @@ class FakeBao:
         self.histories = {}
         self.attempts = []
         self.on_manifest_write = None
+        self.list_calls = []
 
     def read(self, key, version=None):
         value = self.values.get(key) if version is None else self.histories.get(key, {}).get(version)
@@ -53,9 +54,11 @@ class FakeBao:
             return hook(key, value, cas)
         return self.apply(key, value, cas)
 
-    def list(self, prefix):
+    def list(self, prefix, *, after=None, limit=central.MAX_SCAN_EVENTS):
+        self.list_calls.append((prefix, after, limit))
         return sorted(key[len(prefix) + 1:] for key in self.values if key.startswith(prefix + '/')
-                      and '/' not in key[len(prefix) + 1:])
+                      and '/' not in key[len(prefix) + 1:]
+                      and (after is None or key[len(prefix) + 1:] > after))[:limit]
 
 
 class TransportContract(unittest.TestCase):
@@ -198,11 +201,35 @@ class TransportContract(unittest.TestCase):
         self.assertIsNone(self.client.token)
         self.assertEqual(self.client.deadline, 0)
 
-    def test_oversized_inbox_list_refuses_without_mutating_or_deleting(self):
+    def test_oversized_inbox_page_refuses_without_mutating_or_deleting(self):
         self.reply = {'data': {'keys': [str(uuid.UUID(int=index)) for index in range(1, 1026)]}}
         with self.assertRaisesRegex(central.Error, 'inbox_list_bound'):
             self.client.list('inbox/producer')
         self.assertEqual([item['method'] for item in self.sent], ['LIST'])
+
+
+    def test_page_request_uses_existing_exclusive_after_and_positive_limit(self):
+        before, current = str(uuid.UUID(int=1024)), str(uuid.UUID(int=1025))
+        self.reply = {'data': {'keys': [current]}}
+        self.assertEqual(self.client.list('inbox/producer', after=before, limit=1), [current])
+        self.assertEqual(self.sent[0]['path'],
+                         '/v1/openclaw-auth/metadata/inbox/producer?limit=1&after=' + before)
+        self.assertEqual(self.sent[0]['method'], 'LIST')
+
+    def test_duplicate_unordered_or_nonadvancing_page_is_refused(self):
+        first, second = str(uuid.UUID(int=1)), str(uuid.UUID(int=2))
+        for keys, after in [([first, first], None), ([second, first], None), ([first], first)]:
+            self.reply = {'data': {'keys': keys}}
+            with self.assertRaisesRegex(central.Error, 'inbox_page_order_or_progress'):
+                self.client.list('inbox/producer', after=after)
+        self.assertEqual([row['method'] for row in self.sent], ['LIST'] * 3)
+
+    def test_page_authentication_denial_does_not_reset_cursor_or_reauthenticate(self):
+        with patch.object(self.client, 'request', side_effect=central.Error('bao_authentication_or_acl_denied')) as request:
+            with self.assertRaisesRegex(central.Error, 'bao_authentication_or_acl_denied'):
+                self.client.list('inbox/producer', after=str(uuid.UUID(int=1024)))
+        self.assertEqual(request.call_count, 1)
+        self.assertEqual(self.client.token, 'synthetic-coordinator-bearer')
 
 
 class Contract(unittest.TestCase):
@@ -494,5 +521,116 @@ class Contract(unittest.TestCase):
         self.assertEqual(self.reopen().once()['committed'], 1)
 
 
+    def report_event(self, number, source='producer'):
+        return {'schemaVersion': 2, 'kind': 'agent-report', 'sourceHost': source,
+                'eventId': str(uuid.UUID(int=number)), 'profiles': []}
+
+    def test_more_than_1024_events_finish_in_bounded_pages_across_cold_reopens(self):
+        total = 1057
+        for number in range(1, total + 1):
+            self.inbox(self.report_event(number))
+        observed, cycles = 0, 0
+        while observed < total and cycles < 40:
+            result = self.reopen().once()
+            observed += result['observed_reports']; cycles += 1
+            self.assertLessEqual(result['scanned'], central.MAX_SCAN_EVENTS)
+            self.assertLessEqual(result['list_requests'], 2)
+            self.assertLessEqual((self.directory / 'inbox-scan.private.json').stat().st_size, 2048)
+        self.assertEqual(observed, total)
+        self.assertEqual(cycles, 34)
+        self.assertTrue(all(1 <= limit <= 32 for _prefix, _after, limit in self.bao.list_calls))
+        self.assertEqual(len([key for key in self.bao.values if key.startswith('inbox/')]), total)
+        self.assertEqual(len([key for key in self.bao.values if key.startswith('coordinator-receipts/')]), total)
+        self.assertEqual(self.bao.read('manifest')['data']['generation'], 0)
+
+    def test_unapproved_early_events_do_not_starve_later_events_or_other_hosts(self):
+        for _ in range(64):
+            self.inbox(self.event())
+        self.inbox(self.report_event(100, source='follower'))
+        first = self.reopen().once()
+        self.assertEqual((first['deferred'], first['scanned']), (32, 32))
+        second = self.reopen().once()
+        self.assertEqual(second['observed_reports'], 1)
+        self.assertEqual(second['scanned'], 32)
+        self.assertEqual(self.bao.list_calls[1][0], 'inbox/follower')
+        self.assertEqual(self.bao.read('manifest')['data']['profiles'], [])
+
+    def test_wrap_revisits_new_lower_uuid_and_later_authorized_event(self):
+        for number in range(100, 133):
+            self.inbox(self.report_event(number))
+        first = self.reopen().once()
+        self.assertEqual(first['observed_reports'], 32)
+        late = self.event(); self.inbox(late)
+        self.assertEqual(self.reopen().once()['observed_reports'], 1)
+        self.assertEqual(self.reopen().once()['deferred'], 1)
+        self.grant(late)
+        results = [self.reopen().once() for _ in range(3)]
+        self.assertEqual(sum(row['committed'] for row in results), 1)
+        self.assertEqual(self.bao.read('manifest')['data']['profiles'][0]['digest'], late['digest'])
+
+    def test_crash_before_cursor_save_reuses_receipts_without_repeating_publication(self):
+        for number in range(1, 34):
+            self.inbox(self.report_event(number))
+        original = central.private_json
+        def crash_before_save(path, value, replace=False):
+            if path.name == 'inbox-scan.private.json':
+                raise Crash()
+            return original(path, value, replace=replace)
+        with patch.object(central, 'private_json', crash_before_save):
+            with self.assertRaises(Crash):
+                self.worker.once()
+        self.assertFalse((self.directory / 'inbox-scan.private.json').exists())
+        before = len(self.bao.attempts)
+        replay = self.reopen().once()
+        self.assertEqual((replay['already_recorded'], replay['observed_reports']), (32, 0))
+        self.assertEqual(len(self.bao.attempts), before)
+        self.assertEqual(self.reopen().once()['observed_reports'], 1)
+
+    def test_pending_unknown_recovery_precedes_saved_cursor_and_never_replays_manifest(self):
+        for number in range(1, 34):
+            self.inbox(self.report_event(number))
+        self.number = 33
+        event = self.event(); self.inbox(event); self.grant(event)
+        self.worker.once()
+        scan_path = self.directory / 'inbox-scan.private.json'
+        original_cursor = scan_path.read_bytes()
+        def lost(key, value, cas):
+            self.bao.apply(key, value, cas)
+            raise central.UnknownOutcome('mutation_outcome_unknown')
+        self.bao.on_manifest_write = lost
+        with self.assertRaises(central.UnknownOutcome):
+            self.reopen().once()
+        self.assertEqual(scan_path.read_bytes(), original_cursor)
+        before = len(self.bao.attempts)
+        resumed = self.reopen().once()
+        self.assertTrue(resumed['recovered_pending'])
+        self.assertEqual(resumed['committed'], 0)
+        self.assertEqual(self.bao.read('manifest')['data']['generation'], 1)
+        self.assertEqual([row for row in self.bao.attempts[before:] if row[0] == 'manifest'], [])
+
+    def test_scan_cursor_rejects_wrong_owner_sources_and_out_of_range_host(self):
+        self.worker.once()
+        path = self.directory / 'inbox-scan.private.json'
+        original = json.loads(path.read_text())
+        for patch_value in [{'ownerId': str(uuid.uuid4())}, {'sourceHosts': ['follower', 'producer']},
+                            {'nextHost': 2}, {'positions': {'producer': 'not-a-uuid', 'follower': None}}]:
+            central.private_json(path, {**original, **patch_value}, replace=True)
+            before = len(self.bao.attempts)
+            with self.assertRaisesRegex(central.Error, 'inbox_scan_owner_or_cursor_binding'):
+                self.reopen().once()
+            self.assertEqual(len(self.bao.attempts), before)
+
+    def test_revoked_grant_stays_revoked_when_deferred_event_is_revisited(self):
+        for number in range(100, 133):
+            self.inbox(self.report_event(number))
+        event = self.event(); self.inbox(event); grant = self.grant(event)
+        self.worker.revoke_authorization(grant['authorizationId'])
+        for _ in range(4):
+            self.assertEqual(self.reopen().once()['committed'], 0)
+        self.assertEqual(self.bao.read('manifest')['data']['profiles'], [])
+        self.assertIsNone(self.bao.read(central.receipt_key('producer', event['eventId'])))
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
+

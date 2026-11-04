@@ -48,7 +48,7 @@ fn listing111_real_enable_reopen_clear_and_sticky_publication_floor()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
-    let (key, admin) = bootstrap_unmounted(&mut service)?;
+    let (key, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     let ordinary = service.state.as_ref().ok_or("ordinary state")?.clone();
     assert_eq!(ordinary.schema, CURRENT_STATE_SCHEMA);
     assert!(!ordinary.has_mount_listing_visibility_state());
@@ -357,7 +357,7 @@ fn listing111_auth_enable_tune_and_invalid_fields_preserve_committed_state()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, admin) = bootstrap_unmounted(&mut service)?;
+    let (_, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -447,16 +447,11 @@ fn listing111_actual_child_namespace_metadata_isolated_from_root_catalog()
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, admin) = bootstrap_unmounted(&mut service)?;
+    let (_, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     assert_eq!(
-        call(
-            &mut service,
-            "POST",
-            "sys/namespaces/team",
-            &admin,
-            json!({})
-        )
-        .status,
+        service
+            .create_pre144_namespace_fixture("team", &admin)?
+            .status,
         200
     );
     assert_eq!(service.handle_at("POST", "sys/mounts/child-public", "team", &admin,

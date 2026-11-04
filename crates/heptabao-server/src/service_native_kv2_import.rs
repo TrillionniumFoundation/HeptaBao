@@ -25,16 +25,26 @@ impl Service {
             Ok(deadline) => deadline,
             Err(_) => return rejected(),
         };
-        let mut authority = |auth: &AuthState| -> Result<(), Response> {
+        let authority = |auth: &AuthState| -> Result<(), Response> {
             deadline.check().map_err(|_| rejected())?;
             let time = request.token_time()?;
             auth.authorize_request_parameters_observed(
-                &principal, request.namespace, request.method,
-                request.path, request.body, time,
-            ).map_err(|error| Response::error(error.status, &error.message))?;
+                &principal,
+                request.namespace,
+                request.method,
+                request.path,
+                request.body,
+                time,
+            )
+            .map_err(|error| Response::error(error.status, &error.message))?;
             auth.authorize_sudo_request_observed(
-                &principal, request.namespace, "sys/migration/openbao/kv2", "update", time,
-            ).map_err(|error| Response::error(error.status, &error.message))?;
+                &principal,
+                request.namespace,
+                "sys/migration/openbao/kv2",
+                "update",
+                time,
+            )
+            .map_err(|error| Response::error(error.status, &error.message))?;
             deadline.check().map_err(|_| rejected())
         };
         if let Err(error) = authority(&admitted.auth) {
@@ -46,7 +56,10 @@ impl Service {
         // HA publication carries its own provenance and reply contract. This
         // new single-node import does not silently widen that admission.
         if !request.namespace.is_empty() || self.ha.is_some() {
-            return Response::error(501, "native KV2 graph import requires root single-node custody");
+            return Response::error(
+                501,
+                "native KV2 graph import requires root single-node custody",
+            );
         }
         if let Err(error) = self.require_native_root_candidate(&admitted) {
             return error;
@@ -65,7 +78,9 @@ impl Service {
             return Response::error(400, "KV2 migration requires a JSON object");
         };
         if fields.len() != 2
-            || fields.keys().any(|key| !matches!(key.as_str(), "mount" | "bundle"))
+            || fields
+                .keys()
+                .any(|key| !matches!(key.as_str(), "mount" | "bundle"))
         {
             return Response::error(400, "unsupported KV2 migration parameter");
         }
@@ -81,7 +96,9 @@ impl Service {
             Ok(bytes) => bytes,
             Err(_) => return Response::error(507, "KV2 migration bundle exceeds capacity"),
         };
-        let source_auth = match self.state.as_ref()
+        let source_auth = match self
+            .state
+            .as_ref()
             .map(|state| owner_store::serialize_owner(&state.auth))
         {
             Some(Ok(bytes)) => bytes,
@@ -96,7 +113,11 @@ impl Service {
         }
         let check = || deadline.check().map_err(|_| RecordError::Invalid);
         let objects = match admitted.engines.stage_openbao_kv2_native_import(
-            request.namespace, mount, &bytes, &parent, &check,
+            request.namespace,
+            mount,
+            &bytes,
+            &parent,
+            &check,
         ) {
             Ok(objects) => objects,
             Err(error) => return Response::from_engine_error(error),
@@ -104,7 +125,9 @@ impl Service {
         admitted.schema = admitted.writer_schema();
         let mut original_gate = |auth: &AuthState| -> Result<(), Response> {
             authority(auth)?;
-            if owner_store::serialize_owner(auth).map_err(|_| rejected())?.as_slice()
+            if owner_store::serialize_owner(auth)
+                .map_err(|_| rejected())?
+                .as_slice()
                 != source_auth.as_slice()
             {
                 return Err(rejected());
@@ -112,14 +135,15 @@ impl Service {
             deadline.check().map_err(|_| rejected())
         };
         let plan = match self.prepare_native_kv2_import_root_checked(
-            &admitted, objects, &mut original_gate,
+            &admitted,
+            objects,
+            &mut original_gate,
         ) {
             Ok(plan) => plan,
             Err(error) => return error,
         };
-        match self.commit_native_root_plan(
-            &admitted, plan, false, "kv2-import", &mut original_gate,
-        ) {
+        match self.commit_native_root_plan(&admitted, plan, false, "kv2-import", &mut original_gate)
+        {
             Ok(installed) => {
                 self.state = Some(installed);
                 Response {

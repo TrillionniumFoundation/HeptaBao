@@ -2,10 +2,7 @@
 //!
 //! Every public service request owns one affine principal and durably commits any
 //! finite-use decrement before dispatch. Raw authorization remains crate-internal.
-#[cfg(any(
-    feature = "fixture-native-v6-service",
-    feature = "experimental-native-v6-ha"
-))]
+#[cfg(any(feature = "native-v6-storage", feature = "native-v6-ha"))]
 #[path = "auth_native_snapshot_clocks.rs"]
 mod native_snapshot_clocks;
 #[path = "auth_rate_limit_quotas.rs"]
@@ -45,6 +42,8 @@ pub(crate) mod sdk_retirement;
 
 #[path = "auth_namespace_assets.rs"]
 pub(crate) mod namespace_assets;
+#[path = "auth_namespace_factory.rs"]
+pub(crate) mod namespace_factory;
 
 #[path = "auth_recovery_ceremony.rs"]
 mod recovery_ceremony;
@@ -88,19 +87,30 @@ pub(crate) mod control_groups;
 mod default_policy;
 #[path = "auth_mfa.rs"]
 pub(crate) mod mfa;
+#[cfg(feature = "native-v6-storage")]
+#[path = "auth_native_controlgroups_draft.rs"]
+pub(crate) mod native_controlgroups_draft;
+#[path = "auth_policy_expiration.rs"]
+pub(crate) mod policy_expiration;
+#[path = "auth_policy_retirement.rs"]
+pub(crate) mod policy_retirement;
+#[path = "auth_policy_startup.rs"]
+pub(crate) mod policy_startup;
+#[path = "auth_security_contract.rs"]
+pub(crate) mod security_contract;
 #[path = "auth_ui_acl.rs"]
 mod ui_acl;
 pub(crate) use acl_template::parse_selector as parse_identity_selector;
 pub(crate) use acl_template::{IdentitySelector, IdentityTemplateValues, TemplateField};
 #[path = "auth_approle_lookup.rs"]
 pub(crate) mod approle_lookup;
-#[path = "auth_approle_renewal.rs"]
-mod approle_renewal;
 #[path = "auth_approle_no_default.rs"]
 pub(crate) mod approle_no_default;
 #[cfg(test)]
 #[path = "auth_approle_no_default_tests.rs"]
 mod approle_no_default_tests;
+#[path = "auth_approle_renewal.rs"]
+mod approle_renewal;
 #[path = "auth_approle_tidy.rs"]
 pub(crate) mod approle_tidy;
 #[path = "auth_capabilities.rs"]
@@ -115,6 +125,11 @@ mod cert_ttl;
 mod cert_validity;
 #[path = "auth_cubbyhole.rs"]
 mod cubbyhole;
+#[cfg(feature = "native-v6-storage")]
+#[path = "auth_native_cubbyhole.rs"]
+mod native_cubbyhole;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_cubbyhole::NativeCubbyholeOwner;
 #[path = "auth_token_go_print.rs"]
 pub(crate) mod go_print;
 #[path = "auth_identity.rs"]
@@ -152,6 +167,11 @@ pub(crate) fn transit_rotation_duration(raw: &str) -> Result<i64, &'static str> 
     token_duration::parse_duration(raw).map_err(|_| "invalid transit rotation duration")
 }
 
+/// Parse signed configuration data without granting a token or lease lifetime.
+pub(crate) fn kv_mount_configuration_duration(raw: &str) -> Result<i64, &'static str> {
+    token_duration::parse_duration(raw).map_err(|_| "invalid KV mount lease duration")
+}
+
 pub(crate) fn framework_duration_seconds(body: &Value, field: &str) -> Result<u64, AuthError> {
     token_roles::framework_duration_seconds(body, field)
 }
@@ -166,6 +186,9 @@ mod radius;
 #[path = "auth_radius_native.rs"]
 mod radius_native;
 use radius_native::RadiusNativeConfig;
+#[cfg(all(test, feature = "native-v6-storage"))]
+#[path = "auth_actor_lifetime_diagnostic.rs"]
+pub(crate) mod actor_lifetime_diagnostic;
 #[path = "auth_token_cidrs.rs"]
 mod token_cidrs;
 #[path = "auth_token_creation_ttl.rs"]
@@ -193,7 +216,7 @@ mod userpass_no_default;
 mod userpass_renewal;
 #[path = "auth_wrapping.rs"]
 mod wrapping;
-pub(crate) use capabilities::InspectionTarget;
+pub(crate) use capabilities::{InspectionObservation, InspectionTarget};
 use identity::LoginIdentity;
 pub(crate) use ldap_renewal::{LdapRenewalObservation, LdapRenewalPlan};
 use provider_renewal::ProviderCredential;
@@ -202,7 +225,11 @@ pub(crate) use radius::{RadiusRenewalObservation, RadiusRenewalPlan};
 pub(crate) use wrapping::validate_sdk_wrap_ttl;
 pub(crate) use wrapping::{
     IngressReplyContext, IngressReplyScope, LexicalJson, StoredWrappedReply, UnwrappedJson,
-    current_ingress, encode_http_envelope, logical_envelope,
+    current_ingress, encode_http_envelope, logical_envelope, StaticKv1LeaseProjection,
+};
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use wrapping::{
+    NativeResponseWrappingOwner, NativeWrappingObservation, NativeWrappingOwner,
 };
 
 const LEGACY_DEFAULT_TTL: u64 = 3600;
@@ -1518,11 +1545,16 @@ enum PrincipalAdmission {
     MountMetadata,
 }
 
+#[cfg(feature = "native-v6-storage")]
+#[path = "auth_native_empty_namespace.rs"]
+mod native_empty_namespace;
+
 pub(super) struct Principal {
     admission: PrincipalAdmission,
     // Affine request authority retains the original trusted Service clock.
     // This field is never serialized into a token or durable owner.
     request_clock: Option<RequestClock>,
+    admission_time: AuthorityTime,
     origin_peer: Option<std::net::IpAddr>,
     identity_policies: BTreeSet<String>,
     identity_templates: IdentityTemplateValues,
@@ -1608,6 +1640,16 @@ impl Principal {
 
 #[derive(Clone, Serialize, Deserialize)]
 struct Policy {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    namespace_factory: Option<namespace_factory::Origin>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    security: Option<security_contract::PolicyMetadata>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    expiration: Option<policy_expiration::Deadline>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    path_compiled_at: Option<Timestamp>,
+    #[serde(default, skip_serializing_if = "is_false")]
+    expired_default: bool,
     source: String,
     rules: Vec<Rule>,
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
@@ -1647,6 +1689,8 @@ fn lossless_parameter_map<'de, D: serde::Deserializer<'de>>(
 
 #[derive(Clone, Serialize, Deserialize)]
 struct Rule {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    expiration: Option<policy_expiration::Deadline>,
     path: String,
     capabilities: BTreeSet<String>,
     #[serde(
@@ -1742,6 +1786,8 @@ impl Drop for User {
 #[derive(Clone, Serialize, Deserialize)]
 struct Role {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    security: Option<security_contract::RoleOptions>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     secret_id_bound_cidrs: Option<Vec<String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     token_bound_cidrs: Option<Vec<String>>,
@@ -1766,6 +1812,8 @@ struct Role {
     secret_id_ttl: u64,
     secret_id_num_uses: u64,
     secret_ids: BTreeMap<String, SecretId>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    local_secret_ids: Option<approle_local::Partition>,
 }
 
 impl Drop for Role {
@@ -2371,6 +2419,7 @@ impl AuthState {
     pub(super) fn known_namespaces(&self) -> BTreeSet<String> {
         let mut namespaces = BTreeSet::new();
         namespaces.extend(self.mfa_known_namespaces());
+        namespaces.extend(self.quota_known_namespaces());
         for token in self.tokens.values() {
             if !token.namespace.is_empty() {
                 namespaces.insert(token.namespace.clone());
@@ -2485,6 +2534,7 @@ impl AuthState {
 
     pub(super) fn namespace_is_empty(&self, namespace: &str) -> bool {
         !self.control_group_namespace_has_requests(namespace)
+            && self.quota_namespace_is_empty(namespace)
             && !self.mfa_namespace_has_assets(namespace)
             && !self.sdk_credential_namespace_pending(namespace)
             && !self.sdk_auth_retirement_namespace_pending(namespace)
@@ -2717,17 +2767,29 @@ impl AuthState {
             }
             "lookup-accessor" | "renew-accessor" => {
                 let accessor = string_field(body, "accessor")?;
+                // Match backend target errors without projecting actor admission
+                // failures as invalid input. Renewal retains its own errors.
+                let target_error = |error| {
+                    if operation == "lookup-accessor" {
+                        lookup_accessor_target_error(error)
+                    } else {
+                        error
+                    }
+                };
                 if actor
                     .service_token()
                     .is_some_and(|token| token.accessor == accessor)
                 {
                     let target = self.check_principal_observed(actor, namespace, time)?;
                     if target.namespace() != namespace {
-                        return Err(denied());
+                        return Err(target_error(denied()));
                     }
                 } else {
-                    let id = self.target_token_observed(namespace, body, true, time)?;
-                    self.active_token_observed(&id, time, operation == "lookup-accessor")?;
+                    let id = self
+                        .target_token_observed(namespace, body, true, time)
+                        .map_err(target_error)?;
+                    self.active_token_observed(&id, time, operation == "lookup-accessor")
+                        .map_err(target_error)?;
                 }
             }
             "accessors" | "tidy" => {
@@ -2773,6 +2835,8 @@ impl AuthState {
         } else {
             time
         };
+        #[cfg(all(test, feature = "native-v6-storage"))]
+        actor_lifetime_diagnostic::observe_active_token(token, time, consume_check);
         if !time.service_live(token.token_api_precision.as_ref(), token.expires_at)
             || consume_check && token.uses_remaining == Some(0)
         {
@@ -2845,7 +2909,6 @@ impl AuthState {
         time: AuthorityTime,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Option<Principal>, AuthError> {
-        let now = time.seconds();
         if raw.starts_with("hvb.") {
             return self
                 .batch_principal_observed(raw, time, origin_peer)
@@ -2860,10 +2923,10 @@ impl AuthState {
         if token.uses_remaining.is_some() || token.wrapping.is_some() {
             return Ok(None);
         }
-        Ok(Some(Self::request_principal(
+        Ok(Some(Self::request_principal_observed(
             id,
             token.clone(),
-            now,
+            time,
             origin_peer,
             PrincipalAdmission::Operation {
                 finite_use_consumed: false,
@@ -2871,16 +2934,34 @@ impl AuthState {
         )))
     }
 
+    #[cfg(test)]
     fn request_principal(
         id: String,
         token: Token,
-        _now: u64,
+        now: u64,
+        origin_peer: Option<std::net::IpAddr>,
+        admission: PrincipalAdmission,
+    ) -> Principal {
+        Self::request_principal_observed(
+            id,
+            token,
+            AuthorityTime::Coarse(now),
+            origin_peer,
+            admission,
+        )
+    }
+
+    fn request_principal_observed(
+        id: String,
+        token: Token,
+        time: AuthorityTime,
         origin_peer: Option<std::net::IpAddr>,
         admission: PrincipalAdmission,
     ) -> Principal {
         Principal {
             admission,
             request_clock: None,
+            admission_time: time,
             origin_peer,
             identity_policies: BTreeSet::new(),
             identity_templates: IdentityTemplateValues::default(),
@@ -2889,7 +2970,7 @@ impl AuthState {
             digest: id,
             credential: batch_principal::VerifiedCredential::Service(Box::new(token)),
             #[cfg(test)]
-            request_time: _now,
+            request_time: time.seconds(),
         }
     }
 
@@ -2915,7 +2996,6 @@ impl AuthState {
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Principal, AuthError> {
         let time = self.control_group_authority_time(self.token_api_observed_time(time))?;
-        let now = time.seconds();
         if raw.starts_with("hvb.") {
             return self.batch_principal_observed(raw, time, origin_peer);
         }
@@ -2941,10 +3021,10 @@ impl AuthState {
             }
         }
         let finite_use_consumed = request_token.uses_remaining.is_some();
-        Ok(Self::request_principal(
+        Ok(Self::request_principal_observed(
             id,
             request_token,
-            now,
+            time,
             origin_peer,
             PrincipalAdmission::Operation {
                 finite_use_consumed,
@@ -3019,6 +3099,19 @@ impl AuthState {
         capability: &str,
         time: AuthorityTime,
     ) -> Result<(), AuthError> {
+        self.authorize_request_observation(principal, namespace, path, capability, time)
+            .map(|_| ())
+    }
+
+    pub(super) fn authorize_request_observation(
+        &self,
+        principal: &Principal,
+        namespace: &str,
+        path: &str,
+        capability: &str,
+        time: AuthorityTime,
+    ) -> Result<AuthorityTime, AuthError> {
+        let time = principal.request_authority_time(time)?;
         if matches!(principal.admission, PrincipalAdmission::MountMetadata) {
             return Err(denied());
         }
@@ -3032,27 +3125,28 @@ impl AuthState {
             .is_some_and(|token| token.wrapping.is_some())
         {
             return if wrapping::allows_token_operation(path, capability) {
-                Ok(())
+                Ok(time)
             } else {
                 Err(denied())
             };
         }
         if self.control_groups_token_permission(principal, path, capability) {
-            return Ok(());
+            return Ok(time);
         }
         if token.is_root() {
-            return Ok(());
+            return Ok(time);
         }
-        if self.policy_allows(
+        if self.policy_allows_observed(
             namespace,
             path,
             capability,
             token.policies(),
             &principal.identity_policies,
             &principal.identity_templates,
-        )? && self.wrapping_policy_allows(principal, namespace, path, token.policies())?
+            time,
+        )? && self.wrapping_policy_allows(principal, namespace, path, token.policies(), time)?
         {
-            Ok(())
+            Ok(time)
         } else {
             Err(acl_denied())
         }
@@ -3116,6 +3210,7 @@ impl AuthState {
         body: &Value,
         time: AuthorityTime,
     ) -> Result<(), AuthError> {
+        let time = principal.request_authority_time(time)?;
         // OpenBao applies generic allowed/denied/required request parameters
         // only to logical read/create/update/patch operations. Delete, list,
         // scan, renew, revoke and rollback have separate admission semantics.
@@ -3128,7 +3223,7 @@ impl AuthState {
         {
             return Ok(());
         }
-        if !self.wrapping_policy_allows(principal, namespace, path, token.policies())? {
+        if !self.wrapping_policy_allows(principal, namespace, path, token.policies(), time)? {
             return Err(acl_denied());
         }
         if !matches!(method, "GET" | "HEAD" | "POST" | "PUT" | "PATCH") {
@@ -3141,9 +3236,15 @@ impl AuthState {
                 .get(namespace)
                 .and_then(|entries| entries.get(policy_name))
             {
+                if !policy.live(time)? {
+                    continue;
+                }
                 for rule in &policy.rules {
+                    if !rule.live(time)? {
+                        continue;
+                    }
                     let Some(rendered) =
-                        acl_template::render(&rule.path, &principal.identity_templates)?
+                        policy.render(&rule.path, &principal.identity_templates)?
                     else {
                         continue;
                     };
@@ -3179,6 +3280,7 @@ impl AuthState {
         }
     }
 
+    #[cfg(test)]
     fn policy_allows(
         &self,
         namespace: &str,
@@ -3188,6 +3290,28 @@ impl AuthState {
         identity_policies: &BTreeSet<String>,
         identity_templates: &IdentityTemplateValues,
     ) -> Result<bool, AuthError> {
+        self.policy_allows_observed(
+            namespace,
+            path,
+            capability,
+            policies,
+            identity_policies,
+            identity_templates,
+            AuthorityTime::Coarse(0),
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn policy_allows_observed(
+        &self,
+        namespace: &str,
+        path: &str,
+        capability: &str,
+        policies: &BTreeSet<String>,
+        identity_policies: &BTreeSet<String>,
+        identity_templates: &IdentityTemplateValues,
+        time: AuthorityTime,
+    ) -> Result<bool, AuthError> {
         let mut decision = acl::Decision::default();
         for policy_name in policies.iter().chain(identity_policies) {
             let explicit = self
@@ -3195,9 +3319,14 @@ impl AuthState {
                 .get(namespace)
                 .and_then(|entries| entries.get(policy_name));
             if let Some(policy) = explicit {
+                if !policy.live(time)? {
+                    continue;
+                }
                 for rule in &policy.rules {
-                    let Some(rendered) = acl_template::render(&rule.path, identity_templates)?
-                    else {
+                    if !rule.live(time)? {
+                        continue;
+                    }
+                    let Some(rendered) = policy.render(&rule.path, identity_templates)? else {
                         continue;
                     };
                     decision.consider(
@@ -3441,14 +3570,7 @@ impl AuthState {
     }
 
     fn disable_auth_mount(&mut self, scope: AuthScope<'_>) {
-        if scope.namespace.is_empty()
-            && let Some(quotas) = self.rate_limit_quotas.as_mut()
-        {
-            let prefix = format!("auth/{}/", scope.mount);
-            quotas
-                .definitions
-                .retain(|_, d| d.path != prefix && d.path != format!("{prefix}login"));
-        }
+        self.prune_rate_limit_quotas_mount(scope.namespace, &format!("auth/{}/", scope.mount));
         if let Some(mounts) = self.oidc_mounts.get_mut(scope.namespace) {
             mounts.remove(scope.mount);
         }
@@ -3553,7 +3675,6 @@ impl AuthState {
         mount: &str,
         destination: &str,
     ) -> Result<Option<NativeRemountOwner>, AuthError> {
-        self.ensure_rate_limit_quotas_allow_remount(namespace, mount)?;
         let Some(entry) = self.effective_auth_mounts(namespace).remove(mount) else {
             return Ok(None);
         };
@@ -3668,7 +3789,6 @@ impl AuthState {
         to: &str,
         cas_revision: Option<u64>,
     ) -> Result<AuthResponse, AuthError> {
-        self.ensure_rate_limit_quotas_allow_remount(namespace, from)?;
         if from.is_empty()
             || to.is_empty()
             || from == to
@@ -3700,6 +3820,11 @@ impl AuthState {
                 "auth remount destination conflicts with an existing mount",
             ));
         }
+        let moved_quotas = self.relocated_rate_limit_quotas(
+            namespace,
+            &format!("auth/{from}/"),
+            &format!("auth/{to}/"),
+        )?;
         self.advance_native_remount_epochs(namespace, &[from, to])?;
         self.advance_approle_tidy_epochs(namespace, &[from, to])?;
         entries.remove(from);
@@ -3858,6 +3983,7 @@ impl AuthState {
                 token.auth_mount = Some(to.into());
             }
         }
+        self.rate_limit_quotas = moved_quotas;
         Ok(response(
             json!({"from":format!("auth/{from}/"),"to":format!("auth/{to}/"),
                 "revision":revision,"accessor":accessor}),
@@ -4395,6 +4521,34 @@ impl AuthState {
         peer_certificates: Option<&[Vec<u8>]>,
         origin_peer: Option<std::net::IpAddr>,
     ) -> Result<Option<AuthResponse>, AuthError> {
+        self.handle_with_connection_clock_for_cluster(
+            principal,
+            namespace,
+            method,
+            path,
+            body,
+            time,
+            clock,
+            peer_certificates,
+            origin_peer,
+            None,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(super) fn handle_with_connection_clock_for_cluster(
+        &mut self,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        time: AuthorityTime,
+        clock: Option<RequestClock>,
+        peer_certificates: Option<&[Vec<u8>]>,
+        origin_peer: Option<std::net::IpAddr>,
+        cluster_id: Option<&str>,
+    ) -> Result<Option<AuthResponse>, AuthError> {
         let time = self.token_api_observed_time(time);
         let clock = clock.map(|clock| self.token_api_request_clock(clock));
         let now = time.seconds();
@@ -4475,7 +4629,7 @@ impl AuthState {
                     self.tidy_secret_ids(principal, scope, method, path, body, now)
                 }
                 "approle" if suffix == "role" || suffix.starts_with("role/") => {
-                    self.role_route(principal, scope, method, path, body, now)
+                    self.role_route(principal, scope, method, path, body, now, cluster_id)
                 }
                 "jwt" => self.jwt_route(principal, scope, method, path, body, now),
                 "cert" => self.cert_route(
@@ -6750,15 +6904,20 @@ impl AuthState {
         }
         let allowed_method = match operation {
             "lookup-self" => matches!(method, "GET" | "POST"),
-            "lookup" | "lookup-accessor" => matches!(method, "GET" | "POST"),
+            "lookup" => matches!(method, "GET" | "POST"),
+            "lookup-accessor" => matches!(method, "POST" | "PUT"),
             "accessors" => matches!(method, "LIST" | "GET"),
             _ => matches!(method, "POST" | "PUT"),
         };
-        if !allowed_method {
+        // The fixed 2.7.1 accessor backend has only Update. Its unsupported
+        // Read still passes the original actor ACL before backend dispatch.
+        let unsupported_accessor_read = operation == "lookup-accessor" && method == "GET";
+        if !allowed_method && !unsupported_accessor_read {
             return Err(err(405, "method not allowed"));
         }
         let capability = match operation {
-            "lookup-self" | "lookup" | "lookup-accessor" => "read",
+            "lookup-self" | "lookup" => "read",
+            "lookup-accessor" if unsupported_accessor_read => "read",
             "accessors" => "list",
             _ => "update",
         };
@@ -6766,6 +6925,9 @@ impl AuthState {
         // Actor ACL admission may reobserve the original Service clock. Carry
         // that actual observation into target resolution and public projections.
         let time = self.principal_token_api_time(actor, time)?;
+        if unsupported_accessor_read {
+            return Err(err(405, "unsupported operation"));
+        }
         let now = time.seconds();
         match operation {
             "create" | "create-orphan" => {
@@ -7605,9 +7767,11 @@ impl AuthState {
             "LIST" => "list",
             "DELETE" => "delete",
             "POST" | "PUT" => "update",
+            "PATCH" if !legacy => "patch",
             _ => return Err(err(405, "method not allowed")),
         };
         let actor = self.permission(principal, namespace, path, capability, now)?;
+        let time = actor.request_authority_time(AuthorityTime::Coarse(now))?;
         if name.is_empty() {
             if method == "GET" && !legacy {
                 return Err(err(405, "1 error occurred:\n\t* unsupported operation\n\n"));
@@ -7618,9 +7782,22 @@ impl AuthState {
             let mut keys: BTreeSet<String> = self
                 .policies
                 .get(namespace)
-                .map(|p| p.keys().cloned().collect())
+                .map(|policies| {
+                    policies
+                        .iter()
+                        .filter(|(_, policy)| !policy.expired_default)
+                        .map(|(name, _)| name.clone())
+                        .collect()
+                })
                 .unwrap_or_default();
-            keys.insert("default".into());
+            if !self
+                .policies
+                .get(namespace)
+                .and_then(|entries| entries.get("default"))
+                .is_some_and(|policy| policy.expired_default)
+            {
+                keys.insert("default".into());
+            }
             keys.remove("root");
             let mut keys: Vec<String> = keys.into_iter().collect();
             if namespace.is_empty() {
@@ -7639,14 +7816,52 @@ impl AuthState {
         if name == "root" {
             return Err(bad("root policy cannot be read, changed, or deleted"));
         }
+        // GetPolicy lazily deletes a whole expired policy. PATCH calls it
+        // before reading CAS; POST goes directly to SetPolicy and therefore
+        // still observes an untouched expired entry's version and CAS flag.
+        if capability == "read" || capability == "patch" {
+            let old = self
+                .policies
+                .get(namespace)
+                .and_then(|entries| entries.get(name));
+            let retired = old.is_some_and(|policy| policy.expired_default);
+            let expired = match old {
+                Some(policy) if !retired => !policy.live(time)?,
+                _ => false,
+            };
+            if retired || expired {
+                if expired {
+                    let entries = self
+                        .policies
+                        .get_mut(namespace)
+                        .ok_or_else(|| err(503, "policy owner disappeared"))?;
+                    entries.remove(name);
+                    if name == "default" {
+                        // Absence historically means the built-in default in
+                        // this owner format. A typed empty tombstone prevents
+                        // this read from immediately restoring its privileges.
+                        entries.insert(name.into(), Policy::expired_default());
+                    }
+                }
+                return Ok(AuthResponse {
+                    status: 404,
+                    body: if capability == "patch" {
+                        json!({"errors":["policy not found"]})
+                    } else {
+                        json!({"errors":[]})
+                    },
+                    ..empty(expired)
+                });
+            }
+        }
         if capability == "read" {
-            let source = match self
+            let policy = match self
                 .policies
                 .get(namespace)
                 .and_then(|entries| entries.get(name))
             {
-                Some(policy) => policy.source.clone(),
-                None if name == "default" => default_policy_source(),
+                Some(policy) => policy.clone(),
+                None if name == "default" => parse_policy(&json!(default_policy_source()))?,
                 None => {
                     return Ok(AuthResponse {
                         status: 404,
@@ -7655,12 +7870,7 @@ impl AuthState {
                     });
                 }
             };
-            let data = if legacy {
-                json!({"name": name, "rules": source})
-            } else {
-                json!({"name": name, "policy": source})
-            };
-            return Ok(response(data, false));
+            return Ok(response(policy.read_security_data(name, legacy)?, false));
         }
         self.authorize_request(actor, namespace, path, "sudo", now)?;
         if capability == "delete" {
@@ -7672,20 +7882,47 @@ impl AuthState {
             }
             return Ok(empty(true));
         }
-        if capability != "update" {
+        if !matches!(capability, "update" | "patch") {
             return Err(err(405, "method not allowed"));
         }
-        reject_unknown(body, &["policy"])?;
-        let input = body
-            .get("policy")
-            .ok_or_else(|| bad("policy is required"))?;
-        let policy = parse_policy(input)?;
+        let previous = self
+            .policies
+            .get(namespace)
+            .and_then(|entries| entries.get(name))
+            .filter(|policy| !policy.expired_default)
+            .cloned();
+        let previous = match previous {
+            None if name == "default"
+                && !self
+                    .policies
+                    .get(namespace)
+                    .is_some_and(|entries| entries.contains_key(name)) =>
+            {
+                Some(parse_policy(&json!(default_policy_source()))?)
+            }
+            value => value,
+        };
+        let policy = security_contract::prepare_policy(
+            previous.as_ref(),
+            body,
+            method == "PATCH",
+            legacy,
+            time,
+        )?;
         self.observe_control_group_policy(&policy);
         self.policies
             .entry(namespace.into())
             .or_default()
             .insert(name.into(), policy);
-        Ok(empty(true))
+        Ok(if method == "PATCH" {
+            AuthResponse {
+                status: 200,
+                body: json!({}),
+                ..empty(true)
+            }
+        } else {
+            empty(true)
+        })
     }
 
     fn user_route(
@@ -8348,6 +8585,7 @@ impl AuthState {
         Ok(response)
     }
 
+    #[allow(clippy::too_many_arguments)]
     fn role_route(
         &mut self,
         principal: Option<&Principal>,
@@ -8356,6 +8594,7 @@ impl AuthState {
         path: &str,
         body: &Value,
         now: u64,
+        cluster_id: Option<&str>,
     ) -> Result<AuthResponse, AuthError> {
         let AuthScope { namespace, mount } = scope;
         let suffix = path
@@ -8410,7 +8649,7 @@ impl AuthState {
                     });
                 };
                 return Ok(response(
-                    json!({"secret_id_bound_cidrs":role.secret_id_bound_cidrs, "token_bound_cidrs":role.token_bound_cidrs.as_deref().unwrap_or_default(), "token_type": role.token_type.unwrap_or_default().name(), "bind_secret_id": role.bind_secret_id, "token_no_default_policy": role.token_no_default_policy.unwrap_or(false), "token_policies": role.policies, "token_ttl": role.token_ttl,
+                    json!({"local_secret_ids":security_contract::role_local_secret_ids(&role), "token_strictly_bind_ip":security_contract::role_strictly_bind_ip(&role), "secret_id_bound_cidrs":role.secret_id_bound_cidrs, "token_bound_cidrs":role.token_bound_cidrs.as_deref().unwrap_or_default(), "token_type": role.token_type.unwrap_or_default().name(), "bind_secret_id": role.bind_secret_id, "token_no_default_policy": role.token_no_default_policy.unwrap_or(false), "token_policies": role.policies, "token_ttl": role.token_ttl,
                     "token_max_ttl": role.token_max_ttl, "token_period": role.token_period,
                     "token_explicit_max_ttl": role.token_explicit_max_ttl,
                     "token_num_uses": role.token_num_uses, "secret_id_ttl": role.secret_id_ttl, "secret_id_num_uses": role.secret_id_num_uses}),
@@ -8428,6 +8667,8 @@ impl AuthState {
                 body,
                 &[
                     "token_type",
+                    "local_secret_ids",
+                    "token_strictly_bind_ip",
                     "token_bound_cidrs",
                     "secret_id_bound_cidrs",
                     "bound_cidr_list",
@@ -8445,7 +8686,9 @@ impl AuthState {
                 ],
             )?;
             reject_alias_pair(body, "policies", "token_policies")?;
+            let is_new_role = existing.is_none();
             let mut role = existing.unwrap_or(Role {
+                security: None,
                 secret_id_bound_cidrs: None,
                 token_bound_cidrs: None,
                 token_type: None,
@@ -8461,6 +8704,7 @@ impl AuthState {
                 secret_id_ttl: 0,
                 secret_id_num_uses: 0,
                 secret_ids: BTreeMap::new(),
+                local_secret_ids: None,
             });
             role.bind_secret_id = boolean(body, "bind_secret_id", role.bind_secret_id)?;
             approle_no_default::update(&mut role, body)?;
@@ -8484,6 +8728,10 @@ impl AuthState {
             approle_renewal::validate_role_limits(&role)?;
             let type_warning = approle_batch::update_role_type(&mut role, body)?;
             approle_secret_cidrs::update(&mut role, body)?;
+            security_contract::update_role(&mut role, body, is_new_role)?;
+            if is_new_role {
+                approle_local::initialize_role(&mut role, cluster_id)?;
+            }
             approle_cidrs::update(&mut role, body)?;
             self.roles_at_mut(scope).insert(name.into(), role);
             return Ok(match type_warning {
@@ -8518,7 +8766,7 @@ impl AuthState {
             }
             ("secret-id", "list") => {
                 let keys: Vec<&str> = role
-                    .secret_ids
+                    .approle_secrets()?
                     .values()
                     .filter(|secret| {
                         !secret.expires_at.is_some_and(|t| t <= now)
@@ -8591,7 +8839,7 @@ impl AuthState {
                     Zeroizing::new(random_id("secret.")?)
                 };
                 let secret_hash = hash(&raw);
-                if role.secret_ids.contains_key(&secret_hash) {
+                if role.approle_secrets()?.contains_key(&secret_hash) {
                     return Err(bad("secret_id already exists"));
                 }
                 let accessor = random_id("sa.")?;
@@ -8600,7 +8848,7 @@ impl AuthState {
                 } else {
                     Some(checked_expiry(now, ttl)?)
                 };
-                role.secret_ids.insert(
+                role.approle_secrets_mut()?.insert(
                     secret_hash,
                     SecretId {
                         metadata: metadata_present.then(|| metadata.take()),
@@ -8634,7 +8882,7 @@ impl AuthState {
                         return Err(bad("missing secret_id_accessor"));
                     }
                     let found = role
-                        .secret_ids
+                        .approle_secrets()?
                         .iter()
                         .find(|(_, secret)| secret.accessor == wanted)
                         .map(|(id, _)| id.clone());
@@ -8645,10 +8893,10 @@ impl AuthState {
                 } else {
                     hash(string_field(body, "secret_id")?)
                 };
-                if !role.secret_ids.contains_key(&id) {
+                if !role.approle_secrets()?.contains_key(&id) {
                     return Err(err(404, "secret_id not found"));
                 }
-                if let Some((mut stored_id, _)) = role.secret_ids.remove_entry(&id) {
+                if let Some((mut stored_id, _)) = role.approle_secrets_mut()?.remove_entry(&id) {
                     stored_id.zeroize();
                 }
                 self.roles_at_mut(scope).insert(name.into(), role);
@@ -8691,7 +8939,7 @@ impl AuthState {
             let secret_id = secret_id.ok_or_else(|| bad("invalid role or secret ID"))?;
             let id = hash(secret_id);
             let secret = role
-                .secret_ids
+                .approle_secrets_mut()?
                 .get_mut(&id)
                 .ok_or_else(|| bad("invalid role or secret ID"))?;
             if secret.expires_at.is_some_and(|expiry| now >= expiry) {
@@ -8717,7 +8965,9 @@ impl AuthState {
             } else {
                 false
             };
-            if exhausted && let Some((mut stored_id, _)) = role.secret_ids.remove_entry(&id) {
+            if exhausted
+                && let Some((mut stored_id, _)) = role.approle_secrets_mut()?.remove_entry(&id)
+            {
                 stored_id.zeroize();
             }
             if previous_secret.uses_remaining.is_some() {
@@ -8727,7 +8977,7 @@ impl AuthState {
                     &role.role_id,
                     &id,
                     previous_secret,
-                    role.secret_ids.get(&id).cloned(),
+                    role.approle_secrets()?.get(&id).cloned(),
                     now,
                 )?);
             }
@@ -8735,7 +8985,8 @@ impl AuthState {
         // Finite SID consumption is authenticated before source/subset checks.
         // A failed check carries only the existing affine consumption capsule.
         let constraints =
-            approle_secret_id_cidrs::login(&role, secret_constraints.as_ref(), origin_peer);
+            approle_secret_id_cidrs::login(&role, secret_constraints.as_ref(), origin_peer)
+                .and_then(|cidrs| security_contract::bind_login_ip(&role, cidrs, origin_peer));
         let bound_cidrs = match constraints {
             Ok(cidrs) => cidrs,
             Err(error) => {
@@ -9169,6 +9420,10 @@ impl<'de> Deserialize<'de> for StrictJson {
 }
 
 fn parse_policy(input: &Value) -> Result<Policy, AuthError> {
+    parse_policy_observed(input, None)
+}
+
+fn parse_policy_observed(input: &Value, at: Option<Timestamp>) -> Result<Policy, AuthError> {
     let source = if let Some(source) = input.as_str() {
         source.to_owned()
     } else {
@@ -9178,23 +9433,29 @@ fn parse_policy(input: &Value) -> Result<Policy, AuthError> {
         return Err(bad("policy too large"));
     }
     let trimmed = source.trim();
-    let rules = if trimmed.starts_with('{') {
-        parse_json_policy(trimmed)?
+    let (rules, timed_paths) = if trimmed.starts_with('{') {
+        parse_json_policy(trimmed, at)?
     } else {
-        parse_hcl_policy(trimmed)?
+        parse_hcl_policy(trimmed, at)?
     };
     if rules.len() > 4096 {
         return Err(bad("too many policy rules"));
     }
-    let control_groups = control_groups::collect(&source, &rules)?;
+    let path_compiled_at = if timed_paths { at } else { None };
+    let control_groups = control_groups::collect_observed(&source, &rules, path_compiled_at)?;
     Ok(Policy {
+        namespace_factory: None,
+        security: None,
+        expiration: None,
+        path_compiled_at,
+        expired_default: false,
         source,
         rules,
         control_groups,
     })
 }
 
-fn parse_json_policy(source: &str) -> Result<Vec<Rule>, AuthError> {
+fn parse_json_policy(source: &str, at: Option<Timestamp>) -> Result<(Vec<Rule>, bool), AuthError> {
     let parsed = parse_strict_json(source.as_bytes())?;
     reject_unknown(&parsed, &["path"])?;
     let paths = parsed
@@ -9202,6 +9463,7 @@ fn parse_json_policy(source: &str) -> Result<Vec<Rule>, AuthError> {
         .and_then(Value::as_object)
         .ok_or_else(|| bad("policy path object is required"))?;
     let mut rules = Vec::new();
+    let mut timed_paths = false;
     for (path, config) in paths {
         reject_unknown(
             config,
@@ -9213,38 +9475,54 @@ fn parse_json_policy(source: &str) -> Result<Vec<Rule>, AuthError> {
                 "min_wrapping_ttl",
                 "max_wrapping_ttl",
                 "control_group",
+                "expiration",
             ],
         )?;
-        let capabilities = parse_capability_array(
-            config
-                .get("capabilities")
-                .ok_or_else(|| bad("capabilities array is required"))?,
-        )?;
+        // The pinned parser checks template syntax and decodes typed fields
+        // before expiration; only later path/capability/wrapping semantics are
+        // skipped. Preserve all existing parameter validation at this stage.
+        let _ = acl_template::selectors(path)?;
+        let capabilities = config
+            .get("capabilities")
+            .map(parse_capability_array)
+            .transpose()?;
+        let allowed = parse_parameter_map(config.get("allowed_parameters"))?;
+        let denied = parse_parameter_map(config.get("denied_parameters"))?;
+        let required = parse_required_parameters(config.get("required_parameters"))?;
+        let expiration = policy_expiration::path(config.get("expiration"))?;
+        timed_paths |= config.get("expiration").is_some();
+        if policy_expiration::expired_at_compile(expiration, at)? {
+            continue;
+        }
         rules.push(rule(
             path.clone(),
-            capabilities,
-            parse_parameter_map(config.get("allowed_parameters"))?,
-            parse_parameter_map(config.get("denied_parameters"))?,
-            parse_required_parameters(config.get("required_parameters"))?,
+            capabilities.ok_or_else(|| bad("capabilities array is required"))?,
+            allowed,
+            denied,
+            required,
             acl_wrapping::Bounds::parse(config)?,
+            expiration,
         )?);
     }
-    Ok(rules)
+    Ok((rules, timed_paths))
 }
 
-fn parse_hcl_policy(source: &str) -> Result<Vec<Rule>, AuthError> {
+fn parse_hcl_policy(source: &str, at: Option<Timestamp>) -> Result<(Vec<Rule>, bool), AuthError> {
     let tokens = lex_hcl(source)?;
     let mut cursor = 0;
     let mut rules = Vec::new();
+    let mut timed_paths = false;
     while cursor < tokens.len() {
         take(&tokens, &mut cursor, Lex::Word("path".into()))?;
         let path = take_string(&tokens, &mut cursor)?;
+        let _ = acl_template::selectors(&path)?;
         take(&tokens, &mut cursor, Lex::Symbol('{'))?;
         let mut capabilities = None;
         let mut allowed = acl::ParameterMap::new();
         let mut denied = acl::ParameterMap::new();
         let mut required = BTreeSet::new();
         let mut wrapping = serde_json::Map::new();
+        let mut expiration = None;
         let mut seen = BTreeSet::new();
         while tokens.get(cursor) != Some(&Lex::Symbol('}')) {
             let field = take_word(&tokens, &mut cursor)?;
@@ -9271,10 +9549,18 @@ fn parse_hcl_policy(source: &str) -> Result<Vec<Rule>, AuthError> {
                 "control_group" => {
                     let _ = control_groups::hcl_value(&tokens, &mut cursor)?;
                 }
+                "expiration" => {
+                    timed_paths = true;
+                    let value = parse_hcl_value_at_depth(&tokens, &mut cursor, 0)?;
+                    expiration = policy_expiration::path(Some(&value))?;
+                }
                 _ => return Err(bad("unsupported ACL rule field")),
             }
         }
         take(&tokens, &mut cursor, Lex::Symbol('}'))?;
+        if policy_expiration::expired_at_compile(expiration, at)? {
+            continue;
+        }
         rules.push(rule(
             path,
             capabilities.ok_or_else(|| bad("capabilities array is required"))?,
@@ -9282,9 +9568,10 @@ fn parse_hcl_policy(source: &str) -> Result<Vec<Rule>, AuthError> {
             denied,
             required,
             acl_wrapping::Bounds::parse(&Value::Object(wrapping))?,
+            expiration,
         )?);
     }
-    Ok(rules)
+    Ok((rules, timed_paths))
 }
 
 fn parse_capability_array(value: &Value) -> Result<BTreeSet<String>, AuthError> {
@@ -9292,11 +9579,21 @@ fn parse_capability_array(value: &Value) -> Result<BTreeSet<String>, AuthError> 
         .as_array()
         .ok_or_else(|| bad("capabilities array is required"))?
         .iter()
-        .map(|value| {
-            value
-                .as_str()
-                .map(str::to_owned)
-                .ok_or_else(|| bad("capability must be a string"))
+        .map(|value| match value {
+            Value::String(value) => Ok(value.clone()),
+            Value::Number(value) => {
+                let spelling = value.to_string();
+                // HCL's string decoder accepts NUMBER, but rejects FLOAT
+                // before a path's expiration can cause that stanza to skip.
+                if spelling
+                    .bytes()
+                    .any(|byte| matches!(byte, b'.' | b'e' | b'E'))
+                {
+                    return Err(bad("capability cannot be a floating-point number"));
+                }
+                Ok(spelling)
+            }
+            _ => Err(bad("capability must be a string")),
         })
         .collect()
 }
@@ -9396,6 +9693,10 @@ fn parse_hcl_value_at_depth(
             Ok(Value::String(value))
         }
         Some(Lex::Number(value)) => {
+            *cursor += 1;
+            Ok(Value::Number(value.into()))
+        }
+        Some(Lex::SignedNumber(value)) => {
             *cursor += 1;
             Ok(Value::Number(value.into()))
         }
@@ -9502,6 +9803,7 @@ fn rule(
     denied_parameters: acl::ParameterMap,
     required_parameters: BTreeSet<String>,
     wrapping: acl_wrapping::Bounds,
+    expiration: Option<policy_expiration::Deadline>,
 ) -> Result<Rule, AuthError> {
     acl_template::validate_policy_path(&path)?;
     wrapping.validate()?;
@@ -9521,6 +9823,7 @@ fn rule(
         return Err(bad("invalid required ACL parameter"));
     }
     Ok(Rule {
+        expiration,
         path,
         capabilities,
         allowed_parameters,
@@ -9536,6 +9839,7 @@ pub(crate) enum Lex {
     Word(String),
     String(String),
     Number(u64),
+    SignedNumber(i64),
     Symbol(char),
 }
 fn take(tokens: &[Lex], cursor: &mut usize, wanted: Lex) -> Result<(), AuthError> {
@@ -9612,6 +9916,19 @@ pub(crate) fn lex_hcl(source: &str) -> Result<Vec<Lex>, AuthError> {
                 index += 1;
             }
             result.push(Lex::Word(source[start..index].into()));
+            continue;
+        }
+        if matches!(bytes[index], b'-' | b'+')
+            && bytes.get(index + 1).is_some_and(u8::is_ascii_digit)
+        {
+            let start = index;
+            index += 1;
+            while index < bytes.len() && bytes[index].is_ascii_digit() {
+                index += 1;
+            }
+            let value = token_duration::signed_int(&source[start..index], false)
+                .map_err(|_| bad("HCL signed integer exceeds supported range"))?;
+            result.push(Lex::SignedNumber(value));
             continue;
         }
         if bytes[index].is_ascii_digit() {
@@ -9715,6 +10032,8 @@ mod userpass_bcrypt;
 
 #[path = "auth_batch.rs"]
 mod batch;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use batch::NativeBatchIssuerOwner;
 #[path = "auth_batch_namespace.rs"]
 pub(crate) mod batch_namespace;
 #[path = "auth_namespace_deletion.rs"]
@@ -9745,6 +10064,8 @@ mod batch_issuance_tests;
 
 #[path = "auth_approle_batch.rs"]
 mod approle_batch;
+#[path = "auth_approle_local.rs"]
+pub(crate) mod approle_local;
 pub(crate) use approle_batch::AppRoleSecretIdConsumption;
 #[cfg(test)]
 #[path = "auth_approle_batch_tests.rs"]
@@ -9829,12 +10150,18 @@ mod sdk_request_path_tests {
 #[path = "auth_token_provenance_json.rs"]
 mod token_provenance_json;
 
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 #[path = "auth_native_v6_routes.rs"]
 mod native_v6_routes;
 
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 pub(crate) use native_v6_routes::NativeV6CertLifetime;
+
+#[cfg(feature = "native-v6-storage")]
+#[path = "auth_native_userpass.rs"]
+mod native_userpass;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_userpass::NativeUserpassOwner;
 
 #[cfg(test)]
 #[path = "auth_lossless_json_tests.rs"]
@@ -9857,7 +10184,7 @@ impl AuthState {
     }
 }
 
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 impl AuthState {
     /// Validate the exact delta generated by actual finite-use authentication.
     /// The original affine Principal retains the post-decrement token snapshot;
@@ -9909,3 +10236,7 @@ impl AuthState {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "auth_security_contract_tests.rs"]
+mod security_contract_tests;

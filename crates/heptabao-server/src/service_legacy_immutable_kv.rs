@@ -206,6 +206,7 @@ impl Service {
         let state = self.state.as_ref()?;
         if state.auth.has_control_group_state()
             || state.has_token_api_precision_state()
+            || state.auth.has_policy_expiration_state()
             || state.engines.has_kubernetes_opaque_artifact_state()
             || state.engines.has_live_leases()
             || !state

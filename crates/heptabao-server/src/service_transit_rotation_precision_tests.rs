@@ -1,5 +1,5 @@
 //! Precise native Transit durations use the existing writer, encrypted restart and snapshot fences.
-use super::tests::{Root, bootstrap};
+use super::tests::Root;
 use super::*;
 use base64::engine::general_purpose::STANDARD as BASE64;
 use zeroize::Zeroizing;
@@ -23,7 +23,8 @@ fn rotation124_service_reader_publication_snapshot_restart_and_retired_floor_are
 -> TestResult {
     let root = Root::new();
     let mut service = root.service().map_err(|_| "service_failed")?;
-    let (unseal, admin) = bootstrap(&mut service).map_err(|_| "bootstrap_failed")?;
+    let (unseal, admin) =
+        crate::service::tests::bootstrap_pre141(&mut service).map_err(|_| "bootstrap_failed")?;
     let unseal = Zeroizing::new(unseal);
     let admin = Zeroizing::new(admin);
     assert!(

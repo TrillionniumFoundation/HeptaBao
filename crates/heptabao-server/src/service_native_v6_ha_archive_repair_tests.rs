@@ -146,7 +146,9 @@ fn repair_fixture() -> TestResult<RepairFixture> {
     })
 }
 
-fn local_anchor(service: &Service) -> TestResult<(u64, u64, Vec<Option<Vec<u8>>>)> {
+type LocalAnchor = (u64, u64, Vec<Option<Vec<u8>>>);
+
+fn local_anchor(service: &Service) -> TestResult<LocalAnchor> {
     let durable = service.durable.as_ref().ok_or("actual durable")?;
     let mut resources = Vec::new();
     for resource in [
@@ -543,12 +545,14 @@ fn native_ha_archive_repair_rejects_real_checkpoint_drift_and_historical_root() 
             .ok_or("actual root")?;
         let generation = process.snapshot_test_record_usage()?.0;
         let checkpointed = Cell::new(false);
+        let mut checkpoint_result = None;
         let result = process.repair_native_v6_current_closure_from_archive(
             OnFirstRead {
                 reader: Cursor::new(&fixture.archive),
                 effect: Some(|| {
-                    process.trigger_snapshot().expect("actual Raft checkpoint");
-                    checkpointed.set(true);
+                    let result = process.trigger_snapshot();
+                    checkpointed.set(result.is_ok());
+                    checkpoint_result = Some(result);
                 }),
             },
             fixture.seal_identity,
@@ -556,6 +560,7 @@ fn native_ha_archive_repair_rejects_real_checkpoint_drift_and_historical_root() 
             deadline,
             &mut |_, _| Ok(()),
         );
+        checkpoint_result.ok_or("actual Raft checkpoint callback absent")??;
         assert!(checkpointed.get());
         assert!(process.snapshot_test_record_usage()?.0 > generation);
         assert!(

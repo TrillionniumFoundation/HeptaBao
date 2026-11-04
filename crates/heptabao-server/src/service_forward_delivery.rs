@@ -34,6 +34,7 @@ impl Service {
             .auth
             .forward_owner_projection_digest()
             .map_err(|_| unavailable())?;
+        #[cfg(feature = "native-v6-storage")]
         if let Some(root) = self.native_root.as_ref() {
             if self.record_root.is_some() {
                 return Err(unavailable());
@@ -64,6 +65,7 @@ impl Service {
     // other durable owner, namespace/catalog graph, KV record, replay/schema
     // and cluster binding remains exact and authenticated by the source MAC.
     fn forward_non_auth_owner_projection(&self) -> Result<[u8; 32], Response> {
+        #[cfg(feature = "native-v6-storage")]
         if let Some(root) = self.native_root.as_ref() {
             if self.record_root.is_some() {
                 return Err(unavailable());
@@ -95,6 +97,7 @@ impl Service {
     // address-key domain, rather than relying on the retired V5 manifest. The
     // optional Auth digest preserves exactly the two existing delivery scopes;
     // a full root identity would also bind the permitted Token API observation.
+    #[cfg(feature = "native-v6-storage")]
     fn forward_native_owner_projection(
         root: &crate::state_record_root_v6::RecordStateRootV6,
         auth: Option<[u8; 32]>,
@@ -126,6 +129,83 @@ impl Service {
         );
         Ok(crate::ha_forward_completion::digest(&bytes))
     }
+    // Exhaustive root/graph destructuring deliberately leaves only actual KV2
+    // data roots and aggregate logical payload counts outside this projection.
+    // The selected completed version's configuration/metadata/descriptor is
+    // independently checked below; no generic receipt acquires this scope.
+    #[cfg(feature = "native-v6-storage")]
+    fn forward_native_data_read_projection(&self) -> Result<[u8; 32], Response> {
+        let state = self
+            .state
+            .as_ref()
+            .ok_or_else(unavailable)?
+            .protected_state()?;
+        let auth = state
+            .auth
+            .forward_owner_projection_digest()
+            .map_err(|_| unavailable())?;
+        if self.record_root.is_some() {
+            return Err(unavailable());
+        }
+        let root = self.native_root.as_ref().ok_or_else(unavailable)?;
+        Self::forward_native_data_read_projection_root(root, auth)
+    }
+    #[cfg(feature = "native-v6-storage")]
+    fn forward_native_data_read_projection_root(
+        root: &crate::state_record_root_v6::RecordStateRootV6,
+        auth: [u8; 32],
+    ) -> Result<[u8; 32], Response> {
+        use crate::state_record_root_v6::{Kv2GraphRef, RecordStateRootV6};
+        root.validate().map_err(|_| unavailable())?;
+        let RecordStateRootV6 {
+            storage_format,
+            state_schema,
+            reader_floor,
+            global_lossless_json_format,
+            cluster_id,
+            replay_epoch,
+            owners,
+            kv1,
+            kv2,
+            object_address_key,
+        } = root;
+        let other: Vec<_> = owners
+            .iter()
+            .filter(|owner| owner.domain != crate::state_record_root_v6::OwnerDomain::Auth)
+            .collect();
+        let graphs: Vec<_> = kv2
+            .iter()
+            .map(|graph| {
+                let Kv2GraphRef {
+                    scope,
+                    graph_format,
+                    logical_payload_bytes: _,
+                    root: _,
+                } = graph;
+                (scope, graph_format)
+            })
+            .collect();
+        let bytes = crate::secret_serde::to_vec(
+            &(
+                "heptabao-native-v6-retained-data-read-stable-owners-v1",
+                storage_format,
+                state_schema,
+                reader_floor,
+                global_lossless_json_format,
+                cluster_id,
+                replay_epoch,
+                other,
+                kv1,
+                graphs,
+                object_address_key,
+                auth,
+            ),
+            usize::MAX,
+        )
+        .map_err(|_| unavailable())?;
+        Ok(crate::ha_forward_completion::digest(&bytes))
+    }
+
     pub(super) fn expects_local_ha_step_down(&self, path: &str, response: &Response) -> bool {
         path == "sys/step-down"
             && response.status == 204
@@ -225,27 +305,45 @@ impl Service {
             .map_err(|_| diagnostic_unavailable(phase, "publication_mac"))?;
         // Wait and synchronize before the final original Actor observation.
         // A blocking applied-index wait must never follow that observation.
-        ha.lock_for_request()
-            .map_err(|_| diagnostic_unavailable(phase, "ha_lock"))?
-            .wait_forward_applied(receipt)
-            .map_err(|_| diagnostic_unavailable(phase, "wait_applied"))?;
+        crate::ha::observe_native_v6_timing(
+            phase,
+            "delivery_wait_applied",
+            Some(receipt.deadline),
+            || {
+                ha.lock_for_request()
+                    .map_err(|_| diagnostic_unavailable(phase, "ha_lock"))?
+                    .wait_forward_applied(receipt)
+                    .map_err(|_| diagnostic_unavailable(phase, "wait_applied"))
+            },
+        )?;
         // No deadline or Actor is renewed when an unrelated completion raced
         // the first materialization. The final witness must authenticate this
         // same actual Service graph before any owner or Actor check follows.
         loop {
-            self.sync_forward_delivery_before(receipt.deadline)
-                .inspect_err(|error| {
-                    eprintln!(
-                        "heptabao-forward-diagnostic: phase={phase} guard=sync status={}",
-                        error.status
-                    );
-                })?;
+            crate::ha::observe_native_v6_timing(
+                phase,
+                "delivery_local_sync",
+                Some(receipt.deadline),
+                || self.sync_forward_delivery_before(receipt.deadline),
+            )
+            .inspect_err(|error| {
+                eprintln!(
+                    "heptabao-forward-diagnostic: phase={phase} guard=sync status={}",
+                    error.status
+                );
+            })?;
             let local_identity = self.current_state_identity()?;
-            let (identity, witness) = ha
-                .lock_for_request()
-                .map_err(|_| unavailable())?
-                .application_identity_witness_for_local_root(local_identity)
-                .map_err(|_| diagnostic_unavailable(phase, "fresh_witness"))?;
+            let (identity, witness) = crate::ha::observe_native_v6_timing(
+                phase,
+                "delivery_fresh_witness",
+                Some(receipt.deadline),
+                || {
+                    ha.lock_for_request()
+                        .map_err(|_| unavailable())?
+                        .application_identity_witness_for_local_root(local_identity)
+                        .map_err(|_| diagnostic_unavailable(phase, "fresh_witness"))
+                },
+            )?;
             if self.current_state_identity()? == identity {
                 return Ok((identity, witness));
             }
@@ -294,7 +392,32 @@ impl Service {
             } else {
                 false
             };
-        if !prefix_covers || (!owner_matches && !typed_no_effect_denial) {
+        #[cfg(feature = "native-v6-storage")]
+        let typed_retained_data_read = if let Some(read) = authority.receipt.native_data_read() {
+            if self.forward_native_data_read_projection()? != read.projection() {
+                return Err(diagnostic_unavailable(phase, "native_read_stable_owner"));
+            }
+            let now = authority
+                .clock
+                .ok_or_else(unavailable)?
+                .observed_at()
+                .map_err(|_| unavailable())?;
+            let state = self.state.as_ref().ok_or_else(unavailable)?;
+            if !state.engines.retained_native_read_visible(read.data(), now) {
+                return Err(diagnostic_unavailable(
+                    phase,
+                    "native_read_retained_version",
+                ));
+            }
+            true
+        } else {
+            false
+        };
+        #[cfg(not(feature = "native-v6-storage"))]
+        let typed_retained_data_read = false;
+        if !prefix_covers
+            || (!owner_matches && !typed_no_effect_denial && !typed_retained_data_read)
+        {
             eprintln!(
                 "heptabao-forward-diagnostic: phase={phase} guard=prefix_or_owner prefix_covers={prefix_covers} owner_matches={owner_matches} typed_no_effect_denial={typed_no_effect_denial} actual_digest={:02x?} receipt_digest={:02x?}",
                 actual_identity.digest(),
@@ -457,6 +580,21 @@ impl Service {
             || self.audit_failed
             || !self.ha_activation_permitted()
         {
+            #[cfg(test)]
+            eprintln!(
+                "HBHA-DIAG-FORWARD-SOURCE-ENTRY deadline_expired={} completion_scope_missing={} recovery_required={} audit_failed={} state_loaded={} barrier_loaded={} durable_loaded={} durable_recovery={}",
+                crate::request_deadline::current()
+                    .is_some_and(|deadline| Instant::now() >= deadline),
+                CompletionScope::deadline().is_none(),
+                self.recovery_required,
+                self.audit_failed,
+                self.state.is_some(),
+                self.barrier_key.is_some(),
+                self.durable.is_some(),
+                self.durable
+                    .as_ref()
+                    .is_some_and(|durable| durable.recovery_required()),
+            );
             seal_diagnostic("entry");
             return;
         }
@@ -519,6 +657,19 @@ impl Service {
             seal_diagnostic("terminal_actor_slots");
             return;
         }
+        #[cfg(feature = "native-v6-storage")]
+        if CompletionScope::has_native_data_read()
+            && let Ok(projection) = self.forward_native_data_read_projection()
+        {
+            crate::ha_forward_completion::bind_native_data_read_projection(
+                projection,
+                |data, clock| {
+                    clock
+                        .observed_at()
+                        .is_ok_and(|now| state.engines.retained_native_read_visible(data, now))
+                },
+            );
+        }
         crate::ha_forward_completion::seal(
             response,
             crate::ha_forward_completion::CompletedPublication {
@@ -569,6 +720,10 @@ fn seal_diagnostic(guard: &'static str) {
     }
 }
 
-#[cfg(all(test, feature = "experimental-native-v6-ha"))]
+#[cfg(all(test, feature = "native-v6-ha"))]
 #[path = "service_forward_delivery_native_tests.rs"]
 mod native_tests;
+
+#[cfg(all(test, feature = "native-v6-ha"))]
+#[path = "service_forward_native_read_completion_tests.rs"]
+mod native_read_completion_tests;

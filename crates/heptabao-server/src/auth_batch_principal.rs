@@ -79,6 +79,11 @@ impl<'a> CheckedCredential<'a> {
                     "type":"batch", "namespace":claims.namespace(),
                     "entity_id":claims.entity_id().unwrap_or(""), "meta":claims.metadata()
                 });
+                // OpenBao's batch lookup renders an empty policy list as null.
+                // The verified policy set remains unchanged for authorization.
+                if claims.policies().is_empty() {
+                    info["policies"] = Value::Null;
+                }
                 if let Some(role) = claims.token_role() {
                     info["role"] = json!(role.name);
                     info["creation_ttl"] = json!(claims.expires_at() - claims.issued_at());
@@ -279,6 +284,7 @@ impl AuthState {
                 finite_use_consumed: false,
             },
             request_clock: None,
+            admission_time: time,
             digest: claims.token_digest().to_owned(),
             credential: VerifiedCredential::Batch(Box::new(claims)),
             origin_peer,

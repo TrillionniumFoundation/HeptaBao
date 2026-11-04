@@ -53,6 +53,7 @@ fn prepare_login_role(
     service: &mut Service,
     admin: &str,
     ttl: &str,
+    local: bool,
 ) -> TestResult<Zeroizing<String>> {
     assert_eq!(
         call(
@@ -78,11 +79,13 @@ fn prepare_login_role(
                 "secret_id_ttl":ttl,
                 "secret_id_num_uses":1,
                 "token_type":"service",
+                "local_secret_ids":local,
             }),
         )
         .status,
         204,
     );
+    assert_partition(service, admin, local)?;
     let mut response = call(service, "GET", &format!("{ROLE}/role-id"), admin, json!({}));
     assert_eq!(response.status, 200);
     secret_field(&mut response, "/data/role_id")
@@ -134,8 +137,18 @@ fn assert_live_token(service: &mut Service, token: &str) -> TestResult {
 #[test]
 fn native_approle_original_secret_expiry_before_publication_keeps_source_unconsumed() -> TestResult
 {
+    original_secret_expiry_before_publication_keeps_source_unconsumed(false)
+}
+
+#[test]
+fn native_approle142_local_secret_expiry_before_publication_keeps_source_unconsumed() -> TestResult
+{
+    original_secret_expiry_before_publication_keeps_source_unconsumed(true)
+}
+
+fn original_secret_expiry_before_publication_keeps_source_unconsumed(local: bool) -> TestResult {
     let (files, mut service, key, admin) = activated()?;
-    let role_id = prepare_login_role(&mut service, &admin, "2s")?;
+    let role_id = prepare_login_role(&mut service, &admin, "2s", local)?;
     let count = token_count(&mut service, &admin)?;
     let secret_id = issue_secret_id(&mut service, &admin)?;
     let pause = LoginPublicationPause::once(Duration::from_millis(2100));
@@ -164,6 +177,7 @@ fn native_approle_original_secret_expiry_before_publication_keeps_source_unconsu
     // SecretID lookup intentionally exposes retained expired metadata. Unlike
     // a failed login alone, this proves the rejected candidate consumed no use.
     let mut service = reopened(&files, &key)?;
+    assert_partition(&mut service, &admin, local)?;
     assert_eq!(token_count(&mut service, &admin)?, count);
     let mut original = secret_lookup(&mut service, &admin, &secret_id);
     assert_eq!(original.status, 200);
@@ -177,8 +191,17 @@ fn native_approle_original_secret_expiry_before_publication_keeps_source_unconsu
 
 #[test]
 fn native_approle_original_secret_expiry_after_audit_withholds_committed_login() -> TestResult {
+    original_secret_expiry_after_audit_withholds_committed_login(false)
+}
+
+#[test]
+fn native_approle142_local_secret_expiry_after_audit_withholds_committed_login() -> TestResult {
+    original_secret_expiry_after_audit_withholds_committed_login(true)
+}
+
+fn original_secret_expiry_after_audit_withholds_committed_login(local: bool) -> TestResult {
     let (files, mut service, key, admin) = activated()?;
-    let role_id = prepare_login_role(&mut service, &admin, "2s")?;
+    let role_id = prepare_login_role(&mut service, &admin, "2s", local)?;
     let count = token_count(&mut service, &admin)?;
     let secret_id = issue_secret_id(&mut service, &admin)?;
     let body = json!({"role_id":role_id.as_str(),"secret_id":secret_id.as_str()});
@@ -247,6 +270,7 @@ fn native_approle_original_secret_expiry_after_audit_withholds_committed_login()
     drop(service);
 
     let mut service = reopened(&files, &key)?;
+    assert_partition(&mut service, &admin, local)?;
     assert_eq!(token_count(&mut service, &admin)?, count + 1);
     assert_eq!(secret_lookup(&mut service, &admin, &secret_id).status, 204);
     assert_consumed(&mut service, &role_id, &secret_id);
@@ -257,8 +281,17 @@ fn native_approle_original_secret_expiry_after_audit_withholds_committed_login()
 
 #[test]
 fn native_approle_one_time_secret_is_checked_without_consuming_again() -> TestResult {
+    one_time_secret_is_checked_without_consuming_again(false)
+}
+
+#[test]
+fn native_approle142_local_one_time_secret_is_checked_without_consuming_again() -> TestResult {
+    one_time_secret_is_checked_without_consuming_again(true)
+}
+
+fn one_time_secret_is_checked_without_consuming_again(local: bool) -> TestResult {
     let (files, mut service, key, admin) = activated()?;
-    let role_id = prepare_login_role(&mut service, &admin, "10m")?;
+    let role_id = prepare_login_role(&mut service, &admin, "10m", local)?;
     let count = token_count(&mut service, &admin)?;
     let secret_id = issue_secret_id(&mut service, &admin)?;
     let (token, _entity) = login(&mut service, &role_id, &secret_id)?;
@@ -271,6 +304,7 @@ fn native_approle_one_time_secret_is_checked_without_consuming_again() -> TestRe
     // Neither root fsync gates nor after-audit source revalidation may run
     // authentication again against the candidate's already-consumed SecretID.
     let mut service = reopened(&files, &key)?;
+    assert_partition(&mut service, &admin, local)?;
     assert_eq!(token_count(&mut service, &admin)?, count + 1);
     assert_eq!(secret_lookup(&mut service, &admin, &secret_id).status, 204);
     assert_consumed(&mut service, &role_id, &secret_id);

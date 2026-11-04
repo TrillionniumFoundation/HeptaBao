@@ -45,7 +45,8 @@ fn entry(key: &str, value: &[u8]) -> StorageEntry {
 fn sdk_storage92_real_record_publication_backup_and_reopen() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, token) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (key, token) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let mut candidate = service.state.clone().ok_or("state")?;
     let owner = mount(&mut candidate, "sdk_probe")?;
     for (k, v) in [
@@ -205,7 +206,8 @@ fn sdk_storage92_unmount_recreate_retires_exact_incarnation() -> TestResult {
 fn sdk_storage92_old_plan_cannot_publish_new_catalog_metadata_or_downgrade() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    crate::service::tests::bootstrap_pre141(&mut service)?;
     let mut candidate = service.state.clone().ok_or("state")?;
     let owner = mount(&mut candidate, "sdk_probe")?;
     candidate
@@ -252,7 +254,8 @@ fn sdk_storage92_old_plan_cannot_publish_new_catalog_metadata_or_downgrade() -> 
 fn sdk_storage92_first_empty_mount_publishes_authenticated_root_and_reopens() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, token) = super::tests::bootstrap_unmounted(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (key, token) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     assert!(service.record_root.is_none());
     let mut candidate = service.state.clone().ok_or("initial state")?;
     assert!(candidate.engines.record_root().is_none());
@@ -581,7 +584,8 @@ fn sdk_remount92_actual_control_capsule_and_status_read_without_sudo() -> TestRe
 fn sdk_headers95_durable_configuration_stale_owner_and_sticky_floor() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, token) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (key, token) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let mut candidate = service.state.clone().ok_or("state")?;
     let old = mount(&mut candidate, "sdk_probe")?;
     candidate.engines.sdk_storage_put(
@@ -766,7 +770,8 @@ fn sdk96_fixture(
 fn sdk96_encrypted_registry_storage_backup_reopen_and_sticky_retirement() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, token) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (key, token) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let mut candidate = service.state.clone().ok_or("state")?;
     let (mut lease, owner) = sdk96_fixture(&mut candidate, &token)?;
     publish(&mut service, candidate)?;
@@ -986,7 +991,8 @@ fn sdk96_clock_only_commit_changes_exact_engine_owner_and_reopens() -> TestResul
 fn sdk96_pki97_joint_encrypted_owners_floor_backup_and_reopen() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, token) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (key, token) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let old_backup = service.durable.as_ref().ok_or("durable")?.export_backup()?;
     let mut candidate = service.state.clone().ok_or("state")?;
     let (lease, owner) = sdk96_fixture(&mut candidate, &token)?;
@@ -1566,7 +1572,8 @@ fn sdk101_register(
 fn sdk101_registration_encrypted_reopen_sticky_floor_and_backup_rollback_rejected() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, token) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (key, token) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let mut candidate = service.state.clone().ok_or("state")?;
     let (mut lease, owner) = sdk96_fixture(&mut candidate, &token)?;
     assert!(lease.registration.is_none());
@@ -1962,7 +1969,8 @@ fn sdk101_batch_registration_caps_real_claims_and_preserves_expired_entry_for_cl
     for (seconds, orphan, ttl) in [(8, false, 6_i64), (8, true, 6), (1, false, -1)] {
         let directory = Root::new();
         let mut service = directory.service()?;
-        let (key, root) = bootstrap(&mut service)?;
+        // Isolate this historical reader floor from the current default-policy floor (141).
+        let (key, root) = crate::service::tests::bootstrap_pre141(&mut service)?;
         let mut candidate = service.state.clone().ok_or("state")?;
         let (mut lease, _) = sdk96_fixture(&mut candidate, &root)?;
         let accepted = sdk101_batch_entry(&mut candidate, &root, seconds, orphan)?;
@@ -2083,7 +2091,8 @@ fn sdk101_batch_registration_caps_real_claims_and_preserves_expired_entry_for_cl
 fn sdk101_batch_registration_encrypted_reopen_backup_and_foreign_key_rejection() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, root) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (key, root) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let mut candidate = service.state.clone().ok_or("state")?;
     let (mut lease, _) = sdk96_fixture(&mut candidate, &root)?;
     let plain_at = crate::auth::Timestamp::checked(100, 100_000_000)?;

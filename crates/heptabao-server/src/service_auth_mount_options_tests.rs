@@ -93,7 +93,8 @@ fn auth_mount_options_native_pairs_and_errors_preserve_rejected_state() -> TestR
 fn auth_mount_options_encrypted_reopen_revision_and_sticky_snapshot_floor() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (key, admin) = bootstrap_unmounted(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (key, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     let previous = service.state.clone().ok_or("previous")?;
     let backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
     let created = call(
@@ -179,7 +180,8 @@ fn auth_mount_options_encrypted_reopen_revision_and_sticky_snapshot_floor() -> T
 fn auth_mount_options_empty_input_preserves_legacy_serialized_auth_shape() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, admin) = bootstrap_unmounted(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (_, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     assert_eq!(
         call(
             &mut service,

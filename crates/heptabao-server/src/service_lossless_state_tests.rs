@@ -303,6 +303,8 @@ fn global_lossless_auth_cubbyhole_and_workflow_durable_inputs_latch_same_state_o
             .workflows
             .has_lossless_json_state()
     );
+    let workflow_bytes =
+        serde_json::to_vec(&service.state.as_ref().ok_or("state")?.namespaces.workflows)?;
     drop(service);
     let mut service = root.service()?;
     assert_eq!(
@@ -310,6 +312,10 @@ fn global_lossless_auth_cubbyhole_and_workflow_durable_inputs_latch_same_state_o
         200
     );
     assert_eq!(global(&service)?, Some(1));
+    assert_eq!(
+        serde_json::to_vec(&service.state.as_ref().ok_or("state")?.namespaces.workflows)?,
+        workflow_bytes
+    );
     assert_eq!(
         call(&mut service, "GET", "cubbyhole/item", &token, json!({})).body["data"],
         value
@@ -322,7 +328,48 @@ fn global_lossless_auth_cubbyhole_and_workflow_durable_inputs_latch_same_state_o
         json!({}),
     );
     assert_eq!(executed.status, 200);
-    assert_eq!(executed.body["data"]["payload"], value);
+    // The workflow keeps exact inputs in its owner and writes exact KV2 data.
+    // Its output maps the real KV2 GET, whose OpenBao 2.7.1 API rounds numbers.
+    crate::service::kv2_import_tests::assert_stored_kv2_payload(
+        &service,
+        "workflow-lossless",
+        1,
+        &value,
+    )?;
+    let expected_api = heptabao_domain::json::decode(br#"{"big":1.844674407370955e+23,"decimal":0.12345678901234568,"fake":{"$serde_json::private::Number":"7"},"raw":{"$serde_json::private::RawValue":"[1]"}}"#)?;
+    assert_eq!(executed.body["data"]["payload"], expected_api);
+    assert_eq!(global(&service)?, Some(1));
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "PUT", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        serde_json::to_vec(&service.state.as_ref().ok_or("state")?.namespaces.workflows)?,
+        workflow_bytes
+    );
+    assert_eq!(
+        call(&mut service, "GET", "cubbyhole/item", &token, json!({})).body["data"],
+        value
+    );
+    crate::service::kv2_import_tests::assert_stored_kv2_payload(
+        &service,
+        "workflow-lossless",
+        1,
+        &value,
+    )?;
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "secret/data/workflow-lossless",
+            &token,
+            json!({})
+        )
+        .body["data"]["data"],
+        expected_api
+    );
     assert_eq!(global(&service)?, Some(1));
     Ok(())
 }
@@ -331,7 +378,8 @@ fn global_lossless_auth_cubbyhole_and_workflow_durable_inputs_latch_same_state_o
 fn global_lossless_kv2_only_uses_its_independent_sticky_engine_custody() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, token) = bootstrap(&mut service)?;
+    // Isolate KV2 custody from the current root policy and its independent schema-141 floor.
+    let (_, token) = crate::service::tests::bootstrap_pre141(&mut service)?;
     assert_eq!(
         call(
             &mut service,

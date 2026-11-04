@@ -4143,7 +4143,7 @@ mod tests {
     fn database_generation_settings_require_schema56_independently() -> Result<(), TestFailure> {
         let root = super::super::tests::Root::new();
         let mut service = root.service().map_err(|_| TestFailure)?;
-        let _ = super::super::tests::bootstrap(&mut service).map_err(|_| TestFailure)?;
+        let _ = super::super::tests::bootstrap_pre141(&mut service).map_err(|_| TestFailure)?;
         let mut state = service.state.clone().ok_or(TestFailure)?;
         state.schema = 55;
         state.validate_format().map_err(|_| TestFailure)?;
@@ -5707,10 +5707,10 @@ mod tests {
 
     #[test]
     fn password_policy_crud_generation_restart_and_schema_fence() -> GenerationResult {
-        use super::super::tests::{Root, bootstrap, call};
+        use super::super::tests::{Root, call};
         let root = Root::new();
         let mut service = root.service()?;
-        let (key, root_token) = bootstrap(&mut service)?;
+        let (key, root_token) = crate::service::tests::bootstrap_pre141(&mut service)?;
         let policy = "length = 10\nrule \"charset\" { charset = \"Q\" min-chars = 10 }";
         assert_eq!(
             call(

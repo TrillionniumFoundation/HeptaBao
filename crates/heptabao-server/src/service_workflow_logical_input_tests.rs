@@ -57,8 +57,8 @@ fn assert_logical_userpass_floor(state: &State) -> TestResult {
         state.namespaces.workflows.has_logical_input_profiles()
             || state.auth.has_control_group_logical_data()
     );
-    assert_eq!(state.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
-    assert_eq!(state.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(state.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
+    assert_eq!(state.writer_schema(), AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     state
         .validate_format()
         .map_err(|_| "combined logical/Userpass format")?;
@@ -592,13 +592,16 @@ fn workflow131_active_and_retired_definition_and_owner_floor_survive_commit_and_
     assert!(!previous.namespaces.workflows.has_logical_input_profiles());
     assert!(!previous.auth.has_control_group_logical_data());
     assert!(previous.auth.has_userpass_issuance_state());
-    assert_eq!(previous.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
-    assert_eq!(previous.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(previous.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
+    assert_eq!(
+        previous.writer_schema(),
+        AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+    );
     install_logical(&mut f, QUERY_PROFILE);
     let active = f.service.state.as_ref().ok_or("state")?.clone();
     assert_logical_userpass_floor(&active)?;
-    assert_eq!(active.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
-    assert_eq!(active.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(active.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
+    assert_eq!(active.writer_schema(), AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     active.validate_format().map_err(|_| "active format")?;
     active
         .validate_publication_schema(Some(&previous))
@@ -621,7 +624,7 @@ fn workflow131_active_and_retired_definition_and_owner_floor_survive_commit_and_
     f = restart(f, 100)?;
     assert_eq!(
         f.service.state.as_ref().ok_or("state")?.schema,
-        USERPASS_ISSUANCE_STATE_SCHEMA
+        AUTH_SECURITY_CONTRACT_STATE_SCHEMA
     );
     assert_eq!(
         call(
@@ -638,8 +641,8 @@ fn workflow131_active_and_retired_definition_and_owner_floor_survive_commit_and_
     let retired = f.service.state.as_ref().ok_or("state")?.clone();
     assert!(retired.auth.has_userpass_issuance_state());
     assert!(!retired.namespaces.workflows.has_logical_input_profiles());
-    assert_eq!(retired.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
-    assert_eq!(retired.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(retired.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
+    assert_eq!(retired.writer_schema(), AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     let mut downgrade = retired.clone();
     downgrade.schema = WORKFLOW_CREDENTIAL_STATE_SCHEMA;
     assert!(
@@ -651,7 +654,7 @@ fn workflow131_active_and_retired_definition_and_owner_floor_survive_commit_and_
     f = restart(f, 100)?;
     assert_eq!(
         f.service.state.as_ref().ok_or("state")?.schema,
-        USERPASS_ISSUANCE_STATE_SCHEMA
+        AUTH_SECURITY_CONTRACT_STATE_SCHEMA
     );
     assert_eq!(
         call(
@@ -669,7 +672,9 @@ fn workflow131_active_and_retired_definition_and_owner_floor_survive_commit_and_
     // Userpass issuance. This isolates 131 from the coexisting 132 floor above.
     let isolated_root = Root::new();
     let mut isolated = isolated_root.service()?;
-    let (isolated_key, isolated_admin) = bootstrap(&mut isolated)?;
+    // Select the historical factory before its first publication. A current
+    // root already owns the schema-141 default policy, independently of 131.
+    let (isolated_key, isolated_admin) = crate::service::tests::bootstrap_pre141(&mut isolated)?;
     let isolated_key = Zeroizing::new(isolated_key);
     let isolated_admin = Zeroizing::new(isolated_admin);
     let before = isolated
@@ -2641,11 +2646,15 @@ fn workflow131_real_float_runtime_casts_output_empty_wire_and_wrapping_fail_at_a
     let token = Zeroizing::new(f.admin.to_string());
     let mut version = 1;
     for (raw, text) in [("NaN", "NaN"), ("+Inf", "+Inf"), ("-Inf", "-Inf")] {
-        for (kind, expected) in [
-            ("string", json!(text)),
-            ("int", json!(i64::MIN)),
-            ("bool", json!(true)),
-            ("[]string", json!([text])),
+        for (kind, expected, kv2_api_expected) in [
+            ("string", json!(text), json!(text)),
+            (
+                "int",
+                json!(i64::MIN),
+                heptabao_domain::json::decode(b"-9223372036854776000")?,
+            ),
+            ("bool", json!(true), json!(true)),
+            ("[]string", json!([text]), json!([text])),
         ] {
             install_logical(&mut f, &nonfinite_document(true, None, kind));
             let reply = wire(
@@ -2682,7 +2691,10 @@ fn workflow131_real_float_runtime_casts_output_empty_wire_and_wrapping_fail_at_a
             );
             version += 1;
             assert_eq!(stored.body["data"]["metadata"]["version"], version);
-            assert_eq!(stored.body["data"]["data"]["value"], expected);
+            assert_eq!(stored.body["data"]["data"]["value"], kv2_api_expected);
+            // The runtime cast and durable payload still own the exact i64
+            // result; only a subsequent KV2 GET has the 2.7.1 float64 view.
+            assert_stored_kv2_payload(&f.service, "cg/key", version, &json!({"value":expected}))?;
         }
         for kind in ["any", "float64"] {
             install_logical(&mut f, &nonfinite_document(true, None, kind));

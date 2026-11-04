@@ -1,5 +1,5 @@
 //! Durable reader, publication, original encrypted restart and retirement fences.
-use super::tests::{Root, bootstrap};
+use super::tests::Root;
 use super::*;
 use zeroize::Zeroizing;
 type TestResult = Result<(), &'static str>;
@@ -21,7 +21,8 @@ fn derivation127_service_old_reader_marker_rollback_snapshot_restart_and_retirem
 -> TestResult {
     let root = Root::new();
     let mut service = root.service().map_err(|_| "service bootstrap")?;
-    let (unseal, admin) = bootstrap(&mut service).map_err(|_| "bootstrap credentials")?;
+    let (unseal, admin) = crate::service::tests::bootstrap_pre141(&mut service)
+        .map_err(|_| "bootstrap credentials")?;
     let unseal = Zeroizing::new(unseal);
     let admin = Zeroizing::new(admin);
     let before = Zeroizing::new(

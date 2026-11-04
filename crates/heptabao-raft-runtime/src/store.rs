@@ -30,6 +30,15 @@ use blocking_io::with_owned_store;
 #[path = "store_snapshot_test_gate.rs"]
 mod snapshot_test_gate;
 
+#[cfg(feature = "native-v6-raft-objects")]
+#[path = "store_v6_log_slot.rs"]
+mod v6_log_slot;
+#[cfg(feature = "native-v6-raft-objects")]
+#[path = "store_v6_retention.rs"]
+mod v6_retention;
+#[cfg(feature = "native-v6-raft-objects")]
+pub use v6_retention::{NativeV6RetainedRoot, NativeV6RetainedRootCatalog, NativeV6RetentionGuard};
+
 const MAX_DURABLE_ARTIFACT_BYTES: usize = 128 * 1024 * 1024;
 const ENVELOPE_OVERHEAD_BYTES: usize = 20;
 const COMPACT_STATE_BUNDLE_FORMAT: u16 = 2;
@@ -1183,6 +1192,12 @@ struct PersistentStateBundle {
     generation: u64,
     state: MemStoreStateMachine,
     current_snapshot: Option<PersistentSnapshot>,
+    // Process-local invalidation provenance, never durable read authority.
+    // Only successful locally GENERATED checkpoints extend this continuous
+    // run. Applying any entry, installing a snapshot or reopening clears it.
+    // A caller still needs a NEW quorum read and the original absolute bound.
+    #[serde(skip)]
+    local_generated_checkpoint_start: Option<u64>,
 }
 
 impl Default for PersistentStateBundle {
@@ -1193,6 +1208,7 @@ impl Default for PersistentStateBundle {
             generation: 1,
             state: MemStoreStateMachine::default(),
             current_snapshot: None,
+            local_generated_checkpoint_start: None,
         }
     }
 }
@@ -1307,6 +1323,7 @@ fn apply_state_journal_event(
                     )));
                 }
             }
+            bundle.local_generated_checkpoint_start = None;
             let response = apply_state_entry(&mut bundle.state, &entry);
             bundle.generation = generation;
             if let Some(version) = bundle.state.records_format_version() {
@@ -1386,8 +1403,10 @@ impl PersistentStateBundle {
     }
 
     fn validate_header(&self) -> io::Result<()> {
-        if !matches!(self.format_version, 1 | COMPACT_STATE_BUNDLE_FORMAT | 3 | 4 | 5)
-            || self.journal_format > 1
+        if !matches!(
+            self.format_version,
+            1 | COMPACT_STATE_BUNDLE_FORMAT | 3 | 4 | 5 | 6 | 7
+        ) || self.journal_format > 1
             || self.generation == 0
         {
             return Err(invalid("unsupported or zero state bundle generation"));
@@ -1677,7 +1696,7 @@ impl DurableStateMachine {
     /// intent log entry. Only a physically persisted, validated snapshot that
     /// contains the original applied-log provenance can supply this identity.
     /// This is local evidence, not a quorum / Actor / root publication grant.
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub(crate) async fn durable_snapshot_v6_intent_log_id(
         &self,
         intent_id: &[u8; 32],
@@ -1704,15 +1723,21 @@ impl DurableStateMachine {
         Ok(state.v6_intent_log_id(intent_id))
     }
 
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub(crate) async fn durable_snapshot_v6_epoch_restore_begin(
         &self,
         command: &crate::v6_epoch_restore::NativeV6EpochRestoreCommand,
         begin_log: LogIdOf<TypeConfig>,
     ) -> io::Result<bool> {
         let bundle = self.bundle.lock().await;
-        let Some(snapshot) = &bundle.current_snapshot else { return Ok(false); };
-        if snapshot.meta.last_log_id.is_none_or(|log| log.index < begin_log.index) {
+        let Some(snapshot) = &bundle.current_snapshot else {
+            return Ok(false);
+        };
+        if snapshot
+            .meta
+            .last_log_id
+            .is_none_or(|log| log.index < begin_log.index)
+        {
             return Ok(false);
         }
         let state = MemStoreStateMachine::from_snapshot(&snapshot.data)?;
@@ -1724,7 +1749,9 @@ impl DurableStateMachine {
         };
         Ok(state.v6_pending_epoch_restore.as_ref().is_some_and(same)
             || state.v6_root.as_ref().is_some_and(|root| {
-                root.restore_lineage.iter().any(|record| same(&record.pending))
+                root.restore_lineage
+                    .iter()
+                    .any(|record| same(&record.pending))
             }))
     }
 
@@ -1825,7 +1852,7 @@ impl DurableStateMachine {
         )
     }
 
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub(crate) async fn native_v6_application_snapshot(
         &self,
     ) -> (
@@ -1856,7 +1883,7 @@ impl DurableStateMachine {
         )
     }
 
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub(crate) async fn native_v6_enrollment(
         &self,
     ) -> (
@@ -1874,7 +1901,7 @@ impl DurableStateMachine {
         )
     }
 
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub(crate) async fn native_v6_root(&self) -> (u64, Option<crate::NativeV6PublishedRoot>) {
         let bundle = self.bundle.lock().await;
         (
@@ -1887,14 +1914,19 @@ impl DurableStateMachine {
         )
     }
 
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub(crate) async fn native_v6_pending_epoch_restore(
         &self,
     ) -> Option<crate::v6_epoch_restore::NativeV6PendingEpochRestore> {
-        self.bundle.lock().await.state.v6_pending_epoch_restore.clone()
+        self.bundle
+            .lock()
+            .await
+            .state
+            .v6_pending_epoch_restore
+            .clone()
     }
 
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub(crate) async fn native_v6_intent_origin(
         &self,
         digest: &[u8; 32],
@@ -1902,7 +1934,28 @@ impl DurableStateMachine {
         self.bundle.lock().await.state.v6_intent_log_id(digest)
     }
 
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
+    pub(crate) async fn native_v6_retained_migration_source(
+        &self,
+        selected: &crate::NativeV6PublishedRoot,
+    ) -> Option<crate::PublishedRecordRoot> {
+        // Historical migration custody only. Ordinary V5 reads remain fenced
+        // after native activation. The process caller retains its original
+        // opaque native ReadIndex witness before and after this single lock.
+        let bundle = self.bundle.lock().await;
+        let current = crate::NativeV6PublishedRoot(bundle.state.v6_root.clone()?);
+        let source = bundle.state.records_v5.as_ref()?.published()?;
+        let (digest, log) = selected.migration_source();
+        if &current != selected
+            || bundle.state.v5_root_log? != log
+            || source.envelope().digest() != digest
+        {
+            return None;
+        }
+        Some(source)
+    }
+
+    #[cfg(feature = "native-v6-raft-objects")]
     pub(crate) async fn native_v6_migration_source(
         &self,
     ) -> Option<([u8; 32], LogIdOf<TypeConfig>)> {
@@ -2027,6 +2080,30 @@ impl DurableStateMachine {
         self.bundle.lock().await.generation
     }
 
+    /// Classify a lost generation only when every intervening transition was
+    /// an actual locally generated, fully persisted checkpoint of the SAME
+    /// full applied LogId. This is neither a witness nor a read permission.
+    /// The private marker is absent after any apply/install/reopen; the node
+    /// must separately bind this exact Arc, old deadline and a fresh ReadIndex.
+    #[cfg(feature = "native-v6-raft-objects")]
+    pub(crate) async fn generated_checkpoint_transition_since(
+        &self,
+        selected_generation: u64,
+        selected_applied: LogIdOf<TypeConfig>,
+    ) -> Option<u64> {
+        let bundle = self.bundle.lock().await;
+        let start = bundle.local_generated_checkpoint_start?;
+        if start <= selected_generation
+            && selected_generation < bundle.generation
+            && bundle.state.last_applied_log == Some(selected_applied)
+            && bundle.current_snapshot.as_ref()?.meta.last_log_id == Some(selected_applied)
+        {
+            Some(bundle.generation)
+        } else {
+            None
+        }
+    }
+
     #[cfg(test)]
     pub fn state_path(&self) -> &Path {
         &self.bundle_path
@@ -2069,10 +2146,16 @@ impl RaftSnapshotBuilder<TypeConfig> for DurableStateMachine {
             // snapshot. Delay that unavoidable byte copy until after persistence;
             // the full state itself was borrowed throughout, never cloned.
             let data = current_snapshot.data.clone();
+            let checkpoint_start = bundle
+                .local_generated_checkpoint_start
+                .unwrap_or(bundle.generation);
             bundle.format_version = format_version;
             bundle.journal_format = journal_format;
             bundle.generation = generation;
             bundle.current_snapshot = Some(current_snapshot);
+            // Both the snapshot bundle and reset journal have reached disk.
+            // This volatile fact is never serialized by either bundle codec.
+            bundle.local_generated_checkpoint_start = Some(checkpoint_start);
             Ok(SnapshotOf::<TypeConfig, Cursor<Vec<u8>>> {
                 meta,
                 snapshot: Cursor::new(data),
@@ -2173,6 +2256,14 @@ impl RaftStateMachine<TypeConfig> for DurableStateMachine {
         with_owned_store(owner, move |bundle| {
             let data = snapshot.into_inner();
             let state = MemStoreStateMachine::from_snapshot(&data)?;
+            #[cfg(feature = "native-v6-raft-objects")]
+            if bundle.state.v6_retained_root_protocol.is_some()
+                && state.v6_retained_root_protocol != bundle.state.v6_retained_root_protocol
+            {
+                return Err(invalid(
+                    "native retained-root snapshot reader floor cannot regress",
+                ));
+            }
             if state.last_applied_log != meta.last_log_id {
                 return Err(invalid("snapshot last-applied log does not match metadata"));
             }
@@ -2196,6 +2287,7 @@ impl RaftStateMachine<TypeConfig> for DurableStateMachine {
                 generation: bundle.next_generation()?,
                 state,
                 current_snapshot: Some(persisted),
+                local_generated_checkpoint_start: None,
             };
             store.persist_bundle(&candidate)?;
             initialize_state_journal(&state_journal_path(&store.bundle_path))?;
@@ -3266,3 +3358,7 @@ mod snapshot_encoding_tests;
 #[path = "record_store_tests.rs"]
 #[allow(clippy::expect_used, clippy::unwrap_used)]
 mod record_store_tests;
+
+#[cfg(all(test, feature = "native-v6-raft-objects"))]
+#[path = "store_generated_checkpoint_tests.rs"]
+mod generated_checkpoint_tests;

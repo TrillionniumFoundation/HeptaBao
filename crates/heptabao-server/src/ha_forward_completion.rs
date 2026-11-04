@@ -33,6 +33,26 @@ pub(crate) struct CompletionWire {
     pub acknowledgement_only: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub oidc_missing_session_denial: Option<OidcDenialPublication>,
+    #[cfg(feature = "native-v6-storage")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub native_data_read: Option<NativeDataReadPublication>,
+}
+
+#[cfg(feature = "native-v6-storage")]
+#[derive(Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct NativeDataReadPublication {
+    data: crate::engines::kv2_native_records::NativeRetainedReadVersion,
+    stable_owner_projection: [u8; 32],
+}
+#[cfg(feature = "native-v6-storage")]
+impl NativeDataReadPublication {
+    pub(crate) fn data(&self) -> &crate::engines::kv2_native_records::NativeRetainedReadVersion {
+        &self.data
+    }
+    pub(crate) fn projection(&self) -> [u8; 32] {
+        self.stable_owner_projection
+    }
 }
 
 #[derive(Serialize, Deserialize)]
@@ -96,6 +116,20 @@ impl CompletedForwardReceipt {
         {
             return Err("HA completed-forward proof is invalid".into());
         }
+        #[cfg(feature = "native-v6-storage")]
+        if let Some(read) = wire.native_data_read.as_ref() {
+            let ingress = NativeDataReadIngress::capture(request)
+                .ok_or("native completed read ingress absent")?;
+            if wire.oidc_missing_session_denial.is_some()
+                || wire.acknowledgement_only
+                || wire.actor.is_none()
+                || !read.data.structurally_valid()
+                || read.stable_owner_projection == [0; 32]
+                || !read.data.matches_ingress(&ingress.namespace, &ingress.path)
+            {
+                return Err("native completed read proof scope is invalid".into());
+            }
+        }
         Ok(Self {
             wire,
             cluster,
@@ -106,6 +140,10 @@ impl CompletedForwardReceipt {
     }
     // Verify the original source's actual publication and audit fields before
     // interpreting its log prefix against a later local quorum witness.
+    #[cfg(test)]
+    pub(crate) fn into_wire_for_test(self) -> CompletionWire {
+        self.wire
+    }
     pub(crate) fn verify_publication(&self, key: &[u8]) -> Result<(), String> {
         let bytes = publication_bytes(&self.wire, &self.cluster, self.source)?;
         ring::hmac::verify(&publication_key(key), &bytes, &self.wire.publication_mac)
@@ -128,6 +166,10 @@ impl CompletedForwardReceipt {
     }
     pub(crate) fn oidc_missing_session_denial(&self) -> Option<&OidcDenialPublication> {
         self.wire.oidc_missing_session_denial.as_ref()
+    }
+    #[cfg(feature = "native-v6-storage")]
+    pub(crate) fn native_data_read(&self) -> Option<&NativeDataReadPublication> {
+        self.wire.native_data_read.as_ref()
     }
     pub(crate) fn acknowledgement_only(&self) -> bool {
         self.wire.acknowledgement_only
@@ -223,7 +265,109 @@ struct Capture {
     acknowledgement_only: bool,
     diagnostic_step_down: bool,
     oidc_missing_session_denial: Option<(crate::auth::OidcMissingSessionDenial, [u8; 32])>,
+    // Local-only binding created by the bounded quota-header merge, after the
+    // original logical response has satisfied its typed delivery contract.
+    // This is never deserialized, forwarded, or a replacement for its MAC.
+    quota_response_headers: Option<QuotaResponseHeaders>,
+    #[cfg(feature = "native-v6-storage")]
+    native_data_read: Option<NativeDataReadCapture>,
+    #[cfg(feature = "native-v6-storage")]
+    native_data_read_ingress: Option<NativeDataReadIngress>,
     complete: Option<CompletionWire>,
+}
+#[cfg(feature = "native-v6-storage")]
+struct NativeDataReadIngress {
+    path: zeroize::Zeroizing<String>,
+    namespace: zeroize::Zeroizing<String>,
+}
+#[cfg(feature = "native-v6-storage")]
+impl NativeDataReadIngress {
+    fn capture(request: &[u8]) -> Option<Self> {
+        #[derive(Deserialize)]
+        struct Route<'a> {
+            #[serde(borrow)]
+            method: &'a str,
+            #[serde(borrow)]
+            path: &'a str,
+            #[serde(borrow)]
+            namespace: &'a str,
+            wrap_ttl_seconds: Option<u64>,
+        }
+        // The actual authenticated decoder has already validated the frame.
+        // This borrowed projection is only a negative scope restriction.
+        let route: Route<'_> = serde_json::from_slice(request.get(9..)?).ok()?;
+        if route.method != "GET"
+            || route.wrap_ttl_seconds.is_some()
+            || route.path.len() > 8192
+            || route.namespace.len() > 512
+        {
+            return None;
+        }
+        Some(Self {
+            path: zeroize::Zeroizing::new(route.path.to_owned()),
+            namespace: zeroize::Zeroizing::new(route.namespace.to_owned()),
+        })
+    }
+}
+#[cfg(feature = "native-v6-storage")]
+struct NativeDataReadCapture {
+    data: crate::engines::kv2_native_records::NativeRetainedReadVersion,
+    response: [u8; 32],
+    stable: Option<[u8; 32]>,
+}
+#[cfg(feature = "native-v6-storage")]
+pub(crate) fn native_data_read_completed(
+    witness: crate::engines::kv2_native_records::NativeDataReadWitness,
+    response: &crate::Response,
+) {
+    CAPTURE.with(|slot| {
+        let mut slot = slot.borrow_mut();
+        let Some(c) = slot.as_mut() else {
+            return;
+        };
+        let Some(ingress) = c.native_data_read_ingress.as_ref() else {
+            return;
+        };
+        let data = witness.into_version();
+        if c.acknowledgement_only
+            || c.oidc_missing_session_denial.is_some()
+            || !data.matches_ingress(&ingress.namespace, &ingress.path)
+        {
+            return;
+        }
+        if let Ok(response) = response_digest(response) {
+            c.native_data_read = Some(NativeDataReadCapture {
+                data,
+                response,
+                stable: None,
+            });
+        }
+    });
+}
+#[cfg(feature = "native-v6-storage")]
+pub(crate) fn bind_native_data_read_projection(
+    projection: [u8; 32],
+    visible: impl FnOnce(
+        &crate::engines::kv2_native_records::NativeRetainedReadVersion,
+        RequestClock,
+    ) -> bool,
+) {
+    CAPTURE.with(|slot| {
+        let mut slot = slot.borrow_mut();
+        let Some(c) = slot.as_mut() else {
+            return;
+        };
+        if let (Some(read), Some(clock)) = (c.native_data_read.as_mut(), c.clock)
+            && projection != [0; 32]
+            && visible(&read.data, clock)
+        {
+            read.stable = Some(projection);
+        }
+    });
+}
+struct QuotaResponseHeaders {
+    original: [u8; 32],
+    completed: [u8; 32],
 }
 thread_local! { static CAPTURE: RefCell<Option<Capture>> = const {RefCell::new(None)}; }
 pub(crate) struct CompletionScope {
@@ -251,10 +395,23 @@ impl CompletionScope {
                 acknowledgement_only: acknowledgement_route,
                 diagnostic_step_down: false,
                 oidc_missing_session_denial: None,
+                quota_response_headers: None,
+                #[cfg(feature = "native-v6-storage")]
+                native_data_read: None,
+                #[cfg(feature = "native-v6-storage")]
+                native_data_read_ingress: NativeDataReadIngress::capture(request),
                 complete: None,
             }))
         });
         Self { previous }
+    }
+    #[cfg(feature = "native-v6-storage")]
+    pub(crate) fn has_native_data_read() -> bool {
+        CAPTURE.with(|slot| {
+            slot.borrow()
+                .as_ref()
+                .is_some_and(|c| c.native_data_read.is_some())
+        })
     }
     pub(crate) fn has_oidc_missing_session_denial() -> bool {
         CAPTURE.with(|slot| {
@@ -396,9 +553,72 @@ pub(crate) fn audited(clock: Option<RequestClock>) {
             c.clock = clock;
             c.audited = clock.is_some();
             c.complete = None;
+            c.quota_response_headers = None;
         }
     });
 }
+
+// The only operation between the two digests is Headers::merge_quota, which
+// accepts four fixed numeric names and preserves the logical body, status,
+// private unwrap origin, and every other response field. It consumes the
+// request's original metadata once; a response status alone grants nothing.
+pub(crate) fn merge_quota_headers(
+    response: &mut crate::Response,
+    headers: crate::service::ResponseHeaders,
+) -> Result<(), ()> {
+    let bind_original = response.response_headers.is_empty()
+        && CAPTURE.with(|slot| {
+            slot.borrow().as_ref().is_some_and(|capture| {
+                capture.audited
+                    && capture.quota_response_headers.is_none()
+                    && Instant::now() < capture.deadline
+                    && (capture.acknowledgement_only
+                        || capture.oidc_missing_session_denial.is_some())
+            })
+        });
+    let original = if bind_original {
+        Some(response_digest(response).map_err(|_| ())?)
+    } else {
+        None
+    };
+    response.response_headers.merge_quota(headers)?;
+    if let Some(original) = original {
+        let completed = response_digest(response).map_err(|_| ())?;
+        CAPTURE.with(|slot| {
+            if let Some(capture) = slot.borrow_mut().as_mut()
+                && capture.audited
+                && capture.quota_response_headers.is_none()
+                && Instant::now() < capture.deadline
+            {
+                let acknowledgement = capture.acknowledgement_only
+                    && response.status == 204
+                    && response.body.is_null();
+                let denied = capture
+                    .oidc_missing_session_denial
+                    .as_ref()
+                    .is_some_and(|(_, expected)| *expected == original);
+                if acknowledgement || denied {
+                    capture.quota_response_headers = Some(QuotaResponseHeaders {
+                        original,
+                        completed,
+                    });
+                }
+            }
+        });
+    }
+    Ok(())
+}
+
+fn logical_headers_remain_empty(capture: &Capture, response: &crate::Response) -> bool {
+    response.response_headers.is_empty()
+        || capture
+            .quota_response_headers
+            .as_ref()
+            .is_some_and(|headers| {
+                response_digest(response).is_ok_and(|actual| actual == headers.completed)
+            })
+}
+
 pub(crate) struct CompletedPublication<'a> {
     pub proof_key: &'a [u8],
     pub identity: StateIdentity,
@@ -422,7 +642,7 @@ pub(crate) fn original_actor_live(
         if c.acknowledgement_only
             && response.status == 204
             && response.body.is_null()
-            && response.response_headers.is_empty()
+            && logical_headers_remain_empty(c, response)
         {
             return true;
         }
@@ -458,7 +678,16 @@ pub(crate) fn seal(response: &crate::Response, publication: CompletedPublication
             let Ok(response_digest) = response_digest(response) else {
                 return;
             };
+            let quota_original = c
+                .quota_response_headers
+                .as_ref()
+                .filter(|headers| headers.completed == response_digest)
+                .map(|headers| headers.original);
+            let logical_headers_empty =
+                response.response_headers.is_empty() || quota_original.is_some();
             let no_actor = c.actor.is_none();
+            #[cfg(feature = "native-v6-storage")]
+            let has_oidc_denial = c.oidc_missing_session_denial.is_some();
             let mut wire = CompletionWire {
                 nonce: c.nonce,
                 request_digest: c.request_digest,
@@ -475,10 +704,10 @@ pub(crate) fn seal(response: &crate::Response, publication: CompletedPublication
                 actor: c.actor.take(),
                 oidc_missing_session_denial: c.oidc_missing_session_denial.take().and_then(
                     |(denial, expected)| {
-                        (expected == response_digest
+                        ((expected == response_digest || quota_original == Some(expected))
                             && no_actor
                             && non_auth_owner_projection != [0; 32]
-                            && response.response_headers.is_empty()
+                            && logical_headers_empty
                             && response.consistency_index.is_none())
                         .then_some(OidcDenialPublication {
                             denial,
@@ -486,10 +715,28 @@ pub(crate) fn seal(response: &crate::Response, publication: CompletedPublication
                         })
                     },
                 ),
+                #[cfg(feature = "native-v6-storage")]
+                native_data_read: c.native_data_read.take().and_then(|read| {
+                    ((read.response == response_digest || quota_original == Some(read.response))
+                        && logical_headers_empty
+                        && !has_oidc_denial
+                        && !c.acknowledgement_only
+                        && !no_actor
+                        && response.status == 200
+                        && response.unwrapped_json.is_none())
+                    .then_some(read)
+                    .and_then(|read| {
+                        read.stable
+                            .map(|stable_owner_projection| NativeDataReadPublication {
+                                data: read.data,
+                                stable_owner_projection,
+                            })
+                    })
+                }),
                 acknowledgement_only: c.acknowledgement_only
                     && response.status == 204
                     && response.body.is_null()
-                    && response.response_headers.is_empty(),
+                    && logical_headers_empty,
             };
             let Ok(bytes) = publication_bytes(&wire, &c.cluster, c.target) else {
                 return;
@@ -535,6 +782,21 @@ fn publication_bytes(
     ))
     .map(zeroize::Zeroizing::new)
     .map_err(|_| "HA completed-forward publication is unavailable")?;
+    #[cfg(feature = "native-v6-storage")]
+    if let Some(read) = wire.native_data_read.as_ref() {
+        if wire.oidc_missing_session_denial.is_some() || wire.acknowledgement_only {
+            return Err("native completed read proof conflicts".into());
+        }
+        return crate::secret_serde::to_vec(
+            &(
+                "HeptaBao/completed-forward/native-kv2-retained-data-read/v1",
+                original.as_slice(),
+                read,
+            ),
+            usize::MAX,
+        )
+        .map_err(|_| "HA completed-forward native read publication is unavailable".into());
+    }
     match &wire.oidc_missing_session_denial {
         None => Ok(original),
         Some(denial) => serde_json::to_vec(&(
@@ -546,3 +808,7 @@ fn publication_bytes(
         .map_err(|_| "HA completed-forward publication is unavailable".into()),
     }
 }
+
+#[cfg(test)]
+#[path = "ha_forward_quota_headers_tests.rs"]
+mod quota_headers_tests;

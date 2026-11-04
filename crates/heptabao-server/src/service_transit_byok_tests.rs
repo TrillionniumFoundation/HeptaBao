@@ -53,7 +53,8 @@ fn wrap(public: &str, material: &[u8]) -> TestResult<String> {
 fn byok_ordinary_service_retains_schema65_and_omitted_fields() -> TestResult {
     let root = Root::new();
     let mut service = root.service().map_err(|_| "test_service_failed")?;
-    let (_, admin) = bootstrap(&mut service).map_err(|_| "test_bootstrap_failed")?;
+    let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)
+        .map_err(|_| "test_bootstrap_failed")?;
     let admin = Zeroizing::new(admin);
     assert!(
         call(
@@ -99,19 +100,14 @@ fn byok_ordinary_service_retains_schema65_and_omitted_fields() -> TestResult {
 fn byok_tenant_imports_encrypted_restart_and_retirement_keep70() -> TestResult {
     let root = Root::new();
     let mut service = root.service().map_err(|_| "test_service_failed")?;
-    let (unseal, admin) = bootstrap(&mut service).map_err(|_| "test_bootstrap_failed")?;
+    let (unseal, admin) = crate::service::tests::bootstrap_pre141(&mut service)
+        .map_err(|_| "test_bootstrap_failed")?;
     let unseal = Zeroizing::new(unseal);
     let admin = Zeroizing::new(admin);
     assert!(
-        call(
-            &mut service,
-            "",
-            "POST",
-            "sys/namespaces/team",
-            &admin,
-            json!({})
-        )
-        .status
+        service
+            .create_pre144_namespace_fixture("team", &admin)?
+            .status
             == 200
     );
     assert!(
@@ -323,15 +319,9 @@ fn byok_tenant_imports_encrypted_restart_and_retirement_keep70() -> TestResult {
         "actual cleaned tenant is absent"
     );
     assert!(
-        call(
-            &mut service,
-            "",
-            "POST",
-            "sys/namespaces/empty",
-            &admin,
-            json!({})
-        )
-        .status
+        service
+            .create_pre144_namespace_fixture("empty", &admin)?
+            .status
             == 200
     );
     assert!(
@@ -385,7 +375,8 @@ fn byok_mixed_pem69_authenticated_restore_prepare_and_commit_reject_active_retir
 -> TestResult {
     let root = Root::new();
     let mut service = root.service().map_err(|_| "test_service_failed")?;
-    let (_, admin) = bootstrap(&mut service).map_err(|_| "test_bootstrap_failed")?;
+    let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)
+        .map_err(|_| "test_bootstrap_failed")?;
     let admin = Zeroizing::new(admin);
     assert!(
         call(
@@ -598,7 +589,8 @@ fn mldsa_fixture() -> TestResult<(Zeroizing<Vec<u8>>, String, String)> {
 fn mldsa270_public_import_encrypted_restart_completion_and_retirement_keep116() -> TestResult {
     let root = Root::new();
     let mut service = root.service().map_err(|_| "service_failed")?;
-    let (unseal, admin) = bootstrap(&mut service).map_err(|_| "bootstrap_failed")?;
+    let (unseal, admin) =
+        crate::service::tests::bootstrap_pre141(&mut service).map_err(|_| "bootstrap_failed")?;
     let unseal = Zeroizing::new(unseal);
     let admin = Zeroizing::new(admin);
     assert!(
@@ -814,7 +806,8 @@ fn mldsa270_public_import_encrypted_restart_completion_and_retirement_keep116() 
 fn mldsa270_mixed116_retired_ssh_marker_cannot_be_erased_by_publication_or_restore() -> TestResult {
     let root = Root::new();
     let mut service = root.service().map_err(|_| "service_failed")?;
-    let (_, admin) = bootstrap(&mut service).map_err(|_| "bootstrap_failed")?;
+    let (_, admin) =
+        crate::service::tests::bootstrap_pre141(&mut service).map_err(|_| "bootstrap_failed")?;
     let admin = Zeroizing::new(admin);
     assert!(
         call(
@@ -972,7 +965,8 @@ fn mldsa270_mixed116_retired_ssh_marker_cannot_be_erased_by_publication_or_resto
 fn mldsa270_existing115_ssh_history_survives_upgrade_to116_and_mount_retirement() -> TestResult {
     let root = Root::new();
     let mut service = root.service().map_err(|_| "service_failed")?;
-    let (_, admin) = bootstrap(&mut service).map_err(|_| "bootstrap_failed")?;
+    let (_, admin) =
+        crate::service::tests::bootstrap_pre141(&mut service).map_err(|_| "bootstrap_failed")?;
     let admin = Zeroizing::new(admin);
     assert!(
         call(
@@ -1085,7 +1079,8 @@ fn asymmetric270_public_import_real_restart_private_completion_and_retirement_ke
     use openssl::sign::{Signer, Verifier};
     let root = Root::new();
     let mut service = root.service().map_err(|_| "service_failed")?;
-    let (unseal, admin) = bootstrap(&mut service).map_err(|_| "bootstrap_failed")?;
+    let (unseal, admin) =
+        crate::service::tests::bootstrap_pre141(&mut service).map_err(|_| "bootstrap_failed")?;
     let unseal = Zeroizing::new(unseal);
     let admin = Zeroizing::new(admin);
     assert!(

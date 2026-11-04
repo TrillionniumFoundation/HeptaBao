@@ -141,6 +141,16 @@ fn native_renew_accessor_original_expiry_survives_real_audit() -> TestResult {
 
 #[test]
 fn native_approle_identity_keeps_finite_uses_through_delivery_and_cold_reopen() -> TestResult {
+    approle_identity_keeps_finite_uses_through_delivery_and_cold_reopen(false)
+}
+
+#[test]
+fn native_approle142_local_identity_keeps_finite_uses_through_delivery_and_cold_reopen()
+-> TestResult {
+    approle_identity_keeps_finite_uses_through_delivery_and_cold_reopen(true)
+}
+
+fn approle_identity_keeps_finite_uses_through_delivery_and_cold_reopen(local: bool) -> TestResult {
     let (files, mut service, key, admin) = activated()?;
     assert_eq!(
         call(
@@ -177,11 +187,13 @@ fn native_approle_identity_keeps_finite_uses_through_delivery_and_cold_reopen() 
                 "token_num_uses":2,
                 "secret_id_ttl":"10m",
                 "secret_id_num_uses":1,
+                "local_secret_ids":local,
             }),
         )
         .status,
         204,
     );
+    assert_partition(&mut service, &admin, local)?;
     let mut role = call(
         &mut service,
         "GET",
@@ -212,6 +224,7 @@ fn native_approle_identity_keeps_finite_uses_through_delivery_and_cold_reopen() 
     // The original affine principal may finish its last admitted lookup after
     // audit. Neither identity binding nor late revalidation authenticates anew.
     let mut service = reopened(&files, &key)?;
+    assert_partition(&mut service, &admin, local)?;
     let mut last = call(
         &mut service,
         "GET",
@@ -238,6 +251,7 @@ fn native_approle_identity_keeps_finite_uses_through_delivery_and_cold_reopen() 
     drop(service);
 
     let mut service = reopened(&files, &key)?;
+    assert_partition(&mut service, &admin, local)?;
     assert_eq!(
         call(
             &mut service,

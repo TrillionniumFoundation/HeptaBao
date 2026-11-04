@@ -65,6 +65,11 @@ fn start(service: &mut Service) -> Result<(String, String), Box<dyn std::error::
     );
     Ok((root, key))
 }
+// Schema-floor fixtures select the historical root before its first publication.
+fn start_historical(service: &mut Service) -> Result<(String, String), Box<dyn std::error::Error>> {
+    let (key, root) = super::tests::bootstrap_pre141_unmounted(service)?;
+    Ok((root, key))
+}
 fn install(service: &mut Service, root: &str) {
     install_with_key_type(service, root, None);
 }
@@ -453,7 +458,7 @@ fn pki_extension_protocol_routes_remain_explicitly_unsupported() -> TestResult {
 fn pki_new_default_identifiers_require_schema75_and_reject_legacy_labels() -> TestResult {
     let f = Fixture::new()?;
     let mut s = f.service()?;
-    let (root, _) = start(&mut s)?;
+    let (root, _) = start_historical(&mut s)?;
     install(&mut s, &root);
     let role = call(&mut s, &root, "GET", "pki/roles/web", json!({}), 101);
     assert_eq!(role.status, 200);
@@ -534,7 +539,7 @@ fn pki_new_default_identifiers_require_schema75_and_reject_legacy_labels() -> Te
 fn pki_default_shape_remains_readable_as_schema57_without_new_fields() -> TestResult {
     let f = Fixture::new()?;
     let mut s = f.service()?;
-    let (root, _) = start(&mut s)?;
+    let (root, _) = start_historical(&mut s)?;
     install_with_key_type(&mut s, &root, Some("ed25519"));
     let state = s.state.as_ref().ok_or("state")?;
     assert!(!state.engines.has_local_typed_pki_state());
@@ -601,7 +606,7 @@ fn pki_default_shape_remains_readable_as_schema57_without_new_fields() -> TestRe
 fn pki_extension_state_requires_schema59_independently() -> TestResult {
     let f = Fixture::new()?;
     let mut s = f.service()?;
-    let (root, _) = start(&mut s)?;
+    let (root, _) = start_historical(&mut s)?;
     assert_eq!(
         call(
             &mut s,

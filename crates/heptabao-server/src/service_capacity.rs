@@ -48,7 +48,7 @@ impl Service {
         let opaque_owner_limit = self.opaque_owner_limit();
         let state_limit = opaque_owner_limit;
 
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let native_capacity = if let Some(root) = self.native_root.as_ref() {
             let owner_bytes = root.owners.iter().try_fold(0u64, |total, owner| {
                 total.checked_add(owner.owner.total_bytes)
@@ -92,10 +92,14 @@ impl Service {
                 total,
                 limit,
                 crate::state_record_root_v6::STORAGE_FORMAT,
-                if root.reader_floor.native_kv2_format == 2 {
-                    "bounded-native-record-state-v6-paged-candidate"
-                } else {
-                    "bounded-native-record-state-v6-candidate"
+                match (
+                    self.native_storage_profile,
+                    root.reader_floor.native_kv2_format,
+                ) {
+                    (Some(_), 2) => "bounded-native-record-state-v6-paged",
+                    (Some(_), _) => "bounded-native-record-state-v6",
+                    (None, 2) => "bounded-native-record-state-v6-paged-candidate",
+                    (None, _) => "bounded-native-record-state-v6-candidate",
                 },
                 crate::state_record_root::OWNER_CHUNK_BYTES,
                 if root.reader_floor.native_kv2_format == 2 {
@@ -108,7 +112,7 @@ impl Service {
         } else {
             None
         };
-        #[cfg(not(feature = "fixture-native-v6-service"))]
+        #[cfg(not(feature = "native-v6-storage"))]
         let native_capacity = None;
         let (
             state_bytes,
@@ -175,7 +179,7 @@ impl Service {
                 None,
             )
         };
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let (native_kv2_logical_payload_bytes, native_kv2_metadata_bytes, native_kv2_reader_format) =
             if let Some(root) = self.native_root.as_ref() {
                 let logical = root.kv2.iter().try_fold(0_u64, |total, graph| {
@@ -201,15 +205,15 @@ impl Service {
             } else {
                 (None, None, None)
             };
-        #[cfg(not(feature = "fixture-native-v6-service"))]
+        #[cfg(not(feature = "native-v6-storage"))]
         let (native_kv2_logical_payload_bytes, native_kv2_metadata_bytes, native_kv2_reader_format) =
             (None::<u64>, None::<u64>, None::<u32>);
         if state_bytes > state_limit {
             return Response::error(503, "committed server state exceeds configured capacity");
         }
-        #[cfg(feature = "fixture-native-v6-service")]
+        #[cfg(feature = "native-v6-storage")]
         let point_observations = self.native_payload_observations.snapshot().map(Some);
-        #[cfg(not(feature = "fixture-native-v6-service"))]
+        #[cfg(not(feature = "native-v6-storage"))]
         let point_observations = [None::<u64>; 7];
         // V5 state_bytes is the live logical payload, not the tiny root size.
         // The durable encrypted-artifact preflight can reject below this upper
@@ -264,6 +268,7 @@ impl Service {
         let Some(data) = response.body.get_mut("data").and_then(Value::as_object_mut) else {
             return Response::error(503, "capacity observation shape rejected");
         };
+        data.insert("replay_epoch".to_owned(), json!(durable.replay_epoch()));
         for (name, value) in [
             (
                 "native_kv2_payload_positioned_read_calls",
@@ -512,7 +517,8 @@ mod tests {
     {
         let root = Root::new();
         let mut service = root.service()?;
-        let (_, token) = bootstrap(&mut service)?;
+        // Isolate this historical reader floor from the current default-policy floor (141).
+        let (_, token) = crate::service::tests::bootstrap_pre141(&mut service)?;
         let current = call(
             &mut service,
             "GET",

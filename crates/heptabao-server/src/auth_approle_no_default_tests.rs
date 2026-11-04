@@ -101,10 +101,17 @@ fn approle135_fresh_roles_store_raw_lists_and_issue_implicit_default_at_login() 
     for mount in ["approle", "build"] {
         let (mut state, root) = setup(mount);
         assert_eq!(
-            write(&mut state, &root, mount, json!({"token_ttl":60})).unwrap().status,
+            write(&mut state, &root, mount, json!({"token_ttl":60}))
+                .unwrap()
+                .status,
             204
         );
-        let role = &state.roles_at(AuthScope { namespace: "", mount }).unwrap()["app"];
+        let role = &state
+            .roles_at(AuthScope {
+                namespace: "",
+                mount,
+            })
+            .unwrap()["app"];
         assert_eq!(role.token_no_default_policy, Some(false));
         assert!(role.policies.is_empty());
         let data = read(&mut state, &root, mount);
@@ -128,13 +135,18 @@ fn approle135_no_default_and_explicit_default_cover_service_and_batch_on_custom_
                 (false, vec!["named"], vec!["default", "named"]),
             ] {
                 let (mut state, root) = setup(mount);
-                assert_eq!(write(
-                    &mut state,
-                    &root,
-                    mount,
-                    json!({"token_type":kind,"token_ttl":60,
+                assert_eq!(
+                    write(
+                        &mut state,
+                        &root,
+                        mount,
+                        json!({"token_type":kind,"token_ttl":60,
                         "token_no_default_policy":flag,"token_policies":raw}),
-                ).unwrap().status, 204);
+                    )
+                    .unwrap()
+                    .status,
+                    204
+                );
                 let data = read(&mut state, &root, mount);
                 assert_eq!(data["token_no_default_policy"], flag);
                 assert_eq!(data["token_policies"], json!(raw));
@@ -143,12 +155,37 @@ fn approle135_no_default_and_explicit_default_cover_service_and_batch_on_custom_
                 let response = login(&mut state, mount, &credentials);
                 assert_policies(&response, &expected);
                 assert_eq!(response.body["auth"]["token_type"], kind);
-                assert_eq!(state.tokens.len(), token_count + usize::from(kind == "service"));
+                assert_eq!(
+                    state.tokens.len(),
+                    token_count + usize::from(kind == "service")
+                );
                 let bearer = response.body["auth"]["client_token"].as_str().unwrap();
+                let before_lookup = Zeroizing::new(serde_json::to_vec(&state).unwrap());
+                let lookup = request(
+                    &mut state,
+                    &root,
+                    "POST",
+                    "auth/token/lookup",
+                    json!({"token":bearer}),
+                )
+                .unwrap();
+                assert_eq!(lookup.status, 200);
+                let policies = if kind == "batch" && expected.is_empty() {
+                    Value::Null
+                } else {
+                    json!(expected)
+                };
+                assert!(lookup.body["data"].get("policies").is_some());
+                assert_eq!(lookup.body["data"]["policies"], policies);
+                assert_eq!(lookup.body["data"]["type"], kind);
+                assert_eq!(*before_lookup, serde_json::to_vec(&state).unwrap());
                 let actor = state.authenticate(bearer, 101).unwrap();
                 assert_eq!(
                     actor.policies(),
-                    &expected.iter().map(|p| (*p).to_owned()).collect::<BTreeSet<_>>()
+                    &expected
+                        .iter()
+                        .map(|p| (*p).to_owned())
+                        .collect::<BTreeSet<_>>()
                 );
             }
         }
@@ -158,11 +195,20 @@ fn approle135_no_default_and_explicit_default_cover_service_and_batch_on_custom_
 #[test]
 fn approle135_omitted_flag_preserves_and_framework_null_and_string_flags_update() {
     let (mut state, root) = setup("approle");
-    write(&mut state, &root, "approle", json!({
-        "token_no_default_policy":true,"token_policies":["named"]
-    })).unwrap();
+    write(
+        &mut state,
+        &root,
+        "approle",
+        json!({
+            "token_no_default_policy":true,"token_policies":["named"]
+        }),
+    )
+    .unwrap();
     write(&mut state, &root, "approle", json!({"token_ttl":60})).unwrap();
-    assert_eq!(read(&mut state, &root, "approle")["token_no_default_policy"], true);
+    assert_eq!(
+        read(&mut state, &root, "approle")["token_no_default_policy"],
+        true
+    );
     for (value, expected) in [
         (json!(false), false),
         (json!("true"), true),
@@ -172,8 +218,17 @@ fn approle135_omitted_flag_preserves_and_framework_null_and_string_flags_update(
         (json!(true), true),
         (Value::Null, false),
     ] {
-        assert_eq!(write(&mut state, &root, "approle",
-            json!({"token_no_default_policy":value})).unwrap().status, 204);
+        assert_eq!(
+            write(
+                &mut state,
+                &root,
+                "approle",
+                json!({"token_no_default_policy":value})
+            )
+            .unwrap()
+            .status,
+            204
+        );
         let data = read(&mut state, &root, "approle");
         assert_eq!(data["token_no_default_policy"], expected);
         assert_eq!(data["token_policies"], json!(["named"]));
@@ -196,19 +251,38 @@ fn approle135_omitted_flag_preserves_and_framework_null_and_string_flags_update(
 fn approle135_false_marker_survives_serialization_and_readback_is_not_a_write() {
     for flag in [false, true] {
         let (mut state, root) = setup("build");
-        write(&mut state, &root, "build", json!({
-            "token_no_default_policy":flag,"token_policies":["named"]
-        })).unwrap();
+        write(
+            &mut state,
+            &root,
+            "build",
+            json!({
+                "token_no_default_policy":flag,"token_policies":["named"]
+            }),
+        )
+        .unwrap();
         let wire = serde_json::to_value(&state).unwrap();
-        assert_eq!(wire["mounted_roles"][""]["build"]["app"]["token_no_default_policy"], flag);
+        assert_eq!(
+            wire["mounted_roles"][""]["build"]["app"]["token_no_default_policy"],
+            flag
+        );
         let bytes = Zeroizing::new(serde_json::to_vec(&state).unwrap());
         let mut reopened: AuthState = serde_json::from_slice(&bytes).unwrap();
         reopened.validate_approle_no_default_policy().unwrap();
         assert!(reopened.has_approle_no_default_policy());
-        assert_eq!(read(&mut reopened, &root, "build")["token_no_default_policy"], flag);
-        assert_eq!(serde_json::to_vec(&reopened).unwrap().as_slice(), bytes.as_slice());
+        assert_eq!(
+            read(&mut reopened, &root, "build")["token_no_default_policy"],
+            flag
+        );
+        assert_eq!(
+            serde_json::to_vec(&reopened).unwrap().as_slice(),
+            bytes.as_slice()
+        );
         let credentials = credentials(&mut reopened, &root, "build");
-        let expected = if flag { vec!["named"] } else { vec!["default", "named"] };
+        let expected = if flag {
+            vec!["named"]
+        } else {
+            vec!["default", "named"]
+        };
         assert_policies(&login(&mut reopened, "build", &credentials), &expected);
     }
 }
@@ -216,24 +290,60 @@ fn approle135_false_marker_survives_serialization_and_readback_is_not_a_write() 
 #[test]
 fn approle135_legacy_none_preserves_normalized_policies_until_explicit_replacement() {
     let (mut state, root) = setup("approle");
-    write(&mut state, &root, "approle", json!({"token_policies":["named"]})).unwrap();
+    write(
+        &mut state,
+        &root,
+        "approle",
+        json!({"token_policies":["named"]}),
+    )
+    .unwrap();
     // Exact legacy policy shape: the predecessor stored its implicit default.
-    let role = state.roles_at_mut(AuthScope { namespace: "", mount: "approle" })
-        .get_mut("app").unwrap();
+    let role = state
+        .roles_at_mut(AuthScope {
+            namespace: "",
+            mount: "approle",
+        })
+        .get_mut("app")
+        .unwrap();
     role.token_no_default_policy = None;
     role.policies.insert("default".into());
     let wire = serde_json::to_value(&state).unwrap();
-    assert!(wire["roles"][""]["app"].get("token_no_default_policy").is_none());
+    assert!(
+        wire["roles"][""]["app"]
+            .get("token_no_default_policy")
+            .is_none()
+    );
     let mut state: AuthState = serde_json::from_value(wire).unwrap();
     assert!(!state.has_approle_no_default_policy());
-    assert_eq!(read(&mut state, &root, "approle")["token_no_default_policy"], false);
+    assert_eq!(
+        read(&mut state, &root, "approle")["token_no_default_policy"],
+        false
+    );
     let credentials = credentials(&mut state, &root, "approle");
-    assert_policies(&login(&mut state, "approle", &credentials), &["default", "named"]);
+    assert_policies(
+        &login(&mut state, "approle", &credentials),
+        &["default", "named"],
+    );
     write(&mut state, &root, "approle", json!({"token_ttl":60})).unwrap();
     assert_eq!(state.roles[""]["app"].token_no_default_policy, None);
-    write(&mut state, &root, "approle", json!({"token_no_default_policy":true})).unwrap();
-    assert_policies(&login(&mut state, "approle", &credentials), &["default", "named"]);
-    write(&mut state, &root, "approle", json!({"token_policies":["named"]})).unwrap();
+    write(
+        &mut state,
+        &root,
+        "approle",
+        json!({"token_no_default_policy":true}),
+    )
+    .unwrap();
+    assert_policies(
+        &login(&mut state, "approle", &credentials),
+        &["default", "named"],
+    );
+    write(
+        &mut state,
+        &root,
+        "approle",
+        json!({"token_policies":["named"]}),
+    )
+    .unwrap();
     assert_eq!(state.roles[""]["app"].token_no_default_policy, Some(true));
     assert_policies(&login(&mut state, "approle", &credentials), &["named"]);
 }
@@ -241,9 +351,15 @@ fn approle135_legacy_none_preserves_normalized_policies_until_explicit_replaceme
 #[test]
 fn approle135_invalid_flags_and_conflicting_aliases_leave_role_and_secret_ids_unchanged() {
     let (mut state, root) = setup("approle");
-    write(&mut state, &root, "approle", json!({
-        "token_no_default_policy":true,"token_policies":["named"],"secret_id_num_uses":2
-    })).unwrap();
+    write(
+        &mut state,
+        &root,
+        "approle",
+        json!({
+            "token_no_default_policy":true,"token_policies":["named"],"secret_id_num_uses":2
+        }),
+    )
+    .unwrap();
     let _credentials = credentials(&mut state, &root, "approle");
     for body in [
         json!({"token_no_default_policy":[],"token_policies":["changed"]}),
@@ -254,59 +370,135 @@ fn approle135_invalid_flags_and_conflicting_aliases_leave_role_and_secret_ids_un
         json!({"token_no_default_policy":false,"unsupported_field":true}),
     ] {
         let before = Zeroizing::new(serde_json::to_vec(&state).unwrap());
-        assert_eq!(write(&mut state, &root, "approle", body).err().unwrap().status, 400);
-        assert_eq!(serde_json::to_vec(&state).unwrap().as_slice(), before.as_slice());
+        assert_eq!(
+            write(&mut state, &root, "approle", body)
+                .err()
+                .unwrap()
+                .status,
+            400
+        );
+        assert_eq!(
+            serde_json::to_vec(&state).unwrap().as_slice(),
+            before.as_slice()
+        );
     }
     for flag in [false, true] {
         let before = Zeroizing::new(serde_json::to_vec(&state).unwrap());
-        assert_eq!(write(&mut state, &root, "approle",
-            json!({"token_no_default_policy":flag,"token_policies":["root"]}))
-            .err().unwrap().status, 403);
-        assert_eq!(serde_json::to_vec(&state).unwrap().as_slice(), before.as_slice());
+        assert_eq!(
+            write(
+                &mut state,
+                &root,
+                "approle",
+                json!({"token_no_default_policy":flag,"token_policies":["root"]})
+            )
+            .err()
+            .unwrap()
+            .status,
+            403
+        );
+        assert_eq!(
+            serde_json::to_vec(&state).unwrap().as_slice(),
+            before.as_slice()
+        );
     }
 }
 
 #[test]
 fn approle135_renewal_keeps_issued_grants_after_role_flag_and_policy_changes() {
     let (mut state, root) = setup("build");
-    write(&mut state, &root, "build", json!({
-        "token_no_default_policy":true,"token_policies":["named"],
-        "token_ttl":60,"token_max_ttl":600
-    })).unwrap();
+    write(
+        &mut state,
+        &root,
+        "build",
+        json!({
+            "token_no_default_policy":true,"token_policies":["named"],
+            "token_ttl":60,"token_max_ttl":600
+        }),
+    )
+    .unwrap();
     let credentials = credentials(&mut state, &root, "build");
     let response = login(&mut state, "build", &credentials);
-    let bearer = response.body["auth"]["client_token"].as_str().unwrap().to_owned();
+    let bearer = response.body["auth"]["client_token"]
+        .as_str()
+        .unwrap()
+        .to_owned();
     for body in [
         json!({"token_no_default_policy":false}),
         json!({"token_no_default_policy":true,"token_policies":["other"]}),
         json!({"token_no_default_policy":null,"token_policies":[]}),
     ] {
         write(&mut state, &root, "build", body).unwrap();
-        let response = state.handle(Some(&root), "", "POST", "auth/token/renew",
-            &json!({"token":bearer,"increment":120}), 101).unwrap().unwrap();
+        let response = state
+            .handle(
+                Some(&root),
+                "",
+                "POST",
+                "auth/token/renew",
+                &json!({"token":bearer,"increment":120}),
+                101,
+            )
+            .unwrap()
+            .unwrap();
         assert_eq!(response.status, 200);
         assert_policies(&response, &["named"]);
     }
-    request(&mut state, &root, "POST", "auth/token/revoke",
-        json!({"token":bearer})).unwrap();
+    request(
+        &mut state,
+        &root,
+        "POST",
+        "auth/token/revoke",
+        json!({"token":bearer}),
+    )
+    .unwrap();
     assert!(state.authenticate(&bearer, 101).is_err());
 }
 
 #[test]
 fn approle135_empty_service_grant_renews_without_default_and_cannot_renew_self() {
     let (mut state, root) = setup("approle");
-    write(&mut state, &root, "approle", json!({
-        "token_no_default_policy":true,"token_ttl":60,"token_max_ttl":600
-    })).unwrap();
+    write(
+        &mut state,
+        &root,
+        "approle",
+        json!({
+            "token_no_default_policy":true,"token_ttl":60,"token_max_ttl":600
+        }),
+    )
+    .unwrap();
     let credentials = credentials(&mut state, &root, "approle");
     let response = login(&mut state, "approle", &credentials);
-    let bearer = response.body["auth"]["client_token"].as_str().unwrap().to_owned();
+    let bearer = response.body["auth"]["client_token"]
+        .as_str()
+        .unwrap()
+        .to_owned();
     assert_policies(&response, &[]);
     let actor = state.authenticate(&bearer, 101).unwrap();
-    assert_eq!(state.handle(Some(&actor), "", "POST", "auth/token/renew-self",
-        &json!({}), 101).err().unwrap().status, 403);
-    let response = state.handle(Some(&root), "", "POST", "auth/token/renew",
-        &json!({"token":bearer}), 101).unwrap().unwrap();
+    assert_eq!(
+        state
+            .handle(
+                Some(&actor),
+                "",
+                "POST",
+                "auth/token/renew-self",
+                &json!({}),
+                101
+            )
+            .err()
+            .unwrap()
+            .status,
+        403
+    );
+    let response = state
+        .handle(
+            Some(&root),
+            "",
+            "POST",
+            "auth/token/renew",
+            &json!({"token":bearer}),
+            101,
+        )
+        .unwrap()
+        .unwrap();
     assert_eq!(response.status, 200);
     assert_policies(&response, &[]);
 }
@@ -314,6 +506,8 @@ fn approle135_empty_service_grant_renews_without_default_and_cannot_renew_self()
 impl AuthState {
     /// Rebuild only predecessor AppRole policy owners for isolated old-format
     /// unit inputs. This cannot erase a no-default grant, credential, or mount.
+    /// The current route also creates explicit 141 security options. Only their
+    /// all-false representation has the same predecessor AppRole semantics.
     pub(crate) fn restore_legacy_approle_policy_owners_for_format_test(&mut self) {
         assert!(!self.tokens.values().any(|token| {
             matches!(
@@ -321,18 +515,108 @@ impl AuthState {
                 Some(TokenAuthProvenance::AppRole { .. })
             ) && !token.policies.contains("default")
         }));
-        for role in self.roles.values_mut().flat_map(|roles| roles.values_mut()).chain(
-            self.mounted_roles
-                .values_mut()
-                .flat_map(|mounts| mounts.values_mut())
-                .flat_map(|roles| roles.values_mut()),
-        ) {
+        for role in self
+            .roles
+            .values_mut()
+            .flat_map(|roles| roles.values_mut())
+            .chain(
+                self.mounted_roles
+                    .values_mut()
+                    .flat_map(|mounts| mounts.values_mut())
+                    .flat_map(|roles| roles.values_mut()),
+            )
+        {
             assert_ne!(role.token_no_default_policy, Some(true));
+            assert!(
+                !security_contract::role_local_secret_ids(role),
+                "historical fixture cannot erase cluster-local SecretID ownership"
+            );
+            assert!(
+                !security_contract::role_strictly_bind_ip(role),
+                "historical fixture cannot erase strict IP binding"
+            );
             let issued = approle_no_default::issued_policies(role);
             if role.token_no_default_policy.take().is_some() {
                 role.policies = issued.clone();
             }
+            role.security = None;
             assert_eq!(approle_no_default::issued_policies(role), issued);
         }
+    }
+}
+
+#[test]
+fn security141_historical_fixture_preserves_all_non_security_owner_fields() {
+    let (mut state, root) = setup("build");
+    write(
+        &mut state,
+        &root,
+        "build",
+        json!({"token_ttl":60,"token_policies":["named"]}),
+    )
+    .unwrap();
+    let _credentials = credentials(&mut state, &root, "build");
+    request(
+        &mut state,
+        &root,
+        "POST",
+        "sys/policies/acl/legacy-fixture",
+        json!({"policy":"path \"secret/*\" { capabilities = [\"read\"] }"}),
+    )
+    .unwrap();
+    let mut expected = serde_json::to_value(&state).unwrap();
+    expected["mounted_roles"][""]["build"]["app"]
+        .as_object_mut()
+        .unwrap()
+        .remove("security");
+    expected["policies"][""]["legacy-fixture"]
+        .as_object_mut()
+        .unwrap()
+        .remove("security");
+    state.restore_pre141_security_owners_for_format_test();
+    assert!(!state.has_security_contract_state());
+    assert!(state.has_approle_no_default_policy());
+    assert_eq!(serde_json::to_value(&state).unwrap(), expected);
+}
+
+#[test]
+fn security141_historical_fixture_refuses_new_options_before_changing_any_owner() {
+    for field in [
+        "local_secret_ids",
+        "token_strictly_bind_ip",
+        "cas_required",
+        "allow_slashes_in_identity_templates",
+        "allow_wildcards_in_identity_templates",
+    ] {
+        let (mut state, root) = setup("build");
+        write(&mut state, &root, "build", json!({"token_ttl":60})).unwrap();
+        let _credentials = credentials(&mut state, &root, "build");
+        request(
+            &mut state,
+            &root,
+            "POST",
+            "sys/policies/acl/legacy-fixture",
+            json!({"policy":"path \"secret/*\" { capabilities = [\"read\"] }"}),
+        )
+        .unwrap();
+        let mut wire = serde_json::to_value(&state).unwrap();
+        if field == "local_secret_ids" || field == "token_strictly_bind_ip" {
+            wire["mounted_roles"][""]["build"]["app"]["security"][field] = json!(true);
+        } else {
+            wire["policies"][""]["legacy-fixture"]["security"][field] = json!(true);
+        }
+        let mut state: AuthState = serde_json::from_value(wire).unwrap();
+        let before = Zeroizing::new(serde_json::to_vec(&state).unwrap());
+        assert!(
+            std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                state.restore_pre141_security_owners_for_format_test();
+            }))
+            .is_err(),
+            "meaningful new option must not become an old fixture: {field}"
+        );
+        assert_eq!(
+            serde_json::to_vec(&state).unwrap().as_slice(),
+            before.as_slice()
+        );
     }
 }

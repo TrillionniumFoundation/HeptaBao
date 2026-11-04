@@ -18,8 +18,12 @@ pub use network::{
     RaftPeerRpc, RaftRpcKind, RaftRpcService, RemoteNetworkFactory, RemoteRaftError,
 };
 pub use node::{ApplicationReadWitness, CommittedApplicationPrefix, ProcessRaftNode};
-#[cfg(feature = "experimental-v6-raft-objects")]
-pub use node::{NativeV6ClosureAdmission, NativeV6CommittedRootRead, NativeV6EpochRestoreRead};
+#[cfg(feature = "native-v6-raft-objects")]
+pub use node::{
+    NativeV6ClosureAdmission, NativeV6CommittedRootRead, NativeV6EpochRestoreRead,
+    NativeV6IntentRetirementObservation, NativeV6IntentRetirementOutcome,
+    NativeV6PreparedIntentRetirement,
+};
 
 #[cfg(test)]
 mod replication_tests;
@@ -29,7 +33,7 @@ mod snapshot_receive_tests;
 
 #[cfg(test)]
 mod snapshot_observation_tests;
-#[cfg(all(test, feature = "experimental-v6-raft-objects"))]
+#[cfg(all(test, feature = "native-v6-raft-objects"))]
 mod v6_intent_tests;
-#[cfg(all(test, unix, feature = "experimental-v6-raft-objects"))]
+#[cfg(all(test, unix, feature = "native-v6-raft-objects"))]
 mod v6_root_tests;

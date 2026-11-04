@@ -7,6 +7,8 @@ use crate::namespace_custody::{
 };
 use std::collections::BTreeSet;
 use std::sync::{Arc, Mutex};
+#[path = "service_namespace_closed_policy_retirement.rs"]
+mod policy_retirement;
 #[path = "service_namespace_sdk_custody.rs"]
 mod sdk_custody;
 pub(super) use sdk_custody::{
@@ -2661,14 +2663,54 @@ mod tests {
             .map_err(|_| "old empty plan")?;
         let canonical_before =
             owner_store::serialize_owner(service.state.as_ref().ok_or("state")?)?;
+        let mut admitted = service.state.clone().ok_or("retirement admission")?;
+        let principal = admitted.auth.authenticate(&token, 100)?;
+        let gc_before = service.record_writes_since_gc;
         let durable = service.durable.take();
-        let rejected = service.namespace_fixture_at(
+        let admission_rejected = service.namespace_fixture_at(
             "DELETE",
             "sys/namespaces/empty",
             "",
             &token,
             json!({}),
             100,
+        );
+        // Current activation admission requires the actual durable owner. A
+        // missing writer is rejected before the retirement transaction starts.
+        assert_eq!(admission_rejected.status, 503);
+        assert_eq!(
+            admission_rejected.body["errors"],
+            json!(["default policy active initialization is unavailable"])
+        );
+        assert!(!service.recovery_required);
+        assert_eq!(service.record_writes_since_gc, gc_before);
+        assert!(service.namespace_runtime.is_loaded("empty"));
+        assert!(stale.namespace_leases.validate().is_ok());
+        assert_eq!(
+            owner_store::serialize_owner(service.state.as_ref().ok_or("retained")?)?,
+            canonical_before
+        );
+        // Separately inject the same lost-writer fault AFTER actor admission,
+        // at the real transaction boundary. Namespace authorization, catalog
+        // retirement, GC and publication still execute their actual code.
+        let rejected = service.namespace_route(
+            admitted,
+            Some(principal),
+            &RequestView {
+                method: "DELETE",
+                path: "sys/namespaces/empty",
+                namespace: "",
+                token_clock: None,
+                token: &token,
+                body: &json!({}),
+                now: 100,
+                admission_started: std::time::Instant::now(),
+                allow_forward: true,
+                enforce_namespace: true,
+                wrap_ttl_seconds: None,
+                origin_peer: None,
+                client_certificates: None,
+            },
         );
         assert!(
             rejected.status == 503
@@ -2678,7 +2720,15 @@ mod tests {
                 && stale.namespace_leases.validate().is_ok()
                 && owner_store::serialize_owner(service.state.as_ref().ok_or("retained")?)?
                     == canonical_before,
-            "failed actual retirement commit retains ciphertext, live key and prepared lease"
+            "failed actual retirement commit retains ciphertext, live key and prepared lease: status={} recovery={} gc_writes={} loaded={} lease_valid={} unchanged={} errors={}",
+            rejected.status,
+            service.recovery_required,
+            service.record_writes_since_gc,
+            service.namespace_runtime.is_loaded("empty"),
+            stale.namespace_leases.validate().is_ok(),
+            owner_store::serialize_owner(service.state.as_ref().ok_or("retained")?)?
+                == canonical_before,
+            rejected.body["errors"]
         );
         service.durable = durable;
         let fenced = service.namespace_fixture_at(

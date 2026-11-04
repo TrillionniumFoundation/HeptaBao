@@ -303,13 +303,20 @@ fn immutable_temp_cleanup_never_follows_symlink_or_replacement_root_path() -> Te
 
 #[test]
 fn immutable_original_deadline_expired_after_real_temp_sync_blocks_final_link() -> TestResult {
-    use std::time::{Duration, Instant};
+    use std::{
+        cell::Cell,
+        time::{Duration, Instant},
+    };
     let root = Root::new()?;
     let owner = ExclusiveDirectory::open(&root.0)?;
     let temp = temporary(&owner, b"original")?;
-    let original_deadline = Instant::now() + Duration::from_millis(500);
+    // Capture one deadline before entry. This test controls only its clock
+    // observation: real filesystem work still runs, but setup/sync latency
+    // cannot expire the fixture before its intended post-sync boundary.
+    let observed_now = Cell::new(Instant::now());
+    let original_deadline = observed_now.get() + Duration::from_millis(500);
     let mut gate = || {
-        if Instant::now() >= original_deadline {
+        if observed_now.get() >= original_deadline {
             Err(io::Error::other("original deadline expired"))
         } else {
             Ok(())
@@ -326,13 +333,18 @@ fn immutable_original_deadline_expired_after_real_temp_sync_blocks_final_link() 
             || {
                 // The hook is after the actual temporary descriptor sync_all.
                 synced_boundary_observed = true;
-                std::thread::sleep(Duration::from_millis(550));
+                // Advance the same observed clock beyond the ORIGINAL
+                // deadline. Do not start a new deadline in this hook.
+                observed_now.set(original_deadline + Duration::from_millis(50));
                 Ok(())
             },
             || Ok(()),
         ),
     );
-    assert!(synced_boundary_observed);
+    assert!(
+        synced_boundary_observed,
+        "publication returned before the post-sync boundary: {result:?}"
+    );
     assert!(matches!(
         result,
         Err(ImmutablePublicationCheckedError::GateBeforeLink(_))
@@ -832,3 +844,7 @@ fn preflush_four_way_joins_workers_before_any_final_link_and_refuses_sync_fault(
     }
     Ok(())
 }
+
+#[cfg(target_os = "macos")]
+#[path = "immutable_macos_batch_barrier_tests.rs"]
+mod macos_batch_barrier;

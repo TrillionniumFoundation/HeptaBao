@@ -272,6 +272,10 @@ pub(crate) fn start_ha_activation_worker_with_budget(
                 // The clock starts before the single try-lock. No work is
                 // queued, and no phase refreshes this deployment-owned budget.
                 let started = std::time::Instant::now();
+                let clock = SystemTime::now()
+                    .duration_since(UNIX_EPOCH)
+                    .ok()
+                    .and_then(|wall| RequestClock::anchored(wall, started).ok());
                 if let Ok(mut writer) = service.try_lock() {
                     #[cfg(target_os = "linux")]
                     let owned_wrapper = writer.ha_owned_wrapper_selected();
@@ -286,9 +290,11 @@ pub(crate) fn start_ha_activation_worker_with_budget(
                     #[cfg(target_os = "linux")]
                     if owned_wrapper {
                         writer.maintain_owned_wrapper_ha();
+                        writer.maintain_default_policy_activation(clock);
                         continue;
                     }
                     writer.maintain_ha_activation();
+                    writer.maintain_default_policy_activation(clock);
                 }
             }
         })

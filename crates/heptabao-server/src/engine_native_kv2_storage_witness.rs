@@ -11,7 +11,10 @@ struct ScopedReader<'a, F> {
 impl<F: Fn(&MountScope, &ObjectRef) -> std::result::Result<Zeroizing<Vec<u8>>, RecordError>>
     RecordReader for ScopedReader<'_, F>
 {
-    fn read_object(&self, reference: &ObjectRef) -> std::result::Result<Zeroizing<Vec<u8>>, RecordError> {
+    fn read_object(
+        &self,
+        reference: &ObjectRef,
+    ) -> std::result::Result<Zeroizing<Vec<u8>>, RecordError> {
         (self.source)(self.scope, reference)
     }
 }
@@ -31,15 +34,25 @@ impl EngineState {
         if mount != canonical && mount != mount_path {
             return Err(bad("storage witness mount is not canonical"));
         }
-        let current = self.namespaces.get("").ok_or_else(not_found)?
-            .mounts.get(&mount_path).ok_or_else(not_found)?;
+        let current = self
+            .namespaces
+            .get("")
+            .ok_or_else(not_found)?
+            .mounts
+            .get(&mount_path)
+            .ok_or_else(not_found)?;
         let Backend::Kv2Native(view) = &current.backend else {
             return Err(error(501, "storage witness requires a native KV2 mount"));
         };
         let scope = MountScope {
-            namespace: String::new(), mount: mount_path, incarnation: current.incarnation,
+            namespace: String::new(),
+            mount: mount_path,
+            incarnation: current.incarnation,
         };
-        let reader = ScopedReader { scope: &scope, source: &source };
+        let reader = ScopedReader {
+            scope: &scope,
+            source: &source,
+        };
         let mut result = view.storage_version_witness(path, version, &reader, check)?;
         result["mount"] = json!(mount);
         result["mount_incarnation"] = json!(scope.incarnation);

@@ -4,14 +4,16 @@
 //! pin, not a root identifier whose disk objects may disappear during a read.
 //! Object bytes are private plaintext until the caller encrypts them. A content
 //! address is a keyed digest, never a public hash of a low-entropy secret.
-use hmac::{Hmac, Mac};
+use aws_lc_rs::hmac as accelerated_hmac;
 use serde::{Deserialize, Serialize};
-use sha2::Sha256;
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 use std::sync::Arc;
 use zeroize::{Zeroize, Zeroizing};
 
+mod bulk;
+#[cfg(test)]
+mod bulk_tests;
 mod codec;
 #[cfg(test)]
 mod tests;
@@ -49,25 +51,60 @@ impl fmt::Display for RecordError {
 impl std::error::Error for RecordError {}
 type Result<T> = std::result::Result<T, RecordError>;
 
-pub(crate) struct AddressKey(Zeroizing<[u8; 32]>);
+pub(crate) struct AddressKey {
+    bytes: Zeroizing<[u8; 32]>,
+    // Only the same HMAC-SHA256 key schedule is retained, never an object MAC
+    // or a completed validation. AWS-LC cleanses the expanded context on drop.
+    hmac_key: accelerated_hmac::Key,
+}
+
+struct AddressMac(accelerated_hmac::Context);
+impl AddressMac {
+    fn update(&mut self, bytes: &[u8]) {
+        self.0.update(bytes);
+    }
+    fn finish(self) -> Result<[u8; 32]> {
+        self.0
+            .sign()
+            .as_ref()
+            .try_into()
+            .map_err(|_| RecordError::Invalid)
+    }
+    fn verify_slice(self, expected: &[u8]) -> Result<()> {
+        use subtle::ConstantTimeEq;
+        if expected.len() != 32 {
+            return Err(RecordError::Corrupt);
+        }
+        let actual = self.0.sign();
+        if bool::from(actual.as_ref().ct_eq(expected)) {
+            Ok(())
+        } else {
+            Err(RecordError::Corrupt)
+        }
+    }
+}
+
 impl AddressKey {
     pub(crate) fn from_bytes(bytes: [u8; 32]) -> Arc<Self> {
-        Arc::new(Self(Zeroizing::new(bytes)))
+        let hmac_key = accelerated_hmac::Key::new(accelerated_hmac::HMAC_SHA256, &bytes);
+        Arc::new(Self {
+            bytes: Zeroizing::new(bytes),
+            hmac_key,
+        })
     }
     pub(crate) fn expose(&self) -> &[u8; 32] {
-        &self.0
+        &self.bytes
     }
     pub(crate) fn digest(&self, domain: &[u8], bytes: &[u8]) -> Result<[u8; 32]> {
         let mut mac = self.mac(domain)?;
         mac.update(bytes);
-        Ok(mac.finalize().into_bytes().into())
+        mac.finish()
     }
-    fn mac(&self, domain: &[u8]) -> Result<Hmac<Sha256>> {
+    fn mac(&self, domain: &[u8]) -> Result<AddressMac> {
         if domain.len() > 128 {
             return Err(RecordError::Invalid);
         }
-        let mut mac =
-            Hmac::<Sha256>::new_from_slice(self.expose()).map_err(|_| RecordError::Invalid)?;
+        let mut mac = AddressMac(accelerated_hmac::Context::with_key(&self.hmac_key));
         mac.update(b"HeptaBao/v5/keyed-object-address\0");
         mac.update(&(domain.len() as u64).to_be_bytes());
         mac.update(domain);
@@ -146,7 +183,7 @@ impl StagedObject {
     pub(crate) fn bytes(&self) -> &[u8] {
         &self.bytes
     }
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     pub(crate) fn payload_block(key: &AddressKey, bytes: &[u8]) -> Result<Arc<Self>> {
         if bytes.is_empty() || bytes.len() > BLOCK_BYTES {
             return Err(RecordError::TooLarge);
@@ -450,6 +487,15 @@ impl Kv1Index {
     }
     pub(crate) fn edit(&self, key: Kv1Key, value: Option<&[u8]>) -> Result<Kv1Edit> {
         tree::edit(self, key, value)
+    }
+    /// Build only a detached initial graph; the caller retains publication and
+    /// authorization. Every record and page obeys the original live check.
+    pub(crate) fn from_records_checked(
+        address_key: Arc<AddressKey>,
+        records: BTreeMap<Kv1Key, Zeroizing<Vec<u8>>>,
+        check: &impl Fn() -> Result<()>,
+    ) -> Result<Self> {
+        bulk::build(address_key, records, check)
     }
     pub(crate) fn scan(
         &self,

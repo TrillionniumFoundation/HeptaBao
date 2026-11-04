@@ -4,6 +4,18 @@ use std::collections::{BTreeMap, BTreeSet};
 mod batch_lifecycle;
 #[path = "service_namespace_deletion.rs"]
 pub(super) mod deletion;
+#[path = "service_namespace_flat_retirement.rs"]
+mod flat_retirement;
+#[path = "service_native_namespace_tree.rs"]
+mod native_tree;
+
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_empty_namespace.rs"]
+pub(super) mod native_empty;
+
+#[cfg(feature = "native-v6-storage")]
+#[path = "service_native_plain_namespace.rs"]
+pub(super) mod native_plain;
 
 const MAX_NAMESPACE_COUNT: usize = 1024;
 const MAX_NAMESPACE_METADATA: usize = 64;
@@ -15,6 +27,10 @@ const MAX_METADATA_VALUE_BYTES: usize = 1024;
 pub(super) struct NamespaceRegistry {
     #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
     entries: BTreeMap<String, NamespaceEntry>,
+    /// Format 1 retains flat retirement; format 2 retains the complete plain
+    /// tree and its ledger. Both are sticky, explicitly versioned reader floors.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    native_flat_retirement_format: Option<u32>,
     /// Sticky actual lifecycle, independent of encrypted catalog hydration.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     batch_lifecycle: Option<crate::auth::batch_namespace::Registry>,
@@ -531,6 +547,7 @@ impl NamespaceRegistry {
 
     pub(super) fn is_empty(&self) -> bool {
         self.entries.is_empty()
+            && self.native_flat_retirement_format.is_none()
             && self.deletions.is_none()
             && self.batch_lifecycle.is_none()
             && self.next_incarnation.is_empty()
@@ -1045,12 +1062,57 @@ impl State {
         self.namespaces.adopt_legacy(&self.cluster_id, paths)
     }
 
+    pub(super) fn validate_namespace_factory_state(&self) -> Result<(), Response> {
+        self.auth
+            .validate_namespace_factory_state(|namespace| {
+                self.namespaces
+                    .custody_binding(&self.cluster_id, namespace)
+                    .map_err(|_| ())
+            })
+            .map_err(|error| Response::error(503, &error.message))
+    }
+
+    #[cfg(feature = "native-v6-storage")]
+    pub(super) fn namespace_factory_bindings(
+        &self,
+        paths: &BTreeSet<String>,
+    ) -> Result<BTreeMap<String, crate::namespace_custody::Binding>, Response> {
+        self.validate_namespace_factory_state()?;
+        paths
+            .iter()
+            .map(|namespace| {
+                self.namespaces
+                    .custody_binding(&self.cluster_id, namespace)
+                    .map(|binding| (namespace.clone(), binding))
+            })
+            .collect()
+    }
+
+    fn retire_unpopulated_namespace_factory(&mut self, path: &str) -> Result<(), Response> {
+        if self.engines.namespace_is_empty(path)
+            && self.database.namespace_is_empty(path)
+            && self.namespaces.workflows.namespace_is_empty(path)
+        {
+            let binding = self.namespaces.custody_binding(&self.cluster_id, path)?;
+            self.auth
+                .retire_empty_namespace_factory_default(&binding)
+                .map_err(|error| Response::error(error.status, &error.message))?;
+        }
+        Ok(())
+    }
+
     fn namespace_payload_is_empty(&self, path: &str) -> bool {
         self.auth.namespace_is_empty(path)
             && self.engines.namespace_is_empty(path)
             && self.database.namespace_is_empty(path)
             && self.namespaces.workflows.namespace_is_empty(path)
     }
+}
+
+enum ChildAuthFactory {
+    Current,
+    #[cfg(test)]
+    Pre144Fixture,
 }
 
 impl Service {
@@ -1178,9 +1240,19 @@ impl Service {
 
     pub(super) fn namespace_route(
         &mut self,
+        state: State,
+        actor: Option<Principal>,
+        request: &RequestView<'_>,
+    ) -> Response {
+        self.namespace_route_with_factory(state, actor, request, ChildAuthFactory::Current)
+    }
+
+    fn namespace_route_with_factory(
+        &mut self,
         mut state: State,
         actor: Option<Principal>,
         request: &RequestView<'_>,
+        factory: ChildAuthFactory,
     ) -> Response {
         let Some(actor) = actor else {
             return Response::error(403, "missing client token");
@@ -1201,15 +1273,18 @@ impl Service {
             "POST" | "PUT" => "update",
             _ => return Response::error(405, "unsupported namespace method"),
         };
-        if let Err(error) = state.auth.authorize_request(
+        // Return the existing authorization observation; no second clock
+        // sample is taken to manufacture the factory's persisted timestamp.
+        let creation_time = match state.auth.authorize_request_observation(
             principal,
             request.namespace,
             request.path,
             capability,
-            request.now,
+            AuthorityTime::Coarse(request.now),
         ) {
-            return Response::error(error.status, &error.message);
-        }
+            Ok(time) => time,
+            Err(error) => return Response::error(error.status, &error.message),
+        };
         let Some(caller_incarnation) = state.namespaces.incarnation(request.namespace) else {
             return Response::error(404, "request namespace not found");
         };
@@ -1532,10 +1607,31 @@ impl Service {
                     {
                         return error;
                     }
-                    if let Err(error) = state.auth.initialize_fresh_namespace_auth(&target) {
+                    let binding = match state.namespaces.custody_binding(&state.cluster_id, &target)
+                    {
+                        Ok(binding) => binding,
+                        Err(error) => return error,
+                    };
+                    let initialized = match factory {
+                        ChildAuthFactory::Current => {
+                            crate::auth::namespace_factory::PreparedChild::new(
+                                binding.clone(),
+                                creation_time,
+                            )
+                            .and_then(|seed| seed.install(&mut state.auth, &binding))
+                        }
+                        #[cfg(test)]
+                        ChildAuthFactory::Pre144Fixture => {
+                            state.auth.initialize_fresh_namespace_auth(&target)
+                        }
+                    };
+                    if let Err(error) = initialized {
                         return Response::error(error.status, &error.message);
                     }
                     state.engines.ensure_empty_namespace(&target);
+                    // Partition validates the source before hiding the marker.
+                    // The sticky outer floor survives even an immediate seal.
+                    state.schema = state.writer_schema();
                 }
                 if state.namespaces.batch_lifecycle.is_some()
                     && let Err(error) = state.sync_namespace_batch_registry()
@@ -1674,6 +1770,12 @@ impl Service {
                 if state.namespace_is_tainted(&target) {
                     return Response::ok(json!({"data":{"status":"in-progress"}}));
                 }
+                // Only a genuine untouched factory record can enter the
+                // original empty retirement lane. Every other owner keeps the
+                // original populated-resource cleanup/refusal below.
+                if let Err(error) = state.retire_unpopulated_namespace_factory(&target) {
+                    return error;
+                }
                 let populated = !state.namespace_payload_is_empty(&target);
                 #[cfg(any(target_os = "linux", target_os = "macos"))]
                 let owned_cleanup = match state.namespace_sdk_deletion_eligible(&target) {
@@ -1809,9 +1911,123 @@ impl Service {
 }
 
 #[cfg(test)]
+impl Service {
+    /// Explicit historical input creation, before this child's first genuine
+    /// publication. No current policy or metadata is removed or relabeled.
+    /// Only a genuine ordinary pre-141 owner with no live child may choose
+    /// this never-admitted target. Prior unrelated retirement history remains.
+    pub(super) fn create_pre144_namespace_fixture(
+        &mut self,
+        name: &str,
+        token: &str,
+    ) -> Result<Response, &'static str> {
+        if self.recovery_required
+            || self.ha.is_some()
+            || self.postgres_durable.is_some()
+            || self.barrier_key.is_none()
+            || self.durable.is_none()
+            || !valid_segment(name)
+            || matches!(
+                name,
+                "root" | "sys" | "audit" | "auth" | "cubbyhole" | "identity"
+            )
+        {
+            return Err("pre-144 child fixture requires a genuine ordinary root owner");
+        }
+        #[cfg(target_os = "linux")]
+        if self.wrapper_barrier_selected() {
+            return Err("pre-144 child fixture cannot select a Wrapper consumer");
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if self.native_storage_profile.is_some()
+            || self.native_candidate_profile.is_some()
+            || self.native_root.is_some()
+        {
+            return Err("pre-144 child fixture cannot select a native storage owner");
+        }
+        let state = self
+            .state
+            .as_ref()
+            .ok_or("pre-144 child fixture requires an active root")?;
+        if state.schema >= AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+            || state.auth.has_security_contract_state()
+            || state.auth.has_namespace_factory_state()
+            || !state.namespaces.entries.is_empty()
+            || state.namespaces.next_incarnation.contains_key(name)
+            || state.namespaces.retired_custody.contains_key(name)
+            || state.namespaces.custody_frontiers.contains_key(name)
+            || state
+                .namespaces
+                .closed_auth_routes
+                .values()
+                .any(|owner| owner.namespace() == name)
+            || state.namespace_protected.is_some()
+            || !state.namespace_leases.is_empty()
+        {
+            return Err(
+                "pre-144 child fixture cannot modify a current or existing namespace owner",
+            );
+        }
+        state
+            .validate_format()
+            .map_err(|_| "pre-144 child fixture source format")?;
+        let actor = state
+            .auth
+            .authenticate_read_only(token, 100)
+            .map_err(|_| "pre-144 child fixture actual root credential")?
+            .ok_or("pre-144 child fixture actual root principal")?;
+        if !actor.is_root() || !actor.namespace().is_empty() {
+            return Err("pre-144 child fixture requires actual root catalog authority");
+        }
+        let path = format!("sys/namespaces/{name}");
+        let body = json!({});
+        state
+            .auth
+            .authorize_request_parameters_observed(
+                &actor,
+                "",
+                "POST",
+                &path,
+                &body,
+                AuthorityTime::Coarse(100),
+            )
+            .map_err(|_| "pre-144 child fixture parameter authorization")?;
+        let candidate = state.clone();
+        let request = RequestView {
+            method: "POST",
+            path: &path,
+            namespace: "",
+            token,
+            body: &body,
+            now: 100,
+            admission_started: std::time::Instant::now(),
+            token_clock: None,
+            allow_forward: false,
+            enforce_namespace: true,
+            wrap_ttl_seconds: None,
+            origin_peer: None,
+            client_certificates: None,
+        };
+        let _deadline = crate::request_deadline::RequestDeadlineScope::enter(
+            std::time::Instant::now() + std::time::Duration::from_secs(15),
+        );
+        Ok(self.namespace_route_with_factory(
+            candidate,
+            Some(actor),
+            &request,
+            ChildAuthFactory::Pre144Fixture,
+        ))
+    }
+}
+
+#[cfg(test)]
 #[path = "service_namespace_tests.rs"]
 mod tests;
 
 #[cfg(test)]
 #[path = "service_namespace_strong_http_tests.rs"]
 mod strong_http_tests;
+
+#[cfg(test)]
+#[path = "service_namespace_factory_tests.rs"]
+mod factory_tests;

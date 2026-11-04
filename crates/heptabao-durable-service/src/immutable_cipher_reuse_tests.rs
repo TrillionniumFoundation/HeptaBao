@@ -270,7 +270,10 @@ fn immutable_reuse_opened_leaf_loss_or_replacement_never_becomes_absence() -> Te
                 },
             );
             assert!(matches!(result, Err(BackendError::OutcomeUnknown)));
-            assert!(matches!(first.read_ciphertext(), Err(BackendError::Unavailable)));
+            assert!(matches!(
+                first.read_ciphertext(),
+                Err(BackendError::Unavailable)
+            ));
             assert_eq!(fs::read(&retained)?, original);
             if replace {
                 assert_eq!(fs::read(&leaf)?, replacement);
@@ -299,7 +302,9 @@ fn immutable_reuse_lost_sync_ack_fences_then_cold_reauthenticates_same_leaf() ->
             &mut |file| {
                 file.sync_all()?;
                 if phase == "file" {
-                    Err(io::Error::other("injected lost completed file sync acknowledgement"))
+                    Err(io::Error::other(
+                        "injected lost completed file sync acknowledgement",
+                    ))
                 } else {
                     Ok(())
                 }
@@ -307,15 +312,23 @@ fn immutable_reuse_lost_sync_ack_fences_then_cold_reauthenticates_same_leaf() ->
             &mut |directory| {
                 directory.sync_all().map_err(io::Error::other)?;
                 if phase == "directory" {
-                    Err(io::Error::other("injected lost completed directory sync acknowledgement"))
+                    Err(io::Error::other(
+                        "injected lost completed directory sync acknowledgement",
+                    ))
                 } else {
                     Ok(())
                 }
             },
         );
         assert!(matches!(result, Err(BackendError::OutcomeUnknown)));
-        assert!(matches!(first.read_ciphertext(), Err(BackendError::Unavailable)));
-        assert!(matches!(backend.immutable_blob_profile(), Err(BackendError::Unavailable)));
+        assert!(matches!(
+            first.read_ciphertext(),
+            Err(BackendError::Unavailable)
+        ));
+        assert!(matches!(
+            backend.immutable_blob_profile(),
+            Err(BackendError::Unavailable)
+        ));
         assert_eq!(fs::read(root.0.join(address.leaf()))?, b"old-cipher");
         drop(backend);
         let mut cold = FileBackend::open(&root.0)?;
@@ -324,7 +337,10 @@ fn immutable_reuse_lost_sync_ack_fences_then_cold_reauthenticates_same_leaf() ->
             .ok_or("cold existing file reported absent")?;
         assert_eq!(fresh.0.identity, initial_identity);
         assert_eq!(fresh.read_ciphertext()?.as_slice(), b"old-cipher");
-        assert!(matches!(first.read_ciphertext(), Err(BackendError::Unavailable)));
+        assert!(matches!(
+            first.read_ciphertext(),
+            Err(BackendError::Unavailable)
+        ));
     }
     Ok(())
 }
@@ -351,8 +367,8 @@ fn immutable_reuse_same_inode_aba_across_real_sync_callbacks_is_rejected() -> Te
             // Actual writes to the existing inode, without truncate/rename.
             let mut writer = fs::OpenOptions::new().write(true).open(&leaf)?;
             writer.write_all(bytes)?;
-            // Restore mtime too: ctime must remain part of the witness even
-            // when both the final full read and visible mtime again match A.
+            // Restore mtime too. The real X230 failure retained ctime as well:
+            // neither timestamp may substitute for the retained kernel watch.
             writer.set_modified(original_modified)?;
             Ok(())
         };
@@ -398,22 +414,53 @@ fn immutable_reuse_same_inode_aba_across_real_sync_callbacks_is_rejected() -> Te
                 Ok(())
             },
         );
-        assert!(restored.get(), "the actual A -> B -> A callback must run: {phase}");
-        assert!(matches!(result, Err(BackendError::OutcomeUnknown)), "{phase}");
+        assert!(
+            restored.get(),
+            "the actual A -> B -> A callback must run: {phase}"
+        );
+        // Observe only after the real operation has already returned an
+        // unexpected result. This adds no reads, waits, writes, or callbacks
+        // inside the synchronization window and changes no assertion.
+        if !matches!(&result, Err(BackendError::OutcomeUnknown)) {
+            let observed_after = object_metadata_witness(&first.0.file, original.len());
+            eprintln!(
+                "HBIMMUTABLE-REUSE-ABA-DIAG phase={phase} result={result:?} \
+                 restored={} file_syncs={} directory_syncs={} \
+                 witness_before={before:?} witness_after={observed_after:?}",
+                restored.get(),
+                file_syncs.get(),
+                directory_syncs.get(),
+            );
+        }
+        assert!(
+            matches!(result, Err(BackendError::OutcomeUnknown)),
+            "{phase}"
+        );
         assert_eq!(file_syncs.get(), 1, "{phase}");
-        assert_eq!(directory_syncs.get(), if phase == "directory" { 1 } else { 0 });
+        assert_eq!(
+            directory_syncs.get(),
+            if phase == "directory" { 1 } else { 0 }
+        );
         let after = object_metadata_witness(&first.0.file, original.len())?;
         assert_eq!(before.identity, after.identity, "{phase}");
         assert_eq!(before.modified_seconds, after.modified_seconds, "{phase}");
         assert_eq!(before.modified_nanos, after.modified_nanos, "{phase}");
-        assert_ne!(
-            (before.changed_seconds, before.changed_nanos),
-            (after.changed_seconds, after.changed_nanos),
-            "actual filesystem must expose the ctime mutation: {phase}"
+        // Timestamp equality is permitted by real filesystems. The actual
+        // writes, sync counts and OutcomeUnknown above must still fence this
+        // owner; a clock delay must never manufacture the rejection witness.
+        assert!(
+            matches!(
+                backend.immutable_blob_profile(),
+                Err(BackendError::Unavailable)
+            ),
+            "actual mutation rejection must fence the original owner: {phase}"
         );
         assert_eq!(fs::read(&leaf)?, original, "{phase}");
         assert_eq!(names(&root)?, before_names, "{phase}");
-        assert!(matches!(first.read_ciphertext(), Err(BackendError::Unavailable)));
+        assert!(matches!(
+            first.read_ciphertext(),
+            Err(BackendError::Unavailable)
+        ));
         assert!(!root.0.join(TEMPORARY_LEAF).exists());
     }
     Ok(())

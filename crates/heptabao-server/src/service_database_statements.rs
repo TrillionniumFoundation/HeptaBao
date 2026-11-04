@@ -812,10 +812,19 @@ mod tests {
 
     fn configured_service()
     -> Result<(super::super::super::tests::Root, Service, String), Box<dyn std::error::Error>> {
-        use super::super::super::tests::{Root, bootstrap, call};
+        configured_service_with_bootstrap(crate::service::tests::bootstrap)
+    }
+
+    type Bootstrap = fn(&mut Service) -> Result<(String, String), Box<dyn std::error::Error>>;
+
+    fn configured_service_with_bootstrap(
+        initialize: Bootstrap,
+    ) -> Result<(super::super::super::tests::Root, Service, String), Box<dyn std::error::Error>>
+    {
+        use super::super::super::tests::{Root, call};
         let root = Root::new();
         let mut service = root.service()?;
-        let (_, root_token) = bootstrap(&mut service)?;
+        let (_, root_token) = initialize(&mut service)?;
         assert_eq!(
             call(
                 &mut service,
@@ -1004,7 +1013,8 @@ mod tests {
     #[test]
     fn statement_state_requires_schema54_and_remains_valid_under_schema55() -> TestResult {
         use super::super::super::tests::call;
-        let (_root, mut service, root_token) = configured_service()?;
+        let (_root, mut service, root_token) =
+            configured_service_with_bootstrap(crate::service::tests::bootstrap_pre141)?;
         let legacy = service.state.clone().ok_or("legacy state")?;
         let mut legacy53 = legacy.clone();
         legacy53.schema = 53;
@@ -1056,7 +1066,8 @@ mod tests {
     #[test]
     fn scram_connection_requires_schema55_while_default_connection_remains_schema54() -> TestResult
     {
-        let (_root, service, _) = configured_service()?;
+        let (_root, service, _) =
+            configured_service_with_bootstrap(crate::service::tests::bootstrap_pre141)?;
         let mut state = service.state.clone().ok_or("state")?;
         state.schema = 54;
         assert!(state.validate_format().is_ok());

@@ -1,7 +1,21 @@
-//! Bounded OpenBao 2.7.1 quota profile: root-owned native AppRole mount/login
-//! rules. Definitions are encrypted Auth owner data; per-IP buckets are node RAM.
+//! OpenBao quota definitions are encrypted Auth owner data. Actual catalog
+//! factors are distinct from the public path; per-IP buckets remain node RAM.
 use super::*;
+#[path = "auth_rate_limit_quota_selectors.rs"]
+mod selectors;
+pub(crate) use selectors::{Selector, Target};
+#[path = "auth_rate_limit_quota_remount.rs"]
+mod remount;
+#[cfg(feature = "native-v6-storage")]
+#[path = "auth_rate_limit_quota_retirement.rs"]
+mod retirement;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use retirement::MountRetirement;
 pub(crate) const STATE_SCHEMA: u32 = 134;
+// Keep the original reader contract for existing AppRole-only registries.
+// Header-enabled or global quotas irreversibly adopt the extended contract.
+pub(crate) const EXTENDED_STATE_SCHEMA: u32 = 137;
+pub(crate) const SCOPED_STATE_SCHEMA: u32 = 139;
 const MAX_QUOTAS: usize = 256;
 const MAX_DURATION: u64 = 86400 * 30;
 const MAX_RATE: f64 = 1_000_000.0;
@@ -15,6 +29,8 @@ pub(crate) struct Definition {
     pub(crate) interval: u64,
     pub(crate) block_interval: u64,
     pub(crate) revision: u64,
+    #[serde(default, skip_serializing_if = "is_false")]
+    pub(crate) inheritable: bool,
 }
 impl Definition {
     pub(crate) fn tokens(&self) -> u64 {
@@ -22,9 +38,9 @@ impl Definition {
     }
     fn data(&self) -> Value {
         json!({"type":"rate-limit","name":self.name,"path":self.path,"role":self.role,
-            "rate":self.rate,"interval":self.interval,"block_interval":self.block_interval,"inheritable":false})
+            "rate":self.rate,"interval":self.interval,"block_interval":self.block_interval,"inheritable":self.inheritable})
     }
-    fn validate(&self) -> Result<(), AuthError> {
+    fn validate_limits(&self) -> Result<(), AuthError> {
         valid_name(&self.name)?;
         if !self.rate.is_finite()
             || self.rate <= 0.0
@@ -37,6 +53,20 @@ impl Definition {
             || self.role.contains('/')
         {
             return Err(bad("invalid bounded rate limit definition"));
+        }
+        Ok(())
+    }
+    fn validate(&self) -> Result<(), AuthError> {
+        self.validate_limits()?;
+        if self.path.is_empty() {
+            return if self.role.is_empty() {
+                Ok(())
+            } else {
+                Err(bad("global quotas cannot select a login role"))
+            };
+        }
+        if self.inheritable {
+            return Err(bad("only namespace quotas can be inheritable"));
         }
         let relative = self
             .path
@@ -85,25 +115,55 @@ impl Default for Config {
 }
 impl Config {
     fn validate(&self) -> Result<(), AuthError> {
-        if self.enable_rate_limit_audit_logging || self.enable_rate_limit_response_headers {
+        if self.enable_rate_limit_audit_logging {
             return Err(bad(
-                "quota audit-device and response-header options are outside this bounded profile",
+                "quota audit-device option is outside this bounded profile",
             ));
         }
         if self.rate_limit_exempt_paths.len() > 128 {
             return Err(bad("too many quota exempt paths"));
         }
         for p in &self.rate_limit_exempt_paths {
-            validate_path(p, false)?;
+            if p.len() > 4096 {
+                return Err(bad("quota exemption path is outside bounded text limits"));
+            }
         }
         Ok(())
     }
-    pub(crate) fn exempt(&self, path: &str) -> bool {
-        // Upstream PathManager uses prefix exemptions, rather than a bearer or
-        // caller-supplied header. Stored paths are canonical and bounded.
+    fn needs_path_manager(&self) -> bool {
+        self.rate_limit_exempt_paths.iter().any(|path| {
+            path.starts_with('!') || path.ends_with('*') || validate_path(path, false).is_err()
+        })
+    }
+    fn exempt(&self, path: &str, path_manager: bool) -> bool {
+        if !path_manager {
+            // Historical 134/137 accepted literal !/* text. Preserve that
+            // admitted encoding and behavior until an explicit config write
+            // adopts the new mode; a generic quota alone cannot reinterpret it.
+            return self
+                .rate_limit_exempt_paths
+                .iter()
+                .any(|prefix| path.starts_with(prefix));
+        }
+        // Upstream PathManager ignores empty entries, removes exactly one
+        // trailing star, then chooses the longest prefix. The last configured
+        // value replaces an identical prefix, including an earlier exception.
         self.rate_limit_exempt_paths
             .iter()
-            .any(|p| path.starts_with(p))
+            .enumerate()
+            .filter_map(|(index, value)| {
+                if value.is_empty() {
+                    return None;
+                }
+                let (value, exception) = value
+                    .strip_prefix('!')
+                    .map_or((value.as_str(), false), |value| (value, true));
+                let prefix = value.strip_suffix('*').unwrap_or(value);
+                path.starts_with(prefix)
+                    .then_some(((prefix.len(), index), !exception))
+            })
+            .max_by_key(|(rank, _)| *rank)
+            .is_some_and(|(_, exempt)| exempt)
     }
 }
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq)]
@@ -112,6 +172,14 @@ pub(crate) struct Registry {
     pub(crate) config: Config,
     pub(crate) definitions: BTreeMap<String, Definition>,
     next_revision: u64,
+    #[serde(default, skip_serializing_if = "is_false")]
+    extended_reader: bool,
+    #[serde(default, skip_serializing_if = "is_false")]
+    scoped_reader: bool,
+    #[serde(default, skip_serializing_if = "is_false")]
+    path_manager_exemptions: bool,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    selectors: BTreeMap<String, Selector>,
     #[serde(skip)]
     pub(crate) runtime_owner: std::sync::Arc<()>,
 }
@@ -121,6 +189,10 @@ impl Default for Registry {
             config: Config::default(),
             definitions: BTreeMap::new(),
             next_revision: 1,
+            extended_reader: false,
+            scoped_reader: false,
+            path_manager_exemptions: false,
+            selectors: BTreeMap::new(),
             runtime_owner: std::sync::Arc::new(()),
         }
     }
@@ -131,17 +203,50 @@ impl Registry {
         if self.definitions.len() > MAX_QUOTAS || self.next_revision == 0 {
             return Err(bad("invalid quota registry"));
         }
+        if !self.extended_reader
+            && (self.config.enable_rate_limit_response_headers
+                || self
+                    .definitions
+                    .values()
+                    .any(|definition| definition.path.is_empty()))
+        {
+            return Err(bad("extended quota reader marker is required"));
+        }
+        if (!self.scoped_reader && (!self.selectors.is_empty() || self.path_manager_exemptions))
+            || self
+                .selectors
+                .keys()
+                .any(|name| !self.definitions.contains_key(name))
+        {
+            return Err(bad(
+                "scoped quota reader marker or selector owner is invalid",
+            ));
+        }
+        if !self.path_manager_exemptions {
+            for path in &self.config.rate_limit_exempt_paths {
+                validate_path(path, false)?;
+            }
+        }
         let mut factors = BTreeSet::new();
         for (name, d) in &self.definitions {
-            d.validate()?;
+            let selector = match self.selectors.get(name) {
+                Some(selector) => {
+                    selector.validate(d)?;
+                    selector.clone()
+                }
+                None => Selector::legacy(d)?,
+            };
             if &d.name != name
                 || d.revision >= self.next_revision
-                || !factors.insert((&d.path, &d.role))
+                || !factors.insert((selector, &d.role))
             {
                 return Err(bad("invalid or conflicting quota definition"));
             }
         }
         Ok(())
+    }
+    pub(crate) fn exempt(&self, path: &str) -> bool {
+        self.config.exempt(path, self.path_manager_exemptions)
     }
 }
 fn valid_name(name: &str) -> Result<(), AuthError> {
@@ -156,29 +261,10 @@ fn valid_name(name: &str) -> Result<(), AuthError> {
     Ok(())
 }
 impl AuthState {
-    pub(crate) fn ensure_rate_limit_quotas_allow_remount(
-        &self,
-        namespace: &str,
-        mount: &str,
-    ) -> Result<(), AuthError> {
-        let prefix = format!("auth/{mount}/");
-        if namespace.is_empty()
-            && self.rate_limit_quotas.as_ref().is_some_and(|r| {
-                r.definitions
-                    .values()
-                    .any(|d| d.path == prefix || d.path == format!("{prefix}login"))
-            })
-        {
-            return Err(bad(
-                "remount of a mount with rate limit quotas is outside this bounded profile",
-            ));
-        }
-        Ok(())
-    }
     /// Preserve process-local quota ownership only after native readback has
     /// proved the complete Auth owner equal to the admitted candidate. Cold
     /// readers and snapshot activation do not call this hook.
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     pub(crate) fn retain_quota_runtime_owner(&mut self, candidate: &Self) -> Result<(), AuthError> {
         match (&mut self.rate_limit_quotas, &candidate.rate_limit_quotas) {
             (None, None) => Ok(()),
@@ -205,6 +291,16 @@ impl AuthState {
     pub(crate) fn has_rate_limit_quota_state(&self) -> bool {
         self.rate_limit_quotas.is_some()
     }
+    pub(crate) fn has_extended_rate_limit_quota_state(&self) -> bool {
+        self.rate_limit_quotas
+            .as_ref()
+            .is_some_and(|registry| registry.extended_reader)
+    }
+    pub(crate) fn has_scoped_rate_limit_quota_state(&self) -> bool {
+        self.rate_limit_quotas
+            .as_ref()
+            .is_some_and(|registry| registry.scoped_reader)
+    }
     pub(crate) fn validate_rate_limit_quota_state(
         &self,
         previous: Option<&Self>,
@@ -214,6 +310,26 @@ impl AuthState {
         {
             return Err(bad("quota reader floor cannot be removed"));
         }
+        if previous.is_some_and(Self::has_extended_rate_limit_quota_state)
+            && !self.has_extended_rate_limit_quota_state()
+        {
+            return Err(bad("extended quota reader floor cannot be removed"));
+        }
+        if previous.is_some_and(Self::has_scoped_rate_limit_quota_state)
+            && !self.has_scoped_rate_limit_quota_state()
+        {
+            return Err(bad("scoped quota reader floor cannot be removed"));
+        }
+        if previous
+            .and_then(|state| state.rate_limit_quotas.as_ref())
+            .is_some_and(|registry| registry.path_manager_exemptions)
+            && self
+                .rate_limit_quotas
+                .as_ref()
+                .is_none_or(|registry| !registry.path_manager_exemptions)
+        {
+            return Err(bad("quota exemption interpretation cannot be downgraded"));
+        }
         if let Some(registry) = &self.rate_limit_quotas {
             registry.validate()?;
         }
@@ -222,55 +338,166 @@ impl AuthState {
     pub(crate) fn rate_limit_quota_registry(&self) -> Option<&Registry> {
         self.rate_limit_quotas.as_ref()
     }
-    /// Resolves only the live native catalog and role_id, without consuming SID,
-    /// authenticating a token, or invoking a plugin/provider.
-    pub(crate) fn rate_limit_approle_scope(
+    pub(super) fn quota_known_namespaces(&self) -> BTreeSet<String> {
+        self.rate_limit_quotas
+            .as_ref()
+            .map(|registry| {
+                registry
+                    .selectors
+                    .values()
+                    .map(|selector| selector.namespace().to_owned())
+                    .filter(|namespace| !namespace.is_empty())
+                    .collect()
+            })
+            .unwrap_or_default()
+    }
+    pub(super) fn quota_namespace_is_empty(&self, namespace: &str) -> bool {
+        self.rate_limit_quotas.as_ref().is_none_or(|registry| {
+            registry
+                .selectors
+                .values()
+                .all(|selector| selector.namespace() != namespace)
+        })
+    }
+    /// A detached candidate only. The caller must own the actual catalog
+    /// retirement; a quota selector never authorizes namespace deletion.
+    #[cfg(feature = "native-v6-storage")]
+    pub(crate) fn prune_rate_limit_quotas_namespace(
+        &mut self,
+        namespace: &str,
+    ) -> Result<(), AuthError> {
+        validate_namespace(namespace)?;
+        if namespace.is_empty() {
+            return Err(bad("root quota ownership cannot be retired as a child"));
+        }
+        let Some(registry) = self.rate_limit_quotas.as_mut() else {
+            return Ok(());
+        };
+        registry.validate()?;
+        let names: Vec<String> = registry
+            .selectors
+            .iter()
+            .filter(|(_, selector)| selector.namespace() == namespace)
+            .map(|(name, _)| name.clone())
+            .collect();
+        for name in names {
+            registry.definitions.remove(&name);
+            registry.selectors.remove(&name);
+        }
+        // Sticky markers, unrelated definitions, revision allocation and all
+        // remaining process-local buckets keep their original ownership.
+        registry.validate()
+    }
+    pub(crate) fn prune_rate_limit_quotas_mount(&mut self, namespace: &str, mount: &str) {
+        let Some(registry) = self.rate_limit_quotas.as_mut() else {
+            return;
+        };
+        let names: Vec<String> = registry
+            .definitions
+            .iter()
+            .filter_map(|(name, definition)| {
+                let matches = match registry.selectors.get(name) {
+                    Some(selector) => {
+                        selector.namespace() == namespace && selector.mount() == mount
+                    }
+                    None => {
+                        namespace.is_empty()
+                            && (definition.path == mount
+                                || definition.path == format!("{mount}login"))
+                    }
+                };
+                matches.then(|| name.clone())
+            })
+            .collect();
+        for name in names {
+            registry.definitions.remove(&name);
+            registry.selectors.remove(&name);
+        }
+    }
+    /// Resolve only local login-role metadata. Failure is the empty-role
+    /// fallback used by 2.7.1; this neither authenticates nor consumes a SID.
+    pub(crate) fn rate_limit_quota_login_role(
         &self,
         namespace: &str,
-        _method: &str,
-        path: &str,
+        mount_path: &str,
         body: &Value,
-    ) -> Result<Option<(String, String)>, AuthError> {
-        if !namespace.is_empty() {
-            return Ok(None);
-        }
-        let Some(relative) = path.strip_prefix("auth/") else {
-            return Ok(None);
+        time: AuthorityTime,
+        peer_certificates: Option<&[Vec<u8>]>,
+    ) -> String {
+        let Some(mount) = mount_path
+            .strip_prefix("auth/")
+            .and_then(|value| value.strip_suffix('/'))
+        else {
+            return String::new();
         };
         let mounts = self.effective_auth_mounts(namespace);
-        let Some((mount, entry, _suffix)) = mounts.iter().find_map(|(mount, entry)| {
-            relative
-                .strip_prefix(&format!("{mount}/"))
-                .map(|suffix| (mount, entry, suffix))
-        }) else {
-            return Ok(None);
+        let Some(entry) = mounts.get(mount) else {
+            return String::new();
         };
-        if entry.kind != "approle" {
-            return Ok(None);
-        }
-        let prefix = format!("auth/{mount}/");
-        let has_role_quota = self.rate_limit_quotas.as_ref().is_some_and(|r| {
-            r.definitions
-                .values()
-                .any(|d| d.path == prefix && !d.role.is_empty())
-        });
-        // The 2.7.1 HTTP quota owner resolves the fixed login role for all
-        // requests on a mount with role rules. Resolution failure is an empty
-        // role, so the exact path and mount fallback counters still apply.
-        // Authentication and its stricter body validation happen afterward.
-        let role = if has_role_quota {
-            body.get("role_id")
+        match entry.kind.as_str() {
+            "approle" => body
+                .get("role_id")
                 .and_then(Value::as_str)
                 .and_then(|role_id| {
                     self.roles_at(AuthScope { namespace, mount })
                         .and_then(|roles| roles.iter().find(|(_, r)| r.role_id == role_id.trim()))
                 })
                 .map(|(name, _)| name.clone())
-                .unwrap_or_default()
-        } else {
-            String::new()
-        };
-        Ok(Some((prefix, role)))
+                .unwrap_or_default(),
+            "cert" => {
+                let requested = match body.get("name") {
+                    None => None,
+                    Some(value) => match value.as_str().filter(|value| super::valid_name(value)) {
+                        Some(name) => Some(name),
+                        None => return String::new(),
+                    },
+                };
+                let Some(chain) = peer_certificates else {
+                    return String::new();
+                };
+                let Ok(presented) = parse_presented_certificate(chain, time) else {
+                    return String::new();
+                };
+                let attributes = chain
+                    .first()
+                    .and_then(|leaf| parse_certificate_attributes(leaf));
+                self.cert_roles
+                    .get(namespace)
+                    .and_then(|mounts| mounts.get(mount))
+                    .and_then(|roles| {
+                        roles.iter().find(|(name, role)| {
+                            requested.is_none_or(|requested| requested == name.as_str())
+                                && matches_cert_role(&presented, attributes.as_ref(), role)
+                        })
+                    })
+                    .map(|(name, _)| name.clone())
+                    .unwrap_or_default()
+            }
+            "jwt" => body
+                .get("role")
+                .and_then(Value::as_str)
+                .and_then(|role| {
+                    self.jwt_mounts
+                        .get(namespace)
+                        .and_then(|mounts| mounts.get(mount))
+                        .filter(|state| state.config.is_some() && state.roles.contains_key(role))
+                        .map(|_| role.to_owned())
+                })
+                .unwrap_or_default(),
+            "oidc" => self
+                .oidc_mounts
+                .get(namespace)
+                .and_then(|mounts| mounts.get(mount))
+                .and_then(|state| state.quota_login_role(body))
+                .unwrap_or_default(),
+            "kubernetes" => self
+                .kubernetes_mounts
+                .get(namespace)
+                .and_then(|mounts| mounts.get(mount))
+                .and_then(|state| state.quota_login_role(body))
+                .unwrap_or_default(),
+            _ => String::new(),
+        }
     }
     pub(super) fn rate_limit_quota_route(
         &mut self,
@@ -281,6 +508,50 @@ impl AuthState {
         body: &Value,
         now: u64,
     ) -> Result<AuthResponse, AuthError> {
+        self.rate_limit_quota_route_inner(principal, namespace, method, path, body, now, None)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn rate_limit_quota_catalog_route(
+        &mut self,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+        target: Result<Target, AuthError>,
+    ) -> Result<AuthResponse, AuthError> {
+        self.rate_limit_quota_route_inner(
+            principal,
+            namespace,
+            method,
+            path,
+            body,
+            now,
+            Some(target),
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn rate_limit_quota_route_inner(
+        &mut self,
+        principal: Option<&Principal>,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+        target: Option<Result<Target, AuthError>>,
+    ) -> Result<AuthResponse, AuthError> {
+        validate_namespace(namespace)?;
+        validate_path(path, false)?;
+        // OpenBao 2.7.1 restricts quota administration to the root namespace,
+        // before bearer authorization. A root request may still select an
+        // existing child namespace through its absolute quota path.
+        if !namespace.is_empty() {
+            return Err(bad("operation only available in root namespace"));
+        }
         let actor = principal.ok_or_else(|| err(403, "missing client token"))?;
         let capability = match method {
             "GET" => "read",
@@ -290,9 +561,6 @@ impl AuthState {
             _ => return Err(err(405, "unsupported quota operation")),
         };
         self.authorize_request(actor, namespace, path, capability, now)?;
-        if !namespace.is_empty() {
-            return Err(bad("quota administration supports the root namespace only"));
-        }
         if path == "sys/quotas/config" {
             return match method {
                 "GET" => Ok(response(
@@ -339,9 +607,11 @@ impl AuthState {
                         )?,
                     };
                     config.validate()?;
-                    self.rate_limit_quotas
-                        .get_or_insert_with(Registry::default)
-                        .config = config;
+                    let registry = self.rate_limit_quotas.get_or_insert_with(Registry::default);
+                    registry.extended_reader |= config.enable_rate_limit_response_headers;
+                    registry.path_manager_exemptions |= config.needs_path_manager();
+                    registry.scoped_reader |= registry.path_manager_exemptions;
+                    registry.config = config;
                     Ok(empty(true))
                 }
                 _ => Err(err(405, "unsupported quota configuration operation")),
@@ -374,10 +644,9 @@ impl AuthState {
                 .map(|d| response(d.data(), false))
                 .ok_or_else(|| err(404, "quota not found")),
             "DELETE" => {
-                self.rate_limit_quotas
-                    .get_or_insert_with(Registry::default)
-                    .definitions
-                    .remove(name);
+                let registry = self.rate_limit_quotas.get_or_insert_with(Registry::default);
+                registry.definitions.remove(name);
+                registry.selectors.remove(name);
                 Ok(empty(true))
             }
             "POST" | "PUT" => {
@@ -393,24 +662,38 @@ impl AuthState {
                         "role",
                     ],
                 )?;
-                if body.get("name").is_some_and(|v| v.as_str() != Some(name)) {
-                    return Err(bad("quota name does not match route"));
-                }
-                if boolean(body, "inheritable", false)? {
-                    return Err(bad("inheritable quotas are outside this bounded profile"));
-                }
-                let supplied = string_field(body, "path")?.trim_matches('/');
+                // The framework's route capture overrides a body field named
+                // `name`; it cannot rename an existing 2.7.1 quota.
+                let supplied = body
+                    .get("path")
+                    .map(|value| {
+                        value
+                            .as_str()
+                            .ok_or_else(|| bad("quota path must be string"))
+                    })
+                    .transpose()?
+                    .unwrap_or("")
+                    .trim_matches('/');
                 let role = body
                     .get("role")
                     .map(|v| v.as_str().ok_or_else(|| bad("quota role must be string")))
                     .transpose()?
                     .unwrap_or("");
-                let relative = supplied.strip_prefix("auth/").ok_or_else(|| {
-                    bad("quota path must identify a native AppRole mount or login")
-                })?;
-                let mounts = self.effective_auth_mounts("");
-                let (mount, login_suffix) =
-                    if mounts.get(relative).is_some_and(|m| m.kind == "approle") {
+                let target = if let Some(target) = target {
+                    // Catalog lookup errors are delivered only after the
+                    // original bearer and namespace capability check above.
+                    target?
+                } else if supplied.is_empty() {
+                    Target::from_catalog("", "", "", false, false)?
+                } else {
+                    let relative = supplied.strip_prefix("auth/").ok_or_else(|| {
+                        bad("quota path must identify a native AppRole mount or login")
+                    })?;
+                    let mounts = self.effective_auth_mounts("");
+                    let (mount, login_suffix) = if mounts
+                        .get(relative)
+                        .is_some_and(|m| m.kind == "approle")
+                    {
                         (relative, false)
                     } else if let Some(mount) = relative.strip_suffix("/login").filter(|mount| {
                         role.is_empty() && mounts.get(*mount).is_some_and(|m| m.kind == "approle")
@@ -421,12 +704,18 @@ impl AuthState {
                             "quota path must identify an actual native AppRole mount or login",
                         ));
                     };
-                validate_path(mount, false)?;
-                let path = if login_suffix {
-                    supplied.to_owned()
-                } else {
-                    format!("{supplied}/")
+                    validate_path(mount, false)?;
+                    Target::from_catalog(
+                        "",
+                        &format!("auth/{mount}/"),
+                        if login_suffix { "login" } else { "" },
+                        true,
+                        true,
+                    )?
                 };
+                target.admit_role(role)?;
+                let inheritable = boolean(body, "inheritable", target.default_inheritable())?;
+                let path = target.selector().path();
                 let rate = body
                     .get("rate")
                     .and_then(Value::as_f64)
@@ -434,19 +723,13 @@ impl AuthState {
                 let interval = duration(body, "interval", 1)?.max(1);
                 let block_interval = duration(body, "block_interval", 0)?;
                 let registry = self.rate_limit_quotas.get_or_insert_with(Registry::default);
-                if registry
-                    .definitions
-                    .get(name)
-                    .is_some_and(|d| d.role != role)
-                {
-                    return Err(bad("changing a quota role is outside this bounded profile"));
-                }
-                if registry
-                    .definitions
-                    .values()
-                    .any(|d| d.name != name && d.path == path && d.role == role)
-                {
-                    return Err(bad("quota rule with similar properties exists"));
+                for definition in registry.definitions.values() {
+                    if definition.name != name
+                        && definition.role == role
+                        && registry.selector_for(definition)? == *target.selector()
+                    {
+                        return Err(bad("quota rule with similar properties exists"));
+                    }
                 }
                 if registry.definitions.len() >= MAX_QUOTAS
                     && !registry.definitions.contains_key(name)
@@ -457,16 +740,37 @@ impl AuthState {
                 let next_revision = revision
                     .checked_add(1)
                     .ok_or_else(|| bad("quota revision exhausted"))?;
+                // 2.7.1 checks conflicting factors using the requested role,
+                // then clones an existing rule without assigning Role. Preserve
+                // that stored role while applying the other requested fields.
+                let retained_role = registry
+                    .definitions
+                    .get(name)
+                    .map_or_else(|| role.to_owned(), |definition| definition.role.clone());
                 let definition = Definition {
                     name: name.into(),
                     path,
-                    role: role.into(),
+                    role: retained_role,
                     rate,
                     interval,
                     block_interval,
                     revision,
+                    inheritable,
                 };
-                definition.validate()?;
+                target.selector().validate(&definition)?;
+                let needs_scoped_reader = target.requires_scoped_reader(&definition);
+                if !needs_scoped_reader {
+                    definition.validate()?;
+                }
+                registry.extended_reader |= definition.path.is_empty();
+                registry.scoped_reader |= needs_scoped_reader;
+                if needs_scoped_reader {
+                    registry
+                        .selectors
+                        .insert(name.into(), target.into_selector());
+                } else {
+                    registry.selectors.remove(name);
+                }
                 registry.next_revision = next_revision;
                 registry.definitions.insert(name.into(), definition);
                 Ok(empty(true))

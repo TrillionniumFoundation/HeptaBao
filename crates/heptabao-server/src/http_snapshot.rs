@@ -18,8 +18,15 @@ impl NativeTarget {
                     | "/v1/sys/storage/raft/snapshot-repair"
             )
         );
-        #[cfg(feature = "fixture-native-v6-service")]
-        let accepted = accepted || path == Some("/v1/sys/migration/openbao/kv2/native-large");
+        #[cfg(feature = "native-v6-storage")]
+        let accepted = accepted
+            || matches!(
+                path,
+                Some(
+                    "/v1/sys/migration/openbao/kv2/native-large"
+                        | "/v1/sys/migration/openbao/kv2/export"
+                )
+            );
         if target.len() > 8192
             || !target.bytes().all(|byte| (33..=126).contains(&byte))
             || target.contains('#')
@@ -41,6 +48,8 @@ pub(super) enum NativeReply {
     Ui(super::ui::Reply),
     HttpBadRequest,
     File(SnapshotFile),
+    #[cfg(feature = "native-v6-storage")]
+    LosslessFile(SnapshotFile),
     Redirect {
         origin: TrustedSnapshotOrigin,
         target: NativeTarget,
@@ -69,6 +78,8 @@ impl NativeReply {
             }
             Self::Ui(reply) => reply.write(writer, head),
             Self::File(file) => write_file_response(writer, file, head, namespace),
+            #[cfg(feature = "native-v6-storage")]
+            Self::LosslessFile(file) => write_lossless_file_response(writer, file, head, namespace),
             Self::Redirect { origin, target } => {
                 write!(
                     writer,
@@ -272,6 +283,8 @@ pub(super) fn execute(
         }
         RequestExecution::External(pending) => pending,
     };
+    #[cfg(feature = "native-v6-storage")]
+    let lossless_download = pending.has_lossless_download();
     let (observation, file) = match BodyReader::new(reader, native.body, deadline) {
         Ok(mut reader) => pending.execute_snapshot_transfer(&mut reader),
         Err(_) => (
@@ -291,6 +304,10 @@ pub(super) fn execute(
     if response.status == 200
         && let Some(file) = file
     {
+        #[cfg(feature = "native-v6-storage")]
+        if lossless_download {
+            return NativeReply::LosslessFile(file);
+        }
         NativeReply::File(file)
     } else {
         NativeReply::Json(response)
@@ -348,6 +365,34 @@ pub(super) fn write_file_response(
     writer.flush()
 }
 
+#[cfg(feature = "native-v6-storage")]
+fn write_lossless_file_response(
+    writer: &mut impl Write,
+    mut file: SnapshotFile,
+    head: bool,
+    namespace: &str,
+) -> io::Result<()> {
+    write!(
+        writer,
+        "HTTP/1.1 200 OK\r\nContent-Type: {}\r\nContent-Disposition: attachment; filename=\"heptabao-kv2-lossless.json\"\r\nContent-Length: {}\r\n",
+        crate::engines::kv2_lossless_export::MEDIA_TYPE,
+        file.len()
+    )?;
+    write_standard_headers(writer, namespace)?;
+    writer.write_all(b"\r\n")?;
+    if !head {
+        let mut buffer = Zeroizing::new([0; 64 * 1024]);
+        loop {
+            let count = file.read(&mut *buffer)?;
+            if count == 0 {
+                break;
+            }
+            writer.write_all(&buffer[..count])?;
+        }
+    }
+    writer.flush()
+}
+
 #[cfg(test)]
 #[path = "http_snapshot_redirect_tests.rs"]
 mod redirect_tests;
@@ -355,6 +400,146 @@ mod redirect_tests;
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[cfg(feature = "native-v6-storage")]
+    #[test]
+    fn lossless_export_http_keeps_read_only_typed_download_and_body_bounds() -> io::Result<()> {
+        for method in ["GET", "HEAD"] {
+            for accept in ["", "Accept: application/json\r\n"] {
+                let raw = format!(
+                    "{method} /v1/sys/migration/openbao/kv2/export?mount=secret HTTP/1.1\r\nHost: local\r\n{accept}\r\n"
+                );
+                let request = read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
+                    .map_err(|_| io::Error::other("lossless download admission"))?;
+                assert_eq!(request.body.0, json!({"mount":"secret"}));
+                assert!(request.native_snapshot.is_some());
+                assert!(
+                    read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), false)
+                        .is_ok_and(|request| request.native_snapshot.is_none())
+                );
+            }
+        }
+        for framing in [
+            "Content-Length: 2\r\n\r\n{}",
+            "Transfer-Encoding: chunked\r\n\r\n0\r\n\r\n",
+            "Content-Length: 0\r\n\r\nGET /v1/sys/health HTTP/1.1\r\n\r\n",
+        ] {
+            let raw = format!(
+                "GET /v1/sys/migration/openbao/kv2/export?mount=secret HTTP/1.1\r\nHost: local\r\n{framing}"
+            );
+            assert!(read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true).is_err());
+        }
+        for method in ["POST", "PUT"] {
+            let raw = format!(
+                "{method} /v1/sys/migration/openbao/kv2/export?mount=secret HTTP/1.1\r\nHost: local\r\nContent-Length: 0\r\n\r\n"
+            );
+            assert!(
+                read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
+                    .is_ok_and(|request| request.native_snapshot.is_none())
+            );
+        }
+        Ok(())
+    }
+
+    #[cfg(feature = "native-v6-storage")]
+    #[test]
+    fn lossless_export_mount_query_is_bounded_route_specific_and_keeps_strings() -> io::Result<()> {
+        for method in ["GET", "HEAD"] {
+            for (query, expected) in [
+                ("mount=true", "true"),
+                ("mount=001", "001"),
+                ("mount=secret%2Fnested", "secret/nested"),
+            ] {
+                let raw = format!(
+                    "{method} /v1/sys/migration/openbao/kv2/export?{query} HTTP/1.1\r\nHost: local\r\n\r\n"
+                );
+                let request = read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
+                    .map_err(|_| io::Error::other("route-specific lossless mount admission"))?;
+                assert_eq!(request.body.0, json!({"mount": expected}));
+                assert!(request.native_snapshot.is_some());
+            }
+            let maximum = "m".repeat(1024);
+            let raw = format!(
+                "{method} /v1/sys/migration/openbao/kv2/export?mount={maximum} HTTP/1.1\r\nHost: local\r\n\r\n"
+            );
+            let request = read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
+                .map_err(|_| io::Error::other("bounded lossless mount admission"))?;
+            assert_eq!(request.body.0, json!({"mount": maximum}));
+            for query in [
+                "mount".to_owned(),
+                "mount=".to_owned(),
+                "mount=%00".to_owned(),
+                "mount=secret&mount=secret".to_owned(),
+                "mount=secret&depth=1".to_owned(),
+                "depth=1&mount=secret".to_owned(),
+                "mount=secret&force=true".to_owned(),
+                format!("mount={}", "m".repeat(1025)),
+            ] {
+                let raw = format!(
+                    "{method} /v1/sys/migration/openbao/kv2/export?{query} HTTP/1.1\r\nHost: local\r\n\r\n"
+                );
+                assert!(
+                    read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true).is_err()
+                );
+            }
+            for path in [
+                "sys/storage/raft/snapshot",
+                "sys/migration/openbao/kv2/export-other",
+            ] {
+                let raw =
+                    format!("{method} /v1/{path}?mount=secret HTTP/1.1\r\nHost: local\r\n\r\n");
+                assert!(
+                    read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true).is_err()
+                );
+            }
+            // Ordinary KV reads retain their existing request-local query
+            // carrier. Parsing that carrier does not select a typed download
+            // or grant the lossless export route's mount selector.
+            let ordinary_path = "secret/data/example";
+            let raw = format!(
+                "{method} /v1/{ordinary_path}?mount=secret HTTP/1.1\r\nHost: local\r\n\r\n"
+            );
+            let request = read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
+                .map_err(|_| io::Error::other("existing ordinary KV query carrier"))?;
+            assert_eq!(request.method, method);
+            assert_eq!(request.path, ordinary_path);
+            assert!(request.namespace.is_empty() && request.token.is_empty());
+            assert!(request.native_snapshot.is_none());
+            assert!(NativeTarget::checked("/v1/secret/data/example?mount=secret").is_err());
+            let carrier = ocsp::query_request(&request.method, &request.path, &request.body.0)
+                .ok_or_else(|| io::Error::other("query carrier remains bound to ordinary route"))?;
+            assert!(
+                ocsp::query_request(
+                    method,
+                    crate::engines::kv2_lossless_export::PATH,
+                    &request.body.0,
+                )
+                .is_none()
+            );
+            assert!(ocsp::query_request("POST", &request.path, &request.body.0).is_none());
+            if method == "GET" {
+                // Without the synchronized actual KV owner, the original
+                // strict query resolution still rejects this unknown field.
+                assert!(carrier.resolve(false).is_err());
+            }
+            // Actual KV query resolution and ordinary HEAD preserve original
+            // URL strings. Neither changes the method, target or authority.
+            let (resolved_method, ordinary_body) = carrier
+                .resolve(method == "GET")
+                .map_err(|_| io::Error::other("existing KV and HEAD string query contract"))?;
+            assert_eq!(resolved_method, method);
+            assert_eq!(ordinary_body.0, json!({"mount": "secret"}));
+        }
+        for method in ["POST", "PUT"] {
+            let body = r#"{"mount":"body"}"#;
+            let raw = format!(
+                "{method} /v1/sys/migration/openbao/kv2/export?mount=secret HTTP/1.1\r\nHost: local\r\nContent-Type: application/json\r\nContent-Length: {}\r\n\r\n{body}",
+                body.len()
+            );
+            assert!(read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true).is_err());
+        }
+        Ok(())
+    }
+
     #[test]
     fn rejected_uploads_drain_framing_without_changing_the_refusal_or_deadline() -> io::Result<()> {
         for (framing, prefix, remaining) in [
@@ -518,7 +703,7 @@ mod tests {
         );
     }
 
-    #[cfg(feature = "experimental-native-v6-ha")]
+    #[cfg(feature = "native-v6-ha")]
     #[test]
     fn native_ha_pending_restore_query_reaches_empty_binary_lane_and_rejects_other_routes()
     -> io::Result<()> {
@@ -546,14 +731,16 @@ mod tests {
                     );
                     let mut request =
                         read_request_mode(&mut raw.as_bytes(), Duration::from_secs(1), true)
-                            .unwrap_or_else(|_| {
-                                panic!("explicit pending selector must reach native admission")
-                            });
+                            .map_err(|_| {
+                                io::Error::other(
+                                    "explicit pending selector must reach native admission",
+                                )
+                            })?;
                     assert_eq!(request.body.0[field], expected);
                     let native = request
                         .native_snapshot
                         .take()
-                        .expect("empty native binary request");
+                        .ok_or_else(|| io::Error::other("empty native binary request"))?;
                     let mut source = io::empty();
                     let mut body = BodyReader::new(
                         &mut source,

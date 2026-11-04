@@ -9,13 +9,14 @@ pub(crate) const STATE_SCHEMA: u32 = 135;
 
 pub(super) fn update(role: &mut Role, body: &Value) -> Result<(), AuthError> {
     if let Some(value) = body.get("token_no_default_policy") {
-        let flag = token_policies::weak_boolean(Some(value), "token_no_default_policy")
-            .map_err(|error| {
+        let flag = token_policies::weak_boolean(Some(value), "token_no_default_policy").map_err(
+            |error| {
                 bad(error
                     .message
                     .strip_prefix("Field validation failed: ")
                     .unwrap_or(&error.message))
-            })?;
+            },
+        )?;
         role.token_no_default_policy = Some(flag);
     }
     let field = if body.get("token_policies").is_some() {

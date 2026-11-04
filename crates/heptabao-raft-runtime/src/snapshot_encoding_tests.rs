@@ -144,6 +144,7 @@ async fn legacy_byte_array_read_is_pure_then_snapshot_promotes_to_compact_format
         journal_format: 1,
         generation: store.generation().await,
         state,
+        local_generated_checkpoint_start: None,
         current_snapshot: Some(PersistentSnapshot {
             meta,
             data,
@@ -212,6 +213,7 @@ fn snapshot_representation_is_bound_to_version_and_base64_is_canonical() {
         journal_format: 1,
         generation: 1,
         state,
+        local_generated_checkpoint_start: None,
         current_snapshot: Some(PersistentSnapshot {
             meta,
             data,

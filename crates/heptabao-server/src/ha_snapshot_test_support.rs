@@ -122,7 +122,7 @@ impl Cluster {
                 Duration::from_millis(50),
             )?;
             processes.push(Arc::new(Mutex::new(HaProcess {
-                #[cfg(feature = "experimental-native-v6-ha")]
+                #[cfg(feature = "native-v6-ha")]
                 native_v6: None,
                 storage_dir: path.join(id.to_string()),
                 record_commits_since_gc: AtomicU64::new(0),
@@ -131,7 +131,7 @@ impl Cluster {
                 bootstrap_admission: None,
                 bootstrap_history_complete: AtomicBool::new(true),
                 bootstrap_owner: false,
-                runtime,
+                runtime: Arc::new(runtime),
                 node: Some(Arc::new(node)),
                 codec: ClusterStateCodec::new(cluster_id, [19; 32])?,
                 cluster_id: cluster_id.to_owned(),

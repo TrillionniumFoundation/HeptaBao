@@ -256,7 +256,81 @@ fn retained_revoked_and_nonleased_pki_owners_stay_visible_to_format_validation()
             &issuer,
             now,
         )?;
-        assert_eq!(issued.body["data"]["expiration"], now + 300);
+        // OpenBao keeps the requested certificate validity while the captured
+        // batch lease remains bounded by this issuer's original authority.
+        assert_eq!(issued.body["data"]["expiration"], now + 3600);
+        assert_eq!(issued.body["lease_duration"], if leased { 300 } else { 0 });
+        if leased {
+            let id = issued.body["lease_id"].as_str().ok_or("actual PKI lease")?;
+            let mut cold: EngineState = serde_json::from_slice(&serde_json::to_vec(&engines)?)?;
+            cold.validate_lease_state()?;
+            let lookup = cold.handle_lease_admin(
+                "team",
+                "POST",
+                "sys/leases/lookup",
+                &json!({"lease_id":id}),
+                now,
+            )?;
+            assert_eq!(lookup.body["data"]["ttl"], 300);
+            assert_eq!(lookup.body["data"]["expire_time"], timestamp(now + 300));
+            let precise = cold.handle_lease_admin_observed(
+                "team",
+                "POST",
+                "sys/leases/lookup",
+                &json!({"lease_id":id}),
+                crate::auth::AuthorityTime::Precise(crate::auth::Timestamp::checked(
+                    now + 299,
+                    750_000_000,
+                )?),
+            )?;
+            assert_eq!(
+                precise.body["data"]["ttl"], 0,
+                "fractional observation is not discarded on PKI-only state"
+            );
+            assert_eq!(
+                cold.handle_lease_admin_observed(
+                    "team",
+                    "POST",
+                    "sys/leases/lookup",
+                    &json!({"lease_id":id}),
+                    crate::auth::AuthorityTime::Precise(crate::auth::Timestamp::whole(now + 300)?),
+                )
+                .err()
+                .ok_or("expired original lease")?
+                .status,
+                404,
+            );
+            let still_live = BTreeSet::from([("team".to_owned(), owner.clone())]);
+            assert!(cold.reconcile_lease_state_observed(
+                crate::auth::AuthorityTime::Precise(crate::auth::Timestamp::whole(now + 300)?),
+                &still_live,
+            )?);
+            assert!(
+                cold.lease_owners().is_empty(),
+                "live claims cannot extend the original captured lease"
+            );
+            // A longer certificate cannot silently erase or extend the stored
+            // batch lease deadline when its actual metadata is reopened.
+            for replacement in [Value::Null, json!({"seconds":now + 601,"nanoseconds":0})] {
+                let mut encoded = serde_json::to_value(&engines)?;
+                let certificates =
+                    encoded["namespaces"]["team"]["mounts"]["pki/"]["backend"]["Pki"]["issued"]
+                        .as_object_mut()
+                        .ok_or("actual certificate index")?;
+                for certificate in certificates.values_mut() {
+                    let object = certificate
+                        .as_object_mut()
+                        .ok_or("actual certificate record")?;
+                    if replacement.is_null() {
+                        object.remove("lease_expires");
+                    } else {
+                        object.insert("lease_expires".into(), replacement.clone());
+                    }
+                }
+                let changed: EngineState = serde_json::from_value(encoded)?;
+                assert!(changed.validate_lease_state().is_err());
+            }
+        }
     }
     assert!(engines.reconcile_lease_state(now + 1, &BTreeSet::new()));
     assert!(engines.lease_owners().is_empty());

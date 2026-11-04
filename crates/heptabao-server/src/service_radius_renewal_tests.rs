@@ -87,9 +87,20 @@ fn accepted(service: &mut Service, plan: PendingExternalRequest) -> Response {
 }
 
 fn fixture(root: &Root) -> TestResult<(Service, String, String, String, String)> {
+    fixture_from_root_factory(root, bootstrap)
+}
+
+fn fixture_pre141(root: &Root) -> TestResult<(Service, String, String, String, String)> {
+    fixture_from_root_factory(root, crate::service::tests::bootstrap_pre141)
+}
+
+fn fixture_from_root_factory(
+    root: &Root,
+    initialize: impl FnOnce(&mut Service) -> TestResult<(String, String)>,
+) -> TestResult<(Service, String, String, String, String)> {
     let mut service = root.service()?;
     enroll(&mut service)?;
-    let (key, root_token) = bootstrap(&mut service)?;
+    let (key, root_token) = initialize(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -260,7 +271,7 @@ fn radius_renewal_rechecks_identity_config_and_revocation_after_provider() -> Te
 fn radius_renewal_schema_fence_rejects_downgrade_and_token_api_provenance_is_distinct() -> TestResult
 {
     let root = Root::new();
-    let (service, _, _, _, _) = fixture(&root)?;
+    let (service, _, _, _, _) = fixture_pre141(&root)?;
     let state = service.state.as_ref().ok_or("missing state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     let mut downgraded = state.clone();
@@ -659,7 +670,7 @@ fn radius_periodic_provider_success_cannot_publish_after_config_or_identity_chan
 #[test]
 fn radius_schema_twenty_two_fences_new_parameters_but_preserves_true_legacy_shape() -> TestResult {
     let root = Root::new();
-    let (mut service, _, admin, _, _) = fixture(&root)?;
+    let (mut service, _, admin, _, _) = fixture_pre141(&root)?;
     let mut state = service.state.clone().ok_or("state")?;
     assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
     restore_legacy_engine_owner(&mut state)?;

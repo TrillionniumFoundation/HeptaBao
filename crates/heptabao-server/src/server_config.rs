@@ -14,6 +14,8 @@ use zeroize::{Zeroize, Zeroizing};
 
 #[path = "server_storage.rs"]
 mod storage;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use storage::NativeStorageProfile;
 pub use storage::StorageConfig;
 pub use storage::{validate_storage, validate_storage_running, validate_storage_runtime};
 
@@ -459,3 +461,7 @@ fn normalize_server(value: &mut Value) -> Result<(), Invalid> {
 #[cfg(test)]
 #[path = "server_config_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "server_native_storage_config_tests.rs"]
+mod native_storage_tests;

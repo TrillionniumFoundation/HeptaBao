@@ -820,15 +820,14 @@ fn handle_with_visibility(
     auth_mounts: &BTreeMap<String, Value>,
     secret_mounts: &BTreeMap<String, Value>,
 ) -> Response {
-    if !matches!(method, "GET" | "POST") {
-        return Response::error(405, "OpenAPI document requires GET or POST");
+    if !matches!(method, "GET" | "POST" | "PUT") {
+        return Response::error(405, "OpenAPI document requires GET, POST or PUT");
     }
     let Some(object) = body.as_object() else {
         return Response::error(400, "OpenAPI parameters must be a JSON object");
     };
-    if object.keys().any(|key| key != "generic_mount_paths") {
-        return Response::error(400, "unsupported OpenAPI parameter");
-    }
+    // OpenBao 2.7.1 ignores unrecognized logical fields on this read-only
+    // endpoint. Only generic_mount_paths affects the generated document.
     let generic = match object.get("generic_mount_paths") {
         None | Some(Value::Null) => false,
         Some(Value::Bool(value)) => *value,
@@ -1045,7 +1044,8 @@ mod tests {
             handle("POST", &json!({"generic_mount_paths":"yes"}), true).status,
             400
         );
-        assert_eq!(handle("POST", &json!({"unknown":true}), true).status, 400);
+        assert_eq!(handle("POST", &json!({"unknown":true}), true).status, 200);
+        assert_eq!(handle("PUT", &json!({}), true).status, 200);
     }
 
     #[test]

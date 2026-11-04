@@ -22,6 +22,10 @@ use std::thread;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 static SEQUENCE: AtomicU64 = AtomicU64::new(0);
+#[path = "v6_closure_batch_receiver_tests.rs"]
+mod closure_batch_receiver_tests;
+#[path = "v6_closure_pipeline_tests.rs"]
+mod closure_pipeline_tests;
 #[path = "v6_committed_root_pull_tests.rs"]
 mod committed_root_pull_tests;
 struct Root(PathBuf);
@@ -53,6 +57,7 @@ impl Drop for Root {
 struct Router {
     peers: Arc<tokio::sync::RwLock<BTreeMap<u64, RaftRpcService>>>,
     isolate_three: Arc<AtomicBool>,
+    read_index_requests: Arc<AtomicU64>,
 }
 impl fmt::Debug for Router {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -70,6 +75,9 @@ impl RaftPeerRpc for Router {
     ) -> futures::future::BoxFuture<'static, Result<Vec<u8>, RemoteRaftError>> {
         let this = self.clone();
         Box::pin(async move {
+            if kind == RaftRpcKind::ReadIndex {
+                this.read_index_requests.fetch_add(1, Ordering::AcqRel);
+            }
             if this.isolate_three.load(Ordering::SeqCst) && (source == 3 || target == 3) {
                 return Err(RemoteRaftError::Transport(
                     "isolated synthetic third voter".into(),
@@ -267,7 +275,11 @@ fn tls_fixture(path: &Path) -> TestResult<TlsFixture> {
         let mut server = ServerConfig::builder_with_provider(provider.clone())
             .with_safe_default_protocol_versions()?
             .with_client_cert_verifier(
-                WebPkiClientVerifier::builder(Arc::new(roots.clone())).build()?,
+                WebPkiClientVerifier::builder_with_provider(
+                    Arc::new(roots.clone()),
+                    provider.clone(),
+                )
+                .build()?,
             )
             .with_single_cert(chain, private_key(&path.join(format!("{name}.key")))?)?;
         server.alpn_protocols = vec![RAFT_ALPN_PROTOCOL.to_vec()];
@@ -738,9 +750,11 @@ fn exact_committed_closure_counts_only_final_pinned_fsync_and_recovers_after_com
                 runtime.handle(),
                 &transport,
                 &healthy.routes,
-                &stores[0],
-                &references,
-                &intent,
+                NativeV6ClosureSource {
+                    source: &stores[0],
+                    references: &references,
+                    intent: &intent,
+                },
                 original,
             )?;
             assert!(blackhole.accepted.load(Ordering::Acquire));
@@ -765,10 +779,12 @@ fn exact_committed_closure_counts_only_final_pinned_fsync_and_recovers_after_com
                 runtime.handle(),
                 &no_self,
                 &live.routes,
-                &stores[0],
-                &references,
-                &intent,
-                deadline()
+                NativeV6ClosureSource {
+                    source: &stores[0],
+                    references: &references,
+                    intent: &intent,
+                },
+                deadline(),
             )
             .is_err()
         );
@@ -788,10 +804,12 @@ fn exact_committed_closure_counts_only_final_pinned_fsync_and_recovers_after_com
                 runtime.handle(),
                 &alias,
                 &live.routes,
-                &stores[0],
-                &references,
-                &intent,
-                deadline()
+                NativeV6ClosureSource {
+                    source: &stores[0],
+                    references: &references,
+                    intent: &intent,
+                },
+                deadline(),
             )
             .is_err()
         );
@@ -801,9 +819,11 @@ fn exact_committed_closure_counts_only_final_pinned_fsync_and_recovers_after_com
             runtime.handle(),
             &transport,
             &live.routes,
-            &stores[0],
-            &references,
-            &intent,
+            NativeV6ClosureSource {
+                source: &stores[0],
+                references: &references,
+                intent: &intent,
+            },
             deadline(),
         )?;
         assert_eq!(quorum.voter_ids(), &[1, 2]);
@@ -863,9 +883,11 @@ fn exact_committed_closure_counts_only_final_pinned_fsync_and_recovers_after_com
             runtime.handle(),
             &transport,
             &live.routes,
-            &stores[0],
-            &references,
-            &intent,
+            NativeV6ClosureSource {
+                source: &stores[0],
+                references: &references,
+                intent: &intent,
+            },
             deadline(),
         )?;
         runtime.block_on(quorum.verify_for_publication(&nodes[0]))?;
@@ -988,9 +1010,11 @@ fn exact_committed_closure_counts_only_final_pinned_fsync_and_recovers_after_com
             runtime.handle(),
             &transport,
             &live.routes,
-            &stores[0],
-            &references,
-            &intent,
+            NativeV6ClosureSource {
+                source: &stores[0],
+                references: &references,
+                intent: &intent,
+            },
             deadline(),
         )?;
         assert_eq!(quorum.voter_ids(), &[1, 2]);
@@ -1015,10 +1039,12 @@ fn exact_committed_closure_counts_only_final_pinned_fsync_and_recovers_after_com
                 runtime.handle(),
                 &transport,
                 &live.routes,
-                &stores[0],
-                &references,
-                &intent,
-                deadline()
+                NativeV6ClosureSource {
+                    source: &stores[0],
+                    references: &references,
+                    intent: &intent,
+                },
+                deadline(),
             )
             .is_err()
         );
@@ -1041,6 +1067,7 @@ struct ObservedMissingReceiver {
     endpoint: TlsPeerEndpoint,
     observations: Arc<Mutex<Vec<MissingFrameObservation>>>,
     fault: Arc<AtomicU64>,
+    reject_packed: Arc<AtomicBool>,
     stop: Arc<AtomicBool>,
     worker: Option<thread::JoinHandle<()>>,
 }
@@ -1061,6 +1088,8 @@ impl ObservedMissingReceiver {
         let seen = observations.clone();
         let fault = Arc::new(AtomicU64::new(0));
         let active_fault = fault.clone();
+        let reject_packed = Arc::new(AtomicBool::new(false));
+        let unsupported = reject_packed.clone();
         let stop = Arc::new(AtomicBool::new(false));
         let stopped = stop.clone();
         let worker = thread::spawn(move || {
@@ -1082,6 +1111,12 @@ impl ObservedMissingReceiver {
                         };
                         let kind = observation.kind;
                         seen.lock().map_err(|_| unknown())?.push(observation);
+                        // Model a peer that rejects the explicit extension before
+                        // admission or storage. No ciphertext may be replayed with
+                        // a legacy kind after this terminal response.
+                        if kind == Kind::PackedStageBatch && unsupported.load(Ordering::Acquire) {
+                            return Err(HaError::InvalidFrame);
+                        }
                         // Execute the actual receiver and all filesystem/intent
                         // gates BEFORE a test-only lost or malformed reply.
                         let mut response = receiver.handle_authenticated(frame)?;
@@ -1112,6 +1147,7 @@ impl ObservedMissingReceiver {
             endpoint,
             observations,
             fault,
+            reject_packed,
             stop,
             worker: Some(worker),
         })
@@ -1145,8 +1181,8 @@ fn missing_only_quorum_keeps_real_fsync_cold_bytes_and_unknown_ack_fences() -> T
 #[test]
 fn ensure_reference_batches_split_only_missing_ciphertext_and_keep_fault_fences() -> TestResult {
     // Two Ensure frames (64 + 1), with six missing in the first and one in the
-    // second. Their actual Stage frames must remain 3 + 3 + 1 leaves, and all
-    // original malformed/lost-ACK, corruption and cold-reopen checks still run.
+    // second. The explicit packed-stage kind must send exactly 6 + 1 leaves,
+    // while all malformed/lost-ACK, corruption and cold-reopen checks still run.
     missing_only_quorum_fixture(65, 7, 64)
 }
 
@@ -1278,10 +1314,12 @@ fn missing_only_quorum_fixture(
                     runtime.handle(),
                     &transport,
                     &live.routes,
-                    &local[0],
-                    &references,
-                    &intent,
-                    original
+                    NativeV6ClosureSource {
+                        source: &local[0],
+                        references: &references,
+                        intent: &intent,
+                    },
+                    original,
                 )
                 .is_err()
             );
@@ -1294,11 +1332,10 @@ fn missing_only_quorum_fixture(
                     .count(),
                 1
             );
-            assert!(
-                !frames
-                    .iter()
-                    .any(|row| matches!(row.kind, Kind::StageBatch | Kind::Stage | Kind::Finalize))
-            );
+            assert!(!frames.iter().any(|row| matches!(
+                row.kind,
+                Kind::PackedStageBatch | Kind::StageBatch | Kind::Stage | Kind::Finalize
+            )));
             assert!(
                 local[1]
                     .read_local_if_present_checked(&missing[0], &mut || Ok(()))?
@@ -1311,6 +1348,57 @@ fn missing_only_quorum_fixture(
                     .is_none()
             );
         }
+
+        // A peer that does not support kind 8 must end this distinct operation
+        // after one packed attempt. It must not replay ciphertext as old kind 5,
+        // try a one-leaf mutation, or produce a final acknowledgement.
+        let (unsupported_intent, _) = stage_intent(0x77)?;
+        observed.reject_packed.store(true, Ordering::Release);
+        let original = Instant::now() + Duration::from_secs(8);
+        assert!(
+            replicate_native_v6_closure_to_quorum(
+                &nodes[0],
+                runtime.handle(),
+                &transport,
+                &live.routes,
+                NativeV6ClosureSource {
+                    source: &local[0],
+                    references: &references,
+                    intent: &unsupported_intent,
+                },
+                original,
+            )
+            .is_err()
+        );
+        assert!(Instant::now() < original);
+        let unsupported_frames = observed.for_operation(unsupported_intent.operation_digest)?;
+        assert_eq!(
+            unsupported_frames
+                .iter()
+                .filter(|row| row.kind == Kind::EnsureBatch)
+                .count(),
+            1
+        );
+        assert_eq!(
+            unsupported_frames
+                .iter()
+                .filter(|row| row.kind == Kind::PackedStageBatch)
+                .count(),
+            1
+        );
+        assert!(
+            !unsupported_frames
+                .iter()
+                .any(|row| matches!(row.kind, Kind::StageBatch | Kind::Stage | Kind::Finalize))
+        );
+        for reference in missing {
+            assert!(
+                local[1]
+                    .read_local_if_present_checked(reference, &mut || Ok(()))?
+                    .is_none()
+            );
+        }
+        observed.reject_packed.store(false, Ordering::Release);
 
         // A corrupt present leaf is an error, never a missing reply or an
         // invitation to overwrite it from another voter.
@@ -1331,10 +1419,12 @@ fn missing_only_quorum_fixture(
                 runtime.handle(),
                 &transport,
                 &live.routes,
-                &local[0],
-                &references,
-                &intent,
-                original
+                NativeV6ClosureSource {
+                    source: &local[0],
+                    references: &references,
+                    intent: &intent,
+                },
+                original,
             )
             .is_err()
         );
@@ -1348,11 +1438,10 @@ fn missing_only_quorum_fixture(
                 .count(),
             1
         );
-        assert!(
-            !frames
-                .iter()
-                .any(|row| matches!(row.kind, Kind::StageBatch | Kind::Stage | Kind::Finalize))
-        );
+        assert!(!frames.iter().any(|row| matches!(
+            row.kind,
+            Kind::PackedStageBatch | Kind::StageBatch | Kind::Stage | Kind::Finalize
+        )));
         // Explicit fixture repair for the NEXT distinct test operation only.
         fs::write(&leaf, &payloads[&references[0].id])?;
 
@@ -1365,10 +1454,12 @@ fn missing_only_quorum_fixture(
                 runtime.handle(),
                 &transport,
                 &live.routes,
-                &local[0],
-                &references,
-                &intent,
-                original
+                NativeV6ClosureSource {
+                    source: &local[0],
+                    references: &references,
+                    intent: &intent,
+                },
+                original,
             )
             .is_err()
         );
@@ -1381,7 +1472,11 @@ fn missing_only_quorum_fixture(
         );
         assert!(!frames.iter().any(|row| matches!(
             row.kind,
-            Kind::EnsureBatch | Kind::StageBatch | Kind::Stage | Kind::Finalize
+            Kind::EnsureBatch
+                | Kind::PackedStageBatch
+                | Kind::StageBatch
+                | Kind::Stage
+                | Kind::Finalize
         )));
 
         let (intent, staged) = stage_intent(0x76)?;
@@ -1391,9 +1486,11 @@ fn missing_only_quorum_fixture(
             runtime.handle(),
             &transport,
             &live.routes,
-            &local[0],
-            &references,
-            &intent,
+            NativeV6ClosureSource {
+                source: &local[0],
+                references: &references,
+                intent: &intent,
+            },
             original,
         )?;
         assert!(Instant::now() < original);
@@ -1416,7 +1513,7 @@ fn missing_only_quorum_fixture(
         }
         let staged_frames: Vec<_> = frames
             .iter()
-            .filter(|row| row.kind == Kind::StageBatch)
+            .filter(|row| row.kind == Kind::PackedStageBatch)
             .collect();
         let expected_stage_frames: usize = references
             .chunks(batch::ENSURE_OBJECTS)
@@ -1426,14 +1523,19 @@ fn missing_only_quorum_fixture(
                     .filter(|reference| missing.contains(reference))
                     .count()
             })
-            .map(|count| count.div_ceil(batch::OBJECTS))
+            .map(|count| count.div_ceil(batch::PACKED_OBJECTS))
             .sum();
+        assert_eq!(
+            expected_stage_frames,
+            if object_count == 65 { 2 } else { 1 }
+        );
         assert_eq!(staged_frames.len(), expected_stage_frames);
+        assert!(!frames.iter().any(|row| row.kind == Kind::StageBatch));
         let mut transferred = Vec::new();
         for frame in staged_frames {
             let stage = &frame.payload;
             let count = usize::from(stage[0]);
-            assert!((1..=batch::OBJECTS).contains(&count));
+            assert!((1..=batch::PACKED_OBJECTS).contains(&count));
             assert!(stage.len() <= batch::MAX_PAYLOAD);
             let mut offset = 1;
             for _ in 0..count {
@@ -1493,4 +1595,17 @@ fn missing_only_quorum_fixture(
     })();
     runtime.block_on(shutdown_nodes(nodes, &router))?;
     result
+}
+
+// New regression entry points stay outside the original closed 12-test filter.
+
+#[test]
+fn committed_root_pull_ready_batch_repairs_actual_follower_with_one_blackhole_in_14s() -> TestResult
+{
+    committed_root_pull_tests::committed_root_pull_ready_batch_repairs_actual_follower_with_one_blackhole_in_14s()
+}
+
+#[test]
+fn committed_root_pull_ready_batch_rejects_reply_after_actual_epoch_publication() -> TestResult {
+    committed_root_pull_tests::committed_root_pull_ready_batch_rejects_reply_after_actual_epoch_publication()
 }

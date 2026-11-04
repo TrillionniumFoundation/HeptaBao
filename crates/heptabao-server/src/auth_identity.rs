@@ -69,14 +69,21 @@ impl AuthState {
         namespace: &str,
         identity_policies: &BTreeSet<String>,
     ) -> Result<BTreeSet<String>, AuthError> {
-        self.policy_template_selectors(namespace, principal.policies(), identity_policies)
+        let time = principal.request_authority_time(principal.admission_time)?;
+        self.policy_template_selectors_observed(
+            namespace,
+            principal.policies(),
+            identity_policies,
+            time,
+        )
     }
 
-    pub(super) fn policy_template_selectors(
+    pub(super) fn policy_template_selectors_observed(
         &self,
         namespace: &str,
         policies: &BTreeSet<String>,
         identity_policies: &BTreeSet<String>,
+        time: AuthorityTime,
     ) -> Result<BTreeSet<String>, AuthError> {
         let mut selectors = BTreeSet::new();
         for name in policies.iter().chain(identity_policies) {
@@ -85,7 +92,13 @@ impl AuthState {
                 .get(namespace)
                 .and_then(|entries| entries.get(name))
             {
+                if !policy.live(time)? {
+                    continue;
+                }
                 for rule in &policy.rules {
+                    if !rule.live(time)? {
+                        continue;
+                    }
                     for selector in acl_template::selectors(&rule.path)? {
                         selectors.insert(selector.to_owned());
                         if selectors.len() > acl_template::MAX_EFFECTIVE_SELECTORS {

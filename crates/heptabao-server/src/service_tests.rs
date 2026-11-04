@@ -56,6 +56,65 @@ pub(super) fn commit_legacy_state_fixture(
     })
 }
 
+// Explicit pre-141 input construction. The live predecessor must still be an
+// ordinary pre-141 writer; this cannot relabel an already activated 141 store.
+// Only this cfg(test) path constructs the old policy renderer/owner shape.
+pub(super) fn create_pre141_acl_policy_fixture(
+    service: &mut Service,
+    admin: &str,
+    name: &str,
+    source: &str,
+) -> Result<(), Box<dyn std::error::Error>> {
+    assert!(service.ha.is_none());
+    assert!(!name.is_empty() && !name.contains('/'));
+    let current = service.state.as_ref().ok_or("historical policy state")?;
+    assert!(current.schema > 0 && current.schema <= CURRENT_STATE_SCHEMA);
+    assert!(current.writer_schema() <= CURRENT_STATE_SCHEMA);
+    assert!(!current.auth.has_security_contract_state());
+    current
+        .validate_format()
+        .map_err(|_| "historical policy predecessor format")?;
+    let mut candidate = current.clone();
+    let actor = candidate
+        .auth
+        .authenticate(admin, 100)
+        .map_err(|_| "historical policy root authentication")?;
+    assert!(actor.is_root());
+    let path = format!("sys/policies/acl/{name}");
+    let absent = candidate
+        .auth
+        .handle(Some(&actor), "", "GET", &path, &json!({}), 100)
+        .map_err(|_| "historical policy lookup")?
+        .ok_or("historical policy route")?;
+    assert_eq!(absent.status, 404);
+    let created = candidate
+        .auth
+        .handle(
+            Some(&actor),
+            "",
+            "POST",
+            &path,
+            &json!({"policy":source}),
+            100,
+        )
+        .map_err(|_| "historical policy construction")?
+        .ok_or("historical policy route")?;
+    assert_eq!(created.status, 204);
+    candidate
+        .auth
+        .restore_pre141_security_owners_for_format_test();
+    assert!(!candidate.auth.has_security_contract_state());
+    candidate.schema = candidate.writer_schema();
+    assert!(candidate.schema <= CURRENT_STATE_SCHEMA);
+    candidate
+        .validate_format()
+        .map_err(|_| "historical policy candidate format")?;
+    commit_legacy_state_fixture(service, &candidate)
+        .map_err(|_| "historical policy fixture publication")?;
+    service.state = Some(candidate);
+    Ok(())
+}
+
 // Unit callers have no HTTP worker. Advance the actual native task once with
 // an explicit affine fixture clock; do not edit State, mint an actor, or retry
 // a failed cleanup effect. Empty namespace deletion may already be terminal.
@@ -139,7 +198,7 @@ fn legacy_fixture_constructor_preserves_real_writer_gate_and_rejects_protected_l
 -> Result<(), Box<dyn std::error::Error>> {
     let root = Root::new();
     let mut service = root.service()?;
-    bootstrap(&mut service)?;
+    bootstrap_pre141(&mut service)?;
     let original = service.state.clone().ok_or("state")?;
     let mut legacy = original.clone();
     legacy.schema = 60;
@@ -857,7 +916,7 @@ pub(super) fn bootstrap_approle(
 pub(super) fn bootstrap_legacy_auth_fixture(
     service: &mut Service,
 ) -> Result<(String, String), Box<dyn std::error::Error>> {
-    let result = bootstrap(service)?;
+    let result = bootstrap_pre141(service)?;
     let mut fixture = service.state.clone().ok_or("legacy fixture state")?;
     let mut wire = serde_json::to_value(&fixture.auth)?;
     for key in ["users", "roles", "mounted_users", "mounted_roles"] {
@@ -883,6 +942,87 @@ pub(super) fn bootstrap_legacy_auth_fixture(
     service.state = Some(fixture);
     Ok(result)
 }
+
+// Explicit old factory chosen before the first state is published. This does
+// not relabel, remove metadata from, or otherwise downgrade an existing owner.
+// The original initialization body still owns validation, the parent lock,
+// staging, AEAD, schema selection, publication and recovery handling.
+pub(super) fn bootstrap_pre141_unmounted(
+    service: &mut Service,
+) -> Result<(String, String), Box<dyn std::error::Error>> {
+    if service.initialized()
+        || service.state.is_some()
+        || service.seal.is_some()
+        || service.durable.is_some()
+        || service.durable_profile.is_some()
+        || service.ha.is_some()
+        || service.postgres_durable.is_some()
+        || service.recovery_required
+        || postgres_pending_exists(&service.data_dir)?
+    {
+        return Err("pre-141 initialization requires an untouched ordinary service".into());
+    }
+    #[cfg(target_os = "linux")]
+    if service.wrapper_barrier_selected() {
+        return Err("pre-141 initialization cannot select a Wrapper consumer".into());
+    }
+    #[cfg(feature = "native-v6-storage")]
+    if service.native_storage_profile.is_some() || service.native_candidate_profile.is_some() {
+        return Err("pre-141 initialization cannot select a native storage profile".into());
+    }
+    let (response, _) = service.initialize_with_wrapper_material_and_auth_factory(
+        &json!({"secret_shares": 1, "secret_threshold": 1}),
+        100,
+        "explicit-pre141-first-publication-fixture",
+        Service::import_postgres_initialization,
+        None,
+        InitialAuthFactory::Pre141Fixture,
+    );
+    assert_eq!(response.status, 200);
+    let key = response.body["keys_base64"][0]
+        .as_str()
+        .ok_or("missing old factory key")?
+        .to_owned();
+    let token = response.body["root_token"]
+        .as_str()
+        .ok_or("missing old factory token")?
+        .to_owned();
+    assert!(service.state.is_none());
+    assert_eq!(
+        call(service, "PUT", "sys/unseal", "", json!({"key": key})).status,
+        200
+    );
+    let state = service.state.as_ref().ok_or("old factory state")?;
+    assert!(state.schema > 0 && state.schema <= CURRENT_STATE_SCHEMA);
+    assert!(state.writer_schema() <= CURRENT_STATE_SCHEMA);
+    assert!(!state.auth.has_security_contract_state());
+    state
+        .validate_format()
+        .map_err(|_| "old factory publication format")?;
+    Ok((key, token))
+}
+
+// Historical migration fixtures select the old unpublished factory explicitly.
+// These wrappers share only the existing mount provisioning calls; the ordinary
+// bootstrap/bootstrap_userpass/bootstrap_approle helpers keep the Current path.
+pub(super) fn bootstrap_pre141(
+    service: &mut Service,
+) -> Result<(String, String), Box<dyn std::error::Error>> {
+    let result = bootstrap_pre141_unmounted(service)?;
+    provision_fixture_mounts(service, "", &result.1);
+    Ok(result)
+}
+
+pub(super) fn bootstrap_pre141_approle(
+    service: &mut Service,
+) -> Result<(String, String), Box<dyn std::error::Error>> {
+    let result = bootstrap_pre141(service)?;
+    enable_fixture_auth_mount(service, "", &result.1, "approle");
+    Ok(result)
+}
+
+#[path = "service_pre141_fixture_tests.rs"]
+mod pre141_fixture_tests;
 
 pub(super) fn bootstrap_unmounted(
     service: &mut Service,

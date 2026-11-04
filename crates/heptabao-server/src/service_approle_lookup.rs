@@ -124,6 +124,7 @@ impl Service {
         if state.auth.has_control_group_state()
             || request.wrap_ttl_seconds.is_some()
             || state.has_token_api_precision_state()
+            || state.auth.has_policy_expiration_state()
             || state.engines.has_kubernetes_opaque_artifact_state()
             || state.engines.has_lease_state()
             || state.engines.has_local_pki_crl_state()

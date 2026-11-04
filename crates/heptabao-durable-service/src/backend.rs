@@ -23,7 +23,8 @@ mod immutable_cipher_store;
 use immutable_cipher_store::ImmutableLease;
 pub use immutable_cipher_store::{
     BlobLocator, ImmutableBlobProfile, ImmutableBlobReadPin, ImmutableBlobStage,
-    MAX_IMMUTABLE_CIPHERTEXT_BYTES, PinReadError,
+    MAX_IMMUTABLE_CIPHERTEXT_BYTES, PinReadError, PreparedImmutableReconciliation,
+    PreparedImmutableRetirement,
 };
 
 mod restore;
@@ -121,9 +122,19 @@ impl fmt::Display for BackendError {
 
 impl std::error::Error for BackendError {}
 
+/// Authenticates one selected ciphertext under the caller's borrowed authority.
+/// Keep the reference and trait object bound together, as in `&mut dyn FnMut`.
+pub type ImmutableCiphertextAuthenticator<'a> =
+    &'a mut (dyn FnMut(usize, &[u8]) -> Result<(), BackendError> + 'a);
+
 /// A backend for the three existing durable-service files.
 pub trait DurableBackend: Send {
     fn verify(&self) -> Result<(), BackendError>;
+    /// Only an actual borrowed FileBackend may opt in. No remote/sessionful
+    /// backend or default adapter acquires shared-read ownership by inference.
+    fn immutable_file_read_backend(&self) -> Option<&FileBackend> {
+        None
+    }
     /// Physical immutable object support only. A profile is not Service admission.
     fn immutable_blob_profile(&self) -> Result<ImmutableBlobProfile, BackendError> {
         Err(BackendError::Unsupported)
@@ -158,6 +169,19 @@ pub trait DurableBackend: Send {
             .map(|(locator, bytes)| self.stage_immutable_ciphertext_checked(*locator, bytes, gate))
             .collect()
     }
+    /// Strict new-only publication. Some contains only actual synchronized
+    /// new pins, with the original physical synchronization witness retained.
+    /// None denotes only a classified raced destination and returns no pins;
+    /// unadmitted new leaves may remain and callers must not retry implicitly.
+    /// Custom backends must implement this proof explicitly. The ordinary
+    /// per-object fallback cannot manufacture a new synchronization witness.
+    fn stage_new_immutable_ciphertext_batch_checked(
+        &mut self,
+        _objects: &[(BlobLocator, &[u8])],
+        _gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Option<Vec<ImmutableBlobReadPin>>, BackendError> {
+        Err(BackendError::Unsupported)
+    }
     /// Keep the original full owner gate at each physical object/link boundary;
     /// an optional independent I/O gate handles bounded write syscall deadlines.
     /// Custom backends safely fall back to the existing full gate everywhere.
@@ -188,6 +212,60 @@ pub trait DurableBackend: Send {
         _exact_len: usize,
         _gate: &mut dyn FnMut() -> Result<(), BackendError>,
     ) -> Result<Option<ImmutableBlobReadPin>, BackendError> {
+        Err(BackendError::Unsupported)
+    }
+    /// Existing-only bounded reuse. Each Some retains its original pre-sync
+    /// fd/metadata/digest through a real per-file barrier and the common real
+    /// directory barrier. None is initial ENOENT only. No provisional pin may
+    /// escape and no new publication fallback is implied by this capability.
+    fn reuse_immutable_ciphertext_batch_checked(
+        &mut self,
+        _objects: &[(BlobLocator, usize)],
+        _gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Vec<Option<ImmutableBlobReadPin>>, BackendError> {
+        Err(BackendError::Unsupported)
+    }
+    /// Prepare original fd witnesses only under complete read-pin quiescence.
+    fn prepare_immutable_retirement(
+        &mut self,
+        _objects: &[(BlobLocator, usize)],
+        _authenticate: ImmutableCiphertextAuthenticator<'_>,
+        _gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<PreparedImmutableRetirement, BackendError> {
+        Err(BackendError::Unsupported)
+    }
+    /// Requires the caller's confirmed authenticated retirement Apply.
+    fn retire_prepared_immutable_ciphertexts(
+        &mut self,
+        _prepared: PreparedImmutableRetirement,
+        _authenticate: ImmutableCiphertextAuthenticator<'_>,
+        _gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<(), BackendError> {
+        Err(BackendError::Unsupported)
+    }
+    fn confirm_immutable_retirement_absent(
+        &mut self,
+        _objects: &[BlobLocator],
+        _gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<(), BackendError> {
+        Err(BackendError::Unsupported)
+    }
+    /// Fresh old-intent reconciliation admission. Existing ciphertext must
+    /// match its authenticated old digest and a new descriptor witness.
+    fn prepare_immutable_reconciliation(
+        &mut self,
+        _objects: &[(BlobLocator, usize, [u8; 32])],
+        _authenticate: ImmutableCiphertextAuthenticator<'_>,
+        _gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<PreparedImmutableReconciliation, BackendError> {
+        Err(BackendError::Unsupported)
+    }
+    fn finish_prepared_immutable_reconciliation(
+        &mut self,
+        _prepared: PreparedImmutableReconciliation,
+        _authenticate: ImmutableCiphertextAuthenticator<'_>,
+        _gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<(), BackendError> {
         Err(BackendError::Unsupported)
     }
     /// Confirm current ownership before an external metadata publication.
@@ -272,6 +350,51 @@ pub trait DurableBackend: Send {
 // fence release on drop; concrete callers can still use their implementation's
 // explicit `close` method through `create_new_with_backend`.
 impl DurableBackend for Box<dyn DurableBackend> {
+    fn prepare_immutable_reconciliation(
+        &mut self,
+        objects: &[(BlobLocator, usize, [u8; 32])],
+        authenticate: ImmutableCiphertextAuthenticator<'_>,
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<PreparedImmutableReconciliation, BackendError> {
+        self.as_mut()
+            .prepare_immutable_reconciliation(objects, authenticate, gate)
+    }
+    fn finish_prepared_immutable_reconciliation(
+        &mut self,
+        prepared: PreparedImmutableReconciliation,
+        authenticate: ImmutableCiphertextAuthenticator<'_>,
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<(), BackendError> {
+        self.as_mut()
+            .finish_prepared_immutable_reconciliation(prepared, authenticate, gate)
+    }
+
+    fn prepare_immutable_retirement(
+        &mut self,
+        objects: &[(BlobLocator, usize)],
+        authenticate: ImmutableCiphertextAuthenticator<'_>,
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<PreparedImmutableRetirement, BackendError> {
+        self.as_mut()
+            .prepare_immutable_retirement(objects, authenticate, gate)
+    }
+    fn retire_prepared_immutable_ciphertexts(
+        &mut self,
+        prepared: PreparedImmutableRetirement,
+        authenticate: ImmutableCiphertextAuthenticator<'_>,
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<(), BackendError> {
+        self.as_mut()
+            .retire_prepared_immutable_ciphertexts(prepared, authenticate, gate)
+    }
+    fn confirm_immutable_retirement_absent(
+        &mut self,
+        objects: &[BlobLocator],
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<(), BackendError> {
+        self.as_mut()
+            .confirm_immutable_retirement_absent(objects, gate)
+    }
     fn verify(&self) -> Result<(), BackendError> {
         self.as_ref().verify()
     }
@@ -304,6 +427,14 @@ impl DurableBackend for Box<dyn DurableBackend> {
         self.as_mut()
             .stage_immutable_ciphertext_batch_checked(objects, gate)
     }
+    fn stage_new_immutable_ciphertext_batch_checked(
+        &mut self,
+        objects: &[(BlobLocator, &[u8])],
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Option<Vec<ImmutableBlobReadPin>>, BackendError> {
+        self.as_mut()
+            .stage_new_immutable_ciphertext_batch_checked(objects, gate)
+    }
     fn stage_immutable_ciphertext_batch_with_io_gate(
         &mut self,
         objects: &[(BlobLocator, &[u8])],
@@ -329,9 +460,21 @@ impl DurableBackend for Box<dyn DurableBackend> {
         self.as_mut()
             .reuse_immutable_ciphertext_checked(locator, exact_len, gate)
     }
+    fn reuse_immutable_ciphertext_batch_checked(
+        &mut self,
+        objects: &[(BlobLocator, usize)],
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Vec<Option<ImmutableBlobReadPin>>, BackendError> {
+        self.as_mut()
+            .reuse_immutable_ciphertext_batch_checked(objects, gate)
+    }
 
     fn verify_live_ownership(&mut self) -> Result<(), BackendError> {
         self.as_mut().verify_live_ownership()
+    }
+
+    fn immutable_file_read_backend(&self) -> Option<&FileBackend> {
+        self.as_ref().immutable_file_read_backend()
     }
 
     fn load(&mut self) -> Result<BackendBundle, BackendError> {
@@ -397,9 +540,10 @@ impl DurableBackend for Box<dyn DurableBackend> {
 pub struct FileBackend {
     directory: ExclusiveDirectory,
     immutable_lease: std::sync::Arc<ImmutableLease>,
-    // The writer-fenced root was scrubbed on open. Only a completed batch may
-    // certify all reserved temporary names as consumed; ANY subsequent error
-    // makes the next batch repeat the full recovery cleanup.
+    retirement_instance: std::sync::Arc<()>,
+    // The writer-fenced root was scrubbed on open. A completed single or batch
+    // stage consumed its reserved temporary names; ANY subsequent stage error
+    // makes the next stage repeat the full recovery cleanup.
     immutable_batch_temps_known_clean: bool,
     #[cfg(test)]
     restore_fail_after: Option<usize>,
@@ -426,6 +570,7 @@ impl FileBackend {
         Ok(Self {
             directory,
             immutable_lease: std::sync::Arc::new(ImmutableLease::new()),
+            retirement_instance: std::sync::Arc::new(()),
             immutable_batch_temps_known_clean: true,
             #[cfg(test)]
             restore_fail_after: None,
@@ -454,6 +599,7 @@ impl FileBackend {
         Ok(Self {
             directory,
             immutable_lease: std::sync::Arc::new(ImmutableLease::new()),
+            retirement_instance: std::sync::Arc::new(()),
             immutable_batch_temps_known_clean: true,
             #[cfg(test)]
             restore_fail_after: None,
@@ -607,6 +753,50 @@ impl FileBackend {
 }
 
 impl DurableBackend for FileBackend {
+    fn immutable_file_read_backend(&self) -> Option<&FileBackend> {
+        Some(self)
+    }
+
+    fn prepare_immutable_reconciliation(
+        &mut self,
+        objects: &[(BlobLocator, usize, [u8; 32])],
+        authenticate: ImmutableCiphertextAuthenticator<'_>,
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<PreparedImmutableReconciliation, BackendError> {
+        FileBackend::prepare_immutable_reconciliation(self, objects, authenticate, gate)
+    }
+    fn finish_prepared_immutable_reconciliation(
+        &mut self,
+        prepared: PreparedImmutableReconciliation,
+        authenticate: ImmutableCiphertextAuthenticator<'_>,
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<(), BackendError> {
+        FileBackend::finish_prepared_immutable_reconciliation(self, prepared, authenticate, gate)
+    }
+
+    fn prepare_immutable_retirement(
+        &mut self,
+        objects: &[(BlobLocator, usize)],
+        authenticate: ImmutableCiphertextAuthenticator<'_>,
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<PreparedImmutableRetirement, BackendError> {
+        FileBackend::prepare_immutable_retirement(self, objects, authenticate, gate)
+    }
+    fn retire_prepared_immutable_ciphertexts(
+        &mut self,
+        prepared: PreparedImmutableRetirement,
+        authenticate: ImmutableCiphertextAuthenticator<'_>,
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<(), BackendError> {
+        FileBackend::retire_prepared_immutable_ciphertexts(self, prepared, authenticate, gate)
+    }
+    fn confirm_immutable_retirement_absent(
+        &mut self,
+        objects: &[BlobLocator],
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<(), BackendError> {
+        FileBackend::confirm_immutable_retirement_absent(self, objects, gate)
+    }
     fn verify(&self) -> Result<(), BackendError> {
         self.verify()
     }
@@ -636,6 +826,13 @@ impl DurableBackend for FileBackend {
     ) -> Result<Vec<ImmutableBlobStage>, BackendError> {
         FileBackend::stage_immutable_ciphertext_batch_checked(self, objects, gate)
     }
+    fn stage_new_immutable_ciphertext_batch_checked(
+        &mut self,
+        objects: &[(BlobLocator, &[u8])],
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Option<Vec<ImmutableBlobReadPin>>, BackendError> {
+        FileBackend::stage_new_immutable_ciphertext_batch_checked(self, objects, gate)
+    }
     fn stage_immutable_ciphertext_batch_with_io_gate(
         &mut self,
         objects: &[(BlobLocator, &[u8])],
@@ -660,6 +857,13 @@ impl DurableBackend for FileBackend {
         gate: &mut dyn FnMut() -> Result<(), BackendError>,
     ) -> Result<Option<ImmutableBlobReadPin>, BackendError> {
         FileBackend::reuse_immutable_ciphertext_checked(self, locator, exact_len, gate)
+    }
+    fn reuse_immutable_ciphertext_batch_checked(
+        &mut self,
+        objects: &[(BlobLocator, usize)],
+        gate: &mut dyn FnMut() -> Result<(), BackendError>,
+    ) -> Result<Vec<Option<ImmutableBlobReadPin>>, BackendError> {
+        FileBackend::reuse_immutable_ciphertext_batch_checked(self, objects, gate)
     }
 
     fn load(&mut self) -> Result<BackendBundle, BackendError> {

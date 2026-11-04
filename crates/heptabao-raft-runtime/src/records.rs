@@ -26,10 +26,10 @@ pub(crate) const PRODUCTION_CLIENT: &str = "heptabao-production-ha";
 
 // A staged V6 ciphertext chunk is NOT an acknowledged V6 root. The feature
 // is off by default and legacy V5 PublishedRecordRoot refuses this kind.
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 const MAX_NATIVE_V6_CIPHERTEXT_CHUNK_BYTES: usize = 256 * 1024;
 
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 fn native_v6_intent_digest(payload: &[u8]) -> RecordObjectId {
     use sha2::{Digest, Sha256};
     let mut hash = Sha256::new();
@@ -39,7 +39,7 @@ fn native_v6_intent_digest(payload: &[u8]) -> RecordObjectId {
     hash.finalize().into()
 }
 
-#[cfg(feature = "experimental-v6-raft-objects")]
+#[cfg(feature = "native-v6-raft-objects")]
 fn native_v6_chunk_digest(ciphertext: &[u8]) -> RecordObjectId {
     use sha2::{Digest, Sha256};
     let mut hash = Sha256::new();
@@ -58,10 +58,10 @@ pub enum RecordObjectKind {
     OwnerChunk,
     PackedLeaf,
     // Private staging only. No V6 Raft root publication is enabled.
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     NativeV6CiphertextChunk,
     // Feature-only Raft-staged metadata: NOT a V6 root CAS or client ACK.
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     NativeV6CommitIntent,
 }
 #[derive(Clone, Eq, PartialEq, Serialize, Deserialize)]
@@ -102,29 +102,37 @@ impl SealedRecordObject {
     /// Stage one opaque V6 ciphertext chunk in the existing replicated object
     /// store. Its domain-separated digest authenticates exact staged bytes,
     /// NOT their barrier/actor provenance or Raft root commitment.
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub fn new_native_v6_ciphertext_chunk(ciphertext: Vec<u8>) -> Result<Self, RaftRuntimeError> {
         if !(25..=MAX_NATIVE_V6_CIPHERTEXT_CHUNK_BYTES).contains(&ciphertext.len()) {
             return Err(RaftRuntimeError::RecordRejected(RecordRejection::Invalid));
         }
         let bytes = u32::try_from(ciphertext.len())
             .map_err(|_| RaftRuntimeError::RecordRejected(RecordRejection::Budget))?;
-        Self::new(
-            RecordObjectRef {
-                id: native_v6_chunk_digest(&ciphertext),
+        // The owned bytes cannot change between hashing and validation: no
+        // borrow, callback or I/O escapes this constructor. Reuse only this
+        // fresh digest; every shape and size predicate still runs below.
+        let digest = native_v6_chunk_digest(&ciphertext);
+        let value = Self {
+            reference: RecordObjectRef {
+                id: digest,
                 kind: RecordObjectKind::NativeV6CiphertextChunk,
                 encoded_bytes: bytes,
                 record_count: 0,
                 payload_bytes: u64::from(bytes),
             },
-            Vec::new(),
-            ciphertext,
-        )
+            children: Vec::new(),
+            sealed: ciphertext,
+        };
+        value
+            .validate_with_fresh_native_ciphertext_digest(Some(digest))
+            .map_err(RaftRuntimeError::RecordRejected)?;
+        Ok(value)
     }
     /// Raft-stage a bounded, typed immutable V6 commit-intent marker. This
     /// only records metadata in the Raft application object log; it never
     /// publishes a V6 root or attests that remote ciphertext exists.
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub fn new_native_v6_commit_intent(
         intent: crate::NativeV6CommitIntent,
     ) -> Result<Self, RaftRuntimeError> {
@@ -166,7 +174,56 @@ impl SealedRecordObject {
     pub fn sealed(&self) -> &[u8] {
         &self.sealed
     }
+    /// Transfer the owned ciphertext bytes without creating a durability or
+    /// authority proof. The caller must keep its original validation gates.
+    #[cfg(feature = "native-v6-raft-objects")]
+    pub(crate) fn into_sealed(self) -> Vec<u8> {
+        self.sealed
+    }
+    // Base64 without padding contains no JSON-escaped bytes. Counting the
+    // actual reference with an empty sealed payload therefore gives the exact
+    // serialized size after adding the checked base64 length. This changes
+    // only admission accounting: shape/digest validation above and every
+    // serialized byte, physical readback and local durability gate stay intact.
+    fn validation_json_size(&self) -> Result<usize, RecordRejection> {
+        #[cfg(feature = "native-v6-raft-objects")]
+        if self.reference.kind == RecordObjectKind::NativeV6CiphertextChunk
+            && self.children.is_empty()
+        {
+            let encoded_payload_bytes = self
+                .sealed
+                .len()
+                .checked_mul(4)
+                .and_then(|bytes| bytes.checked_add(2))
+                .map(|bytes| bytes / 3)
+                .ok_or(RecordRejection::Invalid)?;
+            let skeleton = Self {
+                reference: self.reference.clone(),
+                children: Vec::new(),
+                sealed: Vec::new(),
+            };
+            let exact = json_size(&skeleton)?
+                .checked_add(encoded_payload_bytes)
+                .ok_or(RecordRejection::Invalid)?;
+            // HBHA-JSON-COUNT-TEST-ONLY-BEGIN
+            #[cfg(all(test, feature = "native-v6-raft-objects"))]
+            native_v6_json_size_tests::record_counted_size(exact);
+            // HBHA-JSON-COUNT-TEST-ONLY-END
+            return Ok(exact);
+        }
+        json_size(self)
+    }
     fn validate(&self) -> Result<(), RecordRejection> {
+        self.validate_with_fresh_native_ciphertext_digest(None)
+    }
+    // Only new_native_v6_ciphertext_chunk may supply a digest that it just
+    // computed from this same owned Vec. All expected-reference, deserialized
+    // and state-machine validation continues through validate() with None.
+    // This is a pure computation reuse, never a physical-read or fsync proof.
+    fn validate_with_fresh_native_ciphertext_digest(
+        &self,
+        _native_ciphertext_digest: Option<RecordObjectId>,
+    ) -> Result<(), RecordRejection> {
         if self.sealed.is_empty()
             || self.sealed.len() > self.reference.encoded_bytes as usize + 256
             || self.sealed.len() > MAX_RECORD_COMMAND_BYTES
@@ -233,7 +290,7 @@ impl SealedRecordObject {
                                     <= u64::from(self.reference.encoded_bytes.saturating_sub(27))
                         })
             }
-            #[cfg(feature = "experimental-v6-raft-objects")]
+            #[cfg(feature = "native-v6-raft-objects")]
             NativeV6CommitIntent => {
                 self.children.is_empty()
                     && self.reference.record_count == 0
@@ -243,14 +300,16 @@ impl SealedRecordObject {
                     && self.reference.id == native_v6_intent_digest(&self.sealed)
                     && crate::NativeV6CommitIntent::decode(&self.sealed).is_ok()
             }
-            #[cfg(feature = "experimental-v6-raft-objects")]
+            #[cfg(feature = "native-v6-raft-objects")]
             NativeV6CiphertextChunk => {
                 self.children.is_empty()
                     && self.reference.record_count == 0
                     && (25..=MAX_NATIVE_V6_CIPHERTEXT_CHUNK_BYTES).contains(&self.sealed.len())
                     && u64::from(self.reference.encoded_bytes) == self.reference.payload_bytes
                     && self.reference.payload_bytes == self.sealed.len() as u64
-                    && self.reference.id == native_v6_chunk_digest(&self.sealed)
+                    && self.reference.id
+                        == _native_ciphertext_digest
+                            .unwrap_or_else(|| native_v6_chunk_digest(&self.sealed))
             }
             Branch => {
                 !self.children.is_empty()
@@ -269,7 +328,8 @@ impl SealedRecordObject {
             }
         };
         if !valid
-            || json_size(self)?
+            || self
+                .validation_json_size()?
                 .checked_add(128)
                 .is_none_or(|n| n > MAX_RECORD_COMMAND_BYTES)
         {
@@ -449,25 +509,33 @@ pub enum RecordRejection {
 }
 #[derive(Clone, Serialize, Deserialize)]
 pub(crate) enum RecordCommand {
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     EnrollNativeV6 {
         enrollment: crate::v6_root_publication::NativeV6EnrollmentCommand,
     },
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     PublishNativeV6 {
         root: crate::v6_root_publication::NativeV6RootCommand,
     },
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     BeginNativeV6EpochRestore {
         pending: crate::v6_epoch_restore::NativeV6EpochRestoreCommand,
     },
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     CancelNativeV6EpochRestore {
-        pending: crate::v6_epoch_restore::NativeV6PendingEpochRestore,
+        pending: Box<crate::v6_epoch_restore::NativeV6PendingEpochRestore>,
     },
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     PublishNativeV6EpochRestore {
-        publication: crate::v6_epoch_restore::NativeV6EpochRestorePublication,
+        publication: Box<crate::v6_epoch_restore::NativeV6EpochRestorePublication>,
+    },
+    #[cfg(feature = "native-v6-raft-objects")]
+    RetireNativeV6Intents {
+        retirement: crate::v6_retention::NativeV6IntentRetirementCommand,
+    },
+    #[cfg(feature = "native-v6-raft-objects")]
+    ActivateNativeV6RetainedRoots {
+        activation: crate::v6_retained_roots::NativeV6RetainedRootActivation,
     },
     RetainLegacyChunks {
         expected_manifest: LegacyStatusIdentity,
@@ -487,16 +555,22 @@ pub(crate) enum RecordCommand {
 impl fmt::Debug for RecordCommand {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str(match self {
-            #[cfg(feature = "experimental-v6-raft-objects")]
+            #[cfg(feature = "native-v6-raft-objects")]
             Self::EnrollNativeV6 { .. } => "EnrollNativeV6([REDACTED])",
-            #[cfg(feature = "experimental-v6-raft-objects")]
+            #[cfg(feature = "native-v6-raft-objects")]
             Self::PublishNativeV6 { .. } => "PublishNativeV6([REDACTED])",
-            #[cfg(feature = "experimental-v6-raft-objects")]
+            #[cfg(feature = "native-v6-raft-objects")]
             Self::BeginNativeV6EpochRestore { .. } => "BeginNativeV6EpochRestore([REDACTED])",
-            #[cfg(feature = "experimental-v6-raft-objects")]
+            #[cfg(feature = "native-v6-raft-objects")]
             Self::CancelNativeV6EpochRestore { .. } => "CancelNativeV6EpochRestore([REDACTED])",
-            #[cfg(feature = "experimental-v6-raft-objects")]
+            #[cfg(feature = "native-v6-raft-objects")]
             Self::PublishNativeV6EpochRestore { .. } => "PublishNativeV6EpochRestore([REDACTED])",
+            #[cfg(feature = "native-v6-raft-objects")]
+            Self::RetireNativeV6Intents { .. } => "RetireNativeV6Intents([REDACTED])",
+            #[cfg(feature = "native-v6-raft-objects")]
+            Self::ActivateNativeV6RetainedRoots { .. } => {
+                "ActivateNativeV6RetainedRoots([REDACTED])"
+            }
             Self::RetainLegacyChunks { .. } => "RetainLegacyChunks([REDACTED])",
             Self::Stage { .. } => "Stage([REDACTED])",
             Self::Publish { .. } => "Publish([REDACTED])",
@@ -535,6 +609,10 @@ pub(crate) fn json_size(value: &impl Serialize) -> Result<usize, RecordRejection
     struct Counter(usize);
     impl std::io::Write for Counter {
         fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
+            // HBHA-JSON-COUNT-TEST-ONLY-BEGIN
+            #[cfg(all(test, feature = "native-v6-raft-objects"))]
+            native_v6_json_size_tests::record_serialized_bytes(bytes.len());
+            // HBHA-JSON-COUNT-TEST-ONLY-END
             self.0 = self
                 .0
                 .checked_add(bytes.len())
@@ -547,6 +625,10 @@ pub(crate) fn json_size(value: &impl Serialize) -> Result<usize, RecordRejection
     }
     let mut counter = Counter(0);
     serde_json::to_writer(&mut counter, value).map_err(|_| RecordRejection::Invalid)?;
+    // HBHA-JSON-COUNT-TEST-ONLY-BEGIN
+    #[cfg(all(test, feature = "native-v6-raft-objects"))]
+    native_v6_json_size_tests::record_counted_size(counter.0);
+    // HBHA-JSON-COUNT-TEST-ONLY-END
     Ok(counter.0)
 }
 pub(crate) fn status_entry_size(client: &str, status: &str) -> Result<usize, RecordRejection> {
@@ -742,7 +824,7 @@ impl RecordState {
     }
     /// Check one complete immutable V6 intent by canonical object ID.
     /// Used for validating applied-log provenance stored in Raft snapshots.
-    #[cfg(feature = "experimental-v6-raft-objects")]
+    #[cfg(feature = "native-v6-raft-objects")]
     pub(crate) fn has_valid_v6_intent(&self, id: &str) -> Result<bool, RecordRejection> {
         let Some(object) = self.objects.get(id) else {
             return Ok(false);
@@ -937,11 +1019,14 @@ impl RecordState {
             self.cache = Some(self.build_cache(legacy_bytes)?);
         }
         match command {
-            #[cfg(feature = "experimental-v6-raft-objects")]
-            RecordCommand::EnrollNativeV6 { .. } | RecordCommand::PublishNativeV6 { .. }
+            #[cfg(feature = "native-v6-raft-objects")]
+            RecordCommand::EnrollNativeV6 { .. }
+            | RecordCommand::PublishNativeV6 { .. }
             | RecordCommand::BeginNativeV6EpochRestore { .. }
             | RecordCommand::CancelNativeV6EpochRestore { .. }
-            | RecordCommand::PublishNativeV6EpochRestore { .. } => {
+            | RecordCommand::PublishNativeV6EpochRestore { .. }
+            | RecordCommand::RetireNativeV6Intents { .. }
+            | RecordCommand::ActivateNativeV6RetainedRoots { .. } => {
                 // Requires the actual applied LogId and membership. The outer
                 // state machine handles it before the V5 object machinery.
                 Err(RecordRejection::Invalid)
@@ -1058,3 +1143,8 @@ impl RecordState {
         }
     }
 }
+// HBHA-JSON-COUNT-TEST-ONLY-BEGIN
+#[cfg(all(test, feature = "native-v6-raft-objects"))]
+#[path = "record_native_v6_json_size_tests.rs"]
+mod native_v6_json_size_tests;
+// HBHA-JSON-COUNT-TEST-ONLY-END

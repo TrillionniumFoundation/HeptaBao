@@ -149,6 +149,11 @@ impl Service {
             return Err(rejected());
         }
         let denial = RefCell::new(None);
+        // Reuse only the plan's request-local deterministic payload semantics,
+        // first learned during live-plan validation. Staged installation,
+        // typed publication and local installation all retain fresh source,
+        // AEAD/address, current format permission, Actor and custody checks.
+        let payload_validation = &plan.payload_validation;
         #[cfg(feature = "private-ha-forward-diagnostic")]
         let phase = NativeHaPhaseTimer::start(
             "service_ha_publication",
@@ -250,14 +255,14 @@ impl Service {
                             actor_only().map_err(|_| ServiceError::BarrierFailure)
                         })
                         .map_err(|_| NativeV6CodecError::Gate)?;
-                    native_v6_ha_objects::prepare_native_v6_ha_objects(
+                    native_v6_ha_objects::prepare_native_v6_ha_objects_with_payload_validation(
                         &plan,
-                        codec,
+                        native_v6_ha_objects::NativeV6ObjectStorage { codec, store },
                         enrollment,
-                        store,
                         Some(&source),
                         Some(previous),
                         &mut || actor_only(),
+                        Some(payload_validation),
                     )
                 },
                 &mut local_gate,
@@ -306,9 +311,38 @@ impl Service {
                     sum.saturating_add(graph.logical_payload_bytes)
                 }),
             );
-            self.sync_native_v6_from_ha_checked(&ha, committed, &mut |_| {
+            #[cfg(test)]
+            let mut observed_install_entry = false;
+            let mut install_actor = |_: &AuthState| {
+                #[cfg(test)]
+                if !observed_install_entry
+                    && native_kv2_large::local_install_observer::matches_import(candidate_identity)
+                {
+                    // Observe only the exact prepared import, after proving
+                    // this same original Actor is actually live at entry. The
+                    // unchanged check below must reject it if the observer
+                    // waits past its real expiry; no authority is replaced.
+                    original_actor(&source_auth)?;
+                    observed_install_entry = true;
+                    native_kv2_large::local_install_observer::entered(
+                        candidate_identity,
+                        deadline.instant(),
+                    );
+                }
                 original_actor(&source_auth)
-            })?;
+            };
+            if migration {
+                self.sync_native_v6_from_ha_checked(&ha, committed, &mut install_actor)?;
+            } else {
+                self.sync_published_native_v6_local_plan_checked(
+                    &ha,
+                    committed,
+                    &plan,
+                    &installed_candidate,
+                    payload_validation,
+                    &mut install_actor,
+                )?;
+            }
             #[cfg(feature = "private-ha-forward-diagnostic")]
             phase.finish(true);
             let installed = self.state.as_mut().ok_or_else(rejected)?;

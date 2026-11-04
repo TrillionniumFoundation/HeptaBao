@@ -4,8 +4,37 @@
 use super::*;
 use std::sync::{Arc, Weak};
 
+#[path = "immutable_source_parallel.rs"]
+mod parallel;
+pub use parallel::FileImmutableSourceReader;
+
+#[path = "immutable_source_batch.rs"]
+mod batch;
+#[path = "immutable_retirement.rs"]
+mod retirement;
 #[path = "immutable_source_reuse.rs"]
 mod reuse;
+pub use retirement::{
+    IMMUTABLE_RETIREMENT_RESOURCE, ImmutableRetirementOutcome, ImmutableRetirementRequest,
+    ImmutableRetirementStatus, NativeHaLocalRetentionOwner, NativeHaLocalRetirementBoundary,
+};
+
+#[path = "native_ha_retirement_ledger.rs"]
+mod ha_shared_retirement;
+pub use ha_shared_retirement::{
+    NATIVE_HA_SHARED_RETIREMENT_RESOURCE, NativeHaSharedCompletedOwner,
+    NativeHaSharedPhysicalOutcome, NativeHaSharedPhysicalOwner, NativeHaSharedRetirementOutcome,
+    NativeHaSharedRetirementRequest, NativeHaSharedRetirementStatus, NativeHaSharedSelection,
+};
+
+#[path = "native_ha_intent_retirement_ledger.rs"]
+mod ha_intent_retirement;
+pub use ha_intent_retirement::{
+    NATIVE_HA_INTENT_RETIREMENT_RESOURCE, NativeHaIntentCommit, NativeHaIntentCompletedOwner,
+    NativeHaIntentOwner, NativeHaIntentReconciliationOutcome, NativeHaIntentReconciliationOwner,
+    NativeHaIntentReconciliationRequest, NativeHaIntentResolution, NativeHaIntentRetirementOutcome,
+    NativeHaIntentRetirementRequest, NativeHaIntentRetirementStatus, NativeHaIntentSelection,
+};
 
 const MAX_SESSION_ROOT_BYTES: usize = 1024 * 1024;
 const MAX_OBJECT_CONTEXT_BYTES: usize = 4096;
@@ -31,6 +60,10 @@ impl fmt::Debug for ImmutableSourceSession {
     }
 }
 impl ImmutableSourceSession {
+    /// Maximum sum of exact ciphertext lengths for one source staging batch.
+    /// The per-object profile and the FileBackend's 32-object limit also apply.
+    pub const MAX_BATCH_CIPHERTEXT_BYTES: usize = 4 * 1024 * 1024;
+
     pub fn generation(&self) -> u64 {
         self.generation
     }
@@ -108,6 +141,15 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         Ok(session)
     }
 
+    /// Recheck only this actual owner's live immutable source binding. This
+    /// grants no object read, principal, publication or restore authority.
+    pub fn verify_immutable_source_session(
+        &mut self,
+        session: &ImmutableSourceSession,
+    ) -> Result<(), ServiceError> {
+        self.check_immutable_source_session(session)
+    }
+
     pub(super) fn check_immutable_source_session(
         &mut self,
         session: &ImmutableSourceSession,
@@ -150,6 +192,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
     ) -> Result<ImmutableBlobReadPin, ServiceError> {
         before()?;
         self.check_immutable_source_session(session)?;
+        self.ensure_immutable_locator_not_retiring(locator)?;
         if locator.store_id() != session.store_id
             || context.is_empty()
             || context.len() > MAX_OBJECT_CONTEXT_BYTES

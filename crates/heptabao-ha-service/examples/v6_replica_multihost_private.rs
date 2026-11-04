@@ -41,9 +41,11 @@ fn roots(dir: &Path) -> Result<RootCertStore, Box<dyn Error>> {
 }
 fn make_server_tls(dir: &Path) -> Result<Arc<ServerConfig>, Box<dyn Error>> {
     let provider = Arc::new(rustls::crypto::ring::default_provider());
-    let mut config = ServerConfig::builder_with_provider(provider)
+    let mut config = ServerConfig::builder_with_provider(provider.clone())
         .with_safe_default_protocol_versions()?
-        .with_client_cert_verifier(WebPkiClientVerifier::builder(Arc::new(roots(dir)?)).build()?)
+        .with_client_cert_verifier(
+            WebPkiClientVerifier::builder_with_provider(Arc::new(roots(dir)?), provider).build()?,
+        )
         .with_single_cert(
             cert(&dir.join("server.crt.der"))?,
             key(&dir.join("server.key.der"))?,

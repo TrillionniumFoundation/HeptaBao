@@ -64,15 +64,18 @@ impl ProcessRaftNode {
         expected: &NativeV6CommitIntent,
         deadline: std::time::Instant,
     ) -> Result<NativeV6ClosureAdmission, RemoteRaftError> {
-        fn unavailable() -> RemoteRaftError {
+        fn unavailable(site: &'static str) -> RemoteRaftError {
+            #[cfg(feature = "private-native-admission-diagnostic")]
+            eprintln!("HBHA-PRIVATE-RAFT-ADMISSION phase={}", site);
+            let _ = site;
             RemoteRaftError::Consensus("committed native closure admission unavailable".into())
         }
         super::super::with_read_index_deadline(deadline, async {
             let (witness, enrollment, root) = self
                 .native_v6_application_read_witness(deadline)
                 .await
-                .map_err(|_| unavailable())?;
-            let enrollment = enrollment.ok_or_else(unavailable)?;
+                .map_err(|_| unavailable("site_77"))?;
+            let enrollment = enrollment.ok_or_else(|| unavailable("site_78"))?;
             // A next-epoch transfer has ONE distinct admission path. It must
             // consume an actual fresh pending restore read whose exact Stage
             // is already sealed in Raft. A numeric epoch or configured pins
@@ -86,11 +89,11 @@ impl ProcessRaftNode {
                     let pending = self
                         .native_v6_epoch_restore_read(expected.operation_digest, deadline)
                         .await
-                        .map_err(|_| unavailable())?;
+                        .map_err(|_| unavailable("site_92"))?;
                     if pending.intent() != Some(*expected) {
-                        return Err(unavailable());
+                        return Err(unavailable("site_94"));
                     }
-                    let log = pending.intent_log_id().ok_or_else(unavailable)?;
+                    let log = pending.intent_log_id().ok_or_else(|| unavailable("site_96"))?;
                     let (witness, enrollment, source) = pending.into_closure_selection();
                     (witness, enrollment, Some(source), Some(log))
                 };
@@ -101,18 +104,18 @@ impl ProcessRaftNode {
                 || witness.term == 0
                 || !enrollment.pins().contains_key(&witness.leader)
             {
-                return Err(unavailable());
+                return Err(unavailable("site_107"));
             }
             let object = SealedRecordObject::new_native_v6_commit_intent(*expected)
-                .map_err(|_| unavailable())?;
+                .map_err(|_| unavailable("site_110"))?;
             let intent_log = tokio::time::timeout_at(
                 bound,
                 self.state_machine
                     .native_v6_intent_origin(&object.reference().id),
             )
             .await
-            .map_err(|_| unavailable())?
-            .ok_or_else(unavailable)?;
+            .map_err(|_| unavailable("site_117"))?
+            .ok_or_else(|| unavailable("site_118"))?;
             if intent_log.index == 0
                 || intent_log.committed_leader_id().node_id == 0
                 || intent_log.committed_leader_id().term == 0
@@ -121,7 +124,7 @@ impl ProcessRaftNode {
                 || intent_log > witness.applied_log
                 || restore_intent_log.is_some_and(|exact| exact != intent_log)
             {
-                return Err(unavailable());
+                return Err(unavailable("site_127"));
             }
 
             // An exact current root can be rechecked after a lost reply. Any
@@ -142,49 +145,45 @@ impl ProcessRaftNode {
                         self.state_machine.native_v6_migration_source(),
                     )
                     .await
-                    .map_err(|_| unavailable())?
-                    .ok_or_else(unavailable)?;
+                    .map_err(|_| unavailable("site_148"))?
+                    .ok_or_else(|| unavailable("site_149"))?;
                     if source.0 != expected.prior_root_digest
                         || source.1.index != expected.expected_previous_commit_index
                         || source.1 >= intent_log
                     {
-                        return Err(unavailable());
+                        return Err(unavailable("site_154"));
                     }
                 }
-                _ => return Err(unavailable()),
+                _ => return Err(unavailable("site_157")),
             }
 
             // Fetch the exact persisted slot, not merely the cached object or
             // its last-applied number. A purged slot instead requires the real
             // persisted state-machine snapshot's original FULL LogId.
-            let end = intent_log.index.checked_add(1).ok_or_else(unavailable)?;
-            let mut reader = self.v6_intent_log_reader.clone();
-            let entries =
-                tokio::time::timeout_at(bound, reader.try_get_log_entries(intent_log.index..end))
-                    .await
-                    .map_err(|_| unavailable())?
-                    .map_err(|_| unavailable())?;
-            match entries.as_slice() {
-                [entry] if entry.log_id == intent_log => match &entry.payload {
+            let slot = tokio::time::timeout_at(
+                bound, self.v6_intent_log_reader.native_v6_log_slot(intent_log.index),
+            ).await.map_err(|_| unavailable("slot_deadline"))?
+                .map_err(|_| unavailable("slot_io"))?;
+            match slot.entry.as_ref() {
+                Some(entry) if entry.log_id == intent_log => match &entry.payload {
                     EntryPayload::Normal(crate::state_machine::ApplicationRequest::RecordsV5(
                         data,
                     )) => match &data.records_v5 {
                         crate::records::RecordCommand::Stage { object: staged }
                             if staged == &object => {}
-                        _ => return Err(unavailable()),
+                        _ => return Err(unavailable("site_180")),
                     },
-                    _ => return Err(unavailable()),
+                    _ => return Err(unavailable("site_182")),
                 },
-                [] => {
-                    let membership = tokio::time::timeout_at(bound, self.membership_observation())
-                        .await
-                        .map_err(|_| unavailable())?
-                        .map_err(|_| unavailable())?;
-                    if membership
-                        .purged_index
-                        .is_none_or(|purged| purged < intent_log.index)
+                None => {
+                    #[cfg(feature = "private-native-admission-diagnostic")]
                     {
-                        return Err(unavailable());
+                        let metrics = self.membership_observation().await.ok();
+                        eprintln!("HBHA-PRIVATE-RAFT-SLOT voter={} intent={:?} actual_purged={:?} metrics_purged={:?}",
+                            self.id, intent_log, slot.last_purged, metrics.and_then(|item| item.purged_index));
+                    }
+                    if !slot.compacted_through(intent_log) {
+                        return Err(unavailable("missing_without_durable_purge"));
                     }
                     let persisted = tokio::time::timeout_at(
                         bound,
@@ -194,27 +193,35 @@ impl ProcessRaftNode {
                         ),
                     )
                     .await
-                    .map_err(|_| unavailable())?
-                    .map_err(|_| unavailable())?;
+                    .map_err(|_| unavailable("site_203"))?
+                    .map_err(|_| unavailable("site_204"))?;
                     if persisted != Some(intent_log) {
-                        return Err(unavailable());
+                        return Err(unavailable("site_206"));
                     }
                 }
-                _ => return Err(unavailable()),
+                _ => return Err(unavailable("site_209")),
             }
             let applied_object = tokio::time::timeout_at(
                 bound,
                 self.state_machine.record_object(object.reference()),
             )
             .await
-            .map_err(|_| unavailable())?
-            .map_err(|_| unavailable())?;
+            .map_err(|_| unavailable("site_216"))?
+            .map_err(|_| unavailable("site_217"))?;
             if applied_object.as_ref() != Some(&object) {
-                return Err(unavailable());
+                return Err(unavailable("site_219"));
             }
             // This also fences every intervening apply, snapshot install,
             // ownership/reopen, term change and original deadline expiry.
-            self.verify_application_read_witness(&witness).await?;
+            self.verify_application_read_witness(&witness)
+                .await
+                .inspect_err(|_| {
+                    #[cfg(feature = "private-native-admission-diagnostic")]
+                    eprintln!(
+                        "HBHA-PRIVATE-RAFT-ADMISSION phase=final_original_witness voter={}",
+                        self.id
+                    );
+                })?;
             Ok(NativeV6ClosureAdmission {
                 witness,
                 enrollment,

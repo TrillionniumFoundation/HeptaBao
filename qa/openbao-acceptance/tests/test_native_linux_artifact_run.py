@@ -6,6 +6,7 @@ import importlib.util
 import json
 from pathlib import Path
 import os
+import platform
 import tempfile
 from types import SimpleNamespace
 import unittest
@@ -97,7 +98,7 @@ class ArtifactCustodyRegression(unittest.TestCase):
         for count, profile in ((58, SCRIPT.with_name("native_candidate_host_run.py").read_bytes()),
                                (55, ("GROUPS = " + repr(legacy) + "\n").encode())):
             with self.subTest(count=count), tempfile.TemporaryDirectory() as tmp:
-                root = Path(tmp)
+                root = Path(tmp).resolve()
                 source = root / "source"
                 source.mkdir(mode=0o700)
                 runner = source / lane.PROFILE_PATH
@@ -137,7 +138,7 @@ class ArtifactCustodyRegression(unittest.TestCase):
         legacy = [row for row in current if row[0] != "native-kv2-mount"]
         for groups in (legacy, current):
             with self.subTest(count=sum(row[3] for row in groups)), tempfile.TemporaryDirectory() as tmp:
-                root = Path(tmp)
+                root = Path(tmp).resolve()
                 capsule = synthetic_capsule(root, groups)
                 digest = put(root / "capsule.json", capsule)
                 actual, _ = lane.verify_capsule(root, digest, "1" * 40, "2" * 40, "3" * 64, groups)
@@ -163,7 +164,7 @@ class ArtifactCustodyRegression(unittest.TestCase):
     def test_original_log_identity_and_selector_list_cannot_be_substituted(self):
         for mode in ("unchanged", "different-running-artifact", "changed-log", "duplicate-name", "changed-selector"):
             with self.subTest(mode=mode), tempfile.TemporaryDirectory() as tmp:
-                root = Path(tmp)
+                root = Path(tmp).resolve()
                 summary, target, profile, groups = original_inventory(root)
                 row = next(row for row in summary["commands"] if row["label"] == "synthetic-server-group-list")
                 path = root / row["log"]
@@ -186,7 +187,7 @@ class ArtifactCustodyRegression(unittest.TestCase):
 
     def test_streamed_copy_preserves_bytes_and_rejects_links_or_overwrite(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
+            root = Path(tmp).resolve()
             source, target = root / "large-unit-bytes", root / "copied-unit-bytes"
             raw = b"public-synthetic-unit-bytes" * 100000
             put(source, raw)
@@ -227,6 +228,22 @@ class ArtifactCustodyRegression(unittest.TestCase):
 
     def test_actual_local_system_elf_loader_observation_is_not_product_execution(self):
         with tempfile.TemporaryDirectory() as tmp:
+            supported = platform.system() == "Linux" and platform.machine() == "x86_64"
+            print("HEPTABAO-QA-RUNTIME-SCOPE " + json.dumps({
+                "case": self._testMethodName, "host_system": platform.system(),
+                "scope": "actual_linux_x86_64_loader" if supported
+                else "unsupported_host_refusal_only",
+            }, sort_keys=True), flush=True)
+            if not supported:
+                with self.subTest(runtime_scope="unsupported_host_refusal_only", host_system=platform.system(),
+                                  host_machine=platform.machine()), \
+                        mock.patch.object(lane, "elf_interpreter", side_effect=AssertionError("host guard must precede ELF reads")), \
+                        mock.patch.object(lane, "bounded_metadata", side_effect=AssertionError("unsupported host must not start metadata processes")):
+                    with self.assertRaisesRegex(lane.Refusal, "^actual_linux_x86_64_host_required$"):
+                        lane.native_abi(Path(tmp).resolve() / "unread-synthetic-artifact", Path(tmp).resolve(),
+                                        "synthetic-unsupported-host")
+                self.assertEqual(list(Path(tmp).iterdir()), [])
+                return
             path = Path("/usr/bin/true").resolve(strict=True)
             result = lane.native_abi(path, Path(tmp), "synthetic-local-system-elf")
             self.assertEqual(result["native_abi"], "x86_64-unknown-linux-gnu")

@@ -160,7 +160,13 @@ impl EngineState {
             }
             AcmeExternalEffect::Revoke(p) => {
                 p.validate(self, at)?;
-                let at = self.acme_observed_time(at);
+                // Preparation and validation already use this durable floor.
+                // Keep it for the signed CRL publication as well; the original
+                // request clock and deadline remain unchanged.
+                let at = self.acme_observed_time(at).max(
+                    Timestamp::whole(self.lease_clock)
+                        .map_err(|_| error(503, "ACME original revocation floor unavailable"))?,
+                );
                 let end = p
                     .clock
                     .map(|clock| clock.with_timestamp_floor(at).observed_at())

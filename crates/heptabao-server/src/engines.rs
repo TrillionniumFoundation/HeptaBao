@@ -37,31 +37,60 @@ mod kv;
 pub use kv::native_records as kv2_native_records;
 #[path = "engine_kv2_import.rs"]
 mod kv2_import;
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 #[path = "engine_kv2_native_import.rs"]
 mod kv2_native_import;
-#[cfg(feature = "fixture-native-v6-service")]
+
+#[cfg(feature = "native-v6-storage")]
 #[path = "engine_native_kv2_mount.rs"]
 mod native_kv2_mount;
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_remount.rs"]
+mod native_remount;
+#[cfg(feature = "native-v6-storage")]
 pub(crate) use native_kv2_mount::NativeKv2MountOwner;
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_kv1.rs"]
+mod native_kv1;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_kv1::NativeKv1Owner;
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_transit.rs"]
+mod native_transit;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_transit::NativeTransitOwner;
+
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_totp.rs"]
+mod native_totp;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_totp::NativeTotpOwner;
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_pki.rs"]
+mod native_pki;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_pki::NativePkiEngineOwner;
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_kv2_lossless_export.rs"]
+mod native_kv2_lossless_export;
+#[cfg(feature = "native-v6-storage")]
 #[path = "engine_native_kv2_storage_witness.rs"]
 mod native_kv2_storage_witness;
 #[cfg(test)]
 pub(crate) use kv::lossless::decode_lossless_json;
 pub(crate) use kv::lossless::deserialize_secret_json as deserialize_lossless_json;
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 pub(crate) use kv::lossless::native_large as kv2_native_large;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use kv::native_records::lossless_export as kv2_lossless_export;
 mod kv1_records;
+#[path = "engine_kv_mount_config.rs"]
+mod kv_mount_config;
 #[path = "engine_kv_versioning.rs"]
 mod kv_versioning;
 #[path = "engine_leases.rs"]
 mod leases;
-#[cfg(any(
-    feature = "fixture-native-v6-service",
-    feature = "experimental-native-v6-ha"
-))]
+#[cfg(any(feature = "native-v6-storage", feature = "native-v6-ha"))]
 #[path = "engine_native_snapshot_clocks.rs"]
 mod native_snapshot_clocks;
 #[path = "engine_pki_revocation.rs"]
@@ -139,6 +168,10 @@ pub struct EngineState {
     namespaces: BTreeMap<String, CowNamespace>,
 }
 
+#[cfg(feature = "native-v6-storage")]
+#[path = "engines/native_empty_namespace.rs"]
+mod native_empty_namespace;
+
 impl std::fmt::Debug for EngineState {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("EngineState")
@@ -147,65 +180,31 @@ impl std::fmt::Debug for EngineState {
     }
 }
 
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 impl EngineState {
-    /// Local authentication may bind or refresh an identity alias. It cannot
-    /// use that allowance to mutate mounts, KV, leases or engine clocks.
-    pub(crate) fn native_auth_identity_only_change(
-        &self,
-        next: &Self,
-        live: &impl Fn() -> bool,
-    ) -> bool {
-        if !self.namespaces.keys().eq(next.namespaces.keys()) {
-            return false;
-        }
-        let mut normalized = next.clone();
-        for (name, prior) in &self.namespaces {
-            let Some(candidate) = normalized.namespaces.get_mut(name) else {
-                return false;
-            };
-            candidate.identity = prior.identity.clone();
-        }
-        // Native views deliberately refuse inline serialization. Compare
-        // only their mount metadata here; the caller must separately compare
-        // the authenticated KV roots produced by the native graph planner.
-        // Stream all other metadata without allocating a plaintext aggregate.
-        fn digest(state: &EngineState, live: &impl Fn() -> bool) -> Option<[u8; 32]> {
-            use sha2::{Digest, Sha256};
-            let mut metadata = state.clone();
-            for owner in metadata.namespaces.values_mut() {
-                for mount in owner.mounts.values_mut() {
-                    if !live() {
-                        return None;
-                    }
-                    if matches!(mount.backend, Backend::Kv2Native(_)) {
-                        mount.backend = Backend::Kv2(kv::Kv2::default());
-                    }
-                }
-            }
-            struct Sink<'a, F>(&'a F, Sha256);
-            impl<F: Fn() -> bool> std::io::Write for Sink<'_, F> {
-                fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
-                    if !(self.0)() {
-                        return Err(std::io::Error::other(
-                            "native authentication deadline expired",
-                        ));
-                    }
-                    self.1.update(bytes);
-                    Ok(bytes.len())
-                }
-                fn flush(&mut self) -> std::io::Result<()> {
-                    Ok(())
-                }
-            }
-            let mut sink = Sink(live, Sha256::new());
-            serde_json::to_writer(&mut sink, &metadata).ok()?;
-            Some(sink.1.finalize().into())
-        }
-        match (digest(self, live), digest(&normalized, live)) {
-            (Some(prior), Some(candidate)) => prior == candidate,
-            _ => false,
-        }
+    /// The configured V6 root profile must not strand a previously enabled
+    /// engine behind its deliberately bounded request dispatcher. This checks
+    /// live owners only; KV data remains authenticated by the normal graph.
+    pub(crate) fn supports_native_v6_root_storage(&self) -> bool {
+        self.sdk_catalog.is_empty()
+            && self.sdk_retired_logical.is_none()
+            && self.namespace_record_owners.is_empty()
+            && self.namespaces.iter().all(|(name, owner)| {
+                name.is_empty()
+                    && owner.sdk_owners.is_empty()
+                    && owner.sdk_leases.is_empty()
+                    && owner.external_keys.is_empty()
+                    && owner.mounts.values().all(|mount| match &mount.backend {
+                        Backend::Kv1(_)
+                        | Backend::Kv1Records
+                        | Backend::Kv2(_)
+                        | Backend::Kv2Native(_) => true,
+                        Backend::Transit(engine) => !engine.has_external_state(),
+                        Backend::Totp(_) => true,
+                        Backend::Pki(engine) => engine.native_local_profile(),
+                        _ => false,
+                    })
+            })
     }
 }
 
@@ -411,6 +410,8 @@ pub(crate) struct NativeRemountOwner {
 #[derive(Clone, Serialize, Deserialize)]
 struct MountState {
     #[serde(default, skip_serializing_if = "Option::is_none")]
+    kv_configuration: Option<kv_mount_config::Configuration>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     listing_visibility: Option<crate::mount_listing_visibility::ListingVisibility>,
     #[serde(default = "mount_revision_one")]
     revision: u64,
@@ -523,6 +524,7 @@ impl Mount {
 
     fn with_incarnation(backend: Backend, description: &str, incarnation: u64) -> Self {
         Self::from(MountState {
+            kv_configuration: None,
             listing_visibility: None,
             revision: 1,
             incarnation: incarnation.max(1),
@@ -568,6 +570,9 @@ impl Mount {
             "revision":self.revision,"incarnation":self.incarnation,
             "local":false,"seal_wrap":false,"external_entropy_access":false,
             "config":{"default_lease_ttl":default_ttl,"max_lease_ttl":max_ttl,"force_no_cache":false}});
+        if let Some(configuration) = &self.kv_configuration {
+            configuration.project_descriptor(&mut descriptor);
+        }
         if let Some(visibility) = self.listing_visibility {
             descriptor["config"]["listing_visibility"] = json!(visibility.name());
         }
@@ -1196,6 +1201,14 @@ impl EngineState {
         self.namespaces.values().any(|namespace| {
             namespace.mounts.values().any(|mount|
             matches!(&mount.backend, Backend::Pki(engine) if engine.has_typed_external_pki_state()))
+        })
+    }
+
+    pub(crate) fn has_pki_batch_lease_state(&self) -> bool {
+        self.namespaces.values().any(|state| {
+            state.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_batch_lease_state())
+            })
         })
     }
 
@@ -2785,6 +2798,29 @@ impl EngineState {
             })
     }
 
+    #[cfg(feature = "native-v6-storage")]
+    pub(crate) fn native_cg_kv2_scoped_data_binding(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<(&str, u64, u64)> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .max_by_key(|(mount, _)| mount.len())
+            .and_then(|(path_prefix, mount)| {
+                let relative = path
+                    .strip_prefix(path_prefix.as_str())?
+                    .strip_prefix("data/")?;
+                (!relative.is_empty()
+                    && !relative.contains('?')
+                    && matches!(mount.backend, Backend::Kv2(_) | Backend::Kv2Native(_)))
+                .then_some((path_prefix.as_str(), mount.incarnation, mount.revision))
+            })
+    }
+
     pub(crate) fn is_actual_pki_ocsp_path(&self, namespace: &str, path: &str) -> bool {
         self.query_owner(namespace, path)
             .is_some_and(|owner| owner.is_pki_path(path))
@@ -2926,12 +2962,7 @@ impl EngineState {
         let kind = match &mount.backend {
             Backend::Kv1(_) | Backend::Kv1Records => "kv1",
             Backend::Kv2(_) => "kv2",
-            Backend::Kv2Native(_) => {
-                return Err(error(
-                    501,
-                    "native KV2 remount requires authenticated graph readdressing",
-                ));
-            }
+            Backend::Kv2Native(_) => "kv2-native",
             Backend::Transit(_) => "transit",
             Backend::Pki(_) => "pki",
             Backend::Ssh(_) => "ssh",
@@ -3011,6 +3042,15 @@ impl EngineState {
             .get(&from_name)
             .cloned()
             .ok_or_else(not_found)?;
+        // An ordinary catalog move cannot rebind a keyed native graph. Only
+        // the checked source reader and affine staged-object entry below may
+        // install its freshly addressed destination view.
+        if matches!(current.backend, Backend::Kv2Native(_)) {
+            return Err(error(
+                503,
+                "native KV2 remount requires checked graph custody",
+            ));
+        }
         require_mount_revision(cas_revision, current.revision)?;
         let sdk_owner = candidate.sdk_owners.get(&from_name).cloned();
         if sdk_owner.is_some() {
@@ -3610,6 +3650,7 @@ fn handle_mounts(
                     "default_lease_ttl":mount.descriptor()["config"]["default_lease_ttl"],
                     "max_lease_ttl":mount.descriptor()["config"]["max_lease_ttl"],
                     "revision":mount.revision,"incarnation":mount.incarnation});
+            data["force_no_cache"] = mount.descriptor()["config"]["force_no_cache"].clone();
             if let Some(visibility) = mount.listing_visibility {
                 data["listing_visibility"] = json!(visibility.name());
             }
@@ -3675,23 +3716,8 @@ fn handle_mounts(
                     "force_no_cache",
                 ],
             )?;
-            // Pinned Bao enable-versioning sends these neutral tune defaults.
-            // Accept their unchanged meaning without claiming nondefault TTL or
-            // caching configuration on a KV engine.
-            for field in ["default_lease_ttl", "max_lease_ttl"] {
-                if body
-                    .get(field)
-                    .is_some_and(|value| value.as_str() != Some(""))
-                {
-                    return Err(bad("nondefault KV lease tuning is not implemented"));
-                }
-            }
-            if body
-                .get("force_no_cache")
-                .is_some_and(|value| value.as_bool() != Some(false))
-            {
-                return Err(bad("nondefault KV cache tuning is not implemented"));
-            }
+            mount.kv_configuration =
+                kv_mount_config::Configuration::tune(mount.kv_configuration.as_ref(), body)?;
         } else {
             reject_unknown(body, &["description", "options", "cas_revision"])?;
         }
@@ -3827,22 +3853,25 @@ fn handle_mounts(
         }
     }
     let mount_kind = body.get("type").and_then(Value::as_str);
-    if !matches!(mount_kind, Some("ssh" | "pki" | "plugin"))
-        && body.get("config").is_some_and(|value| {
-            value.as_object().is_none_or(|config| {
-                !config.is_empty()
-                    && !(matches!(mount_kind, Some("kv" | "kv-v1" | "kv-v2"))
-                        && config.iter().all(|(key, value)| match key.as_str() {
-                            // These exact defaults are serialized by the official
-                            // Go MountInput without requesting lease/cache changes.
-                            "options" => value.is_null(),
-                            "default_lease_ttl" | "max_lease_ttl" => value.as_str() == Some(""),
-                            "force_no_cache" => value.as_bool() == Some(false),
-                            _ => false,
-                        }))
-            })
+    if !matches!(
+        mount_kind,
+        Some("ssh" | "pki" | "plugin" | "kv" | "kv-v1" | "kv-v2")
+    ) && body.get("config").is_some_and(|value| {
+        value.as_object().is_none_or(|config| {
+            !config.is_empty()
+                && !(matches!(
+                    mount_kind,
+                    Some("kv" | "kv-v1" | "kv-v2" | "transit" | "totp")
+                ) && config.iter().all(|(key, value)| match key.as_str() {
+                    // These exact defaults are serialized by the official
+                    // Go MountInput without requesting lease/cache changes.
+                    "options" => value.is_null(),
+                    "default_lease_ttl" | "max_lease_ttl" => value.as_str() == Some(""),
+                    "force_no_cache" => value.as_bool() == Some(false),
+                    _ => false,
+                }))
         })
-    {
+    }) {
         return Err(error(
             501,
             "nondefault mount lease configuration is not implemented",
@@ -3982,6 +4011,9 @@ fn handle_mounts(
         .unwrap_or("");
     let incarnation = state.mount_epochs.get(&name).copied().unwrap_or(1).max(1);
     let mut mount = Mount::with_incarnation(backend, description, incarnation);
+    if matches!(mount.backend, Backend::Kv1(_) | Backend::Kv2(_)) {
+        mount.kv_configuration = kv_mount_config::Configuration::enable(body.get("config"))?;
+    }
     mount.listing_visibility = listing_visibility;
     state.mounts.insert(name, mount);
     Ok(empty(true))
@@ -4121,6 +4153,57 @@ impl EngineState {
 #[path = "engine_lossless_json_tests.rs"]
 mod lossless_json_tests;
 
-#[cfg(feature = "fixture-native-v6-service")]
+#[cfg(feature = "native-v6-storage")]
 #[path = "engine_native_paged_dispatch.rs"]
 mod native_paged_dispatch;
+
+#[cfg(feature = "native-v6-storage")]
+impl EngineState {
+    /// Select only an absent ordinary mount in the requested namespace.
+    /// Its closed Service owner must separately retain a real namespace scope.
+    /// Every backend in the actual catalog counts, including backends that have
+    /// no native owner. A known mount or its routing ancestry is never admitted
+    /// by this predicate; system/auth/Identity/cubbyhole keep their own owners.
+    pub(crate) fn native_missing_mount_read(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+    ) -> bool {
+        let base = path.trim_end_matches('/');
+        // Match the original Service ingress path contract, not the smaller
+        // mount-name limit. An absent but valid long resource path is still an
+        // original dispatcher 404; malformed paths never select this owner.
+        let canonical = path.len() <= 4096
+            && !path.contains("//")
+            && !path.starts_with('/')
+            && base.split('/').all(|part| {
+                !part.is_empty()
+                    && !matches!(part, "." | "..")
+                    && part.chars().all(|c| {
+                        c.is_alphanumeric() || matches!(c, '-' | '_' | '.' | ':' | '+' | '*')
+                    })
+            });
+        if !matches!(method, "GET" | "HEAD" | "LIST")
+            || !canonical
+            || matches!(
+                base.split('/').next(),
+                Some("sys" | "auth" | "identity" | "cubbyhole")
+            )
+            || external_keys::owns(base)
+            || identity::owns(base)
+        {
+            return false;
+        }
+        self.namespaces.get(namespace).is_none_or(|state| {
+            state.mounts.keys().all(|mount| {
+                let known = mount.trim_end_matches('/');
+                base != known
+                    && !path.starts_with(mount.as_str())
+                    && !known
+                        .strip_prefix(base)
+                        .is_some_and(|suffix| suffix.starts_with('/'))
+            })
+        })
+    }
+}

@@ -43,11 +43,11 @@ const IO_CHUNK: usize = 256 * 1024;
 const _: () = assert!(IO_CHUNK <= MAX_IMMUTABLE_CIPHERTEXT_BYTES);
 
 #[derive(Clone)]
-struct Slot {
-    resource: String,
-    locator: BlobLocator,
-    ciphertext_bytes: usize,
-    plaintext_bytes: usize,
+pub(super) struct Slot {
+    pub(super) resource: String,
+    pub(super) locator: BlobLocator,
+    pub(super) ciphertext_bytes: usize,
+    pub(super) plaintext_bytes: usize,
 }
 impl Drop for Slot {
     fn drop(&mut self) {
@@ -55,7 +55,7 @@ impl Drop for Slot {
     }
 }
 impl Slot {
-    fn decode(resource: &str, bytes: &[u8]) -> Result<Self, ServiceError> {
+    pub(super) fn decode(resource: &str, bytes: &[u8]) -> Result<Self, ServiceError> {
         if bytes.len() != 72 || &bytes[..16] != SLOT_MAGIC {
             return Err(ServiceError::CorruptState);
         }
@@ -114,7 +114,7 @@ impl Slot {
             plaintext_bytes,
         })
     }
-    fn aad(&self) -> Vec<u8> {
+    pub(super) fn aad(&self) -> Vec<u8> {
         let mut aad = OBJECT_AAD.to_vec();
         aad.extend_from_slice(self.resource.as_bytes());
         aad
@@ -346,6 +346,9 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
     ) -> Result<V6BackupSource, ServiceError> {
         gate()?;
         self.verify_live_ownership()?;
+        self.ensure_no_pending_immutable_retirement()?;
+        self.ensure_no_pending_ha_shared_retirement()?;
+        self.ensure_no_pending_ha_intent_retirement()?;
         let slots = collect_slots(
             self.snapshot
                 .entries
@@ -385,6 +388,9 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         verify: &mut impl FnMut(&str, &[u8]) -> Result<(), ServiceError>,
     ) -> Result<V6BackupSize, ServiceError> {
         gate()?;
+        self.ensure_no_pending_immutable_retirement()?;
+        self.ensure_no_pending_ha_shared_retirement()?;
+        self.ensure_no_pending_ha_intent_retirement()?;
         self.check_immutable_source_session(&source.session)?;
         let total = source
             .slots
@@ -529,6 +535,9 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         verify: &mut impl FnMut(&PreparedRestore, &str, &[u8]) -> Result<(), ServiceError>,
     ) -> Result<PreparedV6Restore<R>, ServiceError> {
         gate()?;
+        self.ensure_no_pending_immutable_retirement()?;
+        self.ensure_no_pending_ha_shared_retirement()?;
+        self.ensure_no_pending_ha_intent_retirement()?;
         if length < HEADER_BYTES as u64 + 60
             || length
                 > MAX_BACKUP_BYTES as u64

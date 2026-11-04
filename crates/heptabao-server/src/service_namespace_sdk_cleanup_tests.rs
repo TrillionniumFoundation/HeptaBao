@@ -3,7 +3,7 @@ use crate::auth::{AuthorityTime, Timestamp};
 use crate::engines::sdk::{Descriptor, StorageEntry};
 use crate::engines::sdk_lease::{Binding as LeaseBinding, Grant, Lease, Phase};
 use crate::engines::sdk_registration::Registration;
-use crate::service::tests::{Root, bootstrap_unmounted, call};
+use crate::service::tests::{Root, bootstrap_pre141_unmounted, call};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
@@ -61,9 +61,12 @@ fn fixture_with_owner_initialized(
     let directory = Root::new();
     let mut service = directory.service()?;
     initialize(&directory, &mut service)?;
-    let (key, token) = bootstrap_unmounted(&mut service)?;
+    // This suite starts with genuine historical root/child owners so its
+    // 109/114 reader fences are not hidden by current default-policy 141/144.
+    // Both factories are selected before the owner's first real publication.
+    let (key, token) = bootstrap_pre141_unmounted(&mut service)?;
     assert_eq!(
-        native(&mut service, "POST", "sys/namespaces/retire", &token).status,
+        service.create_pre144_namespace_fixture(NS, &token)?.status,
         200
     );
     let namespace_share = if independent {
@@ -3409,6 +3412,18 @@ fn child_resources114_mode(
         200
     );
     let mut state = f.service.state.clone().ok_or("actual child namespace")?;
+    // This nested child is created through the current public namespace API;
+    // its factory provenance adds 144 independently of the SDK custody floor.
+    assert!(state.auth.has_namespace_factory_state());
+    assert_eq!(state.schema, NAMESPACE_FACTORY_STATE_SCHEMA);
+    let mut below_factory = state.clone();
+    below_factory.schema = SDK_AUTH_NAMESPACE_CUSTODY_STATE_SCHEMA;
+    assert!(below_factory.validate_format().is_err());
+    assert!(
+        below_factory
+            .validate_publication_schema(Some(&state))
+            .is_err()
+    );
     state
         .ensure_namespace_batch_registry()
         .map_err(|_| "actual child lifecycle")?;
@@ -3752,7 +3767,7 @@ fn model_late_ack114_mode(
                 .state
                 .as_ref()
                 .ok_or("actual closed physical graph")?;
-            assert_eq!(closed.schema, 114);
+            assert_eq!(closed.schema, NAMESPACE_FACTORY_STATE_SCHEMA);
             assert!(
                 closed.namespaces.custody_owner(CHILD114).is_none()
                     && closed.namespaces.inherited_owner(CHILD114).is_none()
@@ -4302,7 +4317,7 @@ fn namespace114_hidden_logical_only_child_keeps_full_original_selection_and_reje
         .state
         .as_ref()
         .ok_or("actual MAC-hydrated full logical graph")?;
-    assert_eq!(state.schema, 114);
+    assert_eq!(state.schema, NAMESPACE_FACTORY_STATE_SCHEMA);
     assert!(state.auth.has_sdk_namespace_custody());
     assert!(
         state

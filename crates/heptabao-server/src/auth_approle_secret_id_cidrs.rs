@@ -167,8 +167,7 @@ impl AuthState {
                     .flat_map(|roles| roles.values()),
             )
             .any(|role| {
-                role.secret_ids
-                    .values()
+                role.all_approle_secrets()
                     .any(|secret| secret.cidr_list.is_some() || secret.token_bound_cidrs.is_some())
             })
     }
@@ -191,7 +190,7 @@ impl AuthState {
         mount: &str,
         roles: &BTreeMap<String, Role>,
     ) -> Result<(), AuthError> {
-        for secret in roles.values().flat_map(|role| role.secret_ids.values()) {
+        for secret in roles.values().flat_map(|role| role.all_approle_secrets()) {
             for values in [&secret.cidr_list, &secret.token_bound_cidrs]
                 .into_iter()
                 .flatten()

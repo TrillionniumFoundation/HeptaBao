@@ -369,10 +369,10 @@ fn malformed_graph_base64_and_aggregate_are_rejected_on_restore() {
 #[test]
 fn semantic_invalid_command_does_not_change_state_and_encoded_budget_counts_legacy() {
     let mut state = StateMachine::default();
-    let invalid = ApplicationRequest::RecordsV5(RecordRequest {
+    let invalid = ApplicationRequest::RecordsV5(Box::new(RecordRequest {
         serial: 0,
         records_v5: RecordCommand::Stage { object: owner(1) },
-    });
+    }));
     let before = bytes(&state);
     assert_eq!(
         state.apply(&invalid).result(),
@@ -1005,4 +1005,26 @@ fn branch_accepts_mixed_legacy_and_packed_leaves_but_never_mixed_tree_levels() {
         )
         .is_err()
     );
+}
+
+#[test]
+fn boxed_record_request_preserves_existing_untagged_json() -> Result<(), Box<dyn std::error::Error>>
+{
+    // Fixed pre-boxing persisted shape, independent of either encoder's output.
+    let original = br#"{"serial":7,"records_v5":{"Prune":{"expected_root":[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],"ids":[]}}}"#;
+    let request = ApplicationRequest::records(
+        7,
+        RecordCommand::Prune {
+            expected_root: [1; 32],
+            ids: vec![],
+        },
+    )
+    .map_err(|_| "original bounded record request")?;
+    assert_eq!(serde_json::to_vec(&request)?, original);
+    let replay: ApplicationRequest = serde_json::from_slice(original)?;
+    assert_eq!(serde_json::to_vec(&replay)?, original);
+    replay
+        .validate_size()
+        .map_err(|_| "replayed bounded record request")?;
+    Ok(())
 }

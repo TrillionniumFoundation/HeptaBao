@@ -128,8 +128,7 @@ impl AuthState {
                     .flat_map(|roles| roles.values()),
             )
             .any(|role| {
-                role.secret_ids
-                    .values()
+                role.all_approle_secrets()
                     .any(|secret| secret.metadata.is_some())
             })
             || self.tokens.values().any(|token| {
@@ -182,7 +181,7 @@ impl AuthState {
     ) -> Result<(), AuthError> {
         for metadata in roles
             .values()
-            .flat_map(|role| role.secret_ids.values())
+            .flat_map(|role| role.all_approle_secrets())
             .filter_map(|secret| secret.metadata.as_ref())
         {
             validate(metadata)?;

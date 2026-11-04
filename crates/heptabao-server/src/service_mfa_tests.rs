@@ -7,7 +7,7 @@ fn mfa129_real_service_configuration_enrollment_acl_and_encrypted_reopen_keep_st
 -> TestResult {
     let files = Root::new();
     let mut service = files.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let ordinary = service.state.clone().ok_or("ordinary state")?;
     assert!(!ordinary.auth.has_identity_mfa_state());
     assert_eq!(
@@ -128,7 +128,7 @@ fn mfa129_real_service_configuration_enrollment_acl_and_encrypted_reopen_keep_st
     // the standalone 129 reader on a genuinely MFA-only native publication.
     let isolated_files = Root::new();
     let mut isolated = isolated_files.service()?;
-    let (_, isolated_admin) = bootstrap(&mut isolated)?;
+    let (_, isolated_admin) = crate::service::tests::bootstrap_pre141(&mut isolated)?;
     let isolated_method = call(
         &mut isolated,
         "POST",
@@ -850,6 +850,8 @@ fn mfa129_native_namespace_terminal_retirement_preserves_floor_and_rejects_old_e
         "ancestor method cannot discard a live child enforcement"
     );
     let original = service.state.clone().ok_or("state")?;
+    assert!(original.auth.has_namespace_factory_state());
+    assert_eq!(original.schema, NAMESPACE_FACTORY_STATE_SCHEMA);
     assert_eq!(
         call(
             &mut service,
@@ -865,7 +867,9 @@ fn mfa129_native_namespace_terminal_retirement_preserves_floor_and_rejects_old_e
     // original namespace binding/terminal/history/ACK checks.
     finish_namespace_deletion_fixture(&mut service, "mfa-child", Duration::from_secs(101))?;
     let retired = service.state.clone().ok_or("terminal state")?;
-    assert_eq!(retired.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
+    // Current namespace creation has its own retained reader floor. Keep the
+    // native MFA retirement checks under that actual composed owner.
+    assert_eq!(retired.schema, original.schema);
     assert!(retired.auth.has_identity_mfa_state());
     assert!(Service::validate_snapshot_protected_floor(&retired, &original).is_err());
     assert_eq!(
@@ -946,7 +950,15 @@ fn mfa129_native_namespace_terminal_retirement_preserves_floor_and_rejects_old_e
     );
     assert_eq!(
         reopened.state.as_ref().ok_or("reopened state")?.schema,
-        USERPASS_ISSUANCE_STATE_SCHEMA
+        NAMESPACE_FACTORY_STATE_SCHEMA
+    );
+    assert!(
+        reopened
+            .state
+            .as_ref()
+            .ok_or("reopened state")?
+            .auth
+            .has_namespace_factory_state()
     );
     Ok(())
 }
@@ -1166,7 +1178,7 @@ fn mfa129_inert_accessor_configuration_survives_real_mount_deletion_and_encrypte
 -> TestResult {
     let files = Root::new();
     let mut service = files.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -3670,14 +3682,11 @@ fn mfa129_fresh_distinct_native_rules_mint_once_only_after_all_requirements_and_
     assert_eq!(denied.status, 400);
     multi_mfa_assert_no_bearer(&denied);
     assert_eq!(token_count(&f.service)?, tokens + 1);
-    assert_eq!(
-        f.service
-            .state
-            .as_ref()
-            .ok_or("native terminal schema")?
-            .schema,
-        USERPASS_ISSUANCE_STATE_SCHEMA
-    );
+    let terminal = f.service.state.as_ref().ok_or("native terminal schema")?;
+    assert!(terminal.auth.has_userpass_issuance_state());
+    assert!(terminal.auth.has_identity_mfa_state());
+    assert!(terminal.auth.has_security_contract_state());
+    assert_eq!(terminal.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     Ok(())
 }
 
@@ -4194,7 +4203,7 @@ fn userpass132_real_native_login_renew_reopen_and_retirement_keep_initial_ttl_an
 -> TestResult {
     let files = Root::new();
     let mut service = files.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let ordinary = service.state.clone().ok_or("ordinary native state")?;
     assert!(!ordinary.auth.has_userpass_issuance_state());
     assert_eq!(
@@ -4404,7 +4413,7 @@ fn userpass132_real_resigned_mfa_unissued_grant_cannot_claim_a_captured_initial_
 {
     let files = Root::new();
     let mut service = files.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
+    let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     assert_eq!(
         call(
             &mut service,

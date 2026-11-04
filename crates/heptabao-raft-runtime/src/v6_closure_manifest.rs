@@ -65,7 +65,7 @@ fn decode(bytes: &[u8]) -> Result<Vec<RecordObjectRef>, LocalV6BlobError> {
         return Err(LocalV6BlobError::InvalidClosure);
     }
     let mut refs = Vec::with_capacity(count);
-    for entry in bytes[HEADER_BYTES..].chunks_exact(ENTRY_BYTES) {
+    for entry in bytes[HEADER_BYTES..].as_chunks::<ENTRY_BYTES>().0 {
         let id = entry[..32]
             .try_into()
             .map_err(|_| LocalV6BlobError::InvalidClosure)?;
@@ -99,6 +99,18 @@ fn name(digest: &[u8; 32]) -> Result<String, LocalV6BlobError> {
     crate::append_hex(&mut name, digest);
     name.push_str(".manifest");
     Ok(name)
+}
+
+pub(super) fn manifest_leaf(digest: &[u8; 32]) -> Result<String, LocalV6BlobError> {
+    name(digest)
+}
+
+/// Syntax/content identity only for a fresh, fully unreferenced candidate.
+/// The actual retained-root mark belongs to the affine retirement owner.
+pub(super) fn canonical_unreferenced_manifest_digest(
+    bytes: &[u8],
+) -> Result<[u8; 32], LocalV6BlobError> {
+    Ok(canonical(&decode(bytes)?)?.1.manifest_sha256)
 }
 
 fn read_manifest(
@@ -146,6 +158,7 @@ impl LocalV6BlobStage {
         references: &[RecordObjectRef],
         gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
     ) -> Result<LocalV6ClosureReceipt, LocalV6BlobError> {
+        let _operation = self.begin_native_operation()?;
         gate()?;
         let (bytes, receipt) = canonical(references)?;
         for reference in references {
@@ -199,6 +212,7 @@ impl LocalV6BlobStage {
         root: &crate::NativeV6PublishedRoot,
         gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
     ) -> Result<Vec<RecordObjectRef>, LocalV6BlobError> {
+        let _operation = self.begin_native_operation()?;
         self.reopen_root_closure_archive(root, gate)
             .map(|(_, references)| references)
     }
@@ -213,6 +227,7 @@ impl LocalV6BlobStage {
         root: &crate::NativeV6PublishedRoot,
         gate: &mut impl FnMut() -> Result<(), LocalV6BlobError>,
     ) -> Result<(Vec<u8>, Vec<RecordObjectRef>), LocalV6BlobError> {
+        let _operation = self.begin_native_operation()?;
         gate()?;
         root.0
             .validate()

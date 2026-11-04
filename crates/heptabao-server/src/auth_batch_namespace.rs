@@ -51,6 +51,50 @@ pub(crate) struct Registry {
 }
 
 impl Registry {
+    /// Structural eligibility only. Service separately binds this exact ledger
+    /// to its actual cluster and fully visible, fresh metadata-only catalog.
+    /// No retired incarnation, nested child or hidden custody is admitted.
+    #[cfg(feature = "native-v6-storage")]
+    pub(crate) fn native_v6_flat_catalog_profile(&self) -> bool {
+        self.validate(&self.cluster_id).is_ok()
+            && self.next_incarnation.is_empty()
+            && self.retired_legacy_paths.is_empty()
+            && self.active.iter().all(|(path, incarnation)| {
+                if path.is_empty() {
+                    *incarnation == 0
+                } else {
+                    !path.contains('/') && *incarnation == 1
+                }
+            })
+    }
+
+    /// This predicate describes fully visible flat incarnation history only.
+    /// The Service must additionally require schema 140, its actual sticky
+    /// marker and exact catalog/paired-Auth ledger equality. It grants no Actor.
+    pub(crate) fn native_v6_flat_incarnation_profile(&self) -> bool {
+        self.validate(&self.cluster_id).is_ok()
+            && self.active.keys().all(|path| !path.contains('/'))
+            && self.next_incarnation.keys().all(|path| !path.contains('/'))
+            && self.retired_legacy_paths == self.next_incarnation.keys().cloned().collect()
+    }
+
+    /// A complete visible plain tree may contain nested incarnations. The
+    /// service supplies every actual catalog path and independently verifies
+    /// schema 145, the format marker and equality of the two durable ledgers.
+    /// This structural check never grants an Actor or a namespace route.
+    pub(crate) fn native_v6_plain_incarnation_profile(&self, paths: &BTreeSet<String>) -> bool {
+        self.validate(&self.cluster_id).is_ok()
+            && !paths.contains("")
+            && self
+                .active
+                .keys()
+                .filter(|path| !path.is_empty())
+                .cloned()
+                .collect::<BTreeSet<_>>()
+                == *paths
+            && self.retired_legacy_paths == self.next_incarnation.keys().cloned().collect()
+    }
+
     /// The Service must prove that every actual catalog is visible before
     /// adopting a historical ledger. This constructor never infers hidden rows.
     pub(crate) fn adopt_visible(

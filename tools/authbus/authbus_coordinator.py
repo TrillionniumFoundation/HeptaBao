@@ -33,6 +33,7 @@ MAX_BODY = 2 * 1024 * 1024
 MAX_DOCUMENT = 128 * 1024
 MAX_PROFILES = 64
 MAX_GRANTS = 32
+MAX_SCAN_EVENTS = 32
 HOST = re.compile(r'[a-z0-9][a-z0-9-]{0,62}\Z')
 SHA = re.compile(r'[a-f0-9]{64}\Z')
 CAS_ERROR = 'check-and-set parameter did not match the current version'
@@ -394,13 +395,25 @@ class Bao:
         require(result['data']['version'] == cas + 1 if cas > 0 else result['data']['version'] == 1, 'kv_write_version_mismatch')
         return result['data']['version']
 
-    def list(self, prefix):
-        value = self.request('LIST', MOUNT + '/metadata/' + prefix)
+    def list(self, prefix, *, after=None, limit=MAX_SCAN_EVENTS):
+        require(isinstance(limit, int) and not isinstance(limit, bool) and 1 <= limit <= MAX_SCAN_EVENTS
+                and (after is None or valid_uuid(after)), 'inbox_page_request_shape')
+        route = MOUNT + '/metadata/' + prefix + '?limit=' + str(limit)
+        if after is not None:
+            route += '&after=' + quote(after, safe='')
+        value = self.request('LIST', route)
         if value is None:
             return []
         keys = value.get('data', {}).get('keys')
-        require(isinstance(keys, list) and len(keys) <= 1024 and all(isinstance(key, str) for key in keys), 'inbox_list_bound')
-        return sorted(keys)
+        # LIST's existing exclusive after/positive limit contract keeps both
+        # the response and local work bounded. Never accept a backend that
+        # ignores the limit or returns the cursor again: that could skip work
+        # or turn one bounded scan into an unbounded cycle.
+        require(isinstance(keys, list) and len(keys) <= limit
+                and all(valid_uuid(key) for key in keys), 'inbox_list_bound')
+        require(keys == sorted(set(keys)) and (after is None or all(key > after for key in keys)),
+                'inbox_page_order_or_progress')
+        return keys
 
 
 class Coordinator:
@@ -618,17 +631,52 @@ class Coordinator:
         journal['phase'] = 'receipt_confirmed'; journal['result'] = 'committed'
         self.complete_pending(journal)
 
+    def scan_state(self):
+        path = self.state / 'inbox-scan.private.json'
+        try:
+            value = json.loads(read_private(path))
+        except FileNotFoundError:
+            return {'schema': PROTOCOL + '.scan', 'ownerId': self.owner,
+                    'sourceHosts': self.sources, 'nextHost': 0,
+                    'positions': {host: None for host in self.sources}}
+        require(isinstance(value, dict) and set(value) == {
+                    'schema', 'ownerId', 'sourceHosts', 'nextHost', 'positions'}
+                and value['schema'] == PROTOCOL + '.scan' and value['ownerId'] == self.owner
+                and value['sourceHosts'] == self.sources
+                and isinstance(value['nextHost'], int) and not isinstance(value['nextHost'], bool)
+                and 0 <= value['nextHost'] < len(self.sources)
+                and isinstance(value['positions'], dict) and set(value['positions']) == set(self.sources)
+                and all(position is None or valid_uuid(position) for position in value['positions'].values()),
+                'inbox_scan_owner_or_cursor_binding')
+        return value
+
     def once(self):
         report = {'schema': PROTOCOL + '.cycle', 'owner_id': self.owner, 'ok': False,
                   'committed': 0, 'observed_reports': 0, 'already_recorded': 0, 'deferred': 0,
+                  'scanned': 0, 'list_requests': 0,
                   'oauth_refreshed': False, 'scheduler_implemented': False, 'provider_liveness_verified': False}
         with operation_lock(self.state):
             report['recovered_pending'] = self.recover_locked()
             self.finish_previous_receipt(self.manifest())
-            handled = 0
-            for host in self.sources:
-                for event_id in self.client.list('inbox/' + quote(host, safe='')):
+            scan = self.scan_state()
+            start_host = scan['nextHost']
+            for offset in range(len(self.sources)):
+                remaining = MAX_SCAN_EVENTS - report['scanned']
+                if remaining == 0:
+                    break
+                host_index = (start_host + offset) % len(self.sources)
+                host = self.sources[host_index]
+                page = self.client.list('inbox/' + quote(host, safe=''),
+                                        after=scan['positions'][host], limit=remaining)
+                report['list_requests'] += 1
+                scan['nextHost'] = (host_index + 1) % len(self.sources)
+                for event_id in page:
                     require(valid_uuid(event_id), 'inbox_list_child_not_event_uuid')
+                    report['scanned'] += 1
+                    # Cursor changes stay in memory until the whole cycle has
+                    # a known result. A failed/unknown mutation preserves the
+                    # previous durable scan position and its original journal.
+                    scan['positions'][host] = event_id
                     key = 'inbox/' + host + '/' + event_id
                     value = self.client.read(key)
                     require(value is not None and value['version'] == 1, 'inbox_event_not_immutable')
@@ -651,10 +699,6 @@ class Coordinator:
                                 and prior['data'].get('eventDigest') == parsed['sha256'], 'inbox_event_receipt_collision')
                         report['already_recorded'] += 1
                         continue
-                    if handled >= 32:
-                        report['batch_bound_hit'] = True
-                        break
-                    handled += 1
                     if parsed['kind'] == 'agent-report':
                         receipt = {'schema': PROTOCOL + '.receipt', 'ownerId': self.owner,
                                    'status': 'observed_no_scheduler_action', 'sourceHost': host,
@@ -675,6 +719,15 @@ class Coordinator:
                             report['deferred'] += 1
                             continue
                         raise
+                if len(page) < remaining:
+                    # LIST is not a snapshot of the whole inbox. Revisit the
+                    # beginning on the next sweep so later smaller UUIDs and
+                    # credentials authorized after deferral are never consumed
+                    # merely because the scan passed them once.
+                    scan['positions'][host] = None
+            if report['scanned'] == MAX_SCAN_EVENTS:
+                report['batch_bound_hit'] = True
+            private_json(self.state / 'inbox-scan.private.json', scan, replace=True)
             report['ok'] = True
             return report
 
@@ -742,3 +795,4 @@ def main():
 
 if __name__ == '__main__':
     raise SystemExit(main())
+

@@ -5,10 +5,11 @@
 //! gate. A fresh ReadIndex witness must surround receiving/installation in the
 //! coordinator; an old typed read cannot replace that consensus observation.
 use super::*;
-use crate::engines::kv2_native_records::NativeReadView;
+use crate::engines::kv2_native_records::{NativeReadView, PagedPayloadValidationMemo};
 use crate::ha_state::ClusterStateCodec;
 use crate::ha_state::native_v6::{
-    CodecResult, NativeV6CipherBuilder, NativeV6CipherClosure, NativeV6CodecError,
+    CodecResult, NativeV6CipherBuilder, NativeV6CipherClosure, NativeV6CipherRead,
+    NativeV6CodecError,
 };
 use crate::state_record_root_v6::{MountScope, ObjectDomain, RecordStateRootV6};
 use crate::state_records::{ObjectRef, RecordError};
@@ -19,6 +20,19 @@ use heptabao_raft_runtime::{
     NativeV6PublishedRoot, RecordObjectRef,
 };
 use std::cell::RefCell;
+
+#[path = "service_native_v6_retained_resources.rs"]
+mod retained_resources;
+pub(crate) use retained_resources::{
+    NativeV6TypedRetainedResources, mark_native_v6_retained_roots,
+};
+
+/// The actual shared codec and local ciphertext store borrowed for one call.
+/// This pair carries no proof, cached admission or renewed request deadline.
+pub(super) struct NativeV6ObjectStorage<'a> {
+    pub(super) codec: &'a ClusterStateCodec,
+    pub(super) store: &'a LocalV6BlobStage,
+}
 
 struct OriginalGate<'a> {
     deadline: OriginalDeadline,
@@ -51,7 +65,7 @@ fn record_error(error: NativeV6CodecError) -> RecordError {
 struct RecordingSource<'a, 'gate> {
     plan: &'a v6_records::NativeRootMigrationPlan,
     fallback: Option<&'a dyn ObjectSource>,
-    reuse: Option<&'a NativeV6CipherClosure>,
+    reuse: Option<&'a NativeV6CipherRead>,
     builder: RefCell<NativeV6CipherBuilder<'a>>,
     gate: &'a RefCell<OriginalGate<'gate>>,
 }
@@ -97,7 +111,7 @@ impl ObjectSource for RecordingSource<'_, '_> {
 struct CipherSource<'a, 'gate> {
     codec: &'a ClusterStateCodec,
     store: &'a LocalV6BlobStage,
-    closure: &'a NativeV6CipherClosure,
+    closure: &'a NativeV6CipherRead,
     gate: &'a RefCell<OriginalGate<'gate>>,
 }
 impl ObjectSource for CipherSource<'_, '_> {
@@ -138,7 +152,7 @@ pub(crate) struct NativeV6HaProposal {
 /// passed the real typed reader. Installing it still requires local Shamir
 /// custody, local root conditions and the caller's fresh consensus witness.
 pub(super) struct ReceivedNativeV6HaObjects {
-    closure: NativeV6CipherClosure,
+    closure: NativeV6CipherRead,
     protected: State,
     native: BTreeMap<MountScope, NativeReadView>,
     deadline: OriginalDeadline,
@@ -176,6 +190,11 @@ impl VerifiedNativeV6Object<'_> {
     pub(super) fn check_original(&self) -> CodecResult<()> {
         (self.original)()
     }
+    pub(super) fn shares_visitor_with(&self, other: &Self) -> bool {
+        std::ptr::eq(self.root, other.root)
+            && std::ptr::eq(self.root_bytes, other.root_bytes)
+            && std::ptr::eq(self.original, other.original)
+    }
 }
 
 pub(super) fn prepare_native_v6_ha_objects(
@@ -184,9 +203,33 @@ pub(super) fn prepare_native_v6_ha_objects(
     enrollment: &NativeV6PeerEnrollment,
     store: &LocalV6BlobStage,
     fallback: Option<&dyn ObjectSource>,
-    reuse: Option<&NativeV6CipherClosure>,
+    reuse: Option<&NativeV6CipherRead>,
     original_actor: &mut impl FnMut() -> CodecResult<()>,
 ) -> CodecResult<PreparedNativeV6HaObjects> {
+    prepare_native_v6_ha_objects_with_payload_validation(
+        plan,
+        NativeV6ObjectStorage { codec, store },
+        enrollment,
+        fallback,
+        reuse,
+        original_actor,
+        None,
+    )
+}
+
+// The optional memo changes only repeated deterministic payload decoding.
+// RecordingSource still reads, authenticates and stages each actual object
+// under every original gate, producing a fresh epoch-bound cipher closure.
+pub(super) fn prepare_native_v6_ha_objects_with_payload_validation(
+    plan: &v6_records::NativeRootMigrationPlan,
+    storage: NativeV6ObjectStorage<'_>,
+    enrollment: &NativeV6PeerEnrollment,
+    fallback: Option<&dyn ObjectSource>,
+    reuse: Option<&NativeV6CipherRead>,
+    original_actor: &mut impl FnMut() -> CodecResult<()>,
+    payload_validation: Option<&RefCell<PagedPayloadValidationMemo>>,
+) -> CodecResult<PreparedNativeV6HaObjects> {
+    let NativeV6ObjectStorage { codec, store } = storage;
     let gate = RefCell::new(OriginalGate {
         deadline: plan.deadline,
         actor: original_actor,
@@ -224,7 +267,35 @@ pub(super) fn prepare_native_v6_ha_objects(
     // Full owner, metadata, retained-history and every paged-payload block are
     // authenticated by their actual role/scoped ObjectRef key. The recording
     // source never asserts that a caller-provided list is a complete closure.
-    let result = v6_records::materialize_for_service(&plan.root, context, &source);
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    let started = {
+        use std::io::Write as _;
+        let started = std::time::Instant::now();
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "HBHA-PRIVATE-PREPARE-STAGE event=start phase=typed_materialize planned_objects={}",
+            plan.objects.len()
+        );
+        started
+    };
+    let result = match payload_validation {
+        Some(memo) => v6_records::materialize_for_service_with_payload_validation(
+            &plan.root, context, &source, memo,
+        ),
+        None => v6_records::materialize_for_service(&plan.root, context, &source),
+    };
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    {
+        use std::io::Write as _;
+        let elapsed = started.elapsed().as_micros();
+        let _ = writeln!(
+            std::io::stderr().lock(),
+            "HBHA-PRIVATE-PREPARE-STAGE event=end phase=typed_materialize planned_objects={} elapsed_us={} completed={}",
+            plan.objects.len(),
+            elapsed,
+            result.is_ok()
+        );
+    }
     check(&gate)?;
     let (protected, native) = result.map_err(|_| NativeV6CodecError::Directory)?;
     drop((protected, native));
@@ -306,21 +377,69 @@ pub(super) fn open_native_v6_ha_objects(
     deadline: OriginalDeadline,
     original_actor: &mut impl FnMut() -> CodecResult<()>,
 ) -> CodecResult<ReceivedNativeV6HaObjects> {
+    open_native_v6_ha_objects_inner(
+        NativeV6ObjectStorage { codec, store },
+        enrollment,
+        published,
+        context,
+        deadline,
+        original_actor,
+        None,
+    )
+}
+
+pub(super) fn open_native_v6_ha_objects_with_payload_validation(
+    storage: NativeV6ObjectStorage<'_>,
+    enrollment: &NativeV6PeerEnrollment,
+    published: &NativeV6PublishedRoot,
+    context: ReadContext<'_>,
+    deadline: OriginalDeadline,
+    original_actor: &mut impl FnMut() -> CodecResult<()>,
+    payload_validation: &RefCell<PagedPayloadValidationMemo>,
+) -> CodecResult<ReceivedNativeV6HaObjects> {
+    open_native_v6_ha_objects_inner(
+        storage,
+        enrollment,
+        published,
+        context,
+        deadline,
+        original_actor,
+        Some(payload_validation),
+    )
+}
+
+fn open_native_v6_ha_objects_inner(
+    storage: NativeV6ObjectStorage<'_>,
+    enrollment: &NativeV6PeerEnrollment,
+    published: &NativeV6PublishedRoot,
+    context: ReadContext<'_>,
+    deadline: OriginalDeadline,
+    original_actor: &mut impl FnMut() -> CodecResult<()>,
+    payload_validation: Option<&RefCell<PagedPayloadValidationMemo>>,
+) -> CodecResult<ReceivedNativeV6HaObjects> {
+    let NativeV6ObjectStorage { codec, store } = storage;
     let gate = RefCell::new(OriginalGate {
         deadline,
         actor: original_actor,
     });
     check(&gate)?;
     let closure =
-        codec
-            .open_native_v6_committed_closure(enrollment, published, store, &mut || check(&gate))?;
+        codec.open_native_v6_committed_read(enrollment, published, store, &mut || check(&gate))?;
     let source = CipherSource {
         codec,
         store,
         closure: &closure,
         gate: &gate,
     };
-    let result = v6_records::materialize_for_service(closure.root(), context, &source);
+    let result = match payload_validation {
+        Some(memo) => v6_records::materialize_for_service_with_payload_validation(
+            closure.root(),
+            context,
+            &source,
+            memo,
+        ),
+        None => v6_records::materialize_for_service(closure.root(), context, &source),
+    };
     check(&gate)?;
     let (protected, native) = result.map_err(|_| NativeV6CodecError::Directory)?;
     check(&gate)?;
@@ -339,7 +458,8 @@ impl ReceivedNativeV6HaObjects {
     pub(super) fn root_bytes(&self) -> &[u8] {
         self.closure.root_bytes()
     }
-    pub(super) fn cipher_closure(&self) -> &NativeV6CipherClosure {
+    #[cfg(test)]
+    pub(super) fn cipher_closure(&self) -> &NativeV6CipherRead {
         &self.closure
     }
 
@@ -380,13 +500,68 @@ impl ReceivedNativeV6HaObjects {
         check(&gate)
     }
 
+    /// Production installation may hold one bounded group while its new
+    /// ciphertext files reach a common durability barrier. Typed capabilities
+    /// are still private temporary borrows of this fully verified closure;
+    /// neither their plaintext nor their original gate escapes this callback.
+    pub(super) fn visit_verified_object_batches(
+        &self,
+        codec: &ClusterStateCodec,
+        store: &LocalV6BlobStage,
+        original_actor: &mut impl FnMut() -> CodecResult<()>,
+        visit: &mut impl FnMut(&[VerifiedNativeV6Object<'_>]) -> CodecResult<()>,
+    ) -> CodecResult<()> {
+        let gate = RefCell::new(OriginalGate {
+            deadline: self.deadline,
+            actor: original_actor,
+        });
+        check(&gate)?;
+        let original = || check(&gate);
+        // Installation rewraps each object with the local HBA1 barrier, whose
+        // exact overhead is 32 bytes. Reserve that overhead for all 32 possible
+        // members before reading any batch, so plaintext plus all local seal
+        // overhead stays within four MiB even for many tiny objects. The
+        // durable owner independently verifies the sum of actual exact lengths.
+        let maximum_plaintext_bytes =
+            heptabao_durable_service::ImmutableSourceSession::MAX_BATCH_CIPHERTEXT_BYTES
+                - 32 * heptabao_filesystem_guard::MAX_IMMUTABLE_BATCH_OBJECTS;
+        self.closure.visit_object_batches(
+            codec,
+            store,
+            maximum_plaintext_bytes,
+            &mut || check(&gate),
+            &mut |batch| {
+                let objects: Vec<_> = batch
+                    .iter()
+                    .map(|(domain, reference, plaintext)| VerifiedNativeV6Object {
+                        root: self.closure.root(),
+                        root_bytes: self.closure.root_bytes(),
+                        domain,
+                        reference,
+                        plaintext: plaintext.as_slice(),
+                        original: &original,
+                    })
+                    .collect();
+                for object in &objects {
+                    object.check_original()?;
+                }
+                visit(&objects)?;
+                for object in &objects {
+                    object.check_original()?;
+                }
+                check(&gate)
+            },
+        )?;
+        check(&gate)
+    }
+
     pub(super) fn into_detached_parts(
         self,
         original_actor: &mut impl FnMut() -> CodecResult<()>,
     ) -> CodecResult<(
         State,
         BTreeMap<MountScope, NativeReadView>,
-        NativeV6CipherClosure,
+        NativeV6CipherRead,
     )> {
         let gate = RefCell::new(OriginalGate {
             deadline: self.deadline,

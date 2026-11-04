@@ -1,13 +1,15 @@
 //! Real Raft publication plus strict lossless historical profile regressions.
 use super::*;
-use crate::service::tests::{Root, bootstrap_unmounted};
+use crate::service::tests::{Root, bootstrap_pre141_unmounted};
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 fn historical(root: &Root) -> TestResult<(Service, String, String)> {
     historical_backend(root, false)
 }
 fn historical_backend(root: &Root, kv1: bool) -> TestResult<(Service, String, String)> {
     let mut service = root.service()?;
-    let (key, token) = bootstrap_unmounted(&mut service)?;
+    // The strict schema-1 wire seed must begin with the historical factory;
+    // current default-policy owners cannot be relabeled as that old format.
+    let (key, token) = bootstrap_pre141_unmounted(&mut service)?;
     let original = service.state.as_ref().ok_or("state")?;
     let mut auth = CheckedJson(serde_json::from_slice(
         &owner_store::serialize_owner(&original.auth).map_err(|_| "auth bytes")?,

@@ -21,8 +21,36 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         plaintext: &[u8],
         before: &mut impl FnMut() -> Result<(), ServiceError>,
     ) -> Result<ImmutableBlobReadPin, ServiceError> {
+        match self.reuse_existing_immutable_object_before_publish(
+            session,
+            locator,
+            exact_ciphertext_len,
+            context,
+            plaintext,
+            before,
+        )? {
+            Some(pin) => Ok(pin),
+            None => self.stage_immutable_object_before_publish(
+                session, locator, context, plaintext, before,
+            ),
+        }
+    }
+
+    // Split only the existing-leaf branch from its ordinary single-object
+    // fallback. Both callers retain the original actual-fd/digest/file+dir
+    // sync/AEAD protocol below; absence grants no physical receipt.
+    pub(super) fn reuse_existing_immutable_object_before_publish(
+        &mut self,
+        session: &ImmutableSourceSession,
+        locator: BlobLocator,
+        exact_ciphertext_len: usize,
+        context: &[u8],
+        plaintext: &[u8],
+        before: &mut impl FnMut() -> Result<(), ServiceError>,
+    ) -> Result<Option<ImmutableBlobReadPin>, ServiceError> {
         before()?;
         self.check_immutable_source_session(session)?;
+        self.ensure_immutable_locator_not_retiring(locator)?;
         if locator.store_id() != session.store_id
             || context.is_empty()
             || context.len() > MAX_OBJECT_CONTEXT_BYTES
@@ -31,8 +59,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         {
             return Err(ServiceError::InvalidResource);
         }
-        if exact_ciphertext_len == 0
-            || exact_ciphertext_len > session.profile.max_ciphertext_bytes
+        if exact_ciphertext_len == 0 || exact_ciphertext_len > session.profile.max_ciphertext_bytes
         {
             return Err(ServiceError::RequestCapacityExhausted);
         }
@@ -65,18 +92,14 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 // Only the first guarded open's actual ENOENT reaches here.
                 before()?;
                 self.check_immutable_source_session(session)?;
-                return self.stage_immutable_object_before_publish(
-                    session, locator, context, plaintext, before,
-                );
+                return Ok(None);
             }
             Err(BackendError::Unsupported) => {
                 // Compatibility is an explicit capability result, not a
                 // fabricated absence or a claimed durability receipt.
                 before()?;
                 self.check_immutable_source_session(session)?;
-                return self.stage_immutable_object_before_publish(
-                    session, locator, context, plaintext, before,
-                );
+                return Ok(None);
             }
             Err(error) => return Err(map_backend_error(error)),
         };
@@ -89,8 +112,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         {
             return Err(ServiceError::CorruptState);
         }
-        let actual =
-            self.read_immutable_object_before_delivery(session, &pin, context, before)?;
+        let actual = self.read_immutable_object_before_delivery(session, &pin, context, before)?;
         if actual.as_slice() != plaintext {
             return Err(ServiceError::RequestBindingConflict);
         }
@@ -102,7 +124,7 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
         if !pin.matches_profile(&session.profile) || !pin.has_synchronized_ciphertext() {
             return Err(ServiceError::CorruptState);
         }
-        Ok(pin)
+        Ok(Some(pin))
     }
 }
 

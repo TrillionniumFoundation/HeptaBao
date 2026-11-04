@@ -109,7 +109,7 @@ fn aad_bound_convergent_schema66_fences_old_formats_and_all_namespace_state() ->
 fn each_nullable_identity_metadata_owner_independently_requires_schema47() -> TestResult {
     let root = Fixture::new()?;
     let mut service = root.service()?;
-    let (admin, _) = bootstrap(&mut service)?;
+    let (_, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -821,7 +821,7 @@ fn identity_schema_fences_persisted_radius_state_for_old_readers() -> TestResult
 fn identity_schema_promotes_before_a_mutating_response_and_survives_reopen() -> TestResult {
     let f = Fixture::new()?;
     let mut s = f.service()?;
-    let (admin, key) = bootstrap(&mut s)?;
+    let (key, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut s)?;
     assert_eq!(
         s.state.as_ref().ok_or("state")?.schema,
         CURRENT_STATE_SCHEMA
@@ -896,7 +896,7 @@ fn identity_schema_promotes_before_a_mutating_response_and_survives_reopen() -> 
 fn identity_schema_finite_use_upgrade_is_durable_even_when_acl_denies() -> TestResult {
     let f = Fixture::new()?;
     let mut s = f.service()?;
-    let (admin, key) = bootstrap(&mut s)?;
+    let (key, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut s)?;
     // Issue through AuthState before any Service mutation publishes a v5 root.
     // Persisting this historical fixture must not attempt to downgrade an
     // already-published record root or discard any KV1 data.
@@ -1258,18 +1258,12 @@ mod acl_templates;
 fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_removal() -> TestResult {
     let fixture = Fixture::new()?;
     let mut service = fixture.service()?;
-    let (admin, unseal) = bootstrap(&mut service)?;
+    let (unseal, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     assert!(service.state.as_ref().ok_or("state")?.schema == CURRENT_STATE_SCHEMA);
     assert!(
-        call(
-            &mut service,
-            "",
-            &admin,
-            "POST",
-            "sys/namespaces/tenant",
-            json!({})
-        )
-        .status
+        service
+            .create_pre144_namespace_fixture("tenant", &admin)?
+            .status
             == 200
     );
     assert!(
@@ -1374,15 +1368,9 @@ fn aad_bound_schema66_is_sticky_after_last_safe_mount_and_empty_namespace_remova
         "actual tenant metadata is retired after its last private engine owner was removed"
     );
     assert!(
-        call(
-            &mut service,
-            "",
-            &admin,
-            "POST",
-            "sys/namespaces/empty",
-            json!({})
-        )
-        .status
+        service
+            .create_pre144_namespace_fixture("empty", &admin)?
+            .status
             == 200
     );
     assert!(

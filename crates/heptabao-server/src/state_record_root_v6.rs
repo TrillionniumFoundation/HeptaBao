@@ -13,7 +13,8 @@ pub(crate) const ENGINE_FORMAT: &str = "heptabao-engines-record-metadata-v6";
 pub(crate) const MAX_KV2_MOUNTS: usize = 128;
 pub(crate) const READER_FORMAT: u32 = 6;
 const MAX_KV1_RECORDS: u64 = 1_048_576;
-pub(crate) const MAX_KV2_RECORDS: u64 = 100_000;
+// The publication-wide total must not exceed the native owner/reader bound.
+pub(crate) const MAX_KV2_RECORDS: u64 = crate::engines::kv2_native_records::MAX_RECORDS as u64;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -167,7 +168,197 @@ fn validate_graph(root: &Kv1Root, required: bool, max_records: u64) -> Result<()
     }
 }
 
+// Pure canonical root data only. No Actor, source, fd, clock or completed
+// ownership check is retained. The Service still validates its live root at every gate.
+#[cfg(feature = "native-v6-storage")]
+pub(crate) struct NativeRootContentIdentity {
+    root: RecordStateRootV6,
+    identity: StateIdentity,
+}
+#[cfg(feature = "native-v6-storage")]
+impl NativeRootContentIdentity {
+    pub(crate) fn capture(
+        root: &RecordStateRootV6,
+        identity: StateIdentity,
+    ) -> Result<Self, RootError> {
+        if root.identity()? != identity {
+            return Err(RootError::Invalid);
+        }
+        Ok(Self {
+            root: root.clone(),
+            identity,
+        })
+    }
+    pub(crate) fn matches_current(
+        &self,
+        root: &RecordStateRootV6,
+        target: StateIdentity,
+        state_digest: [u8; 32],
+    ) -> Result<bool, RootError> {
+        if target != self.identity
+            || state_digest != self.identity.digest()
+            || !root.same_identity_fields(&self.root)
+        {
+            // The Service takes its original complete identity path on false.
+            return Ok(false);
+        }
+        // Keep one original live-root validation on every successful shortcut.
+        // Every other Service case runs it through the original fallback.
+        root.validate()?;
+        Ok(true)
+    }
+}
+
 impl RecordStateRootV6 {
+    // Exhaustive destructuring deliberately makes adding a root/floor field a
+    // compile error here. Equal typed fields have identical canonical bytes;
+    // this comparison never substitutes for a physical/current-source check.
+    #[cfg(feature = "native-v6-storage")]
+    fn same_identity_fields(&self, other: &Self) -> bool {
+        use subtle::ConstantTimeEq;
+        fn reference_eq(left: &ObjectRef, right: &ObjectRef) -> bool {
+            let ObjectRef {
+                id,
+                kind,
+                encoded_bytes,
+                record_count,
+                payload_bytes,
+            } = left;
+            let ObjectRef {
+                id: other_id,
+                kind: other_kind,
+                encoded_bytes: other_encoded,
+                record_count: other_count,
+                payload_bytes: other_payload,
+            } = right;
+            id.bytes() == other_id.bytes()
+                && kind == other_kind
+                && encoded_bytes == other_encoded
+                && record_count == other_count
+                && payload_bytes == other_payload
+        }
+        fn index_eq(left: &Kv1Root, right: &Kv1Root) -> bool {
+            let Kv1Root { reference, height } = left;
+            let Kv1Root {
+                reference: other_reference,
+                height: other_height,
+            } = right;
+            height == other_height
+                && match (reference, other_reference) {
+                    (Some(left), Some(right)) => reference_eq(left, right),
+                    (None, None) => true,
+                    _ => false,
+                }
+        }
+        fn owner_eq(left: &RoleOwner, right: &RoleOwner) -> bool {
+            let RoleOwner { domain, owner } = left;
+            let RoleOwner {
+                domain: other_domain,
+                owner: other_owner,
+            } = right;
+            let OpaqueOwnerRef {
+                name,
+                total_bytes,
+                chunks,
+                digest,
+            } = owner;
+            let OpaqueOwnerRef {
+                name: other_name,
+                total_bytes: other_total,
+                chunks: other_chunks,
+                digest: other_digest,
+            } = other_owner;
+            domain == other_domain
+                && name == other_name
+                && total_bytes == other_total
+                && digest == other_digest
+                && chunks.len() == other_chunks.len()
+                && chunks
+                    .iter()
+                    .zip(other_chunks)
+                    .all(|(a, b)| reference_eq(a, b))
+        }
+        fn graph_eq(left: &Kv2GraphRef, right: &Kv2GraphRef) -> bool {
+            let Kv2GraphRef {
+                scope,
+                graph_format,
+                logical_payload_bytes,
+                root,
+            } = left;
+            let Kv2GraphRef {
+                scope: other_scope,
+                graph_format: other_format,
+                logical_payload_bytes: other_logical,
+                root: other_root,
+            } = right;
+            let MountScope {
+                namespace,
+                mount,
+                incarnation,
+            } = scope;
+            let MountScope {
+                namespace: other_namespace,
+                mount: other_mount,
+                incarnation: other_incarnation,
+            } = other_scope;
+            namespace == other_namespace
+                && mount == other_mount
+                && incarnation == other_incarnation
+                && graph_format == other_format
+                && logical_payload_bytes == other_logical
+                && index_eq(root, other_root)
+        }
+        let Self {
+            storage_format,
+            state_schema,
+            reader_floor,
+            global_lossless_json_format,
+            cluster_id,
+            replay_epoch,
+            owners,
+            kv1,
+            kv2,
+            object_address_key,
+        } = self;
+        let Self {
+            storage_format: other_storage_format,
+            state_schema: other_state_schema,
+            reader_floor: other_reader_floor,
+            global_lossless_json_format: other_global_format,
+            cluster_id: other_cluster_id,
+            replay_epoch: other_replay_epoch,
+            owners: other_owners,
+            kv1: other_kv1,
+            kv2: other_kv2,
+            object_address_key: other_address_key,
+        } = other;
+        let ReaderFloor {
+            record_format,
+            minimum_state_schema,
+            native_kv2_format,
+        } = reader_floor;
+        let ReaderFloor {
+            record_format: other_record_format,
+            minimum_state_schema: other_minimum_schema,
+            native_kv2_format: other_native_format,
+        } = other_reader_floor;
+        let AddressMaterial(address_key) = object_address_key;
+        let AddressMaterial(other_key) = other_address_key;
+        storage_format == other_storage_format
+            && state_schema == other_state_schema
+            && record_format == other_record_format
+            && minimum_state_schema == other_minimum_schema
+            && native_kv2_format == other_native_format
+            && global_lossless_json_format == other_global_format
+            && cluster_id == other_cluster_id
+            && replay_epoch == other_replay_epoch
+            && owners.len() == other_owners.len()
+            && owners.iter().zip(other_owners).all(|(a, b)| owner_eq(a, b))
+            && index_eq(kv1, other_kv1)
+            && kv2.len() == other_kv2.len()
+            && kv2.iter().zip(other_kv2).all(|(a, b)| graph_eq(a, b))
+            && bool::from(address_key.ct_eq(other_key))
+    }
     pub(crate) fn validate(&self) -> Result<(), RootError> {
         if self.storage_format != STORAGE_FORMAT
             || self.object_address_key.0 == [0; 32]

@@ -538,19 +538,32 @@ def stop_owned(process, owner):
     started = time.monotonic()
     term_until, kill_until = started + 5, started + 10
     observation_error = None
+
+    def record_term_observation_error(error):
+        nonlocal observation_error
+        # TERM exhaustion only advances to KILL. It proves no emptiness;
+        # a fresh complete scan must still finish under the original kill_until.
+        # Identity, I/O and every other observation error remain fatal.
+        if (isinstance(error, Refusal)
+                and str(error) == "original_cleanup_observation_deadline_expired"
+                and time.monotonic() >= term_until):
+            receipt["term_observation_deadline_expired"] = True
+        else:
+            observation_error = str(error) if isinstance(error, Refusal) else type(error).__name__
+
     try:
         remaining = live_owned_group(owner, term_until)
         receipt["live_group_before"] = remaining
     except (OSError, Refusal) as error:
         remaining = [process.pid]
-        observation_error = str(error) if isinstance(error, Refusal) else type(error).__name__
+        record_term_observation_error(error)
     os.killpg(process.pid, signal.SIGTERM)
     receipt["signals"].append("SIGTERM")
     while remaining and time.monotonic() < term_until:
         try:
             remaining = live_owned_group(owner, term_until)
         except (OSError, Refusal) as error:
-            observation_error = str(error) if isinstance(error, Refusal) else type(error).__name__
+            record_term_observation_error(error)
             break
         if remaining:
             time.sleep(min(0.05, max(0, term_until - time.monotonic())))

@@ -18,7 +18,7 @@ use std::collections::BTreeMap;
 #[cfg(test)]
 use std::collections::BTreeSet;
 use std::sync::Arc;
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 use std::time::Instant;
 #[cfg(test)]
 use zeroize::Zeroizing;
@@ -58,10 +58,10 @@ impl From<RecordError> for CustodyError {
     }
 }
 
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 #[derive(Clone, Copy)]
 pub(crate) struct OriginalDeadline(Instant);
-#[cfg(any(test, feature = "fixture-native-v6-service"))]
+#[cfg(any(test, feature = "native-v6-storage"))]
 impl OriginalDeadline {
     pub(crate) fn capture() -> Result<Self, CustodyError> {
         let deadline = Self(crate::request_deadline::current().ok_or(CustodyError::Deadline)?);

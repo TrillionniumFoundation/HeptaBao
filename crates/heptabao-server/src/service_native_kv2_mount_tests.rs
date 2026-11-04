@@ -12,8 +12,10 @@ const SECONDS: u64 = 15;
 const WITNESS: &str = "sys/internal/storage/kv2-version-witness";
 const PAYLOAD: &[u8] = br#"{"a":0.123456789012345678901234567890,"nested":[null,true,{"zero":"\\u0000"}],"unicode":"credential migration","z":9007199254740993}"#;
 
+type AfterMountAuditHook = Box<dyn FnOnce(&mut Service)>;
+
 thread_local! {
-    static AFTER_MOUNT_AUDIT: RefCell<Option<Box<dyn FnOnce(&mut Service)>>> = RefCell::new(None);
+    static AFTER_MOUNT_AUDIT: RefCell<Option<AfterMountAuditHook>> = RefCell::new(None);
 }
 
 pub(super) fn after_actual_mount_audit(service: &mut Service) {
@@ -625,7 +627,7 @@ fn native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs() -> T
         403
     );
     for body in [
-        json!({"type":"transit"}),
+        json!({"type":"ssh"}),
         json!({"type":"kv","options":{"version":"1"}}),
     ] {
         assert_eq!(
@@ -747,10 +749,9 @@ fn native_kv2_mount_seal_after_actual_audit_vetoes_reply_and_cold_recovers_commi
             service
                 .native_root
                 .as_ref()
-                .expect("actual committed root")
-                .kv2
-                .iter()
-                .any(|graph| graph.scope.mount == "sealed-mount/" && graph.scope.incarnation == 1)
+                .is_some_and(|root| root.kv2.iter().any(|graph| {
+                    graph.scope.mount == "sealed-mount/" && graph.scope.incarnation == 1
+                }))
         );
         let seal = call(service, "POST", "sys/seal", &seal_root, json!({}));
         assert_eq!(seal.status, 204, "real Service seal after committed mount");

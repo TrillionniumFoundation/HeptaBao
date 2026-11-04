@@ -8,12 +8,56 @@ mod snapshot;
 
 #[path = "service_native_v6_ha_archive_source.rs"]
 mod archive_source;
+pub(in crate::service) use archive_source::BorrowedArchiveRepairSource;
 pub(crate) use archive_source::NativeHaArchiveRepairSource;
 
 pub(crate) struct ColdNativeHaRead {
     pub(in crate::service) metadata: State,
     pub(in crate::service) native: BTreeMap<MountScope, NativeReadView>,
     pub(in crate::service) root: RecordStateRootV6,
+}
+
+// A warm request has already selected the exact current local root/cursors and
+// original committed ReadIndex. Floor2 authenticates its typed metadata and
+// every actual ciphertext locator under that same source session and gate;
+// historical JSON is authenticated only by the selected point payload reader.
+// This is the existing single-node floor2 contract, not a cached authorization.
+// New-root installation, cold recovery and post-publication readback continue
+// to use materialize_local() and authenticate the complete payload closure.
+pub(super) fn materialize_current_local_request(
+    durable: &mut DurableService<AeadBarrier>,
+    root: &RecordStateRootV6,
+    deadline: OriginalDeadline,
+    gate: &mut impl FnMut() -> Result<(), ServiceError>,
+) -> Result<(State, BTreeMap<MountScope, NativeReadView>), Response> {
+    if root.reader_floor.native_kv2_format != 2 {
+        return materialize_local(durable, root, deadline, gate);
+    }
+    let source = native_blob_source::NativeSource::new_checked(durable, deadline, &mut *gate)
+        .map_err(|_| unavailable())?;
+    let (metadata, native) =
+        v6_records::materialize_metadata_for_service(root, context(root)?, &source)
+            .map_err(|_| unavailable())?;
+    for (scope, view) in &native {
+        view.visit_paged_payload_references(
+            |reference| {
+                source.pin_payload_location(
+                    &crate::state_record_root_v6::ObjectDomain::Kv2(scope.clone()),
+                    reference,
+                )
+            },
+            &|| {
+                deadline
+                    .check()
+                    .map_err(|_| crate::state_records::RecordError::Invalid)
+            },
+        )
+        .map_err(|_| unavailable())?;
+    }
+    drop(source);
+    gate().map_err(storage_rejected)?;
+    live(deadline)?;
+    Ok((metadata, native))
 }
 
 fn fingerprints(state: &State, deadline: OriginalDeadline) -> Result<[[u8; 32]; 4], Response> {
@@ -65,16 +109,57 @@ pub(crate) fn load_cold_native_ha(
     if probe.storage_format.as_deref() != Some(crate::state_record_root_v6::STORAGE_FORMAT) {
         return Ok(None);
     }
+    // One cold call may install a new committed root and then reauthenticate
+    // its full local graph. Share only successful pure payload semantics;
+    // every pass still obtains a fresh source, AEAD/full digest and live gate.
+    // The memo never leaves this call or grants a cold/warm owner capability.
+    let payload_validation = RefCell::new(PagedPayloadValidationMemo::default());
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    let cold_phase = NativeHaPhaseTimer::start(
+        "cold_native_total",
+        deadline.instant(),
+        durable.generation(),
+        0,
+        0,
+    );
     let ha = service.ha.as_ref().ok_or_else(unavailable)?;
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    let phase = NativeHaPhaseTimer::start(
+        "cold_environment",
+        deadline.instant(),
+        durable.generation(),
+        0,
+        0,
+    );
     let environment = LocalHaEnvironment::capture(service, ha, key, deadline)
         .inspect_err(|_| cold_stage_failed("environment"))?;
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    phase.finish(true);
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    let phase = NativeHaPhaseTimer::start(
+        "cold_process_lock",
+        deadline.instant(),
+        durable.generation(),
+        0,
+        0,
+    );
     let process = ha.lock_for_request().map_err(|_| {
         cold_stage_failed("process_lock");
         unavailable()
     })?;
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    phase.finish(true);
     if !process.native_v6_enabled() {
         return Err(unavailable());
     }
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    let phase = NativeHaPhaseTimer::start(
+        "cold_committed_read",
+        deadline.instant(),
+        durable.generation(),
+        0,
+        0,
+    );
     let committed = process
         .native_v6_committed_read(deadline)
         .map_err(|error| {
@@ -88,6 +173,16 @@ pub(crate) fn load_cold_native_ha(
             cold_stage_failed("committed_root_absent");
             unavailable()
         })?;
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    phase.finish(true);
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    let phase = NativeHaPhaseTimer::start(
+        "cold_local_selection",
+        deadline.instant(),
+        durable.generation(),
+        committed.published().intent().object_count,
+        committed.published().intent().ciphertext_bytes,
+    );
     let mut selected = LocalSelection::read(durable, &committed)
         .inspect_err(|_| cold_stage_failed("local_selection"))?;
     let root = selected.native.as_ref().ok_or_else(unavailable)?;
@@ -98,6 +193,8 @@ pub(crate) fn load_cold_native_ha(
         cold_stage_failed("local_root_binding");
         return Err(unavailable());
     }
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    phase.finish(true);
     let mut gate = || {
         environment
             .check_cold(service, key)
@@ -114,10 +211,26 @@ pub(crate) fn load_cold_native_ha(
         // selected. A cold catch-up installs the actual current closure without
         // needing readable obsolete payloads or a fabricated warm State.
         let published = Cell::new(false);
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let phase = NativeHaPhaseTimer::start(
+            "cold_replica_install",
+            deadline.instant(),
+            durable.generation(),
+            committed.published().intent().object_count,
+            committed.published().intent().ciphertext_bytes,
+        );
         let result = process
             .with_native_v6_source(&committed, |codec, store| {
-                service.install_native_v6_replica_inner(
-                    durable, &selected, &committed, codec, store, &mut gate, &published,
+                service.install_native_v6_replica_inner_with_payload_validation(
+                    durable,
+                    &selected,
+                    &committed,
+                    LocalInstallSource {
+                        storage: NativeV6ObjectStorage { codec, store },
+                        payload_validation: &payload_validation,
+                    },
+                    &mut gate,
+                    &published,
                 )
             })
             .map_err(|_| {
@@ -131,6 +244,8 @@ pub(crate) fn load_cold_native_ha(
             ));
         }
         result.inspect_err(|_| cold_stage_failed("replica_install"))?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        phase.finish(true);
         selected = LocalSelection::read(durable, &committed)
             .inspect_err(|_| cold_stage_failed("installed_local_selection"))?;
     }
@@ -138,11 +253,36 @@ pub(crate) fn load_cold_native_ha(
     NativeHaCursor::decode(selected.ha_bytes.as_ref().ok_or_else(unavailable)?.expose())?
         .matches_current(&committed)
         .inspect_err(|_| cold_stage_failed("current_cursor"))?;
-    let (metadata, native) = match materialize_local(durable, root, deadline, &mut gate) {
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    let phase = NativeHaPhaseTimer::start(
+        "cold_materialize_full",
+        deadline.instant(),
+        durable.generation(),
+        committed.published().intent().object_count,
+        committed.published().intent().ciphertext_bytes,
+    );
+    let materialized = materialize_local_with_payload_validation(
+        durable,
+        root,
+        deadline,
+        &mut gate,
+        Some(&payload_validation),
+    );
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    phase.finish(materialized.is_ok());
+    let (metadata, native) = match materialized {
         Ok(local) => local,
         Err(_) => {
             // Only exact-current registered metadata is eligible for a missing
             // physical-file repair. Existing bad bytes remain untouched.
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            let phase = NativeHaPhaseTimer::start(
+                "cold_missing_physical_repair",
+                deadline.instant(),
+                durable.generation(),
+                committed.published().intent().object_count,
+                committed.published().intent().ciphertext_bytes,
+            );
             process
                 .with_native_v6_source(&committed, |codec, store| {
                     repair_current_local_objects(
@@ -154,10 +294,36 @@ pub(crate) fn load_cold_native_ha(
                     unavailable()
                 })?
                 .inspect_err(|_| cold_stage_failed("physical_repair"))?;
-            materialize_local(durable, root, deadline, &mut gate)
-                .inspect_err(|_| cold_stage_failed("materialize_after_repair"))?
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            phase.finish(true);
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            let phase = NativeHaPhaseTimer::start(
+                "cold_materialize_after_repair",
+                deadline.instant(),
+                durable.generation(),
+                committed.published().intent().object_count,
+                committed.published().intent().ciphertext_bytes,
+            );
+            let materialized = materialize_local_with_payload_validation(
+                durable,
+                root,
+                deadline,
+                &mut gate,
+                Some(&payload_validation),
+            );
+            #[cfg(feature = "private-ha-forward-diagnostic")]
+            phase.finish(materialized.is_ok());
+            materialized.inspect_err(|_| cold_stage_failed("materialize_after_repair"))?
         }
     };
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    let phase = NativeHaPhaseTimer::start(
+        "cold_final_binding",
+        deadline.instant(),
+        durable.generation(),
+        committed.published().intent().object_count,
+        committed.published().intent().ciphertext_bytes,
+    );
     root_namespace_only(&metadata).inspect_err(|_| cold_stage_failed("root_namespace"))?;
     let owner_bytes = root
         .owners
@@ -175,6 +341,10 @@ pub(crate) fn load_cold_native_ha(
         .inspect_err(|_| cold_stage_failed("final_local_generation"))
         .map_err(storage_rejected)?;
     gate().map_err(storage_rejected)?;
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    phase.finish(true);
+    #[cfg(feature = "private-ha-forward-diagnostic")]
+    cold_phase.finish(true);
     // This cold owner has not installed State or a local barrier key into
     // Service, completed unseal audit, or authorized any business principal.
     Ok(Some(ColdNativeHaRead {
@@ -194,6 +364,31 @@ pub(crate) struct NativeHaReadProof {
     identity: StateIdentity,
     owner_fingerprints: [[u8; 32]; 4],
 }
+// Confined to one actual local request check while its Durable owner is
+// taken separately. The shared Service borrow fixes only the ordinary root,
+// State and opaque owner values. Physical seal, HA environment, deadline,
+// actual consensus witness and storage session checks remain live.
+struct BorrowedNativeHaReadProof<'a> {
+    proof: &'a NativeHaReadProof,
+    service: &'a Service,
+}
+
+impl<'a> BorrowedNativeHaReadProof<'a> {
+    fn capture(proof: &'a NativeHaReadProof, service: &'a Service) -> Result<Self, Response> {
+        proof.check_instance(service)?;
+        Ok(Self { proof, service })
+    }
+
+    fn check_live(&self) -> Result<(), Response> {
+        self.proof.environment.check(self.service)?;
+        live(self.proof.environment.deadline)
+    }
+
+    fn check_complete(&self) -> Result<(), Response> {
+        self.proof.check_instance(self.service)
+    }
+}
+
 impl NativeHaReadProof {
     pub(crate) fn generation(&self) -> u64 {
         self.selected.initial_generation
@@ -289,6 +484,14 @@ impl NativeHaReadProof {
             OriginalDeadline,
         ) -> Result<(), Response>,
     ) -> Result<(), Response> {
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let phase = NativeHaPhaseTimer::start(
+            "request_proof_check",
+            self.environment.deadline.instant(),
+            self.selected.initial_generation,
+            0,
+            0,
+        );
         self.check_instance(service)?;
         let process = self
             .environment
@@ -300,12 +503,14 @@ impl NativeHaReadProof {
             .map_err(|_| unavailable())?;
         let mut durable = service.durable.take().ok_or_else(unavailable)?;
         let result = (|| {
+            let borrowed = BorrowedNativeHaReadProof::capture(self, service)?;
             self.selected
                 .check(&mut durable, self.selected.initial_generation)
                 .map_err(storage_rejected)?;
             let root = self.selected.native.as_ref().ok_or_else(unavailable)?;
             let mut gate = || {
-                self.check_instance(service)
+                borrowed
+                    .check_live()
                     .map_err(|_| ServiceError::BarrierFailure)?;
                 process
                     .verify_native_v6_committed_read(&self.committed)
@@ -315,8 +520,12 @@ impl NativeHaReadProof {
                     .check()
                     .map_err(|_| ServiceError::BarrierFailure)
             };
-            let (metadata, native) =
-                materialize_local(&mut durable, root, self.environment.deadline, &mut gate)?;
+            let (metadata, native) = materialize_current_local_request(
+                &mut durable,
+                root,
+                self.environment.deadline,
+                &mut gate,
+            )?;
             if fingerprints(&metadata, self.environment.deadline)? != self.owner_fingerprints {
                 return Err(unavailable());
             }
@@ -330,11 +539,15 @@ impl NativeHaReadProof {
             self.selected
                 .check(&mut durable, self.selected.initial_generation)
                 .map_err(storage_rejected)?;
-            gate().map_err(storage_rejected)
+            gate().map_err(storage_rejected)?;
+            borrowed.check_complete()
         })();
         service.durable = Some(durable);
         result?;
-        self.check_instance(service)
+        self.check_instance(service)?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        phase.finish(true);
+        Ok(())
     }
 
     /// Caller-supplied check is always additional to the retained custody and
@@ -365,6 +578,8 @@ impl Service {
         }
         original_actor()?;
         let deadline = OriginalDeadline::capture().map_err(|_| unavailable())?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        let phase = NativeHaPhaseTimer::start("request_proof_capture", deadline.instant(), 0, 0, 0);
         let ha = self.ha.as_ref().ok_or_else(unavailable)?.clone();
         let key = Zeroizing::new(**self.barrier_key.as_ref().ok_or_else(unavailable)?);
         let environment = LocalHaEnvironment::capture(self, &ha, &key, deadline)?;
@@ -373,8 +588,8 @@ impl Service {
             return Err(unavailable());
         }
         // Bind the optimization to this actual Service's selected identity.
-        // The full typed materialization, original Actor and unchanged
-        // committed selection below remain mandatory, including on a miss.
+        // Typed metadata/actual payload locator custody, original Actor and
+        // unchanged committed selection remain mandatory, including on a miss.
         let identity = self.current_state_identity()?;
         let committed = process
             .native_v6_committed_read_for_local_root(deadline, identity.digest())
@@ -399,7 +614,8 @@ impl Service {
                     .map_err(|_| ServiceError::BarrierFailure)?;
                 deadline.check().map_err(|_| ServiceError::BarrierFailure)
             };
-            let (metadata, native) = materialize_local(&mut durable, root, deadline, &mut gate)?;
+            let (metadata, native) =
+                materialize_current_local_request(&mut durable, root, deadline, &mut gate)?;
             Self::check_native_installed(
                 self.state.as_ref().ok_or_else(unavailable)?,
                 &metadata,
@@ -430,6 +646,8 @@ impl Service {
         };
         proof.check_warm(self)?;
         original_actor()?;
+        #[cfg(feature = "private-ha-forward-diagnostic")]
+        phase.finish(true);
         Ok(Some(proof))
     }
     pub(crate) fn capture_native_ha_unseal_proof(

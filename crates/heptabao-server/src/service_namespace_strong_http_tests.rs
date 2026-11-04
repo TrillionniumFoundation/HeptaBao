@@ -1235,6 +1235,37 @@ fn ordinary_router_keeps_authenticated_self_context_and_cross_namespace_acl_orde
             );
         }
     }
+    let one_use = wire(
+        &mut service,
+        "POST",
+        "auth/token/create",
+        "barrier",
+        &token,
+        json!({"policies":["reader"], "no_default_policy":true, "num_uses":1}),
+    );
+    assert_eq!(one_use.status, 200);
+    let one_use = zeroize::Zeroizing::new(
+        one_use.body["auth"]["client_token"]
+            .as_str()
+            .ok_or("one-use HELP actor")?
+            .to_owned(),
+    );
+    // Metadata for an unloaded foreign owner still consumes the original
+    // authenticated finite use. Bypassing its resource ACL is not a new login
+    // or permission to reuse an exhausted actor.
+    for expected in [404, 403] {
+        let response = wire(
+            &mut service,
+            "HELP",
+            "auth/token/create",
+            "plain",
+            &one_use,
+            json!({}),
+        );
+        assert_eq!(response.status, expected);
+        assert!(response.body.get("data").is_none());
+        assert!(response.body.get("auth").is_none());
+    }
     assert!(
         wire(
             &mut service,
@@ -2151,6 +2182,14 @@ fn public_origin_closed_auth_complete_ciphertext_and_canonical_floor_survive_con
         lookup.body["data"]["meta"],
         json!({"public_marker":"complete-private-origin-owner"})
     );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("open namespace factory")?
+            .auth
+            .has_namespace_factory_state()
+    );
     assert_eq!(
         origin_wire(
             &mut service,
@@ -2164,7 +2203,17 @@ fn public_origin_closed_auth_complete_ciphertext_and_canonical_floor_survive_con
         204
     );
     let state = service.state.as_ref().ok_or("state")?;
-    assert_eq!(state.schema, AUTH_PUBLIC_ORIGIN_STATE_SCHEMA);
+    // Closing the child hides its Auth owner, but must retain the reader floor
+    // established by the real namespace default-policy factory.
+    assert_eq!(state.schema, NAMESPACE_FACTORY_STATE_SCHEMA);
+    assert_eq!(state.writer_schema(), NAMESPACE_FACTORY_STATE_SCHEMA);
+    let mut below_factory = state.clone();
+    below_factory.schema = AUTH_SECURITY_CONTRACT_STATE_SCHEMA;
+    assert!(
+        below_factory
+            .validate_publication_schema(Some(state))
+            .is_err()
+    );
     assert!(
         state.auth.namespace_is_empty("plain") && !service.namespace_runtime.is_loaded("plain")
     );
@@ -2258,7 +2307,7 @@ fn public_origin_closed_auth_complete_ciphertext_and_canonical_floor_survive_con
     );
     assert_eq!(
         service.state.as_ref().ok_or("restored")?.schema,
-        AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+        NAMESPACE_FACTORY_STATE_SCHEMA
     );
     assert!(
         service
@@ -2396,7 +2445,15 @@ fn public_origin_independent_assets_restore_exact_stamp_and_empty_map_after_real
     assert_eq!(after.body["data"]["path"], "auth/token/create");
     assert_eq!(
         service.state.as_ref().ok_or("live")?.schema,
-        AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+        NAMESPACE_FACTORY_STATE_SCHEMA
+    );
+    assert!(
+        service
+            .state
+            .as_ref()
+            .ok_or("restored namespace factory")?
+            .auth
+            .has_namespace_factory_state()
     );
     assert!(
         service

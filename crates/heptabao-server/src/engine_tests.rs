@@ -2475,10 +2475,9 @@ fn official_go_mount_defaults_support_real_kv_lifecycle_without_adding_configura
             );
         }
     }
+    // Non-neutral KV TTL/cache configuration has its own durable owner and
+    // formal V6 restore coverage. Unknown configuration remains unsupported.
     for (key, value) in [
-        ("default_lease_ttl", json!("1s")),
-        ("max_lease_ttl", json!("1s")),
-        ("force_no_cache", json!(true)),
         ("options", json!({"nondefault":"requested"})),
         ("unknown_setting", json!(true)),
     ] {

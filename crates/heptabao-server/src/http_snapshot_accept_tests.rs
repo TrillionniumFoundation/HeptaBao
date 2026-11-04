@@ -24,6 +24,9 @@ struct WireResponse {
     status: u16,
     headers: BTreeMap<String, String>,
     body: Zeroizing<Vec<u8>>,
+    // Fixture-only observation, assigned after the original request worker
+    // joins. This is not a deadline, clock authority or accepted response.
+    original_request_elapsed: Duration,
 }
 impl WireResponse {
     fn json(&self) -> TestResult<Value> {
@@ -114,6 +117,7 @@ fn read_response(reader: &mut impl Read, head: bool) -> TestResult<WireResponse>
         status,
         headers,
         body,
+        original_request_elapsed: Duration::ZERO,
     })
 }
 
@@ -196,7 +200,8 @@ impl HttpsFixture {
     ) -> TestResult<WireResponse> {
         // One accepted request owns this unchanged fifteen-second endpoint.
         // Socket connect, TLS, parsing, admission, body I/O and reply share it.
-        let deadline = Instant::now() + Duration::from_secs(REQUEST_SECONDS);
+        let original_request_started = Instant::now();
+        let deadline = original_request_started + Duration::from_secs(REQUEST_SECONDS);
         let listener = TcpListener::bind("127.0.0.1:0")?;
         let address = listener.local_addr()?;
         let client_socket = TcpStream::connect_timeout(
@@ -259,7 +264,7 @@ impl HttpsFixture {
                 deadline,
             },
         );
-        let result = (|| -> TestResult<WireResponse> {
+        let mut result = (|| -> TestResult<WireResponse> {
             write!(
                 client,
                 "{method} /v1/{path} HTTP/1.1\r\nHost: localhost\r\nX-Vault-Token: {token}\r\nX-Vault-Namespace: {namespace}\r\nAccept: application/json\r\nContent-Type: {content_type}\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
@@ -289,6 +294,9 @@ impl HttpsFixture {
         // original deadline. No detached server or extra listener is retained.
         drop(client);
         worker.join()?;
+        if let Ok(reply) = &mut result {
+            reply.original_request_elapsed = original_request_started.elapsed();
+        }
         result
     }
 
@@ -381,12 +389,14 @@ impl HttpsFixture {
     }
 }
 
-fn seed() -> TestResult<(
+type Seed = (
     HttpsFixture,
     Zeroizing<String>,
     Zeroizing<String>,
     Zeroizing<String>,
-)> {
+);
+
+fn seed() -> TestResult<Seed> {
     let fixture = HttpsFixture::new()?;
     let init = fixture.call(
         "POST",
@@ -490,6 +500,38 @@ fn seed() -> TestResult<(
     Ok((fixture, key, root, actor))
 }
 
+// Only known public constant errors may enter diagnostics. In particular an
+// unknown body is neither printed nor hashed, and no dynamic error is kept.
+fn witness_error_projection(body: &[u8]) -> (&'static str, Option<&'static str>) {
+    if body.len() > 2048 {
+        return ("unclassified", None);
+    }
+    #[derive(serde::Deserialize)]
+    struct Errors<'a> {
+        #[serde(borrow)]
+        errors: Vec<&'a str>,
+    }
+    let Ok(parsed) = serde_json::from_slice::<Errors<'_>>(body) else {
+        return ("unclassified", None);
+    };
+    match parsed.errors.as_slice() {
+        ["native KV2 storage witness original custody rejected"] => (
+            "service_original_custody",
+            Some("native KV2 storage witness original custody rejected"),
+        ),
+        ["native storage witness request expired"] => (
+            "engine_original_request",
+            Some("native storage witness request expired"),
+        ),
+        ["native KV2 storage witness custody or payload rejected"] => (
+            "engine_custody_or_payload",
+            Some("native KV2 storage witness custody or payload rejected"),
+        ),
+        _ => ("unclassified", None),
+    }
+}
+
+#[track_caller]
 fn exact_history(fixture: &HttpsFixture, root: &str) -> TestResult {
     for version in 1..=3 {
         let observed = fixture.call(
@@ -498,6 +540,25 @@ fn exact_history(fixture: &HttpsFixture, root: &str) -> TestResult {
             root,
             json!({"mount":"secret","path":"history","version":version}),
         )?;
+        if observed.status != 200 {
+            let (class, known_message) = witness_error_projection(&observed.body);
+            let known_message_sha256 = known_message.map_or_else(
+                || "none".to_owned(),
+                |message| format!("{:x}", Sha256::digest(message.as_bytes())),
+            );
+            // Keep the original assertion and error. Diagnostic write failure
+            // must not replace them, and elapsed never grants more time.
+            let _ = writeln!(
+                std::io::stderr().lock(),
+                "HB-SNAPSHOT-HTTPS-WITNESS-FAIL caller_line={} version={} status={} original_request_elapsed_us={} error_class={} known_message_sha256={}",
+                std::panic::Location::caller().line(),
+                version,
+                observed.status,
+                observed.original_request_elapsed.as_micros(),
+                class,
+                known_message_sha256,
+            );
+        }
         assert_eq!(observed.status, 200);
         let witness = observed.json()?;
         let data = &witness["data"];

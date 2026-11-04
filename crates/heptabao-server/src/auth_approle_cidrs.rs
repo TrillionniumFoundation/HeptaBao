@@ -3,6 +3,7 @@
 use super::*;
 
 pub(super) fn validate_constraints(role: &Role) -> Result<(), AuthError> {
+    security_contract::validate_role(role)?;
     if !role.bind_secret_id
         && role.token_bound_cidrs.as_ref().is_none_or(Vec::is_empty)
         && role

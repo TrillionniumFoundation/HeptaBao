@@ -5,15 +5,14 @@ use super::*;
 use crate::request_deadline::RequestDeadlineScope;
 use heptabao_ha_service::replicate_native_v6_closure_to_quorum;
 use heptabao_raft_runtime::{
-    LocalV6BlobStage, NativeV6CommitIntent, NativeV6PeerEnrollment, PublishedRecordRoot,
-    RecordRootBase, SealedRecordObject, with_read_index_deadline,
+    NativeV6CommitIntent, PublishedRecordRoot, RecordRootBase, SealedRecordObject,
+    with_read_index_deadline,
 };
 use std::sync::{Condvar, mpsc};
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
-#[path = "service_native_v6_ha_mtls_fixture.rs"]
-mod tls_fixture;
+use crate::native_v6_ha_mtls_fixture as tls_fixture;
 
 struct Directory(PathBuf);
 impl Drop for Directory {
@@ -187,10 +186,18 @@ impl SaturatedForwards {
     }
     fn finish(mut self) -> TestResult {
         self.unblock();
+        let mut first_error = None;
         for client in self.clients.drain(..) {
-            client
+            let result = client
                 .join()
-                .map_err(|_| "capacity TLS client panicked")??;
+                .map_err(|_| "capacity TLS client panicked".to_owned())
+                .flatten();
+            if let Err(error) = result {
+                first_error.get_or_insert(error);
+            }
+        }
+        if let Some(error) = first_error {
+            return Err(error.into());
         }
         Ok(())
     }
@@ -254,7 +261,7 @@ fn saturated_forwarding_preserves_native_quorum_read_index_and_reserved_consensu
                 .ok_or("candidate listener absent")?
                 .workers
                 .len(),
-            8
+            20
         );
     }
     let runtime = &processes[0].runtime;
@@ -370,10 +377,12 @@ fn saturated_forwarding_preserves_native_quorum_read_index_and_reserved_consensu
             leader.runtime.handle(),
             transport,
             &leader.peers,
-            &storage,
-            &references,
-            &intent,
-            started
+            heptabao_ha_service::NativeV6ClosureSource {
+                source: &storage,
+                references: &references,
+                intent: &intent,
+            },
+            started,
         )
         .is_err()
     );
@@ -382,9 +391,11 @@ fn saturated_forwarding_preserves_native_quorum_read_index_and_reserved_consensu
         leader.runtime.handle(),
         transport,
         &leader.peers,
-        &storage,
-        &references,
-        &intent,
+        heptabao_ha_service::NativeV6ClosureSource {
+            source: &storage,
+            references: &references,
+            intent: &intent,
+        },
         deadline,
     )?;
     assert_eq!(
@@ -415,6 +426,54 @@ fn saturated_forwarding_preserves_native_quorum_read_index_and_reserved_consensu
         .block_on(follower.native_v6_application_read_witness(deadline))?;
     assert_eq!(actual_enrollment.as_ref(), Some(&enrollment));
     assert_eq!(actual_root.as_ref(), Some(&published));
+    // Repair must use the SAME authenticated production listener while the
+    // four original business handlers remain blocked. The only live donor is
+    // the follower, so each concurrent root-pull request obtains a real remote
+    // ReadIndex from this recovering leader. This extra owned empty ciphertext
+    // store supplies no Actor, Service installation or synthetic witness.
+    let repair_path = root.0.join("owned-empty-repair-store");
+    let mut repair_builder = fs::DirBuilder::new();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::DirBuilderExt;
+        repair_builder.mode(0o700);
+    }
+    repair_builder.create(&repair_path)?;
+    let repair_store = heptabao_raft_runtime::LocalV6BlobStage::open_existing(&repair_path)?;
+    let selected = leader
+        .runtime
+        .block_on(node.native_v6_committed_root_read(deadline))?
+        .ok_or("actual committed root absent before saturated repair")?;
+    let generation = selected.application_generation();
+    let recovered = heptabao_ha_service::recover_native_v6_committed_closure(
+        node,
+        leader.runtime.handle(),
+        transport,
+        &leader.peers,
+        &repair_store,
+        selected,
+    )?;
+    assert_eq!(recovered.read().operation_deadline(), deadline);
+    assert_eq!(recovered.read().application_generation(), generation);
+    assert_eq!(recovered.read().root(), &published);
+    assert_eq!(recovered.local_receipt().object_count(), references.len());
+    let mut repair_gate = || {
+        if Instant::now() >= deadline {
+            return Err(heptabao_raft_runtime::LocalV6BlobError::CorruptOrChanged);
+        }
+        leader
+            .runtime
+            .block_on(node.verify_native_v6_committed_root_read(recovered.read()))
+            .map_err(|_| heptabao_raft_runtime::LocalV6BlobError::CorruptOrChanged)
+    };
+    let repaired = repair_store.reopen_root_closure(recovered.read().root(), &mut repair_gate)?;
+    assert_eq!(repaired, references);
+    for reference in &references {
+        assert_eq!(
+            repair_store.read_local(reference)?,
+            storage.read_local(reference)?
+        );
+    }
     assert!(
         Instant::now() < deadline,
         "saturation or consensus work renewed the original 15-second budget"
@@ -433,5 +492,40 @@ fn saturated_forwarding_preserves_native_quorum_read_index_and_reserved_consensu
         "native-peer-capacity: actual_tls_forwarders=4 healthy_voters=2 offline_voters=1 root_cas=1 elapsed_ms={} budget_ms=15000",
         started.elapsed().as_millis()
     );
+    Ok(())
+}
+
+#[test]
+fn native_repair_capacity_reserves_four_pull_and_global_fanout_read_slots() -> TestResult {
+    let ordinary = PeerWorkerBudget::for_limit(4);
+    let capacity = NativePeerCapacity::for_budget(&ordinary);
+    assert_eq!(ordinary.workers, 4);
+    assert_eq!(ordinary.forwarding, 2);
+    assert_eq!(capacity.workers, 20);
+    assert_eq!(
+        heptabao_ha_service::NATIVE_V6_ROOT_PULL_REQUESTS_PER_DONOR,
+        4
+    );
+    assert_eq!(heptabao_ha_service::NATIVE_V6_ROOT_PULL_GLOBAL_FRAMES, 8);
+    let native = (0..2)
+        .map(|_| capacity.native.clone().try_acquire_owned())
+        .collect::<Result<Vec<_>, _>>()?;
+    let pull = (0..4)
+        .map(|_| capacity.root_pull.clone().try_acquire_owned())
+        .collect::<Result<Vec<_>, _>>()?;
+    let read = (0..10)
+        .map(|_| capacity.read_index.clone().try_acquire_owned())
+        .collect::<Result<Vec<_>, _>>()?;
+    assert!(capacity.native.clone().try_acquire_owned().is_err());
+    assert!(capacity.root_pull.clone().try_acquire_owned().is_err());
+    assert!(capacity.read_index.clone().try_acquire_owned().is_err());
+    assert_eq!(
+        capacity.workers - native.len() - pull.len() - read.len(),
+        ordinary.workers
+    );
+    drop((native, pull, read));
+    assert_eq!(capacity.native.available_permits(), 2);
+    assert_eq!(capacity.root_pull.available_permits(), 4);
+    assert_eq!(capacity.read_index.available_permits(), 10);
     Ok(())
 }

@@ -55,7 +55,7 @@ fn urls(certificate: &X509, issuer: &str) -> TestResult {
 fn pki_url97_partial_input_clear_invalid_atomic_and_sticky_received_floor() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap(&mut service)?;
+    let (unseal, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     assert_eq!(
         call(
             &mut service,

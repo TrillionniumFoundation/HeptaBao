@@ -4,13 +4,18 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 publish = false
+default-run = "heptabao-server"
 
 [features]
-default = []
+default = ["native-v6-storage", "native-v6-ha"]
+# Compiled storage support never selects a backend, admits a writer, or unseals
+# storage. Normal startup requires an explicit checked storage profile.
+native-v6-storage = []
+native-v6-ha = ["native-v6-storage", "heptabao-ha-service/native-v6-peer-ingress", "heptabao-raft-runtime/native-v6-raft-objects"]
 fixture-native-restore-faults = ["rustix/net", "rustix/process"]
 fixture-capacity-limit = []
-fixture-native-v6-service = []
-experimental-native-v6-ha = ["fixture-native-v6-service", "heptabao-ha-service/experimental-v6-peer-ingress", "heptabao-raft-runtime/experimental-v6-raft-objects"]
+fixture-native-v6-service = ["native-v6-storage"]
+experimental-native-v6-ha = ["native-v6-ha", "fixture-native-v6-service", "heptabao-ha-service/experimental-v6-peer-ingress", "heptabao-raft-runtime/experimental-v6-raft-objects"]
 private-ha-forward-diagnostic = ["heptabao-ha-service/private-forward-stage-diagnostic"]
 
 [dependencies]
@@ -71,8 +76,15 @@ heptabao-linux-parent-death = { path = "../heptabao-linux-parent-death" }
 
 [target.'cfg(unix)'.dependencies]
 libc = "=0.2.189"
+signal-hook = { version = "=0.3.18", default-features = false }
+arc-swap = { version = "=1.9.2", default-features = false }
 # Safe descriptor-relative filesystem operations, including macOS audit rotation.
 rustix = { version = "=1.1.4", features = ["fs", "process", "time"] }
 
 [lints]
 workspace = true
+
+[[bin]]
+name = "heptabao-seed"
+path = "src/bin/heptabao-seed.rs"
+required-features = ["native-v6-storage"]

@@ -50,6 +50,15 @@ fn workflow_lossless_body_survives_durable_restart_and_actual_output_mapping() -
         serde_json::to_vec(&service.state.as_ref().ok_or("state")?.namespaces.workflows)?,
         before
     );
+    let stored = service
+        .state
+        .as_ref()
+        .ok_or("state")?
+        .namespaces
+        .workflows
+        .get("", "operations/lossless")
+        .ok_or("workflow")?;
+    assert_eq!(stored.definition.steps[0].body["data"], value);
     let executed = call(
         &mut service,
         "POST",
@@ -58,7 +67,16 @@ fn workflow_lossless_body_survives_durable_restart_and_actual_output_mapping() -
         json!({}),
     );
     assert_eq!(executed.status, 200);
-    assert_eq!(executed.body["data"]["payload"], value);
+    // Inspect the exact owner before comparing its separate public API copy.
+    crate::service::kv2_import_tests::assert_stored_kv2_payload_on_mount(
+        &service,
+        "lossless-workflow/",
+        "item",
+        1,
+        &value,
+    )?;
+    let expected_api = heptabao_domain::json::decode(br#"{"big":1.844674407370955e+23,"decimal":0.12345678901234568,"fake":{"$serde_json::private::Number":"7"}}"#)?;
+    assert_eq!(executed.body["data"]["payload"], expected_api);
     assert_eq!(
         call(
             &mut service,
@@ -68,7 +86,17 @@ fn workflow_lossless_body_survives_durable_restart_and_actual_output_mapping() -
             json!({})
         )
         .body["data"]["data"],
-        value
+        expected_api
+    );
+    drop(service);
+    let mut service = root.service()?;
+    assert_eq!(
+        call(&mut service, "POST", "sys/unseal", "", json!({"key":key})).status,
+        200
+    );
+    assert_eq!(
+        serde_json::to_vec(&service.state.as_ref().ok_or("state")?.namespaces.workflows)?,
+        before
     );
     let stored = service
         .state
@@ -79,5 +107,23 @@ fn workflow_lossless_body_survives_durable_restart_and_actual_output_mapping() -
         .get("", "operations/lossless")
         .ok_or("workflow")?;
     assert_eq!(stored.definition.steps[0].body["data"], value);
+    crate::service::kv2_import_tests::assert_stored_kv2_payload_on_mount(
+        &service,
+        "lossless-workflow/",
+        "item",
+        1,
+        &value,
+    )?;
+    assert_eq!(
+        call(
+            &mut service,
+            "GET",
+            "lossless-workflow/data/item",
+            &token,
+            json!({})
+        )
+        .body["data"]["data"],
+        expected_api
+    );
     Ok(())
 }

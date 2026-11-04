@@ -1,5 +1,5 @@
 //! Actual Service publication, encrypted restart, snapshot and retirement fences for schema119.
-use super::tests::{Root, bootstrap};
+use super::tests::Root;
 use super::*;
 use base64::engine::general_purpose::STANDARD as BASE64;
 use zeroize::Zeroizing;
@@ -21,7 +21,8 @@ fn call(
 fn symmetric270_service_namespaced_backup_restore_restart_and_retirement_keep119() -> TestResult {
     let root = Root::new();
     let mut service = root.service().map_err(|_| "service_failed")?;
-    let (unseal, admin) = bootstrap(&mut service).map_err(|_| "bootstrap_failed")?;
+    let (unseal, admin) =
+        crate::service::tests::bootstrap_pre141(&mut service).map_err(|_| "bootstrap_failed")?;
     let unseal = Zeroizing::new(unseal);
     let admin = Zeroizing::new(admin);
     assert!(
@@ -130,15 +131,9 @@ fn symmetric270_service_namespaced_backup_restore_restart_and_retirement_keep119
             .to_owned(),
     );
     assert!(
-        call(
-            &mut service,
-            "",
-            "POST",
-            "sys/namespaces/backup-team",
-            &admin,
-            json!({})
-        )
-        .status
+        service
+            .create_pre144_namespace_fixture("backup-team", &admin)?
+            .status
             == 200
     );
     assert!(

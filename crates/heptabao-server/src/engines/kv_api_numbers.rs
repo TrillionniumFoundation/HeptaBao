@@ -5,7 +5,10 @@ use super::*;
 use zeroize::Zeroizing;
 
 fn rejected() -> EngineError {
-    error(500, "stored KV2 data cannot be represented by the OpenBao JSON API")
+    error(
+        500,
+        "stored KV2 data cannot be represented by the OpenBao JSON API",
+    )
 }
 
 pub(super) fn project(data: &Value) -> Result<SecretJson> {
@@ -25,8 +28,16 @@ pub(super) fn validate_write(data: &Value) -> Result<()> {
                 return Err(bad("KV2 JSON number is outside the OpenBao API range"));
             }
         }
-        Value::Array(values) => { for value in values { validate_write(value)?; } }
-        Value::Object(values) => { for value in values.values() { validate_write(value)?; } }
+        Value::Array(values) => {
+            for value in values {
+                validate_write(value)?;
+            }
+        }
+        Value::Object(values) => {
+            for value in values.values() {
+                validate_write(value)?;
+            }
+        }
         Value::Null | Value::Bool(_) | Value::String(_) => {}
     }
     Ok(())
@@ -129,8 +140,16 @@ mod tests {
             assert_eq!(read.status, 200);
             assert_eq!(read.body["data"]["data"], expected);
             assert_eq!(read.body["data"]["metadata"]["version"], 1);
-            let value = engine.entries.get("item").ok_or("entry")?
-                .versions.get(&1).ok_or("version")?.data.as_ref().ok_or("payload")?;
+            let value = engine
+                .entries
+                .get("item")
+                .ok_or("entry")?
+                .versions
+                .get(&1)
+                .ok_or("version")?
+                .data
+                .as_ref()
+                .ok_or("payload")?;
             assert_eq!(serde_json::to_vec(value.expose())?, exact);
             assert_eq!(serde_json::to_vec(engine)?, stored);
         }
@@ -142,22 +161,32 @@ mod tests {
         // Actual six finite API observations: summary SHA256
         // 1281990796a3be2fc0064f0ffcb7fd2696b6bb7bf800e886e2534120e087481d.
         for (input, expected) in [
-            ("1.0", "1"), ("-0", "-0"), ("1e-6", "0.000001"),
-            ("1e-7", "1e-7"), ("1e20", "100000000000000000000"),
+            ("1.0", "1"),
+            ("-0", "-0"),
+            ("1e-6", "0.000001"),
+            ("1e-7", "1e-7"),
+            ("1e20", "100000000000000000000"),
             ("1e21", "1e+21"),
             ("18446744073709551615", "18446744073709552000"),
         ] {
             let data = lossless::decode_lossless_json(format!("{{\"n\":{input}}}").as_bytes())?;
             let stored = serde_json::to_vec(&data)?;
             let projected = project(&data)?;
-            assert_eq!(projected["n"].as_number().ok_or("number")?.to_string(), expected, "{input}");
+            assert_eq!(
+                projected["n"].as_number().ok_or("number")?.to_string(),
+                expected,
+                "{input}"
+            );
             assert_eq!(serde_json::to_vec(&data)?, stored);
             let mut owner = Kv2::default();
             owner.handle("POST", "data/notation", &json!({"data":data}), 100)?;
             let persisted = serde_json::to_vec(&owner)?;
             let response = owner.handle_read("GET", "data/notation", &json!({}), 101)?;
-            assert_eq!(serde_json::to_string(&response.body["data"]["data"])?,
-                format!("{{\"n\":{expected}}}"), "{input}");
+            assert_eq!(
+                serde_json::to_string(&response.body["data"]["data"])?,
+                format!("{{\"n\":{expected}}}"),
+                "{input}"
+            );
             assert_eq!(serde_json::to_vec(&owner)?, persisted);
         }
         let mut owner = Kv2::default();
@@ -165,7 +194,10 @@ mod tests {
         let entry = owner.entries.get_mut("item").ok_or("entry")?;
         entry.current_metadata_version = 9_007_199_254_740_993;
         let read = owner.handle_read("GET", "metadata/item", &json!({}), 101)?;
-        assert_eq!(read.body["data"]["current_metadata_version"].as_u64(), Some(9_007_199_254_740_993));
+        assert_eq!(
+            read.body["data"]["current_metadata_version"].as_u64(),
+            Some(9_007_199_254_740_993)
+        );
         Ok(())
     }
 
@@ -174,19 +206,43 @@ mod tests {
         let data = lossless::decode_lossless_json(br#"{"n":1e400}"#)?;
         let mut owner = Kv2::default();
         let before = serde_json::to_vec(&owner)?;
-        let rejected = owner.handle("POST", "data/absent", &json!({"data":data,"options":{"cas":0}}), 100)
-            .err().ok_or("overflow must be rejected")?;
-        assert_eq!(rejected.status,400);
-        assert_eq!(serde_json::to_vec(&owner)?,before);
+        let rejected = owner
+            .handle(
+                "POST",
+                "data/absent",
+                &json!({"data":data,"options":{"cas":0}}),
+                100,
+            )
+            .err()
+            .ok_or("overflow must be rejected")?;
+        assert_eq!(rejected.status, 400);
+        assert_eq!(serde_json::to_vec(&owner)?, before);
         assert!(!owner.entries.contains_key("absent"));
-        assert_eq!(owner.handle_read("GET","data/absent",&json!({}),101)
-            .err().ok_or("absent version")?.status,404);
-        owner.handle("POST","data/item",&json!({"data":{"kept":true}}),100)?;
-        let before=serde_json::to_vec(&owner)?;
-        assert_eq!(owner.handle("PATCH","data/item",&json!({"data":data,"options":{"cas":1}}),101)
-            .err().ok_or("overflow PATCH must be rejected")?.status,400);
-        assert_eq!(serde_json::to_vec(&owner)?,before);
-        let bundle=json!({
+        assert_eq!(
+            owner
+                .handle_read("GET", "data/absent", &json!({}), 101)
+                .err()
+                .ok_or("absent version")?
+                .status,
+            404
+        );
+        owner.handle("POST", "data/item", &json!({"data":{"kept":true}}), 100)?;
+        let before = serde_json::to_vec(&owner)?;
+        assert_eq!(
+            owner
+                .handle(
+                    "PATCH",
+                    "data/item",
+                    &json!({"data":data,"options":{"cas":1}}),
+                    101
+                )
+                .err()
+                .ok_or("overflow PATCH must be rejected")?
+                .status,
+            400
+        );
+        assert_eq!(serde_json::to_vec(&owner)?, before);
+        let bundle = json!({
             "schema":"openbao270-kv2-lossless-v1",
             "config":{"max_versions":1,"cas_required":false,"metadata_cas_required":false,"delete_version_after":"0s"},
             "entries":{"imported":{
@@ -197,15 +253,33 @@ mod tests {
                 "versions":{"1":{"created_time":"1970-01-01T00:01:40Z","deletion_time":"","destroyed":false,"data":data}}
             }}
         });
-        let imported=Kv2::from_lossless_import_json(&serde_json::to_vec(&bundle)?)?;
-        let persisted=serde_json::to_vec(&imported)?;
-        let reopened:Kv2=serde_json::from_slice(&persisted)?;
-        for engine in [&imported,&reopened] {
-            assert_eq!(engine.entries.get("imported").ok_or("entry")?.versions.get(&1)
-                .ok_or("version")?.data.as_ref().ok_or("payload")?.expose(),&data);
-            assert_eq!(engine.handle_read("GET","data/imported",&json!({}),101)
-                .err().ok_or("nonfinite API projection must fail")?.status,500);
-            assert_eq!(serde_json::to_vec(engine)?,persisted);
+        let imported = Kv2::from_lossless_import_json(&serde_json::to_vec(&bundle)?)?;
+        let persisted = serde_json::to_vec(&imported)?;
+        let reopened: Kv2 = serde_json::from_slice(&persisted)?;
+        for engine in [&imported, &reopened] {
+            assert_eq!(
+                engine
+                    .entries
+                    .get("imported")
+                    .ok_or("entry")?
+                    .versions
+                    .get(&1)
+                    .ok_or("version")?
+                    .data
+                    .as_ref()
+                    .ok_or("payload")?
+                    .expose(),
+                &data
+            );
+            assert_eq!(
+                engine
+                    .handle_read("GET", "data/imported", &json!({}), 101)
+                    .err()
+                    .ok_or("nonfinite API projection must fail")?
+                    .status,
+                500
+            );
+            assert_eq!(serde_json::to_vec(engine)?, persisted);
         }
         Ok(())
     }

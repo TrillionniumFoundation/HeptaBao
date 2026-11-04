@@ -119,6 +119,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a23eb6b1614318a8071c9b2521f36b424b2c83db5eb3a0fead4a6c0809af6e61"
 
 [[package]]
+name = "arc-swap"
+version = "1.9.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c049c0be4daef0b145cb3555416b3b8ef5b7888a38aea1a3a155801fe7b0810b"
+dependencies = [
+ "rustversion",
+]
+
+[[package]]
 name = "asn1-rs"
 version = "0.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1271,6 +1280,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "heptabao-darwin-vnode-events"
+version = "0.1.0"
+dependencies = [
+ "libc",
+]
+
+[[package]]
 name = "heptabao-domain"
 version = "0.1.0"
 dependencies = [
@@ -1303,6 +1319,7 @@ dependencies = [
 name = "heptabao-filesystem-guard"
 version = "0.1.0"
 dependencies = [
+ "heptabao-darwin-vnode-events",
  "libc",
  "rustix",
 ]
@@ -1328,6 +1345,7 @@ dependencies = [
  "rustls",
  "rustls-pemfile",
  "tokio",
+ "tokio-rustls",
  "zeroize",
 ]
 
@@ -1585,6 +1603,7 @@ dependencies = [
 name = "heptabao-server"
 version = "0.1.0"
 dependencies = [
+ "arc-swap",
  "aws-lc-rs",
  "base64 0.22.1",
  "bcrypt",
@@ -1627,6 +1646,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "sha3",
+ "signal-hook",
  "signature 2.2.0",
  "ssh-key",
  "subtle",
@@ -3229,6 +3249,26 @@ name = "shlex"
 version = "2.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f8fadd59c855ef2080decdef8ff161eb6661b86933c9d82e5ba29dc602a55aba"
+
+[[package]]
+name = "signal-hook"
+version = "0.3.18"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d881a16cf4426aa584979d30bd82cb33429027e42122b169753d6ef1085ed6e2"
+dependencies = [
+ "libc",
+ "signal-hook-registry",
+]
+
+[[package]]
+name = "signal-hook-registry"
+version = "1.4.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c4db69cba1110affc0e9f7bcd48bbf87b3f4fc7c61fc9155afd4c469eb3d6c1b"
+dependencies = [
+ "errno",
+ "libc",
+]
 
 [[package]]
 name = "signature"

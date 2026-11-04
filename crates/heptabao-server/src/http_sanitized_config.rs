@@ -18,6 +18,16 @@ pub(super) fn project(config: &Config) -> Value {
         ),
         Some(StorageConfig::PostgreSql {}) => ("postgresql", "", ""),
         Some(StorageConfig::PebbleDb { .. }) => ("pebbledb", "", ""),
+        Some(StorageConfig::NativeV6File { .. }) => ("native_v6_file", "", ""),
+        Some(StorageConfig::NativeV6Raft {
+            api_addr,
+            cluster_addr,
+            ..
+        }) => (
+            "native_v6_raft",
+            api_addr.as_deref().unwrap_or(""),
+            cluster_addr.as_str(),
+        ),
         None => ("heptabao-native", "", ""),
     };
     // Only fields that are either fixed runtime properties or selected

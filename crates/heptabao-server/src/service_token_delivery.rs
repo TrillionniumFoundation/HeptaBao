@@ -3,7 +3,7 @@ use super::*;
 
 pub(super) fn capability(method: &str, path: &str) -> &'static str {
     match path.strip_prefix("auth/token/").unwrap_or_default() {
-        "lookup" | "lookup-self" | "lookup-accessor" => "read",
+        "lookup" | "lookup-self" => "read",
         "accessors" => "list",
         _ => match method {
             "GET" | "HEAD" => "read",

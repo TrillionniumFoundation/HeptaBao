@@ -36,7 +36,7 @@ fn setup_with_historical_token(
 ) -> TestResult<(Root, Service, String, String, String)> {
     let root = Root::new();
     let mut service = root.service()?;
-    let (key, root_token) = bootstrap(&mut service)?;
+    let (key, root_token) = super::tests::bootstrap_pre141(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -65,21 +65,38 @@ fn setup_with_historical_token(
         57,
         "a parameter-free schema-57 state reopens without implicit promotion"
     );
-    assert_eq!(
-        call(
+    if historical {
+        super::tests::create_pre141_acl_policy_fixture(
             &mut service,
-            "PUT",
-            "sys/policies/acl/parameter-guard",
             &root_token,
-            json!({"policy":PARAMETER_POLICY}),
-        )
-        .status,
-        204
-    );
+            "parameter-guard",
+            PARAMETER_POLICY,
+        )?;
+    } else {
+        assert_eq!(
+            call(
+                &mut service,
+                "PUT",
+                "sys/policies/acl/parameter-guard",
+                &root_token,
+                json!({"policy":PARAMETER_POLICY}),
+            )
+            .status,
+            204
+        );
+    }
     assert_eq!(
-        service.state.as_ref().ok_or("schema 58 state")?.schema,
-        CURRENT_STATE_SCHEMA,
-        "the first constraint-bearing mutation publishes the current schema"
+        service
+            .state
+            .as_ref()
+            .ok_or("constraint-bearing state")?
+            .schema,
+        if historical {
+            CURRENT_STATE_SCHEMA
+        } else {
+            AUTH_SECURITY_CONTRACT_STATE_SCHEMA
+        },
+        "current API publishes141; only the explicit historical constructor omits that owner"
     );
     let body = json!({"policies":["parameter-guard"],"no_default_policy":true,"ttl":"1h"});
     let issued = if historical {
@@ -271,9 +288,17 @@ fn acl_parameter_state_requires_schema58_and_survives_reopen() -> TestResult {
     let (root, service, key, _root_token, token) = setup()?;
     assert_eq!(
         service.state.as_ref().ok_or("state")?.schema,
-        AUTH_PUBLIC_ORIGIN_STATE_SCHEMA
+        AUTH_SECURITY_CONTRACT_STATE_SCHEMA
     );
     let mut downgraded = service.state.clone().ok_or("state")?;
+    downgraded
+        .auth
+        .restore_pre141_security_owners_for_format_test();
+    downgraded
+        .auth
+        .omit_unwrapped_public_origin_for_legacy_fixture();
+    downgraded.schema = 58;
+    assert!(downgraded.validate_format().is_ok());
     downgraded.schema = 57;
     assert!(downgraded.validate_format().is_err());
     drop(service);

@@ -12,6 +12,7 @@ type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 // unchanged owner bytes as a legacy reader would, without retaining the v5
 // runtime installed by current HTTP writes and masking the auth schema fence.
 fn restore_legacy_engine_owner(state: &mut State) -> Result<(), Box<dyn std::error::Error>> {
+    state.auth.restore_pre141_security_owners_for_format_test();
     state.engines.restore_pre47_identity_metadata_for_test();
     assert!(
         !state.engines.has_record_kv1(),
@@ -103,8 +104,15 @@ struct Fixture {
 }
 
 fn fixture(root: &Root) -> TestResult<Fixture> {
+    fixture_with_bootstrap(root, bootstrap)
+}
+
+fn fixture_with_bootstrap(
+    root: &Root,
+    initialize: fn(&mut Service) -> TestResult<(String, String)>,
+) -> TestResult<Fixture> {
     let mut service = root.service()?;
-    let (key, root_token) = bootstrap(&mut service)?;
+    let (key, root_token) = initialize(&mut service)?;
     for (path, body) in [
         ("sys/auth/ldap", json!({"type":"ldap"})),
         ("auth/ldap/config", config()),
@@ -267,7 +275,7 @@ fn native_ldap_service_restart_schema_and_all_renewal_entries() -> TestResult {
         group,
     } = fixture(&root)?;
     let state = service.state.as_ref().ok_or("missing state")?;
-    assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
+    assert_eq!(state.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     let mut downgraded = state.clone();
     restore_legacy_engine_owner(&mut downgraded)?;
     downgraded.auth.remove_name_modes_for_legacy_format_test();
@@ -855,7 +863,10 @@ fn native_ldap_cidr_issued_token_survives_config_clear_and_durable_restart() -> 
         root_token,
         key,
         ..
-    } = fixture(&root)?;
+    } = fixture_with_bootstrap(&root, super::tests::bootstrap_pre141)?;
+    // This migration fixture needs the original implicit root default. The
+    // current factory persists Identity templates (schema 60) even after only
+    // its security metadata is omitted, which would mask the LDAP 28/29 fence.
     let mut historical = service.state.clone().ok_or("state")?;
     // Format-only fixture: old native LDAP configs had neither field. Actual
     // migration is separately exercised with pinned historical binaries.
@@ -870,7 +881,10 @@ fn native_ldap_cidr_issued_token_survives_config_clear_and_durable_restart() -> 
     historical.auth.remove_name_modes_for_legacy_format_test();
     historical.schema = 28;
     historical.auth.omit_lease_metadata_for_legacy_fixture();
-    assert!(historical.validate_format().is_ok());
+    assert!(!historical.auth.has_acl_template_state());
+    historical
+        .validate_format()
+        .map_err(|error| format!("historical LDAP format rejected: {}", error.body))?;
     assert_eq!(
         call(
             &mut service,

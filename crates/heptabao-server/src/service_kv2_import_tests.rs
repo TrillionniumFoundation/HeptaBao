@@ -55,6 +55,63 @@ fn engine_bytes(service: &Service) -> TestResult<Vec<u8>> {
     .to_vec())
 }
 
+// Inspect the real serialized owner at an exact namespace/mount/path/version.
+// This never dispatches a KV2 GET or calls its API-number projector. The
+// selected bytes must equal the independently supplied original payload.
+pub(super) fn assert_stored_kv2_payload(
+    service: &Service,
+    path: &str,
+    version: u64,
+    expected: &Value,
+) -> TestResult {
+    assert_stored_kv2_payload_on_mount(service, "secret/", path, version, expected)
+}
+
+pub(super) fn assert_stored_kv2_payload_on_mount(
+    service: &Service,
+    mount: &str,
+    path: &str,
+    version: u64,
+    expected: &Value,
+) -> TestResult {
+    struct ErasedOwner(Value);
+    impl Drop for ErasedOwner {
+        fn drop(&mut self) {
+            erase_json(&mut self.0);
+        }
+    }
+    let encoded = crate::secret_serde::to_vec(
+        &*service.state.as_ref().ok_or("stored KV2 owner")?.engines,
+        crate::MAX_APPLICATION_STATE_BYTES,
+    )
+    .map_err(|_| "stored KV2 owner encoding")?;
+    let owner = ErasedOwner(crate::engines::decode_lossless_json(&encoded)?);
+    let version_key = version.to_string();
+    let mut selected = &owner.0;
+    for field in [
+        "namespaces",
+        "",
+        "mounts",
+        mount,
+        "backend",
+        "Kv2",
+        "entries",
+        path,
+        "versions",
+        version_key.as_str(),
+        "data",
+    ] {
+        selected = selected.get(field).ok_or("stored KV2 payload field")?;
+    }
+    let actual_bytes = zeroize::Zeroizing::new(serde_json::to_vec(selected)?);
+    let expected_bytes = zeroize::Zeroizing::new(serde_json::to_vec(expected)?);
+    assert!(
+        actual_bytes.as_slice() == expected_bytes.as_slice(),
+        "stored KV2 payload must retain the exact original JSON tokens"
+    );
+    Ok(())
+}
+
 fn imported(service: &mut Service, token: &str) -> TestResult {
     assert_eq!(
         call(
@@ -248,13 +305,17 @@ fn kv2_import_service_durable_reopen_preserves_all_history_counters_and_secret_n
 -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (key, token) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (key, token) = crate::service::tests::bootstrap_pre141(&mut service)?;
     imported(&mut service, &token)?;
     let state = service.state.as_ref().ok_or("state")?;
     assert_eq!(state.schema, KV2_LOSSLESS_STATE_SCHEMA);
     state
         .validate_format()
         .map_err(|_| "KV2 state format validation failed")?;
+    let expected_stored = bundle()?["entries"]["item"]["versions"]["5"]["data"].clone();
+    let expected_api = crate::engines::decode_lossless_json(br#"{"big":1.844674407370955e+23,"decimal":0.12345678901234568,"fake":{"$serde_json::private::Number":"7"},"raw":{"$serde_json::private::RawValue":"[1]"}}"#)?;
+    assert_stored_kv2_payload(&service, "item", 5, &expected_stored)?;
     let before = engine_bytes(&service)?;
     let current = call(&mut service, "GET", "secret/data/item", &token, json!({}));
     assert_eq!(current.status, 200);
@@ -262,18 +323,17 @@ fn kv2_import_service_durable_reopen_preserves_all_history_counters_and_secret_n
         current.body["data"]["metadata"]["created_time"],
         stamp(95, 113)?
     );
-    assert_eq!(
-        current.body["data"]["data"],
-        bundle()?["entries"]["item"]["versions"]["5"]["data"]
-    );
+    assert_eq!(current.body["data"]["data"], expected_api);
     assert!(current.body["data"]["data"]["fake"].is_object());
     assert_eq!(
         current.body["data"]["data"]["big"]
             .as_number()
             .ok_or("number")?
             .to_string(),
-        "184467440737095516160001"
+        "1.844674407370955e+23"
     );
+    assert_stored_kv2_payload(&service, "item", 5, &expected_stored)?;
+    assert_eq!(engine_bytes(&service)?, before);
     assert_eq!(
         call(
             &mut service,
@@ -313,6 +373,13 @@ fn kv2_import_service_durable_reopen_preserves_all_history_counters_and_secret_n
         call(&mut reopened, "PUT", "sys/unseal", "", json!({"key":key})).status,
         200
     );
+    assert_eq!(engine_bytes(&reopened)?, before);
+    assert_stored_kv2_payload(&reopened, "item", 5, &expected_stored)?;
+    let after_reopen = call(&mut reopened, "GET", "secret/data/item", &token, json!({}));
+    assert_eq!(after_reopen.status, 200);
+    assert_eq!(after_reopen.body["data"]["data"], expected_api);
+    assert_eq!(after_reopen.body["data"]["metadata"]["version"], 5);
+    assert_stored_kv2_payload(&reopened, "item", 5, &expected_stored)?;
     assert_eq!(engine_bytes(&reopened)?, before);
     assert_eq!(
         reopened.state.as_ref().ok_or("reopened")?.schema,
@@ -359,7 +426,8 @@ fn kv2_import_service_durable_reopen_preserves_all_history_counters_and_secret_n
 fn kv2_import_service_snapshot_recovery_keeps_precise_payload_and_sticky_schema() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, token) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (_, token) = crate::service::tests::bootstrap_pre141(&mut service)?;
     imported(&mut service, &token)?;
     let original = engine_bytes(&service)?;
     let backup = call(
@@ -466,7 +534,8 @@ fn kv2_import_service_uses_the_captured_precise_clock_on_read_and_write_dispatch
 fn kv2_import_schema_floor_survives_mount_retirement_and_rejects_torn_marker() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, token) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (_, token) = crate::service::tests::bootstrap_pre141(&mut service)?;
     imported(&mut service, &token)?;
     let previous = service.state.as_ref().ok_or("state")?.clone();
     let mut downgrade = previous.clone();

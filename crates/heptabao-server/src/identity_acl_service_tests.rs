@@ -283,7 +283,8 @@ fn acl_identity_templates_reject_metadata_wildcards_and_missing_identity_without
         "%2e%2e",
         "{{identity.entity.id}}",
     ] {
-        let expected_status = if value.contains(['*', '+']) { 400 } else { 403 };
+        // Current policies use the 2.7.1 full-evaluation forbidden contract.
+        let expected_status = 403;
         update_entity(
             &mut f.service,
             "",
@@ -468,8 +469,46 @@ path "idtest/custom/{{{{identity.entity.aliases.{accessor}.custom_metadata.tenan
 #[test]
 fn acl_identity_template_schema60_is_independent_and_no_template_schema59_is_byte_stable()
 -> TestResult {
-    let mut f = TemplateFixture::new(false)?;
+    // Produce an actual pre-template owner. The general fixture deliberately
+    // creates modern AppRole/login state whose independent reader floors
+    // cannot be relabelled as schema 59.
+    let root = Fixture::new()?;
+    let mut service = root.service()?;
+    let (key, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
+    assert_eq!(
+        call(
+            &mut service,
+            "",
+            &admin,
+            "POST",
+            "sys/mounts/idtest",
+            json!({"type":"kv","options":{"version":"1"}})
+        )
+        .status,
+        204
+    );
+    let created = call(
+        &mut service,
+        "",
+        &admin,
+        "POST",
+        "identity/entity",
+        json!({"name":"legacy-template-owner"}),
+    );
+    assert_eq!(created.status, 200);
+    let entity = text(&created.body, "/data/id")?;
+    let mut f = TemplateFixture {
+        root,
+        service,
+        admin,
+        key,
+        token: String::new(),
+        entity,
+    };
     let mut legacy = f.service.state.clone().ok_or("state")?;
+    assert!(!legacy.auth.has_approle_no_default_policy());
+    assert!(!legacy.has_token_api_precision_state());
+    assert!(legacy.global_lossless_json_format.is_none());
     legacy.schema = 59;
     legacy.validate_format().map_err(|_| "schema59 rejected")?;
     let original = serde_json::to_vec(&legacy)?;
@@ -485,8 +524,14 @@ fn acl_identity_template_schema60_is_independent_and_no_template_schema59_is_byt
     assert_eq!(f.service.state.as_ref().ok_or("state")?.schema, 59);
     f.grant(r#"path "idtest/{{identity.entity.id}}/*" { capabilities = ["read"] }"#);
     let state = f.service.state.as_ref().ok_or("state")?;
-    assert_eq!(state.schema, CURRENT_STATE_SCHEMA);
+    assert_eq!(state.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     let mut disguised = state.clone();
+    // Explicit old-format clone keeps the template owner but omits 141 metadata.
+    disguised
+        .auth
+        .restore_pre141_security_owners_for_format_test();
+    disguised.schema = 60;
+    assert!(disguised.validate_format().is_ok());
     disguised.schema = 59;
     let denied = disguised
         .validate_format()
@@ -500,7 +545,7 @@ fn acl_identity_template_schema60_is_independent_and_no_template_schema59_is_byt
     f.restart()?;
     assert_eq!(
         f.service.state.as_ref().ok_or("state")?.schema,
-        CURRENT_STATE_SCHEMA
+        AUTH_SECURITY_CONTRACT_STATE_SCHEMA
     );
     Ok(())
 }
@@ -560,7 +605,7 @@ path "idtest/{{identity.entity.metadata.team}}/*" { capabilities = ["deny"] }
             );
             assert_eq!(
                 f.read("idtest/peer/item"),
-                400,
+                403,
                 "invalid substitution must fail the full ACL evaluation, not erase deny: batch={batch}"
             );
             let before = f
@@ -577,7 +622,7 @@ path "idtest/{{identity.entity.metadata.team}}/*" { capabilities = ["deny"] }
                     json!({"synthetic":"forbidden"})
                 )
                 .status,
-                400
+                403
             );
             assert_eq!(
                 f.service
@@ -611,7 +656,7 @@ path "idtest/{{identity.entity.metadata.team}}/*" { capabilities = ["deny"] }
             );
         }
         f.restart()?;
-        assert_eq!(f.read("idtest/peer/item"), 400);
+        assert_eq!(f.read("idtest/peer/item"), 403);
         update_entity(
             &mut f.service,
             "",

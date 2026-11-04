@@ -61,21 +61,28 @@ impl NativeV6ArchiveRootAnchor {
     pub(crate) fn published(&self) -> &NativeV6PublishedRoot {
         self.selected.root()
     }
-    pub(super) fn deadline(&self) -> OriginalDeadline { self.deadline }
+    pub(super) fn deadline(&self) -> OriginalDeadline {
+        self.deadline
+    }
 
     pub(super) fn fresh_for_epoch_restore(
-        &self, process: &HaProcess,
+        &self,
+        process: &HaProcess,
     ) -> ArchiveResult<NativeV6CommittedRootRead> {
         original_operation(self.deadline)?;
-        let native = process.native_v6.as_ref().filter(|value| value.enabled())
+        let native = process
+            .native_v6
+            .as_ref()
+            .filter(|value| value.enabled())
             .ok_or(NativeV6ArchiveError::Gate)?;
         let node = process.node.as_ref().ok_or(NativeV6ArchiveError::Gate)?;
         if !Arc::ptr_eq(&self.instance, &native.identity) {
             return Err(NativeV6ArchiveError::WrongSelection);
         }
-        let fresh = process.runtime.block_on(
-            node.native_v6_committed_root_read(self.deadline.instant()),
-        ).map_err(|_| NativeV6ArchiveError::Gate)?
+        let fresh = process
+            .runtime
+            .block_on(node.native_v6_committed_root_read(self.deadline.instant()))
+            .map_err(|_| NativeV6ArchiveError::Gate)?
             .ok_or(NativeV6ArchiveError::WrongSelection)?;
         if !fresh.same_selection(&self.selected)
             || fresh.operation_deadline() != self.deadline.instant()
@@ -83,9 +90,12 @@ impl NativeV6ArchiveRootAnchor {
         {
             return Err(NativeV6ArchiveError::WrongSelection);
         }
-        native.validate_enrollment(&process.codec, fresh.enrollment())
+        native
+            .validate_enrollment(&process.codec, fresh.enrollment())
             .map_err(|_| NativeV6ArchiveError::WrongSelection)?;
-        process.runtime.block_on(node.verify_native_v6_committed_root_read(&fresh))
+        process
+            .runtime
+            .block_on(node.verify_native_v6_committed_root_read(&fresh))
             .map_err(|_| NativeV6ArchiveError::Gate)?;
         original_operation(self.deadline)?;
         Ok(fresh)
@@ -221,14 +231,19 @@ impl HaProcess {
         if tokio::runtime::Handle::try_current().is_ok() {
             return Err(NativeV6ArchiveError::Gate);
         }
-        let native = self.native_v6.as_ref().filter(|native| native.enabled())
+        let native = self
+            .native_v6
+            .as_ref()
+            .filter(|native| native.enabled())
             .ok_or(NativeV6ArchiveError::Gate)?;
         let node = self.node.as_ref().ok_or(NativeV6ArchiveError::Gate)?;
-        let initial = self.runtime
+        let initial = self
+            .runtime
             .block_on(node.native_v6_committed_root_read(deadline.instant()))
             .map_err(|_| NativeV6ArchiveError::Gate)?
             .ok_or(NativeV6ArchiveError::WrongSelection)?;
-        native.validate_enrollment(&self.codec, initial.enrollment())
+        native
+            .validate_enrollment(&self.codec, initial.enrollment())
             .map_err(|_| NativeV6ArchiveError::WrongSelection)?;
         let enrollment = initial.enrollment().clone();
         let published = initial.root().clone();
@@ -263,6 +278,7 @@ impl HaProcess {
     /// missing destination or reauthenticates/fsyncs an exact existing file.
     /// Failed attempts can leave exact immutable local bytes; they return no
     /// completed repair/read and those bytes are never quorum acknowledgments.
+    #[cfg(test)]
     pub(crate) fn repair_native_v6_current_closure_from_archive<R: Read + Seek>(
         &self,
         reader: R,
@@ -275,7 +291,12 @@ impl HaProcess {
         ) -> ArchiveResult<()>,
     ) -> ArchiveResult<NativeV6ArchiveRepair> {
         self.repair_native_v6_archive_inner(
-            reader, expected_seal_identity, archive_barrier, deadline, original_owner, None,
+            reader,
+            expected_seal_identity,
+            archive_barrier,
+            deadline,
+            original_owner,
+            None,
         )
     }
 
@@ -294,8 +315,12 @@ impl HaProcess {
         ) -> ArchiveResult<()>,
     ) -> ArchiveResult<NativeV6ArchiveRepair> {
         self.repair_native_v6_archive_inner(
-            reader, expected_seal_identity, archive_barrier, anchor.deadline,
-            original_owner, Some(anchor),
+            reader,
+            expected_seal_identity,
+            archive_barrier,
+            anchor.deadline,
+            original_owner,
+            Some(anchor),
         )
     }
 
@@ -345,6 +370,9 @@ impl HaProcess {
             NativeV6ArchiveSelection::from_committed(initial.enrollment(), initial.root())?;
         let intent = initial.root().intent();
         let storage = native.storage.get().ok_or(NativeV6ArchiveError::Storage)?;
+        let native_operation = storage
+            .begin_native_operation()
+            .map_err(|_| NativeV6ArchiveError::Storage)?;
         let owner = RefCell::new(ActualArchiveRoot {
             process: self,
             native,
@@ -414,6 +442,7 @@ impl HaProcess {
             .map_err(|_| NativeV6ArchiveError::Gate)?
             .fresh_same()?;
         let read = CommittedNativeV6Read {
+            _operation: native_operation,
             instance: native.identity.clone(),
             selected,
             deadline,

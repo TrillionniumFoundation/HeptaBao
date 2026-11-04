@@ -1889,7 +1889,7 @@ impl Service {
 
 #[cfg(test)]
 mod tests {
-    use super::super::super::tests::{Root, bootstrap, call};
+    use super::super::super::tests::{Root, bootstrap_pre141, call};
     use super::*;
 
     type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
@@ -1901,7 +1901,9 @@ mod tests {
     fn fixture() -> TestResult<(Root, Service, String)> {
         let root = Root::new();
         let mut service = root.service()?;
-        let (_, root_token) = bootstrap(&mut service)?;
+        // Preserve this fixture's independent schema-53/56/57 reader checks
+        // before any current default-policy owner has been published.
+        let (_, root_token) = bootstrap_pre141(&mut service)?;
         assert_eq!(
             call(
                 &mut service,

@@ -161,7 +161,7 @@ impl AuthState {
             namespace: owner.namespace(),
             mount: owner.mount(),
         };
-        // The single native SID map owns each accessor with its credential.
+        // Each selected global/local SID map owns its accessors with its credentials.
         // There is no independent accessor index to sweep or synthesize.
         let mut items: Vec<(String, String)> = Vec::new();
         if let Some(roles) = self.roles_at(scope) {
@@ -176,7 +176,7 @@ impl AuthState {
                         Bound::Excluded(previous.verifier.as_str())
                     });
                 for verifier in role
-                    .secret_ids
+                    .approle_secrets()?
                     .range::<str, _>((first, Bound::Unbounded))
                     .map(|(verifier, _)| verifier)
                 {
@@ -204,11 +204,15 @@ impl AuthState {
         let mut removed = 0;
         for (mut role_name, mut verifier) in items {
             if let Some(role) = self.roles_at_mut(scope).get_mut(&role_name)
-                && role.secret_ids.get(&verifier).is_some_and(|secret| {
-                    secret.uses_remaining == Some(0)
-                        || secret.expires_at.is_some_and(|expiry| expiry <= now)
-                })
-                && let Some((mut stored, mut secret)) = role.secret_ids.remove_entry(&verifier)
+                && role
+                    .approle_secrets()?
+                    .get(&verifier)
+                    .is_some_and(|secret| {
+                        secret.uses_remaining == Some(0)
+                            || secret.expires_at.is_some_and(|expiry| expiry <= now)
+                    })
+                && let Some((mut stored, mut secret)) =
+                    role.approle_secrets_mut()?.remove_entry(&verifier)
             {
                 stored.zeroize();
                 secret.accessor.zeroize();

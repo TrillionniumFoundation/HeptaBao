@@ -23,6 +23,12 @@ pub(super) struct OidcMount {
     sessions: BTreeMap<String, Session>,
     clock: u64,
 }
+impl OidcMount {
+    pub(super) fn quota_login_role(&self, body: &Value) -> Option<String> {
+        let role = body.get("role")?.as_str()?;
+        (self.config.is_some() && self.roles.contains_key(role)).then(|| role.to_owned())
+    }
+}
 #[derive(Clone, Serialize, Deserialize, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
 struct OidcConfig {

@@ -5,16 +5,11 @@ type TestResult = Result<(), Box<dyn std::error::Error>>;
 fn token_role_schema80_namespace_reopen_retirement_and_snapshot_floor() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (key, admin) = bootstrap_unmounted(&mut service)?;
+    let (key, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     assert_eq!(
-        call(
-            &mut service,
-            "POST",
-            "sys/namespaces/team",
-            &admin,
-            json!({})
-        )
-        .status,
+        service
+            .create_pre144_namespace_fixture("team", &admin)?
+            .status,
         200
     );
     let previous = service.state.clone().ok_or("previous")?;
@@ -183,11 +178,11 @@ fn token_role_batch_provenance_cidrs_and_lookup_survive_retirement_and_encrypted
         204
     );
     assert_eq!(call(&mut service, "POST", "auth/token/roles/batch", &admin, json!({"allowed_policies":["reader"],"token_type":"batch","orphan":true,"renewable":false,"token_num_uses":2,"path_suffix":"v123","token_bound_cidrs":["127.0.0.1/32"]})).status, 204);
-    // The role alone owns schema 80. A newly issued Token API batch also
-    // authenticates its public origin and therefore retains schema 86.
+    // The role and batch keep their independent owners. This fixture already
+    // wrote a current ACL policy, so the actual durable root retains141.
     assert_eq!(
         service.state.as_ref().ok_or("state")?.schema,
-        TOKEN_ROLE_STATE_SCHEMA
+        AUTH_SECURITY_CONTRACT_STATE_SCHEMA
     );
     let records = serde_json::to_value(&service.state.as_ref().ok_or("state")?.auth)?["tokens"]
         .as_object()
@@ -215,7 +210,7 @@ fn token_role_batch_provenance_cidrs_and_lookup_survive_retirement_and_encrypted
     );
     assert_eq!(
         service.state.as_ref().ok_or("state")?.schema,
-        NAMESPACE_BATCH_STATE_SCHEMA
+        AUTH_SECURITY_CONTRACT_STATE_SCHEMA
     );
     assert!(
         service
@@ -280,7 +275,7 @@ fn token_role_batch_provenance_cidrs_and_lookup_survive_retirement_and_encrypted
     );
     assert_eq!(
         service.state.as_ref().ok_or("state")?.schema,
-        NAMESPACE_BATCH_STATE_SCHEMA
+        AUTH_SECURITY_CONTRACT_STATE_SCHEMA
     );
     drop(service);
     let mut service = root.service()?;
@@ -305,7 +300,7 @@ fn ordinary_unicode_batch_schema80_floor_and_authenticated_lookup_survive_encryp
 -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (key, admin) = bootstrap_unmounted(&mut service)?;
+    let (key, admin) = crate::service::tests::bootstrap_pre141_unmounted(&mut service)?;
     let backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
     let grant = service.handle_at(
         "POST",

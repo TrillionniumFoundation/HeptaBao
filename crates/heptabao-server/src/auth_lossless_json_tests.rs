@@ -6,6 +6,7 @@ type TestResult = Result<(), Box<dyn std::error::Error>>;
 fn auth_lossless_parameter_rules_reopen_without_user_map_coercion() -> TestResult {
     let value = heptabao_domain::json::decode(br#"{"big":184467440737095516160001,"decimal":0.12345678901234567890123456789,"fake":{"$serde_json::private::Number":"7"}}"#)?;
     let rule = Rule {
+        expiration: None,
         path: "secret/data/item".into(),
         capabilities: BTreeSet::from(["update".into()]),
         allowed_parameters: BTreeMap::from([("payload".into(), vec![value.clone()])]),

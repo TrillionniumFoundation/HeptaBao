@@ -1,4 +1,4 @@
-use super::tests::{Root, bootstrap_approle as bootstrap, call};
+use super::tests::{Root, call};
 use super::*;
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 
@@ -9,17 +9,12 @@ fn approle_per_secret_id_presence_requires46_and_absent45_reads_preserve_bytes()
             for value in [Value::Null, json!([]), json!(["127.0.0.1/32"])] {
                 let root = Root::new();
                 let mut service = root.service()?;
-                let (key, admin) = bootstrap(&mut service)?;
+                let (key, admin) = crate::service::tests::bootstrap_pre141_approle(&mut service)?;
                 if !namespace.is_empty() {
                     assert_eq!(
-                        call(
-                            &mut service,
-                            "POST",
-                            "sys/namespaces/team",
-                            &admin,
-                            json!({})
-                        )
-                        .status,
+                        service
+                            .create_pre144_namespace_fixture("team", &admin)?
+                            .status,
                         200
                     );
                     assert_eq!(
@@ -38,7 +33,12 @@ fn approle_per_secret_id_presence_requires46_and_absent45_reads_preserve_bytes()
                 }
                 let path = format!("auth/{mount}/role/example");
                 super::approle_no_default_tests::create_legacy_approle_role_fixture(
-                    &mut service, namespace, mount, "example", &admin, json!({}),
+                    &mut service,
+                    namespace,
+                    mount,
+                    "example",
+                    &admin,
+                    json!({}),
                 )?;
                 let old_sid = service.handle_at(
                     "POST",
@@ -51,7 +51,8 @@ fn approle_per_secret_id_presence_requires46_and_absent45_reads_preserve_bytes()
                 assert_eq!(old_sid.status, 200);
                 let mut old = service.state.clone().ok_or("state")?;
                 assert!(!old.auth.has_approle_secret_id_cidrs());
-                old.auth.restore_legacy_approle_policy_owners_for_format_test();
+                old.auth
+                    .restore_legacy_approle_policy_owners_for_format_test();
                 old.schema = 45;
                 old.validate_format().map_err(|_| "old format")?;
                 let before = owner_store::serialize_owner(&old.auth).map_err(|_| "encode")?;
@@ -118,12 +119,18 @@ fn approle_per_secret_id_presence_requires46_and_absent45_reads_preserve_bytes()
 fn approle_secret_source_presence_requires45_but_absent44_reads_preserve_bytes() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
+    let (_, admin) = crate::service::tests::bootstrap_pre141_approle(&mut service)?;
     super::approle_no_default_tests::create_legacy_approle_role_fixture(
-        &mut service, "", "approle", "source", &admin, json!({"token_ttl":60}),
+        &mut service,
+        "",
+        "approle",
+        "source",
+        &admin,
+        json!({"token_ttl":60}),
     )?;
     let mut old = service.state.clone().ok_or("state")?;
-    old.auth.restore_legacy_approle_policy_owners_for_format_test();
+    old.auth
+        .restore_legacy_approle_policy_owners_for_format_test();
     old.schema = 44;
     old.validate_format().map_err(|_| "old format")?;
     let before = owner_store::serialize_owner(&old.auth).map_err(|_| "encode")?;
@@ -159,19 +166,26 @@ fn approle_secret_source_presence_requires45_but_absent44_reads_preserve_bytes()
             204
         );
         let mut changed = service.state.clone().ok_or("state")?;
-        assert_eq!(changed.schema, CURRENT_STATE_SCHEMA);
+        assert_eq!(changed.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
+        assert!(changed.auth.has_approle_secret_bound_cidrs());
+        // The current role write owns its security options; only this separate
+        // unpublished clone is reduced to the predecessor format under test.
+        changed
+            .auth
+            .restore_legacy_approle_policy_owners_for_format_test();
         changed.schema = 45;
         changed
             .validate_format()
             .map_err(|_| "minimum source format")?;
         changed.schema = 44;
+        let rejected = changed
+            .validate_format()
+            .err()
+            .ok_or("missing source gate")?;
+        assert_eq!(rejected.status, 503);
         assert_eq!(
-            changed
-                .validate_format()
-                .err()
-                .ok_or("missing source gate")?
-                .status,
-            503
+            rejected.body["errors"][0],
+            "AppRole SecretID login source constraints require schema 45"
         );
     }
     Ok(())
@@ -181,12 +195,18 @@ fn approle_secret_source_presence_requires45_but_absent44_reads_preserve_bytes()
 fn approle_cidr_presence_requires43_but_absent42_role_reads_do_not_migrate() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
+    let (_, admin) = crate::service::tests::bootstrap_pre141_approle(&mut service)?;
     super::approle_no_default_tests::create_legacy_approle_role_fixture(
-        &mut service, "", "approle", "old", &admin, json!({"token_ttl":60}),
+        &mut service,
+        "",
+        "approle",
+        "old",
+        &admin,
+        json!({"token_ttl":60}),
     )?;
     let mut old = service.state.clone().ok_or("state")?;
-    old.auth.restore_legacy_approle_policy_owners_for_format_test();
+    old.auth
+        .restore_legacy_approle_policy_owners_for_format_test();
     old.schema = 42;
     old.validate_format().map_err(|_| "old format")?;
     let before = owner_store::serialize_owner(&old.auth).map_err(|_| "encode")?;

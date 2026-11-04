@@ -69,7 +69,8 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 Some(value) => {
                     binding.push(1);
                     binding.extend_from_slice(&digest32(
-                        b"heptabao.durable-service.value.v1", value.expose(),
+                        b"heptabao.durable-service.value.v1",
+                        value.expose(),
                     ));
                 }
                 None => binding.push(0),
@@ -87,36 +88,52 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 Some(value) => {
                     binding.push(1);
                     binding.extend_from_slice(&digest32(
-                        b"heptabao.durable-service.condition-value.v1", value.expose(),
+                        b"heptabao.durable-service.condition-value.v1",
+                        value.expose(),
                     ));
                 }
                 None => binding.push(0),
             }
         }
-        let binding_digest = digest32(
-            b"heptabao.durable-service.epoch-publication.v1", &binding,
-        );
+        let binding_digest = digest32(b"heptabao.durable-service.epoch-publication.v1", &binding);
         binding.zeroize();
         self.check_epoch_publication_source(
-            (expected_generation, expected_epoch), &request.namespace,
-            &conditions, &mut original_owner,
+            (expected_generation, expected_epoch),
+            &request.namespace,
+            &conditions,
+            &mut original_owner,
         )?;
         let frontier = self.restore_frontier();
-        let generation = expected_generation.checked_add(1)
+        let generation = expected_generation
+            .checked_add(1)
             .ok_or(ServiceError::GenerationOverflow)?;
         let recovery_reference = recovery_reference(&binding_digest, generation, 1);
         let marker = CommitMarker {
-            key: key.clone(), binding_digest,
-            recovery_reference: recovery_reference.clone(), generation,
+            key: key.clone(),
+            binding_digest,
+            recovery_reference: recovery_reference.clone(),
+            generation,
         };
-        let mutations = request.mutations.iter().map(|(resource, value)| JournalMutation {
-            resource: resource.clone(), value: value.clone(),
-        }).collect::<Vec<_>>();
+        let mutations = request
+            .mutations
+            .iter()
+            .map(|(resource, value)| JournalMutation {
+                resource: resource.clone(),
+                value: value.clone(),
+            })
+            .collect::<Vec<_>>();
         let candidate_len = candidate_snapshot_plaintext_len(
-            &self.snapshot, self.snapshot_plaintext_bytes, &marker, &mutations,
+            &self.snapshot,
+            self.snapshot_plaintext_bytes,
+            &marker,
+            &mutations,
         )?;
         preflight_snapshot_capacity(
-            &self.barrier, &self.snapshot, candidate_len, &marker, &mutations,
+            &self.barrier,
+            &self.snapshot,
+            candidate_len,
+            &marker,
+            &mutations,
         )?;
         let mut snapshot = self.snapshot.clone();
         apply_journal_mutations(&mut snapshot, &marker, &mutations)?;
@@ -128,27 +145,36 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             return Err(ServiceError::RequestCapacityExhausted);
         }
         self.check_epoch_publication_source(
-            (expected_generation, expected_epoch), &request.namespace,
-            &conditions, &mut original_owner,
+            (expected_generation, expected_epoch),
+            &request.namespace,
+            &conditions,
+            &mut original_owner,
         )?;
         // Every old resolved identity is retired at the exact CURRENT local
         // frontier. Retain only this new epoch's actual publication identity.
-        let ledger = BTreeMap::from([(key, LedgerRecord {
-            binding_digest, recovery_reference: recovery_reference.clone(), generation,
-        })]);
+        let ledger = BTreeMap::from([(
+            key,
+            LedgerRecord {
+                binding_digest,
+                recovery_reference: recovery_reference.clone(),
+                generation,
+            },
+        )]);
         if ledger.len() > self.max_retained_requests {
             return Err(ServiceError::RequestCapacityExhausted);
         }
         let ledger_bytes = sealed_ledger(
-            &self.barrier, generation, request.replay_epoch, expected_generation, &ledger,
+            &self.barrier,
+            generation,
+            request.replay_epoch,
+            expected_generation,
+            &ledger,
         )?;
         if ledger_bytes.len() > MAX_FILE_BYTES {
             return Err(ServiceError::RequestCapacityExhausted);
         }
         let checkpoint = checkpoint_marker(&snapshot, &ledger, expected_generation)?;
-        let frame = sealed_journal_record(
-            &self.barrier, 1, &JournalEvent::Checkpoint(checkpoint),
-        )?;
+        let frame = sealed_journal_record(&self.barrier, 1, &JournalEvent::Checkpoint(checkpoint))?;
         let mut journal_bytes = Vec::with_capacity(JOURNAL_MAGIC.len() + frame.len());
         journal_bytes.extend_from_slice(JOURNAL_MAGIC);
         journal_bytes.extend_from_slice(&frame);
@@ -159,15 +185,21 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
             instance: Arc::clone(&self.restore_instance),
             frontier,
             components: BackupComponents {
-                snapshot_bytes, ledger_bytes, journal_bytes, snapshot, ledger,
+                snapshot_bytes,
+                ledger_bytes,
+                journal_bytes,
+                snapshot,
+                ledger,
                 replay_epoch: request.replay_epoch,
                 retired_through_generation: expected_generation,
                 journal_sequence: 1,
             },
         };
         self.check_epoch_publication_source(
-            (expected_generation, expected_epoch), &request.namespace,
-            &conditions, &mut original_owner,
+            (expected_generation, expected_epoch),
+            &request.namespace,
+            &conditions,
+            &mut original_owner,
         )?;
         // Reuses the actual target-identity-bound authenticated FileIntent and
         // backend bundle CAS. No sequence of independent epoch/root writes.
@@ -178,11 +210,18 @@ impl<B: Barrier, P: DurableBackend> DurableService<B, P> {
                 Err(error)
             };
         }
-        if self.verify_live_ownership().and_then(|()| original_owner()).is_err() {
+        if self
+            .verify_live_ownership()
+            .and_then(|()| original_owner())
+            .is_err()
+        {
             self.unresolved = true;
             return Err(ServiceError::OutcomeUnknown { recovery_reference });
         }
-        Ok(MutationOutcome::Committed { generation, recovery_reference })
+        Ok(MutationOutcome::Committed {
+            generation,
+            recovery_reference,
+        })
     }
 
     fn check_epoch_publication_source(

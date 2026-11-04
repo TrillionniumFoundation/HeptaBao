@@ -290,11 +290,11 @@ fn workflow125_active_and_retired_expression_floors_reject_old_publication_and_s
     create(&mut f);
     let old = f.service.state.as_ref().ok_or("old state")?.clone();
     assert!(!old.namespaces.workflows.has_expression_profiles());
-    assert_eq!(old.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(old.writer_schema(), AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     assert_eq!(dynamic_profile123(&mut f, EXPRESSION125, -1).status, 200);
     let active = f.service.state.as_ref().ok_or("active")?.clone();
-    assert_eq!(active.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
-    assert_eq!(active.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(active.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
+    assert_eq!(active.writer_schema(), AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     assert!(active.namespaces.workflows.has_expression_profiles());
     assert!(active.validate_format().is_ok());
     assert!(supported_reader_schema(WORKFLOW_EXPRESSION_STATE_SCHEMA));
@@ -354,8 +354,8 @@ fn workflow125_active_and_retired_expression_floors_reject_old_publication_and_s
     );
     let retired = f.service.state.as_ref().ok_or("retired")?.clone();
     assert!(!retired.namespaces.workflows.has_expression_profiles());
-    assert_eq!(retired.schema, USERPASS_ISSUANCE_STATE_SCHEMA);
-    assert_eq!(retired.writer_schema(), USERPASS_ISSUANCE_STATE_SCHEMA);
+    assert_eq!(retired.schema, AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
+    assert_eq!(retired.writer_schema(), AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
     assert!(retired.validate_format().is_ok());
     let mut lower = retired.clone();
     lower.schema = TRANSIT_ROTATION_PRECISION_STATE_SCHEMA;
@@ -380,7 +380,7 @@ fn workflow125_active_and_retired_expression_floors_reject_old_publication_and_s
     f = restart(f, 100)?;
     assert_eq!(
         f.service.state.as_ref().ok_or("retired reopen")?.schema,
-        USERPASS_ISSUANCE_STATE_SCHEMA
+        AUTH_SECURITY_CONTRACT_STATE_SCHEMA
     );
     assert_eq!(
         call(

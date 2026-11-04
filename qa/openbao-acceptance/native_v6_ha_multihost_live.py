@@ -160,29 +160,27 @@ class StrictCompleteMesh(loopback.CompleteLoopbackMesh):
 
 
 def native_process_script() -> str:
-    """Extend the reviewed PID/start-time contract only for the explicit flag.
+    """Bind the ordinary CLI process contract to this exact owned fixture.
 
-    Exact substitutions fail if the shared ownership script changes. This does
-    not admit baseline HA argv, a different executable, or another fixture PID.
+    Native HA is selected by explicit server storage configuration. Production
+    builds must never require experimental or fixture-only command-line flags.
     """
     source = base.REMOTE_PROCESS_SCRIPT
-    changes = {
-        "action, raw_root, has_ha = sys.argv[1:]":
-            "action, raw_root, has_ha, run_id = sys.argv[1:]",
-        "if has_ha == '1':\n    argv += ['--ha-config', str(root / 'ha.json')]":
-            "if has_ha == '1':\n    argv += ['--ha-config', str(root / 'ha.json'), "
-            "'--experimental-native-v6-ha']",
-        "[exe, '--config', config, '--ha-config', str(root / 'ha.json')]":
-            "[exe, '--config', config, '--ha-config', str(root / 'ha.json'), "
-            "'--experimental-native-v6-ha']",
-        "*([argv[-1]] if has_ha == '1' else [])":
-            "*([str(root / 'ha.json')] if has_ha == '1' else [])",
+    old = "action, raw_root, has_ha = sys.argv[1:]"
+    new = "action, raw_root, has_ha, run_id = sys.argv[1:]"
+    if source.count(old) != 1:
+        raise base.FixtureError("shared_process_identity_contract_changed")
+    source = source.replace(old, new)
+    # Preserve the previous exact shared-script drift checks while using its
+    # ordinary CLI unchanged. File ownership and both recorded argv forms
+    # remain part of the PID/start-time identity contract.
+    expected_contracts = {
+        "if has_ha == '1':\n    argv += ['--ha-config', str(root / 'ha.json')]": 1,
+        "[exe, '--config', config, '--ha-config', str(root / 'ha.json')]": 2,
+        "*([argv[-1]] if has_ha == '1' else [])": 1,
     }
-    expected_counts = (1, 1, 2, 1)
-    for (old, new), expected in zip(changes.items(), expected_counts):
-        if source.count(old) != expected:
-            raise base.FixtureError("shared_process_identity_contract_changed")
-        source = source.replace(old, new)
+    if any(source.count(text) != count for text, count in expected_contracts.items()):
+        raise base.FixtureError("shared_process_identity_contract_changed")
     anchor = "exe = str(root / 'heptabao-server')"
     if source.count(anchor) != 1:
         raise base.FixtureError("shared_process_root_contract_changed")
@@ -294,7 +292,7 @@ def validate_seed_archive(path: Path) -> None:
     with tarfile.open(path, "r:gz") as archive:
         for entry in archive:
             name = Path(entry.name)
-            if (name.is_absolute() or not name.parts or name.parts[0] != "data"
+            if (name.is_absolute() or not name.parts or name.parts[0] != "state"
                     or any(part in ("", ".", "..") for part in name.parts)
                     or entry.name in seen or not (entry.isdir() or entry.isfile())):
                 raise base.FixtureError("cold_seed_archive_unsafe_entry")
@@ -312,13 +310,13 @@ def install_seed(node, archive: Path) -> None:
 from pathlib import Path
 import os, stat, sys, tarfile
 root=Path(sys.argv[1]); archive_path=root/'seed-data.tgz'
-if root.resolve(strict=True)!=root or (root/'data').exists() or (root/'data').is_symlink():
+if root.resolve(strict=True)!=root or (root/'state').exists() or (root/'state').is_symlink():
     raise SystemExit(70)
 with tarfile.open(archive_path, 'r:gz') as archive:
     entries=archive.getmembers(); names=set(); total=0
     for entry in entries:
         name=Path(entry.name)
-        if (name.is_absolute() or not name.parts or name.parts[0]!='data'
+        if (name.is_absolute() or not name.parts or name.parts[0]!='state'
                 or any(part in ('','.','..') for part in name.parts)
                 or entry.name in names or not (entry.isfile() or entry.isdir())):
             raise SystemExit(71)
@@ -518,6 +516,9 @@ class NativeRun:
             "large_http_forwarding_verified": False,
             "history_payload_target_bytes": TARGET_BYTES,
             "mutating_requests_retried": False,
+            "native_storage_entrypoint": "server-config-native_v6_raft",
+            "native_activation_route": "/v1/sys/storage/native-v6/activate",
+            "fixture_service_feature_required": False,
             "fixture_recovery": self.recovery.public_receipt,
             "qualification": False, "independent_qualification": False,
             "production_authority": False, "direct_lan_qualification": False,
@@ -752,6 +753,7 @@ class NativeRun:
         self.confidential.append(ca_key.read_text())
         self.context = ssl.create_default_context(cafile=str(ca_cert))
         self.hosts, self.node_files, self.peers = {}, {}, {}
+        self.server_configs = {}
         for node in self.nodes:
             actual = setup_root(node, self.run_id)
             self.created.add(node)
@@ -766,17 +768,19 @@ class NativeRun:
             leaf = hashlib.sha256(ssl.PEM_cert_to_DER_cert(cert.read_text())).hexdigest()
             self.peers[str(node.node_id)] = {
                 "node_name": node.name, "address": f"{node.ip}:{node.raft_port}",
+                "cluster_address": f"https://{node.ip}:{node.raft_port}",
                 "api_address": node.api_origin, "server_name": node.server_name,
                 "certificate_sha256": leaf,
             }
             server = self.mesh.configure_server(node, {
-                "listen": f"{node.ip}:{node.api_port}", "data_dir": node.root + "/data",
+                "listen": f"{node.ip}:{node.api_port}", "data_dir": node.root + "/state",
                 "audit_file": node.root + "/audit.jsonl", "tls_cert_file": node.root + "/tls.crt",
                 "tls_key_file": node.root + "/tls.key", "max_connections": 64,
                 "timeout_seconds": REQUEST_SECONDS, "rate_limit_per_second": 2000,
                 "rate_limit_burst": 4000, "rate_limit_entries": 512,
                 "lifecycle_interval_seconds": 1,
             })
+            self.server_configs[node] = server
             config = directory / "server.json"
             write_private(config, canonical(server) + b"\n")
             base.install_candidate(node, payloads[node.alias], self.expected[str(node.node_id)])
@@ -859,7 +863,7 @@ class NativeRun:
         archive = self.work / "seed-data.tgz"
         with archive.open("xb") as output:
             base.checked_run(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10",
-                              seed.alias, "tar", "-C", seed.root, "-czf", "-", "data"],
+                              seed.alias, "tar", "-C", seed.root, "-czf", "-", "state"],
                              timeout=120, stdout=output)
             output.flush()
             os.fsync(output.fileno())
@@ -885,6 +889,20 @@ class NativeRun:
                 "peers": self.peers, "bootstrap": node.node_id == 1,
                 "peer_timeout_ms": 1500, "forward_timeout_ms": 8000, "max_inflight": 32,
             })
+            # The V5 seed remains at exactly the same state path. Select
+            # the formal backend only after the cold archive has been copied.
+            # Both origins are taken from the final enrolled local peer,
+            # so loopback and direct LAN bind the same declared local identity.
+            formal_server = dict(self.server_configs[node])
+            local_peer = config["peers"][str(node.node_id)]
+            formal_server["storage"] = {"native_v6_raft": {
+                "path": node.root, "node_id": local_peer["node_name"],
+                "cluster_addr": local_peer["cluster_address"],
+                "api_addr": local_peer["api_address"],
+            }}
+            formal_path = self.node_files[node] / "server-native.json"
+            write_private(formal_path, canonical(formal_server) + b"\n")
+            base.upload(node, formal_path, node.root + "/server.json", 0o600)
             path = self.node_files[node] / "ha.json"
             write_private(path, canonical(config) + b"\n")
             base.upload(node, replication, node.root + "/replication.key", 0o600)
@@ -912,7 +930,7 @@ class NativeRun:
 
     def activate_and_grow(self, leader):
         self.stage = "actual_native_ha_activation"
-        status, body = self.request(leader, "POST", "sys/internal/native-v6/activate", {})
+        status, body = self.request(leader, "POST", "sys/storage/native-v6/activate", {})
         self.check("native_activate_once", status == 204 and body in (None, {}))
         self.capacity(leader)
         for node in self.nodes:

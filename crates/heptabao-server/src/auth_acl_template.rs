@@ -181,6 +181,17 @@ pub(super) fn render<'a>(
     path: &'a str,
     values: &IdentityTemplateValues,
 ) -> Result<Option<Cow<'a, str>>, AuthError> {
+    // Records predating schema 141 retain their original bounded semantics.
+    render_with_options(path, values, true, false, false)
+}
+
+pub(super) fn render_with_options<'a>(
+    path: &'a str,
+    values: &IdentityTemplateValues,
+    allow_slashes: bool,
+    allow_wildcards: bool,
+    empty_is_missing: bool,
+) -> Result<Option<Cow<'a, str>>, AuthError> {
     if !path.contains("{{") && !path.contains("}}") {
         return Ok(Some(Cow::Borrowed(path)));
     }
@@ -199,12 +210,26 @@ pub(super) fn render<'a>(
                 // delete a deny while retaining a broad grant. An invalid
                 // present substitution fails the entire ACL evaluation,
                 // even when this particular rule would not match the path.
-                if value.contains(['*', '+']) {
+                if empty_is_missing && value.is_empty() {
+                    return Ok(None);
+                }
+                if !allow_wildcards && value.contains(['*', '+']) {
                     // The pinned 2.7.0 oracle classifies an invalid present
                     // binding as bad input, not a normal policy denial. Still
                     // abort the entire evaluation; never echo Identity data.
-                    return Err(bad(
-                        "ACL Identity substitution contains a forbidden wildcard",
+                    return Err(if empty_is_missing {
+                        super::err(
+                            403,
+                            "ACL Identity substitution contains a forbidden wildcard",
+                        )
+                    } else {
+                        bad("ACL Identity substitution contains a forbidden wildcard")
+                    });
+                }
+                if !allow_slashes && value.contains('/') {
+                    return Err(super::err(
+                        403,
+                        "ACL Identity substitution contains a forbidden slash",
                     ));
                 }
                 value.as_str()
@@ -353,5 +378,57 @@ mod tests {
             &"x".repeat(MAX_PATH_BYTES),
         );
         assert!(render("secret/{{identity.entity.metadata.empty}}", &values).is_err());
+    }
+
+    #[test]
+    #[allow(clippy::unwrap_used)]
+    fn security141_template_switches_apply_to_substitutions_not_literal_globs() {
+        let mut values = IdentityTemplateValues::default();
+        values.insert("identity.entity.metadata.team", "ops/service");
+        let path = "secret/{{identity.entity.metadata.team}}/*";
+        assert!(render_with_options(path, &values, false, false, true).is_err());
+        assert_eq!(
+            render_with_options(path, &values, true, false, true)
+                .unwrap()
+                .as_deref(),
+            Some("secret/ops/service/*")
+        );
+        values.insert("identity.entity.metadata.team", "+");
+        assert!(render_with_options(path, &values, true, false, true).is_err());
+        assert_eq!(
+            render_with_options(path, &values, false, true, true)
+                .unwrap()
+                .as_deref(),
+            Some("secret/+/*")
+        );
+        values.insert("identity.entity.metadata.team", "ops/*");
+        let terminal = "secret/{{identity.entity.metadata.team}}";
+        assert!(render_with_options(terminal, &values, true, false, true).is_err());
+        assert!(render_with_options(terminal, &values, false, true, true).is_err());
+        assert_eq!(
+            render_with_options(terminal, &values, true, true, true)
+                .unwrap()
+                .as_deref(),
+            Some("secret/ops/*")
+        );
+    }
+
+    #[test]
+    #[allow(clippy::unwrap_used)]
+    fn security141_empty_scalar_has_no_binding_and_legacy_semantics_remain_explicit() {
+        let mut values = IdentityTemplateValues::default();
+        values.insert("identity.entity.metadata.team", "");
+        let path = "secret/a{{identity.entity.metadata.team}}b";
+        assert!(
+            render_with_options(path, &values, false, false, true)
+                .unwrap()
+                .is_none()
+        );
+        assert_eq!(render(path, &values).unwrap().as_deref(), Some("secret/ab"));
+        values.insert("identity.entity.metadata.team", "ops/service");
+        assert_eq!(
+            render(path, &values).unwrap().as_deref(),
+            Some("secret/aops/serviceb")
+        );
     }
 }

@@ -20,7 +20,13 @@ impl EngineState {
         parent: &AddressKey,
         check: &impl Fn() -> std::result::Result<(), RecordError>,
     ) -> Result<NativeKv2GraphImport> {
-        self.stage_native_import(namespace, requested, ImportInput::Legacy(bundle), parent, check)
+        self.stage_native_import(
+            namespace,
+            requested,
+            ImportInput::Legacy(bundle),
+            parent,
+            check,
+        )
     }
 
     pub(crate) fn stage_openbao_kv2_native_large_import(
@@ -31,7 +37,13 @@ impl EngineState {
         parent: &AddressKey,
         check: &impl Fn() -> std::result::Result<(), RecordError>,
     ) -> Result<NativeKv2GraphImport> {
-        self.stage_native_import(namespace, requested, ImportInput::NativeLarge(bundle), parent, check)
+        self.stage_native_import(
+            namespace,
+            requested,
+            ImportInput::NativeLarge(bundle),
+            parent,
+            check,
+        )
     }
 
     // Used before any large body I/O, and repeated by the graph constructor.
@@ -47,14 +59,25 @@ impl EngineState {
             return Err(bad("KV2 import mount must be canonical"));
         }
         let name = format!("{canonical}/");
-        let mount = self.namespaces.get(namespace)
-            .and_then(|owner| owner.mounts.get(&name)).ok_or_else(not_found)?;
+        let mount = self
+            .namespaces
+            .get(namespace)
+            .and_then(|owner| owner.mounts.get(&name))
+            .ok_or_else(not_found)?;
         let Backend::Kv2Native(current) = &mount.backend else {
-            return Err(bad("native graph import requires an active native KV2 mount"));
+            return Err(bad(
+                "native graph import requires an active native KV2 mount",
+            ));
         };
-        current.check_graph_import_destination(parent, crate::engines::kv2_native_records::NativeScope {
-            namespace, mount: &name, incarnation: mount.incarnation,
-        }, check)
+        current.check_graph_import_destination(
+            parent,
+            crate::engines::kv2_native_records::NativeScope {
+                namespace,
+                mount: &name,
+                incarnation: mount.incarnation,
+            },
+            check,
+        )
     }
 
     fn stage_native_import(
@@ -72,11 +95,15 @@ impl EngineState {
         check().map_err(|_| error(503, "native KV2 import original budget exhausted"))?;
         self.validate_kv2_lossless_state(None)?;
         let name = format!("{canonical}/");
-        let mount = self.namespaces.get(namespace)
+        let mount = self
+            .namespaces
+            .get(namespace)
             .and_then(|owner| owner.mounts.get(&name))
             .ok_or_else(not_found)?;
         let Backend::Kv2Native(current) = &mount.backend else {
-            return Err(bad("native graph import requires an active native KV2 mount"));
+            return Err(bad(
+                "native graph import requires an active native KV2 mount",
+            ));
         };
         let scope = MountScope {
             namespace: namespace.into(),
@@ -85,15 +112,17 @@ impl EngineState {
         };
         let revision = next_mount_revision(mount.revision)?;
         let (view, objects) = match bundle {
-            ImportInput::Legacy(bytes) => current.prepare_lossless_graph_import(
-                bytes, parent, scope.borrowed(), check,
-            ),
-            ImportInput::NativeLarge(bytes) => current.prepare_native_large_graph_import(
-                bytes, parent, scope.borrowed(), check,
-            ),
+            ImportInput::Legacy(bytes) => {
+                current.prepare_lossless_graph_import(bytes, parent, scope.borrowed(), check)
+            }
+            ImportInput::NativeLarge(bytes) => {
+                current.prepare_native_large_graph_import(bytes, parent, scope.borrowed(), check)
+            }
         }?;
         let mut candidate = self.clone();
-        let mount = candidate.namespaces.get_mut(namespace)
+        let mount = candidate
+            .namespaces
+            .get_mut(namespace)
             .and_then(|owner| owner.mounts.get_mut(&name))
             .ok_or_else(not_found)?;
         mount.backend = Backend::Kv2Native(view);

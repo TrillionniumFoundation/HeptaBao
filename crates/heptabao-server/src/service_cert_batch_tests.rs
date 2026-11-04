@@ -194,7 +194,7 @@ fn schema48_cert_role_and_mount_each_reject_false_legacy_schema() -> TestResult 
     for mount_only in [false, true] {
         let root = Root::new();
         let mut service = root.service()?;
-        let (_, admin) = bootstrap(&mut service)?;
+        let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
         let mut legacy = service.state.clone().ok_or("state")?;
         legacy.schema = 47;
         assert!(!legacy.auth.has_cert_batch_state());
@@ -249,7 +249,7 @@ fn schema48_cert_role_and_mount_each_reject_false_legacy_schema() -> TestResult 
 fn schema48_token_api_creation_ttl_has_an_independent_reader_fence() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
+    let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let issued = call(
         &mut service,
         "POST",

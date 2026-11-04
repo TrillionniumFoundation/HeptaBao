@@ -144,10 +144,39 @@ fn native_forward_projection_real_precise_clock_auth_and_kv2_owner_boundaries() 
         json!({"policy":"path \"secret/data/pipeline/projection\" { capabilities = [\"read\"] }"}),
         204,
     )?;
+    let security_activated = observed(&pipeline, leader)?;
+    // Fresh initialization already carries the Auth security reader floor.
+    // Creating another versioned policy is therefore Auth-only:
+    // it must change the authenticated projection without changing the
+    // non-Auth owners or relabeling their existing reader interpretation.
+    assert!(clock_only.root.state_schema >= crate::service::AUTH_SECURITY_CONTRACT_STATE_SCHEMA);
+    assert_eq!(
+        security_activated.root.state_schema,
+        clock_only.root.state_schema
+    );
+    assert_ne!(security_activated.auth, clock_only.auth);
+    assert_ne!(security_activated.full, clock_only.full);
+    assert_eq!(security_activated.non_auth, clock_only.non_auth);
+
+    // Once the floor is current, an actual Auth-only replacement must preserve
+    // every non-Auth owner while changing the full authenticated projection.
+    call(
+        &pipeline,
+        leader,
+        "PUT",
+        "sys/policies/acl/native-forward-projection",
+        pipeline.admin(),
+        json!({"policy":"path \"secret/data/pipeline/projection\" { capabilities = [\"read\",\"update\"] }"}),
+        204,
+    )?;
     let auth_changed = observed(&pipeline, leader)?;
-    assert_ne!(auth_changed.auth, clock_only.auth);
-    assert_ne!(auth_changed.full, clock_only.full);
-    assert_eq!(auth_changed.non_auth, clock_only.non_auth);
+    assert_eq!(
+        auth_changed.root.state_schema,
+        security_activated.root.state_schema
+    );
+    assert_ne!(auth_changed.auth, security_activated.auth);
+    assert_ne!(auth_changed.full, security_activated.full);
+    assert_eq!(auth_changed.non_auth, security_activated.non_auth);
 
     call(
         &pipeline,
@@ -177,9 +206,15 @@ fn native_forward_projection_real_precise_clock_auth_and_kv2_owner_boundaries() 
         .digest[0] ^= 1;
     let mut foreign_key = kv_changed.root.clone();
     foreign_key.object_address_key.0[0] ^= 1;
+    let mut foreign_schema = kv_changed.root.clone();
+    foreign_schema.state_schema += 1;
     for (domain, counterfeit) in [
         ("non-Auth ownership transplant", foreign_owner),
         ("object address-key transplant", foreign_key),
+        (
+            "reader schema relabel with unchanged owners",
+            foreign_schema,
+        ),
     ] {
         counterfeit.validate().map_err(|_| {
             format!("native projection fault must remain structurally valid: {domain}")

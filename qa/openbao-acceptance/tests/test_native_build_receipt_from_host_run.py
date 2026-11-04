@@ -62,7 +62,7 @@ class ProjectionRegression(unittest.TestCase):
 
     def test_exact_retained_records_project_build_but_preserve_failed_scope(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path, manifest, _ = fixture(Path(tmp))
+            path, manifest, _ = fixture(Path(tmp).resolve())
             value = self.apply(path, manifest)
             self.assertEqual(value["schema"], "heptabao.native-build.v1")
             self.assertEqual(value["native_abi"], "aarch64-apple-darwin")
@@ -73,7 +73,7 @@ class ProjectionRegression(unittest.TestCase):
     def test_actual_artifact_or_compiler_log_change_refuses(self):
         for changed in ("heptabao-server", "rustc-version.log", "built-binary-format.log", "build-server.log"):
             with self.subTest(changed=changed), tempfile.TemporaryDirectory() as tmp:
-                path, manifest, _ = fixture(Path(tmp))
+                path, manifest, _ = fixture(Path(tmp).resolve())
                 with (path.parent / changed).open("ab") as output:
                     output.write(b"changed after recorded digest")
                 with self.assertRaises(projector.Refusal):
@@ -84,21 +84,21 @@ class ProjectionRegression(unittest.TestCase):
                              ("source_commit", "4" * 40), ("source_tree", "5" * 40),
                              ("runner_sha256", "6" * 64), ("status", "running")):
             with self.subTest(field=field), tempfile.TemporaryDirectory() as tmp:
-                path, manifest, summary = fixture(Path(tmp))
+                path, manifest, summary = fixture(Path(tmp).resolve())
                 summary[field] = value
                 put(path, summary)
                 with self.assertRaises(projector.Refusal):
                     self.apply(path, manifest)
         for side in ("source_before", "source_after"):
             with self.subTest(side=side), tempfile.TemporaryDirectory() as tmp:
-                path, manifest, summary = fixture(Path(tmp))
+                path, manifest, summary = fixture(Path(tmp).resolve())
                 summary[side]["tree"] = "7" * 40
                 put(path, summary)
                 with self.assertRaises(projector.Refusal):
                     self.apply(path, manifest)
         for code in (False, True, 1, -1):
             with self.subTest(code=code), tempfile.TemporaryDirectory() as tmp:
-                path, manifest, summary = fixture(Path(tmp))
+                path, manifest, summary = fixture(Path(tmp).resolve())
                 summary["commands"][0]["exit_code"] = code
                 put(path, summary)
                 with self.assertRaises(projector.Refusal):
@@ -107,7 +107,7 @@ class ProjectionRegression(unittest.TestCase):
     def test_duplicate_command_wrong_native_abi_and_manifest_refuse(self):
         for mode in ("duplicate", "machine", "manifest"):
             with self.subTest(mode=mode), tempfile.TemporaryDirectory() as tmp:
-                path, manifest, summary = fixture(Path(tmp))
+                path, manifest, summary = fixture(Path(tmp).resolve())
                 if mode == "duplicate":
                     summary["commands"].append(summary["commands"][0].copy())
                 elif mode == "machine":
@@ -120,7 +120,7 @@ class ProjectionRegression(unittest.TestCase):
 
     def test_symlink_binary_and_existing_receipt_are_never_replaced(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path, manifest, _ = fixture(Path(tmp))
+            path, manifest, _ = fixture(Path(tmp).resolve())
             value = self.apply(path, manifest)
             output = path.parent / "receipt.json"
             projector.write_new(output, value)
@@ -138,7 +138,7 @@ class ProjectionRegression(unittest.TestCase):
 
     def test_binary_stream_has_exact_digest_and_rejects_oversize_without_read(self):
         with tempfile.TemporaryDirectory() as tmp:
-            root = Path(tmp)
+            root = Path(tmp).resolve()
             binary = root / "public-synthetic-stream-bytes"
             raw = b"public-artifact-stream-unit-vector" * 100000
             put(binary, raw)
@@ -160,7 +160,7 @@ class ProjectionRegression(unittest.TestCase):
 
     def test_stream_custody_detects_same_size_replacement_and_hardlink(self):
         with tempfile.TemporaryDirectory() as tmp:
-            binary = Path(tmp) / "synthetic-binary"
+            binary = Path(tmp).resolve() / "synthetic-binary"
             put(binary, b"first vector")
             actual_read = os.read
             changed = False

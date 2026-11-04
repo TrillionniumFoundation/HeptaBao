@@ -374,7 +374,7 @@ fn jwt_pem_invalid_private_weak_wrong_curve_and_source_mix_leave_config_intact()
 fn jwt_pem_namespace_reopen_renew_and_sticky_retirement_keep_existing_authority() -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (unseal, admin) = bootstrap(&mut service)?;
+    let (unseal, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let unseal = Zeroizing::new(unseal);
     let admin = Zeroizing::new(admin);
     let key = PKey::from_rsa(Rsa::generate(2048)?)?;
@@ -383,16 +383,9 @@ fn jwt_pem_namespace_reopen_renew_and_sticky_retirement_keep_existing_authority(
         "ordinary writer starts65"
     );
     assert!(
-        call(
-            &mut service,
-            "",
-            "POST",
-            "sys/namespaces/team",
-            &admin,
-            json!({}),
-            100
-        )
-        .status
+        service
+            .create_pre144_namespace_fixture("team", &admin)?
+            .status
             == 200,
         "namespace"
     );
@@ -512,7 +505,7 @@ fn jwt_pem_state_requires69_and_revalidates_public_key_binding_without_changing_
 -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
+    let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let key = PKey::from_rsa(Rsa::generate(2048)?)?;
     setup(&mut service, &admin, "", "pemjwt")?;
     assert!(
@@ -735,7 +728,7 @@ fn jwt_pem_authenticated_snapshot_prepare_and_final_commit_reject_active_retired
 -> TestResult {
     let root = Root::new();
     let mut service = root.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
+    let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let key = PKey::from_rsa(Rsa::generate(2048)?)?;
     setup(&mut service, &admin, "", "pemjwt")?;
     assert!(

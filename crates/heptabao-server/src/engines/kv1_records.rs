@@ -194,6 +194,73 @@ impl EngineState {
             .as_ref()
             .map(|runtime| runtime.protected.root())
     }
+
+    /// Bind both actual immutable key/value views and their write ownership.
+    /// Namespace partition/merge may change B-tree page shape without changing
+    /// those views. Pending publication objects are bookkeeping only; clearing
+    /// them must not invalidate a fixed logical candidate after its commit.
+    pub(crate) fn record_view_binding(
+        &self,
+        mut live: impl FnMut() -> bool,
+    ) -> Result<Option<[u8; 32]>> {
+        use sha2::{Digest, Sha256};
+        if !live() {
+            return Err(error(503, "record view binding deadline exhausted"));
+        }
+        let Some(runtime) = &self.records else {
+            return Ok(None);
+        };
+        let mut hash = Sha256::new();
+        hash.update(b"HeptaBao/closed-policy143-record-view/v1\0");
+        hash.update([u8::from(runtime.observed_lossless_json)]);
+        hash.update((runtime.loaded_namespaces.len() as u64).to_be_bytes());
+        for namespace in &runtime.loaded_namespaces {
+            if !live() {
+                return Err(error(503, "record view binding deadline exhausted"));
+            }
+            hash.update((namespace.len() as u64).to_be_bytes());
+            hash.update(namespace.as_bytes());
+        }
+        for index in [&runtime.index, &runtime.protected] {
+            let mut graph = Sha256::new();
+            let mut count = 0u64;
+            index
+                .visit_keys(|key| {
+                    if !live() {
+                        return Err(RecordError::Corrupt);
+                    }
+                    for part in [key.namespace(), key.mount(), key.path()] {
+                        graph.update((part.len() as u64).to_be_bytes());
+                        graph.update(part.as_bytes());
+                    }
+                    graph.update(key.incarnation().to_be_bytes());
+                    let value = index.get(key).ok_or(RecordError::Corrupt)?;
+                    graph.update((value.len() as u64).to_be_bytes());
+                    for chunk in value.chunks(64 * 1024) {
+                        if !live() {
+                            return Err(RecordError::Corrupt);
+                        }
+                        graph.update(chunk);
+                    }
+                    count = count.checked_add(1).ok_or(RecordError::TooLarge)?;
+                    Ok(())
+                })
+                .map_err(record_error)?;
+            graph.update(count.to_be_bytes());
+            hash.update(graph.finalize());
+        }
+        if !live() {
+            return Err(error(503, "record view binding deadline exhausted"));
+        }
+        // Keep this private observation keyed to its actual runtime owner.
+        // Neither key/value bytes nor this binding are serialized or exported.
+        let digest = runtime
+            .key
+            .digest(b"closed-policy143-record-view", &hash.finalize())
+            .map_err(record_error)?;
+        Ok(Some(digest))
+    }
+
     pub(crate) fn record_address_key(&self) -> Option<Arc<AddressKey>> {
         self.records
             .as_ref()
@@ -339,10 +406,42 @@ impl EngineState {
 
     /// Readdress the actual authenticated root-only KV1 graph for a new record
     /// format. No publication or independent namespace custody is granted.
-    #[cfg(any(test, feature = "fixture-native-v6-service"))]
+    #[cfg(any(test, feature = "native-v6-storage"))]
     pub(crate) fn rekey_root_records_checked(
         &self,
         key: Arc<AddressKey>,
+        check: &impl Fn() -> std::result::Result<(), RecordError>,
+    ) -> Result<Self> {
+        self.rekey_root_records_with_pristine_paths(key, &BTreeSet::new(), check)
+    }
+
+    /// The caller has authenticated the actual catalog and all V5 owners.
+    /// Permit exactly its pristine child metadata; their KV1 graph must still
+    /// contain no child records. This grants no child mount or custody owner.
+    #[cfg(feature = "native-v6-storage")]
+    pub(crate) fn rekey_root_records_with_pristine_namespaces_checked(
+        &self,
+        key: Arc<AddressKey>,
+        paths: &BTreeSet<String>,
+        check: &impl Fn() -> std::result::Result<(), RecordError>,
+    ) -> Result<Self> {
+        check().map_err(record_error)?;
+        if !self.native_empty_namespace_engine_profile(paths) {
+            return Err(error(
+                503,
+                "record rekey requires pristine catalog metadata",
+            ));
+        }
+        self.rekey_root_records_with_pristine_paths(key, paths, check)
+    }
+
+    // Shared transformation, without public selection or detached source.
+    // The original root-only entry supplies an empty exact path set.
+    #[cfg(any(test, feature = "native-v6-storage"))]
+    fn rekey_root_records_with_pristine_paths(
+        &self,
+        key: Arc<AddressKey>,
+        paths: &BTreeSet<String>,
         check: &impl Fn() -> std::result::Result<(), RecordError>,
     ) -> Result<Self> {
         check().map_err(record_error)?;
@@ -356,7 +455,17 @@ impl EngineState {
             || self
                 .namespaces
                 .keys()
-                .any(|namespace| !namespace.is_empty())
+                .filter(|namespace| !namespace.is_empty())
+                .cloned()
+                .collect::<BTreeSet<_>>()
+                != *paths
+            || paths.iter().any(|path| {
+                path.is_empty()
+                    || self
+                        .namespaces
+                        .get(path)
+                        .is_none_or(|owner| !owner.is_pristine())
+            })
             || source.index.root() != source.protected.root()
         {
             return Err(error(
@@ -801,6 +910,86 @@ mod tests {
         state
     }
     #[test]
+    fn expiration143_closed_record_binding_preserves_values_across_page_shapes_and_cache_clear() {
+        let key = AddressKey::from_bytes([143; 32]);
+        let mut ascending = Kv1Index::empty(Arc::clone(&key));
+        let mut descending = Kv1Index::empty(Arc::clone(&key));
+        let value = [b'x'; 200];
+        for row in 0..600 {
+            let record = Kv1Key::new("", "records/", 1, &format!("row/{row:04}")).unwrap();
+            ascending = ascending.edit(record, Some(&value)).unwrap().next;
+        }
+        for row in (0..600).rev() {
+            let record = Kv1Key::new("", "records/", 1, &format!("row/{row:04}")).unwrap();
+            descending = descending.edit(record, Some(&value)).unwrap().next;
+        }
+        assert!(
+            ascending.root() != descending.root(),
+            "different real split histories"
+        );
+        let original = EngineState {
+            records: Some(Runtime::new(Arc::clone(&key), ascending)),
+            ..EngineState::default()
+        };
+        let expected = original.record_view_binding(|| true).unwrap();
+        assert!(expected.is_some());
+        let mut reshaped = original.clone();
+        let runtime = reshaped.records.as_mut().unwrap();
+        runtime.index = descending.clone();
+        runtime.protected = descending;
+        assert_eq!(reshaped.record_view_binding(|| true).unwrap(), expected);
+        let mut pending = Vec::new();
+        original
+            .records
+            .as_ref()
+            .unwrap()
+            .protected
+            .visit_objects(|object| {
+                pending.push(Arc::clone(object));
+                Ok(())
+            })
+            .unwrap();
+        *original.records.as_ref().unwrap().pending.lock().unwrap() = Pending::Ready(pending);
+        assert!(!original.record_objects().unwrap().is_empty());
+        assert_eq!(original.record_view_binding(|| true).unwrap(), expected);
+        original
+            .clear_published_record_objects(&original.record_root().unwrap())
+            .unwrap();
+        assert!(original.record_objects().unwrap().is_empty());
+        assert_eq!(original.record_view_binding(|| true).unwrap(), expected);
+
+        let mut changed = original.clone();
+        changed
+            .records
+            .as_mut()
+            .unwrap()
+            .loaded_namespaces
+            .insert("different-owner".into());
+        assert_ne!(changed.record_view_binding(|| true).unwrap(), expected);
+        let mut changed = original.clone();
+        changed.records.as_mut().unwrap().observed_lossless_json = true;
+        assert_ne!(changed.record_view_binding(|| true).unwrap(), expected);
+        let mut changed = original.clone();
+        changed.records.as_mut().unwrap().key = AddressKey::from_bytes([144; 32]);
+        assert_ne!(changed.record_view_binding(|| true).unwrap(), expected);
+        assert_eq!(
+            original.record_view_binding(|| false).unwrap_err().status,
+            503
+        );
+        let mut checks = 0;
+        assert_eq!(
+            original
+                .record_view_binding(|| {
+                    checks += 1;
+                    checks < 10
+                })
+                .unwrap_err()
+                .status,
+            503
+        );
+        assert_eq!(checks, 10, "one original budget, no restarted observation");
+    }
+    #[test]
     fn migration_preserves_reads_scan_order_and_candidate_isolation() {
         let mut legacy = populated();
         let legacy_bytes = serde_json::to_vec(&legacy).unwrap();
@@ -873,6 +1062,193 @@ mod tests {
         assert_eq!(original.record_root().unwrap(), old_root);
         assert!(!candidate.record_objects().unwrap().is_empty());
     }
+    #[cfg(feature = "native-v6-storage")]
+    #[test]
+    fn native_pristine_rekey140_preserves_exact_metadata_and_root_values() {
+        let mut legacy = populated();
+        legacy.ensure_empty_namespace("retired");
+        legacy.ensure_empty_namespace("sibling");
+        let mut original = legacy
+            .migrate_kv1_records(AddressKey::from_bytes([31; 32]))
+            .unwrap();
+        let paths = BTreeSet::from(["retired".to_owned(), "sibling".to_owned()]);
+        let old_root = original.record_root().unwrap();
+        let before = serde_json::to_vec(&original).unwrap();
+        // The old entry retains its original root-only rejection.
+        assert!(
+            original
+                .rekey_root_records_checked(AddressKey::from_bytes([32; 32]), &|| Ok(()))
+                .is_err()
+        );
+        let mut next = original
+            .rekey_root_records_with_pristine_namespaces_checked(
+                AddressKey::from_bytes([33; 32]),
+                &paths,
+                &|| Ok(()),
+            )
+            .unwrap();
+        assert_eq!(serde_json::to_vec(&next).unwrap(), before);
+        assert_ne!(next.record_root().unwrap(), old_root);
+        for path in ["raw/a", "raw/false", "raw/m/x", "raw/z"] {
+            assert_eq!(
+                call(&mut next, "GET", path, json!({})).body,
+                call(&mut original, "GET", path, json!({})).body,
+            );
+        }
+        assert_eq!(
+            call(&mut next, "LIST", "raw/", json!({})).body,
+            call(&mut original, "LIST", "raw/", json!({})).body,
+        );
+        assert_eq!(original.record_root().unwrap(), old_root);
+        assert_eq!(serde_json::to_vec(&original).unwrap(), before);
+        assert!(!next.record_objects().unwrap().is_empty());
+    }
+
+    #[cfg(feature = "native-v6-storage")]
+    #[test]
+    fn native_pristine_rekey140_rejects_catalog_frontier_and_child_data() {
+        let mut legacy = populated();
+        legacy.ensure_empty_namespace("child");
+        let original = legacy
+            .migrate_kv1_records(AddressKey::from_bytes([34; 32]))
+            .unwrap();
+        let paths = BTreeSet::from(["child".to_owned()]);
+        for wrong in [
+            BTreeSet::new(),
+            BTreeSet::from(["other".to_owned()]),
+            BTreeSet::from(["child".to_owned(), "other".to_owned()]),
+            BTreeSet::from(["".to_owned(), "child".to_owned()]),
+        ] {
+            assert!(
+                original
+                    .rekey_root_records_with_pristine_namespaces_checked(
+                        AddressKey::from_bytes([35; 32]),
+                        &wrong,
+                        &|| Ok(()),
+                    )
+                    .is_err()
+            );
+        }
+        let mut frontier = original.clone();
+        frontier
+            .namespaces
+            .get_mut("child")
+            .unwrap()
+            .mount_epochs
+            .insert("retired/".to_owned(), 2);
+        assert!(
+            frontier
+                .rekey_root_records_with_pristine_namespaces_checked(
+                    AddressKey::from_bytes([36; 32]),
+                    &paths,
+                    &|| Ok(()),
+                )
+                .is_err()
+        );
+        // Real child mount and write use the existing Engine API, not a fake
+        // catalog bit. Even an empty mount is outside the pristine profile.
+        let mut child = original.clone();
+        assert!(
+            child
+                .handle(
+                    "child",
+                    "POST",
+                    "sys/mounts/data",
+                    &json!({"type":"kv", "options":{"version":"1"}}),
+                    100
+                )
+                .unwrap()
+                .unwrap()
+                .mutated
+        );
+        assert!(
+            child
+                .rekey_root_records_with_pristine_namespaces_checked(
+                    AddressKey::from_bytes([37; 32]),
+                    &paths,
+                    &|| Ok(()),
+                )
+                .is_err()
+        );
+        assert!(
+            child
+                .handle("child", "PUT", "data/item", &json!({"keep":"exact"}), 100)
+                .unwrap()
+                .unwrap()
+                .mutated
+        );
+        let before = serde_json::to_vec(&child).unwrap();
+        let root = child.record_root().unwrap();
+        assert!(
+            child
+                .rekey_root_records_with_pristine_namespaces_checked(
+                    AddressKey::from_bytes([38; 32]),
+                    &paths,
+                    &|| Ok(()),
+                )
+                .is_err()
+        );
+        assert_eq!(child.record_root().unwrap(), root);
+        assert_eq!(serde_json::to_vec(&child).unwrap(), before);
+        assert_eq!(
+            child
+                .handle("child", "GET", "data/item", &json!({}), 100)
+                .unwrap()
+                .unwrap()
+                .body["data"]["keep"],
+            "exact"
+        );
+    }
+
+    #[cfg(feature = "native-v6-storage")]
+    #[test]
+    fn native_pristine_rekey140_keeps_loaded_owner_and_original_check_fences() {
+        let mut legacy = populated();
+        legacy.ensure_empty_namespace("child");
+        let original = legacy
+            .migrate_kv1_records(AddressKey::from_bytes([39; 32]))
+            .unwrap();
+        let paths = BTreeSet::from(["child".to_owned()]);
+        let root = original.record_root().unwrap();
+        let before = serde_json::to_vec(&original).unwrap();
+        let mut loaded = original.clone();
+        loaded
+            .records
+            .as_mut()
+            .unwrap()
+            .loaded_namespaces
+            .insert("child".to_owned());
+        assert!(
+            loaded
+                .rekey_root_records_with_pristine_namespaces_checked(
+                    AddressKey::from_bytes([40; 32]),
+                    &paths,
+                    &|| Ok(()),
+                )
+                .is_err()
+        );
+        let calls = std::cell::Cell::new(0);
+        assert!(
+            original
+                .rekey_root_records_with_pristine_namespaces_checked(
+                    AddressKey::from_bytes([41; 32]),
+                    &paths,
+                    &|| {
+                        calls.set(calls.get() + 1);
+                        if calls.get() >= 4 {
+                            Err(RecordError::Invalid)
+                        } else {
+                            Ok(())
+                        }
+                    },
+                )
+                .is_err()
+        );
+        assert_eq!(calls.get(), 4);
+        assert_eq!(original.record_root().unwrap(), root);
+        assert_eq!(serde_json::to_vec(&original).unwrap(), before);
+    }
+
     #[test]
     fn metadata_without_authenticated_graph_is_not_readable_and_disable_drops_scope() {
         let legacy = populated();

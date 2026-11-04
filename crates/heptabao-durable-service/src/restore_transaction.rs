@@ -195,6 +195,7 @@ pub(super) fn reopen_pending<B: Barrier, P: DurableBackend>(
     {
         return Err(ServiceError::CorruptState);
     }
+    DurableService::<B, P>::ensure_ha_intent_retirement_snapshot_complete(&restored.snapshot)?;
     // Old frontier is authenticated alongside all old bytes, including journal
     // sequence. It is not substituted for the new epoch on rollback.
     let _old_authority = intent.old_authority;

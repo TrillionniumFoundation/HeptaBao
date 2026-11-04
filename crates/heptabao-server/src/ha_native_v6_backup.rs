@@ -27,7 +27,13 @@ use format::*;
 
 #[path = "ha_native_v6_backup_historical.rs"]
 mod historical;
-pub(crate) use historical::{HistoricalNativeV6ArchiveFacts, validate_historical_native_v6_archive};
+pub(crate) use historical::{
+    HistoricalNativeV6ArchiveFacts, validate_historical_native_v6_archive,
+};
+
+#[path = "ha_native_v6_backup_cold.rs"]
+mod cold;
+pub(crate) use cold::{ColdNativeV6ArchiveFacts, validate_cold_native_v6_archive};
 
 #[derive(Debug)]
 pub(crate) enum NativeV6ArchiveError {
@@ -238,6 +244,9 @@ pub(crate) fn write_native_v6_archive<R: Read + Seek>(
     gate: &mut impl FnMut() -> ArchiveResult<()>,
 ) -> ArchiveResult<NativeV6ArchiveReport> {
     let deadline = local.deadline;
+    let _native_operation = store
+        .begin_native_operation()
+        .map_err(|_| NativeV6ArchiveError::Storage)?;
     check(deadline, gate)?;
     if seal_identity == [0; 32]
         || local.selection_digest != <[u8; 32]>::from(Sha256::digest(&selection.provenance))
@@ -426,12 +435,19 @@ pub(crate) fn validate_native_v6_archive<R: Read + Seek>(
     deadline: OriginalDeadline,
     gate: &mut impl FnMut() -> ArchiveResult<()>,
 ) -> ArchiveResult<VerifiedNativeV6Archive<R>> {
-    validate_archive_inner(reader, expected_seal_identity, barrier, deadline, gate, |provenance| {
-        if provenance != expected.provenance {
-            return Err(NativeV6ArchiveError::WrongSelection);
-        }
-        Ok(expected.intent())
-    })
+    validate_archive_inner(
+        reader,
+        expected_seal_identity,
+        barrier,
+        deadline,
+        gate,
+        |provenance| {
+            if provenance != expected.provenance {
+                return Err(NativeV6ArchiveError::WrongSelection);
+            }
+            Ok(expected.intent())
+        },
+    )
 }
 
 // The selection callback can return DATA only. The entire canonical pack and
@@ -465,9 +481,7 @@ fn validate_archive_inner<R: Read + Seek>(
         gate,
     )?;
     let header = Header::decode(&bytes)?;
-    if header.seal_identity != expected_seal_identity
-        || expected_seal_identity == [0; 32]
-    {
+    if header.seal_identity != expected_seal_identity || expected_seal_identity == [0; 32] {
         return Err(NativeV6ArchiveError::WrongSelection);
     }
     let body_end = header.body_bytes()?;

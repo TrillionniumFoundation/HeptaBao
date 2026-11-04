@@ -55,7 +55,7 @@ fn registered(
 fn sdk_credential102_encrypted_reopen_lookup_and_snapshot_downgrade() -> TestResult {
     let files = Root::new();
     let mut service = files.service()?;
-    let (key, root) = bootstrap(&mut service)?;
+    let (key, root) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let previous = service.state.clone().ok_or("previous")?;
     let backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
     let mut candidate = previous.clone();
@@ -90,7 +90,7 @@ fn sdk_credential102_encrypted_reopen_lookup_and_snapshot_downgrade() -> TestRes
 fn sdk_credential102_retained_provenance_rejects_removal_and_foreign_backend() -> TestResult {
     let files = Root::new();
     let mut service = files.service()?;
-    let (_, root) = bootstrap(&mut service)?;
+    let (_, root) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let mut candidate = service.state.clone().ok_or("state")?;
     let backend = mount(&mut candidate, &root)?;
     let record = registered(&mut candidate, &root, &backend)?;
@@ -514,7 +514,7 @@ fn sdk_auth_retirement107_none_preserves_legacy_bytes() -> TestResult {
 fn sdk_auth_retirement107_queued_encrypted_reopen_and_protected_restore() -> TestResult {
     let files = Root::new();
     let mut service = files.service()?;
-    let (key, root) = bootstrap(&mut service)?;
+    let (key, root) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let previous = service.state.clone().ok_or("previous")?;
     let old_backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
     let mut state = previous.clone();

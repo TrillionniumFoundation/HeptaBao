@@ -87,6 +87,8 @@ struct ObservedBackend {
     rewrite_after_reuse: Option<(PathBuf, Vec<u8>)>,
     aba_after_reuse: Option<(PathBuf, Vec<u8>, Vec<u8>)>,
     return_plain_read_pin: bool,
+    retain_actual_reuse_pin: bool,
+    actual_reuse_pin: Option<ImmutableBlobReadPin>,
 }
 impl ObservedBackend {
     fn new(inner: FileBackend, counts: BackendCounts) -> Self {
@@ -99,6 +101,8 @@ impl ObservedBackend {
             rewrite_after_reuse: None,
             aba_after_reuse: None,
             return_plain_read_pin: false,
+            retain_actual_reuse_pin: false,
+            actual_reuse_pin: None,
         }
     }
 }
@@ -145,7 +149,8 @@ impl DurableBackend for ObservedBackend {
         if self.reject_stage {
             return Err(BackendError::Io);
         }
-        self.inner.stage_immutable_ciphertext_checked(locator, bytes, gate)
+        self.inner
+            .stage_immutable_ciphertext_checked(locator, bytes, gate)
     }
     fn reuse_immutable_ciphertext_checked(
         &mut self,
@@ -160,13 +165,19 @@ impl DurableBackend for ObservedBackend {
         if self.return_plain_read_pin {
             return self.inner.pin_immutable_ciphertext(locator, len).map(Some);
         }
-        let result = self.inner.reuse_immutable_ciphertext_checked(locator, len, gate)?;
+        let result = self
+            .inner
+            .reuse_immutable_ciphertext_checked(locator, len, gate)?;
+        if self.retain_actual_reuse_pin {
+            // Test-only observation: retain the actual returned pin before
+            // the unchanged real mutation callback, never synthesize a pin.
+            self.actual_reuse_pin = result.clone();
+        }
         if let Some((leaf, ciphertext)) = self.rewrite_after_reuse.take() {
             fs::write(leaf, ciphertext).map_err(|_| BackendError::Io)?;
         }
         if let Some((leaf, alternate, original)) = self.aba_after_reuse.take() {
-            rewrite_and_restore(&leaf, &alternate, &original)
-                .map_err(|_| BackendError::Io)?;
+            rewrite_and_restore(&leaf, &alternate, &original).map_err(|_| BackendError::Io)?;
         }
         // An upper backend failure after the actual existing descriptor was
         // synchronized must not be reclassified as first-open absence.
@@ -202,8 +213,16 @@ fn locator(address: u8) -> Result<BlobLocator, BackendError> {
 fn leaf_name(locator: BlobLocator) -> String {
     // Fixture addressing uses only public locator fields, not the physical
     // sibling module's private leaf() implementation.
-    let store = locator.store_id().iter().map(|byte| format!("{byte:02x}")).collect::<String>();
-    let address = locator.address().iter().map(|byte| format!("{byte:02x}")).collect::<String>();
+    let store = locator
+        .store_id()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    let address = locator
+        .address()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
     format!("nv6.{store}.{address}.hbo")
 }
 fn no_gate() -> Result<(), ServiceError> {
@@ -216,7 +235,11 @@ fn primary_files(root: &TestRoot) -> io::Result<[Vec<u8>; 3]> {
         fs::read(root.0.join("ledger.hbl"))?,
     ])
 }
-fn rewrite_and_restore(leaf: &std::path::Path, alternate: &[u8], original: &[u8]) -> io::Result<()> {
+fn rewrite_and_restore(
+    leaf: &std::path::Path,
+    alternate: &[u8],
+    original: &[u8],
+) -> io::Result<()> {
     let mut writer = fs::OpenOptions::new().write(true).open(leaf)?;
     let modified = writer.metadata()?.modified()?;
     writer.write_all(alternate)?;
@@ -240,7 +263,12 @@ fn reuse(
     address: BlobLocator,
 ) -> Result<ImmutableBlobReadPin, ServiceError> {
     owner.stage_immutable_object_reusing_existing_before_publish(
-        session, address, PAYLOAD.len() + 40, CONTEXT, PAYLOAD, &mut no_gate,
+        session,
+        address,
+        PAYLOAD.len() + 40,
+        CONTEXT,
+        PAYLOAD,
+        &mut no_gate,
     )
 }
 
@@ -341,7 +369,12 @@ fn immutable_reuse_bad_local_cipher_or_context_or_plaintext_never_repairs() -> T
             PAYLOAD
         };
         let result = owner.stage_immutable_object_reusing_existing_before_publish(
-            &session, address, PAYLOAD.len() + 40, context, expected, &mut no_gate,
+            &session,
+            address,
+            PAYLOAD.len() + 40,
+            context,
+            expected,
+            &mut no_gate,
         );
         match kind {
             "plaintext" => assert!(matches!(result, Err(ServiceError::RequestBindingConflict))),
@@ -375,8 +408,14 @@ fn immutable_reuse_cold_orphan_requires_fresh_session_and_no_reseal() -> TestRes
     let stages = counts.stages.load(Ordering::SeqCst);
     barrier.reject_seal.store(true, Ordering::SeqCst);
     cold.backend.reject_stage = true;
-    assert!(matches!(reuse(&mut cold, &old, address), Err(ServiceError::RecoveryRequired)));
-    assert!(matches!(first.read_ciphertext(), Err(BackendError::Unavailable)));
+    assert!(matches!(
+        reuse(&mut cold, &old, address),
+        Err(ServiceError::RecoveryRequired)
+    ));
+    assert!(matches!(
+        first.read_ciphertext(),
+        Err(BackendError::Unavailable)
+    ));
     let fresh = session(&mut cold)?;
     let pin = reuse(&mut cold, &fresh, address)?;
     assert_eq!(pin.read_ciphertext()?.as_slice(), original.as_slice());
@@ -392,7 +431,8 @@ fn immutable_reuse_foreign_live_session_and_intervening_source_state_fail() -> T
     let _serial = serial_test();
     for kind in ["foreign", "generation", "epoch", "root"] {
         let (root, mut owner, barrier, counts) = fixture("reuse-stale-source")?;
-        let (_foreign_root, mut foreign, _foreign_barrier, _foreign_counts) = fixture("reuse-foreign")?;
+        let (_foreign_root, mut foreign, _foreign_barrier, _foreign_counts) =
+            fixture("reuse-foreign")?;
         let original = session(&mut owner)?;
         let foreign_session = session(&mut foreign)?;
         let address = locator(5)?;
@@ -400,7 +440,11 @@ fn immutable_reuse_foreign_live_session_and_intervening_source_state_fail() -> T
         match kind {
             "generation" => {
                 owner.put(PutRequest::new(
-                    "principal-a", "root/team-a", "other", "secret/other", [7; 32],
+                    "principal-a",
+                    "root/team-a",
+                    "other",
+                    "secret/other",
+                    [7; 32],
                     Secret::new(b"other".to_vec())?,
                 )?)?;
             }
@@ -425,7 +469,13 @@ fn immutable_reuse_foreign_live_session_and_intervening_source_state_fail() -> T
         let bytes = fs::read(root.0.join(leaf_name(address)))?;
         barrier.reject_seal.store(true, Ordering::SeqCst);
         owner.backend.reject_stage = true;
-        assert!(matches!(reuse(&mut owner, source, address), Err(ServiceError::PublicationConditionConflict)), "{kind}");
+        assert!(
+            matches!(
+                reuse(&mut owner, source, address),
+                Err(ServiceError::PublicationConditionConflict)
+            ),
+            "{kind}"
+        );
         assert_eq!(counts.reuses.load(Ordering::SeqCst), reuses, "{kind}");
         assert_eq!(counts.stages.load(Ordering::SeqCst), stages, "{kind}");
         assert_eq!(barrier.seals.load(Ordering::SeqCst), seals, "{kind}");
@@ -456,8 +506,14 @@ fn immutable_reuse_same_directory_reconnect_cannot_reuse_old_owner_session() -> 
     let stages = counts.stages.load(Ordering::SeqCst);
     barrier.reject_seal.store(true, Ordering::SeqCst);
     owner.backend.reject_stage = true;
-    assert!(matches!(reuse(&mut owner, &original, address), Err(ServiceError::PublicationConditionConflict)));
-    assert!(matches!(first.read_ciphertext(), Err(BackendError::Unavailable)));
+    assert!(matches!(
+        reuse(&mut owner, &original, address),
+        Err(ServiceError::PublicationConditionConflict)
+    ));
+    assert!(matches!(
+        first.read_ciphertext(),
+        Err(BackendError::Unavailable)
+    ));
     let fresh = session(&mut owner)?;
     reuse(&mut owner, &fresh, address)?;
     assert_eq!(barrier.seals.load(Ordering::SeqCst), seals);
@@ -483,7 +539,11 @@ fn immutable_reuse_original_gate_can_reject_before_io_and_after_actual_open() ->
     owner.backend.reject_stage = true;
     assert!(matches!(
         owner.stage_immutable_object_reusing_existing_before_publish(
-            &session, address, PAYLOAD.len() + 40, CONTEXT, PAYLOAD,
+            &session,
+            address,
+            PAYLOAD.len() + 40,
+            CONTEXT,
+            PAYLOAD,
             &mut || Err(ServiceError::BarrierFailure),
         ),
         Err(ServiceError::BarrierFailure)
@@ -493,7 +553,11 @@ fn immutable_reuse_original_gate_can_reject_before_io_and_after_actual_open() ->
     barrier.revoke_after_open.store(true, Ordering::SeqCst);
     assert!(matches!(
         owner.stage_immutable_object_reusing_existing_before_publish(
-            &session, address, PAYLOAD.len() + 40, CONTEXT, PAYLOAD,
+            &session,
+            address,
+            PAYLOAD.len() + 40,
+            CONTEXT,
+            PAYLOAD,
             &mut || {
                 if barrier.revoked.load(Ordering::SeqCst) {
                     Err(ServiceError::BarrierFailure)
@@ -554,7 +618,10 @@ fn immutable_reuse_post_open_errors_never_fallback_and_unknown_fences() -> TestR
         let generation = owner.generation();
         let seals = barrier.seals.load(Ordering::SeqCst);
         let stages = counts.stages.load(Ordering::SeqCst);
-        let unknown = matches!(error, BackendError::OutcomeUnknown | BackendError::StaleWriter);
+        let unknown = matches!(
+            error,
+            BackendError::OutcomeUnknown | BackendError::StaleWriter
+        );
         owner.backend.error_after_reuse = Some(error);
         owner.backend.reject_stage = true;
         barrier.reject_seal.store(true, Ordering::SeqCst);
@@ -562,7 +629,10 @@ fn immutable_reuse_post_open_errors_never_fallback_and_unknown_fences() -> TestR
         if unknown {
             assert!(matches!(result, Err(ServiceError::RecoveryRequired)));
             assert!(owner.unresolved);
-            assert!(matches!(owner.verify_live_ownership(), Err(ServiceError::RecoveryRequired)));
+            assert!(matches!(
+                owner.verify_live_ownership(),
+                Err(ServiceError::RecoveryRequired)
+            ));
         } else {
             assert!(matches!(result, Err(ServiceError::CorruptState)));
             assert!(!owner.unresolved);
@@ -628,14 +698,23 @@ fn immutable_reuse_boxed_file_backend_forwards_supported_capability() -> TestRes
     let session = session(&mut owner)?;
     let address = locator(11)?;
     let first = owner.stage_immutable_object_before_publish(
-        &session, address, CONTEXT, PAYLOAD, &mut no_gate,
+        &session,
+        address,
+        CONTEXT,
+        PAYLOAD,
+        &mut no_gate,
     )?;
     let original = first.read_ciphertext()?;
     let primary = primary_files(&root)?;
     let seals = barrier.seals.load(Ordering::SeqCst);
     barrier.reject_seal.store(true, Ordering::SeqCst);
     let pin = owner.stage_immutable_object_reusing_existing_before_publish(
-        &session, address, PAYLOAD.len() + 40, CONTEXT, PAYLOAD, &mut no_gate,
+        &session,
+        address,
+        PAYLOAD.len() + 40,
+        CONTEXT,
+        PAYLOAD,
+        &mut no_gate,
     )?;
     assert_eq!(pin.read_ciphertext()?.as_slice(), original.as_slice());
     assert_eq!(barrier.seals.load(Ordering::SeqCst), seals);
@@ -675,6 +754,7 @@ fn immutable_reuse_sync_witness_survives_aba_after_backend_and_final_aead_gate()
     let _serial = serial_test();
     for phase in ["after_backend", "after_aead", "final_gate"] {
         let (root, mut owner, barrier, counts) = fixture("reuse-source-aba")?;
+        owner.backend.retain_actual_reuse_pin = true;
         let session = session(&mut owner)?;
         let address = locator(13)?;
         first_object(&mut owner, &session, address)?;
@@ -695,7 +775,8 @@ fn immutable_reuse_sync_witness_survives_aba_after_backend_and_final_aead_gate()
         let mut changed_after_open = false;
         let mut gates_after_open = 0;
         if phase == "after_backend" {
-            owner.backend.aba_after_reuse = Some((leaf.clone(), alternate.clone(), original.clone()));
+            owner.backend.aba_after_reuse =
+                Some((leaf.clone(), alternate.clone(), original.clone()));
         }
         let result = owner.stage_immutable_object_reusing_existing_before_publish(
             &session,
@@ -704,9 +785,7 @@ fn immutable_reuse_sync_witness_survives_aba_after_backend_and_final_aead_gate()
             CONTEXT,
             PAYLOAD,
             &mut || {
-                if phase != "after_backend"
-                    && barrier.opens.load(Ordering::SeqCst) == opens + 1
-                {
+                if phase != "after_backend" && barrier.opens.load(Ordering::SeqCst) == opens + 1 {
                     gates_after_open += 1;
                     let target_gate = if phase == "final_gate" { 2 } else { 1 };
                     if !changed_after_open && gates_after_open == target_gate {
@@ -726,9 +805,24 @@ fn immutable_reuse_sync_witness_survives_aba_after_backend_and_final_aead_gate()
             "{phase}"
         );
         let after = fs::metadata(&leaf)?;
-        assert_eq!((metadata.dev(), metadata.ino(), metadata.len()), (after.dev(), after.ino(), after.len()));
-        assert_eq!((metadata.mtime(), metadata.mtime_nsec()), (after.mtime(), after.mtime_nsec()));
-        assert_ne!((metadata.ctime(), metadata.ctime_nsec()), (after.ctime(), after.ctime_nsec()));
+        assert_eq!(
+            (metadata.dev(), metadata.ino(), metadata.len()),
+            (after.dev(), after.ino(), after.len())
+        );
+        assert_eq!(
+            (metadata.mtime(), metadata.mtime_nsec()),
+            (after.mtime(), after.mtime_nsec())
+        );
+        // Real filesystems may leave ctime equal across these actual writes.
+        // Assert the retained synchronized pin is rejected instead of making
+        // that disproven timestamp-resolution assumption a platform gate.
+        let rejected_pin = owner
+            .backend
+            .actual_reuse_pin
+            .as_ref()
+            .ok_or("the actual synchronized backend pin was not observed")?;
+        assert!(rejected_pin.has_synchronized_ciphertext());
+        assert!(rejected_pin.read_ciphertext().is_err(), "{phase}");
         assert_eq!(fs::read(&leaf)?, original, "{phase}");
         assert_eq!(barrier.seals.load(Ordering::SeqCst), seals, "{phase}");
         assert_eq!(counts.stages.load(Ordering::SeqCst), stages, "{phase}");

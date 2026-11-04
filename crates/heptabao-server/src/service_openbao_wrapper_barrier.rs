@@ -341,11 +341,13 @@ mod linux {
         operation: OpenBaoWrapperOperationPlan,
         seal: SealMetadata,
         publication_deadline: Option<Instant>,
+        policy_clock: Option<crate::auth::RequestClock>,
     }
     pub(crate) struct ActivationCompletion {
         operation: OpenBaoWrapperCompletion,
         seal: SealMetadata,
         publication_deadline: Option<Instant>,
+        policy_clock: Option<crate::auth::RequestClock>,
     }
     impl ActivationPlan {
         pub(crate) fn execute(self) -> ActivationCompletion {
@@ -353,6 +355,7 @@ mod linux {
                 operation: self.operation.execute(),
                 seal: self.seal,
                 publication_deadline: self.publication_deadline,
+                policy_clock: self.policy_clock,
             }
         }
     }
@@ -693,6 +696,13 @@ mod linux {
         pub(crate) fn prepare_wrapper_barrier_activation(
             &self,
         ) -> Result<Option<ActivationPlan>, String> {
+            // This clock belongs to the original trusted startup admission,
+            // before provider work. Completion cannot renew its observation.
+            let started = Instant::now();
+            let policy_clock = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .ok()
+                .and_then(|wall| crate::auth::RequestClock::anchored(wall, started).ok());
             let Some(seal) = self.seal.as_ref().filter(|seal| seal.is_wrapper()) else {
                 return Ok(None);
             };
@@ -720,6 +730,7 @@ mod linux {
                 operation,
                 seal: seal.clone(),
                 publication_deadline,
+                policy_clock,
             }))
         }
         pub(crate) fn finish_wrapper_barrier_activation(
@@ -733,6 +744,8 @@ mod linux {
                 self.fence_wrapper_barrier_delivery();
                 return Err("Wrapper startup seal changed before activation".into());
             }
+            let policy_clock = completion.policy_clock;
+            let policy_deadline = completion.operation.deadline;
             let result = self.finish_openbao_wrapper_operation(completion.operation);
             let key = match result {
                 Ok(WrapperReply::Decrypted(key)) if key.len() == 32 => key,
@@ -766,6 +779,18 @@ mod linux {
             {
                 self.fence_wrapper_barrier_delivery();
                 return Err("Wrapper barrier activation failed closed".into());
+            }
+            // This additional lifecycle write may only use the original
+            // provider/caller budget. No new budget starts after decryption.
+            let _scope = crate::request_deadline::RequestDeadlineScope::enter(
+                deadline.map_or(policy_deadline, |end| end.min(policy_deadline)),
+            );
+            if self
+                .complete_default_policy_activation(policy_clock)
+                .is_err()
+            {
+                self.fence_wrapper_barrier_delivery();
+                return Err("Wrapper default policy activation failed closed".into());
             }
             Ok(())
         }

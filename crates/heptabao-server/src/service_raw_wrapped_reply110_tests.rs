@@ -28,7 +28,8 @@ fn issue(
 fn raw110_encrypted_reopen_original_id_and_retired_snapshot_floor() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let old_backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
     let bearer = issue(&mut service, &admin, [0xa1; 16])?;
     assert_eq!(
@@ -915,7 +916,8 @@ fn raw110_assert_http_terminal(
 fn raw112_actual_sticky_floor_consume_retire_reopen_and_snapshot_cow_veto() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     raw110_pki_install(&mut service, &admin, true)?;
     let old_backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
     let mut old_state = service.state.as_ref().ok_or("old state")?.clone();
@@ -1033,7 +1035,8 @@ fn raw113_actual_pki_kind_metadata_veto_and_client_special_fields_choose_separat
 -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     raw110_pki_install(&mut service, &admin, true)?;
     let bearer = raw110_pki_issue(
         &mut service,
@@ -1208,7 +1211,8 @@ fn raw112_actual_explicit_csr_is_400_without_engine_publication_and_keeps_pki_st
 {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (_, admin) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (_, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     raw110_pki_install(&mut service, &admin, true)?;
     let bearer = raw110_pki_issue(
         &mut service,
@@ -1331,7 +1335,8 @@ fn raw112_actual_shared_official_named_curve_csr_signs_its_public_key_and_verifi
 fn raw113_actual_generic_floor_cow_snapshot_consume_revoke_encrypted_reopen() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let old_backup = Zeroizing::new(service.durable.as_ref().ok_or("durable")?.export_backup()?);
     let mut old_state = service.state.as_ref().ok_or("old state")?.clone();
     let old_plan = service
@@ -1480,7 +1485,8 @@ fn raw113_actual_generic_floor_cow_snapshot_consume_revoke_encrypted_reopen() ->
 fn raw113_actual_opaque_number_and_string_shadow_require_distinct_mandatory_audit() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (_key, admin) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (_key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let number = crate::auth::LexicalJson::parse_listener(br#"{"number":1e309}"#)?;
     let string = crate::auth::LexicalJson::parse_listener(br#"{"number":"1e309"}"#)?;
     assert!(number.wrapping_view()? == string.wrapping_view()?);
@@ -1577,7 +1583,8 @@ fn raw113_actual_selected_json_consume_needs_real_http_ingress_and_stays_permane
 -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (_key, admin) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (_key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let lexical = crate::auth::LexicalJson::parse_listener(
         br#"{"http_status_code":null,"http_content_type":1.0,"http_raw_body":"1.0","request_id":"client-cannot-mint","extra":1e309}"#,
     )?;
@@ -1807,7 +1814,8 @@ fn raw112_assert_chain_rewrap_reopen_terminal(
 fn raw112_actual_imported_single_ca_chain_has_no_terminal_lf_through_rewrap_reopen() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -1871,7 +1879,8 @@ fn raw112_actual_imported_single_ca_chain_has_no_terminal_lf_through_rewrap_reop
 fn raw112_actual_two_certificate_ca_chain_has_one_separator_and_no_terminal_lf() -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     assert_eq!(
         call(
             &mut service,
@@ -2054,7 +2063,8 @@ fn raw113_actual_selected_mandatory_response_audit_failure_erases_owner_and_reta
 -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let lexical =
         crate::auth::LexicalJson::parse_listener(br#"{"http_raw_body":"do-not-release!"}"#)?;
     let _issue =
@@ -2162,7 +2172,8 @@ fn raw113_actual_wrapped_raw_media_sanitizes_only_terminal_header_through_rewrap
 -> TestResult {
     let directory = Root::new();
     let mut service = directory.service()?;
-    let (key, admin) = bootstrap(&mut service)?;
+    // Isolate this historical reader floor from the current default-policy floor (141).
+    let (key, admin) = crate::service::tests::bootstrap_pre141(&mut service)?;
     let original = " \ttext/plain\r\nInjected: cannot-be-a-header\t ";
     let expected = "text/plain  Injected: cannot-be-a-header";
     let first = raw113_issue_media(&mut service, &admin, original, [0xb9; 16])?;

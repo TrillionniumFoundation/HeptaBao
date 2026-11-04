@@ -52,8 +52,22 @@ impl Drop for CertRenewalPublicationPause {
 fn wait_until_after(expiry: SystemTime) {
     let until = expiry + Duration::from_millis(50);
     let delay = until.duration_since(SystemTime::now()).unwrap_or_default();
-    assert!(delay <= Duration::from_secs(10));
-    std::thread::sleep(delay);
+    let budget = Duration::from_secs(10);
+    assert!(delay <= budget);
+    let started = Instant::now();
+    // Sleeping advances a monotonic clock; certificate expiry uses wall time.
+    // Recheck the real expiry after clock adjustments without extending the
+    // original ten-second ceiling or weakening the expired-leaf assertion.
+    while SystemTime::now() <= expiry {
+        let remaining = budget.saturating_sub(started.elapsed());
+        assert!(
+            !remaining.is_zero(),
+            "certificate expiry wait exceeded its original budget"
+        );
+        let delay = until.duration_since(SystemTime::now()).unwrap_or_default();
+        assert!(delay <= remaining);
+        std::thread::sleep(delay.min(Duration::from_millis(50)));
+    }
     assert!(SystemTime::now() > expiry);
 }
 

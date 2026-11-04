@@ -58,7 +58,10 @@ fn checked_existing_exact_keeps_inode_and_real_syncs_without_temporary_write() -
             .any(|name| name.to_string_lossy().starts_with(".v6-tmp-"));
         Ok(())
     })?;
-    assert!(missing_used_temporary, "missing objects keep the original write path");
+    assert!(
+        missing_used_temporary,
+        "missing objects keep the original write path"
+    );
     let destination = root.0.join(LocalV6BlobStage::leaf(first.reference())?);
     let file = File::open(&destination)?;
     let identity = ExistingIdentity::read(&file, first.reference())?;
@@ -78,7 +81,10 @@ fn checked_existing_exact_keeps_inode_and_real_syncs_without_temporary_write() -
             Ok(())
         },
     )?;
-    assert_eq!(duplicate.ok_or("existing receipt absent")?.reference(), first.reference());
+    assert_eq!(
+        duplicate.ok_or("existing receipt absent")?.reference(),
+        first.reference()
+    );
     assert_eq!(events, EVENTS);
     assert_eq!(ExistingIdentity::read(&file, first.reference())?, identity);
     assert_eq!(entries(&root.0)?, before);
@@ -176,7 +182,10 @@ fn checked_existing_cancellation_at_actual_boundaries_releases_no_receipt() -> T
                 Ok(())
             },
         );
-        assert!(cancelled.get(), "the selected physical boundary was reached");
+        assert!(
+            cancelled.get(),
+            "the selected physical boundary was reached"
+        );
         assert!(result.is_err());
         assert_eq!(entries(&root.0)?, before);
         assert_eq!(store.read_local(first.reference())?, ciphertext);
@@ -244,7 +253,10 @@ fn checked_existing_same_content_name_replacement_at_each_boundary_is_rejected()
             },
         );
         assert!(replaced);
-        assert!(result.is_err(), "equal bytes do not authorize another inode");
+        assert!(
+            result.is_err(),
+            "equal bytes do not authorize another inode"
+        );
         assert_ne!(fs::metadata(&destination)?.ino(), original_inode);
         assert_eq!(fs::metadata(&retired)?.ino(), original_inode);
         assert_eq!(fs::read(&destination)?, ciphertext);
@@ -255,7 +267,10 @@ fn checked_existing_same_content_name_replacement_at_each_boundary_is_rejected()
 
 #[test]
 fn checked_existing_same_inode_mutation_after_each_real_sync_is_rejected() -> TestResult {
-    for mutate_at in [ExistingStageEvent::FileSynced, ExistingStageEvent::DirectorySynced] {
+    for mutate_at in [
+        ExistingStageEvent::FileSynced,
+        ExistingStageEvent::DirectorySynced,
+    ] {
         let root = Root::new()?;
         let store = LocalV6BlobStage::open_existing(&root.0)?;
         let ciphertext = vec![0x77; 131_072];
@@ -281,7 +296,11 @@ fn checked_existing_same_inode_mutation_after_each_real_sync_is_rejected() -> Te
         assert_eq!(fs::metadata(&destination)?.ino(), original_inode);
         let mut expected = ciphertext;
         expected[0] ^= 1;
-        assert_eq!(fs::read(&destination)?, expected, "bad existing bytes remain untouched");
+        assert_eq!(
+            fs::read(&destination)?,
+            expected,
+            "bad existing bytes remain untouched"
+        );
     }
     Ok(())
 }
@@ -368,7 +387,10 @@ fn checked_existing_short_reads_eintr_and_eof_keep_each_64k_gate() -> TestResult
         }
     });
     assert!(result.is_err());
-    assert_eq!(reader.calls, 1, "the post-read original gate stops the next read");
+    assert_eq!(
+        reader.calls, 1,
+        "the post-read original gate stops the next read"
+    );
     Ok(())
 }
 
@@ -379,14 +401,24 @@ fn checked_existing_trailing_bytes_and_full_reference_mismatch_are_rejected() ->
     let mut grown = ciphertext.clone();
     grown.push(0);
     assert!(
-        read_exact_existing(&mut Cursor::new(grown), object.reference(), &ciphertext, &mut || Ok(()))
-            .is_err()
+        read_exact_existing(
+            &mut Cursor::new(grown),
+            object.reference(),
+            &ciphertext,
+            &mut || Ok(())
+        )
+        .is_err()
     );
     let mut forged = object.reference().clone();
     forged.record_count = 1;
     assert!(
-        read_exact_existing(&mut Cursor::new(ciphertext.clone()), &forged, &ciphertext, &mut || Ok(()))
-            .is_err()
+        read_exact_existing(
+            &mut Cursor::new(ciphertext.clone()),
+            &forged,
+            &ciphertext,
+            &mut || Ok(())
+        )
+        .is_err()
     );
     Ok(())
 }
@@ -411,8 +443,7 @@ fn checked_existing_interrupted_reads_have_a_finite_original_gate_bound() -> Tes
     let object = SealedRecordObject::new_native_v6_ciphertext_chunk(ciphertext.clone())?;
     let mut file = Interrupted { calls: 0 };
     assert!(
-        read_exact_existing(&mut file, object.reference(), &ciphertext, &mut || Ok(()))
-            .is_err()
+        read_exact_existing(&mut file, object.reference(), &ciphertext, &mut || Ok(())).is_err()
     );
     assert!(file.calls <= 65);
     Ok(())

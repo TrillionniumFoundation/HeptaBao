@@ -176,6 +176,9 @@ pub(super) struct OrdinaryKvAuthority {
     legacy_upgrade_failure: Option<LegacyUpgradeFailureNotice>,
     audited_fingerprint: Option<String>,
     legacy_replica: Option<Box<legacy_immutable_kv::LegacyReplicaRead>>,
+    #[cfg(feature = "native-v6-storage")]
+    pub(super) native_response_wrapping:
+        Option<Box<native_response_wrapping::NativeWrappedKvDelivery>>,
 }
 
 impl Drop for OrdinaryKvAuthority {
@@ -262,6 +265,8 @@ impl OrdinaryKvAuthority {
             legacy_upgrade_failure: None,
             audited_fingerprint: None,
             legacy_replica: None,
+            #[cfg(feature = "native-v6-storage")]
+            native_response_wrapping: None,
         };
         authority.check(state, &state.auth, activation_nonce)?;
         Ok(authority)
@@ -295,6 +300,16 @@ impl OrdinaryKvAuthority {
         self.audited_fingerprint = Some(fingerprint.to_owned());
     }
 
+    #[cfg(feature = "native-v6-storage")]
+    pub(super) fn check_native_control_group(
+        &mut self,
+        state: &State,
+        owner: &crate::auth::control_groups::DeferredRequest,
+        clock: RequestClock,
+    ) -> Result<(), Response> {
+        native_controlgroups::check_inner_action(state, owner, &mut self.principal, clock)
+    }
+
     pub(super) fn principal(&self) -> &Principal {
         &self.principal
     }
@@ -321,6 +336,13 @@ impl OrdinaryKvAuthority {
     }
 
     pub(super) fn observe_candidate(&self, state: &mut State) -> Result<(), Response> {
+        #[cfg(feature = "native-v6-storage")]
+        if let Some(owner) = self.native_response_wrapping.as_ref() {
+            // Composition already performed this original observation before
+            // binding its exact Auth successor. Later time has the existing
+            // distinct terminal-clock writer; do not mutate the bound capsule.
+            return owner.admit_candidate(state);
+        }
         let time = self.token_time(&state.auth)?;
         state
             .auth
@@ -509,7 +531,7 @@ impl Service {
         result
     }
 
-    #[cfg(feature = "fixture-native-v6-service")]
+    #[cfg(feature = "native-v6-storage")]
     pub(super) fn commit_ordinary_native_kv_plan(
         &mut self,
         state: &mut State,
@@ -536,7 +558,11 @@ impl Service {
         let candidate_result = if let Some(authority) = authority.as_mut() {
             let activation_nonce = self.unseal_nonce.clone();
             self.commit_native_root_plan(state, plan, false, "resource", &mut |auth| {
-                authority.check(state, auth, &activation_nonce)
+                authority.check(state, auth, &activation_nonce)?;
+                if let Some(owner) = authority.native_response_wrapping.as_ref() {
+                    owner.check_publish_source(state, auth)?;
+                }
+                Ok(())
             })
         } else if let Some(authority) = token_authority.as_ref() {
             let activation = self.unseal_nonce.clone();
@@ -628,6 +654,8 @@ impl Service {
             };
         }
         let planned_success = (200..300).contains(&response.status);
+        #[cfg(feature = "native-v6-storage")]
+        let response_wrapping = authority.native_response_wrapping.take();
         let _deadline_scope = authority
             .deadline
             .map(crate::request_deadline::RequestDeadlineScope::enter);
@@ -695,7 +723,12 @@ impl Service {
                 .as_ref()
                 .ok_or_else(|| Response::error(503, "ordinary KV delivery is sealed"))?;
             veto_reason = OrdinaryKvVetoReason::ActorFinal;
-            authority.check(state, &state.auth, &self.unseal_nonce)
+            authority.check(state, &state.auth, &self.unseal_nonce)?;
+            #[cfg(feature = "native-v6-storage")]
+            if let Some(owner) = response_wrapping.as_ref() {
+                owner.check_delivery(self, &mut authority, &response)?;
+            }
+            Ok(())
         })();
         if let Err(error) = checked {
             erase_json(&mut response.body);
