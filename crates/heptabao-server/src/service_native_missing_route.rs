@@ -67,8 +67,8 @@ impl NativeMissingRouteOwner {
     ) -> Result<Self, Response> {
         let method = kv_authorization_method(request.method, request.body);
         if !state
-                .engines
-                .native_missing_mount_read(request.namespace, method, request.path)
+            .engines
+            .native_missing_mount_read(request.namespace, method, request.path)
             || request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
         {
             return Err(Response::error(
@@ -84,10 +84,8 @@ impl NativeMissingRouteOwner {
         let deadline = OriginalDeadline::capture().map_err(|_| unavailable())?;
         // Engine absence alone cannot grant a namespace or rebind a retained
         // owner after that namespace or any ancestor was removed/recreated.
-        let scope = namespaces::native_plain::PlainNamespaceScope::capture(
-            state,
-            request.namespace,
-        )?;
+        let scope =
+            namespaces::native_plain::PlainNamespaceScope::capture(state, request.namespace)?;
         let capability = match method {
             "GET" | "HEAD" => "read",
             "LIST" => "list",

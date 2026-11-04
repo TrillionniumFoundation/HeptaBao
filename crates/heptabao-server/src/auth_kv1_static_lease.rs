@@ -26,12 +26,16 @@ impl StaticKv1LeaseProjection {
         if status != 200 {
             return Ok(None);
         }
-        let Some(seconds) = logical.get("lease_duration").and_then(Value::as_i64)
-            .filter(|seconds| *seconds < 0) else {
+        let Some(seconds) = logical
+            .get("lease_duration")
+            .and_then(Value::as_i64)
+            .filter(|seconds| *seconds < 0)
+        else {
             return Ok(None);
         };
         if !engines.is_kv1_value_read(namespace, method, path, request)
-            || engines.kv1_default_lease_duration_nanos(namespace, path)
+            || engines
+                .kv1_default_lease_duration_nanos(namespace, path)
                 .is_none_or(|value| value >= 0 || value / 1_000_000_000 != seconds)
         {
             return Err(err(503, "signed KV1 lease has no admitted registry owner"));
@@ -50,17 +54,23 @@ impl StaticKv1LeaseProjection {
     }
 
     pub(crate) fn validate(&self, logical: &Value) -> Result<(), AuthError> {
-        if self.format != 1 || self.seconds >= 0
+        if self.format != 1
+            || self.seconds >= 0
             || self.seconds < i64::MIN / 1_000_000_000
             || logical.get("lease_duration").and_then(Value::as_i64) != Some(self.seconds)
             || logical.get("renewable").and_then(Value::as_bool) != Some(false)
-            || !logical.get("lease_id").is_none_or(|value| value.as_str() == Some(""))
+            || !logical
+                .get("lease_id")
+                .is_none_or(|value| value.as_str() == Some(""))
             || !logical.get("auth").is_none_or(Value::is_null)
             || !logical.get("wrap_info").is_none_or(Value::is_null)
             || !logical.get("data").is_some_and(Value::is_object)
             || self.logical_digest != Self::logical_digest(logical)?
         {
-            return Err(err(503, "signed KV1 static reply differs from its producer"));
+            return Err(err(
+                503,
+                "signed KV1 static reply differs from its producer",
+            ));
         }
         Ok(())
     }

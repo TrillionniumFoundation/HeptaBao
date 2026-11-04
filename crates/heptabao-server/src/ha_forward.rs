@@ -200,7 +200,9 @@ struct ForwardRequestRef<'a> {
 pub(crate) enum UnwrapFramingWire {
     StoredJson,
     // Only an admitted KV1 registry producer or its completed peer reply owns this.
-    StaticKv1Lease { projection: crate::auth::StaticKv1LeaseProjection },
+    StaticKv1Lease {
+        projection: crate::auth::StaticKv1LeaseProjection,
+    },
     // Produced locally only by evaluated workflow output, or recovered from
     // an original completed-forward MAC. No public request carrier creates it.
     WorkflowJsonFailure {
@@ -929,10 +931,14 @@ fn encode_completed_framed_response_for_cluster(
     unwrap_response: bool,
     native_index_response: bool,
 ) -> Result<Vec<u8>, String> {
-    let static_kv1 = response.unwrapped_json.as_ref()
+    let static_kv1 = response
+        .unwrapped_json
+        .as_ref()
         .is_some_and(|origin| origin.static_kv1_lease().is_some());
     if response.unwrapped_json.is_some()
-        && ((!unwrap_response && !static_kv1) || response.status != 200 || !response.body.is_object())
+        && ((!unwrap_response && !static_kv1)
+            || response.status != 200
+            || !response.body.is_object())
     {
         return Err("HA trusted origin requires its successful negotiated framing".into());
     }
@@ -1032,10 +1038,14 @@ fn decode_framed_response_for_cluster(
             encoded,
         )?
     };
-    let static_kv1 = matches!(response.unwrapped_json,
-        Some(UnwrapFramingWire::StaticKv1Lease { .. }));
+    let static_kv1 = matches!(
+        response.unwrapped_json,
+        Some(UnwrapFramingWire::StaticKv1Lease { .. })
+    );
     if response.unwrapped_json.is_some()
-        && ((!unwrap_response && !static_kv1) || response.status != 200 || !response.body.is_object())
+        && ((!unwrap_response && !static_kv1)
+            || response.status != 200
+            || !response.body.is_object())
     {
         return Err("HA typed origin is outside its negotiated successful reply".into());
     }
@@ -1292,7 +1302,10 @@ fn decode_native_index_response(encoded: &[u8]) -> Result<ForwardResponse, Strin
         raw_wrapped_reply: None,
     };
     if response.unwrapped_json.is_some()
-        && !matches!(response.unwrapped_json, Some(UnwrapFramingWire::StaticKv1Lease { .. }))
+        && !matches!(
+            response.unwrapped_json,
+            Some(UnwrapFramingWire::StaticKv1Lease { .. })
+        )
     {
         return Err("HA native index forbids non-static-KV1 private origins".into());
     }

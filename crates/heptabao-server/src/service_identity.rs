@@ -755,7 +755,10 @@ impl State {
         if self.schema < KV_MOUNT_CONFIGURATION_STATE_SCHEMA
             && protected.auth.has_static_kv1_wrapped_reply_state()
         {
-            return Err(Response::error(503, "signed static KV1 reply custody requires schema 146"));
+            return Err(Response::error(
+                503,
+                "signed static KV1 reply custody requires schema 146",
+            ));
         }
         if self.schema < GENERAL_WRAPPED_REPLY_STATE_SCHEMA
             && (protected.auth.has_general_wrapped_reply_state()
@@ -1597,7 +1600,10 @@ impl State {
         if self.schema < KV_MOUNT_CONFIGURATION_STATE_SCHEMA
             && self.auth.has_static_kv1_wrapped_reply_state()
         {
-            return Err(Response::error(503, "signed static KV1 reply custody requires schema 146"));
+            return Err(Response::error(
+                503,
+                "signed static KV1 reply custody requires schema 146",
+            ));
         }
         if self.schema < GENERAL_WRAPPED_REPLY_STATE_SCHEMA
             && self.auth.has_general_wrapped_reply_state()
