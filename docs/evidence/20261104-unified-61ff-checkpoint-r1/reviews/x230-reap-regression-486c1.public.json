@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.migration-reap-real-regression-static-review.v1",
+  "commit": "486c1e84c5a3ef51131ae821f84867de4ab77203",
+  "source_sha256": "13f0992359ed65ef14123b45ccd2a33de36c3a405ebcbe640b93c1211a3e2ae4",
+  "complete_source_read": true,
+  "actual_helper_method_invoked": "Run.migration",
+  "case_count": 6,
+  "cases": "baseline and fixed, each success/nonzero/timeout",
+  "actual_popen_children": true,
+  "stale_signal_intercepted_before_dispatch": true,
+  "unreaped_signal_requires_waitid_wnowait_and_actual_pgid": true,
+  "outer_cleanup_requires_six_original_waited_and_group_empty": true,
+  "formal_http15_migration360_native5_unchanged": true,
+  "test_only_limits": {
+    "success_nonzero_seconds": 2,
+    "timeout_seconds": 0.25,
+    "supervisor_seconds": 60
+  },
+  "limits": {
+    "executed_by_this_reviewer": false,
+    "native_cli_supervise_exercised": false,
+    "full34_or_real_http_exercised": false,
+    "full_replacement_qualified": false
+  }
+}

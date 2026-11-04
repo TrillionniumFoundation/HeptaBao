@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.workspace-live-selected-log-observation.v1",
+  "job": "1a1a7e9ec36-fc05-2cea",
+  "search_id": "b2a47e093e174556958690dda6d9bb2a8675d2898c8c7a853c48f67aa329a74d",
+  "selected_file": "normal-workspace/workspace.stdout",
+  "search_created_unix_ms": 1793818967674,
+  "selected_snapshot_bytes": 322871,
+  "complete_search_of_selected_file_snapshot": true,
+  "completed_top_level_groups": 53,
+  "completed_top_level_totals": {
+    "passed": 913,
+    "failed": 0,
+    "ignored": 1,
+    "measured": 0,
+    "filtered": 0
+  },
+  "nested_filtered_groups": [
+    {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 47,
+      "line": 390
+    },
+    {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 47,
+      "line": 396
+    }
+  ],
+  "actual_failed_test_lines": [
+    {
+      "line": 2553,
+      "path": "workspace.stdout",
+      "preview": "test http::snapshot_accept_tests::native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refusals ... FAILED",
+      "preview_truncated": false
+    }
+  ],
+  "complete_workspace_result": false,
+  "source": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "full_replacement_qualified": false,
+  "static_hypothesis": {
+    "file": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+    "line": 725,
+    "existing_expected": 400,
+    "current_public_restore_import_error": 500,
+    "actual_panic_details_pending": true,
+    "no_test_or_source_modified": true
+  }
+}

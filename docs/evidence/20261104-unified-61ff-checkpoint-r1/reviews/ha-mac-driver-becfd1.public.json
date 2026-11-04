@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.mac-candidate-driver-independent-review.v1",
+  "reviewer": "bao_acceptance",
+  "original_commit": "8ee08b0ae9c0f1a02ce689bd868c1a8c23995ffc",
+  "original_sha256": "23a4da9748d177a2d6238a8977d4a0c0acbfcd562cf51f8221cc637cf607d979",
+  "original_syntax_failure_preserved": true,
+  "reviewed_commit": "becfd1becd4fcb4339aa4480a1e5432bad63e212",
+  "candidate_bytes": 40625,
+  "candidate_sha256": "7a6a3c484d8219bb5e2faa4f71a3341685b53ac5306c1760136b8923a6a2cf74",
+  "candidate_exact_delta": [
+    {
+      "old_line": 111,
+      "new_line": 111,
+      "removed": [],
+      "added": [
+        "    finally:",
+        "        os.close(fd)"
+      ]
+    }
+  ],
+  "checks": {
+    "complete_original_and_candidate_source_read": true,
+    "actual_mac_toolchain_and_volume_pins": true,
+    "fresh_owned_root_source_target": true,
+    "source_stage_receipt_and_packet_pinned": true,
+    "exact_input_tree_and_thirteen_product_files": true,
+    "apfs_clone_cross_source_inode_separation": true,
+    "clone_only_release_lock_scope_declared": true,
+    "normal_profile_inherited_and_fixture_features_absent": true,
+    "actual_test_artifact_source_lib_path_unique": true,
+    "actual_artifact_features_exact_default_native_v6_ha_native_v6_storage": true,
+    "actual_artifact_opt3_assertions_overflow_test_flag_checked": true,
+    "requested_debug0_codegen16_ltofalse_panicunwind_recorded": true,
+    "retained_binary_copy_and_original_sha_verified": true,
+    "ten_distinct_tests_listed_once": true,
+    "each_exact_test_invocation_requires_one_pass_zero_fail_exit0": true,
+    "final_source_clean_and_frozen": true,
+    "production_artifacts_normal_same_source": true,
+    "all_cargo_and_tests_share1800_seconds": true,
+    "original_unreaped_anchor_held_through_group_cleanup": true,
+    "full_qualification_not_claimed": true
+  },
+  "limits": {
+    "actual_syntax_compile_receipt_pending_from_author": true,
+    "compiled_or_executed_by_this_reviewer": false,
+    "stage_source_review_owned_by_parent": true,
+    "ten_component_tests_not_full_workspace": true,
+    "public_https_not_run_by_driver": true,
+    "physical_multihost_not_run_by_driver": true,
+    "remaining_product_gaps_recorded": true
+  },
+  "conclusion": "Static review found no further blocker after the exact missing-finally repair; actual fixed-Python syntax gate is required before staging or execution."
+}
