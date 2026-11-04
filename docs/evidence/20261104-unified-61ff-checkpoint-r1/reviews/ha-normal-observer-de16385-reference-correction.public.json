@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.independent-static-review.reference-correction.v1",
+  "source_commit": "de16385d0a8953bdd19c4e2f28ed51cb2877e793",
+  "source_sha256": "0abcb7763eb9546367865d943a8036fd7d0cd6a3c2dda0ba4777026416e68efd",
+  "prior_review_commit": "b75d5f9a9e4c1f30f244e52c16ad3348e092926e",
+  "prior_review_sha256": "b972504a99fed996752c6d0ca46ff4c9a3e8d8a9edc2e0407724152b748366af",
+  "code_review_scope_unchanged": true,
+  "status": "reference_gap_open_not_live_qualified",
+  "unsupported_reference": {
+    "label": "ttl_root_default_standby_invalid_restore",
+    "expected_status": 500,
+    "claimed_reference_wire_sha256": "070f7234092f9799b85af95f600e1d0519ddc9c3ed81f132e21ef2af86f7cf97",
+    "issue": "Parent exact raw review found no observation of invalid restore with the TTL root token. A root/control response using a different credential cannot supply this evidence.",
+    "source_author_retracted_prior_attribution": true
+  },
+  "reference_cases_supported_by_old_token_wire": [
+    "ttl_root_default_standby_snapshot",
+    "finite1_default_snapshot",
+    "finite2_default_snapshot"
+  ],
+  "parent_source_review": {
+    "known_http_operations": 87,
+    "checks_passed": 83,
+    "reviewer_of_this_record_did_not_refetch_raw_oracle": true
+  },
+  "required_resolution": "Pin an actual fixed OpenBao 2.7.1 observation with the same TTL actor and invalid restore operation; bind the new observer revision's complete reference gate before any scoped compatibility claim.",
+  "observer_de16385_executed": false,
+  "new_observer_reference_complete_gate_pending": true,
+  "all_34_expectations_grounded": false,
+  "full_replacement_qualified": false
+}
