@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.finite-client-inventory.mac-dispatch-plan.r2",
+  "status": "PREPARED_NOT_DISPATCHED",
+  "source_packet_tree": "0a0ff5c2b3680207d3f70f447de8f785290b6669",
+  "source": {
+    "bytes": 45694,
+    "sha256": "3f574f0b3a455a3e43ad1433d6ad0777495357c41cd65c5cfb71649fc9f30094",
+    "blob": "0c942a8c10861c42a6ae85cd7977bdfc65805ba0"
+  },
+  "manifest": {
+    "bytes": 86481,
+    "sha256": "3c3900c814ebf3e9a1cd0d58226dd6a99fe0edb0aeb42510c3dd7fe5b528af93",
+    "blob": "8d9d9cd2e6f7476812a4f5019ed2ecf11fe7c252"
+  },
+  "inert": {
+    "args_file": "mac-inert-exact-start-args.public.json",
+    "key": "heptabao-finite-client-inventory-mac-r2-inert-3f574f0b-20261104-r1",
+    "new_inner_seconds": 10,
+    "new_outer_seconds": 60,
+    "validator_sha256": "06d098c2fd5621a02ffcc74220601bbbb471d36c5ce346a99eeaf6b1f8109da2",
+    "stdin_bytes": 142619,
+    "stdin_sha256": "04b1152266e27bbcf251c6c9426d9558f63624006145517781d9c4a87398f2f1",
+    "source_executed": false,
+    "files_written": false
+  },
+  "readonly": {
+    "args_file": "mac-readonly-exact-start-args.public.json",
+    "key": "heptabao-finite-client-inventory-mac-r2-readonly-3f574f0b-20261104-r1",
+    "original_shared_host_seconds": 45,
+    "new_outer_seconds": 60,
+    "expected_uid": 501,
+    "expected_os": "Darwin",
+    "expected_arch": "arm64",
+    "one_host_only": true,
+    "source_and_manifest_passed_in_memory": true,
+    "child_commands": "Exact seven manifest queries plus one final own-group ps, all within original45.",
+    "observation_only": true
+  },
+  "approval": "Root must authorize each concrete submission; no job has been started by this plan.",
+  "sequence": "Inert actual exit0/full raw output first; original source-byte/manifest and declaration count match required. Root can then authorize exactly one readonly key. Any lost ACK uses only same exact key/status reconciliation. No new-key replay.",
+  "result_rules": "Raw stdout, authority, exact start args and all source pins preserved. Incomplete paths/aliases/unparsed argument dependencies remain explicit; no whole-service or whole-host completion inference."
+}

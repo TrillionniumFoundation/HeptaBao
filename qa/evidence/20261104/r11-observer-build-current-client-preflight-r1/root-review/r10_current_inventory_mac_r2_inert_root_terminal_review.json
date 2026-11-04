@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.finite-inventory-mac-r2-root-terminal-review.v1",
+  "status": "PASS_INERT_ONLY_READY_FOR_FIXED_READONLY_OBSERVATION",
+  "packet_tree": "7660bbdafa54b2e6fb71e30440714941063bc837",
+  "job": "1a1a8861ebc-fc05-2ef3",
+  "source_packet_tree": "0a0ff5c2b3680207d3f70f447de8f785290b6669",
+  "dispatch_packet_tree": "26ee6b2f49ca5aa2457ccb5a2b66a6bbcf544d70",
+  "exact_source_and_manifest_pins": true,
+  "actual_args_equal_frozen": true,
+  "authority": {
+    "bytes": 729,
+    "sha256": "2f906edae3e8ae96a9fe8ce1e8883a3af227a3078339918b20d087084a392c70",
+    "blob": "1b628a3bb70080a68fc2c0b18e6886d477b0e27b"
+  },
+  "stdout": {
+    "bytes": 684,
+    "sha256": "a687677a20657bd5af835e9ccbb8b4296643a6d3b816cc90c45ae9a65fed15c3",
+    "blob": "a843ba833a4a626f713d88a5817b140f580cb38d"
+  },
+  "original_read_sdk": {
+    "bytes": 2426,
+    "sha256": "f800d2cfe42bf9b8f1680a0f3bd4c33a2061bb23830d7a42d0d94a78b00ff3da",
+    "blob": "db9fad4a8402f0821c08c36de038414eb2539da0"
+  },
+  "raw_hex_and_text_and_authority_bytes_equal": true,
+  "stdout_eof_full_durable": true,
+  "elapsed_seconds": 0.006830665999999999,
+  "new_inert_cap": 10,
+  "new_outer_cap": 60,
+  "actual_python_ast_compile_without_execution": true,
+  "actual_host_inventory_read": false,
+  "actual_children_started": false,
+  "actual_files_written": false,
+  "current_consumer_runtime_qualified": false,
+  "readonly_dispatch": "heptabao-finite-client-inventory-mac-r2-readonly-3f574f0b-20261104-r1",
+  "readonly_GO": true
+}

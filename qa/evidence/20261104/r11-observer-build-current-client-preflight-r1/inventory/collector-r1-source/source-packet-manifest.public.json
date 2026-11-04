@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.finite-client-inventory.source-packet.r1",
+  "status": "SOURCE_ONLY_NOT_EXECUTED",
+  "files": [
+    {
+      "path": "finite_client_inventory_r1.py",
+      "mode": "100644",
+      "bytes": 44922,
+      "sha256": "4b7dfc869bca690e942e0f201e6e050a9a1f4ee31827b7bb3202ec66bd2f4282",
+      "blob_sha": "eca2c542ac6b54b3fcd96ddb1747886d5bdab062"
+    },
+    {
+      "path": "finite_client_inventory_manifest_r1.public.json",
+      "mode": "100644",
+      "bytes": 85939,
+      "sha256": "b52cec525ecf14161a0f6a396545d25e0532dfe5284dd07bf63b670fe570862f",
+      "blob_sha": "831e455c53e5efca4c9c5b27b4f7d24337e8cfec"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "bytes": 11986,
+      "sha256": "ae1fd6c578e9f3482e804d99dff94b254b59612a28772f17f41b15d7224ba334",
+      "blob_sha": "4c98b2f0a7f4adb514804f8c9b0b68d18e7e49b9"
+    },
+    {
+      "path": "author-source-review.public.json",
+      "mode": "100644",
+      "bytes": 2588,
+      "sha256": "4084a6392b77c1d152a774301fee9605e36cc4fdf2eaa4a716b140f7b4c28edd",
+      "blob_sha": "77aa3baafbca34134b577d8a4a56e343e20ccb71"
+    }
+  ],
+  "host_mutations": false,
+  "host_collection_executed": false,
+  "production_qualified": false
+}

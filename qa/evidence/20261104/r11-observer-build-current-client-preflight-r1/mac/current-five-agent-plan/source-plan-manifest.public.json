@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.mac-r10-current-consumer-service-plan.packet.r1",
+  "status": "SOURCE_PLAN_ONLY_NO_NEW_MAC_CAPTURE_OR_SERVICE",
+  "files": [
+    {
+      "path": "MAC_T5_R10_NEXT_CONSUMER_PLAN.md",
+      "mode": "100644",
+      "bytes": 17254,
+      "sha256": "6063d9915cacf192e34195b7c62707bd67c9bb81e7bacd5dfb42d6ee7267bb27",
+      "blob_sha": "3fbfa9c06d646f5509cca8d407a539baa1feda06"
+    },
+    {
+      "path": "mac-r10-current-consumer-service-plan.public.json",
+      "mode": "100644",
+      "bytes": 15284,
+      "sha256": "2be0620a1dea6858b3c62d37fb0e6616ffe79bcf4c6e7098986e617e94fc0d76",
+      "blob_sha": "b41054c529fb6b74f206f800523d497601257815"
+    }
+  ],
+  "normal_product_qualification": "Previously accepted actual Mac+ROG normal44; does not qualify this new consumer/manager/backup plan.",
+  "executed": false,
+  "production_changed": false
+}

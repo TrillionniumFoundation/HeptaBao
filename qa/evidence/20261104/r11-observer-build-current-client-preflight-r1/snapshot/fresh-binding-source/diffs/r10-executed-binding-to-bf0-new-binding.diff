@@ -1,0 +1,116 @@
+--- a/phaseb_binding_r3.py
++++ b/phaseb_binding_r3.py
+@@ -15,8 +15,18 @@
+ import time
+ 
+ SCHEMA = "heptabao.official271-native-cli-phaseb-r3.binding.v1"
+-COMMIT = "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+-TREE = "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
++COMMIT = "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24"
++TREE = "ac4027db88fec69381ea0c6bba953d9a99c4e82a"
++OBSERVER_PATH = "crates/heptabao-server/src/ha_native_v6_runtime.rs"
++INGRESS_OBSERVER_TESTS = (
++    "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
++    "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",
++    "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result",
++    "ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata",
++    "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates",
++    "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results",
++    "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success",
++)
+ BASE = Path("/home/qian-qi/heptabao-ha-closure-20261103-r1")
+ OFFICIAL_SHA = "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea"
+ OFFICIAL_BYTES = 181760103
+@@ -36,6 +46,8 @@
+         46586, "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9"),
+ }
+ PRODUCT_PINS = {
++    OBSERVER_PATH: ("7bbd34e86039d0f640ac12a48cd81b2f836e600a",
++                    "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d"),
+     "crates/heptabao-server/src/snapshot_archive.rs": (
+         "6828ae88590184830da949001b13abd82a4f9b10",
+         "77c9565ac4efcfe8d387ae7955c4c977bdd4913bcf770981a9b28facdeb2313d"),
+@@ -169,6 +181,13 @@
+ 
+ class Binding:
+     def __init__(self, path: Path, expected_sha: str, until: int):
++        need(type(COMMIT) is str and re.fullmatch(r"[0-9a-f]{40}", COMMIT) is not None
++             and type(TREE) is str and re.fullmatch(r"[0-9a-f]{40}", TREE) is not None
++             and type(PRODUCT_PINS[OBSERVER_PATH][0]) is str
++             and re.fullmatch(r"[0-9a-f]{40}", PRODUCT_PINS[OBSERVER_PATH][0]) is not None
++             and type(PRODUCT_PINS[OBSERVER_PATH][1]) is str
++             and re.fullmatch(r"[0-9a-f]{64}", PRODUCT_PINS[OBSERVER_PATH][1]) is not None,
++             "diagnostic_candidate_source_not_frozen")
+         raw, observed = read_file(path, 2 * 1024 * 1024, until)
+         need(observed["sha256"] == expected_sha, "binding_sha_mismatch")
+         need(observed["uid"] == os.getuid() and observed["mode"] == 0o600, "private_binding_custody")
+@@ -179,7 +198,7 @@
+             "budgets", "ready_for_readonly_prepare",
+         }, "exact_binding_fields")
+         need(spec["schema"] == SCHEMA and spec["candidate_commit"] == COMMIT
+-             and spec["candidate_tree"] == TREE, "canonical_r10_binding")
++             and spec["candidate_tree"] == TREE, "exact_diagnostic_candidate_binding")
+         need(spec["ready_for_readonly_prepare"] is True, "unresolved_binding_is_not_admission")
+         need(spec["budgets"] == BUDGETS, "original_budgets_unchanged")
+         self.spec, self.path, self.sha256, self.initial_file = spec, path, expected_sha, observed
+@@ -194,7 +213,7 @@
+              and re.fullmatch(r"official271-native-cli-phaseb-r3-live-r[0-9]+", self.work.name) is not None,
+              "owned_work_namespace")
+         need(self.source.parent == BASE
+-             and re.fullmatch(r"normal-r10-validation-source-r[0-9]+", self.source.name) is not None,
++             and re.fullmatch(r"normal-phaseb-ingress-observer-source-r[0-9]+", self.source.name) is not None,
+              "canonical_source_namespace")
+         need(self.prepare.parent == self.control
+              and re.fullmatch(r"prepare-r[0-9]+", self.prepare.name) is not None, "prepare_namespace")
+@@ -297,7 +316,7 @@
+             "--message-format=json-render-diagnostics"
+         ] and str(command[0]).endswith("/bin/cargo"), "normal_release_exact_command")
+         need(self.artifacts["test_groups"]["sha256"] == GROUPS_SHA, "original_44_group_file")
+-        need(combined.get("schema") == "heptabao.linux-normal-release-and-exact-libtest-r10.v1"
++        need(combined.get("schema") == "heptabao.linux-normal-release-and-exact-libtest-phaseb-observer.v1"
+              and combined.get("source_commit") == COMMIT and combined.get("source_tree") == TREE
+              and combined.get("status") == "passed"
+              and combined.get("normal_default_features") is True
+@@ -308,7 +327,7 @@
+              and combined.get("release_artifacts_unchanged") is True
+              and combined.get("source_unchanged") is True
+              and combined.get("native_build_receipt_sha256") == self.artifacts["native_receipt"]["sha256"],
+-             "r10_original44_terminal_pass_required")
++             "diagnostic_original44_terminal_pass_required")
+         shapes = [("ssh25", 25), ("mount1", 1), ("redirect5", 5), ("actor2", 2),
+                   ("ordinary5", 5), ("no_forward6", 6)]
+         need(type(groups) is list and [(g["label"], len(g["tests"])) for g in groups] == shapes,
+@@ -323,6 +342,22 @@
+                  and test.get("exit_code") == 0 and test.get("timed_out") is False
+                  and test.get("direct_child_reaped") is True and test.get("remaining") == [],
+                  "original_group_terminal_and_ownership")
++        extra = combined.get("ingress_observer_regression")
++        need(type(extra) is dict
++             and extra.get("schema") == "heptabao.normal-ingress-observer-regression.v1"
++             and extra.get("status") == "passed" and extra.get("test_count") == 7
++             and extra.get("original_44_denominator_unchanged") is True
++             and extra.get("new_total_group_cap_seconds") == 600
++             and extra.get("actual_test_names") == list(INGRESS_OBSERVER_TESTS)
++             and type(extra.get("tests")) is list and len(extra["tests"]) == 7
++             and combined.get("original_44_status") == "passed",
++             "exact_ingress_observer_negative_regression")
++        for name, observed in zip(INGRESS_OBSERVER_TESTS, extra["tests"]):
++            test = observed["tests"]
++            need(observed.get("name") == name and test.get("exit_code") == 0
++                 and test.get("timed_out") is False
++                 and test.get("direct_child_reaped") is True and test.get("remaining") == [],
++                 "ingress_observer_regression_terminal")
+         cleanup = combined.get("cleanup")
+         need(type(cleanup) is list and bool(cleanup)
+              and all(item.get("direct_child_reaped") is True and item.get("remaining") == []
+@@ -349,7 +384,9 @@
+             "schema": "heptabao.official271-native-cli-phaseb-r3.inputs.v1",
+             "binding_sha256": self.sha256, "host": host, "files": observations,
+             "source": source_observation, "archive_and_audit_product_sources": product,
+-            "budgets": BUDGETS, "api_ports": API_PORTS, "raft_ports": RAFT_PORTS,
++            "budgets": BUDGETS,
++            "api_ports": {str(node): port for node, port in API_PORTS.items()},
++            "raft_ports": {str(node): port for node, port in RAFT_PORTS.items()},
+             "official_source_commit": OFFICIAL_SOURCE_COMMIT,
+             "whole_replacement_qualification": False,
+         }

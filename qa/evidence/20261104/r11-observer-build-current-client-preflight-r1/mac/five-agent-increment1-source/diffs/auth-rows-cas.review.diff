@@ -1,0 +1,31 @@
+diff --git a/mac_auth_rows_cas_r1.mjs b/mac_auth_rows_cas_r1.mjs
+--- a/mac_auth_rows_cas_r1.mjs
++++ b/mac_auth_rows_cas_r1.mjs
+@@ -1,3 +1,4 @@
++import fs from 'node:fs';
+ import path from 'node:path';
+ import { DatabaseSync } from 'node:sqlite';
+ import { createHash } from 'node:crypto';
+@@ -8,12 +9,18 @@
+ const tables = { store: ['auth_profile_store','store_key','store_json'],
+   state: ['auth_profile_state','state_key','state_json'] };
+ function boundDatabase(stateRoot, agentId) {
+-  if (!['main','tg8687951891'].includes(agentId)) throw new Error('auth_rows_agent_not_allowlisted');
++  if (!['main','trnm','hepta-ui','hepta','hepta-backend'].includes(agentId)) throw new Error('auth_rows_agent_not_allowlisted');
+   const root = path.resolve(stateRoot);
+-  if (!root.startsWith('/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/')
+-    || !root.includes('/current-native-') || !root.endsWith('/state'))
++  if (!['initial','cold-new-process'].some(phase => root ===
++    '/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/'+phase+'/state'))
+     throw new Error('auth_rows_not_new_owned_state');
+-  return path.join(root, 'agents', agentId, 'agent', 'openclaw-agent.sqlite');
++  const file=path.join(root,'agents',agentId,'agent','openclaw-agent.sqlite');
++  if(fs.realpathSync(root)!==root||fs.realpathSync(path.dirname(file))!==path.dirname(file)
++    ||fs.realpathSync(file)!==file)throw new Error('auth_rows_symlink_or_alias_refused');
++  const st=fs.lstatSync(file);
++  if(!st.isFile()||st.uid!==501||st.nlink!==1||(st.mode&0o777)!==0o600)
++    throw new Error('auth_rows_file_custody');
++  return file;
+ }
+ function rowsFrom(db) {
+   return Object.fromEntries(Object.entries(tables).map(([kind,[table,key,column]]) =>

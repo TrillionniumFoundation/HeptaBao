@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.phaseb-observer-root-actual-build-admission.v1",
+  "status": "ADMITTED_BUILD_RUNNING_NOT_QUALIFIED",
+  "job": "1a1a87f578a-fc05-2ee0",
+  "key": "heptabao-phaseb-native-ingress-observer-normal44-plus7-bf0aaec-20261104-r1",
+  "ack": {
+    "bytes": 1586,
+    "sha256": "98a3a27e95f4216e7cbdda785682c940f05c328201e23535bf2113cf7b9813e1",
+    "blob": "cd26f7c31bf7078d6dbc1c1e54977524cb25e37d"
+  },
+  "source_stage_job": "1a1a87499fe-fc05-2ecd",
+  "source_stage_sha256": "bb2bd7b46974dc18bcb87325ea55c46383e17f2f8a521f2eaa77b1fc9fba8d2b",
+  "source_commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+  "source_tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a",
+  "whole_sdk_source": {
+    "bytes": 25004,
+    "sha256": "ccb0cc5985fca3f9db5b903032b9ccdbff0299064c22aca54a3cea5878e64ca3",
+    "blob": "690b4bae50313f310aca763d7c02a0a69eb1e650"
+  },
+  "reconstructed_files": [
+    {
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/build-control-r1/launch-preflight.public.json",
+      "bytes": 12914,
+      "sha256": "91b8fe2e1d6e34d1e0b885a9bbb81c27e83e1d6f3f07cb4235cb2314b27e29d4",
+      "blob": "2def89faac3bc24636024b77216940aca9517e3e",
+      "raw_version": "66306:33072021:12914:1793828282418613404:1793828282418613404"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/intent.public.json",
+      "bytes": 7838,
+      "sha256": "ad7adbf410217af34555e9b9135505cb8f70309facfa748f4fb1c3f0614eedb2",
+      "blob": "3612e56bbc866758394cd648ce9ac41a787e0ce1",
+      "raw_version": "66306:33072023:7838:1793828282456385272:1793828282456385272"
+    }
+  ],
+  "original44_groups_byte_equivalent": true,
+  "original_caps_unchanged": true,
+  "retained_r10_unchanged": true,
+  "no_compiler_holders_at_admission": true,
+  "new_additional_seven_shared600": true,
+  "new_outer12000": true,
+  "normal_build_result_not_yet_observed": true,
+  "tests_not_yet_observed": true,
+  "ha_live_GO": false
+}

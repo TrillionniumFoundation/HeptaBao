@@ -1,0 +1,29 @@
+{
+  "host_contracts": [
+    {
+      "host": "mac",
+      "entries": 38,
+      "passes": 15,
+      "queries": 7,
+      "maxObservations": 31,
+      "totalObservations": 357
+    },
+    {
+      "host": "rog",
+      "entries": 46,
+      "passes": 17,
+      "queries": 4,
+      "maxObservations": 31,
+      "totalObservations": 434
+    },
+    {
+      "host": "x230",
+      "entries": 18,
+      "passes": 5,
+      "queries": 6,
+      "maxObservations": 32,
+      "totalObservations": 112
+    }
+  ],
+  "limits_unchanged": true
+}

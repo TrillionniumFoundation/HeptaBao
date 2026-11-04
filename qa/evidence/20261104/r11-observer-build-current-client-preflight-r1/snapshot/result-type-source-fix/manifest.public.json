@@ -1,0 +1,67 @@
+{
+  "schema": "heptabao.phaseb-native-ingress-result-annotation-packet.v1",
+  "base_commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+  "source_only": true,
+  "files": [
+    {
+      "path": "candidate/crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "bytes": 61623,
+      "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a",
+      "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3"
+    },
+    {
+      "path": "native-ingress-result-type.review.diff",
+      "bytes": 678,
+      "sha256": "b8a04c2af6d06ebb68b14f53b57ef0d7c17e4e2bfc69bb8bab222f9efb8e2286",
+      "blob": "4adea51bbe474872f7d20e0b78d8b3e07f654d6a"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3008,
+      "sha256": "9491ac096224ea02355cb61e9350003e4b62f65e9464afad5c9cda136df80a99",
+      "blob": "9f4a82a404e0bcdc3f35d6e8a2aaa3a2b2046907"
+    },
+    {
+      "path": "source-review.public.json",
+      "bytes": 2640,
+      "sha256": "cdfea2431932f94e46c2f90bf280db1527f8af0e88ba2c13458657ddb3638ac1",
+      "blob": "4054faae24b7f6e77a91b68e451409ce475598ba"
+    },
+    {
+      "path": "evidence/normal-release-build.stderr",
+      "bytes": 27914,
+      "sha256": "d47156c8828983229eccec58c9a4cd5f1535b653c7d59fab9ddf4db72839ee3e",
+      "blob": "b52ca5a2ac29aa05919bed897f360ecef8a26746"
+    },
+    {
+      "path": "evidence/normal-release-build.stdout",
+      "bytes": 384196,
+      "sha256": "324a6b59e740e1ed2dc0c447ce638557d5cbd53cdec2c5b3afaa0a701cee3c92",
+      "blob": "2fa9bb2d97de2eac9dbe8cf151ec14cefbbc8a6d"
+    },
+    {
+      "path": "evidence/normal-release-build.public.json",
+      "bytes": 710,
+      "sha256": "654c0e9dd676855d585746275be3dc92188c843e576d873d6b3607141fb9f412",
+      "blob": "da16c331a4548c9eddbd037030f5f5eb26c32c76"
+    },
+    {
+      "path": "evidence/failed-result.public.json",
+      "bytes": 9233,
+      "sha256": "2947b177c2b7ca145a499175567aec632c76d12641c8afa4276ae900dda3a122",
+      "blob": "3c909afa3fa0e2d2888adbd1452e7fd69cfe9934"
+    },
+    {
+      "path": "evidence/failed-authority.public.json",
+      "bytes": 726,
+      "sha256": "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6",
+      "blob": "971f9ee47142e65ce39b05834e7bc647b08e655b"
+    },
+    {
+      "path": "existing-seven-test-catalog.public.json",
+      "bytes": 3649,
+      "sha256": "dededdfc5afdff0924793b55d15306c7dc59939d3789f5f75eb37ff47c8a33b3",
+      "blob": "1dd83d4a79f0e1558420ce0a02e90585ec052a38"
+    }
+  ]
+}

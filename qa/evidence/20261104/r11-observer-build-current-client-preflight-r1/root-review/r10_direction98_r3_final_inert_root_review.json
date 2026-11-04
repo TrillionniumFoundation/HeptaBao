@@ -1,0 +1,432 @@
+{
+  "schema": "heptabao.direction98-r3-final-inert-root-review.v1",
+  "status": "PASS_EXACT_INERT_STAGE_ONLY",
+  "tree": "23f7381a96f85e219f7223b2dba48ce390b141ef",
+  "packet": {
+    "tree": "23f7381a96f85e219f7223b2dba48ce390b141ef",
+    "leaves": 13,
+    "bytes": 180895,
+    "merkle": {
+      "root_sha": "23f7381a96f85e219f7223b2dba48ce390b141ef",
+      "trees_verified": 1
+    },
+    "records": [
+      {
+        "path": "DESIGN.md",
+        "bytes": 8236,
+        "sha256": "197deca82d2569b11727bf54a2021214846b901fa3cf387f412f80274022964f",
+        "blob": "f994c67ab16efc38eedd1c579a4fd4e42d692304"
+      },
+      {
+        "path": "design-draft1-to-final.review.diff",
+        "bytes": 3064,
+        "sha256": "f854ad5622cb88d5d7bf1c2951670d64193d33d736efcdfa80c936dd3b51d859",
+        "blob": "dcbabbaedb93264ad6ab04db1f7e1cca6609175f"
+      },
+      {
+        "path": "dispatch.public.json",
+        "bytes": 3043,
+        "sha256": "cd8bd61b9cd0536ba3bb8658540739b5dd8baef1301d16e68b022fc14e88b2da",
+        "blob": "5b93694b9061bf820024eba68f1f1a907a01e24d"
+      },
+      {
+        "path": "inert-r2-to-r3.review.diff",
+        "bytes": 1157,
+        "sha256": "9f70c0d93bf4212cfb9e1e800c42dd9b44f8c842086e93f9b78128572003602d",
+        "blob": "9031be558a88edb5fd1f0aaead737cea2ea3bc38"
+      },
+      {
+        "path": "inert_carrier.py",
+        "bytes": 5573,
+        "sha256": "1044e680b9289764c8ce80d5142f5ba08ce92b2da6dc8f098183cb4fd166c75f",
+        "blob": "bf702956348fad015155d87cd6554d5f55fb873e"
+      },
+      {
+        "path": "inert_payload.json",
+        "bytes": 88397,
+        "sha256": "0ded9bba8d2699f34bab928f3167af5dacc78e67bea3c7f37501986f71d739f4",
+        "blob": "c44c59b1b1b18f1bf9caf60255e265d90f511c7e"
+      },
+      {
+        "path": "launch_normal_r10_pocket_direct98_r3.py",
+        "bytes": 17895,
+        "sha256": "5b25448423abba0a18a9317e645fb7bffe392355efe7809e9c76c480f3f3c5b4",
+        "blob": "c6e231570a92e174b2f84b4633209eba04d0c7c7"
+      },
+      {
+        "path": "launcher-draft1-to-final.review.diff",
+        "bytes": 689,
+        "sha256": "03c2e1702d50ae7857b5df70187a0c7995aa89406ccb926ce2a41d137e8b906a",
+        "blob": "0fae2fc756369b06ed8da2bd1c4f1c3e4a92c20c"
+      },
+      {
+        "path": "manifest.public.json",
+        "bytes": 2993,
+        "sha256": "5730cabad0fc4214b49a19ed0d381724207b041be2deff3f7c815ef56191104a",
+        "blob": "acb6142c12ce3b898ab1455d9e9a42210ace7e5d"
+      },
+      {
+        "path": "native_v6_pocket_source_direct98_r10_r3.py",
+        "bytes": 25523,
+        "sha256": "485fd21b5ef150eb952b65a3eb446b1a25a55a25550c17599198497f11d5f081",
+        "blob": "a359c06befbd3b668facc9940bc2186d787cbf00"
+      },
+      {
+        "path": "probe_normal_build_r10_r1.py",
+        "bytes": 6445,
+        "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+        "blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a"
+      },
+      {
+        "path": "read_stopped_direction_frontier_r3.py",
+        "bytes": 16250,
+        "sha256": "e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0",
+        "blob": "a59d3b3d93fcb0468940476e54899da23f6354d8"
+      },
+      {
+        "path": "runner-draft1-to-final.review.diff",
+        "bytes": 1630,
+        "sha256": "ef5776ec19f17949eaa00000b7520835689db70a37e445baa15447b38d275ff3",
+        "blob": "f6d1af25c1d9d64445534c7898134e669a379a6c"
+      }
+    ]
+  },
+  "prior_root_source_review": {
+    "schema": "heptabao.direction98-r3-draft1-root-source-review.v1",
+    "status": "PASS_SOURCE_STRUCTURE_PENDING_FINAL_SINGLE_CLOCK_DELTA_AND_DISPATCH",
+    "tree": "c365c4e9d72b60369f19033aa452c39c283752ac",
+    "packet": {
+      "tree": "c365c4e9d72b60369f19033aa452c39c283752ac",
+      "leaves": 10,
+      "bytes": 109152,
+      "merkle": {
+        "root_sha": "c365c4e9d72b60369f19033aa452c39c283752ac",
+        "trees_verified": 1
+      },
+      "records": [
+        {
+          "path": "DESIGN.md",
+          "bytes": 7741,
+          "sha256": "a5dc54c553059e13175750841bf4b2ae4f24a0ec700e060d13ffdf1bce8933fc",
+          "blob": "1bca294af0f855f4d3f237147353b2559f497f80"
+        },
+        {
+          "path": "launch_normal_r10_pocket_direct98_r3.py",
+          "bytes": 17895,
+          "sha256": "f5a471e4efc6f5e6d3df30007164dc9b7532a05e369b0ab5d54eff82b27c4c31",
+          "blob": "d62fb84f84cca8a1421b0a5279f1688db6d6f7c5"
+        },
+        {
+          "path": "launcher-r2-to-r3.review.diff",
+          "bytes": 8370,
+          "sha256": "d9e539ab0c9237ad7b9e2412eeef461d8b69b5e8b9e59761792dffea8d7dc18d",
+          "blob": "766373e7e13e4821d5e8f69b96c2f8b9a6a3c059"
+        },
+        {
+          "path": "manifest.public.json",
+          "bytes": 2381,
+          "sha256": "5f378fa096915c383db0ddc999112a95a4f6e0931c6666bf61cb2df36a726067",
+          "blob": "978266469afe73806ab396342cd3322a1f3a571f"
+        },
+        {
+          "path": "method-preservation.public.json",
+          "bytes": 786,
+          "sha256": "2521456bb779bc0300d54567bd6f9cff6ce39defacee21d5f8def0d121709683",
+          "blob": "7cd26bf6dd5b67e6a6e6548fc92f20eceba25640"
+        },
+        {
+          "path": "native_v6_pocket_source_direct98_r10_r3.py",
+          "bytes": 25425,
+          "sha256": "a317176d27ac70a8656ec4c22416302b982c284764ae17310068e6a5f6b246d7",
+          "blob": "c272870cccb2dea8387389306678bcd0357996c0"
+        },
+        {
+          "path": "probe_normal_build_r10_r1.py",
+          "bytes": 6445,
+          "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+          "blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a"
+        },
+        {
+          "path": "read_stopped_direction_frontier_r3.py",
+          "bytes": 16250,
+          "sha256": "e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0",
+          "blob": "a59d3b3d93fcb0468940476e54899da23f6354d8"
+        },
+        {
+          "path": "reader-r4-to-r3-fixture.review.diff",
+          "bytes": 5634,
+          "sha256": "4881f5db18e4edf95ac6788404f74e862bee45fc1da0ee6242935b12dd30f621",
+          "blob": "2b5579b7f0007309dccbc12e0e45a18f606695eb"
+        },
+        {
+          "path": "runner-r2-to-r3.review.diff",
+          "bytes": 18225,
+          "sha256": "f96062ba443fac9dc1f9fd869a6645be8f3be2964ecb8539db0ed119243d74d8",
+          "blob": "31ad5a28fdac9fc3d0e6c89367892f5a09900e6e"
+        }
+      ]
+    },
+    "strict_diffs": [
+      {
+        "name": "launcher",
+        "hunks": 9,
+        "before": {
+          "bytes": 16111,
+          "sha256": "7a40c9ce4c646f850c611fc29317cc2c0662d5823a10c7d52d7d43dcaa97ade9",
+          "blob": "da78aa1036d1cb38ec41694b48d70b194968d768"
+        },
+        "after": {
+          "bytes": 17895,
+          "sha256": "f5a471e4efc6f5e6d3df30007164dc9b7532a05e369b0ab5d54eff82b27c4c31",
+          "blob": "d62fb84f84cca8a1421b0a5279f1688db6d6f7c5"
+        },
+        "diff": {
+          "bytes": 8370,
+          "sha256": "d9e539ab0c9237ad7b9e2412eeef461d8b69b5e8b9e59761792dffea8d7dc18d",
+          "blob": "766373e7e13e4821d5e8f69b96c2f8b9a6a3c059"
+        }
+      },
+      {
+        "name": "runner",
+        "hunks": 8,
+        "before": {
+          "bytes": 10844,
+          "sha256": "b7623c0bb2a9bfd754401c00867ae6535fe8e19364c9fb6367219cffa2656e89",
+          "blob": "b746e8eaae9f7608bfb8265422b27e7f18a520f1"
+        },
+        "after": {
+          "bytes": 25425,
+          "sha256": "a317176d27ac70a8656ec4c22416302b982c284764ae17310068e6a5f6b246d7",
+          "blob": "c272870cccb2dea8387389306678bcd0357996c0"
+        },
+        "diff": {
+          "bytes": 18225,
+          "sha256": "f96062ba443fac9dc1f9fd869a6645be8f3be2964ecb8539db0ed119243d74d8",
+          "blob": "31ad5a28fdac9fc3d0e6c89367892f5a09900e6e"
+        }
+      },
+      {
+        "name": "reader",
+        "hunks": 7,
+        "before": {
+          "bytes": 15562,
+          "sha256": "ecea803b16419202116b7b428fc794335da259cb4e68635073de6bc0b8f03e82",
+          "blob": "600740120f5c21e3318fd6098e80b10b26b23652"
+        },
+        "after": {
+          "bytes": 16250,
+          "sha256": "e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0",
+          "blob": "a59d3b3d93fcb0468940476e54899da23f6354d8"
+        },
+        "diff": {
+          "bytes": 5634,
+          "sha256": "4881f5db18e4edf95ac6788404f74e862bee45fc1da0ee6242935b12dd30f621",
+          "blob": "2b5579b7f0007309dccbc12e0e45a18f606695eb"
+        }
+      }
+    ],
+    "ast": {
+      "executed_modules": false,
+      "files": [
+        {
+          "bytes": 17895,
+          "name": "launcher.py",
+          "nodes": 2161,
+          "sha256": "f5a471e4efc6f5e6d3df30007164dc9b7532a05e369b0ab5d54eff82b27c4c31"
+        },
+        {
+          "bytes": 25425,
+          "name": "runner.py",
+          "nodes": 3693,
+          "sha256": "a317176d27ac70a8656ec4c22416302b982c284764ae17310068e6a5f6b246d7"
+        },
+        {
+          "bytes": 16250,
+          "name": "reader.py",
+          "nodes": 3207,
+          "sha256": "e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0"
+        }
+      ],
+      "schema": "heptabao.root-source-ast-only.v1"
+    },
+    "runtime_executed": false,
+    "actual_original_method_reversal_exact": true,
+    "ten_original_check_names_order_preserved": [
+      "missing_cipher_targets_stopped",
+      "missing_cipher_two_targets_quarantined",
+      "missing_cipher_sealed_pair_elected",
+      "missing_cipher_source_rejoined",
+      "missing_cipher_leader_empty_before_unseal",
+      "missing_cipher_leader_unsealed",
+      "missing_cipher_leader_exact_history",
+      "missing_cipher_actual_leaves_rebuilt",
+      "missing_cipher_remaining_nodes_unsealed",
+      "missing_cipher_all_hosts_readindex"
+    ],
+    "inherited_product_request_stop_start_cleanup_implementation_unchanged": true,
+    "actual_node3_source_and_node1_leader_guard_preserved": true,
+    "all_three_original_cold_unseals_preserved": true,
+    "added_readonly_sequence": "stop2, once numeric2, actual quorum1/3 health and Mac passive committed/applied frontier, stop1/3, once numeric1, stronger persisted term/index proof",
+    "new_total_prepare_seconds": 60,
+    "new_numeric_max_seconds": 15,
+    "new_numeric_ssh_max_seconds": 45,
+    "original_http_max_seconds": 15,
+    "original_admission_max_seconds": 8,
+    "original_sealed_election_seconds": 60,
+    "original_whole_fixture_seconds": 2400,
+    "new_deadline_never_reset": true,
+    "no_added_business_mutation_for_role_selection": true,
+    "numeric_not_read_index_authority": true,
+    "pre_stop_non_ROG_leader_may_leave_prep_uncovered": true,
+    "old_failures_preserved": true,
+    "descendant_named_fd_recheck_added": true,
+    "no_permission_changes": true,
+    "remaining_source_delta": "Use one completed monotonic timestamp for final preparation deadline check and elapsed reporting; clarify existing SSH transport versus explicit StrictHostKeyChecking flag.",
+    "stage_or_prepare_or_product_GO": false
+  },
+  "final_deltas": [
+    {
+      "name": "runner",
+      "hunks": 2,
+      "old": {
+        "bytes": 25425,
+        "sha256": "a317176d27ac70a8656ec4c22416302b982c284764ae17310068e6a5f6b246d7",
+        "blob": "c272870cccb2dea8387389306678bcd0357996c0"
+      },
+      "new": {
+        "bytes": 25523,
+        "sha256": "485fd21b5ef150eb952b65a3eb446b1a25a55a25550c17599198497f11d5f081",
+        "blob": "a359c06befbd3b668facc9940bc2186d787cbf00"
+      },
+      "diff": {
+        "bytes": 1630,
+        "sha256": "ef5776ec19f17949eaa00000b7520835689db70a37e445baa15447b38d275ff3",
+        "blob": "f6d1af25c1d9d64445534c7898134e669a379a6c"
+      }
+    },
+    {
+      "name": "launcher",
+      "hunks": 1,
+      "old": {
+        "bytes": 17895,
+        "sha256": "f5a471e4efc6f5e6d3df30007164dc9b7532a05e369b0ab5d54eff82b27c4c31",
+        "blob": "d62fb84f84cca8a1421b0a5279f1688db6d6f7c5"
+      },
+      "new": {
+        "bytes": 17895,
+        "sha256": "5b25448423abba0a18a9317e645fb7bffe392355efe7809e9c76c480f3f3c5b4",
+        "blob": "c6e231570a92e174b2f84b4633209eba04d0c7c7"
+      },
+      "diff": {
+        "bytes": 689,
+        "sha256": "03c2e1702d50ae7857b5df70187a0c7995aa89406ccb926ce2a41d137e8b906a",
+        "blob": "0fae2fc756369b06ed8da2bd1c4f1c3e4a92c20c"
+      }
+    }
+  ],
+  "carrier_baseline": {
+    "bytes": 5452,
+    "sha256": "eec794e003fffabd92ef1ec0e22dccdec75b6693cc88c788a4ea0b358b6188d6",
+    "blob": "f726e473a1ef23e65c2bc0a87bdee88fa68e3b54"
+  },
+  "carrier_hunks": 1,
+  "only_new_root_and_four_pins_in_carrier": true,
+  "carrier": {
+    "bytes": 5573,
+    "sha256": "1044e680b9289764c8ce80d5142f5ba08ce92b2da6dc8f098183cb4fd166c75f",
+    "blob": "bf702956348fad015155d87cd6554d5f55fb873e"
+  },
+  "stdin": {
+    "bytes": 88397,
+    "sha256": "0ded9bba8d2699f34bab928f3167af5dacc78e67bea3c7f37501986f71d739f4",
+    "blob": "c44c59b1b1b18f1bf9caf60255e265d90f511c7e"
+  },
+  "decoded_four_sources": [
+    {
+      "path": "launch_normal_r10_pocket_direct98_r3.py",
+      "bytes": 17895,
+      "sha256": "5b25448423abba0a18a9317e645fb7bffe392355efe7809e9c76c480f3f3c5b4"
+    },
+    {
+      "path": "native_v6_pocket_source_direct98_r10_r3.py",
+      "bytes": 25523,
+      "sha256": "485fd21b5ef150eb952b65a3eb446b1a25a55a25550c17599198497f11d5f081"
+    },
+    {
+      "path": "read_stopped_direction_frontier_r3.py",
+      "bytes": 16250,
+      "sha256": "e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0"
+    },
+    {
+      "path": "probe_normal_build_r10_r1.py",
+      "bytes": 6445,
+      "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee"
+    }
+  ],
+  "create_only_private_root_and_files": true,
+  "all_decode_parse_compile_before_mkdir": true,
+  "source_not_executed_by_inert": true,
+  "atomic_publication_fsync_full_fd_and_named_readback_preserved": true,
+  "exact_inert_dispatch": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args_mode": "-I -S -B -c exact inert_carrier.py content",
+    "source": {
+      "bytes": 5573,
+      "sha256": "1044e680b9289764c8ce80d5142f5ba08ce92b2da6dc8f098183cb4fd166c75f",
+      "blob": "bf702956348fad015155d87cd6554d5f55fb873e"
+    },
+    "stdin": {
+      "bytes": 88397,
+      "sha256": "0ded9bba8d2699f34bab928f3167af5dacc78e67bea3c7f37501986f71d739f4",
+      "blob": "c44c59b1b1b18f1bf9caf60255e265d90f511c7e"
+    },
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-r10-pocket-direction-controls-inert-r3-5b254484-485fd21b",
+    "expected_control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-direct98-control-r3",
+    "expected_files": [
+      {
+        "path": "launch_normal_r10_pocket_direct98_r3.py",
+        "bytes": 17895,
+        "sha256": "5b25448423abba0a18a9317e645fb7bffe392355efe7809e9c76c480f3f3c5b4",
+        "blob": "c6e231570a92e174b2f84b4633209eba04d0c7c7"
+      },
+      {
+        "path": "native_v6_pocket_source_direct98_r10_r3.py",
+        "bytes": 25523,
+        "sha256": "485fd21b5ef150eb952b65a3eb446b1a25a55a25550c17599198497f11d5f081",
+        "blob": "a359c06befbd3b668facc9940bc2186d787cbf00"
+      },
+      {
+        "path": "read_stopped_direction_frontier_r3.py",
+        "bytes": 16250,
+        "sha256": "e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0",
+        "blob": "a59d3b3d93fcb0468940476e54899da23f6354d8"
+      },
+      {
+        "path": "probe_normal_build_r10_r1.py",
+        "bytes": 6445,
+        "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+        "blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a"
+      }
+    ],
+    "effect": "compile/AST without exec, then create-only0700 directory and0600 exact files; no SSH, product, Git, Cargo, or children"
+  },
+  "prepare_dispatch_reviewed_but_waits_actual_stage": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-direct98-control-r3/launch_normal_r10_pocket_direct98_r3.py",
+      "--prepare-only"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-r10-pocket-direct98-prepare-r3-5b254484-485fd21b",
+    "effect": "original build/source/QA/fence probes and argument/contract parsing; no product fixture"
+  },
+  "live_not_authorized": true
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.finite-client-inventory.mac-dispatch-packet.r2",
+  "status": "SOURCE_ONLY_NO_HOST_SUBMISSION",
+  "files": [
+    {
+      "path": "DISPATCH.public.json",
+      "mode": "100644",
+      "bytes": 2121,
+      "sha256": "416fbcb31cf45e2914eb7e9af3c71cfafb2dd7cbb43597b37cb49d9d38b41696",
+      "blob_sha": "cd78df9342fd299415e45599ce5e09241fe314ad"
+    },
+    {
+      "path": "inert_validator.py",
+      "mode": "100644",
+      "bytes": 3137,
+      "sha256": "06d098c2fd5621a02ffcc74220601bbbb471d36c5ce346a99eeaf6b1f8109da2",
+      "blob_sha": "4f45517161025ebcc04a6346d68c323fb49a8ae3"
+    },
+    {
+      "path": "mac-inert-exact-start-args.public.json",
+      "mode": "100644",
+      "bytes": 163561,
+      "sha256": "ef59c72be43b7871def1ae6212b40fa1a520b23eef7702baab097cccddc46c2c",
+      "blob_sha": "c9742223e4c6d7e6dd78a8b4adb127a1c1bc6372"
+    },
+    {
+      "path": "mac-readonly-exact-start-args.public.json",
+      "mode": "100644",
+      "bytes": 142896,
+      "sha256": "bfca6efadc8a812d640fbbd9eb095b65cba56301d6068cff399657ee617e9607",
+      "blob_sha": "6bb734d24438fe15df985ccbf2876c78c128b6f8"
+    }
+  ]
+}

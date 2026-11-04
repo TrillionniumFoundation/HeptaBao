@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.phaseb-observer-successor-independent-review.r1",
+  "status": "BLOCKED_SOURCE_ONLY",
+  "reviewer": "authbus_migration",
+  "reviewed_tree": "27d6054bc3de026e0e58590498e53183f78b2342",
+  "scope": [
+    "Complete source stage and launcher plus unchanged normal runner",
+    "Fixed failed-bf0 fence and authority coupling",
+    "Absolute and existing leaf budgets; cleanup/known-terminal contract",
+    "Original-to-candidate exact unified differences"
+  ],
+  "inputs": [
+    {
+      "role": "stage",
+      "blob": "57e6b669158f61ccdbd8926f596b77f864638b92",
+      "bytes": 24552,
+      "sha256": "8b187ab5411177107959da3afc5ef1dd000c7abe946e223126c9c51cc8d00fea"
+    },
+    {
+      "role": "launcher",
+      "blob": "5df49e6993eb4ff46898ad2adce689e1d96eb953",
+      "bytes": 28425,
+      "sha256": "23a36f8ab8b971955d8b1f778a1f66e1ba5efd1351d910d01595fbf3552eb0de"
+    },
+    {
+      "role": "runner",
+      "blob": "65389248669059eb8f7db20eeee3d9ad47ba7282",
+      "bytes": 20791,
+      "sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273"
+    },
+    {
+      "role": "stage_diff",
+      "blob": "784af24daefa642d9b96b34aa166e0b9a9f30df0",
+      "bytes": 12650,
+      "sha256": "351a25abe34629133cf3be8f68ab2c27299e9978b67f5c287824b5a138322c5f"
+    },
+    {
+      "role": "launcher_diff",
+      "blob": "626840e56ae9d3733364cf8ec3018df05057ca6a",
+      "bytes": 10941,
+      "sha256": "75d5e0e6c940fa83a7997fcbc465dc643051d88617ae640cbf107a702b89bb4a"
+    },
+    {
+      "role": "dispatch",
+      "blob": "077dcaea1f44d16b3ba0e5372e6328560b4e4865",
+      "bytes": 7715,
+      "sha256": "2fb891d8869c17e2297e7c0beea25e267b4086f782d9dd470e1ec0e468b3790e"
+    }
+  ],
+  "exact_diff_reconstruction": {
+    "stage_hunks": 8,
+    "launcher_hunks": 9,
+    "both_whole_source_equal": true
+  },
+  "blocking_findings": [
+    {
+      "id": "RUNNER_SOURCE_IDENTITY_STALE",
+      "runner_lines": [
+        19,
+        20,
+        154,
+        155
+      ],
+      "launcher_lines": [
+        22,
+        23,
+        441,
+        442,
+        470
+      ],
+      "runner_expected_commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+      "runner_expected_tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a",
+      "launcher_passed_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+      "launcher_passed_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+      "assertion": "assert args.commit == DIAGNOSTIC_COMMIT and args.tree == DIAGNOSTIC_TREE",
+      "static_evaluation": false,
+      "consequence": "The fixed new launcher's argv necessarily fails the runner's exact identity assertion before output.mkdir at line174, intent at line182, and all Cargo/test starts.",
+      "required_correction": "Freeze a fresh runner replacing only the two exact commit/tree literals, cascade the resulting whole SHA/size/blob through stage/carrier/dispatch, retain R2 original controls and any actual source-stage evidence. Do not remove or weaken the assertion.",
+      "runtime_reproduction_performed": false
+    }
+  ],
+  "reviewed_without_additional_blocker": {
+    "failed_observer_fence": "Twelve explicit original files use same-FD/name identity and whole SHA, exact bf0 clean source before/after. Cached 726-byte raw authority must retain job1a1a87f578a-fc05-2ee0 failed exit1, complete/durable, no timeout/retry; child exit101 plus empty runtime groups are required. New launcher independently rechecks the full record and requires equality with the actual stage record.",
+    "source_stage": "Fixed new source root; local independent no-hardlinks/dissociate clone plus exact canonical fetch, full3755 history/root/sole parents/fsck and3911 full blob/mode/index proof. Existing owned functions preserve registration and reaping; all source commands min(originalGit90/clone180, same300 remaining); final publication and exit require original300.",
+    "normal_budgets": "Unchanged runner bytes retain release1800, libtest3600, list30, six original runtime600 groups and separate seven existing tests sharing one600 cap. Extra final elapsed uses one monotonic sample. NEW aggregate12000 is accurately labelled; launcher keeps its original target probe and closes before exec under parent's exclusive window.",
+    "known_limit": "Stage/launcher failed-bf0 checks are admission evidence, not post-build preservation proof. Unchanged runner does not perform a new hidden scan of old roots. Source review is not actual stage/build/test qualification."
+  },
+  "host_requests": 0,
+  "python_executed": false,
+  "product_started": false,
+  "files_on_hosts_written": false,
+  "source_refs_mutated": false,
+  "review_does_not_authorize_runtime": true
+}

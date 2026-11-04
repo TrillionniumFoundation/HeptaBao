@@ -1,0 +1,28 @@
+--- draft1/native_v6_pocket_source_direct98_r10_r3.py
++++ final/native_v6_pocket_source_direct98_r10_r3.py
+@@ -139,8 +139,9 @@
+                    + " --max-seconds " + repr(seconds) + " <<'" + delimiter + "'\n"
+                    + script + "\n" + delimiter + "\n")
+         started = time.monotonic()
+-        # Reuses the original strict host-key/BatchMode SSH transport. No child
+-        # is started by the remote reader; unknown completion aborts this run.
++        # base.ssh retains BatchMode/ConnectTimeout; the unchanged outer
++        # native.execute_fixture strict_shared_transport adds strict host keys.
++        # The remote reader starts no child; unknown completion aborts this run.
+         row["dispatch_attempted"] = True
+         row["remote_completion_unknown"] = True
+         output = base.ssh(node, command, timeout=remaining)
+@@ -286,10 +287,11 @@
+                  "this_does_not_assert_next_actual_leader": True}
+         self.report["directional_role_preparation"]["persisted_frontier_proof"] = proof
+         self.event("direction_preparation_complete", **proof)
+-        if time.monotonic() >= until:
++        completed = time.monotonic()
++        if completed >= until:
+             raise base.FixtureError("direction_preparation_completion_after_deadline")
+         proof["within_new_total_prepare_deadline"] = True
+-        proof["new_total_prepare_elapsed_seconds"] = 60.0 - (until - time.monotonic())
++        proof["new_total_prepare_elapsed_seconds"] = 60.0 - (until - completed)
+ 
+     def missing_cipher_leader(self, healthy):
+         self.stage = "owned_missing_cipher_leader_recovery"

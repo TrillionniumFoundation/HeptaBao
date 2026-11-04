@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.phaseb-native-ingress-result-annotation-source-review.v1",
+  "status": "source-only",
+  "base_commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+  "base_tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a",
+  "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+  "before": {
+    "bytes": 61578,
+    "sha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d",
+    "blob": "7bbd34e86039d0f640ac12a48cd81b2f836e600a"
+  },
+  "after": {
+    "bytes": 61623,
+    "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a",
+    "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3"
+  },
+  "diff": {
+    "bytes": 678,
+    "sha256": "b8a04c2af6d06ebb68b14f53b57ef0d7c17e4e2bfc69bb8bab222f9efb8e2286",
+    "blob": "4adea51bbe474872f7d20e0b78d8b3e07f654d6a"
+  },
+  "checks": {
+    "one_hunk_strict_apply_exact": true,
+    "one_annotation_inverse_whole_source_exact": true,
+    "existing_outer_return_type_used": true,
+    "original_calls_question_marks_and_guards_unchanged": true,
+    "no_deadline_or_retry_change": true
+  },
+  "actual_failed_build": {
+    "job_id": "1a1a87f578a-fc05-2ee0",
+    "controller_exit": 1,
+    "cargo_exit": 101,
+    "elapsed_seconds": 62.09384498698637,
+    "release_cap_seconds": 1800,
+    "tests_started": false,
+    "owned_pgid": 3509410,
+    "direct_child_reaped": true,
+    "remaining": []
+  },
+  "compiler_errors": {
+    "E0277": 27,
+    "E0308": 1,
+    "inferred_error_type": "str",
+    "required_error_type": "String",
+    "local_binding_line": 689,
+    "match_line": 782,
+    "return_line": 788
+  },
+  "compiler_stderr": {
+    "bytes": 27914,
+    "sha256": "d47156c8828983229eccec58c9a4cd5f1535b653c7d59fab9ddf4db72839ee3e",
+    "blob": "b52ca5a2ac29aa05919bed897f360ecef8a26746"
+  },
+  "compiler_stdout": {
+    "bytes": 384196,
+    "sha256": "324a6b59e740e1ed2dc0c447ce638557d5cbd53cdec2c5b3afaa0a701cee3c92",
+    "blob": "2fa9bb2d97de2eac9dbe8cf151ec14cefbbc8a6d"
+  },
+  "candidate_formatted": false,
+  "candidate_compiled": false,
+  "candidate_tests_run": false,
+  "product_changed_on_host": false,
+  "git_ref_changed": false,
+  "prior_phaseb_unknown_replayed": false,
+  "required_successor_gates": [
+    "root source review/new exact commit and tree",
+    "fresh isolated source and build roots/new single key",
+    "retained failed source, authority, core and complete Cargo log fences",
+    "same normal profile/default features/original 44 groups and seven separately recorded existing tests",
+    "all original deadlines and owned cleanup",
+    "fresh Phase B inputs and qualification only after successful normal artifact evidence"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.mac-etc-alias-source-packet.r1",
+  "files": [
+    {
+      "path": "mac_etc_alias_r1.py",
+      "bytes": 3778,
+      "sha256": "5a4838b8704315d31c80c07b5dd5f8a42837e28a369a2545f1fa669bc18f7c1d",
+      "blob": "d521b52880a59e0250a588d85fce24c6626b8536"
+    },
+    {
+      "path": "exact-start-arguments.json",
+      "bytes": 4137,
+      "sha256": "8076d13c805321915d35f1642ba0417bea2888699f6e282707f8f865ed38aa3c",
+      "blob": "cf0adf8dd84961b07f2c94dfa21e57d98a389ca3"
+    },
+    {
+      "path": "SOURCE_CONTRACT.public.json",
+      "bytes": 1442,
+      "sha256": "138adf81276a76fae96ca8594c46852d7038e478d2f7e6b00c85263ba5ffcd44",
+      "blob": "9f86ae41141e74c85a3fb9836d31a6269c7d7c58"
+    }
+  ]
+}

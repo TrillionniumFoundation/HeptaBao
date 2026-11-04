@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.finite-client-inventory.author-source-review.r1",
+  "status": "SOURCE_CANDIDATE_NOT_EXECUTED",
+  "controller": {
+    "bytes": 44922,
+    "sha256": "4b7dfc869bca690e942e0f201e6e050a9a1f4ee31827b7bb3202ec66bd2f4282"
+  },
+  "manifest": {
+    "bytes": 85939,
+    "sha256": "b52cec525ecf14161a0f6a396545d25e0532dfe5284dd07bf63b670fe570862f"
+  },
+  "finite_arithmetic": [
+    {
+      "host": "mac",
+      "entries": 38,
+      "passes": 15,
+      "queries": 7,
+      "maximum_explicit_observations": 31,
+      "total_predeclared_observations": 357,
+      "unique_entry_denominator": true
+    },
+    {
+      "host": "rog",
+      "entries": 46,
+      "passes": 17,
+      "queries": 4,
+      "maximum_explicit_observations": 31,
+      "total_predeclared_observations": 434,
+      "unique_entry_denominator": true
+    },
+    {
+      "host": "x230",
+      "entries": 18,
+      "passes": 5,
+      "queries": 6,
+      "maximum_explicit_observations": 32,
+      "total_predeclared_observations": 112,
+      "unique_entry_denominator": true
+    }
+  ],
+  "finite_arithmetic_method": "Pure JavaScript exact path/parent/set/count recomputation against final manifest; no host IO and no Python execution",
+  "prior_author_check_discarded": "An initial JavaScript check used localeCompare instead of Python lexical ordering for same-depth paths and refused Mac p14. The source/manifest were unchanged by that check; final arithmetic uses exact ASCII lexical ordering and all passes match.",
+  "explicit_metadata_calls": 4,
+  "original_host_seconds": 45,
+  "new_outer_seconds": 60,
+  "whole_read_bound": 8388608,
+  "output_bound": 65536,
+  "python_ast_or_compile_executed": false,
+  "component_tests_executed": false,
+  "host_reads_executed": false,
+  "production_qualified": false,
+  "cloud_runtime_used": false,
+  "own_changes_before_freeze": [
+    "Conservative simple-literal public path projection rejects inline shell text/whitespace.",
+    "Config enabled and Docker scalar fields enforce original schema rather than publishing arbitrary values.",
+    "Popen original deadline is rechecked inside protected registration.",
+    "Manifest absence wording matches actual blocked-descendant behavior."
+  ],
+  "known_limits": [
+    "No global cross-file snapshot or unchanged-atime claim.",
+    "A lexical symlink ancestor is reported unresolved, never silently followed.",
+    "Only selected installed service/cron/Docker records; no whole-host absence.",
+    "Source-only review must be followed by inert Python validation before runtime GO."
+  ],
+  "pocket_reuse_included": true
+}

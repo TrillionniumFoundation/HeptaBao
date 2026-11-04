@@ -1,0 +1,171 @@
+--- a/launch_normal_phaseb_observer.py
++++ b/launch_normal_phaseb_observer.py
+@@ -1,6 +1,6 @@
+ #!/usr/bin/env python3
+-"""Preserve exact R8/R9/R10 evidence; admit one independent normal observer build."""
++"""Preserve exact R8/R9/R10 and failed bf0 evidence; admit one new normal build."""
+ from pathlib import Path
+ import argparse
+ import fcntl
+ import hashlib
+@@ -18,10 +18,10 @@
+     parser.add_argument('--' + name, required=True)
+ for name in ('r9-resume-sha256', 'r9-resume-terminal-sha256', 'r9-resume-authority-sha256'):
+     parser.add_argument('--' + name)
+ args = parser.parse_args()
+-assert args.commit == 'bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'
+-assert args.tree == 'ac4027db88fec69381ea0c6bba953d9a99c4e82a'
++assert args.commit == '3cb873919170cc77101b27f6a3ab9e98f41f8d93'
++assert args.tree == '7f4d48a647a81ca96e8a24a0a057c2c829459060'
+ for name in ('r9_resume_sha256', 'r9_resume_terminal_sha256', 'r9_resume_authority_sha256'):
+     value = getattr(args, name)
+     if args.host == 'mac':
+         assert re.fullmatch('[0-9a-f]{64}', value or '')
+@@ -56,9 +56,9 @@
+     RUNNER_NAME = 'mac_normal_exact_tests_r10.py'
+     expected_system, expected_uid = ('Darwin', 'arm64'), 501
+ else:
+     BASE = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1')
+-    ROOT = Path('/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1')
++    ROOT = Path('/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r2')
+     R9 = BASE / 'r9-http-routing-r1'
+     OLD = BASE / 'normal-release-tests-r8-r1'
+     OLD_SOURCE = BASE / 'source-r8-test-fixtures-r1'
+     OLD_COMMIT = '384c957612186d64c5a530044af0ae62c568cc3d'
+@@ -86,8 +86,29 @@
+ OLD_TREE = 'd5a0f91a4d47f7c8d5f34170ea167d10dc036e04'
+ R9_SOURCE = R9 / 'source'
+ R9_COMMIT = '1d12abc45a83d4b32e7185d01a876eb93110b1e2'
+ R9_TREE = 'e1faeaa3ed49d26fb01a7617a8879cb693a12907'
++FAILED_ROOT = Path('/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1')
++FAILED_SOURCE = FAILED_ROOT / 'source'
++FAILED_COMMIT = 'bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'
++FAILED_TREE = 'ac4027db88fec69381ea0c6bba953d9a99c4e82a'
++FAILED_AUTHORITY_NAME = 'prior-observer-build-authority.public.json'
++FAILED_AUTHORITY_SHA = '820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6'
++FAILED_FILES = {
++    'control/stage-result.public.json': (6838, 'bb2bd7b46974dc18bcb87325ea55c46383e17f2f8a521f2eaa77b1fc9fba8d2b'),
++    'build-control-r1/launch-preflight.public.json': (12914, '91b8fe2e1d6e34d1e0b885a9bbb81c27e83e1d6f3f07cb4235cb2314b27e29d4'),
++    'normal-release-tests-r1/intent.public.json': (7838, 'ad7adbf410217af34555e9b9135505cb8f70309facfa748f4fb1c3f0614eedb2'),
++    'normal-release-tests-r1/result.public.json': (9233, '2947b177c2b7ca145a499175567aec632c76d12641c8afa4276ae900dda3a122'),
++    'normal-release-tests-r1/normal-release-build.public.json': (710, '654c0e9dd676855d585746275be3dc92188c843e576d873d6b3607141fb9f412'),
++    'normal-release-tests-r1/normal-release-build.stderr': (27914, 'd47156c8828983229eccec58c9a4cd5f1535b653c7d59fab9ddf4db72839ee3e'),
++    'normal-release-tests-r1/normal-release-build.stdout': (384196, '324a6b59e740e1ed2dc0c447ce638557d5cbd53cdec2c5b3afaa0a701cee3c92'),
++    'control/stage_source_phaseb_observer.py': (18774, '2cfc47c230d7a4780e758ee8736e4cd6f1412a2f65174c5581be48038581b32a'),
++    'control/launch_normal_phaseb_observer.py': (22961, '56c7b06d4329e4fdb72079a089ad2f1509e856357328d849d58844236b86fd63'),
++    'control/normal_phaseb_observer_build.py': (20791, 'c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273'),
++    'control/normal-test-groups.public.json': (6249, '0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1'),
++    'source/crates/heptabao-server/src/ha_native_v6_runtime.rs': (61578, 'cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d'),
++}
++
+ R9_MAC_STAGE_FENCES = {
+     'stage-result.public.json': '1f60d0bbdab00feee4e0d5d1593fa3543b74ff05fae8ec60f9d17b3ddd381166',
+     '021-git-fetch.public.json': '89e4865c8bb30bc500b05cd1fd0a79d0d39bb49fbe1830250d155f9797ff19a5',
+     '021-git-fetch.stderr': 'dbcc4dce38066a3223043b215a80a7acdd2dd1e2f52063de42801d63d931e5ff',
+@@ -264,8 +285,59 @@
+     evidence.update(source_after=before, retained=retained, all_unchanged=True)
+     return evidence
+ 
+ 
++def preserve_failed_observer():
++    before = freeze(FAILED_SOURCE)
++    assert before == {'commit': FAILED_COMMIT, 'tree': FAILED_TREE, 'status': ''}
++    rows, loaded = {}, {}
++    for relative, (size, expected_sha) in FAILED_FILES.items():
++        path = FAILED_ROOT / relative
++        info = path.lstat()
++        raw, _ = read_bound(path, expected_sha, size)
++        assert len(raw) == size
++        assert identity(info) == identity(path.lstat())
++        rows[relative] = {'path': str(path), 'bytes': size, 'sha256': expected_sha,
++                          'identity': list(identity(info))}
++        if relative in ('normal-release-tests-r1/result.public.json',
++                        'normal-release-tests-r1/normal-release-build.public.json'):
++            loaded[relative] = json.loads(raw)
++    authority_path = CONTROL / FAILED_AUTHORITY_NAME
++    authority_info = authority_path.lstat()
++    authority_raw, _ = read_bound(authority_path, FAILED_AUTHORITY_SHA, 726)
++    assert len(authority_raw) == 726
++    assert identity(authority_info) == identity(authority_path.lstat())
++    authority = json.loads(authority_raw)
++    assert authority['job_id'] == '1a1a87f578a-fc05-2ee0'
++    assert authority['state'] == 'failed' and authority['exit_code'] == 1
++    assert authority['output_complete'] and authority['output_durable']
++    assert authority['terminal_publication_confirmed']
++    assert not authority['timed_out'] and not authority['cancelled'] and not authority['automatic_retry']
++    assert all(value is False for value in authority['log_truncated'].values())
++    assert all(value is None for value in authority['log_errors'].values())
++    failed = loaded['normal-release-tests-r1/result.public.json']
++    child = loaded['normal-release-tests-r1/normal-release-build.public.json']
++    assert failed['source_commit'] == FAILED_COMMIT and failed['source_tree'] == FAILED_TREE
++    assert failed['status'] == 'failed' and failed['failure_type'] == 'AssertionError'
++    assert failed['failure'] == 'normal production binary compilation failed'
++    assert failed['runtime_tests_started'] is False and failed['group_results'] == []
++    assert failed['test_count'] == 44 and failed['normal_release_build'] == child
++    assert child['exit_code'] == 101 and not child['timed_out']
++    assert child['outer_cap_seconds'] == 1800 and child['elapsed_seconds'] < 1800
++    assert child['direct_child_reaped'] and child['remaining'] == []
++    assert len(failed['cleanup']) == 1
++    assert all(row['direct_child_reaped'] and row['remaining'] == []
++               and row['exit_code'] == 101 and not row.get('cleanup_error_type')
++               for row in failed['cleanup'])
++    assert freeze(FAILED_SOURCE) == before
++    return {'source_before': before, 'source_after': before, 'files': rows,
++            'authority': {'path': str(authority_path), 'bytes': 726,
++                          'sha256': FAILED_AUTHORITY_SHA,
++                          'identity': list(identity(authority_info)),
++                          'source': 'exact cached authoritative terminal receipt'},
++            'prior_failed_build_replayed': False}
++
++
+ def holders():
+     if args.host == 'mac':
+         observed = subprocess.run(['/usr/sbin/lsof', '-t', str(TARGET / 'release/.cargo-lock')],
+                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=15)
+@@ -298,9 +370,9 @@
+ assert not ADMISSION.exists() and not ADMISSION.is_symlink()
+ assert not OUTPUT.exists() and not OUTPUT.is_symlink()
+ stage_raw, stage_pin = read_bound(CONTROL / 'stage-result.public.json', args.stage_sha256, 150000)
+ stage = json.loads(stage_raw)
+-assert stage['schema'] == 'heptabao.phaseb-observer-independent-source-stage.v1'
++assert stage['schema'] == 'heptabao.phaseb-observer-independent-source-stage.v2'
+ assert stage['status'] == 'prepared' and stage['source_commit'] == args.commit and stage['source_tree'] == args.tree
+ assert stage['source_clean'] and stage['independent_git_directory'] and stage['old_source_unchanged']
+ assert all(x['direct_child_reaped'] and not x['remaining'] for x in stage['cleanup'])
+ runner = CONTROL / RUNNER_NAME
+@@ -308,13 +380,15 @@
+ groups_raw, groups_pin = read_bound(CONTROL / 'normal-test-groups.public.json', args.groups_sha256, 20000)
+ groups = json.loads(groups_raw)
+ assert stage['controls'][RUNNER_NAME]['sha256'] == args.runner_sha256
+ assert stage['controls']['normal-test-groups.public.json']['sha256'] == args.groups_sha256
++assert stage['controls'][FAILED_AUTHORITY_NAME] == {'bytes': 726, 'sha256': FAILED_AUTHORITY_SHA}
++assert stage['failed_observer_before'] == stage['failed_observer_after']
+ assert [[g['label'], len(g['tests'])] for g in groups] == stage['exact_groups']
+ assert sum(len(g['tests']) for g in groups) == stage['exact_test_count']
+ assert all(g['runtime_seconds'] == 600 for g in groups)
+ ADMISSION.mkdir(mode=0o700)
+-result = {'schema': 'heptabao.phaseb-observer-normal-target-admission.v1', 'status': 'failed',
++result = {'schema': 'heptabao.phaseb-observer-normal-target-admission.v2', 'status': 'failed',
+           'host': args.host, 'source_commit': args.commit, 'source_tree': args.tree,
+           'stage': stage_pin, 'runner': runner_pin, 'groups': groups_pin,
+           'target': str(TARGET), 'production_changed': False, 'normal_runner_started': False,
+           'started_ns': time.time_ns()}
+@@ -360,8 +434,10 @@
+     retained.append(libtest_pin)
+     assert freeze(SOURCE) == before and freeze(OLD_SOURCE) == old_before
+     result['retained_r9_evidence'] = preserve_r9()
+     result['retained_r10_evidence'] = preserve_r10()
++    result['retained_failed_observer'] = preserve_failed_observer()
++    assert result['retained_failed_observer'] == stage['failed_observer_after']
+     assert freeze(SOURCE) == before and freeze(OLD_SOURCE) == old_before
+     argv = [PYTHON, '-I', '-S', '-B', str(runner), '--source', str(SOURCE),
+             '--output', str(OUTPUT), '--commit', args.commit, '--tree', args.tree,
+             '--toolchain', TOOLCHAIN, '--cargo-home', CARGO_HOME, '--target', str(TARGET),
+@@ -388,6 +464,7 @@
+ print(json.dumps({'status': 'preflight-admitted', 'source_commit': args.commit,
+                   'source_tree': args.tree, 'exact_test_count': stage['exact_test_count'],
+                   'retained_r8_artifacts_verified': True, 'retained_r9_evidence_verified': True,
+                   'retained_r10_evidence_verified': True,
++                  'retained_failed_observer_verified': True,
+                   'original_budgets_preserved': True}), flush=True)
+ os.execv(argv[0], argv)

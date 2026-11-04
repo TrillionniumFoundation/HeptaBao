@@ -1,0 +1,104 @@
+{
+  "schema": "heptabao.phaseb-observer-3cb-r2-control-packet.v1",
+  "status": "source_only_not_executed",
+  "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "files": [
+    {
+      "path": "stage_source_phaseb_observer.py",
+      "bytes": 24552,
+      "sha256": "8b187ab5411177107959da3afc5ef1dd000c7abe946e223126c9c51cc8d00fea",
+      "blob": "57e6b669158f61ccdbd8926f596b77f864638b92"
+    },
+    {
+      "path": "launch_normal_phaseb_observer.py",
+      "bytes": 28425,
+      "sha256": "23a36f8ab8b971955d8b1f778a1f66e1ba5efd1351d910d01595fbf3552eb0de",
+      "blob": "5df49e6993eb4ff46898ad2adce689e1d96eb953"
+    },
+    {
+      "path": "normal_phaseb_observer_build.py",
+      "bytes": 20791,
+      "sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273",
+      "blob": "65389248669059eb8f7db20eeee3d9ad47ba7282"
+    },
+    {
+      "path": "normal-test-groups.public.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f"
+    },
+    {
+      "path": "prior-observer-build-authority.public.json",
+      "bytes": 726,
+      "sha256": "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6",
+      "blob": "971f9ee47142e65ce39b05834e7bc647b08e655b"
+    },
+    {
+      "path": "stage-carrier.private-safe-source.json",
+      "bytes": 57660,
+      "sha256": "d8ac6575880540b8a094de52bc0102ddfa0c725b98d5f528f04b4842d739af31",
+      "blob": "fa0373706dada08034940b6ad05ce4a844002698"
+    },
+    {
+      "path": "DISPATCH.v4.json",
+      "bytes": 7715,
+      "sha256": "2fb891d8869c17e2297e7c0beea25e267b4086f782d9dd470e1ec0e468b3790e",
+      "blob": "077dcaea1f44d16b3ba0e5372e6328560b4e4865"
+    },
+    {
+      "path": "README.md",
+      "bytes": 4946,
+      "sha256": "698e22a352664f7fce87374e09de9268af4ca6443ac1fddf50b2a97442195461",
+      "blob": "bdf5b78a1e91192b77c0b2b5636eb637a0ca52b2"
+    },
+    {
+      "path": "stage-r1-to-r2.review.diff",
+      "bytes": 12650,
+      "sha256": "351a25abe34629133cf3be8f68ab2c27299e9978b67f5c287824b5a138322c5f",
+      "blob": "784af24daefa642d9b96b34aa166e0b9a9f30df0"
+    },
+    {
+      "path": "launcher-r1-to-r2.review.diff",
+      "bytes": 10941,
+      "sha256": "75d5e0e6c940fa83a7997fcbc465dc643051d88617ae640cbf107a702b89bb4a",
+      "blob": "626840e56ae9d3733364cf8ec3018df05057ca6a"
+    },
+    {
+      "path": "source-invariance.public.json",
+      "bytes": 9859,
+      "sha256": "3b9762ede1bd04b2a253e04c1337a1c8881d0560d9b192a4ef09ff3814c8462a",
+      "blob": "2dba1e53609b216421781f6e406f711f0b803e6c"
+    },
+    {
+      "path": "canonical-tree-proof.public.json",
+      "bytes": 809,
+      "sha256": "17e511594518118f98fd2d7017a0e0207db0b9006a1b22cca5509d531e9138cf",
+      "blob": "66aa8060c582c378d667ceb20201a3922fab3a1c"
+    },
+    {
+      "path": "reference-r1/stage_source_phaseb_observer.py",
+      "bytes": 18774,
+      "sha256": "2cfc47c230d7a4780e758ee8736e4cd6f1412a2f65174c5581be48038581b32a",
+      "blob": "1d5b8e48f5f870af6495d911a61d16da349da2ed"
+    },
+    {
+      "path": "reference-r1/launch_normal_phaseb_observer.py",
+      "bytes": 22961,
+      "sha256": "56c7b06d4329e4fdb72079a089ad2f1509e856357328d849d58844236b86fd63",
+      "blob": "b0ba2b6fbf075d7a855c7b3d107f9a1a39aa2ad0"
+    },
+    {
+      "path": "reference-r1/stage-carrier.private-safe-source.json",
+      "bytes": 51246,
+      "sha256": "66a6546f4cb19c13d2273e6e6613033e5c2823f5d3aeccbeaf0deddf46a56443",
+      "blob": "ed815fdd743dc18ea4541448050450f9e430c066"
+    },
+    {
+      "path": "reference-r1/DISPATCH.v3.json",
+      "bytes": 6723,
+      "sha256": "8661ee4a9f637919cedd8ad200d79df9bce580fb0847e24838a42d7f917719a8",
+      "blob": "2644a8b130ebc846bf5d444c94d6e4254f1d0319"
+    }
+  ]
+}

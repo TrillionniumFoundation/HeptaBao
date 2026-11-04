@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.finite-client-inventory.author-source-review.r2",
+  "status": "SOURCE_ONLY_NOT_EXECUTED",
+  "previous_tree": "d9051eedfefef4c9576a1d01e22d4969dd272846",
+  "previous_ha_review": {
+    "blob": "152c4cb9714a5510abf2d991ba58c1420f1042a7",
+    "sha256": "14e5967d54ff3dd108d6f5fe90bae4b0fc729670992d7f34a177f313aefbe195"
+  },
+  "controller": {
+    "bytes": 45694,
+    "sha256": "3f574f0b3a455a3e43ad1433d6ad0777495357c41cd65c5cfb71649fc9f30094"
+  },
+  "manifest": {
+    "bytes": 86481,
+    "sha256": "3c3900c814ebf3e9a1cd0d58226dd6a99fe0edb0aeb42510c3dd7fe5b528af93"
+  },
+  "changes": [
+    "command/plist executable-only literal; all remaining arguments count/hash/unresolved",
+    "unit section Unit/Service/Install or digest/unresolved",
+    "remaining(original query deadline) immediately after wait",
+    "stop/FD/pipe close protected before once marker",
+    "Docker explicit unix:///var/run/docker.sock and no fallback",
+    "result r2 and exact revised manifest binding"
+  ],
+  "finite_arithmetic": [
+    {
+      "host": "mac",
+      "entries": 38,
+      "passes": 15,
+      "queries": 7,
+      "maximum_explicit_observations": 31,
+      "total_predeclared_observations": 357,
+      "unique_entry_denominator": true
+    },
+    {
+      "host": "rog",
+      "entries": 46,
+      "passes": 17,
+      "queries": 4,
+      "maximum_explicit_observations": 31,
+      "total_predeclared_observations": 434,
+      "unique_entry_denominator": true
+    },
+    {
+      "host": "x230",
+      "entries": 18,
+      "passes": 5,
+      "queries": 6,
+      "maximum_explicit_observations": 32,
+      "total_predeclared_observations": 112,
+      "unique_entry_denominator": true
+    }
+  ],
+  "unchanged": {
+    "entry_paths": true,
+    "passes": true,
+    "queries_count": true,
+    "host_seconds": 45,
+    "new_outer_seconds": 60,
+    "bytes_read": 8388608,
+    "public_bytes": 65536,
+    "per_pass_observations": 32,
+    "query_seconds": 10,
+    "final_ps_seconds": 5,
+    "normal_cleanup_once": "TERM/wait5 then KILL/wait5 only if active"
+  },
+  "source_or_host_execution": false,
+  "python_full_ast_or_components_executed_by_author": false,
+  "full_service_dependency_relation_qualified": false,
+  "production_qualified": false
+}

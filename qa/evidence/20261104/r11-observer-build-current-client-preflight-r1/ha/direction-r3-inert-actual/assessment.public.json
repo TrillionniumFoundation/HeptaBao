@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.direction98-r3-inert-assessment.v1",
+  "status": "PASS_INERT_ONLY",
+  "job_id": "1a1a870388e-fc05-2ebe",
+  "source_tree": "23f7381a96f85e219f7223b2dba48ce390b141ef",
+  "elapsed_to_original_terminal_seconds": 0.250309795,
+  "source_count": 4,
+  "source_ast_and_compile_only": 4,
+  "module_execution": false,
+  "product_requests": 0,
+  "git_started": false,
+  "cargo_started": false,
+  "service_started": false,
+  "source_file_readback_exact": true,
+  "durable_result_matches_terminal_stdout_losslessly": true,
+  "namespace_control": "new fixed0700 control-r3",
+  "files": [
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-direct98-control-r3/launch_normal_r10_pocket_direct98_r3.py",
+      "bytes": 17895,
+      "sha256": "5b25448423abba0a18a9317e645fb7bffe392355efe7809e9c76c480f3f3c5b4",
+      "mode": "0600",
+      "uid": 1000,
+      "nlink": 1,
+      "publication": "created"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-direct98-control-r3/native_v6_pocket_source_direct98_r10_r3.py",
+      "bytes": 25523,
+      "sha256": "485fd21b5ef150eb952b65a3eb446b1a25a55a25550c17599198497f11d5f081",
+      "mode": "0600",
+      "uid": 1000,
+      "nlink": 1,
+      "publication": "created"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-direct98-control-r3/read_stopped_direction_frontier_r3.py",
+      "bytes": 16250,
+      "sha256": "e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0",
+      "mode": "0600",
+      "uid": 1000,
+      "nlink": 1,
+      "publication": "created"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-direct98-control-r3/probe_normal_build_r10_r1.py",
+      "bytes": 6445,
+      "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+      "mode": "0600",
+      "uid": 1000,
+      "nlink": 1,
+      "publication": "created"
+    }
+  ],
+  "limits": [
+    "Inert source preparation is not --prepare-only qualification and is not a physical HA run.",
+    "Per-file readback is stable, not an atomic snapshot across every file.",
+    "No product, original QA module, reader, or fixture was executed by this stage."
+  ]
+}

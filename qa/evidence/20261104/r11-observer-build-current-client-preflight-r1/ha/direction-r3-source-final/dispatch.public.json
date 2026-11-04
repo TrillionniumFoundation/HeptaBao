@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.direction98-r3-inert-and-prepare-dispatch.v1",
+  "status": "source-only-not-submitted",
+  "inert": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args_mode": "-I -S -B -c exact inert_carrier.py content",
+    "source": {
+      "bytes": 5573,
+      "sha256": "1044e680b9289764c8ce80d5142f5ba08ce92b2da6dc8f098183cb4fd166c75f",
+      "blob": "bf702956348fad015155d87cd6554d5f55fb873e"
+    },
+    "stdin": {
+      "bytes": 88397,
+      "sha256": "0ded9bba8d2699f34bab928f3167af5dacc78e67bea3c7f37501986f71d739f4",
+      "blob": "c44c59b1b1b18f1bf9caf60255e265d90f511c7e"
+    },
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-r10-pocket-direction-controls-inert-r3-5b254484-485fd21b",
+    "expected_control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-direct98-control-r3",
+    "expected_files": [
+      {
+        "path": "launch_normal_r10_pocket_direct98_r3.py",
+        "bytes": 17895,
+        "sha256": "5b25448423abba0a18a9317e645fb7bffe392355efe7809e9c76c480f3f3c5b4",
+        "blob": "c6e231570a92e174b2f84b4633209eba04d0c7c7"
+      },
+      {
+        "path": "native_v6_pocket_source_direct98_r10_r3.py",
+        "bytes": 25523,
+        "sha256": "485fd21b5ef150eb952b65a3eb446b1a25a55a25550c17599198497f11d5f081",
+        "blob": "a359c06befbd3b668facc9940bc2186d787cbf00"
+      },
+      {
+        "path": "read_stopped_direction_frontier_r3.py",
+        "bytes": 16250,
+        "sha256": "e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0",
+        "blob": "a59d3b3d93fcb0468940476e54899da23f6354d8"
+      },
+      {
+        "path": "probe_normal_build_r10_r1.py",
+        "bytes": 6445,
+        "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+        "blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a"
+      }
+    ],
+    "effect": "compile/AST without exec, then create-only0700 directory and0600 exact files; no SSH, product, Git, Cargo, or children"
+  },
+  "prepare": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-direct98-control-r3/launch_normal_r10_pocket_direct98_r3.py",
+      "--prepare-only"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-r10-pocket-direct98-prepare-r3-5b254484-485fd21b",
+    "effect": "original build/source/QA/fence probes and argument/contract parsing; no product fixture"
+  },
+  "required_order": "Source review then one inert dispatch; full authority/result/source bytes must match before the one prepare-only dispatch. Failed/unknown operation stops without replacement key or retry.",
+  "runtime": {
+    "authorized": false,
+    "reason": "No actual HA run in this dispatch. Future live requires the actual prepared digest and root's exclusive quiet window after ROG compilation."
+  }
+}

@@ -1,0 +1,199 @@
+--- a/stage_source_phaseb_observer.py
++++ b/stage_source_phaseb_observer.py
+@@ -1,6 +1,6 @@
+ #!/usr/bin/env python3
+-"""Create one independent bf0aaec ROG checkout and inert controls; no Cargo or product."""
++"""Create one independent 3cb8739 ROG checkout and inert controls; no Cargo or product."""
+ from pathlib import Path, PurePosixPath
+ import argparse
+ import hashlib
+ import json
+@@ -18,24 +18,47 @@
+ parser.add_argument('--self-sha256', required=True)
+ parser.add_argument('--carrier-sha256', required=True)
+ args = parser.parse_args()
+ args.host = 'rog'
+-ROOT = Path('/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1')
++ROOT = Path('/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r2')
+ SOURCE = ROOT / 'source'
+ CONTROL = ROOT / 'control'
+ OLD = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source')
+ OLD_COMMIT = '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
+ OLD_TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
+-COMMIT = 'bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'
+-TREE = 'ac4027db88fec69381ea0c6bba953d9a99c4e82a'
+-PARENT = '6d3040a2dbd06661a67f5c62df259ff446eb8515'
++COMMIT = '3cb873919170cc77101b27f6a3ab9e98f41f8d93'
++TREE = '7f4d48a647a81ca96e8a24a0a057c2c829459060'
++PARENT = 'bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'
++GRANDPARENT = '6d3040a2dbd06661a67f5c62df259ff446eb8515'
+ ROOT_COMMIT = '67d79b3b5442ed033d38929eab2010403463e56d'
+ ORIGIN = 'https://github.com/TrillionniumFoundation/HeptaBao.git'
+ EXPECTED_CONTROLS = {
+     "normal_phaseb_observer_build.py": (20791, "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273"),
+-    "launch_normal_phaseb_observer.py": (22961, "56c7b06d4329e4fdb72079a089ad2f1509e856357328d849d58844236b86fd63"),
++    "launch_normal_phaseb_observer.py": (28425, "23a36f8ab8b971955d8b1f778a1f66e1ba5efd1351d910d01595fbf3552eb0de"),
++    "prior-observer-build-authority.public.json": (726, "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6"),
+     "normal-test-groups.public.json": (6249, "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"),
+ }
++FAILED_ROOT = Path('/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1')
++FAILED_SOURCE = FAILED_ROOT / 'source'
++FAILED_COMMIT = 'bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'
++FAILED_TREE = 'ac4027db88fec69381ea0c6bba953d9a99c4e82a'
++FAILED_AUTHORITY_NAME = 'prior-observer-build-authority.public.json'
++FAILED_AUTHORITY_SHA = '820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6'
++FAILED_FILES = {
++    'control/stage-result.public.json': (6838, 'bb2bd7b46974dc18bcb87325ea55c46383e17f2f8a521f2eaa77b1fc9fba8d2b'),
++    'build-control-r1/launch-preflight.public.json': (12914, '91b8fe2e1d6e34d1e0b885a9bbb81c27e83e1d6f3f07cb4235cb2314b27e29d4'),
++    'normal-release-tests-r1/intent.public.json': (7838, 'ad7adbf410217af34555e9b9135505cb8f70309facfa748f4fb1c3f0614eedb2'),
++    'normal-release-tests-r1/result.public.json': (9233, '2947b177c2b7ca145a499175567aec632c76d12641c8afa4276ae900dda3a122'),
++    'normal-release-tests-r1/normal-release-build.public.json': (710, '654c0e9dd676855d585746275be3dc92188c843e576d873d6b3607141fb9f412'),
++    'normal-release-tests-r1/normal-release-build.stderr': (27914, 'd47156c8828983229eccec58c9a4cd5f1535b653c7d59fab9ddf4db72839ee3e'),
++    'normal-release-tests-r1/normal-release-build.stdout': (384196, '324a6b59e740e1ed2dc0c447ce638557d5cbd53cdec2c5b3afaa0a701cee3c92'),
++    'control/stage_source_phaseb_observer.py': (18774, '2cfc47c230d7a4780e758ee8736e4cd6f1412a2f65174c5581be48038581b32a'),
++    'control/launch_normal_phaseb_observer.py': (22961, '56c7b06d4329e4fdb72079a089ad2f1509e856357328d849d58844236b86fd63'),
++    'control/normal_phaseb_observer_build.py': (20791, 'c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273'),
++    'control/normal-test-groups.public.json': (6249, '0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1'),
++    'source/crates/heptabao-server/src/ha_native_v6_runtime.rs': (61578, 'cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d'),
++}
++
+ children = []
+ protected = 0
+ pending_signal = None
+ created_control = False
+@@ -231,8 +254,60 @@
+             'tree': git(path, 'rev-parse', 'HEAD^{tree}').decode().strip(),
+             'status': git(path, 'status', '--porcelain=v1', '--untracked-files=all').decode()}
+ 
+ 
++def preserve_failed_observer():
++    stage_remaining()
++    before = freeze(FAILED_SOURCE)
++    assert before == {'commit': FAILED_COMMIT, 'tree': FAILED_TREE, 'status': ''}
++    rows, loaded = {}, {}
++    for relative, (size, expected_sha) in FAILED_FILES.items():
++        stage_remaining()
++        path = FAILED_ROOT / relative
++        info = path.lstat()
++        raw = stable_read(path, size, size, expected_sha)
++        assert identity(info) == identity(path.lstat())
++        rows[relative] = {'path': str(path), 'bytes': size, 'sha256': expected_sha,
++                          'identity': list(identity(info))}
++        if relative in ('normal-release-tests-r1/result.public.json',
++                        'normal-release-tests-r1/normal-release-build.public.json'):
++            loaded[relative] = json.loads(raw)
++    authority_path = CONTROL / FAILED_AUTHORITY_NAME
++    authority_info = authority_path.lstat()
++    authority_raw = stable_read(authority_path, 726, 726, FAILED_AUTHORITY_SHA)
++    assert identity(authority_info) == identity(authority_path.lstat())
++    authority = json.loads(authority_raw)
++    assert authority['job_id'] == '1a1a87f578a-fc05-2ee0'
++    assert authority['state'] == 'failed' and authority['exit_code'] == 1
++    assert authority['output_complete'] and authority['output_durable']
++    assert authority['terminal_publication_confirmed']
++    assert not authority['timed_out'] and not authority['cancelled'] and not authority['automatic_retry']
++    assert all(value is False for value in authority['log_truncated'].values())
++    assert all(value is None for value in authority['log_errors'].values())
++    failed = loaded['normal-release-tests-r1/result.public.json']
++    child = loaded['normal-release-tests-r1/normal-release-build.public.json']
++    assert failed['source_commit'] == FAILED_COMMIT and failed['source_tree'] == FAILED_TREE
++    assert failed['status'] == 'failed' and failed['failure_type'] == 'AssertionError'
++    assert failed['failure'] == 'normal production binary compilation failed'
++    assert failed['runtime_tests_started'] is False and failed['group_results'] == []
++    assert failed['test_count'] == 44 and failed['normal_release_build'] == child
++    assert child['exit_code'] == 101 and not child['timed_out']
++    assert child['outer_cap_seconds'] == 1800 and child['elapsed_seconds'] < 1800
++    assert child['direct_child_reaped'] and child['remaining'] == []
++    assert len(failed['cleanup']) == 1
++    assert all(row['direct_child_reaped'] and row['remaining'] == []
++               and row['exit_code'] == 101 and not row.get('cleanup_error_type')
++               for row in failed['cleanup'])
++    assert freeze(FAILED_SOURCE) == before
++    stage_remaining()
++    return {'source_before': before, 'source_after': before, 'files': rows,
++            'authority': {'path': str(authority_path), 'bytes': 726,
++                          'sha256': FAILED_AUTHORITY_SHA,
++                          'identity': list(identity(authority_info)),
++                          'source': 'exact cached authoritative terminal receipt'},
++            'prior_failed_build_replayed': False}
++
++
+ def walk_error(error):
+     raise error
+ 
+ 
+@@ -296,11 +371,11 @@
+         total += len(content)
+         assert total <= 128 * 1024 * 1024
+         proof.update((relative + '\0' + mode + '\0' + object_id + '\0' + str(len(content)) + '\n').encode())
+     runtime = stable_read(SOURCE / 'crates/heptabao-server/src/ha_native_v6_runtime.rs',
+-                          65536, 61578,
+-                          'cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d')
+-    assert blob(runtime) == '7bbd34e86039d0f640ac12a48cd81b2f836e600a'
++                          65536, 61623,
++                          '5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a')
++    assert blob(runtime) == '3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3'
+     stage_remaining()
+     return {'tracked_leaf_count': len(entries), 'tracked_bytes': total,
+             'full_leaf_index_sha256': proof.hexdigest(), 'index_matches_tree': True,
+             'all_tracked_worktree_blobs_and_modes_match': True}
+@@ -314,9 +389,9 @@
+ assert digest(self_source.encode()) == args.self_sha256
+ carrier = sys.stdin.buffer.read(262145)
+ assert len(carrier) <= 262144 and digest(carrier) == args.carrier_sha256
+ data = json.loads(carrier)
+-assert set(data) == {'schema', 'controls'} and data['schema'] == 'heptabao.phaseb-observer-inert-controls.v1'
++assert set(data) == {'schema', 'controls'} and data['schema'] == 'heptabao.phaseb-observer-inert-controls.v2'
+ assert set(data['controls']) == set(EXPECTED_CONTROLS)
+ for name, (size, expected_sha) in EXPECTED_CONTROLS.items():
+     raw = data['controls'][name].encode()
+     assert len(raw) == size and digest(raw) == expected_sha
+@@ -326,9 +401,9 @@
+ assert [(g['label'], len(g['tests'])) for g in groups] == [
+     ('ssh25', 25), ('mount1', 1), ('redirect5', 5), ('actor2', 2), ('ordinary5', 5), ('no_forward6', 6)]
+ assert sum(len(g['tests']) for g in groups) == 44 and all(g['runtime_seconds'] == 600 for g in groups)
+ assert not os.path.lexists(ROOT)
+-result = {'schema': 'heptabao.phaseb-observer-independent-source-stage.v1', 'status': 'failed',
++result = {'schema': 'heptabao.phaseb-observer-independent-source-stage.v2', 'status': 'failed',
+           'source_commit': COMMIT, 'source_tree': TREE, 'sole_parent': PARENT,
+           'root': str(ROOT), 'source': str(SOURCE), 'host': 'rog',
+           'stager_sha256': args.self_sha256, 'carrier_sha256': args.carrier_sha256,
+           'original_git_leaf_cap_seconds': 90, 'original_clone_cap_seconds': 180,
+@@ -354,8 +429,9 @@
+     public(CONTROL / 'stage-intent.public.json', result)
+     before = freeze(OLD)
+     assert before == {'commit': OLD_COMMIT, 'tree': OLD_TREE, 'status': ''}
+     result['old_source_before'] = before
++    result['failed_observer_before'] = preserve_failed_observer()
+     owned('independent-local-clone',
+           ['/usr/bin/git', '-c', 'gc.auto=0', '-c', 'maintenance.auto=false',
+            '-c', 'core.hooksPath=' + str(CONTROL / 'empty-hooks'),
+            '-c', 'protocol.allow=never', '-c', 'protocol.file.allow=always',
+@@ -366,20 +442,25 @@
+     git(SOURCE, '-c', 'fetch.fsckObjects=true', '-c', 'transfer.fsckObjects=true',
+         'fetch', '--no-tags', '--no-recurse-submodules', 'origin', COMMIT)
+     assert git(SOURCE, 'rev-parse', COMMIT + '^{tree}').decode().strip() == TREE
+     assert git(SOURCE, 'show', '-s', '--format=%P', COMMIT).decode().strip() == PARENT
+-    assert git(SOURCE, 'show', '-s', '--format=%P', PARENT).decode().strip() == OLD_COMMIT
++    assert git(SOURCE, 'show', '-s', '--format=%P', PARENT).decode().strip() == GRANDPARENT
++    assert git(SOURCE, 'show', '-s', '--format=%P', GRANDPARENT).decode().strip() == OLD_COMMIT
+     assert git(SOURCE, 'rev-list', '--count', OLD_COMMIT).decode().strip() == '3752'
+-    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3754'
++    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3755'
+     assert git(SOURCE, 'rev-list', '--max-parents=0', COMMIT).decode().strip() == ROOT_COMMIT
+     git(SOURCE, 'checkout', '--detach', COMMIT)
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+     git(SOURCE, 'fsck', '--full', '--strict', '--no-reflogs', '--no-dangling', COMMIT)
+     result.update(independent_git())
+     result['full_worktree'] = verify_full_worktree()
++    assert result['full_worktree']['tracked_bytes'] == 62194197
++    assert result['full_worktree']['full_leaf_index_sha256'] == '5cb27cb400dc0896da98a5d4c740f2d5c9a83b6c60eb59dbec4eb7acd1a6ce00'
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+     result['old_source_after'] = freeze(OLD)
+     assert result['old_source_after'] == before
++    result['failed_observer_after'] = preserve_failed_observer()
++    assert result['failed_observer_after'] == result['failed_observer_before']
+     stage_remaining()
+     result.update(status='prepared', source_clean=True, old_source_unchanged=True,
+                   exact_test_count=44,
+                   exact_groups=[[g['label'], len(g['tests'])] for g in groups],

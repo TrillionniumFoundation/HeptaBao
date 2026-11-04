@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.finite-client-inventory.mac-readonly-terminal-review.r2",
+  "status": "KNOWN_INCOMPLETE_ORIGINAL_SCOPE",
+  "job_id": "1a1a88a785a-fc05-2f00",
+  "authority": {
+    "state": "failed",
+    "exit_code": 1,
+    "timed_out": false,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "stdout_bytes": 46277,
+    "stderr_bytes": 0
+  },
+  "scope": {
+    "backup_metadata": 3,
+    "entries": 38,
+    "passes": 15,
+    "queries": 7
+  },
+  "entry_status_counts": {
+    "read_verified": 16,
+    "absent": 4,
+    "metadata_observed": 17,
+    "blocked_by_ancestor": 1
+  },
+  "unobserved_entries": [],
+  "unobserved_queries": [],
+  "only_incomplete_entry": {
+    "id": "f035",
+    "path": "/etc/crontab",
+    "status": "blocked_by_ancestor",
+    "blocked_component": "/etc",
+    "code": "parent_not_plain_directory",
+    "system_crontab_absence_claimed": false,
+    "symlink_followed": false
+  },
+  "queries": {
+    "count": 7,
+    "all_projection_complete": true,
+    "owner_crontab_absent_only": true,
+    "launchd_gateway_and_four_relays_running": true,
+    "t5_uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+    "device_identifier": "disk7s1"
+  },
+  "all_prior_content_sha_pins_matched": true,
+  "all_owned_stopped": true,
+  "all_owned_descriptors_closed": true,
+  "owned_process_count": 8,
+  "budget": {
+    "host_seconds": 45,
+    "new_outer_seconds": 60,
+    "elapsed_seconds": 0.12988945899999998,
+    "read_bytes": 173847,
+    "max_read_bytes": 8388608,
+    "public_output_bytes": 46277,
+    "max_public_output_bytes": 65536
+  },
+  "original_result_preserved_byte_for_byte": true,
+  "unsafe_integer_identities_preserved_in_original_bytes": true,
+  "sdk_hex_reconstruction_equal_original_text": true,
+  "production_changed": false,
+  "sqlite_opened": false,
+  "sdk_called": false,
+  "provider_called": false,
+  "j3160_contacted": false,
+  "services_transitioned": false,
+  "files_written": false,
+  "actual_consumer_qualified": false,
+  "complete_service_dependencies_qualified": false,
+  "complete_backup_dependencies_qualified": false,
+  "current_readonly_scope_does_not_parse_script_or_non_executable_arguments": true,
+  "no_replay_or_extra_host_observation_performed": true,
+  "current_baseline": {
+    "openclaw_config_sha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+    "configured_agents": [
+      "main",
+      "trnm",
+      "hepta-ui",
+      "hepta",
+      "hepta-backend"
+    ],
+    "unchanged_flags": {
+      "hostId": "mac",
+      "leader": false,
+      "publishNew": true,
+      "manageOrder": true,
+      "releaseGeneration": 200,
+      "pollIntervalMs": 15000,
+      "refreshMarginMs": 900000,
+      "maxRefreshesPerCycle": 1
+    },
+    "order_excluded_agents": null,
+    "scheduler_mode_field_absent": true
+  }
+}

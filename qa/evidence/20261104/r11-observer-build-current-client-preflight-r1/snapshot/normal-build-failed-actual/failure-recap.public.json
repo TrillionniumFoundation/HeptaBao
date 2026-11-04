@@ -1,0 +1,195 @@
+{
+  "schema": "heptabao.phaseb-native-ingress-observer-bf0-build-failure-evidence.v1",
+  "qualification": "FAILED_NORMAL_BUILD_NO_TESTS",
+  "actual_source": {
+    "commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+    "tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a",
+    "root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source",
+    "source_stage_tree": "286b41f0d359087d4b393197cdf314da149e0572",
+    "source_stage_result_sha256": "bb2bd7b46974dc18bcb87325ea55c46383e17f2f8a521f2eaa77b1fc9fba8d2b",
+    "input_controls_tree": "6135e45e2ee94bfb2f2f7746f98c72b866573e29"
+  },
+  "job": {
+    "id": "1a1a87f578a-fc05-2ee0",
+    "key": "heptabao-phaseb-native-ingress-observer-normal44-plus7-bf0aaec-20261104-r1",
+    "state": "failed",
+    "exit_code": 1,
+    "output_complete": true,
+    "output_durable": true,
+    "timeout": false,
+    "automatic_retry": false,
+    "aggregate_outer_seconds": 12000,
+    "aggregate_scope": "NEW independently approved supervisor envelope; original child limits unchanged"
+  },
+  "cargo": {
+    "argv": [
+      "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "build",
+      "--release",
+      "--locked",
+      "--offline",
+      "-p",
+      "heptabao-server",
+      "--bin",
+      "heptabao-server",
+      "--bin",
+      "heptabao-seed",
+      "--message-format=json-render-diagnostics"
+    ],
+    "direct_child_reaped": true,
+    "elapsed_seconds": 62.09384498698637,
+    "exit_code": 101,
+    "label": "normal-release-build",
+    "outer_cap_seconds": 1800,
+    "owned_pgid": 3509410,
+    "remaining": [],
+    "stderr_sha256": "d47156c8828983229eccec58c9a4cd5f1535b653c7d59fab9ddf4db72839ee3e",
+    "stdout_sha256": "324a6b59e740e1ed2dc0c447ce638557d5cbd53cdec2c5b3afaa0a701cee3c92",
+    "timed_out": false
+  },
+  "original44": {
+    "count": 44,
+    "groups_sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+    "ran": false
+  },
+  "additional7": {
+    "ran": false,
+    "separate_group_total_cap_seconds": 600
+  },
+  "runtime_tests_started": false,
+  "qualified_new_server": false,
+  "qualified_new_native_receipt": false,
+  "failure": {
+    "failure_type": "AssertionError",
+    "message": "normal production binary compilation failed",
+    "compiler_errors": {
+      "E0277": 27,
+      "E0308": 1
+    },
+    "file": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+    "binding_line": 689,
+    "inferred_error_type": "str",
+    "required_error_type": "String",
+    "exact_failure_class": "new observer closure result type inference"
+  },
+  "cleanup": [
+    {
+      "direct_child_reaped": true,
+      "exit_code": 101,
+      "label": "normal-release-build",
+      "pid": 3509410,
+      "remaining": []
+    }
+  ],
+  "all_recorded_owned_stopped": true,
+  "complete_logs": {
+    "controller_stdout": {
+      "bytes": 718,
+      "sha256": "1dfd2caaf51bac6280afe8c08c82d7e8000c5157b8f0948567a9b9e7bdd9832a",
+      "blob": "297da54ce38fe9df94d6a3f6805e97ea87b09e7c"
+    },
+    "controller_stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "cargo_stdout": {
+      "bytes": 384196,
+      "sha256": "324a6b59e740e1ed2dc0c447ce638557d5cbd53cdec2c5b3afaa0a701cee3c92",
+      "blob": "2fa9bb2d97de2eac9dbe8cf151ec14cefbbc8a6d"
+    },
+    "cargo_stderr": {
+      "bytes": 27914,
+      "sha256": "d47156c8828983229eccec58c9a4cd5f1535b653c7d59fab9ddf4db72839ee3e",
+      "blob": "b52ca5a2ac29aa05919bed897f360ecef8a26746"
+    }
+  },
+  "cargo_stdout_readback": {
+    "expected_bytes": 384196,
+    "expected_sha256": "324a6b59e740e1ed2dc0c447ce638557d5cbd53cdec2c5b3afaa0a701cee3c92",
+    "fixed_file_version": "66306:33072024:384196:1793828344504145242:1793828344504145242",
+    "all_chunk_hashes_and_offsets_verified": true,
+    "whole_sha_verified": true,
+    "chunks": [
+      {
+        "offset": 0,
+        "next_offset": 65536,
+        "eof": false,
+        "chunk_sha256": "0001f065e359173000576276bc3c3e542e3b6d42b0c15111f29adeb438015e58",
+        "size": 384196,
+        "version": "66306:33072024:384196:1793828344504145242:1793828344504145242"
+      },
+      {
+        "offset": 65536,
+        "next_offset": 131072,
+        "eof": false,
+        "chunk_sha256": "f3087a4a64396c37f6d4e51a648141719d1ce0b4c9d0c10b9418e2b506e05773",
+        "size": 384196,
+        "version": "66306:33072024:384196:1793828344504145242:1793828344504145242"
+      },
+      {
+        "offset": 131072,
+        "next_offset": 196608,
+        "eof": false,
+        "chunk_sha256": "78765baaa51272ee90bb1c656d2876e33f40e23fcfd3790337dd6f1c2a4f25f0",
+        "size": 384196,
+        "version": "66306:33072024:384196:1793828344504145242:1793828344504145242"
+      },
+      {
+        "offset": 196608,
+        "next_offset": 262144,
+        "eof": false,
+        "chunk_sha256": "047097049c146b68c8b2ebd5e065ac834eeeb7d4de0c380b0f04a49f5fcb6abb",
+        "size": 384196,
+        "version": "66306:33072024:384196:1793828344504145242:1793828344504145242"
+      },
+      {
+        "offset": 262144,
+        "next_offset": 327680,
+        "eof": false,
+        "chunk_sha256": "47c17d77645a9550885ee0a6d324304081ad79e92af6649dd894f19a9c36ae69",
+        "size": 384196,
+        "version": "66306:33072024:384196:1793828344504145242:1793828344504145242"
+      },
+      {
+        "offset": 327680,
+        "next_offset": 384196,
+        "eof": true,
+        "chunk_sha256": "0186ebf8e3c9397d469717dbcbbfd0294e4b4f070392221ee23b3b16bf71a31b",
+        "size": 384196,
+        "version": "66306:33072024:384196:1793828344504145242:1793828344504145242"
+      }
+    ]
+  },
+  "cargo_stderr_readback": {
+    "fixed_file_version": "66306:33072025:27914:1793828344504145242:1793828344504145242",
+    "expected_bytes": 27914,
+    "whole_sha_verified": true,
+    "metadata_and_read_same_version": true
+  },
+  "actual_cargo_stdout_records": {
+    "total": 442,
+    "compiler_artifact": 396,
+    "build_script_executed": 45,
+    "compiler_message": 0,
+    "build_finished": 1,
+    "build_finished_success": false
+  },
+  "scope_limits": {
+    "earlier_phaseb_503_inner_error_remains_unknown": true,
+    "old_phaseb_business_operation_replayed": false,
+    "failed_build_retried": false,
+    "new_build_started": false,
+    "candidate_annotation_compilation_not_claimed": true,
+    "admission_old_source_and_retained_artifact_fences_apply_to_recorded_admission_interval": true,
+    "post_failure_source_rehash_not_invented": true,
+    "source_mutated_during_evidence_collection": false,
+    "host_commands_started_during_log_collection": false
+  },
+  "next_source_proposal": {
+    "unreferenced_tree": "56e8e89cef322aab1665cc4afe165c8ed74722cb",
+    "only_change": "explicit Result<Option<NativeV6IngressRead>, String> local binding annotation",
+    "candidate_source_sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a",
+    "requires_new_commit_fresh_root_and_reviewed_runtime_window": true
+  }
+}

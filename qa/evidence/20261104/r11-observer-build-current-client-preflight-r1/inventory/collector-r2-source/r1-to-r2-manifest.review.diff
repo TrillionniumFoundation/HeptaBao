@@ -1,0 +1,36 @@
+diff --git a/finite_client_inventory_manifest.public.json b/finite_client_inventory_manifest.public.json
+--- a/finite_client_inventory_manifest.public.json
++++ b/finite_client_inventory_manifest.public.json
+@@ -2333,13 +2333,22 @@
+           "kind": "docker",
+           "argv": [
+             "/usr/bin/docker",
++            "--host",
++            "unix:///var/run/docker.sock",
+             "inspect",
+             "--format",
+             "{\"Id\":{{json .Id}},\"Name\":{{json .Name}},\"Image\":{{json .Config.Image}},\"StateStatus\":{{json .State.Status}},\"Running\":{{json .State.Running}},\"Paused\":{{json .State.Paused}},\"Restarting\":{{json .State.Restarting}},\"ExitCode\":{{json .State.ExitCode}},\"Pid\":{{json .State.Pid}},\"StartedAt\":{{json .State.StartedAt}},\"FinishedAt\":{{json .State.FinishedAt}},\"Mounts\":{{json .Mounts}},\"RestartPolicy\":{{json .HostConfig.RestartPolicy}},\"NetworkMode\":{{json .HostConfig.NetworkMode}},\"Ports\":{{json .NetworkSettings.Ports}}}",
+             "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9"
+           ],
+           "seconds": 10,
+-          "container_id": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9"
++          "container_id": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9",
++          "endpoint_binding": {
++            "scope": "fixed_local_unix_only",
++            "address": "unix:///var/run/docker.sock",
++            "fallback_allowed": false,
++            "current_context_used": false,
++            "prior_socket_existence_claimed": false
++          }
+         },
+         {
+           "id": "owner-crontab",
+@@ -2357,7 +2366,7 @@
+       "standard_application_absence_not_proven_by_this_manifest": true
+     }
+   },
+-  "query_contract": "Only exact manifest argv for standard installed read-only tools. No untrusted file or script is executed. Utility provenance is not promoted to product qualification. One final owned-only ps PID/PPID/PGID/state snapshot; no process argv/environment.",
++  "query_contract": "Only exact manifest argv for standard installed read-only tools. No untrusted file or script is executed. Utility provenance is not promoted to product qualification. One final owned-only ps PID/PPID/PGID/state snapshot; no process argv/environment. Docker uses an explicit fixed unix:///var/run/docker.sock endpoint; HOME/current context cannot select a remote endpoint. An absent or refused socket remains a failed finite query with no fallback.",
+   "absence_contract": "Every entry remains in the denominator. Only a leaf's own before/after ENOENT under a verified held parent is reported absent. An unavailable, missing or symlink ancestor leaves each descendant blocked and the observation incomplete; no child absence is inferred. Symlinks are never followed; unreadable/refused paths are not absence.",
+   "previous_plan_corrections": [
+     "The nine f458 registration/hold references are distinct from the nine public receipts documenting one Nov2 capture / Nov3 recovery chain.",

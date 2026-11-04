@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.direction98-r3-inert-root-terminal-review.v1",
+  "status": "PASS_INERT_AND_READY_FOR_EXACT_PREPARE_ONLY",
+  "tree": "e52b15ce1fdd7cb7b4a54a1ddd20107e055866cc",
+  "packet": {
+    "tree": "e52b15ce1fdd7cb7b4a54a1ddd20107e055866cc",
+    "leaves": 10,
+    "bytes": 77182,
+    "merkle": {
+      "root_sha": "e52b15ce1fdd7cb7b4a54a1ddd20107e055866cc",
+      "trees_verified": 2
+    },
+    "records": [
+      {
+        "path": "assessment.public.json",
+        "bytes": 2295,
+        "sha256": "1235999aeb3f75fc80678e32069ecd93abc3e91985dc901a94591b550aa837a7",
+        "blob": "54bb40df53ea4f8f55c594bea7ae4e0a24451fe5"
+      },
+      {
+        "path": "authority.api.json",
+        "bytes": 732,
+        "sha256": "13ec966a94bef8b333b6eb858e27310ddca2c904347e5708c66c6e18b53bf556",
+        "blob": "1f868b55d263f0b682ab9ac16fe8dce40cfcf090"
+      },
+      {
+        "path": "inert-stage.result.public.json",
+        "bytes": 3374,
+        "sha256": "7504d8f6b8b87a24e63e97bd5f7f71d0daa11b4b7b30af1b98b10948812a1284",
+        "blob": "8af2046edda91f1786076a77d54b00e3e3213405"
+      },
+      {
+        "path": "source-readback.metadata.public.json",
+        "bytes": 1992,
+        "sha256": "4584150462b2465de2983f8a0bffa0feed8166c0485128f621aa6edaf43dd42b",
+        "blob": "fa37bd23796f1b59899c28e816e0ef9eae788dac"
+      },
+      {
+        "path": "source-readback/launch_normal_r10_pocket_direct98_r3.py",
+        "bytes": 17895,
+        "sha256": "5b25448423abba0a18a9317e645fb7bffe392355efe7809e9c76c480f3f3c5b4",
+        "blob": "c6e231570a92e174b2f84b4633209eba04d0c7c7"
+      },
+      {
+        "path": "source-readback/native_v6_pocket_source_direct98_r10_r3.py",
+        "bytes": 25523,
+        "sha256": "485fd21b5ef150eb952b65a3eb446b1a25a55a25550c17599198497f11d5f081",
+        "blob": "a359c06befbd3b668facc9940bc2186d787cbf00"
+      },
+      {
+        "path": "source-readback/probe_normal_build_r10_r1.py",
+        "bytes": 6445,
+        "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+        "blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a"
+      },
+      {
+        "path": "source-readback/read_stopped_direction_frontier_r3.py",
+        "bytes": 16250,
+        "sha256": "e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0",
+        "blob": "a59d3b3d93fcb0468940476e54899da23f6354d8"
+      },
+      {
+        "path": "terminal.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "terminal.stdout",
+        "bytes": 2676,
+        "sha256": "f11caf865a4b19134378c9eacaa68501921b647e94f794d119e1dc46c4e59aa9",
+        "blob": "c9e49f86db605a8c051b0965ac3801ce9a033c47"
+      }
+    ]
+  },
+  "job": "1a1a870388e-fc05-2ebe",
+  "authority": {
+    "bytes": 732,
+    "sha256": "13ec966a94bef8b333b6eb858e27310ddca2c904347e5708c66c6e18b53bf556",
+    "blob": "1f868b55d263f0b682ab9ac16fe8dce40cfcf090"
+  },
+  "result": {
+    "bytes": 3374,
+    "sha256": "7504d8f6b8b87a24e63e97bd5f7f71d0daa11b4b7b30af1b98b10948812a1284",
+    "blob": "8af2046edda91f1786076a77d54b00e3e3213405"
+  },
+  "stdout_lossless_equal": true,
+  "raw_elapsed_ns": "250309795",
+  "source_readbacks_all_exact": true,
+  "all_four_created_0600_uid1000_single_link": true,
+  "all_read_versions_match_original_raw_identities": true,
+  "ast_and_compile_only": 4,
+  "no_business_or_fixture_execution": true,
+  "exact_prepare_dispatch": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-direct98-control-r3/launch_normal_r10_pocket_direct98_r3.py",
+      "--prepare-only"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-r10-pocket-direct98-prepare-r3-5b254484-485fd21b",
+    "effect": "original build/source/QA/fence probes and argument/contract parsing; no product fixture"
+  },
+  "prepare_not_yet_executed": true,
+  "live_not_authorized": true
+}

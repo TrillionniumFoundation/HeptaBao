@@ -1,0 +1,102 @@
+{
+  "schema": "heptabao.phaseb-fresh-binding.independent-ha-review.r1",
+  "status": "NARROW_BINDING_SOURCE_PASS_PLAN_DISPATCH_CORRECTION_REQUIRED",
+  "packet_tree": "79b3d22362c1e42ed4a41b1d1b610559b48608a7",
+  "new_binding": {
+    "path": "phaseb_binding_r3.py",
+    "bytes": 23664,
+    "sha256": "e651ec49a8e5effd44a80c4057e2767e83c155efe415bb2c992ab33bd01d391c",
+    "blob": "34aeeaae15f0337e1683bdfce05413cf695e9382"
+  },
+  "old_binding": {
+    "blob": "236c35803f07f2b6bfeb06b0abfe108baef27215",
+    "bytes": 20742,
+    "sha256": "39795f901ffac84236411f4b89ce2ee2ae573446ce30f490f9b8d0c603131501"
+  },
+  "exact_diff": {
+    "path": "diffs/r10-executed-binding-to-bf0-new-binding.diff",
+    "bytes": 7660,
+    "sha256": "ef4094af01dce8cb33fbb3326bb183c89f2ef9b4b4c29a8f503193ce82c13cf2",
+    "blob": "e35a8a4f6a4f9cf1245ed6472ed5103f3d9e8404"
+  },
+  "strict_apply": {
+    "base_blob": "236c35803f07f2b6bfeb06b0abfe108baef27215",
+    "hunks": 9,
+    "exact": true
+  },
+  "retained_tree_identity": [
+    {
+      "path": "retained/native_fixture_reference_r8.py",
+      "old": "7e465b3ea72814726ed2e01355ab91412190a747",
+      "new": "7e465b3ea72814726ed2e01355ab91412190a747",
+      "size": 68149,
+      "exact": true
+    },
+    {
+      "path": "retained/official_cli_reference_r4.py",
+      "old": "4a4a60d1d52a0fd835b467f1e4687ee95314d1de",
+      "new": "4a4a60d1d52a0fd835b467f1e4687ee95314d1de",
+      "size": 46586,
+      "exact": true
+    },
+    {
+      "path": "retained/phaseb_controller_r3.py",
+      "old": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+      "new": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+      "size": 61210,
+      "exact": true
+    },
+    {
+      "path": "retained/phaseb_evidence_r3.py",
+      "old": "e507fef5b87305f4b8e8a0d729aecec6da284bed",
+      "new": "e507fef5b87305f4b8e8a0d729aecec6da284bed",
+      "size": 15201,
+      "exact": true
+    }
+  ],
+  "examined_scope": [
+    "Complete7660-byte delta and all new binding control flow; original shared helpers retained.",
+    "PLAN and unresolved concrete-layout template; original product/test receipt gates and original budget/port definitions.",
+    "Four retained modules compared by exact Git blob/size against published R3 tree1536ca; their entire implementations were not independently reaudited in this narrow review."
+  ],
+  "source_gate_conclusions": [
+    "Candidate is fixed bf0aaec1/ac4027 and its additional observer source blob/SHA; old495033 artifacts or receipts cannot satisfy the new source identity checks.",
+    "Normal ABI/default features/profile/cargo command/source freeze and release provenance remain required.",
+    "Original44 exact group file/denominator, actual test-name sets and each group ownership result remain required. Separate extra7 exact names/count/status/600-second group cap and terminal ownership are added, not substituted for44.",
+    "All nonempty combined cleanup rows must report reaped/empty and no cleanup error; final source/artifact fields stay required.",
+    "Partial binding ready_for_readonly_prepare=false rejects before admission; null artifact hashes/bytes independently fail the existing exact file-pin validator. No build result is invented."
+  ],
+  "unchanged_runtime_scope": [
+    "BUDGETS and integer-key API_PORTS/RAFT_PORTS definitions are byte-identical to the old binding.",
+    "Only returned observation maps convert node keys to strings. Runtime int-key indexing and ports remain unchanged; JSON roundtrip identity no longer differs solely by key representation.",
+    "Original main/evidence/native-reference/official-CLI-reference blobs are unchanged, so this delta adds no API or CLI replay, retry, restore or deadline extension.",
+    "New work/control/source paths are separate. Old PhaseB unknown result remains an exact immutable fence; old private archive/native runtime data are not transfer inputs.",
+    "New CA/leaf/seed/root-token generation belongs in the fresh live root under the retained normal fixture path. Port availability is not a reservation."
+  ],
+  "finding": {
+    "id": "proposed_binding_basename_mismatch",
+    "affected": "PLAN.proposed_dispatch.prepare.args_template and live.args_template",
+    "observation": "Both templates name binding.public.json, while the unchanged Binding.__init__ requires exactly binding.private.json at line220.",
+    "required_fix": "Change only both proposed argument templates and future stager output location to the existing binding.private.json/0600 contract. Preserve the constructor guard.",
+    "author_acknowledged": true,
+    "current_runtime_impact": "No runtime has started and null/unready inputs remain rejected; the plan must be corrected before a later dispatch is frozen."
+  },
+  "current_admission": {
+    "artifacts_resolved": false,
+    "actual_new_desktop_source": false,
+    "new_prepare": false,
+    "new_live": false,
+    "source_stage_authorized_by_this_review": false,
+    "runtime_authorized_by_this_review": false,
+    "build_observed_independently": false,
+    "note": "The subsequently reported bf0 build failure is being investigated by its owner/root; this review does not qualify it or any successor candidate."
+  },
+  "method": {
+    "host_reads": 0,
+    "python_execution": false,
+    "component_execution": false,
+    "products_started": false,
+    "utf8_sha256_git_blob_verification": true,
+    "strict_unified_hunks_applied": 9
+  }
+}

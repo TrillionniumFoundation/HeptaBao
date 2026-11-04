@@ -1,0 +1,74 @@
+diff --git a/run_owned_capture.py b/run_owned_capture.py
+--- a/run_owned_capture.py
++++ b/run_owned_capture.py
+@@ -1,25 +1,38 @@
+-def run_owned_capture(argv, env, cwd, timeout, stdout_path, stderr_path, native_observer=None):
++def run_owned_capture(argv, env, cwd, until, stdout_path, stderr_path, native_observer=None):
++    global protected
+     from authbus_native_login_custody import group_members
+     from authbus_native_process_observer import OwnedNativeObserver, ObservationRefused
+     lifecycle = {'exitCode': None, 'timeout': False, 'interrupted': False, 'primaryReaped': False,
+                  'noGroupSurvivors': False, 'outcomeUnknown': False}
+-    observer = OwnedNativeObserver(native_observer) if native_observer else None
++    remaining(until)
++    observer = None
++    protected += 1
++    try:
++        observer = OwnedNativeObserver(native_observer) if native_observer else None
++        if observer is not None: observers.append(observer)
++    finally: protected -= 1
++    if pending_signal is not None: raise Cancelled()
+     child_env = dict(env)
+     if observer:
+         need(not any(k in child_env for k in observer.child_env), 'fresh_observer_pipe_environment')
+         child_env.update(observer.child_env)
+     with stdout_path.open('xb') as stdout, stderr_path.open('xb') as stderr:
++        protected += 1
+         try:
++            remaining(until)
+             proc = subprocess.Popen(argv, env=child_env, cwd=str(cwd), start_new_session=True,
+                 stdout=stdout, stderr=stderr, close_fds=True,
+                 pass_fds=observer.child_fds if observer else ())
+-        except Exception:
++            owned.append({'process': proc, 'stopAttempted': False, 'lifecycle': lifecycle})
++        except BaseException:
+             if observer: observer.close()
+             raise
++        finally: protected -= 1
+         pgid = proc.pid; lifecycle['ownedProcessGroup'] = pgid
+         try:
+             if observer: observer.parent_after_spawn(proc)
+-            deadline = time.monotonic() + timeout
++            deadline = until
++            if pending_signal is not None: raise Cancelled()
+             while True:
+                 if time.monotonic() >= deadline:
+                     lifecycle['timeout'] = True
+@@ -33,7 +46,7 @@
+                     lifecycle['timeout'] = True
+                     break
+                 time.sleep(0.025)
+-        except KeyboardInterrupt: lifecycle['interrupted'] = True
++        except (KeyboardInterrupt, Cancelled): lifecycle['interrupted'] = True
+         except Exception as observer_error:
+             lifecycle['observationError'] = str(observer_error) if isinstance(observer_error, ObservationRefused) else type(observer_error).__name__
+         finally:
+@@ -41,6 +54,8 @@
+                 observer.close()
+                 lifecycle['nativeProcessObserver'] = observer.report
+             previous = signal.signal(signal.SIGINT, signal.SIG_IGN)
++            previous_term = signal.signal(signal.SIGTERM, signal.SIG_IGN)
++            owned[-1]['stopAttempted'] = True
+             try:
+                 if group_members(pgid):
+                     try: os.killpg(pgid, signal.SIGTERM)
+@@ -60,6 +75,8 @@
+                 lifecycle['remainingGroupMembers'] = remaining
+                 lifecycle['noGroupSurvivors'] = not remaining
+                 lifecycle['outcomeUnknown'] = lifecycle['timeout'] or lifecycle['interrupted'] or bool(remaining) or bool(lifecycle.get('observationError'))
+-            finally: signal.signal(signal.SIGINT, previous)
++            finally:
++                signal.signal(signal.SIGINT, previous)
++                signal.signal(signal.SIGTERM, previous_term)
+     return lifecycle
+ 

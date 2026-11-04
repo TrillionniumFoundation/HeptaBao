@@ -1,0 +1,22 @@
+{
+  "original_stop_block_reversal_exact": true,
+  "original_method_checks_sequence_exact": true,
+  "checks": [
+    "missing_cipher_targets_stopped",
+    "missing_cipher_two_targets_quarantined",
+    "missing_cipher_sealed_pair_elected",
+    "missing_cipher_source_rejoined",
+    "missing_cipher_leader_empty_before_unseal",
+    "missing_cipher_leader_unsealed",
+    "missing_cipher_leader_exact_history",
+    "missing_cipher_actual_leaves_rebuilt",
+    "missing_cipher_remaining_nodes_unsealed",
+    "missing_cipher_all_hosts_readindex"
+  ],
+  "original_missing_method_chars": 4493,
+  "new_missing_method_chars": 6118,
+  "inherited_identity_assertion_bytes_same": true,
+  "new_direct_write_requests_in_added_methods": [
+    "self.request(node, \"GET\", path, authenticate=False,"
+  ]
+}

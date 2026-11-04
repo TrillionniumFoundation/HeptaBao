@@ -1,0 +1,158 @@
+[
+  {
+    "all_exact": true,
+    "functions": [
+      {
+        "bytes": 132,
+        "name": "on_signal",
+        "sha256": "75c7efafdd4925099c2eacbed4303f22a41411c42d3957bbbba811411cd8f2b2"
+      },
+      {
+        "bytes": 59,
+        "name": "digest",
+        "sha256": "aa0210ace4fdb541410909814713738e8261645d1f9f4e166eecc1083c4c42ed"
+      },
+      {
+        "bytes": 99,
+        "name": "blob",
+        "sha256": "7a51a2d0fe33d9d934daa69cd32b66cacc8442e5ad00d38769c46185628aa6b4"
+      },
+      {
+        "bytes": 174,
+        "name": "identity",
+        "sha256": "31cdfee60f379858d1d19ec4aaf46038988c296f6cac40c1773627ef069a15cb"
+      },
+      {
+        "bytes": 999,
+        "name": "stable_read",
+        "sha256": "c855d4348b09c092e34c873228e4425a5b3d4740453f3851f69dbfdeb7a546e1"
+      },
+      {
+        "bytes": 153,
+        "name": "fsync_dir",
+        "sha256": "9ed96ca279d29afbabd2d7f2846f9ada16843d2fafbc094d6a2665a2358d6928"
+      },
+      {
+        "bytes": 266,
+        "name": "create",
+        "sha256": "7603310b225afd7cb5c55eff7691884bca6ad7159c259928eb6c88c38d981e27"
+      },
+      {
+        "bytes": 131,
+        "name": "public",
+        "sha256": "89ffec99915250816373b4f540db440af588fcd74fb777d65bf3070e92996616"
+      },
+      {
+        "bytes": 437,
+        "name": "group_members",
+        "sha256": "009e69a345ba2528b96e3f4a6298abd3e3a0686df77a4681286c6b2ec6860af3"
+      },
+      {
+        "bytes": 617,
+        "name": "stop_owned",
+        "sha256": "a26f54dfa76cf98aca648107e1da9c148c341ef1214a2ca9b733d5e2fde45345"
+      },
+      {
+        "bytes": 1791,
+        "name": "owned",
+        "sha256": "a5f799ae1729efc2de5478d85982910cb842aaadc1ba4479668a6caaf0dac102"
+      },
+      {
+        "bytes": 462,
+        "name": "git",
+        "sha256": "dfbfb3257d0f4b66cd276af7febb4690b9a7fa4739cca5e886349e2fb9fd9a5f"
+      },
+      {
+        "bytes": 259,
+        "name": "freeze",
+        "sha256": "763782bcfd5041b87e384e57fcf5743f960133534297859a4a4f303a39057c5e"
+      }
+    ],
+    "modules_executed": false,
+    "scope": "stage"
+  },
+  {
+    "all_exact": true,
+    "functions": [
+      {
+        "bytes": 174,
+        "name": "identity",
+        "sha256": "31cdfee60f379858d1d19ec4aaf46038988c296f6cac40c1773627ef069a15cb"
+      },
+      {
+        "bytes": 1023,
+        "name": "read_bound",
+        "sha256": "3b7eb37bb7da951a44e494fbc9e593f7a6ec4eaa898376a08a8ae4da55dbaa88"
+      },
+      {
+        "bytes": 363,
+        "name": "freeze",
+        "sha256": "6b433d3fba4b7ee24e0214e8a5315307aa9f29596953cc49d443c1dbbe4abbf3"
+      },
+      {
+        "bytes": 436,
+        "name": "public",
+        "sha256": "ab6e51bcc63c365df85d8cba100471adb7bb2115aa642b59c8bc0606d263e24a"
+      },
+      {
+        "bytes": 5546,
+        "name": "preserve_r9",
+        "sha256": "c5cabe521c47d615925a55ef67c6ef5f4a4415530785b330f9cd26ffc90c20b5"
+      },
+      {
+        "bytes": 1347,
+        "name": "holders",
+        "sha256": "db98166a194d2900c4003f597ec370002172cf2ce0b1a5360460aefa239581f6"
+      }
+    ],
+    "modules_executed": false,
+    "scope": "launcher"
+  },
+  {
+    "all_exact": true,
+    "functions": [
+      {
+        "bytes": 138,
+        "name": "signal_received",
+        "sha256": "d100439851fd346baa1c0fd0d5ca5c71674dd9524d24dfe9de884146d9320f2d"
+      },
+      {
+        "bytes": 111,
+        "name": "sha",
+        "sha256": "754260acecb447eedb5eefd09b11c06ab275d5ee33c993819bf2035f2200d0a9"
+      },
+      {
+        "bytes": 303,
+        "name": "write",
+        "sha256": "b304e0b7cb870b14d2130de60350261cf3eaa1bc5f4845ffce532bdc73d254b4"
+      },
+      {
+        "bytes": 166,
+        "name": "git",
+        "sha256": "f353d2170cf2edec658b1b9ace9d44a7a7400c0f438e8ab43e1ffeb2209766dd"
+      },
+      {
+        "bytes": 154,
+        "name": "freeze",
+        "sha256": "6745a9abf9394ae19c07d2afe786838f96a4c649dfccae8ea4a63c1d410d320c"
+      },
+      {
+        "bytes": 401,
+        "name": "group_members",
+        "sha256": "3c212b10c38b028434e1755d35cc7dd1a9511fd6842f41a9badfdd10ae6ef28a"
+      },
+      {
+        "bytes": 780,
+        "name": "terminate_owned",
+        "sha256": "bdb02b8a9449602d51b705b25a775fc48474f88cb170e6cef9858cbfd324fb2e"
+      },
+      {
+        "bytes": 1679,
+        "name": "owned",
+        "sha256": "e428e90b8b469f0854d0902cb09137c99f33f7d02c8906e437e396298052de29"
+      }
+    ],
+    "modules_executed": false,
+    "scope": "runner"
+  }
+]

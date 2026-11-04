@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.direction98-r3-live-root-intent-review.v1",
+  "status": "FROZEN_INTENT_MATCHES_PREPARED_HOLD_BUILD_WINDOW",
+  "intent": {
+    "bytes": 3014,
+    "sha256": "8b0fbe402e9b0acd8c3525a1f8b15a280830df3d00700a35642adc85612c6b65",
+    "blob": "e46cf63a7e11323b6bb09190f63830388e9f02d5"
+  },
+  "tree": "585b8b697a84023288a39ef3ac42bb4af771d187",
+  "prepared": {
+    "bytes": 36786,
+    "sha256": "deac7add8e45d56099c1e126b2f547ddc0f39e0b5ef9ff15f086f2dfca01e565",
+    "blob": "d39ea2124a48620a972e5e57798e192a32253f69"
+  },
+  "dispatch": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-direct98-control-r3/launch_normal_r10_pocket_direct98_r3.py",
+      "--run-once",
+      "--prepared-sha256",
+      "deac7add8e45d56099c1e126b2f547ddc0f39e0b5ef9ff15f086f2dfca01e565"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 3000,
+    "idempotency_key": "heptabao-r10-pocket-direct98-live-r3-5b254484-485fd21b"
+  },
+  "runtime_contract": {
+    "original_required_checks": 98,
+    "original_qa_total_seconds": 2400,
+    "original_http_seconds": 15,
+    "original_admission_seconds": 8,
+    "original_sealed_election_seconds": 60,
+    "new_shared_preparation_seconds": 60,
+    "max_numeric_reader_seconds": 15,
+    "max_numeric_ssh_seconds": 45,
+    "new_outer_supervisor_seconds": 3000,
+    "comparison_fences": 20,
+    "data_source_required": 3,
+    "actual_empty_leader_required": 1,
+    "actual_election_required": true,
+    "forced_election": false,
+    "automatic_retry": false,
+    "numeric_dispatches_per_fixed_stopped_node_at_most": 1
+  },
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "live_GO": false,
+  "exclusive_window_blocker": "actual observer normal build job 1a1a87f578a-fc05-2ee0 still running",
+  "no_private_or_product_execution": true
+}

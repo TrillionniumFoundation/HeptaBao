@@ -1,0 +1,14 @@
+--- a/normal_phaseb_observer_build.py
++++ b/normal_phaseb_observer_build.py
+@@ -342,8 +342,9 @@
+         result['release_artifacts_unchanged'] = all(sha(v['path']) == v['sha256'] for v in release_artifacts.values())
+         result['source_unchanged'] = freeze() == before
+         assert result['binary_unchanged'] and result['release_artifacts_unchanged'] and result['source_unchanged']
+-        extra_remaining()
+-        extra['elapsed_seconds'] = time.monotonic() - extra_started
++        extra_completed = time.monotonic()
++        assert extra_completed < extra_until, 'ingress observer group deadline'
++        extra['elapsed_seconds'] = extra_completed - extra_started
+         extra['status'] = 'passed'
+         result['status'] = 'passed'
+ except BaseException as error:

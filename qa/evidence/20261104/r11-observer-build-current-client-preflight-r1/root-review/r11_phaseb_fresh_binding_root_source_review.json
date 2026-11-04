@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.phaseb-bf0-binding-root-source-review.v1",
+  "status": "SOURCE_BINDING_DIFF_PASS_PLAN_FILENAME_CORRECTION_REQUIRED_HOLD_BUILD",
+  "packet_tree": "79b3d22362c1e42ed4a41b1d1b610559b48608a7",
+  "manifest_files_verified": 8,
+  "old_executed_binding": {
+    "bytes": 20742,
+    "sha256": "39795f901ffac84236411f4b89ce2ee2ae573446ce30f490f9b8d0c603131501",
+    "blob": "236c35803f07f2b6bfeb06b0abfe108baef27215"
+  },
+  "new_binding": {
+    "bytes": 23664,
+    "sha256": "e651ec49a8e5effd44a80c4057e2767e83c155efe415bb2c992ab33bd01d391c",
+    "blob": "34aeeaae15f0337e1683bdfce05413cf695e9382"
+  },
+  "diff": {
+    "bytes": 7660,
+    "sha256": "ef4094af01dce8cb33fbb3326bb183c89f2ef9b4b4c29a8f503193ce82c13cf2",
+    "blob": "e35a8a4f6a4f9cf1245ed6472ed5103f3d9e8404"
+  },
+  "strict_hunks": 9,
+  "retained_main_evidence_refs_identical_to_published943": true,
+  "inert": {
+    "additional_exact_test_names": 7,
+    "ast_compile": true,
+    "budgets_ports_official_groups_unchanged": true,
+    "changed_methods": [
+      "Binding.__init__",
+      "Binding.verify"
+    ],
+    "full_module_executed": false,
+    "host_io": false,
+    "returned_port_maps_match_json_roundtrip": true,
+    "runtime_ports_remain_integer_keyed": true,
+    "schema": "heptabao.phaseb-bf0-binding-root-inert-review.v1",
+    "unchanged_functions": 15
+  },
+  "prior_local_test_error_retained": "First root harness attempted literal_eval on existing numeric RAFT_PORTS comprehension and got KeyError before component checks; exact source was unchanged; second harness evaluates only this observed numeric constant expression.",
+  "partial_artifacts_unresolved": 4,
+  "ready_for_readonly_prepare": false,
+  "old_unknown_and_final_fence_error_preserved": true,
+  "source_stage_GO": false,
+  "prepare_GO": false,
+  "live_GO": false,
+  "plan_correction_required": {
+    "field": "proposed_dispatch.prepare.args_template --binding and live --binding",
+    "incorrect": "binding.public.json",
+    "guard_requires": "binding.private.json",
+    "origin": "Independent HA review confirmed unchanged Binding.__init__ guard; change planned template/stager only, keep guard",
+    "source_product_run": false
+  },
+  "peer_review_blob": "aac17c77de773f231d7eee8dda16f8b0b81e2f21",
+  "peer_review_sha256": "3bc7951e0fe60b90c81125b7597aad5f2bc5c485f921286bac0b46398648e08b"
+}

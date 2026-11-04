@@ -1,0 +1,11 @@
+--- draft1/launch_normal_r10_pocket_direct98_r3.py
++++ final/launch_normal_r10_pocket_direct98_r3.py
+@@ -24,7 +24,7 @@
+ LINUX = '/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1'
+ PROBE = CONTROL / 'probe_normal_build_r10_r1.py'
+ RUNNER = CONTROL / 'native_v6_pocket_source_direct98_r10_r3.py'
+-RUNNER_SHA256 = 'a317176d27ac70a8656ec4c22416302b982c284764ae17310068e6a5f6b246d7'
++RUNNER_SHA256 = '485fd21b5ef150eb952b65a3eb446b1a25a55a25550c17599198497f11d5f081'
+ NUMERIC_HELPER = CONTROL / 'read_stopped_direction_frontier_r3.py'
+ NUMERIC_HELPER_SHA256 = 'e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0'
+ QA_PINS = {

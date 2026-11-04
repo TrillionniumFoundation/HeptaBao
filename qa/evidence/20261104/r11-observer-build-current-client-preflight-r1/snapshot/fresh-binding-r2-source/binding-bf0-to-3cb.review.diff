@@ -1,0 +1,28 @@
+--- a/phaseb_binding_r3.py
++++ b/phaseb_binding_r3.py
+@@ -14,10 +14,10 @@
+ import sys
+ import time
+ 
+ SCHEMA = "heptabao.official271-native-cli-phaseb-r3.binding.v1"
+-COMMIT = "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24"
+-TREE = "ac4027db88fec69381ea0c6bba953d9a99c4e82a"
++COMMIT = "3cb873919170cc77101b27f6a3ab9e98f41f8d93"
++TREE = "7f4d48a647a81ca96e8a24a0a057c2c829459060"
+ OBSERVER_PATH = "crates/heptabao-server/src/ha_native_v6_runtime.rs"
+ INGRESS_OBSERVER_TESTS = (
+     "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+     "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",
+@@ -45,10 +45,10 @@
+     "official_cli_reference_r4.py": (
+         46586, "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9"),
+ }
+ PRODUCT_PINS = {
+-    OBSERVER_PATH: ("7bbd34e86039d0f640ac12a48cd81b2f836e600a",
+-                    "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d"),
++    OBSERVER_PATH: ("3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
++                    "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a"),
+     "crates/heptabao-server/src/snapshot_archive.rs": (
+         "6828ae88590184830da949001b13abd82a4f9b10",
+         "77c9565ac4efcfe8d387ae7955c4c977bdd4913bcf770981a9b28facdeb2313d"),
+     "crates/heptabao-server/src/service.rs": (

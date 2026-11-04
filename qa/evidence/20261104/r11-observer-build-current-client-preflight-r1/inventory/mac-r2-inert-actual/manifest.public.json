@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.finite-client-inventory.mac-inert-evidence-manifest.r1",
+  "job_id": "1a1a8861ebc-fc05-2ef3",
+  "status": "PASS_INERT_ONLY",
+  "source_packet_tree": "0a0ff5c2b3680207d3f70f447de8f785290b6669",
+  "dispatch_packet_tree": "26ee6b2f49ca5aa2457ccb5a2b66a6bbcf544d70",
+  "files": [
+    {
+      "path": "actual-start-ack.public.json",
+      "bytes": 4450,
+      "sha256": "832a50293a1107f955927e01e05fb67a4c8531d735df6f9cc5efaf504266048f",
+      "blob": "34519ef5de8c63618ef3e7c1f2494d9484177a98"
+    },
+    {
+      "path": "actual-authority.public.json",
+      "bytes": 729,
+      "sha256": "2f906edae3e8ae96a9fe8ce1e8883a3af227a3078339918b20d087084a392c70",
+      "blob": "1b628a3bb70080a68fc2c0b18e6886d477b0e27b"
+    },
+    {
+      "path": "actual-stdout.json",
+      "bytes": 684,
+      "sha256": "a687677a20657bd5af835e9ccbb8b4296643a6d3b816cc90c45ae9a65fed15c3",
+      "blob": "a843ba833a4a626f713d88a5817b140f580cb38d"
+    },
+    {
+      "path": "actual-process-read.sdk.json",
+      "bytes": 2426,
+      "sha256": "f800d2cfe42bf9b8f1680a0f3bd4c33a2061bb23830d7a42d0d94a78b00ff3da",
+      "blob": "db9fad4a8402f0821c08c36de038414eb2539da0"
+    },
+    {
+      "path": "actual-stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "terminal-review.public.json",
+      "bytes": 1927,
+      "sha256": "05ea182bfb38dee7981d734a889bbf2c9054f5fe4ccd12a185485b4dfe11b2b9",
+      "blob": "38ef2feb4ae165f9fb56f77544f0cc5bbc423ad0"
+    },
+    {
+      "path": "exact-inert-start-arguments.json",
+      "bytes": 163561,
+      "sha256": "ef59c72be43b7871def1ae6212b40fa1a520b23eef7702baab097cccddc46c2c",
+      "blob": "c9742223e4c6d7e6dd78a8b4adb127a1c1bc6372"
+    }
+  ]
+}

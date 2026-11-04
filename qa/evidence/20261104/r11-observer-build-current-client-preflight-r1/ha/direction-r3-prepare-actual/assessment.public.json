@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.direction98-r3-prepare-assessment.v1",
+  "status": "PASS_PREPARE_ONLY",
+  "job_id": "1a1a872fadc-fc05-2ec7",
+  "authority_exit_code": 0,
+  "authority_complete_and_durable": true,
+  "prepared": {
+    "bytes": 36786,
+    "sha256": "deac7add8e45d56099c1e126b2f547ddc0f39e0b5ef9ff15f086f2dfca01e565",
+    "blob": "d39ea2124a48620a972e5e57798e192a32253f69"
+  },
+  "prepared_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-direct98-control-r3/prepared.public.json",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "source_packet_tree": "23f7381a96f85e219f7223b2dba48ce390b141ef",
+  "inert_packet_tree": "e52b15ce1fdd7cb7b4a54a1ddd20107e055866cc",
+  "original_required_checks": 98,
+  "original_set_exactly_equals_prior_direction_r2": true,
+  "unchanged_prior_objects": {
+    "same_build_pins": true,
+    "same_build_probes": true,
+    "same_qa": true,
+    "same_98": true,
+    "old16_retained": true,
+    "only_changed_top": [
+      "argv",
+      "comparison_pins",
+      "direction_contract",
+      "launcher_sha256",
+      "numeric_helper_sha256",
+      "prepared_unix",
+      "runner_sha256"
+    ]
+  },
+  "comparison_fences": 20,
+  "old16_plus_prior_direction_failure4": true,
+  "actual_argument_parser_and_contract_passed": true,
+  "bindings": {
+    "launcher": "5b25448423abba0a18a9317e645fb7bffe392355efe7809e9c76c480f3f3c5b4",
+    "runner": "485fd21b5ef150eb952b65a3eb446b1a25a55a25550c17599198497f11d5f081",
+    "reader": "e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0",
+    "probe": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee"
+  },
+  "budget_scope": {
+    "original_http": 15,
+    "original_admission": 8,
+    "original_qa_total": 2400,
+    "original_sealed_election": 60,
+    "new_shared_preparation": 60,
+    "max_numeric_read": 15,
+    "max_numeric_ssh": 45
+  },
+  "scope_limits": [
+    "All normal source/build/raw receipts equal prior accepted R2 preparation; normal product binaries were not executed by build probes.",
+    "Prepared contract does not prove a future leader or runtime98/98 result; actual R3 fixture has not started.",
+    "No actual HA run is authorized by this packet; exclusive quiet window follows root coordination after ROG compilation.",
+    "The original R2 uncovered direction, old unknown operations, and diagnostic refusal remain immutable."
+  ]
+}

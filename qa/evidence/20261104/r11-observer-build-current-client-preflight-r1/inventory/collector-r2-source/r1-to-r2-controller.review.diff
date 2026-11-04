@@ -1,0 +1,149 @@
+diff --git a/finite_client_inventory.py b/finite_client_inventory.py
+--- a/finite_client_inventory.py
++++ b/finite_client_inventory.py
+@@ -25,12 +25,12 @@
+ 
+ START = time.monotonic()
+ UNTIL = START + 45.0
+-MANIFEST_SHA = "b52cec525ecf14161a0f6a396545d25e0532dfe5284dd07bf63b670fe570862f"
++MANIFEST_SHA = "3c3900c814ebf3e9a1cd0d58226dd6a99fe0edb0aeb42510c3dd7fe5b528af93"
+ MAX_DOC = 2 * 1024 * 1024
+ MAX_READ = 8 * 1024 * 1024
+ MAX_OUTPUT = 64 * 1024
+ MAX_OBSERVATIONS = 32
+-SCHEMA = "heptabao.finite-client-inventory.result.r1"
++SCHEMA = "heptabao.finite-client-inventory.result.r2"
+ protected = 0
+ pending_signal = None
+ children = []
+@@ -161,10 +161,12 @@
+     row["argument_count"] = len(args)
+     row["arguments_sha256"] = sha(encoded(args))
+     row["executable"] = path_projection(args[0].lstrip("-+!:@")) if args else None
+-    row["inline_code_present"] = "-c" in args or "-e" in args
+-    refs = [path_projection(x) for x in args if x.startswith("/")]
+-    need(len(refs) <= 32, "command_path_reference_bound")
+-    row["absolute_path_references"] = refs
++    row["inline_code_present"] = any(x in args for x in ("-c", "-e", "-lc", "--eval", "--print"))
++    # Only argv[0] has an established executable/path meaning. Even an argument
++    # beginning with '/' can be a token or inline code; do not publish it.
++    row["non_executable_argument_count"] = max(0, len(args) - 1)
++    row["non_executable_arguments_sha256"] = sha(encoded(args[1:]))
++    row["argument_dependencies_resolved"] = False
+     return row
+ 
+ 
+@@ -222,8 +224,11 @@
+              and all(type(x) is str for x in args), "launchd_arguments_shape")
+         out["ProgramArguments"] = {
+             "count": len(args), "sha256": sha(encoded(args)),
+-            "absolute_path_references": [path_projection(x) for x in args if x.startswith("/")],
+-            "inline_code_present": "-c" in args or "-e" in args,
++            "executable": path_projection(args[0]) if args else None,
++            "non_executable_argument_count": max(0, len(args) - 1),
++            "non_executable_arguments_sha256": sha(encoded(args[1:])),
++            "argument_dependencies_resolved": False,
++            "inline_code_present": any(x in args for x in ("-c", "-e", "-lc", "--eval", "--print")),
+         }
+     env = value.get("EnvironmentVariables", {})
+     need(type(env) is dict and len(env) <= 64, "launchd_environment_shape")
+@@ -247,7 +252,9 @@
+         if not s or s.startswith(("#", ";")):
+             continue
+         if s.startswith("[") and s.endswith("]"):
+-            section = s[1:-1]
++            name = s[1:-1]
++            section = name if name in ("Unit", "Service", "Install") else {
++                "unresolved": True, "sha256": sha(name.encode())}
+             continue
+         if s.endswith("\\"):
+             out["continuation_line_present"] = True
+@@ -372,15 +379,16 @@
+ 
+ def close_once(row):
+     global protected
+-    if row["close_attempted"]:
+-        return
+-    row["close_attempted"] = True
+     protected += 1
+     try:
+-        os.close(row["fd"])
+-        row["closed"] = True
+-    except BaseException as error:
+-        row["close_error_type"] = type(error).__name__
++        if row["close_attempted"]:
++            return
++        row["close_attempted"] = True
++        try:
++            os.close(row["fd"])
++            row["closed"] = True
++        except BaseException as error:
++            row["close_error_type"] = type(error).__name__
+     finally:
+         protected -= 1
+ 
+@@ -570,12 +578,12 @@
+ 
+ def stop_once(row):
+     global protected
+-    if row.get("stop_attempted"):
+-        return
+-    row["stop_attempted"] = True
+-    p = row["process"]
+     protected += 1
+     try:
++        if row.get("stop_attempted"):
++            return
++        row["stop_attempted"] = True
++        p = row["process"]
+         if p.poll() is None:
+             try:
+                 os.killpg(p.pid, signal.SIGTERM)
+@@ -597,20 +605,25 @@
+ 
+ 
+ def close_child_streams_once(row):
+-    if row.get("stream_close_attempted"):
+-        return
+-    row["stream_close_attempted"] = True
+-    errors = []
+-    for stream in (row["process"].stdout, row["process"].stderr):
+-        try:
+-            if stream is not None:
+-                stream.close()
+-        except BaseException as error:
+-            errors.append(type(error).__name__)
+-    row["streams_closed"] = not errors and all(
+-        stream is None or stream.closed for stream in (row["process"].stdout, row["process"].stderr))
+-    if errors:
+-        row["stream_close_errors"] = errors
++    global protected
++    protected += 1
++    try:
++        if row.get("stream_close_attempted"):
++            return
++        row["stream_close_attempted"] = True
++        errors = []
++        for stream in (row["process"].stdout, row["process"].stderr):
++            try:
++                if stream is not None:
++                    stream.close()
++            except BaseException as error:
++                errors.append(type(error).__name__)
++        row["streams_closed"] = not errors and all(
++            stream is None or stream.closed for stream in (row["process"].stdout, row["process"].stderr))
++        if errors:
++            row["stream_close_errors"] = errors
++    finally:
++        protected -= 1
+ 
+ 
+ def run_child(label, argv, host, *, cleanup_probe=False):
+@@ -654,6 +667,7 @@
+                 need(sum(counts.values()) <= MAX_DOC, "query_output_bound")
+                 chunks[key.data].append(block)
+         p.wait(timeout=remaining(deadline))
++        remaining(deadline)
+     except BaseException as error:
+         failure = {"error_type": type(error).__name__,
+                    "code": str(error) if isinstance(error, Refused) else None}

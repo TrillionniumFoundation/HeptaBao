@@ -1,0 +1,11 @@
+--- a/stage_source_phaseb_observer.py
++++ b/stage_source_phaseb_observer.py
+@@ -31,7 +31,7 @@
+ ROOT_COMMIT = '67d79b3b5442ed033d38929eab2010403463e56d'
+ ORIGIN = 'https://github.com/TrillionniumFoundation/HeptaBao.git'
+ EXPECTED_CONTROLS = {
+-    "normal_phaseb_observer_build.py": (20695, "b602011f9ad9a954de30d08ce3594a5013a064e570df5aaad9fa71f526ad1868"),
++    "normal_phaseb_observer_build.py": (20791, "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273"),
+     "launch_normal_phaseb_observer.py": (22961, "56c7b06d4329e4fdb72079a089ad2f1509e856357328d849d58844236b86fd63"),
+     "normal-test-groups.public.json": (6249, "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"),
+ }

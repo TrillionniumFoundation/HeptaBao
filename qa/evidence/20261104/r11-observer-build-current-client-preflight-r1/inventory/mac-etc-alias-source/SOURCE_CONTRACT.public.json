@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.mac-finite-inventory-etc-alias.source-contract.r1",
+  "status": "SOURCE_ONLY_NOT_DISPATCHED",
+  "prior_job": "1a1a88a785a-fc05-2f00",
+  "prior_result_blob": "53996b7f5c59b2cb18fe6979efded3d6138ad67c",
+  "prior_result_status": "incomplete",
+  "source": {
+    "bytes": 3778,
+    "sha256": "5a4838b8704315d31c80c07b5dd5f8a42837e28a369a2545f1fa669bc18f7c1d",
+    "blob": "d521b52880a59e0250a588d85fce24c6626b8536"
+  },
+  "read_set": [
+    {
+      "path": "/",
+      "operations": [
+        "lstat_before",
+        "open_directory_nofollow",
+        "fstat_fd",
+        "lstat_after"
+      ]
+    },
+    {
+      "path": "/etc",
+      "operations": [
+        "named_lstat_before_dirfd",
+        "named_readlink_dirfd",
+        "named_lstat_after_dirfd"
+      ],
+      "expected_identity": [
+        "16777233",
+        "1152921500312571429",
+        "0",
+        "0",
+        "41453",
+        "1",
+        "11",
+        "1786589515000000000",
+        "1786589515000000000"
+      ]
+    }
+  ],
+  "explicit_lstat_fstat_denominator": 5,
+  "readlink_denominator": 1,
+  "target_not_read": true,
+  "no_general_follow_symlink": true,
+  "no_repeat_completed_37": true,
+  "new_inner_seconds": 5,
+  "new_outer_seconds": 60,
+  "next_step": "Only after this actual output is accepted can a separate exact canonical-target crontab read be bound. No target path is guessed or accessed by this source.",
+  "root_runtime_go_required": true
+}

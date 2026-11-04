@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.native-ingress-result-type-root-source-review.v1",
+  "status": "PASS_ONE_LINE_SOURCE_FIX_NOT_BUILT",
+  "before": {
+    "bytes": 61578,
+    "sha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d",
+    "blob": "7bbd34e86039d0f640ac12a48cd81b2f836e600a"
+  },
+  "after": {
+    "bytes": 61623,
+    "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a",
+    "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3"
+  },
+  "diff": {
+    "bytes": 678,
+    "sha256": "b8a04c2af6d06ebb68b14f53b57ef0d7c17e4e2bfc69bb8bab222f9efb8e2286",
+    "blob": "4adea51bbe474872f7d20e0b78d8b3e07f654d6a"
+  },
+  "strict_hunks": 1,
+  "full_source_inverse_byte_equal": true,
+  "whole_file_changed_bytes": 45,
+  "original_return_signature_preserved": true,
+  "error_conversions_question_marks_calls_permission_steps_deadlines_unchanged": true,
+  "actual_failed_cargo_stdout": {
+    "bytes": 384196,
+    "sha256": "324a6b59e740e1ed2dc0c447ce638557d5cbd53cdec2c5b3afaa0a701cee3c92",
+    "blob": "2fa9bb2d97de2eac9dbe8cf151ec14cefbbc8a6d"
+  },
+  "cargo_json_records": 442,
+  "cargo_event_kinds": {
+    "compiler-artifact": 396,
+    "build-script-executed": 45,
+    "build-finished": 1
+  },
+  "actual_cargo_build_finished": false,
+  "child_receipt_equals_core": true,
+  "sole_parent_required": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+  "format_or_build_not_executed": true,
+  "normal44_extra7_qualification": false,
+  "source_publish_GO": true
+}

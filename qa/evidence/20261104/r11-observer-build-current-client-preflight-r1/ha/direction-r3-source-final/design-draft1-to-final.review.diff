@@ -1,0 +1,20 @@
+--- draft1/DESIGN.md
++++ final/DESIGN.md
+@@ -31,7 +31,7 @@
+ 
+ This helper adds the missing directory check: each held directory records its parent FD and basename, and final fstat must match a no-follow stat relative to that same parent. Root is checked too. The existing file relative-name and FD checks remain.
+ 
+-The runner reuses the original StrictHostKeyChecking/BatchMode SSH path. The shell execs the pinned interpreter into the helper, which starts no children and writes no files. Every numeric dispatch is recorded before launch; each node can be dispatched only once. A failed or uncertain SSH return aborts the fixture with remote_completion_unknown preserved. Successful completion requires the SSH exit plus a bound, complete helper response within both remote and caller deadlines. No caller error is an excuse to replay the read or business operation. Original service cleanup remains separate from the explicit numeric-dispatch completion records.
++The runner calls unchanged base.ssh, whose own argv contains BatchMode and ConnectTimeout10. During the unchanged native.execute_fixture context, strict_shared_transport wraps base.checked_run and injects StrictHostKeyChecking=yes for SSH. This describes the existing wrapper, not an option unconditionally present in base.ssh itself; no SSH configuration or route is changed. The shell execs the pinned interpreter into the helper, which starts no children and writes no files. Every numeric dispatch is recorded before launch; each node can be dispatched only once. A failed or uncertain SSH return aborts the fixture with remote_completion_unknown preserved. Successful completion requires the SSH exit plus a bound, complete helper response within both remote and caller deadlines. No caller error is an excuse to replay the read or business operation. Original service cleanup remains separate from the explicit numeric-dispatch completion records.
+ 
+ ## Preserved contract and new bounds
+ 
+@@ -48,7 +48,7 @@
+ 
+ ## Review/validation status
+ 
+-This package is source-only. No R3 fixture, preparation, helper, parser test, or syntax process has executed. The provided textual preservation check restores the one replacement stop block and exactly reproduces the previous R2 missing_cipher_leader method; it is not a runtime test. Actual syntax/contract preparation and controlled runtime need the root's reviewed window.
++This package is source-only. No R3 fixture, preparation, helper, parser test, or syntax process has executed. The provided textual preservation check restores the one replacement stop block and exactly reproduces the previous R2 missing_cipher_leader method; it is not a runtime test. Root independently parsed the draft1 three new sources as AST without importing/executing them. The final single-sample completion-clock change and explanatory SSH comment have not executed. Actual syntax/contract preparation and controlled runtime need the root's reviewed window.
+ 
+ Prior evidence remains immutable:
+ - Direction R2 core tree a6f41fcc1ae5a251c8198e4539568da937fb1668.

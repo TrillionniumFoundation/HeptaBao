@@ -1,0 +1,450 @@
+diff --git a/mac_single_native_r1.mjs b/mac_single_native_r1.mjs
+--- a/mac_single_native_r1.mjs
++++ b/mac_single_native_r1.mjs
+@@ -1,7 +1,8 @@
+ #!/usr/bin/env node
+-/** Exercise installed AuthBus plus the actual installed Codex registry and local native auth bridge.
+- * The new private state is populated from the real HeptaBao TLS/AppRole API.
+- * Kernel containment blocks external egress. Native background attempts are not claimed to be zero.
++/** One real installed Codex factory for one actual Mac agent.
++ * A separate five-agent worker already ran the shared AuthBus cycle. This
++ * worker never repeats that cycle or supplies a preferred profile. The real
++ * launchd wrapper owns its single-use anonymous-pipe process observer.
+  */
+ import fs from 'node:fs';
+ import path from 'node:path';
+@@ -17,7 +18,7 @@
+ const stable = value => Array.isArray(value) ? value.map(stable) : value && typeof value === 'object'
+   ? Object.fromEntries(Object.keys(value).sort().map(key => [key, stable(value[key])])) : value;
+ const digest = value => hash(JSON.stringify(stable(value)));
+-const report = { schema: 'heptabao.actual-plugin-two-source-native-codex-consumer.v1', ok: false,
++const report = { schema: 'heptabao.mac-five-agent-single-native-worker.r1', ok: false,
+   productionChanged: false, productionTrafficCutover: false, providerResponseObtained: false, externalNetworkEgressAllowed: false,
+   explicitModelRpcDispatched: false, nativeBackgroundNetworkAttemptCount: null,
+   nativeBackgroundNetworkAttemptsNotMeasured: true, j3160Contacted: false,
+@@ -26,6 +27,19 @@
+ let service, baoAgent, plan, nativeClient;
+ let nativeStarted = 0, nativeSpawned = 0;
+ let nativeControlBaseline;
++let nativeUntil, nativeCloseAttempted = false;
++const workerStarted = process.hrtime.bigint();
++function boundedNativeMs(cap) {
++  need(nativeUntil !== undefined, 'native_phase_allocation_required');
++  const left = Number((nativeUntil - process.hrtime.bigint()) / 1000000n);
++  need(left > 0, 'shared_phase_allocation_exhausted');
++  return Math.min(cap, left);
++}
++async function closeNativeOnce(client) {
++  need(!nativeCloseAttempted, 'native_close_not_repeated');
++  nativeCloseAttempted = true;
++  return client.closeAndWait({ exitTimeoutMs: boundedNativeMs(3000) });
++}
+ const nativeStderr = [];
+ let blockedOperations = 0;
+ const tokens = [];
+@@ -48,6 +62,8 @@
+ function save(file, value) {
+   const fd = fs.openSync(file, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | fs.constants.O_NOFOLLOW, 0o600);
+   try { fs.writeFileSync(fd, JSON.stringify(value)); fs.fsyncSync(fd); } finally { fs.closeSync(fd); }
++  const dir=fs.openSync(path.dirname(file),fs.constants.O_RDONLY|fs.constants.O_DIRECTORY|fs.constants.O_NOFOLLOW);
++  try { fs.fsyncSync(dir); } finally { fs.closeSync(dir); }
+ }
+ function within(root, file) {
+   const rel = path.relative(root, file);
+@@ -169,7 +185,7 @@
+   // Production leased/shared and isolated factories use the same pinned start
+   // context + initializer + auth application. Only cache/lease lifetime differs.
+   const client = await nativeApi.i({ agentDir, config: cfg,
+-    startOptions, timeoutMs: 15000, onStartedClient: observeStarted });
++    startOptions, timeoutMs: boundedNativeMs(15000), onStartedClient: observeStarted });
+   check('actual_native_factory_initialized_and_logged_in', client === nativeClient && client.initialized === true
+     && initializeSeen === 1 && loginSucceeded === 1 && nativeSpawned === 1);
+   const identity = client.getRuntimeIdentity();
+@@ -178,7 +194,7 @@
+   need(String(client.getServerVersion()) === '0.144.3', 'exact_managed_native_version');
+   check('native_runtime_reports_exact_isolated_home', identity?.codexHome === plan.nativeHome);
+   save(plan.nativeIdentityOutput, { runtimeIdentity: identity, version: client.getServerVersion() });
+-  const account = await client.request('account/read', { refreshToken: false }, { timeoutMs: 8000 });
++  const account = await client.request('account/read', { refreshToken: false }, { timeoutMs: boundedNativeMs(8000) });
+   save(plan.nativeAccountOutput, account);
+   check('actual_local_account_is_chatgpt', account?.account?.type === 'chatgpt' && account.requiresOpenaiAuth === true);
+   // Exact 0.144.3 token_data.rs takes top-level email, then profile.email;
+@@ -191,7 +207,7 @@
+   report.nativeAccountEmailPresent = expectedEmail !== null;
+   report.nativeAccountEmailSha256 = expectedEmail === null ? null : hash(expectedEmail);
+   check('native_external_tokens_not_persisted_as_auth_json', !fs.existsSync(path.join(plan.nativeHome, 'auth.json')));
+-  const closed = await client.closeAndWait({ exitTimeoutMs: 3000 });
++  const closed = await closeNativeOnce(client);
+   check('actual_native_close_and_wait', closed === true); nativeClient = undefined;
+   check('native_local_rpc_only', report.nativeRpc.sent.map(x => x.method).join('|') === 'initialize|account/login/start|account/read'
+     && report.nativeRpc.sent.every(x => x.completed));
+@@ -201,31 +217,51 @@
+ 
+ try {
+   plan = JSON.parse(privateRead(process.argv[2]));
+-  report.mode = plan.mode;
++  const AGENTS = ['main', 'trnm', 'hepta-ui', 'hepta', 'hepta-backend'];
++  const ROOT = '/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1';
++  need(plan.schema === 'heptabao.mac-five-agent-worker.private.r1' && plan.mode === 'native'
++    && AGENTS.includes(plan.agentId) && ['initial', 'cold-new-process'].includes(plan.phase),
++    'exact_native_worker_scope');
++  need(plan.workRoot === ROOT && plan.phaseRoot === path.join(ROOT, plan.phase)
++    && plan.stateRoot === path.join(plan.phaseRoot, 'state')
++    && fs.realpathSync(plan.stateRoot) === plan.stateRoot, 'exact_owned_state_scope');
++  need(Number.isSafeInteger(plan.phaseRemainingMs) && plan.phaseRemainingMs > 0
++    && plan.phaseRemainingMs <= 120000 && plan.phaseOwnerPid === process.ppid,
++    'original_phase_owner_and_remaining_allocation');
++  // A relative allocation is only a child-side shortening. The real wrapper
++  // keeps and enforces the original monotonic phase deadline across all six
++  // workers, including process startup and all observer/cleanup time.
++  nativeUntil = workerStarted + BigInt(plan.phaseRemainingMs) * 1000000n;
++  report.agentId = plan.agentId; report.phase = plan.phase;
++  report.phaseOwnerAbsoluteDeadlineAuthoritative = true;
++  report.allocatedRemainingMs = plan.phaseRemainingMs;
+   check('scoped_application_roots', process.env.OPENCLAW_STATE_DIR === plan.stateRoot
+     && process.env.OPENCLAW_CONFIG_PATH === path.join(plan.stateRoot, 'openclaw.json')
+     && process.env.OPENCLAW_OAUTH_DIR === path.join(plan.stateRoot, 'oauth'));
+-  check('private_work_scope', within(plan.workRoot, plan.stateRoot) && within(plan.workRoot, plan.pluginEntry)
+-    && within(plan.workRoot, plan.selectionOutput) && within(plan.workRoot, plan.custodyOutput));
++  for (const key of ['baselineOutput','rollbackCheckpointOutput','selectionOutput',
++    'custodyOutput','nativeDiagnosticOutput','nativeErrorOutput','nativeIdentityOutput','nativeAccountOutput'])
++    need(within(plan.phaseRoot, plan[key]), 'native_private_output_scope.' + key);
+   const cfg = JSON.parse(privateRead(path.join(plan.stateRoot, 'openclaw.json')));
+-  const agentDir = path.join(plan.stateRoot, 'agents/main/agent');
+-  const target = new URL(plan.pluginConfig.address);
+-  check('loopback_https_only', target.protocol === 'https:' && target.hostname === '127.0.0.1' && !!target.port);
+-  check('private_plugin_mode', plan.pluginConfig.leader === false && plan.pluginConfig.publishNew === false
+-    && plan.pluginConfig.schedulerMode === 'shadow' && plan.pluginConfig.manageOrder === true);
+-  for (const [file, expected] of Object.entries(plan.sourcePins)) check('source.' + path.basename(file), hash(fs.readFileSync(file)) === expected);
+-  const originalHttpsRequest = https.request;
++  check('all_five_configured_agents_preserved', digest(cfg.agents.list.map(a => a.id)) === digest(AGENTS));
++  const agentDir = path.join(plan.stateRoot, 'agents', plan.agentId, 'agent');
++  need(plan.nativeHome === path.join(agentDir, 'codex-home')
++    && within(plan.phaseRoot, plan.nativeTmp), 'per_agent_native_home_and_tmp');
++  const declared = cfg.agents.list.find(a => a.id === plan.agentId);
++  check('actual_configured_agent_directory', (declared.agentDir ?? path.join(plan.stateRoot,'agents',declared.id,'agent')) === agentDir);
++  for (const [file, expected] of Object.entries(plan.sourcePins))
++    check('source.' + path.basename(file), hash(fs.readFileSync(file)) === expected);
+   const originalExecFileSync = childProcess.execFileSync;
+   const originalSpawn = childProcess.spawn;
+   for (const method of ['log', 'warn', 'error', 'info', 'debug']) console[method] = () => {};
+   globalThis.fetch = deny;
+-  http.request = deny; http.get = deny;
+-  for (const method of ['spawn', 'spawnSync', 'exec', 'execSync', 'execFile', 'execFileSync', 'fork']) childProcess[method] = deny;
++  http.request = deny; http.get = deny; https.request = deny; https.get = deny;
++  for (const method of ['spawn', 'spawnSync', 'exec', 'execSync', 'execFile', 'execFileSync', 'fork'])
++    childProcess[method] = deny;
+   childProcess.execFileSync = (file, args, options) => {
+     if (file !== 'mount' || !Array.isArray(args) || args.length || options !== undefined) return deny();
+     const s = fs.lstatSync('/sbin/mount');
+     need(process.platform === 'darwin' && s.isFile() && s.uid === 0 && (s.mode & 0o022) === 0, 'trusted_mount_tool');
+-    return originalExecFileSync('/sbin/mount', [], { timeout: 3000, maxBuffer: 262144,
++    return originalExecFileSync('/sbin/mount', [], { timeout: boundedNativeMs(3000), maxBuffer: 262144,
+       stdio: ['ignore', 'pipe', 'pipe'], env: { PATH: '/usr/bin:/bin:/usr/sbin:/sbin' } });
+   };
+   // Directly preserve the installed managed command/argv and process options.
+@@ -269,213 +305,112 @@
+   // This installed QA variable affects detached process lifetime only (the
+   // pinned transport's resolveCodexAppServerDetachedMode); not auth selection.
+   process.env.OPENCLAW_QA_PARENT_PID = String(process.pid);
+-  baoAgent = new https.Agent({ keepAlive: false, maxCachedSessions: 0 });
+-  https.request = (options, callback) => {
+-    need(options && typeof options === 'object' && !(options instanceof URL), 'https_shape');
+-    need((options.hostname || options.host) === target.hostname && String(options.port || 443) === target.port
+-      && options.rejectUnauthorized === true, 'https_endpoint_or_trust');
+-    const route = options.path;
+-    const allowed = options.method === 'POST' && route === '/v1/auth/approle/login'
+-      || options.method === 'GET' && route.startsWith('/v1/openclaw-auth/data/')
+-      || options.method === 'POST' && route.startsWith('/v1/openclaw-auth/data/inbox/' + plan.pluginConfig.hostId + '/');
+-    need(allowed, 'https_operation_scope');
+-    const item = { method: options.method, path: route };
+-    report.wire.push(item);
+-    return originalHttpsRequest({ ...options, agent: baoAgent }, response => {
+-      item.status = response.statusCode;
+-      item.tlsVerified = response.socket.authorized === true;
+-      const certificate = response.socket.getPeerCertificate?.();
+-      item.peerSha256 = certificate?.raw ? hash(certificate.raw) : null;
+-      need(item.tlsVerified && item.peerSha256 === plan.serverCertificateSha256, 'https_peer_pin');
+-      if (route === '/v1/auth/approle/login') {
+-        let size = 0; const chunks = [];
+-        response.on('data', part => { size += part.length; if (size <= 1024 * 1024) chunks.push(part); });
+-        response.on('end', () => {
+-          if (size > 1024 * 1024) return;
+-          try {
+-            const value = JSON.parse(Buffer.concat(chunks));
+-            if (response.statusCode === 200 && typeof value.auth?.client_token === 'string') {
+-              tokens.push(value.auth.client_token); sensitive.push(value.auth.client_token);
+-            }
+-          } catch {}
+-        });
+-      }
+-      callback(response);
+-    });
+-  };
++
+   syncBuiltinESMExports();
+   const sdk = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/plugin-sdk/agent-runtime.js')));
+-  const storeApi = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/store-DH33UrUj.js')));
+-  let nativeApi, runtimeOptions;
+   const orderApi = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/order-CeBlX0NH.js')));
+-  check('sdk_default_scope', path.resolve(sdk.resolveDefaultAgentDir({})) === agentDir);
+-  check('sdk_database_scope', path.resolve(sdk.resolveAuthStorePathForDisplay(agentDir)) === path.join(agentDir, 'openclaw-agent.sqlite'));
+-  const current = sdk.loadAuthProfileStoreWithoutExternalProfiles(agentDir, { allowKeychainPrompt: false });
+-  for (const [id, cred] of Object.entries(current.profiles)) { sensitive.push(id); sensitive.push(...secrets(cred)); }
+-  if (plan.mode === 'rollback') {
+-    const before = JSON.parse(privateRead(plan.baselineOutput));
+-    const candidate = JSON.parse(privateRead(plan.rollbackCheckpointOutput));
+-    check('rollback_expected_candidate', digest(current) === candidate.storeSha256);
+-    let applied = false;
+-    const result = await storeApi.m({ agentDir, updater: store => {
+-      if (digest(store) !== candidate.storeSha256) return false;
+-      for (const key of Object.keys(store)) delete store[key];
+-      Object.assign(store, structuredClone(before)); applied = true; return true;
+-    } });
+-    check('installed_sdk_atomic_rollback', result !== null && applied);
+-    sdk.clearRuntimeAuthProfileStoreSnapshots();
+-    check('rollback_logical_store_exact', digest(sdk.loadAuthProfileStoreWithoutExternalProfiles(agentDir, { allowKeychainPrompt: false })) === digest(before));
+-    report.rollbackScope = 'Isolated logical auth store restored with the installed SDK; original live stores untouched.';
+-    report.originalOrderRestored = digest(current.order) !== digest(before.order);
+-  } else {
+-    const before = current;
+-    check('all_original_account_identities_present', Object.entries(plan.expectedProfiles).every(([id, v]) =>
+-      before.profiles[id]?.accountId === v.accountId));
+-    if (plan.mode === 'initial') save(plan.baselineOutput, before);
+-    // Explicitly carry each source's observed quota state into the private
+-    // migration, using the installed SDK transaction and a full-store CAS.
+-    let quotaApplied = false;
+-    const quotaState = await storeApi.m({ agentDir, updater: store => {
+-      if (digest(store) !== digest(before)) return false;
+-      store.usageStats ??= {};
+-      for (const [id, state] of Object.entries(plan.observedUsageByProfile))
+-        store.usageStats[id] = { ...store.usageStats[id], ...structuredClone(state) };
+-      quotaApplied = true; return true;
+-    }});
+-    check('observed_quota_carried_with_whole_store_cas', quotaState !== null && quotaApplied);
+-    sdk.clearRuntimeAuthProfileStoreSnapshots();
+-    const quotaBaseline = sdk.loadAuthProfileStoreWithoutExternalProfiles(agentDir, { allowKeychainPrompt: false });
+-    check('quota_carry_preserved_all_credentials', digest(quotaBaseline.profiles) === digest(before.profiles));
+-    const plugin = (await import(pathToFileURL(plan.pluginEntry))).default;
+-    check('installed_plugin_export', plugin?.id === 'openclaw-authbus' && typeof plugin.register === 'function');
+-    let subscriptions = 0;
+-    plugin.register({ registrationMode: 'full', pluginConfig: plan.pluginConfig,
+-      agent: { events: { registerAgentEventSubscription() { subscriptions++; } } },
+-      registerService(value) { need(!service, 'single_plugin_service'); service = value; } });
+-    check('installed_service_registration', subscriptions === 1 && service?.id === 'openclaw-authbus');
+-    const logs = { info: 0, warn: 0, error: 0, debug: 0 };
+-    const logger = Object.fromEntries(Object.keys(logs).map(key => [key, () => { logs[key]++; }]));
+-    await service.start({ stateDir: plan.stateRoot, logger, config: cfg });
+-    await service.stop(); service = null;
+-    const status = JSON.parse(privateRead(path.join(plan.stateRoot, 'authbus/status.json')));
+-    report.plugin = Object.fromEntries(['ok', 'manifestProfiles', 'importedProfiles', 'agentStores', 'verifiedStores',
+-      'effectiveMissing', 'effectiveMismatched', 'changedOrders', 'verifiedOrderBindings', 'schedulerReports', 'pendingRuntimeRefreshes'].map(k => [k, status[k] ?? null]));
+-    report.plugin.logCounts = logs;
+-    if (status.error) report.plugin.errorSha256 = hash(String(status.error));
+-    check('actual_plugin_cycle', status.ok === true);
+-    sdk.clearRuntimeAuthProfileStoreSnapshots();
+-    const after = sdk.loadAuthProfileStoreWithoutExternalProfiles(agentDir, { allowKeychainPrompt: false });
+-    check('both_real_profiles_exact', Object.entries(plan.expectedProfiles).every(([id, v]) =>
+-      digest(after.profiles[id]) === v.credentialSha256));
+-    check('both_account_identities_preserved', Object.entries(plan.expectedProfiles).every(([id, v]) =>
+-      after.profiles[id]?.accountId === v.accountId));
+-    check('source_quota_state_exact_after_import', Object.keys(plan.expectedProfiles).every(id =>
+-      digest(after.usageStats?.[id]) === digest(quotaBaseline.usageStats?.[id])));
+-    check('other_profiles_unchanged', Object.entries(before.profiles).filter(([id]) => !Object.hasOwn(plan.expectedProfiles, id))
+-      .every(([id, v]) => digest(v) === digest(after.profiles[id])) && Object.keys(after.profiles).length === Object.keys(before.profiles).length);
+-    // Record the actual committed post-import checkpoint before loading a
+-    // harness. Even a later loader/native failure can attempt exact CAS rollback.
+-    save(plan.rollbackCheckpointOutput, { storeSha256: digest(after), source: 'committed_installed_sdk_post_import' });
+-    const order = orderApi.i({ cfg, store: structuredClone(after), provider: plan.model.provider });
+-    check('original_relative_managed_order_preserved', digest(after.order?.openai) === digest(plan.projectedManagedOrder));
+-    check('actual_sdk_order_contains_both_trusted_sources', order.length === 2 && order.every(id => Object.hasOwn(plan.expectedProfiles, id)));
+-    report.orderSameAsEarlierPreparation = digest(order) === digest(plan.actualFinalOrder);
+-    check('invalid_refresh_account_not_candidate', plan.excludedProfileIds.every(id => !order.includes(id)));
+-    // The actual registry loader registers all enabled installed harness owners.
+-    // The actual selector, original default config and no runtime override decide.
+-    const loader = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/runtime-registry-loader-Duw3fvRO.js')));
+-    const selector = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/selection-JInn13lc.js')));
+-    const registry = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/registry-DtLZ3rba.js')));
+-    await loader.t({ scope: 'all', config: cfg, activationSourceConfig: cfg,
+-      workspaceDir: plan.workspace, onlyPluginIds: plan.harnessOwnerPluginIds });
+-    const selectedHarness = selector.o({ provider: plan.model.provider, modelId: plan.model.id,
+-      config: cfg, agentId: 'main' });
+-    check('actual_loader_and_selector_choose_codex', selectedHarness?.id === 'codex');
+-    check('selected_harness_is_actual_registered_instance', registry.r('codex')?.harness === selectedHarness);
+-    report.harnessSelection = { actualLoader: true, registered: true, selected: selectedHarness.id,
+-      defaultModelUnchanged: true, runtimeOverrideSupplied: false,
+-      allInstalledEnabledHarnessOwnerIds: plan.harnessOwnerPluginIds,
+-      productionLiveSessionOverrideObserved: false };
+-    nativeApi = await import(pathToFileURL(path.join(plan.codexRoot, 'dist/shared-client-4ICy3U6d.js')));
+-    const codexConfig = await import(pathToFileURL(path.join(plan.codexRoot, 'dist/config-CYEDnLJ2.js')));
+-    runtimeOptions = codexConfig.d({ pluginConfig: cfg.plugins.entries.codex.config, env: process.env }).start;
+-    check('original_agent_scope_and_managed_stdio_options', runtimeOptions.homeScope === 'agent'
+-      && runtimeOptions.transport === 'stdio' && runtimeOptions.commandSource === 'managed'
+-      && runtimeOptions.command === 'codex' && !runtimeOptions.env?.CODEX_HOME);
+-    // Neither authProfileId nor a preferred account is supplied to the native
+-    // selector or factory; the actual SDK applies the preserved current quotas.
+-    const selectedProfileId = nativeApi.y({ agentDir, config: cfg });
+-    check('native_default_selection_is_current_sdk_choice', selectedProfileId === order[0]
+-      && Object.hasOwn(plan.expectedProfiles, selectedProfileId));
+-    const cred = after.profiles[selectedProfileId]; sensitive.push(...secrets(cred));
+-    check('native_selected_credential_is_exact_trusted_generation', digest(cred) === plan.expectedProfiles[selectedProfileId].credentialSha256);
+-    const claims = JSON.parse(Buffer.from(cred.access.split('.')[1], 'base64url'));
+-    check('native_selected_jwt_account_and_future_expiry', claims['https://api.openai.com/auth']?.chatgpt_account_id === cred.accountId
+-      && claims.exp * 1000 > Date.now() + 600000);
+-    report.selectedProfileOrdinal = Object.keys(before.profiles).indexOf(selectedProfileId) + 1;
+-    report.selectedCredentialSha256 = digest(cred);
+-    // Resolution may annotate its in-memory store. Bind rollback to a fresh
+-    // installed-SDK read of the committed store, not those runtime annotations.
+-    sdk.clearRuntimeAuthProfileStoreSnapshots();
+-    const committed = sdk.loadAuthProfileStoreWithoutExternalProfiles(agentDir, { allowKeychainPrompt: false });
+-    check('committed_both_profiles_exact', Object.entries(plan.expectedProfiles).every(([id, v]) =>
+-      digest(committed.profiles[id]) === v.credentialSha256));
+-    check('committed_source_quota_not_cleared', Object.keys(plan.expectedProfiles).every(id =>
+-      digest(committed.usageStats?.[id]) === digest(quotaBaseline.usageStats?.[id])));
+-    check('committed_managed_order_exact', digest(committed.order) === digest(after.order));
+-    check('actual_login_and_both_tls_reads', tokens.length === 1 && Object.values(plan.expectedProfiles).every(v =>
+-      report.wire.some(x => x.method === 'GET' && x.path === '/v1/openclaw-auth/data/profiles/' + v.profileKey && x.status === 200)));
+-    save(plan.selectionOutput, { schema: 'heptabao.private-default-model-selection.v1',
+-      profileId: selectedProfileId, credential: cred, resolvedApiKey: cred.access,
+-      storeSha256: digest(committed), credentialSha256: digest(cred), model: plan.model,
+-      source: 'actual_installed_native_auth_selector_after_actual_authbus_cycle' });
+-    await exerciseNative({ cfg, agentDir, committed, credential: cred, nativeApi, startOptions: runtimeOptions });
++  const rowApi = await import(pathToFileURL(path.join(path.dirname(process.argv[1]), 'mac_auth_rows_cas_r1.mjs')));
++  const cacheApi = await import(pathToFileURL(path.join(path.dirname(process.argv[1]), 'mac_authbus_cache_cas_r1.mjs')));
++  const candidate = JSON.parse(privateRead(plan.rollbackCheckpointOutput));
++  const currentStores = () => {
+     sdk.clearRuntimeAuthProfileStoreSnapshots();
+-    check('native_factory_preserved_entire_committed_store', digest(sdk.loadAuthProfileStoreWithoutExternalProfiles(agentDir,
+-      { allowKeychainPrompt: false })) === digest(committed));
+-    report.actualNativeLocalConsumptionQualified = true;
+-    report.productionGatewayQualified = false;
+-    report.profileCount = Object.keys(after.profiles).length;
+-    report.selectedProfileCount = 1;
+-    report.importedTrustedProfileCount = 2;
+-    report.actualOrderOrdinals = order.map(id => Object.keys(before.profiles).indexOf(id) + 1);
+-    report.sourceQuotaStatePreserved = true;
+-    report.businessAvailabilityQualified = false;
+-    report.sdkVersion = JSON.parse(fs.readFileSync(path.join(plan.sdkRoot, 'package.json'))).version;
++    return Object.fromEntries(AGENTS.map(id => [id, sdk.loadAuthProfileStoreWithoutExternalProfiles(
++      path.join(plan.stateRoot, 'agents', id, 'agent'), { allowKeychainPrompt: false })]));
++  };
++  const allBefore = currentStores();
++  const rowsBefore = Object.fromEntries(AGENTS.map(id => [id, rowApi.captureAuthRows(plan.stateRoot,id)]));
++  const cachesBefore = cacheApi.captureAuthBusCaches(plan.stateRoot);
++  for (const id of AGENTS) {
++    check('post_cycle_effective_checkpoint.'+id, digest(allBefore[id]) === digest(candidate.stores[id]));
++    check('post_cycle_raw_checkpoint.'+id, rowApi.authRowsDigest(rowsBefore[id]) === rowApi.authRowsDigest(candidate.authRows[id]));
++    for (const [profile,cred] of Object.entries(allBefore[id].profiles)) {
++      sensitive.push(profile); sensitive.push(...secrets(cred));
++    }
+   }
+-  check('no_unexpected_network_or_process_operations', blockedOperations === 0);
+-  check('all_source_pins_unchanged', Object.entries(plan.sourcePins).every(([file, expected]) => hash(fs.readFileSync(file)) === expected));
+-  check('report_contains_no_credential_values', sensitive.every(v => !JSON.stringify(report).includes(v)));
++  check('post_cycle_six_cache_checkpoint', digest(cachesBefore) === digest(candidate.authbusCaches));
++  const committed = allBefore[plan.agentId];
++  const order = orderApi.i({ cfg, store: structuredClone(committed), provider: plan.model.provider });
++  const loader = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/runtime-registry-loader-Duw3fvRO.js')));
++  const selector = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/selection-JInn13lc.js')));
++  const registry = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/registry-DtLZ3rba.js')));
++  await loader.t({ scope:'all', config:cfg, activationSourceConfig:cfg,
++    workspaceDir:plan.workspace, onlyPluginIds:plan.harnessOwnerPluginIds });
++  const selectedHarness = selector.o({ provider:plan.model.provider, modelId:plan.model.id,
++    config:cfg, agentId:plan.agentId });
++  check('actual_loader_and_selector_choose_codex', selectedHarness?.id === 'codex');
++  check('selected_harness_is_actual_registered_instance', registry.r('codex')?.harness === selectedHarness);
++  const nativeApi = await import(pathToFileURL(path.join(plan.codexRoot, 'dist/shared-client-4ICy3U6d.js')));
++  const codexConfig = await import(pathToFileURL(path.join(plan.codexRoot, 'dist/config-CYEDnLJ2.js')));
++  const startOptions = codexConfig.d({ pluginConfig:cfg.plugins.entries.codex.config, env:process.env }).start;
++  check('original_agent_scope_and_managed_stdio_options', startOptions.homeScope === 'agent'
++    && startOptions.transport === 'stdio' && startOptions.commandSource === 'managed'
++    && startOptions.command === 'codex' && !startOptions.env?.CODEX_HOME);
++  // Do not force either trusted shared ID. The actual five-agent SDK preserves
++  // its complete original order/usage and can select any current eligible ID.
++  const selectedProfileId = nativeApi.y({ agentDir, config:cfg });
++  check('native_default_is_actual_sdk_first_candidate', order.length > 0
++    && selectedProfileId === order[0] && Object.hasOwn(committed.profiles,selectedProfileId));
++  const credential = committed.profiles[selectedProfileId];
++  sensitive.push(...secrets(credential));
++  check('selected_actual_oauth_shape', credential?.provider === plan.model.provider
++    && credential?.type === 'oauth' && typeof credential.access === 'string'
++    && typeof credential.accountId === 'string');
++  const claims = JSON.parse(Buffer.from(credential.access.split('.')[1], 'base64url'));
++  check('actual_selected_jwt_identity', claims['https://api.openai.com/auth']?.chatgpt_account_id === credential.accountId);
++  const profileKeys = Object.keys(committed.profiles);
++  report.selectedProfileOrdinal = profileKeys.indexOf(selectedProfileId) + 1;
++  report.selectedCredentialSha256 = digest(credential);
++  report.actualOrderOrdinals = order.map(id => profileKeys.indexOf(id) + 1);
++  report.profileCount = profileKeys.length;
++  report.selectedCredentialExpiryObserved = typeof credential.expires === 'number';
++  report.selectionForced = false;
++  report.sharedManifestOrInboxCycleExecutedHere = false;
++  save(plan.selectionOutput,{schema:'heptabao.mac-current-native-selection.private.r1',
++    agentId:plan.agentId,profileId:selectedProfileId,credential,credentialSha256:digest(credential),
++    storeSha256:digest(committed),model:plan.model,source:'actual_installed_selector_after_five_agent_cycle'});
++  await exerciseNative({cfg,agentDir,committed,credential,nativeApi,startOptions});
++  const allAfter = currentStores();
++  for (const id of AGENTS) {
++    check('native_preserved_whole_effective_store.'+id, digest(allAfter[id]) === digest(allBefore[id]));
++    check('native_preserved_whole_raw_store.'+id, rowApi.authRowsDigest(rowApi.captureAuthRows(plan.stateRoot,id)) === rowApi.authRowsDigest(rowsBefore[id]));
++  }
++  check('native_preserved_six_caches', digest(cacheApi.captureAuthBusCaches(plan.stateRoot)) === digest(cachesBefore));
++  check('single_actual_native_factory', nativeStarted === 1 && nativeSpawned === 1);
++  check('no_explicit_network_or_other_process', blockedOperations === 0 && report.wire.length === 0);
++  check('source_pins_unchanged', Object.entries(plan.sourcePins).every(([file,pin])=>hash(fs.readFileSync(file))===pin));
++  check('report_contains_no_credential_values', sensitive.every(value=>!JSON.stringify(report).includes(value)));
++  boundedNativeMs(1);
+   report.ok = true;
+ } catch (error) {
+-  report.error = error?.safeCode ?? 'actual_plugin_consumer_failed';
++  report.error = error?.safeCode ?? 'mac_single_native_worker_failed';
+   report.errorClass = error?.constructor?.name ?? 'unknown';
+   report.errorCodeSha256 = hash(String(error?.message ?? error));
+-  if (plan?.nativeErrorOutput) { try { save(plan.nativeErrorOutput, { message: String(error?.message ?? error), stack: String(error?.stack ?? '') }); } catch {} }
+-  report.sourceFrame = String(error?.stack ?? '').split('\n').slice(1, 5).map(line => line.match(/([A-Za-z0-9_.-]+\.(?:js|mjs)):(\d+):(\d+)/)?.slice(1) ?? ['native']);
++  report.sourceFrame = String(error?.stack ?? '').split('\n').slice(1,5)
++    .map(line=>line.match(/([A-Za-z0-9_.-]+\.(?:js|mjs)):(\d+):(\d+)/)?.slice(1)??['native']);
+ } finally {
+-  if (service) { try { await service.stop(); } catch {} }
+-  if (nativeClient) {
+-    try { report.nativeClientCloseAndWait = await nativeClient.closeAndWait({ exitTimeoutMs: 3000 }); }
++  if (nativeClient && !nativeCloseAttempted) {
++    try { report.nativeClientCloseAndWait = await closeNativeOnce(nativeClient); }
+     catch { report.nativeClientCloseAndWait = false; }
+     if (!report.nativeClientCloseAndWait) report.ok = false;
+   }
+   if (plan && nativeSpawned) {
+-    try { save(plan.nativeDiagnosticOutput, { stderr: Buffer.concat(nativeStderr).toString('utf8') }); } catch {}
+-    report.nativeAuthJsonAbsentAfterClose = !fs.existsSync(path.join(plan.nativeHome, 'auth.json'));
+-    if (!report.nativeAuthJsonAbsentAfterClose) report.ok = false;
++    try { save(plan.nativeDiagnosticOutput,{stderr:Buffer.concat(nativeStderr).toString('utf8')}); }
++    catch { report.ok=false; }
++    report.nativeAuthJsonAbsentAfterClose = !fs.existsSync(path.join(plan.nativeHome,'auth.json'));
++    if (!report.nativeAuthJsonAbsentAfterClose) report.ok=false;
+   }
+   if (nativeControlBaseline) {
+-    let unchanged = false;
+-    try { unchanged = Object.entries(nativeControlBaseline).every(([file, expected]) => hash(privateRead(file)) === expected); } catch {}
+-    report.nativeControlFilesBytesUnchangedAfterClose = unchanged;
+-    report.checks.push({ case: 'native_control_files_exact_bytes_after_close', passed: unchanged });
+-    if (!unchanged) report.ok = false;
+-  }
+-  baoAgent?.destroy();
+-  if (plan) {
+-    try { save(plan.custodyOutput, { tokens }); } catch {}
++    try { report.nativeControlFilesBytesUnchangedAfterClose =
++      Object.entries(nativeControlBaseline).every(([file,pin])=>hash(privateRead(file))===pin); }
++    catch { report.nativeControlFilesBytesUnchangedAfterClose=false; }
++    if (!report.nativeControlFilesBytesUnchangedAfterClose) report.ok=false;
+   }
++  try { if (plan) save(plan.custodyOutput,{tokens:[]}); } catch { report.ok=false; }
+ }
+-process.stdout.write(JSON.stringify(report) + '\n');
+-process.exitCode = report.ok ? 0 : 1;
++if (sensitive.some(value=>JSON.stringify(report).includes(value))) {
++  for (const key of Object.keys(report)) delete report[key];
++  Object.assign(report,{schema:'heptabao.mac-five-agent-single-native-worker.r1',ok:false,
++    error:'public_projection_contains_sensitive_value'});
++}
++process.stdout.write(JSON.stringify(report)+'\n');
++process.exitCode=report.ok?0:1;

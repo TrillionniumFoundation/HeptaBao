@@ -1,0 +1,95 @@
+--- a/normal_phaseb_observer_build.py
++++ b/normal_phaseb_observer_build.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Build frozen R10 normal server/seed and libtest, then execute exact reviewed groups."""
++"""Build a frozen independent normal observer candidate; retain the original exact 44 tests."""
+ from pathlib import Path
+ import argparse
+ import hashlib
+@@ -16,6 +16,17 @@
+     parser.add_argument('--' + name, required=True)
+ args = parser.parse_args()
+ source, output = Path(args.source), Path(args.output)
++DIAGNOSTIC_COMMIT = 'bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'
++DIAGNOSTIC_TREE = 'ac4027db88fec69381ea0c6bba953d9a99c4e82a'
++INGRESS_OBSERVER_TESTS = (
++    "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
++    "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",
++    "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result",
++    "ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata",
++    "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates",
++    "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results",
++    "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success",
++)
+ children = []
+ protected = 0
+ pending_signal = None
+@@ -140,7 +151,8 @@
+ 
+ assert os.uname().sysname == 'Linux' and os.uname().machine == 'x86_64'
+ # Physical commit is pinned by the reviewed launcher and the clean-tree freeze below.
+-assert args.tree == '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
++assert isinstance(DIAGNOSTIC_COMMIT, str) and isinstance(DIAGNOSTIC_TREE, str), 'diagnostic source identity unresolved'
++assert args.commit == DIAGNOSTIC_COMMIT and args.tree == DIAGNOSTIC_TREE
+ assert args.groups_sha256 == '0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1'
+ assert sha(args.groups) == args.groups_sha256
+ groups = json.loads(Path(args.groups).read_text())
+@@ -160,7 +172,7 @@
+ before = freeze()
+ assert before == {'commit': args.commit, 'tree': args.tree, 'status': ''}
+ output.mkdir(mode=0o700)
+-intent = {'schema': 'heptabao.linux-normal-release-and-exact-libtest-r10.v1', 'source_commit': args.commit,
++intent = {'schema': 'heptabao.linux-normal-release-and-exact-libtest-phaseb-observer.v1', 'source_commit': args.commit,
+           'source_tree': args.tree, 'normal_default_features': True, 'fixture_features': [],
+           'profile': profile, 'groups': groups, 'test_count': len(all_names),
+           'groups_sha256': args.groups_sha256, 'controller_sha256': sha(__file__),
+@@ -292,6 +304,48 @@
+     result['source_unchanged'] = freeze() == before
+     result['status'] = 'passed' if (result['binary_unchanged'] and result['release_artifacts_unchanged'] and result['source_unchanged']
+             and all(x['tests']['exit_code'] == 0 and not x['tests']['timed_out'] for x in result['group_results'])) else 'failed'
++    if result['status'] == 'passed':
++        # Preserve the original 44 denominator and its completed result. The new
++        # bounded group executes only after those original checks succeeded.
++        result['original_44_status'] = 'passed'
++        result['status'] = 'failed'
++        extra_started = time.monotonic()
++        extra_until = extra_started + 600.0
++        extra = {'schema': 'heptabao.normal-ingress-observer-regression.v1',
++                 'status': 'failed', 'test_count': len(INGRESS_OBSERVER_TESTS),
++                 'original_44_denominator_unchanged': True,
++                 'new_total_group_cap_seconds': 600,
++                 'actual_test_names': [], 'tests': []}
++        result['ingress_observer_regression'] = extra
++        def extra_remaining():
++            value = extra_until - time.monotonic()
++            assert value > 0, 'ingress observer group deadline'
++            return value
++        for index, name in enumerate(INGRESS_OBSERVER_TESTS):
++            label = 'ingress-observer-' + str(index + 1)
++            listing = owned(label + '-list', [str(binary), name, '--exact', '--list'],
++                            min(30.0, extra_remaining()))
++            assert listing['exit_code'] == 0 and not listing['timed_out']
++            selected = [line[:-6] for line in (output / (label + '-list.stdout')).read_text().splitlines()
++                        if line.endswith(': test')]
++            assert selected == [name], 'exact original ingress/timing testcase missing'
++            extra_remaining()
++            tests = owned(label, [str(binary), name, '--exact', '--nocapture', '--test-threads=1'],
++                          extra_remaining())
++            extra['actual_test_names'].append(name)
++            extra['tests'].append({'name': name, 'tests': tests})
++            assert tests['exit_code'] == 0 and not tests['timed_out']
++            summary = (output / (label + '.stdout')).read_text()
++            assert 'test result: ok. 1 passed; 0 failed; 0 ignored;' in summary, 'actual testcase not executed'
++            extra_remaining()
++        result['binary_unchanged'] = sha(binary) == binary_sha
++        result['release_artifacts_unchanged'] = all(sha(v['path']) == v['sha256'] for v in release_artifacts.values())
++        result['source_unchanged'] = freeze() == before
++        assert result['binary_unchanged'] and result['release_artifacts_unchanged'] and result['source_unchanged']
++        extra_remaining()
++        extra['elapsed_seconds'] = time.monotonic() - extra_started
++        extra['status'] = 'passed'
++        result['status'] = 'passed'
+ except BaseException as error:
+     result['failure_type'] = type(error).__name__
+     result['failure'] = str(error)

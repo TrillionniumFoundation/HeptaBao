@@ -1,0 +1,88 @@
+{
+  "schema": "heptabao.mac-current-consumer-plan.independent-ha-review.r1",
+  "status": "SOURCE_PLAN_REVIEWED_IMPLEMENTATION_REQUIREMENTS",
+  "packet_tree": "0461891c5a95d3d7f56c763756ad7037c214801f",
+  "plan_markdown": {
+    "path": "MAC_T5_R10_NEXT_CONSUMER_PLAN.md",
+    "bytes": 17254,
+    "sha256": "6063d9915cacf192e34195b7c62707bd67c9bb81e7bacd5dfb42d6ee7267bb27",
+    "blob": "3fbfa9c06d646f5509cca8d407a539baa1feda06"
+  },
+  "plan_json": {
+    "path": "mac-r10-current-consumer-service-plan.public.json",
+    "bytes": 15284,
+    "sha256": "2be0620a1dea6858b3c62d37fb0e6616ffe79bcf4c6e7098986e617e94fc0d76",
+    "blob": "b41054c529fb6b74f206f800523d497601257815"
+  },
+  "original_code_verified": [
+    {
+      "name": "driver",
+      "bytes": 36421,
+      "sha256": "c384de8d1ada71f5fc4461a1cb5c03faaa178d42d88bfe6a652aa77c0ca101d0",
+      "blob": "d547432ce6045b93cfc1639c8ff217870127787e"
+    },
+    {
+      "name": "consumer",
+      "bytes": 33710,
+      "sha256": "a0faff4f0da0f9afd505476715495bf2ae4af040693020cf46e56b707aa7a733",
+      "blob": "e07e5106c9a49b1f95f453a6c6dac03c719f7141"
+    },
+    {
+      "name": "observer",
+      "bytes": 11897,
+      "sha256": "2a2d8e61ba33b41a6617e5c900d502ee73b3e4a96377f1f502a64822875bb2a9",
+      "blob": "acc80fe9dcae285c0c162447d1fdf89e758cfa7a"
+    }
+  ],
+  "accepted_plan_boundaries": [
+    "Canonical495033/tree1d421 and actual Mac bc1fc6b8 normal product/receipts remain bound; historical normal360 consumer evidence is not transferred.",
+    "The exact configured cohort is main,trnm,hepta-ui,hepta,hepta-backend. Full local1/2/3 state/order/usage is preserved; trnm raw-empty and effective inheritance are distinguished.",
+    "Original hostId, publishNew, manageOrder, scheduler omissions, model, runtime and homeScope remain unchanged. Four connection-field changes and separately enumerated owned filesystem/channel isolation are distinct.",
+    "Current captures are read-only non-global-atomic snapshots with terminal source fences; drift is refused rather than restored over production.",
+    "Actual installed SDK/native initialize, ephemeral token login and account/read(false) under inherited kernel egress denial are the intended proof. No provider/model call, token fabrication or forced eligibility is proposed.",
+    "Each aggregate phase retains one120-second deadline, with start15/account8/close3 caps. Unknown controller/manager wrapper limits must be explicitly new.",
+    "Owned launchd labels/root are separate from ai.openclaw.gateway and relays. KeepAlive=false qualification is not production KeepAlive=true qualification.",
+    "Same-T5 custody is not off-host recovery. Historical Linux recovery does not count as current Mac backup; new current encryption/restore stays a separately bound action."
+  ],
+  "implementation_requirements_before_executable_freeze": [
+    {
+      "id": "five_distinct_native_ownership_proofs",
+      "source_basis": "Original consumer hard-codes main and a single nativeSpawned==0 entry. Original observer poll returns after handled=True and closes response_write after one ACK.",
+      "minimum_change": "Use an exact five-agent ledger for initial and cold phases. Bind each actual selected agent/runtime/homeScope and native generation to an independent nonce, immutable PID/birth/executable lineage, RPC result and close/reap result. A previous agent's verified boolean cannot qualify another agent.",
+      "narrow_option": "Retain the proven single-use observer per owned Node/native attempt, sequentially under one shared phase deadline, rather than silently broadening its authority. Distinguish one full-cohort AuthBus cycle from per-agent native consumption proof."
+    },
+    {
+      "id": "launchd_wrapper_must_be_actual_node_parent",
+      "source_basis": "Original observer.verify_chain requires node.ppid==outer_pid, node.pgid==node_pid, matching UID and actual executable; anonymous pipes are created by that direct parent.",
+      "minimum_change": "The owned launchd program should run the fixed wrapper that itself creates the anonymous observer pipes and Popen sandbox-exec/Node. The external orchestrator owns only the exact manager label transition. Do not weaken direct-parent/birth checks or pretend the external caller PGID owns a launchd-created Node.",
+      "sandbox_boundary": "Apply the actual sandbox at the consumer entry in this launched wrapper and inherit it through installed launcher/native. Parent process observation and volume guarding remain in their reviewed owner context."
+    },
+    {
+      "id": "effective_store_is_derived_not_a_restore_target",
+      "source_basis": "Plan JSON says restore SDK local+effective first, while its own trnm invariant correctly forbids materializing inherited profiles into an empty primary row.",
+      "minimum_change": "CAS only real durable local/raw records and exact updated_at/absence. After related local records are restored, recompute effective views using the actual SDK and compare them. Do not write effective inherited contents into trnm.",
+      "phase_custody": "Keep initial and cold distinct private state roots, five-agent checkpoint maps and full six-cache custody, preserving the original driver's two independent materializations. Require exact initial/cold/their-two-inverse phase identities, with per-agent once CAS bookkeeping and explicit partial/conflict outcomes."
+    },
+    {
+      "id": "freeze_finite_manager_transition_graph",
+      "minimum_change": "Specify each initial/cold/inverse manager generation, exact label, bootstrap/print/bootout dispatch and ownership receipt. Require exact label absence before first bootstrap and known bootout plus complete process-tree closure before a later cold bootstrap. No ambiguous manager transition advances the graph.",
+      "deadlines": "Every native15/8/3 operation is clamped to the same original120-second aggregate phase remainder; five agents do not get five phase windows. Volume/manager outer bounds remain explicitly separate and finite, named NEW when no historical cap is recovered."
+    }
+  ],
+  "qualification_notes": [
+    "Actual selector choice must be reported without resetting usage or forcing a profile. A local fallback selected in a run supplies only the evidence actually observed; it does not silently prove consumption of every managed credential.",
+    "Host inbox proposals and canonical profile enrollment are distinct authority states. Preserving publishNew must not be achieved by unreported harness suppression or by treating a proposal as an enrollment grant.",
+    "Native local-auth success under denied egress does not prove provider validity, model availability or zero blocked background attempts.",
+    "An executable candidate and its fixed inventories still require source and inert/component review; this is a plan assessment, not runtime authorization."
+  ],
+  "method": {
+    "plan_full_text_read": true,
+    "source_hashes_checked": true,
+    "original_driver_consumer_observer_relevant_control_flow_read": true,
+    "current_host_probed": false,
+    "new_private_capture": false,
+    "python_or_node_executed": false,
+    "service_started": false,
+    "production_changed": false
+  }
+}

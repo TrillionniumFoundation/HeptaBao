@@ -1,0 +1,54 @@
+--- a/PLAN.public.json
++++ b/PLAN.public.json
+@@ -1,6 +1,6 @@
+ {
+-  "schema": "heptabao.phaseb-normal-ingress-observer-fresh-input-source-plan.v1",
++  "schema": "heptabao.phaseb-normal-ingress-observer-fresh-input-source-plan.v2",
+   "status": "source_only_actual_build_and_transport_required",
+   "candidate": {
+     "commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+     "tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a",
+@@ -159,9 +159,9 @@
+         "-S",
+         "-B",
+         "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/qa/phaseb_controller_r3.py",
+         "--binding",
+-        "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/binding.public.json",
++        "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/binding.private.json",
+         "--binding-sha256",
+         "@actual concrete binding SHA256@",
+         "--prepare-only"
+       ],
+@@ -175,17 +175,22 @@
+         "-S",
+         "-B",
+         "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/qa/phaseb_controller_r3.py",
+         "--binding",
+-        "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/binding.public.json",
++        "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/binding.private.json",
+         "--binding-sha256",
+         "@actual concrete binding SHA256@",
+         "--run",
+         "--prepare-result-sha256",
+         "@actual root-accepted prepare result SHA256@"
+       ],
+       "outer_seconds": 3000,
+       "outer_scope": "Retain the separately approved NEW aggregate outer envelope used by R3; it does not enlarge any original per-action or request limit"
++    },
++    "concrete_binding_file": {
++      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/binding.private.json",
++      "mode": 384,
++      "custody_guard_unchanged": true
+     }
+   },
+   "representation_fix": {
+     "affected_return_fields": [
+@@ -233,6 +238,7 @@
+     "new_desktop_artifacts": false,
+     "new_prepare": false,
+     "new_live": false,
+     "full_openbao271_replacement": false
+-  }
++  },
++  "revision_note": "Only planned binding basename is corrected to the original Binding.__init__ requirement; no QA source change. Prior plan5082 and tree79b3 retained."
+ }

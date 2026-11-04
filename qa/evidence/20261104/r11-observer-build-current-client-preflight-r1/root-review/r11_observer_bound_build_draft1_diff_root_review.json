@@ -1,0 +1,59 @@
+[
+  {
+    "name": "stage",
+    "hunks": 3,
+    "old": {
+      "bytes": 27150,
+      "sha256": "90bc84593ba4a2845cbce6141277e22e01dfc9be3fce126a31448a9428f8c990",
+      "blob": "3b012a9df21060bf582e97da537ff9c9bcc9027d"
+    },
+    "new": {
+      "bytes": 18774,
+      "sha256": "1219bb5efdfce2a132412b14e01f051dc549cd6a257d1cdeafe408bf28cdc428",
+      "blob": "9f0b10e50d1e2b466d86f51407b388db33a5d1e4"
+    },
+    "diff": {
+      "bytes": 32659,
+      "sha256": "25fb02f767b515dbf6146e2a5f83cc4381570a495a1196ce00aec46925ddcb32",
+      "blob": "fea9dcb3a528809052c74c0ac9ff8b3b36cdd99c"
+    }
+  },
+  {
+    "name": "launcher",
+    "hunks": 10,
+    "old": {
+      "bytes": 20167,
+      "sha256": "d1542351492f9efb41ba18c3b25e9548be7eb658db5cb13c5b4bf80f097a55ad",
+      "blob": "af34201f8930265a8813028ba6cc21a07166e43d"
+    },
+    "new": {
+      "bytes": 22961,
+      "sha256": "56c7b06d4329e4fdb72079a089ad2f1509e856357328d849d58844236b86fd63",
+      "blob": "b0ba2b6fbf075d7a855c7b3d107f9a1a39aa2ad0"
+    },
+    "diff": {
+      "bytes": 7567,
+      "sha256": "ce4d6462e7aa2eccc79cf15c96f95a675ee3ec8a8df54dceeac5e1be3d2c0910",
+      "blob": "67b1b57c84a89c869e0c4e16f0764215427dcd41"
+    }
+  },
+  {
+    "name": "runner",
+    "hunks": 5,
+    "old": {
+      "bytes": 16900,
+      "sha256": "7aa39562fde6d96eeca9b1d0e53f600c9629de09613d052fad8e68e9c734d176",
+      "blob": "686b824755f193e4ae777de22fb682d9510528a2"
+    },
+    "new": {
+      "bytes": 20695,
+      "sha256": "b602011f9ad9a954de30d08ce3594a5013a064e570df5aaad9fa71f526ad1868",
+      "blob": "4049aaa1ac5cc07fe4a7a4636a35dc5b7881cc87"
+    },
+    "diff": {
+      "bytes": 5998,
+      "sha256": "7fea4659f8057bf839e40daae08fc14988963bdf2cda427f701cb016ea9d3531",
+      "blob": "3cccad141f5e08b859931b95471e902ed4b05c9e"
+    }
+  }
+]

@@ -1,0 +1,7 @@
+{
+  "chunk_id": "1a94f7",
+  "wall_time_seconds": 0.000024057,
+  "exit_code": 1,
+  "original_token_count": 25,
+  "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 16, in <module>\nKeyError: 'RAFT_PORTS'\n"
+}

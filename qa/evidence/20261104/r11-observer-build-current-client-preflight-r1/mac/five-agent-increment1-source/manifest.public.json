@@ -1,0 +1,121 @@
+{
+  "schema": "heptabao.mac-five-agent-worker-implementation.source-draft.r1",
+  "status": "SOURCE_DRAFT_NOT_EXECUTED_NOT_COMPLETE_LIVE_DRIVER",
+  "product_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "product_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "prior_plan_tree": "0461891c5a95d3d7f56c763756ad7037c214801f",
+  "current_inventory_tree": "92eb2881f894ee0df757107715da8b419768ad32",
+  "old_mac_qa_commit": "8a31986957805df7e27bdd17e34b02bdf96219d4",
+  "strict_diff_reconstruction_passed": true,
+  "observer_and_native_spawn_guard_preserved": true,
+  "old_one_shot_observer_reused_per_separate_worker": true,
+  "effective_state_never_written_during_inverse": true,
+  "source_executed": false,
+  "private_current_inputs_read": false,
+  "complete_live_driver_ready": false,
+  "manager_and_capture_components_still_in_progress": true,
+  "files": [
+    {
+      "path": "candidate/mac_single_native_r1.mjs",
+      "bytes": 28025,
+      "sha256": "0afe9844fd1710700a97ca72d146d1a00857c568ef5fb15177e22c8c867665e9",
+      "blob": "b7e23b4bb4279e66c437a2978c1bb8c33900e36b"
+    },
+    {
+      "path": "candidate/mac_current_cycle_r1.mjs",
+      "bytes": 23730,
+      "sha256": "61137ab9d09ea16f6d5552a07cef354eeaff3519ae0c4ce07c3cccfcefb76cb4",
+      "blob": "8dc1b849979fe0810f9e579fd7e2d933c3afaf48"
+    },
+    {
+      "path": "candidate/mac_current_phase_owner_r1.py",
+      "bytes": 20969,
+      "sha256": "b73bdfcb48af65d55f92177ce2753c09899df7c2ea3d11e51f17367b5136ff33",
+      "blob": "d77a911a93ce425bb76a7cfe94b73774f5601379"
+    },
+    {
+      "path": "candidate/mac_auth_rows_cas_r1.mjs",
+      "bytes": 3103,
+      "sha256": "0021fa7539f4fb36e2ac907315da1c9d9e407c9ccac606d1908e0b7a3f7042dd",
+      "blob": "50cf42a76cd313fb4de889e954bb9abe2e716530"
+    },
+    {
+      "path": "candidate/mac_authbus_cache_cas_r1.mjs",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+      "blob": "a318e427095b6c9273f03208620296b57ab59bc0"
+    },
+    {
+      "path": "candidate/authbus_native_process_observer.py",
+      "bytes": 11897,
+      "sha256": "2a2d8e61ba33b41a6617e5c900d502ee73b3e4a96377f1f502a64822875bb2a9",
+      "blob": "acc80fe9dcae285c0c162447d1fdf89e758cfa7a"
+    },
+    {
+      "path": "candidate/authbus_native_login_custody.py",
+      "bytes": 12110,
+      "sha256": "418f77d72235c6c34576ab7d18059841e49ca0af9253e3bc80fef15ec0385cdd",
+      "blob": "096e246eb501edb0034111b8a85f76e54df25127"
+    },
+    {
+      "path": "originals/authbus_native_codex_consumer.mjs",
+      "bytes": 33710,
+      "sha256": "a0faff4f0da0f9afd505476715495bf2ae4af040693020cf46e56b707aa7a733",
+      "blob": "e07e5106c9a49b1f95f453a6c6dac03c719f7141"
+    },
+    {
+      "path": "originals/authbus_native_codex_live.py",
+      "bytes": 36421,
+      "sha256": "c384de8d1ada71f5fc4461a1cb5c03faaa178d42d88bfe6a652aa77c0ca101d0",
+      "blob": "d547432ce6045b93cfc1639c8ff217870127787e"
+    },
+    {
+      "path": "originals/run_owned_capture.py",
+      "bytes": 3499,
+      "sha256": "696f104fb4be272d37f06d7e9a4076505539cfe895e1e0172584233a62ba66d9",
+      "blob": "f17d8454b5e91e2a71d6ec5dbacfb2166fad3c81"
+    },
+    {
+      "path": "originals/pocket_first_cycle_consumer_r1.mjs",
+      "bytes": 24016,
+      "sha256": "6455180970f37831bb1a4084aab8583822c900586f9fabcbd7536332bc45429e",
+      "blob": "b3c346ae81db2e462c10860a120dced611aff5bd"
+    },
+    {
+      "path": "originals/pocket_native_auth_rows_cas_r1.mjs",
+      "bytes": 2703,
+      "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+      "blob": "dbb561238f006c71a7da28d382b5e495900eae02"
+    },
+    {
+      "path": "diffs/native-worker.review.diff",
+      "bytes": 32832,
+      "sha256": "0e245fc9591090f9cb281a21ca5203b670a58b098bca3ff1ad19e51cb3bc6d0e",
+      "blob": "9d02f6d4a2822093a2462cb9a753883a540644b2"
+    },
+    {
+      "path": "diffs/five-agent-cycle.review.diff",
+      "bytes": 43496,
+      "sha256": "b47c168d5ac4607e757cbfedee916b540e8d17ccfdcb7c68bb14a437fb588722",
+      "blob": "11783d1c904bf25a2555d5b1542d97019ebca598"
+    },
+    {
+      "path": "diffs/auth-rows-cas.review.diff",
+      "bytes": 1775,
+      "sha256": "e48e0089cbe529baa00e520cc92c381e5a2a4b2c43142c61e43258f1704255eb",
+      "blob": "5acb6564e63d4ae5210c08255c2036c45241162c"
+    },
+    {
+      "path": "diffs/owned-capture.review.diff",
+      "bytes": 3709,
+      "sha256": "8ec4898221f8275b67a5e1891c60fe4d3000e17ec78a9792b413be188edc40c5",
+      "blob": "79561b9cecbcb3442c08ae17e7e2f00e4816cd7a"
+    },
+    {
+      "path": "README.md",
+      "bytes": 7223,
+      "sha256": "addbf9194c1f6ed17a492e9c80fa57a4beaa2d2f5a09dd4d870a694dd0b2117b",
+      "blob": "e60b71eeaf7ec976266302ba96915e1096e5136f"
+    }
+  ]
+}

@@ -1,0 +1,179 @@
+--- a/PLAN.public.json
++++ b/PLAN.public.json
+@@ -1,44 +1,19 @@
+ {
+-  "schema": "heptabao.phaseb-normal-ingress-observer-fresh-input-source-plan.v2",
+-  "status": "source_only_actual_build_and_transport_required",
++  "schema": "heptabao.phaseb-normal-ingress-observer-fresh-input-source-plan.v3",
++  "status": "source_only_new_3cb_build_and_transport_required",
+   "candidate": {
+-    "commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+-    "tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a",
+-    "sole_parent": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+-    "production_code_change_scope": "Existing normal failure observer added to fresh-ingress scope; no custody/admission/deadline behavior changed",
++    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
++    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
++    "sole_parent": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
++    "production_code_change_scope": "One explicit Result error-type annotation on top of the already reviewed normal observer; no custody/admission/deadline behavior change",
+     "runtime_file": {
+       "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+-      "bytes": 61578,
+-      "sha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d",
+-      "blob": "7bbd34e86039d0f640ac12a48cd81b2f836e600a"
++      "bytes": 61623,
++      "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a",
++      "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3"
+     }
+   },
+-  "actual_source_stage": {
+-    "job_id": "1a1a87499fe-fc05-2ecd",
+-    "source_root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source",
+-    "receipt_sha256": "bb2bd7b46974dc18bcb87325ea55c46383e17f2f8a521f2eaa77b1fc9fba8d2b",
+-    "evidence_tree": "286b41f0d359087d4b393197cdf314da149e0572",
+-    "root_review_pass": true
+-  },
+-  "build_in_progress": {
+-    "job_id": "1a1a87f578a-fc05-2ee0",
+-    "actual_ack_sha256": "98a3a27e95f4216e7cbdda785682c940f05c328201e23535bf2113cf7b9813e1",
+-    "source_commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+-    "source_tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a",
+-    "output_root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1",
+-    "normal_runner_sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273",
+-    "normal_default_features": [
+-      "default",
+-      "native-v6-ha",
+-      "native-v6-storage"
+-    ],
+-    "source_frozen": true,
+-    "normal_release_terminal": null,
+-    "combined_original44_terminal": null,
+-    "additional7_terminal": null,
+-    "all_owned_cleanup_terminal": null
+-  },
+   "retained_qa": {
+     "phaseb_controller_r3.py": {
+       "bytes": 61210,
+       "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+@@ -47,11 +22,11 @@
+       "product_candidate_inherited_from_r10": false
+     },
+     "phaseb_binding_r3.py": {
+       "bytes": 23664,
+-      "sha256": "e651ec49a8e5effd44a80c4057e2767e83c155efe415bb2c992ab33bd01d391c",
+-      "blob": "34aeeaae15f0337e1683bdfce05413cf695e9382",
+-      "basis": "New source/receipt/extra7/fresh-root binding plus returned port-map string keys",
++      "sha256": "73736dbcfe951cf666f8413190958aff38d68e95457f1f969b0e47f8c0266c25",
++      "blob": "3565e0d507d8adcd9d249b75d9f97c24f7c4bf0a",
++      "basis": "Retain the reviewed fresh-input/extra7/port-map observation contract; replace only four exact product identity literals for 3cb",
+       "product_candidate_inherited_from_r10": false
+     },
+     "phaseb_evidence_r3.py": {
+       "bytes": 15201,
+@@ -77,9 +52,9 @@
+   },
+   "old_input_identity": {
+     "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+     "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+-    "use": "Historical immutable fence only; never relabel old server/native/release/44 evidence as bf0",
++    "use": "Historical immutable fence only; never relabel old server/native/release/44 evidence as bf0 or its 3cb successor",
+     "old_phaseb_work": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1",
+     "old_phaseb_result_sha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184",
+     "old_unknown_preserved": true,
+     "old_final_input_fence_error_preserved": true
+@@ -91,9 +66,9 @@
+     "prepare": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/prepare-r1"
+   },
+   "transfer_inputs": {
+     "public_only": true,
+-    "source": "Full canonical bf0/ac4027 Git checkout; verify sole parent6d, 3754 reachable commits, complete strict fsck, 3911 tracked leaf/index bindings and old-source immutability before accepting desktop source",
++    "source": "Full canonical 3cb/7f4d48 Git checkout; verify sole parent bf0, 3755 reachable commits, complete strict fsck, 3911 tracked leaf/index bindings (5cb27cb400dc0896da98a5d4c740f2d5c9a83b6c60eb59dbec4eb7acd1a6ce00) and retained old-source immutability before accepting desktop source",
+     "artifacts": {
+       "server": {
+         "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/artifacts/heptabao-server",
+         "sha256": null,
+@@ -141,20 +116,20 @@
+     "old_archive_or_native_data_transfer": false,
+     "new_private_runtime_material": "The actual normal setup generates a new owned CA/leaf/replication/bootstrap/root-token generation inside the fresh live-r2 root only"
+   },
+   "acceptance_chain": [
+-    "Root verifies this job's complete normal release, exact original44 and separate extra7 pass, plus final source/artifact fences and every owned-child cleanup. No early release-only success admits Phase B.",
++    "Root verifies the new 3cb job's complete normal release, exact original44 and separate extra7 pass, plus final source/artifact fences and every owned-child cleanup. No early release-only success admits Phase B.",
+     "Root reviews exact create-only source/artifact/control transport adaptation after actual hashes exist. No current missing artifact field is inferred from old R10 bytes.",
+     "A separately authorized local input stage captures actual desktop host/tool/source/file identities, copies only fixed public inputs into fresh control-r2 and emits a concrete binding. It does not start product or parse old private backups.",
+-    "A separately authorized one-shot prepare-only uses the fixed61210 main and e651 binding, exact concrete binding digest, original action300 and outer330. Current source must be bf0/ac4027 and all receipts must bind it; placeholders fail before preparation.",
++    "A separately authorized one-shot prepare-only uses the fixed61210 main and 73736dbc binding, exact concrete binding digest, original action300 and outer330. Current source must be 3cb/7f4d48 and all receipts must bind it; placeholders fail before preparation.",
+     "Only after root accepts the complete prepare authority/result/input fences and reserves the desktop fixture window may one fresh live-r2 start. Original CLI/HTTP15, action300, readiness45, election60, peer1.5/forward8, normal stop/final cleanup5+5 and prior NEW aggregate3000 are preserved."
+   ],
+   "proposed_dispatch": {
+     "host": "desktop",
+     "executable": "/usr/bin/python3.12",
+-    "local_stage_key": "heptabao-phaseb-ingress-observer-inputs-bf0aaec-20261104-r1",
++    "local_stage_key": "heptabao-phaseb-ingress-observer-inputs-3cb8739-20261104-r2",
+     "prepare": {
+-      "key": "heptabao-phaseb-r3-prepare-10816-bf0aaec-20261104-r1",
++      "key": "heptabao-phaseb-r3-prepare-10816-3cb8739-20261104-r2",
+       "args_template": [
+         "-I",
+         "-S",
+         "-B",
+@@ -168,9 +143,9 @@
+       "outer_seconds": 330,
+       "action_seconds": 300
+     },
+     "live": {
+-      "key": "heptabao-phaseb-r3-live-10816-bf0aaec-20261104-r1",
++      "key": "heptabao-phaseb-r3-live-10816-3cb8739-20261104-r2",
+       "args_template": [
+         "-I",
+         "-S",
+         "-B",
+@@ -239,6 +214,48 @@
+     "new_prepare": false,
+     "new_live": false,
+     "full_openbao271_replacement": false
+   },
+-  "revision_note": "Only planned binding basename is corrected to the original Binding.__init__ requirement; no QA source change. Prior plan5082 and tree79b3 retained."
++  "revision_note": "The earlier 79b3/5082 plan and failed bf0 evidence remain intact. Two planned --binding filenames are corrected to binding.private.json, preserving the original basename/mode/custody guard; only four product identity literals change in the new binding. New artifact fields remain null until the successor actually builds and its complete required tests pass.",
++  "retained_prior_source_stage": {
++    "job_id": "1a1a87499fe-fc05-2ecd",
++    "source_root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source",
++    "receipt_sha256": "bb2bd7b46974dc18bcb87325ea55c46383e17f2f8a521f2eaa77b1fc9fba8d2b",
++    "evidence_tree": "286b41f0d359087d4b393197cdf314da149e0572",
++    "root_review_pass": true,
++    "scope": "bf0 only; does not qualify 3cb source staging"
++  },
++  "prior_failed_build": {
++    "job_id": "1a1a87f578a-fc05-2ee0",
++    "actual_ack_sha256": "98a3a27e95f4216e7cbdda785682c940f05c328201e23535bf2113cf7b9813e1",
++    "source_commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
++    "source_tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a",
++    "output_root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1",
++    "normal_runner_sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273",
++    "normal_default_features": [
++      "default",
++      "native-v6-ha",
++      "native-v6-storage"
++    ],
++    "source_frozen": true,
++    "normal_release_terminal": "failed_exit101",
++    "combined_original44_terminal": "not_started",
++    "additional7_terminal": "not_started",
++    "all_owned_cleanup_terminal": "complete",
++    "authority_sha256": "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6",
++    "result_sha256": "2947b177c2b7ca145a499175567aec632c76d12641c8afa4276ae900dda3a122",
++    "evidence_tree": "94bc1904b020caebc231f14fa3a5992156f77a86"
++  },
++  "new_source_and_build_proposal": {
++    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
++    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
++    "control_packet_tree": "27d6054bc3de026e0e58590498e53183f78b2342",
++    "root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r2",
++    "runner_sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273",
++    "job_id": null,
++    "actual_stage": null,
++    "normal_release_terminal": null,
++    "combined_original44_terminal": null,
++    "additional7_terminal": null,
++    "all_owned_cleanup_terminal": null
++  }
+ }

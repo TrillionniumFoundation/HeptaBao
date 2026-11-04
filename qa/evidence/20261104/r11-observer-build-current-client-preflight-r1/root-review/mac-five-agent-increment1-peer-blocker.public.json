@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.mac-five-agent-cycle-rawcas-independent-source-review.v1",
+  "source_tree": "fd88a77f960a36f1a28355ca4aaa995eca47110c",
+  "scope": "full cycle and rawCAS source; complete README; relevant phase-owner propagation paths; no native-worker/outer-manager qualification",
+  "files": {
+    "cycle": {
+      "bytes": 23730,
+      "sha256": "61137ab9d09ea16f6d5552a07cef354eeaff3519ae0c4ce07c3cccfcefb76cb4",
+      "blob": "8dc1b849979fe0810f9e579fd7e2d933c3afaf48"
+    },
+    "rawcas": {
+      "bytes": 3103,
+      "sha256": "0021fa7539f4fb36e2ac907315da1c9d9e407c9ccac606d1908e0b7a3f7042dd",
+      "blob": "50cf42a76cd313fb4de889e954bb9abe2e716530"
+    },
+    "before_cycle": {
+      "bytes": 24016,
+      "sha256": "6455180970f37831bb1a4084aab8583822c900586f9fabcbd7536332bc45429e",
+      "blob": "b3c346ae81db2e462c10860a120dced611aff5bd"
+    },
+    "before_rawcas": {
+      "bytes": 2703,
+      "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+      "blob": "dbb561238f006c71a7da28d382b5e495900eae02"
+    },
+    "cycle_diff": {
+      "bytes": 43496,
+      "sha256": "b47c168d5ac4607e757cbfedee916b540e8d17ccfdcb7c68bb14a437fb588722",
+      "blob": "11783d1c904bf25a2555d5b1542d97019ebca598"
+    },
+    "rawcas_diff": {
+      "bytes": 1775,
+      "sha256": "e48e0089cbe529baa00e520cc92c381e5a2a4b2c43142c61e43258f1704255eb",
+      "blob": "5acb6564e63d4ae5210c08255c2036c45241162c"
+    },
+    "cache_reference": {
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+      "blob": "a318e427095b6c9273f03208620296b57ab59bc0"
+    },
+    "phase_owner": {
+      "bytes": 20969,
+      "sha256": "b73bdfcb48af65d55f92177ce2753c09899df7c2ea3d11e51f17367b5136ff33",
+      "blob": "d77a911a93ce425bb76a7cfe94b73774f5601379"
+    }
+  },
+  "verified_source_facts": [
+    "Both supplied diffs strictly apply to the exact recovered original sources and reproduce complete candidate bytes",
+    "Rollback once marker is create-only and fsyncs file and parent before every inverse mutation",
+    "All five complete candidate effective/local/raw stores and six cache records are checked before inverse mutations",
+    "SDK inverse writes only captured local stores; all original raw rows and updated_at values are restored before effective stores are recomputed",
+    "Effective inherited state is never an inverse write input; trnm profile-free local baseline remains distinct from derived effective state",
+    "All five restored local/effective/raw baselines are rechecked before restoring six caches last",
+    "The actual cycle preserves original flags including publishNew; only four connection fields differ",
+    "No hardcoded profile selector is used in this cycle worker; actual installed order is observed with original store/config, native factories belong to separate workers",
+    "RawCAS allows only exact new T5 initial/cold roots and five explicit agent IDs, with UID501/mode0600/nlink1/non-symlink checks and a single SQLite IMMEDIATE transaction"
+  ],
+  "diff_hunks": {
+    "cycle": 4,
+    "rawcas": 2
+  },
+  "blocking_findings": [
+    {
+      "id": "inverse-error-outcome-classification",
+      "source_lines": {
+        "inverse_start": 202,
+        "first_sdk_inverse": 220,
+        "raw_inverse": 232,
+        "cache_inverse": 242,
+        "final_classification": 346
+      },
+      "counterexample": "After one inverse SDK/raw/cache mutation is dispatched or committed, a later I/O or commit-result error is caught. In rollback mode the HTTP wire array is empty and serviceStopped remains true, so the current final expression reports outcomeUnknown=false despite an unproved or partial inverse.",
+      "owner_propagation": "The phase owner inherits lifecycle/report unknown and fails the gate, but a normal nonzero worker with this false flag is not promoted to unknown. No retry occurs because the marker/gate already prevents it; the public classification still needs correction.",
+      "narrow_correction": "Set inverseMutationAttempted immediately before the first inverse mutation and inverseCompleted only after every local/raw/effective/cache final predicate; failed attempted-but-uncompleted inverse is conservatively unknown. Retain the once marker, no retry, original CAS algorithm and all caps.",
+      "runtime_counterexample_executed": false
+    }
+  ],
+  "non_claims": {
+    "host_io": false,
+    "sdk_import": false,
+    "node_execution": false,
+    "sqlite_execution": false,
+    "kernel_sandbox_verified": false,
+    "actual_launchd_verified": false,
+    "current_credentials_read": false,
+    "successful_runtime_qualification": false
+  },
+  "outcome": "SOURCE_BLOCKED_ON_ONE_EXCEPTION_CLASSIFICATION"
+}

@@ -1,0 +1,140 @@
+{
+  "schema": "heptabao.phaseb-observer-build-source-invariance.v1",
+  "scope": "source byte comparison only; no Python AST execution or host operation",
+  "stager": {
+    "original": {
+      "bytes": 27150,
+      "sha256": "90bc84593ba4a2845cbce6141277e22e01dfc9be3fce126a31448a9428f8c990",
+      "blob": "3b012a9df21060bf582e97da537ff9c9bcc9027d"
+    },
+    "candidate": {
+      "bytes": 18774,
+      "sha256": "1219bb5efdfce2a132412b14e01f051dc549cd6a257d1cdeafe408bf28cdc428",
+      "blob": "9f0b10e50d1e2b466d86f51407b388db33a5d1e4"
+    },
+    "complete_reused_owned_helpers": {
+      "bytes": 6183,
+      "sha256": "698b08081426d5860583a74517515ee935dfadda267e47e8209e2122e5325f4f",
+      "blob": "49cef4b4fd82dc182da42e648d78ea81237abaca"
+    },
+    "freeze": {
+      "bytes": 260,
+      "sha256": "f0126b9e2835f072fa7c87ca7406ca62690250bd0beabd5795b4c53d1a79a072",
+      "blob": "7b0919d6cd8ee93c606747b4c8cf149f5dbf7966"
+    },
+    "full_diff": {
+      "bytes": 32659,
+      "sha256": "25fb02f767b515dbf6146e2a5f83cc4381570a495a1196ce00aec46925ddcb32",
+      "blob": "fea9dcb3a528809052c74c0ac9ff8b3b36cdd99c"
+    },
+    "diff_hunks": 3,
+    "strict_apply_equal": true
+  },
+  "launcher": {
+    "original": {
+      "bytes": 20167,
+      "sha256": "d1542351492f9efb41ba18c3b25e9548be7eb658db5cb13c5b4bf80f097a55ad",
+      "blob": "af34201f8930265a8813028ba6cc21a07166e43d"
+    },
+    "candidate": {
+      "bytes": 22961,
+      "sha256": "56c7b06d4329e4fdb72079a089ad2f1509e856357328d849d58844236b86fd63",
+      "blob": "b0ba2b6fbf075d7a855c7b3d107f9a1a39aa2ad0"
+    },
+    "original_functions": [
+      {
+        "name": "identity",
+        "source_equal": true,
+        "sha256": "ccbfa2ed113368dcca67c2c5024ee033d4a06e43a2cd9ab8193c9d7e12411c20"
+      },
+      {
+        "name": "read_bound",
+        "source_equal": true,
+        "sha256": "3e3e98937723f7d7ca4ec0f383ef074efe4c8c1f01647a971582e75f0076a558"
+      },
+      {
+        "name": "freeze",
+        "source_equal": true,
+        "sha256": "bb691010936abb17d1c3f83f6fd7adeb4587bfde3f14b9a3369e100987a009fd"
+      },
+      {
+        "name": "public",
+        "source_equal": true,
+        "sha256": "4ced59e461fc1dfe07bcd503276f8394b88bdb9c0478a5b98914484d4e7c84cb"
+      },
+      {
+        "name": "preserve_r9",
+        "source_equal": true,
+        "sha256": "11228ee92ee3a45367ac3b8af298c851612647b77e30ec614b609e358327fde5"
+      },
+      {
+        "name": "holders",
+        "source_equal": true,
+        "sha256": "df4d27d4a7157cbff53db2cfccfb78d95acd65e1f8f2a24d7422ae68c2ef1d92"
+      }
+    ],
+    "new_function": "preserve_r10"
+  },
+  "runner": {
+    "original": {
+      "bytes": 16900,
+      "sha256": "7aa39562fde6d96eeca9b1d0e53f600c9629de09613d052fad8e68e9c734d176",
+      "blob": "686b824755f193e4ae777de22fb682d9510528a2"
+    },
+    "candidate": {
+      "bytes": 20695,
+      "sha256": "b602011f9ad9a954de30d08ce3594a5013a064e570df5aaad9fa71f526ad1868",
+      "blob": "4049aaa1ac5cc07fe4a7a4636a35dc5b7881cc87"
+    },
+    "original_functions": [
+      {
+        "name": "signal_received",
+        "source_equal": true,
+        "sha256": "d7b50170ce09cb53148a60fb8790c01524ab87563f46efd2e4b8dd09440de4a4"
+      },
+      {
+        "name": "sha",
+        "source_equal": true,
+        "sha256": "6ba2242721e77c5053b502e8683c33d4c49f66f2c68f052760ffbcce0b1ddc82"
+      },
+      {
+        "name": "write",
+        "source_equal": true,
+        "sha256": "f7eb01e1dc3c335bdb32736f2a067916c628858b88d2a8475c46e777b4789850"
+      },
+      {
+        "name": "git",
+        "source_equal": true,
+        "sha256": "cfb30dd939500378faaf8f6bf0877d6f381670d23a142f333588fb1500fe71b1"
+      },
+      {
+        "name": "freeze",
+        "source_equal": true,
+        "sha256": "1bbce732251e69ada6ed6239bdb4595cf6d768361f464a67cdb0828168d5bfc6"
+      },
+      {
+        "name": "group_members",
+        "source_equal": true,
+        "sha256": "cca853ecb26255494d173314790644b34b5e8a3f94210abb46f7890a8814d6a8"
+      },
+      {
+        "name": "terminate_owned",
+        "source_equal": true,
+        "sha256": "bddffdd269342c51bec1b8ba76ab1ad82332c641bd0f4f86e3853b2dffd11b22"
+      },
+      {
+        "name": "owned",
+        "source_equal": true,
+        "sha256": "244c2af2af8b811f0e0dc46322b37610f2d08a296b6c25c21b94333f0b5b957f"
+      }
+    ],
+    "full_diff": {
+      "bytes": 5998,
+      "sha256": "7fea4659f8057bf839e40daae08fc14988963bdf2cda427f701cb016ea9d3531",
+      "blob": "3cccad141f5e08b859931b95471e902ed4b05c9e"
+    },
+    "diff_hunks": 5,
+    "strict_apply_equal": true
+  },
+  "executed": false
+}

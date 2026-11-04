@@ -1,0 +1,271 @@
+{
+  "schema": "heptabao.mac-r10-current-consumer-service-plan.r1",
+  "status": "SOURCE_PLAN_NOT_IMPLEMENTED_OR_EXECUTED",
+  "product": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/source",
+    "normal44_accepted": true,
+    "server": {
+      "bytes": 93038816,
+      "compiler_executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/heptabao-server",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/normal-release-tests-r1/artifacts/heptabao-server",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "bc1fc6b8ded5a43a60ab4c562cd5e092e63ae9df77afd654c9af8c096c128c98"
+    },
+    "native_receipt": {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/normal-release-tests-r1/native-build.public.json",
+      "bytes": 798,
+      "sha256": "16fa488ed8d7a9a46541b5aea5007e27b538e5c37f9246c14de0e5fe24b05ad1",
+      "blob": "3daa9c7e0537b066502606430b9289b39a249712"
+    },
+    "normal_receipt": {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/normal-release-tests-r1/normal-release-result.public.json",
+      "bytes": 3326,
+      "sha256": "f5746eaf7fd79c8001ac927c9738922297d6e5e575cbd12bc092aafa2c13f544",
+      "blob": "5d0f6fd01dfd4415610e6f30afe4b2ea203a4297"
+    },
+    "normal44": {
+      "bytes": 24522,
+      "sha256": "28f47931ad644e610d45af00545b343a8d5867546ea8d00a44cae0a3de13c961",
+      "blob": "f1721688e97951506f728bc7ae639e8107641696"
+    }
+  },
+  "physical": {
+    "host": "mac",
+    "uid": 501,
+    "os": "Darwin",
+    "arch": "arm64",
+    "t5_mount": "/Volumes/T5",
+    "volume_uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+    "fresh_root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1",
+    "root_created": false,
+    "mode_directories": "0700",
+    "mode_private_files": "0600"
+  },
+  "current_client": {
+    "home": "/Users/qianqi",
+    "config": {
+      "path": "/Users/qianqi/.openclaw/openclaw.json",
+      "sha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d"
+    },
+    "configured_agents": [
+      "main",
+      "trnm",
+      "hepta-ui",
+      "hepta",
+      "hepta-backend"
+    ],
+    "prior_flags": {
+      "address": "https://100.66.117.33:8200",
+      "caFile": "/Users/qianqi/.openclaw/credentials/authbus/ca.crt",
+      "roleIdFile": "/Users/qianqi/.openclaw/credentials/authbus/role_id",
+      "secretIdFile": "/Users/qianqi/.openclaw/credentials/authbus/secret_id",
+      "hostId": "mac",
+      "leader": false,
+      "publishNew": true,
+      "manageOrder": true,
+      "orderExcludeAgentIds": null,
+      "schedulerMode": null,
+      "enforceRefreshLeases": null,
+      "releaseGeneration": 200,
+      "pollIntervalMs": 15000,
+      "refreshMarginMs": 900000,
+      "maxRefreshesPerCycle": 1,
+      "schedulerReportIntervalMs": null
+    },
+    "source_of_flags": "Retained reviewed Mac plan; current hash/fields must be read by accepted finite collector before new private capture.",
+    "local_stores": {
+      "main": "profiles1/2/3; stored order1/2/3",
+      "trnm": "profile-free primary row; actual effective inheritance from main",
+      "hepta-ui": "profiles1/2/3; preserve full row/usage",
+      "hepta": "profiles1/2/3; preserve full row/usage",
+      "hepta-backend": "profiles1/2/3; preserve full row/usage"
+    },
+    "actual_profile_id_hashes": [
+      "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+      "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1"
+    ],
+    "shared_order": {
+      "managed_ordinals": [
+        2,
+        1
+      ],
+      "activeProfile": null,
+      "enforceManagedOrder": false,
+      "scheduler": null
+    },
+    "profile3": "Retain full original local generation, usage, order and recovery material. Do not publish it as a new valid generation or replay its rejected refresh.",
+    "independent_user_native": {
+      "paths": [
+        "/Users/qianqi/.codex/auth.json",
+        "/Users/qianqi/.codex/config.toml"
+      ],
+      "operation": "before/after custody only; no user-native source replacement"
+    }
+  },
+  "original_gateway": {
+    "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.gateway.plist",
+    "sha256": "e176c41f40b462b288177c20ced94c0e645b3a58f6bda024e53366f1592e8d08",
+    "mode": "0o600",
+    "label": "ai.openclaw.gateway",
+    "program": null,
+    "argv0": "/bin/sh",
+    "argumentCount": 8,
+    "argumentFlags": [
+      "--port"
+    ],
+    "workingDirectory": "/Users/qianqi/.openclaw",
+    "runAtLoad": true,
+    "keepAlive": true,
+    "environmentKeys": [],
+    "standardOutPath": "/Users/qianqi/Library/Logs/openclaw/gateway.log",
+    "standardErrorPath": "/dev/null",
+    "loadedProjection": [
+      "path = /Users/qianqi/Library/LaunchAgents/ai.openclaw.gateway.plist",
+      "state = running",
+      "program = /bin/sh",
+      "pid = 18437",
+      "state = active",
+      "state = active"
+    ],
+    "launchctlReturnCode": 0
+  },
+  "current_source_candidates": {
+    "sdk": "/opt/homebrew/lib/node_modules/openclaw",
+    "node": "/opt/homebrew/bin/node",
+    "authbus": "/Users/qianqi/.openclaw/extensions/openclaw-authbus",
+    "codex_plugin": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex",
+    "registry": "/Users/qianqi/.openclaw/state/openclaw.sqlite",
+    "native_pin_receipt": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/runtime-contract-source-r1/native-pin.public.json",
+    "native_pin_receipt_sha256": "fce8536b33a83b920accd7264991759a13011057cac3502b0ce14fffc075339e",
+    "native_agent_main": "/Users/qianqi/.openclaw/agents/main/agent/codex-home",
+    "revalidation_required": "These are exact prior source references, not fresh inventory results. Current changed paths or pins stop admission; no silent rediscovery or runtime override."
+  },
+  "source_basis": {
+    "qa_commit": "8a31986957805df7e27bdd17e34b02bdf96219d4",
+    "driver": {
+      "path": "qa/openbao-acceptance/authbus_native_codex_live.py",
+      "blob": "d547432ce6045b93cfc1639c8ff217870127787e",
+      "bytes": 36421,
+      "sha256": "c384de8d1ada71f5fc4461a1cb5c03faaa178d42d88bfe6a652aa77c0ca101d0"
+    },
+    "consumer": {
+      "path": "qa/openbao-acceptance/authbus_native_codex_consumer.mjs",
+      "blob": "e07e5106c9a49b1f95f453a6c6dac03c719f7141",
+      "bytes": 33710,
+      "sha256": "a0faff4f0da0f9afd505476715495bf2ae4af040693020cf46e56b707aa7a733"
+    },
+    "observer": {
+      "path": "qa/openbao-acceptance/authbus_native_process_observer.py",
+      "blob": "acc80fe9dcae285c0c162447d1fdf89e758cfa7a",
+      "bytes": 11897,
+      "sha256": "2a2d8e61ba33b41a6617e5c900d502ee73b3e4a96377f1f502a64822875bb2a9"
+    },
+    "observer_preflight": {
+      "blob": "6bd31b879a340b829257b0e28a03e84ffd0ca1cc",
+      "bytes": 6082,
+      "sha256": "104a09d76c8c9924fe3cc82f1205d6856c0d5c788d5ce4ee2c91b0e176a3e906"
+    },
+    "existing_r10_pocket_proof": "Use the reviewed same-identity/full raw/local/effective/six-cache CAS ownership pattern as a contract, not Linux path checks or Linux namespace code copied onto Mac."
+  },
+  "fixed_stage_layout": {
+    "qa": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/qa",
+    "inputs": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/private-inputs",
+    "initial": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/initial",
+    "cold": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/cold-new-process",
+    "server": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/server",
+    "launchd": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/launchd",
+    "custody": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/credential-recovery",
+    "public": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/public"
+  },
+  "service_only_proposal": {
+    "server_label": "org.heptabao.qa.mac-authbus-r10-r1.server",
+    "consumer_label": "org.heptabao.qa.mac-authbus-r10-r1.consumer",
+    "domain": "gui/501",
+    "plists": [
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/launchd/server.plist",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/launchd/consumer.plist"
+    ],
+    "activation": "launchctl bootstrap gui/501 <one exact owned plist>",
+    "observation": "launchctl print gui/501/<exact owned label>; verify actual path/program/args, UID, PID/start identity and ready receipt.",
+    "stop": "launchctl bootout gui/501/<exact owned label> once, then bounded actual manager/process/child closure.",
+    "keep_alive": false,
+    "run_at_load": true,
+    "scope": "Actual manager bootstrap/stop/new-process cold/reverse for owned jobs. KeepAlive=false prevents unreviewed automatic retries; this does not qualify the production KeepAlive=true policy.",
+    "production_label_touched": false,
+    "t5_guard": "Before create/open state and each owned manager launch: original diskutil30 guard verifies exact UUID/mount, held parent/device identity and fixed source/config/binary pins. No mkdir fallback on missing/replaced volume.",
+    "no_automatic_relaunch_or_replay": true
+  },
+  "execution_contract": {
+    "service_or_consumer_started": false,
+    "source_not_yet_implemented": true,
+    "fresh_capture": "Five exact auth store/state primary rows, complete logical local/effective stores, six cache bytes/absence, original config, registry exact named row, private native config inputs and actual SDK/module/native pins. No production write or atomic-global claim.",
+    "sqlite_safety": "Reuse guarded exact readonly query semantics only with existing valid sidecars; missing-sidecar/permission fallback requires an explicitly reviewed stable FD copy of bounded input. No guessed schema or SQL on a newly copied incomplete WAL set.",
+    "config_diff": "Owned copy changes four AuthBus connection fields only; separate owned filesystem/non-started messaging isolation fields explicitly enumerated and audited. All auth flags/hostId/model/runtime/homeScope/order/usage remain original.",
+    "egress": "Inherit actual Mac sandbox-exec policy across installed Node launcher and native child. Allow only the one owned loopback TLS server; deny production credential/config/agent/state paths and external provider/J3160. Probe real kernel containment before any credential-bearing native child.",
+    "credentials": "Exact same managed1/2 source identities/generations from previously reviewed private source packet plus current capture; verify original provider/type/account/email identity privately. Never fabricate tokens or synthetic generations, never force selection.",
+    "native_calls": [
+      "initialize",
+      "account/login/start with actual ephemeral chatgptAuthTokens",
+      "account/read(refreshToken=false)"
+    ],
+    "native_per_factory_limits_ms": {
+      "start": 15000,
+      "account_read": 8000,
+      "close": 3000
+    },
+    "prior_phase_seconds": 120,
+    "prior_phase_scope": "One aggregate deadline per initial/cold/rollback phase across all five agents; not five fresh120 deadlines. Final controller/manager outer limits must be stated as new if historical envelope cannot be recovered.",
+    "before_unknown_stop": "Record every unsafe dispatch before send; an unknown response, generation conflict, unreaped child or ambiguous manager transition stops the chain. Do not initiate a later business/cold operation.",
+    "inverse": "Consume durable once marker before exact expected-state inverse. Restore SDK local+effective first, primary raw row/updated_at/absence next, then six caches full byte/identity CAS. Restore original owned config. Verify all five agents and native source custody. No shared KV/history rewind.",
+    "source_fences": "Recheck source/code/normal artifacts/config/all selected primary rows/cache/native inputs and original gateway/relay registrations at terminal. Drift is reported and never overwritten."
+  },
+  "backup_contract": {
+    "new_current_mac_capture": false,
+    "new_offhost_restore": false,
+    "required_current_credential_scope": [
+      "original config and four connection bindings",
+      "CA/AppRole private custody",
+      "five complete credential/auth state rows and effective inheritance contract",
+      "six caches and absent-file identities",
+      "independent user-native and actual agent-native inputs within observed ownership",
+      "actual gateway/wrapper/env/registered relay inputs",
+      "coordinator owner state only if actually enrolled by this host plan"
+    ],
+    "t5": "Owner-private create-only current credential bundle with logical/raw custody and fsync; same device is not an off-host backup.",
+    "offhost": "After concrete encryption/key-custody source is observed and reviewed, encrypted current Mac bundle to independent X230 owned destination, whole transport/hash and actual decrypt/restore under original chosen recovery contract; no private/key material in public receipt.",
+    "historical_chain": "Nov2 capture/Nov3 restore Linux main is retained historical evidence; not Mac current recovery.",
+    "expansion": "Only accepted current registration/configuration or actual restore binding extends scope. No speculative manual or nine-backup gate."
+  },
+  "admission": [
+    "Root accepts finite Mac current output (or its precise unresolved branches) and exact prior source receipts needed for the named capture.",
+    "Author freezes new five-agent Mac source/strict inverse/kernel containment and actual manager ownership code; root/peer source review plus inert syntax/component verification.",
+    "Root authorizes separate create-only T5 private capture/stage after actual volume/source/old state guards.",
+    "One isolated installed consumer+native initial/cold/inverse qualification, no production manager mutation.",
+    "One separately bound owned launchd server/consumer lifecycle with actual ready/stop/cold/inverse proof.",
+    "Current encrypted Mac credential backup and independent restore after actual custody policy/selected producer inputs are bound.",
+    "Any production forward/restart/inverse uses a later fresh stopped-state intent and actual endpoint/roles/cluster/supervisor bindings; it is not inferred from this plan."
+  ],
+  "qualifications": {
+    "normal_product_builds": true,
+    "current_mac_five_agent_consumer": false,
+    "real_mac_manager": false,
+    "current_mac_offhost_recovery": false,
+    "provider": false,
+    "production_cutover": false,
+    "legacy_cleanup": false
+  }
+}

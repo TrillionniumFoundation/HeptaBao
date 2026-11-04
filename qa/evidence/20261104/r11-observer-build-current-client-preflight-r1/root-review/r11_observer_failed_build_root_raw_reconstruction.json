@@ -1,0 +1,106 @@
+{
+  "schema": "heptabao.phaseb-observer-failed-build-root-raw-reconstruction.v1",
+  "packet_tree": "94bc1904b020caebc231f14fa3a5992156f77a86",
+  "whole_raw_files": 30,
+  "compiler_stdout": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/normal-release-build.stdout",
+    "sha256": "324a6b59e740e1ed2dc0c447ce638557d5cbd53cdec2c5b3afaa0a701cee3c92",
+    "size": 384196,
+    "version": "66306:33072024:384196:1793828344504145242:1793828344504145242"
+  },
+  "compiler_stderr": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/normal-release-build.stderr",
+    "sha256": "d47156c8828983229eccec58c9a4cd5f1535b653c7d59fab9ddf4db72839ee3e",
+    "size": 27914,
+    "version": "66306:33072025:27914:1793828344504145242:1793828344504145242"
+  },
+  "stdout_chunks": [
+    {
+      "bytes": 87748,
+      "sha256": "05d2fb78a3a4895d3c1434a49dd26edfc039a3688749290c65d90ddd06e1027e",
+      "blob": "40ff1bbee5269744ffb0803b20ee94fae71a85ea"
+    },
+    {
+      "bytes": 87753,
+      "sha256": "08c69750d5bb0b4cb5e40147d8a5f1f91b07f81baf93649f3aa0695aa796c15c",
+      "blob": "18dc27b16f00abfd43b8bbba03f66a578b7cefc6"
+    },
+    {
+      "bytes": 87754,
+      "sha256": "a15d713067e938fac510ab612c5ccb547d43af4b741bc66705af6388be9bc707",
+      "blob": "b094544063bb0ac1b89879f1a384902726d759a5"
+    },
+    {
+      "bytes": 87754,
+      "sha256": "6b2abd1c6c842765e035bf30060a20c95a21dafeb7d9726390ef4ad920abc7b2",
+      "blob": "d291ff11b199e491e40b0b2765f3e2694df69344"
+    },
+    {
+      "bytes": 87754,
+      "sha256": "9c95159a4b7e2333379ae729b9075739ca5186e03dc6f6b7a886b8a7a646117c",
+      "blob": "0f838cf28a403f8d2a606df6853d53030ab86d58"
+    },
+    {
+      "bytes": 75725,
+      "sha256": "189145f406946a2da03f1dfb57dc3a7d77609dd70d5aff8fb33856ff05324bb8",
+      "blob": "6afab82ffd3aae7b8ed8a731b3d09092c3eaaa24"
+    }
+  ],
+  "stdout_full_bytes_equal": true,
+  "compiler_readback_files": [
+    {
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/result.public.json",
+      "blob": "3c909afa3fa0e2d2888adbd1452e7fd69cfe9934",
+      "bytes": 9233,
+      "sha256": "2947b177c2b7ca145a499175567aec632c76d12641c8afa4276ae900dda3a122",
+      "version": "66306:33072044:9233:1793828344571144982:1793828344571144982"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/normal-release-build.stderr",
+      "blob": "b52ca5a2ac29aa05919bed897f360ecef8a26746",
+      "bytes": 27914,
+      "sha256": "d47156c8828983229eccec58c9a4cd5f1535b653c7d59fab9ddf4db72839ee3e",
+      "version": "66306:33072025:27914:1793828344504145242:1793828344504145242"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/normal-release-build.public.json",
+      "blob": "da16c331a4548c9eddbd037030f5f5eb26c32c76",
+      "bytes": 710,
+      "sha256": "654c0e9dd676855d585746275be3dc92188c843e576d873d6b3607141fb9f412",
+      "version": "66306:33072026:710:1793828344558640174:1793828344558640174"
+    }
+  ],
+  "controller_stdout_full_hex_text_equal": true,
+  "controller_stdout_bytes": 718,
+  "original_terminal_sdk": {
+    "bytes": 905,
+    "sha256": "119ef9292183fc029637ca1b1965835a2ab59a7202665b011c2e586687a12a3e",
+    "blob": "2b460125a7c8d08c8025a54b14c19e0523f20d01"
+  },
+  "authority_projection_trailing_lf_added": false,
+  "authority_raw_original_preserved_in_sdk": true,
+  "all_original_integer_tokens_preserved": true,
+  "build_stays_failed": true
+}

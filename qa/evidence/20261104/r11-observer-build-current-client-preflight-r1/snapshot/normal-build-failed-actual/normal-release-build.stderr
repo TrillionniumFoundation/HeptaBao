@@ -1,0 +1,487 @@
+   Compiling heptabao-filesystem-guard v0.1.0 (/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/crates/heptabao-filesystem-guard)
+   Compiling heptabao-domain v0.1.0 (/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/crates/heptabao-domain)
+   Compiling heptabao-raft-runtime v0.1.0 (/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/crates/heptabao-raft-runtime)
+   Compiling heptabao-plugin-contracts v0.1.0 (/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/crates/heptabao-plugin-contracts)
+   Compiling heptabao-durable-service v0.1.0 (/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/crates/heptabao-durable-service)
+   Compiling heptabao-linux-parent-death v0.1.0 (/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/crates/heptabao-linux-parent-death)
+   Compiling heptabao-workflow-template v0.6.1 (/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/third_party/workflow-gotmpl)
+   Compiling bcrypt v0.19.3 (/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/vendor/bcrypt-0.19.3)
+   Compiling heptabao-plugin-host v0.1.0 (/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/crates/heptabao-plugin-host)
+   Compiling heptabao-openbao-grpc v0.1.0 (/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/crates/heptabao-openbao-grpc)
+   Compiling heptabao-ha-service v0.1.0 (/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/crates/heptabao-ha-service)
+   Compiling heptabao-kms-contracts v0.1.0 (/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/crates/heptabao-kms-contracts)
+   Compiling qrcode v0.14.1 (/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/vendor/qrcode-0.14.1)
+   Compiling heptabao-server v0.1.0 (/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/crates/heptabao-server)
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:782:16
+    |
+782 |         if let Err(reason) = &result {
+    |                ^^^^^^^^^^^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by a bound in `Err`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:566:4
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:689:22
+    |
+689 |           let result = (|| {
+    |  ______________________^
+690 | |             permission.check_initial_read(deadline, local_root)?;
+691 | |             failure.step("fresh_ingress_runtime");
+692 | |             let native = self
+...   |
+780 | |             Ok(Some(NativeV6IngressRead::Ready(read)))
+781 | |         })();
+    | |____________^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `std::result::Result`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:557:0
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:780:13
+    |
+780 |             Ok(Some(NativeV6IngressRead::Ready(read)))
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by a bound in `std::prelude::v1::Ok`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:561:4
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:746:32
+    |
+746 |                           return Ok(Some(NativeV6IngressRead::Superseded(
+    |  ________________________________^
+747 | |                             NativeV6IngressSuperseded {
+748 | |                                 _operation: operation,
+749 | |                                 instance: Arc::clone(&native.identity),
+...   |
+753 | |                             },
+754 | |                         )));
+    | |___________________________^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by a bound in `std::prelude::v1::Ok`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:561:4
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:712:24
+    |
+712 |                 return Ok(None);
+    |                        ^^^^^^^^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by a bound in `std::prelude::v1::Ok`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:561:4
+
+error[E0277]: `?` couldn't convert the error to `str`
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:690:64
+    |
+690 |             permission.check_initial_read(deadline, local_root)?;
+    |                        ----------------------------------------^ the trait `From<std::string::String>` is not implemented for `str`
+    |                        |
+    |                        this can't be annotated with `?` because it has type `Result<_, std::string::String>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = help: `&str` implements trait `From<T>`:
+              From<&icu_locid::extensions::other::subtag::Subtag>
+              From<&icu_locid::extensions::private::other::Subtag>
+              From<&icu_locid::extensions::transform::key::Key>
+              From<&icu_locid::extensions::unicode::attribute::Attribute>
+              From<&icu_locid::extensions::unicode::key::Key>
+              From<&icu_locid::subtags::language::Language>
+              From<&icu_locid::subtags::region::Region>
+              From<&icu_locid::subtags::script::Script>
+            and 2 others
+
+error[E0277]: `?` couldn't convert the error to `str`
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:696:63
+    |
+696 |                 .ok_or("native HA was not explicitly enabled")?;
+    |                  ---------------------------------------------^ the trait `From<&str>` is not implemented for `str`
+    |                  |
+    |                  this can't be annotated with `?` because it has type `Result<_, &str>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = help: `&str` implements trait `From<T>`:
+              From<&icu_locid::extensions::other::subtag::Subtag>
+              From<&icu_locid::extensions::private::other::Subtag>
+              From<&icu_locid::extensions::transform::key::Key>
+              From<&icu_locid::extensions::unicode::attribute::Attribute>
+              From<&icu_locid::extensions::unicode::key::Key>
+              From<&icu_locid::subtags::language::Language>
+              From<&icu_locid::subtags::region::Region>
+              From<&icu_locid::subtags::script::Script>
+            and 2 others
+
+error[E0277]: `?` couldn't convert the error to `str`
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:779:56
+    |
+779 |             self.verify_native_v6_committed_read(&read)?;
+    |                  --------------------------------------^ the trait `From<std::string::String>` is not implemented for `str`
+    |                  |
+    |                  this can't be annotated with `?` because it has type `Result<_, std::string::String>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = help: `&str` implements trait `From<T>`:
+              From<&icu_locid::extensions::other::subtag::Subtag>
+              From<&icu_locid::extensions::private::other::Subtag>
+              From<&icu_locid::extensions::transform::key::Key>
+              From<&icu_locid::extensions::unicode::attribute::Attribute>
+              From<&icu_locid::extensions::unicode::key::Key>
+              From<&icu_locid::subtags::language::Language>
+              From<&icu_locid::subtags::region::Region>
+              From<&icu_locid::subtags::script::Script>
+            and 2 others
+
+error[E0277]: `?` couldn't convert the error to `str`
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:697:75
+    |
+697 |             let node = self.node.as_ref().ok_or("HA process is shut down")?;
+    |                                           --------------------------------^ the trait `From<&str>` is not implemented for `str`
+    |                                           |
+    |                                           this can't be annotated with `?` because it has type `Result<_, &str>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = help: `&str` implements trait `From<T>`:
+              From<&icu_locid::extensions::other::subtag::Subtag>
+              From<&icu_locid::extensions::private::other::Subtag>
+              From<&icu_locid::extensions::transform::key::Key>
+              From<&icu_locid::extensions::unicode::attribute::Attribute>
+              From<&icu_locid::extensions::unicode::key::Key>
+              From<&icu_locid::subtags::language::Language>
+              From<&icu_locid::subtags::region::Region>
+              From<&icu_locid::subtags::script::Script>
+            and 2 others
+
+error[E0277]: `?` couldn't convert the error to `str`
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:770:44
+    |
+762 | /                 read_or_recover_native_v6_committed_closure(
+763 | |                     node,
+764 | |                     self.runtime.handle(),
+765 | |                     &native.transport,
+...   |
+768 | |                     selected,
+769 | |                 )
+    | |_________________- this has type `Result<_, heptabao_ha_service::HaError>`
+770 |                   .map_err(|e| e.to_string())?
+    |                    --------------------------^ the trait `From<std::string::String>` is not implemented for `str`
+    |                    |
+    |                    this can't be annotated with `?` because it has type `Result<_, std::string::String>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = help: `&str` implements trait `From<T>`:
+              From<&icu_locid::extensions::other::subtag::Subtag>
+              From<&icu_locid::extensions::private::other::Subtag>
+              From<&icu_locid::extensions::transform::key::Key>
+              From<&icu_locid::extensions::unicode::attribute::Attribute>
+              From<&icu_locid::extensions::unicode::key::Key>
+              From<&icu_locid::subtags::language::Language>
+              From<&icu_locid::subtags::region::Region>
+              From<&icu_locid::subtags::script::Script>
+            and 2 others
+
+error[E0277]: `?` couldn't convert the error to `str`
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:701:57
+    |
+701 |                 .ok_or("native ciphertext store absent")?;
+    |                  ---------------------------------------^ the trait `From<&str>` is not implemented for `str`
+    |                  |
+    |                  this can't be annotated with `?` because it has type `Result<_, &str>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = help: `&str` implements trait `From<T>`:
+              From<&icu_locid::extensions::other::subtag::Subtag>
+              From<&icu_locid::extensions::private::other::Subtag>
+              From<&icu_locid::extensions::transform::key::Key>
+              From<&icu_locid::extensions::unicode::attribute::Attribute>
+              From<&icu_locid::extensions::unicode::key::Key>
+              From<&icu_locid::subtags::language::Language>
+              From<&icu_locid::subtags::region::Region>
+              From<&icu_locid::subtags::script::Script>
+            and 2 others
+
+error[E0277]: `?` couldn't convert the error to `str`
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:705:44
+    |
+704 |                 .begin_native_operation()
+    |                  ------------------------ this has type `Result<_, heptabao_raft_runtime::LocalV6BlobError>`
+705 |                 .map_err(|e| e.to_string())?;
+    |                  --------------------------^ the trait `From<std::string::String>` is not implemented for `str`
+    |                  |
+    |                  this can't be annotated with `?` because it has type `Result<_, std::string::String>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = help: `&str` implements trait `From<T>`:
+              From<&icu_locid::extensions::other::subtag::Subtag>
+              From<&icu_locid::extensions::private::other::Subtag>
+              From<&icu_locid::extensions::transform::key::Key>
+              From<&icu_locid::extensions::unicode::attribute::Attribute>
+              From<&icu_locid::extensions::unicode::key::Key>
+              From<&icu_locid::subtags::language::Language>
+              From<&icu_locid::subtags::region::Region>
+              From<&icu_locid::subtags::script::Script>
+            and 2 others
+
+error[E0277]: `?` couldn't convert the error to `str`
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:741:52
+    |
+733 | /                         recover_native_v6_committed_closure(
+734 | |                             node,
+735 | |                             self.runtime.handle(),
+736 | |                             &native.transport,
+...   |
+739 | |                             read,
+740 | |                         )
+    | |_________________________- this has type `Result<_, heptabao_ha_service::HaError>`
+741 |                           .map_err(|e| e.to_string())?
+    |                            --------------------------^ the trait `From<std::string::String>` is not implemented for `str`
+    |                            |
+    |                            this can't be annotated with `?` because it has type `Result<_, std::string::String>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = help: `&str` implements trait `From<T>`:
+              From<&icu_locid::extensions::other::subtag::Subtag>
+              From<&icu_locid::extensions::private::other::Subtag>
+              From<&icu_locid::extensions::transform::key::Key>
+              From<&icu_locid::extensions::unicode::attribute::Attribute>
+              From<&icu_locid::extensions::unicode::key::Key>
+              From<&icu_locid::subtags::language::Language>
+              From<&icu_locid::subtags::region::Region>
+              From<&icu_locid::subtags::script::Script>
+            and 2 others
+
+error[E0277]: `?` couldn't convert the error to `str`
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:710:44
+    |
+709 |                 .block_on(node.native_v6_committed_root_read(deadline.instant()))
+    |                  ---------------------------------------------------------------- this has type `Result<_, RemoteRaftError>`
+710 |                 .map_err(|e| e.to_string())?;
+    |                  --------------------------^ the trait `From<std::string::String>` is not implemented for `str`
+    |                  |
+    |                  this can't be annotated with `?` because it has type `Result<_, std::string::String>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = help: `&str` implements trait `From<T>`:
+              From<&icu_locid::extensions::other::subtag::Subtag>
+              From<&icu_locid::extensions::private::other::Subtag>
+              From<&icu_locid::extensions::transform::key::Key>
+              From<&icu_locid::extensions::unicode::attribute::Attribute>
+              From<&icu_locid::extensions::unicode::key::Key>
+              From<&icu_locid::subtags::language::Language>
+              From<&icu_locid::subtags::region::Region>
+              From<&icu_locid::subtags::script::Script>
+            and 2 others
+
+error[E0277]: `?` couldn't convert the error to `str`
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:715:75
+    |
+715 |             native.validate_enrollment(&self.codec, selected.enrollment())?;
+    |                    -------------------------------------------------------^ the trait `From<std::string::String>` is not implemented for `str`
+    |                    |
+    |                    this can't be annotated with `?` because it has type `Result<_, std::string::String>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = help: `&str` implements trait `From<T>`:
+              From<&icu_locid::extensions::other::subtag::Subtag>
+              From<&icu_locid::extensions::private::other::Subtag>
+              From<&icu_locid::extensions::transform::key::Key>
+              From<&icu_locid::extensions::unicode::attribute::Attribute>
+              From<&icu_locid::extensions::unicode::key::Key>
+              From<&icu_locid::subtags::language::Language>
+              From<&icu_locid::subtags::region::Region>
+              From<&icu_locid::subtags::script::Script>
+            and 2 others
+
+error[E0277]: `?` couldn't convert the error to `str`
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:725:44
+    |
+718 |                   match read_native_v6_fresh_ingress_closure(
+    |  _______________________-
+719 | |                     node,
+720 | |                     self.runtime.handle(),
+721 | |                     &self.peers,
+722 | |                     Arc::clone(storage),
+723 | |                     selected,
+724 | |                 )
+    | |_________________- this has type `Result<_, heptabao_ha_service::HaError>`
+725 |                   .map_err(|e| e.to_string())?
+    |                    --------------------------^ the trait `From<std::string::String>` is not implemented for `str`
+    |                    |
+    |                    this can't be annotated with `?` because it has type `Result<_, std::string::String>`
+    |
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = help: `&str` implements trait `From<T>`:
+              From<&icu_locid::extensions::other::subtag::Subtag>
+              From<&icu_locid::extensions::private::other::Subtag>
+              From<&icu_locid::extensions::transform::key::Key>
+              From<&icu_locid::extensions::unicode::attribute::Attribute>
+              From<&icu_locid::extensions::unicode::key::Key>
+              From<&icu_locid::subtags::language::Language>
+              From<&icu_locid::subtags::region::Region>
+              From<&icu_locid::subtags::script::Script>
+            and 2 others
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:690:13
+    |
+690 |             permission.check_initial_read(deadline, local_root)?;
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `std::result::Result`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:557:0
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:692:26
+    |
+692 |               let native = self
+    |  __________________________^
+693 | |                 .native_v6
+694 | |                 .as_ref()
+695 | |                 .filter(|native| native.enabled())
+696 | |                 .ok_or("native HA was not explicitly enabled")?;
+    | |_______________________________________________________________^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `std::result::Result`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:557:0
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:779:13
+    |
+779 |             self.verify_native_v6_committed_read(&read)?;
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `std::result::Result`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:557:0
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:697:24
+    |
+697 |             let node = self.node.as_ref().ok_or("HA process is shut down")?;
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `std::result::Result`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:557:0
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:762:17
+    |
+762 | /                 read_or_recover_native_v6_committed_closure(
+763 | |                     node,
+764 | |                     self.runtime.handle(),
+765 | |                     &native.transport,
+...   |
+770 | |                 .map_err(|e| e.to_string())?
+    | |____________________________________________^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `std::result::Result`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:557:0
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:698:27
+    |
+698 |               let storage = native
+    |  ___________________________^
+699 | |                 .storage
+700 | |                 .get()
+701 | |                 .ok_or("native ciphertext store absent")?;
+    | |_________________________________________________________^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `std::result::Result`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:557:0
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:703:29
+    |
+703 |               let operation = storage
+    |  _____________________________^
+704 | |                 .begin_native_operation()
+705 | |                 .map_err(|e| e.to_string())?;
+    | |____________________________________________^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `std::result::Result`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:557:0
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:733:25
+    |
+733 | /                         recover_native_v6_committed_closure(
+734 | |                             node,
+735 | |                             self.runtime.handle(),
+736 | |                             &native.transport,
+...   |
+741 | |                         .map_err(|e| e.to_string())?
+    | |____________________________________________________^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `std::result::Result`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:557:0
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:707:28
+    |
+707 |               let selected = self
+    |  ____________________________^
+708 | |                 .runtime
+709 | |                 .block_on(node.native_v6_committed_root_read(deadline.instant()))
+710 | |                 .map_err(|e| e.to_string())?;
+    | |____________________________________________^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `std::result::Result`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:557:0
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:715:13
+    |
+715 |             native.validate_enrollment(&self.codec, selected.enrollment())?;
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `std::result::Result`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:557:0
+
+error[E0277]: the size for values of type `str` cannot be known at compilation time
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:718:23
+    |
+718 |                   match read_native_v6_fresh_ingress_closure(
+    |  _______________________^
+719 | |                     node,
+720 | |                     self.runtime.handle(),
+721 | |                     &self.peers,
+...   |
+725 | |                 .map_err(|e| e.to_string())?
+    | |____________________________________________^ doesn't have a size known at compile-time
+    |
+    = help: the trait `Sized` is not implemented for `str`
+note: required by an implicit `Sized` bound in `std::result::Result`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:557:0
+
+error[E0308]: mismatched types
+   --> crates/heptabao-server/src/ha_native_v6_runtime.rs:788:9
+    |
+686 |     ) -> Result<Option<NativeV6IngressRead>, String> {
+    |          ------------------------------------------- expected `std::result::Result<std::option::Option<NativeV6IngressRead>, std::string::String>` because of return type
+...
+782 |         if let Err(reason) = &result {
+    |                               ------ here the type of `result` is inferred to be `std::result::Result<std::option::Option<NativeV6IngressRead>, str>`
+...
+788 |         result
+    |         ^^^^^^ expected `Result<Option<NativeV6IngressRead>, ...>`, found `Result<Option<NativeV6IngressRead>, str>`
+    |
+    = note: expected enum `std::result::Result<_, std::string::String>`
+               found enum `std::result::Result<_, str>`
+
+Some errors have detailed explanations: E0277, E0308.
+For more information about an error, try `rustc --explain E0277`.
+error: could not compile `heptabao-server` (lib) due to 28 previous errors

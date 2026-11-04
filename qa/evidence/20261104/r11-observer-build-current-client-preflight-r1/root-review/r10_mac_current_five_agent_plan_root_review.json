@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.mac-current-five-agent-plan-root-review.v1",
+  "status": "PLAN_CURRENT_CONFIG_CONFIRMED_SOURCE_IMPLEMENTATION_PENDING",
+  "plan_tree": "0461891c5a95d3d7f56c763756ad7037c214801f",
+  "plan_md": {
+    "bytes": 17254,
+    "sha256": "6063d9915cacf192e34195b7c62707bd67c9bb81e7bacd5dfb42d6ee7267bb27",
+    "blob": "3fbfa9c06d646f5509cca8d407a539baa1feda06"
+  },
+  "plan_json": {
+    "bytes": 15284,
+    "sha256": "2be0620a1dea6858b3c62d37fb0e6616ffe79bcf4c6e7098986e617e94fc0d76",
+    "blob": "b41054c529fb6b74f206f800523d497601257815"
+  },
+  "peer_review": {
+    "bytes": 7203,
+    "sha256": "f354649c41c85a4a3f321fa092915b08e1ceca578f04ba4b8b40616f0ef8d1b9",
+    "blob": "f2597d0d922b49aac29e69648b93befec7ed5407"
+  },
+  "actual_current_config_job": "1a1a88a785a-fc05-2f00",
+  "actual_current_config_sha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+  "exact_agents": [
+    "main",
+    "trnm",
+    "hepta-ui",
+    "hepta",
+    "hepta-backend"
+  ],
+  "original_flag_projection_matches": true,
+  "source_candidate_implemented": false,
+  "current_five_agent_sdk_or_native_not_executed": true,
+  "implementation_corrections": [
+    "One installed full-cohort AuthBus cycle per initial/cold phase, followed by five separately owned Node/native attempts with independent single-use observer lineage; all share original120s.",
+    "The launchd program is the actual wrapper parent of sandbox-exec/Node and anonymous observer pipes; external orchestrator owns only exact manager transitions.",
+    "Restore actual durable local/raw state and original updated_at/absence; effective store is recomputed and compared, never materialized into trnm raw-empty row.",
+    "Freeze exact initial/cold and both inverses, per-agent CAS and six-cache once custody, finite manager transition graph; no continuation after unknown."
+  ],
+  "actual_launchd_qualified": false,
+  "offhost_current_mac_restore_qualified": false,
+  "production_cutover": false,
+  "legacy_cleanup": false
+}

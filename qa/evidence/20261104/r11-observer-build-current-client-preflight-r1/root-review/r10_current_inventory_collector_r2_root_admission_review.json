@@ -1,0 +1,39 @@
+{
+  "full_collector_executed": false,
+  "host_cases": [
+    {
+      "duplicate_leaf_refused": true,
+      "duplicate_pass_refused": true,
+      "entries": 38,
+      "host": "mac",
+      "incorrect_count_refused": true,
+      "omitted_parent_refused": true,
+      "passes": 15,
+      "total_explicit_observations": 357
+    },
+    {
+      "duplicate_leaf_refused": true,
+      "duplicate_pass_refused": true,
+      "entries": 46,
+      "host": "rog",
+      "incorrect_count_refused": true,
+      "omitted_parent_refused": true,
+      "passes": 17,
+      "total_explicit_observations": 434
+    },
+    {
+      "duplicate_leaf_refused": true,
+      "duplicate_pass_refused": true,
+      "entries": 18,
+      "host": "x230",
+      "incorrect_count_refused": true,
+      "omitted_parent_refused": true,
+      "passes": 5,
+      "total_explicit_observations": 112
+    }
+  ],
+  "host_or_private_input_read": false,
+  "manifest_sha256": "3c3900c814ebf3e9a1cd0d58226dd6a99fe0edb0aeb42510c3dd7fe5b528af93",
+  "os_identity_stubbed": true,
+  "schema": "heptabao.inventory-r2-root-pure-admission.v1"
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.observer-r2-source-stage-root-start-review.v1",
+  "status": "UNIQUE_SOURCE_STAGE_ACK_EXACT",
+  "job": "1a1a8a17dcd-fc05-2f48",
+  "created_unix_ms": 1793830518221,
+  "ack": {
+    "bytes": 26300,
+    "sha256": "750073a36ee1722fc393ba17d55de9152a6442bf2d92f4db8d91b87cd3db675c",
+    "blob": "5bd2c6f06bbe3c1f7663a0a3b119b0a5764abcfd"
+  },
+  "exact_frozen_args_equal": true,
+  "source_sha256": "8b187ab5411177107959da3afc5ef1dd000c7abe946e223126c9c51cc8d00fea",
+  "carrier_sha256": "d8ac6575880540b8a094de52bc0102ddfa0c725b98d5f528f04b4842d739af31",
+  "reused": false,
+  "automatic_replay": false,
+  "normal_build_GO": false
+}

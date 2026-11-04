@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.mac-etc-alias-readback.r1",
+  "status": "PASS_NAMED_ALIAS_ONLY",
+  "job_id": "1a1a8a36747-fc05-2f52",
+  "authority_sha256": "6d4296a6241d81135b04f161179c225630e502f01d80d330f565e24cf92edca3",
+  "stdout_sha256": "61ad3e1dcd69c43f20010869225d0bd8ed6654b4e88570ecc03a239689157254",
+  "stdout_bytes": 1239,
+  "raw_text_equals_hex": true,
+  "readlink_target": "private/etc",
+  "lexical_absolute_candidate": "/private/etc",
+  "expected_previous_identity_matched": true,
+  "explicit_stat_fstat_count": 5,
+  "readlink_count": 1,
+  "elapsed_seconds": 0.00010899999999999799,
+  "new_inner_seconds": 5,
+  "new_outer_seconds": 60,
+  "owned_root_fd_closed": true,
+  "target_opened": false,
+  "system_crontab_read": false,
+  "system_crontab_absence_claimed": false,
+  "prior_readonly_known_incomplete_preserved": true,
+  "next_step_requires_separate_exact_canonical_target_read_authorization": true
+}

@@ -1,0 +1,254 @@
+{
+  "schema": "heptabao.phaseb-observer-3cb-r2-source-invariance.v1",
+  "method": "complete top-level function source span comparison, not Python AST execution",
+  "runtime_executed": false,
+  "stage_existing_functions": 18,
+  "launcher_existing_functions": 7,
+  "comparisons": [
+    {
+      "kind": "stage",
+      "name": "on_signal",
+      "occurrence": 1,
+      "before_sha256": "ef006bc4a65a00e7ae13d5f17d787789b0b6e91ad2c71936a4554e6db38344e4",
+      "after_sha256": "ef006bc4a65a00e7ae13d5f17d787789b0b6e91ad2c71936a4554e6db38344e4",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "digest",
+      "occurrence": 1,
+      "before_sha256": "884bb01e185f2d9d9430301d9fae0ad420aa9c9ab5ec6be9c82587a6bf0ed525",
+      "after_sha256": "884bb01e185f2d9d9430301d9fae0ad420aa9c9ab5ec6be9c82587a6bf0ed525",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "blob",
+      "occurrence": 1,
+      "before_sha256": "30b1de4508f46b68d681c4ec522dbef07eb44a1f78943f90c20e607a0c60c7e7",
+      "after_sha256": "30b1de4508f46b68d681c4ec522dbef07eb44a1f78943f90c20e607a0c60c7e7",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "identity",
+      "occurrence": 1,
+      "before_sha256": "ccbfa2ed113368dcca67c2c5024ee033d4a06e43a2cd9ab8193c9d7e12411c20",
+      "after_sha256": "ccbfa2ed113368dcca67c2c5024ee033d4a06e43a2cd9ab8193c9d7e12411c20",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "stable_read",
+      "occurrence": 1,
+      "before_sha256": "4aa3538e38da072ef8d77d75e35aa091950eda507ec5ee5026cbcaacb34b06b3",
+      "after_sha256": "4aa3538e38da072ef8d77d75e35aa091950eda507ec5ee5026cbcaacb34b06b3",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "fsync_dir",
+      "occurrence": 1,
+      "before_sha256": "41abd50d7950c4f7f1849b144e2193ee30212f97ed0391bd597477634e67b406",
+      "after_sha256": "41abd50d7950c4f7f1849b144e2193ee30212f97ed0391bd597477634e67b406",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "create",
+      "occurrence": 1,
+      "before_sha256": "2a38da3fe2fbbd231b207517bf7b75804db08d695e9a47e8939d958b4a7b5dc9",
+      "after_sha256": "2a38da3fe2fbbd231b207517bf7b75804db08d695e9a47e8939d958b4a7b5dc9",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "public",
+      "occurrence": 1,
+      "before_sha256": "1422f47a274fd6a7cfa5fcde28d4cac34a184065490a54692ea91ae2cd7eb4d2",
+      "after_sha256": "1422f47a274fd6a7cfa5fcde28d4cac34a184065490a54692ea91ae2cd7eb4d2",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "group_members",
+      "occurrence": 1,
+      "before_sha256": "5f91d7f708c824477dda4d4188aaea70aac4a6779cde320e357859b44b590db6",
+      "after_sha256": "5f91d7f708c824477dda4d4188aaea70aac4a6779cde320e357859b44b590db6",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "stop_owned",
+      "occurrence": 1,
+      "before_sha256": "cd20b3e52614dd679f9cdf54e3571209acd0c3de7319da853f52a72f4d8fe77d",
+      "after_sha256": "cd20b3e52614dd679f9cdf54e3571209acd0c3de7319da853f52a72f4d8fe77d",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "owned",
+      "occurrence": 1,
+      "before_sha256": "ffd653df23e2ad248e09a7fbae4f7ac38111fdcbab1ff4ec3b5705286610f229",
+      "after_sha256": "ffd653df23e2ad248e09a7fbae4f7ac38111fdcbab1ff4ec3b5705286610f229",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "git",
+      "occurrence": 1,
+      "before_sha256": "df21ddb8a3974926b78102bcd76b7e42205822ba1fb6539a3006088d14720ceb",
+      "after_sha256": "df21ddb8a3974926b78102bcd76b7e42205822ba1fb6539a3006088d14720ceb",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "stage_remaining",
+      "occurrence": 1,
+      "before_sha256": "1b1ab8ad10936207138bb5f0e6ec0163ad4fa80eed3124e230c3026d34191fc3",
+      "after_sha256": "1b1ab8ad10936207138bb5f0e6ec0163ad4fa80eed3124e230c3026d34191fc3",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "owned",
+      "occurrence": 2,
+      "before_sha256": "0b371e7e27007645c66b531f3c091606c27c6933e02a30ab492ae9c16e13d6ca",
+      "after_sha256": "0b371e7e27007645c66b531f3c091606c27c6933e02a30ab492ae9c16e13d6ca",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "freeze",
+      "occurrence": 1,
+      "before_sha256": "f0126b9e2835f072fa7c87ca7406ca62690250bd0beabd5795b4c53d1a79a072",
+      "after_sha256": "f0126b9e2835f072fa7c87ca7406ca62690250bd0beabd5795b4c53d1a79a072",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "walk_error",
+      "occurrence": 1,
+      "before_sha256": "88a386c940eb12280224e9c1f84aaa51f04f06ce80384b4a2feb88522b2cb738",
+      "after_sha256": "88a386c940eb12280224e9c1f84aaa51f04f06ce80384b4a2feb88522b2cb738",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "independent_git",
+      "occurrence": 1,
+      "before_sha256": "f2137c955c92de21f4bd0fff810c560110e56c56b4fdbde945f284d3f4c9f5e1",
+      "after_sha256": "f2137c955c92de21f4bd0fff810c560110e56c56b4fdbde945f284d3f4c9f5e1",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "stage",
+      "name": "verify_full_worktree",
+      "occurrence": 1,
+      "before_sha256": "0986d0722cee2ac24435dcb12e9f6f437ab2daea82bee784fd8aaf2feaa1ca15",
+      "after_sha256": "c91f90088f6308c1089015a0a159f6e284921a86306b222e1e0c2d548d6c05b0",
+      "byte_equal": false,
+      "only_three_runtime_identity_literals": true
+    },
+    {
+      "kind": "launcher",
+      "name": "identity",
+      "occurrence": 1,
+      "before_sha256": "ccbfa2ed113368dcca67c2c5024ee033d4a06e43a2cd9ab8193c9d7e12411c20",
+      "after_sha256": "ccbfa2ed113368dcca67c2c5024ee033d4a06e43a2cd9ab8193c9d7e12411c20",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "launcher",
+      "name": "read_bound",
+      "occurrence": 1,
+      "before_sha256": "3e3e98937723f7d7ca4ec0f383ef074efe4c8c1f01647a971582e75f0076a558",
+      "after_sha256": "3e3e98937723f7d7ca4ec0f383ef074efe4c8c1f01647a971582e75f0076a558",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "launcher",
+      "name": "freeze",
+      "occurrence": 1,
+      "before_sha256": "bb691010936abb17d1c3f83f6fd7adeb4587bfde3f14b9a3369e100987a009fd",
+      "after_sha256": "bb691010936abb17d1c3f83f6fd7adeb4587bfde3f14b9a3369e100987a009fd",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "launcher",
+      "name": "public",
+      "occurrence": 1,
+      "before_sha256": "4ced59e461fc1dfe07bcd503276f8394b88bdb9c0478a5b98914484d4e7c84cb",
+      "after_sha256": "4ced59e461fc1dfe07bcd503276f8394b88bdb9c0478a5b98914484d4e7c84cb",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "launcher",
+      "name": "preserve_r9",
+      "occurrence": 1,
+      "before_sha256": "11228ee92ee3a45367ac3b8af298c851612647b77e30ec614b609e358327fde5",
+      "after_sha256": "11228ee92ee3a45367ac3b8af298c851612647b77e30ec614b609e358327fde5",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "launcher",
+      "name": "preserve_r10",
+      "occurrence": 1,
+      "before_sha256": "c72de8261d0500ce5dfa84c635f45aba2786e92d2ee5e2c4e85394654a85ba5e",
+      "after_sha256": "c72de8261d0500ce5dfa84c635f45aba2786e92d2ee5e2c4e85394654a85ba5e",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    },
+    {
+      "kind": "launcher",
+      "name": "holders",
+      "occurrence": 1,
+      "before_sha256": "df4d27d4a7157cbff53db2cfccfb78d95acd65e1f8f2a24d7422ae68c2ef1d92",
+      "after_sha256": "df4d27d4a7157cbff53db2cfccfb78d95acd65e1f8f2a24d7422ae68c2ef1d92",
+      "byte_equal": true,
+      "only_three_runtime_identity_literals": false
+    }
+  ],
+  "runner_whole_byte_equal": true,
+  "runner": {
+    "bytes": 20791,
+    "sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273",
+    "blob": "65389248669059eb8f7db20eeee3d9ad47ba7282"
+  },
+  "groups_whole_byte_equal": true,
+  "groups": {
+    "bytes": 6249,
+    "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+    "blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f"
+  },
+  "authority_raw_byte_equal": true,
+  "authority": {
+    "bytes": 726,
+    "sha256": "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6",
+    "blob": "971f9ee47142e65ce39b05834e7bc647b08e655b"
+  },
+  "source_stage_new_gate": "exact retained failed source + 12 fixed files and cached authoritative terminal before/after, including whole bytes and original named identities",
+  "launcher_new_gate": "same frozen failed-fence record must still equal the successful stage record before runner exec"
+}

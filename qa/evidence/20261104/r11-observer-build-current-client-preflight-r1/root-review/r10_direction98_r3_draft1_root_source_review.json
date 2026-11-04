@@ -1,0 +1,193 @@
+{
+  "schema": "heptabao.direction98-r3-draft1-root-source-review.v1",
+  "status": "PASS_SOURCE_STRUCTURE_PENDING_FINAL_SINGLE_CLOCK_DELTA_AND_DISPATCH",
+  "tree": "c365c4e9d72b60369f19033aa452c39c283752ac",
+  "packet": {
+    "tree": "c365c4e9d72b60369f19033aa452c39c283752ac",
+    "leaves": 10,
+    "bytes": 109152,
+    "merkle": {
+      "root_sha": "c365c4e9d72b60369f19033aa452c39c283752ac",
+      "trees_verified": 1
+    },
+    "records": [
+      {
+        "path": "DESIGN.md",
+        "bytes": 7741,
+        "sha256": "a5dc54c553059e13175750841bf4b2ae4f24a0ec700e060d13ffdf1bce8933fc",
+        "blob": "1bca294af0f855f4d3f237147353b2559f497f80"
+      },
+      {
+        "path": "launch_normal_r10_pocket_direct98_r3.py",
+        "bytes": 17895,
+        "sha256": "f5a471e4efc6f5e6d3df30007164dc9b7532a05e369b0ab5d54eff82b27c4c31",
+        "blob": "d62fb84f84cca8a1421b0a5279f1688db6d6f7c5"
+      },
+      {
+        "path": "launcher-r2-to-r3.review.diff",
+        "bytes": 8370,
+        "sha256": "d9e539ab0c9237ad7b9e2412eeef461d8b69b5e8b9e59761792dffea8d7dc18d",
+        "blob": "766373e7e13e4821d5e8f69b96c2f8b9a6a3c059"
+      },
+      {
+        "path": "manifest.public.json",
+        "bytes": 2381,
+        "sha256": "5f378fa096915c383db0ddc999112a95a4f6e0931c6666bf61cb2df36a726067",
+        "blob": "978266469afe73806ab396342cd3322a1f3a571f"
+      },
+      {
+        "path": "method-preservation.public.json",
+        "bytes": 786,
+        "sha256": "2521456bb779bc0300d54567bd6f9cff6ce39defacee21d5f8def0d121709683",
+        "blob": "7cd26bf6dd5b67e6a6e6548fc92f20eceba25640"
+      },
+      {
+        "path": "native_v6_pocket_source_direct98_r10_r3.py",
+        "bytes": 25425,
+        "sha256": "a317176d27ac70a8656ec4c22416302b982c284764ae17310068e6a5f6b246d7",
+        "blob": "c272870cccb2dea8387389306678bcd0357996c0"
+      },
+      {
+        "path": "probe_normal_build_r10_r1.py",
+        "bytes": 6445,
+        "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+        "blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a"
+      },
+      {
+        "path": "read_stopped_direction_frontier_r3.py",
+        "bytes": 16250,
+        "sha256": "e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0",
+        "blob": "a59d3b3d93fcb0468940476e54899da23f6354d8"
+      },
+      {
+        "path": "reader-r4-to-r3-fixture.review.diff",
+        "bytes": 5634,
+        "sha256": "4881f5db18e4edf95ac6788404f74e862bee45fc1da0ee6242935b12dd30f621",
+        "blob": "2b5579b7f0007309dccbc12e0e45a18f606695eb"
+      },
+      {
+        "path": "runner-r2-to-r3.review.diff",
+        "bytes": 18225,
+        "sha256": "f96062ba443fac9dc1f9fd869a6645be8f3be2964ecb8539db0ed119243d74d8",
+        "blob": "31ad5a28fdac9fc3d0e6c89367892f5a09900e6e"
+      }
+    ]
+  },
+  "strict_diffs": [
+    {
+      "name": "launcher",
+      "hunks": 9,
+      "before": {
+        "bytes": 16111,
+        "sha256": "7a40c9ce4c646f850c611fc29317cc2c0662d5823a10c7d52d7d43dcaa97ade9",
+        "blob": "da78aa1036d1cb38ec41694b48d70b194968d768"
+      },
+      "after": {
+        "bytes": 17895,
+        "sha256": "f5a471e4efc6f5e6d3df30007164dc9b7532a05e369b0ab5d54eff82b27c4c31",
+        "blob": "d62fb84f84cca8a1421b0a5279f1688db6d6f7c5"
+      },
+      "diff": {
+        "bytes": 8370,
+        "sha256": "d9e539ab0c9237ad7b9e2412eeef461d8b69b5e8b9e59761792dffea8d7dc18d",
+        "blob": "766373e7e13e4821d5e8f69b96c2f8b9a6a3c059"
+      }
+    },
+    {
+      "name": "runner",
+      "hunks": 8,
+      "before": {
+        "bytes": 10844,
+        "sha256": "b7623c0bb2a9bfd754401c00867ae6535fe8e19364c9fb6367219cffa2656e89",
+        "blob": "b746e8eaae9f7608bfb8265422b27e7f18a520f1"
+      },
+      "after": {
+        "bytes": 25425,
+        "sha256": "a317176d27ac70a8656ec4c22416302b982c284764ae17310068e6a5f6b246d7",
+        "blob": "c272870cccb2dea8387389306678bcd0357996c0"
+      },
+      "diff": {
+        "bytes": 18225,
+        "sha256": "f96062ba443fac9dc1f9fd869a6645be8f3be2964ecb8539db0ed119243d74d8",
+        "blob": "31ad5a28fdac9fc3d0e6c89367892f5a09900e6e"
+      }
+    },
+    {
+      "name": "reader",
+      "hunks": 7,
+      "before": {
+        "bytes": 15562,
+        "sha256": "ecea803b16419202116b7b428fc794335da259cb4e68635073de6bc0b8f03e82",
+        "blob": "600740120f5c21e3318fd6098e80b10b26b23652"
+      },
+      "after": {
+        "bytes": 16250,
+        "sha256": "e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0",
+        "blob": "a59d3b3d93fcb0468940476e54899da23f6354d8"
+      },
+      "diff": {
+        "bytes": 5634,
+        "sha256": "4881f5db18e4edf95ac6788404f74e862bee45fc1da0ee6242935b12dd30f621",
+        "blob": "2b5579b7f0007309dccbc12e0e45a18f606695eb"
+      }
+    }
+  ],
+  "ast": {
+    "executed_modules": false,
+    "files": [
+      {
+        "bytes": 17895,
+        "name": "launcher.py",
+        "nodes": 2161,
+        "sha256": "f5a471e4efc6f5e6d3df30007164dc9b7532a05e369b0ab5d54eff82b27c4c31"
+      },
+      {
+        "bytes": 25425,
+        "name": "runner.py",
+        "nodes": 3693,
+        "sha256": "a317176d27ac70a8656ec4c22416302b982c284764ae17310068e6a5f6b246d7"
+      },
+      {
+        "bytes": 16250,
+        "name": "reader.py",
+        "nodes": 3207,
+        "sha256": "e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0"
+      }
+    ],
+    "schema": "heptabao.root-source-ast-only.v1"
+  },
+  "runtime_executed": false,
+  "actual_original_method_reversal_exact": true,
+  "ten_original_check_names_order_preserved": [
+    "missing_cipher_targets_stopped",
+    "missing_cipher_two_targets_quarantined",
+    "missing_cipher_sealed_pair_elected",
+    "missing_cipher_source_rejoined",
+    "missing_cipher_leader_empty_before_unseal",
+    "missing_cipher_leader_unsealed",
+    "missing_cipher_leader_exact_history",
+    "missing_cipher_actual_leaves_rebuilt",
+    "missing_cipher_remaining_nodes_unsealed",
+    "missing_cipher_all_hosts_readindex"
+  ],
+  "inherited_product_request_stop_start_cleanup_implementation_unchanged": true,
+  "actual_node3_source_and_node1_leader_guard_preserved": true,
+  "all_three_original_cold_unseals_preserved": true,
+  "added_readonly_sequence": "stop2, once numeric2, actual quorum1/3 health and Mac passive committed/applied frontier, stop1/3, once numeric1, stronger persisted term/index proof",
+  "new_total_prepare_seconds": 60,
+  "new_numeric_max_seconds": 15,
+  "new_numeric_ssh_max_seconds": 45,
+  "original_http_max_seconds": 15,
+  "original_admission_max_seconds": 8,
+  "original_sealed_election_seconds": 60,
+  "original_whole_fixture_seconds": 2400,
+  "new_deadline_never_reset": true,
+  "no_added_business_mutation_for_role_selection": true,
+  "numeric_not_read_index_authority": true,
+  "pre_stop_non_ROG_leader_may_leave_prep_uncovered": true,
+  "old_failures_preserved": true,
+  "descendant_named_fd_recheck_added": true,
+  "no_permission_changes": true,
+  "remaining_source_delta": "Use one completed monotonic timestamp for final preparation deadline check and elapsed reporting; clarify existing SSH transport versus explicit StrictHostKeyChecking flag.",
+  "stage_or_prepare_or_product_GO": false
+}

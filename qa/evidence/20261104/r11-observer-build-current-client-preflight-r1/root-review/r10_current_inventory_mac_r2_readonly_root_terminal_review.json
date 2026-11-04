@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.finite-inventory-mac-r2-root-whole-terminal-review.v1",
+  "status": "KNOWN_INCOMPLETE_ONE_ALIAS_BLOCKED_CLEANUP_COMPLETE",
+  "job": "1a1a88a785a-fc05-2f00",
+  "ack": {
+    "bytes": 49552,
+    "sha256": "7e44a05871c497e68bcfbaecd65cca3c2402fe2438bbce0c3e8ed3a64109b72e",
+    "blob": "86b60ac854faece0c7bf4e2101035665f22b917c"
+  },
+  "authority": {
+    "bytes": 730,
+    "sha256": "969e0c4808a2e319d61673714a4e432b2b526a271efd0c037d2e91f8675e93fc",
+    "blob": "07fbd0e5c2b216b79497386ae71d5087124afc81"
+  },
+  "stdout": {
+    "bytes": 46277,
+    "sha256": "001d9d3384f1b8c00fa3cba8af7f3020bedc54f26678611ab3cd3a524ce23902",
+    "blob": "53996b7f5c59b2cb18fe6979efded3d6138ad67c"
+  },
+  "elapsed_seconds": 0.12988945899999998,
+  "bytes_read": 173847,
+  "read_calls": 43,
+  "entry_denominator": 38,
+  "entries_fully_accounted": 38,
+  "status_counts": {
+    "read_verified": 16,
+    "absent": 4,
+    "metadata_observed": 17,
+    "blocked_by_ancestor": 1
+  },
+  "pass_count": 15,
+  "query_denominator": 7,
+  "queries_complete": 7,
+  "owned_children_closed_and_empty": 8,
+  "all_owned_descriptors_closed": true,
+  "precise_incomplete": [
+    {
+      "id": "f035",
+      "path": "/etc/crontab",
+      "status": "blocked_by_ancestor",
+      "ancestor": "/etc",
+      "ancestor_observation": "refused_nondirectory_or_symlink"
+    }
+  ],
+  "configured_prior_hashes_match": true,
+  "unsafe_integer_tokens_preserved": true,
+  "system_crontab_absence_not_proven": true,
+  "service_argument_dependencies_unresolved": true,
+  "all_host_inventory_qualified": false,
+  "provider_called": false,
+  "j3160_called": false,
+  "production_changed": false,
+  "sdk_raw_hex_reconstruction_pending": false,
+  "physical_ha_window_may_start": true,
+  "packet_tree": "92eb2881f894ee0df757107715da8b419768ad32",
+  "whole_packet_files": 10,
+  "manifest_members_verified": 9,
+  "original_sdk_pages": [
+    {
+      "bytes": 50923,
+      "sha256": "13f15db1f8cc78d703a4a7c65c4f8f332be0c4844f153f06b27ad7c154828fd9",
+      "blob": "ff44a4c99813d951e2adc73c04bb964cca88b90e"
+    },
+    {
+      "bytes": 50778,
+      "sha256": "ebf4627f3d23b7f680b7589af5fd43d6a8421a02f1b3d3a479d11ff0472b93e1",
+      "blob": "b7ca197c393449574a3f768c7bdcc30e6751c596"
+    },
+    {
+      "bytes": 42160,
+      "sha256": "d766ca43795f20ce3da95cc0523c29f47738a195e8fcb5a0305e7648b413d99c",
+      "blob": "c716a6dda4c051d0810339bafd27438ad4853589"
+    }
+  ],
+  "original_sdk_raw_bytes_and_text_match_full_stdout": true,
+  "original_sdk_offsets_and_eof_complete": true,
+  "not_whole_service_relation": true
+}

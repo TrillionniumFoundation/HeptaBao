@@ -1,0 +1,104 @@
+--- observe_stopped_raft_numeric_r4.py
++++ read_stopped_direction_frontier_r3.py
+@@ -1,6 +1,7 @@
+ #!/usr/bin/env python3
+-"""Read-only numeric projection of two fixed, already-stopped synthetic Raft stores.
++"""One bounded numeric read of a fixed fresh direction-R3 node after its owned stop.
+ Does not invoke Rust open_existing, repair/truncate a journal, or open ciphertext.
++The controller supplies the actual fresh run ID and records the original stop.
+ """
+ import argparse
+ import hashlib
+@@ -13,11 +14,10 @@
+ import time
+ import zlib
+ 
+-RUN = "2f514650d5a5cbd46daa2a899858b833"
+-SUMMARY_SHA = "bd7cc8949faca6bebcad6c847f2f1506526a6329ed6392f865892f253cf0c912"
++BASELINE_FAILURE_SHA = "bd7cc8949faca6bebcad6c847f2f1506526a6329ed6392f865892f253cf0c912"
+ ROOTS = {
+-    1: ("/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-direct98-node1-r2", 501),
+-    2: ("/home/qian-qi/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-direct98-node2-r2", 1000),
++    1: ("/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-direct98-node1-r3", 501),
++    2: ("/home/qian-qi/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-direct98-node2-r3", 1000),
+ }
+ # Exact stopped-fixture metadata observations, per node; no permission changes.
+ LOG_MODES = {1: (0o755, 0o644), 2: (0o775, 0o664)}
+@@ -227,7 +227,7 @@
+     return b"".join(chunks)
+ 
+ 
+-def execute(node, until):
++def execute(node, until, run_id):
+     raw_root, expected_uid = ROOTS[node]
+     log_directory_mode, log_file_mode = LOG_MODES[node]
+     root = Path(raw_root)
+@@ -242,7 +242,7 @@
+         info = os.fstat(fd)
+         require(stat.S_ISDIR(info.st_mode) and info.st_uid == expected_uid
+                 and stat.S_IMODE(info.st_mode) == expected_mode, "owned_directory_mode")
+-        directory_facts.append((fd, name, identity(info)))
++        directory_facts.append((fd, parent, name, identity(info)))
+         return fd
+     def file(name, parent, maximum, expected_mode=0o600):
+         within(until)
+@@ -261,7 +261,7 @@
+         marker_raw = read_fd(markerfd, marker_size, until)
+         marker = parse(marker_raw)
+         require(type(marker) is dict and marker.get("schema") == "heptabao.native-v6-fixture-owner.v1"
+-                and marker.get("run_id") == RUN and marker.get("root") == raw_root
++                and marker.get("run_id") == run_id and marker.get("root") == raw_root
+                 and marker.get("node_id") == node and marker.get("production_authority") is False
+                 and marker.get("root_device") == root_stat.st_dev
+                 and marker.get("root_inode") == root_stat.st_ino, "fixture_owner_marker_mismatch")
+@@ -283,10 +283,14 @@
+             facts.append({"relative_file": name, "before": before, "after": after,
+                           "sha256": hashlib.sha256(raw).hexdigest()})
+         directories = []
+-        for fd, name, before in directory_facts:
++        for fd, parent, name, before in directory_facts:
+             after = identity(os.fstat(fd))
+-            require(after == before, "directory_identity_changed")
+-            directories.append({"directory": name, "before": before, "after": after})
++            named_info = os.stat(name, dir_fd=parent, follow_symlinks=False)
++            named = identity(named_info)
++            require(stat.S_ISDIR(named_info.st_mode) and before == after == named,
++                    "directory_identity_changed")
++            directories.append({"directory": name, "before": before, "after": after,
++                                "named_after": named})
+         require(root.stat().st_dev == root_stat.st_dev and root.stat().st_ino == root_stat.st_ino
+                 and root.resolve(strict=True) == root, "root_identity_changed")
+         within(until)
+@@ -306,21 +310,26 @@
+ def main():
+     parser = argparse.ArgumentParser()
+     parser.add_argument("--node", type=int, choices=sorted(ROOTS), required=True)
++    parser.add_argument("--run-id", required=True)
++    parser.add_argument("--max-seconds", type=float, required=True)
+     args = parser.parse_args()
++    if (len(args.run_id) != 32 or any(c not in "0123456789abcdef" for c in args.run_id)
++            or not 0 < args.max_seconds <= SECONDS):
++        parser.error("invalid_fixed_fixture_read_binding")
+     started = time.monotonic()
+-    until = started + SECONDS
++    until = started + args.max_seconds
+     result = {
+-        "schema": "heptabao.stopped-synthetic-raft-numeric-observer.v1",
+-        "fixture_run_id": RUN, "terminal_summary_sha256": SUMMARY_SHA,
+-        "scope": "readonly after already-proven fixture cleanup; current persisted state, not historical live metrics",
+-        "new_observer_deadline_seconds": SECONDS, "new_max_bytes_per_log_file": MAX_FILE,
++        "schema": "heptabao.direction-r3-stopped-node-numeric-observer.v1",
++        "fixture_run_id": args.run_id, "baseline_direction_failure_sha256": BASELINE_FAILURE_SHA,
++        "scope": "readonly after this fixed node owned stop; current persisted state, not historical live metrics",
++        "new_observer_deadline_seconds": args.max_seconds, "new_max_bytes_per_log_file": MAX_FILE,
+         "child_processes": 0, "file_writes": 0, "product_requests": 0,
+         "ciphertext_or_state_machine_files_opened": False,
+         "production_authority": False, "status": "failed",
+     }
+     rc = 1
+     try:
+-        result["observation"] = execute(args.node, until)
++        result["observation"] = execute(args.node, until, args.run_id)
+         within(until)
+         result["status"] = "completed"
+         rc = 0

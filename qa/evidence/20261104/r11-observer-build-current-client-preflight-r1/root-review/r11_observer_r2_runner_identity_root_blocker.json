@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.observer-r2-runner-identity-root-blocker.v1",
+  "status": "BLOCKED_BEFORE_BUILD_DISPATCH",
+  "runner": {
+    "bytes": 20791,
+    "sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273",
+    "blob": "65389248669059eb8f7db20eeee3d9ad47ba7282"
+  },
+  "runner_expected": {
+    "commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+    "tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a"
+  },
+  "new_launcher_arguments": {
+    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060"
+  },
+  "identity_predicate_accepts": false,
+  "original_runner_whole_bytes_unchanged_was_insufficient_for_successor": true,
+  "original44_extra7_bodies_budgets_and_cleanup_need_no_change": true,
+  "required_correction": "Only two source identity literals in a successor runner, plus exact chained control/source-stage pins under a new root; preserve R2 actual stage and original source files.",
+  "new_build_dispatched": false,
+  "normal_build_go": false,
+  "source_stage_go_was_only_public_git_stage": true,
+  "peer": "authbus_migration",
+  "product_runtime_failure_claimed": false
+}

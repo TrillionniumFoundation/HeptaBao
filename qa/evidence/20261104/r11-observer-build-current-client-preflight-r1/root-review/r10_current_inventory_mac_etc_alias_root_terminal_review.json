@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.mac-etc-alias-root-terminal-review.v1",
+  "status": "PASS_NAMED_ALIAS_OBSERVATION_ONLY",
+  "whole_packet": {
+    "tree": "3f3fce341469924f0ee6104c099ae996d98fc9ec",
+    "leaves": 9,
+    "bytes": 21867,
+    "merkle": {
+      "root_sha": "3f3fce341469924f0ee6104c099ae996d98fc9ec",
+      "trees_verified": 1
+    },
+    "records": [
+      {
+        "path": "authority.public.json",
+        "bytes": 731,
+        "sha256": "6d4296a6241d81135b04f161179c225630e502f01d80d330f565e24cf92edca3",
+        "blob": "47d698f47d03ddf1fa3178e5cbe80540276af059"
+      },
+      {
+        "path": "exact-start-arguments.json",
+        "bytes": 4137,
+        "sha256": "8076d13c805321915d35f1642ba0417bea2888699f6e282707f8f865ed38aa3c",
+        "blob": "cf0adf8dd84961b07f2c94dfa21e57d98a389ca3"
+      },
+      {
+        "path": "mac_etc_alias_r1.py",
+        "bytes": 3778,
+        "sha256": "5a4838b8704315d31c80c07b5dd5f8a42837e28a369a2545f1fa669bc18f7c1d",
+        "blob": "d521b52880a59e0250a588d85fce24c6626b8536"
+      },
+      {
+        "path": "manifest.public.json",
+        "bytes": 1915,
+        "sha256": "03455c622147f1f8c6cd1c509dfc69cfe557914f0c6d7188833a1d192fdca77f",
+        "blob": "64b9276e2a032b0034e322209a8beb5cea644545"
+      },
+      {
+        "path": "recap.public.json",
+        "bytes": 911,
+        "sha256": "27efd8f7e9de4fa34ac182087d491026bb6980fbf255a14d31a9ab843a7290b0",
+        "blob": "cb77ff0ab4d92134b4be9fb388f003a1b590c646"
+      },
+      {
+        "path": "sdk-read.public.json",
+        "bytes": 4167,
+        "sha256": "b41418e8c825b93c38f8ef687bcc920aa1fae6479b41dbe8169a0c89aff770df",
+        "blob": "42d95dbfddb32b645792c9c69d43a944fcfb5f6e"
+      },
+      {
+        "path": "start-ack.public.json",
+        "bytes": 4989,
+        "sha256": "15b83ce4481f7a89086d93da40a5f2ced5dcee2f16ddafdd20b9c4b18d10c558",
+        "blob": "13a4cfefd72a6c1b8d52176ce6f7c0b66ce65724"
+      },
+      {
+        "path": "stderr.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "stdout.public.json",
+        "bytes": 1239,
+        "sha256": "61ad3e1dcd69c43f20010869225d0bd8ed6654b4e88570ecc03a239689157254",
+        "blob": "439b29c2f1e6baa56958b68e56ce52e749692d4e"
+      }
+    ]
+  },
+  "job": "1a1a8a36747-fc05-2f52",
+  "stdout": {
+    "bytes": 1239,
+    "sha256": "61ad3e1dcd69c43f20010869225d0bd8ed6654b4e88570ecc03a239689157254",
+    "blob": "439b29c2f1e6baa56958b68e56ce52e749692d4e"
+  },
+  "authority": {
+    "bytes": 731,
+    "sha256": "6d4296a6241d81135b04f161179c225630e502f01d80d330f565e24cf92edca3",
+    "blob": "47d698f47d03ddf1fa3178e5cbe80540276af059"
+  },
+  "ack": {
+    "bytes": 4989,
+    "sha256": "15b83ce4481f7a89086d93da40a5f2ced5dcee2f16ddafdd20b9c4b18d10c558",
+    "blob": "13a4cfefd72a6c1b8d52176ce6f7c0b66ce65724"
+  },
+  "original_sdk_hex_and_text_and_eof_exact": true,
+  "full_original_integer_tokens_preserved": true,
+  "elapsed_seconds": 0.00010899999999999799,
+  "expected_prior_identity_exact": true,
+  "readlink_target": "private/etc",
+  "lexical_absolute_candidate": "/private/etc",
+  "owned_fd_closed": true,
+  "system_crontab_opened": false,
+  "system_crontab_absence_qualified": false,
+  "old_inventory_exit1_retained": true,
+  "new_canonical_leaf_read_requires_fixed_source_binding": true
+}

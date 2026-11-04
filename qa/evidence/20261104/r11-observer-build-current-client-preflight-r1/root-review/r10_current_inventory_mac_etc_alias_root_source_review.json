@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.mac-current-inventory-etc-alias-root-source-review.v1",
+  "status": "PASS_EXACT_READLINK_ONLY_GO_ONCE",
+  "packet_tree": "a9e3347fa73f778e4d24aaad8ae07df17802c77d",
+  "whole_packet": {
+    "tree": "a9e3347fa73f778e4d24aaad8ae07df17802c77d",
+    "leaves": 4,
+    "bytes": 10083,
+    "merkle": {
+      "root_sha": "a9e3347fa73f778e4d24aaad8ae07df17802c77d",
+      "trees_verified": 1
+    },
+    "records": [
+      {
+        "path": "SOURCE_CONTRACT.public.json",
+        "bytes": 1442,
+        "sha256": "138adf81276a76fae96ca8594c46852d7038e478d2f7e6b00c85263ba5ffcd44",
+        "blob": "9f86ae41141e74c85a3fb9836d31a6269c7d7c58"
+      },
+      {
+        "path": "exact-start-arguments.json",
+        "bytes": 4137,
+        "sha256": "8076d13c805321915d35f1642ba0417bea2888699f6e282707f8f865ed38aa3c",
+        "blob": "cf0adf8dd84961b07f2c94dfa21e57d98a389ca3"
+      },
+      {
+        "path": "mac_etc_alias_r1.py",
+        "bytes": 3778,
+        "sha256": "5a4838b8704315d31c80c07b5dd5f8a42837e28a369a2545f1fa669bc18f7c1d",
+        "blob": "d521b52880a59e0250a588d85fce24c6626b8536"
+      },
+      {
+        "path": "manifest.public.json",
+        "bytes": 726,
+        "sha256": "f53727855d3bcf609a7d2ac259bfcab9d64725fa7cb286c72ac298949e3d9bcf",
+        "blob": "a6c2d6501a0041966334ad2671ad1967f8944bc2"
+      }
+    ]
+  },
+  "source": {
+    "bytes": 3778,
+    "sha256": "5a4838b8704315d31c80c07b5dd5f8a42837e28a369a2545f1fa669bc18f7c1d",
+    "blob": "d521b52880a59e0250a588d85fce24c6626b8536"
+  },
+  "dispatch": {
+    "bytes": 4137,
+    "sha256": "8076d13c805321915d35f1642ba0417bea2888699f6e282707f8f865ed38aa3c",
+    "blob": "cf0adf8dd84961b07f2c94dfa21e57d98a389ca3"
+  },
+  "observed_previous_identity_decimal_strings": [
+    "16777233",
+    "1152921500312571429",
+    "0",
+    "0",
+    "41453",
+    "1",
+    "11",
+    "1786589515000000000",
+    "1786589515000000000"
+  ],
+  "identity_matches_original_lossless_inventory": true,
+  "compiled_inert_only": true,
+  "metadata_calls": 5,
+  "readlink_calls": 1,
+  "original37_entries_repeated": false,
+  "symlink_followed": false,
+  "target_read": false,
+  "system_crontab_absence_claimed": false,
+  "product_or_service_or_sqlite_or_provider_calls": false,
+  "new_inner_seconds": 5,
+  "new_outer_seconds": 60,
+  "required_actual_authority_exit0_and_elapsed_under5": true
+}

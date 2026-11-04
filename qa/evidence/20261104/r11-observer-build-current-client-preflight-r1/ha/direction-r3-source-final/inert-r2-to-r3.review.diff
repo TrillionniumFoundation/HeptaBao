@@ -1,0 +1,21 @@
+--- r2/inert_carrier.py
++++ r3/inert_carrier.py
+@@ -5,14 +5,14 @@
+ 
+ os.umask(0o077)
+ PARENT = Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-BASE = PARENT / 'normal-r10-pocket3-mac1-direct98-control-r2'
++BASE = PARENT / 'normal-r10-pocket3-mac1-direct98-control-r3'
+ RECEIPT = BASE / 'inert-stage.result.public.json'
+ PINS = {
+-    "launch_normal_r10_pocket_direct98_r2.py": (16111, "7a40c9ce4c646f850c611fc29317cc2c0662d5823a10c7d52d7d43dcaa97ade9"),
+-    "native_v6_pocket_source_direct98_r10_r2.py": (10844, "b7623c0bb2a9bfd754401c00867ae6535fe8e19364c9fb6367219cffa2656e89"),
++    "launch_normal_r10_pocket_direct98_r3.py": (17895, "5b25448423abba0a18a9317e645fb7bffe392355efe7809e9c76c480f3f3c5b4"),
++    "native_v6_pocket_source_direct98_r10_r3.py": (25523, "485fd21b5ef150eb952b65a3eb446b1a25a55a25550c17599198497f11d5f081"),
++    "read_stopped_direction_frontier_r3.py": (16250, "e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0"),
+     "probe_normal_build_r10_r1.py": (6445, "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee"),
+ }
+-
+ def sha(raw):
+     return hashlib.sha256(raw).hexdigest()
+ def ident(s):

@@ -1,0 +1,119 @@
+{
+  "schema": "heptabao.phaseb-observer-stage-build-draft-manifest.v2",
+  "status": "source_only",
+  "prior_draft_tree": "e679d4dac259bbc1dbce4a6560a730eba7dd6f28",
+  "candidate_commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+  "candidate_tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 6157,
+      "sha256": "3ad1229a1b7640e6b587af90ef97852f1bade80aa55ce1f10c492c355493276d",
+      "blob": "c0ecc46676539edda2e3e844174d0381b4c9c2c9"
+    },
+    {
+      "path": "DISPATCH.public.json",
+      "bytes": 6723,
+      "sha256": "8661ee4a9f637919cedd8ad200d79df9bce580fb0847e24838a42d7f917719a8",
+      "blob": "2644a8b130ebc846bf5d444c94d6e4254f1d0319"
+    },
+    {
+      "path": "stage_source_phaseb_observer.py",
+      "bytes": 18774,
+      "sha256": "2cfc47c230d7a4780e758ee8736e4cd6f1412a2f65174c5581be48038581b32a",
+      "blob": "1d5b8e48f5f870af6495d911a61d16da349da2ed"
+    },
+    {
+      "path": "launch_normal_phaseb_observer.py",
+      "bytes": 22961,
+      "sha256": "56c7b06d4329e4fdb72079a089ad2f1509e856357328d849d58844236b86fd63",
+      "blob": "b0ba2b6fbf075d7a855c7b3d107f9a1a39aa2ad0"
+    },
+    {
+      "path": "normal_phaseb_observer_build.py",
+      "bytes": 20791,
+      "sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273",
+      "blob": "65389248669059eb8f7db20eeee3d9ad47ba7282"
+    },
+    {
+      "path": "normal-test-groups.public.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f"
+    },
+    {
+      "path": "stage-carrier.private-safe-source.json",
+      "bytes": 51246,
+      "sha256": "66a6546f4cb19c13d2273e6e6613033e5c2823f5d3aeccbeaf0deddf46a56443",
+      "blob": "ed815fdd743dc18ea4541448050450f9e430c066"
+    },
+    {
+      "path": "source-invariance.public.json",
+      "bytes": 5211,
+      "sha256": "3089617b0c95806d123ab3e16eb20ed19b3d60ee537d5af94c0a985d9d64e026",
+      "blob": "c979129047fff879b7fcdeb9e30c4706d946b769"
+    },
+    {
+      "path": "exact-additional-tests.public.json",
+      "bytes": 3649,
+      "sha256": "dededdfc5afdff0924793b55d15306c7dc59939d3789f5f75eb37ff47c8a33b3",
+      "blob": "1dd83d4a79f0e1558420ce0a02e90585ec052a38"
+    },
+    {
+      "path": "diffs/r10-stager-to-observer-stage.diff",
+      "bytes": 32659,
+      "sha256": "e83221c454395eccfe39e1b4c8ab6b60bc389e6074687fcf7292e8e484e0eedd",
+      "blob": "18202b04782aea3c5eef17b59e5fd66c9d40a959"
+    },
+    {
+      "path": "diffs/r10-launcher-to-observer-launcher.diff",
+      "bytes": 7567,
+      "sha256": "ce4d6462e7aa2eccc79cf15c96f95a675ee3ec8a8df54dceeac5e1be3d2c0910",
+      "blob": "67b1b57c84a89c869e0c4e16f0764215427dcd41"
+    },
+    {
+      "path": "diffs/r10-runner-to-observer-44-plus7.diff",
+      "bytes": 6095,
+      "sha256": "b05588e87329e03e0b253aed2e56f4f54c51bda7bc7094c69aad8c356e4023a9",
+      "blob": "0dad6f5c67423cbdd26cde55ee4f5d2b60b7404f"
+    },
+    {
+      "path": "diffs/reviewed-runner-r1-to-bound-r2.diff",
+      "bytes": 4554,
+      "sha256": "9e3592c82fbf34188bbc2545ca19990d466171d61846ff9ec5778e4d1e922389",
+      "blob": "512664ec5ca8fb983a09cc4eb2688f3d95bf3a5e"
+    },
+    {
+      "path": "reference-r10/stage_source_r10.py",
+      "bytes": 27150,
+      "sha256": "90bc84593ba4a2845cbce6141277e22e01dfc9be3fce126a31448a9428f8c990",
+      "blob": "3b012a9df21060bf582e97da537ff9c9bcc9027d"
+    },
+    {
+      "path": "reference-r10/launch_normal_r10.py",
+      "bytes": 20167,
+      "sha256": "d1542351492f9efb41ba18c3b25e9548be7eb658db5cb13c5b4bf80f097a55ad",
+      "blob": "af34201f8930265a8813028ba6cc21a07166e43d"
+    },
+    {
+      "path": "reference-r10/linux_normal_release_and_tests_r10.py",
+      "bytes": 16900,
+      "sha256": "7aa39562fde6d96eeca9b1d0e53f600c9629de09613d052fad8e68e9c734d176",
+      "blob": "686b824755f193e4ae777de22fb682d9510528a2"
+    },
+    {
+      "path": "diffs/draft1-to-draft2-runner.diff",
+      "bytes": 783,
+      "sha256": "ae546f3a136e93248836eb8dbca0789b46b9b66ca94ffd097ffc04bf9b98e288",
+      "blob": "f4d62ef918c8c6b0cfe84f1630490848d9b0cd79"
+    },
+    {
+      "path": "diffs/draft1-to-draft2-stage.diff",
+      "bytes": 712,
+      "sha256": "7bf42668621c6199930b5661efaf570e32a3df6626c30cc76b358d9cd63b8681",
+      "blob": "e80fba4524fe24155397824e4fb7fd27b14f1e9f"
+    }
+  ],
+  "file_count": 18,
+  "host_execution": false
+}

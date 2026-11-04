@@ -1,0 +1,11 @@
+{
+  "command_absolute_credential_exposed": true,
+  "endpoint_userinfo_path_query_fragment_omitted": true,
+  "full_collector_executed": false,
+  "host_or_private_input_read": false,
+  "plist_absolute_credential_exposed": true,
+  "schema": "heptabao.inventory-r1-pure-projection-root-counterexamples.v1",
+  "source_sha256": "4b7dfc869bca690e942e0f201e6e050a9a1f4ee31827b7bb3202ec66bd2f4282",
+  "synthetic_only": true,
+  "unknown_unit_section_exposed": true
+}

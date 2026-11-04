@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.direction98-r3-root-actual-start-review.v1",
+  "status": "RUNNING_NOT_QUALIFIED",
+  "job": "1a1a88ffe46-fc05-2f1b",
+  "start_ack": {
+    "bytes": 1296,
+    "sha256": "6b5ed228be7b93f216e68a009729ed3dcb9cc7fbc181d4d497806e0950f487b5",
+    "blob": "e6a048d55f1e77db39625acdda79a023285204cf"
+  },
+  "request": {
+    "bytes": 522,
+    "sha256": "2233043876c3b0b0e728a53fad90ef33da50605ef21950e5518c148bf59665dc",
+    "blob": "e86d1f6f59ed44203fcf067d1758cde405557ba3"
+  },
+  "intent": {
+    "bytes": 3014,
+    "sha256": "8b0fbe402e9b0acd8c3525a1f8b15a280830df3d00700a35642adc85612c6b65",
+    "blob": "e46cf63a7e11323b6bb09190f63830388e9f02d5"
+  },
+  "actual_argv_host_executable_cwd_key_equal_frozen": true,
+  "reused": false,
+  "unique_actual_start": true,
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "run_id": "ec3bcae2abef07e7f6828be221adcdb4",
+  "full98_not_yet_proven": true
+}

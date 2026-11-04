@@ -1,5 +1,61 @@
 # HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
 
+## 当前检查点：Pocket→空 Mac 恢复 98/98；当前 Mac 清点完成有界观察，完整替代仍未获资格
+
+更新于 2026-11-04T22:21:01Z。**正常默认构建的三机方向回归已真实完成：Pocket4 节点 3 为密文来源，空 Mac 节点 1 实际成为 leader，原 98 项全部通过。恢复解封 9,452.187 ms，保持原 15 秒请求限额。全量替代 OpenBao 2.7.1 的资格仍为 false。** 已通过的范围不能替代恢复后冷启动、实际快照 CLI、逐台服务切流及全部客户端与备份迁移。
+
+本次运行仍绑定产品 `49503322c7f446e5eb41e7744f1fdbd7f1192ecc` / tree `1d4211f91e1b34a2ed087a3bbef2e2884bac88e9`。诊断代码后续提交 `3cb873919170cc77101b27f6a3ab9e98f41f8d93` 尚未通过新构建与运行资格；主 PR 保持 `6d3040a2dbd06661a67f5c62df259ff446eb8515`。未初始化或切换生产服务，未删除旧服务、二进制、凭证或恢复资产。
+
+| 必须完成的门槛 | 本次新增证据 | 剩余缺口 |
+|---|---|---|
+| 正式 KV2 迁移和恢复 | 既有 X230 31/31、三机 34 MiB 历史与三份导出继续有效；本次跨 Pocket→Mac 恢复 338 个实际引用密文叶，35,742,393 B，逐叶 SHA/大小匹配 | 当前生产数据与备份迁移；恢复成功后、历史尚存时的全节点冷启动 |
+| 三机 HA | 原 98 个唯一检查全部通过；真实断主、自然选主、ReadIndex、多数派拒绝、原冷启与指定恢复方向均有原件 | 恢复后的另一次冷启、其余未覆盖故障和完整运行资格 |
+| AuthBus 无 J3160 | 既有 Pocket 当前消费者闭环继续有效；Mac 当前五 agent、配置/凭证哈希、7 条服务查询完成有界观察 | Mac 五 agent 实际 SDK/native、launchd 生命周期、完整回滚；ROG/X230 当前客户端与恢复路径 |
+| 逐台切换 | 当前 Mac 输入和实际服务状态有只读证据；测试源码已明确隔离、原顺序、local/raw/effective 回滚要求 | 每台真实凭证读写、重启、回滚及正式流量切换；生产保管与解封安排 |
+| 旧版清理 | 失败、未知结果和历史恢复材料全部保留 | 所有客户端及备份完成迁移、当前恢复可用后才能删除旧版 |
+
+### Pocket3→空 Mac1：实际恢复与清理均已核验
+
+实际 job `1a1a88ffe46-fc05-2f1b`、fixture `ec3bcae2abef07e7f6828be221adcdb4` 权威终态 succeeded/exit 0，输出完整持久。六件核心原件和 106 件操作意图/响应 metadata 已逐件核验完整字节、SHA-256、Git blob 和目录 Merkle；原 98 个名称唯一、集合精确相同且全部通过。53 对记录均有响应，未知结果与重试均为零；其中一次原预算 12 秒、52 次原预算 15 秒，全部在界内。该 53 是记录的操作边界数量，不能当作包括所有被动查询在内的 HTTP 总次数。[原始摘要](../../qa/evidence/20261104/r11-observer-build-current-client-preflight-r1/ha/direction-r3-live-core/summary.json) · [完整操作原件清单](../../qa/evidence/20261104/r11-observer-build-current-client-preflight-r1/ha/direction-r3-raw-boundaries/manifest.public.json) · [独立终态审核](../../qa/evidence/20261104/r11-observer-build-current-client-preflight-r1/root-review/r10_direction98_r3_live_root_terminal_review.json)
+
+新增加的只读角色准备总预算 60 秒，实际 7.521225980948657 秒。先停 ROG 后，Mac/Pocket 的真实多数派推进：ROG 停机 committed 为 term2/node2/index61，Mac 停机 committed 为 term3/node1/index62，同时观察到 Mac applied62。停机读取验证持有 FD、逐层目录名、文件身份和完整日志；它不读取应用 state machine，也不以日志观察代替 ReadIndex 权限。后续真实选举仍单独检查，未强制选主。
+
+Mac 恢复前隔离 442 个密文叶，恢复后实际引用的 338 个叶共 35,742,393 B，逐叶 SHA/大小一致；104 个未引用隔离叶未被误算为缺失。19 个保留历史版本和 34 MiB 大载荷通过核验；其他节点解封及三机 ReadIndex 通过。六次 Mac 前台会话的本地 SSH 与远程 native 子进程均已回收且组内为空，保留原 5 秒停止边界；最终三台自有 server 全停、隧道子进程为零，二十项旧输入 fence 未变。
+
+**这轮仍不证明“恢复之后再冷启仍能读取恢复历史”。** 原 execute 次序先 full_cold_restart，再 missing_cipher_leader，最后 finish_application 删除测试 metadata。终态目录里的删除已经被确认；直接重启这些旧目录只可能证明删除不复活，不能用于读取已删除历史。新增 B 方案将在全新 fixture 中、恢复成功后且原删除之前加入独立共享期限的三节点冷启，保留原 98 判据和最后删除顺序。B 尚未运行。旧 R2 方向失败 87/98 仍是失败；也不能把本次 98 与既有 128 相加称为独立 226 项。
+
+### 快照 blocker：编译失败已解释，原 503 内因仍未关闭
+
+旧诊断构建 job `1a1a87f578a-fc05-2ee0` 为已知失败，Cargo 在 62.09384498698637 秒以 101 退出，未超原 1,800 秒限额，唯一子进程已回收。44 项与额外 7 项均未开始。完整 384,196 B stdout 的六个原 SDK chunk 已拼回原字节；27,914 B stderr 与 child/core/authority 一致，包含 27 个 E0277 和一个 E0308。[失败构建原件清单](../../qa/evidence/20261104/r11-observer-build-current-client-preflight-r1/snapshot/normal-build-failed-actual/manifest.public.json) · [完整字节重建审核](../../qa/evidence/20261104/r11-observer-build-current-client-preflight-r1/root-review/r11_observer_failed_build_root_raw_reconstruction.json)
+
+原因是新增观察器闭包的错误类型被推断为 str，而原函数及 ? 路径要求 String。后续 `3cb8739` 只增加显式 `Result<Option<NativeV6IngressRead>, String>` 局部类型，一行增加 45 B，其余 3,910 个源码叶不变。此修复只解决编译问题，不解释先前快照准入 503。bf0 的旧 source-stage、失败原件与产品资格缺口均保留。
+
+3cb 的 R2 公共源码准备已有唯一实际 ACK `1a1a8a17dcd-fc05-2f48`；本检查点尚未纳入完整 stage 终态的 root 审核。新 build 未发出：独立源码审查发现保持整字节不变的 c46 runner 仍在第 19/20 行固定 bf0/ac4027，第 155 行会拒绝新 launcher 传入的 3cb/7f4d，早于 output 创建、intent 和 Cargo。下一控制版只改两个身份 literal 并更新固定输入链，保留全部函数、44/7 分母和原预算；旧 R2 根和控制文件不覆盖。[执行器身份阻断](../../qa/evidence/20261104/r11-observer-build-current-client-preflight-r1/root-review/observer-r2-independent-blocker.public.json)
+
+Phase B 方案的两个 binding 文件名已修正为原 guard 要求的 `binding.private.json`，权限仍为 0600。新 binding 只更新四个产品身份 literal；61,210 B 主控制器及其他三个 helper 完全保留。新产物 hash/大小仍为 null、ready=false，尚未执行 transport/prepare/live。此前 B01 仍为 FAIL_UNKNOWN，无有效 archive、无重放；准入发生在 archive writer 之前已获证明，内部失败原因仍未找到。[新绑定方案](../../qa/evidence/20261104/r11-observer-build-current-client-preflight-r1/snapshot/fresh-binding-r2-source/PLAN.public.json)
+
+### 当前 Mac：37 项有结论，系统 crontab 单条仍需补证
+
+实际只读清点 job `1a1a88a785a-fc05-2f00` 使用完整 R2 collector 原件：38 条固定 entry、15 个 pass、7 条查询，耗时 0.12988945899999998 秒，保留原 host 45 秒限额。结果为 16 read_verified、17 metadata_observed、4 个在已验证父目录下的 absence、1 个因父路径 `/etc` 为 symlink 而阻断。权威 exit 1 被完整保留；没有未知结果、重试或超时。八个自有查询/最终 ps 进程全部回收，FD、输出流已关闭。46,277 B stdout 已由三个原 SDK 页逐字拼回。[原始清点](../../qa/evidence/20261104/r11-observer-build-current-client-preflight-r1/inventory/mac-r2-readonly-actual/actual-stdout.public.json) · [root 终态审核](../../qa/evidence/20261104/r11-observer-build-current-client-preflight-r1/root-review/r10_current_inventory_mac_r2_readonly_root_terminal_review.json)
+
+五个当前 agent 为 main、trnm、hepta-ui、hepta、hepta-backend。配置先前 SHA 匹配；所有已配置 prior SHA 的固定输入均匹配。六缓存中的四项存在，两项已在稳定父目录下证实不存在。主 agent DB 存在，WAL/SHM 不存在；后续捕获不能通过打开生产 SQLite 自动创建缺失 SHM。生产 gateway 与四个 relay 当前在运行；公开 argv 仅保留 argv[0]，其余参数只公开数量/hash，实际 wrapper 依赖尚未全解析。T5 UUID 为 FB804D1B-24CB-4D6E-AEA7-A9E180807758；三个备份根只做 metadata 观察，不代表当前备份内容和恢复已验证。
+
+补证 job `1a1a8a36747-fc05-2f52` 仅进行了五次显式 metadata 观察和一次 readlink，0.00010899999999999799 秒完成，FD 已关闭。原九字段 identity 精确匹配，实际 `/etc` 文本目标为 `private/etc`。这只得到词法候选 `/private/etc`；没有打开该 target 或 crontab，没有声明 crontab 不存在，也没有重跑之前 37 条和 7 条查询。[别名观察原件](../../qa/evidence/20261104/r11-observer-build-current-client-preflight-r1/inventory/mac-etc-alias-actual/stdout.public.json)
+
+Mac 五 agent 的第一版实现仍是未完成源码：guarded capture、外层服务管理器和完整 driver 尚未闭合，未运行实际消费者或 launchd。独立审查还发现逆操作中一次 SDK/raw/cache 写入之后若出现错误，现逻辑可能错误公开 outcomeUnknown=false；需要 attempted/completed 两标记使不完整逆操作保守记为未知，原一次 marker 和禁止重试仍保留。原稿与负面审查均保存，不能以这份源码声称 Mac 闭环已通过。[五 agent 源码计划](../../qa/evidence/20261104/r11-observer-build-current-client-preflight-r1/mac/five-agent-increment1-source/README.md) · [回滚分类缺陷](../../qa/evidence/20261104/r11-observer-build-current-client-preflight-r1/root-review/mac-five-agent-increment1-peer-blocker.public.json)
+
+### 完整替代资格与后续顺序
+
+既有 X230 正式 KV2 31/31、OpenBao 2.7.1 两侧各 69/69 的有限 13 模块对照、三机 128/128 与 Pocket 当前 AuthBus 结果继续保留。历史 59-surface ledger 的目标实际是 OpenBao 2.6.2，不能充当完整 2.7.1 分母；完整身份认证、引擎、管理 API、外部 provider、运维生命周期和故障面仍需逐项闭合。CI run41907498576 的 merge/head 两条 job 在 22:12:27 UTC 仍处于完整 locked Rust workspace 测试，前九步成功、未观察到失败；未取消、重跑或移动主 PR。
+
+继续顺序是修正新诊断执行器并完成真实正常构建 44+7，定位并修复快照 503 后验证 CLI 迁移/恢复；补齐恢复后的三节点冷启；完成 Mac 五 agent 与 ROG/X230 当前依赖、实际服务重启/回滚以及当前加密备份恢复；再按逐台资格推进流量切换。所有客户端和备份路径确认迁移之前，旧 OpenBao、旧 HeptaBao 和恢复资产仍保留。
+
+本检查点追加 29 个原始包、404 个原文件，共 5,471,833 B；所有原始文件保留完整 bytes 和 unsafe integer token，派生审核独立命名。先前索引 73 个顶层字段除 as_of_utc 外不改，旧失败和未知结论不覆盖。
+
+---
+
+## 先前检查点原文（各段时间边界保留）
+
 ## 当前检查点：Pocket 实际首轮完成；快照准入 503 已定位阶段，完整替代尚未获资格
 
 更新于 2026-11-04T21:12:15Z。**Pocket R10 已完成实际产物传输、准备、18/18 预检和 66/66 主检查，两次当前消费者运行与两次回滚全部通过。三机 HA 128/128、X230 正式 KV2 31/31 和 OpenBao 2.7.1 两侧各 69/69 对照结果继续有效。全量替代资格仍为 false；逐台真实服务切流、全部客户端和备份迁移、旧版删除尚未完成。**

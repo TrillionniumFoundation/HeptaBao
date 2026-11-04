@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "/usr/bin/git",
+    "-c",
+    "gc.auto=0",
+    "-c",
+    "maintenance.auto=false",
+    "-c",
+    "core.hooksPath=/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/empty-hooks",
+    "-c",
+    "protocol.allow=never",
+    "-c",
+    "protocol.file.allow=always",
+    "clone",
+    "--no-hardlinks",
+    "--dissociate",
+    "--no-checkout",
+    "--template=/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/empty-template",
+    "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+    "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.046885496005415916,
+  "exit_code": 0,
+  "limit_seconds": 180,
+  "pid": 3502278,
+  "remaining": [],
+  "stderr_sha256": "a37c666a1da12ad843c25c66ae560b688f3ce138aac046835c45d45234503ed6",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "timed_out": false
+}

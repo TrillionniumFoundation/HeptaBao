@@ -1,0 +1,831 @@
+{
+  "schema": "heptabao.direction98-r3-terminal-independent-assessment.v1",
+  "status": "PASS_SCOPED_98",
+  "original_required_check_count": 98,
+  "observed_check_count": 98,
+  "exact_required_set": true,
+  "all_observed_pass": true,
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "summary_sha256": "db362c9c2041636912ccfc95076c6ec7948ec7918efc17032af856875e61cd41",
+  "fixture_run_id": "ec3bcae2abef07e7f6828be221adcdb4",
+  "authority_job": "1a1a88ffe46-fc05-2f1b",
+  "authority_exit0": true,
+  "actual_pair": {
+    "actual_empty_leader_node": 1,
+    "leader_selection_forced": false,
+    "requested_pair_observed": true,
+    "source_node": 3
+  },
+  "source_selection": {
+    "actual_pre_quarantine_leader_node": 2,
+    "all_three_original_cold_unseals_completed": true,
+    "data_source_selection_does_not_claim_leader_authority": true,
+    "requested_source_node": 3,
+    "selected_source_node": 3
+  },
+  "preparation": {
+    "leader_selection_forced": false,
+    "new_total_prepare_seconds": 60,
+    "observations": [
+      {
+        "elapsed_seconds": 0.45815991004928946,
+        "health": [
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 1,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ]
+      },
+      {
+        "elapsed_seconds": 0.583073585992679,
+        "health": [
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 1,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ]
+      },
+      {
+        "elapsed_seconds": 0.710332007962279,
+        "health": [
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 1,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ]
+      },
+      {
+        "elapsed_seconds": 0.8383243969874457,
+        "health": [
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 1,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ]
+      },
+      {
+        "elapsed_seconds": 0.9652455130126327,
+        "health": [
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 1,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ]
+      },
+      {
+        "elapsed_seconds": 1.0917926869587973,
+        "health": [
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 1,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ]
+      },
+      {
+        "elapsed_seconds": 1.222753279027529,
+        "health": [
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 1,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ]
+      },
+      {
+        "elapsed_seconds": 1.3507756639737636,
+        "health": [
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 1,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ]
+      },
+      {
+        "elapsed_seconds": 1.4786992350127548,
+        "health": [
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 1,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ]
+      },
+      {
+        "elapsed_seconds": 1.6057571000419557,
+        "health": [
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 1,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ]
+      },
+      {
+        "elapsed_seconds": 1.7334455930395052,
+        "health": [
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 1,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ]
+      },
+      {
+        "elapsed_seconds": 1.8605164070613682,
+        "health": [
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 1,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ]
+      },
+      {
+        "elapsed_seconds": 1.9878787059569731,
+        "health": [
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 1,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ]
+      },
+      {
+        "elapsed_seconds": 2.1165608760202304,
+        "health": [
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 1,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ]
+      },
+      {
+        "elapsed_seconds": 2.2432394840288907,
+        "health": [
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 1,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ]
+      },
+      {
+        "elapsed_seconds": 2.481727986014448,
+        "health": [
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 1,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ]
+      },
+      {
+        "elapsed_seconds": 2.608628893038258,
+        "health": [
+          {
+            "ha_active": true,
+            "ha_application_ready": true,
+            "node": 1,
+            "sealed": false,
+            "standby": false,
+            "status": 200
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ],
+        "leader_frontier": [
+          62,
+          62
+        ],
+        "leader_node": 1,
+        "mac_frontier": [
+          62,
+          62
+        ]
+      },
+      {
+        "elapsed_seconds": 2.9785204640356824,
+        "health": [
+          {
+            "ha_active": true,
+            "ha_application_ready": true,
+            "node": 1,
+            "sealed": false,
+            "standby": false,
+            "status": 200
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ],
+        "leader_frontier": [
+          62,
+          62
+        ],
+        "leader_node": 1,
+        "mac_frontier": [
+          62,
+          62
+        ]
+      },
+      {
+        "elapsed_seconds": 3.3039746100548655,
+        "health": [
+          {
+            "ha_active": true,
+            "ha_application_ready": true,
+            "node": 1,
+            "sealed": false,
+            "standby": false,
+            "status": 200
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ],
+        "leader_frontier": [
+          62,
+          62
+        ],
+        "leader_node": 1,
+        "mac_frontier": [
+          62,
+          62
+        ]
+      },
+      {
+        "elapsed_seconds": 3.6302933370461687,
+        "health": [
+          {
+            "ha_active": true,
+            "ha_application_ready": true,
+            "node": 1,
+            "sealed": false,
+            "standby": false,
+            "status": 200
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ],
+        "leader_frontier": [
+          62,
+          62
+        ],
+        "leader_node": 1,
+        "mac_frontier": [
+          62,
+          62
+        ]
+      },
+      {
+        "elapsed_seconds": 3.9513362779980525,
+        "health": [
+          {
+            "ha_active": true,
+            "ha_application_ready": true,
+            "node": 1,
+            "sealed": false,
+            "standby": false,
+            "status": 200
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ],
+        "leader_frontier": [
+          62,
+          62
+        ],
+        "leader_node": 1,
+        "mac_frontier": [
+          62,
+          62
+        ]
+      },
+      {
+        "elapsed_seconds": 4.273247785982676,
+        "health": [
+          {
+            "ha_active": true,
+            "ha_application_ready": true,
+            "node": 1,
+            "sealed": false,
+            "standby": false,
+            "status": 200
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ],
+        "leader_frontier": [
+          62,
+          62
+        ],
+        "leader_node": 1,
+        "mac_frontier": [
+          62,
+          62
+        ]
+      },
+      {
+        "elapsed_seconds": 4.637972439057194,
+        "health": [
+          {
+            "ha_active": true,
+            "ha_application_ready": true,
+            "node": 1,
+            "sealed": false,
+            "standby": false,
+            "status": 200
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ],
+        "leader_frontier": [
+          62,
+          62
+        ],
+        "leader_node": 1,
+        "mac_frontier": [
+          62,
+          62
+        ]
+      },
+      {
+        "elapsed_seconds": 4.958671691012569,
+        "health": [
+          {
+            "ha_active": true,
+            "ha_application_ready": true,
+            "node": 1,
+            "sealed": false,
+            "standby": false,
+            "status": 200
+          },
+          {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "node": 3,
+            "sealed": false,
+            "standby": true,
+            "status": 429
+          }
+        ],
+        "leader_frontier": [
+          62,
+          62
+        ],
+        "leader_node": 1,
+        "mac_frontier": [
+          62,
+          62
+        ]
+      }
+    ],
+    "original_three_stop_calls_preserved": true,
+    "persisted_frontier_proof": {
+      "mac_passive_applied_index": 62,
+      "new_total_prepare_elapsed_seconds": 7.521225980948657,
+      "numeric_preparation_proven": true,
+      "stopped_mac_committed": {
+        "index": 62,
+        "leader_id": {
+          "node_id": 1,
+          "term": 3
+        }
+      },
+      "stopped_mac_last": {
+        "index": 62,
+        "leader_id": {
+          "node_id": 1,
+          "term": 3
+        }
+      },
+      "stopped_mac_vote": {
+        "committed": true,
+        "leader_id": {
+          "node_id": 1,
+          "term": 3
+        }
+      },
+      "stopped_rog_committed": {
+        "index": 61,
+        "leader_id": {
+          "node_id": 2,
+          "term": 2
+        }
+      },
+      "stopped_rog_last": {
+        "index": 61,
+        "leader_id": {
+          "node_id": 2,
+          "term": 2
+        }
+      },
+      "stopped_rog_vote": {
+        "committed": true,
+        "leader_id": {
+          "node_id": 2,
+          "term": 2
+        }
+      },
+      "this_does_not_assert_next_actual_leader": true,
+      "within_new_total_prepare_deadline": true
+    },
+    "pre_stop_rog": {
+      "applied_index": 61,
+      "committed_index": 61,
+      "is_self": true
+    },
+    "quorum_frontier": {
+      "leader_committed_index": 62,
+      "leader_node": 1,
+      "mac_applied_index": 62,
+      "mac_committed_index": 62,
+      "stable_seconds": 2.440123255015351,
+      "within_new_preparation_deadline": true
+    },
+    "stop_order": [
+      2,
+      1,
+      3
+    ]
+  },
+  "numeric_reads_once": [
+    {
+      "node": 2,
+      "dispatched": true,
+      "repeated": false,
+      "remote_completion_unknown": false,
+      "public_result_sha256": "79b13646af17ba56dfdef4153cf564ff603a13384cc8d4b286ff2f2f7435ac6a",
+      "ssh_elapsed_seconds": 0.4249728120630607,
+      "publication_within_original_observer_deadline": true
+    },
+    {
+      "node": 1,
+      "dispatched": true,
+      "repeated": false,
+      "remote_completion_unknown": false,
+      "public_result_sha256": "796fb29bb6e056d6afa7ce575dde3fb13c539e54ff1cd935286053455c693443",
+      "ssh_elapsed_seconds": 0.526808644994162,
+      "publication_within_original_observer_deadline": true
+    }
+  ],
+  "mutation_intents": 53,
+  "mutation_responses": 53,
+  "unknown_transport_outcomes": 0,
+  "automatic_retry": false,
+  "boundary_denominator_exact_1_through_53": true,
+  "all_boundaries_complete_and_within_original_budget": true,
+  "boundary_budget_counts": {
+    "12": 1,
+    "15": 52
+  },
+  "target_recovery_boundaries": [
+    {
+      "sequence": 43,
+      "node": 1,
+      "stage": "owned_missing_cipher_leader_recovery",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "elapsed_ms": 621.086,
+      "status": 200
+    },
+    {
+      "sequence": 44,
+      "node": 2,
+      "stage": "owned_missing_cipher_leader_recovery",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "elapsed_ms": 319.867,
+      "status": 200
+    },
+    {
+      "sequence": 45,
+      "node": 3,
+      "stage": "owned_missing_cipher_leader_recovery",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "elapsed_ms": 340.882,
+      "status": 200
+    },
+    {
+      "sequence": 46,
+      "node": 1,
+      "stage": "owned_missing_cipher_leader_recovery",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "elapsed_ms": 9452.187,
+      "status": 200
+    },
+    {
+      "sequence": 47,
+      "node": 2,
+      "stage": "owned_missing_cipher_leader_recovery",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "elapsed_ms": 8443.915,
+      "status": 200
+    },
+    {
+      "sequence": 48,
+      "node": 3,
+      "stage": "owned_missing_cipher_leader_recovery",
+      "method": "POST",
+      "route": "sys/unseal",
+      "budget_seconds": 15,
+      "elapsed_ms": 333.246,
+      "status": 200
+    }
+  ],
+  "foreground_sessions": 6,
+  "foreground_all_owned_stopped": true,
+  "original_stop_seconds": 5,
+  "original_start_seconds": 60,
+  "final_stop_node_ids": [
+    3,
+    2,
+    1
+  ],
+  "tunnel_children": 0,
+  "cleanup_cases": [
+    {
+      "case": "owned_processes_stopped",
+      "passed": true
+    },
+    {
+      "case": "owned_mesh_stopped",
+      "passed": true
+    },
+    {
+      "case": "native.complete",
+      "passed": true
+    }
+  ],
+  "original_http_seconds": 15,
+  "original_admission_seconds": 8,
+  "original_qa_seconds": 2400,
+  "new_outer_seconds": 3000,
+  "new_preparation_seconds": 60,
+  "old_fence_count": 20,
+  "terminal_exit": {
+    "controller_unchanged": true,
+    "exit_code": 0,
+    "finished_unix": 1793829729.4646294,
+    "fresh_build_source_files_unchanged": {
+      "linux": true,
+      "mac": true
+    },
+    "prior_receipts_unchanged": true,
+    "private_diagnostic_feature_enabled": false,
+    "runner_unchanged": true,
+    "schema": "heptabao.normal-r10-direct98-direction-exit.v1",
+    "summary": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r3/summary.json"
+  },
+  "cold_scope": {
+    "exact_native_execute_order": [
+      "prepare",
+      "bootstrap_v5",
+      "activate_and_grow",
+      "failover_and_quorum",
+      "full_cold_restart",
+      "missing_cipher_leader",
+      "finish_application"
+    ],
+    "original_full_cold_before_missing_recovery": true,
+    "missing_cipher_before_recovery_cold_unseals_each_node": true,
+    "original98_post_recovery_restart_present": false,
+    "original_finish_deletes_recovered_metadata": true,
+    "original_finish_confirms_absent_all_three_nodes": true,
+    "remaining_scope": "No post-restoration restart while recovered history remains live. Current stopped fixture has acknowledged cleanup deletions; cold restart of these roots can verify no resurrection but cannot serve the deleted history."
+  },
+  "limitation": "This is one scoped physical direct98 fixture using normal R10 artifacts; it does not supersede old failures/unknowns or prove full OpenBao compatibility, production deployment, snapshot CLI success, disk-full or power-loss behavior."
+}

@@ -1,0 +1,157 @@
+{
+  "schema": "heptabao.inventory-r2-root-dispatch-review.v1",
+  "status": "PASS_SOURCE_AND_PURE_COMPONENTS_INERT_MAC_ONLY_GO",
+  "source_packet_tree": "0a0ff5c2b3680207d3f70f447de8f785290b6669",
+  "dispatch_tree": "26ee6b2f49ca5aa2457ccb5a2b66a6bbcf544d70",
+  "source": {
+    "bytes": 45694,
+    "sha256": "3f574f0b3a455a3e43ad1433d6ad0777495357c41cd65c5cfb71649fc9f30094",
+    "blob": "0c942a8c10861c42a6ae85cd7977bdfc65805ba0"
+  },
+  "manifest": {
+    "bytes": 86481,
+    "sha256": "3c3900c814ebf3e9a1cd0d58226dd6a99fe0edb0aeb42510c3dd7fe5b528af93",
+    "blob": "8d9d9cd2e6f7476812a4f5019ed2ecf11fe7c252"
+  },
+  "inert": {
+    "bytes": 163561,
+    "sha256": "ef59c72be43b7871def1ae6212b40fa1a520b23eef7702baab097cccddc46c2c",
+    "blob": "c9742223e4c6d7e6dd78a8b4adb127a1c1bc6372"
+  },
+  "readonly_pending": {
+    "bytes": 142896,
+    "sha256": "bfca6efadc8a812d640fbbd9eb095b65cba56301d6068cff399657ee617e9607",
+    "blob": "6bb734d24438fe15df985ccbf2876c78c128b6f8"
+  },
+  "whole_source_manifest_bindings_verified": true,
+  "strict_diff": {
+    "schema": "heptabao.inventory-r2-root-strict-diff.v1",
+    "exact": true,
+    "source_packet_tree": "0a0ff5c2b3680207d3f70f447de8f785290b6669",
+    "diffs": [
+      {
+        "kind": "controller",
+        "hunks": 8,
+        "exact": true,
+        "old": {
+          "bytes": 44922,
+          "sha256": "4b7dfc869bca690e942e0f201e6e050a9a1f4ee31827b7bb3202ec66bd2f4282",
+          "blob": "eca2c542ac6b54b3fcd96ddb1747886d5bdab062"
+        },
+        "new": {
+          "bytes": 45694,
+          "sha256": "3f574f0b3a455a3e43ad1433d6ad0777495357c41cd65c5cfb71649fc9f30094",
+          "blob": "0c942a8c10861c42a6ae85cd7977bdfc65805ba0"
+        },
+        "diff": {
+          "bytes": 5722,
+          "sha256": "664df333682e6be40c31581803a6b8e41b1a8ad7cbcbf78a94d01f3a14e58ca3",
+          "blob": "7b96934184cde620d98c30e27dfa297193d16f90"
+        }
+      },
+      {
+        "kind": "manifest",
+        "hunks": 2,
+        "exact": true,
+        "old": {
+          "bytes": 85939,
+          "sha256": "b52cec525ecf14161a0f6a396545d25e0532dfe5284dd07bf63b670fe570862f",
+          "blob": "831e455c53e5efca4c9c5b27b4f7d24337e8cfec"
+        },
+        "new": {
+          "bytes": 86481,
+          "sha256": "3c3900c814ebf3e9a1cd0d58226dd6a99fe0edb0aeb42510c3dd7fe5b528af93",
+          "blob": "8d9d9cd2e6f7476812a4f5019ed2ecf11fe7c252"
+        },
+        "diff": {
+          "bytes": 3040,
+          "sha256": "2e3a96a4a282a63caf17f1e7dea5f2088598f720892643984fdfd5f17a623fff",
+          "blob": "91ad1b02f0bfeee262121a8466f891524308651c"
+        }
+      }
+    ],
+    "manifest_files_verified": 6,
+    "full_collector_executed": false,
+    "current_host_read": false
+  },
+  "pure_components": {
+    "endpoint_redaction_preserved": true,
+    "full_ast_compile": true,
+    "full_collector_executed": false,
+    "no_actual_signal_or_child_or_host_io": true,
+    "post_wait_same_query_deadline_cases": [
+      {
+        "cleanup_probe": false,
+        "completion": 9.9,
+        "late_refused": false,
+        "owned_closed": true
+      },
+      {
+        "cleanup_probe": false,
+        "completion": 10.1,
+        "late_refused": true,
+        "owned_closed": true
+      },
+      {
+        "cleanup_probe": true,
+        "completion": 5.1,
+        "late_refused": true,
+        "owned_closed": true
+      }
+    ],
+    "production_qualified": false,
+    "protected_once_cleanup_helpers": [
+      "stop_once",
+      "close_child_streams_once",
+      "close_once"
+    ],
+    "schema": "heptabao.inventory-r2-root-inert-components.v1",
+    "selected_component_definitions": 18,
+    "shared_host_deadline_refuses": true,
+    "source_sha256": "3f574f0b3a455a3e43ad1433d6ad0777495357c41cd65c5cfb71649fc9f30094",
+    "three_r1_redaction_counterexamples_closed": true
+  },
+  "pure_admission": {
+    "full_collector_executed": false,
+    "host_cases": [
+      {
+        "duplicate_leaf_refused": true,
+        "duplicate_pass_refused": true,
+        "entries": 38,
+        "host": "mac",
+        "incorrect_count_refused": true,
+        "omitted_parent_refused": true,
+        "passes": 15,
+        "total_explicit_observations": 357
+      },
+      {
+        "duplicate_leaf_refused": true,
+        "duplicate_pass_refused": true,
+        "entries": 46,
+        "host": "rog",
+        "incorrect_count_refused": true,
+        "omitted_parent_refused": true,
+        "passes": 17,
+        "total_explicit_observations": 434
+      },
+      {
+        "duplicate_leaf_refused": true,
+        "duplicate_pass_refused": true,
+        "entries": 18,
+        "host": "x230",
+        "incorrect_count_refused": true,
+        "omitted_parent_refused": true,
+        "passes": 5,
+        "total_explicit_observations": 112
+      }
+    ],
+    "host_or_private_input_read": false,
+    "manifest_sha256": "3c3900c814ebf3e9a1cd0d58226dd6a99fe0edb0aeb42510c3dd7fe5b528af93",
+    "os_identity_stubbed": true,
+    "schema": "heptabao.inventory-r2-root-pure-admission.v1"
+  },
+  "actual_private_read_GO": false,
+  "inert_key": "heptabao-finite-client-inventory-mac-r2-inert-3f574f0b-20261104-r1",
+  "new_inert_seconds": 10,
+  "new_outer_seconds": 60
+}

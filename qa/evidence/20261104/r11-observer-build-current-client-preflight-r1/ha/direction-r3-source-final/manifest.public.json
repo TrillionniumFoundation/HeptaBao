@@ -1,0 +1,82 @@
+{
+  "schema": "heptabao.direction98-r3-final-source.v1",
+  "status": "source-only-no-dispatch",
+  "draft1_tree": "c365c4e9d72b60369f19033aa452c39c283752ac",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "actual_r3_qualification": false,
+  "files": [
+    {
+      "path": "launch_normal_r10_pocket_direct98_r3.py",
+      "bytes": 17895,
+      "sha256": "5b25448423abba0a18a9317e645fb7bffe392355efe7809e9c76c480f3f3c5b4",
+      "blob": "c6e231570a92e174b2f84b4633209eba04d0c7c7"
+    },
+    {
+      "path": "native_v6_pocket_source_direct98_r10_r3.py",
+      "bytes": 25523,
+      "sha256": "485fd21b5ef150eb952b65a3eb446b1a25a55a25550c17599198497f11d5f081",
+      "blob": "a359c06befbd3b668facc9940bc2186d787cbf00"
+    },
+    {
+      "path": "read_stopped_direction_frontier_r3.py",
+      "bytes": 16250,
+      "sha256": "e5dbccfdcb4881dfd2ce9bdfea5bf7bdfbbca6b5ce0684c412f67e5d32ea12e0",
+      "blob": "a59d3b3d93fcb0468940476e54899da23f6354d8"
+    },
+    {
+      "path": "probe_normal_build_r10_r1.py",
+      "bytes": 6445,
+      "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+      "blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a"
+    },
+    {
+      "path": "runner-draft1-to-final.review.diff",
+      "bytes": 1630,
+      "sha256": "ef5776ec19f17949eaa00000b7520835689db70a37e445baa15447b38d275ff3",
+      "blob": "f6d1af25c1d9d64445534c7898134e669a379a6c"
+    },
+    {
+      "path": "launcher-draft1-to-final.review.diff",
+      "bytes": 689,
+      "sha256": "03c2e1702d50ae7857b5df70187a0c7995aa89406ccb926ce2a41d137e8b906a",
+      "blob": "0fae2fc756369b06ed8da2bd1c4f1c3e4a92c20c"
+    },
+    {
+      "path": "design-draft1-to-final.review.diff",
+      "bytes": 3064,
+      "sha256": "f854ad5622cb88d5d7bf1c2951670d64193d33d736efcdfa80c936dd3b51d859",
+      "blob": "dcbabbaedb93264ad6ab04db1f7e1cca6609175f"
+    },
+    {
+      "path": "DESIGN.md",
+      "bytes": 8236,
+      "sha256": "197deca82d2569b11727bf54a2021214846b901fa3cf387f412f80274022964f",
+      "blob": "f994c67ab16efc38eedd1c579a4fd4e42d692304"
+    },
+    {
+      "path": "inert_carrier.py",
+      "bytes": 5573,
+      "sha256": "1044e680b9289764c8ce80d5142f5ba08ce92b2da6dc8f098183cb4fd166c75f",
+      "blob": "bf702956348fad015155d87cd6554d5f55fb873e"
+    },
+    {
+      "path": "inert_payload.json",
+      "bytes": 88397,
+      "sha256": "0ded9bba8d2699f34bab928f3167af5dacc78e67bea3c7f37501986f71d739f4",
+      "blob": "c44c59b1b1b18f1bf9caf60255e265d90f511c7e"
+    },
+    {
+      "path": "inert-r2-to-r3.review.diff",
+      "bytes": 1157,
+      "sha256": "9f70c0d93bf4212cfb9e1e800c42dd9b44f8c842086e93f9b78128572003602d",
+      "blob": "9031be558a88edb5fd1f0aaead737cea2ea3bc38"
+    },
+    {
+      "path": "dispatch.public.json",
+      "bytes": 3043,
+      "sha256": "cd8bd61b9cd0536ba3bb8658540739b5dd8baef1301d16e68b022fc14e88b2da",
+      "blob": "5b93694b9061bf820024eba68f1f1a907a01e24d"
+    }
+  ]
+}

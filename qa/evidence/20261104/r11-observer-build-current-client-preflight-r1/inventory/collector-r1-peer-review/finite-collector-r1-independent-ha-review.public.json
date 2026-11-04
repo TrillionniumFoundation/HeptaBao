@@ -1,0 +1,120 @@
+{
+  "schema": "heptabao.finite-client-inventory.independent-source-review.ha.r1",
+  "status": "SOURCE_REVISIONS_REQUIRED_NO_EXECUTION",
+  "reviewer": "ha_validation",
+  "packet_tree": "d9051eedfefef4c9576a1d01e22d4969dd272846",
+  "reviewed_inputs": {
+    "controller": {
+      "bytes": 44922,
+      "sha256": "4b7dfc869bca690e942e0f201e6e050a9a1f4ee31827b7bb3202ec66bd2f4282",
+      "blob": "eca2c542ac6b54b3fcd96ddb1747886d5bdab062"
+    },
+    "manifest": {
+      "bytes": 85939,
+      "sha256": "b52cec525ecf14161a0f6a396545d25e0532dfe5284dd07bf63b670fe570862f",
+      "blob": "831e455c53e5efca4c9c5b27b4f7d24337e8cfec"
+    },
+    "readme": {
+      "bytes": 11986,
+      "sha256": "ae1fd6c578e9f3482e804d99dff94b254b59612a28772f17f41b15d7224ba334",
+      "blob": "4c98b2f0a7f4adb514804f8c9b0b68d18e7e49b9"
+    }
+  },
+  "method": {
+    "controller_full_text_read": true,
+    "manifest_fixed_entry_parent_sets_query_argv_limits_independently_read": true,
+    "count_arithmetic": "Pure JavaScript exact ancestor-set and ASCII ordering reconstruction; no Python execution.",
+    "source_blob_hashes_and_utf8_bytes_independently_verified": true,
+    "host_access": false,
+    "collector_executed": false,
+    "python_ast_executed": false,
+    "components_executed": false,
+    "signals_sent": false,
+    "children_created": false
+  },
+  "finite_counts": [
+    {
+      "host": "mac",
+      "entries": 38,
+      "passes": 15,
+      "queries": 7,
+      "maxObservations": 31,
+      "totalObservations": 357,
+      "passesExact": true,
+      "uniqueDenominator": true
+    },
+    {
+      "host": "rog",
+      "entries": 46,
+      "passes": 17,
+      "queries": 4,
+      "maxObservations": 31,
+      "totalObservations": 434,
+      "passesExact": true,
+      "uniqueDenominator": true
+    },
+    {
+      "host": "x230",
+      "entries": 18,
+      "passes": 5,
+      "queries": 6,
+      "maxObservations": 32,
+      "totalObservations": 112,
+      "passesExact": true,
+      "uniqueDenominator": true
+    }
+  ],
+  "confirmed_controls": [
+    "One module START/UNTIL=START+45 applies to manifest stdin, all passes, file reads, every query and final ps. No per-pass reset.",
+    "One byte_reads counter covers stdin, actual regular-file reads, query stdout/stderr and final ps; allowances are clamped before each read to the shared 8 MiB bound.",
+    "Each explicit metadata observation is admitted by a unique predeclared pass key. Parent lstat-before/fstat-open/lstat-after each count once; DB/WAL/SHM leaves count separately and remain metadata-only.",
+    "Read leaves use held O_DIRECTORY/O_NOFOLLOW ancestor descriptors, read-only O_NOFOLLOW/O_NONBLOCK file descriptors, single-link/owner/size checks, matching FD/name identities and hashes.",
+    "Absent or rejected ancestors block descendant observation without declaring leaf absence; all fixed entries remain represented.",
+    "Popen and os.open registration defer signal exceptions over the returned-resource-to-ledger interval. Queries use fixed manifest argv without a shell and a clean environment.",
+    "Normal run_child termination consumes stdout/stderr, waits the direct child, closes streams and records one stop attempt. Final one-shot ps filters only ledger PGIDs; unreaped children, remaining or unobserved groups and close errors prevent complete status.",
+    "Final success requires all entries/queries qualified, no pass/projection failure, closed descriptors and complete group cleanup, plus original host deadline before output. Main returns zero only after output while still inside that deadline.",
+    "An over-64-KiB candidate report becomes explicitly incomplete instead of truncated-complete. No whole-host absence, production cutover, new restore or consumer-runtime qualification is claimed."
+  ],
+  "required_changes": [
+    {
+      "id": "query_completion_must_recheck_same_deadline",
+      "location": "run_child: original lines 616-674, especially p.wait at 656",
+      "source_observation": "The code checks remaining(deadline) before waiting, but not after p.wait returns. The final host45 check does not independently enforce an earlier query10 or final-ps5 deadline.",
+      "consequence": "A return observed after the original per-query deadline may leave failure=None and be projected as complete while the host45 envelope remains valid.",
+      "minimal_change": "Immediately recheck the same deadline after p.wait inside its existing try, before cleanup; retain 10/5/45 and original cleanup allowance.",
+      "evidence_class": "static control-flow finding; no synthetic or actual late process was executed"
+    },
+    {
+      "id": "protect_cleanup_attempt_marking",
+      "location": "stop_once: original lines 571-596; analogous close_once/close_child_streams_once flags",
+      "source_observation": "stop_attempted is set before entering the protected signal-deferral region. A signal in that interval can abort before TERM/wait; later cleanup sees the flag and skips the only attempt.",
+      "consequence": "The result remains incomplete, but the owned direct child may not receive the intended cleanup. Analogous early close-attempt flags can skip descriptor/stream closing.",
+      "minimal_change": "Move protection to cover each first attempt-marker assignment through actual cleanup, with the existing finally restoration. Preserve one attempt, no extra kill/retry budget.",
+      "evidence_class": "static signal-interleaving finding; no signal or child was executed"
+    },
+    {
+      "id": "docker_endpoint_must_be_fixed",
+      "location": "manifest X230 x230-exact-oracle argv and run_child environment",
+      "source_observation": "The Docker query has no --host or --context and retains the real home directory. Clearing DOCKER_* variables does not override persisted currentContext.",
+      "consequence": "The fixed container ID alone does not bind the query to the intended local daemon. A configured TCP/SSH context could contact another endpoint or create an implicit transport child.",
+      "minimal_change": "Bind the approved local daemon endpoint or explicit built-in default context, without mutating user configuration. Keep actual endpoint provenance explicit; do not claim any remote contact was observed.",
+      "primary_sources": [
+        "https://docs.docker.com/reference/cli/docker/context/use/",
+        "https://docs.docker.com/reference/cli/docker/",
+        "https://docs.docker.com/engine/manage-resources/contexts/"
+      ],
+      "evidence_class": "static source plus official Docker CLI contract; current host context was not read"
+    }
+  ],
+  "other_review_coordination": {
+    "root_reported_argument_path_disclosure": "Root identified untrusted slash-prefixed arguments being projected as paths; author is fixing in R2. This narrow review does not qualify the R1 public projection.",
+    "author_acknowledged_query_deadline_change": true,
+    "future_r2_not_yet_reviewed": true
+  },
+  "limitations": [
+    "No historical-source matrix or currently installed utility binary provenance was newly qualified by this review.",
+    "The explicit-metadata count does not cover kernel-internal lookups, Python imports or filesystem activity internal to fixed standard query utilities.",
+    "Cleanup failures remain unknown/incomplete, not proof of termination. No completed host observation exists in this source packet.",
+    "This review does not authorize collector runtime or the separately prepared physical R3 direction run."
+  ]
+}
