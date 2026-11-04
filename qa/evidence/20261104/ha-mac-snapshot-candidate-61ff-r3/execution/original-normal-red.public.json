@@ -1,0 +1,723 @@
+{
+  "cargo_build_jobs": 2,
+  "cargo_deadline_monotonic": 2707354.807201625,
+  "cargo_remaining_seconds": 1729.7223389167339,
+  "cargo_sha256": "1de2e84c15443b70444eecfa959ff9099dd8c1a5606b6d9ef5bc0ea9c25bc7f9",
+  "cargo_started_monotonic": 2705554.807201625,
+  "cargo_started_utc": "2026-11-04T19:15:07Z",
+  "clone_inode_verification": {
+    "directories": 2099,
+    "regular_files": 23737
+  },
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "commit.gpgsign=false",
+        "-C",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 46455,
+        "remaining": [],
+        "returncode": 0
+      },
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+      "elapsed_seconds": 0.05464024981483817,
+      "exit_code": 0,
+      "label": "input-head",
+      "owned_pgid": 46455,
+      "remaining": [],
+      "remaining_at_end_seconds": 299.86109020840377,
+      "remaining_at_start_seconds": 299.9157307911664,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "7c6d5ddae0b3af2321ffa80921adeea4b60242984026d532f468609ca34d4b1f",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "commit.gpgsign=false",
+        "-C",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 46458,
+        "remaining": [],
+        "returncode": 0
+      },
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+      "elapsed_seconds": 0.055274167098104954,
+      "exit_code": 0,
+      "label": "input-tree",
+      "owned_pgid": 46458,
+      "remaining": [],
+      "remaining_at_end_seconds": 299.8053900003433,
+      "remaining_at_start_seconds": 299.86066416604444,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "379fb60b16143f3ff68289c5fc7a792a676ce252d01e5a76fb4fa6b361f044ef",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "commit.gpgsign=false",
+        "-C",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 46461,
+        "remaining": [],
+        "returncode": 0
+      },
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+      "elapsed_seconds": 0.16079479176551104,
+      "exit_code": 0,
+      "label": "input-clean",
+      "owned_pgid": 46461,
+      "remaining": [],
+      "remaining_at_end_seconds": 299.643957500346,
+      "remaining_at_start_seconds": 299.804752250202,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/bin/ps",
+        "-axo",
+        "pid=,ppid=,pgid=,comm="
+      ],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 46464,
+        "remaining": [],
+        "returncode": 0
+      },
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+      "elapsed_seconds": 0.05343629186972976,
+      "exit_code": 0,
+      "label": "preparation-process-snapshot",
+      "owned_pgid": 46464,
+      "remaining": [],
+      "remaining_at_end_seconds": 299.5841600834392,
+      "remaining_at_start_seconds": 299.6375963333994,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 58244,
+      "stdout_sha256": "4e193ad202222d33c05b37c8e273cc4f0c94dd4db3078e27c25db07f3462cff4",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/bin/cp",
+        "-cR",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-unified-normal-61ff-r1/runtime.noindex/target",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/runtime.noindex/target"
+      ],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 46467,
+        "remaining": [],
+        "returncode": 0
+      },
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+      "elapsed_seconds": 2.2775227082893252,
+      "exit_code": 0,
+      "label": "apfs-cache-clone",
+      "owned_pgid": 46467,
+      "remaining": [],
+      "remaining_at_end_seconds": 297.30531808314845,
+      "remaining_at_start_seconds": 299.5828406661749,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/rustc",
+        "-vV"
+      ],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 46496,
+        "remaining": [],
+        "returncode": 0
+      },
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+      "elapsed_seconds": 0.05522199999541044,
+      "exit_code": 0,
+      "label": "rustc-version",
+      "owned_pgid": 46496,
+      "remaining": [],
+      "remaining_at_end_seconds": 296.9169435412623,
+      "remaining_at_start_seconds": 296.97216587513685,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 192,
+      "stdout_sha256": "bd38eb565e393486255b35ff1f74e9dc7ca87425f1febb798b9dd042159a833a",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "fmt",
+        "--all"
+      ],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 46499,
+        "remaining": [],
+        "returncode": 0
+      },
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+      "elapsed_seconds": 3.8779944158159196,
+      "exit_code": 0,
+      "label": "cargo-fmt",
+      "owned_pgid": 46499,
+      "remaining": [],
+      "remaining_at_end_seconds": 1796.121558083687,
+      "remaining_at_start_seconds": 1799.9995524166152,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 46512,
+        "remaining": [],
+        "returncode": 0
+      },
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+      "elapsed_seconds": 3.8728673751465976,
+      "exit_code": 0,
+      "label": "cargo-fmt-check",
+      "owned_pgid": 46512,
+      "remaining": [],
+      "remaining_at_end_seconds": 1792.2454046248458,
+      "remaining_at_start_seconds": 1796.1182718747295,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "commit.gpgsign=false",
+        "-C",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+        "diff",
+        "--name-only"
+      ],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 46530,
+        "remaining": [],
+        "returncode": 0
+      },
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+      "elapsed_seconds": 0.15896408399567008,
+      "exit_code": 0,
+      "label": "formatted-paths",
+      "owned_pgid": 46530,
+      "remaining": [],
+      "remaining_at_end_seconds": 1792.0831474587321,
+      "remaining_at_start_seconds": 1792.2421114169993,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 404,
+      "stdout_sha256": "6a2f875ba4f7ab1d92113e5d83f792632f5815cd61dc09fb67aa3f8150ef71ea",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-C",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+        "diff",
+        "--no-ext-diff"
+      ],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 46533,
+        "remaining": [],
+        "returncode": 0
+      },
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+      "elapsed_seconds": 0.1525778342038393,
+      "exit_code": 0,
+      "label": "format-diff",
+      "owned_pgid": 46533,
+      "remaining": [],
+      "remaining_at_end_seconds": 1791.9301923336461,
+      "remaining_at_start_seconds": 1792.0827702917159,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 25453,
+      "stdout_sha256": "b2a1800b8bd24c5a5548369bb2cb95732647c495efb3a5fb23de62548fac39b3",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "commit.gpgsign=false",
+        "-C",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+        "add",
+        "--",
+        "crates/heptabao-server/src/ha_snapshot_clock.rs",
+        "crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs",
+        "crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs",
+        "crates/heptabao-server/src/service_snapshot_clock.rs",
+        "crates/heptabao-server/src/service_snapshot_denial.rs",
+        "crates/heptabao-server/src/service_snapshot_transfer.rs",
+        "crates/heptabao-server/src/service_snapshot_v6_ha.rs"
+      ],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 46536,
+        "remaining": [],
+        "returncode": 0
+      },
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+      "elapsed_seconds": 0.1576369577087462,
+      "exit_code": 0,
+      "label": "format-add",
+      "owned_pgid": 46536,
+      "remaining": [],
+      "remaining_at_end_seconds": 1791.7721083746292,
+      "remaining_at_start_seconds": 1791.9297452499159,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "commit.gpgsign=false",
+        "-C",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+        "commit",
+        "--quiet",
+        "-m",
+        "Format isolated snapshot ACL and denial integration candidate"
+      ],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 46539,
+        "remaining": [],
+        "returncode": 0
+      },
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+      "elapsed_seconds": 0.05358766624704003,
+      "exit_code": 0,
+      "label": "format-freeze",
+      "owned_pgid": 46539,
+      "remaining": [],
+      "remaining_at_end_seconds": 1791.7180979168043,
+      "remaining_at_start_seconds": 1791.7716854587197,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "commit.gpgsign=false",
+        "-C",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+        "rev-parse",
+        "HEAD"
+      ],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 46544,
+        "remaining": [],
+        "returncode": 0
+      },
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+      "elapsed_seconds": 0.05366799980401993,
+      "exit_code": 0,
+      "label": "frozen-head",
+      "owned_pgid": 46544,
+      "remaining": [],
+      "remaining_at_end_seconds": 1791.6640379587188,
+      "remaining_at_start_seconds": 1791.7177058747038,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "5c2c8faba52e2aba9c04665668081fcabf9fe11418c2160a367983629c38fd2a",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "commit.gpgsign=false",
+        "-C",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 46547,
+        "remaining": [],
+        "returncode": 0
+      },
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+      "elapsed_seconds": 0.053733374923467636,
+      "exit_code": 0,
+      "label": "frozen-tree",
+      "owned_pgid": 46547,
+      "remaining": [],
+      "remaining_at_end_seconds": 1791.6099701668136,
+      "remaining_at_start_seconds": 1791.6637034169398,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 41,
+      "stdout_sha256": "77024197a91189560b3355c4c1d53cd186559e15fb23f7c94b8fed3468c4f2ee",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-c",
+        "core.hooksPath=/dev/null",
+        "-c",
+        "commit.gpgsign=false",
+        "-C",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 46550,
+        "remaining": [],
+        "returncode": 0
+      },
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+      "elapsed_seconds": 0.053508167155086994,
+      "exit_code": 0,
+      "label": "frozen-clean",
+      "owned_pgid": 46550,
+      "remaining": [],
+      "remaining_at_end_seconds": 1791.5561294169165,
+      "remaining_at_start_seconds": 1791.609637499787,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "clippy",
+        "--release",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--exclude",
+        "qrcode",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cleanup": {
+        "already_reaped": false,
+        "forced": false,
+        "group_cleanup_before_reap": true,
+        "group_signalled_after_reap": false,
+        "pid": 46553,
+        "remaining": [],
+        "returncode": 101
+      },
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+      "elapsed_seconds": 61.823481999803334,
+      "exit_code": 101,
+      "label": "strict-clippy",
+      "owned_pgid": 46553,
+      "remaining": [],
+      "remaining_at_end_seconds": 1729.7309819166549,
+      "remaining_at_start_seconds": 1791.5544638750143,
+      "stderr_bytes": 16243,
+      "stderr_sha256": "fe452d0021a4d2dfa4301c7f9f60c7ea816088bec3e6a0bd239573f8dbb285ac",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "timed_out": false
+    }
+  ],
+  "completed_tests": [],
+  "copy_mode": "APFS cp -cR, no fallback",
+  "critical_tests": [
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update_actor",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_standby_acl_denial_commits_floor_without_transfer_lease_and_survives_cold",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_standby_original_snapshot_actor_expiry_before_floor_returns_proved_403",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoints",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_http_consistency_forward_restricts_local_snapshot_and_no_forward_kv",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_read_restore_validation_and_no_forward_use_real_owners",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_finite_tokens_redirect_without_consumption",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_late_root_change_and_lost_quorum_refuse_delivery",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_ttl_snapshot_commits_real_leader_floor_and_survives_cold_restart",
+    "ha::snapshot_clock::tests::snapshot_clock_denied_requires_original_binding_exact_successor_and_only_status_403"
+  ],
+  "driver_sha256": "7a6a3c484d8219bb5e2faa4f71a3341685b53ac5306c1760136b8923a6a2cf74",
+  "elapsed_seconds": 73.36111512500793,
+  "failure_class": "RuntimeError",
+  "failure_code": "command_nonzero_strict-clippy",
+  "format_diff_sha256": "b2a1800b8bd24c5a5548369bb2cb95732647c495efb3a5fb23de62548fac39b3",
+  "frozen_manifest_sha256": "160af1b9c52b31ff5d38ebb25d5c94f7d17f1a64d8de58a584a19efcde43ef76",
+  "frozen_source": {
+    "commit": "786f2c151ff2054937b3e743e97363085089ee5e",
+    "status": "",
+    "tree": "af01b7700b513272f9ed20a92725b23eff6de1d2"
+  },
+  "full_replacement_qualified": false,
+  "input_product_files": [
+    {
+      "bytes": 520380,
+      "git_blob": "965df43d4bd0b43f15160d8d7387aa49c2432250",
+      "path": "crates/heptabao-server/src/service.rs",
+      "sha256": "ecc34e93aeec0832943910aeab443009bfcad4f4cbc6d721b7a2fb213c599313"
+    },
+    {
+      "bytes": 64166,
+      "git_blob": "0a4596c5b5cdb97dbd453862e1cdc26690eb8141",
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "sha256": "a29b89e4efca56a28dbbaefccab89aac329e6cf75de1d75f62bc80545ddee4d1"
+    },
+    {
+      "bytes": 22960,
+      "git_blob": "2b6281aba7d5fdf802f83a9fa1be25d3b50b4cec",
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha.rs",
+      "sha256": "fd7d4801ed2f3e28823c311c360f26a828a83e27bcab69f946bf0acb6a640f3e"
+    },
+    {
+      "bytes": 27950,
+      "git_blob": "a33a8cb8466d9b5b6769583f393f05d55360c36f",
+      "path": "crates/heptabao-server/src/service_snapshot_v6.rs",
+      "sha256": "4bc682d4565942e10d93a72ea48de4e1e9c44f7d7891750899cebaa0cb0b65f0"
+    },
+    {
+      "bytes": 14254,
+      "git_blob": "71148ff6176168e2e73756071f35988812aa48dc",
+      "path": "crates/heptabao-server/src/service_snapshot_clock.rs",
+      "sha256": "f01580b4fbbeb0e31eb690e18c1dafc6b542bb72bfb82c318d58b01748c003e3"
+    },
+    {
+      "bytes": 14308,
+      "git_blob": "421b365cd3119c3da9bffa2372096137cd16d605",
+      "path": "crates/heptabao-server/src/service_snapshot_denial.rs",
+      "sha256": "c3273310c926cd68a489fb0b111b29f4e194b973718effa670b6b5d3afa82496"
+    },
+    {
+      "bytes": 16786,
+      "git_blob": "af44a032d401e0269809aedd07cb9429ea151af9",
+      "path": "crates/heptabao-server/src/snapshot_file.rs",
+      "sha256": "98d3215819659dce42213be41215827cb19110311221ea460a09cacb63576414"
+    },
+    {
+      "bytes": 38750,
+      "git_blob": "7e86854bbf598cc7f2b3c2845ba94d4ed196e7f1",
+      "path": "crates/heptabao-server/src/ha_snapshot_clock.rs",
+      "sha256": "188b1e44be59e8bcae0e8184e2925be5f8ca9c04bbaf02bec00c5665913c5f5f"
+    },
+    {
+      "bytes": 44113,
+      "git_blob": "ebb045e333f78144e5a9a035d74ce789f5c36a76",
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "sha256": "7b420b0e859c7cd7376687a9404b3ae37678c3dd98eb55e55e0f51187a7f812d"
+    },
+    {
+      "bytes": 16428,
+      "git_blob": "c6040baa75c4cefc1d53d817032d04020cb0f6a2",
+      "path": "crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs",
+      "sha256": "f1676351ba8f74e2ac64dc07efd109657447e8241fc1872334a1200ddea811b0"
+    },
+    {
+      "bytes": 17411,
+      "git_blob": "9a7959a991063572a172a6791835301e1bcc793d",
+      "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs",
+      "sha256": "a68cad2e3423dfe479d8b00e6e49f88b6bcbe6b2fdbeab326c7c167022693774"
+    },
+    {
+      "bytes": 231754,
+      "git_blob": "c7a4307e7a50075bb777f324aba48af929e46f2e",
+      "path": "crates/heptabao-server/src/http.rs",
+      "sha256": "6f855ab990ed6eba637a239cbdceda0b1172eae4173c68e34c950f88c22288cc"
+    },
+    {
+      "bytes": 16843,
+      "git_blob": "ed64b70e48cb8d549597e0102cf9003e0c1e606f",
+      "path": "crates/heptabao-server/src/http_consistency.rs",
+      "sha256": "d8d20d8c69e6cf02a29801a3f05645d8ba58138d0d97c72cdd20994c2caa56cf"
+    }
+  ],
+  "input_source": {
+    "commit": "1f11b13ffad62b80695e036f393739cfcc8a8cab",
+    "status": "",
+    "tree": "6708710421a4407e0d098fcc9ecc9aea479441db"
+  },
+  "input_tree": "6708710421a4407e0d098fcc9ecc9aea479441db",
+  "known_remaining_product_gaps": [
+    "A first new expiry observed only after the one leader clock writer returns 503 without replay; it is not mislabeled as a proved entry-time Denied 403.",
+    "Other pre-plan errors such as a quota refusal are not covered by the new snapshot denial capsule.",
+    "Ordinary KV X-Vault-No-Request-Forwarding plus global precision still needs an independent closed authority and metadata-only leader clock path.",
+    "Listener consistency Forward restriction is implemented in revision 3; its new integration and normal-wire validation have not run.",
+    "Other non-clock maintenance states remain ineligible for this local standby snapshot path."
+  ],
+  "last_owned_child_cleanup": {
+    "already_reaped": true,
+    "forced": false,
+    "group_signalled_after_reap": false,
+    "pid": 46553,
+    "remaining": [],
+    "returncode": 101
+  },
+  "multi_physical_host_ha_executed": false,
+  "normal_profile": {
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_PANIC": "unwind"
+  },
+  "preparation_budget_seconds": 300.0,
+  "preparation_elapsed_seconds": 3.0834543337114155,
+  "preparation_process_blockers": [],
+  "product_service_started": false,
+  "production_changed": false,
+  "python_sha256": "7ecc1ecbf9daa9303c4bf502ff62ffdd9010ed5c08729d470ae9380c10ce1211",
+  "review_commit": "4609acf94695508ea49097039b8355897a1b20f2",
+  "root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1",
+  "rustc_sha256": "a11618eca0956a8aa4372c2bc898690b513cbdfa2cb9125b2a5301e360ed5b49",
+  "rustc_vv": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: aarch64-apple-darwin\nrelease: 1.98.0\nLLVM version: 22.1.8\n",
+  "schema": "heptabao.mac-snapshot-candidate-normal.v1",
+  "shared_cargo_budget_seconds": 1800.0,
+  "source_cache_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-unified-normal-61ff-r1/runtime.noindex/target",
+  "source_cache_scope": "release build-directory lock; not whole cache or host reservation",
+  "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+  "source_release_lock": {
+    "descriptor_mode": "O_RDONLY|O_NOFOLLOW",
+    "device": 16777244,
+    "held_since_monotonic_ns": 2705552140859416,
+    "inode": 72462745,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-unified-normal-61ff-r1/runtime.noindex/target/release/.cargo-lock",
+    "primitive": "flock LOCK_EX|LOCK_NB",
+    "verified_through_monotonic_ns": 2705554751560791
+  },
+  "stage_receipt_sha256": "6ef4d495f8a57369d0bfffdf04d5fb14c487a9968f73afc8758aafd2c53c1b0a",
+  "status": "failed",
+  "strict_clippy_inherited_excluded_package": "qrcode",
+  "target_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/runtime.noindex/target"
+}

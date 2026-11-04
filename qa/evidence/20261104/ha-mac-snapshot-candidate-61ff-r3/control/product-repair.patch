@@ -1,0 +1,31 @@
+--- a/crates/heptabao-server/src/service_snapshot_transfer.rs
++++ b/crates/heptabao-server/src/service_snapshot_transfer.rs
+@@ -146,6 +146,8 @@
+ 
+ pub(super) struct SnapshotTransferPlan {
+     actor: Principal,
++    #[cfg(feature = "native-v6-ha")]
++    method: String,
+     path: String,
+     namespace: String,
+     activation: String,
+@@ -871,6 +873,8 @@
+             };
+         let mut plan = SnapshotTransferPlan {
+             actor,
++            #[cfg(feature = "native-v6-ha")]
++            method: request.method.to_owned(),
+             path: request.path.to_owned(),
+             namespace: request.namespace.to_owned(),
+             activation: self.unseal_nonce.clone(),
+--- a/crates/heptabao-server/src/service_snapshot_denial.rs
++++ b/crates/heptabao-server/src/service_snapshot_denial.rs
+@@ -70,7 +70,7 @@
+             enforce_namespace: true,
+             wrap_ttl_seconds: None,
+             origin_peer: request.origin_peer,
+-            client_certificates: request.client_certificates,
++            client_certificates: request.client_certificates.as_deref(),
+         };
+         let clock_request = if self
+             .state

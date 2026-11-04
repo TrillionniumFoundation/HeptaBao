@@ -1,0 +1,573 @@
+diff --git a/crates/heptabao-server/src/ha_snapshot_clock.rs b/crates/heptabao-server/src/ha_snapshot_clock.rs
+index 7e86854..07e5587 100644
+--- a/crates/heptabao-server/src/ha_snapshot_clock.rs
++++ b/crates/heptabao-server/src/ha_snapshot_clock.rs
+@@ -899,7 +899,6 @@ mod tests {
+         assert!(!SnapshotClockOperation::ValidateForceUpload.accepts(ClockMethod::Get));
+     }
+ 
+-
+     #[test]
+     fn snapshot_clock_denied_requires_original_binding_exact_successor_and_only_status_403() {
+         let original = original();
+@@ -968,10 +967,13 @@ mod tests {
+         wrong_source.auth_sha256[0] ^= 1;
+         for (before, after) in [
+             (wrong_source, None),
+-            (source(), Some(SharedSnapshotClockState {
+-                logical_generation: 11,
+-                ..successor
+-            })),
++            (
++                source(),
++                Some(SharedSnapshotClockState {
++                    logical_generation: 11,
++                    ..successor
++                }),
++            ),
+         ] {
+             let mut reply = response();
+             reply.outcome = OutcomeWire::Denied {
+diff --git a/crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs b/crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs
+index 9a7959a..4446de7 100644
+--- a/crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs
+@@ -13,7 +13,11 @@ fn snapshot_policy_token(
+     update: bool,
+     ttl: &str,
+ ) -> TestResult<Zeroizing<String>> {
+-    let capabilities = if update { r#"["read", "update"]"# } else { r#"["read"]"# };
++    let capabilities = if update {
++        r#"["read", "update"]"#
++    } else {
++        r#"["read"]"#
++    };
+     let policy = format!(
+         r#"path "sys/storage/raft/snapshot" {{ capabilities = {capabilities} }}
+ path "sys/storage/raft/snapshot-force" {{ capabilities = {capabilities} }}
+@@ -55,8 +59,12 @@ path "auth/token/lookup-self" {{ capabilities = ["read"] }}"#
+ 
+ fn floor(pipeline: &Pipeline, index: usize) -> TestResult<Option<Timestamp>> {
+     pipeline.with_service(index, |service| {
+-        Ok(service.state.as_ref().ok_or("actual snapshot Auth state")?
+-            .auth.terminal_token_clock_floor())
++        Ok(service
++            .state
++            .as_ref()
++            .ok_or("actual snapshot Auth state")?
++            .auth
++            .terminal_token_clock_floor())
+     })
+ }
+ 
+@@ -84,21 +92,41 @@ fn formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update
+     let archive = wire(&pipeline, leader, "GET", SNAPSHOT, &reader, b"", None)?;
+     assert_eq!(archive.status, 200);
+     assert!(archive.body.starts_with(&[0x1f, 0x8b]));
+-    let read = wire(&pipeline, standby, "GET", SNAPSHOT, &reader, b"", Some("false"))?;
++    let read = wire(
++        &pipeline,
++        standby,
++        "GET",
++        SNAPSHOT,
++        &reader,
++        b"",
++        Some("false"),
++    )?;
+     assert_eq!(read.status, 200);
+     assert!(read.body.starts_with(&[0x1f, 0x8b]));
+     for index in [leader, standby] {
+         for path in [SNAPSHOT, "sys/storage/raft/snapshot-force"] {
+             let denied = wire(&pipeline, index, "POST", path, &reader, b"not-gzip", None)?;
+-            assert_eq!(denied.status, 403, "actual update ACL precedes archive parsing");
++            assert_eq!(
++                denied.status, 403,
++                "actual update ACL precedes archive parsing"
++            );
+             assert!(!denied.body.starts_with(&[0x1f, 0x8b]));
+             let invalid = wire(&pipeline, index, "POST", path, &writer, b"not-gzip", None)?;
+-            assert_eq!(invalid.status, 500, "actual authorized parser keeps its error");
++            assert_eq!(
++                invalid.status, 500,
++                "actual authorized parser keeps its error"
++            );
+             assert_eq!(selection(&pipeline, leader, migration_source)?.0, 0);
+         }
+     }
+     let validated = wire(
+-        &pipeline, standby, "POST", SNAPSHOT, &writer, &archive.body, None,
++        &pipeline,
++        standby,
++        "POST",
++        SNAPSHOT,
++        &writer,
++        &archive.body,
++        None,
+     )?;
+     redirected(&validated);
+     assert_eq!(selection(&pipeline, leader, migration_source)?.0, 0);
+@@ -112,7 +140,11 @@ fn formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update
+         let mut service = lock_until(service, until).map_err(|_| "internal query lock")?;
+         let refused = service.begin_native_snapshot_before(
+             ServiceRequest::new(
+-                "POST", SNAPSHOT, "", &writer, json!({"inspect_pending_restore":true}),
++                "POST",
++                SNAPSHOT,
++                "",
++                &writer,
++                json!({"inspect_pending_restore":true}),
+             ),
+             until,
+         );
+@@ -125,7 +157,10 @@ fn formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update
+ 
+     expect(
+         pipeline.call(
+-            leader, "POST", "secret/data/pipeline/history", pipeline.admin(),
++            leader,
++            "POST",
++            "secret/data/pipeline/history",
++            pipeline.admin(),
+             json!({"options":{"cas":1},"data":{"value":"after-reader-archive"}}),
+         )?,
+         200,
+@@ -134,7 +169,13 @@ fn formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update
+     // This reaches the real historical restore writer and epoch transition;
+     // a malformed-upload status alone cannot prove the deep actor guard.
+     let restored = wire(
+-        &pipeline, leader, "POST", SNAPSHOT, &writer, &archive.body, None,
++        &pipeline,
++        leader,
++        "POST",
++        SNAPSHOT,
++        &writer,
++        &archive.body,
++        None,
+     )?;
+     assert_eq!(restored.status, 200);
+     let body: Value = serde_json::from_slice(&restored.body)?;
+@@ -143,7 +184,10 @@ fn formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update
+     pipeline.assert_history(leader, &[(1, "seed-v5")])?;
+     expect(
+         pipeline.call(
+-            leader, "GET", "secret/data/pipeline/history", pipeline.admin(),
++            leader,
++            "GET",
++            "secret/data/pipeline/history",
++            pipeline.admin(),
+             json!({"version":2}),
+         )?,
+         404,
+@@ -165,20 +209,38 @@ fn formal_native_standby_acl_denial_commits_floor_without_transfer_lease_and_sur
+     assert_eq!(first.status, 200);
+ 
+     let spool = pipeline.with_service(standby, |service| {
+-        Ok(Arc::clone(service.snapshot_spool.as_ref().ok_or("actual snapshot spool")?))
++        Ok(Arc::clone(
++            service
++                .snapshot_spool
++                .as_ref()
++                .ok_or("actual snapshot spool")?,
++        ))
+     })?;
+     let occupied = spool.lease()?;
+     let before = pipeline.native_selection(leader)?;
+     let old_floor = floor(&pipeline, leader)?.ok_or("actual prior floor")?;
+     let refused = wire(
+-        &pipeline, standby, "POST", SNAPSHOT, &reader, b"not-gzip", None,
++        &pipeline,
++        standby,
++        "POST",
++        SNAPSHOT,
++        &reader,
++        b"not-gzip",
++        None,
+     )?;
+     assert_eq!(refused.status, 403);
+     assert!(!refused.body.starts_with(&[0x1f, 0x8b]));
+-    assert!(spool.lease().is_err(), "the real transfer lease is still occupied");
++    assert!(
++        spool.lease().is_err(),
++        "the real transfer lease is still occupied"
++    );
+     let after = pipeline.native_selection(leader)?;
+     let committed = floor(&pipeline, leader)?.ok_or("actual denied clock floor")?;
+-    assert_eq!(after.0, before.0 + 1, "exactly one real clock-only publication");
++    assert_eq!(
++        after.0,
++        before.0 + 1,
++        "exactly one real clock-only publication"
++    );
+     assert!(committed > old_floor);
+     assert_eq!(pipeline.native_selection(standby)?, after);
+     assert_eq!(floor(&pipeline, standby)?, Some(committed));
+@@ -191,23 +253,43 @@ fn formal_native_standby_acl_denial_commits_floor_without_transfer_lease_and_sur
+     pipeline.unseal(standby)?;
+     assert!(floor(&pipeline, standby)?.is_some_and(|actual| actual >= committed));
+     assert_eq!(
+-        wire(&pipeline, standby, "POST", SNAPSHOT, &reader, b"not-gzip", None)?.status,
++        wire(
++            &pipeline,
++            standby,
++            "POST",
++            SNAPSHOT,
++            &reader,
++            b"not-gzip",
++            None
++        )?
++        .status,
+         403,
+     );
+ 
+     // A real physical-seal failure cannot be hidden behind the same ACL 403.
+-    let seal_path = pipeline.with_service(standby, |service| Ok(service.data_dir.join("seal.json")))?;
++    let seal_path =
++        pipeline.with_service(standby, |service| Ok(service.data_dir.join("seal.json")))?;
+     let permissions = fs::metadata(&seal_path)?.permissions();
+     let before = pipeline.native_selection(leader)?;
+     fs::set_permissions(&seal_path, fs::Permissions::from_mode(0o644))?;
+     let observed = wire(
+-        &pipeline, standby, "POST", SNAPSHOT, &reader, b"not-gzip", None,
++        &pipeline,
++        standby,
++        "POST",
++        SNAPSHOT,
++        &reader,
++        b"not-gzip",
++        None,
+     );
+     fs::set_permissions(&seal_path, permissions)?;
+     let refused = observed?;
+     assert_eq!(refused.status, 503);
+     assert!(!refused.body.starts_with(&[0x1f, 0x8b]));
+-    assert_eq!(pipeline.native_selection(leader)?, before, "no floor after failed physical seal");
++    assert_eq!(
++        pipeline.native_selection(leader)?,
++        before,
++        "no floor after failed physical seal"
++    );
+     pipeline.with_service(standby, |service| {
+         // A physical corruption may deliberately fence the Service. It must
+         // retain no resource delivery or partially admitted transfer owner.
+@@ -232,12 +314,17 @@ fn formal_native_standby_original_snapshot_actor_expiry_before_floor_returns_pro
+     let _scope = RequestDeadlineScope::enter(until);
+     let ingress = crypto::random::<16>()?;
+     let _ingress = IngressReplyScope::listener(&ingress);
+-    let service = pipeline.services[standby].as_ref().ok_or("expiry standby")?;
++    let service = pipeline.services[standby]
++        .as_ref()
++        .ok_or("expiry standby")?;
+     let mut owner = lock_until(service, until).map_err(|_| "expiry admission lock")?;
+     let mut pending = admit(&mut owner, "GET", &reader, until)?;
+     drop(owner);
+     let (observation, archive) = pending.execute_snapshot_transfer(&mut io::empty());
+-    assert!(archive.is_some(), "actual archive exists privately before delivery");
++    assert!(
++        archive.is_some(),
++        "actual archive exists privately before delivery"
++    );
+     let expired_at = issued_response + Duration::from_millis(6100);
+     assert!(expired_at < until);
+     thread::sleep(expired_at.saturating_duration_since(Instant::now()));
+@@ -245,7 +332,10 @@ fn formal_native_standby_original_snapshot_actor_expiry_before_floor_returns_pro
+     let denied = owner.finish_external_request(*pending, observation);
+     assert_eq!(denied.status, 403);
+     assert!(denied.body.get("data").is_none());
+-    assert!(Instant::now() < until, "real token expiry, not request deadline");
++    assert!(
++        Instant::now() < until,
++        "real token expiry, not request deadline"
++    );
+     assert!(owner.native_request_binding.is_none());
+     drop((owner, archive));
+     let after = pipeline.native_selection(leader)?;
+@@ -257,8 +347,7 @@ fn formal_native_standby_original_snapshot_actor_expiry_before_floor_returns_pro
+ }
+ 
+ #[test]
+-fn formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoints()
+--> TestResult {
++fn formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoints() -> TestResult {
+     let pipeline = formal_cold_source()?;
+     let leader = pipeline.ready_leader()?;
+     activate_formal_cold(&pipeline, leader)?;
+@@ -271,16 +360,22 @@ fn formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoint
+         let ingress = crypto::random::<16>()?;
+         let _ingress = IngressReplyScope::listener(&ingress);
+         let original = pipeline.with_service_mut_for_delivery_test(standby, |service| {
+-            service.sync_from_ha_with_anchor(false)
++            service
++                .sync_from_ha_with_anchor(false)
+                 .map_err(|response| format!("NoChange sync HTTP {}", response.status))?;
+-            service.capture_native_ha_request_proof(&mut || Ok(()))
++            service
++                .capture_native_ha_request_proof(&mut || Ok(()))
+                 .map_err(|response| format!("NoChange original proof HTTP {}", response.status))?
+                 .ok_or_else(|| "actual NoChange original proof absent".into())
+         })?;
+         let before = pipeline.with_service(leader, |service| {
+             Ok((
+-                service.current_state_identity().map_err(|_| "leader identity")?,
+-                service.external_effect_generation().map_err(|_| "leader generation")?,
++                service
++                    .current_state_identity()
++                    .map_err(|_| "leader identity")?,
++                service
++                    .external_effect_generation()
++                    .map_err(|_| "leader generation")?,
+             ))
+         })?;
+         let source = original.snapshot_clock_shared_state();
+@@ -295,40 +390,58 @@ fn formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoint
+             deadline: until,
+         };
+         let completion = {
+-            let process = pipeline.processes[standby].as_ref().ok_or("actual caller")?
+-                .lock_for_request().map_err(|_| "NoChange caller lock")?;
+-            let receipt = process.observe_snapshot_terminal_clock(context)
++            let process = pipeline.processes[standby]
++                .as_ref()
++                .ok_or("actual caller")?
++                .lock_for_request()
++                .map_err(|_| "NoChange caller lock")?;
++            let receipt = process
++                .observe_snapshot_terminal_clock(context)
+                 .map_err(|response| format!("actual NoChange exchange HTTP {}", response.status))?;
+-            receipt.consume(&process, context)
++            receipt
++                .consume(&process, context)
+                 .map_err(|response| format!("actual NoChange receipt HTTP {}", response.status))?
+         };
+         assert!(completion.successor().is_none());
+         assert_eq!(completion.is_denied(), denied);
+         pipeline.with_service_mut_for_delivery_test(standby, |service| {
+-            service.sync_from_ha_with_anchor(false)
++            service
++                .sync_from_ha_with_anchor(false)
+                 .map_err(|response| format!("NoChange completion sync HTTP {}", response.status))?;
+-            let current = service.capture_native_ha_request_proof(&mut || Ok(()))
++            let current = service
++                .capture_native_ha_request_proof(&mut || Ok(()))
+                 .map_err(|response| format!("NoChange current proof HTTP {}", response.status))?
+                 .ok_or("actual NoChange current proof absent")?;
+             assert_eq!(current.snapshot_clock_shared_state(), source);
+-            original.check_with(service, Service::check_native_installed)
++            original
++                .check_with(service, Service::check_native_installed)
+                 .map_err(|response| format!("NoChange source proof HTTP {}", response.status))?;
+-            current.check_warm(service)
++            current
++                .check_warm(service)
+                 .map_err(|response| format!("NoChange current proof HTTP {}", response.status))?;
+             Ok(())
+         })?;
+         let after = pipeline.with_service(leader, |service| {
+             Ok((
+-                service.current_state_identity().map_err(|_| "leader identity")?,
+-                service.external_effect_generation().map_err(|_| "leader generation")?,
++                service
++                    .current_state_identity()
++                    .map_err(|_| "leader identity")?,
++                service
++                    .external_effect_generation()
++                    .map_err(|_| "leader generation")?,
+             ))
+         })?;
+-        assert!(before == after, "strict identity and complete publication generation unchanged");
++        assert!(
++            before == after,
++            "strict identity and complete publication generation unchanged"
++        );
+         if denied {
+-            completion.finish_denied()
++            completion
++                .finish_denied()
+                 .map_err(|response| format!("Denied completion HTTP {}", response.status))?;
+         } else {
+-            completion.finish_allowed()
++            completion
++                .finish_allowed()
+                 .map_err(|response| format!("Allowed completion HTTP {}", response.status))?;
+         }
+         assert_eq!(pipeline.native_selection(leader)?, initial);
+@@ -339,8 +452,8 @@ fn formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoint
+ }
+ 
+ #[test]
+-fn formal_native_http_consistency_forward_restricts_local_snapshot_and_no_forward_kv()
+--> TestResult {
++fn formal_native_http_consistency_forward_restricts_local_snapshot_and_no_forward_kv() -> TestResult
++{
+     let pipeline = formal_cold_source()?;
+     let leader = pipeline.ready_leader()?;
+     activate_formal_cold(&pipeline, leader)?;
+@@ -354,8 +467,17 @@ fn formal_native_http_consistency_forward_restricts_local_snapshot_and_no_forwar
+             (true, Some("forward-active-node"), 200),
+         ] {
+             let reply = wire_with_routing(
+-                &pipeline, standby, "GET", path, pipeline.admin(), b"",
+-                WireRouting { no_forward, inconsistent, missing_forward },
++                &pipeline,
++                standby,
++                "GET",
++                path,
++                pipeline.admin(),
++                b"",
++                WireRouting {
++                    no_forward,
++                    inconsistent,
++                    missing_forward,
++                },
+             )?;
+             assert_eq!(reply.status, expected);
+             if expected == 307 {
+@@ -375,9 +497,16 @@ fn formal_native_http_consistency_forward_restricts_local_snapshot_and_no_forwar
+         (true, Some("forward-active-node"), 200),
+     ] {
+         let reply = wire_with_routing(
+-            &pipeline, standby, "GET", SNAPSHOT, &reader, b"",
++            &pipeline,
++            standby,
++            "GET",
++            SNAPSHOT,
++            &reader,
++            b"",
+             WireRouting {
+-                no_forward: Some("false"), inconsistent, missing_forward,
++                no_forward: Some("false"),
++                inconsistent,
++                missing_forward,
+             },
+         )?;
+         assert_eq!(reply.status, expected);
+diff --git a/crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs b/crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs
+index c6040ba..91611a1 100644
+--- a/crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs
+@@ -36,7 +36,10 @@ fn wire(
+         path,
+         token,
+         body,
+-        WireRouting { no_forward, ..WireRouting::default() },
++        WireRouting {
++            no_forward,
++            ..WireRouting::default()
++        },
+     )
+ }
+ 
+diff --git a/crates/heptabao-server/src/service_snapshot_clock.rs b/crates/heptabao-server/src/service_snapshot_clock.rs
+index 71148ff..ed85659 100644
+--- a/crates/heptabao-server/src/service_snapshot_clock.rs
++++ b/crates/heptabao-server/src/service_snapshot_clock.rs
+@@ -66,13 +66,8 @@ impl Service {
+         actor
+             .bind_request_clock(Some(clock))
+             .map_err(|error| Response::error(error.status, &error.message))?;
+-        let admission = Self::authorize_snapshot_clock_actor(
+-            state,
+-            &mut actor,
+-            request,
+-            capability,
+-            time,
+-        );
++        let admission =
++            Self::authorize_snapshot_clock_actor(state, &mut actor, request, capability, time);
+         let denied_before_floor = match admission {
+             Ok(()) => false,
+             Err(error) if error.status == 403 => true,
+@@ -345,7 +340,8 @@ impl Service {
+             }
+         };
+         let mut admitted = admitted?;
+-        let disposition = self.finish_snapshot_clock_actor(&mut admitted, request, capability, clock)?;
++        let disposition =
++            self.finish_snapshot_clock_actor(&mut admitted, request, capability, clock)?;
+         self.check_snapshot_clock_leader(request)?;
+         if self.current_state_identity()? != after.0
+             || self.external_effect_generation()? != after.1
+diff --git a/crates/heptabao-server/src/service_snapshot_denial.rs b/crates/heptabao-server/src/service_snapshot_denial.rs
+index 421b365..fcbe3bc 100644
+--- a/crates/heptabao-server/src/service_snapshot_denial.rs
++++ b/crates/heptabao-server/src/service_snapshot_denial.rs
+@@ -104,7 +104,9 @@ impl Service {
+                 spool
+             }
+         };
+-        let seal_bytes = spool.read_seal_metadata(deadline).map_err(|_| unavailable())?;
++        let seal_bytes = spool
++            .read_seal_metadata(deadline)
++            .map_err(|_| unavailable())?;
+         let seal_metadata: SealMetadata =
+             serde_json::from_slice(&seal_bytes).map_err(|_| unavailable())?;
+         if self.seal.as_ref() != Some(&seal_metadata) {
+@@ -148,7 +150,10 @@ impl Service {
+         denied: &StandbySnapshotDenial,
+         expected: StateIdentity,
+     ) -> Result<(), Response> {
+-        if !self.ha.as_ref().is_some_and(|ha| Arc::ptr_eq(ha, &denied.ha))
++        if !self
++            .ha
++            .as_ref()
++            .is_some_and(|ha| Arc::ptr_eq(ha, &denied.ha))
+             || self.recovery_required
+             || self.audit_failed
+             || self.barrier_key.is_none()
+@@ -298,9 +303,13 @@ impl Service {
+                     return Err(unavailable());
+                 }
+                 if completion.successor().is_some() {
+-                    denied.original.check_snapshot_terminal_successor(self, &current)?;
++                    denied
++                        .original
++                        .check_snapshot_terminal_successor(self, &current)?;
+                 } else {
+-                    denied.original.check_with(self, Service::check_native_installed)?;
++                    denied
++                        .original
++                        .check_with(self, Service::check_native_installed)?;
+                     current.check_warm(self)?;
+                 }
+                 let checkpoint = (
+@@ -324,7 +333,9 @@ impl Service {
+                 {
+                     return Err(unavailable());
+                 }
+-                denied.original.check_with(self, Service::check_native_installed)?;
++                denied
++                    .original
++                    .check_with(self, Service::check_native_installed)?;
+                 self.check_standby_snapshot_denial_environment(&denied, denied.base)?;
+                 self.check_standby_snapshot_actor_is_denied(&mut denied)?;
+             }
+diff --git a/crates/heptabao-server/src/service_snapshot_transfer.rs b/crates/heptabao-server/src/service_snapshot_transfer.rs
+index 0a4596c..f744162 100644
+--- a/crates/heptabao-server/src/service_snapshot_transfer.rs
++++ b/crates/heptabao-server/src/service_snapshot_transfer.rs
+@@ -471,8 +471,10 @@ impl Service {
+         #[cfg(feature = "native-v6-ha")]
+         let (mut standby_actor, mut standby_observation) = (None, None);
+         #[cfg(not(feature = "native-v6-ha"))]
+-        let (standby_actor, standby_observation): (Option<Principal>, Option<(Instant, Duration)>) =
+-            (None, None);
++        let (standby_actor, standby_observation): (
++            Option<Principal>,
++            Option<(Instant, Duration)>,
++        ) = (None, None);
+         // This is before authentication/finite-use persistence, staging and
+         // JSON HA forwarding. The receiving leader independently authorizes
+         // the original request; observing a leader never grants authority.
+diff --git a/crates/heptabao-server/src/service_snapshot_v6_ha.rs b/crates/heptabao-server/src/service_snapshot_v6_ha.rs
+index 2b6281a..5c4b8a9 100644
+--- a/crates/heptabao-server/src/service_snapshot_v6_ha.rs
++++ b/crates/heptabao-server/src/service_snapshot_v6_ha.rs
+@@ -452,8 +452,7 @@ impl Service {
+                 self.sync_from_ha_with_anchor(false)?;
+                 let expected = terminal.successor().unwrap_or(source);
+                 self.check_native_ha_snapshot_owner_before_identity(plan)?;
+-                if self.current_state_identity()?
+-                    != StateIdentity::RecordsV6(expected.root_digest)
++                if self.current_state_identity()? != StateIdentity::RecordsV6(expected.root_digest)
+                     || self.current_snapshot_seal_identity_for_plan(plan)? != plan.seal_identity
+                 {
+                     return Err(unavailable());
