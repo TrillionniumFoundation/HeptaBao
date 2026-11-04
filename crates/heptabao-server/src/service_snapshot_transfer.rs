@@ -146,6 +146,8 @@ impl StandbySnapshotClockRequest {
 
 pub(super) struct SnapshotTransferPlan {
     actor: Principal,
+    #[cfg(feature = "native-v6-ha")]
+    method: String,
     path: String,
     namespace: String,
     activation: String,
@@ -871,6 +873,8 @@ impl Service {
             };
         let mut plan = SnapshotTransferPlan {
             actor,
+            #[cfg(feature = "native-v6-ha")]
+            method: request.method.to_owned(),
             path: request.path.to_owned(),
             namespace: request.namespace.to_owned(),
             activation: self.unseal_nonce.clone(),

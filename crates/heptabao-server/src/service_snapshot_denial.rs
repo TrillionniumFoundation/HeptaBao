@@ -70,7 +70,7 @@ impl Service {
             enforce_namespace: true,
             wrap_ttl_seconds: None,
             origin_peer: request.origin_peer,
-            client_certificates: request.client_certificates,
+            client_certificates: request.client_certificates.as_deref(),
         };
         let clock_request = if self
             .state
