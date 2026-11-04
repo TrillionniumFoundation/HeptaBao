@@ -1,0 +1,109 @@
+{
+  "candidateMetadataDirectories": 9,
+  "matching": [
+    {
+      "argvSha256": "c07d4ef98a7e27c06434c2d3b140ec5e72566ff57e380c7e99cc9c92e10fe2b8",
+      "child.json": {
+        "keys": [
+          "identity",
+          "pid"
+        ],
+        "public": {
+          "pid": 2809960
+        },
+        "sha256": "acf3318ddfdde10e57c56733c3c2c71feefa5a798a847c6f4b9857ba84ee5c97"
+      },
+      "createdMillisFromId": 1793793819391,
+      "executable": "/usr/bin/python3",
+      "exit.json": {
+        "keys": [
+          "at_unix_ms",
+          "cancelled",
+          "exit_code",
+          "job_id",
+          "launch_nonce",
+          "log_bytes",
+          "log_errors",
+          "log_synced",
+          "log_truncated",
+          "output_complete",
+          "output_durable",
+          "terminal_publication_protocol",
+          "timed_out"
+        ],
+        "public": {
+          "at_unix_ms": 1793793839912,
+          "exit_code": 0,
+          "job_id": "1a1a67182ff-fc05-2559",
+          "output_complete": true,
+          "timed_out": false
+        },
+        "sha256": "6b521594dbb2c17b52a698a59f51d3903b43c572bbe5d1278a4629bbd529bf11"
+      },
+      "exit.witness.json": {
+        "keys": [
+          "exit_sha256",
+          "job_id",
+          "launch_nonce",
+          "terminal_publication_protocol"
+        ],
+        "public": {
+          "job_id": "1a1a67182ff-fc05-2559"
+        },
+        "sha256": "8f31745434a8c60da100f50c235b9aabe2931a98ab3c3f78653da8aa117d3ebf"
+      },
+      "idempotencyKey": null,
+      "inlineCodeSha256": null,
+      "jobId": "1a1a67182ff-fc05-2559",
+      "metadataSha256": "05476d412ef8c2e852e437fec8aee0b70d324974e74d479da5bc378c4bc725e8",
+      "mode": "live",
+      "requestKeys": [
+        "allow_detached_fallback",
+        "allow_job_network",
+        "args",
+        "cpu_quota_percent",
+        "cwd",
+        "default_cwd",
+        "env",
+        "executable",
+        "execution_mode",
+        "job_dir",
+        "job_id",
+        "launch_nonce",
+        "memory_max_bytes",
+        "nice",
+        "platform",
+        "request_digest",
+        "request_fingerprint",
+        "terminal_publication_protocol",
+        "timeout_seconds",
+        "unit"
+      ],
+      "scriptIsExactController": true,
+      "started.json": {
+        "keys": [
+          "at_unix_ms",
+          "invocation_id",
+          "job_id",
+          "launch_nonce",
+          "supervisor_identity",
+          "supervisor_pid",
+          "supervisor_uid"
+        ],
+        "public": {
+          "at_unix_ms": 1793793820522,
+          "job_id": "1a1a67182ff-fc05-2559"
+        },
+        "sha256": "e40d2f45216f9b4009d57652d5c6a013ecc58b8966d948cb3391696c12632b4e"
+      }
+    }
+  ],
+  "schema": "heptabao.exact-installed-sdk-job-provenance-read.v1",
+  "stdinRead": false,
+  "timeRange": [
+    1793793659000,
+    1793793899000
+  ],
+  "unrelatedArgsPublished": false,
+  "writes": false
+}

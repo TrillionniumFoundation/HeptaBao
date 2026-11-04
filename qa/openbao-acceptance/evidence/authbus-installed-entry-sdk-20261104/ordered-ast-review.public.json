@@ -1,0 +1,10 @@
+{
+  "baseDriverSha256": "d67736322a29f5daad0eb657007f56b4922c727cdf7188e5a5f3a49fd17afa65",
+  "candidateCalls": 104,
+  "candidateDriverSha256": "f303c6e92333f53112396b4e8d1ea5d3c02389bf1b0eec7bc14cd55f1e394bed",
+  "matchedOriginalCalls": 99,
+  "originalCalls": 99,
+  "originalOrderedCallSequencePreserved": true,
+  "runtimeExecuted": false,
+  "schema": "heptabao.installed-sdk-original-ordered-assertions-review.v1"
+}

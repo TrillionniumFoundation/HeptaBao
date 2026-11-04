@@ -1,0 +1,74 @@
+--- original-normal/controller.py
++++ installed-entry/controller.py
+@@ -1,11 +1,11 @@
+ #!/usr/bin/env python3
+-"""Bounded normal-artifact run of the original AuthBus core/SDK lifecycle."""
++"""Bounded actual-SDK lifecycle through the exact bound installed-entry APIs."""
+ from pathlib import Path
+ import argparse, ast, base64, hashlib, importlib.util, json, os, stat, subprocess, sys, time
+ 
+ BASE=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-CONTROL=BASE/'authbus-coordinator-normal-sdk-control-r1'
+-WORK=BASE/'authbus-coordinator-normal-sdk-live-r1'
++CONTROL=BASE/'authbus-coordinator-installed-sdk-control-r1'
++WORK=BASE/'authbus-coordinator-installed-sdk-live-r1'
+ SOURCE=BASE/'ha-root-pull-response-final-source-r1'
+ BUILD=BASE/'ha-root-pull-response-normal-build-rog-r1'
+ BINARY=BUILD/'artifacts/heptabao-server'
+@@ -104,7 +104,7 @@
+         if b!=git('show',COMMIT+':'+rel):raise RuntimeError('helper_not_exact_git_blob')
+         write(CONTROL/rel,b);helpers[rel]=h(b)
+     for p in CONTROL.rglob('*.py'):ast.parse(p.read_text())
+-    receipt={'schema':'heptabao.authbus-normal-sdk-stage.v1','boundary':before,'inputs':inputs,'helpers':helpers,
++    receipt={'schema':'heptabao.authbus-installed-entry-sdk-stage.v1','boundary':before,'inputs':inputs,'helpers':helpers,
+              'controller_sha256':digest(CONTROL/'controller.py'),'server_started':False,'production_changed':False}
+     js(CONTROL/'stage.public.json',receipt)
+     for d in sorted((p for p in CONTROL.rglob('*') if p.is_dir()),key=lambda x:len(x.parts),reverse=True)+[CONTROL,BASE]:
+@@ -120,17 +120,18 @@
+     before=boundary(); private_before=protected()
+     js(CONTROL/'live-intent.public.json',{'boundary':before,'protected_metadata':private_before,'work_root':str(WORK),
+        'readiness_seconds':12,'http_seconds':10,'child_worker_seconds':75,'outer_seconds':900,
+-       'no_fixture_features':True,'formal_activate':'sys/storage/native-v6/activate','direct_core_api':True,
+-       'installed_entry_executed':False,'synthetic_provider_credentials':True,'production_changed':False})
++       'no_fixture_features':True,'formal_activate':'sys/storage/native-v6/activate','direct_core_api':False,
++       'installed_entry_planned':True,'actual_manager_in_this_scope':False,'synthetic_provider_credentials':True,'production_changed':False})
+     sys.path.insert(0,str(CONTROL/'qa/openbao-acceptance'))
+     import owned_process
+     argv=['/usr/bin/python3','-B',str(CONTROL/DRIVER),'--binary',str(BINARY),'--central-source',str(CONTROL/'tools/authbus/authbus_coordinator.py'),
++          '--installed-entry-source',str(CONTROL/'tools/authbus/authbus_coordinator_installed.py'),
+           '--plugin-root',str(PLUGIN),'--openclaw-root',str(SDK),'--node','/usr/bin/node','--work-dir',str(WORK)]
+     env={'PATH':'/usr/bin:/bin','HOME':'/home/qian-qi','PYTHONDONTWRITEBYTECODE':'1','LC_ALL':'C.UTF-8'}
+     started=time.monotonic();code=None;error=None
+     with (CONTROL/'driver.stdout.private.log').open('xb') as out,(CONTROL/'driver.stderr.private.log').open('xb') as err:
+         try:
+-            r=owned_process.run(argv,cwd=CONTROL,env=env,stdout=out,stderr=err,timeout=900,label='root.authbus-normal-sdk')
++            r=owned_process.run(argv,cwd=CONTROL,env=env,stdout=out,stderr=err,timeout=900,label='root.authbus-installed-sdk')
+             code=r.returncode
+         except Exception as exc:error=type(exc).__name__
+     remaining=finite_processes()
+@@ -138,15 +139,22 @@
+     try:after=boundary();private_after=protected()
+     except Exception as exc:after_error=type(exc).__name__
+     result_path=WORK/'public-receipt.json';result=json.loads(result_path.read_bytes()) if result_path.exists() else None
+-    good=(code==0 and not error and not remaining and after==before and private_after==private_before and result and result.get('ok') is True)
+-    receipt={'schema':'heptabao.authbus-normal-sdk-outer.v1','ok':bool(good),'exit_code':code,'error_type':error,
++    good=(code==0 and not error and not remaining and after==before and private_after==private_before and result and result.get('ok') is True
++          and result.get('installed_entry_executed') is True
++          and result.get('installed_entry_sdk_same_fixture_qualified') is True
++          and result.get('coordinator_execution_scope') == 'bound_installed_entry_api'
++          and result.get('actual_manager_qualified_in_this_scope') is False)
++    receipt={'schema':'heptabao.authbus-installed-entry-sdk-outer.v1','ok':bool(good),'exit_code':code,'error_type':error,
+       'elapsed_seconds':time.monotonic()-started,'remaining_owned_processes':remaining,'after_error_type':after_error,
+       'boundary_before':before,'boundary_after':after,'protected_metadata_before':private_before,
+       'protected_metadata_after':private_after,'protected_files_unchanged':private_before==private_after,
+       'result_sha256':digest(result_path) if result_path.exists() else None,
+       'result_bytes':result_path.stat().st_size if result_path.exists() else None,
+       'checks':len(result.get('checks',[])) if result else None,'result_ok':result.get('ok') if result else None,
+-      'result_error':result.get('error') if result else None,'production_changed':False,'installed_entry_executed':False}
++      'result_error':result.get('error') if result else None,'production_changed':False,
++      'installed_entry_executed':bool(result and result.get('installed_entry_executed')),
++      'same_fixture_sdk_entry_qualified':bool(result and result.get('installed_entry_sdk_same_fixture_qualified')),
++      'actual_manager_qualified_in_this_scope':False}
+     js(CONTROL/'outer-result.public.json',receipt)
+     print(json.dumps(receipt,sort_keys=True))
+     return 0 if good else 1

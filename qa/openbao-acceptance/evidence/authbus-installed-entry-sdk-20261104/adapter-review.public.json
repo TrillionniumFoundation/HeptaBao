@@ -1,0 +1,55 @@
+{
+  "actualManagerQualifiedByThisScope": false,
+  "baseNormalDriverSha256": "d67736322a29f5daad0eb657007f56b4922c727cdf7188e5a5f3a49fd17afa65",
+  "executionScope": "bound_installed_entry_api_with_actual_installed_sdk_same_fixture",
+  "fixtureFlags": false,
+  "formalActivationRoute": "sys/storage/native-v6/activate",
+  "originalBudget": {
+    "httpSeconds": 10,
+    "normalServerStartupSeconds": 12,
+    "outerSeconds": 900,
+    "workerSeconds": 75
+  },
+  "originalConsumerByteIdentical": true,
+  "originalRunCallAsts": {
+    "call": {
+      "allOriginalCallAstsUnchanged": true,
+      "candidate": 28,
+      "original": 28
+    },
+    "central_action": {
+      "allOriginalCallAstsUnchanged": true,
+      "candidate": 12,
+      "original": 12
+    },
+    "check": {
+      "allOriginalCallAstsUnchanged": true,
+      "candidate": 52,
+      "original": 47
+    },
+    "client": {
+      "allOriginalCallAstsUnchanged": true,
+      "candidate": 10,
+      "original": 10
+    },
+    "restart": {
+      "allOriginalCallAstsUnchanged": true,
+      "candidate": 2,
+      "original": 2
+    }
+  },
+  "pendingParentReview": true,
+  "productionChanged": false,
+  "runtimeExecuted": false,
+  "schema": "heptabao.actual-sdk-installed-entry-adapter-source-review.v1",
+  "sourcePins": {
+    "SCOPE.md": "e2cc703feab6f9ab6612a4c9930f43e66147fc841b1fbbb0fa8c01e2f66776bf",
+    "candidate/qa/openbao-acceptance/native_v6_authbus_coordinator_consumer.mjs": "069ac45973b28918dfe970e628ab3a56d8253ee697b09bb16e92452fbb7966e4",
+    "candidate/qa/openbao-acceptance/native_v6_authbus_coordinator_live.py": "f303c6e92333f53112396b4e8d1ea5d3c02389bf1b0eec7bc14cd55f1e394bed",
+    "candidate/tools/authbus/authbus_coordinator.py": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+    "candidate/tools/authbus/authbus_coordinator_installed.py": "16204429b78d370e58aa1332aa17ae1a295eae94e59bceb08c9144d7e991891b",
+    "controller.py": "6ab909bad241e0dedee9ff331bfbe56e03d89b19efcaff651fa65f2b69c3c7ff",
+    "installed-entry-api-adapter-r1.diff": "17acac9a359b3f3cfd9e7b42286120a2783a9aeac5d3d823c708f610a5b5eedd",
+    "outer-controller-r1.diff": "faf177412fe27bb5c30ff6e2cdece7d978712284ec8729ff52cece98fc6dce6b"
+  }
+}

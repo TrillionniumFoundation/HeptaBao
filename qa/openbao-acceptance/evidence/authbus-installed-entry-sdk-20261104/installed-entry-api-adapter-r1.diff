@@ -1,0 +1,286 @@
+--- original-normal/qa/openbao-acceptance/native_v6_authbus_coordinator_live.py
++++ candidate/qa/openbao-acceptance/native_v6_authbus_coordinator_live.py
+@@ -1,10 +1,12 @@
+ #!/usr/bin/env python3
+-"""Real HTTPS qualification of the independent central AuthBus candidate.
++"""Actual SDK producer/follower through the bound installed-entry APIs.
+ 
+ Uses an owned new V6 server, unchanged production OpenClaw plugin copies and
+ actual SDK SQLite stores. Source provider credentials are synthetic; no provider
+ API, production gateway, old Bao or J3160 is contacted. The independent service
+-performs all successful profile/manifest credential publication.
++performs all successful profile/manifest credential publication. The installed
++entry is the exact X230-qualified source; this scope does not start a manager
++unit or claim that ROG's manager was qualified by X230's separate execution.
+ """
+ from __future__ import annotations
+ 
+@@ -33,6 +35,8 @@
+ PRODUCER, FOLLOWER, WRITER = 'authbus-central-producer', 'authbus-central-follower', 'authbus-central-writer'
+ PROFILE = 'openai:authbus-central-a'
+ ORIGINAL_PLUGIN_SHA = 'b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b'
++INSTALLED_ENTRY_SHA = '16204429b78d370e58aa1332aa17ae1a295eae94e59bceb08c9144d7e991891b'
++INSTALLED_CORE_SHA = 'eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d'
+ 
+ 
+ class NormalInstance(smoke.Instance):
+@@ -82,26 +86,40 @@
+ 
+ 
+ def run_worker(config_path):
+-    """Private QA adapter around the unchanged independent service module."""
++    """Private adapter that invokes the unchanged installed-entry APIs."""
+     cfg = owned_private_json(config_path)
+     root, output = Path(cfg['workRoot']), Path(cfg['runDir'])
+     if not output.is_relative_to(root) or output.is_symlink() or stat.S_IMODE(output.stat().st_mode) != 0o700:
+         raise CanaryFailure('worker_scope')
+-    central = import_central(Path(cfg['centralSource']), cfg['centralSourceSha256'])
+-    config = central.load_config(Path(cfg['centralConfig']))
+-    client = central.Bao(config)
+-    secondary = []
++    entry = import_central(Path(cfg['installedEntry']), cfg['installedEntrySha256'])
++    binding = entry.Binding(Path(cfg['installationBinding']), cfg['installationBindingSha256'])
++    if (cfg['installedEntrySha256'] != INSTALLED_ENTRY_SHA
++            or cfg['centralSourceSha256'] != INSTALLED_CORE_SHA
++            or binding.value['entry']['path'] != cfg['installedEntry']
++            or binding.value['entry']['sha256'] != INSTALLED_ENTRY_SHA
++            or binding.value['core']['path'] != cfg['centralSource']
++            or binding.value['core']['sha256'] != INSTALLED_CORE_SHA
++            or binding.value['config']['path'] != cfg['centralConfig']):
++        raise CanaryFailure('exact_installed_worker_binding')
++    central, config = binding.central, binding.config
++    client = entry.GuardedBao(binding)
++    secondary, workers = [], []
+     report = {'schema': 'authbus-central-actual-worker-v1', 'ok': False,
+               'action': cfg['action'], 'sourceSha256': cfg['centralSourceSha256'],
+-              'syntheticCredentialFixture': True, 'productionMutation': False}
++              'syntheticCredentialFixture': True, 'productionMutation': False,
++              'installedEntryExecuted': True, 'installedEntrySha256': INSTALLED_ENTRY_SHA,
++              'installationSha256': binding.expected, 'productionConfiguration': True,
++              'actualServiceManagerInThisScope': False, 'entryApiCalls': []}
+ 
+     def capture():
+-        tokens = [item.token for item in [client, *secondary] if item.token is not None]
++        tokens = [item.delegate.token for item in [client, *secondary] if item.delegate.token is not None]
+         private(output / 'tokens.private.json', json.dumps({'tokens': tokens}))
+ 
+     def hook(phase):
+         if cfg.get('fault') == 'cas_metadata_race' and phase == 'profile_confirmed':
+-            competitor = central.Bao(config); secondary.append(competitor)
++            # The original explicit competing CAS is a QA fault, not a new
++            # installed operator path or an automatically authorized grant.
++            competitor = entry.GuardedBao(binding); secondary.append(competitor)
+             current = competitor.read('manifest')
+             current['data']['coordinator']['fixtureOperatorRevision'] = current['version']
+             competitor.write('manifest', current['data'], current['version'])
+@@ -112,37 +130,70 @@
+                      'lastObservedPhase': phase, 'publicSuccessClaimed': False}))
+             os._exit(73)
+ 
+-    worker = central.Coordinator(client, config['state_dir'], config['owner_id'], config['source_hosts'], hook)
++    original_worker = binding.worker
++    def observed_worker(transport):
++        worker = original_worker(transport)
++        worker.hook = hook
++        workers.append(worker)
++        return worker
++    binding.worker = observed_worker
++
++    def operator(command):
++        report['entryApiCalls'].append('operator.inspect')
++        head = entry.operator(binding, client, 'inspect')
++        grant_path = grant_sha = None
++        if command != 'initialize':
++            grant = cfg['authorization']
++            if command == 'revoke-authorization' and grant['authorizationId'] != cfg['authorizationId']:
++                raise CanaryFailure('revoke_exact_original_grant')
++            grant_path = output / 'authorization.private.json'
++            private(grant_path, json.dumps(grant, sort_keys=True))
++            grant_sha = sha(grant_path)
++        report['entryApiCalls'].append('operator.' + command)
++        return entry.operator(binding, client, command,
++                              version=head['manifestVersion'], head_sha=head['manifestSha256'],
++                              grant_path=grant_path, grant_sha=grant_sha)
++
+     code = 2
+     try:
+         if cfg['action'] == 'initialize':
+-            result = worker.initialize()
++            result = operator('initialize')
+         elif cfg['action'] == 'authorize':
+-            result = worker.authorize(cfg['authorization'])
++            result = operator('authorize')
+         elif cfg['action'] == 'revoke-authorization':
+-            result = worker.revoke_authorization(cfg['authorizationId'])
++            result = operator('revoke-authorization')
+         elif cfg['action'] == 'recover':
+-            with central.operation_lock(worker.state):
+-                result = {'recovered_pending': worker.recover_locked()}
+-                worker.finish_previous_receipt(worker.manifest())
++            with binding.lock('service_lock'):
++                report['entryApiCalls'].append('service_cycle.recover')
++                result = entry.service_cycle(binding, client, recover=True)
+         elif cfg['action'] == 'renew-due':
+-            client.ensure_token(); before = client.token
+-            client.deadline = time.monotonic() + 20
+-            client.ensure_token()
+-            result = {'actualRenewSelfSameBearer': client.token == before, 'forcedLocalDueClock': True,
++            # Keep the original local-clock-only renewal fixture. Both actual
++            # reads use GuardedBao; only its original transport deadline is set.
++            with binding.lock('service_lock'):
++                client.read('manifest'); before = client.delegate.token
++                client.delegate.deadline = time.monotonic() + 20
++                client.read('manifest')
++            report['entryApiCalls'].append('GuardedBao.read.actual_renew_self')
++            result = {'actualRenewSelfSameBearer': client.delegate.token == before, 'forcedLocalDueClock': True,
+                       'realLeaseExpiryWaited': False}
+         elif cfg['action'] == 'once':
+-            result = worker.once()
++            with binding.lock('service_lock'):
++                report['entryApiCalls'].append('service_cycle.once')
++                result = entry.service_cycle(binding, client)
+         else:
+             raise CanaryFailure('worker_action')
++        entry.render(binding, client, result)
+         report.update(ok=True, result=result); code = 0
+-    except central.Error as exc:
+-        report.update(error=str(exc), unknownOutcome=isinstance(exc, central.UnknownOutcome))
+-        code = 3 if isinstance(exc, central.UnknownOutcome) else 2
++    except Exception as exc:
++        text, code = entry.error_result(binding, client, exc)
++        detail = json.loads(text)
++        print(text, flush=True)
++        report.update(error=detail['error'], unknownOutcome=detail['unknown_outcome'],
++                      actualInstalledError=detail)
+     finally:
+         capture()
+         payload = json.dumps(report)
+-        sensitive = client.secrets + worker.secrets + [v for item in secondary for v in item.secrets]
++        sensitive = client.secrets + [v for w in workers for v in w.secrets] + [v for item in secondary for v in item.secrets]
+         if any(secret and secret in payload for secret in sensitive):
+             raise CanaryFailure('worker_public_secret')
+         private(output / 'receipt.json', payload)
+@@ -158,9 +209,11 @@
+     report.update(checks=[], clients=[], central_actions=[], server_cycles=[],
+                   binary_sha256=sha(args.binary), driver_sha256=sha(__file__),
+                   consumer_sha256=sha(HERE / 'native_v6_authbus_coordinator_consumer.mjs'),
+-                  central_source_sha256=sha(args.central_source))
++                  central_source_sha256=sha(args.central_source),
++                  installed_entry_sha256=sha(args.installed_entry_source))
+     confidential, issued, logs = [], [], []
+     roles, states, bindings = {}, {}, {}
++    installation, original_grants = {}, {}
+     instance = None
+     credential_a = {'provider': 'openai', 'type': 'oauth',
+                     'access': 'synthetic-authbus-central-' + secrets.token_hex(20),
+@@ -238,10 +291,27 @@
+         run_dir = root / 'runs' / name; mkdir(run_dir)
+         cfg = {'workRoot': str(root), 'runDir': str(run_dir), 'centralSource': str(root / 'authbus_coordinator.py'),
+                'centralSourceSha256': report['central_source_sha256'], 'centralConfig': str(root / 'central-config.private.json'),
++               'installedEntry':str(root / 'authbus_coordinator_installed.py'),
++               'installedEntrySha256':report['installed_entry_sha256'],
++               'installationBinding':installation['path'],
++               'installationBindingSha256':installation['sha256'],
+                'action': action, **extra}
++        if action == 'authorize':
++            grant = extra['authorization']
++            original_grants[grant['authorizationId']] = json.loads(json.dumps(grant))
++        if action == 'revoke-authorization':
++            # Preserve the exact originally authorized grant body, rather than
++            # deriving a new body from a later same-ID manifest entry.
++            cfg['authorization'] = original_grants[extra['authorizationId']]
+         path = run_dir / 'worker.private.json'; private(path, json.dumps(cfg))
+         result = collect_process(name, [sys.executable, str(Path(__file__).resolve()), '--worker', str(path)], run_dir, expected)
+         report['central_actions'].append({'case': name, **result})
++        check(name + '.actual_installed_entry_binding',
++              result.get('installedEntryExecuted') is True
++              and result.get('installedEntrySha256') == INSTALLED_ENTRY_SHA
++              and result.get('installationSha256') == installation['sha256']
++              and result.get('productionConfiguration') is True
++              and result.get('actualServiceManagerInThisScope') is False)
+         if expected == 0:
+             check(name + '.service_ok', result.get('ok') is True)
+         return result
+@@ -291,9 +361,12 @@
+         environment.pop(name, None)
+     environment['PYTHONDONTWRITEBYTECODE'] = '1'
+     try:
+-        for directory in (root / 'plugin', root / 'node_modules', root / 'credentials', root / 'runs', root / 'central-state'):
++        check('installed_entry.expected_source', report['installed_entry_sha256'] == INSTALLED_ENTRY_SHA)
++        check('installed_entry.expected_core', report['central_source_sha256'] == INSTALLED_CORE_SHA)
++        for directory in (root / 'plugin', root / 'node_modules', root / 'credentials', root / 'runs', root / 'installation'):
+             mkdir(directory)
+         private(root / 'authbus_coordinator.py', args.central_source.read_bytes())
++        private(root / 'authbus_coordinator_installed.py', args.installed_entry_source.read_bytes())
+         report['plugin_source_sha256'] = {}
+         for name in FILES:
+             source = args.plugin_root / name
+@@ -334,12 +407,33 @@
+         for host in (PRODUCER, FOLLOWER):
+             writer_policy += f'\npath "{MOUNT}/metadata/inbox/{host}" {{ capabilities=["list"] }}\npath "{MOUNT}/data/inbox/{host}/*" {{ capabilities=["read"] }}'
+         credential_dir = role(WRITER, writer_policy)
++        entry = import_central(root / 'authbus_coordinator_installed.py', INSTALLED_ENTRY_SHA)
+         config = {'schema': 'heptabao-authbus-coordinator-v1.config', 'address': instance.address,
+                   'ca_file': str(credential_dir / 'ca.crt'), 'role_id_file': str(credential_dir / 'role_id'),
+                   'secret_id_file': str(credential_dir / 'secret_id'), 'server_certificate_sha256': report['server_cert_der_sha256'],
+                   'state_dir': str(root / 'central-state'), 'owner_id': str(uuid.uuid4()),
+-                  'source_hosts': [PRODUCER, FOLLOWER], 'production_cutover': False}
++                  'source_hosts': [PRODUCER, FOLLOWER], 'production_cutover': True,
++                  'service_scope':{'manager':'user', **entry.current_service_identity()},
++                  'request_timeout_seconds':10, 'poll_interval_seconds':15}
+         private(root / 'central-config.private.json', json.dumps(config))
++        prepared_state = entry.prepare_state(Path(config['state_dir']),config['owner_id'],config['source_hosts'])
++        binding_path = root / 'installation/installation.private.json'
++        pin_path = root / 'installation/binding-pin.env'
++        unit_path = root / 'installation/heptabao-installed-sdk-fixture.service'
++        unit_bytes = entry.service_file_bytes(config,binding_path,pin_path)
++        entry.create_private_bytes(unit_path,unit_bytes,entry.load_core())
++        prepared_binding = entry.make_binding(root/'central-config.private.json',
++                           sha(root/'central-config.private.json'),unit_path,sha(unit_path),binding_path,pin_path)
++        installation.update(path=str(binding_path),sha256=prepared_binding['bindingSha256'])
++        verified_binding = entry.Binding(binding_path,installation['sha256'])
++        check('installed_entry.actual_create_only_preparation',
++              prepared_state['statePrepared'] is True and prepared_binding['bindingPrepared'] is True
++              and verified_binding.config['production_cutover'] is True
++              and verified_binding.value['entry']['sha256'] == INSTALLED_ENTRY_SHA
++              and verified_binding.value['core']['sha256'] == INSTALLED_CORE_SHA)
++        report['installed_preparation'] = {'state':prepared_state,'binding':prepared_binding,
++                 'exactUnitSha256':sha(unit_path),'serviceManagerRegistered':False,
++                 'serviceScopeInThisApiFixture':'user','productionServiceChanged':False}
+         central_action('central_initialize', 'initialize')
+         published = client('original_producer_new_event', PRODUCER, [{}, {'upserts': [{'profileId': PROFILE, 'credential': credential_a}]}])
+         check('original_producer.leader_flag_is_true', all(cycle['plugin'].get('leader') is True for cycle in published['cycles']))
+@@ -445,11 +539,14 @@
+             call('revoke.persisted_token.' + str(index), 'GET', MOUNT + '/data/manifest', token=token, expected=403)
+         check('source.original_plugin_unchanged', all(sha(args.plugin_root / name) == expected for name, expected in report['plugin_source_sha256'].items()))
+         check('source.independent_service_unchanged', sha(args.central_source) == report['central_source_sha256'] == sha(root / 'authbus_coordinator.py'))
++        check('source.installed_entry_unchanged',
++              sha(args.installed_entry_source) == INSTALLED_ENTRY_SHA == sha(root/'authbus_coordinator_installed.py'))
+         all_diagnostics = b''.join(path.read_bytes() for path in logs) + (instance.root / 'server.log').read_bytes()
+         check('evidence.no_credential_values', all(secret.encode() not in all_diagnostics + json.dumps(report).encode() for secret in confidential))
+         report.update(ok=True, actual_independent_service_credential_publication=True,
+                       actual_original_producer_and_consumer=True, plugin_leader_is_central_publisher=False,
+                       actual_sdk_qualified=True, actual_service_https_qualified=True,
++                      installed_entry_executed=True, installed_entry_sdk_same_fixture_qualified=True,
+                       central_process_crash_and_server_restart_qualified=True, production_coordinator_replacement=False,
+                       enforced_scheduler_qualified=False, oauth_refresh_ownership_qualified=False)
+     finally:
+@@ -463,6 +560,7 @@
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--binary', type=Path, required=True)
+     parser.add_argument('--central-source', type=Path, required=True)
++    parser.add_argument('--installed-entry-source', type=Path, required=True)
+     parser.add_argument('--plugin-root', type=Path, required=True)
+     parser.add_argument('--openclaw-root', type=Path, required=True)
+     parser.add_argument('--node', type=Path, default=Path('/usr/bin/node'))
+@@ -474,7 +572,9 @@
+               'oauth_refreshed': False, 'enforced_scheduler_qualified': False,
+               'actual_sdk_qualified': False, 'actual_service_https_qualified': False,
+               'normal_storage_profile': 'native_v6_file', 'fixture_feature_used': False,
+-              'coordinator_execution_scope': 'direct_core_api', 'installed_entry_executed': False,
++              'coordinator_execution_scope': 'bound_installed_entry_api', 'installed_entry_executed': False,
++              'installed_entry_sdk_same_fixture_qualified': False,
++              'actual_manager_qualified_in_this_scope': False,
+               'original_worker_seconds': 75, 'original_http_seconds': 10,
+               'original_readiness_seconds': 12, 'formal_activation_route': 'sys/storage/native-v6/activate'}
+     try:

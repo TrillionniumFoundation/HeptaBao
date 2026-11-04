@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.installed-sdk-current-owned-process-read.v1",
+  "remainingOwnedProcesses": [],
+  "exactOriginalPidsPresent": {
+    "2809960": false,
+    "2809978": false,
+    "2810188": false
+  },
+  "readOnly": true,
+  "servicesStarted": 0,
+  "signalsSent": 0
+}

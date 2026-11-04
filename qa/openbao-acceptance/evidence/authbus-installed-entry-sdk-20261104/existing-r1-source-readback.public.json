@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.exact-installed-sdk-source-readback.v1",
+  "files": [
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-installed-sdk-control-r1/controller.py",
+      "sha256": "6ab909bad241e0dedee9ff331bfbe56e03d89b19efcaff651fa65f2b69c3c7ff",
+      "bytes": 10789,
+      "version": "66306:35014354:10789:1793793792579651263:1793793792579651263"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-installed-sdk-control-r1/qa/openbao-acceptance/native_v6_authbus_coordinator_live.py",
+      "sha256": "f303c6e92333f53112396b4e8d1ea5d3c02389bf1b0eec7bc14cd55f1e394bed",
+      "bytes": 40413,
+      "version": "66306:35014348:40413:1793793792574745939:1793793792574745939"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-installed-sdk-control-r1/qa/openbao-acceptance/native_v6_authbus_coordinator_consumer.mjs",
+      "sha256": "069ac45973b28918dfe970e628ab3a56d8253ee697b09bb16e92452fbb7966e4",
+      "bytes": 13193,
+      "version": "66306:35014349:13193:1793793792576292935:1793793792576292935"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-installed-sdk-control-r1/tools/authbus/authbus_coordinator.py",
+      "sha256": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+      "bytes": 44118,
+      "version": "66306:35014352:44118:1793793792577447697:1793793792577447697"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-installed-sdk-control-r1/tools/authbus/authbus_coordinator_installed.py",
+      "sha256": "16204429b78d370e58aa1332aa17ae1a295eae94e59bceb08c9144d7e991891b",
+      "bytes": 37221,
+      "version": "66306:35014353:37221:1793793792578592651:1793793792578592651"
+    }
+  ]
+}
