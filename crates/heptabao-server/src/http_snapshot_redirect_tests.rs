@@ -352,6 +352,9 @@ fn tcp_tls_redirect(
                         Err(error) => return Err(error),
                     }
                 };
+                // Darwin can inherit the listener's nonblocking mode. The real
+                // HTTP/1.1 negotiation restores blocking before DeadlineStream.
+                socket.set_nonblocking(false)?;
                 socket.set_nodelay(true)?;
                 let mut stream = StreamOwned::new(
                     ServerConnection::new(Arc::new(server_config)).map_err(io::Error::other)?,
