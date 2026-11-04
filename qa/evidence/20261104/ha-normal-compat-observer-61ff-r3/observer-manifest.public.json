@@ -2,9 +2,9 @@
   "schema": "heptabao.normal.compatibility.observer.v3",
   "status": "prepared_not_run",
   "source": {
-    "bytes": 70024,
-    "sha256": "0abcb7763eb9546367865d943a8036fd7d0cd6a3c2dda0ba4777026416e68efd",
-    "git_blob": "badeca6e3304ae1982cb9ca79381e7e4a3468765"
+    "bytes": 70930,
+    "sha256": "e333fae4ded2b1568cc2c60ef6a34203299638b2e53ab26bc3354392a4d7cf72",
+    "git_blob": "276f4cc90276082bc45063145ca930a49b2e0543"
   },
   "prior_normal_observer": {
     "bytes": 59402,
@@ -14,8 +14,8 @@
   "unavailable_prior_candidate_r2_sha256": "e2fec76abd661341e0682e3b0dc254a6b950acf0aa0913c2a6af11c9fb4d2c0a",
   "recovered_prior_candidate_r2": false,
   "patch": {
-    "bytes": 40032,
-    "sha256": "c5191c62912cc15a77f3270252675b45bf4c119422fcdcc438b0158da70c2c94"
+    "bytes": 40951,
+    "sha256": "08c8ab158af0e6e8c3b625093db62e538a2b9057b9530f9993f18e65791cc2e1"
   },
   "expected_status_cases": {
     "ttl_kv_node2_root_1": 200,
@@ -56,8 +56,10 @@
   "expected_mapping_review": {
     "expected_count": 34,
     "policy_labels_verified": 30,
-    "wrong": [],
-    "remaining_reference": "070f7234092f9799b85af95f600e1d0519ddc9c3ed81f132e21ef2af86f7cf97"
+    "token_labels_verified_by_root": 3,
+    "unverified_reference_labels": [
+      "ttl_root_default_standby_invalid_restore"
+    ]
   },
   "api_ports": [
     48680,
@@ -93,5 +95,22 @@
   "scoped_compatibility_requires_all_34_exactly_once_and_no_differences": true,
   "full_replacement_qualification": false,
   "archive_scope": "bounded shape only; no restoration or OpenBao snapshot-format compatibility proof",
-  "validation": "static reconstruction and 30 exact policy-oracle status mappings checked; Python syntax and live binary execution pending"
+  "validation": "Static code review and 33 grounded status mappings; one inherited status hypothesis unverified; syntax/live execution pending.",
+  "official_reference_complete": false,
+  "unverified_reference_labels": [
+    "ttl_root_default_standby_invalid_restore"
+  ],
+  "provenance_correction": {
+    "previous_commit": "de16385d0a8953bdd19c4e2f28ed51cb2877e793",
+    "reason": "The earlier 070f token oracle has no TTL-token invalid_restore request. The inherited 500 expected value has not been directly observed for this credential and must not be attributed to it.",
+    "old_oracle_actual": {
+      "http_known": 87,
+      "dynamic_checks": 83,
+      "token_wire_bytes": 61074
+    },
+    "policy_reference_cases": 30,
+    "token_reference_cases": 3,
+    "unverified_expected_hypotheses": 1,
+    "scoped_compatibility_must_remain_false": true
+  }
 }

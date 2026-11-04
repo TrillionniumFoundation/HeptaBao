@@ -56,6 +56,11 @@ CLUSTER_PORTS = {n: p + 1 for n, p in API_PORTS.items()}
 os.umask(0o077)
 
 
+# One inherited expected value lacks its claimed original credential-specific oracle.
+# It remains a hypothesis until a separate fixed-binary observation is archived.
+OFFICIAL_REFERENCE_COMPLETE = False
+UNVERIFIED_REFERENCE_LABELS = ['ttl_root_default_standby_invalid_restore']
+
 OFFICIAL_STATUS = {
     "ttl_kv_node2_root_1": 200,
     "ttl_kv_node2_root_false": 200,
@@ -118,7 +123,10 @@ def scoped_coverage(cases):
             'missing_labels': missing, 'duplicate_labels': duplicates,
             'unexpected_labels': unexpected, 'coverage_complete': complete,
             'status_differences': differences,
-            'scoped_status_compatibility_passed': complete and not differences}
+            'official_reference_complete': OFFICIAL_REFERENCE_COMPLETE,
+            'unverified_reference_labels': UNVERIFIED_REFERENCE_LABELS,
+            'scoped_status_compatibility_passed': (complete and not differences
+                and OFFICIAL_REFERENCE_COMPLETE and not UNVERIFIED_REFERENCE_LABELS)}
 
 
 class Refused(Exception):
@@ -1000,7 +1008,8 @@ class Fixture:
                               headers=headers, body=body, raw_body=raw_body, content_type=content_type)
         row = {'kind': 'scoped_status_case', 'node': node, 'method': method, 'route': path,
                'credential_class': credential, 'headers': headers or {},
-               'official_observed_status': OFFICIAL_STATUS[label],
+               'expected_status': OFFICIAL_STATUS[label],
+               'official_reference_verified': label not in UNVERIFIED_REFERENCE_LABELS,
                'same_status_as_official_default': o['status'] == OFFICIAL_STATUS[label], **o}
         # Persist every completed business observation even if a later shape,
         # effect, cleanup or coverage check fails.
@@ -1108,6 +1117,10 @@ class Fixture:
                 'archive_scope': 'bounded shape only; no restore or format compatibility proof',
                 'official_policy_wire_sha256': 'd1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0',
                 'official_token_wire_sha256': '070f7234092f9799b85af95f600e1d0519ddc9c3ed81f132e21ef2af86f7cf97',
+                'official_token_wire_covers_only': ['ttl_root_default_standby_snapshot',
+                    'finite1_default_snapshot', 'finite2_default_snapshot'],
+                'official_reference_complete': OFFICIAL_REFERENCE_COMPLETE,
+                'unverified_reference_labels': UNVERIFIED_REFERENCE_LABELS,
                 'automatic_redirect_following': False, 'unknown_mutation_replay': False,
                 'cold_restart_tested': False, 'full_replacement_qualification': False}
         # This is attempted even after an incomplete setup or business failure.

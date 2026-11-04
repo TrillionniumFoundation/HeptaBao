@@ -27,7 +27,7 @@
  ARTIFACTS = BUILD / 'artifacts'
  OPENSSL = Path('/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl')
  OPENSSL_SHA = '103fc7706cf6646f226d96f29242d81890363499afc730e7ef1fadd64b3a123c'
-@@ -51,11 +51,76 @@
+@@ -51,11 +51,84 @@
  HTTP_SECONDS = 15.0
  READINESS_SECONDS = 45.0
  MAX_RESPONSE = 16 * 1024 * 1024
@@ -37,6 +37,11 @@
  os.umask(0o077)
  
  
++# One inherited expected value lacks its claimed original credential-specific oracle.
++# It remains a hypothesis until a separate fixed-binary observation is archived.
++OFFICIAL_REFERENCE_COMPLETE = False
++UNVERIFIED_REFERENCE_LABELS = ['ttl_root_default_standby_invalid_restore']
++
 +OFFICIAL_STATUS = {
 +    "ttl_kv_node2_root_1": 200,
 +    "ttl_kv_node2_root_false": 200,
@@ -99,13 +104,16 @@
 +            'missing_labels': missing, 'duplicate_labels': duplicates,
 +            'unexpected_labels': unexpected, 'coverage_complete': complete,
 +            'status_differences': differences,
-+            'scoped_status_compatibility_passed': complete and not differences}
++            'official_reference_complete': OFFICIAL_REFERENCE_COMPLETE,
++            'unverified_reference_labels': UNVERIFIED_REFERENCE_LABELS,
++            'scoped_status_compatibility_passed': (complete and not differences
++                and OFFICIAL_REFERENCE_COMPLETE and not UNVERIFIED_REFERENCE_LABELS)}
 +
 +
  class Refused(Exception):
      pass
  
-@@ -261,6 +326,11 @@
+@@ -261,6 +334,11 @@
              headers['X-Vault-Token'] = bootstrap['root_token']
          elif spec['credential'] == 'invalid':
              headers['X-Vault-Token'] = 'hvs.owned-invalid-standby-oracle'
@@ -117,7 +125,7 @@
          headers.update(spec['headers'])
          if 'Transfer-Encoding' not in headers:
              headers['Content-Length'] = str(len(body))
-@@ -339,6 +409,8 @@
+@@ -339,6 +417,8 @@
  
  
  def verify_artifacts() -> dict:
@@ -126,7 +134,7 @@
      for value in (EXPECTED_SHA, EXPECTED_BUILD_RESULT, EXPECTED_NATIVE_RECEIPT):
          if not isinstance(value, str) or not re.fullmatch('[0-9a-f]{64}', value):
              raise Refused('explicit_independent_artifact_pins_required')
-@@ -383,7 +455,7 @@
+@@ -383,7 +463,7 @@
  def check_prepared(binary: Path, work: Path) -> dict:
      if platform.system() != 'Darwin' or platform.machine() != 'arm64':
          raise Refused('normal_artifact_native_host_abi_required')
@@ -135,7 +143,7 @@
          raise Refused('explicit_owned_fresh_paths_required')
      if any(c.isspace() for c in str(binary)+str(work)) or work.exists() or work.is_symlink():
          raise Refused('fresh_ascii_argv_safe_work_root_required')
-@@ -473,7 +545,8 @@
+@@ -473,7 +553,8 @@
                    'target_bytes': len(path), 'target_sha256': hashlib.sha256(path.encode()).hexdigest(),
                    'label': label, 'credential_class': credential, 'body_bytes': len(payload),
                    'body_sha256': hashlib.sha256(payload).hexdigest(),
@@ -145,7 +153,7 @@
                    'encode_chunked': encode_chunked, 'max_namespace_fill': max_namespace_fill,
                    'deadline_monotonic_ns': until, 'parent_deadline_monotonic_ns': parent_deadline_ns,
                    'intent_unix_ns': time.time_ns(),
-@@ -484,6 +557,7 @@
+@@ -484,6 +565,7 @@
                      response_body_file=str(response_file), content_type=content_type,
                      headers=headers or {}, ca_file=str(self.root / 'ca.crt'),
                      bootstrap_file=str(self.private / 'bootstrap.json'), deadline_monotonic_ns=until,
@@ -153,7 +161,7 @@
                      encode_chunked=encode_chunked, max_namespace_fill=max_namespace_fill,
                      expected_leaf_sha256=hashlib.sha256(ssl.PEM_cert_to_DER_cert(
                          (self.root / f'node{node}/tls.crt').read_text())).hexdigest())
-@@ -529,12 +603,18 @@
+@@ -529,12 +611,18 @@
              raise Refused('exchange_failed_without_response')
          return observation, response_file.read_bytes()
  
@@ -173,7 +181,7 @@
              if o['response_complete']:
                  h = json.loads(b)
                  if (time.monotonic_ns() < until
-@@ -547,10 +627,12 @@
+@@ -547,10 +635,12 @@
      def roles(self, label: str) -> dict:
          records = {}
          for n in API_PORTS:
@@ -188,7 +196,7 @@
              health = json.loads(hb)
              records[n] = {'is_self': d.get('is_self'), 'ha_enabled': d.get('ha_enabled'),
                            'leader_node': next((i for i, p in API_PORTS.items()
-@@ -585,7 +667,7 @@
+@@ -585,7 +675,7 @@
                      raise Refused('original_stable_election_deadline')
                  o, b = self.request(node, 'GET', '/v1/sys/health',
                                      'sealed_election' if sealed else 'unsealed_election', credential='none',
@@ -197,7 +205,7 @@
                  h = json.loads(b)
                  if h.get('sealed') is not sealed:
                      raise Refused('election_seal_state_changed')
-@@ -647,7 +729,7 @@
+@@ -647,7 +737,7 @@
              argv += ['--ha-config', str(directory / 'ha.json')]
          with (directory / f'{kind}.stdout.private.log').open('xb') as out, (directory / f'{kind}.stderr.private.log').open('xb') as err:
              p = self.start_owned_child(self.procs, argv, stdin=subprocess.DEVNULL, stdout=out, stderr=err,
@@ -206,7 +214,7 @@
              ident = process_identity(p.pid)
              if ident is None:
                  raise Refused('owned_server_identity_unavailable')
-@@ -806,6 +888,8 @@
+@@ -806,6 +896,8 @@
                    'replication_key_file': str(node / 'replication.key'), 'peers': peers, 'bootstrap': n == 1,
                    'peer_timeout_ms': 1500, 'forward_timeout_ms': 8000, 'max_inflight': 32}
              native = dict(servers[n])
@@ -215,7 +223,7 @@
              native['storage'] = {'native_v6_raft': {'path': str(node), 'node_id': peers[str(n)]['node_name'],
                                  'cluster_addr': peers[str(n)]['cluster_address'], 'api_addr': peers[str(n)]['api_address']}}
              write_json(node / 'server-native.json', native)
-@@ -817,7 +901,8 @@
+@@ -817,7 +909,8 @@
          self.stable_leader(sealed=True)
          for n in API_PORTS:
              o, b = self.request(n, 'POST', '/v1/sys/unseal', f'node{n}_native_unseal_once',
@@ -225,7 +233,7 @@
              self.check(f'node{n}_native_unseal_complete', o['status'] == 200 and json.loads(b).get('sealed') is False)
          self.actual_leader = self.stable_leader(sealed=False)
          o, _ = self.request(self.actual_leader, 'POST', '/v1/sys/storage/native-v6/activate',
-@@ -833,115 +918,205 @@
+@@ -833,115 +926,210 @@
              'generation': cap['generation']})
          for n in API_PORTS:
              for version in (1, 2):
@@ -317,7 +325,8 @@
 +                              headers=headers, body=body, raw_body=raw_body, content_type=content_type)
 +        row = {'kind': 'scoped_status_case', 'node': node, 'method': method, 'route': path,
 +               'credential_class': credential, 'headers': headers or {},
-+               'official_observed_status': OFFICIAL_STATUS[label],
++               'expected_status': OFFICIAL_STATUS[label],
++               'official_reference_verified': label not in UNVERIFIED_REFERENCE_LABELS,
 +               'same_status_as_official_default': o['status'] == OFFICIAL_STATUS[label], **o}
 +        # Persist every completed business observation even if a later shape,
 +        # effect, cleanup or coverage check fails.
@@ -514,6 +523,10 @@
 +                'archive_scope': 'bounded shape only; no restore or format compatibility proof',
 +                'official_policy_wire_sha256': 'd1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0',
 +                'official_token_wire_sha256': '070f7234092f9799b85af95f600e1d0519ddc9c3ed81f132e21ef2af86f7cf97',
++                'official_token_wire_covers_only': ['ttl_root_default_standby_snapshot',
++                    'finite1_default_snapshot', 'finite2_default_snapshot'],
++                'official_reference_complete': OFFICIAL_REFERENCE_COMPLETE,
++                'unverified_reference_labels': UNVERIFIED_REFERENCE_LABELS,
 +                'automatic_redirect_following': False, 'unknown_mutation_replay': False,
 +                'cold_restart_tested': False, 'full_replacement_qualification': False}
 +        # This is attempted even after an incomplete setup or business failure.
@@ -526,7 +539,7 @@
          cleanup, client_cleanup = [], []
          for collection, destination in ((self.clients, client_cleanup), (self.procs, cleanup)):
              for p, captured in reversed(collection):
-@@ -961,16 +1136,21 @@
+@@ -961,16 +1149,21 @@
          except Exception as exc:
              verification_error = str(exc) if isinstance(exc, Refused) else type(exc).__name__
          incomplete_sequences = sorted(set(range(1, self.seq + 1)) - {o['sequence'] for o in self.observations})
@@ -553,7 +566,7 @@
                    'complete_http_responses': sum(bool(o['response_complete']) for o in self.observations),
                    'preconnect_failures': sum(not o['response_complete'] and o['request_sent'] is False for o in self.observations),
                    'owned_cleanup': cleanup, 'client_cleanup': client_cleanup, 'all_owned_stopped': clean,
-@@ -979,14 +1159,20 @@
+@@ -979,14 +1172,20 @@
                    'terminal_unix_ns': time.time_ns(), 'started_unix_ns': self.started_unix_ns,
                    'elapsed_ms': (time.monotonic_ns() - self.started_monotonic_ns) / 1e6,
                    'operation_boundary_complete': complete, 'physical_hosts': 1,
@@ -576,7 +589,7 @@
                            'compatibility_status_differences': report['compatibility_status_differences']}, sort_keys=True))
          return 0 if status == 'completed_observation' else 1
  
-@@ -999,14 +1185,18 @@
+@@ -999,14 +1198,18 @@
      ap.add_argument('--expected-binary-sha256')
      ap.add_argument('--expected-build-result-sha256')
      ap.add_argument('--expected-native-build-sha256')
