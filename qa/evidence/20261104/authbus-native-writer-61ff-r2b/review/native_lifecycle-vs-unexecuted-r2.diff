@@ -1,0 +1,121 @@
+--- unexecuted-r2/native_lifecycle.mjs
++++ baseline-r2b/native_lifecycle.mjs
+@@ -133,11 +133,13 @@
+   let startedResolve; const started = new Promise(resolve => { startedResolve = resolve; });
+   let gateResolve; const gate = new Promise(resolve => { gateResolve = resolve; });
+   let gateReleased = false, oldPromise, newerPromise, newerOutcome, oldKey, oldEntry, first, second;
+-  const tracked = [], children = [], ownedSpawns = [], acquires = [];
++  const tracked = [], children = [], ownedSpawns = [], acquires = [], sharedStartups = [];
++  let sharedEntryCaptureFailed = false;
+   const lifecycleAbort = new AbortController();
+   let callbackRetirement = null, cleanupStarted = false, closed = false;
+   function acquire(label) {
+-    const state = {label,settled:false,client:null,released:false,promise:null};
++    const state = {label,settled:false,client:null,released:false,promise:null,sharedStartup:null,
++      initialBarrier:n.patched&&label==='new'?globalThis[STATE]?.retiring?.get(oldKey):null};
+     const promise = factory.a(options()); state.promise = promise; acquires.push(state);
+     promise.then(client => {
+       state.settled = true; state.client = client;
+@@ -161,6 +163,42 @@
+     }).catch(() => {});
+     promise.catch(() => {}); return promise;
+   }
++  function captureSharedPromise(record) {
++    const promise=record.entry.promise;
++    if(!promise)return;
++    if(record.promise&&record.promise!==promise){record.replaced=true;return;}
++    if(record.promise)return;
++    if(typeof promise.then!=='function'){record.observationFailed=true;return;}
++    record.promise=promise;
++    event('actual_shared_startup_promise_captured',{ordinal:record.ordinal,entryKeySha256:record.keySha256});
++    const settled=outcome=>{
++      record.settled=true;record.outcome=outcome;
++      event('actual_shared_startup_settled',{ordinal:record.ordinal,outcome});
++    };
++    promise.then(()=>settled('fulfilled'),()=>settled('rejected')).catch(()=>{record.observationFailed=true;});
++  }
++  function sharedStartupBeforeActualSpawn() {
++    const state=globalThis[STATE], pairs=state?.clients instanceof Map?[...state.clients.entries()]:[];
++    const valid=pairs.length===1&&pairs[0][1]?.client===undefined
++      &&pairs[0][1]?.pendingAcquires===1;
++    if(!valid)sharedEntryCaptureFailed=true;
++    need(valid,'exact_actual_spawn_shared_entry');
++    const [key,entry]=pairs[0], owner=acquires.find(a=>!a.sharedStartup&&!a.settled);
++    if(!owner)sharedEntryCaptureFailed=true;
++    need(owner,'exact_actual_spawn_acquire_owner');
++    let record=sharedStartups.find(r=>r.entry===entry);
++    if(!record){record={ordinal:sharedStartups.length+1,entry,keySha256:hash(key),
++      promise:null,settled:false,replaced:false,observationFailed:false,outcome:null};
++      sharedStartups.push(record);}
++    owner.sharedStartup=record;
++    captureSharedPromise(record);
++    // Original factory assigns entry.promise after its synchronous spawn stack.
++    // Keep the exact object even if the callback retires it before that write.
++    queueMicrotask(()=>{try{captureSharedPromise(record);}catch{record.observationFailed=true;}});
++    event('actual_shared_entry_retained_before_spawn',{ordinal:record.ordinal,
++      entryKeySha256:record.keySha256,promiseAlreadyPublished:record.promise!==null});
++    return record;
++  }
+   function living(saved) { return sameProcess(saved, identity(saved?.pid)); }
+   function nativeFor(wrapperPid) {
+     const candidates = [];
+@@ -192,9 +230,10 @@
+     event('native_wrapper_spawn_requested', {ordinal:children.length + 1,priorNativeAlive,
+       priorWrapperAlive:tracked.some(x => x.wrapper && living(x.wrapper))});
+     // Observe the original decision; an unsafe second spawn is not blocked here.
++    const sharedStartup=sharedStartupBeforeActualSpawn();
+     const child = originalSpawn(command, args, options); children.push(child);
+     // Register the actual child before any onStarted assertion can fail.
+-    const owned = {child,ordinal:children.length,initialWrapper:identity(child.pid),native:null};
++    const owned = {child,ordinal:children.length,initialWrapper:identity(child.pid),native:null,sharedStartup};
+     ownedSpawns.push(owned);
+     event('actual_wrapper_spawn_returned',{ordinal:owned.ordinal,pid:child.pid??null,
+       initialWrapper:owned.initialWrapper});
+@@ -430,14 +469,34 @@
+     for(const saved of ownedIdentities)if(living(saved))exactSignal(saved,'SIGTERM','cleanup_exact_owned_sigterm');
+     await delay(Math.min(100,Math.max(0,deadline-clock())));
+     for(const saved of ownedIdentities)if(living(saved))exactSignal(saved,'SIGKILL','cleanup_exact_owned_sigkill');
+-    try{await untilDeadline(Promise.allSettled(acquires.map(a=>a.promise)),deadline,'owned_startup_settlement_timeout');}catch{}
++    for(const record of sharedStartups){try{captureSharedPromise(record);}catch{record.observationFailed=true;}}
++    const originals=sharedStartups.filter(r=>r.promise).map(r=>r.promise);
++    try{await untilDeadline(Promise.allSettled([...acquires.map(a=>a.promise),...originals]),
++      deadline,'owned_acquire_and_shared_startup_settlement_timeout');}catch{}
+     try{await waitFor(()=>ownedIdentities.every(saved=>!living(saved)),Math.max(1,deadline-clock()),'owned_native_cleanup_timeout');}catch{}
+     report.cleanup.closed=true;report.cleanup.actualSpawnCount=children.length;
+     report.cleanup.ownerRegistryCount=ownedSpawns.length;
+-    report.cleanup.startupPromisesSettled=acquires.every(a=>a.settled);
++    report.cleanup.acquirePromisesSettled=acquires.every(a=>a.settled);
++    const validStartup=r=>r&&r.promise&&r.settled&&!r.replaced&&!r.observationFailed
++      &&r.entry.promise===r.promise;
++    report.cleanup.sharedStartupCoverage=acquires.map(a=>{
++      const barrierOnly=!a.sharedStartup&&a.initialBarrier&&a.initialBarrier.entry===oldEntry
++        &&globalThis[STATE].retiring?.get(oldKey)===a.initialBarrier
++        &&a.initialBarrier.confirmed===false&&a.settled&&a.client===null;
++      return {label:a.label,originalStartupCaptured:!!a.sharedStartup,
++        originalStartupSettled:!!validStartup(a.sharedStartup),retainedBarrierOnly:!!barrierOnly,
++        covered:!!validStartup(a.sharedStartup)||!!barrierOnly};
++    });
++    report.cleanup.startupPromisesSettled=!sharedEntryCaptureFailed
++      &&report.cleanup.sharedStartupCoverage.every(x=>x.covered)
++      &&sharedStartups.every(validStartup)
++      &&ownedSpawns.every(own=>sharedStartups.includes(own.sharedStartup));
++    report.cleanup.sharedStartupPromises=sharedStartups.map(r=>({ordinal:r.ordinal,
++      entryKeySha256:r.keySha256,promiseCaptured:!!r.promise,settled:r.settled,
++      outcome:r.outcome,replaced:r.replaced,observationFailed:r.observationFailed}));
+     report.cleanup.allOwnedLeasesReleased=acquires.every(a=>a.client===null||a.released);
+     report.cleanup.everySpawnTracked=children.length===tracked.length&&ownedSpawns.length===children.length;
+-    report.cleanup.allOwnedStopped=report.cleanup.startupPromisesSettled&&report.cleanup.allOwnedLeasesReleased&&report.cleanup.everySpawnTracked
++    report.cleanup.allOwnedStopped=report.cleanup.acquirePromisesSettled&&report.cleanup.startupPromisesSettled&&report.cleanup.allOwnedLeasesReleased&&report.cleanup.everySpawnTracked
+       &&tracked.every(rec=>rec.wrapper&&rec.native&&!living(rec.native)&&!living(rec.wrapper));
+     report.cleanup.identities=ownedSpawns.map(own=>({ordinal:own.ordinal,
+       wrapperObserved:!!own.cleanupWrapper,nativeObserved:!!own.native,
+@@ -446,7 +505,8 @@
+       exitCode:own.child.exitCode,signalCode:own.child.signalCode}));
+     checkpoint('after_owned_cleanup');
+     report.generationsUnchanged=!watchFailure&&report.nativeCheckpoints.every(x=>x.exact);
+-    event('owned_harness_cleanup_completed',{startupPromisesSettled:report.cleanup.startupPromisesSettled,
++    event('owned_harness_cleanup_completed',{acquirePromisesSettled:report.cleanup.acquirePromisesSettled,
++      startupPromisesSettled:report.cleanup.startupPromisesSettled,
+       actualSpawnCount:children.length,allOwnedStopped:report.cleanup.allOwnedStopped});
+     need(report.cleanup.allOwnedStopped&&report.generationsUnchanged,'native_owned_cleanup_and_generation');
+     return report;
