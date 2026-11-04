@@ -1,0 +1,131 @@
+{
+  "schema": "heptabao.continuation.environment-recovery-checkpoint.v1",
+  "observed_at_utc": "2026-11-04 17:15:25 UTC",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "evidence_parent_commit": "0fbfe300d1c15189d4c9ea21160e99f7e101e932",
+  "full_openbao_271_replacement_proven": false,
+  "production_traffic_cutover": false,
+  "old_installations_deleted": false,
+  "environment": {
+    "local_executor": "unavailable",
+    "observed_error": "exec-server transport disconnected; recovery timed out",
+    "remote_controller_jobs": "durable and independently reachable",
+    "github": "reachable",
+    "do_not_replay_unknown_mutations": true
+  },
+  "accepted_new_evidence": {
+    "mac_cargo_release_lock": {
+      "commit": "0fbfe300d1c15189d4c9ea21160e99f7e101e932",
+      "tree": "9a3f07825f715eea3f1e9e7824f67049ec234be2",
+      "files": 23,
+      "checks": 23,
+      "readback": [
+        {
+          "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/root-review.public.json",
+          "sha256": "e58ec83a21ed5af04cdd21b9f22f3386452daf6e6e0524729cf1054517f81327",
+          "git_blob_sha": "954e03e9e29b144a98a9e374b1e7488d5c711e25",
+          "bytes": 2929,
+          "exact": true
+        },
+        {
+          "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/result.public.json",
+          "sha256": "d9be1b814a0f7834f22eef219c765a3dae8ede2b6be60ca02f1b88600cc69403",
+          "git_blob_sha": "e485422c569f8937321bbedf1c46da4233851b77",
+          "bytes": 3438,
+          "exact": true
+        },
+        {
+          "path": "tools/production/run_mac_cargo_lock_probe.py",
+          "sha256": "36764b174fae8037fc2020aed9334d2f399342ea3f2dabe69126be95fdd4faa0",
+          "git_blob_sha": "ea410c98f2d107bae02df1059b09f6a29b93197d",
+          "bytes": 5081,
+          "exact": true
+        },
+        {
+          "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/manifest.public.json",
+          "sha256": "eadb3020d9921441a11f51ca2ecf875502ffc93063622cbb2e8d10df102d1a60",
+          "git_blob_sha": "e98a6093655fe11abc170d5edf8b98522b95bef8",
+          "bytes": 4637,
+          "exact": true
+        }
+      ]
+    }
+  },
+  "current_product_candidate": {
+    "physical_rog_commit": "3961275d27e4a4e64e2d28619ef3b1b8d76e9980",
+    "tree": "d6dffaf4627ac16961e67c94b99f84122adc2e1d",
+    "format_checks": "passed",
+    "strict_clippy": "failed in actual test compilation: two Response Debug-bound errors, two missing test-fixture fields, one int-plus-one lint",
+    "original_1640_clippy_diagnostics": "no longer present in r3",
+    "reviewed_r4_fix": "four test-related files; not applied because compile admission refused a newly observed builder",
+    "new_product_binary_qualified": false,
+    "new_candidate_tests_run": false,
+    "shared_cache_blocker": {
+      "job_id": "1a1a7738839-fc05-2b7f",
+      "ownership": "other durable HeptaBao r9 build; exact process/cgroup observed by acceptance agent",
+      "last_observed_state": "running",
+      "may_stop_or_mutate": false
+    },
+    "acceptance_agent_recovery": "exact r4 argv and stdin, r3 source packet, manifest and stderr retained in code-mode store; separate evidence branch being prepared"
+  },
+  "gates": {
+    "kv2": {
+      "historical_normal33_x230_34MiB": "31/31 scoped checks; official 2.7.1 subset 69/69",
+      "seed": "actual 3/2 V5 seed restored across Mac to ROG; all 3 two-share pairs tested on Mac",
+      "remaining": [
+        "Qualify current unified normal source",
+        "Repeat formal V6 migration/recovery and 34MiB tests on required hosts",
+        "Prove complete owner-state/backup recovery and production custody"
+      ]
+    },
+    "ha": {
+      "historical_normal33_lan": "Mac/ROG/Pocket 128/128; separate Pocket-to-empty-Mac 98/98",
+      "new_compatibility_gap": [
+        "ordinary KV NoForward and listener policy precedence",
+        "non-root snapshot ACL behavior",
+        "bounded completion of early refusal with actual audit/clock receipt"
+      ],
+      "remaining": [
+        "Compile current unified source",
+        "Normal-binary observer against fixed 2.7.1 status expectations",
+        "Physical failure/election/ReadIndex/persistence/restart on the exact qualified artifact"
+      ]
+    },
+    "authbus": {
+      "fresh_provider": {
+        "managed1": "ROG current generation: one GET 401 token_expired",
+        "managed2": "ROG current explicit SDK profile2: one GET 200; agent freezing/recovering complete originals",
+        "native4": "ROG native unmanaged generation: one GET 200; distinct account/generation"
+      },
+      "default_native_source_migrated": false,
+      "concurrent_writer_gap": "Static factory/recycler gap; actual overlapping initialized native-writer fixture has not run",
+      "desktop": "8 configured agents, 6 existing databases, 10 OAuth rows, 4 distinct generations, 2 pending runtime refreshes; readonly only"
+    },
+    "per_host_cutover": {
+      "completed_hosts": [],
+      "rule": "Actual credential read/write, restart and rollback before traffic cutover"
+    },
+    "retirement": {
+      "eligible": false,
+      "reason": "All clients, backup paths and production cutovers are not yet qualified"
+    }
+  },
+  "retention": {
+    "historical_green_results_do_not_transfer_to_current_source": true,
+    "seed_initialization_must_not_repeat": true,
+    "unknown_seed_mount_operation_must_not_replay": true,
+    "provider_gets_must_not_replay": true,
+    "unrelated_builds_must_not_stop": true,
+    "desktop_held_guards_must_not_remove": true,
+    "existing_openbao_271_oracle_must_keep": true,
+    "root_probe_sources_and_receipts": "published and independently read back at accepted_new_evidence.mac_cargo_release_lock.commit",
+    "observer_r2_e2fec": "agent reports only scratch copy, not yet staged or durably recovered; do not invent original bytes"
+  },
+  "next_actions": [
+    "Preserve acceptance, AuthBus and official-oracle evidence to independent GitHub branches with exact readback.",
+    "Wait for the identified foreign builder to release shared locks; recheck admission under the original compilation budget.",
+    "Resume the already reviewed r4 compile from exact retained request only after known prior no-effect failures and current resource checks.",
+    "Stage exact strict-qualified source to T5 and run the normal build using a separately reviewed launcher.",
+    "Continue genuine native-client concurrency proof and ownership barrier fix in an owned isolated fixture."
+  ]
+}
