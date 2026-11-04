@@ -1,0 +1,14 @@
+{
+  "actual_original_controller_exit": 0,
+  "finished_unix": 1793789608.639769,
+  "input_pins_unchanged": true,
+  "load_error_type": null,
+  "load_manifest_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-pocket3-mac1-direct98-control-r1/host-load-observations.public.json",
+  "load_manifest_sha256": "0adfdf07c4c63f688b99eb6d9d44ec37ace5c53f5481fc17f9d0aab62e40f98f",
+  "original_exit_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-pocket3-mac1-direct98-control-r1/exit.public.json",
+  "original_exit_sha256": "764e9a15ee83a7b9bc7133c147e072a146a57fbec64376db43f476ee218d1d54",
+  "owned_load_observers_stopped": true,
+  "private_diagnostic_feature_enabled": false,
+  "schema": "heptabao.normal-direct98-direction-external-observer-exit.v1",
+  "wrapper_unchanged": true
+}

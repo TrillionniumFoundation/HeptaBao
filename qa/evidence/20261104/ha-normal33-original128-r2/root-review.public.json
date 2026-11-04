@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.root-reviewed-normal33-original128.v1",
+  "reviewed_utc": "2026-11-04T10:43:05.704518+00:00",
+  "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "fixture_run_id": "25d34889eba0c9d5a8647c8cb0914a1f",
+  "files": {
+    "summary": {
+      "sha256": "8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1",
+      "bytes": 109148
+    },
+    "assessment": {
+      "sha256": "66df7dbd422004f7f4569fb9e44a5835f929a5c7f5d19a08b484cc3ecf0cb318",
+      "bytes": 174328
+    },
+    "exit": {
+      "sha256": "c29e4b4adff0a94f6a496d69fe408ad15b783870eb26a747d363136be670c80d",
+      "bytes": 443
+    },
+    "outer": {
+      "sha256": "7e05fd9086ddf90b17654d5342eedd3b1f6107b5deb9478d91952b08f4a28109",
+      "bytes": 778
+    },
+    "load": {
+      "sha256": "20c6c3711a83b52bc2c44eeb44a4fe8f368bcd0d6fcba42e6689b760af1ad621",
+      "bytes": 1741
+    }
+  },
+  "full_source_pinned_case_set_read_and_evaluated": true,
+  "original_direct_cases": 98,
+  "original_official_cases": 30,
+  "exact_unique_cases": 128,
+  "passed": 128,
+  "mutation_sequence_count": 67,
+  "all_mutations_have_one_dispatch_and_complete_outcome_within_original_budget": true,
+  "unknown": 0,
+  "source_node": 2,
+  "empty_leader_node": 1,
+  "cold_http_ms": 10083.937,
+  "official_import_ms": 4645.568,
+  "source_and_build_pins_unchanged": true,
+  "normal_features_only": true,
+  "original_server_14s_contract_preserved_by_frozen_build": true,
+  "old_failure_evidence_preserved": true,
+  "root_read_full_summary_and_assessment_not_only_compact": true,
+  "scope": "Original 98 direct LAN plus30 official full34 history/snapshot/readindex/cold cases on actual Mac, ROG, Pocket4 normal binaries.",
+  "remaining_direction": "Pocket4 source to empty elected Mac remains uncovered",
+  "production_changed": false,
+  "full_openbao_replacement_qualified": false,
+  "uncovered": [
+    "large_http_forwarding",
+    "physical_power_loss",
+    "disk_full",
+    "long_horizon_linearizability",
+    "production_traffic_switch",
+    "old_production_asset_cleanup"
+  ],
+  "earlier_failure_cause_proven_resolved": false,
+  "root_separately_verified_outer_exit_and_all_three_load_observers": true
+}

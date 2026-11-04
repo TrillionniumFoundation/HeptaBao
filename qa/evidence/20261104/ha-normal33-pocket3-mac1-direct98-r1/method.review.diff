@@ -1,0 +1,32 @@
+--- original33/NativeRun.missing_cipher_leader
++++ direction98/PocketSourceDirect98Run.missing_cipher_leader
+@@ -7,7 +7,14 @@
+             self.stop(node)
+             self.start(node)
+             self.unseal(node)
+-        healthy = self.leader(self.nodes)
++        original_leader = self.leader(self.nodes)
++        healthy = next(node for node in self.nodes if node.node_id == 3)
++        self.report["directional_source_selection"] = {
++            "requested_source_node": 3, "selected_source_node": healthy.node_id,
++            "actual_pre_quarantine_leader_node": original_leader.node_id,
++            "all_three_original_cold_unseals_completed": True,
++            "data_source_selection_does_not_claim_leader_authority": True,
++        }
+         for node in self.nodes:
+             self.stop(node)
+         self.check("missing_cipher_targets_stopped", not self.started)
+@@ -30,6 +37,13 @@
+         still_elected = self.wait_sealed_leader(self.nodes, expected=elected)
+         self.check("missing_cipher_source_rejoined", still_elected == elected,
+                    source=healthy.node_id, selected_missing_leader_is_current=elected.node_id)
++        self.report["directional_observed_pair"] = {
++            "source_node": healthy.node_id, "actual_empty_leader_node": elected.node_id,
++            "requested_pair_observed": healthy.node_id == 3 and elected.node_id == 1,
++            "leader_selection_forced": False,
++        }
++        if healthy.node_id != 3 or elected.node_id != 1:
++            raise base.FixtureError("directional_pocket_to_mac_pair_not_observed")
+         empty = cipher_inventory(elected, self.run_id, "empty")
+         self.check("missing_cipher_leader_empty_before_unseal", empty.get("remaining_count") == 0
+                    and empty.get("inventory_sha256") == inventories[elected]["inventory_sha256"],

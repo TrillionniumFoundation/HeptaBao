@@ -1,6 +1,6 @@
 {
   "schema": "heptabao.36076-and-33cafa-checkpoint.v4",
-  "as_of_utc": "2026-11-04T10:10:00Z",
+  "as_of_utc": "2026-11-04T11:08:10.551200+00:00",
   "compiled_source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
   "compiled_source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95",
   "published_source_commit": "a5c05856f23c395e590fd4e6eeec02bb669a2aa9",
@@ -309,14 +309,14 @@
     "formatted_run_id": 41791159057,
     "formatted_conclusion": "failure",
     "formatted_failure": "Repository documentation validator required technical prose in the intentionally empty main README; fmt passed and Rust runtime tests not executed.",
-    "current_head": "1780833661058efff2e31cd2ce2733d485075ac3",
-    "current_tree": "3835532737b5a2369ea46947442b3c03a77d0271",
-    "current_head_rust_matches_physical_33cafa_tree": true,
+    "current_head": "0dc39624d1266a6fca98760757b9482bf6f98a7a",
+    "current_tree": "959c65d6782b288c41730da869c86007c268547c",
+    "current_head_rust_matches_physical_33cafa_tree": false,
     "additional_integration_scope": "Intentional empty README; same technical documentation requirements moved to CURRENT_DOCUMENTATION with negative regressions; no runtime gate removed.",
-    "current_full_qualification_terminal_observed": true,
-    "current_run_id": 41797943393,
-    "current_status": "completed",
-    "current_trust_boundary_run_id": 41797943632,
+    "current_full_qualification_terminal_observed": false,
+    "current_run_id": 41814525698,
+    "current_status": "in_progress",
+    "current_trust_boundary_run_id": 41814525725,
     "current_trust_boundary_conclusion": "success",
     "current_attempt": 1,
     "attempt1_conclusion": "failure",
@@ -326,7 +326,7 @@
     "previous_run_id": 41792816829,
     "attempt2_state": "failed",
     "attempt2_failure_receipt_sha256": "fc149d259198ed285dbdab51c3fd72848b2be3157f3666535ac4baf439f65770",
-    "workflow_sha256": "b17c195652fa9e25113ec9a7a67593a7d28bed1eeb4038f07b5af1bdadb9dd0b",
+    "workflow_sha256": "dd40e4f9c6ab2b74b3db97a2ad9e3beaa5296b48e729efab573057cd4b15d635",
     "cargo_build_jobs": 1,
     "compile_only_resource_sampler": true,
     "workflow_exact_readback_verified": true,
@@ -396,7 +396,32 @@
         "Compilation success and partial test outcomes do not qualify runtime gates."
       ]
     },
-    "current_conclusion": "cancelled"
+    "current_conclusion": null,
+    "previous_completed_head": "1780833661058efff2e31cd2ce2733d485075ac3",
+    "prospective_merge": "186570233517b2295de7384ef96a5815ba7db06f",
+    "production_rust_matches_physical33_except_test_only_fixture": true,
+    "current_jobs": [
+      126521818538,
+      126521818811
+    ],
+    "codeql_separate_run_id": 41814520252,
+    "overall_job_timeout_minutes": 360,
+    "runtime_fixture_request_deadlines_unchanged": true,
+    "original_failed_test_reproduced": {
+      "sha256": "643636360c40533cc3d91ff56b18d104e256c89347067742f9f222072801d795",
+      "bytes": 2487
+    },
+    "test_only_fix_review": {
+      "sha256": "91d63e3f6ab91be28815a41c63f2f8e7c528ce0caac5b133a6054f214919e3de",
+      "bytes": 1592
+    },
+    "corrected_test_rog_verification": {
+      "state": "running",
+      "job": "1a1a634ff3c-fc05-235b",
+      "local_source_commit": "45d45a79349d8feaed35cb60335edc76ae81bd29",
+      "tree": "7c66c145435dfa32afafc20dfb9e5c3a5f96cdaf",
+      "exact_ci_test_file_sha256": "376eb96c9ef21b0b2eeb0e78533119ecf4797b9def921abbbc3c848f73b08768"
+    }
   },
   "qa_publication": {
     "physical_followup_commit": "ccee5c8d1cd482fcb8fcadc578f8d045f823576a",
@@ -413,95 +438,78 @@
     "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
     "published_commit": "054d17cd50951efa46d78db3911ad1d277a0c584",
     "published_tree_exact": true,
-    "physical128_prepared_sha256": "bbc0ea744caed7c19e6099c1ab912351ca600dc771f3d8fe530836c1b7f4b5af",
-    "physical128_controller_sha256": "5a4b8930b1f8aaae9e73f774f9a3959f1265e98f69ce408f6f68119fa3a36529",
+    "physical128_prepared_sha256": "e3ca7c94f456e5807b8a7d9e4944ca96e9dcb85b49e0a75fa3beddc3a6ab5c04",
     "physical128_result": {
+      "schema": "heptabao.root-reviewed-normal33-original128.v1",
+      "reviewed_utc": "2026-11-04T10:43:05.704518+00:00",
       "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
       "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
-      "fixture_run_id": "fc48c32973d28b761edb8ff28002a75f",
-      "status": "failed",
-      "passed_checks": 90,
-      "required_checks": 128,
-      "not_executed_check_count": 38,
-      "failure_code": "node_1_native_cold_unseal_failed",
-      "failure_stage": "owned_missing_cipher_leader_recovery",
-      "roles": {
-        "node_1": "mac",
-        "node_2": "rog",
-        "node_3": "pocket4",
-        "pocket4_to_mac_direction_executed": false,
-        "pocket4_to_mac_direction_recovery_passed": false,
-        "selected_empty_leader_node": 1,
-        "source_node": 2
-      },
-      "fixture_recovery": {
-        "automatic_resume_or_retry": false,
-        "initialization_custody_saved": true,
-        "mutation_intents": 47,
-        "mutation_responses": 47,
-        "relative_root": "private-recovery",
-        "schema": "heptabao.synthetic-fixture-recovery-public.v1",
-        "secret_values_emitted": false,
-        "synthetic_only": true,
-        "unknown_transport_outcomes": 0
-      },
-      "original_deadlines": {
-        "http_request_budget_seconds": 15,
-        "native_admission_budget_seconds": 8,
-        "native_large_http_budget_seconds": 5
-      },
-      "owned_cleanup_checks": [
-        {
-          "archive_sha256": "34f29e6ebd3fa3120a7a32ee47c0acb4b6067135bd3a16aae80c2cf01131e0aa",
-          "case": "seed_stopped_cold_archive",
-          "passed": true
+      "fixture_run_id": "25d34889eba0c9d5a8647c8cb0914a1f",
+      "files": {
+        "summary": {
+          "sha256": "8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1",
+          "bytes": 109148
         },
-        {
-          "case": "all_voters_stopped_for_cold_restart",
-          "passed": true
+        "assessment": {
+          "sha256": "66df7dbd422004f7f4569fb9e44a5835f929a5c7f5d19a08b484cc3ecf0cb318",
+          "bytes": 174328
         },
-        {
-          "case": "missing_cipher_targets_stopped",
-          "passed": true
+        "exit": {
+          "sha256": "c29e4b4adff0a94f6a496d69fe408ad15b783870eb26a747d363136be670c80d",
+          "bytes": 443
         },
-        {
-          "case": "owned_processes_stopped",
-          "passed": true
+        "outer": {
+          "sha256": "7e05fd9086ddf90b17654d5342eedd3b1f6107b5deb9478d91952b08f4a28109",
+          "bytes": 778
         },
-        {
-          "case": "owned_mesh_stopped",
-          "passed": true
+        "load": {
+          "sha256": "20c6c3711a83b52bc2c44eeb44a4fe8f368bcd0d6fcba42e6689b760af1ad621",
+          "bytes": 1741
         }
-      ],
-      "owned_load_observers_stopped": true,
-      "reported_background_mac_io": {
-        "created_unix_ms": 1793779477825,
-        "file_count": 24,
-        "manifest_sha256": "e6ece04ba46c3399820fa1068ef24b528889b3fc303566554fe9b220c3f83c69",
-        "no_zero_extra_io_claim": true,
-        "not_claimed_unique_cause": true,
-        "per_file_and_directory_fsync": true,
-        "reported_by": "root",
-        "runtime_job": "1a1a596ad41-fc05-1fb8",
-        "terminal_at_unix_ms": 1793779478098,
-        "total_bytes": 353180,
-        "window_ms": 273
       },
-      "cross_host_clock_synchronization_claimed": false,
-      "assessment_sha256": "30f3f88667cfb876833d4c84347c40ca9c20fc91c08e4f1d812cdf41b11cda4f",
-      "summary_sha256": "41af5de59863ec2d430674d0b6272b040276d2777dda383a25a2e195cdab9f44",
-      "cold_unseal_elapsed_ms": 14099.923,
-      "cold_unseal_http_status": 503,
-      "service_original_recovery_deadline_seconds": 14,
-      "original128_qualified": false
+      "full_source_pinned_case_set_read_and_evaluated": true,
+      "original_direct_cases": 98,
+      "original_official_cases": 30,
+      "exact_unique_cases": 128,
+      "passed": 128,
+      "mutation_sequence_count": 67,
+      "all_mutations_have_one_dispatch_and_complete_outcome_within_original_budget": true,
+      "unknown": 0,
+      "source_node": 2,
+      "empty_leader_node": 1,
+      "cold_http_ms": 10083.937,
+      "official_import_ms": 4645.568,
+      "source_and_build_pins_unchanged": true,
+      "normal_features_only": true,
+      "original_server_14s_contract_preserved_by_frozen_build": true,
+      "old_failure_evidence_preserved": true,
+      "root_read_full_summary_and_assessment_not_only_compact": true,
+      "scope": "Original 98 direct LAN plus30 official full34 history/snapshot/readindex/cold cases on actual Mac, ROG, Pocket4 normal binaries.",
+      "remaining_direction": "Pocket4 source to empty elected Mac remains uncovered",
+      "production_changed": false,
+      "full_openbao_replacement_qualified": false,
+      "uncovered": [
+        "large_http_forwarding",
+        "physical_power_loss",
+        "disk_full",
+        "long_horizon_linearizability",
+        "production_traffic_switch",
+        "old_production_asset_cleanup"
+      ],
+      "earlier_failure_cause_proven_resolved": false,
+      "root_separately_verified_outer_exit_and_all_three_load_observers": true,
+      "root_review": {
+        "sha256": "b3694b4910d6d6f90f5335df87bf130ac80481c7c9c66909939e3f32a9f92e29",
+        "bytes": 2243
+      },
+      "remaining_direction_note_is_historical_to_canonical_review": true
     },
-    "known_pocket3_to_mac1_recovery_failure_closed": false,
     "qualification": false,
-    "physical128_job": "1a1a591a045-fc05-1f8c",
-    "physical128_run_id": "fc48c32973d28b761edb8ff28002a75f",
-    "physical128_state": "failed",
+    "physical128_job": "1a1a6146933-fc05-22e9",
+    "physical128_run_id": "25d34889eba0c9d5a8647c8cb0914a1f",
+    "physical128_state": "passed",
     "physical128_last_observed_checks": [
-      90,
+      128,
       128
     ],
     "builds": {
@@ -550,7 +558,201 @@
       "comparison69_result_sha256": "8b9224e43aad89caa7118c24746a3800d1c1ce932a7786051c62c11a71565a6b",
       "comparison69_summary_sha256": "c528fa297bf7d4c79d88437538da59a4b777051a8e7bb2db07b769c6a7cee8a0",
       "all_owned_stopped": true
-    }
+    },
+    "physical128_r1_history": {
+      "physical128_prepared_sha256": "bbc0ea744caed7c19e6099c1ab912351ca600dc771f3d8fe530836c1b7f4b5af",
+      "physical128_controller_sha256": "5a4b8930b1f8aaae9e73f774f9a3959f1265e98f69ce408f6f68119fa3a36529",
+      "physical128_result": {
+        "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+        "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+        "fixture_run_id": "fc48c32973d28b761edb8ff28002a75f",
+        "status": "failed",
+        "passed_checks": 90,
+        "required_checks": 128,
+        "not_executed_check_count": 38,
+        "failure_code": "node_1_native_cold_unseal_failed",
+        "failure_stage": "owned_missing_cipher_leader_recovery",
+        "roles": {
+          "node_1": "mac",
+          "node_2": "rog",
+          "node_3": "pocket4",
+          "pocket4_to_mac_direction_executed": false,
+          "pocket4_to_mac_direction_recovery_passed": false,
+          "selected_empty_leader_node": 1,
+          "source_node": 2
+        },
+        "fixture_recovery": {
+          "automatic_resume_or_retry": false,
+          "initialization_custody_saved": true,
+          "mutation_intents": 47,
+          "mutation_responses": 47,
+          "relative_root": "private-recovery",
+          "schema": "heptabao.synthetic-fixture-recovery-public.v1",
+          "secret_values_emitted": false,
+          "synthetic_only": true,
+          "unknown_transport_outcomes": 0
+        },
+        "original_deadlines": {
+          "http_request_budget_seconds": 15,
+          "native_admission_budget_seconds": 8,
+          "native_large_http_budget_seconds": 5
+        },
+        "owned_cleanup_checks": [
+          {
+            "archive_sha256": "34f29e6ebd3fa3120a7a32ee47c0acb4b6067135bd3a16aae80c2cf01131e0aa",
+            "case": "seed_stopped_cold_archive",
+            "passed": true
+          },
+          {
+            "case": "all_voters_stopped_for_cold_restart",
+            "passed": true
+          },
+          {
+            "case": "missing_cipher_targets_stopped",
+            "passed": true
+          },
+          {
+            "case": "owned_processes_stopped",
+            "passed": true
+          },
+          {
+            "case": "owned_mesh_stopped",
+            "passed": true
+          }
+        ],
+        "owned_load_observers_stopped": true,
+        "reported_background_mac_io": {
+          "created_unix_ms": 1793779477825,
+          "file_count": 24,
+          "manifest_sha256": "e6ece04ba46c3399820fa1068ef24b528889b3fc303566554fe9b220c3f83c69",
+          "no_zero_extra_io_claim": true,
+          "not_claimed_unique_cause": true,
+          "per_file_and_directory_fsync": true,
+          "reported_by": "root",
+          "runtime_job": "1a1a596ad41-fc05-1fb8",
+          "terminal_at_unix_ms": 1793779478098,
+          "total_bytes": 353180,
+          "window_ms": 273
+        },
+        "cross_host_clock_synchronization_claimed": false,
+        "assessment_sha256": "30f3f88667cfb876833d4c84347c40ca9c20fc91c08e4f1d812cdf41b11cda4f",
+        "summary_sha256": "41af5de59863ec2d430674d0b6272b040276d2777dda383a25a2e195cdab9f44",
+        "cold_unseal_elapsed_ms": 14099.923,
+        "cold_unseal_http_status": 503,
+        "service_original_recovery_deadline_seconds": 14,
+        "original128_qualified": false
+      },
+      "physical128_job": "1a1a591a045-fc05-1f8c",
+      "physical128_run_id": "fc48c32973d28b761edb8ff28002a75f",
+      "physical128_state": "failed",
+      "physical128_last_observed_checks": [
+        90,
+        128
+      ],
+      "known_pocket3_to_mac1_recovery_failure_closed": false
+    },
+    "pocket3_to_mac1_independent_direction": {
+      "schema": "heptabao.root-reviewed-normal33-pocket3-mac1-direct98.v1",
+      "reviewed_utc": "2026-11-04T11:04:46.539049+00:00",
+      "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+      "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+      "fixture_run_id": "26f3bc7381e0c5f80746262bb2f93406",
+      "files": {
+        "summary.json": {
+          "sha256": "b02a111b487e33065117fc88596113c7e8a7695feb283331165381fafd3c167f",
+          "bytes": 45176
+        },
+        "assessment.json": {
+          "sha256": "02f40102e2ec81021bc6ee1f51d7d72a14076ec57437e2babc66abb07f44a705",
+          "bytes": 93424
+        },
+        "exit.json": {
+          "sha256": "764e9a15ee83a7b9bc7133c147e072a146a57fbec64376db43f476ee218d1d54",
+          "bytes": 457
+        },
+        "outer.json": {
+          "sha256": "15c1b0e41a70d41ff2f2405ace2df3b5bd67836714bd5bfb7ae5aa8dda9bff56",
+          "bytes": 812
+        },
+        "load.json": {
+          "sha256": "0adfdf07c4c63f688b99eb6d9d44ec37ace5c53f5481fc17f9d0aab62e40f98f",
+          "bytes": 1796
+        },
+        "prepared.public.json": {
+          "sha256": "5f7cadbec71c4aac9cc3079193fed7440dbe5fb1e07d6dce9cf6903efd722304",
+          "bytes": 33163
+        },
+        "direction-contract.public.json": {
+          "sha256": "8dbe9cf0ae32dba72d12313c052b8c95ecfb1c70835d66084abe4739e38ce918",
+          "bytes": 4572
+        },
+        "preflight-coverage-scope.public.json": {
+          "sha256": "f0b350a3f677f5668dc1ec5f64968e71716640c9777db5bfce5626c7a56a5cc4",
+          "bytes": 5318
+        },
+        "controller-freeze.public.json": {
+          "sha256": "0e41393afe179a432c7b11bd96ce9f5b88803ed8dd9cae92c1dfebdc415bcee0",
+          "bytes": 3790
+        },
+        "native_v6_pocket_source_direct98_r1.py": {
+          "sha256": "fa6ed593833e7aa37c86935469c83d2731a112bd2a441ae9dbcd32db9a9bb718",
+          "bytes": 10838
+        },
+        "method.review.diff": {
+          "sha256": "2cc9fc11b75b4571b088b1369ad4aaef7634b9824a328a5b02866b6c2989d7e4",
+          "bytes": 1851
+        }
+      },
+      "full_source_pinned_case_set_read_and_evaluated": true,
+      "exact_unique_original_direct_cases": 98,
+      "passed": 98,
+      "canonical_original128_unchanged": false,
+      "scope": "Separate explicitly controlled Pocket4 data-source fixture; actual empty Mac leader elected without forcing; original 98 direct assertions retained.",
+      "canonical128_summary_sha256": "8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1",
+      "original_official30_repeated_in_this_scope": false,
+      "two_reviewed_method_blocks_only": true,
+      "original_method_normalized_sha256": "cae208acf0482cfddb43f55722aa98a47eafbcac16aba6b26d52c61381835298",
+      "all_three_original_cold_unseals_verified_before_source_selection": true,
+      "mutation_sequence_count": 53,
+      "all_mutations_have_one_dispatch_and_complete_outcome_within_original_budget": true,
+      "unknown": 0,
+      "source_node": 3,
+      "empty_leader_node": 1,
+      "cold_unseal_sequence": 46,
+      "cold_http_ms": 9362.428,
+      "every_recovered_leaf_hash_and_size_matches": true,
+      "restored_leaves": 338,
+      "restored_bytes": 35742379,
+      "unreferenced_quarantined_leaves_retained": 104,
+      "normal_features_only": true,
+      "source_and_build_pins_unchanged": true,
+      "original_http15_server14_admission8_readiness45_contracts_preserved": true,
+      "old_failure_and_canonical_success_evidence_preserved": true,
+      "root_read_full_summary_and_assessment_not_only_compact": true,
+      "root_separately_verified_outer_exit_and_all_three_load_observers": true,
+      "owned_services_and_mesh_stopped": true,
+      "quiet_window_released": true,
+      "production_changed": false,
+      "full_openbao_replacement_qualified": false,
+      "earlier_failure_cause_proven_resolved": false,
+      "uncovered_in_this_fixture": [
+        "native_ha_snapshot_export_restore",
+        "large_http_forwarding",
+        "physical_power_loss",
+        "disk_full",
+        "long_horizon_linearizability",
+        "production_traffic_switch",
+        "old_production_asset_cleanup"
+      ],
+      "root_review": {
+        "sha256": "9a320e34b8d2f1be660477b288aee3c02dbac1de0d102ad8751ef19a635e2c6d",
+        "bytes": 3813
+      },
+      "job": "1a1a62bdc62-fc05-2334",
+      "state": "passed"
+    },
+    "prior_timing_failure_unique_cause_proven": false,
+    "qualification_scope": "Full OpenBao replacement remains unqualified; exact original128 and independent direction98 contracts passed."
   },
   "mac_native_actual_consumer": {
     "normal_source": "36076db5f5afe00db75eba9b607dee7802dae554",
@@ -844,6 +1046,78 @@
     "actual_installed_resolver": true,
     "alternative_1_2_changed_rog_zbj": true,
     "mac_result_sha256": "f6522d170c06276f82088264d7a5c77a8a87225911d9d3235d96051c76afee0e",
-    "rog_result_sha256": "244be61bad65a3c1f059188fe96960ed57d9ff8c27f5246b2e99813fd4ea3677"
+    "rog_result_sha256": "244be61bad65a3c1f059188fe96960ed57d9ff8c27f5246b2e99813fd4ea3677",
+    "published_commit": "682c063994c18e1dafc476f6affa4d25e7ff716f"
+  },
+  "historical_top_level_source_fields_remain_original360_scope": true,
+  "mac_offline_material_stage": {
+    "activation_created": false,
+    "actual_ca_and_node_keypair_generated": true,
+    "actual_guard_check_passed": true,
+    "actual_plist_bootstrap_checked_with_readonly_command": true,
+    "actual_plutil_lint_passed": true,
+    "api_request_dispatched": false,
+    "approles_generated": false,
+    "binary_bytes": 90045552,
+    "binary_sha256": "d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20",
+    "ca_der_sha256": "9c6bb844653d6fe415b76be7c11863bd59df729ce7367b924e1b3e0cd33c2b13",
+    "formal_normal_ha_qualified": false,
+    "guard_sha256": "dac338fd8dbc0e1a11eb29a02d9f8b15758d9cbda8771c358cc1b8f7963cccd9",
+    "ha_config_generated": false,
+    "leaf_der_sha256": "f1b41dc0bf36148b7693a1d0f9ecb77b29e546449cc8c89f6e6edc2b5d2447d2",
+    "ok": true,
+    "plist_sha256": "189d43c22dc321b7613769fd4b288c43aaa545f2c20b6c5ff8c5a5cada7f85d4",
+    "production_changed": false,
+    "provider_called": false,
+    "replication_key_bytes": 32,
+    "root": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1",
+    "schema": "heptabao.mac-offline-node-prepared.v1",
+    "seed_custody_directory_prepared": true,
+    "seed_initialized": false,
+    "service_loaded": false,
+    "service_started": false,
+    "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "source_identity_unchanged": true,
+    "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+    "stage_binding_sha256": "50347e3e23e2721381fed5f4627a80facea10a5e644a333bae8d88e88c1659dc",
+    "strict_server_client_chain_and_san_verified": true,
+    "tls_not_after_unix": 1809341079.0,
+    "traffic_cutover": false,
+    "volume": {
+      "device": 16777244,
+      "device_identifier": "disk7s1",
+      "mountpoint": "/Volumes/T5",
+      "volume_uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758"
+    },
+    "receipt": {
+      "sha256": "2a2223789632f111a2fa78bccbad5dac392e73f8441b7e95f21da270bddc83ff",
+      "bytes": 1737
+    },
+    "runtime_job": "1a1a6292bf9-fc05-2325"
+  },
+  "installed_coordinator_real_user_systemd": {
+    "host": "x230",
+    "status": "failed",
+    "system_scope_candidate": "preparing_not_executed",
+    "all_owned_cleanup_completed": true,
+    "r1": {
+      "sha256": "b9c7cfe0cafef987cc52518f9b651b9ff4b2217a3f11c55e78ee13f417a7f53d",
+      "bytes": 14946
+    },
+    "r1_cleanup": {
+      "sha256": "1db7ec183f91c227694902bd7c406a93adf5bd36c9936afc6a4f22f608321342",
+      "bytes": 1126
+    },
+    "r2": {
+      "sha256": "54d309831e1b2fe03d8be148fc3fbc9f2a4b51413d609ad6629592cfe35652e4",
+      "bytes": 19333
+    },
+    "r3": {
+      "sha256": "e1a70454948703f3947d6431aded6a819a90de8b8938896c144e401df3ba242f",
+      "bytes": 20709
+    },
+    "r3_actual_separate_user_namespace": true,
+    "r3_actual_code_and_config_readonly": false,
+    "global_security_policy_changed": false
   }
 }

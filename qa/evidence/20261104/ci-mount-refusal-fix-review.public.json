@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.ci-stale-refusal-fix.v1",
+  "source_parent": "1780833661058efff2e31cd2ce2733d485075ac3",
+  "normal_runtime_source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "reproduced_original_test_result_sha256": "643636360c40533cc3d91ff56b18d104e256c89347067742f9f222072801d795",
+  "failure": {
+    "actual_status": 204,
+    "old_expected_status": 501,
+    "test_seconds": 0.08,
+    "original_unit_request_seconds": 15
+  },
+  "fix": "Use unsupported KV version 3 instead of supported KV1 in the backend refusal loop.",
+  "old_test_sha256": "b899f39f2f57932357b481b812a9df677bed42c0f32d348978456d0be06f3e26",
+  "new_test_sha256": "376eb96c9ef21b0b2eeb0e78533119ecf4797b9def921abbbc3c848f73b08768",
+  "source_explanation": [
+    "service.rs selects native KV1 registry owner before native KV2 mount owner",
+    "engine_native_kv1.rs admits type kv and version 1",
+    "engine_native_kv2_mount.rs refuses version other than 2",
+    "existing service_native_kv1_registry_tests.rs tests positive version 1 creation and cold restore"
+  ],
+  "production_runtime_source_changed": false,
+  "all_existing_acl_cas_and_graph_assertions_preserved": true,
+  "new_test_executed": false,
+  "workflow": {
+    "parent_sha256": "b17c195652fa9e25113ec9a7a67593a7d28bed1eeb4038f07b5af1bdadb9dd0b",
+    "candidate_sha256": "dd40e4f9c6ab2b74b3db97a2ad9e3beaa5296b48e729efab573057cd4b15d635",
+    "total_job_minutes_before": 90,
+    "total_job_minutes_after": 360,
+    "all_request_and_fixture_timeouts_unchanged": true,
+    "feature_and_profile_unchanged": true
+  },
+  "full_qualification": false
+}

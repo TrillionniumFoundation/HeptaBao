@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.root-reviewed-normal33-pocket3-mac1-direct98.v1",
+  "reviewed_utc": "2026-11-04T11:04:46.539049+00:00",
+  "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "fixture_run_id": "26f3bc7381e0c5f80746262bb2f93406",
+  "files": {
+    "summary.json": {
+      "sha256": "b02a111b487e33065117fc88596113c7e8a7695feb283331165381fafd3c167f",
+      "bytes": 45176
+    },
+    "assessment.json": {
+      "sha256": "02f40102e2ec81021bc6ee1f51d7d72a14076ec57437e2babc66abb07f44a705",
+      "bytes": 93424
+    },
+    "exit.json": {
+      "sha256": "764e9a15ee83a7b9bc7133c147e072a146a57fbec64376db43f476ee218d1d54",
+      "bytes": 457
+    },
+    "outer.json": {
+      "sha256": "15c1b0e41a70d41ff2f2405ace2df3b5bd67836714bd5bfb7ae5aa8dda9bff56",
+      "bytes": 812
+    },
+    "load.json": {
+      "sha256": "0adfdf07c4c63f688b99eb6d9d44ec37ace5c53f5481fc17f9d0aab62e40f98f",
+      "bytes": 1796
+    },
+    "prepared.public.json": {
+      "sha256": "5f7cadbec71c4aac9cc3079193fed7440dbe5fb1e07d6dce9cf6903efd722304",
+      "bytes": 33163
+    },
+    "direction-contract.public.json": {
+      "sha256": "8dbe9cf0ae32dba72d12313c052b8c95ecfb1c70835d66084abe4739e38ce918",
+      "bytes": 4572
+    },
+    "preflight-coverage-scope.public.json": {
+      "sha256": "f0b350a3f677f5668dc1ec5f64968e71716640c9777db5bfce5626c7a56a5cc4",
+      "bytes": 5318
+    },
+    "controller-freeze.public.json": {
+      "sha256": "0e41393afe179a432c7b11bd96ce9f5b88803ed8dd9cae92c1dfebdc415bcee0",
+      "bytes": 3790
+    },
+    "native_v6_pocket_source_direct98_r1.py": {
+      "sha256": "fa6ed593833e7aa37c86935469c83d2731a112bd2a441ae9dbcd32db9a9bb718",
+      "bytes": 10838
+    },
+    "method.review.diff": {
+      "sha256": "2cc9fc11b75b4571b088b1369ad4aaef7634b9824a328a5b02866b6c2989d7e4",
+      "bytes": 1851
+    }
+  },
+  "full_source_pinned_case_set_read_and_evaluated": true,
+  "exact_unique_original_direct_cases": 98,
+  "passed": 98,
+  "canonical_original128_unchanged": false,
+  "scope": "Separate explicitly controlled Pocket4 data-source fixture; actual empty Mac leader elected without forcing; original 98 direct assertions retained.",
+  "canonical128_summary_sha256": "8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1",
+  "original_official30_repeated_in_this_scope": false,
+  "two_reviewed_method_blocks_only": true,
+  "original_method_normalized_sha256": "cae208acf0482cfddb43f55722aa98a47eafbcac16aba6b26d52c61381835298",
+  "all_three_original_cold_unseals_verified_before_source_selection": true,
+  "mutation_sequence_count": 53,
+  "all_mutations_have_one_dispatch_and_complete_outcome_within_original_budget": true,
+  "unknown": 0,
+  "source_node": 3,
+  "empty_leader_node": 1,
+  "cold_unseal_sequence": 46,
+  "cold_http_ms": 9362.428,
+  "every_recovered_leaf_hash_and_size_matches": true,
+  "restored_leaves": 338,
+  "restored_bytes": 35742379,
+  "unreferenced_quarantined_leaves_retained": 104,
+  "normal_features_only": true,
+  "source_and_build_pins_unchanged": true,
+  "original_http15_server14_admission8_readiness45_contracts_preserved": true,
+  "old_failure_and_canonical_success_evidence_preserved": true,
+  "root_read_full_summary_and_assessment_not_only_compact": true,
+  "root_separately_verified_outer_exit_and_all_three_load_observers": true,
+  "owned_services_and_mesh_stopped": true,
+  "quiet_window_released": true,
+  "production_changed": false,
+  "full_openbao_replacement_qualified": false,
+  "earlier_failure_cause_proven_resolved": false,
+  "uncovered_in_this_fixture": [
+    "native_ha_snapshot_export_restore",
+    "large_http_forwarding",
+    "physical_power_loss",
+    "disk_full",
+    "long_horizon_linearizability",
+    "production_traffic_switch",
+    "old_production_asset_cleanup"
+  ]
+}

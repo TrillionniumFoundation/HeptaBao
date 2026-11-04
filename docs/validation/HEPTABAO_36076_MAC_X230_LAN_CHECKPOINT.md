@@ -1,16 +1,57 @@
-# HeptaBao：36076 验证与 33cafa HA 候选检查点
+# HeptaBao：正常 V6 存储、三机 HA 与完整替代检查点
 
 ## 当前结论
 
-本检查点记录 2026-11-04 已完成的可复核工作，**不授予全量替代、生产切流或旧版删除资格**。
+本检查点记录 2026-11-04 已完成且可复核的工作。**正常构建的原始三机 128 项和 Pocket4 → Mac 独立方向 98 项已经通过；完整 OpenBao 2.7.1 替代、生产切流及旧版清理仍未获完整证据。** 下文明确区分已通过的合同、历史失败和仍开放的能力。
 
-最新正常候选为 `33cafa4c`，Mac 和 ROG 均已按原 release profile 完成构建，没有启用 private diagnostic。Mac server SHA256=`d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20`；Linux server SHA256=`7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba`。该 Linux 产物在 X230 上的原 full34 已通过 31/31（147.112 秒），原官方 2.7.1 对照双方均为 69/69（44.541 秒）；源码和二进制前后相同，owned 服务全部停止。原断言、15 秒 HTTP、360 秒迁移预算和 13 模块对照入口均未改动。
+当前物理候选为 `33cafa4c6e29f0bde1553e041550d21b4c725d9c`，tree=`cdc2376e7b39c1d8bbbeb10a813d58bfe923f336`，GitHub 同 tree 发布 commit=`054d17cd50951efa46d78db3911ad1d277a0c584`。正常 Mac server SHA256=`d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20`，Linux server=`7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba`。两者使用原 release profile、默认 native-v6-storage/native-v6-ha，未启用私有诊断或 fixture 功能。X230 同 Linux 产物的正式 full34 已通过 31/31；原 13 模块官方 2.7.1 对照双方均为 69/69。这些合同不代表全部 OpenBao API。
 
-新候选的三机原 128 项已经终态失败，90 项通过、38 项未执行。该轮自然角色为 ROG 节点 2 向空缺 Mac 节点 1 恢复；seq47 单次冷解封在 14,099.923ms 返回完整 HTTP 503，服务内部原 14 秒恢复期限已耗尽。47 个 mutation intents 均有确定 response，unknown=0，owned 服务、mesh 和观察器全部停止。原 5 秒导入、15 秒 HTTP 和 8 秒 admission 限制均未改；响应端修复不足以关闭冷恢复门槛，旧 Pocket4 节点 3 向 Mac 节点 1 的失败方向也未覆盖。下文 `36076` 的旧证据分别保留其身份，不能自动改标为新候选。
+### 正常三机原始 128 项
 
-既有 `36076` 正常构建源码已完成 Mac 和 X230 的 34MiB 正式 KV2 迁移恢复验证。命名空间退休问题和 TLS 请求分帧问题已有修复及对应测试。三机 HA 正常构建首轮原始 128 项测试通过 100 项，停在官方历史导入；这一轮导入超过原有 5 秒调用期限后结果未知，未重放。随后相同源码的私有诊断构建完成了全新隔离运行的 128/128 项。再后的一次全新正常构建运行通过 90 项，在密文缺失恢复中的节点 1 冷解封收到明确 503；诊断通过不能代替正常构建验收，两次正常失败均保留。
+全新 r2 在 Mac、ROG、Pocket4 上完成 **128/128**，精确等于原 98 个 direct LAN case 与 30 个 official history case 的并集，没有重名、缺项或额外项充数。67 个变更 intent 均有完整 response，unknown=0，每个请求只派发一次。实际恢复角色为 ROG 节点 2 → 空缺且实际当选的 Mac 节点 1：seq47 冷解封 HTTP200 为 **10,083.937ms**；seq55 官方 34MiB 导入 HTTP204 为 **4,645.568ms**。原 5 秒导入、15 秒普通 HTTP、14 秒服务恢复、8 秒 admission 限制未放宽。
 
-实际安装版 AuthBus 插件已完成真实凭证导入、SDK 凭证选择、重启、续期、撤销及隔离状态回滚。Mac 隔离网关已通过启动和完整状态回滚；一次沿内置 HTTP 路径的真实默认模型请求返回完整 HTTP 429。后续核查发现生产还安装并启用了 Codex 原生插件，r8 的插件允许集合未覆盖它，因此该轮不能代表完整生产运行时。现用 Mac、ROG、Pocket4 的 AuthBus 配置仍指向旧来源，逐台迁移尚未完成。
+恢复后逐项核对 339 个叶对象，共 35,743,140 字节；443 个原对象隔离，104 个未引用对象继续隔离。原 19 版本状态、34MiB 存活历史、快照下载、快照后写入、恢复后的 publication 推进、各主机 ReadIndex、真实断主与重新选主、旧主冷启动追平和全节点冷启动均通过。控制器与外层观察器均正常退出，所有本轮 owned 服务、mesh 和三台负载观察器停止。
+
+### Pocket4 → Mac 独立方向 98 项
+
+全新方向合同完成 **98/98**，53 intents/53 responses/0 unknown。它在三个原始冷解封均完成后显式选择健康 Pocket4 节点 3 作为密文数据源，再要求空数据 voter 的真实选主结果为 Mac 节点 1；不伪造或强制选主。若实际方向不符，会在目标解封前退出并记为未覆盖。原方法仅有这两个已审阅的控制块变化，其余执行、请求、断言、清理与启动停止实现保持继承身份。
+
+该方向的目标是原 Direct98 序列 **46**，HTTP200 为 **9,362.428ms**。逐项恢复 338 个叶对象、35,742,379 字节，442 个对象隔离，104 个未引用对象保留隔离。叶数与原 128 不同是两个 fixture 的数据集合不同；该方向没有重复 30 项 official history，不能标成另一轮 unchanged canonical128。完整原 98 集合、每条原请求期限（seed mount 12 秒，其余变更 15 秒）、二进制与源码、8 份旧证据围栏、所有 owned 清理均经根审阅独立核对。
+
+### 历史失败保留及当前限制
+
+`33cafa` 正常 r1 的 90/128、seq47 HTTP503 14,099.923ms 保留；`36076` 的 100/128 且 seq55 导入结果未知、后续 90/128，以及私有诊断运行的成功和失败也全部保留。未知变更没有重放。两次新正常通过证明具体新鲜运行满足合同，**不证明已找到此前偶发超时的唯一原因**。三机证明使用真实进程终止、持久化和重启；尚不代表物理断电、磁盘写满或长期线性一致性压力完成。
+
+### AuthBus、服务安装与生产材料
+
+Mac/ROG 原生 SDK 的管理顺序预览证据已发布到 QA commit `682c063994c18e1dafc476f6affa4d25e7ff716f`。采用 `[2,1]` 保留现存各 agent 的实际顺序，保留 `[1,2]` 会改变 ROG zbj 顺序的反例；原扫描失败及非凭证路由别名的逐项归因同时保留。现有真实凭证、原生插件和隔离回滚证明见后文；实际客户端流量仍未切换。
+
+Mac 已在 `/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1` 创建只供后续部署使用的离线材料：精确正常二进制、新 CA 与 Mac TLS 证书、私有复制密钥、配置、未加载的 launchd plist 及绑定 T5 VolumeUUID 的启动检查程序。已核对证书用途、SAN、密钥匹配、权限、配置及 plist。该步骤没有启动服务、调用 API、初始化、创建 AppRole、激活存储、配置 HA 或切换流量。最初在 T5 顶层创建失败的 PermissionError 保留；只读检查确认现有用户拥有的工作目录可写，随后使用其子目录，未修改磁盘根权限。生产解封门槛与密钥托管尚未绑定，不能把测试的单份解封配置直接当生产策略。
+
+X230 的真实安装版协调器已有三次失败记录：r1 在全新 inactive unit 上多余 reset-failed 被拒；清理另有精确回执。r2 走过实际服务启动及身份检查，但文件系统只读隔离失败。r3 加 PrivateUsers 后确实进入独立用户命名空间，代码、配置和状态所在真实挂载仍均可写，故仍失败，未降低断言。三轮 owned 服务均清理。正在准备 root-owned 系统级 runtime unit，服务进程以普通用户 qian 运行；系统级方案尚未执行或通过，不作为用户级方案成功。没有全局改动 AppArmor/sysctl。
+
+### 完整 CI 与替代能力分母
+
+CI 候选现为 `0dc39624d1266a6fca98760757b9482bf6f98a7a`，tree=`959c65d6782b288c41730da869c86007c268547c`，prospective merge=`186570233517b2295de7384ef96a5815ba7db06f`。旧完整 run `41797943393` 在原 90 分钟总上限附近 cancelled，部分测试中原 KV2 挂载用例 FAILED；ROG 用未改原源码独立重现了 204 与旧预期 501 不同。源码证据表明 KV1 已被正式支持，所以修订仅把“应拒绝”的 KV version1 改为确实不支持的 version3，保留该用例全部 ACL/CAS/图不变断言。SSH 仍为独立拒绝项，未借此次修正开启支持。
+
+工作流总 job 包络改为仓库已有完整矩阵采用的 360 分钟，全部 fixture/request 原期限、features、profile、断言及 gate 列表保持不变。新完整 run `41814525698` 的 head 与 prospective-merge 两个 job 正在工作区测试步骤；步骤标签不证明编译已结束。trust boundary run `41814525725` 已通过。CodeQL run `41814520252` 是单独扫描，不能代替完整资格。ROG 对修改后用例的独立正常构建验证仍在执行。
+
+精确源码审计已发现正式 V6 的完整替代分母大于当前部署五项：某些 auth/engine/provider 的业务代码虽已存在，尚无正式 V6 存储 owner；SSH 挂载就是明确的运行路径拒绝。外部 KMS/plugin/postgres 等受 native profile 限制，未覆盖的根/子命名空间 system 操作亦需分别闭合。发布清单中的 OPEN/null 只是未授予完整资格，不能反过来当作所有功能都未实现，既有 full34/HA 等新证明继续有效。快照尤其要区分已存在的 HTTP frontend Redirect 与 service 内层拒绝直接 standby stream；其真实入口和官方行为正在核实，不能只凭一个内层 503 宣称整个快照路径缺失。
+
+完整替代、所有客户端及备份迁移、生产切流、旧版清理均仍为 false。后续修改将在独立候选上验证；本页的正常构建通过只属于上列精确 source/tree/binary。
+
+| 最新完整报告 | SHA256 |
+| --- | --- |
+| 正常 r2 canonical128 summary | `8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1` |
+| 正常 r2 canonical128 assessment | `66df7dbd422004f7f4569fb9e44a5835f929a5c7f5d19a08b484cc3ecf0cb318` |
+| 正常 r2 canonical128 根复核 | `b3694b4910d6d6f90f5335df87bf130ac80481c7c9c66909939e3f32a9f92e29` |
+| Pocket4 → Mac direct98 summary | `b02a111b487e33065117fc88596113c7e8a7695feb283331165381fafd3c167f` |
+| Pocket4 → Mac direct98 assessment | `02f40102e2ec81021bc6ee1f51d7d72a14076ec57437e2babc66abb07f44a705` |
+| Pocket4 → Mac direct98 根复核 | `9a320e34b8d2f1be660477b288aee3c02dbac1de0d102ad8751ef19a635e2c6d` |
+| Mac 离线材料 prepared | `2a2223789632f111a2fa78bccbad5dac392e73f8441b7e95f21da270bddc83ff` |
+| X230 用户级 r3 失败 | `e1a70454948703f3947d6431aded6a819a90de8b8938896c144e401df3ba242f` |
+
+以下是带日期的历史检查点，保留当时状态和证据；当前结论以上节为准。
 
 ## 2026-11-04 10:10 UTC 增量核验
 
@@ -75,7 +116,7 @@ CI run `41797943393` 已终态 cancelled，不能继续写为 pending 或通过�
 
 命名空间修复保留了 mount epochs 的抗复活含义；没有把带挂载墓碑的引擎错误认定为 pristine。它删除的是已退休且无活动资源的精确 namespace incarnation，并保留 incarnation 墓碑。它没有新增任意非空命名空间的级联删除能力。
 
-## HA 尚未通过的门槛
+## 36076 历史 HA 门槛与失败（保留原证据）
 
 本轮是 Mac、ROG、Pocket4 三台真实物理机上的直连局域网 TLS 测试。正常构建、源 tree、三机二进制及运行器保持固定。
 

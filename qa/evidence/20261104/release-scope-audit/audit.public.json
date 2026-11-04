@@ -1,0 +1,502 @@
+{
+  "schema": "heptabao.exact-source-full-replacement-denominator-audit.v1",
+  "refs": {
+    "formal": "054d17cd50951efa46d78db3911ad1d277a0c584",
+    "ci": "0dc39624d1266a6fca98760757b9482bf6f98a7a",
+    "physical": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+  },
+  "readOnlyCloudAudit": true,
+  "physicalHostOperations": false,
+  "productionAuthority": false,
+  "scopeConclusion": "The five active migration blockers are necessary for this deployment, but completing them alone cannot establish the repository's existing whole-surface OpenBao 2.7.1 replacement contract. Confirmed V6 owner/provider/API refusals remain in the normal source; metadata OPEN also includes implemented-but-not-independently-admitted behavior.",
+  "sources": {
+    "service": {
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/054d17cd50951efa46d78db3911ad1d277a0c584/crates/heptabao-server/src/service.rs",
+      "git_blob": "3c572c63f073a0c2babc66d0550a25ea35dd887f",
+      "characters": 510688
+    },
+    "storage": {
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/054d17cd50951efa46d78db3911ad1d277a0c584/crates/heptabao-server/src/server_storage.rs",
+      "git_blob": "cfcd4469d1357547ef279d35451d1dd6d3c857a4",
+      "characters": 16423
+    },
+    "engines": {
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/054d17cd50951efa46d78db3911ad1d277a0c584/crates/heptabao-server/src/engines.rs",
+      "git_blob": "277c5f7d26788bdca525ac7d8a00f3a25577f18d",
+      "characters": 153150
+    },
+    "native_auth_routes": {
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/054d17cd50951efa46d78db3911ad1d277a0c584/crates/heptabao-server/src/auth_native_v6_routes.rs",
+      "git_blob": "3d3997809257b760bf7dd026a13cd2e5adb7706b",
+      "characters": 21719
+    },
+    "mount": {
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/054d17cd50951efa46d78db3911ad1d277a0c584/crates/heptabao-server/src/engine_native_kv2_mount.rs",
+      "git_blob": "b8957da2b66b1dc67858d237c8245f6863a86f9c",
+      "characters": 19138
+    },
+    "mount_test": {
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/054d17cd50951efa46d78db3911ad1d277a0c584/crates/heptabao-server/src/service_native_kv2_mount_tests.rs",
+      "git_blob": "b80a9eae85c8df4d3c60c8b628e095d2297d2c4e",
+      "characters": 26695
+    },
+    "native_transit": {
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/054d17cd50951efa46d78db3911ad1d277a0c584/crates/heptabao-server/src/engine_native_transit.rs",
+      "git_blob": "42219da164f15347ee030c6ea95075388d4ca84a",
+      "characters": 26820
+    },
+    "native_pki": {
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/054d17cd50951efa46d78db3911ad1d277a0c584/crates/heptabao-server/src/engine_native_pki.rs",
+      "git_blob": "fc4d8d10fe993c900f9eded586b4b339a86a6cb9",
+      "characters": 21635
+    },
+    "surface_ledger": {
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/054d17cd50951efa46d78db3911ad1d277a0c584/planning/HEPTABAO_SURFACE_WORK_V1.json",
+      "git_blob": "279310f8e329aca3f4ad8ed3d7d1f730095258fd",
+      "characters": 146111
+    },
+    "surface_corpus": {
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/054d17cd50951efa46d78db3911ad1d277a0c584/qa/openbao-acceptance/complete_surface_corpus_v1.json",
+      "git_blob": "aaf511acf1408e229ae6b3fc5a6992668baf2162",
+      "characters": 45228
+    },
+    "admission": {
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/054d17cd50951efa46d78db3911ad1d277a0c584/planning/OPENBAO_271_ADMISSION_SUPERSET_V1.json",
+      "git_blob": "4025a4a770bc9312308d3346632edfa354939745",
+      "characters": 11589
+    },
+    "validator": {
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/054d17cd50951efa46d78db3911ad1d277a0c584/scripts/validate_openbao_271_release_denominator.py",
+      "git_blob": "5f31b1d450891ce7303ccb6b504d2a579cea4c7f",
+      "characters": 6279
+    },
+    "baseline_262": {
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/054d17cd50951efa46d78db3911ad1d277a0c584/planning/OPENBAO_REPLACEMENT_ADMISSION_V1.yaml",
+      "git_blob": "c9046105ff954c7e9f89130c5963040b3f0e8a37",
+      "characters": 4584
+    }
+  },
+  "formalAndCiBindings": {
+    "admissionSameGitBlob": true,
+    "validatorSameGitBlob": true,
+    "nativeStorageConfigSameGitBlob": true,
+    "nativeAuthRoutesSameGitBlob": true
+  },
+  "declaration": {
+    "authority": "NOT_ADMITTED",
+    "replacement_authority": false,
+    "requiredGates": [
+      {
+        "id": "exact_head_native",
+        "status": "OPEN",
+        "exact_candidate_receipt": null
+      },
+      {
+        "id": "prospective_main_merge",
+        "status": "OPEN",
+        "exact_candidate_receipt": null
+      },
+      {
+        "id": "module_evidence_integrity",
+        "status": "OPEN",
+        "exact_candidate_receipt": null
+      },
+      {
+        "id": "scalable_state_storage",
+        "status": "OPEN",
+        "exact_candidate_receipt": null
+      },
+      {
+        "id": "replay_identity_lifecycle",
+        "status": "OPEN",
+        "exact_candidate_receipt": null
+      },
+      {
+        "id": "complete_surface_admission",
+        "status": "OPEN",
+        "exact_candidate_receipt": null
+      },
+      {
+        "id": "external_provider_semantics",
+        "status": "OPEN",
+        "exact_candidate_receipt": null
+      },
+      {
+        "id": "full_asset_migration",
+        "status": "OPEN",
+        "exact_candidate_receipt": null
+      },
+      {
+        "id": "multi_host_fault_upgrade",
+        "status": "OPEN",
+        "exact_candidate_receipt": null
+      },
+      {
+        "id": "openbao_2_7_1_oracle",
+        "status": "OPEN",
+        "exact_candidate_receipt": null
+      },
+      {
+        "id": "security_release_supply_chain",
+        "status": "OPEN",
+        "exact_candidate_receipt": null
+      }
+    ],
+    "securityDeltas": [
+      {
+        "id": "sanitized_acme_eab_mac_key",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "sys/config/state/sanitized must redact tls_acme_eab_mac_key"
+      },
+      {
+        "id": "root_generation_and_rekey_audit_fail_closed",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "Unsealed root generation/rekey may never release responses on mandatory audit failure"
+      },
+      {
+        "id": "approle_secret_id_expiry_before_tidy",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "Expired AppRole SecretID must not authenticate before tidy"
+      },
+      {
+        "id": "approle_form_encoded_login",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "AppRole form-data login must parse consistently and reject confused encodings"
+      },
+      {
+        "id": "certificate_quota_tls_identity",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "Certificate auth quota must bind actual TLS peer certificate"
+      },
+      {
+        "id": "kubernetes_renewal_post_revocation",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "Kubernetes ServiceAccount JWT must revalidate on renewal after revoke"
+      },
+      {
+        "id": "cross_namespace_policy_cache_isolation",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "Cross-namespace ACL resolution must be cache-isolated (2.7.0 security baseline)"
+      },
+      {
+        "id": "plugins_root_namespace_only",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "Plugin catalog mutation must remain root namespace restricted (2.7.0 security baseline)"
+      },
+      {
+        "id": "unauthorized_workflow_policy_denial",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "ACL/workflow policy denial must fail closed (2.7.0 security baseline)"
+      },
+      {
+        "id": "agent_proxy_quit_request_header",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "OpenBao 2.7.0 security: Agent and proxy quit/cache-clear endpoints must require X-Vault-Request when configured"
+      },
+      {
+        "id": "canonical_resolve_path_operation",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "OpenBao 2.7.0 security: Canonical auth/PKI/policy/workflow endpoints must authorize canonical resource paths"
+      },
+      {
+        "id": "plugin_command_path_confinement",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "OpenBao 2.7.0 security: Plugin executable command path must be constrained relative to plugin_directory"
+      },
+      {
+        "id": "sdk_malformed_audit_redaction",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "OpenBao 2.7.0 security: TypeKVPair and TypeHeader malformed data must not leak raw values to audit records"
+      },
+      {
+        "id": "pki_acme_unvalidated_san_rejection",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "OpenBao 2.7.0 security: ACME issuance must reject subjectAltNames that have not been validated"
+      },
+      {
+        "id": "oidc_ui_prompt_none_disabled",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "OpenBao 2.7.0 security: OIDC provider UI must reject prompt=none redirection"
+      }
+    ],
+    "featureDeltas": [
+      {
+        "id": "postgresql_horizontal_scale",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "Independent PostgreSQL readers and WAL/snapshot/LSN correctness"
+      },
+      {
+        "id": "external_kms_hsm_pki_transit",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "Real external KMS/HSM plugin key operations and failure boundaries"
+      },
+      {
+        "id": "pqc_tls_mldsa",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "Post-quantum TLS and native PKI/Transit ML-DSA interoperability"
+      },
+      {
+        "id": "pebble_storage",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "Pebble storage durability, migration and crash recovery"
+      },
+      {
+        "id": "indexed_consistency",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "X-Vault-Index / X-Vault-Inconsistent standby semantics"
+      },
+      {
+        "id": "control_groups_second_party_approval",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "OpenBao 2.7.0 baseline: control_group ACLs defer protected requests until distinct approvers satisfy the configured factors; approved requests execute once under current authorization."
+      },
+      {
+        "id": "grpc_invalidation",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "Persistent invalidation manager under restart/upgrade"
+      },
+      {
+        "id": "raft_auto_join_provider_port",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "Raft discovery join honors provider port"
+      },
+      {
+        "id": "sdk_lifetime_watcher_backoff",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "Failed lease renewals honor SDK watcher backoff"
+      },
+      {
+        "id": "barrier_rotation_disabled_field_persistence",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "OpenBao 2.7.1: KeyRotationConfig disabled flag changes must be durable across restart/upgrade"
+      },
+      {
+        "id": "linux_package_default_pebbledb",
+        "status": "OPEN",
+        "receipt": null,
+        "scenario": "OpenBao 2.7.1: packaged default server config selects pebbledb rather than removed file backend"
+      }
+    ],
+    "validatorScope": "Required declared IDs and selected primary-source bindings only, explicitly not exhaustive upstream coverage or executable compatibility."
+  },
+  "inheritedSurfaceLedger": {
+    "target": "OpenBao 2.6.2",
+    "surfaceCount": 59,
+    "implementationStatuses": {
+      "runtime_complete": 2,
+      "runtime_partial": 52,
+      "tooling_partial": 5
+    },
+    "wholeSurfaceAdmitted": 0,
+    "corpusCoverageSummary": {
+      "implemented_surface_count": 59,
+      "defined_not_implemented_surface_count": 0,
+      "fixture_case_count": 472,
+      "independently_observed_current_exact_head_surface_count": 0
+    },
+    "limitation": "This is the current machine ledger's declaration, not a fresh aggregate of all November run receipts. IMPLEMENTED_SCOPED and runtime_complete are not whole_surface_admitted."
+  },
+  "findings": [
+    {
+      "id": "native_v6_provider_configuration",
+      "classification": "confirmed_current_configuration_refusal",
+      "gates": [
+        "complete_surface_admission",
+        "external_provider_semantics",
+        "full_asset_migration"
+      ],
+      "source": "storage",
+      "lines": [
+        58,
+        86
+      ],
+      "fact": "native_v6_file/native_v6_raft rejects postgres_durable, openbao_wrapper, plugin_auth, plugin_database, plugin_kms, external_kms and plugin_secrets. V6 requires Shamir file custody without these provider adapters.",
+      "limit": "Other storage/profile implementations and provider code exist in the repository; this finding is the selected scalable V6 profile's exact admission boundary, not a claim that the entire product has no provider implementation."
+    },
+    {
+      "id": "native_auth_state_and_route_owners",
+      "classification": "confirmed_current_state_and_route_refusal",
+      "gates": [
+        "complete_surface_admission",
+        "external_provider_semantics",
+        "full_asset_migration"
+      ],
+      "source": "native_auth_routes",
+      "lines": [
+        112,
+        194
+      ],
+      "fact": "V6 storage eligibility requires no identity MFA/password policies and empty JWT, Kubernetes, OIDC, LDAP, RADIUS, Kerberos and plugin auth state. Root auth mounts are token/AppRole/cert/userpass; admitted child auth mounts are service-token/AppRole/cert, with further child token-state limits.",
+      "limit": "The scope is exact V6 eligibility and dispatch. Existing LDAP/RADIUS/etc code, historical runtime tests and the local AppRole/TLS positive tests are preserved."
+    },
+    {
+      "id": "native_secret_engine_owners",
+      "classification": "confirmed_current_owner_whitelist",
+      "gates": [
+        "complete_surface_admission",
+        "full_asset_migration"
+      ],
+      "source": "engines",
+      "lines": [
+        188,
+        207
+      ],
+      "fact": "The root engine eligibility admits KV1/KV2, local Transit without external state, TOTP and PKI's native-local profile. Other backends fail eligibility; non-admitted runtime routes reach the Service 501 gate. SSH mount remains an explicit 501 negative case; database/Kubernetes/OpenLDAP/plugin-backed secret effects cannot be inferred from KV2 tests.",
+      "supportingSources": [
+        {
+          "key": "service",
+          "lines": [
+            4989,
+            5028
+          ]
+        },
+        {
+          "key": "mount",
+          "lines": [
+            104,
+            126
+          ]
+        },
+        {
+          "key": "mount_test",
+          "lines": [
+            583,
+            640
+          ]
+        }
+      ],
+      "limit": "KV1 is supported and the old KV1-refusal test expectation was stale. CI0dc changes only that input to unsupported KV3; the SSH refusal remains."
+    },
+    {
+      "id": "namespace_owner_completeness",
+      "classification": "confirmed_current_partial_namespace_ownership",
+      "gates": [
+        "complete_surface_admission",
+        "full_asset_migration"
+      ],
+      "source": "service",
+      "lines": [
+        4845,
+        4914
+      ],
+      "fact": "Transit/TOTP/PKI/root wrapping/capability observations are explicitly root-local. Nonroot routes require one of the named CG/auth/identity/KV/metadata/remount/missing-route owners; anything outside the list is 501.",
+      "supportingSources": [
+        {
+          "key": "service",
+          "lines": [
+            4969,
+            4986
+          ]
+        }
+      ],
+      "limit": "New scoped namespace31 positive evidence is valid; it does not prove arbitrary nested namespace, full engine composition or per-namespace seal parity."
+    },
+    {
+      "id": "system_owner_routes",
+      "classification": "confirmed_current_native_refusal",
+      "gates": [
+        "complete_surface_admission",
+        "full_asset_migration",
+        "security_release_supply_chain"
+      ],
+      "source": "service",
+      "lines": [
+        5037,
+        5052
+      ],
+      "fact": "The native route gate rejects unsupported restore/replication/raft/rekey/raw/migrate owners, with explicit exceptions for the supported native snapshot and Raft observation owners. Separate manual-unseal migrate=true and PGP rekey backup=true responses are explicitly unimplemented.",
+      "supportingSources": [
+        {
+          "key": "service",
+          "lines": [
+            8665,
+            8683
+          ]
+        },
+        {
+          "key": "service",
+          "lines": [
+            9361,
+            9375
+          ]
+        }
+      ],
+      "limit": "Do not turn this into a blanket 'all snapshots/rekey absent' claim: route-specific supported snapshot/observation exceptions and nonnative operations must retain their actual scope."
+    },
+    {
+      "id": "standby_large_upload_and_snapshot",
+      "classification": "confirmed_current_transport_refusal",
+      "gates": [
+        "complete_surface_admission",
+        "openbao_2_7_1_oracle",
+        "multi_host_fault_upgrade"
+      ],
+      "source": "service",
+      "lines": [
+        4042,
+        4060
+      ],
+      "fact": "On a follower, typed large KV2 upload and native snapshot streaming explicitly return 503; upload forwarding and snapshot redirect/standby streaming are not implemented in those branches.",
+      "limit": "Ordinary leader forwarding/ReadIndex and leader-local large KV2 evidence do not cover these two transport paths. A separate whole-surface OpenBao oracle comparison is still needed to classify final status/redirect parity."
+    },
+    {
+      "id": "real_provider_and_full_api_receipts",
+      "classification": "existing_mandatory_evidence_not_globally_admitted",
+      "gates": [
+        "complete_surface_admission",
+        "external_provider_semantics",
+        "openbao_2_7_1_oracle"
+      ],
+      "source": "admission",
+      "fact": "The 2.7.1 manifest requires exact-candidate executable receipts for all 15 security and 11 feature/correctness deltas. Real KMS/HSM, PostgreSQL/other supported databases, LDAP and other provider-backed surfaces cannot be replaced by in-memory fakes or the AuthBus model provider's credential tests.",
+      "limit": "OPEN metadata alone is not proof of a missing implementation or a current failing run. Control groups, ML-DSA, PostgreSQL, Pebble and provider code already exist; this audit has not independently admitted their full behavior."
+    },
+    {
+      "id": "assets_replay_upgrade_release",
+      "classification": "existing_mandatory_release_evidence_not_closed_by_five_tasks",
+      "gates": [
+        "replay_identity_lifecycle",
+        "full_asset_migration",
+        "multi_host_fault_upgrade",
+        "security_release_supply_chain"
+      ],
+      "source": "baseline_262",
+      "fact": "The inherited complete-replacement requirements include all configuration/policy/identity/mount/key-version/lease/revocation assets; quorum-ordered replay retirement without a fixed lifetime ceiling; storage faults and mixed-version rolling upgrade; provenance/dependency/license/security/reproducibility/platform qualification.",
+      "limit": "They are pre-existing gates, not new requirements invented for this audit. Current HA128, KV2 full34 and real AuthBus lifecycle passes remain useful exact-scope evidence."
+    }
+  ],
+  "doNotRegressEvidence": [
+    "Do not re-open the historical r670 2560KiB mismatch merely because it remains in the old observations array; compare it with the newer normal full34 receipts.",
+    "Do not change or erase successful current scoped namespace/auth/native consumer/HA results.",
+    "Do not infer missing code from OPEN or historical ledger entries; confirmed implementation refusals above use the current exact source.",
+    "Do not treat this source review, a passing structural validator, or 69/128 fixture counts as whole-surface admission."
+  ],
+  "executedRuntimeTests": 0
+}
+

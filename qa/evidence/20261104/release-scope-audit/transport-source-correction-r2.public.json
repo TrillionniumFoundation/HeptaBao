@@ -1,0 +1,36 @@
+{
+  "ref": "054d17cd50951efa46d78db3911ad1d277a0c584",
+  "type": "source_read_correction_not_new_runtime_pass",
+  "snapshot": {
+    "frontdoor": "crates/heptabao-server/src/http_snapshot.rs",
+    "gitBlob": "782498e4622e074f9f3aeaf5d85c6368e70c5c93",
+    "lines": [
+      257,
+      280
+    ],
+    "writeLines": [
+      83,
+      103
+    ],
+    "tests": "crates/heptabao-server/src/service_snapshot_redirect_tests.rs",
+    "testsGitBlob": "cf2e8fc89233e157e76201161e31926924181037",
+    "admission": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+    "admissionGitBlob": "b502ba68bde9e965d5f56a296853f3b13382df12",
+    "admissionLines": [
+      373,
+      482
+    ],
+    "httpFramingTests": "crates/heptabao-server/src/http_snapshot_redirect_tests.rs",
+    "httpFramingTestsGitBlob": "1cfe4dac5c4068dc40ae11b18aa7c00443035299"
+  },
+  "large": {
+    "frontdoor": "crates/heptabao-server/src/http_native_kv2_large.rs",
+    "gitBlob": "20afd1b5f6003b1df2dcde0e73ce8c9de08bc293",
+    "admission": "crates/heptabao-server/src/service_native_kv2_large.rs",
+    "admissionGitBlob": "eca7d8c28bd2490e248ed30b828d2ba17f798e8a",
+    "admissionLines": [
+      251,
+      277
+    ]
+  }
+}

@@ -1,0 +1,2246 @@
+{
+  "all_mutation_boundaries": [
+    {
+      "intent": {
+        "bytes": 442,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00001.intent.json",
+        "sha256": "07748746b27789af4ff5cacd2f04bb2ed32d19368c044231d0714756d946db61"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789299.7538185,
+        "sequence": 1,
+        "stage": "fresh_standalone_v5_seed"
+      },
+      "outcome": {
+        "bytes": 425,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00001.outcome.json",
+        "sha256": "41b8e6ed38b7579c1ebd7c8ef12762c550e11513a25053449a6311157a25ed3e"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 87.246,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "93c7de8e4bee12728a8dfec44b0837dc023d1856cedc0d1a770314bd7d6c73e7",
+        "sequence": 1,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 443,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00002.intent.json",
+        "sha256": "e91e4fa9e441c618615a720640d3cd0a947f5ec4971e4e309d6c3b3405c47ed4"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789299.882452,
+        "sequence": 2,
+        "stage": "fresh_standalone_v5_seed"
+      },
+      "outcome": {
+        "bytes": 426,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00002.outcome.json",
+        "sha256": "0f7fc6e707f47351a0eb38a2ef4a3dfd48226f800111c6a0072f013c9505f270"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 117.291,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "317273228a9f6c9ddcbe04d205236e7aca95921502e7058d2f8895cf5ad94bdc",
+        "sequence": 2,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 451,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00003.intent.json",
+        "sha256": "3699eea80c28f5e0d39ad76af7f79717e116bbfe27b0dd1dfe75d6eee1ee284c"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 12,
+        "recorded_before_dispatch_unix_seconds": 1793789300.0223083,
+        "sequence": 3,
+        "stage": "fresh_standalone_v5_seed"
+      },
+      "outcome": {
+        "bytes": 425,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00003.outcome.json",
+        "sha256": "bb7f6cc89959765ac61827bdbdcb61753f5c72cd6e25cd68a07ac909607ad016"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 79.232,
+        "http_status": 204,
+        "original_http_budget_seconds": 12,
+        "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "sequence": 3,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 447,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00004.intent.json",
+        "sha256": "73a7dea8575978a1b1e833b6e33e9ef43fb181526489aeddfc774c206b75d9f8"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789300.1319277,
+        "sequence": 4,
+        "stage": "fresh_standalone_v5_seed"
+      },
+      "outcome": {
+        "bytes": 425,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00004.outcome.json",
+        "sha256": "d795ed6fe1a34d764daa45570ac347765ddcb4d6f067ff81c81ec25336d3e90c"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 45.428,
+        "http_status": 204,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "sequence": 4,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 624,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00005.intent.json",
+        "sha256": "90f851f2c0be6bf80aec916a3894a9c2a0276b6b790e8b2f0a8c95728a61dd24"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789300.1850755,
+        "sequence": 5,
+        "stage": "fresh_standalone_v5_seed"
+      },
+      "outcome": {
+        "bytes": 451,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00005.outcome.json",
+        "sha256": "f002f37aad124e2755d8b01a1e2f17d5d0d933da23fccd403f6c1966f9a93c49"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 35.046,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "458d2b04524e46d81931a11376df2bb97fc0d7443d84e2503798f8dead5594b5",
+        "sequence": 5,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 624,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00006.intent.json",
+        "sha256": "8a7ea9e88e9d4e232b479a327eae7b96601c944c91836b64cd480d730bd41fd5"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789300.2279024,
+        "sequence": 6,
+        "stage": "fresh_standalone_v5_seed"
+      },
+      "outcome": {
+        "bytes": 451,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00006.outcome.json",
+        "sha256": "2f26c839e51444ffe616e9e6fa3a6f89118a8046cec78036cad5c8959cc58337"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 41.908,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "e5af9c1f036439b1285d34c745b7dfa1d6a0006c3b3c1d22543f1a1ba60c9638",
+        "sequence": 6,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 443,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00007.intent.json",
+        "sha256": "873a6f35fc8ce5bb13a0449e8a5badc6a2365a43d9617456730dbfad1043b991"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789318.2410178,
+        "sequence": 7,
+        "stage": "native_ha_initial_start"
+      },
+      "outcome": {
+        "bytes": 426,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00007.outcome.json",
+        "sha256": "9cc4395c1ca56958d0676890cbcc81c2089bb4d6dac3349dbca0ee6b70da725e"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 379.562,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 7,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 443,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00008.intent.json",
+        "sha256": "f5ba78e568398b65b362b9a609f56690fa1815e5ef347b940fa877f1553a87a2"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 2,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789318.6537158,
+        "sequence": 8,
+        "stage": "native_ha_initial_start"
+      },
+      "outcome": {
+        "bytes": 425,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00008.outcome.json",
+        "sha256": "f315309a3252b0cf0d798d0a2fd78bc56af46885c00a722e5337a45de6611f2d"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 68.454,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 8,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 442,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00009.intent.json",
+        "sha256": "2f2fa6eb3a7750a9aa1de0dae683a0869705e5b713982b47f3cc4d166f3f448f"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 3,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789318.747198,
+        "sequence": 9,
+        "stage": "native_ha_initial_start"
+      },
+      "outcome": {
+        "bytes": 425,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00009.outcome.json",
+        "sha256": "c00a36c525b1ce2c7d3564507ba7ff14693bfa72019277f7bcf49f415408d5c3"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 57.462,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 9,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 468,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00010.intent.json",
+        "sha256": "e6401c0797a018478b156c2cc576ff1f6ced611d90f1c09bb0ccb2b98d94bb4e"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789328.2194984,
+        "sequence": 10,
+        "stage": "actual_native_ha_activation"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00010.outcome.json",
+        "sha256": "4535dca354daea9277fa29f17a5a39de987907002f286a25d9698153ea2705c9"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 780.172,
+        "http_status": 204,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "sequence": 10,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 451,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00011.intent.json",
+        "sha256": "37c5a5a09587e1aeec99fe1fee945392f5c4c5a65a74730d6897ff208dbfe26d"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789331.7664328,
+        "sequence": 11,
+        "stage": "actual_native_ha_activation"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00011.outcome.json",
+        "sha256": "2078fa4bcb5b2aa355ba00287e679feeacba8dac4ee3ec34886a5ea3ffa391d0"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 191.933,
+        "http_status": 204,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "sequence": 11,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 512,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00012.intent.json",
+        "sha256": "0d1a4e2f3ed9af15473709c6f05586b46cf8e090affdcdada18b4ebda90d1dd3"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "DELETE",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789332.1696491,
+        "sequence": 12,
+        "stage": "actual_native_ha_activation"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00012.outcome.json",
+        "sha256": "338466b9c3262cbeea0a25b6ae8b1ae7ab7a4afb8ba148c921b1b88f0eb4ef3f"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 207.645,
+        "http_status": 204,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "sequence": 12,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 639,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00013.intent.json",
+        "sha256": "8cb1897fd4aff87a9bc3fc86e57f49b37a02a0d0b1861bc22e499d0835a2b941"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789332.6135883,
+        "sequence": 13,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 454,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00013.outcome.json",
+        "sha256": "ddb414877495443ed799a662ae2ec46dfe337084898378a59e41bacee62ef041"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 1315.458,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "c1c3aa2ff2c96b12fa0069a2261f633a3da6b5df4c7275445309cb163378aad5",
+        "sequence": 13,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 639,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00014.intent.json",
+        "sha256": "3d0ed1838fd3f043ec81e9d496793e6036fdfe56eaca98f47099976898f249e8"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789334.4784338,
+        "sequence": 14,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 454,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00014.outcome.json",
+        "sha256": "140e499b9efac0a15b1ab10c4c62a2ac2c3d268f208c0c182577a987d51a9d4c"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 1435.891,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "825b3efd234daf31cfdad11872069fe3b361f02dcfa1590340123838e98228de",
+        "sequence": 14,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 639,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00015.intent.json",
+        "sha256": "645366e0b10acbd507f6b368f9cc3132e6dc3dcc3aa36e36341e5a690ab04d8d"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789336.4303544,
+        "sequence": 15,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 454,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00015.outcome.json",
+        "sha256": "62d32349a2ff4fb54ade0b5850a4068576362fa9f7e8b75636e5e0ea86753344"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 1685.378,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "ee4622073b236c662cf96afc9cc2aaeeedcd8be340352adc544d67dfe2a7923c",
+        "sequence": 15,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 639,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00016.intent.json",
+        "sha256": "b3431912ebb5f541851bf9f7e84504340b199619543de7b5a8d4256b462303f5"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789338.6791818,
+        "sequence": 16,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 454,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00016.outcome.json",
+        "sha256": "ad5bbc2b26f8752dc70ed8ce5a934b98ed5939fc463ffae51570ac83a1530820"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 1885.645,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "8026555905387b864f839310c69b90f3f1112602e55be0fa327947b352bc4020",
+        "sequence": 16,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 639,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00017.intent.json",
+        "sha256": "2113360cb942298767db9766adc292b6a148792730bee824374e7bdda9c26ea3"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789341.1910381,
+        "sequence": 17,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 454,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00017.outcome.json",
+        "sha256": "1964635ded659bae9e39a95853a72bfced9bcd62631bd22021b2da05206e3217"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 1706.283,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "32ce18af8361771def71243ab79ee3985833c728a447944677de905895449c02",
+        "sequence": 17,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 639,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00018.intent.json",
+        "sha256": "76b7adf6a0adb37cff3b00d980ddddd9750e8faa802aaa68a31f57570dd05982"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789343.5681365,
+        "sequence": 18,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 454,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00018.outcome.json",
+        "sha256": "86b0d5549becb772307383eecaf9a19855bfff916914476f0754ff4535bfbc28"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 1842.337,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "96abb682489a02e7dec488b06d9fb9fec9e012ca712029b3590433dd5639c0ed",
+        "sequence": 18,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 637,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00019.intent.json",
+        "sha256": "7ffb5b5571cad8de7a6f90020554f53ab3d73523bc24230858709c59bf93af67"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789346.09106,
+        "sequence": 19,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 454,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00019.outcome.json",
+        "sha256": "3510eb4bbff9cbe9e81629f3cd35801362d61ea6bbea0f87bf80d7da81ddadae"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 2142.011,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "3c2f0dded8e330b7afae6bdac3dc251d9e133db517ab4a2f2153df5b3e6db78a",
+        "sequence": 19,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 640,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00020.intent.json",
+        "sha256": "a5058775fdffa436f2ff6c7147480e228bb309ce359a31339bc1f359236d568f"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789348.8515086,
+        "sequence": 20,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 455,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00020.outcome.json",
+        "sha256": "c6c24edd37a15759a76824ddda4709e2a50236d380fe68a2d13bcf598cdfd2a2"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 2091.566,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "bebaa1fc047ae583a6f142a5820c2b2473b80e76fb2704595c2090e37f29d072",
+        "sequence": 20,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 641,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00021.intent.json",
+        "sha256": "1535d98ae14a90456e0484739b1dfa88269684eb55538f28832f6eeb90ae59d2"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789351.7090948,
+        "sequence": 21,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 455,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00021.outcome.json",
+        "sha256": "72c707e33ae487e5d1d4ad3df387b52ac8a52381a93111d1e7965333a3d26bb1"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 2227.998,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "e1ecf26b36cd6976a485055b3ff78fbcad03aa67fe897483c24b62104af1d572",
+        "sequence": 21,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 641,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00022.intent.json",
+        "sha256": "e9800f6f2c32b36efb21d8083ee7bdca0b0cafa1142e1a29ee558e7c92ee418a"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789354.8661406,
+        "sequence": 22,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 455,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00022.outcome.json",
+        "sha256": "9b96ea9ebbed7b0359027d4065cfb71d8e0e48a6162b451e555bcfbd2c3517eb"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 2455.333,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "003cb7da46ab07e23abe45da5881678d952cfab4f213ce3b919e3c5778557b06",
+        "sequence": 22,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 640,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00023.intent.json",
+        "sha256": "9ddc438088cdefe4b4a3122b5c2b8e805a34d31c1d0d2859bd01c907a8b14f0a"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789358.328642,
+        "sequence": 23,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 455,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00023.outcome.json",
+        "sha256": "e28f2b58dd50ec20b9a99d98747de0031716f7844b51438ce9ad0cbcf8b9cf95"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 2705.068,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "53eaa10c3eff33071de98f0a8aca3bf08b5fbb54415b94baba10d5d03e6dc728",
+        "sequence": 23,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 640,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00024.intent.json",
+        "sha256": "8ce4db37237699ede3ba0c4475b7f396d644ba76b75d933bb3f7c6747a072315"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789361.741589,
+        "sequence": 24,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 455,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00024.outcome.json",
+        "sha256": "760fa7914a30e0f4a088a2af69c567fb97f60d10e2da6873801cf39c3f1ad631"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 3049.429,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "56642376ffb21e7b5ca93288b0a81a242306367044cf7f0be8c2a9ec8975ebdf",
+        "sequence": 24,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 640,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00025.intent.json",
+        "sha256": "8b07f58d9143cc2802e633b40cc5c88934c2256e768cc4e3adc46337972d403f"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789365.616921,
+        "sequence": 25,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 455,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00025.outcome.json",
+        "sha256": "bd61ef19a657520caca0d82155eb74d7874b1dd6d117a05918cb45c4ade9c619"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 2785.878,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "272956df06b9ee29fe03244faba7e3ac3b2c8971e8b948d572eec8aaf9cb2a18",
+        "sequence": 25,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 641,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00026.intent.json",
+        "sha256": "e707219b6059abc4d77f7f6fa62d0f52d0a12ff5a4e0a0e89257f5a58ff9c6dd"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789369.2519608,
+        "sequence": 26,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 455,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00026.outcome.json",
+        "sha256": "cc262b08bb1b2a63e2eab29ff9b3b02408bf7330de6958035254dd95801a4884"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 2974.967,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "3e181df7a1ba3fbd486f2e9aa875d675ef78f3d3de2b3a91b22c3b5e1a2d35ed",
+        "sequence": 26,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 641,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00027.intent.json",
+        "sha256": "fef66352eef98ebd493b36de22ec750716599d2074f13483989392903b9ac20c"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789372.9609373,
+        "sequence": 27,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 455,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00027.outcome.json",
+        "sha256": "327ba19ac99fcdd7341b5e861774ebb897d8380fa79505f2bfad87627e7f2250"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 3031.406,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "8669153151095581d946f9102cb78238eddb2f7a82ac26b8095ccfb04f8f8a1f",
+        "sequence": 27,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 641,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00028.intent.json",
+        "sha256": "47017163032d1368869c60f34a0441bc2e6f942e7eb1f4512ba674454535313b"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789376.6306355,
+        "sequence": 28,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 455,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00028.outcome.json",
+        "sha256": "6b49b4276978febaf48875c6ed87e599d6dcd00b44da15f8ba40152c62eccd16"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 3120.218,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "924cf68fde3fe204310f22f01577d47d3d667f1330212319f7d445f60ee4830f",
+        "sequence": 28,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 641,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00029.intent.json",
+        "sha256": "185b1ec4627e14c026845471b535e82b198b40d8e206b4a1a49f59a6e4ad038c"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789381.0795717,
+        "sequence": 29,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 454,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00029.outcome.json",
+        "sha256": "aa6bb12df6f1ee0e26ed4baebd7bca17d36253bf8a24c7658e381b08da6f2ac1"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 3286.13,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9543b73de2644a4eb1f25ffa7fe058b9bad510cc32d03afea34c1ad5ff79d3a4",
+        "sequence": 29,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 513,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00030.intent.json",
+        "sha256": "873db09dc21fadd84932a4b62dc7cf4962ea4093c343420568d826c0233fcb50"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789394.9232464,
+        "sequence": 30,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 428,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00030.outcome.json",
+        "sha256": "f09771b5f08004dd0d1f668a5d2d36d503ddcf1d41ba42ccabe81ee7424d9f56"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 2853.937,
+        "http_status": 204,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "sequence": 30,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 514,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00031.intent.json",
+        "sha256": "8c1e06f54f01fa8af0e8753e9418663dfb7f598da7dda7018b3e40d16205aa5b"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789397.8082278,
+        "sequence": 31,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 428,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00031.outcome.json",
+        "sha256": "41802768e9bd9e7f07b6ed2e4546b3a01e988e3a19df464db2b69d40bdf7e1cb"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 2866.492,
+        "http_status": 204,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "sequence": 31,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 649,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00032.intent.json",
+        "sha256": "c98310a3fefd4d12a7026c2bfd93beb673cd73fd222543ae3c477ccb095e202e"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 2,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789409.6866693,
+        "sequence": 32,
+        "stage": "seventeen_actual_native_history_writes"
+      },
+      "outcome": {
+        "bytes": 454,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00032.outcome.json",
+        "sha256": "9458435d98856ea415c5f3a81abbb82088e99e242d147d3438fccf88696d8e23"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 5269.636,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "f17601adc01b9d912bce0fee731cf4dec17f134c7a5568802c0bab8bd3df843d",
+        "sequence": 32,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 636,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00033.intent.json",
+        "sha256": "644b01e0fa13804dec21b3b0b44f8290b13535e57c5a466a5acc11282bc7fe71"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 3,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789434.1258748,
+        "sequence": 33,
+        "stage": "actual_native_leader_sigkill"
+      },
+      "outcome": {
+        "bytes": 454,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00033.outcome.json",
+        "sha256": "3a0dfa67c35e75827aba71e616b2cff81db80a86992e10f8b218f713a3316c9c"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 1474.078,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "f1870bc8a240299a5ff813dc10f04fd2acb820f469fa78d4c092fd2d033b67d6",
+        "sequence": 33,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 449,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00034.intent.json",
+        "sha256": "3e2d5d8d3577b05935756a27ea0bf992eb3799ea32223847754d0ea6f3695c4e"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789438.8759077,
+        "sequence": 34,
+        "stage": "actual_native_leader_sigkill"
+      },
+      "outcome": {
+        "bytes": 428,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00034.outcome.json",
+        "sha256": "3fdefc8923d47499e5ed1f48a6f44b46c37aba3f2f2d65104f1c3bff1f805038"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 2827.113,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 34,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 632,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00035.intent.json",
+        "sha256": "f06777b5fe7748f2eea701b538c4adda5890615f85d8c1edb40e8cc8fbf8c16f"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 3,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789449.7508147,
+        "sequence": 35,
+        "stage": "actual_native_quorum_loss"
+      },
+      "outcome": {
+        "bytes": 429,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00035.outcome.json",
+        "sha256": "83d10a879b4989408274fb411c94b717586064169df25f18f06324e1a4fd0224"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 14006.471,
+        "http_status": 503,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "73d995a1441d87424f8ce1ce6ee962482ee14cfd19bdcfa107222dce1784c577",
+        "sequence": 35,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 446,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00036.intent.json",
+        "sha256": "064cee6d514aa42e2af3a73b60e2f5a894e9de07800e820b7db4c4440a2a1b73"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789479.9826167,
+        "sequence": 36,
+        "stage": "actual_native_quorum_loss"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00036.outcome.json",
+        "sha256": "a78fe90c5d2d59ea99051d603c5c2493d8acae3ca022e8596b2e99df237c4077"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 576.757,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 36,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 446,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00037.intent.json",
+        "sha256": "b4c23babc87eb5e5ce59cfcde5fa5706d2bb9eef49268269929a291da2a43c2f"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 2,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789480.6252458,
+        "sequence": 37,
+        "stage": "actual_native_quorum_loss"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00037.outcome.json",
+        "sha256": "e906a30eb948b1b87d589332a8e269ad6e9172010894888c9edafdc6872e9804"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 266.022,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 37,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 640,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00038.intent.json",
+        "sha256": "b142d1186d95ac67cfaacc7d8b6f9ffbc3fe30fde81f1ed5f70b7540255d10f6"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 3,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789485.3882604,
+        "sequence": 38,
+        "stage": "actual_native_quorum_loss"
+      },
+      "outcome": {
+        "bytes": 454,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00038.outcome.json",
+        "sha256": "56464d423130fefd458d91ffa0a29af89130169a6e40018b8b7cb67a4bd0f496"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 1394.298,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "de7e03becdf28e9602ee2ee23a78974a06c1b019580a3372c802dbcd0e0966c6",
+        "sequence": 38,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 453,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00039.intent.json",
+        "sha256": "ff780ec6fc341455dde6d8da66dd226db6b1f7db977b1dc9da7b4e68136fa8ac"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789503.879674,
+        "sequence": 39,
+        "stage": "all_three_persistent_cold_restart"
+      },
+      "outcome": {
+        "bytes": 425,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00039.outcome.json",
+        "sha256": "5530172ad631a5b7b22be59f68b6b403ca009e2989ca021ebfede95aa40326ee"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 579.4,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 39,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 454,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00040.intent.json",
+        "sha256": "42c3c7473558a950a9394833a5df1c0b9e3bdb15db0fb216e94100d7c097f40b"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 2,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789504.5793455,
+        "sequence": 40,
+        "stage": "all_three_persistent_cold_restart"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00040.outcome.json",
+        "sha256": "f6da3bb3c241b49356b6e49384ba15bb3e4efc0bd05ff331eaec0d1e53ca70ef"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 320.674,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 40,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 454,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00041.intent.json",
+        "sha256": "e6f2d1735b8fb930d61537cfc9992e29429aa5f8d4416cef864ea01b9ead5ea7"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 3,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789504.9897287,
+        "sequence": 41,
+        "stage": "all_three_persistent_cold_restart"
+      },
+      "outcome": {
+        "bytes": 426,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00041.outcome.json",
+        "sha256": "eb5fa59367fade89d81f697778ce9fdb2d324eeaccb306d7afbc3a4e80456ab4"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 348.44,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 41,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 649,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00042.intent.json",
+        "sha256": "8aa75c93fd789a6cbc717e977d98ba41c70126a1be2d29344e6121ddcb6e65be"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 3,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789514.4285705,
+        "sequence": 42,
+        "stage": "all_three_persistent_cold_restart"
+      },
+      "outcome": {
+        "bytes": 453,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00042.outcome.json",
+        "sha256": "58c3b7a0ed690dda2eb7998dccaf98703d44ca58999d8a6d561c41d672f8c582"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 1418.92,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9f79943b00831fcf333f3b8c0746a04fd9abbe17c23babb4e174b4cacea9bb6e",
+        "sequence": 42,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 457,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00043.intent.json",
+        "sha256": "628136b1223b1e86f49db07689c1e8dee3ca03ac62f7a3a3d3ebe883e7a7de7c"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789529.1136746,
+        "sequence": 43,
+        "stage": "owned_missing_cipher_leader_recovery"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00043.outcome.json",
+        "sha256": "4e72438e45f9a5745bd8f1d61295339854e1cf01d24939d11c53688e330faf63"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 544.181,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 43,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 457,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00044.intent.json",
+        "sha256": "771a9822c73e8499dd9d5e812a5be9e65d9e2149261958c536bd8dcf15e03e4c"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 2,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789531.2921665,
+        "sequence": 44,
+        "stage": "owned_missing_cipher_leader_recovery"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00044.outcome.json",
+        "sha256": "af43c7ba6ddab3dab9965c38eb8c8577e127af154ddf139499c2847ba8ff6fc6"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 253.244,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 44,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 456,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00045.intent.json",
+        "sha256": "4e7736dae47b57ce44f0a6d188645148405b233d18d6ade0c873033d08c40248"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 3,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789533.348383,
+        "sequence": 45,
+        "stage": "owned_missing_cipher_leader_recovery"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00045.outcome.json",
+        "sha256": "65230cdc4535a450b6b7d3c6f92ab482163180a360e802c6af0b3d756c60f164"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 366.206,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 45,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 457,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00046.intent.json",
+        "sha256": "74f729291a5c0ce6b7ac40b95454ec5b84f1bee0bc626e397c47df471963fd82"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789548.4803305,
+        "sequence": 46,
+        "stage": "owned_missing_cipher_leader_recovery"
+      },
+      "outcome": {
+        "bytes": 428,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00046.outcome.json",
+        "sha256": "cec5a030fcf914ff2f84603659ebf90a19c35e270ef736371430ae8e30e0d681"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 9362.428,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 46,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 456,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00047.intent.json",
+        "sha256": "cff73ecf281eda511f8cccac5aec9f7e51d60ecf7a8e4f0ef93015c98fa3a6f1"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 2,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789566.382204,
+        "sequence": 47,
+        "stage": "owned_missing_cipher_leader_recovery"
+      },
+      "outcome": {
+        "bytes": 429,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00047.outcome.json",
+        "sha256": "8a446e18d177590d311e944707f5934b64c21cb267cbbf0b26c48235f09f5ebb"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 10309.168,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 47,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 456,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00048.intent.json",
+        "sha256": "b3fd1e8e50abd2dd996aba2e16c5bc2395a346cbef72321b515992c5187bd169"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 3,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789576.753508,
+        "sequence": 48,
+        "stage": "owned_missing_cipher_leader_recovery"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00048.outcome.json",
+        "sha256": "efda354cd9d93777a4bf9088937501b0e01c9f49d9b6d6df59543136f55c21bd"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 331.782,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 48,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 511,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00049.intent.json",
+        "sha256": "dab24152c3ba17cc0ce0179c1c711b5db8d362ff3960cb8027c085108b01a8e0"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "DELETE",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789592.0459552,
+        "sequence": 49,
+        "stage": "owned_synthetic_metadata_cleanup"
+      },
+      "outcome": {
+        "bytes": 428,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00049.outcome.json",
+        "sha256": "6f5e276658db213b2e49084fcc0dcfd231ee43cd5eff44d9f197acbfdf5462a8"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 1316.684,
+        "http_status": 204,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "sequence": 49,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 521,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00050.intent.json",
+        "sha256": "6cb2b7afd1e23b2c6343f116c4e7f1f348259aaaaaae1726c90bb9c9862459c7"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "DELETE",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789593.3848095,
+        "sequence": 50,
+        "stage": "owned_synthetic_metadata_cleanup"
+      },
+      "outcome": {
+        "bytes": 426,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00050.outcome.json",
+        "sha256": "ce86bfb607935812c9ad28c4c3dd95d6e3295e5b79cb231a9aa9e3bf1c311dfc"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 728.57,
+        "http_status": 204,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "sequence": 50,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 518,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00051.intent.json",
+        "sha256": "164b5b55d440535fa37a031f4609d47cd80e716e303722ab366a5ea8b67372a1"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "DELETE",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789594.1268892,
+        "sequence": 51,
+        "stage": "owned_synthetic_metadata_cleanup"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00051.outcome.json",
+        "sha256": "3f84d34f5cb763d0a200980d938e9443c961b0a67b3189cae51b471544e98db2"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 708.894,
+        "http_status": 204,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "sequence": 51,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 525,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00052.intent.json",
+        "sha256": "d1943244cc5e9faa8f94b730a655aa077f4753fe2b553ec4a860cb237457cf46"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "DELETE",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789594.8631408,
+        "sequence": 52,
+        "stage": "owned_synthetic_metadata_cleanup"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00052.outcome.json",
+        "sha256": "e78aaf30018d67b4345de7d39fe1dbf26c770a800e365cdfa6ef7746741e40a8"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 736.524,
+        "http_status": 204,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "sequence": 52,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 526,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00053.intent.json",
+        "sha256": "b301a8faaf56d4be4a3659bdc6f490198990f86c5e7a09c8928e7f1a5bd3d489"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "DELETE",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789595.6253667,
+        "sequence": 53,
+        "stage": "owned_synthetic_metadata_cleanup"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00053.outcome.json",
+        "sha256": "a66bdbfcc21ea50002e7bb641e5042eca5303fa0c9badb0529fbf635ff529366"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 710.582,
+        "http_status": 204,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+        "sequence": 53,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    }
+  ],
+  "canonical_original128_reference": {
+    "bytes": 109148,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-normal-full128-r2/summary.json",
+    "sha256": "8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1"
+  },
+  "canonical_original128_unchanged_and_passed": true,
+  "controller_and_outer_exit_codes": [
+    0,
+    0
+  ],
+  "controller_exit": {
+    "bytes": 457,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-pocket3-mac1-direct98-control-r1/exit.public.json",
+    "sha256": "764e9a15ee83a7b9bc7133c147e072a146a57fbec64376db43f476ee218d1d54"
+  },
+  "created_unix": 1793789654.861962,
+  "critical_mutations": [
+    {
+      "intent": {
+        "bytes": 457,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00043.intent.json",
+        "sha256": "628136b1223b1e86f49db07689c1e8dee3ca03ac62f7a3a3d3ebe883e7a7de7c"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789529.1136746,
+        "sequence": 43,
+        "stage": "owned_missing_cipher_leader_recovery"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00043.outcome.json",
+        "sha256": "4e72438e45f9a5745bd8f1d61295339854e1cf01d24939d11c53688e330faf63"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 544.181,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 43,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 457,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00044.intent.json",
+        "sha256": "771a9822c73e8499dd9d5e812a5be9e65d9e2149261958c536bd8dcf15e03e4c"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 2,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789531.2921665,
+        "sequence": 44,
+        "stage": "owned_missing_cipher_leader_recovery"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00044.outcome.json",
+        "sha256": "af43c7ba6ddab3dab9965c38eb8c8577e127af154ddf139499c2847ba8ff6fc6"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 253.244,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 44,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 456,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00045.intent.json",
+        "sha256": "4e7736dae47b57ce44f0a6d188645148405b233d18d6ade0c873033d08c40248"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 3,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789533.348383,
+        "sequence": 45,
+        "stage": "owned_missing_cipher_leader_recovery"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00045.outcome.json",
+        "sha256": "65230cdc4535a450b6b7d3c6f92ab482163180a360e802c6af0b3d756c60f164"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 366.206,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 45,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 457,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00046.intent.json",
+        "sha256": "74f729291a5c0ce6b7ac40b95454ec5b84f1bee0bc626e397c47df471963fd82"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 1,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789548.4803305,
+        "sequence": 46,
+        "stage": "owned_missing_cipher_leader_recovery"
+      },
+      "outcome": {
+        "bytes": 428,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00046.outcome.json",
+        "sha256": "cec5a030fcf914ff2f84603659ebf90a19c35e270ef736371430ae8e30e0d681"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 9362.428,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 46,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 456,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00047.intent.json",
+        "sha256": "cff73ecf281eda511f8cccac5aec9f7e51d60ecf7a8e4f0ef93015c98fa3a6f1"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 2,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789566.382204,
+        "sequence": 47,
+        "stage": "owned_missing_cipher_leader_recovery"
+      },
+      "outcome": {
+        "bytes": 429,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00047.outcome.json",
+        "sha256": "8a446e18d177590d311e944707f5934b64c21cb267cbbf0b26c48235f09f5ebb"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 10309.168,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 47,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    },
+    {
+      "intent": {
+        "bytes": 456,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00048.intent.json",
+        "sha256": "b3fd1e8e50abd2dd996aba2e16c5bc2395a346cbef72321b515992c5187bd169"
+      },
+      "intent_projection": {
+        "automatic_retry": false,
+        "dispatch_attempts_allowed": 1,
+        "method": "POST",
+        "node_id": 3,
+        "original_http_budget_seconds": 15,
+        "recorded_before_dispatch_unix_seconds": 1793789576.753508,
+        "sequence": 48,
+        "stage": "owned_missing_cipher_leader_recovery"
+      },
+      "outcome": {
+        "bytes": 427,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/private-recovery/mutation-00048.outcome.json",
+        "sha256": "efda354cd9d93777a4bf9088937501b0e01c9f49d9b6d6df59543136f55c21bd"
+      },
+      "outcome_projection": {
+        "automatic_retry": false,
+        "elapsed_ms": 331.782,
+        "http_status": 200,
+        "original_http_budget_seconds": 15,
+        "response_sha256": "9e6bcfdd35c63805a9e24f89edb00710130685e8f6bef165c6a172433a97e81c",
+        "sequence": 48,
+        "storage_commit_outcome": "not_inferred_from_http_or_transport",
+        "transport_returned": true,
+        "within_original_budget": true
+      }
+    }
+  ],
+  "cross_host_clock_synchronization_claimed": false,
+  "direction_qualified": true,
+  "directional_observed_pair": {
+    "actual_empty_leader_node": 1,
+    "leader_selection_forced": false,
+    "requested_pair_observed": true,
+    "source_node": 3
+  },
+  "directional_source_selection": {
+    "actual_pre_quarantine_leader_node": 3,
+    "all_three_original_cold_unseals_completed": true,
+    "data_source_selection_does_not_claim_leader_authority": true,
+    "requested_source_node": 3,
+    "selected_source_node": 3
+  },
+  "external_observer_exit": {
+    "bytes": 812,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-pocket3-mac1-direct98-control-r1/external-observer-exit.public.json",
+    "sha256": "15c1b0e41a70d41ff2f2405ace2df3b5bd67836714bd5bfb7ae5aa8dda9bff56"
+  },
+  "failed_checks": [],
+  "failure_code": null,
+  "failure_stage": null,
+  "failure_type": null,
+  "fixture_run_id": "26f3bc7381e0c5f80746262bb2f93406",
+  "fresh_build_source_files_unchanged": {
+    "linux": true,
+    "mac": true
+  },
+  "full_openbao_compatibility": false,
+  "host_load_observations": {
+    "cadence_seconds": 1,
+    "cross_host_clock_synchronization_claimed": false,
+    "nodes": [
+      {
+        "alias": "mac-ts",
+        "max_loadavg": [
+          2.93017578125,
+          1.783203125,
+          1.6171875
+        ],
+        "monitor_returncode": 0,
+        "owned_observer_terminated": true,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-pocket3-mac1-direct98-control-r1/mac-ts.load.public.json",
+        "samples": 350,
+        "sha256": "ee859ef16e9509e275a81eb4b4082a9f336fd74f6af34156d8cf8bad320e528c"
+      },
+      {
+        "alias": "rog-ts",
+        "max_loadavg": [
+          1.10791015625,
+          0.61181640625,
+          0.5244140625
+        ],
+        "monitor_returncode": 0,
+        "owned_observer_terminated": true,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-pocket3-mac1-direct98-control-r1/rog-ts.load.public.json",
+        "samples": 352,
+        "sha256": "9f92c6fc7690b02f221e550e5ffc91b7f3517483cd86e617305f275bae3cec42"
+      },
+      {
+        "alias": "pocket4-ts",
+        "max_loadavg": [
+          3.154296875,
+          2.83154296875,
+          2.8740234375
+        ],
+        "monitor_returncode": 0,
+        "owned_observer_terminated": true,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-pocket3-mac1-direct98-control-r1/pocket4-ts.load.public.json",
+        "samples": 351,
+        "sha256": "08f02f5552d74a06199afb10f7eaf5262502fdf71213310989e73f82fc2c620d"
+      }
+    ],
+    "original_request_deadlines_unchanged": true,
+    "read_only": true,
+    "schema": "heptabao.readonly-host-load-observations.v1",
+    "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-pocket3-mac1-direct98-control-r1/observe_host_load_remote_r2.py",
+    "source_sha256": "bb506980ec7aa2f5e371396cb252a5b87c6a5677b7e9ba4b218d8490640a66b5"
+  },
+  "independent_direction_predicates": {
+    "actual_source_pocket3_and_empty_leader_mac1": true,
+    "actual_three_store_cold_sync_outcomes_before_source_selection": true,
+    "original_fourth_stage_unseal_targets_actual_empty_mac": true,
+    "original_missing_cipher_chain_passed": true,
+    "reported_direction_matches_observed": true
+  },
+  "independent_mutation_counts": {
+    "intent_files": 53,
+    "outcome_files": 53,
+    "sequence_set_contiguous": true,
+    "summary_intents_match": true,
+    "summary_responses_match": true,
+    "unknown_transport_outcomes": 0
+  },
+  "load_manifest": {
+    "bytes": 1796,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-pocket3-mac1-direct98-control-r1/host-load-observations.public.json",
+    "sha256": "0adfdf07c4c63f688b99eb6d9d44ec37ace5c53f5481fc17f9d0aab62e40f98f"
+  },
+  "missing_original_cases": [],
+  "normal_build_pins": {
+    "linux": {
+      "abi": "x86_64-unknown-linux-gnu",
+      "actual_native_build_host": "rog",
+      "alias": "rog-ts",
+      "build": "/home/qian-qi/heptabao-ha-closure-20261103-r1/ha-root-pull-response-normal-build-rog-r1",
+      "files": {
+        "artifacts/heptabao-seed": "4d3f0be9e527b5b36a7cfb45bbb0fadcd9c8c2c2f3e7a72e14bab90ab1ed68c3",
+        "artifacts/heptabao-server": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+        "cargo.jsonl": "ddd53e4eed2cb9e3807ac06e25c7e49b275159cc7a3060be82c22c0d95323a3a",
+        "native-build.public.json": "2fa263744917e1d71658daa4f34e09ea448fe77ec0b2c0f8ec22c01e2cd84e8e",
+        "result.public.json": "7fa76585e94fe2e60bbc3ce754f37e4d9d433e4cf576fcc2e39a1e95771f3f42"
+      },
+      "python": "/usr/bin/python3",
+      "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/ha-root-pull-response-final-source-r1"
+    },
+    "mac": {
+      "abi": "aarch64-apple-darwin",
+      "actual_native_build_host": "mac",
+      "alias": "mac-ts",
+      "build": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-root-pull-response-r1/build-normal-r1",
+      "files": {
+        "artifacts/heptabao-seed": "2f2d8453a7c6c6d39ae3a233411f79d7607ab92db5358c5687bfb2cde86bf2d2",
+        "artifacts/heptabao-server": "d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20",
+        "cargo.jsonl": "9b17bfa1aac1e1682f306e8a1562328cf7e1dd963dbc6bc810ed264d8f44161a",
+        "native-build.public.json": "0e0980a9915ece82a051f828e5740562c1832d1a920b95995af0bada00eb3cff",
+        "result.public.json": "b53967aac8d06547473f68f907047fd34a89f4ab6295cb9765b24f2202853f33"
+      },
+      "python": "/opt/homebrew/bin/python3",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-root-pull-response-r1/source"
+    }
+  },
+  "observed_unique_checks": 98,
+  "official30_repeated_in_this_scope": false,
+  "old_evidence_pins": {
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/combined-blocker-closure-build-control-r1/import-failure-boundary.public.json": "352d797c58371547ccfd125d4ceed7ca54baf5f756ebf81a2dd81224951e5a90",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/e171-private-cold-phase-full128-live-r1/summary.json": "53a17ce7169e412e30099b7232dd3e2ba3b064a6bd39d47fc58753883476c91e",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/e171-private-cold-phase-full128-live-r2/summary.json": "f928c1d74bd1f8b4bad8530b6f2ad9d96ea8ff8020ac5f4384a136c833241d1d",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-normal-full128-r1/summary.json": "41af5de59863ec2d430674d0b6272b040276d2777dda383a25a2e195cdab9f44",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-normal-full128-r2/summary.json": "8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-36076-normal-full128-r1/summary.json": "6c0c51c2e155db952dfb154b5d5418e2a66beb21b3548f63d1b25f4787deab8b",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-full128-control-r1/normal-original128-assessment.public.json": "30f3f88667cfb876833d4c84347c40ca9c20fc91c08e4f1d812cdf41b11cda4f",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-full128-control-r2/normal-original128-assessment.public.json": "66df7dbd422004f7f4569fb9e44a5835f929a5c7f5d19a08b484cc3ecf0cb318"
+  },
+  "old_evidence_unchanged": true,
+  "original98_passed": true,
+  "original98_predicates": {
+    "all98_passed": true,
+    "all_recorded_mutations_observed": true,
+    "controller_exit_zero": true,
+    "controller_qa_and_wrapper_unchanged": true,
+    "every_mutation_once_only": true,
+    "exact_original98_set": true,
+    "fresh_builds_unchanged": true,
+    "no_unknown_transport_outcome": true,
+    "normal_features_only": true,
+    "old_receipts_unchanged": true,
+    "owned_load_observers_stopped": true,
+    "owned_services_and_mesh_stopped": true
+  },
+  "original_http_seconds": 15,
+  "original_native_admission_seconds": 8,
+  "owned_load_observers_stopped": true,
+  "passed_checks": 98,
+  "performance_failure_cause_claimed_resolved": false,
+  "prepared": {
+    "bytes": 33163,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-pocket3-mac1-direct98-control-r1/prepared.public.json",
+    "sha256": "5f7cadbec71c4aac9cc3079193fed7440dbe5fb1e07d6dce9cf6903efd722304"
+  },
+  "prior_failures_remain_preserved": true,
+  "production_changed": false,
+  "qa_pins": {
+    "ha_multihost_live.py": "0e7362d3e579f8a13d63ad1573745fb8cda71aeba75f40288db3927204e408de",
+    "native_fixture_recovery.py": "4c71ef73947ba30a1f4f24344a9840f38f78350c223a4cc80c2b3cb53d777af3",
+    "native_v6_ha_direct_lan_live.py": "8b82b66555f0190eeb0eaf40ad2a19006de932297fa01b512b22b73675995197",
+    "native_v6_ha_multihost_live.py": "330cc6fe8eccb02711e897753ef70d9f3f46717f581f6e80a7b814f7603c638c",
+    "native_v6_ha_official_history_live.py": "758e5d6cc93900fd6c5de328446fce069f167fe1eb7c63fc1f2a8310231e04d5"
+  },
+  "quiet_window_coordination": {
+    "other_os_process_idle_not_claimed": true,
+    "root_auth_compat_member_io_held": true
+  },
+  "required_original_checks": 98,
+  "role_checks": [
+    {
+      "case": "missing_cipher_targets_stopped",
+      "passed": true
+    },
+    {
+      "case": "missing_cipher_two_targets_quarantined",
+      "nodes": {
+        "1": {
+          "inventory_sha256": "385f52d90c0762a367d95e66aafe53790bfa28eb1ce746d64f4ed92d2cced24b",
+          "quarantined_bytes": 36203108,
+          "quarantined_count": 442,
+          "remaining_count": 0
+        },
+        "2": {
+          "inventory_sha256": "9da6b60db3b63daa2009f5c47b6c77b3cbdf20cacf2aad7fea377613f82633bb",
+          "quarantined_bytes": 36102707,
+          "quarantined_count": 425,
+          "remaining_count": 0
+        }
+      },
+      "passed": true
+    },
+    {
+      "both_voters_have_no_native_ciphertext": true,
+      "case": "missing_cipher_sealed_pair_elected",
+      "leader": 1,
+      "passed": true
+    },
+    {
+      "case": "missing_cipher_source_rejoined",
+      "passed": true,
+      "selected_missing_leader_is_current": 1,
+      "source": 3
+    },
+    {
+      "case": "missing_cipher_leader_empty_before_unseal",
+      "leader": 1,
+      "passed": true
+    },
+    {
+      "case": "missing_cipher_leader_unsealed",
+      "original_http_budget_seconds": 15,
+      "passed": true
+    },
+    {
+      "case": "missing_cipher_leader_exact_history",
+      "leader": 1,
+      "passed": true,
+      "retained_large_payload_bytes": 35651584
+    },
+    {
+      "case": "missing_cipher_actual_leaves_rebuilt",
+      "every_restored_sha_and_size_match": true,
+      "inventory_sha256": "385f52d90c0762a367d95e66aafe53790bfa28eb1ce746d64f4ed92d2cced24b",
+      "passed": true,
+      "quarantined_count": 442,
+      "restored_bytes": 35742379,
+      "restored_count": 338,
+      "unreferenced_quarantined_count": 104
+    },
+    {
+      "case": "missing_cipher_remaining_nodes_unsealed",
+      "passed": true
+    },
+    {
+      "case": "missing_cipher_all_hosts_readindex",
+      "passed": true
+    }
+  ],
+  "roles": {
+    "actual_empty_leader_node": 1,
+    "actual_leader_selection_forced": false,
+    "controlled_data_source_choice": 3,
+    "leader_result_not_faked": true,
+    "node_1": "mac",
+    "node_2": "rog",
+    "node_3": "pocket4",
+    "requested_pair_observed": true,
+    "source_node": 3
+  },
+  "schema": "heptabao.normal33-pocket3-mac1-complete-direct98-assessment.v1",
+  "server_cold_deadline_unchanged_from_pinned_normal33": true,
+  "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "status": "passed",
+  "summary": {
+    "bytes": 45176,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-pocket3-mac1-direct98-r1/summary.json",
+    "sha256": "b02a111b487e33065117fc88596113c7e8a7695feb283331165381fafd3c167f"
+  },
+  "unexpected_cases": []
+}

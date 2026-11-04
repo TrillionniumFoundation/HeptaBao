@@ -1,0 +1,50 @@
+{
+  "cadence_seconds": 1,
+  "cross_host_clock_synchronization_claimed": false,
+  "nodes": [
+    {
+      "alias": "mac-ts",
+      "max_loadavg": [
+        3.9658203125,
+        2.53857421875,
+        2.02880859375
+      ],
+      "monitor_returncode": 0,
+      "owned_observer_terminated": true,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-full128-control-r2/mac-ts.load.public.json",
+      "samples": 848,
+      "sha256": "e6c007b882ba33d35e2d7e76ab0e0060705df4c29bb27fd360947136c1932394"
+    },
+    {
+      "alias": "rog-ts",
+      "max_loadavg": [
+        0.751953125,
+        0.54541015625,
+        0.8046875
+      ],
+      "monitor_returncode": 0,
+      "owned_observer_terminated": true,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-full128-control-r2/rog-ts.load.public.json",
+      "samples": 851,
+      "sha256": "008d8ba89fdea2c970e18ca360e2742451e4935fcfc78a77ff8e4604dfc26197"
+    },
+    {
+      "alias": "pocket4-ts",
+      "max_loadavg": [
+        7.97412109375,
+        4.091796875,
+        3.17919921875
+      ],
+      "monitor_returncode": 0,
+      "owned_observer_terminated": true,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-full128-control-r2/pocket4-ts.load.public.json",
+      "samples": 851,
+      "sha256": "fd2bee179784eec633269e87adeaf478b05db32e50f39cf9f0cfcf2f11e0336b"
+    }
+  ],
+  "original_request_deadlines_unchanged": true,
+  "read_only": true,
+  "schema": "heptabao.readonly-host-load-observations.v1",
+  "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-full128-control-r2/observe_host_load_remote_r2.py",
+  "source_sha256": "bb506980ec7aa2f5e371396cb252a5b87c6a5677b7e9ba4b218d8490640a66b5"
+}
