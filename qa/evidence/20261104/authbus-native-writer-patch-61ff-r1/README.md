@@ -1,0 +1,13 @@
+# Native writer retirement candidate: source review only
+
+This is an isolated ROG candidate, not a production plugin deployment and not a passed live test. The reviewed original baseline is commit 93dfe2aa6c92f554bc2e4aa57f087a709d77093e under qa/evidence/20261104/authbus-native-writer-61ff-r1. Its staging job 1a1a7b7bcf8-fc05-2c5f succeeded; baseline native execution has not yet been submitted when this source review package was created.
+
+The factory installs an entry-owned writer-exit barrier before removing that exact entry. Pending startup retains its original promise and every actual onStarted client. New acquires recheck the barrier after awaiting it, share one original acquire deadline, and never retain a new entry across an await after the final barrier check. Pre-aborted acquires do not start a new entry. Only the same entry/barrier incarnation can clear the barrier. Unknown, forced, nonzero or signalled wrapper exits remain fail closed.
+
+For the precisely pinned ROG 0.159.2 stdio CLI wrapper, closeAndWait true is insufficient: confirmation additionally requires actual wrapper exitCode 0 and no signal. The pinned wrapper's zero-exit path follows native-child exit. A wrapper SIGTERM does not satisfy that contract because handlers are installed after native spawn. The fixture must independently observe actual wrapper and native process identities and exit ordering. This package does not qualify arbitrary wrappers, other transports, cross-gateway process restarts, Desktop, Mac, or production service-manager child cleanup.
+
+The recycler delegates to the factory's codex-writer-exit-v1 interface. It prevalidates the complete batch and refuses legacy factories with active entries; it has no direct-delete fallback. Synchronous metrics report close requests and deferrals, never a confirmed process exit. Paired factory/recycler installation and drain/restart planning are necessary before any production use.
+
+Planned isolated validation: reproduce the original active-lease, pending-initialize, and spawn-callback/client-absent races; run the same actual SDK/AuthBus/private-native fixture with the paired candidate; require no second spawn before confirmed normal old writer exit; and separately force wrapper SIGKILL with the owned native still alive, requiring retained barrier and refused reacquire. No provider refresh, model request, production mutation or traffic switch is permitted. The prior r5 pending/local credential selector correction must be included in the later combined overlay, with its own exact pin, before qualification.
+
+These files have not yet been syntax checked on the remote executor or live tested. Source review and successful exact GitHub readback are preparation only.

@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.native-writer-patch-source-review.v1",
+  "status": "unexecuted-source-review",
+  "productionChanged": false,
+  "baselineCommit": "93dfe2aa6c92f554bc2e4aa57f087a709d77093e",
+  "originalFactorySha256": "bff60f1bb2cb73ad44c7f9c9d779576a2ffd9836b22ecba0bd5b6046e7ce9103",
+  "originalRecyclerSha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+  "files": [
+    {
+      "path": "source/shared-client-4ICy3U6d.js",
+      "bytes": 83727,
+      "sha256": "95d7f0d30cb7b8003ba94fb169e76a487f4fbc73c8fbfdcf5602f8e3b2bff2dc"
+    },
+    {
+      "path": "source/codex-client-recycler.js",
+      "bytes": 2228,
+      "sha256": "a4f7304b32c6f13293f2f392e97de4c0790a655173fab4a99bc10792fc7ec12c"
+    },
+    {
+      "path": "review/shared-client.diff",
+      "bytes": 13604,
+      "sha256": "3db0402b2381601f2069427f8b93635b19d23513af7b7b1fad442c4670c6640b"
+    },
+    {
+      "path": "review/codex-client-recycler.diff",
+      "bytes": 4275,
+      "sha256": "7c826bd839667532f6ef53aa3efb3dc5327eba8bf8a14a72719e750bf034cce3"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2734,
+      "sha256": "42db8678a1554cfd8074c87706b91a1c6c1550281192b2970b45f692d9e7c486"
+    }
+  ]
+}

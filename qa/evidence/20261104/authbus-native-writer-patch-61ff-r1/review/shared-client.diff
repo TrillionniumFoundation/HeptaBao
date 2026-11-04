@@ -1,0 +1,293 @@
+--- installed/shared-client-4ICy3U6d.js
++++ candidate/shared-client-4ICy3U6d.js
+@@ -1532,13 +1532,21 @@
+ 	retireSharedCodexAppServerClientIfCurrent: () => retireSharedCodexAppServerClientIfCurrent
+ });
+ const SHARED_CODEX_APP_SERVER_CLIENT_STATE = Symbol.for("openclaw.codexAppServerClientState");
++const SHARED_CODEX_WRITER_EXIT_PROTOCOL = "codex-writer-exit-v1";
+ function getSharedCodexAppServerClientState() {
+ 	const globalState = globalThis;
+ 	globalState[SHARED_CODEX_APP_SERVER_CLIENT_STATE] ??= {
+ 		clients: /* @__PURE__ */ new Map(),
+ 		leasedReleases: /* @__PURE__ */ new WeakMap()
+ 	};
+-	return globalState[SHARED_CODEX_APP_SERVER_CLIENT_STATE];
++	const state = globalState[SHARED_CODEX_APP_SERVER_CLIENT_STATE];
++	if (!(state.clients instanceof Map) || !(state.leasedReleases instanceof WeakMap)) throw new Error("codex shared client state is incompatible");
++	if (state.retirementProtocol !== void 0 && state.retirementProtocol !== SHARED_CODEX_WRITER_EXIT_PROTOCOL) throw new Error("codex writer retirement protocol is incompatible");
++	state.retiring ??= /* @__PURE__ */ new Map();
++	if (!(state.retiring instanceof Map)) throw new Error("codex writer retirement state is incompatible");
++	state.retirementProtocol = SHARED_CODEX_WRITER_EXIT_PROTOCOL;
++	state.retireEntry = retireSharedCodexAppServerClientEntry;
++	return state;
+ }
+ async function resolveCodexAppServerClientStartContext(options) {
+ 	const agentDir = options?.agentDir ?? resolveDefaultAgentDir(options?.config ?? {});
+@@ -1600,8 +1608,55 @@
+ 		fallbackApiKeyCacheKey
+ 	});
+ 	const state = getSharedCodexAppServerClientState();
+-	const entry = getOrCreateSharedClientEntry(state, key);
+-	const releasePendingAcquire = retainPendingSharedClientAcquire(entry);
++	const timeoutMs = options?.timeoutMs ?? 0;
++	const acquireDeadline = Date.now() + (timeoutMs > 0 ? timeoutMs : 15e3);
++	let entry;
++	let releasePendingAcquire;
++	while (true) {
++		if (options?.abandonSignal?.aborted) throw new Error("codex app-server acquire abandoned");
++		const barrier = state.retiring.get(key);
++		if (!barrier) {
++			if (timeoutMs > 0 && Date.now() >= acquireDeadline) throw new Error("codex app-server initialize timed out");
++			// No await between the final barrier check and retaining this entry.
++			entry = getOrCreateSharedClientEntry(state, key);
++			releasePendingAcquire = retainPendingSharedClientAcquire(entry);
++			break;
++		}
++		const remaining = acquireDeadline - Date.now();
++		if (remaining <= 0) throw new Error("codex writer retirement barrier timed out");
++		const confirmed = await withTimeout$1(barrier.promise, remaining, "codex writer retirement barrier timed out");
++		if (confirmed !== true) throw new Error("codex writer exit remains unconfirmed");
++		// A newer retirement may have appeared while this acquire was suspended.
++	}
++	if (!entry.promise) {
++		entry.startupPending = true;
++		// Publish the original startup promise before any onStarted callback or
++		// abort handler can retire an entry whose client is not published yet.
++		entry.promise = Promise.resolve().then(async () => {
++			entry.startupAttempted = true;
++			const client = await startInitializedCodexAppServerClient({
++				startOptions,
++				agentDir,
++				authProfileId: usesNativeAuth ? null : authProfileId,
++				config: options?.config,
++				onStartedClient: (startedClient) => {
++					entry.writerClients.add(startedClient);
++					entry.client = startedClient;
++					entry.writerExitBarrier?.closeStartedClient?.(startedClient);
++					options?.onStartedClient?.(startedClient);
++				}
++			});
++			entry.client = client;
++			client.addCloseHandler((closedClient) => clearSharedClientEntryIfCurrent(key, closedClient));
++			return client;
++		});
++		const settled = () => {
++			entry.startupPending = false;
++			closeRetiredSharedClientEntryIfIdle(entry);
++		};
++		entry.promise.then(settled, settled);
++	}
++	const sharedPromise = entry.promise;
+ 	let cleanupAbandonSignal;
+ 	if (options?.abandonSignal) {
+ 		const abandon = () => {
+@@ -1612,33 +1667,19 @@
+ 		cleanupAbandonSignal = () => options.abandonSignal?.removeEventListener("abort", abandon);
+ 		if (options.abandonSignal.aborted) abandon();
+ 	}
+-	const sharedPromise = entry.promise ?? (entry.promise = (async () => {
+-		const client = await startInitializedCodexAppServerClient({
+-			startOptions,
+-			agentDir,
+-			authProfileId: usesNativeAuth ? null : authProfileId,
+-			config: options?.config,
+-			onStartedClient: (startedClient) => {
+-				entry.client = startedClient;
+-				options?.onStartedClient?.(startedClient);
+-			}
+-		});
+-		entry.client = client;
+-		client.addCloseHandler((closedClient) => clearSharedClientEntryIfCurrent(key, closedClient));
+-		return client;
+-	})());
+ 	try {
+-		const client = await withTimeout$1(sharedPromise, options?.timeoutMs ?? 0, "codex app-server initialize timed out");
++		if (options?.abandonSignal?.aborted) throw new Error("codex app-server acquire abandoned");
++		const remaining = timeoutMs > 0 ? acquireDeadline - Date.now() : 0;
++		if (timeoutMs > 0 && remaining <= 0) throw new Error("codex app-server initialize timed out");
++		const client = await withTimeout$1(sharedPromise, remaining, "codex app-server initialize timed out");
++		if (options?.abandonSignal?.aborted) throw new Error("codex app-server acquire abandoned");
+ 		ensureCodexAppServerClientRuntime(client, {
+ 			agentDir,
+ 			authProfileId: usesNativeAuth ? void 0 : authProfileId,
+ 			config: options?.config
+ 		});
+ 		const release = leaseOptions?.leased ? retainSharedClientEntry(entry) : void 0;
+-		return release ? {
+-			client,
+-			release
+-		} : { client };
++		return release ? { client, release } : { client };
+ 	} catch (error) {
+ 		const currentEntry = state.clients.get(key);
+ 		if (currentEntry?.promise === sharedPromise) clearSharedClientEntry(key, currentEntry);
+@@ -1723,7 +1764,7 @@
+ 	if (!client) return false;
+ 	const state = getSharedCodexAppServerClientState();
+ 	for (const [key, entry] of state.clients) if (entry.client === client) {
+-		state.clients.delete(key);
++		retireSharedCodexAppServerClientEntry(key, entry);
+ 		client.close();
+ 		return true;
+ 	}
+@@ -1734,13 +1775,7 @@
+ 	if (!client) return;
+ 	const state = getSharedCodexAppServerClientState();
+ 	for (const [key, entry] of state.clients) if (entry.client === client) {
+-		state.clients.delete(key);
+-		entry.closeWhenIdle = true;
+-		const closed = closeRetiredSharedClientEntryIfIdle(entry);
+-		return {
+-			activeLeases: entry.activeLeases,
+-			closed
+-		};
++		return retireSharedCodexAppServerClientEntry(key, entry);
+ 	}
+ 	const activeLeases = state.leasedReleases.get(client)?.length ?? 0;
+ 	if (activeLeases > 0) return {
+@@ -1753,9 +1788,8 @@
+ 	if (!client) return false;
+ 	const state = getSharedCodexAppServerClientState();
+ 	for (const [key, entry] of state.clients) if (entry.client === client) {
+-		state.clients.delete(key);
+-		await client.closeAndWait(options);
+-		return true;
++		retireSharedCodexAppServerClientEntry(key, entry);
++		return await client.closeAndWait(options);
+ 	}
+ 	return false;
+ }
+@@ -1763,7 +1797,7 @@
+ async function clearSharedCodexAppServerClientAndWait(options) {
+ 	const state = getSharedCodexAppServerClientState();
+ 	const clients = collectSharedClients(state);
+-	state.clients.clear();
++	for (const [key, entry] of [...state.clients]) retireSharedCodexAppServerClientEntry(key, entry);
+ 	await Promise.all(clients.map((client) => client.closeAndWait(options)));
+ }
+ function getOrCreateSharedClientEntry(state, key) {
+@@ -1772,21 +1806,27 @@
+ 		entry = {
+ 			activeLeases: 0,
+ 			pendingAcquires: 0,
+-			closeWhenIdle: false
++			closeWhenIdle: false,
++			writerExitProtocol: SHARED_CODEX_WRITER_EXIT_PROTOCOL,
++			writerClients: /* @__PURE__ */ new Set(),
++			startupPending: false,
++			startupAttempted: false
+ 		};
+ 		state.clients.set(key, entry);
+ 	}
++	if (entry.writerExitProtocol !== SHARED_CODEX_WRITER_EXIT_PROTOCOL || !(entry.writerClients instanceof Set)) throw new Error("codex shared entry lacks writer exit tracking");
+ 	return entry;
+ }
+ function clearSharedClientEntry(key, entry) {
+ 	const state = getSharedCodexAppServerClientState();
+ 	if (state.clients.get(key) !== entry) return;
+-	state.clients.delete(key);
++	retireSharedCodexAppServerClientEntry(key, entry);
+ 	entry.client?.close();
+ }
+ function clearSharedClientEntryIfCurrent(key, client) {
+ 	const state = getSharedCodexAppServerClientState();
+-	if (state.clients.get(key)?.client === client) state.clients.delete(key);
++	const entry = state.clients.get(key);
++	if (entry?.client === client) retireSharedCodexAppServerClientEntry(key, entry);
+ }
+ /** Clears a matching shared client only when no lease or acquire currently claims it. */
+ function clearSharedCodexAppServerClientIfCurrentAndUnclaimed(client) {
+@@ -1830,21 +1870,85 @@
+ 		closeRetiredSharedClientEntryIfIdle(entry);
+ 	};
+ }
++/**
++ * Register the entry's own barrier before removing it from the shared map.
++ * AuthBus calls this factory-owned interface; it must never directly delete
++ * an entry or infer process exit from a close request.
++ */
++function retireSharedCodexAppServerClientEntry(key, entry) {
++	const state = getSharedCodexAppServerClientState();
++	if (state.clients.get(key) !== entry || entry.writerExitProtocol !== SHARED_CODEX_WRITER_EXIT_PROTOCOL || !(entry.writerClients instanceof Set)) throw new Error("codex writer retirement ownership mismatch");
++	if (state.retiring.has(key) || entry.writerExitBarrier) throw new Error("codex writer retirement barrier already exists");
++	let resolve;
++	const promise = new Promise((done) => { resolve = done; });
++	const barrier = { key, entry, promise, resolve, closing: false, settled: false, confirmed: false };
++	entry.writerExitBarrier = barrier;
++	state.retiring.set(key, barrier);
++	entry.closeWhenIdle = true;
++	state.clients.delete(key);
++	const closeRequested = closeRetiredSharedClientEntryIfIdle(entry);
++	return { retired: true, activeLeases: entry.activeLeases, pendingAcquires: entry.pendingAcquires,
++		closed: false, closeRequested };
++}
+ function closeRetiredSharedClientEntryIfIdle(entry) {
+-	if (!entry.closeWhenIdle || entry.activeLeases > 0 || entry.pendingAcquires > 0 || !entry.client) return false;
+-	const client = entry.client;
+-	entry.closeWhenIdle = false;
+-	entry.client = void 0;
+-	client.close();
++	const barrier = entry.writerExitBarrier;
++	if (!entry.closeWhenIdle || entry.activeLeases > 0 || entry.pendingAcquires > 0 || !barrier || barrier.closing || barrier.settled) return false;
++	barrier.closing = true;
++	const deadline = Date.now() + 12e3;
++	const closes = /* @__PURE__ */ new Map();
++	// A pending startup may publish its actual client after the last claimant
++	// has abandoned it. Close that client, but still await the real startup
++	// promise; a zero pending count is never treated as writer-exit evidence.
++	barrier.closeStartedClient = (client) => {
++		if (closes.has(client)) return;
++		let closing;
++		try {
++			closing = Promise.resolve(client.closeAndWait({
++				forceKillDelayMs: 1e3,
++				exitTimeoutMs: Math.max(1, deadline - Date.now())
++			})).then((exited) => exited === true && client.child?.exitCode === 0 && client.child?.signalCode === null, () => false);
++		} catch {
++			closing = Promise.resolve(false);
++		}
++		closes.set(client, closing);
++	};
++	for (const client of entry.writerClients) barrier.closeStartedClient(client);
++	const complete = (confirmed) => {
++		if (barrier.settled) return;
++		let state;
++		try { state = getSharedCodexAppServerClientState(); } catch { /* Incompatible state cannot confirm exit. */ }
++		confirmed = confirmed === true && state?.retiring instanceof Map && state.retiring.get(barrier.key) === barrier
++			&& entry.writerExitBarrier === barrier && barrier.entry === entry
++			&& entry.activeLeases === 0 && entry.pendingAcquires === 0 && entry.startupPending === false;
++		barrier.confirmed = confirmed;
++		barrier.settled = true;
++		if (confirmed) {
++			state.retiring.delete(barrier.key);
++			entry.closeWhenIdle = false;
++			entry.client = void 0;
++		}
++		// Unknown/forced/abnormal exits deliberately keep the same barrier.
++		barrier.resolve(confirmed);
++	};
++	(async () => {
++		if (entry.promise) {
++			const settled = entry.promise.then(() => true, () => true);
++			await withTimeout$1(settled, Math.max(1, deadline - Date.now()), "codex retired startup did not settle");
++		}
++		for (const client of entry.writerClients) barrier.closeStartedClient(client);
++		const results = await withTimeout$1(Promise.all([...closes.values()]), Math.max(1, deadline - Date.now()), "codex retired writer exit timed out");
++		// Under the pinned CLI contract, wrapper zero exit follows native exit.
++		// Signal/nonzero/unknown exit is not upgraded by closeAndWait=true.
++		const noStartup = !entry.startupAttempted && !entry.promise && entry.writerClients.size === 0;
++		complete(noStartup || entry.writerClients.size > 0 && closes.size === entry.writerClients.size && results.every((value) => value === true));
++	})().catch(() => complete(false));
+ 	return true;
+ }
+ function closeSharedClientEntryIfUnclaimed(key, entry) {
+ 	if (entry.activeLeases > 0 || entry.pendingAcquires > 0) return false;
+ 	const state = getSharedCodexAppServerClientState();
+ 	if (state.clients.get(key) !== entry) return false;
+-	state.clients.delete(key);
+-	entry.client?.close();
+-	return Boolean(entry.client);
++	return retireSharedCodexAppServerClientEntry(key, entry).closeRequested;
+ }
+ function collectSharedClients(state) {
+ 	return [...new Set([...state.clients.values()].map((entry) => entry.client).filter((client) => Boolean(client)))];
