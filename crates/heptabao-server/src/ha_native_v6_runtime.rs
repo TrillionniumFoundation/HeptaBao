@@ -684,8 +684,11 @@ impl HaProcess {
         local_root: [u8; 32],
         permission: &crate::service::native_v6_ha_install::NativeIngressSelectionPermit,
     ) -> Result<Option<NativeV6IngressRead>, String> {
+        let failure =
+            NativeV6FailureObservation::start("fresh_ingress_permission", deadline.instant());
         let result = (|| {
             permission.check_initial_read(deadline, local_root)?;
+            failure.step("fresh_ingress_runtime");
             let native = self
                 .native_v6
                 .as_ref()
@@ -696,9 +699,11 @@ impl HaProcess {
                 .storage
                 .get()
                 .ok_or("native ciphertext store absent")?;
+            failure.step("fresh_ingress_storage_operation");
             let operation = storage
                 .begin_native_operation()
                 .map_err(|e| e.to_string())?;
+            failure.step("fresh_ingress_read_index");
             let selected = self
                 .runtime
                 .block_on(node.native_v6_committed_root_read(deadline.instant()))
@@ -706,8 +711,10 @@ impl HaProcess {
             let Some(selected) = selected else {
                 return Ok(None);
             };
+            failure.step("fresh_ingress_enrollment");
             native.validate_enrollment(&self.codec, selected.enrollment())?;
             let selected = if selected.root().root_digest() == local_root {
+                failure.step("fresh_ingress_same_root_closure");
                 match read_native_v6_fresh_ingress_closure(
                     node,
                     self.runtime.handle(),
@@ -721,6 +728,7 @@ impl HaProcess {
                     NativeV6IngressClosureRead::NeedsOriginalRepair(read) => {
                         // This is the first original repair, never a no-effects
                         // continuation. No supersession token can escape it.
+                        failure.step("fresh_ingress_original_repair");
                         permission.refuse_reselection();
                         recover_native_v6_committed_closure(
                             node,
@@ -749,6 +757,7 @@ impl HaProcess {
             } else {
                 // The initial actual selection already differs: retain the one
                 // original full catch-up, with no changed-root reselection token.
+                failure.step("fresh_ingress_changed_root_recover");
                 permission.refuse_reselection();
                 read_or_recover_native_v6_committed_closure(
                     node,
@@ -766,11 +775,15 @@ impl HaProcess {
                 selected,
                 deadline,
             };
+            failure.step("fresh_ingress_final_witness");
             self.verify_native_v6_committed_read(&read)?;
             Ok(Some(NativeV6IngressRead::Ready(read)))
         })();
-        if result.is_err() {
+        if let Err(reason) = &result {
+            failure.refused("fresh_ingress_read_refused", reason);
             permission.refuse_reselection();
+        } else {
+            failure.complete();
         }
         result
     }
