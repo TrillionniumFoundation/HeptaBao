@@ -1,0 +1,38 @@
+{
+  "argv": [
+    "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+    "clippy",
+    "--release",
+    "--locked",
+    "--offline",
+    "--workspace",
+    "--all-targets",
+    "--exclude",
+    "qrcode",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "cleanup": {
+    "already_reaped": false,
+    "forced": false,
+    "group_cleanup_before_reap": true,
+    "group_signalled_after_reap": false,
+    "pid": 52059,
+    "remaining": [],
+    "returncode": 0
+  },
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+  "elapsed_seconds": 30.20814224984497,
+  "exit_code": 0,
+  "label": "strict-clippy",
+  "owned_pgid": 52059,
+  "remaining": [],
+  "remaining_at_end_seconds": 395.8251700331457,
+  "remaining_at_start_seconds": 426.03331265831366,
+  "stderr_bytes": 7399,
+  "stderr_sha256": "99d56f399c5a49046db5c2266250ad742be7bdd06b5d805d7cb0ee8dc743bac9",
+  "stdout_bytes": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "timed_out": false
+}
