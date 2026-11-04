@@ -1,0 +1,6 @@
+{
+  "failed_assertion": "actual_lock_wait_observed",
+  "raw_receipts_changed": false,
+  "reason": "The initial review comparator omitted Cargo diagnostic indentation. The corrected comparator trims only leading whitespace in the complete original stderr. No remote probe or product operation was repeated.",
+  "schema": "heptabao.local-evidence-review-predecessor.v1"
+}

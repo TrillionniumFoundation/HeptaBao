@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1a77f3353-fc05-2b9a\",\n  \"stderr\": {\n    \"bytes_hex\": \"54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0a202046696c6520223c737472696e673e222c206c696e65203131332c20696e203c6d6f64756c653e0a202020206d61696e28290a202020207e7e7e7e5e5e0a202046696c6520223c737472696e673e222c206c696e652038322c20696e206d61696e0a2020202061737365727420696e666f2e73745f646576203d3d2064657669636520616e6420696e666f2e73745f756964203d3d203530310a20202020202020202020205e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e0a417373657274696f6e4572726f720a\",\n    \"eof\": true,\n    \"next_offset\": 261,\n    \"offset\": 0,\n    \"size\": 261,\n    \"text\": \"Traceback (most recent call last):\\n  File \\\"<string>\\\", line 113, in <module>\\n    main()\\n    ~~~~^^\\n  File \\\"<string>\\\", line 82, in main\\n    assert info.st_dev == device and info.st_uid == 501\\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\\nAssertionError\\n\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

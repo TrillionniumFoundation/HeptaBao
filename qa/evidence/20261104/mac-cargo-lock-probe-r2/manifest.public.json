@@ -1,0 +1,117 @@
+{
+  "files": [
+    {
+      "bytes": 14597,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r1/original-request.public.json",
+      "sha256": "bda920dc7284041d64279c6bdaa85a51a2b83f16417679a016016b018ae7b21d"
+    },
+    {
+      "bytes": 4907,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r1/run_mac_cargo_lock_probe.preflight-r1.py",
+      "sha256": "a1564315bd8095e41d801fc70f23123c401e1cc1a90b331f9e3d0532823b53a3"
+    },
+    {
+      "bytes": 6641,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r1/start.original-sdk.json",
+      "sha256": "3fa1ad8a176b4dcd9864908d0b9dd93c6dd7720fc7badebe779ed7afec667dd2"
+    },
+    {
+      "bytes": 949,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r1/status.original-sdk.json",
+      "sha256": "3eb79c9e66de122d66b9f0b57f139d85ed7b3fd883eda6c598a8db87161f28e8"
+    },
+    {
+      "bytes": 1316,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r1/read.original-sdk.json",
+      "sha256": "2e6c0b0c340a93a0fdbbd660b87ef468a1b9657b0df50a191e3af789a268e3b4"
+    },
+    {
+      "bytes": 14774,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/original-request.public.json",
+      "sha256": "b8181b8d38d4ef43f7a56fd488a9470349554b6823fdd942e09a72cfdbbec2fd"
+    },
+    {
+      "bytes": 5081,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/run_mac_cargo_lock_probe.py",
+      "sha256": "36764b174fae8037fc2020aed9334d2f399342ea3f2dabe69126be95fdd4faa0"
+    },
+    {
+      "bytes": 6819,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/start.original-sdk.json",
+      "sha256": "91b179628eefeec53f3bc34c8a0ac114b581a2d3dace2e8d5c702b7cf4497187"
+    },
+    {
+      "bytes": 952,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/status.original-sdk.json",
+      "sha256": "f6f46758cb666ac03ba8795861a0ab015371baef5007c9e0483b1049b23fb968"
+    },
+    {
+      "bytes": 2534,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/read.original-sdk.json",
+      "sha256": "05991a4beedd481984bb5297faf8d507c51ff942965c824e9153497e8377bfcc"
+    },
+    {
+      "bytes": 9064,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/files.original-sdk.json",
+      "sha256": "1bb2d4d23c7da76de36d0f44598d086f99acc613021e4992b09c4d14e9e6c6ba"
+    },
+    {
+      "bytes": 9003,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/probe_actual_cargo_release_lock_r2.py",
+      "sha256": "aaec18ac2ac5a610629b3eaa6d0e8e0de7ef0d45716cd5e3ea24b11145136271"
+    },
+    {
+      "bytes": 5081,
+      "path": "tools/production/run_mac_cargo_lock_probe.py",
+      "sha256": "36764b174fae8037fc2020aed9334d2f399342ea3f2dabe69126be95fdd4faa0"
+    },
+    {
+      "bytes": 997,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/stage.public.json",
+      "sha256": "8fcdbb944f8cee827aa878904a797aa60b7dc17f887d60135da71e7862f122d6"
+    },
+    {
+      "bytes": 3438,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/result.public.json",
+      "sha256": "d9be1b814a0f7834f22eef219c765a3dae8ede2b6be60ca02f1b88600cc69403"
+    },
+    {
+      "bytes": 1056,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/cargo.stdout",
+      "sha256": "b198e09cef1c03c42108931d10c72d1806fe21cb064f05476ee2bebeadd4e1f1"
+    },
+    {
+      "bytes": 267,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/cargo.stderr",
+      "sha256": "e4147cedffbf4f0e0b11f44f6974c0ec2dd6be5d84e20d9db9a27570b21cdfd5"
+    },
+    {
+      "bytes": 335,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/cargo-version.stdout",
+      "sha256": "fc5da452af509c1010d5949e8773b2d2e1a28f2ed00e5e4cdbf72c204fc62c32"
+    },
+    {
+      "bytes": 2929,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/root-review.public.json",
+      "sha256": "e58ec83a21ed5af04cdd21b9f22f3386452daf6e6e0524729cf1054517f81327"
+    },
+    {
+      "bytes": 8145,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/root_review.js",
+      "sha256": "1235f09b91401c8c8f54ec5dc33c5e36501534d68cb042a9132de80d048329d7"
+    },
+    {
+      "bytes": 370,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/root-review-predecessor.public.json",
+      "sha256": "1e0ae2e7484b8b8d113622b138be0b9ae0dc88a6c9d0f34984bdad39436fd15c"
+    },
+    {
+      "bytes": 1416,
+      "path": "qa/evidence/20261104/mac-cargo-lock-probe-r2/README.md",
+      "sha256": "797e8e13b19d44673ed457f2a44967a3c9a10cda96a9770252213a03242cae5a"
+    }
+  ],
+  "full_replacement": false,
+  "root_review_sha256": "e58ec83a21ed5af04cdd21b9f22f3386452daf6e6e0524729cf1054517f81327",
+  "schema": "heptabao.mac-cargo-lock-evidence-manifest.v1"
+}

@@ -1,0 +1,119 @@
+{
+  "checks": [
+    {
+      "name": "remote_file_stage.public.json",
+      "passed": true
+    },
+    {
+      "name": "remote_file_result.public.json",
+      "passed": true
+    },
+    {
+      "name": "remote_file_cargo.stdout",
+      "passed": true
+    },
+    {
+      "name": "remote_file_cargo.stderr",
+      "passed": true
+    },
+    {
+      "name": "remote_file_cargo-version.stdout",
+      "passed": true
+    },
+    {
+      "name": "original_request_bytes",
+      "passed": true
+    },
+    {
+      "name": "probe_pin",
+      "passed": true
+    },
+    {
+      "name": "wrapper_pins",
+      "passed": true
+    },
+    {
+      "name": "request_1a1a77f3353-fc05-2b9a",
+      "passed": true
+    },
+    {
+      "name": "request_1a1a7848b96-fc05-2ba5",
+      "passed": true
+    },
+    {
+      "name": "first_red_before_probe",
+      "passed": true
+    },
+    {
+      "name": "durable_terminal_1a1a77f3353-fc05-2b9a",
+      "passed": true
+    },
+    {
+      "name": "durable_terminal_1a1a7848b96-fc05-2ba5",
+      "passed": true
+    },
+    {
+      "name": "volume_interpreter",
+      "passed": true
+    },
+    {
+      "name": "success_job",
+      "passed": true
+    },
+    {
+      "name": "stdout_pins",
+      "passed": true
+    },
+    {
+      "name": "toolchain",
+      "passed": true
+    },
+    {
+      "name": "actual_lock_wait",
+      "passed": true
+    },
+    {
+      "name": "same_child_sequence",
+      "passed": true
+    },
+    {
+      "name": "log_pins",
+      "passed": true
+    },
+    {
+      "name": "real_non_test_artifact",
+      "passed": true
+    },
+    {
+      "name": "original_budget_cleanup",
+      "passed": true
+    },
+    {
+      "name": "scope",
+      "passed": true
+    }
+  ],
+  "checks_passed": 23,
+  "checks_total": 23,
+  "control_plane_note": "The initial r2 response was not retained as a parseable receipt. Reconciliation used the identical request and key; only the authoritative job and complete raw receipts above are accepted.",
+  "evidence_consistent": true,
+  "job_id": "1a1a7848b96-fc05-2ba5",
+  "limitations": {
+    "full_replacement": false,
+    "global_cargo_home_reserved": false,
+    "ha_or_storage_behavior_qualified": false,
+    "normal_product_profile_qualified": false,
+    "product_build_qualified": false,
+    "production_cutover": false,
+    "source_cache_clone_executed": false,
+    "whole_host_reserved": false
+  },
+  "prior_red": {
+    "job_id": "1a1a77f3353-fc05-2b9a",
+    "reason": "Wrapper incorrectly required user ownership of the root-owned APFS mount; failed before any directory creation or probe execution."
+  },
+  "probe_elapsed_seconds": 0.3185258749872446,
+  "qualified_scope": "Actual pinned Cargo 1.98.0 on Darwin waits for O_RDONLY flock on its owned release build directory and the same child builds after unlock.",
+  "result_sha256": "d9be1b814a0f7834f22eef219c765a3dae8ede2b6be60ca02f1b88600cc69403",
+  "schema": "heptabao.mac-cargo-release-lock-root-review.v1"
+}
