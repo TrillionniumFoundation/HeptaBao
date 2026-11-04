@@ -1,0 +1,35 @@
+{
+  "actual_seed_cluster_id_bound": false,
+  "local_transport_component_passed": 6,
+  "local_transport_component_total": 6,
+  "local_transport_receipt_sha256": "fbf4cdf72226799d1675e7677e56d057615915a5711b06321ae2a0097da00144",
+  "policy_status": "Proposed implementation for owned preparation; no prior user custody decision found and no share distribution performed.",
+  "prepared_at": "2026-11-04T13:32:16.579212+00:00",
+  "production_initialized": false,
+  "remaining": [
+    "Static peer review and actual loopback normal-binary execution.",
+    "Explicit final recovery custody choice and safe verified distribution; the transitional complete private init response is not split custody.",
+    "Record actual seed cluster_id, then preserve and rebind all three peer configs and startup bindings.",
+    "Admit one combined final product candidate and corresponding native binary/physical-LAN/X230 receipts before production activation."
+  ],
+  "remote_staged": false,
+  "runtime_executed": false,
+  "schema": "heptabao.recoverable-seed-implementation-plan.v1",
+  "scope": [
+    "Exactly one new standalone loopback initialization; exact normal33 source, stage, guard, runtime and TLS leaf pins.",
+    "Make raw initialization response durable before parsing; no root token or share in arguments, environment or public output.",
+    "Require one share remains sealed and two distinct shares unseal; verify all three two-share pairs from stopped encrypted archive copies.",
+    "Root token lookup survives cold recovery and original cluster_id is identical in each copy.",
+    "Bound HTTP requests by an absolute socket shutdown timer; never replay unknown mutations.",
+    "Owned direct child stays in controller process group; SIGINT/SIGTERM trigger exact-child cleanup; no unowned process killed.",
+    "Production node/state and node/raft stay empty, stage and configuration unchanged, no V6 activation or client changes."
+  ],
+  "script": "tools/production/prepare_recoverable_seed.py",
+  "script_sha256": "6a2687be3f83583d8730353c72f36bf6c79e24e64211b8a617ba57088f910000",
+  "seed_directory": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/authority/seed-custody/bootstrap-61ff8bef-r1",
+  "shares": 3,
+  "signal_creation_window_deferred_and_actual_child_cleanup_tested": true,
+  "strict_CRLF_and_exact_content_length_verified": true,
+  "syntax_checked": true,
+  "threshold": 2
+}

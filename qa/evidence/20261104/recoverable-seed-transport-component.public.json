@@ -1,0 +1,37 @@
+{
+  "cases": [
+    {
+      "case": "complete-json",
+      "error_type": null,
+      "exact_response_durable_before_decode": true,
+      "one_request_only": true,
+      "passed": true
+    },
+    {
+      "case": "invalid-json",
+      "error_type": "JSONDecodeError",
+      "exact_response_durable_before_decode": true,
+      "one_request_only": true,
+      "passed": true
+    },
+    {
+      "case": "absolute-deadline-with-trickled-tls-header",
+      "component_budget_seconds": 0.4,
+      "elapsed_seconds": 0.4155525550013408,
+      "error_type": "BrokenPipeError",
+      "one_request_only": true,
+      "outcome": "unknown",
+      "passed": true
+    }
+  ],
+  "new_self_signed_component_ca_only": true,
+  "ok": true,
+  "production_files_read_or_changed": false,
+  "production_http_budget_seconds": 12,
+  "production_initialized": false,
+  "real_heptabao_executed": false,
+  "remote_hosts_contacted": false,
+  "schema": "heptabao.recoverable-seed-local-transport-component.v1",
+  "source_sha256": "6e11147b6f97752d5491cd652e1f1b4b03601bcf8cfa866c4d49d7e7208add93",
+  "temporary_fixture_removed": true
+}

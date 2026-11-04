@@ -1,0 +1,14 @@
+{
+  "actual_outcome": "response_received",
+  "actual_status_accepted": 204,
+  "case": "truncated204_header_without_final_CRLFCRLF",
+  "expected_outcome": "unknown",
+  "known_defect_reproduced": true,
+  "production_changed": false,
+  "real_heptabao_executed": false,
+  "remote_hosts_contacted": false,
+  "requests": 1,
+  "schema": "heptabao.seed-http-header-red-reproduction.v1",
+  "source_sha256": "6e11147b6f97752d5491cd652e1f1b4b03601bcf8cfa866c4d49d7e7208add93",
+  "strict_header_safety_qualified": false
+}

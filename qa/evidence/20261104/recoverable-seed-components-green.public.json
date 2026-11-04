@@ -1,0 +1,59 @@
+{
+  "cases": [
+    {
+      "case": "complete-json",
+      "error_type": null,
+      "exact_response_durable_before_decode": true,
+      "one_request_only": true,
+      "passed": true
+    },
+    {
+      "case": "invalid-json",
+      "error_type": "JSONDecodeError",
+      "exact_response_durable_before_decode": true,
+      "one_request_only": true,
+      "passed": true
+    },
+    {
+      "case": "truncated204-header",
+      "error": "http_response_header_incomplete",
+      "one_request_only": true,
+      "outcome": "unknown",
+      "passed": true
+    },
+    {
+      "case": "truncated-declared-body",
+      "error": "original_http_deadline_or_size",
+      "one_request_only": true,
+      "outcome": "unknown",
+      "passed": true
+    },
+    {
+      "case": "absolute-deadline-with-trickled-tls-header",
+      "component_budget_seconds": 0.4,
+      "elapsed_seconds": 0.40605200600111857,
+      "error_type": "BrokenPipeError",
+      "one_request_only": true,
+      "outcome": "unknown",
+      "passed": true
+    },
+    {
+      "actual_child_retained_and_reaped": true,
+      "actual_signal_delivered": true,
+      "case": "sigterm-after-spawn-before-popen-return",
+      "controller_process_group_retained": true,
+      "passed": true,
+      "unowned_process_signalled": false
+    }
+  ],
+  "new_self_signed_component_ca_only": true,
+  "ok": true,
+  "production_files_read_or_changed": false,
+  "production_http_budget_seconds": 12,
+  "production_initialized": false,
+  "real_heptabao_executed": false,
+  "remote_hosts_contacted": false,
+  "schema": "heptabao.recoverable-seed-local-transport-component.v1",
+  "source_sha256": "6a2687be3f83583d8730353c72f36bf6c79e24e64211b8a617ba57088f910000",
+  "temporary_fixture_removed": true
+}

@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.controller-health-delivery-observation.v1",
+  "fixed_challenge_deadline_seconds": 10,
+  "host_offline_inferred": false,
+  "remote_commands_started": false,
+  "observations": [
+    {
+      "host": "mac",
+      "result": {
+        "status": "fulfilled",
+        "value": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `codex_apps/heptaruntime_mac_controller.host_health`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+            }
+          ],
+          "isError": true
+        }
+      }
+    },
+    {
+      "host": "rog",
+      "result": {
+        "status": "fulfilled",
+        "value": {
+          "content": [
+            {
+              "type": "text",
+              "text": "tool call error: tool call failed for `codex_apps/heptaruntime_mac_controller.host_health`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+            }
+          ],
+          "isError": true
+        }
+      }
+    }
+  ]
+}
