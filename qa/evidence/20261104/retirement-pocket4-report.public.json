@@ -1,0 +1,337 @@
+{
+  "all_clients_migrated": false,
+  "authbus": {
+    "address": {
+      "hostname": "100.66.117.33",
+      "port": 8200,
+      "scheme": "https",
+      "userinfo_path_and_query_omitted": true
+    },
+    "configuration": {
+      "caFile": "/home/alex/.openclaw/credentials/authbus/ca.crt",
+      "enforceRefreshLeases": null,
+      "hostId": "pocket4",
+      "leader": false,
+      "manageOrder": true,
+      "orderExcludeAgentIds": [
+        "main",
+        "tg8687951891"
+      ],
+      "pollIntervalMs": 15000,
+      "publishNew": true,
+      "releaseGeneration": 202,
+      "roleIdFile": "/home/alex/.openclaw/credentials/authbus/role_id",
+      "schedulerMode": null,
+      "secretIdFile": "/home/alex/.openclaw/credentials/authbus/secret_id"
+    },
+    "enabled": true
+  },
+  "backup_path_candidates": [
+    {
+      "directory": "/home/alex/.openclaw",
+      "recursive": false,
+      "selected": [
+        {
+          "bytes": 21250,
+          "device": 66306,
+          "gid": 1000,
+          "inode": 31327277,
+          "kind": "file",
+          "mode": 384,
+          "mtime_ns": 1791167446302726287,
+          "path": "/home/alex/.openclaw/openclaw.json.bak",
+          "uid": 1000
+        },
+        {
+          "bytes": 4096,
+          "device": 66306,
+          "gid": 1000,
+          "inode": 33588843,
+          "kind": "directory",
+          "mode": 448,
+          "mtime_ns": 1791795077151225716,
+          "path": "/home/alex/.openclaw/rollback-heptabao-r470-20261012",
+          "uid": 1000
+        }
+      ],
+      "total_directory_entries": 59,
+      "truncated": false
+    },
+    {
+      "directory": "/home/alex/.config",
+      "recursive": false,
+      "selected": [],
+      "total_directory_entries": 53,
+      "truncated": false
+    },
+    {
+      "directory": "/home/alex",
+      "recursive": false,
+      "selected": [
+        {
+          "bytes": 44875,
+          "device": 66306,
+          "gid": 1000,
+          "inode": 31371701,
+          "kind": "file",
+          "mode": 384,
+          "mtime_ns": 1792469105674405996,
+          "path": "/home/alex/heptabao-authbus-backup_restore_owned_r2.py",
+          "uid": 1000
+        },
+        {
+          "bytes": 4096,
+          "device": 66306,
+          "gid": 1000,
+          "inode": 31645913,
+          "kind": "directory",
+          "mode": 448,
+          "mtime_ns": 1792593500516412594,
+          "path": "/home/alex/heptabao-authbus-original-plugin-pocket4-snapshot-20261021-r1",
+          "uid": 1000
+        },
+        {
+          "bytes": 4096,
+          "device": 66306,
+          "gid": 1000,
+          "inode": 31376576,
+          "kind": "directory",
+          "mode": 448,
+          "mtime_ns": 1792591118813659958,
+          "path": "/home/alex/heptabao-authbus-sdk-pocket4-snapshot-20261021-r1",
+          "uid": 1000
+        },
+        {
+          "bytes": 4096,
+          "device": 66306,
+          "gid": 1000,
+          "inode": 41204923,
+          "kind": "directory",
+          "mode": 448,
+          "mtime_ns": 1793741674625667156,
+          "path": "/home/alex/heptabao-full-current-recovery-20261103-r1",
+          "uid": 1000
+        },
+        {
+          "bytes": 4096,
+          "device": 66306,
+          "gid": 1000,
+          "inode": 41204925,
+          "kind": "directory",
+          "mode": 448,
+          "mtime_ns": 1793746780861988695,
+          "path": "/home/alex/heptabao-full-current-recovery-20261103-r2",
+          "uid": 1000
+        }
+      ],
+      "total_directory_entries": 1539,
+      "truncated": false
+    }
+  ],
+  "changes": [],
+  "client_config": {
+    "bytes": 21250,
+    "device": 66306,
+    "gid": 1000,
+    "inode": 31327275,
+    "kind": "file",
+    "mode": 384,
+    "mtime_ns": 1791167446299726187,
+    "path": "/home/alex/.openclaw/openclaw.json",
+    "sha256": "3611380b8c77282e785e00e20d9eba8bc8cf0164b3b3f00e2ea5d1f52a441c98",
+    "uid": 1000
+  },
+  "client_config_after": {
+    "bytes": 21250,
+    "device": 66306,
+    "gid": 1000,
+    "inode": 31327275,
+    "kind": "file",
+    "mode": 384,
+    "mtime_ns": 1791167446299726187,
+    "path": "/home/alex/.openclaw/openclaw.json",
+    "uid": 1000
+  },
+  "client_config_metadata_stable": true,
+  "committed_backup_qualified": false,
+  "complete_asset_inventory": false,
+  "configured_agent_ids": [
+    "main",
+    "tg8687951891"
+  ],
+  "credential_files_read": false,
+  "docker_listing": {
+    "argv": [
+      "/usr/bin/docker",
+      "ps",
+      "-a",
+      "--format",
+      "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"
+    ],
+    "exit_code": 1,
+    "matched_rows": [],
+    "stderr_sha256": "d0527b91b88a4736c47893d33c0242b10f32454ed6cacf1081bc07594358dfc5",
+    "truncated": false
+  },
+  "elapsed_seconds": 1.0727225949522108,
+  "errors": [],
+  "finished_unix_ns": 1793805450162016233,
+  "host": "alex-G1628-04",
+  "installed_binary_candidates": [],
+  "manager_observations": [
+    {
+      "argv": [
+        "/usr/bin/systemctl",
+        "list-unit-files",
+        "--no-pager",
+        "--no-legend"
+      ],
+      "exit_code": 0,
+      "matched_rows": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "truncated": false
+    },
+    {
+      "argv": [
+        "/usr/bin/systemctl",
+        "list-units",
+        "--all",
+        "--no-pager",
+        "--no-legend"
+      ],
+      "exit_code": 0,
+      "matched_rows": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "truncated": false
+    },
+    {
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "list-unit-files",
+        "--no-pager",
+        "--no-legend"
+      ],
+      "exit_code": 0,
+      "matched_rows": [
+        "openclaw-authbus-restart-when-idle.service                                                   static    -",
+        "openclaw-gateway.service                                                                     enabled   enabled",
+        "openclaw-local-ollama.service                                                                enabled   enabled",
+        "openclaw-ollama-desktop-tunnel.service                                                       disabled  enabled"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "truncated": false
+    },
+    {
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "list-units",
+        "--all",
+        "--no-pager",
+        "--no-legend"
+      ],
+      "exit_code": 0,
+      "matched_rows": [
+        "  openclaw-gateway.service                                                                                                            loaded    inactive   dead               OpenClaw Gateway (v2026.7.1-2)",
+        "  openclaw-local-ollama.service                                                                                                       loaded    active     running            Pocket local Ollama embedding server for OpenClaw"
+      ],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "truncated": false
+    }
+  ],
+  "platform": "linux",
+  "process_arguments_read": false,
+  "process_environment_read": false,
+  "process_names_only": {
+    "argv": [
+      "/bin/ps",
+      "-axo",
+      "pid=,ppid=,comm="
+    ],
+    "exit_code": 0,
+    "matched_rows": [],
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "truncated": false
+  },
+  "retirement_authorized_by_this_report": false,
+  "schema": "heptabao.retirement-boundaries-readonly.v1",
+  "service_files": [
+    {
+      "bytes": 213,
+      "device": 66306,
+      "gid": 1000,
+      "inode": 31627527,
+      "kind": "file",
+      "mode": 420,
+      "mtime_ns": 1786452667639156392,
+      "path": "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service",
+      "sha256": "edfa0b8eb79fc7017265a08b77e14c02688b65b677d25c1d8101dcfa39092d84",
+      "stable_read": true,
+      "uid": 1000
+    },
+    {
+      "bytes": 4096,
+      "device": 66306,
+      "gid": 1000,
+      "inode": 31761854,
+      "kind": "directory",
+      "mode": 448,
+      "mtime_ns": 1792717299245784089,
+      "path": "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d",
+      "uid": 1000
+    },
+    {
+      "bytes": 1054,
+      "device": 66306,
+      "gid": 1000,
+      "inode": 31589939,
+      "kind": "file",
+      "mode": 420,
+      "mtime_ns": 1786380900380548228,
+      "path": "/home/alex/.config/systemd/user/openclaw-gateway.service",
+      "sha256": "6fda457a5c62fe4a8d9665602bf288b377eddf17af9d2426f4efbea10a2be457",
+      "stable_read": true,
+      "uid": 1000
+    },
+    {
+      "bytes": 4096,
+      "device": 66306,
+      "gid": 1000,
+      "inode": 32374785,
+      "kind": "directory",
+      "mode": 448,
+      "mtime_ns": 1792717299246784110,
+      "path": "/home/alex/.config/systemd/user/openclaw-gateway.service.d",
+      "uid": 1000
+    },
+    {
+      "bytes": 381,
+      "device": 66306,
+      "gid": 1000,
+      "inode": 31625384,
+      "kind": "file",
+      "mode": 436,
+      "mtime_ns": 1785841295746390080,
+      "path": "/home/alex/.config/systemd/user/openclaw-local-ollama.service",
+      "sha256": "2bce29a96f0af8b8173635dc19b6d12a1a12dbdb0d7e0d8410bf9c7e56e15413",
+      "stable_read": true,
+      "uid": 1000
+    },
+    {
+      "bytes": 630,
+      "device": 66306,
+      "gid": 1000,
+      "inode": 31599072,
+      "kind": "file",
+      "mode": 384,
+      "mtime_ns": 1785818026443175184,
+      "path": "/home/alex/.config/systemd/user/openclaw-ollama-desktop-tunnel.service",
+      "sha256": "ce3b5cef1fc37ae37a494a554514f8bf981fc24e0f9dfc36ba4c3007e7347c57",
+      "stable_read": true,
+      "uid": 1000
+    }
+  ],
+  "started_unix_ns": 1793805449089304639,
+  "uid": 1000
+}

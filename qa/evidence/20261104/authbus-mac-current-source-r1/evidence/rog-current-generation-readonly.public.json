@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.current-rog-credential-generation-readonly.v1",
+  "source": "/home/qian-qi/.openclaw/agents/main/agent/openclaw-agent.sqlite",
+  "sourceCustodyVerified": true,
+  "sourceCohortStableDuringRead": true,
+  "storeJsonSha256": "f88c58180eee59f4518b1596c46917b961b7a8ecb74a2c640e31ce80007fd411",
+  "storeCanonicalSha256": "28fdce224d90a6d4a5a5ec2313130fbef13ce82e483774174d66d52a198823ea",
+  "profiles": [
+    {
+      "ordinal": 1,
+      "provider": "openai",
+      "type": "oauth",
+      "credentialSha256": "bca88c7adde84057871fd63f202e6aba80d453a04f75151df1d29f269dfaa5f1",
+      "samePriorProviderVerifiedCredential": true,
+      "expiresUnixMs": 1794533945016,
+      "storedExpiryFuture": true,
+      "jwtExpiryFuture": true,
+      "jwtAccountMatches": true
+    },
+    {
+      "ordinal": 2,
+      "provider": "openai",
+      "type": "oauth",
+      "credentialSha256": "131b8515d48433365dd84555e7659297d4d62de631f9a526a8a4293f03396175",
+      "samePriorProviderVerifiedCredential": false,
+      "expiresUnixMs": 1793840722317,
+      "storedExpiryFuture": true,
+      "jwtExpiryFuture": true,
+      "jwtAccountMatches": true
+    },
+    {
+      "ordinal": 3,
+      "provider": "openai",
+      "type": "oauth",
+      "credentialSha256": "63a40b812af24584847961eeaff54e780eacc66625970ee40ea2d9b1e0a70398",
+      "samePriorProviderVerifiedCredential": false,
+      "expiresUnixMs": 1794365041000,
+      "storedExpiryFuture": true,
+      "jwtExpiryFuture": true,
+      "jwtAccountMatches": true
+    }
+  ],
+  "priorProviderProofSha256": "3050622c35bacb53ac47f532d4d5230c7c5c68bd2db243376c3c27385744a878",
+  "readOnlySqlite": true,
+  "credentialValuesPublished": false,
+  "accountIdentitiesPublished": false,
+  "nativeUserCredentialNotSelected": true,
+  "providerCalled": false,
+  "sdkImported": false,
+  "productionChanged": false
+}

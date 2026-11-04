@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.normal33-current-auth-source-scope-addendum.v1",
+  "originalRawReceiptsUnchanged": true,
+  "rowScope": "The unchanged current_credential_stage driver captures only primary records from auth_profile_store and auth_profile_state for the five configured Mac agents.",
+  "nonPrimaryAuthRowsQualified": false,
+  "otherDatabaseTablesQualified": false,
+  "completeDatabaseBackupRecoveryQualified": false,
+  "sdkLogicalStoreScope": "Three installed-SDK reads match complete logical stores visible from those private reconstructed primary rows; the separate selector performs whole logical-store CAS rollback.",
+  "capturedOAuthProfileRecords": 12,
+  "capturedExpiredOAuthProfileRecords": 12,
+  "uniqueProviderAccountsCountQualified": false,
+  "providerCredentialValidityFromRowMigrationQualified": false,
+  "normal33NativeProfile2CredentialBindingQualified": true,
+  "freshProviderRequestPerformed": false,
+  "productionGatewayRecoveryQualified": false
+}

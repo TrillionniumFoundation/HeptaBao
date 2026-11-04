@@ -1,0 +1,426 @@
+{
+  "all_accounts_qualified": false,
+  "binary_sha256": "c8ab414e8a4af70f4c64215258dc192129f3b975aaeda1d5c2c6ee1dcffdc932",
+  "bridge_default_selector_match_count_in_current_profiles": 0,
+  "build_result_sha256": "c50823dde5507b6a441e0440c300de236b6a85d79633437bf817b7be08186d73",
+  "checks": [
+    {
+      "case": "normal_build_receipt",
+      "passed": true
+    },
+    {
+      "case": "normal_build_identity",
+      "passed": true
+    },
+    {
+      "case": "source_frozen",
+      "passed": true
+    },
+    {
+      "case": "binary_identity",
+      "passed": true
+    },
+    {
+      "case": "script.native_profile_stage.py",
+      "passed": true
+    },
+    {
+      "case": "script.native_profile_prepare_v2.mjs",
+      "passed": true
+    },
+    {
+      "case": "script.native_current_probe.mjs",
+      "passed": true
+    },
+    {
+      "case": "script.current_stage_read.mjs",
+      "passed": true
+    },
+    {
+      "case": "script.current_credential_stage.py",
+      "passed": true
+    },
+    {
+      "case": "native_generation_same_as_prior_verified",
+      "passed": true
+    },
+    {
+      "case": "native_matches_original_profile2_only",
+      "passed": true
+    },
+    {
+      "case": "native_access_not_expired",
+      "passed": true
+    },
+    {
+      "case": "original_usage_module_located",
+      "passed": true
+    },
+    {
+      "case": "one_current_provider_read_validated",
+      "passed": true
+    },
+    {
+      "case": "native_stage_passed",
+      "passed": true
+    },
+    {
+      "case": "native_source_unchanged",
+      "passed": true
+    },
+    {
+      "case": "normal_source_and_binary_unchanged",
+      "passed": true
+    }
+  ],
+  "finished_unix_ms": 1793762415376,
+  "full_replacement_qualified": false,
+  "j3160_contacted": false,
+  "native_access_expires_unix_ms": 1794569676000,
+  "native_source_sha256": "d13068db6b55edc3e1ca798b3726e2c5fc6de659b160a4b10dfdd333d5b5682c",
+  "native_stage_exit_code": 0,
+  "native_stage_result": {
+    "actualServerColdRecoveryQualified": true,
+    "allAccountsQualified": false,
+    "binarySha256": "c8ab414e8a4af70f4c64215258dc192129f3b975aaeda1d5c2c6ee1dcffdc932",
+    "checks": [
+      {
+        "case": "current_native_proof",
+        "passed": true
+      },
+      {
+        "case": "native_capture_current_before",
+        "passed": true
+      },
+      {
+        "case": "private_sdk_preparation",
+        "passed": true
+      },
+      {
+        "case": "binary_identity",
+        "passed": true
+      },
+      {
+        "case": "initialize",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "unseal",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "kv2_mount",
+        "passed": true,
+        "status": 204
+      },
+      {
+        "case": "approle_mount",
+        "passed": true,
+        "status": 204
+      },
+      {
+        "case": "formal_activation",
+        "passed": true,
+        "status": 204
+      },
+      {
+        "case": "capacity",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "formal_format2",
+        "passed": true
+      },
+      {
+        "case": "validated_profile_import",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "reader_policy",
+        "passed": true,
+        "status": 204
+      },
+      {
+        "case": "reader_role",
+        "passed": true,
+        "status": 204
+      },
+      {
+        "case": "role_id",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "secret_id",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "initial-read",
+        "passed": true
+      },
+      {
+        "case": "initial-read.exact",
+        "passed": true
+      },
+      {
+        "case": "actual_sigkill_waited",
+        "passed": true
+      },
+      {
+        "case": "cold_sealed",
+        "passed": true,
+        "status": 503
+      },
+      {
+        "case": "cold_unseal",
+        "passed": true,
+        "status": 200
+      },
+      {
+        "case": "cold-read",
+        "passed": true
+      },
+      {
+        "case": "cold-read.exact",
+        "passed": true
+      },
+      {
+        "case": "production_auth_rows_unchanged",
+        "passed": true
+      },
+      {
+        "case": "native_source_still_current",
+        "passed": true
+      },
+      {
+        "case": "service_disk_no_credential_plaintext",
+        "passed": true
+      },
+      {
+        "case": "diagnostics_no_credential_values",
+        "passed": true
+      }
+    ],
+    "cold-read": {
+      "checks": [
+        {
+          "case": "native-profile-2.exact_app_role_read",
+          "passed": true
+        },
+        {
+          "case": "native-profile-2.cross_agent_policy_denied",
+          "passed": true
+        },
+        {
+          "case": "native-profile-2.self_revoke_confirmed",
+          "passed": true
+        }
+      ],
+      "credentialValuesPublished": false,
+      "documentsSha256": "3d77abbbfa8c04a15d5b9a297b9dd70a80dd521a809e732d5ba12712279d5859",
+      "ok": true,
+      "providerCalled": false
+    },
+    "credentialValuesPublished": false,
+    "initial-read": {
+      "checks": [
+        {
+          "case": "native-profile-2.exact_app_role_read",
+          "passed": true
+        },
+        {
+          "case": "native-profile-2.cross_agent_policy_denied",
+          "passed": true
+        },
+        {
+          "case": "native-profile-2.self_revoke_confirmed",
+          "passed": true
+        }
+      ],
+      "credentialValuesPublished": false,
+      "documentsSha256": "3d77abbbfa8c04a15d5b9a297b9dd70a80dd521a809e732d5ba12712279d5859",
+      "ok": true,
+      "providerCalled": false
+    },
+    "j3160Contacted": false,
+    "modelCalled": false,
+    "nativeCurrentCredentialMirroredIntoFormalV6": true,
+    "nativeProofSha256": "9707009a540aa04f38a285cc4847cd67cef688dceec3540427c31a4fb1d23064",
+    "ok": true,
+    "preparedProfiles": 1,
+    "privateSdkAtomicRollbackQualified": true,
+    "productionChanged": false,
+    "productionGatewaySelectionQualified": false,
+    "productionTrafficCutover": false,
+    "profileDocumentSha256": "1eb4cfc6c45aac7106333db5f0f6d307f3d810529c0a9c947ded968c476df102",
+    "providerMutationAttempted": false,
+    "providerReadsInThisRun": 0,
+    "schema": "heptabao.native-profile-private-v6-stage.v1",
+    "sdkPreparation": {
+      "blockedNetworkOrChildOperations": 0,
+      "blockedOperations": [],
+      "checks": [
+        {
+          "case": "private_clone_environment",
+          "passed": true
+        },
+        {
+          "case": "validated_native_capture_exact",
+          "passed": true
+        },
+        {
+          "case": "unique_existing_account_match",
+          "passed": true
+        },
+        {
+          "case": "matches_previously_identified_profile_two",
+          "passed": true
+        },
+        {
+          "case": "sdk_identity_gate",
+          "passed": true
+        },
+        {
+          "case": "sdk_freshness_gate",
+          "passed": true
+        },
+        {
+          "case": "installed_sdk_atomic_update",
+          "passed": true
+        },
+        {
+          "case": "private_candidate_exact",
+          "passed": true
+        },
+        {
+          "case": "nonmatching_profiles_unchanged",
+          "passed": true
+        },
+        {
+          "case": "noncredential_store_state_unchanged",
+          "passed": true
+        },
+        {
+          "case": "current_sdk_explicit_profile_resolves_native_access",
+          "passed": true
+        },
+        {
+          "case": "installed_sdk_atomic_rollback",
+          "passed": true
+        },
+        {
+          "case": "private_rollback_exact",
+          "passed": true
+        },
+        {
+          "case": "installed_sdk_candidate_reprepared",
+          "passed": true
+        },
+        {
+          "case": "sdk_sources_unchanged",
+          "passed": true
+        },
+        {
+          "case": "no_unexpected_network_or_child_calls",
+          "passed": true
+        },
+        {
+          "case": "native_sqlite_filesystem_policy_checked",
+          "passed": true
+        }
+      ],
+      "credentialValuesPublished": false,
+      "explicitProfileResolutionOnly": true,
+      "networkOrChildOperationsAttempted": 2,
+      "ok": true,
+      "permittedReadOnlyMountCalls": [
+        {
+          "operation": "system_mount_enumeration",
+          "outputPublished": false,
+          "succeeded": true
+        },
+        {
+          "operation": "system_mount_enumeration",
+          "outputPublished": false,
+          "succeeded": true
+        }
+      ],
+      "preparedProfileCount": 1,
+      "privateSdkAtomicUpdateAndRollbackQualified": true,
+      "productionChanged": false,
+      "productionGatewaySelectionQualified": false,
+      "profileDocumentSha256": "1eb4cfc6c45aac7106333db5f0f6d307f3d810529c0a9c947ded968c476df102",
+      "profileIdentityPublished": false,
+      "providerCalled": false,
+      "schema": "heptabao.native-profile-private-sdk-preparation.v1",
+      "sdkCandidateOrderAfter": [
+        1,
+        2,
+        3
+      ],
+      "sdkCandidateOrderBefore": [
+        1,
+        2,
+        3
+      ],
+      "sdkPins": {
+        "oauth-B4aOCsid.js": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e",
+        "order-CeBlX0NH.js": "4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732",
+        "source-check-ZSz5NzGW.js": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+        "sqlite-wal-Bhk2Ro-u.js": "ef69e7cad95ff5cd5fe3087331294daae557833bcbc3d0ae140394d16855c3da",
+        "store-DH33UrUj.js": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf"
+      }
+    }
+  },
+  "native_stage_result_sha256": "a9438fb224bc19d2e69b71e76547e4a5a3a607ab87ce8f5a6929813f8c053802",
+  "ok": true,
+  "owned_survivors_after_cleanup": [],
+  "owned_survivors_before_cleanup": [],
+  "production_changed": false,
+  "production_cutover": false,
+  "provider_read_result": {
+    "accountIdentityPublished": false,
+    "activeGatewayCredentialBindingProven": false,
+    "allAccountsQualified": false,
+    "credentialValuesPublished": false,
+    "endpoint": "https://chatgpt.com/backend-api/wham/usage",
+    "httpStatus": 200,
+    "j3160Contacted": false,
+    "modelCalled": false,
+    "ok": true,
+    "privateCurrentCaptureSaved": true,
+    "productionChanged": false,
+    "providerMutationAttempted": false,
+    "providerReadAttempted": true,
+    "refreshAttempted": false,
+    "requestCount": 1,
+    "responseBytes": 1568,
+    "schema": "heptabao.native-current-account-read.v1",
+    "sdkSnapshotParsed": true,
+    "sdkSourcesUnchanged": true,
+    "sdkUsageModuleSha256": "cab428b63c6e8912f444089e120c95aea4a1d5edf4258c7fd1b20346558d12e6",
+    "singleCurrentNativeCredentialValidated": true,
+    "source": "/Users/qianqi/.codex/auth.json",
+    "sourceSha256": "d13068db6b55edc3e1ca798b3726e2c5fc6de659b160a4b10dfdd333d5b5682c",
+    "sourceUnchanged": true,
+    "tlsVerified": true,
+    "usageWindowCount": 1
+  },
+  "provider_refresh_attempted": false,
+  "schema": "heptabao.native-profile2-normal-8d-rehearsal.v1",
+  "source_commit": "8d3eeb9b2a1ffedc9161b8cd6720fbe48fa93fab",
+  "source_tree": "34719a51ad942d3bc839df3d78524e9cf4326f30",
+  "started_unix_ms": 1793762409686,
+  "unchanged_driver_pins": {
+    "current_credential_stage.py": "1851ae94089dfb32c2f088164578044230a255239d11f598d41560899366936e",
+    "current_stage_read.mjs": "7116904030c3718858a7d10cb2129acaf0dd20ff5d5a887faec0124567540860",
+    "native_current_probe.mjs": "97147f7762174e8782f8a196ab1abf6111b9413c75b9deef381ccd70b33c8222",
+    "native_profile_prepare_v2.mjs": "185c9c8d9f7c803c1466c984e59c0cda8fff22f0e6a20d03be40bdb6fbf93098",
+    "native_profile_stage.py": "e30b71a0b1f0398767405071b3e5418c6ed3b12512675761ce8387a02b58aab2"
+  }
+}

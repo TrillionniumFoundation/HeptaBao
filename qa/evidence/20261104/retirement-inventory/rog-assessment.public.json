@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.retirement-inventory-independent-receipt-review.v1",
+  "host": "rog",
+  "job_id": "1a1a6fa6a1e-fc05-29b6",
+  "terminal_exit": 0,
+  "stdout_bytes": 14289,
+  "stdout_sha256": "84bf8960938be79f6bf30ab6add2def77c36bf66049e26e0949293d420ab828c",
+  "sdk_payload_sha256": "11eea6b3ef580479ed1d51f2346461bf747f6afa864218dcff1d6b9ff61af118",
+  "source_script_sha256": "7b3f7e3283bc472cbf138d5bc01f4e8a5359cd756a1c7ef0d91cd83287fd99fa",
+  "changes": [],
+  "credential_files_read": false,
+  "process_arguments_read": false,
+  "process_environment_read": false,
+  "complete_asset_inventory": false,
+  "all_clients_migrated": false,
+  "committed_backup_qualified": false,
+  "retirement_authorized_by_this_report": false,
+  "authbus_address": {
+    "hostname": "100.66.117.33",
+    "port": 8200,
+    "scheme": "https",
+    "userinfo_path_and_query_omitted": true
+  },
+  "authbus_enabled": true,
+  "service_file_count": 9,
+  "installed_binary_candidates": [],
+  "backup_candidates": 33,
+  "errors": [],
+  "elapsed_seconds": 0.4582056190120056
+}

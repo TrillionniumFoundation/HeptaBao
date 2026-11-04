@@ -1,0 +1,125 @@
+{
+  "allAccountsQualified": false,
+  "allOwnedServersStopped": true,
+  "archiveSha256": "8d8f43cafa85271c609fbfb5385b0f01e2839d1d611a18183396ea33a654158b",
+  "assertions": {
+    "actualSdkCold": 51,
+    "actualSdkColdRollback": 40,
+    "actualSdkInitial": 51,
+    "actualSdkInitialRollback": 40,
+    "actualSelectorDriver": 54,
+    "coldAppRoleReadAclRevoke": 15,
+    "currentAuthRowDriver": 50,
+    "initialAppRoleReadAclRevoke": 15,
+    "outer": 14
+  },
+  "binarySha256": "d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20",
+  "bridgeGate": {
+    "actualBridgeReady": false,
+    "exactSelectorOptionsRefused": true,
+    "policyChanged": false,
+    "productionGuardReason": "geoip_disagreement"
+  },
+  "completeOpenClawDatabaseRecoveryQualified": false,
+  "currentRowsQualification": "Fresh five-agent auth-row lossless migration and auth-only recovery; all twelve captured OAuth profile records are expired, and records are not a count of unique accounts.",
+  "currentSourceRows": {
+    "agents": 5,
+    "authTablesOnly": true,
+    "documentsSha256": "5d6aadc53c72c239450dd8c9567ac341532dc2cbef2bad1aa9b9deae4a49043a",
+    "expiredOAuthProfiles": 12,
+    "freshCurrentSource": true,
+    "futureDatedOAuthProfiles": 0,
+    "literalCredentialFields": 24,
+    "oldBackupUsed": false,
+    "profileRows": 12,
+    "secretReferenceFields": 0
+  },
+  "fullRawFilesValidated": 14,
+  "fullReplacementQualified": false,
+  "independentExportRemaining": [],
+  "liveJob": "1a1a6eccc77-fc05-2986",
+  "liveJobReplayed": false,
+  "nativeCredentialSha256": "48e095587f180413f65274d6d25d88d4ee6f9f99d981575f54bc4fb3399c286e",
+  "newLoginThisRun": false,
+  "oauthRefreshThisRun": false,
+  "ok": true,
+  "processBoundary": "Actual server process SIGKILL/wait/cold unseal; no operating-system service-manager or production-service restart is claimed.",
+  "productionGatewaySelectionQualified": false,
+  "productionTrafficRollbackQualified": false,
+  "providerProof": {
+    "credentialAndResolvedAccessByteIdentical": true,
+    "currentSelectionSha256": "51e9f131bee2bdc6d8f92a42355a52e07b804587337d3037aa7f26f041f1ade7",
+    "priorRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/live-r4",
+    "priorSelectionSha256": "f0de303bdbc19074c959b406e1741bddd529d5e4707ed811bfc4df3d8b1cb4d2",
+    "proofSha256": "2a7df051464c3036b9d5d50ab17647c93ea75b6d7bcfd320415166c52fbf4867",
+    "reused": true,
+    "scope": "Prior real provider success for the byte-identical actual default-selected credential; not a fresh provider connectivity test."
+  },
+  "providerReadThisRun": false,
+  "rawFiles": {
+    "current-auth-rows-custody.intent.public.json": {
+      "bytes": 467,
+      "sha256": "6d2ca747103231ab81ea5eeb6e9f5da0f408c16f0eeac630df5be9532998be7d"
+    },
+    "current-auth-rows-r1/custody.public.json": {
+      "bytes": 499,
+      "sha256": "ec038cf008cec468d7934e1f50668bad15ad395335dbd42128302fb4c255b0af"
+    },
+    "current-auth-rows-r1/result.public.json": {
+      "bytes": 9909,
+      "sha256": "7221a1e0887f35e362acf0ea8533e8b9d5f5d1c3faaafa0031984fad9eb09bf8"
+    },
+    "current-auth-rows.intent.public.json": {
+      "bytes": 1421,
+      "sha256": "a21562d18cf93329eb5a71f1e5030bbfb1bf6d42e36d8274c114e2889b6f41c3"
+    },
+    "native-profile2-selector-r1/consumer-cold-new-process/result.public.json": {
+      "bytes": 4620,
+      "sha256": "3765cfe5f620dfd84adbcf3816cae1708bd7a1d32ea2d0799c25efff878b6a6c"
+    },
+    "native-profile2-selector-r1/consumer-cold-new-process/rollback-result.public.json": {
+      "bytes": 2601,
+      "sha256": "5e5d2188e1c2f2b08f7461b53c7d87bfc8d69d1a07c5b646f57b965ee01ee73d"
+    },
+    "native-profile2-selector-r1/consumer-initial/result.public.json": {
+      "bytes": 4620,
+      "sha256": "14c24068726ee75dbc8da596c7c304004d13d49d8f5720e9614ae55b022ac181"
+    },
+    "native-profile2-selector-r1/consumer-initial/rollback-result.public.json": {
+      "bytes": 2601,
+      "sha256": "5e5d2188e1c2f2b08f7461b53c7d87bfc8d69d1a07c5b646f57b965ee01ee73d"
+    },
+    "native-profile2-selector-r1/linked-prior-provider-read.public.json": {
+      "bytes": 788,
+      "sha256": "6598a834638850c3296ef5431384213dfb2ce369fe6af27626f2af67346ad68d"
+    },
+    "native-profile2-selector-r1/provider-read-intent.public.json": {
+      "bytes": 356,
+      "sha256": "25967dd5d5819d767b3838cafb8c2513afb198f79ed54eafbb7a85a9303f0ad9"
+    },
+    "native-profile2-selector-r1/result.public.json": {
+      "bytes": 26359,
+      "sha256": "b7deec943bf523c737da753f9b639852eb4af824429933cb087f2f6c4c9958f4"
+    },
+    "native-profile2-selector.intent.public.json": {
+      "bytes": 1922,
+      "sha256": "b5b1a657455b26ac36c8a79e5d3221ad743ab7e8441670b3154ec198e8fb5101"
+    },
+    "result.public.json": {
+      "bytes": 11783,
+      "sha256": "a62fc3a506ae26b6d14bf6a043f17dc0c7668ee91915c01276a74b7543f7db63"
+    },
+    "stage.public.json": {
+      "bytes": 9138,
+      "sha256": "5a15d1be299349b971cf81c080df96996bff2fc48240cab1bdb8153268232f2e"
+    }
+  },
+  "rawReceiptReadTimeoutPreserved": true,
+  "rogCurrentProfile1Scope": "Separate current SQLite read matched prior verified credential generation; no new normal33 ROG storage/SDK qualification is inferred from this Mac run.",
+  "schema": "heptabao.normal33-current-auth-source-agent-review.v1",
+  "sdkRecovery": "Three offline installed-SDK reads match whole logical stores. Independent cold server process plus initial/cold original installed-plugin and SDK default selection. Two full logical-store SDK CAS rollbacks restore private baselines.",
+  "sourceAndProductionFencesUnchanged": true,
+  "sourceCommit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "sourcePinsCount": 52,
+  "sourceTree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+}

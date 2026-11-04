@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.retirement-inventory-control.v1",
+  "host": "rog",
+  "source_sha256": "7b3f7e3283bc472cbf138d5bc01f4e8a5359cd756a1c7ef0d91cd83287fd99fa",
+  "idempotency_key": "root61ff-retirement-readonly-inventory-rog-20261104-r1",
+  "control_outcome": "process_start_mcp_request_timed_out",
+  "job_id": null,
+  "dispatch_or_execution_not_inferred": true,
+  "retry_requires_same_key_and_exact_args": true,
+  "read_only": true,
+  "production_changed": false
+}

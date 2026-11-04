@@ -1,0 +1,125 @@
+{
+  "all_backup_restore_paths_migrated": false,
+  "all_clients_migrated": false,
+  "changes": [],
+  "complete_asset_inventory": false,
+  "credential_values_read": false,
+  "hosts": [
+    {
+      "authbus_address": {
+        "hostname": "100.66.117.33",
+        "port": 8200,
+        "scheme": "https",
+        "userinfo_path_and_query_omitted": true
+      },
+      "config_metadata_stable": true,
+      "config_sha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+      "docker_probe": null,
+      "exit_code": 0,
+      "host": "mac",
+      "job": "mac/1a1a721926e-fc05-2a46",
+      "nonrecursive_backup_path_candidates": 34,
+      "report_sha256": "bee416209fe9a1029d3a7e735f72564c642bc479652fdb2bfc8e1dd4493abaf7",
+      "scope_errors": [],
+      "service_path_candidates": 7,
+      "stdout_sha256": "48222c227b44d3be4d5d2c9352d4f7e2e314dacbb53a045667b9cdaf7f417959"
+    },
+    {
+      "authbus_address": {
+        "hostname": "100.66.117.33",
+        "port": 8200,
+        "scheme": "https",
+        "userinfo_path_and_query_omitted": true
+      },
+      "config_metadata_stable": true,
+      "config_sha256": "a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15",
+      "docker_probe": {
+        "argv": [
+          "/usr/bin/docker",
+          "ps",
+          "-a",
+          "--format",
+          "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"
+        ],
+        "exit_code": 1,
+        "matched_rows": [],
+        "stderr_sha256": "d0527b91b88a4736c47893d33c0242b10f32454ed6cacf1081bc07594358dfc5",
+        "truncated": false
+      },
+      "exit_code": 0,
+      "host": "rog",
+      "job": "rog/1a1a6fa6a1e-fc05-29b6",
+      "nonrecursive_backup_path_candidates": 33,
+      "report_sha256": "60df1ea2b661482780ec2d856da4c620229b9d0d2d1096b534507cf3782b4d1e",
+      "scope_errors": [],
+      "service_path_candidates": 9,
+      "stdout_sha256": "84bf8960938be79f6bf30ab6add2def77c36bf66049e26e0949293d420ab828c"
+    },
+    {
+      "authbus_address": {
+        "hostname": "100.66.117.33",
+        "port": 8200,
+        "scheme": "https",
+        "userinfo_path_and_query_omitted": true
+      },
+      "config_metadata_stable": true,
+      "config_sha256": "3611380b8c77282e785e00e20d9eba8bc8cf0164b3b3f00e2ea5d1f52a441c98",
+      "docker_probe": {
+        "argv": [
+          "/usr/bin/docker",
+          "ps",
+          "-a",
+          "--format",
+          "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"
+        ],
+        "exit_code": 1,
+        "matched_rows": [],
+        "stderr_sha256": "d0527b91b88a4736c47893d33c0242b10f32454ed6cacf1081bc07594358dfc5",
+        "truncated": false
+      },
+      "exit_code": 0,
+      "host": "pocket4",
+      "job": "pocket4/1a1a722efde-fc05-2a4e",
+      "nonrecursive_backup_path_candidates": 7,
+      "report_sha256": "10ae2da00852f0729e5d770ddfdf5132000366990bb4b1d8866dcbb28bd4291f",
+      "scope_errors": [],
+      "service_path_candidates": 6,
+      "stdout_sha256": "611cef0063d7b047c267e11ea2cb90c61bbf320df0b4e875da4d822018b930b3"
+    },
+    {
+      "authbus_address": null,
+      "config_metadata_stable": null,
+      "config_sha256": null,
+      "docker_probe": {
+        "argv": [
+          "/usr/bin/docker",
+          "ps",
+          "-a",
+          "--format",
+          "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"
+        ],
+        "exit_code": 0,
+        "matched_rows": [
+          "f67985499a16\theptabao-openbao271-oracle-r46\tghcr.io/openbao/openbao:2.7.1\tUp 3 weeks"
+        ],
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "exit_code": 0,
+      "host": "x230",
+      "job": "x230/1a1a7220a13-fc05-2a4c",
+      "nonrecursive_backup_path_candidates": 5,
+      "report_sha256": "9a25dc24442e3b25b576304fe6c406584d5cc4acaaebbd0d026676a8b356552b",
+      "scope_errors": [],
+      "service_path_candidates": 2,
+      "stdout_sha256": "3a3644570564d3182017deb6fa8afe691f351726509f34ffceb852adac0bf6ed"
+    }
+  ],
+  "ok": true,
+  "old_installations_deleted": false,
+  "pocket4_docker_listing_failed_and_not_claimed_empty": true,
+  "preserve_openbao271_x230_oracle": true,
+  "retirement_qualified": false,
+  "schema": "heptabao.root-reviewed-four-host-retirement-inventory.v1",
+  "script_sha256": "7b3f7e3283bc472cbf138d5bc01f4e8a5359cd756a1c7ef0d91cd83287fd99fa"
+}

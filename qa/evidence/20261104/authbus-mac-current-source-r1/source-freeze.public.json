@@ -1,0 +1,80 @@
+{
+  "copies": [
+    {
+      "target": "scripts/authbus_current_credential_stage.py",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-root-pull-response-r1/source/qa/openbao-acceptance/authbus_current_credential_stage.py",
+      "sha256": "1851ae94089dfb32c2f088164578044230a255239d11f598d41560899366936e"
+    },
+    {
+      "target": "scripts/current_stage_read.mjs",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-mac-current-stage-20261103-r1/scripts/current_stage_read.mjs",
+      "sha256": "7116904030c3718858a7d10cb2129acaf0dd20ff5d5a887faec0124567540860"
+    },
+    {
+      "target": "scripts/current_sdk_read.mjs",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-mac-current-stage-20261103-r1/scripts/current_sdk_read.mjs",
+      "sha256": "30997cac2f2b38a5c43ea85d347bc14c02189005a21059b37a5d50bd6ae7f57e"
+    },
+    {
+      "target": "scripts/authbus_profile2_selector_live.py",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/source/qa/openbao-acceptance/authbus_profile2_selector_live.py",
+      "sha256": "72f8b7031f2be9e1f4a4a224a8c04b77ac6985fed9360babe5b47d23004a0855"
+    },
+    {
+      "target": "scripts/authbus_profile2_consumer.mjs",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/source/qa/openbao-acceptance/authbus_profile2_consumer.mjs",
+      "sha256": "40f3deaa00ace62f1e69912f6e91da8747cc61a9dfe9da0d9f7df2cad0def6c4"
+    },
+    {
+      "target": "scripts/authbus_selected_usage.mjs",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/source/qa/openbao-acceptance/authbus_selected_usage.mjs",
+      "sha256": "426ad02701aa4cabcf43947d748bc6e203f513a3cf23fbe4e79bd4d74b333d22"
+    },
+    {
+      "target": "transport/strict-bao-client.js",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-lifecycle-20261103-r1/production-transport/plugin/strict-bao-client.js",
+      "sha256": "3c226b335257ff67c4f6e23091468d99cba97399eea40b396bb89a8e691e5294"
+    },
+    {
+      "target": "transport/private-outbox-store.js",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-lifecycle-20261103-r1/production-transport/plugin/private-outbox-store.js",
+      "sha256": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d"
+    }
+  ],
+  "expectedPins": {
+    "/Users/qianqi/.openclaw/authbus-relay/bin/authbus-relay-bridge": "0b742de419bf22fd06da93014c22554b33e7257cac3bf73d6f8bdc130cd7fa13",
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/bad-refresh-quarantine.js": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/codex-client-recycler.js": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/index.js": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b",
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/lease-assignments.js": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/order-policy.js": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301",
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/package.json": "e9a39d1880a285e76b5b09fb69c9614cfbecff0e1021eb29ce214a6340fd7334",
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/provider-error-classifier.js": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/runtime-refresh-policy.js": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/model-auth-CJEm9SNp.js": "2b5e700c9f7a7b012f8e7d7b0b56b06267e58861b3ebf8ca3a092bd74dd90aa7",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/oauth-B4aOCsid.js": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/order-CeBlX0NH.js": "4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/plugin-sdk/agent-runtime.js": "7831532d17eeaddd62889b2e8bb7b65ea7a7851901f69ceec23607a8c579dd95",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/source-check-ZSz5NzGW.js": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/sqlite-wal-Bhk2Ro-u.js": "ef69e7cad95ff5cd5fe3087331294daae557833bcbc3d0ae140394d16855c3da",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/store-DH33UrUj.js": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+    "/opt/homebrew/lib/node_modules/openclaw/package.json": "695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db",
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python": "7ecc1ecbf9daa9303c4bf502ff62ffdd9010ed5c08729d470ae9380c10ce1211",
+    "/opt/homebrew/bin/node": "a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e",
+    "/Users/qianqi/.openclaw/openclaw.json": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+    "/Users/qianqi/.codex/auth.json": "d13068db6b55edc3e1ca798b3726e2c5fc6de659b160a4b10dfdd333d5b5682c",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-root-pull-response-r1/source/../build-normal-r1/artifacts/heptabao-server": "d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-root-pull-response-r1/source/../build-normal-r1/result.public.json": "b53967aac8d06547473f68f907047fd34a89f4ab6295cb9765b24f2202853f33",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/provider-usage-BxQS-VWA.js": "cab428b63c6e8912f444089e120c95aea4a1d5edf4258c7fd1b20346558d12e6",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-native-profile2-8d-20261104-a2/native-validation-r1/result.public.json": "9707009a540aa04f38a285cc4847cd67cef688dceec3540427c31a4fb1d23064",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-native-profile2-8d-20261104-a2/native-validation-r1/native-auth-current.private.json": "d13068db6b55edc3e1ca798b3726e2c5fc6de659b160a4b10dfdd333d5b5682c",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/live-r4/selected-account-provider-read.public.json": "2a7df051464c3036b9d5d50ab17647c93ea75b6d7bcfd320415166c52fbf4867",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/live-r4/consumer-initial/runtime-selection.private.json": "f0de303bdbc19074c959b406e1741bddd529d5e4707ed811bfc4df3d8b1cb4d2"
+  },
+  "embeddedPins": {
+    "controller.py": "ec5ceb231867008bb7eab378e6b9498d70c264a38972d5755d5c710bd4b8bd66",
+    "scripts/authbus_current_stage_custody.py": "78feda840b5c823aa37a73f92689ff051a7075051b093dd20464698bc24c5201",
+    "transport/package.json": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae"
+  },
+  "payloadSha256": "c50ab43c3273b5ddfcc10b90d2c340388812da8c3c4c287d89b0ac3527b2d6f0"
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "bytes": 26323,
+    "local": "/workspace/scratch/61ff8bef4cc9/authbus-current-source-61ff-r1/evidence/prior-0-result.public.json",
+    "remote": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/final360-core-r2/result.public.json",
+    "sha256": "3ac84a78cb6f6fb145508adbb6918cf7de40478ec92854eeb4427ec5c04242a7"
+  },
+  {
+    "bytes": 868,
+    "local": "/workspace/scratch/61ff8bef4cc9/authbus-current-source-61ff-r1/evidence/prior-1-source-capture.public.json",
+    "remote": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile1-source-36076-20261104-r1/source-private/source-capture.public.json",
+    "sha256": "3302d83a794ee8c3ecb1a7328105660b14d04a58b2f0f5fcdc0acd77319252c3"
+  },
+  {
+    "bytes": 1791,
+    "local": "/workspace/scratch/61ff8bef4cc9/authbus-current-source-61ff-r1/evidence/prior-2-provider-proof.public.json",
+    "remote": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile1-source-36076-20261104-r1/source-private/provider-proof.public.json",
+    "sha256": "3050622c35bacb53ac47f532d4d5230c7c5c68bd2db243376c3c27385744a878"
+  },
+  {
+    "bytes": 11805,
+    "local": "/workspace/scratch/61ff8bef4cc9/authbus-current-source-61ff-r1/evidence/prior-3-result.public.json",
+    "remote": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-native-profile2-8d-20261104-a2/result.public.json",
+    "sha256": "9d0e132bf32cb4f7cfef4ddf9982e664e7d9eb54c5f01fc3ac84a88f965fe0f2"
+  },
+  {
+    "bytes": 2482,
+    "local": "/workspace/scratch/61ff8bef4cc9/authbus-current-source-61ff-r1/original/current_stage_read.mjs",
+    "remote": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-native-profile2-8d-20261104-a2/scripts/current_stage_read.mjs",
+    "sha256": "7116904030c3718858a7d10cb2129acaf0dd20ff5d5a887faec0124567540860"
+  },
+  {
+    "bytes": 9500,
+    "local": "/workspace/scratch/61ff8bef4cc9/authbus-current-source-61ff-r1/original/native_profile_stage.py",
+    "remote": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-native-profile2-8d-20261104-a2/scripts/native_profile_stage.py",
+    "sha256": "e30b71a0b1f0398767405071b3e5418c6ed3b12512675761ce8387a02b58aab2"
+  },
+  {
+    "bytes": 1785,
+    "local": "/workspace/scratch/61ff8bef4cc9/authbus-current-source-61ff-r1/evidence/helpers-2-stage-intent.public.json",
+    "remote": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-native-profile2-8d-20261104-a2/stage-intent.public.json",
+    "sha256": "9ec8f1bfec0dd09ec4a5248a0a28c1e84a691d04d0efc2ae71a5415f6dc24305"
+  },
+  {
+    "bytes": 587,
+    "local": "/workspace/scratch/61ff8bef4cc9/authbus-current-source-61ff-r1/evidence/helpers-3-provider-read-intent.public.json",
+    "remote": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-native-profile2-8d-20261104-a2/provider-read-intent.public.json",
+    "sha256": "72a9ad353ee3d87cafa4dfd76f8f76cac1d5795db19551a80d820dae8a6f39f0"
+  },
+  {
+    "bytes": 2615,
+    "local": "/workspace/scratch/61ff8bef4cc9/authbus-current-source-61ff-r1/original/authbus_current_stage_custody.py",
+    "remote": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-root-pull-response-r1/source/qa/openbao-acceptance/authbus_current_stage_custody.py",
+    "sha256": "00565c6d296df66444839be9c643121856bc1fde26cf57e4eb3c9bde04095975"
+  },
+  {
+    "bytes": 16692,
+    "local": "/workspace/scratch/61ff8bef4cc9/authbus-current-source-61ff-r1/original/authbus_client_current_inventory.py",
+    "remote": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-root-pull-response-r1/source/qa/openbao-acceptance/authbus_client_current_inventory.py",
+    "sha256": "f842c10c560d639eef67496fa9618a410345ec9744738e5b3c727b88bc0099c6"
+  }
+]

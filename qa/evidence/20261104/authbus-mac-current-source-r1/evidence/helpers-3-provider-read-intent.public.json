@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/node",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-native-profile2-8d-20261104-a2/scripts/native_current_probe.mjs",
+    "/Users/qianqi/.codex/auth.json",
+    "d13068db6b55edc3e1ca798b3726e2c5fc6de659b160a4b10dfdd333d5b5682c",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/provider-usage-BxQS-VWA.js",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-native-profile2-8d-20261104-a2/native-validation-r1"
+  ],
+  "original_profile2_identity_matched": true,
+  "provider_get_only": true,
+  "refresh_allowed": false,
+  "retries": 0
+}

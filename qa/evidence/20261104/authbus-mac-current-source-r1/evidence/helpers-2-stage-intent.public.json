@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "-B",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-native-profile2-8d-20261104-a2/scripts/native_profile_stage.py",
+    "--work-dir",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-native-profile2-8d-20261104-a2/live-r1",
+    "--helpers",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-native-profile2-8d-20261104-a2/scripts/current_credential_stage.py",
+    "--native-proof",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-native-profile2-8d-20261104-a2/native-validation-r1/result.public.json",
+    "--native-capture",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-native-profile2-8d-20261104-a2/native-validation-r1/native-auth-current.private.json",
+    "--native-source",
+    "/Users/qianqi/.codex/auth.json",
+    "--prepare-child",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-native-profile2-8d-20261104-a2/scripts/native_profile_prepare_v2.mjs",
+    "--read-child",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-native-profile2-8d-20261104-a2/scripts/current_stage_read.mjs",
+    "--binary",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-missing-route-a9e98-r1/build-normal-r1/artifacts/heptabao-server",
+    "--binary-sha256",
+    "c8ab414e8a4af70f4c64215258dc192129f3b975aaeda1d5c2c6ee1dcffdc932",
+    "--server-source",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-missing-route-a9e98-r1/source",
+    "--client-modules",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-lifecycle-20261103-r1/production-transport/plugin"
+  ],
+  "normal_commit": "8d3eeb9b2a1ffedc9161b8cd6720fbe48fa93fab",
+  "normal_tree": "34719a51ad942d3bc839df3d78524e9cf4326f30",
+  "original_driver_unchanged": true,
+  "source_is_current": true
+}

@@ -1,0 +1,12 @@
+--- original
++++ candidate
+@@ -1,6 +1,7 @@
+-import hashlib,json,os,stat,subprocess
++import hashlib,json,os,stat,subprocess,sys
+ from pathlib import Path
+-root=Path('/Volumes/T5/hepta-vnext-recovery-20261013/authbus-mac-current-stage-20261103-r1/validation-r1')
++root=Path(sys.argv[1])
++assert root.is_absolute() and root.name == 'current-auth-rows-r1' and root.parent.name == 'authbus-current-source-61ff8bef-20261104-r1'
+ docs=json.loads((root/'captured-auth-rows.private.json').read_bytes())
+ secrets=[]
+ for doc in docs:
