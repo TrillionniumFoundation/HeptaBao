@@ -57,7 +57,8 @@
   },
   "scope": "Official malformed-archive status/effect observation only. Neither syntax-only success nor completed_observation is HeptaBao runtime qualification or full replacement proof.",
   "source_patch": {
-    "bytes": 16654,
-    "sha256": "b66523b9910e4a64b536f7a7f2a6fc53752cf44802ebba5b10ec4fb4710aca96"
+    "bytes": 16038,
+    "sha256": "c0e113513c5138cd2b5faf2a0062331bb137c52bd66b71ac5f40bb491ee99d76",
+    "exact_apply_reconstructs_candidate": true
   }
 }

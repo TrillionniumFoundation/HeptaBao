@@ -44,7 +44,7 @@ diff --git a/official_271_snapshot_corruption_reference_r1.py b/official_271_sna
          write_json(self.public / f'{number}.intent.public.json', intent)
          spec = dict(port=API_PORTS[node], method=method, path=path, credential=credential,
                      body_file=str(body_file), response_meta_file=str(meta_file),
-@@ -683,22 +686,10 @@
+@@ -683,83 +686,101 @@
          o, _ = self.request(1, 'POST', '/v1/owned/data/read-marker', 'owned_kv_write_once',
                              body={'options': {'cas': 0}, 'data': {'marker': 'owned-policy-oracle'}})
          self.check('owned_kv_write_acknowledged', o['status'] == 200)
@@ -68,12 +68,6 @@ diff --git a/official_271_snapshot_corruption_reference_r1.py b/official_271_sna
 +                    'non_gzip_transfer_literal', 'non_gzip_http_literal')
 +        expected = {f'{variant}_node{node}' for variant in variants for node in (1, 2)}
 +        for variant in variants:
-             for node in (1, 2):
-                 self.observed(node, 'POST', '/v1/sys/storage/raft/snapshot',
-                               f'{label}_node{node}_invalid_restore', credential=label,
-@@ -700,58 +691,87 @@
-                           label + '_node2_snapshot_no_forward_false', credential=label,
-                           headers={'X-Vault-No-Request-Forwarding': 'false'})
              for node in (1, 2):
 -                self.observed(node, 'POST', '/v1/sys/storage/raft/snapshot',
 -                              f'{label}_node{node}_invalid_restore', credential=label,
@@ -208,10 +202,6 @@ diff --git a/official_271_snapshot_corruption_reference_r1.py b/official_271_sna
 +                  if case.get('kind') == 'exact_archive_corruption']
 +        self.check('exact_five_variants_by_two_nodes_observed',
 +                   len(actual) == 10 and len(set(actual)) == 10 and set(actual) == expected)
-         after = self.roles('roles_after')
-         self.check('actual_leader_unchanged', after['actual_leader'] == 1)
-         write_json(self.root / 'wire-observations.public.json', {'cases': self.cases,
-@@ -755,11 +775,12 @@
          after = self.roles('roles_after')
          self.check('actual_leader_unchanged', after['actual_leader'] == 1)
          write_json(self.root / 'wire-observations.public.json', {'cases': self.cases,
