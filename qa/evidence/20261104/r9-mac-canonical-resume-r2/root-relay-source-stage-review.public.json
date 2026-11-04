@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.root.bundle-ssh-source-review.v1",
+  "sourceTree": "f9f56e14538129ecc4e91da6b891ced51f224c7c",
+  "fullSourcesRead": true,
+  "allSourceShaAndGitBlobIndependentlyVerified": true,
+  "originalSuccessfulSshControllerSha256": "c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e",
+  "sameKnownAliasesAndStrictPrefix": true,
+  "originalPartialUploadAbortAck": true,
+  "syntaxActualJob": "1a1a7bdeab1-fc05-2c71",
+  "syntaxActualExit": 0,
+  "actualStageVerified": true,
+  "sourceStageDirectory": "/home/qian-qi/heptabao-ha-closure-20261103-r1/r9-canonical-bundle-ssh-source-r1",
+  "threeFilesFullBytesAndModeVerified": true,
+  "conditionalSourceOnlyTransferAndImportApproved": true,
+  "normalCargoOrServicesApproved": false
+}

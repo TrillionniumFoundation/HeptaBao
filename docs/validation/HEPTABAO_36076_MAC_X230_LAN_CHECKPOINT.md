@@ -1,6 +1,22 @@
 # HeptaBao：正常 V6 存储、三机 HA 与完整替代检查点
 
-## R10 当前进度：检查助手修正已发布，实际编译与运行尚未判定
+## R10 运行进度：ROG 正常构建中，Mac 离线 canonical 恢复完成
+
+更新于 2026-11-04 18:26 UTC。ROG 的 R10 源准备已实际完成：独立干净 clone 为 canonical `49503322c7f446e5eb41e7744f1fdbd7f1192ecc` / tree `1d4211f91e1b34a2ed087a3bbef2e2884bac88e9`，唯一父提交 `1d12abc45a83d4b32e7185d01a876eb93110b1e2`；完整历史 3,752 个提交，strict fsck 通过，42 个受控命令全部回收。唯一已审 test helper 和五份控制输入的完整哈希、原 R9 源树均已复核。实际导出的单提交 Git bundle 为 1,522 字节，SHA256=`543ad493d0b3e224f9620b5418e7eda260a000ccc1d8c3c0153bc49a963dad36`。[完整源准备原件](../../qa/evidence/20261104/r10-rog-source-stage-r1/manifest.public.json)及[根审阅](../../qa/evidence/20261104/r10-rog-source-stage-r1/root-review.public.json)保留原始 JSON 字节。
+
+正常 R10 release + libtest + 原六组 44 项的唯一 ROG 作业为 `1a1a7c83142-fc05-2c88`。根审阅者已独立读取实际 `preflight-admitted` stdout 和 running authority，旧 R8 产物与 R9 失败证据已通过启动检查，原 10,080 秒外层及内层 1,800/3,600/30/600 秒预算不变。**正在运行不代表构建或测试通过；当前没有该作业的终态准入。**
+
+Mac 的 R9 离线恢复已完整通过。固定公共源码 bundle 在已核实的原 SSH 通道传输约 1.123 秒，实收 1,886,365 字节与原 SHA 一致；先核真实 T5 UUID，再 O_EXCL 创建、同 FD 全量回读和文件/目录 fsync；四个本机受控组和远端端点全部结束。随后唯一 resume 作业 `1a1a7c78a32-fc05-2c86` 实际 exit 0，完整持久输出，约 2.555 秒内发布。48 个受控命令全部回收，canonical `1d12` / `e1fa` 的 3,751 个完整提交和 strict fsck 通过；原本地 materialization `f0c6171` 以专用 ref 保留。旧 R8 源树及四份原 fetch 失败文件的字节和 inode 信息前后不变。只执行一次本地 file 协议 import，没有公网 Git 重试或 Mac Cargo。[完整原件](../../qa/evidence/20261104/r9-mac-canonical-resume-r2/manifest.public.json)、[根恢复审阅](../../qa/evidence/20261104/r9-mac-canonical-resume-r2/root-resume-review.public.json)和[根传输审阅](../../qa/evidence/20261104/r9-mac-canonical-resume-r2/root-relay-review.public.json)分别保留传输与 canonical 恢复的范围。
+
+Mac 的 R10 四文件分发脚本已经完整源审，固定真实 T5 UUID 和原 30 秒 guard、原子 create-only、已有文件完全相同才可复用；此时尚未记录 Mac R10 源准备或构建成功。下一步使用 ROG 实际 1,522 字节增量 bundle 准备相同 canonical R10。
+
+全替代仍有明确产品能力缺口：native snapshot standby 的实际 CLI 闭合、正式 native rekey/系统 owner、外部认证/MFA/密码策略、数据库/插件/外部 KMS、完整 namespace/Identity 与全资产迁移。当前正式 SSH owner 和已通过的 KV2 范围不被误列为缺失；旧 r670 失败也不冒充 R10 新失败。[逐项源码入口及限定](../../qa/evidence/20261104/r10-native-scope-gaps-r1/root-source-gaps.public.json)保留 exact R10 绑定。
+
+本次还修复检查点汇总中两个历史纳秒整数被 JavaScript 序列化舍入的问题，恢复 `80bc5a9` 原发布文件的十进制值；独立运行原件一直保留原字节，运行结论没有改变。[精度修复记录](../../qa/evidence/20261104/r10-rog-source-stage-r1/checkpoint-integer-precision-repair.public.json)列出两个字段和原值。后续原件保持原字节，整数比较使用无精度损失的读取方式。
+
+**生产切流、客户端与备份全迁移、旧 OpenBao/旧 HeptaBao 删除仍未执行。** 下列记录保留各自原时间与候选绑定。
+
+## R10 源审归档（18:04）：检查助手修正已发布，实际编译与运行尚未判定
 
 更新于 2026-11-04 18:04 UTC。当前 canonical 候选为 `49503322c7f446e5eb41e7744f1fdbd7f1192ecc`，tree=`1d4211f91e1b34a2ed087a3bbef2e2884bac88e9`，唯一父提交为 R9 `1d12abc45a83d4b32e7185d01a876eb93110b1e2`。本次仅修改一个 `cfg(test)` 状态检查助手：使用已有 checked native graph projection、完整元数据、KV1 root/key 以及 Zeroizing 的原生根编码见证；原有限令牌次数、耐久 generation、StateIdentity、pending delivery、原检查期限均保留。自 `finite_actor` 起的 12,674 字节、全部测试主体和 44 个测试名称没有改变。正式产品源码在 R9→R10 之间未改动。
 

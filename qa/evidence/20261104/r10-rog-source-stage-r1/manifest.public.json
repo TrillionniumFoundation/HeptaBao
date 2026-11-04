@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.r10-rog-source-stage-readback.v1",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "carrier_job": "1a1a7c4f30b-fc05-2c7e",
+  "source_job": "1a1a7c664fa-fc05-2c84",
+  "normal_build_job": "1a1a7c83142-fc05-2c88",
+  "normal_build_status_at_freeze": "started_no_terminal_claim",
+  "source_stage_outer_seconds": 900,
+  "normal_build_outer_seconds": 10080,
+  "source_result": {
+    "bytes": 10742,
+    "sha256": "e8265cf07e04216233fbe42af0589b21fc18b1ffa005ff6f00d62f566a445b68",
+    "status": "prepared",
+    "cleanup_processes": 42,
+    "all_owned_reaped": true,
+    "strict_fsck": true,
+    "canonical_commit_count": 3752,
+    "sole_parent": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+    "old_source_unchanged": true
+  },
+  "git_bundle": {
+    "raw_bytes": 1522,
+    "raw_sha256": "543ad493d0b3e224f9620b5418e7eda260a000ccc1d8c3c0153bc49a963dad36",
+    "base64_path": "source/canonical-r10-from-r9.bundle.base64",
+    "header": {
+      "header_sha256": "1c55ee5df2af8fd1915cc2b88d833c061fc019cf94d8761de9cc0bfb04c1016c",
+      "heads": [
+        [
+          "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "1d12abc45a83d4b32e7185d01a876eb93110b1e2"
+      ],
+      "version": 2
+    }
+  },
+  "files": [
+    {
+      "path": "carrier/result.public.json",
+      "bytes": 1764,
+      "sha256": "3fbb283ca91096907dfbae9e7099770a0b8edf4144c74e4576e16ea27383388b",
+      "git_blob": "ee73a224723c3592bae730e5a1dff31b05aa8412"
+    },
+    {
+      "path": "carrier/process-status.public.json",
+      "bytes": 731,
+      "sha256": "683153ba4a8be2c096adb40ebb5d5210fbb52b0be613d58d32d0de98093edd31",
+      "git_blob": "85b7f87a0cd5feb0c2fae44f496628cb7680502d"
+    },
+    {
+      "path": "carrier/process.stdout",
+      "bytes": 1358,
+      "sha256": "9a4015d7a4733f9aa875b4717bea65d3f58f4725def1963b1b6e64472c43d143",
+      "git_blob": "14b9f255ca3b1130ebd7cb02f6b542dfb0cd6a00"
+    },
+    {
+      "path": "carrier/process.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "source/stage-result.public.json",
+      "bytes": 10742,
+      "sha256": "e8265cf07e04216233fbe42af0589b21fc18b1ffa005ff6f00d62f566a445b68",
+      "git_blob": "6d597faa1834964f25a903d3fef4f1a00bc93826"
+    },
+    {
+      "path": "source/process-status.public.json",
+      "bytes": 729,
+      "sha256": "ed9187a7cfdb2650d5d564e2f0bab097f9f571d73ea31bee24257dfa9620f310",
+      "git_blob": "81d76f836cb80ce0cb050cd81f4f4c644694a840"
+    },
+    {
+      "path": "source/process.stdout",
+      "bytes": 442,
+      "sha256": "c41a2593ca2026b7db01550be6d61939d637dfec392e2ffdeeb53c82fc846b6b",
+      "git_blob": "0b36c9e043054ff2aa458cc534694be38f4bf545"
+    },
+    {
+      "path": "source/process.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "source/start-ack.public.json",
+      "bytes": 1612,
+      "sha256": "2d9b72e7a44c066e22d29d8f76d801ec9614765e7e243c461afd8dc82f2d5a3d",
+      "git_blob": "748685dd3cd3f8b0aca981c2b77dc1099f688f65"
+    },
+    {
+      "path": "build/start-ack.public.json",
+      "bytes": 1576,
+      "sha256": "ce5a5c615690a9cf336527328c0e9e4c359904e29a4819d17d1f0ae7fb8cfa07",
+      "git_blob": "56c4fd2ea42ec03f0810b6ed6fcfcd4739e48bcf"
+    },
+    {
+      "path": "source/canonical-r10-from-r9.bundle.base64",
+      "bytes": 2033,
+      "sha256": "f25e8087a8c8444ab773efb566602feed63b5d51c59bb60e85e99b53eee29484",
+      "git_blob": "60d63ad0c2e45e6e634a9d107dabeecefdbe519c"
+    }
+  ],
+  "original_integer_precision": "Raw public JSON bytes are retained; parsed JS number summaries are not substituted for originals.",
+  "transport_history": "Initial binary_write and second binary_upload chunk ACK timed out; upload ID was aborted with confirmed ACK. The separately authorized inert carrier created all three fixed files and reached authoritative success. No source stage was started before carrier completion.",
+  "compiler_qualification": false
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.r9.mac-canonical-resume-independent-readback.v1",
+  "job_id": "1a1a7c78a32-fc05-2c86",
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r9/source",
+  "commit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+  "tree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907",
+  "result_bytes": 73389,
+  "result_sha256": "d3c26b8b78c41915421e1972c4eaeea47eb14ec5ad581568206047e89ac9ab7d",
+  "checks": {
+    "authority": true,
+    "terminal": true,
+    "exact48commands": true,
+    "exact48cleanup": true,
+    "source_recovered": true,
+    "ancestry_complete": true,
+    "materialized_preserved": true,
+    "all_four_failures_unchanged": true,
+    "old_r8_unchanged": true,
+    "real_t5_uuid": true,
+    "only_local_bundle_fetch": true,
+    "no_product_runtime": true
+  },
+  "elapsed_after_publication_seconds": 2.555364541709423,
+  "qualification": "source-recovery-only",
+  "r10_roots_modified": false,
+  "cargo_started": false
+}

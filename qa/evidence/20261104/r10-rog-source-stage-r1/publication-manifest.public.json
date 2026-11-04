@@ -1,0 +1,291 @@
+{
+  "schema": "heptabao.r10-source-preparation-and-mac-canonical-resume-publication.v1",
+  "as_of_utc": "2026-11-04T18:26:28Z",
+  "parent_commit": "6cb13418a627e6576a53f77eca42e49ce6708960",
+  "product_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "scope": "Actual ROG canonical R10 source preparation and running normal build preflight; actual Mac canonical R9 source restore; no R10 runtime or full replacement PASS",
+  "original_json_preserved_as_raw_bytes": true,
+  "historical_index_two_nanosecond_fields_restored_to_original": true,
+  "files": [
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/carrier/result.public.json",
+      "bytes": 1764,
+      "sha256": "3fbb283ca91096907dfbae9e7099770a0b8edf4144c74e4576e16ea27383388b",
+      "git_blob": "ee73a224723c3592bae730e5a1dff31b05aa8412",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/carrier/process-status.public.json",
+      "bytes": 731,
+      "sha256": "683153ba4a8be2c096adb40ebb5d5210fbb52b0be613d58d32d0de98093edd31",
+      "git_blob": "85b7f87a0cd5feb0c2fae44f496628cb7680502d",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/carrier/process.stdout",
+      "bytes": 1358,
+      "sha256": "9a4015d7a4733f9aa875b4717bea65d3f58f4725def1963b1b6e64472c43d143",
+      "git_blob": "14b9f255ca3b1130ebd7cb02f6b542dfb0cd6a00",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/carrier/process.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/source/stage-result.public.json",
+      "bytes": 10742,
+      "sha256": "e8265cf07e04216233fbe42af0589b21fc18b1ffa005ff6f00d62f566a445b68",
+      "git_blob": "6d597faa1834964f25a903d3fef4f1a00bc93826",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/source/process-status.public.json",
+      "bytes": 729,
+      "sha256": "ed9187a7cfdb2650d5d564e2f0bab097f9f571d73ea31bee24257dfa9620f310",
+      "git_blob": "81d76f836cb80ce0cb050cd81f4f4c644694a840",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/source/process.stdout",
+      "bytes": 442,
+      "sha256": "c41a2593ca2026b7db01550be6d61939d637dfec392e2ffdeeb53c82fc846b6b",
+      "git_blob": "0b36c9e043054ff2aa458cc534694be38f4bf545",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/source/process.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/source/start-ack.public.json",
+      "bytes": 1612,
+      "sha256": "2d9b72e7a44c066e22d29d8f76d801ec9614765e7e243c461afd8dc82f2d5a3d",
+      "git_blob": "748685dd3cd3f8b0aca981c2b77dc1099f688f65",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/build/start-ack.public.json",
+      "bytes": 1576,
+      "sha256": "ce5a5c615690a9cf336527328c0e9e4c359904e29a4819d17d1f0ae7fb8cfa07",
+      "git_blob": "56c4fd2ea42ec03f0810b6ed6fcfcd4739e48bcf",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/source/canonical-r10-from-r9.bundle.base64",
+      "bytes": 2033,
+      "sha256": "f25e8087a8c8444ab773efb566602feed63b5d51c59bb60e85e99b53eee29484",
+      "git_blob": "60d63ad0c2e45e6e634a9d107dabeecefdbe519c",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/manifest.public.json",
+      "bytes": 4301,
+      "sha256": "eb5017fcce6d01c3dc49f908187421a924ac190fa1e0198da4f1ab989fb1a9ae",
+      "git_blob": "43dffbf9335a711ec6c33ca0ca61dccb62b48ff2",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/root-review.public.json",
+      "bytes": 1027,
+      "sha256": "bb5eca7c275d725469e291252cf1595b93a8005e9c6a1cba50c6fe89a58d353a",
+      "git_blob": "6f25680cb2f57f26dbeb5e800fddfe33580c4cf8",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/root-build-running-status.api.json",
+      "bytes": 472,
+      "sha256": "76da12b08083c3021c2fe8b0e4ada97ecd2de283999fd5d036b411fa49ec746a",
+      "git_blob": "cb5513c65da7c0db4c8e9f63676ae85e31f60991",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/root-build-preflight.stdout",
+      "bytes": 292,
+      "sha256": "ec551e14b3ae7398f6f466fdd9456b6fe75ac46dc850791acb776ae12f479ea5",
+      "git_blob": "c4c4ec6ffe65d0b37589ab73e2221267ff96b08c",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/carrier/atomic-carrier.py",
+      "bytes": 4544,
+      "sha256": "2b76a44929a6cf700c15a627e18cdf37d2401f6e034f095f557672f4a1049726",
+      "git_blob": "d7b4b99093626ad38ec1a459b781c26b8cd5507d",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/mac-bundle-file-info.api.json",
+      "bytes": 514,
+      "sha256": "2f1b5ee1a1b0e5b8c5c8d77a6945b82292ce298ac37066900114181da600f7a0",
+      "git_blob": "dbce5fdd15f4b90b017db340a2ac7c62281daeb6",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/mac-controller-file-info.api.json",
+      "bytes": 500,
+      "sha256": "410cc41b50e76cee55be65a7be2e74161f35be0d1921af61268c85c7c4ddbf84",
+      "git_blob": "86fecebac75c1c59594f5031582760b271ceb2de",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/mac-resume-authority.api.json",
+      "bytes": 730,
+      "sha256": "24deb356103c8210bb76751122aaa0c19fc6ab5ec6a9e09a62f0cc68e326a57e",
+      "git_blob": "78628c09a8cc3234a9b3894e99a34c5ca178d459",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/mac-resume-result.public.json",
+      "bytes": 73389,
+      "sha256": "d3c26b8b78c41915421e1972c4eaeea47eb14ec5ad581568206047e89ac9ab7d",
+      "git_blob": "4c5b9b9043f074426e8607c733eecc9f712c636e",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/mac-resume-terminal.stdout",
+      "bytes": 534,
+      "sha256": "8f03915cf7fce1dc2eb92cdce9933e663dbe40ccc5c104e7d2c97e8f364abd28",
+      "git_blob": "d02c3daaed37c2ce646b43ebc812d9df9c99c971",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/manifest.public.json",
+      "bytes": 2583,
+      "sha256": "41c3e556f89f83e880e4bfb1c5be367167255a85f86f735b819ea06a7d45d79c",
+      "git_blob": "ad77c5690e252f30c4b5b14dfd57871041f14b29",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/readback-assessment.public.json",
+      "bytes": 976,
+      "sha256": "e37c8d488c5714222f82efacf3847ee1af84aa26c2f83ef40a1a3867065df523",
+      "git_blob": "6e544e5355f34f027d998bde5a3e133453d16d7f",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/relay-authority.api.json",
+      "bytes": 730,
+      "sha256": "2d279cc964a255ab6d4766b68de66976e4fa86e69f04f71f0e4a7b7805106f2d",
+      "git_blob": "e154b2560e5cb13d6e47c4b4beaa385ae65d8a24",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/relay-result.public.json",
+      "bytes": 9077,
+      "sha256": "6f5c5cf299a83f29f4c44489b1e150de05baca6e6c3e059c866abfae6024acc6",
+      "git_blob": "c4030108780b11164b90b62bb018c41714719006",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/relay-terminal.stdout",
+      "bytes": 341,
+      "sha256": "753149b1054323b92427799b532cd049ec83deae37bdb9e1e9981d6b545203af",
+      "git_blob": "357eada00b395361c3d24d87f264b9c0228a22fa",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/root-resume-review.public.json",
+      "bytes": 999,
+      "sha256": "0a0516208d2904f373ca7093b4ceda8aa4740f0248a42bdf4bc9df0846538b68",
+      "git_blob": "44d4cf8412934973f5e24cfa72ea03e11fe21037",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/root-relay-review.public.json",
+      "bytes": 718,
+      "sha256": "86424943d77e65b9fb0704ff6d72c289fe7c1ce8492af88aa0b80e1919f69204",
+      "git_blob": "030640d296f6e057bd94fa3c40ab795f28ff06fa",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/root-relay-source-stage-review.public.json",
+      "bytes": 754,
+      "sha256": "24b68182715d846c023a30f29ae3bd7ade2d60eabd61a485a01272ce42b64b8c",
+      "git_blob": "07df01ca8001f2e6b667693adeb37fd9ac46bb61",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/relay-stage/stage.public.json",
+      "bytes": 4729,
+      "sha256": "f3b5d0ad892e369a3e6de70e85d3bda49074ca47027dcdbad92d5f3cf779aaa1",
+      "git_blob": "934876fde7e6586165ad1da881a63c7607e0effa",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/relay-stage/syntax.public.json",
+      "bytes": 742,
+      "sha256": "889d7d8e4bb60d801992109b53253ad6cb1dd6abf67b02e9d6b3739978425e3a",
+      "git_blob": "41ed9972fc5eda3d3a64b0f47d77dafb02a37138",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/relay-stage/syntaxAuthority.public.json",
+      "bytes": 730,
+      "sha256": "b0d40db3fa9ca94008fad3d3296ca1b1e59a30f24897ee5a9701610e2ceb206c",
+      "git_blob": "eced4229c1caa4aae4f40c1765c946f1b5d1c322",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/relay-stage/directory.public.json",
+      "bytes": 232,
+      "sha256": "ccc3614f4bb35076f79efa0a4f440110fad8208f591340145b031ead63e63e07",
+      "git_blob": "57c084746c525e8016f45b26f9ba5a2dea977c50",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-mac-canonical-resume-r2/relay-stage/directoryAuthority.public.json",
+      "bytes": 730,
+      "sha256": "0b99c7335804f3a9d663cd7c3a62e152b770c861cd982ea88ef754c32d829105",
+      "git_blob": "ec7d04dc9409a94c448ccd15e8beaebf1f94688b",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-native-scope-gaps-r1/root-source-gaps.public.json",
+      "bytes": 6423,
+      "sha256": "65e450069cba8d54139548a1825e2287b2a5681af8a18fe8404cb2087ecdd75f",
+      "git_blob": "7a289c84ba169e9c26f16ad8e0ee52b2c679e808",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-mac-source-distribution-r1/atomic-carrier.py",
+      "bytes": 9112,
+      "sha256": "1257850838e6949b265ab36c83ade2303ff47a15d1931142bf2df2b934462b88",
+      "git_blob": "6473654405f3ae97f833182f020f2447c58fabeb",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-mac-source-distribution-r1/root-source-review.public.json",
+      "bytes": 605,
+      "sha256": "9ac2dee35d4ffea0e18cfa52ea1fb1c42f1086c8a82b30d065ad8e3bce260803",
+      "git_blob": "7fa234c9109d8017726ad419f7c043aa72911f5e",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-rog-source-stage-r1/checkpoint-integer-precision-repair.public.json",
+      "bytes": 1130,
+      "sha256": "03773ee754ee49acc84808968172f26ba7705101c6f3770f01a42e646cd24102",
+      "git_blob": "724714c0b91966859c46ff0489b8a1c163e9bbef",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/36076-checkpoint.public.json",
+      "bytes": 140006,
+      "sha256": "3ca7b53b601b2bc645472e99d47fdc5e7777410e5a8e2e3bcb42f89d0cc78b2d",
+      "git_blob": "eae1e3137d88786d761b5bd0ec994122a2ead7bb",
+      "mode": "100644"
+    },
+    {
+      "path": "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+      "bytes": 93030,
+      "sha256": "13598b63d4176ba7b9c52356739c773dde38fa91ddf5c51b40f57b19b3c070ce",
+      "git_blob": "418c8de9b7719c14c8180740e6dbb84d70f64432",
+      "mode": "100644"
+    }
+  ]
+}

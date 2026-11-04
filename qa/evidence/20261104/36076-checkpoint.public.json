@@ -1,6 +1,6 @@
 {
   "schema": "heptabao.36076-and-33cafa-checkpoint.v4",
-  "as_of_utc": "2026-11-04T18:04:23Z",
+  "as_of_utc": "2026-11-04T18:26:28Z",
   "compiled_source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
   "compiled_source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95",
   "published_source_commit": "a5c05856f23c395e590fd4e6eeec02bb669a2aa9",
@@ -503,7 +503,7 @@
       ],
       "test_count": 2,
       "production_services_changed": false,
-      "started_ns": 1793797021145707300,
+      "started_ns": 1793797021145707270,
       "preparation": {
         "schema": "ci-lossless-actor-403-prepare-v1",
         "source": "9c54d92a18ef59022a803cb89566ca8007b8b97c",
@@ -595,7 +595,7 @@
       },
       "binary_unchanged": true,
       "source_unchanged": true,
-      "terminal_ns": 1793798360231454200
+      "terminal_ns": 1793798360231454149
     },
     "current_ci_contains_combined_r7": false,
     "concurrent_head_update_observed_not_launched_by_root": true
@@ -3312,5 +3312,72 @@
     "within_original_300_seconds": true,
     "mac_import_qualification": false,
     "evidence_prefix": "qa/evidence/20261104/r9-offline-canonical-export-r2/"
+  },
+  "r9_mac_canonical_resume_r2": {
+    "schema": "heptabao.root.mac-r9-canonical-resume-review.v1",
+    "jobId": "1a1a7c78a32-fc05-2c86",
+    "controllerSha256": "0df1b75480e6145d9713f00c91580e30c8a6cf0789fec97b7ce842d60b0352c4",
+    "resultSha256": "d3c26b8b78c41915421e1972c4eaeea47eb14ec5ad581568206047e89ac9ab7d",
+    "authoritySha256": "24deb356103c8210bb76751122aaa0c19fc6ab5ec6a9e09a62f0cc68e326a57e",
+    "terminalSha256": "8f03915cf7fce1dc2eb92cdce9933e663dbe40ccc5c104e7d2c97e8f364abd28",
+    "canonicalCommit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+    "canonicalTree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907",
+    "completeCommits": 3751,
+    "all48CommandsAndCleanupVerified": true,
+    "oldSourceAndAllFourFailureFilesUnchanged": true,
+    "localMaterializedCommitPreserved": true,
+    "realExternalVolumeUuidVerified": true,
+    "original300SecondPublicationSatisfied": true,
+    "actualAuthorityExit": 0,
+    "r10BaseSourceReady": true,
+    "cargoOrServicesExecuted": false,
+    "oldFencesAndSourceComparedWithoutIntegerPrecisionLoss": true
+  },
+  "r10_rog_source_stage_r1": {
+    "schema": "heptabao.root.r10-rog-source-stage-review.v1",
+    "carrierJob": "1a1a7c4f30b-fc05-2c7e",
+    "sourceJob": "1a1a7c664fa-fc05-2c84",
+    "sourceResultSha256": "e8265cf07e04216233fbe42af0589b21fc18b1ffa005ff6f00d62f566a445b68",
+    "canonicalCommit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "canonicalTree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "completeCommits": 3752,
+    "soleParent": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+    "strictFsck": true,
+    "independentCleanClone": true,
+    "oldSourceUnchanged": true,
+    "all42OwnedCommandsReaped": true,
+    "soleApprovedTestHelperAndFiveControlsVerified": true,
+    "canonicalBundleBytes": 1522,
+    "canonicalBundleSha256": "543ad493d0b3e224f9620b5418e7eda260a000ccc1d8c3c0153bc49a963dad36",
+    "canonicalBundleWholeBytesIndependentlyDecodedAndHashed": true,
+    "normalBuildJob": "1a1a7c83142-fc05-2c88",
+    "normalBuildOuterSeconds": 10080,
+    "normalBuildPreflightActuallyAdmitted": true,
+    "normalBuildState": "running",
+    "normalBuildOr44TestPassClaimed": false
+  },
+  "r10_native_scope_gap_review_r1": {
+    "evidence_path": "qa/evidence/20261104/r10-native-scope-gaps-r1/root-source-gaps.public.json",
+    "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "explicit_gap_groups": 6,
+    "whole_replacement": false
+  },
+  "checkpoint_integer_precision_repair_r1": {
+    "evidence_path": "qa/evidence/20261104/r10-rog-source-stage-r1/checkpoint-integer-precision-repair.public.json",
+    "historical_integer_fields_restored": 2,
+    "runtime_outcomes_changed": false
+  },
+  "current_r10_progress_1826": {
+    "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "rog_source_prepared": true,
+    "rog_normal_preflight_admitted": true,
+    "rog_normal_job": "1a1a7c83142-fc05-2c88",
+    "rog_normal_qualification": false,
+    "mac_r9_canonical_base_prepared": true,
+    "mac_r10_source_prepared": false,
+    "mac_r10_normal_started": false,
+    "full_replacement": false,
+    "production_cutover": false,
+    "legacy_cleanup": false
   }
 }

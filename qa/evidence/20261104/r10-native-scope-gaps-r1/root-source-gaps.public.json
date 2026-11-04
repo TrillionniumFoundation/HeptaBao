@@ -1,0 +1,113 @@
+{
+  "schema": "heptabao.root.r10-executable-scope-gaps.v1",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "product_unchanged_from_r9": true,
+  "exact_product_sources": [
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "git_blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+      "bytes": 518245,
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/49503322c7f446e5eb41e7744f1fdbd7f1192ecc/crates/heptabao-server/src/service.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "git_blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+      "bytes": 50683,
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/49503322c7f446e5eb41e7744f1fdbd7f1192ecc/crates/heptabao-server/src/service_snapshot_transfer.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha.rs",
+      "git_blob": "6c5d06a598e1e48c57dd30bf391643b7c2b448ce",
+      "bytes": 12109,
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/49503322c7f446e5eb41e7744f1fdbd7f1192ecc/crates/heptabao-server/src/service_snapshot_v6_ha.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "git_blob": "0a94044292493853c7770cb36aa69544c1488aca",
+      "bytes": 43899,
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/49503322c7f446e5eb41e7744f1fdbd7f1192ecc/crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_forward.rs",
+      "git_blob": "c4f67654fc940285233ad3db47d78681cb1e0ef5",
+      "bytes": 78860,
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/49503322c7f446e5eb41e7744f1fdbd7f1192ecc/crates/heptabao-server/src/ha_forward.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_native_v6_routes.rs",
+      "git_blob": "3d3997809257b760bf7dd026a13cd2e5adb7706b",
+      "bytes": 21719,
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/49503322c7f446e5eb41e7744f1fdbd7f1192ecc/crates/heptabao-server/src/auth_native_v6_routes.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/server_storage.rs",
+      "git_blob": "cfcd4469d1357547ef279d35451d1dd6d3c857a4",
+      "bytes": 16423,
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/49503322c7f446e5eb41e7744f1fdbd7f1192ecc/crates/heptabao-server/src/server_storage.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/engines.rs",
+      "git_blob": "d4eb181702573cab33fb48de07765a47d870c713",
+      "bytes": 153342,
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/49503322c7f446e5eb41e7744f1fdbd7f1192ecc/crates/heptabao-server/src/engines.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_empty_namespace.rs",
+      "git_blob": "7b84d326d8699a2f28e11df7d214800c292e0ee1",
+      "bytes": 42568,
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/49503322c7f446e5eb41e7744f1fdbd7f1192ecc/crates/heptabao-server/src/service_native_empty_namespace.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_plain_namespace.rs",
+      "git_blob": "91ed324a0bb20151c50bb2e1f141e70b08ad835b",
+      "bytes": 12426,
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/49503322c7f446e5eb41e7744f1fdbd7f1192ecc/crates/heptabao-server/src/service_native_plain_namespace.rs"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_database.rs",
+      "git_blob": "69d34dc61295d788bbdac548969cac3cceeb5ff2",
+      "bytes": 237942,
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/49503322c7f446e5eb41e7744f1fdbd7f1192ecc/crates/heptabao-server/src/service_database.rs"
+    }
+  ],
+  "gaps": [
+    {
+      "id": "native_snapshot_standby",
+      "status": "requires_current_real_cli_archive_evidence_and_native_owner_implementation",
+      "next": "Use Phase B real A/B native archives and current normal binaries; CLI success requires actual API/audit/state and cold reopen proof. Keep bounded authenticated streaming work under source review."
+    },
+    {
+      "id": "native_rekey_and_system_owners",
+      "status": "explicit_native_route_refusal",
+      "next": "Add a native operation owner covering seal generation, original request/audit authority, durable pending verification, crash reconciliation and cluster consistency before admitting rekey. The existing legacy filesystem rekey functions do not establish native HA ownership."
+    },
+    {
+      "id": "external_auth_mfa_password_policy",
+      "status": "native_profile_requires_unsupported_state_empty",
+      "next": "Add native persistence/authority ownership and same-version real oracle for JWT/OIDC and other configured auth providers, MFA and password policy. Existing local token/AppRole/cert/userpass proofs remain scoped."
+    },
+    {
+      "id": "database_plugins_external_kms",
+      "status": "explicit_native_startup_and_engine_profile_refusal",
+      "next": "Implement configuration, issue, renew, revoke and unknown external effect recovery in native owners; then verify real providers. Do not re-enable an OpenBao wrapper as replacement evidence."
+    },
+    {
+      "id": "namespace_and_identity_completion",
+      "status": "partial_native_owners",
+      "next": "Preserve existing KV1 retirement and local identity; add nonempty namespace retirement, remaining child owners and alias/merge/MFA/OIDC identity semantics with isolation and reopen checks."
+    },
+    {
+      "id": "all_asset_migration_and_tooling",
+      "status": "no_full_current_candidate_evidence",
+      "next": "For each actual client and backup path, migrate its owned assets and prove read/write, restart and rollback. KV2/Transit archives do not prove policies, identity, active leases, external effects or full CLI/Agent/Proxy coverage."
+    }
+  ],
+  "source_limits": [
+    "Historical r670 size failure is not asserted as an R10 runtime failure.",
+    "Historical whole-surface fixture metadata is not a current executable receipt.",
+    "The current normal SSH native owner is supported within its tested scope and is not labelled 501.",
+    "No production cutover or old asset deletion follows from control-source or compilation checks alone."
+  ],
+  "full_openbao_271_replacement": false
+}

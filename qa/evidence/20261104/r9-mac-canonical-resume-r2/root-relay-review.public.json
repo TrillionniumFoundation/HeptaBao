@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.root.r9-source-relay-runtime-review.v1",
+  "jobId": "1a1a7c5231a-fc05-2c80",
+  "exitCode": 0,
+  "receiptSha256": "6f5c5cf299a83f29f4c44489b1e150de05baca6e6c3e059c866abfae6024acc6",
+  "wholeBytes": 1886365,
+  "sha256": "49060b399899b9904aded82973589837062dace090fcb43102fa862a5ff7fb06",
+  "elapsedAfterPublicationSeconds": 1.1228127119829878,
+  "allFourLocalOwnedGroupsAndRemoteEndpointCompletionVerified": true,
+  "sourceVersion": "66306:28228563:1886365:1793814029233278292:1793814029235278291",
+  "sourceAndOriginalControllerIdentityCheckedWithoutIntegerPrecisionLoss": true,
+  "realT5UuidVerified": true,
+  "createOnlySameFdReadbackAndFsyncVerified": true,
+  "productQualification": false
+}

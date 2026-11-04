@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.root.checkpoint-integer-precision-repair.v1",
+  "source_commit": "80bc5a913d3444add725d5a24f94dd7a23ff053a",
+  "source_file": "qa/evidence/20261104/36076-checkpoint.public.json",
+  "source_git_blob": "c29f138de98c921b92f762dadb50067ec6b29811",
+  "reason": "JavaScript parse/stringify in the R9 summary publication rounded two historical nanosecond integers; restore their original published decimal tokens. Individual original runtime evidence files were retained byte-exact and are not changed.",
+  "fields": [
+    {
+      "path": "ci.existing_normal_two_test_result.started_ns",
+      "rounded_summary_decimal": "1793797021145707300",
+      "restored_original_decimal": "1793797021145707270"
+    },
+    {
+      "path": "ci.existing_normal_two_test_result.terminal_ns",
+      "rounded_summary_decimal": "1793798360231454200",
+      "restored_original_decimal": "1793798360231454149"
+    }
+  ],
+  "runtime_outcomes_changed": false,
+  "source_or_binaries_changed": false,
+  "new_original_json_handling": "Store and publish original JSON bytes; compare large integer fields using lossless token handling."
+}

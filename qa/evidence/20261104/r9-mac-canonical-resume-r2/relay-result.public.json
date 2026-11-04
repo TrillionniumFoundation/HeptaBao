@@ -1,0 +1,353 @@
+{
+  "all_local_owned_stopped": true,
+  "all_owned_stopped": true,
+  "cleanup": [
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "rog-ts-effective-config",
+      "pid": 3277767,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "mac-ts-effective-config",
+      "pid": 3277769,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "receive-mac",
+      "pid": 3277771,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "send-rog",
+      "pid": 3277772,
+      "remaining": []
+    }
+  ],
+  "cleanup_errors": [],
+  "commands": [
+    {
+      "direct_child_reaped": true,
+      "elapsed_seconds": 0.056601044023409486,
+      "exit_code": 0,
+      "label": "rog-ts-effective-config",
+      "limit_seconds": 90,
+      "pid": 3277767,
+      "remaining": [],
+      "timed_out": false
+    },
+    {
+      "direct_child_reaped": true,
+      "elapsed_seconds": 0.042790378094650805,
+      "exit_code": 0,
+      "label": "mac-ts-effective-config",
+      "limit_seconds": 90,
+      "pid": 3277769,
+      "remaining": [],
+      "timed_out": false
+    },
+    {
+      "direct_child_reaped": true,
+      "elapsed_seconds": 0.5559576830128208,
+      "exit_code": 0,
+      "label": "send-rog",
+      "limit_seconds": 90,
+      "pid": 3277772,
+      "remaining": [],
+      "timed_out": false
+    },
+    {
+      "direct_child_reaped": true,
+      "elapsed_seconds": 0.6774516419973224,
+      "exit_code": 0,
+      "label": "receive-mac",
+      "limit_seconds": 90,
+      "pid": 3277771,
+      "remaining": [],
+      "timed_out": false
+    }
+  ],
+  "compiler_started": false,
+  "controller": {
+    "bytes": 13141,
+    "identity": [
+      2050,
+      58075869,
+      1000,
+      1000,
+      33152,
+      1,
+      13141,
+      1793815941233173532,
+      1793815949438265537
+    ],
+    "sha256": "14f6f1617b4194ec54fb69d6492cb74f16f6af7733e43dfd2a33e7cf93f80c47"
+  },
+  "destination_alias": "mac-ts",
+  "diskutil_seconds": 30,
+  "elapsed_seconds": 1.1198217909550294,
+  "endpoint_seconds": 90,
+  "expected_bytes": 1886365,
+  "expected_sha256": "49060b399899b9904aded82973589837062dace090fcb43102fa862a5ff7fb06",
+  "git_operations": 0,
+  "helpers": {
+    "receiver.py": {
+      "bytes": 6965,
+      "identity": [
+        2050,
+        58075883,
+        1000,
+        1000,
+        33152,
+        1,
+        6965,
+        1793815974720558016,
+        1793815988487769587
+      ],
+      "sha256": "28b594cd10f9a15633ce54eaf8ab66d8d789f55543e47bb3b5e842bc1fb46e99"
+    },
+    "sender.py": {
+      "bytes": 5978,
+      "identity": [
+        2050,
+        58075874,
+        1000,
+        1000,
+        33152,
+        1,
+        5978,
+        1793815958397963046,
+        1793815964699677625
+      ],
+      "sha256": "e855a5deefe27ef4cbccc28e7e654c6c23d7ce0b86c3d8c5e5284c5228f2488b"
+    }
+  },
+  "original_ha_controller_after": {
+    "bytes": 12409,
+    "identity": [
+      2050,
+      1742404,
+      1000,
+      1000,
+      33152,
+      1,
+      12409,
+      1793787427894245554,
+      1793787427894245554
+    ],
+    "sha256": "c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e"
+  },
+  "original_ha_controller_before": {
+    "bytes": 12409,
+    "identity": [
+      2050,
+      1742404,
+      1000,
+      1000,
+      33152,
+      1,
+      12409,
+      1793787427894245554,
+      1793787427894245554
+    ],
+    "sha256": "c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e"
+  },
+  "overall_seconds": 300,
+  "receiver": {
+    "all_owned_stopped": true,
+    "cleanup": [
+      {
+        "direct_child_reaped": true,
+        "exit_code": 0,
+        "pid": 35032,
+        "remaining": []
+      }
+    ],
+    "cleanup_errors": [],
+    "compiler_started": false,
+    "destination": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r9/control/canonical-from-7a552330-r2.bundle",
+    "destination_created_exclusive": true,
+    "destination_fsynced": true,
+    "destination_identity": [
+      16777244,
+      72485951,
+      501,
+      20,
+      33152,
+      1,
+      1886365,
+      1793816078794933343,
+      1793816078794951760
+    ],
+    "elapsed_seconds": 0.11204508319497108,
+    "git_operations": 0,
+    "parent_descriptor_identity": [
+      16777244,
+      72446751,
+      501,
+      20,
+      16832,
+      80,
+      2560,
+      1793816078793860080,
+      1793816078793860080
+    ],
+    "received": {
+      "bytes": 1886365,
+      "sha256": "49060b399899b9904aded82973589837062dace090fcb43102fa862a5ff7fb06"
+    },
+    "request_seconds": 90,
+    "role": "receiver",
+    "same_fd_readback": {
+      "bytes": 1886365,
+      "sha256": "49060b399899b9904aded82973589837062dace090fcb43102fa862a5ff7fb06"
+    },
+    "schema": "heptabao.r9.fixed-public-bundle-endpoint.v1",
+    "server_started": false,
+    "status": "complete",
+    "volume": {
+      "exit_code": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "85fcc5f23fed38c4506c2352e929cebac25cf6ba3439dce1b708ab9af69a5e35",
+      "uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758"
+    },
+    "within_original_deadline": true
+  },
+  "remote_cleanup_unknown": false,
+  "remote_endpoint_completion_verified": true,
+  "runtime_qualification": false,
+  "schema": "heptabao.r9.fixed-public-bundle-relay.v1",
+  "sender": {
+    "all_owned_stopped": true,
+    "cleanup": [],
+    "cleanup_errors": [],
+    "compiler_started": false,
+    "elapsed_seconds": 0.011595427989959717,
+    "git_operations": 0,
+    "initial_file": {
+      "bytes": 1886365,
+      "sha256": "49060b399899b9904aded82973589837062dace090fcb43102fa862a5ff7fb06"
+    },
+    "request_seconds": 90,
+    "role": "sender",
+    "schema": "heptabao.r9.fixed-public-bundle-endpoint.v1",
+    "server_started": false,
+    "source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r9-http-routing-r1/control/canonical-export-r2/canonical-from-7a552330-r2.bundle",
+    "source_identity_after": [
+      66306,
+      28228563,
+      1000,
+      1000,
+      33152,
+      1,
+      1886365,
+      1793814029233278292,
+      1793814029235278291
+    ],
+    "source_identity_before": [
+      66306,
+      28228563,
+      1000,
+      1000,
+      33152,
+      1,
+      1886365,
+      1793814029233278292,
+      1793814029235278291
+    ],
+    "source_version": "66306:28228563:1886365:1793814029233278292:1793814029235278291",
+    "status": "complete",
+    "stream": {
+      "bytes": 1886365,
+      "sha256": "49060b399899b9904aded82973589837062dace090fcb43102fa862a5ff7fb06"
+    },
+    "within_original_deadline": true
+  },
+  "server_started": false,
+  "source_alias": "rog-ts",
+  "source_version": "66306:28228563:1886365:1793814029233278292:1793814029235278291",
+  "ssh_child_seconds": 90,
+  "ssh_preflight": {
+    "mac-ts": {
+      "effective_config_sha256": "7c67c774e1216583c07f329b0650e6c3e5fca3519e19419677e6aabee74df44d",
+      "known_hosts_before": {
+        "/home/qian-qi/.ssh/hepta-transport/known_hosts": {
+          "bytes": 5391,
+          "identity": [
+            2050,
+            52599357,
+            1000,
+            1000,
+            33152,
+            1,
+            5391,
+            1793703653819681345,
+            1793703653854741609
+          ],
+          "sha256": "1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034"
+        }
+      },
+      "projection": {
+        "batchmode": "yes",
+        "clearallforwardings": "yes",
+        "connectionattempts": "1",
+        "connecttimeout": "10",
+        "controlmaster": "false",
+        "controlpath": null,
+        "forwardagent": "no",
+        "host": "mac-ts",
+        "hostkeyalias": "hepta-node-mac",
+        "hostname": "192.168.0.8",
+        "port": "22",
+        "stricthostkeychecking": "true",
+        "updatehostkeys": "false",
+        "user": "qianqi"
+      }
+    },
+    "rog-ts": {
+      "effective_config_sha256": "9228489a625661b16e643d1bde2d4b81bb95c2d23798b92024f700309400cf08",
+      "known_hosts_before": {
+        "/home/qian-qi/.ssh/hepta-transport/known_hosts": {
+          "bytes": 5391,
+          "identity": [
+            2050,
+            52599357,
+            1000,
+            1000,
+            33152,
+            1,
+            5391,
+            1793703653819681345,
+            1793703653854741609
+          ],
+          "sha256": "1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034"
+        }
+      },
+      "projection": {
+        "batchmode": "yes",
+        "clearallforwardings": "yes",
+        "connectionattempts": "1",
+        "connecttimeout": "10",
+        "controlmaster": "false",
+        "controlpath": null,
+        "forwardagent": "no",
+        "host": "rog-ts",
+        "hostkeyalias": "hepta-node-rog",
+        "hostname": "192.168.0.10",
+        "port": "22",
+        "stricthostkeychecking": "true",
+        "updatehostkeys": "false",
+        "user": "qian-qi"
+      }
+    }
+  },
+  "status": "transferred",
+  "terminal_unix_ns": 1793816079880960327
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.r9.offline-canonical-mac-recovery-packet.v1",
+  "files": [
+    {
+      "path": "mac-resume-result.public.json",
+      "bytes": 73389,
+      "sha256": "d3c26b8b78c41915421e1972c4eaeea47eb14ec5ad581568206047e89ac9ab7d",
+      "blob": "4c5b9b9043f074426e8607c733eecc9f712c636e"
+    },
+    {
+      "path": "mac-resume-authority.api.json",
+      "bytes": 730,
+      "sha256": "24deb356103c8210bb76751122aaa0c19fc6ab5ec6a9e09a62f0cc68e326a57e",
+      "blob": "78628c09a8cc3234a9b3894e99a34c5ca178d459"
+    },
+    {
+      "path": "mac-resume-terminal.stdout",
+      "bytes": 534,
+      "sha256": "8f03915cf7fce1dc2eb92cdce9933e663dbe40ccc5c104e7d2c97e8f364abd28",
+      "blob": "d02c3daaed37c2ce646b43ebc812d9df9c99c971"
+    },
+    {
+      "path": "mac-bundle-file-info.api.json",
+      "bytes": 514,
+      "sha256": "2f1b5ee1a1b0e5b8c5c8d77a6945b82292ce298ac37066900114181da600f7a0",
+      "blob": "dbce5fdd15f4b90b017db340a2ac7c62281daeb6"
+    },
+    {
+      "path": "mac-controller-file-info.api.json",
+      "bytes": 500,
+      "sha256": "410cc41b50e76cee55be65a7be2e74161f35be0d1921af61268c85c7c4ddbf84",
+      "blob": "86fecebac75c1c59594f5031582760b271ceb2de"
+    },
+    {
+      "path": "relay-result.public.json",
+      "bytes": 9077,
+      "sha256": "6f5c5cf299a83f29f4c44489b1e150de05baca6e6c3e059c866abfae6024acc6",
+      "blob": "c4030108780b11164b90b62bb018c41714719006"
+    },
+    {
+      "path": "relay-authority.api.json",
+      "bytes": 730,
+      "sha256": "2d279cc964a255ab6d4766b68de66976e4fa86e69f04f71f0e4a7b7805106f2d",
+      "blob": "e154b2560e5cb13d6e47c4b4beaa385ae65d8a24"
+    },
+    {
+      "path": "relay-terminal.stdout",
+      "bytes": 341,
+      "sha256": "753149b1054323b92427799b532cd049ec83deae37bdb9e1e9981d6b545203af",
+      "blob": "357eada00b395361c3d24d87f264b9c0228a22fa"
+    },
+    {
+      "path": "readback-assessment.public.json",
+      "bytes": 976,
+      "sha256": "e37c8d488c5714222f82efacf3847ee1af84aa26c2f83ef40a1a3867065df523",
+      "blob": "6e544e5355f34f027d998bde5a3e133453d16d7f"
+    }
+  ],
+  "source_controller_tree": "bf8fbed3666258f2b4c731da7e8b90b182b1b4ec",
+  "export_evidence_tree": "311edb4766e02094e956e755db98a2d05e38de3c",
+  "relay_source_tree": "f9f56e14538129ecc4e91da6b891ced51f224c7c",
+  "relay_stage_tree": "aa60c8f92042099f7ec4be9a7b5460e178e63634",
+  "scope": "Only public source-file transfer and isolated R9 Git recovery; no Cargo, server or runtime qualification.",
+  "api_json_note": "Original API text with one terminal LF appended if absent; durable result/terminal stdout unchanged."
+}

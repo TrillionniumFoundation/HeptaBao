@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.root.r10-rog-source-stage-review.v1",
+  "carrierJob": "1a1a7c4f30b-fc05-2c7e",
+  "sourceJob": "1a1a7c664fa-fc05-2c84",
+  "sourceResultSha256": "e8265cf07e04216233fbe42af0589b21fc18b1ffa005ff6f00d62f566a445b68",
+  "canonicalCommit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonicalTree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "completeCommits": 3752,
+  "soleParent": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+  "strictFsck": true,
+  "independentCleanClone": true,
+  "oldSourceUnchanged": true,
+  "all42OwnedCommandsReaped": true,
+  "soleApprovedTestHelperAndFiveControlsVerified": true,
+  "canonicalBundleBytes": 1522,
+  "canonicalBundleSha256": "543ad493d0b3e224f9620b5418e7eda260a000ccc1d8c3c0153bc49a963dad36",
+  "canonicalBundleWholeBytesIndependentlyDecodedAndHashed": true,
+  "normalBuildJob": "1a1a7c83142-fc05-2c88",
+  "normalBuildOuterSeconds": 10080,
+  "normalBuildPreflightActuallyAdmitted": true,
+  "normalBuildState": "running",
+  "normalBuildOr44TestPassClaimed": false
+}

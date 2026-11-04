@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.root.r10-mac-inert-distribution-source-review.v1",
+  "bytes": 9112,
+  "sha256": "1257850838e6949b265ab36c83ade2303ff47a15d1931142bf2df2b934462b88",
+  "blob": "6473654405f3ae97f833182f020f2447c58fabeb",
+  "fullSourceRead": true,
+  "fourFixedPublicInputs": true,
+  "allDecodedBeforeAnyFileCreation": true,
+  "realT5UuidGuardBeforeWrites": true,
+  "originalDiskutilThirtySeconds": true,
+  "protectedChildRegistrationAndOwnedCleanup": true,
+  "createOnlyAtomicLinkAndExactExistingReadback": true,
+  "noSourceOrCargoOrServiceExecution": true,
+  "approvedSourceDistributionOnly": true
+}
