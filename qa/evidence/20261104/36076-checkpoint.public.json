@@ -1,6 +1,6 @@
 {
   "schema": "heptabao.36076-and-33cafa-checkpoint.v4",
-  "as_of_utc": "2026-11-04T12:34:11.661746+00:00",
+  "as_of_utc": "2026-11-04T12:52:08.356705+00:00",
   "compiled_source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
   "compiled_source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95",
   "published_source_commit": "a5c05856f23c395e590fd4e6eeec02bb669a2aa9",
@@ -1596,14 +1596,56 @@
     ]
   },
   "normal33_standby_wire_r3": {
-    "state": "running",
+    "all_owned_request_children_stopped": 59,
+    "all_owned_servers_stopped": 4,
+    "body_completion_independently_verified": {
+      "204_no_body": 2,
+      "single_content_length_exact_bytes": 54
+    },
+    "checks_completed_before_request_failure": 41,
+    "complete_case_matrix": false,
+    "definite_preconnect_failures": 2,
+    "embedded_public_files_byte_hash_verified": 121,
+    "failure_sequence": 59,
+    "fixed_qualification_denominator_claimed": false,
+    "full_boundary_sha256": "11f241b66f63a5f12d983827750576dee4f87b8456e9f873e13ff5cc6ac7b93a",
+    "full_replacement_qualified": false,
+    "header_equals_first_fixed_redirect_write_fragment": true,
     "host": "desktop",
+    "http_intents": 59,
     "job": "1a1a68b95a0-fc05-26ba",
-    "controller_sha256": "f6770eea97846adaf67aa0672d9f50596a1800b13d00c074aa16bef6f886765d",
-    "normal33_unchanged": true,
-    "new_fixture_not_replay": true,
-    "strict_header_termination_required": true,
-    "original_case_order_and_budgets_retained": true,
-    "completed_observation_claimed": false
+    "location_has_no_received_value": true,
+    "not_observed": [
+      "remaining_invalid_restore_cases",
+      "ordinary_256k_standby_writes",
+      "no_forward_effect",
+      "native_large_invalid_schema",
+      "roles_after"
+    ],
+    "original_budget_seconds": {
+      "election": 60,
+      "http": 15,
+      "readiness": 45
+    },
+    "original_source_binary_controller_and_seven_evidence_fences_unchanged": true,
+    "private_raw_headers_kept_private": 57,
+    "production_changed": false,
+    "received_header_bytes": 43,
+    "received_header_sha256": "784faf9483052fa127c456e1fd7e1296a8ec358523780ac0a124d91d4d6f9aff",
+    "recorded_outcomes": 59,
+    "response_truncation_proven": true,
+    "result_sha256": "f5a44d25e6f33e562b492e050242f36cc2744417a13a01db4beab1c0422ae590",
+    "root_review_script_sha256": "c442b7ee28e2cab7f6bff940656ffb5c638bba8cf43c218dd5c89990172a9bf4",
+    "schema": "heptabao.normal33-strict-wire-r3-root-review.v1",
+    "status": "retained_failure_verified",
+    "strict_complete_http": 56,
+    "strict_head_terminator_received": false,
+    "strict_unknown": 1,
+    "tcp_reset_proven": false,
+    "terminal_exit": 1,
+    "unique_transport_root_cause_proven": false,
+    "unknown_request_replayed": false,
+    "valid_restore_bodies": 0,
+    "zero_existing_write_failure_markers_proves_all_writes_succeeded": false
   }
 }

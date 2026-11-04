@@ -58,9 +58,13 @@ CI 候选现为 `0dc39624d1266a6fca98760757b9482bf6f98a7a`，tree=`959c65d6782b2
 
 在 desktop 的全新 `normal33-standby-oracle-live-r2` 上，正常 33 构建完成 42/43 动态不变量后失败。记录 67 intents/67 outcomes；旧解析器报告 66 complete HTTP、1 个明确连接前失败（seq10）、unknown=0。第 67 个请求是节点 2 的无效 snapshot POST，解析状态 307，但 exact enrolled leader origin+target 谓词失败；只保存了 `Location` header name，未保存原始值或 CRLFCRLF 终止符。四个 owned 服务和 67 个 HTTP 子进程均已停止，原源码、二进制、控制器及五份旧证据均未变。
 
-独立复核确认 Python `http.client` 可以接受头部终止前 EOF。因此原始 `response_complete=true` 与 `http_unknown=0` 字段只能按原解析器语义引用，**不能证明第 67 个响应严格完整，也不能断言是地址拼接错误**。完整旧失败原样保留；严格捕获原始头部的后继 observer r5 已获准在全新 live-r3 上单次执行，当前尚无可引用终态。捕获 r4 的 39 项手工 spec 组件通过后，根审阅另发现父进程没有传递 `response_head_file` 的真实接口遗漏；该版本阻断于运行前，后继 r5 已在 desktop 真实父进程到 owned Python 子进程路径完成 61/61 无网络检查，包含 EOF、捕获文件写入失败、连接关闭及回收。未以缩小矩阵、改请求顺序或放宽期限换取通过。
+独立复核确认 Python `http.client` 可以接受头部终止前 EOF。因此原始 `response_complete=true` 与 `http_unknown=0` 字段只能按原解析器语义引用，**不能证明第 67 个响应严格完整，也不能断言是地址拼接错误**。完整旧失败原样保留；后继 observer r5 已在全新 live-r3 上单次执行并明确失败，详情如下。捕获 r4 的 39 项手工 spec 组件通过后，根审阅另发现父进程没有传递 `response_head_file` 的真实接口遗漏；该版本阻断于运行前，后继 r5 已在 desktop 真实父进程到 owned Python 子进程路径完成 61/61 无网络检查，包含 EOF、捕获文件写入失败、连接关闭及回收。未以缩小矩阵、改请求顺序或放宽期限换取通过。
 
 该部分运行已观察到 leader snapshot GET 403/403/200，两个 standby GET 均为 307，leader 无效 snapshot／snapshot-force POST 为 400；与官方默认 standby 的 authorized GET 200、无效 restore 500 存在差别。case 矩阵未完成，roles_after 不存在，不能宣布完整兼容或从旧头部证据唯一归因。
+
+后继严格运行 `normal33-standby-oracle-live-r3` 耗时 88.929 秒，durable job `1a1a68b95a0-fc05-26ba` exit1。59 intents／59 outcomes 中有 56 个完整响应、2 个明确连接前失败和 **1 个严格 unknown**；41 个已执行不变量均通过，失败发生在 HTTP 请求边界，不能把 41/41 标作该矩阵通过。独立复核重建 121 份嵌入公有 JSON 的字节与 SHA，并核对 57 个私有头部文件的 size/hash/0600 单链接身份。56 个完整响应另做体长度复核：54 个单一 Content-Length 与实际字节精确相等，2 个为合法无体的 204。
+
+seq59 的节点 2 无效 snapshot POST 仍是原 22 字节测试输入，调用耗时 439.058ms，没有触及 15 秒期限。客户端只收到 43 字节，SHA256=`784faf9483052fa127c456e1fd7e1296a8ec358523780ac0a124d91d4d6f9aff`，严格等于源码首次固定写出的 `HTTP/1.1 307 Temporary Redirect` 加 `Location:` 起始片段。它没有地址或路径值，也没有结束 CRLF／CRLFCRLF；解析器虽接受 307，严格观察器立即标 unknown 并停止。该运行明确证明此响应被截断；零个旧 write-failure marker 不证明所有 write 成功，也不独证 TCP RST 的唯一因果。未知请求未重放，四个 owned 服务和 59 个请求子进程均已停止，正常 33 source/binary/controller 与七份旧证据围栏前后不变。后续独立修复将审查有界完整响应头组包写出；剩余 case 和 roles_after 尚未观察。
 
 ### SSH native owner 的正常构建和失败测试
 
