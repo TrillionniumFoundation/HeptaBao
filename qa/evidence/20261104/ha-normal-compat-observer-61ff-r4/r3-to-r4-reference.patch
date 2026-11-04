@@ -1,0 +1,36 @@
+--- a/normal_unified_standby_compat_observer_r3.py
++++ b/normal_unified_standby_compat_observer_r4.py
+@@ -56,10 +56,11 @@
+ os.umask(0o077)
+ 
+ 
+-# One inherited expected value lacks its claimed original credential-specific oracle.
+-# It remains a hypothesis until a separate fixed-binary observation is archived.
+-OFFICIAL_REFERENCE_COMPLETE = False
+-UNVERIFIED_REFERENCE_LABELS = ['ttl_root_default_standby_invalid_restore']
++# All 34 status references are now grounded in exact fixed OpenBao 2.7.1 wire.
++# The missing TTL restore case was separately observed in cd035b00, sequence 68;
++# it is never attributed to the older 070f token oracle or an unrelated actor.
++OFFICIAL_REFERENCE_COMPLETE = True
++UNVERIFIED_REFERENCE_LABELS = []
+ 
+ OFFICIAL_STATUS = {
+     "ttl_kv_node2_root_1": 200,
+@@ -1108,7 +1109,7 @@
+     def finish(self, failed: str | None) -> int:
+         coverage = scoped_coverage(self.cases)
+         wire_error, wire_sha256 = None, None
+-        wire = {'schema': 'heptabao-normal-standby-scoped-wire-r3',
++        wire = {'schema': 'heptabao-normal-standby-scoped-wire-r4',
+                 'cases': self.cases, 'coverage': coverage,
+                 'default_read_standby_node': 2,
+                 'consistency_missing_header_forward_node': 3,
+@@ -1119,6 +1120,8 @@
+                 'official_token_wire_sha256': '070f7234092f9799b85af95f600e1d0519ddc9c3ed81f132e21ef2af86f7cf97',
+                 'official_token_wire_covers_only': ['ttl_root_default_standby_snapshot',
+                     'finite1_default_snapshot', 'finite2_default_snapshot'],
++                'official_ttl_restore_wire_sha256': 'cd035b00b7d382d9966652774281b18840b99ce77ad9adc7d10a8f3e2b3ef83b',
++                'official_ttl_restore_wire_covers_only': ['ttl_root_default_standby_invalid_restore'],
+                 'official_reference_complete': OFFICIAL_REFERENCE_COMPLETE,
+                 'unverified_reference_labels': UNVERIFIED_REFERENCE_LABELS,
+                 'automatic_redirect_following': False, 'unknown_mutation_replay': False,

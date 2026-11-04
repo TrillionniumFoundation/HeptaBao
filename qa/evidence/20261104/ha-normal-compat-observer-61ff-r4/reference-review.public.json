@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.ha-agent.final-reference-review.v1",
+  "reference_commit": "df47f00f3289fe690f38a8fd433f11b6f530ecc9",
+  "reference_wire_sha256": "cd035b00b7d382d9966652774281b18840b99ce77ad9adc7d10a8f3e2b3ef83b",
+  "sequence": 68,
+  "credential_identity_sequence": 66,
+  "identity_policies": [
+    "root"
+  ],
+  "identity_num_uses": 0,
+  "identity_ttl": 580,
+  "method": "POST",
+  "path": "/v1/sys/storage/raft/snapshot",
+  "node": 2,
+  "headers": {},
+  "body_bytes": 22,
+  "body_sha256": "e57744e6940b15f3055f206c34ada9f50f0e2af9eacd46bf6f79c9ae150521cf",
+  "status": 500,
+  "original_http_seconds": 15,
+  "complete_response": true,
+  "outcome_unknown": false,
+  "catalog_labels_exactly_once": 34,
+  "unchanged_expected_status_values": true,
+  "old_070f_claim_corrected_and_retained": true,
+  "review_scope": "source and original public wire/intent/outcome comparison; no HeptaBao runtime claim",
+  "known_intents_and_outcomes": 75,
+  "unknown_outcomes": 0,
+  "checks": 68,
+  "clients_clean": 75,
+  "servers_clean": 3,
+  "operation_replayed": false
+}
