@@ -1,0 +1,18 @@
+[
+  {
+    "after": "r'official271-standby-ttl-restore-oracle-live-61ff-r[0-9]+'",
+    "before": "r'official271-standby-policy-oracle-live-61ff-r[0-9]+'"
+  },
+  {
+    "after": "        # Supplemental reference: authenticate the actual expiring, unlimited\n        # root-policy token on the default read standby, then issue the exact\n        # snapshot GET and invalid-body POST used by the normal observer.\n        o, raw = self.request(2, 'GET', '/v1/auth/token/lookup-self',\n                              'ttl_root_default_standby_actual_authentication',\n                              credential='ttl-default')\n        data = json.loads(raw).get('data', {})\n        self.check('ttl_root_default_standby_actual_identity',\n                   o['status'] == 200 and data.get('policies') == ['root']\n                   and data.get('num_uses') == 0\n                   and isinstance(data.get('ttl'), int) and 0 < data['ttl'] <= 600)\n        self.cases.append({'kind': 'actual_ttl_policy_identity',\n                           'credential_class': 'ttl-default',\n                           'policies': data['policies'], 'num_uses': data['num_uses'],\n                           'ttl': data['ttl'], **o})\n        self.observed(2, 'GET', '/v1/sys/storage/raft/snapshot',\n                      'ttl_root_default_standby_snapshot', credential='ttl-default')\n        self.observed(2, 'POST', '/v1/sys/storage/raft/snapshot',\n                      'ttl_root_default_standby_invalid_restore', credential='ttl-default',\n                      raw_body=b'owned-invalid-snapshot', content_type='application/octet-stream')\n        after_invalid = self.lookup_token('ttl-default', 'after_invalid_restore')\n        self.check('ttl_root_after_invalid_restore_still_unlimited_and_valid',\n                   after_invalid['status'] == 200 and after_invalid['num_uses'] == 0\n                   and after_invalid['policies'] == ['root']\n                   and isinstance(after_invalid['ttl'], int) and after_invalid['ttl'] > 0)\n        for label in ('ttl-default', 'snapshot-read', 'snapshot-update'):",
+    "before": "        for label in ('ttl-default', 'snapshot-read', 'snapshot-update'):"
+  },
+  {
+    "after": "'qualification': 'official271_scoped_acl_consistency_and_ttl_restore_reference_only'",
+    "before": "'qualification': 'official271_scoped_acl_and_consistency_only'"
+  },
+  {
+    "after": "'schema':'official271_ttl_restore_reference_61ff_r1'",
+    "before": "'schema':'official271_scoped_acl_and_consistency_61ff_r2'"
+  }
+]

@@ -1,0 +1,55 @@
+{
+  "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+  "business_case": {
+    "body": "owned-invalid-snapshot",
+    "content_type": "application/octet-stream",
+    "credential_class": "ttl-default",
+    "expected_status_forced": false,
+    "headers": {},
+    "label": "ttl_root_default_standby_invalid_restore",
+    "method": "POST",
+    "node": 2,
+    "route": "/v1/sys/storage/raft/snapshot"
+  },
+  "files": [
+    {
+      "bytes": 46195,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/source/official_271_ttl_restore_reference_r1.py",
+      "sha256": "448cce0cedef1b2010beb789634d3b195750c25c8f96f7deb7b6919e9b2419fd"
+    },
+    {
+      "bytes": 2880,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/control/stage_and_run.py",
+      "sha256": "7f50f7effe364c1ce8306e9f4f205d7c17a8680f98afd8005a0d12b08221c858"
+    },
+    {
+      "bytes": 2540,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/control/exact-edits.public.json",
+      "sha256": "8aa34a6b22eaffa043ae62f51837872cbd06b551ffab0d37fec88bfb63b25929"
+    },
+    {
+      "bytes": 50328,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/request.public.json",
+      "sha256": "78354e1b18bfe7493e1e116e05920bc83d15256438efa41b5170e1cecf756b01"
+    }
+  ],
+  "full_replacement_qualified": false,
+  "official_source": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "preserved": {
+    "fresh_owned_fixture": true,
+    "http_seconds": 15,
+    "original_policy_cases": 30,
+    "owned_process_cleanup": true,
+    "readiness_seconds": 45,
+    "redirect_following": false,
+    "unknown_request_replay": false
+  },
+  "prior_source_blob": "58658ad63badc57ed99db03e902ce05579868322",
+  "prior_source_sha256": "8fa4d740f3e0a7cddc3b27391ce2d46308c19e519f078fc9f3afb0e47039ccec",
+  "reference_gap": "TTL unlimited root-policy token invalid restore on default read standby has no actual row in 070f old token wire.",
+  "schema": "heptabao.official-ttl-restore-reference-control.v1",
+  "source_blob": "5c19e15a6c8697bdfd24b2fec0eb588f74344276",
+  "source_sha256": "448cce0cedef1b2010beb789634d3b195750c25c8f96f7deb7b6919e9b2419fd",
+  "status": "prepared_not_executed",
+  "whole_fixture_supervisor_timeout_seconds": 300
+}
