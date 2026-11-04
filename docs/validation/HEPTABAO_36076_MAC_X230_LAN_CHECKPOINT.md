@@ -12,6 +12,33 @@
 
 实际安装版 AuthBus 插件已完成真实凭证导入、SDK 凭证选择、重启、续期、撤销及隔离状态回滚。Mac 隔离网关已通过启动和完整状态回滚；一次沿内置 HTTP 路径的真实默认模型请求返回完整 HTTP 429。后续核查发现生产还安装并启用了 Codex 原生插件，r8 的插件允许集合未覆盖它，因此该轮不能代表完整生产运行时。现用 Mac、ROG、Pocket4 的 AuthBus 配置仍指向旧来源，逐台迁移尚未完成。
 
+## 2026-11-04 10:10 UTC 增量核验
+
+最新正常候选仍为 `33cafa4c`，正常三机 90/128 的失败没有被覆盖。为定位该失败，单独构建的私有阶段观察源码为 `e17180d81db8b62ce333b58961efb70021e1e259`，tree=`494be8525e801e7fbd72660b2eb36816f720d1df`。首次诊断运行在新端口的 Pocket4 readiness probe 失败，24/128、7 intents/7 responses，未到达冷恢复；其服务实际已输出 listener ready。停止后的有限规则核验发现新端口未在原 UFW 允许范围内，未修改防火墙。原失败、日志和清理回执均保留。
+
+新的 r2 使用原允许的 46230/46231 端口以及全新数据目录，保持原 128 项、5 秒导入、15 秒 HTTP、8 秒 admission 和 14 秒 server 请求期限。它已完成 **128/128**，67 个变更 intent 均有明确 response，unknown=0；原 runner 和附加 collector 均 exit=0，所有 owned 服务、mesh、负载观察器停止。主机仍为 Mac、ROG、Pocket4，实际自然恢复方向为 ROG 节点 2 → 空缺 Mac 主节点 1。该轮未覆盖 Pocket4 节点 3 → Mac 的供给方向，不能授予正常构建资格。
+
+根审阅已逐项核对完整 summary 的 128 个不同 case、全部预算、源码和三机二进制 pins，并独立验证精确冷恢复 scope inventory。唯一目标为 Mac node1 emission377：339 个缺失对象全部接收并 fsync，共 35,743,010 字节，逐项 SHA/大小核对通过；3509 条 trace、完整 BOUND、drop=0。其恢复阶段为 9.599666 秒，seq47 HTTP200 为 10,298.918ms；seq55 官方 34MiB 导入 HTTP204 为 4,587.567ms。观察记录含 200 次真实 ReadIndex、187 个实际持久化批次，1/2/3/4 对象批次数为 73/85/20/9。私有观察有开销，不能用这次较快结果解释此前失败的唯一原因；不同进程 emission 及不同主机的时钟不得直接相减，socket 并发累计值不得当作墙钟耗时。
+
+Mac/ROG 的实际 SDK 顺序预览已完成：Mac 五个 agent 和 ROG 六个 agent 在 managed candidates `[2,1]`、activeProfile=null、非强制顺序下全部保留原 stored/effective 顺序。`[1,2]` 会把 ROG zbj 继承顺序从 `[4,2,1]` 改成 `[4,1,2]`，此反例保留，故正式计划采用 `[2,1]`。这只证明排序与状态保持，不代表执行了生产插件、换凭证或生产重启。两机配置中的旧来源尚未改变；当前 8200/8201 有限监听检查为空，所提生产端口尚未占用或保留。
+
+正式 AuthBus coordinator 入口已准备并完成 45 项原核心合同及 28 项安装入口合同：真实私有文件/fsync/锁，KV 边界仍为合成。安装入口将服务 serve/recover 与显式 operator 初始化/授权/撤销分离，固定配置、代码、服务字节及原锁身份；通过独立 binding-pin.env 消除 unit 与 binding 的循环哈希。对已派发 CAS、不可接受的成功认证回复、完成记录落盘失败和不可读 pending，保留 unknown 及对应恢复要求，不自动重发。X230 的真实 normal V6/TLS、实际 supervisor 与完整 owner+KV 成对恢复仍待执行；这些合同通过不等于已安装生产服务。
+
+Pocket4 两个当前原生消费者场景的 32 文件证据包已完整发布到 QA 分支 commit `c4adf3468c042f673228e3c0297dc592d94304ae`。原 packet SHA=`408ce5dc146d9d7fea257eda21cdd0b4b65055170ac6712b8dd135a9a2bccbe2`，32 个成员及全部条目哈希已独立核对；有限实际 secret literal 扫描为 37 个 distinct literal、0 命中。此发布不改变服务或客户端。
+
+CI run `41797943393` 已终态 cancelled，不能继续写为 pending 或通过。两个 worker 的工作区编译分别成功耗时 66m41s、76m59s，随后执行了部分 Rust 测试，在原 90 分钟 job 上限附近被取消。head 日志已有一个原始 KV2 挂载 ACL/CAS 用例 FAILED；其余 libtest 结束摘要尚未输出，失败断言正在 ROG 用完全相同源码、原断言和 15 秒请求预算单独复现。编译采样最大单进程 RSS 约 12.72 GiB，cgroup counters 不可用，不由此声称 OOM。正在评审把包含编译与全部检查的 workflow 总包络对齐仓库既有 360 分钟完整矩阵；所有运行时请求/fixture 期限、profile、features、断言和 gate 列表均保持原值。该调整尚未发布，失败用例没有豁免。
+
+| 新增精确回执 | SHA256 |
+| --- | --- |
+| e171 r2 原 128 项完整 summary | `f928c1d74bd1f8b4bad8530b6f2ad9d96ea8ff8020ac5f4384a136c833241d1d` |
+| e171 r2 控制器与停止回执 | `a3aa88da3f1e810324bff4c45c6f9fea776e93ca9d38dbc47d5d1fc3c13b637b` |
+| e171 r2 冷恢复完整 assessment | `b89064e4cfc256258739ef7f74fe47a67a471d05d8c6348a9231bab80c4d44d6` |
+| e171 r2 精确 scope inventory | `b79e2f279828d6512d8685cd9aa5be0e6c60ef116d878b80123261a79b803315` |
+| CI 41797943393 终态归纳 | `3ef19682a3a42a858a520b376896e8f63b06c44d7a1b7f4a693cf255e4bcc89f` |
+| coordinator 45+28 合同回执 | `be7473e3cd0c4f3f3e3cb14fdcd2b3e6ef86b6da9821d8c06a01ff36a887d06c` |
+
+以下各节保留此前阶段的源码身份、失败和证据范围；上表的新私有通过不会覆盖早期正常失败。生产切流、全部备份迁移和旧版清理仍未执行。
+
 ## 既有 36076 源码和二进制身份
 
 | 项目 | 精确身份 |
@@ -146,7 +173,7 @@ AuthBus 可复核辅助源码先发布 a78bdadc（tree=76ad1d16），再追加�
 
 该提交的 run 41792816829 两次 attempt 均通过格式、全部仓库/Python 验证，但两个 worker 都在 Rust 编译阶段收到 shutdown signal，以 143 退出。日志未显示 Rust 编译错误或 Rust 用例开始，具体上游关闭原因尚未证明；两次均保持失败。第二次在同一不可变提交和 workflow 上执行，没有修改断言或预算。
 
-当前 PR head 已追加为 1780833661058efff2e31cd2ce2733d485075ac3，tree=3835532737b5a2369ea46947442b3c03a77d0271，仅变更 CI workflow：Cargo 编译并发固定为 1，编译阶段记录有限内存、磁盘和进程资源计数；采样器在任何 Rust 用例开始前停止并 wait。原完整测试命令、matrix、所有其他步骤、features/profile 和 90 分钟 job 预算保持不变，产品 Rust 文件仍与物理 33cafa 一致。新的 run 41797943393 尚待终态；记录资源计数不代表已证明内存或磁盘耗尽。
+当前 PR head 已追加为 1780833661058efff2e31cd2ce2733d485075ac3，tree=3835532737b5a2369ea46947442b3c03a77d0271，仅变更 CI workflow：Cargo 编译并发固定为 1，编译阶段记录有限内存、磁盘和进程资源计数；采样器在任何 Rust 用例开始前停止并 wait。原完整测试命令、matrix、所有其他步骤、features/profile 和 90 分钟 job 预算保持不变，产品 Rust 文件仍与物理 33cafa 一致。该 run 41797943393 现已终态 cancelled；两项编译成功，部分 Rust 测试已执行，head 有一个 FAILED，详见本文件最新增量。记录资源计数不代表已证明内存或磁盘耗尽。
 
 ## 主要回执 SHA256
 

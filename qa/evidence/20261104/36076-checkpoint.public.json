@@ -1,6 +1,6 @@
 {
   "schema": "heptabao.36076-and-33cafa-checkpoint.v4",
-  "as_of_utc": "2026-11-04T08:17:22.431016+00:00",
+  "as_of_utc": "2026-11-04T10:10:00Z",
   "compiled_source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
   "compiled_source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95",
   "published_source_commit": "a5c05856f23c395e590fd4e6eeec02bb669a2aa9",
@@ -313,9 +313,9 @@
     "current_tree": "3835532737b5a2369ea46947442b3c03a77d0271",
     "current_head_rust_matches_physical_33cafa_tree": true,
     "additional_integration_scope": "Intentional empty README; same technical documentation requirements moved to CURRENT_DOCUMENTATION with negative regressions; no runtime gate removed.",
-    "current_full_qualification_terminal_observed": false,
+    "current_full_qualification_terminal_observed": true,
     "current_run_id": 41797943393,
-    "current_status": "in_progress",
+    "current_status": "completed",
     "current_trust_boundary_run_id": 41797943632,
     "current_trust_boundary_conclusion": "success",
     "current_attempt": 1,
@@ -330,7 +330,73 @@
     "cargo_build_jobs": 1,
     "compile_only_resource_sampler": true,
     "workflow_exact_readback_verified": true,
-    "all_other_workflow_steps_preserved": true
+    "all_other_workflow_steps_preserved": true,
+    "run_41797943393_terminal": {
+      "workflow_run": 41797943393,
+      "head_sha": "1780833661058efff2e31cd2ce2733d485075ac3",
+      "conclusion": "cancelled",
+      "full_qualification_passed": false,
+      "job_timeout_minutes": 90,
+      "job_summaries": [
+        {
+          "job_id": 126466431747,
+          "logCharacters": 1949012,
+          "resource_samples": 267,
+          "compilation": [
+            "2026-11-04T09:23:14.8791465Z     Finished `test` profile [optimized + debuginfo] target(s) in 66m 41s",
+            "2026-11-04T09:23:17.4407252Z     Finished `test` profile [optimized + debuginfo] target(s) in 0.93s"
+          ],
+          "first_test": "2026-11-04T09:23:17.4635240Z running 4 tests",
+          "last_test": "2026-11-04T09:44:37.1990231Z test service::native_auth::tests::verified_tls::native_cert_auth_uses_verified_tls_peer_and_survives_cold_reopen ... ok",
+          "observed_test_outcomes": {
+            "ok": 3548,
+            "ignored": 1,
+            "failed": 1
+          },
+          "failed_tests": [
+            "2026-11-04T09:43:23.3663278Z test service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs ... FAILED"
+          ],
+          "min_mem_available_kib": 2022376,
+          "max_rss_kib": 13217184,
+          "min_swap_free_kib": 2914168,
+          "min_disk_free_bytes": 66896465920,
+          "cgroup_data_samples": 0,
+          "error_lines": [
+            "2026-11-04T09:44:37.5456114Z ##[error]The operation was canceled."
+          ]
+        },
+        {
+          "job_id": 126466432232,
+          "logCharacters": 1678596,
+          "resource_samples": 308,
+          "compilation": [
+            "2026-11-04T09:34:09.9410917Z     Finished `test` profile [optimized + debuginfo] target(s) in 76m 59s",
+            "2026-11-04T09:34:11.9730604Z     Finished `test` profile [optimized + debuginfo] target(s) in 1.07s"
+          ],
+          "first_test": "2026-11-04T09:34:12.0016143Z running 4 tests",
+          "last_test": "2026-11-04T09:44:35.3659064Z test service::control_groups::tests::cg270_denied_parameter_and_capability_never_create_deferred_request_or_write_kv ... ok",
+          "observed_test_outcomes": {
+            "ok": 2633,
+            "ignored": 1
+          },
+          "failed_tests": [],
+          "min_mem_available_kib": 2278868,
+          "max_rss_kib": 13337884,
+          "min_swap_free_kib": 2997256,
+          "min_disk_free_bytes": 66891124736,
+          "cgroup_data_samples": 0,
+          "error_lines": [
+            "2026-11-04T09:44:40.8418382Z ##[error]The operation was canceled."
+          ]
+        }
+      ],
+      "limitations": [
+        "Logs were canceled before failing libtest assertion output was emitted.",
+        "Resource sampler ran only during compilation and cgroup counters were unavailable.",
+        "Compilation success and partial test outcomes do not qualify runtime gates."
+      ]
+    },
+    "current_conclusion": "cancelled"
   },
   "qa_publication": {
     "physical_followup_commit": "ccee5c8d1cd482fcb8fcadc578f8d045f823576a",
@@ -339,7 +405,8 @@
     "exact_tree_verified": true,
     "published_ref_readback_verified": true,
     "audit_source_readback_exact": true,
-    "production_deployed": false
+    "production_deployed": false,
+    "pocket_native_packet_commit": "c4adf3468c042f673228e3c0297dc592d94304ae"
   },
   "latest_normal_candidate": {
     "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
@@ -693,5 +760,90 @@
     "cutover_qualified": false,
     "missing_core_sha256": "133e1060d327bd14cae5b0673d3c5649c92d99c5d306f946114bcd480c691b41",
     "missing_execution_sha256": "dbb95fa33ec3fad08a24a951d47c2991e3dfbda26decf8246f74d048924c61bc"
+  },
+  "ha_private_phase_diagnostic_e171_r2": {
+    "source_commit": "e17180d81db8b62ce333b58961efb70021e1e259",
+    "source_tree": "494be8525e801e7fbd72660b2eb36816f720d1df",
+    "passed": 128,
+    "required": 128,
+    "intents": 67,
+    "responses": 67,
+    "unknown": 0,
+    "summary_sha256": "f928c1d74bd1f8b4bad8530b6f2ad9d96ea8ff8020ac5f4384a136c833241d1d",
+    "assessment_sha256": "b89064e4cfc256258739ef7f74fe47a67a471d05d8c6348a9231bab80c4d44d6",
+    "root_independently_verified": true,
+    "all_owned_stopped": true,
+    "normal_qualification": false,
+    "donor_node": 2,
+    "empty_leader_node": 1,
+    "pocket_to_mac_covered": false,
+    "cold_missing_objects": 339,
+    "cold_restored_bytes": 35743010,
+    "trace_rows": 3509,
+    "trace_dropped": 0,
+    "cold_http_ms": 10298.918,
+    "official_import_http_ms": 4587.567
+  },
+  "coordinator_installed_entry_contract_r4": {
+    "ok": true,
+    "productionChanged": false,
+    "realPrivateFilesAndLocks": true,
+    "realServerOrServiceManagerTested": false,
+    "schema": "heptabao.authbus-coordinator-installed-contract-validation.v1",
+    "sourcePins": {
+      "qa/openbao-acceptance/authbus_coordinator_contract_test.py": "e37065b40fd6f3dba1db033e167e6b386de09d8c4eeb17fb9870df6e9363584f",
+      "qa/openbao-acceptance/authbus_coordinator_installed_contract_test.py": "56876d7c1ed4519990be8dab8a5163f4633a9b3b02b5f6e3c2f480e56e6d5201",
+      "tools/authbus/INSTALLED_COORDINATOR.md": "265e477b73ce6297c919c731479fce34ff74d25be4ee1912c2cfed4c76fa235d",
+      "tools/authbus/authbus_coordinator.py": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+      "tools/authbus/authbus_coordinator_installed.py": "dddcea3ef7478b7c5772bdcdc334fa8b4b0469e76443d3bf280a882c91c81fe2"
+    },
+    "suites": [
+      {
+        "argv": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "-I",
+          "-S",
+          "-B",
+          "qa/openbao-acceptance/authbus_coordinator_contract_test.py"
+        ],
+        "elapsedSeconds": 1.28371054600575,
+        "exitCode": 0,
+        "name": "original-core",
+        "ok": true,
+        "stderrSha256": "e7e97ad0960e191af3558bb31d73ab43e0dc68b255670f7208e1767ad402f261",
+        "tests": 45
+      },
+      {
+        "argv": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+          "-I",
+          "-S",
+          "-B",
+          "qa/openbao-acceptance/authbus_coordinator_installed_contract_test.py"
+        ],
+        "elapsedSeconds": 1.811198969007819,
+        "exitCode": 0,
+        "name": "installed-entry",
+        "ok": true,
+        "stderrSha256": "ed17e481f4cd74ff876fc9ab54227759058e89c18d25bbf91fafac4698632518",
+        "tests": 28
+      }
+    ],
+    "syntheticKvBoundary": true
+  },
+  "effective_order_preview": {
+    "mac_agents": 5,
+    "rog_agents": 6,
+    "selected_managed_ordinals": [
+      2,
+      1
+    ],
+    "active_profile": null,
+    "enforced_order": false,
+    "production_changed": false,
+    "actual_installed_resolver": true,
+    "alternative_1_2_changed_rog_zbj": true,
+    "mac_result_sha256": "f6522d170c06276f82088264d7a5c77a8a87225911d9d3235d96051c76afee0e",
+    "rog_result_sha256": "244be61bad65a3c1f059188fe96960ed57d9ff8c27f5246b2e99813fd4ea3677"
   }
 }
