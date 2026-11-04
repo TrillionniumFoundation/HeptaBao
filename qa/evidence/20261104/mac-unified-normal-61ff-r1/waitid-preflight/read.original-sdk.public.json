@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1a7ad0824-fc05-2c31\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b22617661696c61626c65223a207b22505f504944223a20747275652c202257455849544544223a20747275652c2022574e4f48414e47223a20747275652c2022574e4f57414954223a20747275652c2022776169746964223a20747275657d2c20226368696c645f726561706564223a20747275652c20226f6b223a20747275652c2022706964223a2033303436372c202270726f647563745f6f725f736f757263655f6d6f646966696564223a2066616c73652c202273616d655f756e7265617065645f6368696c645f6f627365727665645f7477696365223a20747275652c2022736368656d61223a2022686570746162616f2e6d61632d7761697469642d707265666c696768742e7631222c2022756e7265617065645f6368696c645f706769645f6d617463686573223a206e756c6c7d0a\",\n    \"eof\": true,\n    \"next_offset\": 310,\n    \"offset\": 0,\n    \"size\": 310,\n    \"text\": \"{\\\"available\\\": {\\\"P_PID\\\": true, \\\"WEXITED\\\": true, \\\"WNOHANG\\\": true, \\\"WNOWAIT\\\": true, \\\"waitid\\\": true}, \\\"child_reaped\\\": true, \\\"ok\\\": true, \\\"pid\\\": 30467, \\\"product_or_source_modified\\\": false, \\\"same_unreaped_child_observed_twice\\\": true, \\\"schema\\\": \\\"heptabao.mac-waitid-preflight.v1\\\", \\\"unreaped_child_pgid_matches\\\": null}\\n\"\n  }\n}",
+      "type": "text"
+    }
+  ],
+  "isError": false,
+  "structuredContent": null
+}

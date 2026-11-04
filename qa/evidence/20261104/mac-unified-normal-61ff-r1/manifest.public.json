@@ -1,0 +1,84 @@
+{
+  "files": [
+    {
+      "bytes": 17475,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/control/stage_source_r5.py",
+      "sha256": "2cfbada60cfc3383cfcfb8cacb8e546ba9ec66b3bd4523cbba3b1de6cdec9e68"
+    },
+    {
+      "bytes": 1042,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/control/launch_wrapper.py",
+      "sha256": "694454a2bbffa1ab6aeb57cdbdb4e1948c40b77fcbeacbec63645c5e86ad11fc"
+    },
+    {
+      "bytes": 60406,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/stage-input.public.json",
+      "sha256": "0902fc241c484da7a9ef4d4835f74f0bb729823fdb58c53c55dd7e215f8eb684"
+    },
+    {
+      "bytes": 83054,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/source-stage.request.public.json",
+      "sha256": "ea505842563fe3c0527dc482a4b395f1c3467de86e70218385a916bdd581f64a"
+    },
+    {
+      "bytes": 1507,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/normal-build.request.public.json",
+      "sha256": "d521082b8da491a0a3f4dce426f8d262982ff6b289807187ee4fb7e873910263"
+    },
+    {
+      "bytes": 5531,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/control/build_normal.py",
+      "sha256": "f902727e82a3c7a8942006b056ecfca9258a856d456f4b1aa2131b2aa3a35d82"
+    },
+    {
+      "bytes": 22417,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/control/launch_mac_normal_build_r3.py",
+      "sha256": "aa09d9bb4c72c374430dc83fdd592b08b36a6d8fa1865c9580c168ac774c3043"
+    },
+    {
+      "bytes": 26585,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/control/frozen-source.public.json",
+      "sha256": "ad59fb02e3affc08720c13f7349d93a99df646ca7616f9a10e41e1cc6ddbeff1"
+    },
+    {
+      "bytes": 1703,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/control/clippy-qualified-source.public.json",
+      "sha256": "510de9e176b77e771a3233d56620c32975c161970213d7f83d1b7eceb37624db"
+    },
+    {
+      "bytes": 1780,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/waitid-preflight/probe.py",
+      "sha256": "46e204bafc83b6603bac43bbc8b64f56871061414717e5d2ffa170b03e5f86f6"
+    },
+    {
+      "bytes": 2195,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/waitid-preflight/request.original-sdk.public.json",
+      "sha256": "1f4d33a1e1a598ee02e3765031f26fefc42158c34725c9dbb3a1089821443a07"
+    },
+    {
+      "bytes": 3333,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/waitid-preflight/start.original-sdk.public.json",
+      "sha256": "50dd69af8d02d7d9852759708fd5b9ba1984e13ab7c06a2594d7c1508c97c941"
+    },
+    {
+      "bytes": 1521,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/waitid-preflight/read.original-sdk.public.json",
+      "sha256": "692bf9f242c5fe6a838f3b4dd70528cadd53cc9d181c44a7b755f13a00d09300"
+    },
+    {
+      "bytes": 952,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/waitid-preflight/status.original-sdk.public.json",
+      "sha256": "eaea8475e6ba7dd3e470e83237d2dbf24b134dc325932c3e4a5ad9c336972c8b"
+    },
+    {
+      "bytes": 1803,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/root-static-review.public.json",
+      "sha256": "543c8ce8c93a57194d4cfd2d967abcdd17a375e8a29d44c736e82f1c0986691f"
+    }
+  ],
+  "full_replacement_qualified": false,
+  "schema": "heptabao.mac-unified-normal-control-manifest.v1",
+  "source": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "status": "source-stage-and-normal-build-not-yet-executed",
+  "tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f"
+}

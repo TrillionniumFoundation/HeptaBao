@@ -1,0 +1,43 @@
+{
+  "builder_sha256": "f902727e82a3c7a8942006b056ecfca9258a856d456f4b1aa2131b2aa3a35d82",
+  "launcher_sha256": "aa09d9bb4c72c374430dc83fdd592b08b36a6d8fa1865c9580c168ac774c3043",
+  "limits": [
+    "Release directory lock does not reserve the entire Cargo home, cache or host.",
+    "A symlink or nonregular entry in the source cache causes a refusal before the builder.",
+    "The recovered builder is executed unchanged; successful build alone is not runtime qualification."
+  ],
+  "preflight": {
+    "exit_code": 0,
+    "getpgid_on_exited_unreaped_child_returned_esrch": true,
+    "job_id": "1a1a7ad0824-fc05-2c31",
+    "output_complete": true,
+    "output_durable": true,
+    "same_unreaped_child_observed_twice": true,
+    "stderr_bytes": 0,
+    "stdout_bytes": 310
+  },
+  "runtime_claims": {
+    "compatibility_passed": false,
+    "full_replacement_qualified": false,
+    "normal_build_executed": false,
+    "source_staging_executed": false
+  },
+  "schema": "heptabao.mac-normal-launch-root-static-review.v1",
+  "source": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "static_checks": {
+    "apfs_clone_no_copy_fallback": true,
+    "complete_launcher_read": true,
+    "darwin_getpgid_exited_child_handled": true,
+    "independent_clone_inodes_required": true,
+    "inherited_strict_qrcode_exclusion_exact": true,
+    "no_group_signal_after_reap": true,
+    "original_builder_exact_bytes_preserved": true,
+    "original_cargo_budget_1800_seconds": true,
+    "original_normal_release_profile_preserved": true,
+    "readonly_source_release_flock_through_clone_verification": true,
+    "signals_only_with_unreaped_owned_direct_child": true,
+    "sixty_two_source_pins_bound": true,
+    "unknown_start_requires_original_idempotency_key": true
+  },
+  "tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f"
+}
