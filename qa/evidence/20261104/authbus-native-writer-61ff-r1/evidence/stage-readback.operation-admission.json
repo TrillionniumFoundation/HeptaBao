@@ -1,0 +1,16 @@
+{
+  "admission_is_not_dispatch_completion": true,
+  "async_state": "queued",
+  "authenticated_chatgpt_caller_isolation": false,
+  "automatic_retry": false,
+  "credential_metadata_resume": true,
+  "cross_session_resume": true,
+  "delivery_proven": false,
+  "execution_resume_after_restart": false,
+  "idempotency_binding_retained": true,
+  "operation_id": "d6be07003cb77af033d5d23afd1c757796c69da9a48a4fb30d4e513cc4c5d02a",
+  "ownership_scope": "authenticated_private_operator_credential",
+  "reused": false,
+  "session_scope": "authenticated_private_operator_credential",
+  "tool_name": "read_multiple_files"
+}
