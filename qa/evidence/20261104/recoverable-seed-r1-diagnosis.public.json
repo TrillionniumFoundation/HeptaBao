@@ -1,0 +1,41 @@
+{
+  "V4": "heptabao-state-owners-v4",
+  "V5": "heptabao-state-records-v5",
+  "diagnosis": "Premature V5 assertion on fresh ordinary initialized V4 owner state; verify the expected V4 projection on an exact cold clone before migration.",
+  "frozen_contract_files": {
+    "service_capacity.rs": {
+      "bytes": 32488,
+      "sha256": "9b630ee7480f27fa1dfc5f471573d209603b3625ff6ad7b417b10d2c56ad0409"
+    },
+    "service_owner_store.rs": {
+      "bytes": 40637,
+      "sha256": "5dc7104af742a6b88428b6f2e72a099c6e65695f4d110b6e8627c3c1685179bb"
+    },
+    "state_record_root.rs": {
+      "bytes": 14916,
+      "sha256": "f926413956629ee9bbd16bea23c5b11568688ae2ce1531755c44ab4a89bd4929"
+    }
+  },
+  "initialize_again": false,
+  "original_r1_state_modified": false,
+  "production_state_populated": false,
+  "r1_failure": "seed-initial.expected_seed_storage_format",
+  "r1_init_response_sha256": "f2ebe0e0a356ead15bed458038c8f2c240a226d6548995951fb2feb885eae119",
+  "r1_initialized_once": true,
+  "r1_result_sha256": "1fac5c29c563841aa0b85b28146197565ab0e794c7dbb33d149dc2b41b60cc9f",
+  "r1_unseal_pair_12_succeeded": true,
+  "resume_all_owned_stopped_reported": true,
+  "resume_helper_sha256": "6d1e1bedaa771e7235ddff4c5efe7dddce84be2c37ab8b97bbe5be7cdbc1651d",
+  "resume_job": "1a1a700b1a4-fc05-29d5",
+  "resume_request_digest": "ed706294d64cfb6a135f4f9d5272377aa00c9fd89f9d316acec0af4f062e49f6",
+  "resume_result_sha256": "5856a6c7308d4f73b796ee4a14a58d6406727f50b1756b654d5826f24122cc34",
+  "resume_stage_job": "1a1a6fcdf0f-fc05-29c5",
+  "resume_status": "failed_exit1_result_pending",
+  "resume_work": "bootstrap-61ff8bef-r2",
+  "schema": "heptabao.seed-r1-diagnosis-and-resume-plan.v1",
+  "source_ref": "054d17cd50951efa46d78db3911ad1d277a0c584",
+  "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "static_peer_review": "ha reviewed original response pins, clone-only state writes, strict format and pair recovery, retained original inventory, owned Popen cleanup; no new concrete issue found",
+  "strict_V5_cold_recovery_gate_retained": true,
+  "verified_prior_fixture_sequence": "ha-http-r4/normal_staged_close_mac_wire_r2.py: initialize,unseal,create dedicated KV2 mount,CAS0,CAS1,verify capacity V5"
+}

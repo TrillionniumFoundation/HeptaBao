@@ -1,0 +1,199 @@
+{
+  "all_owned_children_stopped": true,
+  "binary_sha256": "d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20",
+  "boundary_before": {
+    "binary_sha256": "d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20",
+    "ha_config_sha256": "ce9a375a4b1584055df0fab868a974dd6511ab2a250db545c1737464e2578a49",
+    "server_config_sha256": "27653557ff3a91213dc65efad35fe1c0a26c28fd4670cd0235ff746cf34173cf",
+    "source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "stage_sha256": "3c76be847908ecc9e96263822a5ae2852c0b674216c17bbdeb5d5d1d37fca2fc",
+    "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+  },
+  "capacity_observations": [
+    {
+      "label": "before-v5-promotion",
+      "native_kv2_reader_format": null,
+      "opaque_owner_aggregate_bytes": null,
+      "profile": "bounded-owner-state-v4",
+      "state_bytes": 5128,
+      "state_schema": 141,
+      "state_storage_format": "heptabao-state-owners-v4"
+    }
+  ],
+  "checks": [
+    {
+      "case": "original_cipher_clone_exact",
+      "passed": true
+    },
+    {
+      "case": "original_cold_threshold",
+      "passed": true
+    },
+    {
+      "case": "original_cold_share_1",
+      "passed": true
+    },
+    {
+      "case": "original_cold_share_2",
+      "passed": true
+    },
+    {
+      "case": "original_cold_initialized",
+      "passed": true
+    },
+    {
+      "case": "original_root_survives_cold_clone",
+      "passed": true
+    },
+    {
+      "case": "before-v5-promotion.status",
+      "passed": true
+    },
+    {
+      "case": "fresh_init_remained_exact_v4",
+      "passed": true
+    },
+    {
+      "case": "dedicated_mount_absent_before",
+      "passed": true
+    }
+  ],
+  "client_changed": false,
+  "credential_source_changed": false,
+  "failure": "fixed_seed_api_response_framing",
+  "initialization_repeated": false,
+  "j3160_contacted": false,
+  "native_v6_activated": false,
+  "no_unknown_mutation_replayed": true,
+  "ok": false,
+  "original_init_response_sha256": "f2ebe0e0a356ead15bed458038c8f2c240a226d6548995951fb2feb885eae119",
+  "original_r1_result_sha256": "1fac5c29c563841aa0b85b28146197565ab0e794c7dbb33d149dc2b41b60cc9f",
+  "processes": [
+    {
+      "forced_kill": false,
+      "name": "seed",
+      "owned_popen": true,
+      "pid": 93098,
+      "port": 58921,
+      "returncode": -15,
+      "stopped": true
+    }
+  ],
+  "production_node_state_populated": false,
+  "production_service_started": false,
+  "production_start_qualified": false,
+  "requests": [
+    {
+      "http_seconds": 12,
+      "label": "original-cold-seal-status",
+      "method": "GET",
+      "nonce": "7600b3bae91141a583881159f22e9862",
+      "outcome": "response_received",
+      "path": "sys/seal-status",
+      "replayed": false,
+      "request_body_sha256": null,
+      "response_bytes": 211,
+      "response_sha256": "c73f5b7b860c49b4c3cd5d5e411b873b94cdf534f97ca72a9434b5d058de734a",
+      "status": 200
+    },
+    {
+      "http_seconds": 12,
+      "label": "original-cold-share-1",
+      "method": "POST",
+      "nonce": "2c106fdffa4747c6a79d3f8c9ec5dc35",
+      "outcome": "response_received",
+      "path": "sys/unseal",
+      "replayed": false,
+      "request_body_sha256": "f094820cefdaa3c7ca7f2f5a58b0474cb017f457fe9a094e19234007cde7c997",
+      "response_bytes": 243,
+      "response_sha256": "ba7231067bef9a1e02a183d8803592f675d63469c3cb3dc8b9e449787b17c1a0",
+      "status": 200
+    },
+    {
+      "http_seconds": 12,
+      "label": "original-cold-share-2",
+      "method": "POST",
+      "nonce": "c0e139c1081f4952b9a1ccdc195efb77",
+      "outcome": "response_received",
+      "path": "sys/unseal",
+      "replayed": false,
+      "request_body_sha256": "fe6a84396a0040ad13f836ecdf781ffb1f066e2dd18d9afa55ca7e47c02c8ce3",
+      "response_bytes": 302,
+      "response_sha256": "6c6237c0689d1c192e4a8e7932e25d75409b7e0c8b84358343ee483ddbb268d6",
+      "status": 200
+    },
+    {
+      "http_seconds": 12,
+      "label": "original-cold-health",
+      "method": "GET",
+      "nonce": "56e27cdcbe0e4c6d85daedffd13d342e",
+      "outcome": "response_received",
+      "path": "sys/health",
+      "replayed": false,
+      "request_body_sha256": null,
+      "response_bytes": 363,
+      "response_sha256": "6545c420e84fc3406647dada56fa6fdb270c5f202581711610974d454b09fc28",
+      "status": 200
+    },
+    {
+      "http_seconds": 12,
+      "label": "original-root-lookup",
+      "method": "GET",
+      "nonce": "c388365a2b064adca654c82dad3361cf",
+      "outcome": "response_received",
+      "path": "auth/token/lookup-self",
+      "replayed": false,
+      "request_body_sha256": null,
+      "response_bytes": 515,
+      "response_sha256": "812b16408be07ec6a86a16cd6631433066a02a9d4a6e2f88063a800dd0c6f8d9",
+      "status": 200
+    },
+    {
+      "http_seconds": 12,
+      "label": "before-v5-promotion",
+      "method": "GET",
+      "nonce": "c0cdb24700ff4df495a5271ead0abf5d",
+      "outcome": "response_received",
+      "path": "sys/internal/capacity",
+      "replayed": false,
+      "request_body_sha256": null,
+      "response_bytes": 1874,
+      "response_sha256": "c37ad70773eed2a8b65dc06f20e7881b5c602ed64047e26a03107d1bfa65a5bb",
+      "status": 200
+    },
+    {
+      "http_seconds": 12,
+      "label": "dedicated-mount-before",
+      "method": "GET",
+      "nonce": "9e007958999e4f3b8b0f3c30893171a5",
+      "outcome": "response_received",
+      "path": "sys/mounts",
+      "replayed": false,
+      "request_body_sha256": null,
+      "response_bytes": 1557,
+      "response_sha256": "53b65349f24424e922e5253b486f6a152cb622ea7f4f146f2f671195891d49dc",
+      "status": 200
+    },
+    {
+      "http_seconds": 12,
+      "label": "dedicated-kv2-mount-once",
+      "method": "POST",
+      "nonce": "0f2be8fc31a9430c91f67d784ae8e5b3",
+      "outcome": "unknown",
+      "path": "sys/mounts/heptabao-seed-recovery-61ff",
+      "replayed": false,
+      "request_body_sha256": "c3d74e38f3a73ed4f46b635eb4f27fa6b53f5c92b0357ec35a4fd8a82cd91de7"
+    }
+  ],
+  "resumed_from_acknowledged_r1": true,
+  "schema": "heptabao.private-recoverable-seed-preparation.v1",
+  "secret_shares": 3,
+  "secret_threshold": 2,
+  "shares_distributed": false,
+  "source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "source_helper_sha256": "6a2687be3f83583d8730353c72f36bf6c79e24e64211b8a617ba57088f910000",
+  "split_custody_qualified": false,
+  "transitional_complete_init_response_retained_privately": true,
+  "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "v4_to_v5_promoted": false
+}

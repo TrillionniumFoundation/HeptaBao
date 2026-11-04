@@ -1,0 +1,1 @@
+{"ok": false, "result": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/authority/seed-custody/bootstrap-61ff8bef-r1/result.public.json", "sha256": "1fac5c29c563841aa0b85b28146197565ab0e794c7dbb33d149dc2b41b60cc9f", "production_service_started": false, "shares_distributed": false, "all_owned_children_stopped": true}

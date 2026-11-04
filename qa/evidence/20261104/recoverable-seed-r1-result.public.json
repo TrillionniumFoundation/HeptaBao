@@ -1,0 +1,168 @@
+{
+  "all_owned_children_stopped": true,
+  "binary_sha256": "d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20",
+  "boundary_before": {
+    "binary_sha256": "d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20",
+    "ha_config_sha256": "ce9a375a4b1584055df0fab868a974dd6511ab2a250db545c1737464e2578a49",
+    "server_config_sha256": "27653557ff3a91213dc65efad35fe1c0a26c28fd4670cd0235ff746cf34173cf",
+    "source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "stage_sha256": "3c76be847908ecc9e96263822a5ae2852c0b674216c17bbdeb5d5d1d37fca2fc",
+    "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+  },
+  "checks": [
+    {
+      "case": "fresh_uninitialized",
+      "passed": true
+    },
+    {
+      "case": "initialization_response_recorded",
+      "passed": true
+    },
+    {
+      "case": "exact_recovery_material_shape",
+      "passed": true
+    },
+    {
+      "case": "seed-initial.share_1",
+      "passed": true
+    },
+    {
+      "case": "seed-initial.share_2",
+      "passed": true
+    },
+    {
+      "case": "seed-initial.same_initialized_cluster",
+      "passed": true
+    },
+    {
+      "case": "seed-initial.root_credential_survives",
+      "passed": true
+    },
+    {
+      "case": "seed-initial.expected_seed_storage_format",
+      "passed": false
+    }
+  ],
+  "client_changed": false,
+  "credential_source_changed": false,
+  "failure": "seed-initial.expected_seed_storage_format",
+  "j3160_contacted": false,
+  "native_v6_activated": false,
+  "no_unknown_mutation_replayed": true,
+  "ok": false,
+  "processes": [
+    {
+      "forced_kill": false,
+      "name": "seed",
+      "owned_popen": true,
+      "pid": 89451,
+      "port": 57154,
+      "returncode": -15,
+      "stopped": true
+    }
+  ],
+  "production_node_state_populated": false,
+  "production_service_started": false,
+  "production_start_qualified": false,
+  "requests": [
+    {
+      "http_seconds": 12,
+      "label": "fresh-uninitialized",
+      "method": "GET",
+      "nonce": "fdd0ea0c434844d18a05a34ecb7ed6a2",
+      "outcome": "response_received",
+      "path": "sys/health",
+      "replayed": false,
+      "request_body_sha256": null,
+      "response_bytes": 329,
+      "response_sha256": "f24aad28bc6a8ebcfce916b79ec735716307f42960404c718a0d1becd8c8d80a",
+      "status": 501
+    },
+    {
+      "http_seconds": 12,
+      "label": "initialize-once",
+      "method": "POST",
+      "nonce": "c9c6576ccaa047a483268efa3f009f5a",
+      "outcome": "response_received",
+      "path": "sys/init",
+      "replayed": false,
+      "request_body_sha256": "aca78292cd40ed26fd6687171b2fb162c242cd4f024853951f558cc0a7ac8ac1",
+      "response_bytes": 591,
+      "response_sha256": "f2ebe0e0a356ead15bed458038c8f2c240a226d6548995951fb2feb885eae119",
+      "status": 200
+    },
+    {
+      "http_seconds": 12,
+      "label": "seed-initial-share-1",
+      "method": "POST",
+      "nonce": "67d3e1a5afa34ec085cff3b86b990f4b",
+      "outcome": "response_received",
+      "path": "sys/unseal",
+      "replayed": false,
+      "request_body_sha256": "f094820cefdaa3c7ca7f2f5a58b0474cb017f457fe9a094e19234007cde7c997",
+      "response_bytes": 243,
+      "response_sha256": "bbcc653a6f7578e9abc04f117c4749bbf967111a1d94c4a414386b9ec926acee",
+      "status": 200
+    },
+    {
+      "http_seconds": 12,
+      "label": "seed-initial-share-2",
+      "method": "POST",
+      "nonce": "8cd160cc1bc747889bdedf95fbdd67d1",
+      "outcome": "response_received",
+      "path": "sys/unseal",
+      "replayed": false,
+      "request_body_sha256": "fe6a84396a0040ad13f836ecdf781ffb1f066e2dd18d9afa55ca7e47c02c8ce3",
+      "response_bytes": 302,
+      "response_sha256": "6c6237c0689d1c192e4a8e7932e25d75409b7e0c8b84358343ee483ddbb268d6",
+      "status": 200
+    },
+    {
+      "http_seconds": 12,
+      "label": "seed-initial-health",
+      "method": "GET",
+      "nonce": "1eceddd89a0b47f9a96b35f14a8afa1e",
+      "outcome": "response_received",
+      "path": "sys/health",
+      "replayed": false,
+      "request_body_sha256": null,
+      "response_bytes": 363,
+      "response_sha256": "68893a87913b9fad26d301cd28a0c4569581c53350bd25e83cd515106a580987",
+      "status": 200
+    },
+    {
+      "http_seconds": 12,
+      "label": "seed-initial-root-lookup",
+      "method": "GET",
+      "nonce": "a28a958b4ac34f62bcc12060be628ed6",
+      "outcome": "response_received",
+      "path": "auth/token/lookup-self",
+      "replayed": false,
+      "request_body_sha256": null,
+      "response_bytes": 515,
+      "response_sha256": "a3a3b7f3bf5ca15e249bd21474bc2ddffaf85498402e621199ed9c232a91137b",
+      "status": 200
+    },
+    {
+      "http_seconds": 12,
+      "label": "seed-initial-capacity",
+      "method": "GET",
+      "nonce": "893c5152c209436fb1392a51377a1caa",
+      "outcome": "response_received",
+      "path": "sys/internal/capacity",
+      "replayed": false,
+      "request_body_sha256": null,
+      "response_bytes": 1874,
+      "response_sha256": "c0d1bc7aabcad9a6ea3b54e386a63936ecd557e998bfae4b842064e0eccf11d1",
+      "status": 200
+    }
+  ],
+  "schema": "heptabao.private-recoverable-seed-preparation.v1",
+  "secret_shares": 3,
+  "secret_threshold": 2,
+  "shares_distributed": false,
+  "source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "split_custody_qualified": false,
+  "transitional_complete_init_response_retained_privately": true,
+  "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+}

@@ -145,6 +145,45 @@ class CompleteHeaderResponse(http.client.HTTPResponse):
              'http_response_status_framing')
 
 
+def bounded_response_body(response):
+    """Read the owned server's 204, fixed-length or canonical chunked framing.
+
+    Complete CRLF headers have already been checked. A 204 ends at that header
+    boundary (RFC 9112 6.3 / RFC 9110 8.6); body-bearing JSON may use chunked
+    transfer above the server's 2048-byte threshold. Neither path accepts EOF
+    as a missing terminator or extends the original socket deadline.
+    """
+    lengths=[v.strip() for k,v in response.getheaders() if k.lower()=='content-length']
+    transfers=[v.strip().lower() for k,v in response.getheaders() if k.lower()=='transfer-encoding']
+    if response.status==204:
+        need(not lengths and not transfers,'bodyless_response_has_framing_header')
+        raw=response.read(MAX_RESPONSE+1)
+        need(raw==b'','bodyless_response_not_empty')
+        return raw,'status_204_header_boundary'
+    if transfers:
+        need(transfers==['chunked'] and not lengths,'ambiguous_chunked_response_framing')
+        raw=bytearray()
+        for _ in range(4096):
+            line=response.fp.readline(4097)
+            digits=line[:-2]
+            need(line.endswith(b'\r\n') and 1<=len(digits)<=16
+                 and all(c in b'0123456789abcdefABCDEF' for c in digits),'chunk_size_framing')
+            size=int(digits,16)
+            if size==0:
+                need(response.fp.readline(4097)==b'\r\n','chunked_terminal_boundary')
+                return bytes(raw),'canonical_chunked_terminal_boundary'
+            need(size<=MAX_RESPONSE-len(raw),'chunked_response_size')
+            part=response.fp.read(size)
+            need(len(part)==size and response.fp.read(2)==b'\r\n','chunk_body_framing')
+            raw.extend(part)
+        raise Refused('chunked_response_count')
+    need(len(lengths)==1 and lengths[0].isascii() and lengths[0].isdigit()
+         and len(lengths[0])<=10 and int(lengths[0])<=MAX_RESPONSE,'fixed_seed_api_response_framing')
+    raw=response.read(MAX_RESPONSE+1)
+    need(len(raw)==int(lengths[0]),'declared_response_body_incomplete')
+    return raw,'exact_content_length'
+
+
 def inventory(path):
     files, total = {}, 0
     for item in sorted(path.rglob('*')):
@@ -260,6 +299,8 @@ class SeedRun:
             need(bool(self.root_token),'root_not_available')
             headers['X-Vault-Token'] = self.root_token
         response_received = False
+        response = None
+        observed_header = {}
         timer.start()
         try:
             conn.connect()
@@ -269,19 +310,17 @@ class SeedRun:
             conn.sock.settimeout(max(.001,end-time.monotonic()))
             conn.request(method,'/v1/'+path,body=payload,headers=headers)
             response = conn.getresponse()
-            lengths=[value.strip() for name,value in response.getheaders() if name.lower()=='content-length']
-            self_delimited=(len(lengths)==1 and lengths[0].isascii() and lengths[0].isdigit()
-                            and len(lengths[0])<=10 and int(lengths[0])<=MAX_RESPONSE
-                            and not any(name.lower()=='transfer-encoding' for name,_ in response.getheaders()))
-            need(self_delimited,'fixed_seed_api_response_framing')
+            observed_header = {'observed_status':response.status,
+                'complete_header_sha256':sha(bytes(response.captured_header.header)),
+                'complete_header_bytes':len(response.captured_header.header)}
             conn.sock.settimeout(max(.001,end-time.monotonic())) if conn.sock is not None else None
-            raw = response.read(MAX_RESPONSE+1)
-            need(len(raw)==int(lengths[0]) and not expired.is_set() and time.monotonic()<end,
+            raw,framing = bounded_response_body(response)
+            need(not expired.is_set() and time.monotonic()<end,
                  'original_http_deadline_or_size')
             # The exact secret-bearing response is made durable before parsing.
             if persist_init:
                 put(self.work/'initialization-response.private.json',raw)
-            outcome = {**intent,'status':response.status,'response_bytes':len(raw),
+            outcome = {**intent,**observed_header,'status':response.status,'response_bytes':len(raw),'framing':framing,
                        'response_sha256':sha(raw),'outcome':'response_received'}
             put(self.work/'journal'/(prefix+'-outcome.public.json'),outcome)
             self.report['requests'].append(outcome)
@@ -289,9 +328,11 @@ class SeedRun:
             return response.status, json.loads(raw) if raw else None
         finally:
             timer.cancel()
+            if response is not None:
+                response.close()
             conn.close()
             if not response_received:
-                outcome = {**intent,'outcome':'unknown' if method not in ('GET','HEAD','LIST') else 'read_failed'}
+                outcome = {**intent,**observed_header,'outcome':'unknown' if method not in ('GET','HEAD','LIST') else 'read_failed'}
                 put(self.work/'journal'/(prefix+'-unresolved.public.json'),outcome)
                 self.report['requests'].append(outcome)
 

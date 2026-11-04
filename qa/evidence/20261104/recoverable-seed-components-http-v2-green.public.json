@@ -1,0 +1,106 @@
+{
+  "cases": [
+    {
+      "case": "complete-json",
+      "error_type": null,
+      "exact_response_durable_before_decode": true,
+      "one_request_only": true,
+      "passed": true
+    },
+    {
+      "case": "invalid-json",
+      "error_type": "JSONDecodeError",
+      "exact_response_durable_before_decode": true,
+      "one_request_only": true,
+      "passed": true
+    },
+    {
+      "case": "complete204-no-length",
+      "framing": "status_204_header_boundary",
+      "one_request_only": true,
+      "passed": true
+    },
+    {
+      "case": "complete-canonical-chunked",
+      "framing": "canonical_chunked_terminal_boundary",
+      "one_request_only": true,
+      "passed": true
+    },
+    {
+      "case": "truncated204-header",
+      "error": "http_response_header_incomplete",
+      "one_request_only": true,
+      "outcome": "unknown",
+      "passed": true
+    },
+    {
+      "case": "truncated-declared-body",
+      "error": "declared_response_body_incomplete",
+      "one_request_only": true,
+      "outcome": "unknown",
+      "passed": true
+    },
+    {
+      "case": "forbidden204-content-length",
+      "error": "bodyless_response_has_framing_header",
+      "one_request_only": true,
+      "outcome": "unknown",
+      "passed": true
+    },
+    {
+      "case": "chunked-short-data",
+      "error": "chunk_body_framing",
+      "one_request_only": true,
+      "outcome": "unknown",
+      "passed": true
+    },
+    {
+      "case": "chunked-wrong-data-terminator",
+      "error": "chunk_body_framing",
+      "one_request_only": true,
+      "outcome": "unknown",
+      "passed": true
+    },
+    {
+      "case": "chunked-missing-terminal-crlf",
+      "error": "chunked_terminal_boundary",
+      "one_request_only": true,
+      "outcome": "unknown",
+      "passed": true
+    },
+    {
+      "case": "chunked-with-content-length",
+      "error": "ambiguous_chunked_response_framing",
+      "one_request_only": true,
+      "outcome": "unknown",
+      "passed": true
+    },
+    {
+      "case": "absolute-deadline-with-trickled-tls-header",
+      "component_budget_seconds": 0.4,
+      "elapsed_seconds": 0.40496251900913194,
+      "error_type": "BrokenPipeError",
+      "one_request_only": true,
+      "outcome": "unknown",
+      "passed": true
+    },
+    {
+      "actual_child_retained_and_reaped": true,
+      "actual_signal_delivered": true,
+      "case": "sigterm-after-spawn-before-popen-return",
+      "controller_process_group_retained": true,
+      "passed": true,
+      "unowned_process_signalled": false
+    }
+  ],
+  "new_self_signed_component_ca_only": true,
+  "ok": true,
+  "production_files_read_or_changed": false,
+  "production_http_budget_seconds": 12,
+  "production_initialized": false,
+  "real_heptabao_executed": false,
+  "remote_hosts_contacted": false,
+  "schema": "heptabao.recoverable-seed-local-transport-component.v1",
+  "source_sha256": "b7b14b6fcbf767d76873b215ce10119fe58beb50ec3fbd164b4925ceb188cfea",
+  "temporary_fixture_removed": true
+}

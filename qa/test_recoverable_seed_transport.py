@@ -114,9 +114,28 @@ def main():
                 assert error=='JSONDecodeError' and response is None
             records.append({'case':label,'passed':True,'one_request_only':True,
                             'exact_response_durable_before_decode':True,'error_type':error})
+        chunked_payload=json.dumps({'value':'c'*3000}).encode()
+        for label,wire,expected in [
+            ('complete204-no-length',b'HTTP/1.1 204 No Content\r\nConnection: close\r\n\r\n',(204,None)),
+            ('complete-canonical-chunked',b'HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n'
+             +format(len(chunked_payload),'x').encode()+b'\r\n'+chunked_payload+b'\r\n0\r\n\r\n',
+             (200,json.loads(chunked_payload)))]:
+            work=root/label;work.mkdir(mode=0o700);(work/'journal').mkdir(mode=0o700)
+            run=seed.SeedRun(work);peer=Peer(context,lambda ch,payload=wire:ch.sendall(payload));run.port=peer.port
+            try: response=run.request(label,'POST','sys/seal',{})
+            finally: peer.finish()
+            assert response==expected and peer.requests==1
+            assert len(run.report['requests'])==1 and run.report['requests'][0]['outcome']=='response_received'
+            records.append({'case':label,'passed':True,'one_request_only':True,
+                            'framing':run.report['requests'][0]['framing']})
         for label,raw in [
             ('truncated204-header',b'HTTP/1.1 204 No Content\r\nContent-Length: 0\r\n'),
-            ('truncated-declared-body',b'HTTP/1.1 200 OK\r\nContent-Length: 20\r\nConnection: close\r\n\r\n{}')]:
+            ('truncated-declared-body',b'HTTP/1.1 200 OK\r\nContent-Length: 20\r\nConnection: close\r\n\r\n{}'),
+            ('forbidden204-content-length',b'HTTP/1.1 204 No Content\r\nContent-Length: 0\r\n\r\n'),
+            ('chunked-short-data',b'HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n20\r\n{}'),
+            ('chunked-wrong-data-terminator',b'HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n2\r\n{}XX0\r\n\r\n'),
+            ('chunked-missing-terminal-crlf',b'HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n2\r\n{}\r\n0\r\n'),
+            ('chunked-with-content-length',b'HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\nContent-Length: 2\r\n\r\n2\r\n{}\r\n0\r\n\r\n')]:
             work=root/label;work.mkdir(mode=0o700);(work/'journal').mkdir(mode=0o700)
             run=seed.SeedRun(work)
             peer=Peer(context,lambda channel,payload=raw:channel.sendall(payload));run.port=peer.port

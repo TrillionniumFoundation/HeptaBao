@@ -1,0 +1,76 @@
+{
+  "actual_cluster_id": "0c56fad8-4061-349e-84a8-0a4cbc7ca12a",
+  "binary_sha256": "d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20",
+  "cold_recovery_pairs": [
+    [
+      1,
+      2
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      2,
+      3
+    ]
+  ],
+  "dynamic_checks": 66,
+  "full_openbao_271_replacement_qualified": false,
+  "http_intents": 40,
+  "http_outcomes": 40,
+  "initialization_repeated": false,
+  "job": "mac/1a1a70e188f-fc05-2a02",
+  "live_http_budget_seconds": 12,
+  "local_tls_signal_component_tests": 13,
+  "ok": true,
+  "original_r1_r2_ciphertext_and_receipts_unchanged": true,
+  "original_sdk_sha256": "7a89821a979e992a3aad8cba4998aa90c7d06a6993aa270ad4f8737d5d06c64a",
+  "owned_processes_reaped": 4,
+  "production_boundary_unchanged": true,
+  "production_start_qualified": false,
+  "promotion_sequence": "r1 fresh V4; r2 mount response unknown; r3 reads exact cold clone as V5 with mount present, then new CAS0/CAS1 and unmount",
+  "provider_credentials_qualified": false,
+  "r2_mount_readonly_reconciled_on_exact_cold_clone": true,
+  "r2_original_unknown_mount_outcome_retained": true,
+  "result_sha256": "ef640ced21b11be8cfd2dd8cac9342cff5cc0406e1ee17f0bb07cf85c37d7ecb",
+  "schema": "heptabao.root-reviewed-recoverable-seed.v1",
+  "seed_archive": {
+    "bytes": 30494,
+    "files": {
+      "journal.hbj": {
+        "bytes": 29443,
+        "sha256": "44a07026ad4a1e6002f890741c9643e0d58ba327ec8c684c10b2443ade309edb"
+      },
+      "ledger.hbl": {
+        "bytes": 398,
+        "sha256": "8e85f26ac225f4e34810231e83fb5b9ad0fe1e6b2e721707835feba6b616566d"
+      },
+      "seal.json": {
+        "bytes": 206,
+        "sha256": "4229d5cc3044af2af0e5e6779277d0573ae3b1a0a112037a90c7af166fac7469"
+      },
+      "state.hbs": {
+        "bytes": 97,
+        "sha256": "b29a33870609ad6ba2777bd4a0edeaf220523623217c71153cb44ac3f738c18c"
+      }
+    },
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/authority/seed-custody/bootstrap-61ff8bef-r3/seed-state.tgz",
+    "sha256": "c50dbae852e748763038d0e0dcdfe2eae7dbc2a254f2b29642dec47c3117e64b"
+  },
+  "seed_storage_format": "heptabao-state-records-v5",
+  "source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "source_pins": {
+    "qa/evidence/20261104/recoverable-seed-retained-source/prepare_recoverable_seed.py": "6a2687be3f83583d8730353c72f36bf6c79e24e64211b8a617ba57088f910000",
+    "qa/evidence/20261104/recoverable-seed-retained-source/resume_recoverable_seed.py": "6d1e1bedaa771e7235ddff4c5efe7dddce84be2c37ab8b97bbe5be7cdbc1651d",
+    "tools/production/prepare_recoverable_seed.py": "b7b14b6fcbf767d76873b215ce10119fe58beb50ec3fbd164b4925ceb188cfea",
+    "tools/production/reconcile_recoverable_seed.py": "fb7772f3c4490e434e6481754d099db94ee23c20298f4f016d4be5e33af28fea",
+    "tools/production/resume_recoverable_seed.py": "6d1e1bedaa771e7235ddff4c5efe7dddce84be2c37ab8b97bbe5be7cdbc1651d"
+  },
+  "split_share_custody_qualified": false,
+  "terminal_exit": 0,
+  "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "unknown_mount_replayed": false,
+  "unknown_outcomes": 0,
+  "v6_activation_qualified_by_this_run": false
+}
