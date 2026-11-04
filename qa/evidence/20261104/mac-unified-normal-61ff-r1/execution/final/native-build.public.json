@@ -1,0 +1,19 @@
+{
+  "binary_sha256": "976776d4183d76e6adf06dc0e765d30f59d0d433adea42aeed8a57a9877c1f26",
+  "build_exit_code": 0,
+  "features": [
+    "default",
+    "native-v6-ha",
+    "native-v6-storage"
+  ],
+  "native_abi": "aarch64-apple-darwin",
+  "provenance": {
+    "cargo_events_sha256": "c3806347fc42b282a4b2a7959b1f8337f16392da438fb36940919fcd69ac19ec",
+    "result_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-unified-normal-61ff-r1/normal-default-r1/result.public.json",
+    "result_sha256": "1213701925f1be075e5d538104cbc25f8b132054f61602fcb27eebf4a820b763"
+  },
+  "schema": "heptabao.native-build.v1",
+  "source_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "source_freeze_verified": true,
+  "source_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f"
+}

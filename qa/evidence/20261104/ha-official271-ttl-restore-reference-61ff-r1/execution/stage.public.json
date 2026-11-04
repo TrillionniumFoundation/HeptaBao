@@ -1,0 +1,15 @@
+{
+  "exact_source_readback": true,
+  "expected_status_forced": false,
+  "fresh_work_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-ttl-restore-oracle-live-61ff-r1",
+  "http_seconds": 15,
+  "prior_helper_sha256": "8fa4d740f3e0a7cddc3b27391ce2d46308c19e519f078fc9f3afb0e47039ccec",
+  "private_credentials_emitted": false,
+  "production_services_touched": false,
+  "readiness_seconds": 45,
+  "schema": "heptabao.official-ttl-reference-stage.v1",
+  "source_bytes": 46195,
+  "source_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-ttl-restore-oracle-control-61ff-r1/official_271_ttl_restore_reference_r1.py",
+  "source_sha256": "448cce0cedef1b2010beb789634d3b195750c25c8f96f7deb7b6919e9b2419fd",
+  "syntax_compiled": true
+}

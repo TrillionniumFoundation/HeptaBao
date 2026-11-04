@@ -1,0 +1,880 @@
+{
+  "all_owned_stopped": true,
+  "checks": [
+    {
+      "name": "node_1_official_version",
+      "passed": true
+    },
+    {
+      "name": "node_2_official_version",
+      "passed": true
+    },
+    {
+      "name": "node_3_original_header_sealed_refusal",
+      "passed": true
+    },
+    {
+      "name": "node_3_official_version",
+      "passed": true
+    },
+    {
+      "name": "initialize_complete",
+      "passed": true
+    },
+    {
+      "name": "node1_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "node_1_official_version",
+      "passed": true
+    },
+    {
+      "name": "node2_joined",
+      "passed": true
+    },
+    {
+      "name": "node2_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "node_2_official_version",
+      "passed": true
+    },
+    {
+      "name": "node3_joined",
+      "passed": true
+    },
+    {
+      "name": "node3_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "node_3_official_version",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_1_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_2_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_3_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_before_single_actual_leader",
+      "passed": true
+    },
+    {
+      "name": "roles_before_all_report_same_leader",
+      "passed": true
+    },
+    {
+      "name": "actual_initial_leader",
+      "passed": true
+    },
+    {
+      "name": "owned_kv_mount_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "owned_kv_write_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "ttl-default_token_created",
+      "passed": true
+    },
+    {
+      "name": "ttl-default_lookup_before_bounded_result",
+      "passed": true
+    },
+    {
+      "name": "ttl_root_unlimited_actual",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node2_root_1_exact_kv_value",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node2_root_false_exact_kv_value",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node2_ttl-default_1_exact_kv_value",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node2_ttl-default_false_exact_kv_value",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node3_root_1_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node3_root_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node3_ttl-default_1_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "ttl_kv_node3_ttl-default_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_policy_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_actual_non_root_policy_token",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_actual_standby_authentication",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_node1_snapshot_complete_actual_archive",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_node2_snapshot_complete_actual_archive",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_node3_snapshot_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_node2_snapshot_no_forward_false_complete_actual_archive",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_policy_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_actual_non_root_policy_token",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_actual_standby_authentication",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_node1_snapshot_complete_actual_archive",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_node2_snapshot_complete_actual_archive",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_node3_snapshot_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_node2_snapshot_no_forward_false_complete_actual_archive",
+      "passed": true
+    },
+    {
+      "name": "consistency_read_node2_explicit_policy_false_exact_kv_value",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_node2_explicit_policy_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_exact_effect_node2_explicit_policy_false",
+      "passed": true
+    },
+    {
+      "name": "consistency_read_node3_explicit_policy_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_node3_explicit_policy_false_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_exact_effect_node3_explicit_policy_false",
+      "passed": true
+    },
+    {
+      "name": "consistency_read_node3_explicit_policy_true_exact_kv_value",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_node3_explicit_policy_true_complete_exact_redirect",
+      "passed": true
+    },
+    {
+      "name": "consistency_write_exact_effect_node3_explicit_policy_true",
+      "passed": true
+    },
+    {
+      "name": "ttl_root_default_standby_actual_identity",
+      "passed": true
+    },
+    {
+      "name": "ttl_root_default_standby_snapshot_complete_actual_archive",
+      "passed": true
+    },
+    {
+      "name": "ttl-default_lookup_after_invalid_restore_bounded_result",
+      "passed": true
+    },
+    {
+      "name": "ttl_root_after_invalid_restore_still_unlimited_and_valid",
+      "passed": true
+    },
+    {
+      "name": "ttl-default_revocation_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "snapshot-read_revocation_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "snapshot-update_revocation_acknowledged",
+      "passed": true
+    },
+    {
+      "name": "roles_after_node_1_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_after_node_2_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_after_node_3_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_after_single_actual_leader",
+      "passed": true
+    },
+    {
+      "name": "roles_after_all_report_same_leader",
+      "passed": true
+    },
+    {
+      "name": "actual_leader_unchanged",
+      "passed": true
+    }
+  ],
+  "client_cleanup": [
+    {
+      "owned_stopped": true,
+      "pid": 3295204,
+      "remaining": [],
+      "start_ticks": 89438164,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3295188,
+      "remaining": [],
+      "start_ticks": 89438136,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3295185,
+      "remaining": [],
+      "start_ticks": 89438109,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3295175,
+      "remaining": [],
+      "start_ticks": 89438076,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3295174,
+      "remaining": [],
+      "start_ticks": 89438044,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3295109,
+      "remaining": [],
+      "start_ticks": 89437935,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3295070,
+      "remaining": [],
+      "start_ticks": 89437891,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3295063,
+      "remaining": [],
+      "start_ticks": 89437807,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3295051,
+      "remaining": [],
+      "start_ticks": 89437710,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3295041,
+      "remaining": [],
+      "start_ticks": 89437634,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3295031,
+      "remaining": [],
+      "start_ticks": 89437573,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3295030,
+      "remaining": [],
+      "start_ticks": 89437523,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3295020,
+      "remaining": [],
+      "start_ticks": 89437485,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3295003,
+      "remaining": [],
+      "start_ticks": 89437432,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294979,
+      "remaining": [],
+      "start_ticks": 89437354,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294949,
+      "remaining": [],
+      "start_ticks": 89437253,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294939,
+      "remaining": [],
+      "start_ticks": 89437188,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294926,
+      "remaining": [],
+      "start_ticks": 89437101,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294925,
+      "remaining": [],
+      "start_ticks": 89437018,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294911,
+      "remaining": [],
+      "start_ticks": 89436936,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294885,
+      "remaining": [],
+      "start_ticks": 89436823,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294834,
+      "remaining": [],
+      "start_ticks": 89436720,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294824,
+      "remaining": [],
+      "start_ticks": 89436618,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294814,
+      "remaining": [],
+      "start_ticks": 89436564,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294812,
+      "remaining": [],
+      "start_ticks": 89436510,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294798,
+      "remaining": [],
+      "start_ticks": 89436413,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294772,
+      "remaining": [],
+      "start_ticks": 89436339,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294728,
+      "remaining": [],
+      "start_ticks": 89436221,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294714,
+      "remaining": [],
+      "start_ticks": 89436147,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294711,
+      "remaining": [],
+      "start_ticks": 89436105,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294703,
+      "remaining": [],
+      "start_ticks": 89436077,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294701,
+      "remaining": [],
+      "start_ticks": 89436048,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294698,
+      "remaining": [],
+      "start_ticks": 89436020,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294688,
+      "remaining": [],
+      "start_ticks": 89435991,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294687,
+      "remaining": [],
+      "start_ticks": 89435962,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294686,
+      "remaining": [],
+      "start_ticks": 89435934,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294674,
+      "remaining": [],
+      "start_ticks": 89435900,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294664,
+      "remaining": [],
+      "start_ticks": 89435871,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294656,
+      "remaining": [],
+      "start_ticks": 89435843,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294653,
+      "remaining": [],
+      "start_ticks": 89435814,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294645,
+      "remaining": [],
+      "start_ticks": 89435789,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294644,
+      "remaining": [],
+      "start_ticks": 89435761,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294643,
+      "remaining": [],
+      "start_ticks": 89435732,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294621,
+      "remaining": [],
+      "start_ticks": 89435704,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294596,
+      "remaining": [],
+      "start_ticks": 89435677,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294595,
+      "remaining": [],
+      "start_ticks": 89435649,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294592,
+      "remaining": [],
+      "start_ticks": 89435621,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294581,
+      "remaining": [],
+      "start_ticks": 89435592,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294580,
+      "remaining": [],
+      "start_ticks": 89435563,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294579,
+      "remaining": [],
+      "start_ticks": 89435535,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294576,
+      "remaining": [],
+      "start_ticks": 89435508,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294568,
+      "remaining": [],
+      "start_ticks": 89435480,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294565,
+      "remaining": [],
+      "start_ticks": 89435451,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294551,
+      "remaining": [],
+      "start_ticks": 89435423,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294541,
+      "remaining": [],
+      "start_ticks": 89435384,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294529,
+      "remaining": [],
+      "start_ticks": 89435346,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294520,
+      "remaining": [],
+      "start_ticks": 89435317,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294512,
+      "remaining": [],
+      "start_ticks": 89435288,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294509,
+      "remaining": [],
+      "start_ticks": 89435261,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294498,
+      "remaining": [],
+      "start_ticks": 89435223,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294485,
+      "remaining": [],
+      "start_ticks": 89435186,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294462,
+      "remaining": [],
+      "start_ticks": 89435149,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294452,
+      "remaining": [],
+      "start_ticks": 89435121,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294444,
+      "remaining": [],
+      "start_ticks": 89435093,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294442,
+      "remaining": [],
+      "start_ticks": 89435064,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294425,
+      "remaining": [],
+      "start_ticks": 89435036,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294420,
+      "remaining": [],
+      "start_ticks": 89435010,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294187,
+      "remaining": [],
+      "start_ticks": 89434350,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294184,
+      "remaining": [],
+      "start_ticks": 89434322,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294159,
+      "remaining": [],
+      "start_ticks": 89434292,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294141,
+      "remaining": [],
+      "start_ticks": 89434254,
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294124,
+      "remaining": [],
+      "start_ticks": 89434182,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294103,
+      "remaining": [],
+      "start_ticks": 89434143,
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294084,
+      "remaining": [],
+      "start_ticks": 89434088,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294045,
+      "remaining": [],
+      "start_ticks": 89434050,
+      "wait_returncode": 2
+    }
+  ],
+  "cold_restart_tested": false,
+  "failure_code": null,
+  "formal_heptabao_qualification": false,
+  "http_intents": 75,
+  "http_outcomes": 75,
+  "http_unknown": 0,
+  "missing_outcome_sequences": [],
+  "operation_replayed": false,
+  "original_deadlines_preserved": true,
+  "pinned_files_unchanged": true,
+  "prepared": {
+    "api_ports": {
+      "1": 48710,
+      "2": 48712,
+      "3": 48714
+    },
+    "binary": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+    "binary_bytes": 181760103,
+    "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+    "cluster_ports": {
+      "1": 48711,
+      "2": 48713,
+      "3": 48715
+    },
+    "controller_sha256": "448cce0cedef1b2010beb789634d3b195750c25c8f96f7deb7b6919e9b2419fd",
+    "http_seconds": 15.0,
+    "loopback_only": true,
+    "max_response_bytes": 16777216,
+    "node3_local_setup_and_role_control": "X-Vault-Inconsistent: fail; business cases retain their declared headers",
+    "node_consistency_missing_header_forward": {
+      "1": false,
+      "2": false,
+      "3": true
+    },
+    "node_disable_standby_reads_config": {
+      "1": "omitted",
+      "2": "omitted",
+      "3": "omitted"
+    },
+    "official_source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "official_tag": "v2.7.1",
+    "old_generations_reopened": false,
+    "readiness_seconds": 45.0,
+    "redirect_following": false,
+    "valid_restore_bodies": 0,
+    "version_stdout_sha256": "caddfa04794e5e3cdda1564951a2e184bb22ac4ffced9e631fcbf7ec8e94759f",
+    "work_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-ttl-restore-oracle-live-61ff-r1"
+  },
+  "production_services_touched": false,
+  "redirect_following": false,
+  "schema": "official271_ttl_restore_reference_61ff_r1",
+  "server_cleanup": [
+    {
+      "owned_stopped": true,
+      "pid": 3294136,
+      "remaining": [],
+      "start_ticks": 89434253,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294098,
+      "remaining": [],
+      "start_ticks": 89434143,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 3294040,
+      "remaining": [],
+      "start_ticks": 89434049,
+      "wait_returncode": 0
+    }
+  ],
+  "status": "completed_observation",
+  "terminal_unix_ns": 1793816724469909337
+}

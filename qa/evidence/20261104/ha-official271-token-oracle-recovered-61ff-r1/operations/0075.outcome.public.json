@@ -1,0 +1,43 @@
+{
+  "caller_elapsed_ms": 316.783556,
+  "caller_timed_out": false,
+  "child_reaped": true,
+  "child_remaining": [],
+  "child_returncode": 0,
+  "content_length": null,
+  "content_type": "application/gzip",
+  "elapsed_ms": 32.335205,
+  "header_names": [
+    "cache-control",
+    "connection",
+    "content-disposition",
+    "content-type",
+    "date",
+    "strict-transport-security",
+    "transfer-encoding"
+  ],
+  "header_wire_bytes": 257,
+  "header_wire_has_terminal_crlf": true,
+  "header_wire_sha256": "14ccbca5916d58b4acfdabdf2e763f2856ff664d6c64a4c38c3b76040e4ff512",
+  "label": "ttl-default_snapshot_request_1",
+  "location_bytes": null,
+  "location_common_prefix_lengths": {
+    "1": 0,
+    "2": 0,
+    "3": 0
+  },
+  "location_is_prefix_of_enrolled_exact_target": false,
+  "location_matches_enrolled_origin_and_exact_target": false,
+  "location_node": null,
+  "location_present": false,
+  "location_sha256": null,
+  "node": 2,
+  "outcome_unknown": false,
+  "phase": "complete",
+  "request_sent": true,
+  "response_bytes": 23065,
+  "response_complete": true,
+  "response_sha256": "b97b5dd9319f67591b4ee73660eddf4a0c689449e2371be97cf421bb9ef2de58",
+  "sequence": 75,
+  "status": 200
+}

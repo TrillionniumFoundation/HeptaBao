@@ -1,0 +1,30 @@
+{
+  "actual_leader": 1,
+  "label": "roles_after",
+  "nodes": {
+    "1": {
+      "ha_enabled": true,
+      "is_self": true,
+      "leader_node": 1,
+      "performance_standby": null,
+      "raft_applied_index": 71,
+      "raft_committed_index": 71
+    },
+    "2": {
+      "ha_enabled": true,
+      "is_self": false,
+      "leader_node": 1,
+      "performance_standby": null,
+      "raft_applied_index": 71,
+      "raft_committed_index": 71
+    },
+    "3": {
+      "ha_enabled": true,
+      "is_self": false,
+      "leader_node": 1,
+      "performance_standby": null,
+      "raft_applied_index": 71,
+      "raft_committed_index": 71
+    }
+  }
+}

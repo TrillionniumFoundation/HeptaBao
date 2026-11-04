@@ -1,0 +1,428 @@
+{
+  "cases": [
+    {
+      "actual_official_status": 200,
+      "credential_class": "root",
+      "expected_status": 200,
+      "headers": {
+        "X-Vault-No-Request-Forwarding": "1"
+      },
+      "label": "ttl_kv_node2_root_1",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/read-marker",
+      "sequence": 29
+    },
+    {
+      "actual_official_status": 200,
+      "credential_class": "root",
+      "expected_status": 200,
+      "headers": {
+        "X-Vault-No-Request-Forwarding": "false"
+      },
+      "label": "ttl_kv_node2_root_false",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/read-marker",
+      "sequence": 30
+    },
+    {
+      "actual_official_status": 200,
+      "credential_class": "ttl-default",
+      "expected_status": 200,
+      "headers": {
+        "X-Vault-No-Request-Forwarding": "1"
+      },
+      "label": "ttl_kv_node2_ttl-default_1",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/read-marker",
+      "sequence": 31
+    },
+    {
+      "actual_official_status": 200,
+      "credential_class": "ttl-default",
+      "expected_status": 200,
+      "headers": {
+        "X-Vault-No-Request-Forwarding": "false"
+      },
+      "label": "ttl_kv_node2_ttl-default_false",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/read-marker",
+      "sequence": 32
+    },
+    {
+      "actual_official_status": 307,
+      "credential_class": "root",
+      "expected_status": 307,
+      "headers": {
+        "X-Vault-No-Request-Forwarding": "1"
+      },
+      "label": "ttl_kv_node3_root_1",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/read-marker",
+      "sequence": 33
+    },
+    {
+      "actual_official_status": 307,
+      "credential_class": "root",
+      "expected_status": 307,
+      "headers": {
+        "X-Vault-No-Request-Forwarding": "false"
+      },
+      "label": "ttl_kv_node3_root_false",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/read-marker",
+      "sequence": 34
+    },
+    {
+      "actual_official_status": 307,
+      "credential_class": "ttl-default",
+      "expected_status": 307,
+      "headers": {
+        "X-Vault-No-Request-Forwarding": "1"
+      },
+      "label": "ttl_kv_node3_ttl-default_1",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/read-marker",
+      "sequence": 35
+    },
+    {
+      "actual_official_status": 307,
+      "credential_class": "ttl-default",
+      "expected_status": 307,
+      "headers": {
+        "X-Vault-No-Request-Forwarding": "false"
+      },
+      "label": "ttl_kv_node3_ttl-default_false",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/read-marker",
+      "sequence": 36
+    },
+    {
+      "actual_official_status": 200,
+      "credential_class": "snapshot-read",
+      "expected_status": 200,
+      "headers": {},
+      "label": "snapshot-read_node1_snapshot",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "sequence": 40
+    },
+    {
+      "actual_official_status": 200,
+      "credential_class": "snapshot-read",
+      "expected_status": 200,
+      "headers": {},
+      "label": "snapshot-read_node2_snapshot",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "sequence": 41
+    },
+    {
+      "actual_official_status": 307,
+      "credential_class": "snapshot-read",
+      "expected_status": 307,
+      "headers": {},
+      "label": "snapshot-read_node3_snapshot",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "sequence": 42
+    },
+    {
+      "actual_official_status": 200,
+      "credential_class": "snapshot-read",
+      "expected_status": 200,
+      "headers": {
+        "X-Vault-No-Request-Forwarding": "false"
+      },
+      "label": "snapshot-read_node2_snapshot_no_forward_false",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "sequence": 43
+    },
+    {
+      "actual_official_status": 403,
+      "credential_class": "snapshot-read",
+      "expected_status": 403,
+      "headers": {},
+      "label": "snapshot-read_node1_invalid_restore",
+      "method": "POST",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "sequence": 44
+    },
+    {
+      "actual_official_status": 403,
+      "credential_class": "snapshot-read",
+      "expected_status": 403,
+      "headers": {},
+      "label": "snapshot-read_node2_invalid_restore",
+      "method": "POST",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "sequence": 45
+    },
+    {
+      "actual_official_status": 200,
+      "credential_class": "snapshot-update",
+      "expected_status": 200,
+      "headers": {},
+      "label": "snapshot-update_node1_snapshot",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "sequence": 49
+    },
+    {
+      "actual_official_status": 200,
+      "credential_class": "snapshot-update",
+      "expected_status": 200,
+      "headers": {},
+      "label": "snapshot-update_node2_snapshot",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "sequence": 50
+    },
+    {
+      "actual_official_status": 307,
+      "credential_class": "snapshot-update",
+      "expected_status": 307,
+      "headers": {},
+      "label": "snapshot-update_node3_snapshot",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "sequence": 51
+    },
+    {
+      "actual_official_status": 200,
+      "credential_class": "snapshot-update",
+      "expected_status": 200,
+      "headers": {
+        "X-Vault-No-Request-Forwarding": "false"
+      },
+      "label": "snapshot-update_node2_snapshot_no_forward_false",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "sequence": 52
+    },
+    {
+      "actual_official_status": 500,
+      "credential_class": "snapshot-update",
+      "expected_status": 500,
+      "headers": {},
+      "label": "snapshot-update_node1_invalid_restore",
+      "method": "POST",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "sequence": 53
+    },
+    {
+      "actual_official_status": 500,
+      "credential_class": "snapshot-update",
+      "expected_status": 500,
+      "headers": {},
+      "label": "snapshot-update_node2_invalid_restore",
+      "method": "POST",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "sequence": 54
+    },
+    {
+      "actual_official_status": 500,
+      "credential_class": "snapshot-update",
+      "expected_status": 500,
+      "headers": {},
+      "label": "snapshot-update_node2_invalid_force_restore",
+      "method": "PUT",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/sys/storage/raft/snapshot-force",
+      "sequence": 55
+    },
+    {
+      "actual_official_status": 200,
+      "credential_class": "root",
+      "expected_status": 200,
+      "headers": {
+        "X-Vault-No-Request-Forwarding": "1"
+      },
+      "label": "consistency_read_node2_explicit_policy_false",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/read-marker",
+      "sequence": 56
+    },
+    {
+      "actual_official_status": 307,
+      "credential_class": "root",
+      "expected_status": 307,
+      "headers": {
+        "X-Vault-No-Request-Forwarding": "1"
+      },
+      "label": "consistency_write_node2_explicit_policy_false",
+      "method": "POST",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/precedence-node2_explicit_policy_false",
+      "sequence": 57
+    },
+    {
+      "actual_official_status": 404,
+      "credential_class": "root",
+      "expected_status": 404,
+      "headers": {},
+      "label": "consistency_write_effect_node2_explicit_policy_false",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/precedence-node2_explicit_policy_false",
+      "sequence": 58
+    },
+    {
+      "actual_official_status": 307,
+      "credential_class": "root",
+      "expected_status": 307,
+      "headers": {
+        "X-Vault-No-Request-Forwarding": "1"
+      },
+      "label": "consistency_read_node3_explicit_policy_false",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/read-marker",
+      "sequence": 59
+    },
+    {
+      "actual_official_status": 307,
+      "credential_class": "root",
+      "expected_status": 307,
+      "headers": {
+        "X-Vault-No-Request-Forwarding": "1"
+      },
+      "label": "consistency_write_node3_explicit_policy_false",
+      "method": "POST",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/precedence-node3_explicit_policy_false",
+      "sequence": 60
+    },
+    {
+      "actual_official_status": 404,
+      "credential_class": "root",
+      "expected_status": 404,
+      "headers": {},
+      "label": "consistency_write_effect_node3_explicit_policy_false",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/precedence-node3_explicit_policy_false",
+      "sequence": 61
+    },
+    {
+      "actual_official_status": 200,
+      "credential_class": "root",
+      "expected_status": 200,
+      "headers": {
+        "X-Vault-Inconsistent": "forward-active-node",
+        "X-Vault-No-Request-Forwarding": "1"
+      },
+      "label": "consistency_read_node3_explicit_policy_true",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/read-marker",
+      "sequence": 62
+    },
+    {
+      "actual_official_status": 307,
+      "credential_class": "root",
+      "expected_status": 307,
+      "headers": {
+        "X-Vault-Inconsistent": "forward-active-node",
+        "X-Vault-No-Request-Forwarding": "1"
+      },
+      "label": "consistency_write_node3_explicit_policy_true",
+      "method": "POST",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/precedence-node3_explicit_policy_true",
+      "sequence": 63
+    },
+    {
+      "actual_official_status": 404,
+      "credential_class": "root",
+      "expected_status": 404,
+      "headers": {},
+      "label": "consistency_write_effect_node3_explicit_policy_true",
+      "method": "GET",
+      "reference_wire_sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "route": "/v1/owned/data/precedence-node3_explicit_policy_true",
+      "sequence": 64
+    },
+    {
+      "actual_official_status": 200,
+      "credential_class": "ttl-default",
+      "expected_status": 200,
+      "headers": {},
+      "intent_sha256": "8cae66e237d822bb5da691511b0a8c13e532d731d7ac1f6e3fada5535444cfaf",
+      "label": "ttl_root_default_standby_snapshot",
+      "method": "GET",
+      "outcome_sha256": "68412fb8ce68d98fdef7fd3252ce942367f245f41ddd887a368301f22e0fdd5e",
+      "reference_label": "ttl-default_snapshot_request_1",
+      "reference_wire_sha256": "070f7234092f9799b85af95f600e1d0519ddc9c3ed81f132e21ef2af86f7cf97",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "sequence": 75
+    },
+    {
+      "actual_official_status": 307,
+      "credential_class": "finite1-default",
+      "expected_status": 307,
+      "headers": {},
+      "intent_sha256": "f78aed6d6f9b0cf78d3818f577ed1d72359f3268444ac3feeb9967daeeeb3e9a",
+      "label": "finite1_default_snapshot",
+      "method": "GET",
+      "outcome_sha256": "a542b11d1d5b0762f5ac2b7514bcc615c0979c28f0893102014458e7516f586f",
+      "reference_label": "finite1-default_snapshot_request_1",
+      "reference_wire_sha256": "070f7234092f9799b85af95f600e1d0519ddc9c3ed81f132e21ef2af86f7cf97",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "sequence": 69
+    },
+    {
+      "actual_official_status": 307,
+      "credential_class": "finite2-default",
+      "expected_status": 307,
+      "headers": {},
+      "intent_sha256": "e6fb7dedd63a27a5605acde0b78222b561e185c03c1817ba60ba5277ad62c2e4",
+      "label": "finite2_default_snapshot",
+      "method": "GET",
+      "outcome_sha256": "33f2c922331fb6209344a68879d6bb0a6b9fe2c6592dffb60cd229871d7d04fe",
+      "reference_label": "finite2-default_snapshot_request_1",
+      "reference_wire_sha256": "070f7234092f9799b85af95f600e1d0519ddc9c3ed81f132e21ef2af86f7cf97",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "sequence": 61
+    },
+    {
+      "actual_official_status": 500,
+      "body_bytes": 22,
+      "body_sha256": "e57744e6940b15f3055f206c34ada9f50f0e2af9eacd46bf6f79c9ae150521cf",
+      "credential_class": "ttl-default",
+      "expected_status": 500,
+      "headers": {},
+      "intent_sha256": "1fb49e9be37187573f15b44fa23c5c3119e67165540a122245ea5a7cd0006b14",
+      "label": "ttl_root_default_standby_invalid_restore",
+      "method": "POST",
+      "outcome_sha256": "4054967225a9d9ff86e56b24a158f7544cb8b17d3546ee726774ff05a3c7dd46",
+      "reference_wire_sha256": "cd035b00b7d382d9966652774281b18840b99ce77ad9adc7d10a8f3e2b3ef83b",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "sequence": 68
+    }
+  ],
+  "heptabao_runtime_pass": false,
+  "reference_complete": true,
+  "schema": "heptabao.fixed-official271-standby-status-reference.v1"
+}

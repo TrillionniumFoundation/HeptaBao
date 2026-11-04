@@ -1,0 +1,13 @@
+{
+  "actual_invalid_body_bytes": 22,
+  "base_sha256": "8fa4d740f3e0a7cddc3b27391ce2d46308c19e519f078fc9f3afb0e47039ccec",
+  "complete_sources_read_and_pinned": true,
+  "exact_four_edits_verified": true,
+  "exact_normal_observer_business_request_matched": true,
+  "expected_http_status_not_forced": true,
+  "no_blocker": true,
+  "original_15_second_http_and_45_second_readiness_unchanged": true,
+  "reviewer": "/root/bao_acceptance",
+  "source_sha256": "448cce0cedef1b2010beb789634d3b195750c25c8f96f7deb7b6919e9b2419fd",
+  "syntax_or_runtime_pass_claimed": false
+}

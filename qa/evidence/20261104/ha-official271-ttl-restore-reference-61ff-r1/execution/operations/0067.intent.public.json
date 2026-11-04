@@ -1,0 +1,17 @@
+{
+  "body_bytes": 0,
+  "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "credential_class": "ttl-default",
+  "deadline_monotonic_ns": 894391860582169,
+  "headers": {},
+  "http_seconds": 15.0,
+  "intent_unix_ns": 1793816710868291898,
+  "label": "ttl_root_default_standby_snapshot",
+  "method": "GET",
+  "node": 2,
+  "parent_deadline_monotonic_ns": null,
+  "path": "/v1/sys/storage/raft/snapshot",
+  "redirect_following": false,
+  "sequence": 67,
+  "valid_restore_body": false
+}

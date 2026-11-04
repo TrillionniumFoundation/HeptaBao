@@ -1,0 +1,42 @@
+{
+  "caller_elapsed_ms": 266.764237,
+  "caller_timed_out": false,
+  "child_reaped": true,
+  "child_remaining": [],
+  "child_returncode": 0,
+  "content_length": "0",
+  "content_type": null,
+  "elapsed_ms": 27.258491,
+  "header_names": [
+    "cache-control",
+    "connection",
+    "content-length",
+    "date",
+    "location",
+    "strict-transport-security"
+  ],
+  "header_wire_bytes": 263,
+  "header_wire_has_terminal_crlf": true,
+  "header_wire_sha256": "e839156cc80463b92f1914ef43f4da8212fbf1c70a19357123556e35dfe206b0",
+  "label": "finite2-default_snapshot_request_1",
+  "location_bytes": 52,
+  "location_common_prefix_lengths": {
+    "1": 52,
+    "2": 22,
+    "3": 22
+  },
+  "location_is_prefix_of_enrolled_exact_target": true,
+  "location_matches_enrolled_origin_and_exact_target": true,
+  "location_node": 1,
+  "location_present": true,
+  "location_sha256": "ce07f36898b48f8b2dcc1a5b24a34fd88da2c19937fec153b8bf6840eb946db9",
+  "node": 2,
+  "outcome_unknown": false,
+  "phase": "complete",
+  "request_sent": true,
+  "response_bytes": 0,
+  "response_complete": true,
+  "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "sequence": 61,
+  "status": 307
+}

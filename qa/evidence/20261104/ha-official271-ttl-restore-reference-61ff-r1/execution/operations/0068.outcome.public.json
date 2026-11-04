@@ -1,0 +1,42 @@
+{
+  "caller_elapsed_ms": 414.392288,
+  "caller_timed_out": false,
+  "child_reaped": true,
+  "child_remaining": [],
+  "child_returncode": 0,
+  "content_length": "94",
+  "content_type": "application/json",
+  "elapsed_ms": 90.158692,
+  "header_names": [
+    "cache-control",
+    "connection",
+    "content-length",
+    "content-type",
+    "date",
+    "strict-transport-security"
+  ],
+  "header_wire_bytes": 235,
+  "header_wire_has_terminal_crlf": true,
+  "header_wire_sha256": "c0b1c8af624b5fe4de877985f32719b2dea2af587c4675b3d195b524a789bf0b",
+  "label": "ttl_root_default_standby_invalid_restore",
+  "location_bytes": null,
+  "location_common_prefix_lengths": {
+    "1": 0,
+    "2": 0,
+    "3": 0
+  },
+  "location_is_prefix_of_enrolled_exact_target": false,
+  "location_matches_enrolled_origin_and_exact_target": false,
+  "location_node": null,
+  "location_present": false,
+  "location_sha256": null,
+  "node": 2,
+  "outcome_unknown": false,
+  "phase": "complete",
+  "request_sent": true,
+  "response_bytes": 94,
+  "response_complete": true,
+  "response_sha256": "f2920571d32176992f85ca4a838a207a3c07c117309db1e022e4c6f44e492144",
+  "sequence": 68,
+  "status": 500
+}

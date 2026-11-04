@@ -1,0 +1,195 @@
+{
+  "files": [
+    {
+      "bytes": 60645,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/wire-observations.public.json",
+      "sha256": "cd035b00b7d382d9966652774281b18840b99ce77ad9adc7d10a8f3e2b3ef83b"
+    },
+    {
+      "bytes": 19598,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/result.public.json",
+      "sha256": "dff1ab3b2be4e847405b5b426fba1ec954c3543449dcbf440ba013aee4028523"
+    },
+    {
+      "bytes": 772,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/stage.public.json",
+      "sha256": "88a4eeeda0c7c52b48797408f7f40315d4ffcfe8f186f214f0df59be2c7e381b"
+    },
+    {
+      "bytes": 523,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/operations/0066.intent.public.json",
+      "sha256": "3d4c8470046e68be7cef4d872038d34235c9665ef2f0d65fedbe353deb900c39"
+    },
+    {
+      "bytes": 1195,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/operations/0066.outcome.public.json",
+      "sha256": "12eab3352554e1573cab20a9159e65cb6e1ff31f807cc3ee9d2209ecd8f5c03b"
+    },
+    {
+      "bytes": 513,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/operations/0067.intent.public.json",
+      "sha256": "ad50d5ad3e2dcc4d6cc430530b69a190f20fa1f72de70df8c3cbec705bda2cb9"
+    },
+    {
+      "bytes": 1193,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/operations/0067.outcome.public.json",
+      "sha256": "52eeb7892b03c79f13bd86e446bf49374a5559167d98de5fd6779b1243d03c63"
+    },
+    {
+      "bytes": 522,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/operations/0068.intent.public.json",
+      "sha256": "1fb49e9be37187573f15b44fa23c5c3119e67165540a122245ea5a7cd0006b14"
+    },
+    {
+      "bytes": 1166,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/operations/0068.outcome.public.json",
+      "sha256": "4054967225a9d9ff86e56b24a158f7544cb8b17d3546ee726774ff05a3c7dd46"
+    },
+    {
+      "bytes": 507,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/operations/0069.intent.public.json",
+      "sha256": "977ebc87834cb95df9632de64ad858e42e532b3972d13ede712d88113f6e10b4"
+    },
+    {
+      "bytes": 1188,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/operations/0069.outcome.public.json",
+      "sha256": "68f2e60c2d36befe94bd36e79b3e50912b135207918bda7f0f79dd1d45d61576"
+    },
+    {
+      "bytes": 490,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/operations/0070.intent.public.json",
+      "sha256": "77a3d9c4c257d61eae9511e435af0ac0a744a58b8cc83a899142d362db2e5a78"
+    },
+    {
+      "bytes": 1148,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/operations/0070.outcome.public.json",
+      "sha256": "4bf939c4e949e810cf8f64a40805f807873f14105e094d51c44290979b731448"
+    },
+    {
+      "bytes": 564,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/peer-source-review.public.json",
+      "sha256": "a1915708a1b7c4bd7fd0d3b10d0ffbd4e5a73fbd2d4d8bd63931f6c6680b3ef5"
+    },
+    {
+      "bytes": 4280,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/start.original-sdk.json",
+      "sha256": "47c66529aba39bfd8c44bec1570fa1257258c01a075a55704a013a6a84bad3f6"
+    },
+    {
+      "bytes": 2345,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/read.original-sdk.json",
+      "sha256": "9678977bad1f49e0a8dd64fbc2aaacfebb66ba0f903b170276df2632a5b201ef"
+    },
+    {
+      "bytes": 952,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/status.original-sdk.json",
+      "sha256": "f4feef381ec8e6437536b5e92ca72339d6058b634c3f033cd163cf301d94f5e7"
+    },
+    {
+      "bytes": 104633,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/files.original-sdk.json",
+      "sha256": "85faa610ebb0e24a1f731854ffdfcc9f486187ddc618fc6cc051f1d072dd6840"
+    },
+    {
+      "bytes": 14647,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/target-journals.original-sdk.json",
+      "sha256": "a178f8974cfc1a4f2ecdefb505574b5b05a36dcdec1b8787a3f9171783f9407b"
+    },
+    {
+      "bytes": 518,
+      "path": "qa/evidence/20261104/ha-official271-token-oracle-recovered-61ff-r1/operations/0061.intent.public.json",
+      "sha256": "e6fb7dedd63a27a5605acde0b78222b561e185c03c1817ba60ba5277ad62c2e4"
+    },
+    {
+      "bytes": 1197,
+      "path": "qa/evidence/20261104/ha-official271-token-oracle-recovered-61ff-r1/operations/0061.outcome.public.json",
+      "sha256": "33f2c922331fb6209344a68879d6bb0a6b9fe2c6592dffb60cd229871d7d04fe"
+    },
+    {
+      "bytes": 518,
+      "path": "qa/evidence/20261104/ha-official271-token-oracle-recovered-61ff-r1/operations/0069.intent.public.json",
+      "sha256": "f78aed6d6f9b0cf78d3818f577ed1d72359f3268444ac3feeb9967daeeeb3e9a"
+    },
+    {
+      "bytes": 1197,
+      "path": "qa/evidence/20261104/ha-official271-token-oracle-recovered-61ff-r1/operations/0069.outcome.public.json",
+      "sha256": "a542b11d1d5b0762f5ac2b7514bcc615c0979c28f0893102014458e7516f586f"
+    },
+    {
+      "bytes": 510,
+      "path": "qa/evidence/20261104/ha-official271-token-oracle-recovered-61ff-r1/operations/0075.intent.public.json",
+      "sha256": "8cae66e237d822bb5da691511b0a8c13e532d731d7ac1f6e3fada5535444cfaf"
+    },
+    {
+      "bytes": 1189,
+      "path": "qa/evidence/20261104/ha-official271-token-oracle-recovered-61ff-r1/operations/0075.outcome.public.json",
+      "sha256": "68412fb8ce68d98fdef7fd3252ce942367f245f41ddd887a368301f22e0fdd5e"
+    },
+    {
+      "bytes": 644,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/roles_before.public.json",
+      "sha256": "543c2f2d1f964b97f624f66fe113535945b7020da1cb44863060e562542f1fa0"
+    },
+    {
+      "bytes": 643,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/roles_after.public.json",
+      "sha256": "fbaf78e3f2148b3a64d9961f9a6a713bf4c36b91512d6ee724bfd4052c2fa4e3"
+    },
+    {
+      "bytes": 11277,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/additional-roles-and-old-token-journals.original-sdk.json",
+      "sha256": "ec18793426c1f0a143f2bf3043fff11015b9bf6b847b6849bdc7d26936e179b6"
+    },
+    {
+      "bytes": 3124,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/root-review.public.json",
+      "sha256": "284827fca3f77b7e0f4fd61a720c563bd4466b51004e574b34e13b668d3e6dca"
+    },
+    {
+      "bytes": 15388,
+      "path": "qa/evidence/20261104/ha-official271-ttl-restore-reference-61ff-r1/execution/complete-official34-reference-catalog.public.json",
+      "sha256": "ad60b0f0d0175d18a2b2de8b82b5b8a084c0dd9cfb46f0eeeef2a392df4e5c60"
+    },
+    {
+      "bytes": 4631,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/final/normal-launch-r3.public.json",
+      "sha256": "8c10aa6d6351b5ff3ab0a9a1e6a9516a7e91b738f5acba5ea265aa068b5a7321"
+    },
+    {
+      "bytes": 3231,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/final/result.public.json",
+      "sha256": "1213701925f1be075e5d538104cbc25f8b132054f61602fcb27eebf4a820b763"
+    },
+    {
+      "bytes": 787,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/final/native-build.public.json",
+      "sha256": "22cfeed88871a0a5cb4fd7ffccce6e04a4ba5773c6d2d71cebbba0b8a2266444"
+    },
+    {
+      "bytes": 2593,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/final/cargo.stderr.log",
+      "sha256": "9f25f7959c461fc23eac6f45e73605d5b494ffe3c60d7a3a1fde68bd304a5bee"
+    },
+    {
+      "bytes": 2494,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/final/root-review.public.json",
+      "sha256": "e0ce21f89ccf26bb14345a05ba49059e85dcd4214896ba5f323cfbd3407b01cf"
+    },
+    {
+      "bytes": 910,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/final/status.original-native-payload.json",
+      "sha256": "ffd15b488a859790af3ba83b9e52c5eb2863fa1d33ffe96a5e7b0e84b68e09dc"
+    },
+    {
+      "bytes": 14920,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/final/files.original-sdk.json",
+      "sha256": "349df79ba71fcc42d7a86cb0ccdd8ecb0eee904d20cd416993d8f45ba0fe6dd6"
+    },
+    {
+      "bytes": 3742,
+      "path": "qa/evidence/20261104/mac-unified-normal-61ff-r1/execution/final/read.original-sdk.json",
+      "sha256": "96cc08f0e083fa0288dbeca73250f24cee2a98c25ed098bb39dec19c1c90df65"
+    }
+  ],
+  "schema": "heptabao.reference-and-mac-build-evidence-manifest.v1"
+}

@@ -1,0 +1,43 @@
+{
+  "caller_elapsed_ms": 467.79859,
+  "caller_timed_out": false,
+  "child_reaped": true,
+  "child_remaining": [],
+  "child_returncode": 0,
+  "content_length": "598",
+  "content_type": "application/json",
+  "elapsed_ms": 142.875104,
+  "header_names": [
+    "cache-control",
+    "connection",
+    "content-length",
+    "content-type",
+    "date",
+    "strict-transport-security",
+    "x-vault-index"
+  ],
+  "header_wire_bytes": 318,
+  "header_wire_has_terminal_crlf": true,
+  "header_wire_sha256": "6dd7b1d7cb5812937b4d9752daf0c93e5820d8f9bca9e0f98f2f50dea45fbfde",
+  "label": "ttl_root_default_standby_actual_authentication",
+  "location_bytes": null,
+  "location_common_prefix_lengths": {
+    "1": 0,
+    "2": 0,
+    "3": 0
+  },
+  "location_is_prefix_of_enrolled_exact_target": false,
+  "location_matches_enrolled_origin_and_exact_target": false,
+  "location_node": null,
+  "location_present": false,
+  "location_sha256": null,
+  "node": 2,
+  "outcome_unknown": false,
+  "phase": "complete",
+  "request_sent": true,
+  "response_bytes": 598,
+  "response_complete": true,
+  "response_sha256": "f810efacea6c1f21b4e2e4334a8059c2bc3be331369e0061feb5527bfd86a99b",
+  "sequence": 66,
+  "status": 200
+}

@@ -1,0 +1,43 @@
+{
+  "caller_elapsed_ms": 287.160975,
+  "caller_timed_out": false,
+  "child_reaped": true,
+  "child_remaining": [],
+  "child_returncode": 0,
+  "content_length": "598",
+  "content_type": "application/json",
+  "elapsed_ms": 70.89514,
+  "header_names": [
+    "cache-control",
+    "connection",
+    "content-length",
+    "content-type",
+    "date",
+    "strict-transport-security",
+    "x-vault-index"
+  ],
+  "header_wire_bytes": 318,
+  "header_wire_has_terminal_crlf": true,
+  "header_wire_sha256": "577adf0762a3a1e0b53330c65fb96bcf7ad32d988467b3232d16a300ff0488f8",
+  "label": "ttl-default_lookup_after_invalid_restore",
+  "location_bytes": null,
+  "location_common_prefix_lengths": {
+    "1": 0,
+    "2": 0,
+    "3": 0
+  },
+  "location_is_prefix_of_enrolled_exact_target": false,
+  "location_matches_enrolled_origin_and_exact_target": false,
+  "location_node": null,
+  "location_present": false,
+  "location_sha256": null,
+  "node": 1,
+  "outcome_unknown": false,
+  "phase": "complete",
+  "request_sent": true,
+  "response_bytes": 598,
+  "response_complete": true,
+  "response_sha256": "a2c83797c3d20e0324d9931d8ac6f5bef615af5c0381b9a5beb0e738b9ad112f",
+  "sequence": 69,
+  "status": 200
+}

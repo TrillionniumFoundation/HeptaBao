@@ -1,0 +1,17 @@
+{
+  "body_bytes": 38,
+  "body_sha256": "bdd16d3466c6152894cdd726c33822b9ecf5cd0dc02a80ffa6d8ff9062f46525",
+  "credential_class": "root",
+  "deadline_monotonic_ns": 894394322694053,
+  "headers": {},
+  "http_seconds": 15.0,
+  "intent_unix_ns": 1793816713330418779,
+  "label": "ttl-default_revoke_once",
+  "method": "POST",
+  "node": 1,
+  "parent_deadline_monotonic_ns": null,
+  "path": "/v1/auth/token/revoke",
+  "redirect_following": false,
+  "sequence": 70,
+  "valid_restore_body": false
+}
