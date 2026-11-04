@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.original-log-git-custody.v1",
+  "original_log_commit": "cb16887a9a7702dc56d52cb09152a667e35292ba",
+  "full_original_logs_retrieved_and_hashed": true,
+  "text_receipts_read_back": 4,
+  "bytes": {
+    "git_blob": "027f9e4570e966005c2d831cf73dfc53df926fa8",
+    "sha256": "a8b98d6abec1b7898a3a49bdfd7137636da513f16e53c424fe437c091ed6dc15",
+    "bytes": 212301,
+    "base64_blob": "acdf91538c14a46770462f14b9dfde3e104e2c5e",
+    "base64_text_bytes": 286793,
+    "base64_text_sha256": "f6d7e1f7f1e81bcc61a8f0aea854549a66e6282cea3b39b19bc9696d07f54d29"
+  },
+  "connector_limitation": "The GitHub connector rejects binary blob content as non-UTF-8. Preserve the gzip binary and a byte-identical base64 text alias. The alias was fetched in full, decoded and SHA-256 verified; the gzip Git blob SHA-1 was also independently recomputed from exact Git blob framing.",
+  "decode": "base64 decode full-logs-r1.json.gz.base64, then gzip decompress and read files.workspace.stdout.text and files.workspace.stderr.text; UTF-8 encoding of each text field reproduces its exact terminal SHA-256.",
+  "full_replacement_qualified": false
+}
