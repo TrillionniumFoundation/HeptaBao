@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.original-popen-reap-guard-independent-review.v1",
+  "commit": "250219792c8f348f15c3f8f0d595a6003ee4f6a8",
+  "reviewer": "bao_acceptance",
+  "complete_sources_and_deltas_read": true,
+  "base_pins": {
+    "helper": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+    "native_cli": "4df0d5eaf069905e5a5bfd9e0e699391ba104ac27d54c5cbb18a79a9d8b1284d"
+  },
+  "candidate_pins": {
+    "helper": "33377bc52b520c53aa2195ee68556581ea78036fbb887ffc2e5bb6fd4d985e47",
+    "native_cli": "8043bce5e2443ca10f09d88dc854fc1a850ae4ac8b904763fbfc1ae3fa2de52a"
+  },
+  "checked": {
+    "every_affected_group_signal_requires_original_popen_returncode_none": true,
+    "no_poll_before_final_signal": true,
+    "reaped_worker_not_signaled_again": true,
+    "normal_business_checks_31_preserved": true,
+    "http15_migration360_native_request5_preserved": true,
+    "receipt_assertions_preserved": true
+  },
+  "limitations": {
+    "syntax_compile_executed_here": false,
+    "runtime_executed_here": false,
+    "original_popen_must_remain_uniquely_reaped": true,
+    "outer_observer_must_not_concurrently_reap_between_guard_and_signal": true,
+    "original_child_wait_is_not_descendant_cleanup_proof": true,
+    "independent_outer_original_child_and_group_empty_evidence_required": true,
+    "derived_root_relocation_not_independently_read_in_this_record": true,
+    "full_replacement_qualified": false
+  }
+}
