@@ -1,0 +1,28 @@
+{
+  "status": "ready_for_strict_timed_admission_not_submitted",
+  "source": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "original_build_job": "1a1a7a26c1b-fc05-2c06",
+  "runner_sha256": "37195138166ec6d78c99267a9169d30a8226367b27d6431f849ce0e3e5d4c748",
+  "runner_git_commit": "c711daee5faf29bd2ff8ccc5d71dc3bb5b1d21a5",
+  "idempotency_key": "bao-acceptance-unified-61ff-r6-workspace-37195138166ec6d7",
+  "controller_safety_ceiling_seconds": 21600,
+  "actual_test_deadline_same_original_monotonic_expires": 159287.304154345,
+  "no_new_test_budget": true,
+  "preconditions_pending": [
+    "Immediate original strict operator-UID no external compiler/unit test admission and artifact hash checks in launcher"
+  ],
+  "scheduler_handoff": {
+    "authbus_job": "1a1a7c3d7f4-fc05-2c7b",
+    "reported_by_owner": "authbus",
+    "reported_terminal": "failed_exit1",
+    "namespace_kernel_teardown_reported": true,
+    "server_stopped_reported": true,
+    "individual_native_identity_receipts_missing": true,
+    "product_qualification_granted": false
+  },
+  "timed_test_guard": "same operator-UID no external compiler/unit test, no exception",
+  "normal_build_result_sha256": "caad94cd4f0e6ed2028cf5742479bda0b4521490fc7912d461f40bad3da5cc33",
+  "original_build_authoritative_exit_code": 0,
+  "original_build_output_complete": true
+}

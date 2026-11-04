@@ -1,0 +1,36 @@
+{
+  "reason": "compiler-artifact",
+  "package_id": "path+file:///home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-server#0.1.0",
+  "manifest_path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-server/Cargo.toml",
+  "target": {
+    "kind": [
+      "lib"
+    ],
+    "crate_types": [
+      "lib"
+    ],
+    "name": "heptabao_server",
+    "src_path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-server/src/lib.rs",
+    "edition": "2024",
+    "doc": true,
+    "doctest": true,
+    "test": true
+  },
+  "profile": {
+    "opt_level": "3",
+    "debuginfo": 0,
+    "debug_assertions": true,
+    "overflow_checks": true,
+    "test": true
+  },
+  "features": [
+    "default",
+    "native-v6-ha",
+    "native-v6-storage"
+  ],
+  "filenames": [
+    "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/cargo-target-normal/release/deps/heptabao_server-66ad9401463fa9d9"
+  ],
+  "executable": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/cargo-target-normal/release/deps/heptabao_server-66ad9401463fa9d9",
+  "fresh": false
+}

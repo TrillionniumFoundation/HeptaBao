@@ -1,0 +1,23 @@
+{
+  "label": "workspace_compile",
+  "args": [
+    "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "test",
+    "--release",
+    "--locked",
+    "--offline",
+    "--workspace",
+    "--all-targets",
+    "--no-fail-fast",
+    "--no-run",
+    "--message-format=json-render-diagnostics"
+  ],
+  "exit_code": 0,
+  "timed_out": false,
+  "elapsed_seconds": 2084.731234822015,
+  "owned_pgid": 3144786,
+  "remaining": [],
+  "original_outer_remaining_seconds": 14633.90323520801,
+  "stdout_sha256": "fe6bf8f08d3fbacbf6954c468b3cf84c2120e1b0250b1720a0449ad28d55584f",
+  "stderr_sha256": "e6944bd88b764c18366415d6044782554416cfd305633baa17f0ad2e8f804a38"
+}
