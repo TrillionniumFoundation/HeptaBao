@@ -38,6 +38,7 @@ pub(super) fn encode(request: &ForwardRequestRef<'_>) -> Result<Vec<u8>, String>
         || request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
         || request.wrapped_reply_ingress.is_some()
         || request.wrapped_reply_lexical.is_some()
+        || request.native_original_reply_profile.is_some()
         || request
             .logical_data
             .is_some_and(crate::request_metadata::DataFrame::is_approle_form)
@@ -116,6 +117,7 @@ pub(super) fn decode(frame: &[u8]) -> Result<ForwardRequest, String> {
         || request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
         || request.wrapped_reply_ingress.is_some()
         || request.wrapped_reply_lexical.is_some()
+        || request.native_original_reply_profile.is_some()
         || request
             .logical_data
             .as_ref()

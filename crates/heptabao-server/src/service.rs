@@ -2825,7 +2825,28 @@ impl Service {
             if let Some(refusal) = pre_admission_refusal {
                 return Err(refusal);
             }
-            if self.pending_forward_delivery.is_some() {
+            if response.response_headers.has_local_redirect() {
+                // The matched local hint was selected before actor admission and
+                // checked above to have no staged effect/delivery. Like native
+                // snapshot routing, it does not consume a token or observe an
+                // application result. Keep the mandatory response audit below;
+                // every ordinary or forwarded action retains its original floor.
+                if self.pending_forward_delivery.is_none()
+                    && response
+                        .response_headers
+                        .local_redirect_matches_current(response.status)
+                    && !native_auth_terminal
+                    && !native_cg_terminal
+                    && !native_kv_output_terminal
+                {
+                    Ok(None)
+                } else {
+                    Err(Response::error(
+                        503,
+                        "local redirect completion binding changed",
+                    ))
+                }
+            } else if self.pending_forward_delivery.is_some() {
                 self.check_pending_forward_delivery(&response)
                     .map(|()| None)
             } else {
@@ -3550,7 +3571,14 @@ impl Service {
             + usize::from(local_unseal_completion.is_some())
             + usize::from(step_down.is_some())
             + usize::from(sdk_control_present);
-        if staged > 1 || delivery_capsules > 1 || staged != 0 && delivery_capsules != 0 {
+        if staged > 1
+            || delivery_capsules > 1
+            || staged != 0 && delivery_capsules != 0
+            || response.response_headers.has_local_redirect()
+                && (staged != 0
+                    || delivery_capsules != 0
+                    || self.pending_forward_delivery.is_some())
+        {
             crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
             self.recovery_required = true;
             self.ha_activation = None;
@@ -4089,6 +4117,66 @@ impl Service {
                 {
                     return response;
                 }
+                // This preference is considered only at the actual forwarding
+                // branch, after existing local/ReadIndex reads had their chance.
+                // A routing hint performs no actor admission or finite-use write.
+                if let Some(data) = logical_data
+                    .as_ref()
+                    .filter(|data| data.no_request_forwarding())
+                {
+                    let Some(profile) = data
+                        .local_redirect
+                        .as_ref()
+                        .filter(|profile| profile.matches_current())
+                    else {
+                        return Response::error(
+                            503,
+                            "local redirect requires original HTTP ingress",
+                        );
+                    };
+                    let origin = match self.configured_standby_destination() {
+                        Ok(Some(origin)) => origin,
+                        Ok(None) => {
+                            return Response::error(503, "HA role changed before local redirect");
+                        }
+                        Err(response) => return response,
+                    };
+                    let Some(deadline) = crate::request_deadline::current()
+                        .filter(|deadline| Instant::now() < *deadline)
+                    else {
+                        return Response::error(
+                            503,
+                            "local redirect original deadline unavailable",
+                        );
+                    };
+                    let mut response =
+                        Response::error(307, "request forwarding disabled by client");
+                    response.response_headers =
+                        ResponseHeaders::local_redirect(origin, profile.clone(), deadline);
+                    return response;
+                }
+                // This choice follows the actual catch-up above, not a URL
+                // suffix or a stale standby registry. Resumed control-group
+                // work skips that catch-up and cannot select this new profile.
+                // The profile carries the original ingress only; the active
+                // node must still capture and complete its real SSH owner.
+                #[cfg(feature = "native-v6-storage")]
+                let native_original_reply_profile = if !resumed_control_group
+                    && namespace.is_empty()
+                    && self.native_root.is_some()
+                    && wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+                    && crate::auth::current_ingress().is_some()
+                    && self.state.as_ref().is_some_and(|state| {
+                        state
+                            .engines
+                            .is_public_ssh_key_read(namespace, method, path)
+                    }) {
+                    Some(crate::ha_forward::NativeOriginalReplyProfile::RootSshPublicKey)
+                } else {
+                    None
+                };
+                #[cfg(not(feature = "native-v6-storage"))]
+                let native_original_reply_profile = None;
                 self.pending_forward_delivery =
                     Some(forward_delivery::PendingForwardDelivery::Rejected);
                 #[cfg(feature = "native-v6-ha")]
@@ -4099,7 +4187,7 @@ impl Service {
                 );
                 let forwarded = match ha.lock_for_request() {
                     Ok(process) => {
-                        process.forward_request_completed(crate::ha_forward::ForwardContext {
+                        let context = crate::ha_forward::ForwardContext {
                             method,
                             path,
                             namespace,
@@ -4109,7 +4197,14 @@ impl Service {
                             origin_peer,
                             client_certificates,
                             caller_deadline: crate::request_deadline::current(),
-                        })
+                        };
+                        if let Some(profile) = native_original_reply_profile {
+                            process.forward_request_completed_with_native_original_reply(
+                                context, profile,
+                            )
+                        } else {
+                            process.forward_request_completed(context)
+                        }
                     }
                     Err(_) => return Response::error(503, "HA process lock is unavailable"),
                 };
@@ -4194,6 +4289,33 @@ impl Service {
             #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
             if let Some(phase) = phase {
                 phase.finish(true);
+            }
+        }
+        if let Some(crate::ha_forward::NativeOriginalReplyProfile::RootSshPublicKey) =
+            crate::ha_forward::current_native_original_reply_profile()
+        {
+            // Recheck the receiving leader's actual mount after its own HA
+            // admission. A peer's selection, or a concurrently replaced mount,
+            // cannot redirect this profile into an ordinary KV read or another
+            // backend. Refusal never downgrades or replays the request.
+            #[cfg(feature = "native-v6-storage")]
+            let actual_native_ssh = !resumed_control_group
+                && namespace.is_empty()
+                && self.native_root.is_some()
+                && wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+                && crate::auth::current_ingress().is_some()
+                && self.state.as_ref().is_some_and(|state| {
+                    state
+                        .engines
+                        .is_public_ssh_key_read(namespace, method, path)
+                });
+            #[cfg(not(feature = "native-v6-storage"))]
+            let actual_native_ssh = false;
+            if !actual_native_ssh {
+                return Response::error(
+                    503,
+                    "HA native SSH reply profile no longer has its root mount",
+                );
             }
         }
         // HA forwards the authenticated transport body above. Interpret this
@@ -4345,7 +4467,7 @@ impl Service {
         if !owner_manifest_migration {
             #[cfg(feature = "native-v6-storage")]
             let native_pki_maintenance =
-                self.native_root.is_some() && admitted.engines.has_native_local_pki();
+                self.native_root.is_some() && admitted.engines.has_native_local_lease_owner();
             #[cfg(not(feature = "native-v6-storage"))]
             let native_pki_maintenance = false;
             #[cfg(feature = "native-v6-storage")]
@@ -4430,6 +4552,9 @@ impl Service {
             && admitted.engines.native_local_pki_mounted(namespace, path);
         #[cfg(not(feature = "native-v6-storage"))]
         let native_pki_mounted = false;
+        #[cfg(feature = "native-v6-storage")]
+        let native_ssh_mounted = self.native_root.is_some()
+            && admitted.engines.native_local_ssh_mounted(namespace, path);
         if !native_pki_mounted && let Some(response) = self.handle_pki_acme(&request, &mut admitted)
         {
             return response;
@@ -4446,6 +4571,10 @@ impl Service {
             None
         };
         if help_projection.as_ref().is_some_and(|help| help.anonymous) {
+            #[cfg(feature = "native-v6-storage")]
+            if native_ssh_mounted {
+                return self.dispatch_native_ssh_request(admitted, None, &request);
+            }
             #[cfg(feature = "native-v6-storage")]
             if native_pki_mounted {
                 return self.dispatch_native_pki_request(
@@ -4502,6 +4631,13 @@ impl Service {
                 .engines
                 .is_public_ssh_key_read(namespace, method, path)
         {
+            #[cfg(feature = "native-v6-storage")]
+            if self.native_root.is_some() {
+                if !native_ssh_mounted {
+                    return Response::error(501, "native SSH public key requires its root owner");
+                }
+                return self.dispatch_native_ssh_request(admitted, None, &request);
+            }
             return Self::native_ssh_public_response(&admitted, namespace, method, path, body)
                 .unwrap_or_else(|| Response::error(503, "SSH public key owner changed"));
         }
@@ -4857,6 +4993,13 @@ impl Service {
                     .engines
                     .native_totp_registry_route(method, path, request.body));
         #[cfg(feature = "native-v6-storage")]
+        let native_local_ssh = self.native_root.is_some()
+            && namespace.is_empty()
+            && (admitted.engines.native_local_ssh_route(namespace, path)
+                || admitted
+                    .engines
+                    .native_ssh_registry_route(method, path, request.body));
+        #[cfg(feature = "native-v6-storage")]
         let native_local_pki = self.native_root.is_some()
             && namespace.is_empty()
             && (admitted.engines.native_local_pki_route(namespace, path)
@@ -4889,6 +5032,7 @@ impl Service {
             && !native_local_transit
             && !native_local_totp
             && !native_local_pki
+            && !native_local_ssh
             && !native_metadata_read;
         #[cfg(feature = "native-v6-storage")]
         let native_capabilities = self.native_root.is_some()
@@ -4999,6 +5143,7 @@ impl Service {
                 && !native_local_transit
                 && !native_local_totp
                 && !native_local_pki
+                && !native_local_ssh
                 && !native_kv2_mount
                 && !native_kv1_mount
                 && !native_remount
@@ -5148,6 +5293,10 @@ impl Service {
         #[cfg(feature = "native-v6-storage")]
         if native_local_totp {
             return self.dispatch_native_totp_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_local_ssh {
+            return self.dispatch_native_ssh_request(admitted, principal.take(), &request);
         }
         #[cfg(feature = "native-v6-storage")]
         if native_local_pki {
@@ -12623,3 +12772,7 @@ mod transit_derivation_tests;
 #[cfg(all(test, feature = "native-v6-ha"))]
 #[path = "service_native_v6_ha_pipeline_tests.rs"]
 mod native_v6_ha_pipeline_tests;
+
+#[cfg(test)]
+#[path = "service_request_redirect_tests.rs"]
+mod request_redirect_tests;

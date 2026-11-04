@@ -75,6 +75,7 @@ mod v6;
 
 // A routing hint is deliberately not an application read/write capability.
 // Only this module can construct one, from a configured HA peer API origin.
+#[derive(Clone)]
 pub(crate) struct TrustedSnapshotOrigin(String);
 impl TrustedSnapshotOrigin {
     pub(crate) fn as_str(&self) -> &str {
@@ -401,7 +402,7 @@ impl Service {
         // This is before authentication/finite-use persistence, staging and
         // JSON HA forwarding. The receiving leader independently authorizes
         // the original request; observing a leader never grants authority.
-        match self.native_snapshot_destination() {
+        match self.configured_standby_destination() {
             Ok(Some(origin)) => {
                 let now = SystemTime::now()
                     .duration_since(UNIX_EPOCH)
@@ -456,7 +457,9 @@ impl Service {
         NativeSnapshotAdmission::Execute(result)
     }
 
-    fn native_snapshot_destination(&self) -> Result<Option<TrustedSnapshotOrigin>, Response> {
+    pub(super) fn configured_standby_destination(
+        &self,
+    ) -> Result<Option<TrustedSnapshotOrigin>, Response> {
         let Some(process) = self.ha.as_ref() else {
             return Ok(None);
         };

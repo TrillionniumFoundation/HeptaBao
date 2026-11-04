@@ -1044,7 +1044,9 @@ impl HaProcess {
                                         listener_allow_legacy_peer_v1,
                                     )
                                     .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
-                                    if request.native_index_response && !native_candidate {
+                                    if (request.native_index_response
+                                        || request.native_original_reply_profile.is_some())
+                                        && !native_candidate {
                                         return Err(heptabao_ha_service::HaError::InvalidFrame);
                                     }
                                     if Instant::now() >= inbound_deadlines.forward_request {
@@ -1067,6 +1069,7 @@ impl HaProcess {
                                     let unwrap_response = request.unwrap_response;
                                     let native_index_response = request.native_index_response;
                                     let _raw_reply_ingress = crate::auth::IngressReplyScope::authenticated_forward(request.wrapped_reply_ingress, request.wrapped_reply_lexical.take());
+                                    let _native_original_reply_profile = crate::ha_forward::NativeOriginalReplyScope::authenticated_forward(request.native_original_reply_profile);
                                     // Forward admission leaves independent workers for
                                     // consensus while product requests await the service writer.
                                     let _forward_slot =
@@ -1381,7 +1384,26 @@ impl HaProcess {
         ),
         String,
     > {
-        self.forward_request_exchange(context, true)
+        self.forward_request_exchange(context, true, None)
+            .and_then(|(response, receipt)| {
+                receipt
+                    .map(|receipt| (response, receipt))
+                    .ok_or_else(|| "HA completed-forward proof is missing".into())
+            })
+    }
+
+    pub(crate) fn forward_request_completed_with_native_original_reply(
+        &self,
+        context: crate::ha_forward::ForwardContext<'_>,
+        profile: crate::ha_forward::NativeOriginalReplyProfile,
+    ) -> Result<
+        (
+            Response,
+            crate::ha_forward_completion::CompletedForwardReceipt,
+        ),
+        String,
+    > {
+        self.forward_request_exchange(context, true, Some(profile))
             .and_then(|(response, receipt)| {
                 receipt
                     .map(|receipt| (response, receipt))
@@ -1424,6 +1446,7 @@ impl HaProcess {
         &self,
         context: crate::ha_forward::ForwardContext<'_>,
         completed: bool,
+        native_original_reply_profile: Option<crate::ha_forward::NativeOriginalReplyProfile>,
     ) -> Result<
         (
             Response,
@@ -1460,10 +1483,14 @@ impl HaProcess {
         let native_index_capacity = completed && self.native_v6_enabled();
         #[cfg(not(feature = "native-v6-ha"))]
         let native_index_capacity = false;
+        if native_original_reply_profile.is_some() && !native_index_capacity {
+            return Err("HA native original reply requires native completed forwarding".into());
+        }
         let unwrap_response = path == "sys/wrapping/unwrap"
             || path.starts_with("sys/workflows/execute/")
             || wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
-                && crate::auth::current_ingress().is_some();
+                && crate::auth::current_ingress().is_some()
+            || native_original_reply_profile.is_some();
         if unwrap_response && (legacy_v1 || !completed) {
             return Err("HA unwrap requires negotiated completed-forward authority".into());
         }
@@ -1490,27 +1517,33 @@ impl HaProcess {
                 local, leader, method, path, namespace, token, body,
             )?
         } else {
-            let encode = if native_index_capacity {
-                crate::ha_forward::encode_completed_request_with_native_index_capacity
-            } else {
-                crate::ha_forward::encode_completed_index_request_for_cluster
+            let context = crate::ha_forward::ForwardContext {
+                method,
+                path,
+                namespace,
+                token,
+                body,
+                wrap_ttl_seconds,
+                origin_peer,
+                client_certificates,
+                caller_deadline,
             };
-            encode(
-                &self.cluster_id,
-                (local, leader),
-                &crate::ha_forward::ForwardContext {
-                    method,
-                    path,
-                    namespace,
-                    token,
-                    body,
-                    wrap_ttl_seconds,
-                    origin_peer,
-                    client_certificates,
-                    caller_deadline,
-                },
-                nonce,
-            )?
+            if let Some(profile) = native_original_reply_profile {
+                crate::ha_forward::encode_completed_request_with_native_original_reply(
+                    &self.cluster_id,
+                    (local, leader),
+                    &context,
+                    nonce,
+                    profile,
+                )?
+            } else {
+                let encode = if native_index_capacity {
+                    crate::ha_forward::encode_completed_request_with_native_index_capacity
+                } else {
+                    crate::ha_forward::encode_completed_index_request_for_cluster
+                };
+                encode(&self.cluster_id, (local, leader), &context, nonce)?
+            }
         });
         // Capacity follows this exact request, never an unsolicited S7 reply.
         let native_index_response = request

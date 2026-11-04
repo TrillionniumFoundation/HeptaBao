@@ -69,10 +69,10 @@ impl EngineState {
              + Sync
          ),
         before_delivery: &(impl Fn() -> std::result::Result<(), RecordError> + Sync),
-        check: &(impl Fn() -> std::result::Result<(), RecordError> + Sync),
         deadline: crate::v6_native_custody::OriginalDeadline,
         stop: &std::sync::atomic::AtomicBool,
     ) -> Result<()> {
+        let check = || deadline.check().map_err(|_| RecordError::Invalid);
         let result = (|| {
             check().map_err(|_| error(503, "native lossless export request expired"))?;
             let canonical = canonical_secret_mount(mount)?;
@@ -99,7 +99,7 @@ impl EngineState {
                 output,
                 &|reference| source(&scope, reference),
                 before_delivery,
-                check,
+                &check,
                 deadline,
                 stop,
             )?;

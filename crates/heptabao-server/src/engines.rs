@@ -71,6 +71,11 @@ mod native_pki;
 #[cfg(feature = "native-v6-storage")]
 pub(crate) use native_pki::NativePkiEngineOwner;
 #[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_ssh.rs"]
+mod native_ssh;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_ssh::NativeSshEngineOwner;
+#[cfg(feature = "native-v6-storage")]
 #[path = "engine_native_kv2_lossless_export.rs"]
 mod native_kv2_lossless_export;
 #[cfg(feature = "native-v6-storage")]
@@ -200,7 +205,7 @@ impl EngineState {
                         | Backend::Kv2(_)
                         | Backend::Kv2Native(_) => true,
                         Backend::Transit(engine) => !engine.has_external_state(),
-                        Backend::Totp(_) => true,
+                        Backend::Totp(_) | Backend::Ssh(_) => true,
                         Backend::Pki(engine) => engine.native_local_profile(),
                         _ => false,
                     })

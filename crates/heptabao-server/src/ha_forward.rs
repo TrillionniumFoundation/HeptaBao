@@ -14,6 +14,10 @@ use zeroize::{Zeroize, Zeroizing};
 #[path = "ha_forward_native_index_tests.rs"]
 mod native_index_tests;
 
+#[cfg(test)]
+#[path = "ha_forward_native_ssh_tests.rs"]
+mod native_ssh_tests;
+
 #[path = "ha_forward_native_kv2_write.rs"]
 mod native_kv2_write;
 
@@ -58,6 +62,88 @@ pub(crate) struct ForwardContext<'a> {
     pub caller_deadline: Option<std::time::Instant>,
 }
 
+/// A closed request-side transport selection, never a raw-response authority.
+/// The Service selects this only from its caught-up native root SSH mount.
+/// The receiving Service must still capture its actual typed SSH response and
+/// complete the original publication, terminal receipt and audit checks.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub(crate) enum NativeOriginalReplyProfile {
+    RootSshPublicKey,
+}
+
+impl NativeOriginalReplyProfile {
+    fn validate_request(
+        self,
+        context: &ForwardContext<'_>,
+        has_ingress: bool,
+        has_lexical: bool,
+        has_completion_nonce: bool,
+    ) -> Result<(), String> {
+        match self {
+            Self::RootSshPublicKey => {
+                // This validates an already selected profile. A path suffix
+                // alone must never select Q8: ordinary native KV replies keep
+                // their existing Q9/S7 capacity, including keys with this name.
+                let canonical_public_path =
+                    context
+                        .path
+                        .strip_suffix("/public_key")
+                        .is_some_and(|prefix| {
+                            !prefix.is_empty()
+                                && prefix.split('/').all(|segment| {
+                                    !segment.is_empty() && !matches!(segment, "." | "..")
+                                })
+                        });
+                if context.method != "GET"
+                    || !context.namespace.is_empty()
+                    || !canonical_public_path
+                    || context.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
+                    || !has_ingress
+                    || has_lexical
+                    || !has_completion_nonce
+                {
+                    return Err(
+                        "HA native SSH reply profile lacks its original root GET ingress".into(),
+                    );
+                }
+            }
+        }
+        Ok(())
+    }
+}
+
+thread_local! {
+    static NATIVE_ORIGINAL_REPLY_PROFILE: std::cell::Cell<Option<NativeOriginalReplyProfile>> = const {
+        std::cell::Cell::new(None)
+    };
+}
+
+/// Request-local restriction installed only after peer, frame and direction
+/// validation. The active Service checks its actual synchronized mount before
+/// any ordinary immutable read can consume this specialized request profile.
+pub(crate) struct NativeOriginalReplyScope {
+    previous: Option<NativeOriginalReplyProfile>,
+}
+
+impl NativeOriginalReplyScope {
+    pub(crate) fn authenticated_forward(profile: Option<NativeOriginalReplyProfile>) -> Self {
+        Self {
+            previous: NATIVE_ORIGINAL_REPLY_PROFILE.with(|slot| slot.replace(profile)),
+        }
+    }
+}
+
+impl Drop for NativeOriginalReplyScope {
+    fn drop(&mut self) {
+        NATIVE_ORIGINAL_REPLY_PROFILE.with(|slot| slot.set(self.previous));
+    }
+}
+
+pub(crate) fn current_native_original_reply_profile() -> Option<NativeOriginalReplyProfile> {
+    NATIVE_ORIGINAL_REPLY_PROFILE.with(std::cell::Cell::get)
+}
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct ForwardRequest {
@@ -82,6 +168,8 @@ pub(crate) struct ForwardRequest {
     pub wrapped_reply_ingress: Option<[u8; 16]>,
     #[serde(default)]
     pub wrapped_reply_lexical: Option<crate::auth::LexicalJson>,
+    #[serde(default)]
+    pub native_original_reply_profile: Option<NativeOriginalReplyProfile>,
     #[serde(default)]
     pub logical_data: Option<crate::request_metadata::DataFrame>,
     /// True only when an explicitly enabled one-step rolling transition
@@ -191,6 +279,8 @@ struct ForwardRequestRef<'a> {
     wrapped_reply_ingress: Option<[u8; 16]>,
     #[serde(skip_serializing_if = "Option::is_none")]
     wrapped_reply_lexical: Option<&'a crate::auth::LexicalJson>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    native_original_reply_profile: Option<NativeOriginalReplyProfile>,
     #[serde(skip_serializing_if = "Option::is_none")]
     logical_data: Option<&'a crate::request_metadata::DataFrame>,
 }
@@ -366,6 +456,7 @@ pub(crate) fn encode_request_for_cluster(
             completion_nonce: None,
             wrapped_reply_ingress: None,
             wrapped_reply_lexical: None,
+            native_original_reply_profile: None,
             logical_data: None,
         },
     )
@@ -449,6 +540,7 @@ pub(crate) fn encode_wrapped_request_for_cluster(
             completion_nonce: None,
             wrapped_reply_ingress: None,
             wrapped_reply_lexical: None,
+            native_original_reply_profile: None,
             logical_data: None,
         },
     )
@@ -494,6 +586,7 @@ pub(crate) fn encode_peer_request_for_cluster(
             completion_nonce: None,
             wrapped_reply_ingress: None,
             wrapped_reply_lexical: None,
+            native_original_reply_profile: None,
             logical_data: None,
         },
     )
@@ -539,7 +632,14 @@ pub(crate) fn encode_completed_index_request_for_cluster(
     context: &ForwardContext<'_>,
     completion_nonce: Option<[u8; 32]>,
 ) -> Result<Vec<u8>, String> {
-    encode_completed_request_for_profile(cluster_id, direction, context, completion_nonce, false)
+    encode_completed_request_for_profile(
+        cluster_id,
+        direction,
+        context,
+        completion_nonce,
+        false,
+        None,
+    )
 }
 
 fn encode_completed_request_for_profile(
@@ -548,6 +648,7 @@ fn encode_completed_request_for_profile(
     context: &ForwardContext<'_>,
     completion_nonce: Option<[u8; 32]>,
     native_capacity: bool,
+    native_original_reply_profile: Option<NativeOriginalReplyProfile>,
 ) -> Result<Vec<u8>, String> {
     let method = context.method;
     let path = context.path;
@@ -575,10 +676,22 @@ fn encode_completed_request_for_profile(
             .lexical_request_binding(method, path, body)
             .map_err(|_| "HA private lexical request binding differs")?;
     }
+    if let Some(profile) = native_original_reply_profile {
+        if !native_capacity {
+            return Err("HA native original reply requires native completed forwarding".into());
+        }
+        profile.validate_request(
+            context,
+            wrapped_reply_ingress.is_some(),
+            wrapped_reply_lexical.is_some(),
+            completion_nonce.is_some(),
+        )?;
+    }
     let full_reply = path == "sys/wrapping/unwrap"
         || path.starts_with("sys/workflows/execute/")
         || wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) && wrapped_reply_ingress.is_some()
-        || wrapped_reply_lexical.is_some();
+        || wrapped_reply_lexical.is_some()
+        || native_original_reply_profile.is_some();
     if full_reply && completion_nonce.is_none() {
         return Err("HA unwrap requires original completed-request nonce".into());
     }
@@ -601,6 +714,7 @@ fn encode_completed_request_for_profile(
         client_certificates,
         origin_peer,
         completion_nonce,
+        native_original_reply_profile,
         logical_data: logical_data.as_ref(),
         wrapped_reply_ingress: if full_reply {
             wrapped_reply_ingress
@@ -640,7 +754,34 @@ pub(crate) fn encode_completed_request_with_native_index_capacity(
     if completion_nonce.is_none() {
         return Err("HA native index capacity requires original completion nonce".into());
     }
-    encode_completed_request_for_profile(cluster_id, direction, context, completion_nonce, true)
+    encode_completed_request_for_profile(
+        cluster_id,
+        direction,
+        context,
+        completion_nonce,
+        true,
+        None,
+    )
+}
+
+/// The only explicit addition to ordinary native completed forwarding. Old
+/// strict peers reject the new field before dispatch. No failed exchange is
+/// retried using another profile, and the original Q8/S6 bound is unchanged.
+pub(crate) fn encode_completed_request_with_native_original_reply(
+    cluster_id: &str,
+    direction: (u64, u64),
+    context: &ForwardContext<'_>,
+    completion_nonce: Option<[u8; 32]>,
+    profile: NativeOriginalReplyProfile,
+) -> Result<Vec<u8>, String> {
+    encode_completed_request_for_profile(
+        cluster_id,
+        direction,
+        context,
+        completion_nonce,
+        true,
+        Some(profile),
+    )
 }
 
 pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
@@ -696,11 +837,33 @@ pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
     if unwrap_response && request.completion_nonce.is_none() {
         return Err("HA unwrap framing requires original completion nonce".into());
     }
+    if let Some(profile) = request.native_original_reply_profile {
+        if !encoded.starts_with(UNWRAP_REQUEST_MAGIC) || approle_form_framing {
+            return Err("HA native original reply requires its explicit Q8 profile".into());
+        }
+        profile.validate_request(
+            &ForwardContext {
+                method: &request.method,
+                path: &request.path,
+                namespace: &request.namespace,
+                token: &request.token,
+                body: &request.body,
+                wrap_ttl_seconds: request.wrap_ttl_seconds,
+                origin_peer: request.origin_peer,
+                client_certificates: request.client_certificates.as_deref(),
+                caller_deadline: None,
+            },
+            request.wrapped_reply_ingress.is_some(),
+            request.wrapped_reply_lexical.is_some(),
+            request.completion_nonce.is_some(),
+        )?;
+    }
     let full_reply = request.path == "sys/wrapping/unwrap"
         || request.path.starts_with("sys/workflows/execute/")
         || request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
             && request.wrapped_reply_ingress.is_some()
-        || request.wrapped_reply_lexical.is_some();
+        || request.wrapped_reply_lexical.is_some()
+        || request.native_original_reply_profile.is_some();
     if let Some(lexical) = &request.wrapped_reply_lexical {
         if !unwrap_response
             || request.wrapped_reply_ingress.is_none()
@@ -830,6 +993,7 @@ pub(crate) fn decode_request_for_cluster_compatible(
                 completion_nonce: None,
                 wrapped_reply_ingress: None,
                 wrapped_reply_lexical: None,
+                native_original_reply_profile: None,
                 logical_data: None,
             })
         }
@@ -1057,10 +1221,10 @@ fn decode_framed_response_for_cluster(
             .validate(&response.body)
             .map_err(|_| "HA stored reply representation rejected")?;
     }
-    if let Some(UnwrapFramingWire::StaticKv1Lease { projection }) = response.unwrapped_json {
-        if response.raw_wrapped_reply.is_some() || projection.validate(&response.body).is_err() {
-            return Err("HA signed KV1 static reply projection differs".into());
-        }
+    if let Some(UnwrapFramingWire::StaticKv1Lease { projection }) = response.unwrapped_json
+        && (response.raw_wrapped_reply.is_some() || projection.validate(&response.body).is_err())
+    {
+        return Err("HA signed KV1 static reply projection differs".into());
     }
     if let Some(UnwrapFramingWire::WorkflowJsonFailure { logical_digest, .. }) =
         response.unwrapped_json

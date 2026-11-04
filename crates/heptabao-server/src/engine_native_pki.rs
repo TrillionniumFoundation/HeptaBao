@@ -117,6 +117,17 @@ impl EngineState {
             )
         })
     }
+    /// The shared original lease reconciler has exact root-local PKI and SSH
+    /// lease custody. This does not grant SSH operations to a PKI request.
+    pub(crate) fn has_native_local_lease_owner(&self) -> bool {
+        self.has_native_local_pki()
+            || self.namespaces.get("").is_some_and(|owner| {
+                owner
+                    .mounts
+                    .values()
+                    .any(|mount| matches!(&mount.backend, Backend::Ssh(_)))
+            })
+    }
     fn native_pki_mount(&self, path: &str) -> Option<(&str, &Mount)> {
         if path.starts_with('/') {
             return None;
@@ -174,7 +185,8 @@ impl EngineState {
             && self.namespaces.iter().all(|(namespace, owner)| {
                 owner.mounts.values().all(|mount| match &mount.backend {
                     Backend::Pki(pki) => namespace.is_empty() && pki.native_local_profile(),
-                    Backend::Ssh(_) | Backend::Kubernetes(_) | Backend::OpenLdap(_) => false,
+                    Backend::Ssh(_) => namespace.is_empty(),
+                    Backend::Kubernetes(_) | Backend::OpenLdap(_) => false,
                     _ => true,
                 })
             })
@@ -239,7 +251,7 @@ impl EngineState {
         root: &RecordStateRootV6,
         check: &impl Fn() -> bool,
     ) -> Result<NativePkiEngineOwner> {
-        if !self.has_native_local_pki() {
+        if !self.has_native_local_lease_owner() {
             return Err(rejected());
         }
         Self::pki_owner(self, Scope::Maintenance, false, root, check)
@@ -400,6 +412,15 @@ impl NativePkiEngineOwner {
                             return Err(rejected());
                         }
                         target.backend = before.backend.clone();
+                    } else if let Backend::Ssh(source) = &before.backend {
+                        let target = next.mounts.get_mut(name).ok_or_else(rejected)?;
+                        let Backend::Ssh(after) = &mut target.backend else {
+                            return Err(rejected());
+                        };
+                        // Shared lease administration/reconciliation may retire
+                        // only this backend's real lease records. Roles, CA keys,
+                        // issuers, signature counts and descriptor stay exact.
+                        after.leases = source.leases.clone();
                     }
                 }
             }

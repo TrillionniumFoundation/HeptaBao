@@ -33,11 +33,17 @@ mod h2_transport;
 mod logical;
 #[path = "http_mutation_profile.rs"]
 mod mutation_profile;
+#[cfg(test)]
+#[path = "http_no_forward_tests.rs"]
+pub(crate) mod no_forward_tests;
 #[path = "http_sanitized_config.rs"]
 mod sanitized_config;
 #[cfg(all(test, feature = "native-v6-storage"))]
 #[path = "http_snapshot_accept_tests.rs"]
 mod snapshot_accept_tests;
+#[cfg(test)]
+#[path = "http_test_client.rs"]
+mod test_client;
 #[cfg(unix)]
 #[path = "http_tls_reload.rs"]
 mod tls_reload;
@@ -1046,6 +1052,32 @@ fn process_parsed_request(
                 origin_peer: Some(peer),
                 client_certificates: request.client_certificates.take(),
             };
+            if let Some(target) = request.no_forward_target.take() {
+                let data = request.logical_data.get_or_insert_with(Default::default);
+                if data
+                    .bind_local_redirect(
+                        target,
+                        (
+                            service_request.method,
+                            service_request.path,
+                            service_request.namespace,
+                            &service_request.body,
+                        ),
+                        attempt_id,
+                    )
+                    .is_err()
+                {
+                    crate::service::erase_json(&mut service_request.body);
+                    return (
+                        snapshot::NativeReply::Json(Response::error(
+                            400,
+                            "invalid original HTTP redirect preference",
+                        )),
+                        is_head,
+                        request.namespace,
+                    );
+                }
+            }
             let _logical_data = match crate::request_metadata::Scope::enter(
                 request.logical_data.take(),
                 service_request.method,
@@ -1102,6 +1134,9 @@ fn process_parsed_request(
                 &request.path,
                 &request.namespace,
             );
+            // Only the request-bound local capsule can select a routing reply,
+            // after the actual terminal audit and logical projection returned.
+            reply = snapshot::project_local_redirect(reply);
             (reply, is_head, request.namespace)
         }
         Err(error) => {
@@ -1503,6 +1538,7 @@ enum ParsedRequest {
 struct Request {
     lexical_wrapping_body: Option<crate::auth::LexicalJson>,
     logical_data: Option<crate::request_metadata::DataFrame>,
+    no_forward_target: Option<crate::request_metadata::CheckedLocalRedirectTarget>,
     consistency: consistency::Headers,
     native_snapshot: Option<snapshot::NativeRequest>,
     method: String,
@@ -1884,6 +1920,11 @@ fn read_request_with_ui(
         {
             return Err(outer_bad("conflicting content length"));
         }
+        // OpenBao's Header.Get uses the first occurrence of this preference,
+        // including an empty first value. Other duplicate-header rules stay put.
+        if name == crate::request_metadata::NO_FORWARD_HEADER && map.contains_key(&name) {
+            continue;
+        }
         if map
             .insert(name, Zeroizing::new(value.trim().to_owned()))
             .is_some()
@@ -1955,6 +1996,7 @@ fn read_request_with_ui(
                         | "x-vault-request"
                         | "x-vault-wrap-ttl"
                         | "x-vault-wrap-format"
+                        | "x-vault-no-request-forwarding"
                 )
         })
     {
@@ -2183,6 +2225,15 @@ fn read_request_with_ui(
     if !deferred_body && bytes.len() != header_end + length {
         return Err(bad("pipelining and trailing bytes are not supported"));
     }
+    let no_forward_target = if !deferred_body
+        && map
+            .get(crate::request_metadata::NO_FORWARD_HEADER)
+            .is_some_and(|value| !value.is_empty())
+    {
+        Some(crate::request_metadata::CheckedLocalRedirectTarget::checked(&target).map_err(bad)?)
+    } else {
+        None
+    };
     // Help ignores logical body bytes after ordinary framing and body bounds.
     if help_selected {
         let body = help::carrier(&method, route, raw_query)?;
@@ -2193,7 +2244,17 @@ fn read_request_with_ui(
         }
         return Ok(ParsedRequest::Api(Box::new(Request {
             lexical_wrapping_body: None,
-            logical_data: None,
+            logical_data: no_forward_target.as_ref().map(|_| {
+                let mut data = crate::request_metadata::DataFrame::default();
+                if let Some(value) = map.get(crate::request_metadata::NO_FORWARD_HEADER) {
+                    data.headers.insert(
+                        crate::request_metadata::NO_FORWARD_HEADER.to_owned(),
+                        vec![value.to_string()],
+                    );
+                }
+                data
+            }),
+            no_forward_target,
             consistency,
             native_snapshot: None,
             method: "HELP".to_owned(),
@@ -2231,6 +2292,7 @@ fn read_request_with_ui(
         return Ok(ParsedRequest::Api(Box::new(Request {
             lexical_wrapping_body: None,
             logical_data: None,
+            no_forward_target: None,
             consistency,
             native_snapshot: None,
             method,
@@ -2364,6 +2426,12 @@ fn read_request_with_ui(
                 .insert(name.clone(), vec![value.to_string()]);
         }
     }
+    if let Some(value) = map.get(crate::request_metadata::NO_FORWARD_HEADER) {
+        logical_data.headers.insert(
+            crate::request_metadata::NO_FORWARD_HEADER.to_owned(),
+            vec![value.to_string()],
+        );
+    }
     let workflow_query = path.starts_with("sys/workflows/execute/");
     if workflow_query {
         for pair in query.split('&').filter(|pair| !pair.is_empty()) {
@@ -2484,6 +2552,7 @@ fn read_request_with_ui(
     Ok(ParsedRequest::Api(Box::new(Request {
         lexical_wrapping_body,
         logical_data,
+        no_forward_target,
         consistency,
         native_snapshot,
         method,
@@ -3117,33 +3186,64 @@ fn write_response_with_namespace(
     // https://github.com/golang/go/blob/go1.25.1/src/net/http/server.go
     let no_body = status == 204 || status == 304 || (100..200).contains(&status);
     let chunked = !no_body && !head && !fixed_raw_body && bytes.len() > 2048;
-    write!(writer, "HTTP/1.1 {status} {reason}\r\n")?;
-    if !acme_no_media && !content_type.is_empty() {
-        write_go_content_type_header(writer, content_type)?;
-    }
-    if !no_body && !(head && acme_empty) && (fixed_raw_body || bytes.len() <= 2048) {
-        write!(writer, "Content-Length: {}\r\n", bytes.len())?;
-    } else if chunked {
-        writer.write_all(b"Transfer-Encoding: chunked\r\n")?;
-    }
-    if let Some(origin) = &response.unwrapped_json
-        && let Some(error) = origin
-            .raw_error_header(&response.body)
-            .map_err(|_| io::Error::new(io::ErrorKind::InvalidData, "raw error custody rejected"))?
-    {
-        write!(writer, "X-Vault-Raw-Error: {error}\r\n")?;
-    }
-    writer.write_all(index.as_bytes())?;
-    write_standard_headers_with_date(
-        writer,
-        namespace,
-        status == admitted_http_status && response.response_headers.has_date(),
-    )?;
-    if status == admitted_http_status {
-        response.response_headers.write(writer)?;
-    }
-    writer.write_all(b"\r\n")?;
-    if !head && !no_body {
+    // A rejected ordinary request can still have unread TLS application data.
+    // Complete the bounded response head and its already admitted small body
+    // before the first transport write. Large fixed/raw or chunked bodies keep
+    // their original writes and framing. Partial writes and the original socket
+    // deadline still belong to writer.
+    // Admitted logical headers have the existing 32 KiB aggregate bound.
+    // Variable fields retain their original bounds; the fixed allowance covers
+    // status/framing, standard/date/timing and closed raw-error headers.
+    let coalesced_body = !head && !no_body && bytes.len() <= 2048;
+    let prefix_capacity = namespace
+        .len()
+        .checked_add(content_type.len())
+        .and_then(|size| size.checked_add(index.len()))
+        .and_then(|size| size.checked_add(32 * 1024 + 1024))
+        .and_then(|size| size.checked_add(if coalesced_body { bytes.len() } else { 0 }))
+        .ok_or_else(|| {
+            io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "response header length overflow",
+            )
+        })?;
+    let mut response_prefix = Zeroizing::new(vec![0; prefix_capacity]);
+    let prefix_length = {
+        // A fixed slice cursor cannot grow the allocation.
+        let mut header = io::Cursor::new(response_prefix.as_mut_slice());
+        write!(header, "HTTP/1.1 {status} {reason}\r\n")?;
+        if !acme_no_media && !content_type.is_empty() {
+            write_go_content_type_header(&mut header, content_type)?;
+        }
+        if !no_body && !(head && acme_empty) && (fixed_raw_body || bytes.len() <= 2048) {
+            write!(header, "Content-Length: {}\r\n", bytes.len())?;
+        } else if chunked {
+            header.write_all(b"Transfer-Encoding: chunked\r\n")?;
+        }
+        if let Some(origin) = &response.unwrapped_json
+            && let Some(error) = origin.raw_error_header(&response.body).map_err(|_| {
+                io::Error::new(io::ErrorKind::InvalidData, "raw error custody rejected")
+            })?
+        {
+            write!(header, "X-Vault-Raw-Error: {error}\r\n")?;
+        }
+        header.write_all(index.as_bytes())?;
+        write_standard_headers_with_date(
+            &mut header,
+            namespace,
+            status == admitted_http_status && response.response_headers.has_date(),
+        )?;
+        if status == admitted_http_status {
+            response.response_headers.write(&mut header)?;
+        }
+        header.write_all(b"\r\n")?;
+        if coalesced_body {
+            header.write_all(&bytes)?;
+        }
+        header.position() as usize
+    };
+    writer.write_all(&response_prefix[..prefix_length])?;
+    if !head && !no_body && !coalesced_body {
         if chunked {
             write!(writer, "{:x}\r\n", bytes.len())?;
             writer.write_all(&bytes)?;
@@ -3162,6 +3262,10 @@ mod unwrap_framing_tests;
 #[cfg(test)]
 #[path = "http_response_framing_tests.rs"]
 mod response_framing_tests;
+
+#[cfg(test)]
+#[path = "http_response_coalescing_tests.rs"]
+mod response_coalescing_tests;
 
 #[cfg(test)]
 #[path = "http_quota_headers_tests.rs"]

@@ -1358,6 +1358,7 @@ fn native_cg_query_and_profile_data_keep_the_original_route_rejection() -> TestR
         .insert("version".to_owned(), vec!["1".to_owned()]);
     let document = "{}";
     let mut profile = DataFrame {
+        local_redirect: None,
         headers: Default::default(),
         query: Default::default(),
         profile: Some(QueryProfile {

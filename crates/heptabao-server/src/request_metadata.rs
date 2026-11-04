@@ -4,6 +4,11 @@ use serde_json::Value;
 use std::{cell::RefCell, collections::BTreeMap};
 use zeroize::Zeroize;
 pub(crate) type Headers = BTreeMap<String, Vec<String>>;
+#[path = "request_metadata_local_redirect.rs"]
+mod local_redirect;
+pub(crate) use local_redirect::{
+    CheckedLocalRedirectTarget, LocalRedirectProfile, NO_FORWARD_HEADER,
+};
 // Reserved transport data; ordinary HTTP and workflow headers cannot set it.
 pub(crate) const AUTH_FORM_CODEC_HEADER: &str = "x-heptabao-internal-auth-form-codec";
 #[derive(Clone, Serialize, Deserialize)]
@@ -25,6 +30,9 @@ pub(crate) struct DataFrame {
     pub(crate) query: BTreeMap<String, Vec<String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) profile: Option<QueryProfile>,
+    // Local HTTP provenance never enters the serialized logical/HA data frame.
+    #[serde(skip)]
+    pub(crate) local_redirect: Option<LocalRedirectProfile>,
 }
 impl std::fmt::Debug for DataFrame {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -40,6 +48,9 @@ impl DataFrame {
 
     pub(crate) fn validate(&self) -> Result<(), &'static str> {
         validate_headers(&self.headers)?;
+        if self.local_redirect.is_some() && !self.no_request_forwarding() {
+            return Err("local redirect requires the original forwarding preference");
+        }
         if self.query.len() > 64 {
             return Err("workflow query exceeds field bound");
         }
@@ -201,10 +212,11 @@ impl Scope {
         let value = frame
             .map(|frame| -> Result<Bound, &'static str> {
                 frame.validate()?;
-                Ok(Bound {
-                    digest: binding(method, path, namespace, body)?,
-                    frame,
-                })
+                let digest = binding(method, path, namespace, body)?;
+                if let Some(profile) = &frame.local_redirect {
+                    profile.validate_binding(digest)?;
+                }
+                Ok(Bound { digest, frame })
             })
             .transpose()?;
         let previous = DATA.with(|slot| slot.replace(value));
@@ -234,6 +246,9 @@ pub(crate) fn current(
         };
         if bound.digest != binding(method, path, namespace, body)? {
             return Err("logical request data belongs to another request");
+        }
+        if let Some(profile) = &bound.frame.local_redirect {
+            profile.validate_binding(bound.digest)?;
         }
         Ok(Some(bound.frame.clone()))
     })

@@ -5,6 +5,14 @@ use crate::configuration::NativeStorageProfile;
 use openssl::x509::{X509, X509Crl};
 use std::ops::{Deref, DerefMut};
 
+// SSH reuses this exact configured normal three-voter/pinned-TLS pipeline.
+// Only the selected engine operations and their assertions differ.
+#[path = "service_native_ssh_ha_tests.rs"]
+mod ssh_tests;
+
+#[path = "service_no_forwarding_ha_tests.rs"]
+mod no_forwarding_tests;
+
 struct PkiPipeline {
     inner: Pipeline,
     servers: Vec<crate::http::Config>,

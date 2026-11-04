@@ -38,6 +38,21 @@ impl NativeTarget {
     }
 }
 
+// Keep native route admission closed. Ordinary origin-relative targets have
+// their own HTTP parser/binding and can select only the same redirect writer.
+pub(super) enum RedirectTarget {
+    Native(NativeTarget),
+    Ordinary(crate::request_metadata::CheckedLocalRedirectTarget),
+}
+impl RedirectTarget {
+    fn as_str(&self) -> &str {
+        match self {
+            Self::Native(target) => target.0.as_str(),
+            Self::Ordinary(target) => target.as_str(),
+        }
+    }
+}
+
 pub(super) struct NativeRequest {
     pub body: NativeBody,
     pub target: NativeTarget,
@@ -52,7 +67,8 @@ pub(super) enum NativeReply {
     LosslessFile(SnapshotFile),
     Redirect {
         origin: TrustedSnapshotOrigin,
-        target: NativeTarget,
+        target: RedirectTarget,
+        headers: crate::service::ResponseHeaders,
     },
 }
 impl NativeReply {
@@ -80,18 +96,83 @@ impl NativeReply {
             Self::File(file) => write_file_response(writer, file, head, namespace),
             #[cfg(feature = "native-v6-storage")]
             Self::LosslessFile(file) => write_lossless_file_response(writer, file, head, namespace),
-            Self::Redirect { origin, target } => {
-                write!(
-                    writer,
-                    "HTTP/1.1 307 Temporary Redirect\r\nLocation: {}{}\r\nContent-Length: 0\r\n",
-                    origin.as_str(),
-                    target.0.as_str(),
-                )?;
-                write_standard_headers(writer, namespace)?;
-                writer.write_all(b"\r\n")?;
+            Self::Redirect {
+                origin,
+                target,
+                headers,
+            } => {
+                // An unread upload can still be in another TLS record. Build
+                // the complete head before the first transport write, instead
+                // of emitting the status/Location prefix as its own record.
+                // The fixed allowance covers the standard/date/timing headers;
+                // existing variable fields keep their original input bounds.
+                let capacity = origin
+                    .as_str()
+                    .len()
+                    .checked_add(target.as_str().len())
+                    .and_then(|size| size.checked_add(namespace.len()))
+                    .and_then(|size| size.checked_add(512))
+                    // Local routing may retain at most four original numeric
+                    // quota fields, each with a value of at most twenty digits.
+                    .and_then(|size| size.checked_add(if headers.is_empty() { 0 } else { 512 }))
+                    .ok_or_else(|| {
+                        io::Error::new(
+                            io::ErrorKind::InvalidInput,
+                            "redirect header length overflow",
+                        )
+                    })?;
+                let mut buffer = Zeroizing::new(vec![0; capacity]);
+                let used = {
+                    // Cursor over a fixed slice cannot grow the allocation.
+                    let mut header = io::Cursor::new(buffer.as_mut_slice());
+                    write!(
+                        header,
+                        "HTTP/1.1 307 Temporary Redirect\r\nLocation: {}{}\r\nContent-Length: 0\r\n",
+                        origin.as_str(),
+                        target.as_str(),
+                    )?;
+                    headers.write(&mut header)?;
+                    write_standard_headers(&mut header, namespace)?;
+                    header.write_all(b"\r\n")?;
+                    header.position() as usize
+                };
+                writer.write_all(&buffer[..used])?;
                 writer.flush()
             }
         }
+    }
+}
+
+pub(super) fn project_local_redirect(reply: NativeReply) -> NativeReply {
+    let NativeReply::Json(mut response) = reply else {
+        return reply;
+    };
+    let Some(capsule) = response.response_headers.take_local_redirect() else {
+        return NativeReply::Json(response);
+    };
+    // A terminal audit/projection failure remains its original error; neither
+    // a status code nor ordinary SDK Location fields can create this capsule.
+    if response.status != 307 {
+        return NativeReply::Json(response);
+    }
+    if !capsule.matches_current() {
+        return NativeReply::Json(Response::error(
+            503,
+            "local redirect completion binding or deadline changed",
+        ));
+    }
+    let headers =
+        match std::mem::take(&mut response.response_headers).into_local_redirect_metadata() {
+            Ok(headers) => headers,
+            Err(()) => {
+                return NativeReply::Json(Response::error(503, "local redirect metadata changed"));
+            }
+        };
+    let (origin, target) = capsule.into_parts();
+    NativeReply::Redirect {
+        origin,
+        target: RedirectTarget::Ordinary(target),
+        headers,
     }
 }
 
@@ -273,7 +354,8 @@ pub(super) fn execute(
             // archive in the ordinary bounded HA forwarding frame.
             return NativeReply::Redirect {
                 origin,
-                target: native.target,
+                target: RedirectTarget::Native(native.target),
+                headers: Default::default(),
             };
         }
     };

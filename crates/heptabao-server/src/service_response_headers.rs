@@ -6,7 +6,35 @@ use std::io::{self, Write};
 use zeroize::{Zeroize, Zeroizing};
 
 #[derive(Default)]
-pub(crate) struct Headers(BTreeMap<String, Vec<Zeroizing<String>>>);
+pub(crate) struct Headers(
+    BTreeMap<String, Vec<Zeroizing<String>>>,
+    Option<LocalRedirect>,
+);
+
+// This local routing capsule is not ordinary header data. SDK and HA decoders
+// never construct it, and serializing a copy cannot downgrade it to Location.
+#[derive(Clone)]
+pub(crate) struct LocalRedirect {
+    origin: super::TrustedSnapshotOrigin,
+    profile: crate::request_metadata::LocalRedirectProfile,
+    deadline: std::time::Instant,
+}
+impl LocalRedirect {
+    pub(crate) fn matches_current(&self) -> bool {
+        let now = std::time::Instant::now();
+        now < self.deadline
+            && crate::request_deadline::current().is_none_or(|deadline| now < deadline)
+            && self.profile.matches_current()
+    }
+    pub(crate) fn into_parts(
+        self,
+    ) -> (
+        super::TrustedSnapshotOrigin,
+        crate::request_metadata::CheckedLocalRedirectTarget,
+    ) {
+        (self.origin, self.profile.into_target())
+    }
+}
 impl Drop for Headers {
     fn drop(&mut self) {
         for (mut name, values) in std::mem::take(&mut self.0) {
@@ -59,13 +87,62 @@ fn canonical_name(name: &str) -> String {
         .collect()
 }
 impl Headers {
+    pub(super) fn local_redirect(
+        origin: super::TrustedSnapshotOrigin,
+        profile: crate::request_metadata::LocalRedirectProfile,
+        deadline: std::time::Instant,
+    ) -> Self {
+        Self(
+            BTreeMap::new(),
+            Some(LocalRedirect {
+                origin,
+                profile,
+                deadline,
+            }),
+        )
+    }
+    pub(super) fn has_local_redirect(&self) -> bool {
+        self.1.is_some()
+    }
+    pub(super) fn local_redirect_matches_current(&self, status: u16) -> bool {
+        status == 307 && self.1.as_ref().is_some_and(LocalRedirect::matches_current)
+    }
+    pub(crate) fn take_local_redirect(&mut self) -> Option<LocalRedirect> {
+        self.1.take()
+    }
+    pub(crate) fn into_local_redirect_metadata(self) -> Result<Self, ()> {
+        // Only the existing node-local numeric quota merge can add metadata
+        // after this routing capsule is minted. Do not permit another Location
+        // or an SDK field to change its destination or framing.
+        if self.1.is_some()
+            || self.0.len() > 4
+            || self.0.iter().any(|(name, values)| {
+                !matches!(
+                    name.as_str(),
+                    "Retry-After"
+                        | "X-Ratelimit-Limit"
+                        | "X-Ratelimit-Remaining"
+                        | "X-Ratelimit-Reset"
+                ) || values.len() != 1
+                    || values[0].is_empty()
+                    || values[0].len() > 20
+                    || !values[0].bytes().all(|byte| byte.is_ascii_digit())
+            })
+        {
+            return Err(());
+        }
+        Ok(self)
+    }
     /// Transport metadata for a local retry decision. A u64 decimal value is
     /// bounded to twenty digits and cannot introduce additional header lines.
     pub(crate) fn retry_after_seconds(seconds: u64) -> Self {
-        Self(BTreeMap::from([(
-            "Retry-After".to_owned(),
-            vec![Zeroizing::new(seconds.to_string())],
-        )]))
+        Self(
+            BTreeMap::from([(
+                "Retry-After".to_owned(),
+                vec![Zeroizing::new(seconds.to_string())],
+            )]),
+            None,
+        )
     }
 
     pub(crate) fn from_sdk(value: Option<&Value>, allowed: &[String]) -> Result<Self, ()> {
@@ -169,6 +246,7 @@ impl Headers {
                     )
                 })
                 .collect(),
+            self.1.clone(),
         )
     }
     /// Add only locally computed numeric quota metadata. Existing logical
@@ -230,7 +308,7 @@ impl Headers {
         self.0.get("Date").is_some_and(|values| !values.is_empty())
     }
     pub(crate) fn is_empty(&self) -> bool {
-        self.0.is_empty()
+        self.0.is_empty() && self.1.is_none()
     }
 }
 
@@ -240,6 +318,11 @@ impl Headers {
 impl serde::Serialize for Headers {
     fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         use serde::ser::SerializeMap;
+        if self.1.is_some() {
+            return Err(serde::ser::Error::custom(
+                "local redirect cannot enter HA header metadata",
+            ));
+        }
         let mut map = serializer.serialize_map(Some(self.0.len()))?;
         for (name, values) in &self.0 {
             let borrowed: Vec<&str> = values.iter().map(|value| value.as_str()).collect();

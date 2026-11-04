@@ -4,6 +4,63 @@ use crate::service::tests::{Root, bootstrap_legacy_auth_fixture as bootstrap, ca
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
 #[test]
+fn no_forward271_keeps_actual_legacy_local_readindex_get() -> TestResult {
+    let root = Root::new();
+    let (service, cluster, token) = prepare(&root)?;
+    let before = Zeroizing::new(serde_json::to_vec(service.state.as_ref().ok_or("state")?)?);
+    let generation = service.durable.as_ref().ok_or("durable")?.generation();
+    let identity = service
+        .current_state_identity()
+        .map_err(|_| "actual local identity")?;
+    let audits = service.audit_sequence;
+    let dispatches = service.kv_read_only_dispatches;
+    let service = Arc::new(Mutex::new(service));
+    let raw = crate::http::no_forward_tests::request(
+        "GET",
+        "/v1/secret/data/legacy",
+        &token,
+        "X-Vault-No-Request-Forwarding: 1\r\n",
+        &json!({}),
+    );
+    let response = crate::http::no_forward_tests::wire(
+        &service,
+        &raw,
+        &[0x71; 16],
+        Instant::now() + Duration::from_secs(10),
+    )?;
+    assert_eq!(response.status, 200);
+    assert!(response.header("Location").is_empty());
+    assert_eq!(
+        response.json()?["data"]["data"]["value"],
+        "actual-committed"
+    );
+    {
+        let writer = service.lock().map_err(|_| "actual Service lock")?;
+        assert!(
+            writer
+                .current_state_identity()
+                .map_err(|_| "actual local identity")?
+                == identity
+        );
+        assert_eq!(
+            writer.durable.as_ref().ok_or("durable")?.generation(),
+            generation
+        );
+        assert!(
+            serde_json::to_vec(writer.state.as_ref().ok_or("state")?)?.as_slice()
+                == before.as_slice()
+        );
+        assert_eq!(writer.audit_sequence, audits + 2);
+        assert_eq!(writer.kv_read_only_dispatches, dispatches + 1);
+        assert!(writer.pending_forward_delivery.is_none());
+        assert!(writer.pending_ordinary_kv_authority.is_none());
+    }
+    drop(service);
+    drop(cluster);
+    Ok(())
+}
+
+#[test]
 fn legacy_replica_kv_expiration143_eligibility_tracks_real_policy_publication() -> TestResult {
     fn precise(
         service: &mut Service,

@@ -229,7 +229,8 @@ pub(crate) use wrapping::{
 };
 #[cfg(feature = "native-v6-storage")]
 pub(crate) use wrapping::{
-    NativeResponseWrappingOwner, NativeWrappingObservation, NativeWrappingOwner,
+    NativeResponseWrappingOwner, NativeSshPublicReplyOwner, NativeWrappingObservation,
+    NativeWrappingOwner,
 };
 
 const LEGACY_DEFAULT_TTL: u64 = 3600;

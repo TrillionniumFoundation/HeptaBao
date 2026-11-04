@@ -234,7 +234,6 @@ impl Service {
                             source.read_paged_payload(&ObjectDomain::Kv2(scope.clone()), reference)
                         },
                         &|| source.before_delivery(),
-                        &|| deadline.check().map_err(|_| RecordError::Invalid),
                         deadline,
                         &stopped,
                     )
