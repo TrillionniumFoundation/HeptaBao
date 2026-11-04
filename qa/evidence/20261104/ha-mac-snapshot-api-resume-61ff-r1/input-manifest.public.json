@@ -1,0 +1,50 @@
+{
+  "schema": 1,
+  "source_commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+  "source_tree": "625b0a5d4e2bce62fe0b014edff9c18f96840a3c",
+  "physical_base": "f06478d8f5451d3a4e5ab86f73bccd37612d378f",
+  "base_tree": "5389e69cc0c9b36dcb48d7480ac109a811745bec",
+  "control_pins": {
+    "driverSha": "a7ed85a140d1d1dc99857c5143d2461ec0007d0661da173eba456afb6336ad12",
+    "packetSha": "6b8269155d348b94e48fa46c3fb7bcc3aaa7c69ed7c9e83cd91434883ba0b553",
+    "bootstrapSha": "53225d2bc31475b5df5841809da1becc11c46db2dda3feba6ab81ca6821c98dd"
+  },
+  "changed_files": [
+    {
+      "path": "crates/heptabao-server/src/http_formal_api_fixture.rs",
+      "bytes": 11432,
+      "sha256": "0380d128a33a915a433866abbf9ee541b979ab7da919bfc2734e1befee57fdc4",
+      "git_blob": "cc8105bb10dbac9827b5135db1182b7a94fb1bec",
+      "base_sha256": "e461fc18722954c8177d05dd23d9fbbcf53e4ebf3fdd1aeb4d0fb8a250902579",
+      "base_blob": "5fb54fd820bf7151bf32a0f4fc905868c005d627"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "bytes": 64504,
+      "sha256": "ac2b39c922f62c0d5b616e12c574934617e8dd0ab55bfa7524007c7c2c08f8fe",
+      "git_blob": "74e822d9ae06eef1d5c308c4865b8e5fa8dca7cc",
+      "base_sha256": "2959b1a386e80a55d2eb81926ffeb54bcd6dd2faf0b0fe142490ed63aa04d657",
+      "base_blob": "028219f62f38bef82cb584ddf82eccbef9d14778"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+      "bytes": 27709,
+      "sha256": "46857f23f2e3ddf57916b92fd71a48e10d7ac4214fd06be68ccb013b3f1e02d5",
+      "git_blob": "703a7183185a4fee775a95109e7b084c1aa315f6",
+      "base_sha256": "049a2d74aca4482b6b5dbe27289b1e0199b9522d34861f71bd5db18c0b8913e9",
+      "base_blob": "f7c23c52a1dea616522426204f2b7416bcb728f1"
+    }
+  ],
+  "same_original_deadline_monotonic": 2711475.262300833,
+  "original_started_monotonic": 2709075.262300833,
+  "utc_deadline_no_later_than": "2026-11-04T20:53:48Z",
+  "original_total_budget_seconds": 2400,
+  "new_budget": false,
+  "old_result_sha256": "a90a6abf56405d3f006171554ebac16ffe89b8bf20240526a38dc7fc1f0ef508",
+  "old_observation": {
+    "total": 14,
+    "passed": 5,
+    "failed": 9
+  },
+  "qualification": false
+}

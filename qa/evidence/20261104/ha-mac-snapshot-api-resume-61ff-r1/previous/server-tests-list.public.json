@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/normal-default-r3/artifacts/heptabao-server-tests",
+    "--list"
+  ],
+  "cleanup": {
+    "already_reaped": false,
+    "forced": false,
+    "group_cleanup_before_reap": true,
+    "group_signalled_after_reap": false,
+    "pid": 66185,
+    "remaining": [],
+    "returncode": 0
+  },
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+  "elapsed_seconds": 2.6249713329598308,
+  "exit_code": 0,
+  "label": "server-tests-list",
+  "owned_pgid": 66185,
+  "remaining": [],
+  "remaining_at_end_seconds": 1905.8636990003288,
+  "remaining_at_start_seconds": 1908.4886702923104,
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 407050,
+  "stdout_sha256": "cf9d66517ed84f508976250c96ab710ecd26efa8eb6315f268a861b8a8a59f90",
+  "timed_out": false
+}

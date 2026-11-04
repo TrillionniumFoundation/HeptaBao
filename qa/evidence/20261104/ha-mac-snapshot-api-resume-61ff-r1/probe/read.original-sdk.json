@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1a846ed4e-fc05-2e28\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b226c697374656e65725f6e6f6e626c6f636b223a20747275652c202261636365707465645f6e6f6e626c6f636b5f6265666f7265223a20747275652c202261636365707465645f6e6f6e626c6f636b5f6166746572223a2066616c73652c20226f776e65645f6c6f6f706261636b223a20747275652c2022656c61707365645f7365636f6e6473223a20302e30303031383531323530343137353330353336372c2022746573745f73636f7065223a202261637475616c2044617277696e20736f636b657420666c616773206f6e6c793b206e6f205275737420544c53206f722070726f64756374207175616c696669636174696f6e227d0a\",\n    \"eof\": true,\n    \"next_offset\": 250,\n    \"offset\": 0,\n    \"size\": 250,\n    \"text\": \"{\\\"listener_nonblock\\\": true, \\\"accepted_nonblock_before\\\": true, \\\"accepted_nonblock_after\\\": false, \\\"owned_loopback\\\": true, \\\"elapsed_seconds\\\": 0.00018512504175305367, \\\"test_scope\\\": \\\"actual Darwin socket flags only; no Rust TLS or product qualification\\\"}\\n\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

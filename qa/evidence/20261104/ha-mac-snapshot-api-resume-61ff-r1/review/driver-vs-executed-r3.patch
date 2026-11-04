@@ -1,0 +1,198 @@
+--- a/run_normal_attempt_r3.py
++++ b/run_normal_resume_r4.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""New isolated snapshot API attempt: one predeclared 2400-second budget."""
++"""Resume the same snapshot API attempt after diagnosed failures; no new budget."""
+ import fcntl
+ import hashlib
+ import json
+@@ -20,14 +20,14 @@
+ ROOT = BASE / 'continuation-20261104-ha-snapshot-acl-denial-61ff-r1'
+ SOURCE = ROOT / 'source'
+ ORIGINAL_CONTROL = ROOT / 'control'
+-PREVIOUS_CONTROL = ORIGINAL_CONTROL / 'resume-normal-r1'
+-CONTROL = ORIGINAL_CONTROL / 'normal-attempt-r3'
++PREVIOUS_CONTROL = ORIGINAL_CONTROL / 'normal-attempt-r3'
++CONTROL = ORIGINAL_CONTROL / 'normal-resume-r4'
+ BASE_ROOT = BASE / 'continuation-20261104-ha-unified-normal-61ff-r1'
+ BASE_SOURCE = BASE_ROOT / 'source'
+ BASE_COMMIT = '70714605c39014bea93545f7f6aa4217d2a23544'
+ BASE_TREE = 'ef0ae63704a06b7dda1038e02abcc3233a2a438f'
+-REVIEW_COMMIT = 'a20dbd15e3b2fd7e828949b937d1d5da75588620'
+-INPUT_TREE = '6046535302a94418d8bc67b65887f68d2d690062'
++REVIEW_COMMIT = '21a521e3e59af291dd2abc6721e8559e06338657'
++INPUT_TREE = '625b0a5d4e2bce62fe0b014edff9c18f96840a3c'
+ PYTHON = Path('/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python')
+ PYTHON_SHA = '7ecc1ecbf9daa9303c4bf502ff62ffdd9010ed5c08729d470ae9380c10ce1211'
+ TOOLCHAIN = Path('/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin')
+@@ -366,8 +366,11 @@
+ CACHE = BASE_ROOT / 'runtime.noindex' / 'target'
+ TARGET = ROOT / 'runtime.noindex' / 'target'
+ CARGO_HOME = BASE / 'r13-full-native-cargo-home-r1'
+-OUTPUT = ROOT / 'normal-default-r3'
++OUTPUT = ROOT / 'normal-default-r4'
+ CARGO_SECONDS = 2400.0
++ORIGINAL_STARTED_MONOTONIC = 2709075.262300833
++ORIGINAL_DEADLINE_MONOTONIC = 2711475.262300833
++ORIGINAL_DEADLINE_UNIX = 1793825628
+ NORMAL_PROFILE = {
+     'CARGO_PROFILE_RELEASE_OPT_LEVEL': '3',
+     'CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS': 'true',
+@@ -492,16 +495,16 @@
+ 
+ 
+ 
+-PREVIOUS_DRIVER_SHA = '80dab89f9781d6cd4eba68d2dd3e2973edcb68f271e527f89e2610cb64a370b7'
+-PREVIOUS_RESULT_SHA = '0986617eb338637bc30dfedae69dae6dea43ec8173b133ea3c08f2ff165f2d78'
+-PREVIOUS_FROZEN_SHA = 'd8e1972ab37eca520850ad0fff12f24c7cfed39439de9c43826c7f1769be06dc'
+-PREVIOUS_STRICT_SHA = '789e3337fe36e12391719112bc597e3430f35c8abfa2c1ecb582b80a5fd480a7'
+-PREVIOUS_COMPILE_SHA = '5dcf943e0f1d3cf0608e29c48af7d3ca8bf4be4208ffcfeae877706bb4275d1b'
+-PREVIOUS_SOURCE = 'c6a0b854c91715209aacadd2c4226ee340f95b13'
+-PREVIOUS_TREE = '3ecc607295bca877aad3f92b22b691ff84c76a9c'
+-PATCH_SHA = '7f60296cf4ee53cb468acd56f79c05c1155619ba8b659d1e7b8472a6a533a6d9'
+-CHANGED_FILES = [{"path":"crates/heptabao-server/src/http_formal_api_fixture.rs","bytes":10257,"sha256":"8f46816dc8a7e6cf2338cdae2e6a72a377f88d33adb1dc1edba6d6084a295c4a","git_blob":"fa3a41ae30afaa3bac1f276789659458bad43272"},{"path":"crates/heptabao-server/src/service_native_v6_ha_formal_api_pipeline_tests.rs","bytes":7301,"sha256":"16f92d2ba2006811f0d3b0bc72c3df68e950d0f122978af29908318235cc6213","git_blob":"91e940ea09d19b3ee46f33bb4f653f9a084f935b"},{"path":"crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs","bytes":18225,"sha256":"22e4f5432e7b35db13bcf43da1ab6c308c277f3f0b8e330027c5282d5a554d64","git_blob":"300bb86d95c6fd812ab6877e8eaecac746d0fefb"},{"path":"crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs","bytes":18963,"sha256":"be1c636aa2115305bfd20c2e7b8ea687aa0c36bb2113bd308fd7e3fa44c6651c","git_blob":"fbf227834e90f0bfa6b0e289e2ee971fa5500c8a"},{"path":"crates/heptabao-server/src/http.rs","bytes":231872,"sha256":"c81de43fae7b9bed3462ca0dccd44dd6569d39e7c613f2c57ceb240180e4d7d4","git_blob":"9301c19637fae2e81e8befc42708913e2acb6636"},{"path":"crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs","bytes":72053,"sha256":"d45af70a5f58e9ff7d7f5e8863a4e82a107ab2eedb44c795099d99adeec2f561","git_blob":"b8db6568d936adf788a5e9eeaaead4f2ee42230c"},{"path":"crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs","bytes":33680,"sha256":"ef2da7061546012e32c06776b3d3aa64c594286b8fa2d4c35dde24f0a03403d5","git_blob":"c335d985eb3a3701b4f98f9383c739e7e3768983"},{"path":"crates/heptabao-server/src/service_native_storage_tests.rs","bytes":26173,"sha256":"f68d0a5e23962d507dce39d6f34c0cf941f5c910c7261e7c7706e0a08a8782a6","git_blob":"61a6d9750d03fc5c6e8a57a9ad786640237ecd2a"},{"path":"qa/openbao-acceptance/kv2_271_lossless_native_live.py","bytes":49483,"sha256":"33377bc52b520c53aa2195ee68556581ea78036fbb887ffc2e5bb6fd4d985e47","git_blob":"def438a011a389920e824b3ab29f853a4db862ed"},{"path":"tools/migration/openbao271_kv2_native_large_migrate.py","bytes":16591,"sha256":"8043bce5e2443ca10f09d88dc854fc1a850ae4ac8b904763fbfc1ae3fa2de52a","git_blob":"6f1e114e545c1f292c696f4cd881a982db95114b"},{"path":"crates/heptabao-server/src/http_snapshot_accept_tests.rs","bytes":27730,"sha256":"049a2d74aca4482b6b5dbe27289b1e0199b9522d34861f71bd5db18c0b8913e9","git_blob":"f7c23c52a1dea616522426204f2b7416bcb728f1"}]
+-ALL_FILES = [{"path":"crates/heptabao-server/src/service.rs","bytes":520380,"sha256":"ecc34e93aeec0832943910aeab443009bfcad4f4cbc6d721b7a2fb213c599313","git_blob":"965df43d4bd0b43f15160d8d7387aa49c2432250"},{"path":"crates/heptabao-server/src/service_snapshot_transfer.rs","bytes":64338,"sha256":"2959b1a386e80a55d2eb81926ffeb54bcd6dd2faf0b0fe142490ed63aa04d657","git_blob":"028219f62f38bef82cb584ddf82eccbef9d14778"},{"path":"crates/heptabao-server/src/service_snapshot_v6_ha.rs","bytes":22940,"sha256":"439777e663ca6812c39eba52c8bdc420ad5c570bd39befe4dfd3b3ed1bf2a92a","git_blob":"5c4b8a99208ddfed8585067ebdbbd9b374c22804"},{"path":"crates/heptabao-server/src/service_snapshot_v6.rs","bytes":27950,"sha256":"4bc682d4565942e10d93a72ea48de4e1e9c44f7d7891750899cebaa0cb0b65f0","git_blob":"a33a8cb8466d9b5b6769583f393f05d55360c36f"},{"path":"crates/heptabao-server/src/service_snapshot_clock.rs","bytes":14207,"sha256":"3d540aaf346b91ee45ef1f9d63c09ca2c3f05d5904953864a370027d57b18ed0","git_blob":"ed85659b2480759ba88301dede9fe9028cd61751"},{"path":"crates/heptabao-server/src/service_snapshot_denial.rs","bytes":14526,"sha256":"9524a08f9636b9e068ffaa156acbc8081314454698bb71fa2c07b01209d3f522","git_blob":"d19daa78b09a443fa1fcb55447e256b8372ba41f"},{"path":"crates/heptabao-server/src/snapshot_file.rs","bytes":16786,"sha256":"98d3215819659dce42213be41215827cb19110311221ea460a09cacb63576414","git_blob":"af44a032d401e0269809aedd07cb9429ea151af9"},{"path":"crates/heptabao-server/src/ha_snapshot_clock.rs","bytes":38808,"sha256":"1319fa425aaa656f266e3b4e3bb064b7b3326272c8d3794744e2d1dc656f1d47","git_blob":"07e5587d47632a9a693bbbfad1d16d5bcdfbd2af"},{"path":"crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs","bytes":44113,"sha256":"7b420b0e859c7cd7376687a9404b3ae37678c3dd98eb55e55e0f51187a7f812d","git_blob":"ebb045e333f78144e5a9a035d74ce789f5c36a76"},{"path":"crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs","bytes":18225,"sha256":"22e4f5432e7b35db13bcf43da1ab6c308c277f3f0b8e330027c5282d5a554d64","git_blob":"300bb86d95c6fd812ab6877e8eaecac746d0fefb"},{"path":"crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs","bytes":18963,"sha256":"be1c636aa2115305bfd20c2e7b8ea687aa0c36bb2113bd308fd7e3fa44c6651c","git_blob":"fbf227834e90f0bfa6b0e289e2ee971fa5500c8a"},{"path":"crates/heptabao-server/src/http.rs","bytes":231872,"sha256":"c81de43fae7b9bed3462ca0dccd44dd6569d39e7c613f2c57ceb240180e4d7d4","git_blob":"9301c19637fae2e81e8befc42708913e2acb6636"},{"path":"crates/heptabao-server/src/http_consistency.rs","bytes":16843,"sha256":"d8d20d8c69e6cf02a29801a3f05645d8ba58138d0d97c72cdd20994c2caa56cf","git_blob":"ed64b70e48cb8d549597e0102cf9003e0c1e606f"},{"path":"crates/heptabao-server/src/http_formal_api_fixture.rs","bytes":10257,"sha256":"8f46816dc8a7e6cf2338cdae2e6a72a377f88d33adb1dc1edba6d6084a295c4a","git_blob":"fa3a41ae30afaa3bac1f276789659458bad43272"},{"path":"crates/heptabao-server/src/service_native_v6_ha_formal_api_pipeline_tests.rs","bytes":7301,"sha256":"16f92d2ba2006811f0d3b0bc72c3df68e950d0f122978af29908318235cc6213","git_blob":"91e940ea09d19b3ee46f33bb4f653f9a084f935b"},{"path":"crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs","bytes":72053,"sha256":"d45af70a5f58e9ff7d7f5e8863a4e82a107ab2eedb44c795099d99adeec2f561","git_blob":"b8db6568d936adf788a5e9eeaaead4f2ee42230c"},{"path":"crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs","bytes":33680,"sha256":"ef2da7061546012e32c06776b3d3aa64c594286b8fa2d4c35dde24f0a03403d5","git_blob":"c335d985eb3a3701b4f98f9383c739e7e3768983"},{"path":"crates/heptabao-server/src/service_native_storage_tests.rs","bytes":26173,"sha256":"f68d0a5e23962d507dce39d6f34c0cf941f5c910c7261e7c7706e0a08a8782a6","git_blob":"61a6d9750d03fc5c6e8a57a9ad786640237ecd2a"},{"path":"qa/openbao-acceptance/kv2_271_lossless_native_live.py","bytes":49483,"sha256":"33377bc52b520c53aa2195ee68556581ea78036fbb887ffc2e5bb6fd4d985e47","git_blob":"def438a011a389920e824b3ab29f853a4db862ed"},{"path":"tools/migration/openbao271_kv2_native_large_migrate.py","bytes":16591,"sha256":"8043bce5e2443ca10f09d88dc854fc1a850ae4ac8b904763fbfc1ae3fa2de52a","git_blob":"6f1e114e545c1f292c696f4cd881a982db95114b"},{"path":"crates/heptabao-server/src/http_snapshot_accept_tests.rs","bytes":27730,"sha256":"049a2d74aca4482b6b5dbe27289b1e0199b9522d34861f71bd5db18c0b8913e9","git_blob":"f7c23c52a1dea616522426204f2b7416bcb728f1"}]
++PREVIOUS_DRIVER_SHA = '7a12c1279c7ee5404c69c3bb0dc86a719e1ca53c7a3cc21d5d28cfbc6b828704'
++PREVIOUS_RESULT_SHA = 'a90a6abf56405d3f006171554ebac16ffe89b8bf20240526a38dc7fc1f0ef508'
++PREVIOUS_FROZEN_SHA = 'ca909caf1a9ca02e6d2122c916dd4d3d96adb0099bfaf0a87f2c51c7bce70d21'
++PREVIOUS_STRICT_SHA = 'f270834ffaead917919495e4a315cf7131f2174917b5c1c9b9aed462b654d850'
++PREVIOUS_COMPILE_SHA = '8e9346646a10e2d4fdde62c1c130820535afbc44f6051b05378f12461bb47213'
++PREVIOUS_SOURCE = 'f06478d8f5451d3a4e5ab86f73bccd37612d378f'
++PREVIOUS_TREE = '5389e69cc0c9b36dcb48d7480ac109a811745bec'
++PATCH_SHA = '6e809de9c1ff4c011a552795a503d44fa8552ae0e8adccffc1e26cde973b14a5'
++CHANGED_FILES = [{"path":"crates/heptabao-server/src/http_formal_api_fixture.rs","bytes":11432,"sha256":"0380d128a33a915a433866abbf9ee541b979ab7da919bfc2734e1befee57fdc4","git_blob":"cc8105bb10dbac9827b5135db1182b7a94fb1bec"},{"path":"crates/heptabao-server/src/service_snapshot_transfer.rs","bytes":64504,"sha256":"ac2b39c922f62c0d5b616e12c574934617e8dd0ab55bfa7524007c7c2c08f8fe","git_blob":"74e822d9ae06eef1d5c308c4865b8e5fa8dca7cc"},{"path":"crates/heptabao-server/src/http_snapshot_accept_tests.rs","bytes":27709,"sha256":"46857f23f2e3ddf57916b92fd71a48e10d7ac4214fd06be68ccb013b3f1e02d5","git_blob":"703a7183185a4fee775a95109e7b084c1aa315f6"}]
++ALL_FILES = [{"path":"crates/heptabao-server/src/service.rs","bytes":520380,"sha256":"ecc34e93aeec0832943910aeab443009bfcad4f4cbc6d721b7a2fb213c599313","git_blob":"965df43d4bd0b43f15160d8d7387aa49c2432250"},{"path":"crates/heptabao-server/src/service_snapshot_transfer.rs","bytes":64504,"sha256":"ac2b39c922f62c0d5b616e12c574934617e8dd0ab55bfa7524007c7c2c08f8fe","git_blob":"74e822d9ae06eef1d5c308c4865b8e5fa8dca7cc"},{"path":"crates/heptabao-server/src/service_snapshot_v6_ha.rs","bytes":22940,"sha256":"439777e663ca6812c39eba52c8bdc420ad5c570bd39befe4dfd3b3ed1bf2a92a","git_blob":"5c4b8a99208ddfed8585067ebdbbd9b374c22804"},{"path":"crates/heptabao-server/src/service_snapshot_v6.rs","bytes":27950,"sha256":"4bc682d4565942e10d93a72ea48de4e1e9c44f7d7891750899cebaa0cb0b65f0","git_blob":"a33a8cb8466d9b5b6769583f393f05d55360c36f"},{"path":"crates/heptabao-server/src/service_snapshot_clock.rs","bytes":14207,"sha256":"3d540aaf346b91ee45ef1f9d63c09ca2c3f05d5904953864a370027d57b18ed0","git_blob":"ed85659b2480759ba88301dede9fe9028cd61751"},{"path":"crates/heptabao-server/src/service_snapshot_denial.rs","bytes":14526,"sha256":"9524a08f9636b9e068ffaa156acbc8081314454698bb71fa2c07b01209d3f522","git_blob":"d19daa78b09a443fa1fcb55447e256b8372ba41f"},{"path":"crates/heptabao-server/src/snapshot_file.rs","bytes":16786,"sha256":"98d3215819659dce42213be41215827cb19110311221ea460a09cacb63576414","git_blob":"af44a032d401e0269809aedd07cb9429ea151af9"},{"path":"crates/heptabao-server/src/ha_snapshot_clock.rs","bytes":38808,"sha256":"1319fa425aaa656f266e3b4e3bb064b7b3326272c8d3794744e2d1dc656f1d47","git_blob":"07e5587d47632a9a693bbbfad1d16d5bcdfbd2af"},{"path":"crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs","bytes":44113,"sha256":"7b420b0e859c7cd7376687a9404b3ae37678c3dd98eb55e55e0f51187a7f812d","git_blob":"ebb045e333f78144e5a9a035d74ce789f5c36a76"},{"path":"crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs","bytes":18430,"sha256":"5e9ba6230ba492bd7f25bee095d8c5bd1f6361375cef95041eeea772f5b417d4","git_blob":"3f3d70ced4c9e137b7ff61a1b4668822e737ac59"},{"path":"crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs","bytes":18963,"sha256":"be1c636aa2115305bfd20c2e7b8ea687aa0c36bb2113bd308fd7e3fa44c6651c","git_blob":"fbf227834e90f0bfa6b0e289e2ee971fa5500c8a"},{"path":"crates/heptabao-server/src/http.rs","bytes":231872,"sha256":"98ecbfc23750153e99a48b017c2235d6bcfbfd57160a7e0fc9c8dcdd29dfcb58","git_blob":"3801150b71e68d75afb46136e31dce05841fe081"},{"path":"crates/heptabao-server/src/http_consistency.rs","bytes":16843,"sha256":"d8d20d8c69e6cf02a29801a3f05645d8ba58138d0d97c72cdd20994c2caa56cf","git_blob":"ed64b70e48cb8d549597e0102cf9003e0c1e606f"},{"path":"crates/heptabao-server/src/http_formal_api_fixture.rs","bytes":11432,"sha256":"0380d128a33a915a433866abbf9ee541b979ab7da919bfc2734e1befee57fdc4","git_blob":"cc8105bb10dbac9827b5135db1182b7a94fb1bec"},{"path":"crates/heptabao-server/src/service_native_v6_ha_formal_api_pipeline_tests.rs","bytes":7773,"sha256":"d2128db04e062b186ec3e04bdabd39fcf759ef576447a65d92c8f866931e0240","git_blob":"e5b89de07763968c517665152b1f3744c06e85cf"},{"path":"crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs","bytes":72052,"sha256":"a269af3e4f35efaed11a9b7726c6d04ab581bb9c53d4fa97993325efbdb9f500","git_blob":"ea282af1c03e61961c91b9b127a73accd1936f77"},{"path":"crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs","bytes":34048,"sha256":"16bbb285164867c1afb3fd97428455ce6e3d68b503981c4df2d1eec275034233","git_blob":"6a2c2940afe460843738fe938ced2a26a409182f"},{"path":"crates/heptabao-server/src/service_native_storage_tests.rs","bytes":26293,"sha256":"2763e39946aaa67b340bddec60bd703a5f17531166cbc6acd704790381bb86b8","git_blob":"4953a421615ea06980284819f53be0ef603c8d88"},{"path":"qa/openbao-acceptance/kv2_271_lossless_native_live.py","bytes":49483,"sha256":"33377bc52b520c53aa2195ee68556581ea78036fbb887ffc2e5bb6fd4d985e47","git_blob":"def438a011a389920e824b3ab29f853a4db862ed"},{"path":"tools/migration/openbao271_kv2_native_large_migrate.py","bytes":16591,"sha256":"8043bce5e2443ca10f09d88dc854fc1a850ae4ac8b904763fbfc1ae3fa2de52a","git_blob":"6f1e114e545c1f292c696f4cd881a982db95114b"},{"path":"crates/heptabao-server/src/http_snapshot_accept_tests.rs","bytes":27709,"sha256":"46857f23f2e3ddf57916b92fd71a48e10d7ac4214fd06be68ccb013b3f1e02d5","git_blob":"703a7183185a4fee775a95109e7b084c1aa315f6"}]
+ KNOWN_GAPS = ["A first new expiry observed only after the one leader clock writer returns 503 without replay; it is not mislabeled as a proved entry-time Denied 403.","Other pre-plan errors such as a quota refusal are not covered by the new snapshot denial capsule.","Ordinary KV X-Vault-No-Request-Forwarding plus global precision still needs an independent closed authority and metadata-only leader clock path.","Listener consistency Forward restriction is implemented in revision 3; its new integration and normal-wire validation have not run.","Other non-clock maintenance states remain ineligible for this local standby snapshot path.","Original 7071 full workspace has eight retained actual failures; these fourteen component tests are not a full workspace rerun.","Fixed OpenBao 2.7.1 accepted a truncated gzip footer and concatenated archive with actual restore; current archive rejection is an unresolved compatibility difference.","Six ordinary KV and consistency cases still returned 307 instead of official 200 on the normal 7071 wire observer; the new immutable KV clock closure is not included here.","Normal-binary HTTPS 34-case observer, physical three-host HA, full34 migration/recovery and production cutover remain unqualified for this source."]
+ 
+ 
+@@ -510,7 +513,10 @@
+     os.umask(0o077)
+     began = time.monotonic()
+     began_utc = time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+-    cargo_until = began + CARGO_SECONDS
++    need(began >= ORIGINAL_STARTED_MONOTONIC, 'original_monotonic_epoch_changed')
++    cargo_until = min(ORIGINAL_DEADLINE_MONOTONIC,
++                      began + max(0, ORIGINAL_DEADLINE_UNIX - time.time()))
++    remaining(cargo_until)
+     need(len(sys.argv) == 3 and sha(__source_raw__) == sys.argv[1]
+          and sha(__packet_raw__) == sys.argv[2], 'exact_new_attempt_sources')
+     device = preflight_host(cargo_until)
+@@ -519,34 +525,38 @@
+          'actual_toolchain_pins')
+     for path in (ROOT, SOURCE, ORIGINAL_CONTROL, PREVIOUS_CONTROL, TARGET, CARGO_HOME):
+         owned_ancestors(path, device)
+-    need(hash_owned(PREVIOUS_CONTROL / 'resume_normal_r1.py', cargo_until)
++    need(hash_owned(PREVIOUS_CONTROL / 'run_normal_attempt_r3.py', cargo_until)
+          == PREVIOUS_DRIVER_SHA, 'previous_driver_unchanged')
+     previous_raw = read_owned(PREVIOUS_CONTROL / 'candidate-normal-result.public.json')
+     frozen_raw = read_owned(PREVIOUS_CONTROL / 'frozen-source.public.json')
+-    strict_raw = read_owned(ROOT / 'normal-default-r2/strict-clippy.public.json')
+-    compile_raw = read_owned(ROOT / 'normal-default-r2/server-tests-compile.public.json')
++    strict_raw = read_owned(ROOT / 'normal-default-r3/strict-clippy.public.json')
++    compile_raw = read_owned(ROOT / 'normal-default-r3/server-tests-compile.public.json')
+     need(sha(previous_raw) == PREVIOUS_RESULT_SHA and sha(frozen_raw) == PREVIOUS_FROZEN_SHA
+          and sha(strict_raw) == PREVIOUS_STRICT_SHA and sha(compile_raw) == PREVIOUS_COMPILE_SHA,
+          'actual_previous_receipt_pins')
+     previous, old_frozen, old_strict, old_compile = map(
+         json.loads, (previous_raw, frozen_raw, strict_raw, compile_raw))
+     need(previous['status'] == 'failed'
+-         and previous['failure_code'] == 'original_shared_cargo_deadline'
+-         and previous['completed_tests'] == []
++         and previous['failure_code'] == 'critical_test_failures'
++         and len(previous['completed_tests']) == 5
++         and len(previous['observed_tests']) == 14 and len(previous['failed_tests']) == 9
++         and previous['cargo_started_monotonic'] == ORIGINAL_STARTED_MONOTONIC
++         and previous['cargo_deadline_monotonic'] == ORIGINAL_DEADLINE_MONOTONIC
++         and previous['shared_cargo_budget_seconds'] == CARGO_SECONDS
+          and previous['last_owned_child_cleanup']['remaining'] == []
+          and previous['last_owned_child_cleanup']['group_signalled_after_reap'] is False
+          and previous['last_owned_child_cleanup']['forced'] is False,
+-         'previous_attempt_finished_without_qualified_tests')
++         'previous_actual_red_and_original_budget')
+     need(old_strict['exit_code'] == 0 and old_strict['timed_out'] is False
+          and old_strict['remaining'] == [] and old_strict['cleanup']['forced'] is False
+-         and old_compile['timed_out'] is True and old_compile['exit_code'] == -15
++         and old_compile['timed_out'] is False and old_compile['exit_code'] == 0
+          and old_compile['remaining'] == [] and old_compile['cleanup']['forced'] is False
+          and old_compile['cleanup']['group_cleanup_before_reap'] is True
+          and old_compile['cleanup']['group_signalled_after_reap'] is False,
+          'previous_actual_strict_and_compile_cleanup')
+     need(old_frozen['source'] == PREVIOUS_SOURCE and old_frozen['tree'] == PREVIOUS_TREE
+          and old_frozen['source_path'] == str(SOURCE) and old_frozen['formatted']
+-         and not old_frozen['compiled'] and len(old_frozen['files']) == 13,
++         and not old_frozen['compiled'] and len(old_frozen['files']) == 21,
+          'previous_frozen_identity')
+     need(set(__payload__) == {'driver', 'files', 'changed_files', 'patch'}
+          and __payload__['files'] == ALL_FILES
+@@ -556,13 +566,13 @@
+     need(not CONTROL.exists() and not CONTROL.is_symlink()
+          and not OUTPUT.exists() and not OUTPUT.is_symlink(), 'fresh_new_attempt_output')
+     need(shutil.disk_usage(ROOT).free >= 1024 * 1024 * 1024, 'build_disk_space')
+-    source_file_pins(old_frozen, device, 13)
++    source_file_pins(old_frozen, device, 21)
+     remaining(cargo_until)
+     work_started = True
+     CONTROL.mkdir(mode=0o700)
+     OUTPUT.mkdir(mode=0o700)
+     (OUTPUT / 'artifacts').mkdir(mode=0o700)
+-    write_raw(CONTROL / 'run_normal_attempt_r3.py', __source_raw__)
++    write_raw(CONTROL / 'run_normal_resume_r4.py', __source_raw__)
+     write_raw(CONTROL / 'input.public.json', __packet_raw__)
+     patch_path = CONTROL / 'source.patch'
+     write_raw(patch_path, __payload__['patch'].encode())
+@@ -572,7 +582,7 @@
+                 'CARGO_BUILD_JOBS': '2', 'CARGO_TERM_COLOR': 'never', 'RUSTFLAGS': ''})
+     runner = OwnedRunner(OUTPUT, env)
+     result = {
+-        'schema': 'heptabao.mac-snapshot-api-normal-attempt.v1', 'status': 'failed',
++        'schema': 'heptabao.mac-snapshot-api-normal-resume.v1', 'status': 'failed',
+         'root': str(ROOT), 'source_path': str(SOURCE), 'target_path': str(TARGET),
+         'review_commit': REVIEW_COMMIT, 'input_tree': INPUT_TREE,
+         'driver_sha256': sys.argv[1], 'packet_sha256': sys.argv[2],
+@@ -581,9 +591,11 @@
+         'previous_frozen_sha256': PREVIOUS_FROZEN_SHA, 'patch_sha256': PATCH_SHA,
+         'python_sha256': PYTHON_SHA, 'cargo_sha256': CARGO_SHA, 'rustc_sha256': RUSTC_SHA,
+         'shared_cargo_budget_seconds': CARGO_SECONDS,
+-        'cargo_started_monotonic': began, 'cargo_deadline_monotonic': cargo_until,
+-        'cargo_started_utc': began_utc,
+-        'attempt_relation': 'new declared attempt after prior deadline and owned cleanup',
++        'cargo_started_monotonic': ORIGINAL_STARTED_MONOTONIC,
++        'cargo_deadline_monotonic': cargo_until,
++        'resume_started_monotonic': began, 'resume_started_utc': began_utc,
++        'cargo_started_utc': '2026-11-04T20:13:48Z',
++        'attempt_relation': 'resume same original 2400-second attempt after diagnosed red and owned cleanup',
+         'previous_budget_extended': False, 'cache_cloned_again': False,
+         'normal_profile': NORMAL_PROFILE, 'cargo_build_jobs': 2,
+         'strict_clippy_inherited_excluded_package': 'qrcode',
+@@ -600,7 +612,7 @@
+         need(before == {'commit': PREVIOUS_SOURCE, 'tree': PREVIOUS_TREE, 'status': ''},
+              'previous_source_changed')
+         result['input_source'] = before
+-        result['previous_product_files'] = source_file_pins(old_frozen, device, 13)
++        result['previous_product_files'] = source_file_pins(old_frozen, device, 21)
+         processes = runner.run('preparation-process-snapshot',
+                                ['/bin/ps', '-axo', 'pid=,ppid=,pgid=,comm='],
+                                cargo_until).decode('utf-8', 'strict')
+@@ -632,7 +644,7 @@
+              'exact_new_source_tree')
+         result['input_product_files'] = source_file_pins(manifest, device, 21)
+         runner.git('source-freeze', cargo_until, 'commit', '--quiet', '-m',
+-                   'Bind actual API TLS origins and retain unsupported-owner regressions')
++                   'Repair actual Darwin TLS accepted mode and cold snapshot eligibility')
+         repaired = source_state(runner, 'repaired', cargo_until)
+         need(repaired['tree'] == INPUT_TREE and repaired['status'] == '', 'new_source_changed')
+         result['repaired_source'] = repaired
+@@ -805,10 +817,11 @@
+                 fcntl.flock(lock_fd, fcntl.LOCK_UN)
+                 os.close(lock_fd)
+         result['elapsed_seconds'] = time.monotonic() - began
++        result['elapsed_since_original_start_seconds'] = time.monotonic() - ORIGINAL_STARTED_MONOTONIC
+         if cargo_until is not None:
+             result['cargo_remaining_seconds'] = max(0, cargo_until - time.monotonic())
+             if time.monotonic() > cargo_until:
+-                result.update(status='failed', failure_code='declared_new_attempt_deadline')
++                result.update(status='failed', failure_code='original_shared_cargo_deadline')
+         digest = write_json(CONTROL / 'candidate-normal-result.public.json', result)
+         print(json.dumps({'status': result['status'],
+                           'result': str(CONTROL / 'candidate-normal-result.public.json'),
