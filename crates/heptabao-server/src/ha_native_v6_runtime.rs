@@ -686,7 +686,7 @@ impl HaProcess {
     ) -> Result<Option<NativeV6IngressRead>, String> {
         let failure =
             NativeV6FailureObservation::start("fresh_ingress_permission", deadline.instant());
-        let result = (|| {
+        let result: Result<Option<NativeV6IngressRead>, String> = (|| {
             permission.check_initial_read(deadline, local_root)?;
             failure.step("fresh_ingress_runtime");
             let native = self
