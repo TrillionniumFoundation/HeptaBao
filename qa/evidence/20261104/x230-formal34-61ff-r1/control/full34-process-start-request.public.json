@@ -1,0 +1,16 @@
+{
+  "host": "x230",
+  "executable": "/usr/bin/python3.12",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-c",
+    "import hashlib,os,stat,sys\nfrom pathlib import Path\npath=Path(\"/home/qian/heptabao-kv2-formal34-61ff-7071-20261104-r1/control/run_x230_full34_r1.py\")\nif len(sys.argv)!=3 or path.resolve(strict=True)!=path:\n    raise SystemExit(\"full34_bootstrap_arguments_or_path\")\nfd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)\ntry:\n    before=os.fstat(fd)\n    if not stat.S_ISREG(before.st_mode) or before.st_uid!=1000 or before.st_nlink!=1 or before.st_size>65536:\n        raise SystemExit(\"full34_controller_custody\")\n    raw=os.read(fd,65537)\n    if len(raw)!=before.st_size or before!=os.fstat(fd) or before!=path.lstat() or hashlib.sha256(raw).hexdigest()!=sys.argv[1]:\n        raise SystemExit(\"full34_controller_pin\")\nfinally:\n    os.close(fd)\nstage_pin=sys.argv[2]\nsys.argv=[str(path),stage_pin]\nexec(compile(raw,str(path),\"exec\"),{\"__name__\":\"__main__\",\"__file__\":str(path)})\n",
+    "a7b97a452d4064c02dd64c52a1e3e99e8af120598506a215d8fabde9e06399d8",
+    "bd6b9842dc5f58a21df9c0adf0b463e20ca544ffb7225e748eaab495ff225f1b"
+  ],
+  "cwd": "/home/qian/heptabao-kv2-formal34-61ff-7071-20261104-r1",
+  "idempotency_key": "root-x230-formal34-7071-run-61ff-20261104-r1-bd6b9842-a7b97a45",
+  "timeout_seconds": 1860
+}

@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.root.mac-resume-control-review.v1",
+  "original_source_sha256": "7a6a3c484d8219bb5e2faa4f71a3341685b53ac5306c1760136b8923a6a2cf74",
+  "resume_source_sha256": "80dab89f9781d6cd4eba68d2dd3e2973edcb68f271e527f89e2610cb64a370b7",
+  "diff_sha256": "7c22deb85764d9c8512e2f810edb9975a6fb75c8cfb18f8eb48f9a1b054b2d70",
+  "patch_reconstructs_exact": true,
+  "common_validation_tail_exact": true,
+  "common_validation_tail_bytes": 9457,
+  "common_validation_tail_sha256": "b1dc1af016fd1144aec581b0a5e0bc79988bdc2b852df1fe9532b702ace20d4a",
+  "request_sha256": "0346494e737db7a12f113847e24d583107c2e2d58ed09e0ae7e58432a7a3c08d",
+  "bootstrap_pins_fixed_python": true,
+  "packet_and_exact_two_file_fix_verified": true,
+  "absolute_original_deadline_utc": "2026-11-04T19:45:07Z",
+  "budget_refreshed": false,
+  "extra_cache_clone": false,
+  "compile_receipt_scope": "Root retrieved archived authoritative terminal SDK, succeeded exit0, output complete and durable, stdout231 stderr0",
+  "product_tests_or_artifact_qualified": false,
+  "compile_only_reported_job_suffix": "2d66",
+  "tail_definition": "From first cargo assignment to first matching outer exception marker; broader than agent 8843-byte slice, both exact",
+  "compile_only_actual_job": "1a1a809d830-fc05-2d66",
+  "compile_terminal_sdk_sha256": "ae067e31c40152c3825ef8d1050882ea4419f068ad1f4fb1cf9c284a4ad5be1f"
+}
