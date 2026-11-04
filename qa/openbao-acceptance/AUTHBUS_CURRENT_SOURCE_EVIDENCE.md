@@ -127,7 +127,7 @@ All production configuration, five auth stores, native authentication, installed
 sources and legacy relay processes remained unchanged; every owned service stopped.
 
 The only actual business probe used a fresh synthetic workspace and history,
-`openai/gpt-5.6-sol` (the unchanged default), and the existing native provider path
+`openai/gpt-5.6-sol` (the unchanged default), and the installed built-in HTTP provider path
 `https://chatgpt.com/backend-api/codex/responses`. It sent one harmless short user
 message and no tools. The real installed Undici dispatcher, original response
 object and strict TLS verification were preserved. Exactly one POST was dispatched
@@ -170,6 +170,131 @@ subprocess permissions cover only the observed read-only mount, hardware-model
 and OS-version probes. Channels, autonomous tasks, other-account refresh,
 provider fallback, model changes and all further provider POSTs remained blocked.
 
+### Runtime scope correction: built-in HTTP and the production Codex registry
+
+The r8 isolated configuration allowed only `openai` and `openclaw-authbus`.
+It did not carry the production `codex` plugin registry into the private gateway.
+Consequently its real HTTP 429, cold restart and private full-state rollback
+qualify that precise built-in HTTP configuration, not the complete production
+runtime collection. The original r8 program, receipt and failed outcome remain
+unchanged. Native Codex consumption is a separate necessary qualification.
+
+The read-only current Mac audit is
+`runtime-contract-source-r1/result.public.json`, SHA256
+`37617ffc49187da02e24d0b2a5c9380a1e2fa5430ab01af7a9975b444562e9e8`.
+It passed 22 static source/configuration checks without starting a gateway,
+native app-server, OAuth flow or provider request. The exact installed-plugin
+index row declares enabled global `@openclaw/codex` 2026.7.1-1 with harness
+`codex`. Current default `openai/gpt-5.6-sol` has no explicit matching runtime
+override. The custom ChatGPT endpoint does not meet the separate official
+`api.openai.com` implicit-Codex predicate, so the source policy resolves to auto.
+The installed auto selector chooses a registered supporting harness by priority;
+the installed Codex harness supports `openai` and `codex` at priority 100.
+This static audit does not inspect the live process registry or a live session's
+runtime override, and does not assert which harness an existing session used.
+
+Current Mac Codex app-server configuration omits command, transport and
+`homeScope`; installed defaults resolve agent scope and the managed stdio
+command. The observed service wrapper environment has no CODEX_HOME or Codex
+command override. In that default scope the shared-client builder resolves the
+SDK's `openai` auth order and sends its actual selected credential as
+`chatgptAuthTokens` to local `account/login/start`. A caller's explicit null
+auth-profile sentinel would instead use native auth; no such sentinel is
+invented for this audit or for a subsequent positive consumer test.
+
+`runtime-contract-source-r1/native-pin.public.json`, SHA256
+`fce8536b33a83b920accd7264991759a13011057cac3502b0ce14fffc075339e`,
+pins the actual managed launcher and selected native executable. The executable
+SHA256 is `718724d7221cf1298071ca92411cb74caa8422809154150cedca7b569a4518e3`;
+its sandboxed `--version` returned **0.144.3**. This is distinct from the
+separately installed **0.133.0** CLI prepared for human recovery below. Only the
+version command ran during the native pin audit. No app-server or account RPC
+ran. The current main agent's `codex-home/auth.json` was absent; the existing
+user native source was unchanged.
+
+### Exact managed Codex 0.144.3 source contract
+
+`runtime-contract-source-r1/official-source-contract.public.json`, SHA256
+`f9de7db17bf33d0195ccad087b333bf8a83957b35417be0ca4712fda33775adc`,
+records official `openai/codex` tag `rust-v0.144.3`, annotated tag object
+`13307a9036baccd2c51b685d1457a4b89b5b2f3b`, resolving to commit
+`78ad6e6bfd1d3b6a209acd3ef82172a96b25179c`. Thirteen source files were obtained
+through the official GitHub connector; their complete bytes were checked against
+their Git blob SHA identities. No fetched code was executed.
+
+The version-specific findings matter for the isolated consumer's network guard:
+
+* The 0.144.3 account-processor constructor only initializes state. Unlike the
+  separately audited ROG 0.159.2 implementation, it does not spawn an initial
+  `read_account` workspace-discovery task.
+* The 0.144.3 `account/read` RPC with `refreshToken:false` skips the explicit
+  refresh branch and obtains account state from the cached auth. That particular
+  RPC is not evidence that the entire app-server stays offline.
+* App-server startup immediately spawns an online models refresh worker. External
+  token login replaces the cloud-config loader, whose startup and background
+  tasks can request remote bundles for eligible business-like plans. Its retry
+  and unauthorized-recovery branches can ask the parent external-auth bridge
+  for refreshed credentials. Login completion can also start remote plugin-cache
+  refresh. These are real background network-attempt paths.
+* `chatgptAuthTokens` is installed through `set_external_auth` and mirrored into
+  an Ephemeral process store. It does not use the ordinary File backend to save
+  these external tokens into `auth.json`. The ordinary CLI File default is a
+  separate contract, not proof about external-token persistence by itself.
+
+The exact primary source entry points are:
+
+* https://github.com/openai/codex/blob/rust-v0.144.3/codex-rs/app-server/src/request_processors/account_processor.rs
+* https://github.com/openai/codex/blob/rust-v0.144.3/codex-rs/app-server/src/message_processor.rs
+* https://github.com/openai/codex/blob/rust-v0.144.3/codex-rs/app-server/src/models_refresh_worker.rs
+* https://github.com/openai/codex/blob/rust-v0.144.3/codex-rs/core/src/auth/manager.rs
+
+A subsequent native consumption check must use actual installed registration,
+the actual harness selector and the original agent-scope auth builder. The
+isolated factory and production leased/shared factory both call
+`resolveCodexAppServerClientStartContext` and
+`startInitializedCodexAppServerClient`; the isolated factory changes client
+cache/lease lifetime, not the process/auth construction. The callback may observe
+or reject RPCs; it must not replace token parameters, native responses or SDK
+selection. Kernel network denial must include all native descendants. Background
+attempts cannot be reported as zero merely because egress is blocked. No native
+factory success or business availability is claimed by this source-only audit.
+
+### ROG's parallel native-user consumer is a different contract
+
+ROG's independently read source-binding receipt is
+`/home/qian-qi/heptabao-installed-authbus-consumer-36076-20261104-r1/native-production-binding-r1.public.json`,
+SHA256 `3b301f822d896fa9a6435de03a8c8d78894600ebd396ecb718003e5aa0393dd5`.
+Its current default is `codex/gpt-6.1-sol`, with explicit Codex runtime,
+ChatGPT Responses API and **homeScope=user**. The fixed native executable is
+0.159.2. Exact process-environment projection confirms the native CODEX_HOME is
+`/home/qian-qi/.codex`; no access-token/API-key environment source was present.
+In the actual shared-client builder, user scope sets `usesNativeAuth`, passes
+the null sentinel and skips SDK credential injection into `account/login/start`.
+
+That user native file belongs to a fourth independent account. Its stable
+identity and generation match none of manifest profiles 1, 2 or 3. It is retained
+as a parallel native source; no migration authority is inferred to replace it
+with an unrelated managed profile. Future access expiry alone is not a provider
+validity or quota proof. AuthBus imports into SDK stores with
+`syncExternalCli=false`; its Codex recycler only retires/closes shared clients.
+Rebuilding such a client continues reading the independent user native source.
+
+The original generic SDK consumer failure remains **41/42**, failed case
+`single_managed_default_candidate`, with strict rollback **39/39**. Its receipt
+SHA256 is `eabde73457dcb83695f19034abb36a600cb269059ab96100c6ba862203d1dfba`.
+Generic provider `codex` does not automatically alias to `openai`, but this
+failure does not establish an alias defect in the production native path.
+Changing the model, forcing agent scope or adding an unused alias would not
+qualify the actual consumer. A separate isolated native preservation test and
+later production restart/rollback must preserve this fourth account and actual
+home scope. The source-binding receipt is not a successful runtime test.
+
+The confirmed old-OpenBao consumer on these hosts is the installed AuthBus
+importer/order service. It still points at J3160. Its SDK-store imports, Mac's
+agent-scope external-token bridge and ROG's independent native-user path must be
+evaluated separately. The finite source audit does not prove there are no other
+business consumers or backup/startup dependencies.
+
 ## Two-source manifest and real installed consumer
 
 `multisource-prepare-r2/prepare.public.json`, SHA256
@@ -193,8 +318,11 @@ SDK's original fallback order is 1,2,3. The prepared managed list preserves the
 relative order 1,2 and excludes only the confirmed invalid account. After carrying
 observed quota states, the actual SDK resolves 2,1. No new priority is invented.
 
-Profile 1's source state has `subscription_limit`, source `wham`, and an observed
-future `blockedUntil` of 1793774885494. Profile 2 has the separately observed actual
+Profile 1's captured source state has `subscription_limit`, source `wham`, and a
+`blockedUntil` of 1793774885494 that was future at the original capture. A later
+test must re-run the actual SDK's time-dependent ordering rather than assuming
+that this timestamp is still future or fixing profile 2 as the selected account.
+Profile 2 has the separately observed actual
 model `usage_limit_reached` response. Both facts remain in the receipts. Valid
 access tokens or a prior usage HTTP 200 do not demonstrate available model quota.
 
@@ -284,7 +412,8 @@ No J3160 access or whole-disk credential search was used.
 
 ## Native authentication backend and prepared human recovery
 
-The installed native CLI is Codex 0.133.0. Its actual user configuration does not
+The separately installed user CLI used for recovery preparation is Codex 0.133.0;
+it is not the managed gateway binary described above. Its actual user configuration does not
 set `cli_auth_credentials_store`. Exact official tag `rust-v0.133.0`, commit
 `9474e5cfc4494b0ba319352aa86ce436c59e65c8`, declares CLI File as the default and
 loads it with `unwrap_or_default`; the separate MCP OAuth backend defaults to Auto.
