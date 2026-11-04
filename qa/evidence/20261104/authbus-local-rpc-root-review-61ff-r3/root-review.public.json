@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.authbus-local-rpc-baseline-root-source-review.v1",
+  "source_commit": "ba5502fa2cffecd6f858c96f58446814900bced6",
+  "base_executed_source_commit": "6c02791667086e6bc06e4177a3ebee4b645d5d9d",
+  "prior_runtime_failure_commit": "51edcad5b3c74c4b2d3c26e6de74b8655a6eb32d",
+  "prior_runtime_failure_job": "1a1a7e670f5-fc05-2cd4",
+  "contract_sha256": "ee0e306efd339be4db23083046aa1d38de6f69026c3d10fe83cc255c16de3f6d",
+  "exact_diff_reconstruction": [
+    {
+      "name": "consumer.mjs",
+      "verified": true,
+      "base_sha256": "ef3dfe081fa1e7b214cc8c373a236573041239c2c6f149dbf541a33c7f33069b",
+      "new_sha256": "6a044d41ad31526f23e9448f37968924b836521f0a20e71d2adfd7231d32ae07"
+    },
+    {
+      "name": "launcher.py",
+      "verified": true,
+      "base_sha256": "99588ca6b84f19b967844e0ac100f12d710a6aa401553117a4c585401e6b5514",
+      "new_sha256": "b770d3f2cc5c049331cd5bd7e0c8f302a9319de49de3bf5dbb468020392ff528"
+    },
+    {
+      "name": "native_lifecycle.mjs",
+      "verified": true,
+      "base_sha256": "e66a2e24f01ac1b7caf68de34961faa0bbee7ae42a840a0055094d53440067e2",
+      "new_sha256": "cf681291cfd46cae5caaa096b891dfbf1b37833c7a8890ab96d749c0db7ed7d6"
+    }
+  ],
+  "driver_unchanged_sha256": "9b79996b1beaf4ea7f469819dacc6aa7634d0ab41986a02902c5864a93ccd42a",
+  "scope": "Only the changed local readiness RPC, report scope, and fresh launcher root. Full original and revised files were fetched, with three declared diffs mechanically reconstructing exact revised bytes; driver is byte-identical. Previous lifecycle custody review remains separately scoped.",
+  "readiness": {
+    "rpc": "thread/loaded/list",
+    "params": {
+      "limit": 1
+    },
+    "timeout_ms": 8000,
+    "required_actual_reply": {
+      "data": [],
+      "nextCursor": null
+    },
+    "observed_concurrency_means": "Two initialized native RPC channels sharing the same writable private credential directory."
+  },
+  "preserved_gates": {
+    "account_read_8s_failure": true,
+    "authentication_identity_qualified": false,
+    "provider_qualified": false,
+    "production_default_gateway_qualified": false,
+    "credential_overwrite_observed": false,
+    "no_model_or_explicit_refresh": true,
+    "external_network_kernel_denied": true,
+    "actual_original_factory_and_recycler": true,
+    "managed2_import_and_whole_logical_cas_rollback_required": true
+  },
+  "finding": "No new blocker found in this narrow source delta. Baseline runtime remains pending; execute only after the ROG timed workspace window is handed back. Fixed overlay was not reviewed here.",
+  "actual_runtime_pass": false,
+  "full_replacement_qualified": false
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.mac-snapshot-candidate-root-stage-and-build-request-review.v2",
+  "prior_static_review_corrected": true,
+  "source_revision": "becfd1becd4fcb4339aa4480a1e5432bad63e212",
+  "execution_revision": "997b39bf5bca517e4463e945edb4971397eb1a6b",
+  "source_delta": "Both control sources differ from the rejected revision only by finally: os.close(fd) in hash_owned; independently reconstructed exact bytes.",
+  "syntax_job": "1a1a7f7300b-fc05-2d1f",
+  "syntax_original_stdout_sha256": "dd4176e21452440856a7f0aa153b7391b000a5329f38325cbe539b9d48f81a7a",
+  "syntax_actual_exit_code": 0,
+  "stage_job": "1a1a7f80668-fc05-2d22",
+  "stage_result_sha256": "6ef4d495f8a57369d0bfffdf04d5fb14c487a9968f73afc8758aafd2c53c1b0a",
+  "stage_actual_exit_code": 0,
+  "source_commit": "1f11b13ffad62b80695e036f393739cfcc8a8cab",
+  "source_tree": "6708710421a4407e0d098fcc9ecc9aea479441db",
+  "stage_17_commands_exit_zero_empty_groups_no_forced": true,
+  "base_7071_unchanged": true,
+  "exact_build_request_reviewed": {
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+    "args": [
+      "-I",
+      "-S",
+      "-c",
+      "import hashlib,os,stat,sys\npath=\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/control/run_candidate_normal_r1.py\"\nif len(sys.argv)!=3:\n    raise SystemExit(\"build_input_pins\")\nfd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)\ntry:\n    before=os.fstat(fd)\n    if not stat.S_ISREG(before.st_mode) or before.st_uid!=501 or before.st_nlink!=1 or before.st_size>128*1024:\n        raise SystemExit(\"build_source_custody\")\n    raw=b\"\"\n    while len(raw)<=128*1024:\n        data=os.read(fd,65536)\n        if not data: break\n        raw+=data\n    after=os.fstat(fd)\nfinally:\n    os.close(fd)\nif len(raw)!=before.st_size or before!=after or hashlib.sha256(raw).hexdigest()!=sys.argv[1]:\n    raise SystemExit(\"build_source_pin\")\nsys.argv=[path,sys.argv[1],sys.argv[2]]\nexec(compile(raw,path,\"exec\"),{\"__name__\":\"__main__\",\"__file__\":path})\n",
+      "7a6a3c484d8219bb5e2faa4f71a3341685b53ac5306c1760136b8923a6a2cf74",
+      "6ef4d495f8a57369d0bfffdf04d5fb14c487a9968f73afc8758aafd2c53c1b0a"
+    ],
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1",
+    "idempotency_key": "ha-snapshot-acl-denial-61ff-normal-r2-7a6a3c484d82-6ef4d495f8a5",
+    "timeout_seconds": 2160
+  },
+  "build_source_sha256": "7a6a3c484d8219bb5e2faa4f71a3341685b53ac5306c1760136b8923a6a2cf74",
+  "build_driver_semantic_review": "Separate bao_acceptance scoped review; this root review verifies exact bootstrap and original stage-result binding.",
+  "build_or_test_pass_claim": false,
+  "full_replacement_qualified": false
+}

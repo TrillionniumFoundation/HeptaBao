@@ -1,0 +1,39 @@
+{
+  "files": [
+    {
+      "mode": "0o755",
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "size": 8020928,
+      "uid": 0
+    },
+    {
+      "mode": "0o700",
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/bao",
+      "sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "size": 181760103,
+      "uid": 1000
+    },
+    {
+      "mode": "0o600",
+      "path": "/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz",
+      "sha256": "0e2f1ce10d124e03112b50dd2fbec6b78003783253bc3a91587938f39d1e2243",
+      "size": 74865426,
+      "uid": 1000
+    }
+  ],
+  "local_commit": {
+    "exit_code": 128
+  },
+  "schema": "heptabao-x230-formal34-inputs-readonly-r1",
+  "ssh_config": {
+    "exit_code": 0,
+    "selected_fields": [
+      "user qian-qi",
+      "hostname 192.168.0.10",
+      "port 22",
+      "stricthostkeychecking true"
+    ]
+  },
+  "uid": 1000
+}

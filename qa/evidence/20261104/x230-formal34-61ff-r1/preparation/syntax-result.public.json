@@ -1,0 +1,29 @@
+{
+  "full34_executed": false,
+  "root_created": false,
+  "source_or_binary_transferred": false,
+  "sources": [
+    {
+      "bytes": 21311,
+      "compiled": true,
+      "executed": false,
+      "name": "stage",
+      "sha256": "6975ea39512bae2fc6c0c45e518678cc82cbc98ec8e7835debc43350899450d2"
+    },
+    {
+      "bytes": 19437,
+      "compiled": true,
+      "executed": false,
+      "name": "controller",
+      "sha256": "a7b97a452d4064c02dd64c52a1e3e99e8af120598506a215d8fabde9e06399d8"
+    },
+    {
+      "bytes": 49517,
+      "compiled": true,
+      "executed": false,
+      "name": "derived_helper",
+      "sha256": "d9e9f2a379f1fa326a61b8fa29585751223a669424ffe28f6b171b18526a4b68"
+    }
+  ],
+  "status": "syntax_passed"
+}
