@@ -133,7 +133,10 @@ def validate(root: Path = ROOT) -> list[str]:
             variants = re.findall(r'^    ([A-Z]\w*)(?:\(|,)', match[1], re.M)
             if not variants or '.backend.{' + ' | '.join(variants) + '}' not in engine:
                 errors.append('engine state diagram differs from current Backend variants')
-        for path in ('README.md', 'docs/CURRENT_DOCUMENTATION.md', SERVER, ARCH):
+        # The deliberately empty public homepage has no technical prose.
+        # The same format-navigation and stale-schema checks remain mandatory
+        # for the current technical portal and both architecture guides.
+        for path in ('docs/CURRENT_DOCUMENTATION.md', SERVER, ARCH):
             text = (root / path).read_text()
             if Path(FORMAT).name not in text:
                 errors.append(f'{path}: missing current state-format navigation')

@@ -77,7 +77,9 @@ class SectionSixIntegrationTests(unittest.TestCase):
         self.assertIn('recovery', contract.lower())
 
     def test_all_current_portals_link_the_increment_without_a_second_master(self):
-        for name in ['README.md', 'docs/CURRENT_DOCUMENTATION.md']:
+        # The public homepage is deliberately empty; technical navigation is
+        # owned by the current portal and retains the original required links.
+        for name in ['docs/CURRENT_DOCUMENTATION.md']:
             text = (ROOT/name).read_text()
             self.assertIn('HEPTABAO_SECTION6_EXECUTION.md', text)
             self.assertIn('HEPTABAO_SURFACE_WORK_V1.json', text)

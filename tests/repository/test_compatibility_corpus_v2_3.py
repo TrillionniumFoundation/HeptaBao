@@ -91,12 +91,12 @@ class CompatibilityCorpusV23Tests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "retain 59 runtime surfaces"):
             VALIDATOR.inventory_surfaces(inventory)
 
-    def test_current_readme_agrees_with_runtime_inventory(self) -> None:
+    def test_current_technical_portal_agrees_with_runtime_inventory(self) -> None:
         inventory = VALIDATOR._mapping(INVENTORY_PATH, "surface inventory")
         surfaces, _ = VALIDATOR.inventory_surfaces(inventory)
-        readme = (ROOT / "README.md").read_text()
-        self.assertIn(f"exact {len(surfaces)}-surface", readme)
-        self.assertNotIn("all original 60 surfaces", readme)
+        portal = (ROOT / "docs/CURRENT_DOCUMENTATION.md").read_text()
+        self.assertIn(f"exact {len(surfaces)}-surface", portal)
+        self.assertNotIn("all original 60 surfaces", portal)
 
     def _validate_mutation(self, mutate) -> list[str]:
         with tempfile.TemporaryDirectory() as temporary:

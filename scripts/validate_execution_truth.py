@@ -7,7 +7,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 FILES = (
-    'README.md', 'docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md',
+    'README.md', 'docs/CURRENT_DOCUMENTATION.md', 'docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md',
     'docs/engines/HEPTABAO_POSTGRESQL_PROVIDER.md',
     'docs/plan/HEPTABAO_SINGLE_NODE_EXECUTION_STATUS.md',
     'docs/modules/heptabao-server.md', 'docs/modules/heptabao-durable-service.md',
@@ -24,6 +24,7 @@ def validate(root: Path = ROOT) -> list[str]:
         problems = []
         forbidden = {
             'README.md': ['Actual PostgreSQL server/SQL acceptance has not been executed in this delivery'],
+            'docs/CURRENT_DOCUMENTATION.md': ['Actual PostgreSQL server/SQL acceptance has not been executed in this delivery'],
             'docs/auth/HEPTABAO_SINGLE_NODE_AUTH.md': ['It still does not fetch a `jwks_url`', 'OIDC discovery/browser login'],
             'docs/modules/heptabao-server.md': ['A signed manifest', 'Invalid framing rejected before service dispatch has no service audit record'],
             'docs/modules/heptabao-durable-service.md': ['automatic journal compaction are unimplemented'],

@@ -110,6 +110,10 @@ where
     )
     .map_err(|error| forward_transport_frame_error("receiver_frame_read", error))?;
     let response_profile = ResponseFrameProfile::for_request(&payload)?;
+    #[cfg(feature = "native-v6-peer-ingress")]
+    let coalesced_root_reply = strict_raft_alpn
+        && response_profile == ResponseFrameProfile::Legacy
+        && is_native_v6_root_pull_frame(&payload);
     response_profile.require_alpn(tls.conn.alpn_protocol())?;
     if Instant::now() >= deadline {
         return Err(forward_transport_frame_error(
@@ -128,6 +132,18 @@ where
         })
         .map_err(|error| forward_transport_frame_error("receiver_handler_result", error))?,
     );
+    // Only an authenticated HBVP2 handler result uses the existing bounded
+    // coalesced writer. Borrow Stream: StreamOwned's default write_vectored
+    // otherwise sends only the first slice and emits a separate header record.
+    // The accepted ForwardDeadlineStream still bounds every actual socket I/O.
+    #[cfg(feature = "native-v6-peer-ingress")]
+    if coalesced_root_reply {
+        return write_coalesced_bounded_frame(
+            &mut rustls::Stream::new(&mut tls.conn, &mut tls.sock),
+            &response,
+        )
+        .map_err(|error| forward_transport_frame_error("receiver_frame_write", error));
+    }
     response_profile
         .write(&mut tls, &response)
         .map_err(|error| forward_transport_frame_error("receiver_frame_write", error))

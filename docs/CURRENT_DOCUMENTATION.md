@@ -4,7 +4,23 @@ Status: `V2.1 / RUNNABLE SINGLE-NODE CANDIDATE UNDER REVIEW`
 
 Plan ID: `HEPTABAO-PLAN-2026-09-07-V2.1`
 
-This is the current entry point for all 49 workspace packages. It records repository implementation truth but grants no compatibility, qualification, production, migration or release authority.
+This is the current technical entry point for all 49 workspace packages (**49 packages**). It records repository implementation truth but grants no compatibility, qualification, production, migration or release authority.
+
+The root `README.md` remains intentionally empty, preserving the public-homepage
+change on main. Engineering navigation, package counts, exact state-format
+links and every mandatory validation command remain here and are checked by the
+repository validators. An empty homepage grants no exception to those checks.
+
+## Active replacement target
+
+The current continuation targets **OpenBao 2.7.1**. Its exact baseline, additional
+security and correctness cases, and required gates are recorded in
+`planning/OPENBAO_271_ADMISSION_SUPERSET_V1.json` and checked by
+`scripts/validate_openbao_271_release_denominator.py`. This is a denominator,
+not a completion receipt. Formal native V6 storage and HA work is tracked in
+`docs/storage/HEPTABAO_NATIVE_V6_HA_BACKUP_NEXT_GATE.md`; each runtime receipt
+retains its exact source, binary, host and tested scope. Full replacement,
+production cutover and legacy cleanup remain unqualified.
 
 ## Canonical current truth
 
@@ -33,7 +49,7 @@ The following retained increment/target documents describe their own historical 
 - `docs/architecture/HEPTABAO_SYSTEM_CONTEXT_AND_CRATE_GRAPH_V1.md`
 - `specs/HEPTABAO_AUDIT_COMMIT_EFFECT_ORDERING_V1.md`
 
-The runnable server composes real TLS, private persistent authentication/ACL, bounded live login/Identity/internal-group policies, encrypted KV/Transit/TOTP, authenticated audit and optional per-process networked Raft. The workspace also contains separately tested identity, lease, telemetry, client and migration contracts/candidates. Those packages are not in the server's dependency closure and do not establish corresponding integrated product features. The 60-surface OpenBao 2.6.2 corpus is a denominator for acceptance evidence, not a compatibility claim. Independent security, external provider, migration, upgrade and destructive HA qualification remain separate gates.
+The runnable server composes real TLS, private persistent authentication/ACL, bounded live login/Identity/internal-group policies, encrypted KV/Transit/TOTP, authenticated audit and optional per-process networked Raft. The workspace also contains separately tested identity, lease, telemetry, client and migration contracts/candidates. Those packages are not in the server's dependency closure and do not establish corresponding integrated product features. The exact 59-surface OpenBao 2.6.2 corpus is a denominator for acceptance evidence, not a compatibility claim. Independent security, external provider, migration, upgrade and destructive HA qualification remain separate gates.
 
 ## Module documentation
 
@@ -70,7 +86,7 @@ Every package has exactly one guide. The validators check package, lockfile, sou
   endpoints, indexes, merge/lineage, bounded verified-login binding and live
   internal-group policies; full external-auth/MFA/OIDC remain open.
 
-These documents do not change the 60-surface denominator or assert completion
+These documents do not change the exact 59-surface denominator or assert completion
 of the combined Cubbyhole/wrapping or full Identity compatibility surfaces.
 `qa/openbao-acceptance/identity_live.py` is the selected official-binary
 Identity differential profile; `identity_upgrade.py` tests the version-1 to
@@ -274,7 +290,7 @@ server dependencies. Current module status and all independent gates are unchang
 - [Raft membership / persisted snapshots / Autopilot](operations/HEPTABAO_RAFT_ADMINISTRATION.md): same-version pre-enrolled native consensus operations, not full restore/migration parity.
 - [Private multi-host HA qualification](operations/HEPTABAO_MULTIHOST_HA_QUALIFICATION.md): manual three-host lifecycle and four-host bounded Autopilot cleanup over authorized private-tailnet machines; not mixed-version, WAN, physical-fault or independent production admission.
 
-These current implementation notes supersede earlier absence-of-implementation statements only for their exact bounded profiles. Original 60-surface admission statuses and independent authority remain unchanged.
+These current implementation notes supersede earlier absence-of-implementation statements only for their exact bounded profiles. Historical 60-row receipts retain their original scope; the current 59-surface denominator and independent authority remain unchanged.
 
 ## Section-six execution increment
 
@@ -319,9 +335,9 @@ maintenance, retained Transit tooling, the actual Kubernetes API/etcd/RBAC gate
 and exact direct-Python-version validation. Source presence and workflow wiring
 are not execution receipts. The separate record-store source is not included.
 
-## Active OpenBao 2.7.0 continuation
+## Retained OpenBao 2.7.0 continuation
 
-The current replacement target and exact-version reference admission are recorded
+The earlier exact-version reference and its bounded behavior are recorded
 in [OpenBao 2.7.0 continuation](compatibility/HEPTABAO_OPENBAO_270_CONTINUATION.md).
 Historical 2.6.2 inventories and receipts retain their original target; they are
 not a completed 2.7.0 denominator. The continuation records wrapping self-discard,

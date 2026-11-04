@@ -27,6 +27,11 @@ class ExecutionTruthTests(unittest.TestCase):
         p.write_text(p.read_text()+'\nActual PostgreSQL server/SQL acceptance has not been executed in this delivery\n')
         self.assertTrue(module.validate(self.root))
 
+    def test_stale_postgres_denial_in_technical_portal_rejected(self):
+        p=self.root/'docs/CURRENT_DOCUMENTATION.md'
+        p.write_text(p.read_text()+'\nActual PostgreSQL server/SQL acceptance has not been executed in this delivery\n')
+        self.assertTrue(module.validate(self.root))
+
     def test_old_fixed_count_rejected(self):
         p=self.root/'planning/HEPTABAO_BLOCKER_REGISTER_V2_0.yaml'
         p.write_text(p.read_text().replace(
