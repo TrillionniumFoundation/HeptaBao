@@ -1,0 +1,26 @@
+{
+  "actual_linux_guards_and_systemd_templates_checked": true,
+  "actual_mac_guard_and_plist_checked": true,
+  "cluster_id_prepared": "4f2a8929-0136-47fb-80a8-e99075947410",
+  "cohort_cluster_id_bound_to_initialized_seed": false,
+  "full_openbao_271_replacement_qualified": false,
+  "linux_missing_activation_serve_refused": true,
+  "ok": true,
+  "old_installations_deleted": false,
+  "physical_hosts": [
+    "mac",
+    "rog",
+    "pocket4"
+  ],
+  "private_keys_exported": false,
+  "production_clients_switched": false,
+  "same_connection_identity_before_key_release": true,
+  "schema": "heptabao.root-review.offline-three-node-preparation.v1",
+  "seed_initialized": false,
+  "service_started": false,
+  "shared_homebrew_installation_modified": false,
+  "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "three_native_state_paths_corrected": true,
+  "verified_public_readback_files": 12
+}

@@ -1,0 +1,29 @@
+{
+  "activation_created": false,
+  "cluster_id": "4f2a8929-0136-47fb-80a8-e99075947410",
+  "cohort_receipt_sha256": "062cdcb29df625a2efb683e9e4223b76de7d1dd3b26e414dba7a27f8f9f357bd",
+  "exact_guard_check_passed": true,
+  "guard_sha256": "cb883080dd0346d6d69f8517b98a9c60a0a07279c936b355c2993e4c08c09aba",
+  "hostname": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+  "missing_activation_serve_refused": true,
+  "node": "rog",
+  "node_id": 2,
+  "ok": true,
+  "production_client_changed": false,
+  "python": {
+    "path": "/usr/bin/python3.14",
+    "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+  },
+  "root": "/home/qian-qi/heptabao-production-20261104-r1",
+  "schema": "heptabao.linux-service-offline-prepared.v1",
+  "script_sha256": "6d80d2b72e855ca519ea3d2a70a956be1c8f6d29da05d464b76cefc7e92a4da7",
+  "seed_initialized": false,
+  "service_loaded": false,
+  "service_started": false,
+  "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "stage_sha256": "d7620ba81d28e39985980f0211086be6b5b18105a8c6bd39bff787e157940b53",
+  "systemd_analyze_user_verify_passed": true,
+  "traffic_cutover": false,
+  "unit_sha256": "42586cffc97f3a799e9589c6614f8c06ea8c5cb13d1c72c1a825fd48fe963cad"
+}

@@ -1,0 +1,16 @@
+{
+  "ca_der_sha256": "9c6bb844653d6fe415b76be7c11863bd59df729ce7367b924e1b3e0cd33c2b13",
+  "ca_pem_sha256": "773f996f12f4546855a5e2d6bb4102017490af26639242bc00f68037dae10aa9",
+  "certificate_der_sha256": "e64b926438be3e8acbf63f7f2f876c4a05a7b260972de9d43b875d17f327c4a6",
+  "certificate_pem_sha256": "bdad041b474dbe1982902e183bbe62a736c3122a8ab3163e879a1cd9db1867a9",
+  "chain_server_client_san_verified": true,
+  "local_private_key_matches": true,
+  "node": "rog",
+  "ok": true,
+  "preparation_sha256": "a3c46341002b414835d976d1874f22dc03c06f330b723960e6a1743be24851d2",
+  "private_key_exported": false,
+  "root": "/home/qian-qi/heptabao-production-20261104-r1",
+  "schema": "heptabao.linux-node-certificates-installed.v1",
+  "service_started": false,
+  "traffic_cutover": false
+}

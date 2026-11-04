@@ -1,0 +1,16 @@
+{
+  "initialized_data_present": false,
+  "node": "rog",
+  "ok": true,
+  "old_config_preserved": true,
+  "old_empty_directory_retained": true,
+  "production_client_changed": false,
+  "reason": "Native Raft requires data_dir == storage.path/state; initial draft used node/data.",
+  "root": "/home/qian-qi/heptabao-production-20261104-r1",
+  "schema": "heptabao.staged-state-path-correction.v1",
+  "server_config_sha256_after": "3d491ba421546de25a757c5c48dfa66b02b50485d297f05dda7ada668a1e5652",
+  "server_config_sha256_before": "9932d1e739e57926346ed76a1336b9417101e80179020cc6949613062019e507",
+  "service_started": false,
+  "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "traffic_cutover": false
+}

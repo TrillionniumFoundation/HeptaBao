@@ -1,0 +1,16 @@
+{
+  "ca_der_sha256": "9c6bb844653d6fe415b76be7c11863bd59df729ce7367b924e1b3e0cd33c2b13",
+  "ca_pem_sha256": "773f996f12f4546855a5e2d6bb4102017490af26639242bc00f68037dae10aa9",
+  "certificate_der_sha256": "576b1ae8cddf1f5805c9722ceecd38eb32949f11836998be65e12a79d16074d8",
+  "certificate_pem_sha256": "56f7dfa3efc90e646d2df674aa0376d45b298fde66fb13f0240ae595c6c2c90a",
+  "chain_server_client_san_verified": true,
+  "local_private_key_matches": true,
+  "node": "pocket4",
+  "ok": true,
+  "preparation_sha256": "f658bd6e5af0523c7ac2a9140d8a8145682e870cbce7efab771907f104967828",
+  "private_key_exported": false,
+  "root": "/home/alex/heptabao-production-20261104-r1",
+  "schema": "heptabao.linux-node-certificates-installed.v1",
+  "service_started": false,
+  "traffic_cutover": false
+}

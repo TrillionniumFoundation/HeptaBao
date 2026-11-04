@@ -1,0 +1,50 @@
+[
+  {
+    "name": "mac-state-path-correction.public.json",
+    "sha256": "15632e4320dfd71629399489c7d059f05bbeb89e21f6105c4324df9e2bb142e1"
+  },
+  {
+    "name": "rog-state-path-correction.public.json",
+    "sha256": "5b54af7bcda8f3fd5b189708d10147e3ceb2b4e713b3d947711b04abba9bbbc4"
+  },
+  {
+    "name": "rog-certificates-installed.public.json",
+    "sha256": "ea45030d9ef2ee50c04f656e1aa7de51c5b2b86d47478e7790294ae48a43e530"
+  },
+  {
+    "name": "pocket4-state-path-correction.public.json",
+    "sha256": "4f8ee718791b07172c49d4967e9105c9c6668da0b287aa036c8fc4f76e2dc285"
+  },
+  {
+    "name": "pocket4-certificates-installed.public.json",
+    "sha256": "f061523f5bafd3f59475b717bdf4e9c217772015e650d22dbab987c842904c30"
+  },
+  {
+    "name": "mac-result.public.json",
+    "sha256": "f83c915b24bb87792e88ee8a0c2bd6967f750a5057c101f05e2851520a4f1f62"
+  },
+  {
+    "name": "mac-rog-identity-verified.public.json",
+    "sha256": "3758aad039d93c66eac92395dff5d12387cfa57e71baf6c8013fd9a47a45aeaf"
+  },
+  {
+    "name": "mac-pocket4-identity-verified.public.json",
+    "sha256": "e0a39e7d15aebb3ee679fc137231a2b398a3bf351490e2d43d40617b7ca1fd70"
+  },
+  {
+    "name": "rog-cohort-prepared.public.json",
+    "sha256": "062cdcb29df625a2efb683e9e4223b76de7d1dd3b26e414dba7a27f8f9f357bd"
+  },
+  {
+    "name": "pocket4-cohort-prepared.public.json",
+    "sha256": "044d1a15ab74e82a1d6c51514cfe516b1fad39e87d6edc9976ba44ede752a07e"
+  },
+  {
+    "name": "rog-service-prepared.public.json",
+    "sha256": "2696a660f402b57b7c86c1acb69b6edf8ca4499e140839c1a1b3566d59f11d5d"
+  },
+  {
+    "name": "pocket4-service-prepared.public.json",
+    "sha256": "e39a3edabdb1bc5612df2e4b88132e971b53f226791a927b181549715566c40e"
+  }
+]

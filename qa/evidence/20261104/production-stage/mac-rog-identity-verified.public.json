@@ -1,0 +1,11 @@
+{
+  "certificate_receipt_sha256": "ea45030d9ef2ee50c04f656e1aa7de51c5b2b86d47478e7790294ae48a43e530",
+  "hostname": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+  "node_id": 2,
+  "nonce": "e3a4a9c405bd7e54a17b7896383ed45c",
+  "prepared_sha256": "a3c46341002b414835d976d1874f22dc03c06f330b723960e6a1743be24851d2",
+  "ready": true,
+  "repair_receipt_sha256": "5b54af7bcda8f3fd5b189708d10147e3ceb2b4e713b3d947711b04abba9bbbc4",
+  "root": "/home/qian-qi/heptabao-production-20261104-r1",
+  "uid": 1000
+}

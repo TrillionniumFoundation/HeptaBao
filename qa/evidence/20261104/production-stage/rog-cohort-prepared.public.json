@@ -1,0 +1,22 @@
+{
+  "activation_created": false,
+  "cluster_id": "4f2a8929-0136-47fb-80a8-e99075947410",
+  "files": {
+    "config/ha.json": "30134cfbeac5972a59d157e9d3c42198c205398c8337a5ef794b0860b14f74b5",
+    "control/peer-registry.private.json": "bccd770fba1cd29faf9cbc69fbe4b03a5c7e45bc35318ded8e0b7c614cb7fb20",
+    "tls/replication.key": "db454a095add7561be656adc01494fb3748080b94a00e0f3a320b6cdceff54a7"
+  },
+  "hostname": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+  "identity_before_key_transfer_verified": true,
+  "node_id": 2,
+  "ok": true,
+  "private_key_exported": false,
+  "replication_key_transport": "authenticated SSH stdin after same-connection destination identity and stage verification; no credential output",
+  "root": "/home/qian-qi/heptabao-production-20261104-r1",
+  "schema": "heptabao.offline-ha-peer-prepared.v1",
+  "seed_initialized": false,
+  "service_started": false,
+  "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "traffic_cutover": false
+}

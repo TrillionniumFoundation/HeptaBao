@@ -1,0 +1,35 @@
+{
+  "ca_der_sha256": "9c6bb844653d6fe415b76be7c11863bd59df729ce7367b924e1b3e0cd33c2b13",
+  "ca_key_exported": false,
+  "ok": true,
+  "peers": {
+    "pocket4": {
+      "certificate_der_sha256": "576b1ae8cddf1f5805c9722ceecd38eb32949f11836998be65e12a79d16074d8",
+      "certificate_path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/authority/linux-peers-20261104-r1/pocket4.crt",
+      "certificate_pem_sha256": "56f7dfa3efc90e646d2df674aa0376d45b298fde66fb13f0240ae595c6c2c90a",
+      "certificate_san_and_chain_verified": true,
+      "csr_sha256": "3456ac3cca417790b69746eb2d0e6e3d7d803b4e678f960e5c9a43acf8ff9207",
+      "csr_signature_verified": true,
+      "hostname": "alex-G1628-04",
+      "ip": "192.168.0.9",
+      "private_node_key_received": false,
+      "receipt_sha256": "f658bd6e5af0523c7ac2a9140d8a8145682e870cbce7efab771907f104967828"
+    },
+    "rog": {
+      "certificate_der_sha256": "e64b926438be3e8acbf63f7f2f876c4a05a7b260972de9d43b875d17f327c4a6",
+      "certificate_path": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/authority/linux-peers-20261104-r1/rog.crt",
+      "certificate_pem_sha256": "bdad041b474dbe1982902e183bbe62a736c3122a8ab3163e879a1cd9db1867a9",
+      "certificate_san_and_chain_verified": true,
+      "csr_sha256": "5949bff9ab1c53c300f1aa0a39b941fcdc28b2cd3f368c14afe5ab5ba79ff9ce",
+      "csr_signature_verified": true,
+      "hostname": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+      "ip": "192.168.0.10",
+      "private_node_key_received": false,
+      "receipt_sha256": "a3c46341002b414835d976d1874f22dc03c06f330b723960e6a1743be24851d2"
+    }
+  },
+  "provider_called": false,
+  "schema": "heptabao.linux-peer-signing-result.v1",
+  "service_started": false,
+  "traffic_cutover": false
+}

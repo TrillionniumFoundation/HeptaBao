@@ -1,0 +1,71 @@
+{
+  "activation_created": false,
+  "ca_key_exported": false,
+  "cluster_id": "4f2a8929-0136-47fb-80a8-e99075947410",
+  "firewall_or_routing_changed": false,
+  "identity_before_key_transfer_verified": true,
+  "linux_receipts": {
+    "pocket4": {
+      "files": {
+        "config/ha.json": "4118bfb739f2bf012011d15890a81dfa2fb5d730b959563f5b16c5133d048fa6",
+        "control/peer-registry.private.json": "bccd770fba1cd29faf9cbc69fbe4b03a5c7e45bc35318ded8e0b7c614cb7fb20",
+        "tls/replication.key": "db454a095add7561be656adc01494fb3748080b94a00e0f3a320b6cdceff54a7"
+      },
+      "node_id": 3,
+      "ok": true,
+      "receipt_sha256": "044d1a15ab74e82a1d6c51514cfe516b1fad39e87d6edc9976ba44ede752a07e",
+      "service_started": false
+    },
+    "rog": {
+      "files": {
+        "config/ha.json": "30134cfbeac5972a59d157e9d3c42198c205398c8337a5ef794b0860b14f74b5",
+        "control/peer-registry.private.json": "bccd770fba1cd29faf9cbc69fbe4b03a5c7e45bc35318ded8e0b7c614cb7fb20",
+        "tls/replication.key": "db454a095add7561be656adc01494fb3748080b94a00e0f3a320b6cdceff54a7"
+      },
+      "node_id": 2,
+      "ok": true,
+      "receipt_sha256": "062cdcb29df625a2efb683e9e4223b76de7d1dd3b26e414dba7a27f8f9f357bd",
+      "service_started": false
+    }
+  },
+  "mac_files": {
+    "config/ha.json": "ce9a375a4b1584055df0fab868a974dd6511ab2a250db545c1737464e2578a49",
+    "control/peer-registry.private.json": "bccd770fba1cd29faf9cbc69fbe4b03a5c7e45bc35318ded8e0b7c614cb7fb20"
+  },
+  "node_private_keys_exported": false,
+  "ok": true,
+  "peers": {
+    "1": {
+      "address": "192.168.0.8:8201",
+      "api_address": "https://192.168.0.8:8200",
+      "certificate_sha256": "f1b41dc0bf36148b7693a1d0f9ecb77b29e546449cc8c89f6e6edc2b5d2447d2",
+      "cluster_address": "https://192.168.0.8:8201",
+      "node_name": "mac",
+      "server_name": "MacBook-Pro.local"
+    },
+    "2": {
+      "address": "192.168.0.10:8201",
+      "api_address": "https://192.168.0.10:8200",
+      "certificate_sha256": "e64b926438be3e8acbf63f7f2f876c4a05a7b260972de9d43b875d17f327c4a6",
+      "cluster_address": "https://192.168.0.10:8201",
+      "node_name": "rog",
+      "server_name": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA"
+    },
+    "3": {
+      "address": "192.168.0.9:8201",
+      "api_address": "https://192.168.0.9:8200",
+      "certificate_sha256": "576b1ae8cddf1f5805c9722ceecd38eb32949f11836998be65e12a79d16074d8",
+      "cluster_address": "https://192.168.0.9:8201",
+      "node_name": "pocket4",
+      "server_name": "alex-G1628-04"
+    }
+  },
+  "replication_key_sha256": "db454a095add7561be656adc01494fb3748080b94a00e0f3a320b6cdceff54a7",
+  "schema": "heptabao.offline-three-node-cohort.v1",
+  "seed_initialized": false,
+  "service_loaded": false,
+  "service_started": false,
+  "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "traffic_cutover": false
+}

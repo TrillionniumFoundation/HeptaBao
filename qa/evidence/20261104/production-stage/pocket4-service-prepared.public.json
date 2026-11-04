@@ -1,0 +1,29 @@
+{
+  "activation_created": false,
+  "cluster_id": "4f2a8929-0136-47fb-80a8-e99075947410",
+  "cohort_receipt_sha256": "044d1a15ab74e82a1d6c51514cfe516b1fad39e87d6edc9976ba44ede752a07e",
+  "exact_guard_check_passed": true,
+  "guard_sha256": "cb883080dd0346d6d69f8517b98a9c60a0a07279c936b355c2993e4c08c09aba",
+  "hostname": "alex-G1628-04",
+  "missing_activation_serve_refused": true,
+  "node": "pocket4",
+  "node_id": 3,
+  "ok": true,
+  "production_client_changed": false,
+  "python": {
+    "path": "/usr/bin/python3.14",
+    "sha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+  },
+  "root": "/home/alex/heptabao-production-20261104-r1",
+  "schema": "heptabao.linux-service-offline-prepared.v1",
+  "script_sha256": "6d80d2b72e855ca519ea3d2a70a956be1c8f6d29da05d464b76cefc7e92a4da7",
+  "seed_initialized": false,
+  "service_loaded": false,
+  "service_started": false,
+  "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "stage_sha256": "719060f49b05c9dc6a76362a7178af7e2a4e178c131d0a6661d5aa0f77d875fa",
+  "systemd_analyze_user_verify_passed": true,
+  "traffic_cutover": false,
+  "unit_sha256": "227efda52c940e352fa6c00256eff977ff5220a2b42e3353b758f1cfd31d04a8"
+}

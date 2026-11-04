@@ -1,0 +1,11 @@
+{
+  "certificate_receipt_sha256": "f061523f5bafd3f59475b717bdf4e9c217772015e650d22dbab987c842904c30",
+  "hostname": "alex-G1628-04",
+  "node_id": 3,
+  "nonce": "af5532559198df61f7d32737301263fb",
+  "prepared_sha256": "f658bd6e5af0523c7ac2a9140d8a8145682e870cbce7efab771907f104967828",
+  "ready": true,
+  "repair_receipt_sha256": "4f8ee718791b07172c49d4967e9105c9c6668da0b287aa036c8fc4f76e2dc285",
+  "root": "/home/alex/heptabao-production-20261104-r1",
+  "uid": 1000
+}
