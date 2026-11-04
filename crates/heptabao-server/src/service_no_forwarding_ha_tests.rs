@@ -8,10 +8,12 @@ struct Unchanged {
     identity: crate::state_record_root::StateIdentity,
     generation: u64,
     state: Zeroizing<Vec<u8>>,
+    native_root: Zeroizing<Vec<u8>>,
     uses: u64,
 }
 
 fn unchanged(service: &Service) -> TestResult<Unchanged> {
+    let deadline = crate::v6_native_custody::OriginalDeadline::capture()?;
     let state = service.state.as_ref().ok_or("normal HA state")?;
     assert!(service.native_root.is_some() && service.record_root.is_none());
     assert!(state.has_token_api_precision_state());
@@ -27,7 +29,40 @@ fn unchanged(service: &Service) -> TestResult<Unchanged> {
         .as_u64()
         .ok_or("actual finite uses")?;
     erase_json(&mut auth);
-    Ok(Unchanged {
+    // Native KV2 is encoded as authenticated records, never a flat State.
+    // This root-only fixture has no loaded namespace view. Preserve every
+    // original metadata field and witness the actual live record owners.
+    assert!(state.namespace_protected.is_none() && state.namespace_leases.is_empty());
+    let root = service.native_root.as_ref().ok_or("actual native root")?;
+    let key = root.kv1_key().map_err(|_| "actual native KV1 key")?;
+    assert!(state.engines.record_root().as_ref() == Some(&root.kv1));
+    assert!(
+        state
+            .engines
+            .record_address_key()
+            .is_some_and(|actual| actual.expose() == key.expose())
+    );
+    let parent = root.kv2_parent_key().map_err(|_| "actual native KV2 key")?;
+    // Borrow the existing Pipeline inspection scope, including every checked
+    // projection visit; do not create or extend a business request deadline.
+    let check = || {
+        deadline
+            .check()
+            .map_err(|_| crate::state_records::RecordError::Invalid)
+    };
+    let (engines, graphs) = state
+        .engines
+        .project_checked_native_roots(
+            &parent,
+            &root.kv2,
+            root.reader_floor.native_kv2_format,
+            &check,
+        )
+        .map_err(|_| "actual native KV2 roots")?;
+    assert!(graphs == root.kv2);
+    let mut metadata = state.clone();
+    metadata.engines = engines.into();
+    let observed = Unchanged {
         identity: service
             .current_state_identity()
             .map_err(|_| "actual root identity")?,
@@ -36,9 +71,12 @@ fn unchanged(service: &Service) -> TestResult<Unchanged> {
             .as_ref()
             .ok_or("actual durable owner")?
             .generation(),
-        state: Zeroizing::new(serde_json::to_vec(state)?),
+        state: Zeroizing::new(serde_json::to_vec(&metadata)?),
+        native_root: root.encode().map_err(|_| "actual native root encoding")?,
         uses,
-    })
+    };
+    deadline.check()?;
+    Ok(observed)
 }
 
 fn assert_unchanged(service: &Service, before: &Unchanged) -> TestResult {
@@ -46,6 +84,7 @@ fn assert_unchanged(service: &Service, before: &Unchanged) -> TestResult {
     assert!(after.identity == before.identity);
     assert_eq!(after.generation, before.generation);
     assert!(after.state.as_slice() == before.state.as_slice());
+    assert!(after.native_root.as_slice() == before.native_root.as_slice());
     assert_eq!(after.uses, before.uses);
     assert_eq!(after.uses, 2);
     assert!(service.pending_forward_delivery.is_none());
