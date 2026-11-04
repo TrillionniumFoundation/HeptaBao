@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.mac-snapshot-candidate-controls.v1",
+  "status": "prepared_not_executed",
+  "input_source": {
+    "review_commit": "4609acf94695508ea49097039b8355897a1b20f2",
+    "tree": "6708710421a4407e0d098fcc9ecc9aea479441db",
+    "base_physical_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+    "base_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f"
+  },
+  "root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1",
+  "source_stage": {
+    "source_sha256": "bc4f347e5f4a4c776f6357d1d406d51a0584e2457344f9a8a05351cd09c99fad",
+    "packet_sha256": "e612e9b1836dc46356d5f0579ca482a39f2bd0c52fe60d6bd7144311764d320d",
+    "request_sha256": "7e043d708ebe0f2217c2c2647272475d14d860ae38a63fa67a0cb70c94e50fce",
+    "budget_seconds": 240,
+    "controller_timeout_seconds": 270
+  },
+  "build": {
+    "source_sha256": "23a4da9748d177a2d6238a8977d4a0c0acbfcd562cf51f8221cc637cf607d979",
+    "preparation_budget_seconds": 300,
+    "shared_cargo_budget_seconds": 1800,
+    "controller_timeout_seconds": 2160,
+    "source_stage_receipt_sha256": "bind only to the successful actual stage receipt before launch",
+    "bootstrap_sha256": "31f8bc8e6d5d733429444a577e96e3e3918aba1d6cb349bcc3ac24274ff87b81",
+    "cache_source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-unified-normal-61ff-r1/runtime.noindex/target",
+    "source_cache_lock_scope": "existing release/.cargo-lock O_RDONLY|O_NOFOLLOW flock LOCK_EX|LOCK_NB held through APFS clone and every independent inode check; no whole-host reservation",
+    "cargo_build_jobs": 2,
+    "critical_tests": [
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update_actor",
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_standby_acl_denial_commits_floor_without_transfer_lease_and_survives_cold",
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_standby_original_snapshot_actor_expiry_before_floor_returns_proved_403",
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoints",
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_http_consistency_forward_restricts_local_snapshot_and_no_forward_kv",
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_read_restore_validation_and_no_forward_use_real_owners",
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_finite_tokens_redirect_without_consumption",
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_late_root_change_and_lost_quorum_refuse_delivery",
+      "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_ttl_snapshot_commits_real_leader_floor_and_survives_cold_restart",
+      "ha::snapshot_clock::tests::snapshot_clock_denied_requires_original_binding_exact_successor_and_only_status_403"
+    ],
+    "normal_profile": {
+      "OPT_LEVEL": "3",
+      "DEBUG_ASSERTIONS": "true",
+      "OVERFLOW_CHECKS": "true",
+      "DEBUG": "0",
+      "LTO": "false",
+      "CODEGEN_UNITS": "16",
+      "PANIC": "unwind"
+    },
+    "gate_order": [
+      "cargo fmt --all",
+      "cargo fmt --all -- --check",
+      "freeze actual formatted source and manifest",
+      "cargo clippy --release --locked --offline --workspace --all-targets --exclude qrcode -- -D warnings",
+      "cargo test --release --locked --offline -p heptabao-server --lib --no-run --message-format=json",
+      "pin and retain actual normal test executable; list exact names; execute ten exact tests sequentially",
+      "cargo build --release --locked --offline -p heptabao-server --bin heptabao-server --bin heptabao-seed --message-format=json",
+      "retain actual normal binaries and exact source/artifact receipts"
+    ],
+    "releases_original_child_before_signalling": false,
+    "cleanup": "WNOWAIT direct-child anchor through group cleanup, Darwin exited-child ESRCH confirmed by waitid; no group signal after reap; preserve nonzero/timeouts/remaining in raw per-command records"
+  },
+  "source_review_only": true,
+  "formatted": false,
+  "compiled": false,
+  "tests_run": false,
+  "normal_https_observer_run": false,
+  "ordinary_kv_global_precision_six_status_gaps_still_open": true,
+  "full_replacement_qualified": false
+}
