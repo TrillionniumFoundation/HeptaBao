@@ -1,0 +1,18 @@
+{
+  "schema": "strict-test-error-assertion-delta-v1",
+  "file": "crates/heptabao-server/src/service_native_plain_namespace.rs",
+  "base_sha256": "e88de0bcf6e9788046ba91aa2d7cfd26b9962626e8cc0b6a823aadbb69ec6c30",
+  "base_git_blob": "91ed324a0bb20151c50bb2e1f141e70b08ad835b",
+  "candidate_sha256": "7f3837bb8eaa65c53c25e3a0d6aa682cc85b12b5107e7506ed11ac178165cc63",
+  "candidate_git_blob": "7d878b6d96c54e471b9d887afc3fef6cd50e7d5a",
+  "patch_sha256": "c556e38ab764fc0bdc069c5db5f2d051977d29aa776e3dfd91c0372d054ecf57",
+  "candidate_bytes": 12426,
+  "changes": 2,
+  "expected_error_status": 503,
+  "production_prefix_identical": true,
+  "deadline_or_allow_changes": false,
+  "debug_or_panic_added": false,
+  "tests_executed": false,
+  "qualification": "uncompiled narrow assertion change pending the shared strict gate",
+  "frozen_evidence_commit": "a4f5e301a3e701575abfe5bae7f45fb0a6b82b5e"
+}
