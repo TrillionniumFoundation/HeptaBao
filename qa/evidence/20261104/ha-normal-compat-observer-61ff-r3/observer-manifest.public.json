@@ -1,0 +1,97 @@
+{
+  "schema": "heptabao.normal.compatibility.observer.v3",
+  "status": "prepared_not_run",
+  "source": {
+    "bytes": 70024,
+    "sha256": "0abcb7763eb9546367865d943a8036fd7d0cd6a3c2dda0ba4777026416e68efd",
+    "git_blob": "badeca6e3304ae1982cb9ca79381e7e4a3468765"
+  },
+  "prior_normal_observer": {
+    "bytes": 59402,
+    "sha256": "0ed1b559abc489fa7f8b91d1a8590fe6b76d3e16ff6bb92086d630b4a71e018c"
+  },
+  "fixed_policy_oracle_source_sha256": "8fa4d740f3e0a7cddc3b27391ce2d46308c19e519f078fc9f3afb0e47039ccec",
+  "unavailable_prior_candidate_r2_sha256": "e2fec76abd661341e0682e3b0dc254a6b950acf0aa0913c2a6af11c9fb4d2c0a",
+  "recovered_prior_candidate_r2": false,
+  "patch": {
+    "bytes": 40032,
+    "sha256": "c5191c62912cc15a77f3270252675b45bf4c119422fcdcc438b0158da70c2c94"
+  },
+  "expected_status_cases": {
+    "ttl_kv_node2_root_1": 200,
+    "ttl_kv_node2_root_false": 200,
+    "ttl_kv_node2_ttl-default_1": 200,
+    "ttl_kv_node2_ttl-default_false": 200,
+    "ttl_kv_node3_root_1": 307,
+    "ttl_kv_node3_root_false": 307,
+    "ttl_kv_node3_ttl-default_1": 307,
+    "ttl_kv_node3_ttl-default_false": 307,
+    "snapshot-read_node1_snapshot": 200,
+    "snapshot-read_node2_snapshot": 200,
+    "snapshot-read_node3_snapshot": 307,
+    "snapshot-read_node2_snapshot_no_forward_false": 200,
+    "snapshot-read_node1_invalid_restore": 403,
+    "snapshot-read_node2_invalid_restore": 403,
+    "snapshot-update_node1_snapshot": 200,
+    "snapshot-update_node2_snapshot": 200,
+    "snapshot-update_node3_snapshot": 307,
+    "snapshot-update_node2_snapshot_no_forward_false": 200,
+    "snapshot-update_node1_invalid_restore": 500,
+    "snapshot-update_node2_invalid_restore": 500,
+    "snapshot-update_node2_invalid_force_restore": 500,
+    "consistency_read_node2_explicit_policy_false": 200,
+    "consistency_write_node2_explicit_policy_false": 307,
+    "consistency_write_effect_node2_explicit_policy_false": 404,
+    "consistency_read_node3_explicit_policy_false": 307,
+    "consistency_write_node3_explicit_policy_false": 307,
+    "consistency_write_effect_node3_explicit_policy_false": 404,
+    "consistency_read_node3_explicit_policy_true": 200,
+    "consistency_write_node3_explicit_policy_true": 307,
+    "consistency_write_effect_node3_explicit_policy_true": 404,
+    "ttl_root_default_standby_snapshot": 200,
+    "ttl_root_default_standby_invalid_restore": 500,
+    "finite1_default_snapshot": 307,
+    "finite2_default_snapshot": 307
+  },
+  "expected_mapping_review": {
+    "expected_count": 34,
+    "policy_labels_verified": 30,
+    "wrong": [],
+    "remaining_reference": "070f7234092f9799b85af95f600e1d0519ddc9c3ed81f132e21ef2af86f7cf97"
+  },
+  "api_ports": [
+    48680,
+    48682,
+    48684
+  ],
+  "raft_ports": [
+    48681,
+    48683,
+    48685
+  ],
+  "physical_hosts": 1,
+  "process_nodes": 3,
+  "real_normal_binary_required": true,
+  "cfg_test_or_convenience_startup": false,
+  "required_cli_arguments": [
+    "--binary",
+    "--work-dir",
+    "--expected-binary-sha256",
+    "--expected-build-result-sha256",
+    "--expected-native-build-sha256",
+    "--expected-source-commit",
+    "--expected-source-tree"
+  ],
+  "http_seconds": 15,
+  "readiness_seconds": 45,
+  "election_seconds": 60,
+  "stable_leader_seconds": 2.2,
+  "work_root_prefix": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-unified-normal-61ff-r1/http-compat-standby-live-r",
+  "controlled_setup_headers": "Node 3 only: X-Vault-Inconsistent: fail; business headers remain original fixed oracle headers.",
+  "complete_http_separate_from_preconnect": true,
+  "mutation_replay": false,
+  "scoped_compatibility_requires_all_34_exactly_once_and_no_differences": true,
+  "full_replacement_qualification": false,
+  "archive_scope": "bounded shape only; no restoration or OpenBao snapshot-format compatibility proof",
+  "validation": "static reconstruction and 30 exact policy-oracle status mappings checked; Python syntax and live binary execution pending"
+}
