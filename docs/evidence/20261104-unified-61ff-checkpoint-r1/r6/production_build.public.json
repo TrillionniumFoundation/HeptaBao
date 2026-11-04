@@ -1,0 +1,25 @@
+{
+  "label": "production_build",
+  "args": [
+    "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "build",
+    "--release",
+    "--locked",
+    "--offline",
+    "-p",
+    "heptabao-server",
+    "--bin",
+    "heptabao-server",
+    "--bin",
+    "heptabao-seed",
+    "--message-format=json-render-diagnostics"
+  ],
+  "exit_code": 0,
+  "timed_out": false,
+  "elapsed_seconds": 625.5381412720017,
+  "owned_pgid": 3137897,
+  "remaining": [],
+  "original_outer_remaining_seconds": 15259.952873439004,
+  "stdout_sha256": "a1b2ad4208908f7ba771b8d16ed6dab32087deb6082448b696c3d47110dde0df",
+  "stderr_sha256": "b8bd46088db14ed2ca5cd4b4f635da3864469fc14f89f993b22d2157fbae7e96"
+}

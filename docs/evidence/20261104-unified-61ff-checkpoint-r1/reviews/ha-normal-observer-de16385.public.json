@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.independent-static-review.v1",
+  "reviewer": "bao_acceptance",
+  "source_commit": "de16385d0a8953bdd19c4e2f28ed51cb2877e793",
+  "source_directory": "qa/evidence/20261104/ha-normal-compat-observer-61ff-r3",
+  "reviewed_files": [
+    {
+      "path": "README.md",
+      "bytes": 2083,
+      "sha256": "37744d2d6c6e7210edce5a0c47cb328b3a8fcc0aae5c454aec717ed56373afbf"
+    },
+    {
+      "path": "observer-manifest.public.json",
+      "bytes": 3956,
+      "sha256": "017f533d0b8207539485e40d774dcd9fbf044959e7334999b5c228a3c3562e8d"
+    },
+    {
+      "path": "normal_unified_standby_compat_observer_r3.py",
+      "bytes": 70024,
+      "sha256": "0abcb7763eb9546367865d943a8036fd7d0cd6a3c2dda0ba4777026416e68efd"
+    },
+    {
+      "path": "recovered-normal-to-compat-r3.patch",
+      "bytes": 40032,
+      "sha256": "c5191c62912cc15a77f3270252675b45bf4c119422fcdcc438b0158da70c2c94"
+    }
+  ],
+  "source_pin_verified": true,
+  "scope": "Static source review only; no Python syntax/runtime executed by reviewer and no Mac artifact claim.",
+  "status": "no_static_blocker_found_in_reviewed_scope",
+  "findings": {
+    "fixed_case_count": 34,
+    "expanded_calls": 34,
+    "unique_labels": 34,
+    "missing_labels": [],
+    "unexpected_labels": [],
+    "case_groups": {
+      "ttl_kv": 8,
+      "nonroot_snapshot_acl": 13,
+      "consistency_precedence_and_effects": 9,
+      "ttl_root_snapshot": 2,
+      "finite_use_snapshot": 2
+    },
+    "completed_observation_exit0_is_not_scoped_compatibility": true,
+    "scoped_pass_requires_exact_coverage_and_no_status_differences": true,
+    "partial_completed_business_rows_retained_before_shape_or_effect_checks": true,
+    "write_archive_failure_does_not_bypass_owned_cleanup": true,
+    "unknown_or_unaccounted_intent_blocks_pass": true,
+    "preconnect_failure_separate_from_completed_http": true,
+    "finite_token_use_count_checked_before_and_after_actual_standby_request": true,
+    "nonroot_policy_identity_authenticated_by_actual_standby_lookup_self": true,
+    "fresh_real_v5_seed_stopped_before_exact_copy": true,
+    "native_v6_activation_real_cli_and_http": true,
+    "normal_binary_and_receipts_bound_to_independent_explicit_pins": true,
+    "source_binary_receipt_controller_pins_rechecked_after_run": true,
+    "actual_tls_ca_hostname_and_leaf_pin": true,
+    "no_redirect_following": true,
+    "no_unknown_mutation_retry": true,
+    "existing_per_http_readiness_election_deadlines_preserved": true
+  },
+  "limits": {
+    "python_syntax_pending": true,
+    "live_observation_pending": true,
+    "fixed_oracle_mapping_not_independently_refetched_by_reviewer": true,
+    "reviewer_compared_code_expansion_to_frozen_manifest_only": true,
+    "physical_hosts": 1,
+    "process_nodes": 3,
+    "archive_validation": "bounded shape, no contents extraction or restore/format compatibility claim",
+    "cold_restart_tested": false,
+    "full_replacement_qualified": false
+  }
+}
