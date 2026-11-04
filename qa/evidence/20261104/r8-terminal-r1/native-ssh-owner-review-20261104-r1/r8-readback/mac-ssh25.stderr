@@ -1,0 +1,102 @@
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBV6-SNAPSHOT-PHASE phase=authenticate-pack elapsed_ms=6
+HBV6-SNAPSHOT-PHASE phase=validate-typed-graph elapsed_ms=1
+HBV6-SNAPSHOT-PHASE phase=derive-clock-bound-graph elapsed_ms=0
+HBV6-RESTORE-STAGE objects=0 elapsed_ms=0
+HBV6-SNAPSHOT-PHASE phase=stage-objects-and-commit elapsed_ms=100
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+heptabao-raft-rpc: kind=pre_vote source=3 target=1 bytes=153 budget_ms=750 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=vote source=3 target=1 bytes=153 budget_ms=750 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=3 target=1 bytes=43018 budget_ms=150 elapsed_ms=0 stage=transport
+HBHA-NATIVE-SYNC-FAIL step=committed_read_index code=read_index_refused reason_sha=a530fba9c493c61f7efec9a3ba2be5f93abada16e753cabd5dff98da22732519 elapsed_us=1149 step_elapsed_us=1146 original_deadline_expired=false original_remaining_ns=7998849250 panicking=false
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-REQUEST-TIMING-FAIL {"schema":"heptabao.native-ha.request-failure-timing.v1","request_class":"ordinary","forwarded":true,"status":503,"elapsed_us":13746,"entry_remaining_ns":7999838541,"exit_remaining_ns":7986091583,"bucket_limit":64,"bucket_bound_reached":false,"phases":[{"scope":"sync_migration_source","phase":"sync_migration_source","calls":1,"advanced":1,"completed":0,"failed":0,"elapsed_us":0,"maximum_elapsed_us":0,"first_entry_remaining_ns":7992877875,"last_exit_remaining_ns":7992877833,"minimum_entry_remaining_ns":7992877875,"minimum_exit_remaining_ns":7992877833},{"scope":"sync_environment","phase":"sync_environment","calls":1,"advanced":1,"completed":0,"failed":0,"elapsed_us":74,"maximum_elapsed_us":74,"first_entry_remaining_ns":7992830041,"last_exit_remaining_ns":7992755083,"minimum_entry_remaining_ns":7992830041,"minimum_exit_remaining_ns":7992755083},{"scope":"sync_environment","phase":"sync_process_witness","calls":1,"advanced":1,"completed":0,"failed":0,"elapsed_us":0,"maximum_elapsed_us":0,"first_entry_remaining_ns":7992755083,"last_exit_remaining_ns":7992754291,"minimum_entry_remaining_ns":7992755083,"minimum_exit_remaining_ns":7992754291},{"scope":"sync_environment","phase":"sync_local_selection","calls":1,"advanced":1,"completed":0,"failed":0,"elapsed_us":134,"maximum_elapsed_us":134,"first_entry_remaining_ns":7992754291,"last_exit_remaining_ns":7992619625,"minimum_entry_remaining_ns":7992754291,"minimum_exit_remaining_ns":7992619625},{"scope":"sync_environment","phase":"sync_local_guard","calls":1,"advanced":1,"completed":0,"failed":0,"elapsed_us":39,"maximum_elapsed_us":39,"first_entry_remaining_ns":7992619625,"last_exit_remaining_ns":7992580166,"minimum_entry_remaining_ns":7992619625,"minimum_exit_remaining_ns":7992580166},{"scope":"sync_environment","phase":"sync_current_local_graph","calls":1,"advanced":1,"completed":0,"failed":0,"elapsed_us":2935,"maximum_elapsed_us":2935,"first_entry_remaining_ns":7992580166,"last_exit_remaining_ns":7989644416,"minimum_entry_remaining_ns":7992580166,"minimum_exit_remaining_ns":7989644416},{"scope":"sync_environment","phase":"sync_current_local_finish","calls":1,"advanced":1,"completed":0,"failed":0,"elapsed_us":116,"maximum_elapsed_us":116,"first_entry_remaining_ns":7989644416,"last_exit_remaining_ns":7989528125,"minimum_entry_remaining_ns":7989644416,"minimum_exit_remaining_ns":7989528125},{"scope":"sync_environment","phase":"sync_final_environment","calls":1,"advanced":1,"completed":0,"failed":0,"elapsed_us":53,"maximum_elapsed_us":53,"first_entry_remaining_ns":7989528125,"last_exit_remaining_ns":7989475041,"minimum_entry_remaining_ns":7989528125,"minimum_exit_remaining_ns":7989475041},{"scope":"sync_environment","phase":"sync_publish_local_state","calls":1,"advanced":0,"completed":1,"failed":0,"elapsed_us":0,"maximum_elapsed_us":0,"first_entry_remaining_ns":7989475041,"last_exit_remaining_ns":7989474500,"minimum_entry_remaining_ns":7989475041,"minimum_exit_remaining_ns":7989474500},{"scope":"sync_environment","phase":"scope_total","calls":1,"advanced":0,"completed":1,"failed":0,"elapsed_us":3355,"maximum_elapsed_us":3355,"first_entry_remaining_ns":7992830041,"last_exit_remaining_ns":7989474500,"minimum_entry_remaining_ns":7992830041,"minimum_exit_remaining_ns":7989474500},{"scope":"sync_migration_source","phase":"sync_after_migration","calls":1,"advanced":0,"completed":1,"failed":0,"elapsed_us":3404,"maximum_elapsed_us":3404,"first_entry_remaining_ns":7992877833,"last_exit_remaining_ns":7989473750,"minimum_entry_remaining_ns":7992877833,"minimum_exit_remaining_ns":7989473750},{"scope":"sync_migration_source","phase":"scope_total","calls":1,"advanced":0,"completed":1,"failed":0,"elapsed_us":3404,"maximum_elapsed_us":3404,"first_entry_remaining_ns":7992877875,"last_exit_remaining_ns":7989473750,"minimum_entry_remaining_ns":7992877875,"minimum_exit_remaining_ns":7989473750}]}
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+heptabao-raft-rpc: kind=pre_vote source=2 target=1 bytes=153 budget_ms=750 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=vote source=2 target=1 bytes=153 budget_ms=750 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=2 target=1 bytes=31316 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=2 target=1 bytes=158 budget_ms=150 elapsed_ms=0 stage=transport
+HBHA-NATIVE-SYNC-FAIL step=committed_read_index code=read_index_refused reason_sha=a530fba9c493c61f7efec9a3ba2be5f93abada16e753cabd5dff98da22732519 elapsed_us=1740 step_elapsed_us=1739 original_deadline_expired=false original_remaining_ns=7998259750 panicking=false
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+native HA Service pipeline path=ssh/verify status=400 errors=["one-time credential is invalid or no longer live"]
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-r72-sync: stage=sync_inner_error status=503 loaded=true recovery=false record_root=false
+HBHA-REQUEST-TIMING-FAIL {"schema":"heptabao.native-ha.request-failure-timing.v1","request_class":"pipeline_test","forwarded":false,"status":503,"elapsed_us":8011839,"entry_remaining_ns":14999999875,"exit_remaining_ns":6988160208,"bucket_limit":64,"bucket_bound_reached":false,"phases":[]}
+native HA Service pipeline path=ssh/creds/otp status=503 errors=["native HA committed root is unavailable"]
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=3 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-r72-sync: stage=sync_inner_error status=503 loaded=true recovery=false record_root=false
+HBHA-REQUEST-TIMING-FAIL {"schema":"heptabao.native-ha.request-failure-timing.v1","request_class":"pipeline_test","forwarded":false,"status":503,"elapsed_us":8015299,"entry_remaining_ns":14999999375,"exit_remaining_ns":6984700375,"bucket_limit":64,"bucket_bound_reached":false,"phases":[]}
+native HA Service pipeline path=ssh/issue/operators status=503 errors=["native HA committed root is unavailable"]
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-raft-rpc: kind=append source=1 target=2 bytes=201 budget_ms=150 elapsed_ms=0 stage=transport
+heptabao-r72-sync: stage=sync_inner_error status=503 loaded=true recovery=false record_root=false
+HBHA-REQUEST-TIMING-FAIL {"schema":"heptabao.native-ha.request-failure-timing.v1","request_class":"pipeline_test","forwarded":false,"status":503,"elapsed_us":8010613,"entry_remaining_ns":14999998875,"exit_remaining_ns":6989385000,"bucket_limit":64,"bucket_bound_reached":false,"phases":[]}
+native HA Service pipeline path=ssh/public_key status=503 errors=["native HA committed root is unavailable"]

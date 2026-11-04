@@ -1,0 +1,11 @@
+--- candidate/comparison69_r8_controller_r1.py
++++ candidate-final-r1/comparison69_r8_controller_r1.py
+@@ -29,7 +29,7 @@
+  try:
+   before=source();need(before=={'commit':HEAD,'tree':TREE,'dirty_including_untracked':False,'binary_sha256':BINARY_SHA},'source_and_binary_pin')
+   driver=ROOT/'native271_comparison_final_r1.py';need(sha(driver)==DRIVER_SHA,'original69_driver_pin')
+-  pins={'native-build.public.json':'f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9','result.public.json':'2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5','transfer.result.public.json':'PENDING_CREATE_ONLY_X230_R8_TRANSFER_RECEIPT_SHA256'}
++  pins={'native-build.public.json':'f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9','result.public.json':'2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5','transfer.result.public.json':'3ebfd7d224efd1b08f69e0b99aeba7bc493ea4f9af32c6320ba6dabf2e6b767d'}
+   for name,pin in pins.items():need(sha(ART/name)==pin,'artifact_provenance_pin')
+   oracle=Path('/home/qian/heptabao-official-271-fresh-20261029-r1/bao');archive=oracle.with_name('official-openbao-2.7.1-linux-amd64.tar.gz')
+   need(sha(oracle)=='535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea','official_binary_pin')

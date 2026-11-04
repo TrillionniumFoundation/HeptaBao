@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.clippy-candidate-closed-source-review.v1",
+  "files": [
+    {
+      "path": "candidate.public.json",
+      "bytes": 5472,
+      "sha256": "3501b26bfefba8760060ce4c64c647e32d18b113f6efe5d381e373ec6ae33353"
+    },
+    {
+      "path": "clippy-source-fix-over-r8.review.diff",
+      "bytes": 4638,
+      "sha256": "b3566f78605d261affcd9fbc2b3e11c00efe63a582c030bc834325ef2661858e"
+    },
+    {
+      "path": "physical-r8-callsite.public.json",
+      "bytes": 2058,
+      "sha256": "5ec61a471e1ea2cfd58074baff9d5bb7f65e167b72def15d9c55bbc7f475f305"
+    },
+    {
+      "path": "physical-r8-callsite-status.public.json",
+      "bytes": 731,
+      "sha256": "46d600605f2872d6e729e75667911907f106d33f242e0fa3889edd83f208c664"
+    },
+    {
+      "path": "root-source-review.public.json",
+      "bytes": 2415,
+      "sha256": "c4669d9a517ec02d1861c77bfa99547290ae3b481c25f0082d0f4d832e75435c"
+    },
+    {
+      "path": "REVIEW_SCOPE.md",
+      "bytes": 4272,
+      "sha256": "9248ffbf0e69aecaf6c9e057e4cd9c3e2decd17c97499689bf2b7a4faa77345a"
+    }
+  ],
+  "physical_tree_unique_callsite_confirmed": true,
+  "source_review_complete": true,
+  "compiled": false,
+  "clippy_passed": false,
+  "github_mutations_performed": false,
+  "production_changed": false
+}

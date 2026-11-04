@@ -1,0 +1,33 @@
+{
+  "checks_passed": 31,
+  "checks_total": 31,
+  "child_exit_code": 0,
+  "elapsed_seconds": 142.913,
+  "failure": null,
+  "full34_qualified": true,
+  "full_replacement_qualified": false,
+  "missing_checks": [],
+  "ok": true,
+  "original_http_seconds": 15,
+  "original_migration_seconds": 360,
+  "owned_processes_stopped": true,
+  "production_changed": false,
+  "production_cutover": false,
+  "reported_status": "passed",
+  "schema": "heptabao.r8-x230-original-full34-assessment.v1",
+  "source_after": {
+    "binary_sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+    "commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+    "dirty": false,
+    "tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04"
+  },
+  "source_before": {
+    "binary_sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+    "commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+    "dirty": false,
+    "tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04"
+  },
+  "source_unchanged": true,
+  "summary_bytes": 90877,
+  "summary_sha256": "ee24ee6018562ec938ef5fd4ad7158293bb94ee421916d416c4b92c9587f8b30"
+}

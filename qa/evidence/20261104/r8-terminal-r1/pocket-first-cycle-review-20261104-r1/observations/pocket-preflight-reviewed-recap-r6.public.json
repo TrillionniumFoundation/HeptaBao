@@ -1,0 +1,44 @@
+{
+  "actualRuntimeExecuted": false,
+  "checks": {
+    "core18AllPassed": true,
+    "exactBudgets": true,
+    "exactR8": true,
+    "kernelIsolation": true,
+    "noProviderProductionOrHoldChange": true,
+    "protectedNineInputs": true,
+    "readOnlyScope": true,
+    "registryStableAndExact": true,
+    "sourceAuthConfigCacheNativeUnchanged": true,
+    "sourceIdentity5AndIndependent4": true,
+    "terminalKnown": true,
+    "twoHeldServicesUnchanged": true
+  },
+  "corePassed": 18,
+  "coreTotal": 18,
+  "fullReplacementQualified": false,
+  "jobId": "1a1a7437c84-fc05-2ac4",
+  "ok": true,
+  "originals": [
+    {
+      "bytes": 8757,
+      "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-preflight-r6/live/result.public.json",
+      "sha256": "fee9837e630c602f650b9042fb6e55b51f7d3edfe144fcb61d5342bd9f48ce23"
+    },
+    {
+      "bytes": 2077,
+      "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-preflight-r6/execution.result.public.json",
+      "sha256": "d0b6fcdc3d08862d76a798ede0fcf76703f825a4074dcaece09643e0b7f156b3"
+    },
+    {
+      "bytes": 5971,
+      "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-preflight-r6/intent.public.json",
+      "sha256": "02648f0f20c563307385b4c7ec6519ad3de09e11e9ff73624a0bd26d9158be2e"
+    }
+  ],
+  "prepareSha256": "83f860169dbccf7b3c36bb97bf697a7cbce9c28322067f5da5661a34ab9b3c52",
+  "productionChanged": false,
+  "qaPinsSha256": "2a234b7b213ce92eb0bf163e1964acd79f7213d8581ae6ec20817c8eaf043c40",
+  "schema": "heptabao.pocket-r8-readonly-preflight-reviewed.v1",
+  "scope": "R8 artifact identity and readonly current-source eligibility only; actual R8 consumer, service cutover and cleanup remain unqualified."
+}

@@ -1,0 +1,25 @@
+{
+  "actualChildPid": 6,
+  "actualChildReturncode": 0,
+  "actualCleanup": {
+    "directChildReaped": true,
+    "errorClass": "RuntimeError",
+    "observedRemainingPids": [
+      6,
+      68181,
+      68182,
+      68213,
+      68214,
+      68248,
+      68249
+    ],
+    "ownedProcessGroupObservedEmpty": false,
+    "pid": 6,
+    "returncode": 0,
+    "sshStarted": true
+  },
+  "actualNetworkOperations": 0,
+  "productionChanged": false,
+  "schema": "heptabao.pocket-artifact-relay-r2-cloud-cleanup-diagnostic.v1",
+  "targetHostRuntimeExecuted": false
+}

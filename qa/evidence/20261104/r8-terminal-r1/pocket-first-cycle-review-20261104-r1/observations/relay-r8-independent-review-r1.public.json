@@ -1,0 +1,29 @@
+{
+  "blocking_findings": [
+    {
+      "code": "remote=json.loads(out) precedes ok/filesReceived assertions; remoteOutcomeUnknown only tests remote is None",
+      "id": "unvalidated_parsed_response_not_unknown",
+      "required_change": "Set a completion-valid flag only after successful exit and full expected response/receipt path/size/SHA validation; malformed or incomplete parsed output remains unknown and is not retried."
+    },
+    {
+      "code": "cleanup accepts an exited/reaped SSH leader without an owned PGID-empty observation",
+      "id": "ssh_group_empty_not_verified",
+      "required_change": "Check the known owned group after wait; a survivor or observation failure prohibits success and records uncertainty. Do not signal an unrelated or unverified reused group."
+    }
+  ],
+  "execution_go": false,
+  "nonblocking_scope_review": [
+    "Exact R8 source commit/tree and normal Linux artifact/build receipt hashes are fixed.",
+    "Desktop and Pocket machine identities and existing user paths are explicit.",
+    "Three public files only; receiver create-only, private modes, regular/single-link, streamed SHA and full readback, file/parent fsync.",
+    "Strict existing SSH alias, no trust or credential creation, no target binary or consumer start.",
+    "Original core runtime budgets are not modified; transfer has its separate 180-second bound."
+  ],
+  "production_changed": false,
+  "reviewer": "authbus_migration",
+  "schema": "heptabao.pocket-r8-relay-independent-source-review.v1",
+  "scope": "cloud-only complete 13523-byte relay source; no LAN or runtime",
+  "source": "/workspace/scratch/f86faac821c4/pocket-first-cycle-review-20261104-r1/pocket_r8_artifact_relay_r1.py",
+  "source_bytes": 13523,
+  "source_sha256": "8a39a87577cdcc378cc2c6decba140bdb6a9df593dcccb09b7f0c8f7b632950d"
+}

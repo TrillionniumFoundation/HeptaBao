@@ -1,0 +1,24 @@
+{
+  "actual_desktop_cleanup_must_pass": true,
+  "authorized_scope": "One fresh create-only three-public-artifact transfer to Pocket after X230 transfer terminal; no service/consumer/provider/runtime start.",
+  "blocking_findings": [],
+  "cleanup_total_seconds": 10,
+  "closed_findings": [
+    "Receiver response becomes valid only after exit0 and exact success/field-set/three-file/fixed-receipt-path/bounded-byte-count/SHA validation. Parsed but invalid output remains unknown, suppressed and not retried.",
+    "Success requires direct SSH child reaped plus actual original PGID-empty metadata observation. A residual/failed observation is unknown and cannot qualify. Signals only target a still-unreaped direct child with verified owned PGID; no signal to a reaped/reused group."
+  ],
+  "cloud_actual_group_observation_failures_preserved": true,
+  "diff_sha256": "92c595d530906ba477230be3762a7528ce64718f75cc45c8940e003df3e00dc9",
+  "previous_review_sha256": "fb68d359c5f2bf6681264d4352cde3513e6c5833d0967c6dde790970036cb492",
+  "production_changed": false,
+  "receiver_byteidentical": true,
+  "receiver_sha256": "9e0de5bf9ee2ecb647c57f3485e4ce005013781434262d7420b4c6c4c0a09432",
+  "reviewer": "authbus_migration",
+  "schema": "heptabao.pocket-r8-relay-independent-source-review.v2",
+  "source_bytes": 16935,
+  "source_sha256": "a3dfbde3750b2651d1e687d28c9c19fdebcb37b7d113e25708b62fa8b7b5dbfd",
+  "synthetic_21_checks_are_host_runtime_qualification": false,
+  "target_runtime_qualified": false,
+  "transfer_seconds_unchanged": 180,
+  "x230_transfer_window_released": true
+}

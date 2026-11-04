@@ -1,0 +1,126 @@
+{
+  "application_request_replayed": false,
+  "diagnostic_job": "1a1a727baab-fc05-2a67",
+  "input_files": [
+    {
+      "bytes": 7419,
+      "path": "observe_errno.c",
+      "sha256": "4a8ab318e029fb391af32be17dd3083e449db2cbaddd179571d28d1f83d0f574"
+    },
+    {
+      "bytes": 11949,
+      "path": "run_diagnostic.py",
+      "sha256": "6facdbfda62c2b6968ce9237c1fa9c1b1992170462596b684323cfa00fe0d80f"
+    },
+    {
+      "bytes": 5497,
+      "path": "result.public.json",
+      "sha256": "06d7f5343c9653ccbd9f508e96d77d0d770ddbb12d213d9a2a4c048420485a76"
+    },
+    {
+      "bytes": 730,
+      "path": "authoritative-status.public.json",
+      "sha256": "f4c77f89b379013ad9af08a3abdc1c1e558499ad34a5c4062405aa49161bf63b"
+    },
+    {
+      "bytes": 371,
+      "path": "observed-exact.stdout",
+      "sha256": "1910dd303e28b0431f9ca1f42932846433194d6d9c80b95d8a644726e5d0b5e1"
+    },
+    {
+      "bytes": 1381,
+      "path": "observed-exact.stderr",
+      "sha256": "dfb5d531b5fb8ee297eabf2d948e1132d41337f6de62ef548da22a5c1ccdbdbb"
+    },
+    {
+      "bytes": 6246,
+      "path": "kernel_pending_bytes.py",
+      "sha256": "3415a07f4f03b02896c4d5da5d22bf2be89fbc634a4f8b399b74f8a2e85c8d6e"
+    },
+    {
+      "bytes": 1488,
+      "path": "kernel-result.public.json",
+      "sha256": "ab233978dcaf2082bb226d477274f2e47157ea6d036fcb1cff180d7d911b21d3"
+    },
+    {
+      "bytes": 730,
+      "path": "kernel-authoritative-status.public.json",
+      "sha256": "a7cfcb7b296fc15ac70d83f84bb90d1fd45b18578d9482072a95e17200fd614e"
+    }
+  ],
+  "interpretation": "The observer client must be able to read buffered response bytes without changing socket timeout options after peer close. A readiness-based test client can retain the original absolute deadline. This does not establish TLS product correctness.",
+  "kernel_job": "1a1a7338a01-fc05-2a8a",
+  "kernel_observation": {
+    "after_peer_close_receive_timeout": {
+      "errno": 22,
+      "level": 65535,
+      "microseconds": 998200,
+      "option": 4102,
+      "optlen": 16,
+      "returncode": -1,
+      "seconds": 4
+    },
+    "all_owned_sockets_closed": true,
+    "connected_receive_timeout": {
+      "errno": 0,
+      "level": 65535,
+      "microseconds": 998294,
+      "option": 4102,
+      "optlen": 16,
+      "returncode": 0,
+      "seconds": 4
+    },
+    "connected_send_timeout": {
+      "errno": 0,
+      "level": 65535,
+      "microseconds": 998284,
+      "option": 4101,
+      "optlen": 16,
+      "returncode": 0,
+      "seconds": 4
+    },
+    "credentials_used": false,
+    "diagnostic_only": true,
+    "direct_read_after_ready": {
+      "bytes": 108,
+      "errno": 0,
+      "exact_complete_response": true,
+      "sha256": "b4ffddd2dfbde99e1141f75d49a5af2d1ca5cb12d581925080ce6bc77c02f164"
+    },
+    "elapsed_seconds": 0.0018358752131462097,
+    "external_network": false,
+    "new_connections_planned": 1,
+    "observed_socket_count": 3,
+    "original_deadline_seconds": 5,
+    "peer_name_errno": 22,
+    "product_executed": false,
+    "production_changed": false,
+    "qualification": false,
+    "schema": "heptabao.mac-tcp-pending-bytes-observation.v1",
+    "server": {
+      "body_read_bytes": 0,
+      "header_bytes_read": 12,
+      "response_bytes_sent": 108,
+      "socket_closed": true
+    },
+    "server_body_read_bytes": 0,
+    "source_sha256": "3415a07f4f03b02896c4d5da5d22bf2be89fbc634a4f8b399b74f8a2e85c8d6e",
+    "status": "observed",
+    "tls_executed": false,
+    "worker_joined": true
+  },
+  "original_mac_32_of_33_failure_retained": true,
+  "product_source_changed_by_diagnostics": false,
+  "production_changed": false,
+  "qualification": false,
+  "reviewed_at_utc": "2026-11-04T15:39:15.192937+00:00",
+  "root_authoring_error_caught_before_execution": "Synthetic body literal length corrected from 23 to required 22 bytes before the only remote kernel observation.",
+  "schema": "heptabao.mac-einval-kernel-root-review.v1",
+  "single_failed_syscall": {
+    "call": "setsockopt",
+    "errno": 22,
+    "option": "SO_RCVTIMEO",
+    "test_exit_code": 101,
+    "valid_timeout_seconds": 4.991715
+  }
+}

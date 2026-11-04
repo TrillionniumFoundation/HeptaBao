@@ -1,0 +1,41 @@
+{
+  "actualComponentsExecutedByThisReview": 0,
+  "findings": [],
+  "fullCompatibilityQualified": false,
+  "hostRuntimeExecuted": false,
+  "ok": true,
+  "pins": {
+    "cli-controller-r3-to-r4-exec-visible-r2.review.diff": {
+      "bytes": 6388,
+      "sha256": "4b05ce1ddea0f6d638318f44b8ca7227c03d06a17e7c6502feef474653448008"
+    },
+    "official271_cli_transport_r3.py": {
+      "bytes": 43464,
+      "sha256": "3cc4ed07fc0d59b89f39d55efdd86dbd86614287414d6d0fa9f372f05bc40723"
+    },
+    "official271_cli_transport_r4.py": {
+      "bytes": 46586,
+      "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9"
+    }
+  },
+  "productionChanged": false,
+  "schema": "heptabao.official271-cli-exec-visible-independent-source-review.v1",
+  "scope": "Independent narrow source review only; no live case or host qualification",
+  "unchangedOwnerMethods": [
+    "interrupted",
+    "record_child_provenance",
+    "close_peers",
+    "run_private",
+    "setup",
+    "tls_context",
+    "case"
+  ],
+  "verified": [
+    "Only empty cmdline with exact executable enters visibility observation; any nonempty mismatch still fails exact argv comparison",
+    "Observes the original provisional child only; no second Popen or command replay",
+    "Every loop retains original absolute deadline and <=1ms bounded sleep; original caller budgets unchanged",
+    "Before each read and before accepting nonempty bytes, checks captured start/PGID/parent/executable/alive; zombie or changed identity rejected",
+    "Existing child cleanup and per-peer cleanup methods byte-semantic unchanged by AST",
+    "Public trace contains only identity metadata, counts, lengths, hashes, safe error codes; no argv or environment values"
+  ]
+}

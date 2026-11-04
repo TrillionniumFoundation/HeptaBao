@@ -1,0 +1,104 @@
+--- a/crates/heptabao-server/src/engine_native_kv2_lossless_export.rs
++++ b/crates/heptabao-server/src/engine_native_kv2_lossless_export.rs
+@@ -66,16 +66,16 @@
+         output: &mut impl Write,
+         source: &(
+              impl Fn(&MountScope, &ObjectRef) -> std::result::Result<Zeroizing<Vec<u8>>, RecordError>
+              + Sync
+          ),
+         before_delivery: &(impl Fn() -> std::result::Result<(), RecordError> + Sync),
+-        check: &(impl Fn() -> std::result::Result<(), RecordError> + Sync),
+         deadline: crate::v6_native_custody::OriginalDeadline,
+         stop: &std::sync::atomic::AtomicBool,
+     ) -> Result<()> {
++        let check = || deadline.check().map_err(|_| RecordError::Invalid);
+         let result = (|| {
+             check().map_err(|_| error(503, "native lossless export request expired"))?;
+             let canonical = canonical_secret_mount(mount)?;
+             let mount_path = format!("{canonical}/");
+             if mount != canonical && mount != mount_path {
+                 return Err(bad("lossless export mount is not canonical"));
+@@ -96,13 +96,13 @@
+                 incarnation: current.incarnation,
+             };
+             view.write_lossless_export_parallel(
+                 output,
+                 &|reference| source(&scope, reference),
+                 before_delivery,
+-                check,
++                &check,
+                 deadline,
+                 stop,
+             )?;
+             check().map_err(|_| error(503, "native lossless export request expired"))
+         })();
+         if result.is_err() {
+--- a/crates/heptabao-server/src/ha_forward.rs
++++ b/crates/heptabao-server/src/ha_forward.rs
+@@ -1054,16 +1054,16 @@
+             return Err("HA original stored reply is outside negotiated consumption".into());
+         }
+         stored
+             .validate(&response.body)
+             .map_err(|_| "HA stored reply representation rejected")?;
+     }
+-    if let Some(UnwrapFramingWire::StaticKv1Lease { projection }) = response.unwrapped_json {
+-        if response.raw_wrapped_reply.is_some() || projection.validate(&response.body).is_err() {
+-            return Err("HA signed KV1 static reply projection differs".into());
+-        }
++    if let Some(UnwrapFramingWire::StaticKv1Lease { projection }) = response.unwrapped_json
++        && (response.raw_wrapped_reply.is_some() || projection.validate(&response.body).is_err())
++    {
++        return Err("HA signed KV1 static reply projection differs".into());
+     }
+     if let Some(UnwrapFramingWire::WorkflowJsonFailure { logical_digest, .. }) =
+         response.unwrapped_json
+         && (response.raw_wrapped_reply.is_some()
+             || response.body != crate::workflow_runtime::FailedOutput::logical()
+             || serde_json::to_vec(&response.body).is_err()
+--- a/crates/heptabao-server/src/service_native_auth.rs
++++ b/crates/heptabao-server/src/service_native_auth.rs
+@@ -1419,22 +1419,22 @@
+             request.path,
+             capability,
+             time,
+         ) {
+             return Response::error(error.status, &error.message);
+         }
+-        if method != "GET" {
+-            if let Err(error) = candidate.auth.authorize_request_observed(
++        if method != "GET"
++            && let Err(error) = candidate.auth.authorize_request_observed(
+                 actor,
+                 request.namespace,
+                 request.path,
+                 "sudo",
+                 time,
+-            ) {
+-                return Response::error(error.status, &error.message);
+-            }
++            )
++        {
++            return Response::error(error.status, &error.message);
+         }
+         let owner = match candidate.engines.capture_native_kv1_owner(
+             request.namespace,
+             method,
+             request.path,
+             request.body,
+--- a/crates/heptabao-server/src/service_snapshot_lossless_export.rs
++++ b/crates/heptabao-server/src/service_snapshot_lossless_export.rs
+@@ -231,13 +231,12 @@
+                         mount,
+                         &mut writer,
+                         &|scope, reference| {
+                             source.read_paged_payload(&ObjectDomain::Kv2(scope.clone()), reference)
+                         },
+                         &|| source.before_delivery(),
+-                        &|| deadline.check().map_err(|_| RecordError::Invalid),
+                         deadline,
+                         &stopped,
+                     )
+                     .map_err(Response::from_engine_error)?;
+                 writer.finish().map_err(|_| unavailable())?;
+             } else {

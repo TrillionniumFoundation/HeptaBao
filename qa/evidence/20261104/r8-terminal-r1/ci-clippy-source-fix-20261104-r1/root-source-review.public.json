@@ -1,0 +1,44 @@
+{
+  "all_four_before_and_after_whole_file_sha_and_git_blobs_verified": true,
+  "candidate_manifest_sha256": "3501b26bfefba8760060ce4c64c647e32d18b113f6efe5d381e373ec6ae33353",
+  "clippy_passed": false,
+  "compiled": false,
+  "diff_sha256": "b3566f78605d261affcd9fbc2b3e11c00efe63a582c030bc834325ef2661858e",
+  "files": [
+    {
+      "after_sha256": "a8d0d08a35f05b5490a8f31364c593becb0a8e5195d35d2a6a96cd3b76f8d79a",
+      "before_sha256": "7afe81f716c166cf78f7f4fa41aba8fcc01c0dfedae467890967cf1755eb073b",
+      "path": "crates/heptabao-server/src/engine_native_kv2_lossless_export.rs"
+    },
+    {
+      "after_sha256": "8c8d95ed29f7e01143ccccce400283c76f4007469f427a5141d3a9991756d84b",
+      "before_sha256": "d4e0c57e9202024feed35c496036c5c03f2cef06e584b3466a9eda6ee98eaf9f",
+      "path": "crates/heptabao-server/src/ha_forward.rs"
+    },
+    {
+      "after_sha256": "dbf07f20dc30ac077761c6ec01936c7f7cd03a3687409d60cca674d4b2ed11cf",
+      "before_sha256": "492a575a053d2aabc27e59bbb199f98bcb9d311d788ade2046d50d6828dcbdd2",
+      "path": "crates/heptabao-server/src/service_native_auth.rs"
+    },
+    {
+      "after_sha256": "15c5f65bec79ef870053c4d52f73de6de45820502c86f7eea0ba9d72d09a9b8b",
+      "before_sha256": "8338a8516d42bba61ccc6c766a1992ac3cd6744c579322db082be1c07f8edf7a",
+      "path": "crates/heptabao-server/src/service_snapshot_lossless_export.rs"
+    }
+  ],
+  "integration_source_review_passed": true,
+  "physical_callsite_result_sha256": "5ec61a471e1ea2cfd58074baff9d5bb7f65e167b72def15d9c55bbc7f475f305",
+  "physical_tree_unique_callsite_confirmation_pending": false,
+  "physical_tree_unique_callsite_confirmed": true,
+  "production_changed": false,
+  "reviewed_at_utc": "2026-11-04T15:55:14.407612+00:00",
+  "runtime_qualified": false,
+  "schema": "heptabao.clippy-r8-root-source-review.v1",
+  "semantic_review": [
+    "Redundant caller deadline.check callback moved into the sole callee; callback construction performs no check or effect.",
+    "Initial, worker and final check invocation sites preserved; before_delivery callback, original deadline and stop flag preserved.",
+    "Both let-chains retain the original first-condition guard and second-condition evaluation order.",
+    "No lint allow, command, feature, provider, timeout or test assertion changes."
+  ],
+  "unchanged_files_independently_fetched_from_exact_github_r8_commit": "051a9f47090dadf43a8329d3b7a7f0a3b8c79583"
+}

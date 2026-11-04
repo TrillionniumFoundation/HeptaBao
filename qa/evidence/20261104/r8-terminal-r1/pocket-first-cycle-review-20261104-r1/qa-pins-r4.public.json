@@ -1,0 +1,52 @@
+{
+  "files": {
+    "authbus_coordinator.py": {
+      "bytes": 44118,
+      "sha256": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d"
+    },
+    "pocket_authbus_cache_cas_r1.mjs": {
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+    },
+    "pocket_first_cycle_consumer_r1.mjs": {
+      "bytes": 24016,
+      "sha256": "6455180970f37831bb1a4084aab8583822c900586f9fabcbd7536332bc45429e"
+    },
+    "pocket_first_cycle_inputs_r1.py": {
+      "bytes": 20076,
+      "sha256": "1ffcca778b9f78f0f63679b0cf0050afc8d520ca3c823ee65fc0aed9bd84f5ac"
+    },
+    "pocket_first_cycle_launch_r4.py": {
+      "bytes": 13045,
+      "sha256": "eeb850a881c91f5927a33d2659e87989963d7c4f6a5478eb01054dbc514d33cc"
+    },
+    "pocket_first_cycle_prepare_r4.py": {
+      "bytes": 6845,
+      "sha256": "b085d713cc7b2f449447a9d013b00837f1748001434b34ba02268edfdd9235c8"
+    },
+    "pocket_native_auth_rows_cas_r1.mjs": {
+      "bytes": 2703,
+      "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83"
+    },
+    "pocket_native_observer_r3.mjs": {
+      "bytes": 11901,
+      "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027"
+    },
+    "pocket_shared_first_cycle_live_r2.py": {
+      "bytes": 44996,
+      "sha256": "ed0149d7bcc1f33ad66fd00095147f93cf58e762b251f39368ae973d70bd905a"
+    },
+    "project_trusted_profile12.py": {
+      "bytes": 9233,
+      "sha256": "a7b05f1729cb658fe036d75caaeb6376149ae08a717cbdd91b69042a9b7b8e43"
+    }
+  },
+  "previousQaPinsSha256": "c8a6820b8f8f12a8b4fb4078d4a0833b2fe01c782d4793cbdd487896a0db3790",
+  "productionChanged": false,
+  "revision": 4,
+  "runtimeQualified": false,
+  "scenario": "shared-managed12-original-local-source",
+  "schema": "heptabao.pocket-shared-first-cycle-qa-pins.v1",
+  "sourceCommit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "sourceTree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+}

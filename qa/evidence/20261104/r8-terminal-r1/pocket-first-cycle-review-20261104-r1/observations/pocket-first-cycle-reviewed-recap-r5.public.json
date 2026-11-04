@@ -1,0 +1,176 @@
+{
+  "actualConsumer": {
+    "actualNativeFactories": 4,
+    "actualNativeRpc": 8,
+    "actualPluginImportedManagedProfilesPerCycle": 2,
+    "actualTlsProfileReadsPerCycle": 2,
+    "allFiveIdentitiesPreserved": true,
+    "allUnmanagedProfileBytesPreserved": true,
+    "installedSdkVersion": "2026.7.1-2",
+    "mainRawAuthRowsChanged": true,
+    "nativeBackendNetworkAttemptCountNotMeasured": true,
+    "nativeServerRefreshRequestsObserved": 0,
+    "nativeVersion": "0.144.3",
+    "orderAndUsagePreserved": true,
+    "orderExcludedAgents": 2,
+    "originalRuntimeAndModelKept": true,
+    "providerEgressDeniedByKernel": true,
+    "sameIdentityManagedGenerationWrites": true,
+    "selectedOrdinalForBothAgents": 5,
+    "tgEffectiveInheritancePreserved": true,
+    "tgRawAuthRowsChanged": false
+  },
+  "binarySha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+  "coreChecks": {
+    "passed": 66,
+    "total": 66
+  },
+  "durableJobId": "1a1a71b2d81-fc05-2a26",
+  "host": "pocket4",
+  "lifecycle": {
+    "actualSigkillAndWait": true,
+    "coldRestartInitiallySealed": true,
+    "coldUnseal": true,
+    "formalNormalStorageActivation": true,
+    "freshConsumerAfterServerRestart": true,
+    "realAppRoleRenewal": true,
+    "realTokenRevoke": true,
+    "revokedToken403": true,
+    "unassignedPath403": true
+  },
+  "ok": true,
+  "originalPublishNewSemantics": {
+    "eventsPerCycle": 3,
+    "firstScanDeferred": 3,
+    "remainingGrants": 0,
+    "secondScanCumulativeDeferred": 6,
+    "sharedManifestOnlyManaged12": true,
+    "unauthorizedPromotions": 0
+  },
+  "originalReceipts": {
+    "pocket-live-core-r4.public.json": {
+      "bytes": 19215,
+      "sha256": "372f53d5db5cf0f4c10d4080ab479003f5e147a4ff679ed8b69e6fa1e76e5499"
+    },
+    "pocket-live-core-r5.public.json": {
+      "bytes": 58813,
+      "sha256": "38926feda8c658aed80a0bb789130c670d85411d887c318eb5821889289c2807"
+    },
+    "pocket-live-intent-r5.public.json": {
+      "bytes": 5922,
+      "sha256": "5224385c4d550999eb57c5d83a94f5befa9a7c4f4927e63b7599318ef0e8f7e7"
+    },
+    "pocket-live-outer-r4.public.json": {
+      "bytes": 2067,
+      "sha256": "78b473748f88d3792f5e4a5870fe7707c554d30c1d6c702c6c52d29df1d2f814"
+    },
+    "pocket-live-outer-r5.public.json": {
+      "bytes": 2067,
+      "sha256": "62e0fe8395636a67479407ffd8eeb4adb917af314c25a32e5788de6d97922ede"
+    },
+    "pocket-live-output-r5.public.json": {
+      "bytes": 1134,
+      "sha256": "107302dc70664b0dd339af1efd095b27e945822fc71db7fac9d92d683f34d89a"
+    },
+    "pocket-live-r4-source-postmortem.public.json": {
+      "bytes": 3502,
+      "sha256": "f19d0a41a3dca05bbd25d687d03d8688f4459a907d84d545ca3731dc93735ecf"
+    },
+    "pocket-live-terminal-r5.public.json": {
+      "bytes": 730,
+      "sha256": "95c577ec34bffa2ea91e0988d2313c3aaf85db63e1da8164f2644a4e4b715f1f"
+    },
+    "pocket-preflight-core-r5.public.json": {
+      "bytes": 8757,
+      "sha256": "94090b0f6d245790aa026370e9caa2fb2a7f492a142d15e042bd541e526a5842"
+    },
+    "pocket-preflight-intent-r5.public.json": {
+      "bytes": 5971,
+      "sha256": "a5f9b134907348a7d29bcb8e7290e1df9f4ebe151ca62832b8cc7724375d88dc"
+    },
+    "pocket-preflight-outer-r5.public.json": {
+      "bytes": 2077,
+      "sha256": "2e23c2b23a16794f85e8c76d948f32ab0a580b80167800778b381738c1155da7"
+    },
+    "pocket-preflight-terminal-r5.public.json": {
+      "bytes": 730,
+      "sha256": "6d6a007696062c05ebbb3e06cc155a547678aaf1d59de7b21bc8f2b4254fa274"
+    },
+    "pocket-prepare-actual-r5.public.json": {
+      "bytes": 11975,
+      "sha256": "dee91e813b912af450571b4befac9aad6178901ae5dc79f914d7825457acbebd"
+    },
+    "pocket-qa-stage-r5.public.json": {
+      "bytes": 5051,
+      "sha256": "1e94b7e747d15ee222134c1b3f37f4f49098144acded94ff72f4d390945332c2"
+    }
+  },
+  "phaseChecks": [
+    {
+      "passed": 128,
+      "phase": "initial",
+      "total": 128
+    },
+    {
+      "passed": 128,
+      "phase": "cold-new-process",
+      "total": 128
+    },
+    {
+      "passed": 95,
+      "phase": "initial.rollback",
+      "total": 95
+    },
+    {
+      "passed": 95,
+      "phase": "cold-new-process.rollback",
+      "total": 95
+    }
+  ],
+  "preservedPriorFailure": {
+    "r4NoCandidateRollbackCheckpoint": true,
+    "r4OriginalOuterOutcomeUnknown": true,
+    "r4Reclassified": false,
+    "r4Replayed": false
+  },
+  "productionFences": {
+    "allOwnedProcessesStopped": true,
+    "authTablesConfigCachesRegistryNative4Unchanged": true,
+    "bothHeldUnitsInactiveDeadPidZero": true,
+    "holdMarkersUnchanged": true
+  },
+  "qaManifestSha256": "4ca5aefbd9f65b0a58ee2fe2919979f7a8b27b2339bd960b84d7b275c793d395",
+  "remainingFinitePocketPlan": [
+    "Bind the same reviewed fixture to the latest reviewed normal candidate before using it as that candidate qualification.",
+    "Complete the concrete final production TLS/AppRole and single-owner service installation binding.",
+    "Qualify the current encrypted offhost recovery set including exact local stores/caches/native4 and service rollback inputs.",
+    "Review and execute the explicit gateway hold release, real gateway restart, checks, and reverse CAS back to the held inactive baseline; keep helper hold unless separately qualified."
+  ],
+  "rollback": {
+    "allSixCacheBytesModesAndAbsencesRestored": true,
+    "bothAuthTablesRawRowsAndTimestampsRestored": true,
+    "bothGuardsAttemptedOnce": true,
+    "fullEffectiveAndLocalSdkStoresRestored": true,
+    "multiFileAtomicityClaimed": false,
+    "retries": 0
+  },
+  "schema": "heptabao.pocket-original-first-cycle-r5-reviewed-recap.v1",
+  "scope": {
+    "actualServiceManagerTestedHere": false,
+    "cleanupAuthorizedByThisResult": false,
+    "currentOffhostRecoveryQualifiedHere": false,
+    "firstCycleOwnedFixtureQualified": true,
+    "frozenPreviouslyVerifiedManagedGenerationsOnly": true,
+    "fullReplacementQualified": false,
+    "holdReleasePerformed": false,
+    "installedCoordinatorEntryTestedHere": false,
+    "latestActiveCredentialGenerationClaimed": false,
+    "latestR8Qualified": false,
+    "normal33Only": true,
+    "productionCutoverPerformed": false,
+    "productionGatewayRestartTested": false,
+    "providerAvailabilityQualified": false
+  },
+  "sourceCommit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "sourceTree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+}

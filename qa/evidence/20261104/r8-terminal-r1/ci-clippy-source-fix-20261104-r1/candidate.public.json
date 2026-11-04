@@ -1,0 +1,138 @@
+{
+  "schema": "heptabao.clippy-minimal-source-fix.v1",
+  "repo": "TrillionniumFoundation/HeptaBao",
+  "ci_commit": "f9139c3b37b6373df3e4b4c61ebdd4f847afac4d",
+  "ci_run": 41837754898,
+  "ci_head_job": 126600985114,
+  "r8_commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+  "r8_tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04",
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/engine_native_kv2_lossless_export.rs",
+      "ci_before": {
+        "bytes": 4267,
+        "sha256": "7afe81f716c166cf78f7f4fa41aba8fcc01c0dfedae467890967cf1755eb073b",
+        "git_blob": "228a01686a1834eb3db264d8301459c030bac348"
+      },
+      "r8_before": {
+        "bytes": 4267,
+        "sha256": "7afe81f716c166cf78f7f4fa41aba8fcc01c0dfedae467890967cf1755eb073b",
+        "git_blob": "228a01686a1834eb3db264d8301459c030bac348"
+      },
+      "ci_r8_whole_equal": true,
+      "r8_basis": "unchanged normal33 cached bytes equal exact f913 source; absent from full R8 changed-file manifest; physical whole-tree callsite pin to follow",
+      "ci_after": {
+        "bytes": 4267,
+        "sha256": "a8d0d08a35f05b5490a8f31364c593becb0a8e5195d35d2a6a96cd3b76f8d79a",
+        "git_blob": "95ba7b865884a1b08c1eb7d3c5780b4d59ac7280"
+      },
+      "r8_after": {
+        "bytes": 4267,
+        "sha256": "a8d0d08a35f05b5490a8f31364c593becb0a8e5195d35d2a6a96cd3b76f8d79a",
+        "git_blob": "95ba7b865884a1b08c1eb7d3c5780b4d59ac7280"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_forward.rs",
+      "ci_before": {
+        "bytes": 72930,
+        "sha256": "80b045324e909f606946ef701f983f2cbc5b22ab96ac38ab916688acc5d06a9e",
+        "git_blob": "f04b8b4471a32cb24ecddf216bf22af2af6b4715"
+      },
+      "r8_before": {
+        "bytes": 78870,
+        "sha256": "d4e0c57e9202024feed35c496036c5c03f2cef06e584b3466a9eda6ee98eaf9f",
+        "git_blob": "91eb2c17225cb2aa30b47c3f84e69710c6346776"
+      },
+      "ci_r8_whole_equal": false,
+      "r8_basis": "exact frozen R8 changed-file manifest and whole bytes",
+      "ci_after": {
+        "bytes": 72920,
+        "sha256": "18a136f18519d45460941134df4a87d00c30e2ba9ab63b121779a8d461c7c3e9",
+        "git_blob": "4cd6c7948f9fd6cc317a2841665e26e314b10ddd"
+      },
+      "r8_after": {
+        "bytes": 78860,
+        "sha256": "8c8d95ed29f7e01143ccccce400283c76f4007469f427a5141d3a9991756d84b",
+        "git_blob": "c4f67654fc940285233ad3db47d78681cb1e0ef5"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_auth.rs",
+      "ci_before": {
+        "bytes": 133396,
+        "sha256": "18d5a180570aff195bb38ef676919a4d6656a5a00a5b12d954fe466412618424",
+        "git_blob": "52679439a1cb8689673029d69d48504c12e912a3"
+      },
+      "r8_before": {
+        "bytes": 137400,
+        "sha256": "492a575a053d2aabc27e59bbb199f98bcb9d311d788ade2046d50d6828dcbdd2",
+        "git_blob": "855e353d564179f0f61e29604074627a2bfd83f0"
+      },
+      "ci_r8_whole_equal": false,
+      "r8_basis": "exact frozen R8 changed-file manifest and whole bytes",
+      "ci_after": {
+        "bytes": 133384,
+        "sha256": "724175ce490819327864c10f223b813a06f1a026ffd18d8d06cca66dd6ac3e18",
+        "git_blob": "4a6848b50532575cc5ca74346bd34fea315a1e0c"
+      },
+      "r8_after": {
+        "bytes": 137388,
+        "sha256": "dbf07f20dc30ac077761c6ec01936c7f7cd03a3687409d60cca674d4b2ed11cf",
+        "git_blob": "604bee0a92af08720cbd33b5c7c72f71d019e738"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_lossless_export.rs",
+      "ci_before": {
+        "bytes": 12284,
+        "sha256": "8338a8516d42bba61ccc6c766a1992ac3cd6744c579322db082be1c07f8edf7a",
+        "git_blob": "2df9ee32863fdda5c20cd43709ad5b2a32742363"
+      },
+      "r8_before": {
+        "bytes": 12284,
+        "sha256": "8338a8516d42bba61ccc6c766a1992ac3cd6744c579322db082be1c07f8edf7a",
+        "git_blob": "2df9ee32863fdda5c20cd43709ad5b2a32742363"
+      },
+      "ci_r8_whole_equal": true,
+      "r8_basis": "unchanged normal33 cached bytes equal exact f913 source; absent from full R8 changed-file manifest; physical whole-tree callsite pin to follow",
+      "ci_after": {
+        "bytes": 12204,
+        "sha256": "15c5f65bec79ef870053c4d52f73de6de45820502c86f7eea0ba9d72d09a9b8b",
+        "git_blob": "6aca23386469d70ebd8ea4390a7f66c7d60906af"
+      },
+      "r8_after": {
+        "bytes": 12204,
+        "sha256": "15c5f65bec79ef870053c4d52f73de6de45820502c86f7eea0ba9d72d09a9b8b",
+        "git_blob": "6aca23386469d70ebd8ea4390a7f66c7d60906af"
+      }
+    }
+  ],
+  "patches": [
+    {
+      "path": "clippy-source-fix-f913.review.diff",
+      "bytes": 4638,
+      "sha256": "d12311de870bbdf173e18675ec40341636a424af2f8649a1595c71d08f767c25"
+    },
+    {
+      "path": "clippy-source-fix-over-r8.review.diff",
+      "bytes": 4638,
+      "sha256": "b3566f78605d261affcd9fbc2b3e11c00efe63a582c030bc834325ef2661858e"
+    }
+  ],
+  "product_changes": 3,
+  "files_changed": 4,
+  "lint_suppression_added": false,
+  "lint_command_changed": false,
+  "test_or_deadline_changed": false,
+  "before_delivery_callback_changed": false,
+  "original_deadline_replaced": false,
+  "new_callback_executes_at_creation": false,
+  "original_early_final_check_calls_preserved": true,
+  "original_worker_check_invocation_sites_preserved": true,
+  "r8_wholefiles_must_not_be_overwritten_by_ci_afterfiles": true,
+  "compiled": false,
+  "tests_run": false,
+  "clippy_pass_claimed": false,
+  "github_or_production_changed": false
+}

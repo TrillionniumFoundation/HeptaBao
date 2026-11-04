@@ -1,0 +1,19 @@
+{
+  "binary_sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+  "build_exit_code": 0,
+  "features": [
+    "default",
+    "native-v6-ha",
+    "native-v6-storage"
+  ],
+  "native_abi": "x86_64-unknown-linux-gnu",
+  "provenance": {
+    "cargo_events_sha256": "956f9788854daa2d2864c1a6b727c4c1e6ee1bf4a5d45e35fdbe7a185d4d74cc",
+    "result_path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/normal-release-tests-r8-r1/normal-release-result.public.json",
+    "result_sha256": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5"
+  },
+  "schema": "heptabao.native-build.v1",
+  "source_commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+  "source_freeze_verified": true,
+  "source_tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04"
+}

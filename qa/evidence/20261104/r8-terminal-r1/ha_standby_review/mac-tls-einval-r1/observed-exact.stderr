@@ -1,0 +1,22 @@
+HB_EINVAL_OBSERVER_LOADED v1
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=false
+HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=false
+HB_EINVAL_EVENT {"sequence":1,"call":"setsockopt","fd":8,"result":-1,"errno":22,"requested":0,"level":65535,"option":4102,"optlen":16,"timeval_sec":4,"timeval_usec":991715,"local_loopback_port":55306,"peer_loopback_port":-1}
+Error: Os { code: 22, kind: InvalidInput, message: "Invalid argument" }
+HB_EINVAL_COUNT {"call":"setsockopt","count":25}
+HB_EINVAL_COUNT {"call":"getsockopt","count":0}
+HB_EINVAL_COUNT {"call":"read","count":85}
+HB_EINVAL_COUNT {"call":"write","count":184}
+HB_EINVAL_COUNT {"call":"readv","count":0}
+HB_EINVAL_COUNT {"call":"writev","count":0}
+HB_EINVAL_COUNT {"call":"recv","count":4}
+HB_EINVAL_COUNT {"call":"send","count":9}
+HB_EINVAL_COUNT {"call":"recvfrom","count":4}
+HB_EINVAL_COUNT {"call":"sendto","count":9}
+HB_EINVAL_COUNT {"call":"connect","count":1}
+HB_EINVAL_COUNT {"call":"bind","count":1}
+HB_EINVAL_COUNT {"call":"listen","count":1}
+HB_EINVAL_COUNT {"call":"accept","count":249}
+HB_EINVAL_COUNT {"call":"shutdown","count":0}
+HB_EINVAL_COUNT {"call":"poll","count":1}
+HB_EINVAL_TOTAL 1

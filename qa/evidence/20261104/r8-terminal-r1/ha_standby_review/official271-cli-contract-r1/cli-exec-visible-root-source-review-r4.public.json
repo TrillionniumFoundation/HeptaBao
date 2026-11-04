@@ -1,0 +1,39 @@
+{
+  "componentCases": 13,
+  "componentChecksPassed": 40,
+  "componentChecksTotal": 40,
+  "componentUsesFakeProcPopenClock": true,
+  "finalExactArgvRequired": true,
+  "freshLiveRun3Authorized": true,
+  "fullReplacementQualified": false,
+  "nonemptyWrongArgvStillImmediatelyRefused": true,
+  "oldRunsReplayed": false,
+  "oneOriginalChildOnly": true,
+  "pins": {
+    "cli-controller-r3-to-r4-exec-visible-r2.review.diff": {
+      "bytes": 6388,
+      "sha256": "4b05ce1ddea0f6d638318f44b8ca7227c03d06a17e7c6502feef474653448008"
+    },
+    "cli-exec-visibility-components-r1.public.json": {
+      "bytes": 32247,
+      "sha256": "88b0e9ac51a3e45f19cec38576905616e53b4ba97d52aa7775c70df68263258e"
+    },
+    "cli-exec-visible-independent-source-review-r4.public.json": {
+      "bytes": 1729,
+      "sha256": "d68caa22d544765d1ffdd915914c449ae2728fc108cf815aa9afedd6732dedf2"
+    },
+    "official271_cli_transport_r4.py": {
+      "bytes": 46586,
+      "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9"
+    }
+  },
+  "productOrProductionChanged": false,
+  "reviewedUtc": "2026-11-04T15:02:34.872373+00:00",
+  "runtimeQualified": false,
+  "samePidStartPgidParentExecutableRequiredDuringVisibilityWait": true,
+  "schema": "heptabao.official271-cli-exec-visible-root-review.v1",
+  "scope": "Root full narrow diff and all component checks/cases plus selected upstream primary source review; no new runtime qualification",
+  "sourceEvidenceLimitation": "Upstream Linux v7.0 and CPython3.12.3 sequence supports the observed empty-cmdline transition; it is not an exact source attestation of the installed Ubuntu kernel. The first uninstrumented failure remains unattributed.",
+  "sourceReviewPassed": true,
+  "unchangedOriginalAbsoluteDeadline": true
+}

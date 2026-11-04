@@ -1,0 +1,185 @@
+{
+  "authoritative_terminal": true,
+  "binary_unchanged": true,
+  "cross_platform_qualified": false,
+  "files": [
+    {
+      "bytes": 18940,
+      "name": "rog-result.public.json",
+      "sha256": "8fa3a928de5c705e6da80d9dd6fc64c5252035226013650c37941105e4069715"
+    },
+    {
+      "bytes": 731,
+      "name": "rog-status.public.json",
+      "sha256": "970d982a178bfb6be04d547fad11aa2ef061a531ca58915e92268a92c2aebf5e"
+    },
+    {
+      "bytes": 3164,
+      "name": "rog-normal-release-result.public.json",
+      "sha256": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5"
+    },
+    {
+      "bytes": 777,
+      "name": "rog-native-build.public.json",
+      "sha256": "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9"
+    },
+    {
+      "bytes": 6170,
+      "name": "rog-normal-intent.public.json",
+      "sha256": "a76a5c86f41c3e81d4e136c3321675a07c75d0d7d1d3d3a9369f96518ee9b7b7"
+    },
+    {
+      "bytes": 3163,
+      "name": "rog-ssh25.stdout",
+      "sha256": "ca6a5179f41ccce05c6474a869ac0efaaf978e160a86ca701bf64325495040bb"
+    },
+    {
+      "bytes": 18014,
+      "name": "rog-ssh25.stderr",
+      "sha256": "e7bc79a32aa0c3e3697e0721736003332a22a79268262c9c662bf2ab86dfb311"
+    },
+    {
+      "bytes": 233,
+      "name": "rog-mount1.stdout",
+      "sha256": "e9930c4b2da746a4a22adec50f633f6e6ef1e9521b8b846b2953575238cbc24e"
+    },
+    {
+      "bytes": 162,
+      "name": "rog-mount1.stderr",
+      "sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0"
+    },
+    {
+      "bytes": 722,
+      "name": "rog-redirect5.stdout",
+      "sha256": "075e73f6f98e229f8d49d03da6c0cc836ef55d1049b2ddf454ed531f0a0bffb4"
+    },
+    {
+      "bytes": 1304,
+      "name": "rog-redirect5.stderr",
+      "sha256": "0d1b1bbb8ca8447a0d365222beef62eb6526abd06fb4462a4c7875287bdc90f9"
+    },
+    {
+      "bytes": 440,
+      "name": "rog-actor2.stdout",
+      "sha256": "0dec0581f80cb35172b6b42d115b734ea4dc80496a4633cf2937b87356d260c7"
+    },
+    {
+      "bytes": 324,
+      "name": "rog-actor2.stderr",
+      "sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727"
+    }
+  ],
+  "full_openbao_replacement_qualified": false,
+  "group_results": [
+    {
+      "elapsed_seconds": 43.89336004300276,
+      "failed": 0,
+      "ignored": 0,
+      "label": "ssh25",
+      "names_exact": true,
+      "passed": 25,
+      "stderr_sha256": "e7bc79a32aa0c3e3697e0721736003332a22a79268262c9c662bf2ab86dfb311",
+      "stdout_sha256": "ca6a5179f41ccce05c6474a869ac0efaaf978e160a86ca701bf64325495040bb"
+    },
+    {
+      "elapsed_seconds": 0.2800722860265523,
+      "failed": 0,
+      "ignored": 0,
+      "label": "mount1",
+      "names_exact": true,
+      "passed": 1,
+      "stderr_sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0",
+      "stdout_sha256": "e9930c4b2da746a4a22adec50f633f6e6ef1e9521b8b846b2953575238cbc24e"
+    },
+    {
+      "elapsed_seconds": 0.1287355850217864,
+      "failed": 0,
+      "ignored": 0,
+      "label": "redirect5",
+      "names_exact": true,
+      "passed": 5,
+      "stderr_sha256": "0d1b1bbb8ca8447a0d365222beef62eb6526abd06fb4462a4c7875287bdc90f9",
+      "stdout_sha256": "075e73f6f98e229f8d49d03da6c0cc836ef55d1049b2ddf454ed531f0a0bffb4"
+    },
+    {
+      "elapsed_seconds": 10.151528244983638,
+      "failed": 0,
+      "ignored": 0,
+      "label": "actor2",
+      "names_exact": true,
+      "passed": 2,
+      "stderr_sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727",
+      "stdout_sha256": "0dec0581f80cb35172b6b42d115b734ea4dc80496a4633cf2937b87356d260c7"
+    }
+  ],
+  "job_id": "1a1a701ddd9-fc05-29dc",
+  "mac_independent_result": "32/33; one first-record TLS component EINVAL; retained separately",
+  "normal_exact33_passed": true,
+  "normal_library_binary": {
+    "bytes": 188077176,
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/normal-release-tests-r8-r1/retained-heptabao-server-libtest",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": true
+    },
+    "sha256": "9f498c4c2c14f2198dcbe746be81be1cf0c7caabca28671bba83fb003a65b46a"
+  },
+  "normal_release_artifacts": {
+    "heptabao-seed": {
+      "bytes": 102021848,
+      "compiler_executable": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/heptabao-seed",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/normal-release-tests-r8-r1/artifacts/heptabao-seed",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "91ea85884e98436bdae0b8c41ebd2e5cb172c6178e3113901cc7acc909934670"
+    },
+    "heptabao-server": {
+      "bytes": 110064840,
+      "compiler_executable": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/heptabao-server",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/normal-release-tests-r8-r1/artifacts/heptabao-server",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed"
+    }
+  },
+  "normal_release_passed": true,
+  "owned_groups_reaped": 10,
+  "production_changed": false,
+  "schema": "heptabao.rog-r8-normal-exact33-independent-readback.v1",
+  "source_commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+  "source_tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04",
+  "source_unchanged": true,
+  "tests_failed": 0,
+  "tests_ignored": 0,
+  "tests_passed": 33
+}

@@ -1,0 +1,102 @@
+{
+  "both_authoritative_terminals_complete_durable": true,
+  "comparison": {
+    "all_normalized_case_objects_equal": true,
+    "cases_each": 69,
+    "normalized_rejection_cases": {
+      "pki.lease_expire_lookup": "rejected_after_ttl",
+      "pki.revoked_lease_absent": "rejected_400_or_404"
+    },
+    "normalized_status_does_not_attest_exact_numeric_wire_status": true,
+    "numeric_status_cases": 67,
+    "oracle": "official OpenBao 2.7.1",
+    "original_modules": 13,
+    "ssh_covered": false,
+    "strict_tls": true
+  },
+  "full34": {
+    "destroyed_payload_absent": true,
+    "export_import_once": true,
+    "mutations_with_received_outcomes": 95,
+    "original_http_seconds": 15,
+    "original_migration_seconds": 360,
+    "passed": 31,
+    "payload_bytes": 35651584,
+    "payload_metadata_history_equal_across_import_cold_and_restore": true,
+    "soft_deleted_payload_retained": true,
+    "storage_witness_stages": 3,
+    "total": 31,
+    "unknown_mutations": 0,
+    "versions_per_stage": 19
+  },
+  "full_replacement_qualified": false,
+  "originals": [
+    {
+      "bytes": 1121,
+      "path": "full34-result.public.json",
+      "sha256": "e802d3dd029db9eedd2eff46b405c50ca36eee23e238f0f462053430a019a956"
+    },
+    {
+      "bytes": 90877,
+      "path": "full34-summary.public.json",
+      "sha256": "ee24ee6018562ec938ef5fd4ad7158293bb94ee421916d416c4b92c9587f8b30"
+    },
+    {
+      "bytes": 1357,
+      "path": "full34-intent.public.json",
+      "sha256": "dec6056f4dc7923fc0b66e10fd65e2c08c060a49cb8d849245cb445d985917ee"
+    },
+    {
+      "bytes": 729,
+      "path": "full34-status.public.json",
+      "sha256": "12a43ea4f9a9d944791076e78c836a9c14e9c06c1abb7899746bb4c7c020598a"
+    },
+    {
+      "bytes": 186,
+      "path": "full34-run.stdout",
+      "sha256": "26ab018b37254631e484077757739aab90049f6a7b57012c6076455632f5ff7b"
+    },
+    {
+      "bytes": 0,
+      "path": "full34-run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 2107,
+      "path": "comparison69-result.public.json",
+      "sha256": "4fa671fef9dd936a90cfe69682b4e668cd7a244d1ccdf9f985008c88eb82195e"
+    },
+    {
+      "bytes": 104035,
+      "path": "comparison69-summary.public.json",
+      "sha256": "523d2bb14e287fc83246d7c5b537e1e8639b7a56d0139cd7cd55af41f32df903"
+    },
+    {
+      "bytes": 2581,
+      "path": "comparison69-intent.public.json",
+      "sha256": "5c3cdcb636433a77b24d71b494012d3fc9f880fae80039b5721fa31a886dae45"
+    },
+    {
+      "bytes": 729,
+      "path": "comparison69-status.public.json",
+      "sha256": "e4677e839a1f2a25a3d4b3e5c2b1dd77be6362e39d5986c9827380c208339af4"
+    },
+    {
+      "bytes": 377,
+      "path": "comparison69-run.stdout",
+      "sha256": "e76db95bbd3dcd53f260a84a3818fdeb79b0f87815072bdf0e79380de10960aa"
+    },
+    {
+      "bytes": 0,
+      "path": "comparison69-run.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "owned_cleanup_confirmed": true,
+  "production_changed": false,
+  "reviewer": "root",
+  "reviewer_schema_correction": "Initial local verifier incorrectly assumed all 69 http_status values were numeric; it stopped before writing a report. Original schema was inspected, 67 numeric plus 2 explicit normalized rejection statuses preserved; no runtime rerun or original modification.",
+  "schema": "heptabao.root-r8-x230-original-terminal-review.v1",
+  "scope": "Two separate fresh X230 loopback runs, normal native_v6_file build, synthetic state. No physical multi-host HA, provider, fleet cutover, or full replacement qualification.",
+  "source_and_binary_unchanged": true
+}

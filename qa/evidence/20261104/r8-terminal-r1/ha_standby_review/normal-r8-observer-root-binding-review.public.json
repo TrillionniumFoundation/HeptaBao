@@ -1,0 +1,38 @@
+{
+  "allFunctionsAndClassesAstUnchangedExceptFreshRootRegex": true,
+  "changedFunction": "check_prepared",
+  "createOnlyTransferPrepareAuthorized": true,
+  "fullDiffRead": true,
+  "newNormal33TestsStillPending": true,
+  "newWireRuntimeQualified": false,
+  "normalReleaseBuildReceiptVerified": true,
+  "originalRequestsDeadlinesUnknownCleanupUnchanged": true,
+  "pins": {
+    "normal-r8-observer-artifact-binding-r1.review.diff": {
+      "bytes": 3158,
+      "sha256": "0ef9b237b5298d2a483ad997891f12c8fab3a0d104869b6246c9a8a5c60ef6d6"
+    },
+    "normal33_standby_oracle_r7.py": {
+      "bytes": 68078,
+      "sha256": "9a044ba861d651dbbd8543e78fa487b850627524f7aa6d5593425c20325300f1"
+    },
+    "normal_r8_standby_oracle_r1.py": {
+      "bytes": 68149,
+      "sha256": "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416"
+    },
+    "r8-linux-native-build.public.json": {
+      "bytes": 777,
+      "sha256": "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9"
+    },
+    "r8-linux-normal-release-result.public.json": {
+      "bytes": 3164,
+      "sha256": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5"
+    }
+  },
+  "productionChanged": false,
+  "reviewedUtc": "2026-11-04T15:02:34.872373+00:00",
+  "schema": "heptabao.normal-r8-wire-root-binding-review.v1",
+  "serverSha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+  "sourceCommit": "384c957612186d64c5a530044af0ae62c568cc3d",
+  "sourceTree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04"
+}

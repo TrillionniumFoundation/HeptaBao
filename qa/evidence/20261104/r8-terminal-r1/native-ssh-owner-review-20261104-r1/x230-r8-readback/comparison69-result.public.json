@@ -1,0 +1,76 @@
+{
+  "cases_match": true,
+  "child_exit_code": 0,
+  "cleanup_errors": [],
+  "elapsed_seconds": 38.036,
+  "execution_host": "x230",
+  "full_openbao_compatibility": false,
+  "intent_sha256": "5c3cdcb636433a77b24d71b494012d3fc9f880fae80039b5721fa31a886dae45",
+  "mismatched_cases": [],
+  "ok": true,
+  "original_driver_unmodified": true,
+  "original_modules_unmodified": true,
+  "owned_cleanup_completed": true,
+  "production_changed": false,
+  "production_qualified": false,
+  "schema": "heptabao.r8-x230-original-comparison69-assessment.v1",
+  "scope": [
+    "approle",
+    "core",
+    "edge_tls",
+    "identity",
+    "kv",
+    "operations",
+    "pki",
+    "system",
+    "token",
+    "totp",
+    "transit",
+    "userpass",
+    "wrapping"
+  ],
+  "side_stats": {
+    "candidate_results": {
+      "cleanup": "passed",
+      "count": 69,
+      "failed": 0,
+      "not_run": 0,
+      "passed": 69
+    },
+    "oracle_results": {
+      "cleanup": "passed",
+      "count": 69,
+      "failed": 0,
+      "not_run": 0,
+      "passed": 69
+    }
+  },
+  "source_after": {
+    "binary_sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+    "commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+    "dirty_including_untracked": false,
+    "tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04"
+  },
+  "source_before": {
+    "binary_sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+    "commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+    "dirty_including_untracked": false,
+    "tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04"
+  },
+  "source_unchanged": true,
+  "status": "passed_scoped_cases",
+  "summary_bytes": 104035,
+  "summary_path": "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/evidence/comparison69-r1/summary.public.json",
+  "summary_sha256": "523d2bb14e287fc83246d7c5b537e1e8639b7a56d0139cd7cd55af41f32df903",
+  "uncovered": [
+    "full_endpoint_error_precedence",
+    "other_auth_methods",
+    "other_secret_engines",
+    "persistent_restart",
+    "ha",
+    "migration",
+    "upgrade",
+    "agent_proxy_cli",
+    "production_security"
+  ]
+}

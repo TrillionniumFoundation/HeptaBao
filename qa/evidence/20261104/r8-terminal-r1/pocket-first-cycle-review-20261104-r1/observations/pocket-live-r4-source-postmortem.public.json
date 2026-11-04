@@ -1,0 +1,112 @@
+{
+  "authoritativeTerminal": {
+    "exitCode": 1,
+    "outputComplete": true,
+    "outputDurable": true,
+    "state": "failed",
+    "timedOut": false
+  },
+  "classification": "Known early consumer path refusal; original overall rollback qualification remains unknown",
+  "coldRestartReached": false,
+  "consumerPrerequisiteChecks": {
+    "passed": 65,
+    "total": 65
+  },
+  "consumerSdkImportQualified": false,
+  "coreCompletedChecks": {
+    "passed": 44,
+    "total": 45
+  },
+  "durableJobId": "1a1a6fee1f3-fc05-29cd",
+  "earlierOwnedWritesPreserved": {
+    "claimOfAllCoordinatorImplicitRequestsEnumerated": false,
+    "directHttpCalls": 18,
+    "directHttpResponses": 18,
+    "formalNormal33InitializedAndActivated": true,
+    "frozenManagedCredentialPublications": 2
+  },
+  "failure": {
+    "actualStatePath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-live-r4/live/consumer-initial/state",
+    "code": "auth_rows_not_new_owned_state",
+    "codeSha256": "c83fb0d9ea1b6831080e3e7773e3d4252c416465b84c5e093694ff722b6545a0",
+    "requiresCurrentNativePathComponent": true,
+    "sourceFrames": [
+      [
+        "pocket_native_auth_rows_cas_r1.mjs",
+        "15",
+        "11"
+      ],
+      [
+        "pocket_native_auth_rows_cas_r1.mjs",
+        "24",
+        "31"
+      ],
+      [
+        "pocket_first_cycle_consumer_r1.mjs",
+        "136",
+        "64"
+      ],
+      [
+        "native"
+      ]
+    ]
+  },
+  "fullFirstCycleQualified": false,
+  "nativeConsumerQualified": false,
+  "newGenerationCaptured": false,
+  "originalReceiptPins": {
+    "pocket-live-core-r4.public.json": {
+      "bytes": 19215,
+      "sha256": "372f53d5db5cf0f4c10d4080ab479003f5e147a4ff679ed8b69e6fa1e76e5499"
+    },
+    "pocket-live-intent-r4.public.json": {
+      "bytes": 5922,
+      "sha256": "bdca8e04ee71fb3b5b30093f1a287ed47e5fbb1882a2947d7e07f037dd78b755"
+    },
+    "pocket-live-outer-r4.public.json": {
+      "bytes": 2067,
+      "sha256": "78b473748f88d3792f5e4a5870fe7707c554d30c1d6c702c6c52d29df1d2f814"
+    },
+    "pocket-live-output-r4.public.json": {
+      "bytes": 1134,
+      "sha256": "ac7e44589e26566aa918762a8c7afad4d9d27eff4a4ea6c9f1aedc81193a5beb"
+    },
+    "pocket-live-terminal-r4.public.json": {
+      "bytes": 727,
+      "sha256": "6aa88d0af907fb22cf7be917b0fb5d9ad4eafc3370e63e21b8e97bc6a4f60f0d"
+    }
+  },
+  "ownedProcessesStopped": true,
+  "productionChanged": false,
+  "productionTrafficCutover": false,
+  "protectedSourcesAndProductionUnitsUnchanged": true,
+  "providerCalled": false,
+  "refreshCalled": false,
+  "rollback": {
+    "attempted": false,
+    "completeCandidateCheckpoint": false,
+    "guard": {
+      "initial": {
+        "attemptedOnce": true,
+        "outcome": "no_candidate_checkpoint_unknown",
+        "retried": false
+      }
+    },
+    "oldRunReopenedOrReplayed": false,
+    "originalCoreOutcomeUnknown": false,
+    "originalOuterOutcomeUnknown": true,
+    "originalResultReclassified": false
+  },
+  "schema": "heptabao.pocket-first-cycle-r4-source-postmortem.v1",
+  "sourceOrdering": {
+    "actualNativeChildren": 0,
+    "actualNativeFactories": 0,
+    "actualNativeRpc": 0,
+    "consumerFileSha256": "6455180970f37831bb1a4084aab8583822c900586f9fabcbd7536332bc45429e",
+    "consumerWireRequests": 0,
+    "guardBeforeActualSdkImport": true,
+    "guardBeforeAuthBusPluginCycle": true,
+    "guardBeforeDatabaseConstructor": true,
+    "rawCasFileSha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83"
+  }
+}

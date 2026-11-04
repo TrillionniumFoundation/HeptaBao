@@ -1,0 +1,202 @@
+{
+  "actual_test_outcome": "FAILED",
+  "all_owned_stopped": true,
+  "call_counts": [
+    {
+      "call": "setsockopt",
+      "count": 25
+    },
+    {
+      "call": "getsockopt",
+      "count": 0
+    },
+    {
+      "call": "read",
+      "count": 85
+    },
+    {
+      "call": "write",
+      "count": 184
+    },
+    {
+      "call": "readv",
+      "count": 0
+    },
+    {
+      "call": "writev",
+      "count": 0
+    },
+    {
+      "call": "recv",
+      "count": 4
+    },
+    {
+      "call": "send",
+      "count": 9
+    },
+    {
+      "call": "recvfrom",
+      "count": 4
+    },
+    {
+      "call": "sendto",
+      "count": 9
+    },
+    {
+      "call": "connect",
+      "count": 1
+    },
+    {
+      "call": "bind",
+      "count": 1
+    },
+    {
+      "call": "listen",
+      "count": 1
+    },
+    {
+      "call": "accept",
+      "count": 249
+    },
+    {
+      "call": "shutdown",
+      "count": 0
+    },
+    {
+      "call": "poll",
+      "count": 1
+    }
+  ],
+  "cleanup": [
+    {
+      "direct_child_reaped": true,
+      "exit_code": 101,
+      "label": "observed-exact",
+      "pid": 3779,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "exact-list",
+      "pid": 3749,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "observer-compile",
+      "pid": 3745,
+      "remaining": []
+    }
+  ],
+  "compiler": {
+    "argv": [
+      "/usr/bin/clang",
+      "-arch",
+      "arm64",
+      "-std=c11",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-dynamiclib",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-http-r8/mac-tls-einval-diagnostic-r1/observe_errno.c",
+      "-o",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-http-r8/mac-tls-einval-diagnostic-r1/observe_errno.dylib"
+    ],
+    "direct_child_reaped": true,
+    "elapsed_seconds": 0.09975787531584501,
+    "exit_code": 0,
+    "label": "observer-compile",
+    "outer_cap_seconds": 120,
+    "owned_pgid": 3745,
+    "remaining": [],
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "timed_out": false
+  },
+  "controller_sha256": "6facdbfda62c2b6968ce9237c1fa9c1b1992170462596b684323cfa00fe0d80f",
+  "diagnostic_only": true,
+  "events": [
+    {
+      "call": "setsockopt",
+      "errno": 22,
+      "fd": 8,
+      "level": 65535,
+      "local_loopback_port": 55306,
+      "option": 4102,
+      "optlen": 16,
+      "peer_loopback_port": -1,
+      "requested": 0,
+      "result": -1,
+      "sequence": 1,
+      "timeval_sec": 4,
+      "timeval_usec": 991715
+    }
+  ],
+  "exact_test": "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload",
+  "io_buffers_logged": false,
+  "new_operation_attempts": 1,
+  "observer_library_sha256": "f5e30cebe87afee6cd9c4cdb764cfdcaa57eeceae34f9f403694addc76ee3d38",
+  "observer_loaded_count": 1,
+  "observer_source_sha256": "4a8ab318e029fb391af32be17dd3083e449db2cbaddd179571d28d1f83d0f574",
+  "old_operation_replayed": false,
+  "original_failed_result_sha256": "fc6677c0f65ba0e2050f0fe20d25356cba33a20ab2c287de5e0e0c7d4dd56557",
+  "original_failed_result_unchanged": true,
+  "original_group_envelope_seconds": 600,
+  "original_libtest_unchanged": true,
+  "original_test_deadline_seconds": 5,
+  "production_changed": false,
+  "qualification": false,
+  "retained_libtest_unchanged": true,
+  "retention": {
+    "bytes": 154048544,
+    "retained": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-http-r8/mac-tls-einval-diagnostic-r1/retained-r8-libtest",
+    "retained_mode": 320,
+    "sha256": "648236a59ebf23aee2ebd02039e6045fb491cebff80ac8d4e564b78b3e316aab",
+    "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/deps/heptabao_server-46a463ff9369a255",
+    "source_identity": [
+      16777244,
+      72446560,
+      501,
+      20,
+      33216,
+      1,
+      154048544,
+      1793804097331074171,
+      1793804097347972795
+    ]
+  },
+  "reused_lifecycle_controller_sha256": "eb6f53b842f79d221e78b79628690df6db37002284c0ca4a400b18eac817b728",
+  "schema": "heptabao.mac-r8-tls-einval-single-diagnostic.v1",
+  "source_commit": "2d9a2efd4cfc3a9ee60a450eee58866828a3f5ad",
+  "source_tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04",
+  "source_unchanged": true,
+  "startup_ns": 1793805761409647000,
+  "status": "observed",
+  "syscall_return_values_or_errno_changed": false,
+  "terminal_ns": 1793805768222034000,
+  "test": {
+    "argv": [
+      "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-http-r8/mac-tls-einval-diagnostic-r1/retained-r8-libtest",
+      "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload",
+      "--exact",
+      "--nocapture",
+      "--test-threads=1"
+    ],
+    "direct_child_reaped": true,
+    "elapsed_seconds": 1.1904113749042153,
+    "exit_code": 101,
+    "label": "observed-exact",
+    "outer_cap_seconds": 600,
+    "owned_pgid": 3779,
+    "remaining": [],
+    "stderr_sha256": "dfb5d531b5fb8ee297eabf2d948e1132d41337f6de62ef548da22a5c1ccdbdbb",
+    "stdout_sha256": "1910dd303e28b0431f9ca1f42932846433194d6d9c80b95d8a644726e5d0b5e1",
+    "timed_out": false
+  },
+  "total_einval": [
+    1
+  ]
+}

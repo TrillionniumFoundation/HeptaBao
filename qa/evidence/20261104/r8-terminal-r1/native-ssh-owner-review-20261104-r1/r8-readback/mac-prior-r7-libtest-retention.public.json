@@ -1,0 +1,13 @@
+{
+  "bytes": 153941408,
+  "original_file_unchanged": true,
+  "original_r7_failure_replayed": false,
+  "prior_failed_result_unchanged": true,
+  "prior_result_sha256": "a1cfc93c3001e49e0e0b8f889c5e2736c4a72e4ddd4564151a1dd19eb4bf6695",
+  "production_changed": false,
+  "retained": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-http-r8/control/retained-prior-r7-libtest",
+  "schema": "heptabao.mac-r7-libtest-retention-before-r8-build.v1",
+  "sha256": "e96092113ee2ae7a17e9de915dffab956bc34d038f05c05de92b676ca4fcd8c1",
+  "shared_target_open_pids": [],
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/deps/heptabao_server-46a463ff9369a255"
+}

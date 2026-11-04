@@ -1,0 +1,38 @@
+{
+  "allControllerFunctionsAstUnchanged": true,
+  "controllerChangedAssignmentsOnly": [
+    "COMMIT",
+    "TREE",
+    "BINARY_SHA",
+    "BUILD_SHA",
+    "NATIVE_SHA"
+  ],
+  "launcherOnlyFreshPathsArtifactPathIntentIdentityChanged": true,
+  "nativeReceiptSha256": "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9",
+  "newCredentialGenerationOrSnapshotCaptured": false,
+  "normalBuildReceiptSha256": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5",
+  "ok": true,
+  "originalBudgets": {
+    "consumer": 70,
+    "http": 10,
+    "outer": 440,
+    "rollback": 35
+  },
+  "prepareOnlyFreshPathsAndArtifactProvenanceFieldsChanged": true,
+  "previousR5QaPinsSha256": "4ca5aefbd9f65b0a58ee2fe2919979f7a8b27b2339bd960b84d7b275c793d395",
+  "productionChanged": false,
+  "qaPinsSha256": "2a234b7b213ce92eb0bf163e1964acd79f7213d8581ae6ec20817c8eaf043c40",
+  "qaRevision": 6,
+  "reviewDiffSha256": "283026996ae5d6a60c97618b50f78bf26188f1aaad726fdeee2846f02f9f2d75",
+  "runtimeExecuted": false,
+  "schema": "heptabao.pocket-r8-artifact-only-source-binding.v1",
+  "unchangedSevenHelperPins": {
+    "authbus_coordinator.py": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+    "pocket_authbus_cache_cas_r1.mjs": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+    "pocket_first_cycle_consumer_r1.mjs": "6455180970f37831bb1a4084aab8583822c900586f9fabcbd7536332bc45429e",
+    "pocket_first_cycle_inputs_r1.py": "1ffcca778b9f78f0f63679b0cf0050afc8d520ca3c823ee65fc0aed9bd84f5ac",
+    "pocket_native_auth_rows_cas_r1.mjs": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+    "pocket_native_observer_r3.mjs": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027",
+    "project_trusted_profile12.py": "a7b05f1729cb658fe036d75caaeb6376149ae08a717cbdd91b69042a9b7b8e43"
+  }
+}

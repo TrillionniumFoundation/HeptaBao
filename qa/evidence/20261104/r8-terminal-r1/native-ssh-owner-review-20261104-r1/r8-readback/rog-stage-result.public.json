@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.combined-r8-rog-stage-intent.v1",
+  "prior": {
+    "commit": "dc1c02dbd4803f4301097a8268d121e5d7f27464",
+    "tree": "97d4e782ffa1f2e5d4e116747c34d8c9fb5390d8",
+    "status": ""
+  },
+  "source_path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/source-r8-test-fixtures-r1",
+  "local_branch": "codex/heptabao-native-ssh-http-20261104-r8-rog",
+  "expected_tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04",
+  "review_sha256": "8926bf701d31f93f183343bbc65eb3ff46e9b60d071d566373eeff46d9f3ff93",
+  "delta_sha256": "6d6f2870b4d44bd9a3d1c04e5b432329e6737b5506f865a86e0789b289cda393",
+  "groups_sha256": "c725fd978f4d730b28cbf90335d8cc6e673003a5dc64b6fb965c7b1ae3485deb",
+  "input_sha256": "ed4c91f697d9997519f8da3352f37e8ceb760bdcba90e40d228f93f6186fea6b",
+  "changes": [
+    {
+      "after_bytes": 21070,
+      "after_git_blob": "d895b4ad2ba29e9d4f140f458be6619dcf4cf929",
+      "after_sha256": "fdfa40cd68bf81db79e55d5f975aac077efdda472325f9b203d990f33acff5a3",
+      "before_sha256": "38e0891a2c6181128386318977f032050b1a5da4423699f152fae4398fd9627c",
+      "path": "crates/heptabao-server/src/http_snapshot_redirect_tests.rs"
+    },
+    {
+      "after_bytes": 3354,
+      "after_git_blob": "48da278659ab5c9a6f72458366fe52403042c674",
+      "after_sha256": "400c57c02d2e395ca73fb6effa28b370645f749dfa81adffc947b30f3526381f",
+      "before_sha256": "707c98e2585f438f26722ae86d4b7222a0866747fd20d955724155c3bbd8a268",
+      "path": "crates/heptabao-server/src/service_snapshot_lossless_parallel_tests.rs"
+    }
+  ],
+  "test_count": 33,
+  "compilation_executed": false,
+  "runtime_executed": false,
+  "product_code_changed_from_r7": false,
+  "production_changed": false,
+  "started_ns": 1793802527406671729,
+  "controller_sha256": "109e2bcfaee2d8fba179534d7e5e1d131437deb83bfb6f6b6d870797d814e7dc",
+  "status": "prepared",
+  "format": {
+    "exit_code": 0,
+    "timed_out": false,
+    "owned_pgid": 2941510,
+    "remaining": [],
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "source_commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+  "source_tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04",
+  "source_clean": true,
+  "prior_source_unchanged": true,
+  "exact_two_test_file_delta": true,
+  "manifest_sha256": "55bf0870eb9d765718e90e2d7eb8615543910c9094f91034fbaa8f43dddd5ce6",
+  "packet": {
+    "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/prepare-r8-test-fixtures-r1/ssh-http-r8-candidate.tar.gz",
+    "bytes": 362309,
+    "sha256": "7dbfd64fdc9a6cf5f285ee7107175b08822d12530dea22c450a2269f23bed9c4"
+  },
+  "bundle": {
+    "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/prepare-r8-test-fixtures-r1/candidate-from-r7.bundle",
+    "bytes": 1259,
+    "sha256": "b9a64f258aa6c0ecfac366d57c675d4f9d712edf5f1fe7ddc0929b69d5769aef",
+    "requires_commit": "dc1c02dbd4803f4301097a8268d121e5d7f27464",
+    "verified": true
+  },
+  "terminal_ns": 1793802533790232436
+}

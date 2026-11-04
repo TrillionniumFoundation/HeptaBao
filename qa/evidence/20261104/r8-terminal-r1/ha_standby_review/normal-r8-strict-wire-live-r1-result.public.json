@@ -1,0 +1,937 @@
+{
+  "all_owned_stopped": true,
+  "artifacts_after": {
+    "build-result.public.json": {
+      "bytes": 3164,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r8-standby-oracle-control-r1/artifacts/build-result.public.json",
+      "sha256": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5"
+    },
+    "heptabao-server": {
+      "bytes": 110064840,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r8-standby-oracle-control-r1/artifacts/heptabao-server",
+      "sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed"
+    },
+    "native-build.public.json": {
+      "bytes": 777,
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r8-standby-oracle-control-r1/artifacts/native-build.public.json",
+      "sha256": "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9"
+    }
+  },
+  "checks": [
+    {
+      "name": "seed_initialize_complete",
+      "passed": true
+    },
+    {
+      "name": "seed_exact_single_unseal_share",
+      "passed": true
+    },
+    {
+      "name": "seed_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "seed_mount_kv2_created",
+      "passed": true
+    },
+    {
+      "name": "seed_version_1_acknowledged_once",
+      "passed": true
+    },
+    {
+      "name": "seed_version_2_acknowledged_once",
+      "passed": true
+    },
+    {
+      "name": "actual_v5_seed",
+      "passed": true
+    },
+    {
+      "name": "fresh_cluster_identity",
+      "passed": true
+    },
+    {
+      "name": "seed_reaped_before_cold_copy",
+      "passed": true
+    },
+    {
+      "name": "node2_stopped_seed_exact_clone",
+      "passed": true
+    },
+    {
+      "name": "node3_stopped_seed_exact_clone",
+      "passed": true
+    },
+    {
+      "name": "stopped_seed_source_unchanged",
+      "passed": true
+    },
+    {
+      "name": "node1_native_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "node2_native_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "node3_native_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "native_v6_activate_complete",
+      "passed": true
+    },
+    {
+      "name": "actual_normal_native_v6",
+      "passed": true
+    },
+    {
+      "name": "node1_actual_native_seed_version_1",
+      "passed": true
+    },
+    {
+      "name": "node1_actual_native_seed_version_2",
+      "passed": true
+    },
+    {
+      "name": "node2_actual_native_seed_version_1",
+      "passed": true
+    },
+    {
+      "name": "node2_actual_native_seed_version_2",
+      "passed": true
+    },
+    {
+      "name": "node3_actual_native_seed_version_1",
+      "passed": true
+    },
+    {
+      "name": "node3_actual_native_seed_version_2",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_1_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_1_unsealed_ha",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_2_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_2_unsealed_ha",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_3_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_3_unsealed_ha",
+      "passed": true
+    },
+    {
+      "name": "roles_before_single_actual_leader",
+      "passed": true
+    },
+    {
+      "name": "roles_before_all_report_same_leader",
+      "passed": true
+    },
+    {
+      "name": "roles_before_health_agrees_with_actual_roles",
+      "passed": true
+    },
+    {
+      "name": "leader_stable_from_activation",
+      "passed": true
+    },
+    {
+      "name": "node2_snapshot_get_none_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node2_snapshot_get_invalid_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node2_snapshot_get_root_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node3_snapshot_get_none_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node3_snapshot_get_invalid_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node3_snapshot_get_root_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node1_snapshot_invalid_restore_no_success",
+      "passed": true
+    },
+    {
+      "name": "node1_snapshot-force_invalid_restore_no_success",
+      "passed": true
+    },
+    {
+      "name": "node2_snapshot_invalid_restore_no_success",
+      "passed": true
+    },
+    {
+      "name": "node2_snapshot_invalid_restore_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node2_snapshot-force_invalid_restore_no_success",
+      "passed": true
+    },
+    {
+      "name": "node2_snapshot-force_invalid_restore_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node3_snapshot_invalid_restore_no_success",
+      "passed": true
+    },
+    {
+      "name": "node3_snapshot_invalid_restore_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node3_snapshot-force_invalid_restore_no_success",
+      "passed": true
+    },
+    {
+      "name": "node3_snapshot-force_invalid_restore_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node2_ordinary_256k_write_once_forward_completed",
+      "passed": true
+    },
+    {
+      "name": "node2_ordinary_256k_write_once_exact_persisted_body",
+      "passed": true
+    },
+    {
+      "name": "node3_ordinary_256k_write_once_forward_completed",
+      "passed": true
+    },
+    {
+      "name": "node3_ordinary_256k_write_once_exact_persisted_body",
+      "passed": true
+    }
+  ],
+  "checks_are_dynamic_observation_invariants_not_a_qualification_denominator": true,
+  "checks_passed": 53,
+  "checks_total": 53,
+  "client_cleanup": [
+    {
+      "owned_stopped": true,
+      "pid": 2759546,
+      "remaining": [],
+      "start_ticks": 88341500,
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2759532,
+      "remaining": [],
+      "start_ticks": 88341463,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2759391,
+      "remaining": [],
+      "start_ticks": 88341302,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2759381,
+      "remaining": [],
+      "start_ticks": 88341263,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2759276,
+      "remaining": [],
+      "start_ticks": 88341146,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2759270,
+      "remaining": [],
+      "start_ticks": 88341110,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2759206,
+      "remaining": [],
+      "start_ticks": 88341076,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2759202,
+      "remaining": [],
+      "start_ticks": 88341041,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2759146,
+      "remaining": [],
+      "start_ticks": 88341011,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2759135,
+      "remaining": [],
+      "start_ticks": 88340977,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2759083,
+      "remaining": [],
+      "start_ticks": 88340947,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2759051,
+      "remaining": [],
+      "start_ticks": 88340915,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758974,
+      "remaining": [],
+      "start_ticks": 88340880,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758846,
+      "remaining": [],
+      "start_ticks": 88340752,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758786,
+      "remaining": [],
+      "start_ticks": 88340716,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758727,
+      "remaining": [],
+      "start_ticks": 88340683,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758620,
+      "remaining": [],
+      "start_ticks": 88340648,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758612,
+      "remaining": [],
+      "start_ticks": 88340602,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758593,
+      "remaining": [],
+      "start_ticks": 88340566,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758559,
+      "remaining": [],
+      "start_ticks": 88340537,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758553,
+      "remaining": [],
+      "start_ticks": 88340498,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758542,
+      "remaining": [],
+      "start_ticks": 88340463,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758538,
+      "remaining": [],
+      "start_ticks": 88340431,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758527,
+      "remaining": [],
+      "start_ticks": 88340401,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758484,
+      "remaining": [],
+      "start_ticks": 88340340,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758461,
+      "remaining": [],
+      "start_ticks": 88340311,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758451,
+      "remaining": [],
+      "start_ticks": 88340277,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758444,
+      "remaining": [],
+      "start_ticks": 88340191,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758416,
+      "remaining": [],
+      "start_ticks": 88340136,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758412,
+      "remaining": [],
+      "start_ticks": 88340089,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758382,
+      "remaining": [],
+      "start_ticks": 88340028,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758377,
+      "remaining": [],
+      "start_ticks": 88339997,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758367,
+      "remaining": [],
+      "start_ticks": 88339963,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758290,
+      "remaining": [],
+      "start_ticks": 88339928,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2758013,
+      "remaining": [],
+      "start_ticks": 88339832,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757961,
+      "remaining": [],
+      "start_ticks": 88339798,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757947,
+      "remaining": [],
+      "start_ticks": 88339772,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757943,
+      "remaining": [],
+      "start_ticks": 88339737,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757939,
+      "remaining": [],
+      "start_ticks": 88339696,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757926,
+      "remaining": [],
+      "start_ticks": 88339662,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757924,
+      "remaining": [],
+      "start_ticks": 88339626,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757920,
+      "remaining": [],
+      "start_ticks": 88339586,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757909,
+      "remaining": [],
+      "start_ticks": 88339558,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757904,
+      "remaining": [],
+      "start_ticks": 88339520,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757890,
+      "remaining": [],
+      "start_ticks": 88339477,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757888,
+      "remaining": [],
+      "start_ticks": 88339449,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757884,
+      "remaining": [],
+      "start_ticks": 88339415,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757875,
+      "remaining": [],
+      "start_ticks": 88339376,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757869,
+      "remaining": [],
+      "start_ticks": 88339336,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757823,
+      "remaining": [],
+      "start_ticks": 88339251,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757809,
+      "remaining": [],
+      "start_ticks": 88339223,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757805,
+      "remaining": [],
+      "start_ticks": 88339190,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757792,
+      "remaining": [],
+      "start_ticks": 88339107,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757782,
+      "remaining": [],
+      "start_ticks": 88339068,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757780,
+      "remaining": [],
+      "start_ticks": 88339038,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757776,
+      "remaining": [],
+      "start_ticks": 88339008,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757760,
+      "remaining": [],
+      "start_ticks": 88338969,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757758,
+      "remaining": [],
+      "start_ticks": 88338940,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757756,
+      "remaining": [],
+      "start_ticks": 88338906,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757745,
+      "remaining": [],
+      "start_ticks": 88338871,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757743,
+      "remaining": [],
+      "start_ticks": 88338840,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757716,
+      "remaining": [],
+      "start_ticks": 88338797,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757683,
+      "remaining": [],
+      "start_ticks": 88338757,
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757550,
+      "remaining": [],
+      "start_ticks": 88338713,
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757515,
+      "remaining": [],
+      "start_ticks": 88338633,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757513,
+      "remaining": [],
+      "start_ticks": 88338595,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757477,
+      "remaining": [],
+      "start_ticks": 88338380,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757473,
+      "remaining": [],
+      "start_ticks": 88338335,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757470,
+      "remaining": [],
+      "start_ticks": 88338293,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757443,
+      "remaining": [],
+      "start_ticks": 88338261,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757438,
+      "remaining": [],
+      "start_ticks": 88338218,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757408,
+      "remaining": [],
+      "start_ticks": 88338159,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757406,
+      "remaining": [],
+      "start_ticks": 88338121,
+      "wait_returncode": 0
+    }
+  ],
+  "compatibility_status_differences": [
+    "node2_snapshot_get_root",
+    "node3_snapshot_get_root",
+    "node1_snapshot_invalid_restore",
+    "node1_snapshot-force_invalid_restore",
+    "node2_snapshot_invalid_restore",
+    "node2_snapshot-force_invalid_restore",
+    "node3_snapshot_invalid_restore",
+    "node3_snapshot-force_invalid_restore"
+  ],
+  "complete_http_responses": 70,
+  "controller_sha256_after": "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416",
+  "elapsed_ms": 42033.138501,
+  "failure_code": "single_exchange_outcome_unknown_no_replay",
+  "full_replacement_qualification": false,
+  "http_intents": 73,
+  "http_outcomes": 73,
+  "http_unknown": 1,
+  "intent_sequences_without_terminal_outcome": [],
+  "operation_boundary_complete": false,
+  "owned_cleanup": [
+    {
+      "owned_stopped": true,
+      "pid": 2757543,
+      "remaining": [],
+      "start_ticks": 88338700,
+      "wait_returncode": -15
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757538,
+      "remaining": [],
+      "start_ticks": 88338698,
+      "wait_returncode": -15
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757532,
+      "remaining": [],
+      "start_ticks": 88338694,
+      "wait_returncode": -15
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2757397,
+      "remaining": [],
+      "start_ticks": 88338114,
+      "wait_returncode": -15
+    }
+  ],
+  "physical_hosts": 1,
+  "preconnect_failures": 2,
+  "prepared": {
+    "api_ports": {
+      "1": 48630,
+      "2": 48632,
+      "3": 48634
+    },
+    "artifacts": {
+      "build-result.public.json": {
+        "bytes": 3164,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r8-standby-oracle-control-r1/artifacts/build-result.public.json",
+        "sha256": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5"
+      },
+      "heptabao-server": {
+        "bytes": 110064840,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r8-standby-oracle-control-r1/artifacts/heptabao-server",
+        "sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed"
+      },
+      "native-build.public.json": {
+        "bytes": 777,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r8-standby-oracle-control-r1/artifacts/native-build.public.json",
+        "sha256": "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9"
+      }
+    },
+    "binary": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r8-standby-oracle-control-r1/artifacts/heptabao-server",
+    "binary_bytes": 110064840,
+    "binary_sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+    "comparison_scope": "actual_wire_observation_not_full_replacement_qualification",
+    "controller_sha256": "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416",
+    "election_seconds": 60.0,
+    "http_seconds": 15.0,
+    "loopback_only": true,
+    "max_response_bytes": 16777216,
+    "max_response_header_capture_bytes": 65536,
+    "node_disable_standby_reads_config": "not_set_by_this_observer",
+    "normal_default_features": true,
+    "old_fences": {
+      "formal-33cafa-normal-full128-r2/summary.json": {
+        "bytes": 109148,
+        "sha256": "8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1"
+      },
+      "formal-33cafa-pocket3-mac1-direct98-r1/summary.json": {
+        "bytes": 45176,
+        "sha256": "b02a111b487e33065117fc88596113c7e8a7695feb283331165381fafd3c167f"
+      },
+      "normal33-standby-oracle-live-r2/partial-wire-assessment.public.json": {
+        "bytes": 184257,
+        "sha256": "3172100f22faa9f23992bf8c6f806ead6c20ff8b68f5821203745c86424c74db"
+      },
+      "normal33-standby-oracle-live-r2/result.public.json": {
+        "bytes": 20381,
+        "sha256": "12cdeb32dc89a7f0af5d1950a2c14a02581a8e98cefd3719c0673a0bd38e68d4"
+      },
+      "normal33-standby-oracle-live-r3/result.public.json": {
+        "bytes": 19915,
+        "sha256": "f5a44d25e6f33e562b492e050242f36cc2744417a13a01db4beab1c0422ae590"
+      },
+      "official271-standby-oracle-live-r1/boundary-assessment.public.json": {
+        "bytes": 112921,
+        "sha256": "4588e9f3a8fff060d4ac7ea035f85b5bcf58cc9874e839d9797bc75023068391"
+      },
+      "official271-standby-oracle-live-r1/result.public.json": {
+        "bytes": 6521,
+        "sha256": "d84a783d817ee7827496182b6f750a1cd995424e554b287f602fd9204f289975"
+      },
+      "official271-standby-oracle-live-r1/wire-observations.public.json": {
+        "bytes": 18036,
+        "sha256": "45d2039f2e68e006cb10dc80925f9d6719fa16dfa433bf22bf5b538e9adfae02"
+      }
+    },
+    "old_generations_reopened": false,
+    "original_forward_timeout_ms": 8000,
+    "original_peer_timeout_ms": 1500,
+    "physical_hosts": 1,
+    "process_nodes": 3,
+    "raft_ports": {
+      "1": 48631,
+      "2": 48633,
+      "3": 48635
+    },
+    "readiness_seconds": 45.0,
+    "redirect_following": false,
+    "response_header_capture": "passive_readline_tap_private_raw_strict_crlf_terminator",
+    "source_clean": true,
+    "source_commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+    "source_tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04",
+    "stable_leader_seconds": 2.2,
+    "valid_restore_bodies": 0,
+    "work_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r8-standby-oracle-live-r1"
+  },
+  "production_services_touched": false,
+  "schema": "heptabao-normal33-standby-wire-header-diagnostic-r1",
+  "source_and_fences_after": {
+    "old_fences": {
+      "formal-33cafa-normal-full128-r2/summary.json": {
+        "bytes": 109148,
+        "sha256": "8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1"
+      },
+      "formal-33cafa-pocket3-mac1-direct98-r1/summary.json": {
+        "bytes": 45176,
+        "sha256": "b02a111b487e33065117fc88596113c7e8a7695feb283331165381fafd3c167f"
+      },
+      "normal33-standby-oracle-live-r2/partial-wire-assessment.public.json": {
+        "bytes": 184257,
+        "sha256": "3172100f22faa9f23992bf8c6f806ead6c20ff8b68f5821203745c86424c74db"
+      },
+      "normal33-standby-oracle-live-r2/result.public.json": {
+        "bytes": 20381,
+        "sha256": "12cdeb32dc89a7f0af5d1950a2c14a02581a8e98cefd3719c0673a0bd38e68d4"
+      },
+      "normal33-standby-oracle-live-r3/result.public.json": {
+        "bytes": 19915,
+        "sha256": "f5a44d25e6f33e562b492e050242f36cc2744417a13a01db4beab1c0422ae590"
+      },
+      "official271-standby-oracle-live-r1/boundary-assessment.public.json": {
+        "bytes": 112921,
+        "sha256": "4588e9f3a8fff060d4ac7ea035f85b5bcf58cc9874e839d9797bc75023068391"
+      },
+      "official271-standby-oracle-live-r1/result.public.json": {
+        "bytes": 6521,
+        "sha256": "d84a783d817ee7827496182b6f750a1cd995424e554b287f602fd9204f289975"
+      },
+      "official271-standby-oracle-live-r1/wire-observations.public.json": {
+        "bytes": 18036,
+        "sha256": "45d2039f2e68e006cb10dc80925f9d6719fa16dfa433bf22bf5b538e9adfae02"
+      }
+    },
+    "source_clean": true,
+    "source_commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+    "source_tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04"
+  },
+  "started_unix_ns": 1793805713226761507,
+  "status": "failed",
+  "terminal_unix_ns": 1793805755259899521,
+  "valid_restore_bodies": 0,
+  "verification_error": null
+}

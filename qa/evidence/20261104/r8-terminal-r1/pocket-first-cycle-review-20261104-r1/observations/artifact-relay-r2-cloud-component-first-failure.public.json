@@ -1,0 +1,15 @@
+{
+  "actualChildWasReapedBeforeAssertion": true,
+  "actualOwnedChildrenStarted": 1,
+  "causeEstablished": false,
+  "exitCode": 1,
+  "failure": "actual_exited_child_reaped_and_group_empty",
+  "networkOperations": 0,
+  "ok": false,
+  "productionChanged": false,
+  "remainingActualChildren": 0,
+  "schema": "heptabao.pocket-artifact-relay-r2-cloud-component-failure.v1",
+  "sourceSha256": "a3dfbde3750b2651d1e687d28c9c19fdebcb37b7d113e25708b62fa8b7b5dbfd",
+  "targetHostRuntimeExecuted": false,
+  "testSourceSha256": "a4355465d2f4d45a4172f93f0cbfc8d2c27d06809e3b5551a41102e3fbea42f3"
+}

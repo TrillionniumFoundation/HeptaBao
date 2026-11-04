@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/source/qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+    "--binary",
+    "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/artifacts/heptabao-server",
+    "--private-work-root",
+    "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/evidence/full34-r1/private-run",
+    "--migration-lane",
+    "native-large",
+    "--profile",
+    "full34"
+  ],
+  "default_build_receipt_sha256": "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9",
+  "default_build_result_sha256": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5",
+  "driver_sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+  "full_replacement_qualified": false,
+  "network_scope": "X230 loopback only",
+  "new_private_synthetic_target": true,
+  "normal_default_build_verified": true,
+  "original_http_seconds": 15,
+  "original_migration_seconds": 360,
+  "production_cutover": false,
+  "schema": "heptabao.r8-x230-full34-intent.v1",
+  "source_before": {
+    "binary_sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+    "commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+    "dirty": false,
+    "tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04"
+  }
+}

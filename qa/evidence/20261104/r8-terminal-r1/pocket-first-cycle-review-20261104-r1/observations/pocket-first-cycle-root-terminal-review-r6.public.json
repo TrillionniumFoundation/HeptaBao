@@ -1,0 +1,111 @@
+{
+  "actual_native_rpc": 8,
+  "all_owned_processes_stopped": true,
+  "binary_sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+  "both_full_auth_and_six_cache_cas_rollback_once": true,
+  "control_channel": "Initial acknowledgement timeout retained. Identical request/key reconciliation produced one known durable terminal; reused=false does not establish initial internal dispatch attribution. No application replay.",
+  "core_passed_total": [
+    66,
+    66
+  ],
+  "full_replacement_qualified": false,
+  "local_default_ordinal5_and_independent_native4_preserved": true,
+  "native_factories": 4,
+  "original_budgets_unchanged": true,
+  "originals": [
+    {
+      "bytes": 58813,
+      "path": "pocket-live-core-r6.public.json",
+      "sha256": "1f42b95791dba63e1dd6cb12bbd643b8d073403948df72f8fe2f282e75806423"
+    },
+    {
+      "bytes": 2068,
+      "path": "pocket-live-outer-r6.public.json",
+      "sha256": "1a5d795252411f0eefdef9b77b517676024958ff755eca5c87086550e483cc60"
+    },
+    {
+      "bytes": 5922,
+      "path": "pocket-live-intent-r6.public.json",
+      "sha256": "8f759887cafcdbccb287b2b0fd667fbfadfbe503bdc02bc43876d700b9ddb5f7"
+    },
+    {
+      "bytes": 730,
+      "path": "pocket-live-terminal-r6.public.json",
+      "sha256": "56c672aa02f76440d542a4503283f61b81527aa23bbaada7be135f6f29e24783"
+    },
+    {
+      "bytes": 1134,
+      "path": "pocket-live-output-r6.public.json",
+      "sha256": "7c0d6726211ec1c8cb207cf9f483e22692f83911d71c48f60a93249904b2c5bf"
+    },
+    {
+      "bytes": 193,
+      "path": "pocket-live-initial-ack-timeout-r6.public.json",
+      "sha256": "82c4be2c9bb3eff8bf5ed5dd16bc52153428a4e50c740823db3c53a70532821c"
+    },
+    {
+      "bytes": 1253,
+      "path": "pocket-live-durable-key-ack-r6.public.json",
+      "sha256": "ddaa350b633927d063c7b31c9f977e6119986de73f5ce4ec04d1bd1b270c0129"
+    },
+    {
+      "bytes": 8757,
+      "path": "pocket-preflight-core-r6.public.json",
+      "sha256": "fee9837e630c602f650b9042fb6e55b51f7d3edfe144fcb61d5342bd9f48ce23"
+    },
+    {
+      "bytes": 2077,
+      "path": "pocket-preflight-outer-r6.public.json",
+      "sha256": "d0b6fcdc3d08862d76a798ede0fcf76703f825a4074dcaece09643e0b7f156b3"
+    },
+    {
+      "bytes": 11975,
+      "path": "pocket-prepare-r6.public.json",
+      "sha256": "83f860169dbccf7b3c36bb97bf697a7cbce9c28322067f5da5661a34ab9b3c52"
+    },
+    {
+      "bytes": 4018,
+      "path": "pocket-r8-relay-sender-result.public.json",
+      "sha256": "dcac9b874e15f7619afd8210cee18d17f7709d01e27df49010ed3af3cc527c9c"
+    },
+    {
+      "bytes": 2388,
+      "path": "pocket-r8-relay-receiver-result.public.json",
+      "sha256": "451de04614fb7c223117f7066ccf4f736dbc94f2ccaff1a0fa8745ab85bbfcd6"
+    },
+    {
+      "bytes": 2889,
+      "path": "pocket-r8-artifacts-fresh-readback-r1.public.json",
+      "sha256": "42eda8956bd3eacc446300cd575a9e0e84cc73381e8915f05b53a93e6d069d99"
+    }
+  ],
+  "outcome_unknown": false,
+  "phase_passed_totals": [
+    [
+      128,
+      128
+    ],
+    [
+      128,
+      128
+    ],
+    [
+      95,
+      95
+    ],
+    [
+      95,
+      95
+    ]
+  ],
+  "production_changed": false,
+  "production_readonly_fences_and_held_units_unchanged": true,
+  "real_sigkill_cold_sealed_unseal_and_new_consumer": true,
+  "renew_revoke_and_denials_verified": true,
+  "reviewer": "root",
+  "schema": "heptabao.root-pocket-first-cycle-r6-terminal-review.v1",
+  "scope": "R8 normal-storage isolated fixture using frozen managed generations and actual installed SDK/native factories. Production read-only; no provider/model/refresh/J3160 calls. Installed service-manager restart, cutover and final R9 qualification remain outstanding.",
+  "source_commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+  "source_tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04",
+  "strict_tls_managed_generations_1_2_actual_reads_and_updates": true
+}

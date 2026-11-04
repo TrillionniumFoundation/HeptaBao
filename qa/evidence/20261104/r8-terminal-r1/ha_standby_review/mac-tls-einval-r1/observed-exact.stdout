@@ -1,0 +1,11 @@
+
+running 1 test
+test http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload ... FAILED
+
+failures:
+
+failures:
+    http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3540 filtered out; finished in 0.54s
+

@@ -1,0 +1,64 @@
+{
+  "automaticRetry": false,
+  "coreChecks": 45,
+  "corePassed": 44,
+  "coreResultPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-live-r4/live/result.public.json",
+  "coreResultSha256": "372f53d5db5cf0f4c10d4080ab479003f5e147a4ff679ed8b69e6fa1e76e5499",
+  "elapsedSeconds": 2.335,
+  "fixtureScenario": "shared-managed12-original-local-source",
+  "holdReleasePerformed": false,
+  "intentSha256": "bdca8e04ee71fb3b5b30093f1a287ed47e5fbb1882a2947d7e07f037dd78b755",
+  "ok": false,
+  "outcomeUnknown": true,
+  "outerTimeout": false,
+  "ownedNamespaceProcessExited": true,
+  "ownedNativeCleanupQualified": true,
+  "phase": "live",
+  "pidNamespaceTeardownEnforced": true,
+  "productionChanged": false,
+  "productionTrafficCutover": false,
+  "productionUnitsAfter": [
+    {
+      "ActiveState": "inactive",
+      "Id": "openclaw-authbus-restart-when-idle.service",
+      "LoadState": "loaded",
+      "MainPID": "0",
+      "SubState": "dead",
+      "UnitFileState": "static"
+    },
+    {
+      "ActiveState": "inactive",
+      "Id": "openclaw-gateway.service",
+      "LoadState": "loaded",
+      "MainPID": "0",
+      "SubState": "dead",
+      "UnitFileState": "enabled"
+    }
+  ],
+  "productionUnitsBefore": [
+    {
+      "ActiveState": "inactive",
+      "Id": "openclaw-authbus-restart-when-idle.service",
+      "LoadState": "loaded",
+      "MainPID": "0",
+      "SubState": "dead",
+      "UnitFileState": "static"
+    },
+    {
+      "ActiveState": "inactive",
+      "Id": "openclaw-gateway.service",
+      "LoadState": "loaded",
+      "MainPID": "0",
+      "SubState": "dead",
+      "UnitFileState": "enabled"
+    }
+  ],
+  "productionUnitsUnchanged": true,
+  "protectedInputsUnchanged": true,
+  "providerAvailabilityQualified": false,
+  "providerNetworkEgress": false,
+  "returncode": 1,
+  "schema": "heptabao.pocket-shared-first-cycle-launch-result.v1",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdoutSha256": "a0d08ab43f62a38ed186f2a8906b23a49800240404c8aaa7920292059fc34bed"
+}

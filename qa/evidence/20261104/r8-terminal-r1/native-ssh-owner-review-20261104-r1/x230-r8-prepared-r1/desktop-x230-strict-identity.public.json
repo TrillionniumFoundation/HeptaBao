@@ -1,0 +1,82 @@
+{
+  "after": {
+    "config": {
+      "bytes": 1455,
+      "ctime_ns": 1793704010881088876,
+      "dev": 2050,
+      "ino": 49940462,
+      "mtime_ns": 1793704010712920454,
+      "path": "/home/qian-qi/.ssh/config",
+      "sha256": "e7b887aad30f6642876c09744c317387b143e4a4b21ddc4879df2b558379ccf4"
+    },
+    "known_hosts": {
+      "bytes": 5391,
+      "ctime_ns": 1793703653854741609,
+      "dev": 2050,
+      "ino": 52599357,
+      "mtime_ns": 1793703653819681345,
+      "path": "/home/qian-qi/.ssh/hepta-transport/known_hosts",
+      "sha256": "1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034"
+    }
+  },
+  "alias": "x230-ts",
+  "before": {
+    "config": {
+      "bytes": 1455,
+      "ctime_ns": 1793704010881088876,
+      "dev": 2050,
+      "ino": 49940462,
+      "mtime_ns": 1793704010712920454,
+      "path": "/home/qian-qi/.ssh/config",
+      "sha256": "e7b887aad30f6642876c09744c317387b143e4a4b21ddc4879df2b558379ccf4"
+    },
+    "known_hosts": {
+      "bytes": 5391,
+      "ctime_ns": 1793703653854741609,
+      "dev": 2050,
+      "ino": 52599357,
+      "mtime_ns": 1793703653819681345,
+      "path": "/home/qian-qi/.ssh/hepta-transport/known_hosts",
+      "sha256": "1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034"
+    }
+  },
+  "exit_code": 0,
+  "known_host_alias": "hepta-node-x230",
+  "known_host_entry_sha256": "9bd0c66b0cffc11ff2d8996342a0c1b49d003c4ec53265b02313d66df629e701",
+  "known_host_matching_public_entries": 3,
+  "production_changed": false,
+  "remote": {
+    "gid": 1000,
+    "home": "/home/qian",
+    "machine": "x86_64",
+    "new_root_absent": true,
+    "old_head": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "old_source": "/home/qian/heptabao-blocker-closure-33cafa4c-20261104-r1/source",
+    "old_status": "",
+    "old_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+    "uid": 1000
+  },
+  "schema": "heptabao.desktop-x230-strict-readonly-identity.v1",
+  "ssh_options": [
+    "-T",
+    "-o",
+    "BatchMode=yes",
+    "-o",
+    "StrictHostKeyChecking=yes",
+    "-o",
+    "UpdateHostKeys=no",
+    "-o",
+    "ControlMaster=no",
+    "-o",
+    "ControlPath=none",
+    "-o",
+    "ConnectionAttempts=1",
+    "-o",
+    "ConnectTimeout=10",
+    "-o",
+    "ClearAllForwardings=yes"
+  ],
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "trust_files_unchanged": true
+}

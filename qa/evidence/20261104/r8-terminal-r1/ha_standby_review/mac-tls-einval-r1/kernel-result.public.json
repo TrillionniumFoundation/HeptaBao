@@ -1,0 +1,59 @@
+{
+  "after_peer_close_receive_timeout": {
+    "errno": 22,
+    "level": 65535,
+    "microseconds": 998200,
+    "option": 4102,
+    "optlen": 16,
+    "returncode": -1,
+    "seconds": 4
+  },
+  "all_owned_sockets_closed": true,
+  "connected_receive_timeout": {
+    "errno": 0,
+    "level": 65535,
+    "microseconds": 998294,
+    "option": 4102,
+    "optlen": 16,
+    "returncode": 0,
+    "seconds": 4
+  },
+  "connected_send_timeout": {
+    "errno": 0,
+    "level": 65535,
+    "microseconds": 998284,
+    "option": 4101,
+    "optlen": 16,
+    "returncode": 0,
+    "seconds": 4
+  },
+  "credentials_used": false,
+  "diagnostic_only": true,
+  "direct_read_after_ready": {
+    "bytes": 108,
+    "errno": 0,
+    "exact_complete_response": true,
+    "sha256": "b4ffddd2dfbde99e1141f75d49a5af2d1ca5cb12d581925080ce6bc77c02f164"
+  },
+  "elapsed_seconds": 0.0018358752131462097,
+  "external_network": false,
+  "new_connections_planned": 1,
+  "observed_socket_count": 3,
+  "original_deadline_seconds": 5,
+  "peer_name_errno": 22,
+  "product_executed": false,
+  "production_changed": false,
+  "qualification": false,
+  "schema": "heptabao.mac-tcp-pending-bytes-observation.v1",
+  "server": {
+    "body_read_bytes": 0,
+    "header_bytes_read": 12,
+    "response_bytes_sent": 108,
+    "socket_closed": true
+  },
+  "server_body_read_bytes": 0,
+  "source_sha256": "3415a07f4f03b02896c4d5da5d22bf2be89fbc634a4f8b399b74f8a2e85c8d6e",
+  "status": "observed",
+  "tls_executed": false,
+  "worker_joined": true
+}

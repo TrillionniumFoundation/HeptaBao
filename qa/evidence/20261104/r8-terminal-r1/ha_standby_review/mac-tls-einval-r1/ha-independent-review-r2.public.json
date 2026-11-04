@@ -1,0 +1,16 @@
+{
+  "c_observer_sha256": "4a8ab318e029fb391af32be17dd3083e449db2cbaddd179571d28d1f83d0f574",
+  "new_parser_closures": [
+    "events count equals reported total",
+    "sorted event ordinal is exactly 1..N without assuming cross-thread output order",
+    "error/call/result are closed checks",
+    "16 counters have exact unique names and nonnegative counts",
+    "exact one test name/outcome and exit code agree",
+    "observer C and dynamic library hashes remain unchanged"
+  ],
+  "runner_bytes": 11949,
+  "runner_sha256": "6facdbfda62c2b6968ce9237c1fa9c1b1992170462596b684323cfa00fe0d80f",
+  "schema": "heptabao.mac-einval-independent-source-review-addendum.v1",
+  "scope": "Post-run parser source review only; original syscall invocation/return/errno and fixed test deadlines unchanged; no runtime execution by reviewer.",
+  "source_review_go": true
+}

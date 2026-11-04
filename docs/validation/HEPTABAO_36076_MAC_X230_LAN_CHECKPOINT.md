@@ -362,3 +362,69 @@ Pocket r3 对 r2 真实 `SQLITE_CANTOPEN(14)`／主文件存在且两 sidecar �
 **Pocket fresh r3 预检仍为 FAIL。** job `1a1a6e52cb3-fc05-295d` 在 3.138 秒后 exit1、无 timeout、无 unknown；已完成的 18 项检查均通过，原主文件稳定复制后的 exact-row 查询因 `current_registry_schema_changed` 拒绝。完整 core SHA256=`b240a1d7baa19d28cca1111be3c9bbeac3884efa21ecf9c95121b6e40203c98e`，outer/core/intent/权威状态/输出均原样保存。尚未执行任何首周期 phase、HeptaBao 服务、installed SDK/native 消费者或 provider 请求，全部 owned 子进程停止。原两份 auth 表、配置、六类缓存、独立 native4、输入与 held 单元状态保持不变；没有释放 hold、切流或清理旧资产。r2 的 code14 失败与 r3 的 schema 拒绝不是同一次运行，也未被拼成一次通过。
 
 本次新增原件位于 `qa/evidence/20261104/r7-terminal-r1/`。`full_openbao_compatibility_qualified=false`、`combined_r7.runtime_qualified=false`、`pocket_first_cycle_preflight_r3.first_cycle_runtime_qualified=false`；全部客户端/备份迁移、正式生产切换和旧版清理仍未获运行证据。该次 publication 只准备可审阅材料，GitHub commit/ref/PR 更新由根另行执行。
+
+
+### R8 正常构建、X230 原始回归与实际消费者终态（追加）
+
+本节接续 validation `173603791bf19bb5a7148caf2173ab19b1ac2463`，保留此前所有 pending、失败和 unknown 原件。**R8 仍未获得跨平台或全量替代资格：ROG 为 33/33，Mac 为 32/33；X230 的正式存储原 31 项与两侧原 69 项均通过，Pocket 的 R8 隔离真实消费者也通过，但实际生产切流、网关恢复与旧版清理尚未执行。** 这些结果分别绑定各自版本、机器和运行范围。
+
+#### 同树正常构建的 33 项终态
+
+R8 产品树为 `d5a0f91a4d47f7c8d5f34170ea167d10dc036e04`。ROG physical commit=`384c957612186d64c5a530044af0ae62c568cc3d`，Mac physical commit=`2d9a2efd4cfc3a9ee60a450eee58866828a3f5ad`；二者 tree 相同。原 25 项 SSH、原 1 项 mount、原 5 项 HTTP redirect 与独立 2 项 actor/deadline 共 33 个完整名称不变，正常默认 feature/profile、原各组期限均保留。
+
+| 平台 | SSH 25 | 原 mount 1 | HTTP redirect 5 | actor/deadline 2 | 完整终态 |
+| --- | --- | --- | --- | --- | --- |
+| ROG Linux | 25/25，43.893 秒 | 1/1，0.280 秒 | 5/5，0.129 秒 | 2/2，10.152 秒 | 33/33，0 ignored |
+| Mac arm64 | 25/25，69.129 秒 | 1/1，1.702 秒 | 4/5，2.195 秒 | 2/2，11.055 秒 | 32/33，1 failed，0 ignored |
+
+ROG 正常 server/seed 构建 660.734 秒，server SHA256=`666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed`。R7→R8 只改测试，因此该 server 字节与 R7 相同并不异常；源码身份与 R8 测试终态仍独立记录。ROG job `1a1a701ddd9-fc05-29dc` exit0，Mac job `1a1a707739c-fc05-29ef` exit1，输出均完整、耐久、无 timeout；ROG 10 组、Mac 9 组本次拥有的进程均收回，源码与测试二进制前后相同。
+
+Mac 唯一失败为 `native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload`，原 stderr 为 `Os { code: 22, kind: InvalidInput, message: "Invalid argument" }`。原 R7 的两项 `actual native HTTP header parse` 失败继续保留；不能把后继修订或 R8 的 32 项通过倒填为 R7 通过，也不能把 Linux 33/33 替代 Mac 失败。根独立跨平台审阅为 `ac8a42f62643772ed34a595cb26b5e2d304c7387fcde54023cfee850003be2c8`，两个平台的完整 result、status、四组 stdout/stderr、正常构建回执及固定清单均收入本节原件。
+
+#### X230：同一 R8 正常产物的 full34 与 69 项对照
+
+X230 新根为 `/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1`。从已验证的 desktop incoming，经现有严格 SSH 身份/known-hosts 路径 create-only 传送 server、两份原构建回执和两条 source bundle；新独立 checkout 的 HEAD/tree、所有文件完整 SHA、fsync 与前后 source pins 均验证。旧正常 33 根与原证据保持不变。
+
+原 full34 在 142.913 秒完成 **31/31**，真实载荷为 **35,651,584 字节（34 MiB）**。通过内容包括：固定官方 2.7.1 来源与 TLS 身份；保留、软删除和已销毁版本的历史；单次导出/导入；正式 native V6 存储的完整历史与冷重启；真实快照下载、后续修改、单次恢复及恢复后冷启动；undelete 数据精确、destroyed 数据保持不存在；data/metadata CAS 拒绝无副作用和成功计数精确。源与目标各自 owned，原 HTTP 15 秒、迁移 360 秒预算未变，最终所有 owned 服务停止。完整 summary 为 90,877 字节，SHA256=`ee24ee6018562ec938ef5fd4ad7158293bb94ee421916d416c4b92c9587f8b30`。
+
+在 full34 明确终态和清理后，原 69 项对照独立执行一次，38.036 秒完成：**HeptaBao 69/69、OpenBao 2.7.1 69/69，0 failed、0 not_run、差异集合为空**。完整 summary 为 104,035 字节，SHA256=`523d2bb14e287fc83246d7c5b537e1e8639b7a56d0139cd7cd55af41f32df903`。两轮 source/binary 前后均为 clean 384c/d5a0/server666370；两个权威 job 均 exit0、完整且耐久，两份大 summary 以固定文件 version 分块取回后校验完整字节和 SHA，未重新运行测试。
+
+69 项范围仍仅为 approle、core、edge_tls、identity、kv、operations、pki、system、token、totp、transit、userpass、wrapping 这 13 个模块。原 wrapper 明确传入该集合；底层 acceptance CLI 自身的默认 12 模块与之不同，不能混淆。两个结果的完整规范化对象一致，其中 67 项使用数值 HTTP 状态，`pki.lease_expire_lookup` 和 `pki.revoked_lease_absent` 分别使用原定义的 `rejected_after_ttl`、`rejected_400_or_404`（允许 400/404），不能写成 69 个原始数值状态完全相等。原脚本没有 SSH 测试；full34 的唯一 501 出现在 `sys/health` 就绪等待允许的状态集合中，并非旧 SSH mount 拒绝断言。固定官方 executable SHA256=`535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea` 与归档成员一致。这里是 X230 单机 loopback 的 owned 合成资格，不能外推成完整 API、生产消费者或 LAN HA 资格。
+
+#### Pocket：保留原 flags、身份、order 与六类缓存的真实首周期
+
+Pocket R4 原失败仍封存：core 44/45；initial consumer 的 65 项前置检查通过后，原 raw CAS helper 因目录不满足 `/current-native-` 契约而拒绝，尚未进行该 consumer 的数据库写入、SDK 导入或 native RPC。outer 仍明确 `outcomeUnknown=true`，不能因为事后定位到封套路径而改写原结果或声称该次回滚通过。之后 R5 只修正 owned 目录绑定，在新根执行。
+
+R5 绑定正常 33，23.040 秒通过 core **66/66**、initial/cold 各 **128/128**、两次完整回滚各 **95/95**。该结果与后继 R8 分开。R6 用同一受审逻辑、原 10/70/35/440 秒预算和仅 artifact/source 绑定变更，在 R8 上实际执行一次，20.988 秒得到同样的 **66/66、128×2、95×2**。两轮都由真实 installed SDK `2026.7.1-2`、Codex native `0.144.3` 的实际 factory 消费：4 个 native factory、8 个真实 initialize/login RPC，实际 `chatgptAuthTokens` 返回；两 agent 默认选择均保持本机 ordinal5。
+
+共同 manifest 只包含原已管理的同身份 1/2，真实 TLS 读取和凭证代际更新有明确证据；main raw auth 行实际改变，tg 保留原本地 raw 行并通过 SDK 继承 effective store。全部五个身份、原 order/usage、本地 ordinal5 与独立 user-native4 保留。原 `publishNew=true`、两个 agent 的中央 order 排除及 shadow 语义没有被关闭或改写：每周期产生 3 个真实 inbox 事件，原 coordinator core 无 grant 时分别 defer 3/累计6，manifest 不扩散。这里测试的是 exact core API，不冒称 installed coordinator service-manager 已在 Pocket 运行。
+
+实际 SIGKILL、wait、冷启动 sealed→unseal、新消费者读取均通过；每阶段回滚各自只尝试一次，完整 SDK local/effective store、raw 两表行与时间戳、六类缓存的字节/mode/缺失状态全部恢复。多文件回滚不被描述为跨文件原子事务。内核禁止 provider 外网；后台尝试数没有测量，不能说为零。原生产 auth/config/cache/registry/native4、两 held 单元与 hold markers 前后不变，没有解除 hold、启动生产网关或切流。
+
+R6 的 artifact relay 和 18/18 只读 preflight 有各自原回执，仍仅证明对应准备范围。随后真实 live job 为 `1a1a74813e5-fc05-2ad3`，core SHA256=`1f42b95791dba63e1dd6cb12bbd643b8d073403948df72f8fe2f282e75806423`，outer SHA256=`1a5d795252411f0eefdef9b77b517676024958ff755eca5c87086550e483cc60`，明确 exit0/unknown=false、owned 全停。首次控制通道 ACK 超时的 193 字节原件和同一请求/同一 idempotency key 的耐久 ACK 原件都保留；没有以新 key 请求第二次业务运行，也不从 `reused=false` 推断首次内部 dispatch 的归属。
+
+此项只证明冻结的已验证 1/2 代际经 R8 存储驱动 owned Pocket 消费者、重启及回滚。它不证明当前最新 provider 代际、账户额度、所有账户、生产 gateway 重启、offhost 恢复集、正式持久服务或后继 R9。QA 文件中保留的原正常 33 provenance 与实际 runtime result 的 R8 source/artifact 绑定分别保存，实际 R8 资格取后者及其独立审阅。
+
+#### 官方 CLI：十项完整观察揭示实际客户端影响
+
+固定 OpenBao 2.7.1 CLI 的 Phase A 使用 owned synthetic TLS responders，**没有启动 OpenBao 或 HeptaBao 服务，没有任何有效 restore 归档**。早期 run1/run2 均在子进程身份 guard 处明确失败，业务 case 0/10，unknown=false；其失败原件不变。第二轮捕获到真实 `/proc/cmdline` 在进程启动中的短暂空值，后继源 R4 在同一原期限内等待可见后再次执行完整身份验证，未放宽 argv/exe/PGID 判据。
+
+第三次独立运行完成 10 intents/10 outcomes、unknown0、全部 owned 清理；这是 **completed observation，不是 10/10 兼容通过**。固定 CLI 的实际行为包括：直接 200 可保存 171 字节精确合成 archive-shape；307→200 的 save 确有第二请求但 CLI 报 incomplete snapshot；直接 restore 收到 400/500 时 exit2；307→400 的 restore 第二次 upload 为 0 字节且 CLI exit0；禁 redirect 的 restore 对307也 exit0。坏 CA、HTTPS→HTTP downgrade 与第二次 redirect 上限另有完整观察。原始输入均无效，不能因 exit0 宣称成功恢复；171 字节只验证形状控制，不证明合法归档互操作。
+
+这些结果使无条件 standby redirect 对既有 CLI 的影响成为实证，仍需解决默认 standby 行为与有效归档互操作。完整 root review SHA256=`3790cc868b531404374455d1fc03a080c0670746ed554157fe18ed12960c843c`；原两失败、第三次完整 result、source R4 与准备/终态均在本节。
+
+#### R8 strict wire：单物理机三进程，保留 sequence73 unknown
+
+此次 strict wire 在 **1 台物理机、3 个 loopback 节点进程** 上运行，不能称为真实 LAN 三机验证。完整 73 个 intent/outcome 对中，70 个严格完整 HTTP、2 个连接前明确失败、1 个 unknown；53 项已执行动态不变量为真，但这些不是完整矩阵分母。所有 4 个 server 组与 73 个 caller 组均已收回，原8份 fences、源码和产物不变。
+
+四个 standby snapshot POST 已获得严格完整 307 与精确 enrolled Location；两次普通 256KiB standby 写及 leader 精确读也完整。随后 sequence73 `ordinary_write_explicit_no_forward` 在 request 已发送后，response-header 阶段仅获 9 字节，`BadStatusLine`，未形成 `CRLFCRLF`、无 Location；caller 没有 timeout，进程已收回。此请求按 unknown 封存且未重放；没有证据把它称为实际 HTTP501 或 TCP reset。整轮 **FAIL / full_matrix_qualified=false**。完整 257,188 字节 assessment 的 SHA256=`9d0028eef9cf5729accc4b4fb2504c3cb87aef122da616d37ea4dd30c97f5782`，root review 为 `234529df9bfae1e89eca56b68102c5289dfa86ba0bcce9b92cf3307b2103ebb9`。
+
+#### Mac EINVAL 与 CI 后继修订的证据边界
+
+Mac 单一失败的原生 syscall 观察定位到 `setsockopt(SO_RCVTIMEO)`，使用合法约 4.99 秒 timeout 仍返回 EINVAL22。独立无凭证、无 TLS、无产品执行的 kernel micro 在同一连接上实证：连接期间设置 timeout 成功，peer close 后设置接收 timeout 返回22，但 readiness 后直接读仍可完整取得108字节。全部 owned sockets/worker 清理。该诊断支持让测试 client 在原绝对期限内读取已缓冲数据，**不直接证明产品 TLS 正确，也不把原 Mac 32/33 改为通过**。九份原始代码/输出/回执和 root review `0eb22c43eed4413c8a1b396714f44d833927fd60b21c6d499f2cc145d6477d7e` 一并收入。
+
+独立 CI run `41837754898` 的源仍为 `f9139c3b37b6373df3e4b4c61ebdd4f847afac4d`，不是 R8。head 与 merge 的完整 Rust workspace 测试步骤成功，随后 strict Clippy 均失败，后续 release gates 跳过，完整 verdict 失败。三个精确诊断为 parallel KV2 export 8/7 参数，以及 HA KV1 projection、native KV1 sudo 两处可合并条件。后继四文件最小差分已经独立 source review：唯一调用点的冗余 original-deadline callback 移到 callee 内原样 lazy 建立，early/worker/final 实际检查次数与位置、before_delivery/stop 顺序不变；两处 let-chain 保留原短路顺序。没有 lint allow、`-D warnings` 调整、期限或断言变化。
+
+该 Clippy 修订只属 **下一候选的源码准备**，尚未在此 checkpoint 获得新编译或 Clippy PASS。R8 的两个原文件已按精确片段处理，避免用 CI 全文件覆盖 SSH 改动。新增 R9 HTTP/NoForward 和 Mac fixture 修订留待另一个同树正常构建/运行包，不混入本节既有 R8 结果。
+
+本节继续保持 `full_openbao_compatibility_qualified=false`、`combined_r8.runtime_qualified=false`、`production_cutover=false`、`all_clients_and_backups_migrated=false`、`old_assets_deleted=false`。原 86 文件 Mac 检查点仍是先前冻结的 605/15c 范围，未因本次追加自动包含这些新结果。新增原件集中在 `qa/evidence/20261104/r8-terminal-r1/`；本次 preparer 不更新 GitHub ref/PR，也不读写根 continuation state。

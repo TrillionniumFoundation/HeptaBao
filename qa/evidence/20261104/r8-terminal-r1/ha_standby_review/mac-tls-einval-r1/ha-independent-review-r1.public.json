@@ -1,0 +1,27 @@
+{
+  "parser_completeness_gap": {
+    "event_count": "Currently loaded/count/total shape does not assert number of parsed events equals total.",
+    "minimal_closure": "Assert exact distinct 16 count names, event sequences 1..total, event call closed enum and errno==22; no syscall/test/budget change."
+  },
+  "product_or_old_fixture_changed": false,
+  "review_conclusions": [
+    "Every wrapper calls its original once and restores immediately captured errno after metadata projection.",
+    "Only EINVAL is logged; I/O buffers and addresses are not logged; timeout timeval is observed only for the two exact socket options and size.",
+    "Fresh root retains exact libtest, source tree and old failure, with existing lifecycle functions selected by pinned AST.",
+    "Original 5-second fixture deadline and 600-second diagnostic envelope are unchanged.",
+    "Diagnostic success cannot qualify the retained failed normal case."
+  ],
+  "reviewed_files": {
+    "observe_errno.c": {
+      "bytes": 7419,
+      "sha256": "4a8ab318e029fb391af32be17dd3083e449db2cbaddd179571d28d1f83d0f574"
+    },
+    "run_diagnostic.py": {
+      "bytes": 10850,
+      "sha256": "a3e849880e6e616bbcbad31be483a9ae0c08eec4638a34b5815b2580da775057"
+    }
+  },
+  "schema": "heptabao.mac-einval-independent-source-review.v1",
+  "scope": "Full source review only; no syscall or diagnostic invocation executed by this reviewer.",
+  "source_blocking_findings": []
+}

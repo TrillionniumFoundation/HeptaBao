@@ -1,0 +1,49 @@
+{
+  "binary_sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+  "budgets": {
+    "consumerSeconds": 70,
+    "httpSeconds": 10,
+    "outerSeconds": 440,
+    "rollbackSeconds": 35
+  },
+  "candidate_source_commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+  "candidate_source_tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04",
+  "files": [
+    {
+      "bytes": 8757,
+      "file": "pocket-preflight-core-r6.public.json",
+      "sha256": "fee9837e630c602f650b9042fb6e55b51f7d3edfe144fcb61d5342bd9f48ce23"
+    },
+    {
+      "bytes": 2077,
+      "file": "pocket-preflight-outer-r6.public.json",
+      "sha256": "d0b6fcdc3d08862d76a798ede0fcf76703f825a4074dcaece09643e0b7f156b3"
+    },
+    {
+      "bytes": 5971,
+      "file": "pocket-preflight-intent-r6.public.json",
+      "sha256": "02648f0f20c563307385b4c7ec6519ad3de09e11e9ff73624a0bd26d9158be2e"
+    },
+    {
+      "bytes": 730,
+      "file": "pocket-preflight-terminal-r6.public.json",
+      "sha256": "7ff7421b754f95e8746f35e0029ada9c559355e9f3705774be4fdbf4cefcc24b"
+    },
+    {
+      "bytes": 1164,
+      "file": "pocket-preflight-output-r6.public.json",
+      "sha256": "a9e6a4046b24ac8529e736cd4a5580760acec41f55c5378ee9ff558502fe4b54"
+    }
+  ],
+  "frozen_trusted12_only_no_latest_provider_claim": true,
+  "full_originals_read_and_all18_checks_verified": true,
+  "full_replacement_qualified": false,
+  "live_once_authorized": true,
+  "native4_and_local5_unchanged": true,
+  "prepare_sha256": "83f860169dbccf7b3c36bb97bf697a7cbce9c28322067f5da5661a34ab9b3c52",
+  "production_cutover_authorized": false,
+  "qa_pins_sha256": "2a234b7b213ce92eb0bf163e1964acd79f7213d8581ae6ec20817c8eaf043c40",
+  "reviewed_at_utc": "2026-11-04T15:55:14.408823+00:00",
+  "schema": "heptabao.pocket-r6-preflight-root-review.v1",
+  "sql_named_row_stable_readonly_main_copy_source_sidecar_identity_and_final_fence_verified": true
+}

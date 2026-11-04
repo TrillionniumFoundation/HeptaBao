@@ -1,0 +1,46 @@
+--- normal33_standby_oracle_r7.py
++++ normal_r8_standby_oracle_r1.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Bounded, fresh, loopback-only normal33 HeptaBao standby wire observation.
++"""Bounded, fresh, loopback-only normal R8 HeptaBao standby wire observation.
+ 
+ No redirect following, no valid restore body, no operation replay.  Bootstrap
+ credentials and all raw HTTP bodies stay in the owned 0700 fixture.  Public
+@@ -28,18 +28,19 @@
+ from urllib.parse import urlsplit
+ 
+ BASE = Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-EXPECTED_SHA = '7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba'
+-COMMIT = '33cafa4c6e29f0bde1553e041550d21b4c725d9c'
+-TREE = 'cdc2376e7b39c1d8bbbeb10a813d58bfe923f336'
+-CONTROL = BASE / 'normal33-standby-oracle-control-r1'
+-SOURCE = BASE / 'ha-root-pull-response-final-source-r1'
++EXPECTED_SHA = '666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed'
++COMMIT = '384c957612186d64c5a530044af0ae62c568cc3d'
++TREE = 'd5a0f91a4d47f7c8d5f34170ea167d10dc036e04'
++CONTROL = BASE / 'normal-r8-standby-oracle-control-r1'
++SOURCE = BASE / 'normal-r8-standby-oracle-source-r1'
+ ARTIFACTS = CONTROL / 'artifacts'
+ ARTIFACT_SOURCES = {
+-    'heptabao-server': (BASE / 'formal-33cafa-normal-full128-r2/candidate-2', EXPECTED_SHA),
+-    'native-build.public.json': (BASE / 'normal-33cafa-full128-control-r2/linux-native-build.public.json', '2fa263744917e1d71658daa4f34e09ea448fe77ec0b2c0f8ec22c01e2cd84e8e'),
+-    'build-result.public.json': (BASE / 'normal-33cafa-full128-control-r2/linux-result.public.json', '7fa76585e94fe2e60bbc3ce754f37e4d9d433e4cf576fcc2e39a1e95771f3f42'),
++    'heptabao-server': (CONTROL / 'incoming/heptabao-server', EXPECTED_SHA),
++    'native-build.public.json': (CONTROL / 'incoming/native-build.public.json', 'f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9'),
++    'build-result.public.json': (CONTROL / 'incoming/normal-release-result.public.json', '2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5'),
+ }
+ OLD_FENCES = {
++    'normal33-standby-oracle-live-r3/result.public.json': 'f5a44d25e6f33e562b492e050242f36cc2744417a13a01db4beab1c0422ae590',
+     'normal33-standby-oracle-live-r2/result.public.json': '12cdeb32dc89a7f0af5d1950a2c14a02581a8e98cefd3719c0673a0bd38e68d4',
+     'normal33-standby-oracle-live-r2/partial-wire-assessment.public.json': '3172100f22faa9f23992bf8c6f806ead6c20ff8b68f5821203745c86424c74db',
+     'formal-33cafa-normal-full128-r2/summary.json': '8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1',
+@@ -625,7 +626,7 @@
+     before = source_and_fences()
+     if platform.system() != 'Linux' or platform.machine() != 'x86_64':
+         raise Refused('normal_artifact_native_host_abi_required')
+-    if work.parent != BASE or not re.fullmatch(r'normal33-standby-oracle-live-r[0-9]+', work.name):
++    if work.parent != BASE or not re.fullmatch(r'normal-r8-standby-oracle-live-r[0-9]+', work.name):
+         raise Refused('work_root_outside_owned_namespace')
+     if work.exists() or work.is_symlink() or work.parent.resolve(strict=True) != BASE:
+         raise Refused('fresh_work_root_required')

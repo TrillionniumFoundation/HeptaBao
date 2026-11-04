@@ -1,0 +1,2394 @@
+{
+  "actual_bao_servers_started": 0,
+  "all_owned_stopped": true,
+  "case_count_observed": 10,
+  "case_count_planned": 10,
+  "cases": [
+    {
+      "actual_http_request_counts": [
+        1,
+        0
+      ],
+      "all_case_owned_stopped": true,
+      "case": "S01_save_direct_200",
+      "classification": "exact_archive_shape_file_saved",
+      "failure_code": null,
+      "incomplete_exchanges": [],
+      "intent": {
+        "address": "https://127.0.0.1:48740",
+        "case": "S01_save_direct_200",
+        "command": "save",
+        "controller_retries": 0,
+        "deadline_monotonic_ns": 882692147669496,
+        "http_body_and_token_values_public": false,
+        "http_seconds": 15.0,
+        "inherited_environment": false,
+        "intent_unix_ns": 1793805011155371381,
+        "private_credential_source": "fresh_synthetic_fixture_only",
+        "redirects_disabled": false,
+        "restore_input_bytes": 0,
+        "restore_input_sha256": null,
+        "sequence": 1,
+        "tls_skip_verify": false,
+        "valid_restore_body": false
+      },
+      "outcome_unknown": false,
+      "output": {
+        "bytes": 171,
+        "exact_synthetic_archive": true,
+        "exists": true,
+        "mode": "0o600",
+        "sha256": "43450db941c14f0261904833ee7fda94554fb784b88e353a1dd518e02b6efbe2"
+      },
+      "peer_controller_errors": [],
+      "peers": [
+        {
+          "accepts": 1,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [
+            {
+              "alpn": "http/1.1",
+              "body_bytes": 0,
+              "body_empty": true,
+              "body_equals_fixed_invalid": false,
+              "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "chunks": 0,
+              "connection": 1,
+              "framing": "none",
+              "head_bytes": 207,
+              "host_header_origin": "1",
+              "http_bytes_received": 207,
+              "method": "GET",
+              "original_token_equal": true,
+              "peer": 1,
+              "request_complete": true,
+              "request_head_complete": true,
+              "request_wire_bytes_received": 207,
+              "response_status": 200,
+              "response_wire_bytes": 262,
+              "response_wire_sha256": "aa8feacbb204c53fff979d5da7525142d659aa14415aff926a892be46f31f6b8",
+              "response_write_complete": true,
+              "route": "snapshot",
+              "tls_complete": true,
+              "tls_version": "TLSv1.3",
+              "token_header_count": 1
+            }
+          ],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 1,
+          "thread_joined": true
+        },
+        {
+          "accepts": 0,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 2,
+          "thread_joined": true
+        }
+      ],
+      "positive_save_control": true,
+      "process": {
+        "direct_child_reaped": true,
+        "elapsed_ms": 421.90689,
+        "error_class": "cli_success",
+        "pid": 2726089,
+        "remaining": [],
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      "sequence": 1,
+      "source_prediction_used_as_pass_predicate": false,
+      "terminal_unix_ns": 1793805011765926998
+    },
+    {
+      "actual_http_request_counts": [
+        1,
+        1
+      ],
+      "all_case_owned_stopped": true,
+      "case": "S02_save_307_then_200",
+      "classification": "redirect_observed_but_cli_reported_incomplete_snapshot",
+      "failure_code": null,
+      "incomplete_exchanges": [],
+      "intent": {
+        "address": "https://127.0.0.1:48740",
+        "case": "S02_save_307_then_200",
+        "command": "save",
+        "controller_retries": 0,
+        "deadline_monotonic_ns": 882692852077976,
+        "http_body_and_token_values_public": false,
+        "http_seconds": 15.0,
+        "inherited_environment": false,
+        "intent_unix_ns": 1793805011859776195,
+        "private_credential_source": "fresh_synthetic_fixture_only",
+        "redirects_disabled": false,
+        "restore_input_bytes": 0,
+        "restore_input_sha256": null,
+        "sequence": 2,
+        "tls_skip_verify": false,
+        "valid_restore_body": false
+      },
+      "outcome_unknown": false,
+      "output": {
+        "exists": false
+      },
+      "peer_controller_errors": [],
+      "peers": [
+        {
+          "accepts": 1,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [
+            {
+              "alpn": "http/1.1",
+              "body_bytes": 0,
+              "body_empty": true,
+              "body_equals_fixed_invalid": false,
+              "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "chunks": 0,
+              "connection": 1,
+              "framing": "none",
+              "head_bytes": 207,
+              "host_header_origin": "1",
+              "http_bytes_received": 207,
+              "method": "GET",
+              "original_token_equal": true,
+              "peer": 1,
+              "request_complete": true,
+              "request_head_complete": true,
+              "request_wire_bytes_received": 207,
+              "response_status": 307,
+              "response_wire_bytes": 137,
+              "response_wire_sha256": "3db250b522bd1b80d7500007dc156a3a46c26e5b4048828a843b8ddcc924c049",
+              "response_write_complete": true,
+              "route": "snapshot",
+              "tls_complete": true,
+              "tls_version": "TLSv1.3",
+              "token_header_count": 1
+            }
+          ],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 1,
+          "thread_joined": true
+        },
+        {
+          "accepts": 1,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [
+            {
+              "alpn": "http/1.1",
+              "body_bytes": 0,
+              "body_empty": true,
+              "body_equals_fixed_invalid": false,
+              "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "chunks": 0,
+              "connection": 1,
+              "framing": "none",
+              "head_bytes": 207,
+              "host_header_origin": "1",
+              "http_bytes_received": 207,
+              "method": "GET",
+              "original_token_equal": true,
+              "peer": 2,
+              "request_complete": true,
+              "request_head_complete": true,
+              "request_wire_bytes_received": 207,
+              "response_status": 200,
+              "response_wire_bytes": 262,
+              "response_wire_sha256": "aa8feacbb204c53fff979d5da7525142d659aa14415aff926a892be46f31f6b8",
+              "response_write_complete": true,
+              "route": "snapshot",
+              "tls_complete": true,
+              "tls_version": "TLSv1.3",
+              "token_header_count": 1
+            }
+          ],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 2,
+          "thread_joined": true
+        }
+      ],
+      "positive_save_control": null,
+      "process": {
+        "direct_child_reaped": true,
+        "elapsed_ms": 643.529803,
+        "error_class": "incomplete_snapshot",
+        "pid": 2726116,
+        "remaining": [],
+        "returncode": 2,
+        "stderr_bytes": 86,
+        "stderr_sha256": "7adf86f04d4308e68812a0b328056b9990af2852d9420e7f579b6909a3d591ac",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      "sequence": 2,
+      "source_prediction_used_as_pass_predicate": false,
+      "terminal_unix_ns": 1793805012598352546
+    },
+    {
+      "actual_http_request_counts": [
+        1,
+        0
+      ],
+      "all_case_owned_stopped": true,
+      "case": "S03_restore_direct_400",
+      "classification": "api_400",
+      "failure_code": null,
+      "incomplete_exchanges": [],
+      "intent": {
+        "address": "https://127.0.0.1:48740",
+        "case": "S03_restore_direct_400",
+        "command": "restore",
+        "controller_retries": 0,
+        "deadline_monotonic_ns": 882693952305961,
+        "http_body_and_token_values_public": false,
+        "http_seconds": 15.0,
+        "inherited_environment": false,
+        "intent_unix_ns": 1793805012960006352,
+        "private_credential_source": "fresh_synthetic_fixture_only",
+        "redirects_disabled": false,
+        "restore_input_bytes": 22,
+        "restore_input_sha256": "e57744e6940b15f3055f206c34ada9f50f0e2af9eacd46bf6f79c9ae150521cf",
+        "sequence": 3,
+        "tls_skip_verify": false,
+        "valid_restore_body": false
+      },
+      "outcome_unknown": false,
+      "output": {
+        "exists": false
+      },
+      "peer_controller_errors": [],
+      "peers": [
+        {
+          "accepts": 1,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [
+            {
+              "alpn": "http/1.1",
+              "body_bytes": 22,
+              "body_empty": false,
+              "body_equals_fixed_invalid": true,
+              "body_sha256": "e57744e6940b15f3055f206c34ada9f50f0e2af9eacd46bf6f79c9ae150521cf",
+              "chunks": 1,
+              "connection": 1,
+              "framing": "chunked",
+              "head_bytes": 236,
+              "host_header_origin": "1",
+              "http_bytes_received": 269,
+              "method": "POST",
+              "original_token_equal": true,
+              "peer": 1,
+              "request_complete": true,
+              "request_head_complete": true,
+              "request_wire_bytes_received": 269,
+              "response_status": 400,
+              "response_wire_bytes": 149,
+              "response_wire_sha256": "7b304774a76c0257f2c91305f671a41fcc04f5e1cdc27586849fefb4aacfbf30",
+              "response_write_complete": true,
+              "route": "snapshot",
+              "tls_complete": true,
+              "tls_version": "TLSv1.3",
+              "token_header_count": 1
+            }
+          ],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 1,
+          "thread_joined": true
+        },
+        {
+          "accepts": 0,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 2,
+          "thread_joined": true
+        }
+      ],
+      "positive_save_control": null,
+      "process": {
+        "direct_child_reaped": true,
+        "elapsed_ms": 517.584893,
+        "error_class": "api_400",
+        "pid": 2726153,
+        "remaining": [],
+        "returncode": 2,
+        "stderr_bytes": 179,
+        "stderr_sha256": "a233962ff094fab47a64706feed7f0b10bcdd4ee7746b4e6d075f59de4fe87ab",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      "sequence": 3,
+      "source_prediction_used_as_pass_predicate": false,
+      "terminal_unix_ns": 1793805013681540389
+    },
+    {
+      "actual_http_request_counts": [
+        1,
+        0
+      ],
+      "all_case_owned_stopped": true,
+      "case": "S04_restore_direct_500",
+      "classification": "api_500",
+      "failure_code": null,
+      "incomplete_exchanges": [],
+      "intent": {
+        "address": "https://127.0.0.1:48740",
+        "case": "S04_restore_direct_500",
+        "command": "restore",
+        "controller_retries": 0,
+        "deadline_monotonic_ns": 882695608896436,
+        "http_body_and_token_values_public": false,
+        "http_seconds": 15.0,
+        "inherited_environment": false,
+        "intent_unix_ns": 1793805014616600632,
+        "private_credential_source": "fresh_synthetic_fixture_only",
+        "redirects_disabled": false,
+        "restore_input_bytes": 22,
+        "restore_input_sha256": "e57744e6940b15f3055f206c34ada9f50f0e2af9eacd46bf6f79c9ae150521cf",
+        "sequence": 4,
+        "tls_skip_verify": false,
+        "valid_restore_body": false
+      },
+      "outcome_unknown": false,
+      "output": {
+        "exists": false
+      },
+      "peer_controller_errors": [],
+      "peers": [
+        {
+          "accepts": 1,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [
+            {
+              "alpn": "http/1.1",
+              "body_bytes": 22,
+              "body_empty": false,
+              "body_equals_fixed_invalid": true,
+              "body_sha256": "e57744e6940b15f3055f206c34ada9f50f0e2af9eacd46bf6f79c9ae150521cf",
+              "chunks": 1,
+              "connection": 1,
+              "framing": "chunked",
+              "head_bytes": 236,
+              "host_header_origin": "1",
+              "http_bytes_received": 269,
+              "method": "POST",
+              "original_token_equal": true,
+              "peer": 1,
+              "request_complete": true,
+              "request_head_complete": true,
+              "request_wire_bytes_received": 269,
+              "response_status": 500,
+              "response_wire_bytes": 159,
+              "response_wire_sha256": "f0082b19960443bc19ba2a0be51cf4af7dfa1145c2a8b575928533ff4f71696b",
+              "response_write_complete": true,
+              "route": "snapshot",
+              "tls_complete": true,
+              "tls_version": "TLSv1.3",
+              "token_header_count": 1
+            }
+          ],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 1,
+          "thread_joined": true
+        },
+        {
+          "accepts": 0,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 2,
+          "thread_joined": true
+        }
+      ],
+      "positive_save_control": null,
+      "process": {
+        "direct_child_reaped": true,
+        "elapsed_ms": 443.948421,
+        "error_class": "api_500",
+        "pid": 2726226,
+        "remaining": [],
+        "returncode": 2,
+        "stderr_bytes": 179,
+        "stderr_sha256": "e0992ba5d5ca1c787f5817fb079e3985be521520e49d14224745754809c7cdff",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      "sequence": 4,
+      "source_prediction_used_as_pass_predicate": false,
+      "terminal_unix_ns": 1793805015352323483
+    },
+    {
+      "actual_http_request_counts": [
+        1,
+        1
+      ],
+      "all_case_owned_stopped": true,
+      "case": "S05_restore_307_then_400",
+      "classification": "cli_success_without_any_valid_restore_input",
+      "failure_code": null,
+      "incomplete_exchanges": [],
+      "intent": {
+        "address": "https://127.0.0.1:48740",
+        "case": "S05_restore_307_then_400",
+        "command": "restore",
+        "controller_retries": 0,
+        "deadline_monotonic_ns": 882697181037170,
+        "http_body_and_token_values_public": false,
+        "http_seconds": 15.0,
+        "inherited_environment": false,
+        "intent_unix_ns": 1793805016188738180,
+        "private_credential_source": "fresh_synthetic_fixture_only",
+        "redirects_disabled": false,
+        "restore_input_bytes": 22,
+        "restore_input_sha256": "e57744e6940b15f3055f206c34ada9f50f0e2af9eacd46bf6f79c9ae150521cf",
+        "sequence": 5,
+        "tls_skip_verify": false,
+        "valid_restore_body": false
+      },
+      "outcome_unknown": false,
+      "output": {
+        "exists": false
+      },
+      "peer_controller_errors": [],
+      "peers": [
+        {
+          "accepts": 1,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [
+            {
+              "alpn": "http/1.1",
+              "body_bytes": 22,
+              "body_empty": false,
+              "body_equals_fixed_invalid": true,
+              "body_sha256": "e57744e6940b15f3055f206c34ada9f50f0e2af9eacd46bf6f79c9ae150521cf",
+              "chunks": 1,
+              "connection": 1,
+              "framing": "chunked",
+              "head_bytes": 236,
+              "host_header_origin": "1",
+              "http_bytes_received": 269,
+              "method": "POST",
+              "original_token_equal": true,
+              "peer": 1,
+              "request_complete": true,
+              "request_head_complete": true,
+              "request_wire_bytes_received": 269,
+              "response_status": 307,
+              "response_wire_bytes": 137,
+              "response_wire_sha256": "3db250b522bd1b80d7500007dc156a3a46c26e5b4048828a843b8ddcc924c049",
+              "response_write_complete": true,
+              "route": "snapshot",
+              "tls_complete": true,
+              "tls_version": "TLSv1.3",
+              "token_header_count": 1
+            }
+          ],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 1,
+          "thread_joined": true
+        },
+        {
+          "accepts": 1,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [
+            {
+              "alpn": "http/1.1",
+              "body_bytes": 0,
+              "body_empty": true,
+              "body_equals_fixed_invalid": false,
+              "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "chunks": 0,
+              "connection": 1,
+              "framing": "chunked",
+              "head_bytes": 236,
+              "host_header_origin": "1",
+              "http_bytes_received": 241,
+              "method": "POST",
+              "original_token_equal": true,
+              "peer": 2,
+              "request_complete": true,
+              "request_head_complete": true,
+              "request_wire_bytes_received": 241,
+              "response_status": 400,
+              "response_wire_bytes": 149,
+              "response_wire_sha256": "7b304774a76c0257f2c91305f671a41fcc04f5e1cdc27586849fefb4aacfbf30",
+              "response_write_complete": true,
+              "route": "snapshot",
+              "tls_complete": true,
+              "tls_version": "TLSv1.3",
+              "token_header_count": 1
+            }
+          ],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 2,
+          "thread_joined": true
+        }
+      ],
+      "positive_save_control": null,
+      "process": {
+        "direct_child_reaped": true,
+        "elapsed_ms": 379.118963,
+        "error_class": "cli_success",
+        "pid": 2726314,
+        "remaining": [],
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      "sequence": 5,
+      "source_prediction_used_as_pass_predicate": false,
+      "terminal_unix_ns": 1793805016937298850
+    },
+    {
+      "actual_http_request_counts": [
+        1,
+        0
+      ],
+      "all_case_owned_stopped": true,
+      "case": "S06_save_redirects_disabled",
+      "classification": "redirect_observed_but_cli_reported_incomplete_snapshot",
+      "failure_code": null,
+      "incomplete_exchanges": [],
+      "intent": {
+        "address": "https://127.0.0.1:48740",
+        "case": "S06_save_redirects_disabled",
+        "command": "save",
+        "controller_retries": 0,
+        "deadline_monotonic_ns": 882697999948902,
+        "http_body_and_token_values_public": false,
+        "http_seconds": 15.0,
+        "inherited_environment": false,
+        "intent_unix_ns": 1793805017007645485,
+        "private_credential_source": "fresh_synthetic_fixture_only",
+        "redirects_disabled": true,
+        "restore_input_bytes": 0,
+        "restore_input_sha256": null,
+        "sequence": 6,
+        "tls_skip_verify": false,
+        "valid_restore_body": false
+      },
+      "outcome_unknown": false,
+      "output": {
+        "exists": false
+      },
+      "peer_controller_errors": [],
+      "peers": [
+        {
+          "accepts": 1,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [
+            {
+              "alpn": "http/1.1",
+              "body_bytes": 0,
+              "body_empty": true,
+              "body_equals_fixed_invalid": false,
+              "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "chunks": 0,
+              "connection": 1,
+              "framing": "none",
+              "head_bytes": 207,
+              "host_header_origin": "1",
+              "http_bytes_received": 207,
+              "method": "GET",
+              "original_token_equal": true,
+              "peer": 1,
+              "request_complete": true,
+              "request_head_complete": true,
+              "request_wire_bytes_received": 207,
+              "response_status": 307,
+              "response_wire_bytes": 137,
+              "response_wire_sha256": "3db250b522bd1b80d7500007dc156a3a46c26e5b4048828a843b8ddcc924c049",
+              "response_write_complete": true,
+              "route": "snapshot",
+              "tls_complete": true,
+              "tls_version": "TLSv1.3",
+              "token_header_count": 1
+            }
+          ],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 1,
+          "thread_joined": true
+        },
+        {
+          "accepts": 0,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 2,
+          "thread_joined": true
+        }
+      ],
+      "positive_save_control": null,
+      "process": {
+        "direct_child_reaped": true,
+        "elapsed_ms": 1075.655321,
+        "error_class": "incomplete_snapshot",
+        "pid": 2726343,
+        "remaining": [],
+        "returncode": 2,
+        "stderr_bytes": 86,
+        "stderr_sha256": "7adf86f04d4308e68812a0b328056b9990af2852d9420e7f579b6909a3d591ac",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      "sequence": 6,
+      "source_prediction_used_as_pass_predicate": false,
+      "terminal_unix_ns": 1793805018215411214
+    },
+    {
+      "actual_http_request_counts": [
+        1,
+        0
+      ],
+      "all_case_owned_stopped": true,
+      "case": "S07_restore_redirects_disabled",
+      "classification": "cli_success_without_any_valid_restore_input",
+      "failure_code": null,
+      "incomplete_exchanges": [],
+      "intent": {
+        "address": "https://127.0.0.1:48740",
+        "case": "S07_restore_redirects_disabled",
+        "command": "restore",
+        "controller_retries": 0,
+        "deadline_monotonic_ns": 882699946827796,
+        "http_body_and_token_values_public": false,
+        "http_seconds": 15.0,
+        "inherited_environment": false,
+        "intent_unix_ns": 1793805018954527890,
+        "private_credential_source": "fresh_synthetic_fixture_only",
+        "redirects_disabled": true,
+        "restore_input_bytes": 22,
+        "restore_input_sha256": "e57744e6940b15f3055f206c34ada9f50f0e2af9eacd46bf6f79c9ae150521cf",
+        "sequence": 7,
+        "tls_skip_verify": false,
+        "valid_restore_body": false
+      },
+      "outcome_unknown": false,
+      "output": {
+        "exists": false
+      },
+      "peer_controller_errors": [],
+      "peers": [
+        {
+          "accepts": 1,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [
+            {
+              "alpn": "http/1.1",
+              "body_bytes": 22,
+              "body_empty": false,
+              "body_equals_fixed_invalid": true,
+              "body_sha256": "e57744e6940b15f3055f206c34ada9f50f0e2af9eacd46bf6f79c9ae150521cf",
+              "chunks": 1,
+              "connection": 1,
+              "framing": "chunked",
+              "head_bytes": 236,
+              "host_header_origin": "1",
+              "http_bytes_received": 269,
+              "method": "POST",
+              "original_token_equal": true,
+              "peer": 1,
+              "request_complete": true,
+              "request_head_complete": true,
+              "request_wire_bytes_received": 269,
+              "response_status": 307,
+              "response_wire_bytes": 137,
+              "response_wire_sha256": "3db250b522bd1b80d7500007dc156a3a46c26e5b4048828a843b8ddcc924c049",
+              "response_write_complete": true,
+              "route": "snapshot",
+              "tls_complete": true,
+              "tls_version": "TLSv1.3",
+              "token_header_count": 1
+            }
+          ],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 1,
+          "thread_joined": true
+        },
+        {
+          "accepts": 0,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 2,
+          "thread_joined": true
+        }
+      ],
+      "positive_save_control": null,
+      "process": {
+        "direct_child_reaped": true,
+        "elapsed_ms": 324.25602,
+        "error_class": "cli_success",
+        "pid": 2726396,
+        "remaining": [],
+        "returncode": 0,
+        "stderr_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      "sequence": 7,
+      "source_prediction_used_as_pass_predicate": false,
+      "terminal_unix_ns": 1793805019362511746
+    },
+    {
+      "actual_http_request_counts": [
+        1,
+        0
+      ],
+      "all_case_owned_stopped": true,
+      "case": "S08_save_redirect_untrusted_CA",
+      "classification": "tls_certificate_refusal",
+      "failure_code": null,
+      "incomplete_exchanges": [],
+      "intent": {
+        "address": "https://127.0.0.1:48740",
+        "case": "S08_save_redirect_untrusted_CA",
+        "command": "save",
+        "controller_retries": 0,
+        "deadline_monotonic_ns": 882700360260431,
+        "http_body_and_token_values_public": false,
+        "http_seconds": 15.0,
+        "inherited_environment": false,
+        "intent_unix_ns": 1793805019367955430,
+        "private_credential_source": "fresh_synthetic_fixture_only",
+        "redirects_disabled": false,
+        "restore_input_bytes": 0,
+        "restore_input_sha256": null,
+        "sequence": 8,
+        "tls_skip_verify": false,
+        "valid_restore_body": false
+      },
+      "outcome_unknown": false,
+      "output": {
+        "exists": false
+      },
+      "peer_controller_errors": [],
+      "peers": [
+        {
+          "accepts": 1,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [
+            {
+              "alpn": "http/1.1",
+              "body_bytes": 0,
+              "body_empty": true,
+              "body_equals_fixed_invalid": false,
+              "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "chunks": 0,
+              "connection": 1,
+              "framing": "none",
+              "head_bytes": 207,
+              "host_header_origin": "1",
+              "http_bytes_received": 207,
+              "method": "GET",
+              "original_token_equal": true,
+              "peer": 1,
+              "request_complete": true,
+              "request_head_complete": true,
+              "request_wire_bytes_received": 207,
+              "response_status": 307,
+              "response_wire_bytes": 137,
+              "response_wire_sha256": "3db250b522bd1b80d7500007dc156a3a46c26e5b4048828a843b8ddcc924c049",
+              "response_write_complete": true,
+              "route": "snapshot",
+              "tls_complete": true,
+              "tls_version": "TLSv1.3",
+              "token_header_count": 1
+            }
+          ],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 1,
+          "thread_joined": true
+        },
+        {
+          "accepts": 1,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [
+            {
+              "connection": 1,
+              "error_phase": "tls",
+              "error_type": "SSLError",
+              "expected_bad_ca_handshake_refusal": true,
+              "http_bytes_received": 0,
+              "known_pre_http_refusal": true,
+              "peer": 2,
+              "request_complete": false,
+              "response_write_complete": false,
+              "tls_complete": false
+            }
+          ],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 2,
+          "thread_joined": true
+        }
+      ],
+      "positive_save_control": null,
+      "process": {
+        "direct_child_reaped": true,
+        "elapsed_ms": 327.355132,
+        "error_class": "tls_certificate_refusal",
+        "pid": 2726426,
+        "remaining": [],
+        "returncode": 2,
+        "stderr_bytes": 185,
+        "stderr_sha256": "20ab5a9a2c673baf75d824d8bee1a0cb6413e3c4c4745cd4a09714cc36186332",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      "sequence": 8,
+      "source_prediction_used_as_pass_predicate": false,
+      "terminal_unix_ns": 1793805019753790149
+    },
+    {
+      "actual_http_request_counts": [
+        1,
+        0
+      ],
+      "all_case_owned_stopped": true,
+      "case": "S09_save_redirect_protocol_downgrade",
+      "classification": "redirect_protocol_downgrade",
+      "failure_code": null,
+      "incomplete_exchanges": [],
+      "intent": {
+        "address": "https://127.0.0.1:48740",
+        "case": "S09_save_redirect_protocol_downgrade",
+        "command": "save",
+        "controller_retries": 0,
+        "deadline_monotonic_ns": 882700751807160,
+        "http_body_and_token_values_public": false,
+        "http_seconds": 15.0,
+        "inherited_environment": false,
+        "intent_unix_ns": 1793805019759500923,
+        "private_credential_source": "fresh_synthetic_fixture_only",
+        "redirects_disabled": false,
+        "restore_input_bytes": 0,
+        "restore_input_sha256": null,
+        "sequence": 9,
+        "tls_skip_verify": false,
+        "valid_restore_body": false
+      },
+      "outcome_unknown": false,
+      "output": {
+        "exists": false
+      },
+      "peer_controller_errors": [],
+      "peers": [
+        {
+          "accepts": 1,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [
+            {
+              "alpn": "http/1.1",
+              "body_bytes": 0,
+              "body_empty": true,
+              "body_equals_fixed_invalid": false,
+              "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "chunks": 0,
+              "connection": 1,
+              "framing": "none",
+              "head_bytes": 207,
+              "host_header_origin": "1",
+              "http_bytes_received": 207,
+              "method": "GET",
+              "original_token_equal": true,
+              "peer": 1,
+              "request_complete": true,
+              "request_head_complete": true,
+              "request_wire_bytes_received": 207,
+              "response_status": 307,
+              "response_wire_bytes": 136,
+              "response_wire_sha256": "069fb07e41afcc6f409b161312b79ee3500fb700a09a1c9d3c19b3d4d6b0bc8d",
+              "response_write_complete": true,
+              "route": "snapshot",
+              "tls_complete": true,
+              "tls_version": "TLSv1.3",
+              "token_header_count": 1
+            }
+          ],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 1,
+          "thread_joined": true
+        },
+        {
+          "accepts": 0,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 2,
+          "thread_joined": true
+        }
+      ],
+      "positive_save_control": null,
+      "process": {
+        "direct_child_reaped": true,
+        "elapsed_ms": 320.800841,
+        "error_class": "redirect_protocol_downgrade",
+        "pid": 2726447,
+        "remaining": [],
+        "returncode": 2,
+        "stderr_bytes": 67,
+        "stderr_sha256": "0145659c3c3b72a6579a2355fc3d552c764c008e8bf254278242256098079f5a",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      "sequence": 9,
+      "source_prediction_used_as_pass_predicate": false,
+      "terminal_unix_ns": 1793805020166025852
+    },
+    {
+      "actual_http_request_counts": [
+        1,
+        1
+      ],
+      "all_case_owned_stopped": true,
+      "case": "S10_save_second_redirect_limit",
+      "classification": "redirect_observed_but_cli_reported_incomplete_snapshot",
+      "failure_code": null,
+      "incomplete_exchanges": [],
+      "intent": {
+        "address": "https://127.0.0.1:48740",
+        "case": "S10_save_second_redirect_limit",
+        "command": "save",
+        "controller_retries": 0,
+        "deadline_monotonic_ns": 882701175700725,
+        "http_body_and_token_values_public": false,
+        "http_seconds": 15.0,
+        "inherited_environment": false,
+        "intent_unix_ns": 1793805020183398776,
+        "private_credential_source": "fresh_synthetic_fixture_only",
+        "redirects_disabled": false,
+        "restore_input_bytes": 0,
+        "restore_input_sha256": null,
+        "sequence": 10,
+        "tls_skip_verify": false,
+        "valid_restore_body": false
+      },
+      "outcome_unknown": false,
+      "output": {
+        "exists": false
+      },
+      "peer_controller_errors": [],
+      "peers": [
+        {
+          "accepts": 1,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [
+            {
+              "alpn": "http/1.1",
+              "body_bytes": 0,
+              "body_empty": true,
+              "body_equals_fixed_invalid": false,
+              "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "chunks": 0,
+              "connection": 1,
+              "framing": "none",
+              "head_bytes": 207,
+              "host_header_origin": "1",
+              "http_bytes_received": 207,
+              "method": "GET",
+              "original_token_equal": true,
+              "peer": 1,
+              "request_complete": true,
+              "request_head_complete": true,
+              "request_wire_bytes_received": 207,
+              "response_status": 307,
+              "response_wire_bytes": 137,
+              "response_wire_sha256": "3db250b522bd1b80d7500007dc156a3a46c26e5b4048828a843b8ddcc924c049",
+              "response_write_complete": true,
+              "route": "snapshot",
+              "tls_complete": true,
+              "tls_version": "TLSv1.3",
+              "token_header_count": 1
+            }
+          ],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 1,
+          "thread_joined": true
+        },
+        {
+          "accepts": 1,
+          "active_socket_closed": true,
+          "cleanup_errors": [],
+          "error_type": null,
+          "events": [
+            {
+              "alpn": "http/1.1",
+              "body_bytes": 0,
+              "body_empty": true,
+              "body_equals_fixed_invalid": false,
+              "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "chunks": 0,
+              "connection": 1,
+              "framing": "none",
+              "head_bytes": 207,
+              "host_header_origin": "1",
+              "http_bytes_received": 207,
+              "method": "GET",
+              "original_token_equal": true,
+              "peer": 2,
+              "request_complete": true,
+              "request_head_complete": true,
+              "request_wire_bytes_received": 207,
+              "response_status": 307,
+              "response_wire_bytes": 146,
+              "response_wire_sha256": "6355b156fd16766e1779ae8105445fa1b8d2632f97816a87cc49209d1d36e816",
+              "response_write_complete": true,
+              "route": "snapshot",
+              "tls_complete": true,
+              "tls_version": "TLSv1.3",
+              "token_header_count": 1
+            }
+          ],
+          "listener_closed": true,
+          "owned_stopped": true,
+          "peer": 2,
+          "thread_joined": true
+        }
+      ],
+      "positive_save_control": null,
+      "process": {
+        "direct_child_reaped": true,
+        "elapsed_ms": 330.103127,
+        "error_class": "incomplete_snapshot",
+        "pid": 2726483,
+        "remaining": [],
+        "returncode": 2,
+        "stderr_bytes": 86,
+        "stderr_sha256": "7adf86f04d4308e68812a0b328056b9990af2852d9420e7f579b6909a3d591ac",
+        "stdout_bytes": 0,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false
+      },
+      "sequence": 10,
+      "source_prediction_used_as_pass_predicate": false,
+      "terminal_unix_ns": 1793805020580000630
+    }
+  ],
+  "child_exec_visibility": [
+    {
+      "additional_reads": 1,
+      "elapsed_ms": 1.848081,
+      "empty_reads": 1,
+      "failure_type": null,
+      "final_cmdline_bytes": 349,
+      "initial_cmdline_bytes": 0,
+      "nonempty_observed": true,
+      "original_deadline_monotonic_ns": 882690601876782,
+      "pgid": 2726046,
+      "pid": 2726046,
+      "start_ticks": 88267560,
+      "state_counts": {
+        "D": 3
+      }
+    }
+  ],
+  "child_provenance": [
+    {
+      "actual_argc": 1,
+      "actual_cmdline_bytes": 0,
+      "actual_cmdline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 0,
+          "equal": false,
+          "expected_bytes": 16,
+          "expected_sha256": "1afb0e3c1a5a2267a9915404e45a289d765039192e7a5ff73df5840e3865e46f",
+          "index": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 16,
+      "extra_args_omitted": 0,
+      "guard_accepted": false,
+      "identity": {
+        "exe": "/usr/bin/openssl",
+        "pgid": 2726046,
+        "pid": 2726046,
+        "ppid": 2726004,
+        "start_ticks": 88267560,
+        "state": "D"
+      },
+      "pid": 2726046,
+      "stage": "empty_cmdline_pending"
+    },
+    {
+      "actual_argc": 16,
+      "actual_cmdline_bytes": 349,
+      "actual_cmdline_sha256": "06be44d3e420def33b327bbc63ace164ac9589005196de63eca0509b5888d6ea",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 16,
+          "equal": true,
+          "expected_bytes": 16,
+          "expected_sha256": "1afb0e3c1a5a2267a9915404e45a289d765039192e7a5ff73df5840e3865e46f",
+          "index": 0,
+          "sha256": "1afb0e3c1a5a2267a9915404e45a289d765039192e7a5ff73df5840e3865e46f"
+        },
+        {
+          "bytes": 3,
+          "equal": true,
+          "expected_bytes": 3,
+          "expected_sha256": "c3f7bdf537c46724392c4428e47e04c148c56966190c3c9ed92114800c9f35bb",
+          "index": 1,
+          "sha256": "c3f7bdf537c46724392c4428e47e04c148c56966190c3c9ed92114800c9f35bb"
+        },
+        {
+          "bytes": 5,
+          "equal": true,
+          "expected_bytes": 5,
+          "expected_sha256": "f2bbb8c5a74bfee6b16b17c37e16f0392d6c5b8b15c57900d08542301965800d",
+          "index": 2,
+          "sha256": "f2bbb8c5a74bfee6b16b17c37e16f0392d6c5b8b15c57900d08542301965800d"
+        },
+        {
+          "bytes": 7,
+          "equal": true,
+          "expected_bytes": 7,
+          "expected_sha256": "bde9cf779870a85ad9d0d447afa0a398f575f7de7dfdf583a1f82fe7c25b2f1f",
+          "index": 3,
+          "sha256": "bde9cf779870a85ad9d0d447afa0a398f575f7de7dfdf583a1f82fe7c25b2f1f"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "69bc570034a6ed674f27035ab5f5e4d2d9300cba54338ce601c1299ae313a488",
+          "index": 4,
+          "sha256": "69bc570034a6ed674f27035ab5f5e4d2d9300cba54338ce601c1299ae313a488"
+        },
+        {
+          "bytes": 6,
+          "equal": true,
+          "expected_bytes": 6,
+          "expected_sha256": "1e45f6e94919337614c8f82341065c49c7dccf8a5b177439381e9bbfb0145369",
+          "index": 5,
+          "sha256": "1e45f6e94919337614c8f82341065c49c7dccf8a5b177439381e9bbfb0145369"
+        },
+        {
+          "bytes": 7,
+          "equal": true,
+          "expected_bytes": 7,
+          "expected_sha256": "02fd1b2032bc4c748e7b466ff686a5fc21fbd7caa45e8fd333edc45cd19664d6",
+          "index": 6,
+          "sha256": "02fd1b2032bc4c748e7b466ff686a5fc21fbd7caa45e8fd333edc45cd19664d6"
+        },
+        {
+          "bytes": 96,
+          "equal": true,
+          "expected_bytes": 96,
+          "expected_sha256": "ca8c94782c11ad63d56f96cba3cecbaeec6bda4224195e59e97ad95deacd8606",
+          "index": 7,
+          "sha256": "ca8c94782c11ad63d56f96cba3cecbaeec6bda4224195e59e97ad95deacd8606"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "587af2036cae4ac402e7e9b40d9cb41bba84d8a3baab9c1fa9dbce2bb8119fc5",
+          "index": 8,
+          "sha256": "587af2036cae4ac402e7e9b40d9cb41bba84d8a3baab9c1fa9dbce2bb8119fc5"
+        },
+        {
+          "bytes": 96,
+          "equal": true,
+          "expected_bytes": 96,
+          "expected_sha256": "716c40709d808683764eb4f5f0082f7a38a9209d0bc20cfd21c3a5e6f3f64867",
+          "index": 9,
+          "sha256": "716c40709d808683764eb4f5f0082f7a38a9209d0bc20cfd21c3a5e6f3f64867"
+        },
+        {
+          "bytes": 5,
+          "equal": true,
+          "expected_bytes": 5,
+          "expected_sha256": "3c63f5c6f61455613b7fa0c9476053fdfd685696ad68f9472938332b5be34bc6",
+          "index": 10,
+          "sha256": "3c63f5c6f61455613b7fa0c9476053fdfd685696ad68f9472938332b5be34bc6"
+        },
+        {
+          "bytes": 1,
+          "equal": true,
+          "expected_bytes": 1,
+          "expected_sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+          "index": 11,
+          "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+        },
+        {
+          "bytes": 5,
+          "equal": true,
+          "expected_bytes": 5,
+          "expected_sha256": "59b8f824dd7ab65643951c0928baa31fa966ba0f5d3f6b61c5e9011f47b44f8d",
+          "index": 12,
+          "sha256": "59b8f824dd7ab65643951c0928baa31fa966ba0f5d3f6b61c5e9011f47b44f8d"
+        },
+        {
+          "bytes": 26,
+          "equal": true,
+          "expected_bytes": 26,
+          "expected_sha256": "a22f5f7fdc042c14ecd52ca0020bf68111eaa782b7e44ac68f82af58b50ec923",
+          "index": 13,
+          "sha256": "a22f5f7fdc042c14ecd52ca0020bf68111eaa782b7e44ac68f82af58b50ec923"
+        },
+        {
+          "bytes": 7,
+          "equal": true,
+          "expected_bytes": 7,
+          "expected_sha256": "45d1d19eefc1fecb6445e47e35ac29523b1eac4ffcf5c8401b4cded4687adadf",
+          "index": 14,
+          "sha256": "45d1d19eefc1fecb6445e47e35ac29523b1eac4ffcf5c8401b4cded4687adadf"
+        },
+        {
+          "bytes": 41,
+          "equal": true,
+          "expected_bytes": 41,
+          "expected_sha256": "c0a7693dc9d0474573c14b98ffeba62aa59a877379af4255a43f9b6d2790fee0",
+          "index": 15,
+          "sha256": "c0a7693dc9d0474573c14b98ffeba62aa59a877379af4255a43f9b6d2790fee0"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 16,
+      "extra_args_omitted": 0,
+      "guard_accepted": true,
+      "identity": {
+        "exe": "/usr/bin/openssl",
+        "pgid": 2726046,
+        "pid": 2726046,
+        "ppid": 2726004,
+        "start_ticks": 88267560,
+        "state": "D"
+      },
+      "pid": 2726046,
+      "stage": "exact_executable_and_argv"
+    },
+    {
+      "actual_argc": 16,
+      "actual_cmdline_bytes": 346,
+      "actual_cmdline_sha256": "bf08467da36190a530494d3f1ef38c0be1b38a3985ff7236eb3bd0efb9484d02",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 16,
+          "equal": true,
+          "expected_bytes": 16,
+          "expected_sha256": "1afb0e3c1a5a2267a9915404e45a289d765039192e7a5ff73df5840e3865e46f",
+          "index": 0,
+          "sha256": "1afb0e3c1a5a2267a9915404e45a289d765039192e7a5ff73df5840e3865e46f"
+        },
+        {
+          "bytes": 3,
+          "equal": true,
+          "expected_bytes": 3,
+          "expected_sha256": "c3f7bdf537c46724392c4428e47e04c148c56966190c3c9ed92114800c9f35bb",
+          "index": 1,
+          "sha256": "c3f7bdf537c46724392c4428e47e04c148c56966190c3c9ed92114800c9f35bb"
+        },
+        {
+          "bytes": 5,
+          "equal": true,
+          "expected_bytes": 5,
+          "expected_sha256": "f2bbb8c5a74bfee6b16b17c37e16f0392d6c5b8b15c57900d08542301965800d",
+          "index": 2,
+          "sha256": "f2bbb8c5a74bfee6b16b17c37e16f0392d6c5b8b15c57900d08542301965800d"
+        },
+        {
+          "bytes": 7,
+          "equal": true,
+          "expected_bytes": 7,
+          "expected_sha256": "bde9cf779870a85ad9d0d447afa0a398f575f7de7dfdf583a1f82fe7c25b2f1f",
+          "index": 3,
+          "sha256": "bde9cf779870a85ad9d0d447afa0a398f575f7de7dfdf583a1f82fe7c25b2f1f"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "69bc570034a6ed674f27035ab5f5e4d2d9300cba54338ce601c1299ae313a488",
+          "index": 4,
+          "sha256": "69bc570034a6ed674f27035ab5f5e4d2d9300cba54338ce601c1299ae313a488"
+        },
+        {
+          "bytes": 6,
+          "equal": true,
+          "expected_bytes": 6,
+          "expected_sha256": "1e45f6e94919337614c8f82341065c49c7dccf8a5b177439381e9bbfb0145369",
+          "index": 5,
+          "sha256": "1e45f6e94919337614c8f82341065c49c7dccf8a5b177439381e9bbfb0145369"
+        },
+        {
+          "bytes": 7,
+          "equal": true,
+          "expected_bytes": 7,
+          "expected_sha256": "02fd1b2032bc4c748e7b466ff686a5fc21fbd7caa45e8fd333edc45cd19664d6",
+          "index": 6,
+          "sha256": "02fd1b2032bc4c748e7b466ff686a5fc21fbd7caa45e8fd333edc45cd19664d6"
+        },
+        {
+          "bytes": 95,
+          "equal": true,
+          "expected_bytes": 95,
+          "expected_sha256": "c7b9e471c69ed6553bc3b74683ea61e245bd54d4f139b805c171c16aa3240eb7",
+          "index": 7,
+          "sha256": "c7b9e471c69ed6553bc3b74683ea61e245bd54d4f139b805c171c16aa3240eb7"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "587af2036cae4ac402e7e9b40d9cb41bba84d8a3baab9c1fa9dbce2bb8119fc5",
+          "index": 8,
+          "sha256": "587af2036cae4ac402e7e9b40d9cb41bba84d8a3baab9c1fa9dbce2bb8119fc5"
+        },
+        {
+          "bytes": 95,
+          "equal": true,
+          "expected_bytes": 95,
+          "expected_sha256": "04e47f4fd811ed47f853634a164b6a6383ad0a5725ba107ee267c82e337ec06a",
+          "index": 9,
+          "sha256": "04e47f4fd811ed47f853634a164b6a6383ad0a5725ba107ee267c82e337ec06a"
+        },
+        {
+          "bytes": 5,
+          "equal": true,
+          "expected_bytes": 5,
+          "expected_sha256": "3c63f5c6f61455613b7fa0c9476053fdfd685696ad68f9472938332b5be34bc6",
+          "index": 10,
+          "sha256": "3c63f5c6f61455613b7fa0c9476053fdfd685696ad68f9472938332b5be34bc6"
+        },
+        {
+          "bytes": 1,
+          "equal": true,
+          "expected_bytes": 1,
+          "expected_sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+          "index": 11,
+          "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+        },
+        {
+          "bytes": 5,
+          "equal": true,
+          "expected_bytes": 5,
+          "expected_sha256": "59b8f824dd7ab65643951c0928baa31fa966ba0f5d3f6b61c5e9011f47b44f8d",
+          "index": 12,
+          "sha256": "59b8f824dd7ab65643951c0928baa31fa966ba0f5d3f6b61c5e9011f47b44f8d"
+        },
+        {
+          "bytes": 25,
+          "equal": true,
+          "expected_bytes": 25,
+          "expected_sha256": "517415b912f73f2750ad90702e3830a29f0488aa797bf52f5a7276b0c976c2a8",
+          "index": 13,
+          "sha256": "517415b912f73f2750ad90702e3830a29f0488aa797bf52f5a7276b0c976c2a8"
+        },
+        {
+          "bytes": 7,
+          "equal": true,
+          "expected_bytes": 7,
+          "expected_sha256": "45d1d19eefc1fecb6445e47e35ac29523b1eac4ffcf5c8401b4cded4687adadf",
+          "index": 14,
+          "sha256": "45d1d19eefc1fecb6445e47e35ac29523b1eac4ffcf5c8401b4cded4687adadf"
+        },
+        {
+          "bytes": 41,
+          "equal": true,
+          "expected_bytes": 41,
+          "expected_sha256": "c0a7693dc9d0474573c14b98ffeba62aa59a877379af4255a43f9b6d2790fee0",
+          "index": 15,
+          "sha256": "c0a7693dc9d0474573c14b98ffeba62aa59a877379af4255a43f9b6d2790fee0"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 16,
+      "extra_args_omitted": 0,
+      "guard_accepted": true,
+      "identity": {
+        "exe": "/usr/bin/openssl",
+        "pgid": 2726058,
+        "pid": 2726058,
+        "ppid": 2726004,
+        "start_ticks": 88267631,
+        "state": "R"
+      },
+      "pid": 2726058,
+      "stage": "exact_executable_and_argv"
+    },
+    {
+      "actual_argc": 6,
+      "actual_cmdline_bytes": 243,
+      "actual_cmdline_sha256": "3c2f4bd50ded75586ab9d31ebbb6c1090c7518ee5d6add3293afb6be8dd6ccac",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 97,
+          "equal": true,
+          "expected_bytes": 97,
+          "expected_sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa",
+          "index": 0,
+          "sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23",
+          "index": 1,
+          "sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5",
+          "index": 2,
+          "sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112",
+          "index": 3,
+          "sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "157dca92e4250458339d4b835250d44c238f3355e1b7986195188ee434e9baff",
+          "index": 4,
+          "sha256": "157dca92e4250458339d4b835250d44c238f3355e1b7986195188ee434e9baff"
+        },
+        {
+          "bytes": 116,
+          "equal": true,
+          "expected_bytes": 116,
+          "expected_sha256": "ef216f60fab3eac14fde09a562e52cd9f0a725049bcbe9fef8139bae71abe99e",
+          "index": 5,
+          "sha256": "ef216f60fab3eac14fde09a562e52cd9f0a725049bcbe9fef8139bae71abe99e"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 6,
+      "extra_args_omitted": 0,
+      "guard_accepted": true,
+      "identity": {
+        "exe": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+        "pgid": 2726089,
+        "pid": 2726089,
+        "ppid": 2726004,
+        "start_ticks": 88267725,
+        "state": "R"
+      },
+      "pid": 2726089,
+      "stage": "exact_executable_and_argv"
+    },
+    {
+      "actual_argc": 6,
+      "actual_cmdline_bytes": 245,
+      "actual_cmdline_sha256": "846d4d29edb776233ebcd250b8efc2f018f97e4e6d8a367a6f03378ec7e916e6",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 97,
+          "equal": true,
+          "expected_bytes": 97,
+          "expected_sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa",
+          "index": 0,
+          "sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23",
+          "index": 1,
+          "sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5",
+          "index": 2,
+          "sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112",
+          "index": 3,
+          "sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "157dca92e4250458339d4b835250d44c238f3355e1b7986195188ee434e9baff",
+          "index": 4,
+          "sha256": "157dca92e4250458339d4b835250d44c238f3355e1b7986195188ee434e9baff"
+        },
+        {
+          "bytes": 118,
+          "equal": true,
+          "expected_bytes": 118,
+          "expected_sha256": "6c858db2a8eee0a10ec66d89d9f099db690a5b0c272ff725309c6284d8e63640",
+          "index": 5,
+          "sha256": "6c858db2a8eee0a10ec66d89d9f099db690a5b0c272ff725309c6284d8e63640"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 6,
+      "extra_args_omitted": 0,
+      "guard_accepted": true,
+      "identity": {
+        "exe": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+        "pgid": 2726116,
+        "pid": 2726116,
+        "ppid": 2726004,
+        "start_ticks": 88267790,
+        "state": "R"
+      },
+      "pid": 2726116,
+      "stage": "exact_executable_and_argv"
+    },
+    {
+      "actual_argc": 6,
+      "actual_cmdline_bytes": 248,
+      "actual_cmdline_sha256": "94bc5dadb984e95ce55d18c8a4178fd2ad7f292a49282f24bcc3bb8fa1a12fa4",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 97,
+          "equal": true,
+          "expected_bytes": 97,
+          "expected_sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa",
+          "index": 0,
+          "sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23",
+          "index": 1,
+          "sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5",
+          "index": 2,
+          "sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112",
+          "index": 3,
+          "sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112"
+        },
+        {
+          "bytes": 7,
+          "equal": true,
+          "expected_bytes": 7,
+          "expected_sha256": "f329e3a317eee6a8a1a7357f69bc0488e0fad238ad58b30fc99139445f51e6ab",
+          "index": 4,
+          "sha256": "f329e3a317eee6a8a1a7357f69bc0488e0fad238ad58b30fc99139445f51e6ab"
+        },
+        {
+          "bytes": 118,
+          "equal": true,
+          "expected_bytes": 118,
+          "expected_sha256": "4a4bdc24b7530d78df6fe5d9e3929dbfafb4ffd8dae4f9d636167affb40abbdf",
+          "index": 5,
+          "sha256": "4a4bdc24b7530d78df6fe5d9e3929dbfafb4ffd8dae4f9d636167affb40abbdf"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 6,
+      "extra_args_omitted": 0,
+      "guard_accepted": true,
+      "identity": {
+        "exe": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+        "pgid": 2726153,
+        "pid": 2726153,
+        "ppid": 2726004,
+        "start_ticks": 88267907,
+        "state": "R"
+      },
+      "pid": 2726153,
+      "stage": "exact_executable_and_argv"
+    },
+    {
+      "actual_argc": 6,
+      "actual_cmdline_bytes": 248,
+      "actual_cmdline_sha256": "98bca4daeffda01cea1044915b343ccffde9f42439ecb3bce78bd5b201377854",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 97,
+          "equal": true,
+          "expected_bytes": 97,
+          "expected_sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa",
+          "index": 0,
+          "sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23",
+          "index": 1,
+          "sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5",
+          "index": 2,
+          "sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112",
+          "index": 3,
+          "sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112"
+        },
+        {
+          "bytes": 7,
+          "equal": true,
+          "expected_bytes": 7,
+          "expected_sha256": "f329e3a317eee6a8a1a7357f69bc0488e0fad238ad58b30fc99139445f51e6ab",
+          "index": 4,
+          "sha256": "f329e3a317eee6a8a1a7357f69bc0488e0fad238ad58b30fc99139445f51e6ab"
+        },
+        {
+          "bytes": 118,
+          "equal": true,
+          "expected_bytes": 118,
+          "expected_sha256": "1f52599b9e356fba17a767f56ae8c98d1e8470ebcdafe322a16c029153cdf1c2",
+          "index": 5,
+          "sha256": "1f52599b9e356fba17a767f56ae8c98d1e8470ebcdafe322a16c029153cdf1c2"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 6,
+      "extra_args_omitted": 0,
+      "guard_accepted": true,
+      "identity": {
+        "exe": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+        "pgid": 2726226,
+        "pid": 2726226,
+        "ppid": 2726004,
+        "start_ticks": 88268084,
+        "state": "R"
+      },
+      "pid": 2726226,
+      "stage": "exact_executable_and_argv"
+    },
+    {
+      "actual_argc": 6,
+      "actual_cmdline_bytes": 250,
+      "actual_cmdline_sha256": "924ae29667f0adaf84928f7369e59aaf0056ce72ce376ddbe19e46abfabe902c",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 97,
+          "equal": true,
+          "expected_bytes": 97,
+          "expected_sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa",
+          "index": 0,
+          "sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23",
+          "index": 1,
+          "sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5",
+          "index": 2,
+          "sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112",
+          "index": 3,
+          "sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112"
+        },
+        {
+          "bytes": 7,
+          "equal": true,
+          "expected_bytes": 7,
+          "expected_sha256": "f329e3a317eee6a8a1a7357f69bc0488e0fad238ad58b30fc99139445f51e6ab",
+          "index": 4,
+          "sha256": "f329e3a317eee6a8a1a7357f69bc0488e0fad238ad58b30fc99139445f51e6ab"
+        },
+        {
+          "bytes": 120,
+          "equal": true,
+          "expected_bytes": 120,
+          "expected_sha256": "11749abcc0bde96edd4ea753bd6e6d309a28f1b195f716bf9fd49cfca5bd7b26",
+          "index": 5,
+          "sha256": "11749abcc0bde96edd4ea753bd6e6d309a28f1b195f716bf9fd49cfca5bd7b26"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 6,
+      "extra_args_omitted": 0,
+      "guard_accepted": true,
+      "identity": {
+        "exe": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+        "pgid": 2726314,
+        "pid": 2726314,
+        "ppid": 2726004,
+        "start_ticks": 88268245,
+        "state": "R"
+      },
+      "pid": 2726314,
+      "stage": "exact_executable_and_argv"
+    },
+    {
+      "actual_argc": 6,
+      "actual_cmdline_bytes": 251,
+      "actual_cmdline_sha256": "9d3ef74d5eec466e00e8f2b67c90efc8939859de268b8b2f77786740ca1f4b86",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 97,
+          "equal": true,
+          "expected_bytes": 97,
+          "expected_sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa",
+          "index": 0,
+          "sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23",
+          "index": 1,
+          "sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5",
+          "index": 2,
+          "sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112",
+          "index": 3,
+          "sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "157dca92e4250458339d4b835250d44c238f3355e1b7986195188ee434e9baff",
+          "index": 4,
+          "sha256": "157dca92e4250458339d4b835250d44c238f3355e1b7986195188ee434e9baff"
+        },
+        {
+          "bytes": 124,
+          "equal": true,
+          "expected_bytes": 124,
+          "expected_sha256": "197fbea4dcdb73ad88233bfbd4bdc53c76286e43ef5a6c0b689c52d5e95f6a73",
+          "index": 5,
+          "sha256": "197fbea4dcdb73ad88233bfbd4bdc53c76286e43ef5a6c0b689c52d5e95f6a73"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 6,
+      "extra_args_omitted": 0,
+      "guard_accepted": true,
+      "identity": {
+        "exe": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+        "pgid": 2726343,
+        "pid": 2726343,
+        "ppid": 2726004,
+        "start_ticks": 88268310,
+        "state": "R"
+      },
+      "pid": 2726343,
+      "stage": "exact_executable_and_argv"
+    },
+    {
+      "actual_argc": 6,
+      "actual_cmdline_bytes": 256,
+      "actual_cmdline_sha256": "c18f65fe9a25d3204a3edccafe6dbb5d90a957e84fca25d66dc69fc768ae3e02",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 97,
+          "equal": true,
+          "expected_bytes": 97,
+          "expected_sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa",
+          "index": 0,
+          "sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23",
+          "index": 1,
+          "sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5",
+          "index": 2,
+          "sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112",
+          "index": 3,
+          "sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112"
+        },
+        {
+          "bytes": 7,
+          "equal": true,
+          "expected_bytes": 7,
+          "expected_sha256": "f329e3a317eee6a8a1a7357f69bc0488e0fad238ad58b30fc99139445f51e6ab",
+          "index": 4,
+          "sha256": "f329e3a317eee6a8a1a7357f69bc0488e0fad238ad58b30fc99139445f51e6ab"
+        },
+        {
+          "bytes": 126,
+          "equal": true,
+          "expected_bytes": 126,
+          "expected_sha256": "33a814d48268d5bc1c2c53bf4bc40ed3641d66c275c0645c8624ee68b88fe4e4",
+          "index": 5,
+          "sha256": "33a814d48268d5bc1c2c53bf4bc40ed3641d66c275c0645c8624ee68b88fe4e4"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 6,
+      "extra_args_omitted": 0,
+      "guard_accepted": true,
+      "identity": {
+        "exe": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+        "pgid": 2726396,
+        "pid": 2726396,
+        "ppid": 2726004,
+        "start_ticks": 88268495,
+        "state": "R"
+      },
+      "pid": 2726396,
+      "stage": "exact_executable_and_argv"
+    },
+    {
+      "actual_argc": 6,
+      "actual_cmdline_bytes": 254,
+      "actual_cmdline_sha256": "5ed72871cf497eb620b4bca83ea11a6090042887c1cf1db26da1ac2cafee37fb",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 97,
+          "equal": true,
+          "expected_bytes": 97,
+          "expected_sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa",
+          "index": 0,
+          "sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23",
+          "index": 1,
+          "sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5",
+          "index": 2,
+          "sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112",
+          "index": 3,
+          "sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "157dca92e4250458339d4b835250d44c238f3355e1b7986195188ee434e9baff",
+          "index": 4,
+          "sha256": "157dca92e4250458339d4b835250d44c238f3355e1b7986195188ee434e9baff"
+        },
+        {
+          "bytes": 127,
+          "equal": true,
+          "expected_bytes": 127,
+          "expected_sha256": "c878254e9d50be7222cb80a6e89c726a5866ca958c70f9f73a9a981e5904f9c6",
+          "index": 5,
+          "sha256": "c878254e9d50be7222cb80a6e89c726a5866ca958c70f9f73a9a981e5904f9c6"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 6,
+      "extra_args_omitted": 0,
+      "guard_accepted": true,
+      "identity": {
+        "exe": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+        "pgid": 2726426,
+        "pid": 2726426,
+        "ppid": 2726004,
+        "start_ticks": 88268536,
+        "state": "R"
+      },
+      "pid": 2726426,
+      "stage": "exact_executable_and_argv"
+    },
+    {
+      "actual_argc": 6,
+      "actual_cmdline_bytes": 260,
+      "actual_cmdline_sha256": "c337492c839cdf8f8018350a69f8850bb02fc57bab07455a60cd7a81bb518f30",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 97,
+          "equal": true,
+          "expected_bytes": 97,
+          "expected_sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa",
+          "index": 0,
+          "sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23",
+          "index": 1,
+          "sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5",
+          "index": 2,
+          "sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112",
+          "index": 3,
+          "sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "157dca92e4250458339d4b835250d44c238f3355e1b7986195188ee434e9baff",
+          "index": 4,
+          "sha256": "157dca92e4250458339d4b835250d44c238f3355e1b7986195188ee434e9baff"
+        },
+        {
+          "bytes": 133,
+          "equal": true,
+          "expected_bytes": 133,
+          "expected_sha256": "d85e97f1a1be64e7708b6fb257834dd75b50e09ce8a65270c64b0a725b59dd50",
+          "index": 5,
+          "sha256": "d85e97f1a1be64e7708b6fb257834dd75b50e09ce8a65270c64b0a725b59dd50"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 6,
+      "extra_args_omitted": 0,
+      "guard_accepted": true,
+      "identity": {
+        "exe": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+        "pgid": 2726447,
+        "pid": 2726447,
+        "ppid": 2726004,
+        "start_ticks": 88268575,
+        "state": "R"
+      },
+      "pid": 2726447,
+      "stage": "exact_executable_and_argv"
+    },
+    {
+      "actual_argc": 6,
+      "actual_cmdline_bytes": 254,
+      "actual_cmdline_sha256": "658f6f462035a5ae1e8ce3efa5de084ef96a553135aa5c1e4d7d894e1bfb3c38",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 97,
+          "equal": true,
+          "expected_bytes": 97,
+          "expected_sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa",
+          "index": 0,
+          "sha256": "e615a5e5282d0bc089aded7bf182bac92a1eeedf79a14bb87dfcf5ac5d6e46fa"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23",
+          "index": 1,
+          "sha256": "06e55b633481f7bb072957eabcf110c972e86691c3cfedabe088024bffe42f23"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5",
+          "index": 2,
+          "sha256": "76a35072df72591a656e69cab6f6fa99aa386fd5ace35c9042851eb324ec16b5"
+        },
+        {
+          "bytes": 8,
+          "equal": true,
+          "expected_bytes": 8,
+          "expected_sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112",
+          "index": 3,
+          "sha256": "16a0eeb0791b6c92451fd284dd9f599e0a7dbe7f6ebea6e2d2d06c7f74aec112"
+        },
+        {
+          "bytes": 4,
+          "equal": true,
+          "expected_bytes": 4,
+          "expected_sha256": "157dca92e4250458339d4b835250d44c238f3355e1b7986195188ee434e9baff",
+          "index": 4,
+          "sha256": "157dca92e4250458339d4b835250d44c238f3355e1b7986195188ee434e9baff"
+        },
+        {
+          "bytes": 127,
+          "equal": true,
+          "expected_bytes": 127,
+          "expected_sha256": "23522046e27d9d67d095561bb6d912b0c351109c3eab72dba597f17c931732d8",
+          "index": 5,
+          "sha256": "23522046e27d9d67d095561bb6d912b0c351109c3eab72dba597f17c931732d8"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 6,
+      "extra_args_omitted": 0,
+      "guard_accepted": true,
+      "identity": {
+        "exe": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+        "pgid": 2726483,
+        "pid": 2726483,
+        "ppid": 2726004,
+        "start_ticks": 88268618,
+        "state": "R"
+      },
+      "pid": 2726483,
+      "stage": "exact_executable_and_argv"
+    }
+  ],
+  "children_without_guard_projection": [],
+  "cli_contract_observation_only": true,
+  "elapsed_ms": 12836.471485,
+  "failure_code": null,
+  "fence_error": null,
+  "full_replacement_qualification": false,
+  "intent_count": 10,
+  "intent_labels_without_durable_outcome": [],
+  "outcome_count": 10,
+  "peer_cleanup": [],
+  "prepared": {
+    "case_labels": [
+      "S01_save_direct_200",
+      "S02_save_307_then_200",
+      "S03_restore_direct_400",
+      "S04_restore_direct_500",
+      "S05_restore_307_then_400",
+      "S06_save_redirects_disabled",
+      "S07_restore_redirects_disabled",
+      "S08_save_redirect_untrusted_CA",
+      "S09_save_redirect_protocol_downgrade",
+      "S10_save_second_redirect_limit"
+    ],
+    "controller_sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9",
+    "credential_helpers_used": false,
+    "http_seconds": 15.0,
+    "inherited_bao_vault_proxy_environment": false,
+    "loopback_only": true,
+    "original_restore_input_bytes": 22,
+    "ports": [
+      48740,
+      48742
+    ],
+    "schema": "openbao271.snapshot-cli-transport-prepare.v1",
+    "source_predictions_are_not_pass_predicates": true,
+    "static": {
+      "binary_bytes": 181760103,
+      "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "official_binary": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+      "official_source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "old_evidence": {
+        "normal33-standby-oracle-live-r2/result.public.json": {
+          "bytes": 20381,
+          "sha256": "12cdeb32dc89a7f0af5d1950a2c14a02581a8e98cefd3719c0673a0bd38e68d4"
+        },
+        "normal33-standby-oracle-live-r3/result.public.json": {
+          "bytes": 19915,
+          "sha256": "f5a44d25e6f33e562b492e050242f36cc2744417a13a01db4beab1c0422ae590"
+        },
+        "official271-cli-openssl-identity-diag-r1/owned-projection.public.json": {
+          "bytes": 7544,
+          "sha256": "426077ea0efdbb496a35dd2d6e1eb57bdf56fe2ec3775c6b00c885e9b5d94810"
+        },
+        "official271-cli-transport-live-r1/result.public.json": {
+          "bytes": 4208,
+          "sha256": "ae4a8d0af3e9e8dcf838adce201f1985256b506f7ad2c565c8e92918148c21e6"
+        },
+        "official271-cli-transport-live-r2/result.public.json": {
+          "bytes": 5986,
+          "sha256": "14b185911aa3cf166ed5d9a16d3f437098fb52ee31e27f1b15753de1bb99100b"
+        },
+        "official271-standby-oracle-live-r1/boundary-assessment.public.json": {
+          "bytes": 112921,
+          "sha256": "4588e9f3a8fff060d4ac7ea035f85b5bcf58cc9874e839d9797bc75023068391"
+        },
+        "official271-standby-oracle-live-r1/result.public.json": {
+          "bytes": 6521,
+          "sha256": "d84a783d817ee7827496182b6f750a1cd995424e554b287f602fd9204f289975"
+        }
+      }
+    },
+    "tls_skip_verify": false,
+    "valid_restore_bodies": 0,
+    "whole_phase_seconds": 300.0,
+    "work_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-cli-transport-live-r3"
+  },
+  "process_cleanup": [
+    {
+      "owned_stopped": true,
+      "pid": 2726483,
+      "remaining": [],
+      "start_ticks": 88268618,
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2726447,
+      "remaining": [],
+      "start_ticks": 88268575,
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2726426,
+      "remaining": [],
+      "start_ticks": 88268536,
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2726396,
+      "remaining": [],
+      "start_ticks": 88268495,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2726343,
+      "remaining": [],
+      "start_ticks": 88268310,
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2726314,
+      "remaining": [],
+      "start_ticks": 88268245,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2726226,
+      "remaining": [],
+      "start_ticks": 88268084,
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2726153,
+      "remaining": [],
+      "start_ticks": 88267907,
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2726116,
+      "remaining": [],
+      "start_ticks": 88267790,
+      "wait_returncode": 2
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2726089,
+      "remaining": [],
+      "start_ticks": 88267725,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2726058,
+      "remaining": [],
+      "start_ticks": 88267631,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 2726046,
+      "remaining": [],
+      "start_ticks": 88267560,
+      "wait_returncode": 0
+    }
+  ],
+  "production_services_changed": false,
+  "schema": "openbao271.snapshot-cli-transport-observation.v1",
+  "source_predictions_are_not_pass_predicates": true,
+  "static_after": {
+    "binary_bytes": 181760103,
+    "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+    "official_binary": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+    "official_source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "old_evidence": {
+      "normal33-standby-oracle-live-r2/result.public.json": {
+        "bytes": 20381,
+        "sha256": "12cdeb32dc89a7f0af5d1950a2c14a02581a8e98cefd3719c0673a0bd38e68d4"
+      },
+      "normal33-standby-oracle-live-r3/result.public.json": {
+        "bytes": 19915,
+        "sha256": "f5a44d25e6f33e562b492e050242f36cc2744417a13a01db4beab1c0422ae590"
+      },
+      "official271-cli-openssl-identity-diag-r1/owned-projection.public.json": {
+        "bytes": 7544,
+        "sha256": "426077ea0efdbb496a35dd2d6e1eb57bdf56fe2ec3775c6b00c885e9b5d94810"
+      },
+      "official271-cli-transport-live-r1/result.public.json": {
+        "bytes": 4208,
+        "sha256": "ae4a8d0af3e9e8dcf838adce201f1985256b506f7ad2c565c8e92918148c21e6"
+      },
+      "official271-cli-transport-live-r2/result.public.json": {
+        "bytes": 5986,
+        "sha256": "14b185911aa3cf166ed5d9a16d3f437098fb52ee31e27f1b15753de1bb99100b"
+      },
+      "official271-standby-oracle-live-r1/boundary-assessment.public.json": {
+        "bytes": 112921,
+        "sha256": "4588e9f3a8fff060d4ac7ea035f85b5bcf58cc9874e839d9797bc75023068391"
+      },
+      "official271-standby-oracle-live-r1/result.public.json": {
+        "bytes": 6521,
+        "sha256": "d84a783d817ee7827496182b6f750a1cd995424e554b287f602fd9204f289975"
+      }
+    }
+  },
+  "status": "completed_observation",
+  "terminal_unix_ns": 1793805022049992669,
+  "unknown": false,
+  "valid_restore_bodies": 0
+}

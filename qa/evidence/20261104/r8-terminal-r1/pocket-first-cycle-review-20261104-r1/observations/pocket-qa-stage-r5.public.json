@@ -1,0 +1,151 @@
+{
+  "schema": "heptabao.pocket-r5-createonly-qa-stage.v1",
+  "ok": true,
+  "qaPinsSha256": "4ca5aefbd9f65b0a58ee2fe2919979f7a8b27b2339bd960b84d7b275c793d395",
+  "root": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-qa-r5",
+  "mkdir": {
+    "at_unix_ms": 1793804526149,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a714da86-fc05-2a0b",
+    "launch_nonce": "034acd0fb0405298cb3cc0d28b10049c",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 194,
+        "stored": 194
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "files": [
+    {
+      "name": "authbus_coordinator.py",
+      "mode": 384,
+      "sha256": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+      "size": 44118,
+      "version": "66306:44081218:44118:1793804606114150479:1793804606115097389",
+      "written": 44118,
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "pocket_authbus_cache_cas_r1.mjs",
+      "mode": 384,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+      "size": 6846,
+      "version": "66306:44081229:6846:1793804609426146220:1793804609426726132",
+      "written": 6846,
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "pocket_first_cycle_consumer_r1.mjs",
+      "mode": 384,
+      "sha256": "6455180970f37831bb1a4084aab8583822c900586f9fabcbd7536332bc45429e",
+      "size": 24016,
+      "version": "66306:44081236:24016:1793804612936674447:1793804612936796860",
+      "written": 24016,
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "pocket_first_cycle_inputs_r1.py",
+      "mode": 384,
+      "sha256": "1ffcca778b9f78f0f63679b0cf0050afc8d520ca3c823ee65fc0aed9bd84f5ac",
+      "size": 20076,
+      "version": "66306:44081238:20076:1793804615470003347:1793804615470958824",
+      "written": 20076,
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "pocket_first_cycle_launch_r5.py",
+      "mode": 384,
+      "sha256": "8dedce99634091e522de0eb28a3f852235d3c20cb9fef815e267639fb93861a2",
+      "size": 13045,
+      "version": "66306:44081240:13045:1793804620035946358:1793804620036940298",
+      "written": 13045,
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "pocket_first_cycle_prepare_r5.py",
+      "mode": 384,
+      "sha256": "3e35daaf9fff2f3ec6426ba8ff9f1f1fc25482ca2b11e3bae1797828b30d47b2",
+      "size": 6845,
+      "version": "66306:44081242:6845:1793804625119585142:1793804625120043288",
+      "written": 6845,
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "pocket_native_auth_rows_cas_r1.mjs",
+      "mode": 384,
+      "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+      "size": 2703,
+      "version": "66306:44081244:2703:1793804631101311507:1793804631102322810",
+      "written": 2703,
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "pocket_native_observer_r3.mjs",
+      "mode": 384,
+      "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027",
+      "size": 11901,
+      "version": "66306:44081246:11901:1793804635085836119:1793804635086245931",
+      "written": 11901,
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "pocket_shared_first_cycle_live_r2.py",
+      "mode": 384,
+      "sha256": "d9e8a1883b39cab318105a600cd35dba9fa1b7f0cdff4e505339baf184e6e02f",
+      "size": 45061,
+      "version": "66306:44081248:45061:1793804640925600570:1793804640926365112",
+      "written": 45061,
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "project_trusted_profile12.py",
+      "mode": 384,
+      "sha256": "a7b05f1729cb658fe036d75caaeb6376149ae08a717cbdd91b69042a9b7b8e43",
+      "size": 9233,
+      "version": "66306:44081250:9233:1793804644823180743:1793804644823444820",
+      "written": 9233,
+      "reconciledAfterWriteReply": false
+    },
+    {
+      "name": "qa-pins.public.json",
+      "mode": 384,
+      "sha256": "4ca5aefbd9f65b0a58ee2fe2919979f7a8b27b2339bd960b84d7b275c793d395",
+      "size": 1953,
+      "version": "66306:44081252:1953:1793804647152755376:1793804647153833375",
+      "written": 1953,
+      "reconciledAfterWriteReply": false
+    }
+  ],
+  "firstMkdirReplyError": {
+    "toolError": "tool call error: tool call failed for `codex_apps/heptaruntime_mac_controller.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+    "isError": true
+  },
+  "mkdirReconciledWithExactIdempotencyKey": true,
+  "runtimeExecuted": false,
+  "productionChanged": false
+}

@@ -1,0 +1,369 @@
+{
+  "binary_execution_allowed": false,
+  "file_results": [
+    {
+      "bytes": 110064840,
+      "create_only": true,
+      "fsynced": true,
+      "mode": 448,
+      "path": "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/artifacts/heptabao-server",
+      "sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+      "single_link": true,
+      "streamed_bytes": 110064840
+    },
+    {
+      "bytes": 777,
+      "create_only": true,
+      "fsynced": true,
+      "mode": 384,
+      "path": "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/artifacts/native-build.public.json",
+      "sha256": "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9",
+      "single_link": true,
+      "streamed_bytes": 777
+    },
+    {
+      "bytes": 3164,
+      "create_only": true,
+      "fsynced": true,
+      "mode": 384,
+      "path": "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/artifacts/result.public.json",
+      "sha256": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5",
+      "single_link": true,
+      "streamed_bytes": 3164
+    },
+    {
+      "bytes": 41551,
+      "create_only": true,
+      "fsynced": true,
+      "mode": 384,
+      "path": "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/artifacts/candidate-from33-r7-r1.bundle",
+      "sha256": "a0f284839b4a1e781af62464bcea919f938f9037a23f7269c403b4f122ed9244",
+      "single_link": true,
+      "streamed_bytes": 41551
+    },
+    {
+      "bytes": 1259,
+      "create_only": true,
+      "fsynced": true,
+      "mode": 384,
+      "path": "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/artifacts/candidate-from-r7.bundle",
+      "sha256": "b9a64f258aa6c0ecfac366d57c675d4f9d712edf5f1fe7ddc0929b69d5769aef",
+      "single_link": true,
+      "streamed_bytes": 1259
+    }
+  ],
+  "files": [
+    [
+      "heptabao-server",
+      110064840,
+      "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+      448
+    ],
+    [
+      "native-build.public.json",
+      777,
+      "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9",
+      384
+    ],
+    [
+      "result.public.json",
+      3164,
+      "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5",
+      384
+    ],
+    [
+      "candidate-from33-r7-r1.bundle",
+      41551,
+      "a0f284839b4a1e781af62464bcea919f938f9037a23f7269c403b4f122ed9244",
+      384
+    ],
+    [
+      "candidate-from-r7.bundle",
+      1259,
+      "b9a64f258aa6c0ecfac366d57c675d4f9d712edf5f1fe7ddc0929b69d5769aef",
+      384
+    ]
+  ],
+  "independent_checkout": true,
+  "no_target_binary_executed": true,
+  "old_source_after": {
+    "head": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "status": "",
+    "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+  },
+  "old_source_before": {
+    "head": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "status": "",
+    "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+  },
+  "old_source_unchanged": true,
+  "owned_git": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian/heptabao-blocker-closure-33cafa4c-20261104-r1/source",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "pid": 2870418,
+      "reaped": true,
+      "remaining_group": false,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9e9898d6dc04fd2592988ee864924988852c6b587232643b6dff257472c34e1f"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian/heptabao-blocker-closure-33cafa4c-20261104-r1/source",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "pid": 2870419,
+      "reaped": true,
+      "remaining_group": false,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "f43947f06732f604faa2ffdba15b700bd489eb49154c5718f4b3368e341fbfe8"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian/heptabao-blocker-closure-33cafa4c-20261104-r1/source",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "pid": 2870420,
+      "reaped": true,
+      "remaining_group": false,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "clone",
+        "--no-hardlinks",
+        "--no-checkout",
+        "--local",
+        "--",
+        "/home/qian/heptabao-blocker-closure-33cafa4c-20261104-r1/source",
+        "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/source"
+      ],
+      "exit_code": 0,
+      "pid": 2870442,
+      "reaped": true,
+      "remaining_group": false,
+      "stderr_sha256": "6a6701da4a3143a126908182571e3d5a5c78b6e4d57a8b179f91c631dd74a849",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/source",
+        "bundle",
+        "verify",
+        "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/artifacts/candidate-from33-r7-r1.bundle"
+      ],
+      "exit_code": 0,
+      "pid": 2870445,
+      "reaped": true,
+      "remaining_group": false,
+      "stderr_sha256": "a4d20e20289a03e3030bcee45b77d4d678a2a47ee47fb52c2c97a7322176b0e1",
+      "stdout_sha256": "3616e2e5979d3065c559a2df2f555ad1910a78dae64203ffcfba4dee27f38568"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/source",
+        "fetch",
+        "--no-tags",
+        "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/artifacts/candidate-from33-r7-r1.bundle",
+        "dc1c02dbd4803f4301097a8268d121e5d7f27464"
+      ],
+      "exit_code": 0,
+      "pid": 2870447,
+      "reaped": true,
+      "remaining_group": false,
+      "stderr_sha256": "c73d74ff6c9a5ea387c651e0e44e775aded3216241a945e8021c8ab87b76765a",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/source",
+        "bundle",
+        "verify",
+        "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/artifacts/candidate-from-r7.bundle"
+      ],
+      "exit_code": 0,
+      "pid": 2870455,
+      "reaped": true,
+      "remaining_group": false,
+      "stderr_sha256": "bd30b43cbf8c97cd2a62f9fdec1d244ea04bc0ea9f25addc148b8d14b1404227",
+      "stdout_sha256": "13e196a76b41e826b7d72954f92da797781ca793f6f1831afb06c654b2528a1a"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/source",
+        "fetch",
+        "--no-tags",
+        "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/artifacts/candidate-from-r7.bundle",
+        "384c957612186d64c5a530044af0ae62c568cc3d"
+      ],
+      "exit_code": 0,
+      "pid": 2870457,
+      "reaped": true,
+      "remaining_group": false,
+      "stderr_sha256": "b95446bccbc4582dddf2ae3740e8d43eaa0507eadd7b08c81ea812ee626074eb",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/source",
+        "checkout",
+        "--detach",
+        "384c957612186d64c5a530044af0ae62c568cc3d"
+      ],
+      "exit_code": 0,
+      "pid": 2870465,
+      "reaped": true,
+      "remaining_group": false,
+      "stderr_sha256": "d0946869576eadf144cc8ebbb8f5d75624fe6c31dccefc7ba8bbd974dd083528",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/source",
+        "remote",
+        "remove",
+        "origin"
+      ],
+      "exit_code": 0,
+      "pid": 2870466,
+      "reaped": true,
+      "remaining_group": false,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/source",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "pid": 2870467,
+      "reaped": true,
+      "remaining_group": false,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "550eced1fc5674f66e0a226bd7827a82f87153c223fc87187c500bb43decb533"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/source",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "pid": 2870468,
+      "reaped": true,
+      "remaining_group": false,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "471b71367d5116757f0942b02b533f4f52b27b9ac291028488351d91458a51e2"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/source",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "pid": 2870469,
+      "reaped": true,
+      "remaining_group": false,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian/heptabao-blocker-closure-33cafa4c-20261104-r1/source",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit_code": 0,
+      "pid": 2870477,
+      "reaped": true,
+      "remaining_group": false,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "9e9898d6dc04fd2592988ee864924988852c6b587232643b6dff257472c34e1f"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian/heptabao-blocker-closure-33cafa4c-20261104-r1/source",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exit_code": 0,
+      "pid": 2870478,
+      "reaped": true,
+      "remaining_group": false,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "f43947f06732f604faa2ffdba15b700bd489eb49154c5718f4b3368e341fbfe8"
+    },
+    {
+      "argv": [
+        "/usr/bin/git",
+        "-C",
+        "/home/qian/heptabao-blocker-closure-33cafa4c-20261104-r1/source",
+        "status",
+        "--porcelain"
+      ],
+      "exit_code": 0,
+      "pid": 2870479,
+      "reaped": true,
+      "remaining_group": false,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "production_changed": false,
+  "receipt_bytes_copied_verbatim": true,
+  "receiver_sha256": "c60fb8509518d1a755e11cc3a2fc7e066b422f6b4ee68fc21ff7b95be209400c",
+  "relay_host": "desktop",
+  "runtime_started": false,
+  "schema": "heptabao.x230-r8-create-only-source-intent.v1",
+  "source_after": {
+    "head": "384c957612186d64c5a530044af0ae62c568cc3d",
+    "status": "",
+    "tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04"
+  },
+  "source_build_host": "rog",
+  "source_commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+  "source_tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04",
+  "transfer_passed": true,
+  "transport_budget_seconds": 300
+}

@@ -1,0 +1,334 @@
+{
+  "binary": {
+    "bytes": 154048544,
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/deps/heptabao_server-46a463ff9369a255",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": true
+    },
+    "sha256": "648236a59ebf23aee2ebd02039e6045fb491cebff80ac8d4e564b78b3e316aab"
+  },
+  "binary_unchanged": true,
+  "build": {
+    "argv": [
+      "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+      "test",
+      "--release",
+      "--locked",
+      "--offline",
+      "-p",
+      "heptabao-server",
+      "--lib",
+      "--no-run",
+      "--message-format=json-render-diagnostics"
+    ],
+    "direct_child_reaped": true,
+    "elapsed_seconds": 451.06879562465474,
+    "exit_code": 0,
+    "label": "build",
+    "outer_cap_seconds": 1800,
+    "owned_pgid": 94915,
+    "remaining": [],
+    "stderr_sha256": "80ec0f89f0ff43220172fbf4a56981628158c7108ebbf97fffa39e9f06e2195e",
+    "stdout_sha256": "df23e254d7bacfa01c3ca4349834b0be2576f3f3234a189aaa1ffa10009968a8",
+    "timed_out": false
+  },
+  "cleanup": [
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "actor2",
+      "pid": 97217,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "actor2-list",
+      "pid": 97212,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 101,
+      "label": "redirect5",
+      "pid": 97208,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "redirect5-list",
+      "pid": 97203,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "mount1",
+      "pid": 97186,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "mount1-list",
+      "pid": 97178,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ssh25",
+      "pid": 96966,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ssh25-list",
+      "pid": 96957,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "build",
+      "pid": 94915,
+      "remaining": []
+    }
+  ],
+  "controller_sha256": "eb6f53b842f79d221e78b79628690df6db37002284c0ca4a400b18eac817b728",
+  "fixture_features": [],
+  "group_results": [
+    {
+      "actual_test_names": [
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_does_not_upgrade_ordinary_suffix_or_shrink_large_json",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_refuses_missing_ingress_nonce_or_wrong_root_get",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_rejects_wire_downgrade_and_missing_or_unknown_metadata",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_retains_original_ingress_nonce_and_custom_route",
+        "service::native_auth::ssh_tests::archive::native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_actor_revocation_never_delivers_otp",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign",
+        "service::native_auth::ssh_tests::native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv",
+        "service::native_auth::ssh_tests::native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed",
+        "service::native_auth::ssh_tests::native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit",
+        "service::native_auth::ssh_tests::native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix",
+        "service::native_auth::ssh_tests::native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable",
+        "service::native_auth::ssh_tests::native_ssh_formal_ca_real_signature_cold_typed_public_transport",
+        "service::native_auth::ssh_tests::native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold",
+        "service::native_auth::ssh_tests::native_ssh_formal_otp_promotion_cold_verify_and_replay",
+        "service::native_auth::ssh_tests::native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs",
+        "service::native_auth::ssh_tests::native_ssh_public_reply_cannot_lose_affine_transport_after_audit",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key"
+      ],
+      "label": "ssh25",
+      "tests": {
+        "argv": [
+          "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/deps/heptabao_server-46a463ff9369a255",
+          "native_ssh_",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 69.12906333338469,
+        "exit_code": 0,
+        "label": "ssh25",
+        "outer_cap_seconds": 600,
+        "owned_pgid": 96966,
+        "remaining": [],
+        "stderr_sha256": "3856dae63c06418202c21b772b571aea9bc47b2f68a73c387dec024a926bcc22",
+        "stdout_sha256": "7673a3005fa7dd0b612415f9a3368db2e31561398ce2b56201e129ed662f7aba",
+        "timed_out": false
+      }
+    },
+    {
+      "actual_test_names": [
+        "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs"
+      ],
+      "label": "mount1",
+      "tests": {
+        "argv": [
+          "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/deps/heptabao_server-46a463ff9369a255",
+          "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 1.7019529594108462,
+        "exit_code": 0,
+        "label": "mount1",
+        "outer_cap_seconds": 600,
+        "owned_pgid": 97186,
+        "remaining": [],
+        "stderr_sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0",
+        "stdout_sha256": "9bcf0985cf054beac9ca78d792ab80cb45745582172032daec8672ae8804220c",
+        "timed_out": false
+      }
+    },
+    {
+      "actual_test_names": [
+        "http::snapshot::redirect_tests::native_http_redirect_complete_head_preserves_short_writes_and_transport_errors",
+        "http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_flush_retains_original_deadline_failure",
+        "http::snapshot::redirect_tests::native_redirect_target_keeps_existing_query_validation_and_rejects_header_injection"
+      ],
+      "label": "redirect5",
+      "tests": {
+        "argv": [
+          "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/deps/heptabao_server-46a463ff9369a255",
+          "http::snapshot::redirect_tests::",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 2.194962415844202,
+        "exit_code": 101,
+        "label": "redirect5",
+        "outer_cap_seconds": 600,
+        "owned_pgid": 97208,
+        "remaining": [],
+        "stderr_sha256": "4853474ecc3cccb9db85f10de2738e4988101d1f90afe5841fbdd0fcd2c60e00",
+        "stdout_sha256": "119acd1ed1acb2ea7b8b5e6fe1ce7c36d355c08a1e54969d270657ce62805fa5",
+        "timed_out": false
+      }
+    },
+    {
+      "actual_test_names": [
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead",
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead"
+      ],
+      "label": "actor2",
+      "tests": {
+        "argv": [
+          "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/deps/heptabao_server-46a463ff9369a255",
+          "lossless_export_parallel_worker_",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 11.055385707877576,
+        "exit_code": 0,
+        "label": "actor2",
+        "outer_cap_seconds": 600,
+        "owned_pgid": 97217,
+        "remaining": [],
+        "stderr_sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727",
+        "stdout_sha256": "3b9bf8e562d48cd82edbcb94112fe2585ad6434a648ae17bcce17883b67f1f03",
+        "timed_out": false
+      }
+    }
+  ],
+  "groups": [
+    {
+      "exact": false,
+      "filter": "native_ssh_",
+      "label": "ssh25",
+      "runtime_seconds": 600,
+      "tests": [
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_does_not_upgrade_ordinary_suffix_or_shrink_large_json",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_refuses_missing_ingress_nonce_or_wrong_root_get",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_rejects_wire_downgrade_and_missing_or_unknown_metadata",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_retains_original_ingress_nonce_and_custom_route",
+        "service::native_auth::ssh_tests::archive::native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_actor_revocation_never_delivers_otp",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign",
+        "service::native_auth::ssh_tests::native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv",
+        "service::native_auth::ssh_tests::native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed",
+        "service::native_auth::ssh_tests::native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit",
+        "service::native_auth::ssh_tests::native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix",
+        "service::native_auth::ssh_tests::native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable",
+        "service::native_auth::ssh_tests::native_ssh_formal_ca_real_signature_cold_typed_public_transport",
+        "service::native_auth::ssh_tests::native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold",
+        "service::native_auth::ssh_tests::native_ssh_formal_otp_promotion_cold_verify_and_replay",
+        "service::native_auth::ssh_tests::native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs",
+        "service::native_auth::ssh_tests::native_ssh_public_reply_cannot_lose_affine_transport_after_audit",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key"
+      ]
+    },
+    {
+      "exact": true,
+      "filter": "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+      "label": "mount1",
+      "runtime_seconds": 600,
+      "tests": [
+        "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs"
+      ]
+    },
+    {
+      "exact": false,
+      "filter": "http::snapshot::redirect_tests::",
+      "label": "redirect5",
+      "runtime_seconds": 600,
+      "tests": [
+        "http::snapshot::redirect_tests::native_http_redirect_complete_head_preserves_short_writes_and_transport_errors",
+        "http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_flush_retains_original_deadline_failure",
+        "http::snapshot::redirect_tests::native_redirect_target_keeps_existing_query_validation_and_rejects_header_injection"
+      ]
+    },
+    {
+      "exact": false,
+      "filter": "lossless_export_parallel_worker_",
+      "label": "actor2",
+      "runtime_seconds": 600,
+      "tests": [
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead",
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead"
+      ]
+    }
+  ],
+  "groups_sha256": "c725fd978f4d730b28cbf90335d8cc6e673003a5dc64b6fb965c7b1ae3485deb",
+  "normal_default_features": true,
+  "production_changed": false,
+  "profile": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_HOME": "/Volumes/T5/hepta-vnext-recovery-20261013/r13-full-native-cargo-home-r1",
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_PANIC": "unwind",
+    "CARGO_TARGET_DIR": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2",
+    "CARGO_TERM_COLOR": "never",
+    "PATH": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin:/opt/homebrew/bin:/usr/bin:/bin",
+    "RUSTFLAGS": ""
+  },
+  "runtime_tests_started": true,
+  "rustc_vv": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: aarch64-apple-darwin\nrelease: 1.98.0\nLLVM version: 22.1.8\n",
+  "schema": "heptabao.mac-normal-exact-libtest.v1",
+  "source_commit": "2d9a2efd4cfc3a9ee60a450eee58866828a3f5ad",
+  "source_tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04",
+  "source_unchanged": true,
+  "started_ns": 1793803646379416000,
+  "status": "failed",
+  "terminal_ns": 1793804186355780000,
+  "test_count": 33
+}

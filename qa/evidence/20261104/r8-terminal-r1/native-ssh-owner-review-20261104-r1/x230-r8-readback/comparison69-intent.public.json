@@ -1,0 +1,65 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/native271_comparison_final_r1.py",
+    "--binary",
+    "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/artifacts/heptabao-server",
+    "--expected-binary-sha256",
+    "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+    "--expected-source-commit",
+    "384c957612186d64c5a530044af0ae62c568cc3d",
+    "--candidate-source",
+    "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/source",
+    "--work-dir",
+    "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/evidence/comparison69-r1/private-run",
+    "--build-log",
+    "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/artifacts/result.public.json",
+    "--oracle-version",
+    "2.7.1"
+  ],
+  "build_log_argument_is_immutable_normal_build_result_receipt": true,
+  "controller_sha256": "f0db9fee048641ec5641705c48702686626f93837ff1f7c15229658d3e8fd01f",
+  "default_modules": [
+    "approle",
+    "core",
+    "edge_tls",
+    "identity",
+    "kv",
+    "operations",
+    "pki",
+    "system",
+    "token",
+    "totp",
+    "transit",
+    "userpass",
+    "wrapping"
+  ],
+  "driver_sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+  "env": {
+    "HB_ORACLE_ARCHIVE": "/home/qian/heptabao-official-271-fresh-20261029-r1/official-openbao-2.7.1-linux-amd64.tar.gz",
+    "HB_ORACLE_BINARY": "/home/qian/heptabao-official-271-fresh-20261029-r1/bao",
+    "LANG": "C.UTF-8",
+    "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+    "TZ": "UTC"
+  },
+  "full_openbao_compatibility": false,
+  "modules_argument_omitted_to_preserve_original_13_module_default": true,
+  "network_scope": "X230 loopback only",
+  "new_private_fixture_root": "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/evidence/comparison69-r1/private-run",
+  "normal_receipt_pins": {
+    "native-build.public.json": "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9",
+    "result.public.json": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5",
+    "transfer.result.public.json": "3ebfd7d224efd1b08f69e0b99aeba7bc493ea4f9af32c6320ba6dabf2e6b767d"
+  },
+  "production_qualified": false,
+  "schema": "heptabao.r8-x230-original-comparison69-intent.v1",
+  "source_before": {
+    "binary_sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+    "commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+    "dirty_including_untracked": false,
+    "tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04"
+  }
+}

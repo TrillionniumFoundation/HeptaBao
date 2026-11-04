@@ -1,0 +1,335 @@
+{
+  "all_checks_pass": true,
+  "case_count_observed": 10,
+  "checks": {
+    "all_cli_direct_reaped_no_timeout": true,
+    "all_complete_http_original_token": true,
+    "all_complete_http_response_written": true,
+    "all_complete_http_strict_tls": true,
+    "all_owned_stopped": true,
+    "case_owned_stopped": true,
+    "completed_observation": true,
+    "no_controller_retries": true,
+    "no_production_mutation": true,
+    "no_unknown": true,
+    "no_unpaired_intent": true,
+    "no_valid_restore_or_bao_servers": true,
+    "old_evidence_unchanged": true,
+    "original_per_call_15s": true,
+    "planned_observed_intent_outcome_10": true,
+    "positive_control_saved_exact171": true,
+    "sequence_exact_1_to_10": true,
+    "source_exact_r4": true,
+    "source_predictions_not_predicates": true
+  },
+  "elapsed_ms": 12836.471485,
+  "limitations": [
+    "Synthetic two-peer TLS transport observation only; no valid restore or actual Bao service.",
+    "All 10 cases were observed; statuses are outcomes, not source-prediction pass predicates.",
+    "Only S01 is an exact 171-byte positive archive-shape save control, not full backup restoration proof.",
+    "307 save and invalid-restore observed CLI behavior differ from direct responses; no safe replay is inferred.",
+    "Earlier two zero-case setup failures remain immutable; run3 exec visibility handling does not retrospectively identify run1 cause."
+  ],
+  "rows": [
+    {
+      "actual_hops": [
+        {
+          "framing": "none",
+          "known_pre_http_refusal": false,
+          "original_token_equal": true,
+          "peer": 1,
+          "request_body_bytes": 0,
+          "request_complete": true,
+          "response_write_complete": true,
+          "status": 200,
+          "tls_complete": true
+        }
+      ],
+      "actual_http_request_counts": [
+        1,
+        0
+      ],
+      "case": "S01_save_direct_200",
+      "classification": "exact_archive_shape_file_saved",
+      "cli_elapsed_ms": 421.90689,
+      "cli_exit": 0,
+      "outcome_unknown": false,
+      "sequence": 1
+    },
+    {
+      "actual_hops": [
+        {
+          "framing": "none",
+          "known_pre_http_refusal": false,
+          "original_token_equal": true,
+          "peer": 1,
+          "request_body_bytes": 0,
+          "request_complete": true,
+          "response_write_complete": true,
+          "status": 307,
+          "tls_complete": true
+        },
+        {
+          "framing": "none",
+          "known_pre_http_refusal": false,
+          "original_token_equal": true,
+          "peer": 2,
+          "request_body_bytes": 0,
+          "request_complete": true,
+          "response_write_complete": true,
+          "status": 200,
+          "tls_complete": true
+        }
+      ],
+      "actual_http_request_counts": [
+        1,
+        1
+      ],
+      "case": "S02_save_307_then_200",
+      "classification": "redirect_observed_but_cli_reported_incomplete_snapshot",
+      "cli_elapsed_ms": 643.529803,
+      "cli_exit": 2,
+      "outcome_unknown": false,
+      "sequence": 2
+    },
+    {
+      "actual_hops": [
+        {
+          "framing": "chunked",
+          "known_pre_http_refusal": false,
+          "original_token_equal": true,
+          "peer": 1,
+          "request_body_bytes": 22,
+          "request_complete": true,
+          "response_write_complete": true,
+          "status": 400,
+          "tls_complete": true
+        }
+      ],
+      "actual_http_request_counts": [
+        1,
+        0
+      ],
+      "case": "S03_restore_direct_400",
+      "classification": "api_400",
+      "cli_elapsed_ms": 517.584893,
+      "cli_exit": 2,
+      "outcome_unknown": false,
+      "sequence": 3
+    },
+    {
+      "actual_hops": [
+        {
+          "framing": "chunked",
+          "known_pre_http_refusal": false,
+          "original_token_equal": true,
+          "peer": 1,
+          "request_body_bytes": 22,
+          "request_complete": true,
+          "response_write_complete": true,
+          "status": 500,
+          "tls_complete": true
+        }
+      ],
+      "actual_http_request_counts": [
+        1,
+        0
+      ],
+      "case": "S04_restore_direct_500",
+      "classification": "api_500",
+      "cli_elapsed_ms": 443.948421,
+      "cli_exit": 2,
+      "outcome_unknown": false,
+      "sequence": 4
+    },
+    {
+      "actual_hops": [
+        {
+          "framing": "chunked",
+          "known_pre_http_refusal": false,
+          "original_token_equal": true,
+          "peer": 1,
+          "request_body_bytes": 22,
+          "request_complete": true,
+          "response_write_complete": true,
+          "status": 307,
+          "tls_complete": true
+        },
+        {
+          "framing": "chunked",
+          "known_pre_http_refusal": false,
+          "original_token_equal": true,
+          "peer": 2,
+          "request_body_bytes": 0,
+          "request_complete": true,
+          "response_write_complete": true,
+          "status": 400,
+          "tls_complete": true
+        }
+      ],
+      "actual_http_request_counts": [
+        1,
+        1
+      ],
+      "case": "S05_restore_307_then_400",
+      "classification": "cli_success_without_any_valid_restore_input",
+      "cli_elapsed_ms": 379.118963,
+      "cli_exit": 0,
+      "outcome_unknown": false,
+      "sequence": 5
+    },
+    {
+      "actual_hops": [
+        {
+          "framing": "none",
+          "known_pre_http_refusal": false,
+          "original_token_equal": true,
+          "peer": 1,
+          "request_body_bytes": 0,
+          "request_complete": true,
+          "response_write_complete": true,
+          "status": 307,
+          "tls_complete": true
+        }
+      ],
+      "actual_http_request_counts": [
+        1,
+        0
+      ],
+      "case": "S06_save_redirects_disabled",
+      "classification": "redirect_observed_but_cli_reported_incomplete_snapshot",
+      "cli_elapsed_ms": 1075.655321,
+      "cli_exit": 2,
+      "outcome_unknown": false,
+      "sequence": 6
+    },
+    {
+      "actual_hops": [
+        {
+          "framing": "chunked",
+          "known_pre_http_refusal": false,
+          "original_token_equal": true,
+          "peer": 1,
+          "request_body_bytes": 22,
+          "request_complete": true,
+          "response_write_complete": true,
+          "status": 307,
+          "tls_complete": true
+        }
+      ],
+      "actual_http_request_counts": [
+        1,
+        0
+      ],
+      "case": "S07_restore_redirects_disabled",
+      "classification": "cli_success_without_any_valid_restore_input",
+      "cli_elapsed_ms": 324.25602,
+      "cli_exit": 0,
+      "outcome_unknown": false,
+      "sequence": 7
+    },
+    {
+      "actual_hops": [
+        {
+          "framing": "none",
+          "known_pre_http_refusal": false,
+          "original_token_equal": true,
+          "peer": 1,
+          "request_body_bytes": 0,
+          "request_complete": true,
+          "response_write_complete": true,
+          "status": 307,
+          "tls_complete": true
+        },
+        {
+          "framing": null,
+          "known_pre_http_refusal": true,
+          "original_token_equal": null,
+          "peer": 2,
+          "request_body_bytes": null,
+          "request_complete": false,
+          "response_write_complete": false,
+          "status": null,
+          "tls_complete": false
+        }
+      ],
+      "actual_http_request_counts": [
+        1,
+        0
+      ],
+      "case": "S08_save_redirect_untrusted_CA",
+      "classification": "tls_certificate_refusal",
+      "cli_elapsed_ms": 327.355132,
+      "cli_exit": 2,
+      "outcome_unknown": false,
+      "sequence": 8
+    },
+    {
+      "actual_hops": [
+        {
+          "framing": "none",
+          "known_pre_http_refusal": false,
+          "original_token_equal": true,
+          "peer": 1,
+          "request_body_bytes": 0,
+          "request_complete": true,
+          "response_write_complete": true,
+          "status": 307,
+          "tls_complete": true
+        }
+      ],
+      "actual_http_request_counts": [
+        1,
+        0
+      ],
+      "case": "S09_save_redirect_protocol_downgrade",
+      "classification": "redirect_protocol_downgrade",
+      "cli_elapsed_ms": 320.800841,
+      "cli_exit": 2,
+      "outcome_unknown": false,
+      "sequence": 9
+    },
+    {
+      "actual_hops": [
+        {
+          "framing": "none",
+          "known_pre_http_refusal": false,
+          "original_token_equal": true,
+          "peer": 1,
+          "request_body_bytes": 0,
+          "request_complete": true,
+          "response_write_complete": true,
+          "status": 307,
+          "tls_complete": true
+        },
+        {
+          "framing": "none",
+          "known_pre_http_refusal": false,
+          "original_token_equal": true,
+          "peer": 2,
+          "request_body_bytes": 0,
+          "request_complete": true,
+          "response_write_complete": true,
+          "status": 307,
+          "tls_complete": true
+        }
+      ],
+      "actual_http_request_counts": [
+        1,
+        1
+      ],
+      "case": "S10_save_second_redirect_limit",
+      "classification": "redirect_observed_but_cli_reported_incomplete_snapshot",
+      "cli_elapsed_ms": 330.103127,
+      "cli_exit": 2,
+      "outcome_unknown": false,
+      "sequence": 10
+    }
+  ],
+  "schema": "openbao271.cli-phasea-whole-result-review.v1",
+  "source_result": {
+    "bytes": 83438,
+    "path": "/workspace/scratch/f86faac821c4/ha_standby_review/official271-cli-contract-r1/phasea-r4-live-r3-result.public.json",
+    "sha256": "03ab9457519569ac87a8d1738bbb1be0f108d8d9ca87d0c567f8301ec26dcd68"
+  }
+}

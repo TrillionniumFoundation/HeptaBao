@@ -1,0 +1,106 @@
+--- official271_cli_transport_r3.py
++++ official271_cli_transport_r4.py
+@@ -30,7 +30,7 @@
+ BINARY = BASE / 'official271-standby-oracle-control-r1/artifacts/bao'
+ BINARY_SHA = '535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea'
+ SOURCE_COMMIT = 'a5db72cef75c24b920ade02065b18dd8eb666bac'
+-ROOT = BASE / 'official271-cli-transport-live-r2'
++ROOT = BASE / 'official271-cli-transport-live-r3'
+ PORTS = (48740, 48742)
+ HTTP_SECONDS = 15.0
+ WHOLE_SECONDS = 300.0
+@@ -41,6 +41,7 @@
+ INVALID = b'owned-invalid-snapshot'
+ ROUTE = '/v1/sys/storage/raft/snapshot'
+ OLD_FENCES = {
++    'official271-cli-transport-live-r2/result.public.json': '14b185911aa3cf166ed5d9a16d3f437098fb52ee31e27f1b15753de1bb99100b',
+     'official271-cli-transport-live-r1/result.public.json': 'ae4a8d0af3e9e8dcf838adce201f1985256b506f7ad2c565c8e92918148c21e6',
+     'official271-cli-openssl-identity-diag-r1/owned-projection.public.json': '426077ea0efdbb496a35dd2d6e1eb57bdf56fe2ec3775c6b00c885e9b5d94810',
+     'official271-standby-oracle-live-r1/result.public.json': 'd84a783d817ee7827496182b6f750a1cd995424e554b287f602fd9204f289975',
+@@ -482,6 +483,7 @@
+         self.private = ROOT / 'private'
+         self.children: list[tuple[subprocess.Popen, dict | None]] = []
+         self.child_provenance: list[dict] = []
++        self.child_exec_visibility: list[dict] = []
+         self.peers: list[Peer] = []
+         self.completed_cases: list[dict] = []
+         self.creating_child = False
+@@ -520,16 +522,66 @@
+             raise Refused('owned_child_identity_unavailable')
+         self.children[-1] = (child, identity)
+         actual_bytes = (Path('/proc') / str(child.pid) / 'cmdline').read_bytes()
++        expected_executable = str(Path(argv[0]).resolve(strict=True))
++        if not actual_bytes and identity['exe'] == expected_executable:
++            self.record_child_provenance(child, identity, argv, actual_bytes, False, 'empty_cmdline_pending')
++            actual_bytes = self.await_owned_cmdline(child, identity, expected_executable, until)
+         actual = actual_bytes.rstrip(b'\0').split(b'\0')
+-        accepted = (identity['exe'] == str(Path(argv[0]).resolve(strict=True))
++        accepted = (identity['exe'] == expected_executable
+                     and actual == [x.encode() for x in argv])
+-        # Project only this owned child's already captured values, after the
+-        # original two reads and exact guard decision. No global proc tap,
+-        # additional identity read, retry, or exec-settling wait is introduced.
++        # Project only this owned child's captured values after the exact
++        # guard decision. Empty-cmdline visibility waits are recorded separately;
++        # no global proc tap or new process/operation is introduced.
+         self.record_child_provenance(child, identity, argv, actual_bytes, accepted, 'exact_executable_and_argv')
+         if not accepted:
+             raise Refused('owned_child_executable_or_argv_changed')
+         return child
++
++    def await_owned_cmdline(self, child: subprocess.Popen, captured: dict,
++                            expected_executable: str, until: int) -> bytes:
++        # Linux may publish the new executable before create_elf_tables has
++        # made cmdline visible. Empty is pending, never an accepted argv.
++        # This observes the one existing child; it cannot launch or replay it.
++        started = time.monotonic_ns()
++        trace = {'pid': child.pid, 'start_ticks': captured['start_ticks'],
++                 'pgid': captured['pgid'], 'original_deadline_monotonic_ns': until,
++                 'initial_cmdline_bytes': 0, 'empty_reads': 1, 'additional_reads': 0,
++                 'state_counts': {}, 'nonempty_observed': False, 'failure_type': None}
++        self.child_exec_visibility.append(trace)
++
++        def verify_current() -> dict:
++            remaining(until)
++            if child.poll() is not None:
++                raise Refused('owned_child_exited_before_cmdline_visible')
++            current = process_identity(child.pid)
++            if (current is None or current['pid'] != child.pid
++                    or current['start_ticks'] != captured['start_ticks']
++                    or current['pgid'] != child.pid or current['pgid'] != captured['pgid']
++                    or current['ppid'] != os.getpid() or current['ppid'] != captured['ppid']
++                    or current['exe'] != expected_executable or current['state'] in ('Z', 'X', 'x')):
++                raise Refused('owned_child_identity_changed_while_cmdline_pending')
++            state = current['state'] if current['state'] in ('R', 'S', 'D', 'T', 't', 'I', 'P', 'W') else 'other'
++            trace['state_counts'][state] = trace['state_counts'].get(state, 0) + 1
++            return current
++
++        try:
++            while True:
++                verify_current()
++                time.sleep(min(0.001, remaining(until)))
++                verify_current()
++                actual = (Path('/proc') / str(child.pid) / 'cmdline').read_bytes()
++                trace['additional_reads'] += 1
++                if actual:
++                    verify_current()
++                    trace['nonempty_observed'] = True
++                    trace['final_cmdline_bytes'] = len(actual)
++                    return actual
++                trace['empty_reads'] += 1
++        except Exception as exc:
++            trace['failure_type'] = str(exc) if isinstance(exc, Refused) else type(exc).__name__
++            raise
++        finally:
++            trace['elapsed_ms'] = (time.monotonic_ns() - started) / 1e6
+ 
+     def record_child_provenance(self, child: subprocess.Popen, identity: dict | None,
+                                 expected_argv: list[str], actual_bytes: bytes | None,
+@@ -756,6 +808,7 @@
+                   'intent_labels_without_durable_outcome': missing_outcomes,
+                   'unknown': self.unknown, 'process_cleanup': process_cleanup, 'peer_cleanup': peer_cleanup,
+                   'child_provenance': self.child_provenance,
++                  'child_exec_visibility': self.child_exec_visibility,
+                   'children_without_guard_projection': [child.pid for child, _ in self.children
+                       if not any(item['pid'] == child.pid for item in self.child_provenance)],
+                   'all_owned_stopped': cleanup, 'production_services_changed': False,

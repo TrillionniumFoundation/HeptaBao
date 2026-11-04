@@ -1,0 +1,191 @@
+{
+  "aliases": {
+    "rog-ts": {
+      "effective": {
+        "batchmode": [
+          "no"
+        ],
+        "canonicalizehostname": [
+          "false"
+        ],
+        "controlmaster": [
+          "false"
+        ],
+        "globalknownhostsfile": [
+          "/etc/ssh/ssh_known_hosts /etc/ssh/ssh_known_hosts2"
+        ],
+        "hostkeyalias": [
+          "hepta-node-rog"
+        ],
+        "hostname": [
+          "192.168.0.10"
+        ],
+        "identitiesonly": [
+          "yes"
+        ],
+        "identityfile": [
+          "/home/qian-qi/.ssh/id_ed25519",
+          "~/.ssh/id_ed25519"
+        ],
+        "port": [
+          "22"
+        ],
+        "stricthostkeychecking": [
+          "true"
+        ],
+        "user": [
+          "qian-qi"
+        ],
+        "userknownhostsfile": [
+          "/home/qian-qi/.ssh/hepta-transport/known_hosts"
+        ]
+      },
+      "exact_host_declaration_in_main_config": true,
+      "metadata": [
+        {
+          "bytes": 419,
+          "exists": true,
+          "field": "identityfile",
+          "mode": 384,
+          "path": "/home/qian-qi/.ssh/id_ed25519",
+          "regular": true,
+          "symlink": false,
+          "uid": 1000
+        },
+        {
+          "bytes": 419,
+          "exists": true,
+          "field": "identityfile",
+          "mode": 384,
+          "path": "/home/qian-qi/.ssh/id_ed25519",
+          "regular": true,
+          "symlink": false,
+          "uid": 1000
+        },
+        {
+          "bytes": 5391,
+          "exists": true,
+          "field": "userknownhostsfile",
+          "mode": 384,
+          "path": "/home/qian-qi/.ssh/hepta-transport/known_hosts",
+          "regular": true,
+          "symlink": false,
+          "uid": 1000
+        },
+        {
+          "exists": false,
+          "field": "globalknownhostsfile",
+          "path": "/etc/ssh/ssh_known_hosts"
+        },
+        {
+          "exists": false,
+          "field": "globalknownhostsfile",
+          "path": "/etc/ssh/ssh_known_hosts2"
+        }
+      ],
+      "proxycommand_present": true,
+      "proxyjump_present": false
+    },
+    "x230-ts": {
+      "effective": {
+        "batchmode": [
+          "no"
+        ],
+        "canonicalizehostname": [
+          "false"
+        ],
+        "controlmaster": [
+          "false"
+        ],
+        "globalknownhostsfile": [
+          "/etc/ssh/ssh_known_hosts /etc/ssh/ssh_known_hosts2"
+        ],
+        "hostkeyalias": [
+          "hepta-node-x230"
+        ],
+        "hostname": [
+          "192.168.0.13"
+        ],
+        "identitiesonly": [
+          "yes"
+        ],
+        "identityfile": [
+          "/home/qian-qi/.ssh/id_ed25519",
+          "~/.ssh/id_ed25519"
+        ],
+        "port": [
+          "22"
+        ],
+        "stricthostkeychecking": [
+          "true"
+        ],
+        "user": [
+          "qian"
+        ],
+        "userknownhostsfile": [
+          "/home/qian-qi/.ssh/hepta-transport/known_hosts"
+        ]
+      },
+      "exact_host_declaration_in_main_config": true,
+      "metadata": [
+        {
+          "bytes": 419,
+          "exists": true,
+          "field": "identityfile",
+          "mode": 384,
+          "path": "/home/qian-qi/.ssh/id_ed25519",
+          "regular": true,
+          "symlink": false,
+          "uid": 1000
+        },
+        {
+          "bytes": 419,
+          "exists": true,
+          "field": "identityfile",
+          "mode": 384,
+          "path": "/home/qian-qi/.ssh/id_ed25519",
+          "regular": true,
+          "symlink": false,
+          "uid": 1000
+        },
+        {
+          "bytes": 5391,
+          "exists": true,
+          "field": "userknownhostsfile",
+          "mode": 384,
+          "path": "/home/qian-qi/.ssh/hepta-transport/known_hosts",
+          "regular": true,
+          "symlink": false,
+          "uid": 1000
+        },
+        {
+          "exists": false,
+          "field": "globalknownhostsfile",
+          "path": "/etc/ssh/ssh_known_hosts"
+        },
+        {
+          "exists": false,
+          "field": "globalknownhostsfile",
+          "path": "/etc/ssh/ssh_known_hosts2"
+        }
+      ],
+      "proxycommand_present": true,
+      "proxyjump_present": false
+    }
+  },
+  "config": {
+    "bytes": 1455,
+    "exists": true,
+    "mode": 384,
+    "path": "/home/qian-qi/.ssh/config",
+    "regular": true,
+    "sha256": "e7b887aad30f6642876c09744c317387b143e4a4b21ddc4879df2b558379ccf4",
+    "symlink": false,
+    "uid": 1000
+  },
+  "config_include_directives_count": 2,
+  "connection_attempted": false,
+  "home": "/home/qian-qi",
+  "schema": "heptabao.desktop-existing-ssh-route-discovery.v1",
+  "trust_or_key_changed": false
+}

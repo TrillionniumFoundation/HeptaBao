@@ -1,0 +1,67 @@
+--- candidate-r4/pocket_first_cycle_launch_r4.py
++++ candidate-r5/pocket_first_cycle_launch_r5.py
+@@ -4,7 +4,7 @@
+ import argparse, hashlib, json, os, re, signal, stat, subprocess, time
+ 
+ P = Path('/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1')
+-Q = P / 'shared-first-cycle-qa-r4'; I = P / 'shared-first-cycle-inputs-r1'
++Q = P / 'shared-first-cycle-qa-r5'; I = P / 'shared-first-cycle-inputs-r1'
+ A = P / 'current-native-inputs-r1/artifacts'
+ SCENARIO = 'shared-managed12-original-local-source'
+ UNIT_IDS = ['openclaw-authbus-restart-when-idle.service', 'openclaw-gateway.service']
+@@ -67,7 +67,7 @@
+     parser.add_argument('--qa-pins-sha256', required=True)
+     args = parser.parse_args()
+     need(re.fullmatch('[a-f0-9]{64}', args.qa_pins_sha256), 'qa_manifest_digest_shape')
+-    run = P / ('shared-first-cycle-' + args.phase + '-r4')
++    run = P / ('shared-first-cycle-' + args.phase + '-r5')
+     need(P.resolve(strict=True) == P, 'project_root_no_symlink')
+     run.mkdir(mode=0o700)  # An existing generation is refused, never reopened.
+     process = None; timed = False; code = None; core = None; started = time.monotonic()
+@@ -96,13 +96,13 @@
+         for name, pin in pins.items():
+             need(re.fullmatch('[a-z0-9_.-]+', name) and sha(Q / name) == pin['sha256']
+                  and (Q / name).stat().st_size == pin['bytes'], 'qa_source_pin')
+-        prepare = I / 'prepare-r4.public.json'; prep = json.loads(prepare.read_bytes())
++        prepare = I / 'prepare-r5.public.json'; prep = json.loads(prepare.read_bytes())
+         need(prep['ok'] is True and prep['qaPinsSha256'] == args.qa_pins_sha256
+              and prep['consumerSha256'] == pins['pocket_first_cycle_consumer_r1.mjs']['sha256']
+              and prep['controllerSha256'] == pins['pocket_shared_first_cycle_live_r2.py']['sha256'],
+              'prepared_qa_binding')
+         if args.phase == 'live':
+-            prior = P / 'shared-first-cycle-preflight-r4'
++            prior = P / 'shared-first-cycle-preflight-r5'
+             prior_result = json.loads((prior / 'execution.result.public.json').read_bytes())
+             prior_intent = json.loads((prior / 'intent.public.json').read_bytes())
+             prior_core = json.loads((prior / 'live/result.public.json').read_bytes())
+--- candidate-r4/pocket_first_cycle_prepare_r4.py
++++ candidate-r5/pocket_first_cycle_prepare_r5.py
+@@ -4,7 +4,7 @@
+ import argparse, hashlib, json, os, re, stat
+ 
+ P = Path('/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1')
+-Q = P / 'shared-first-cycle-qa-r4'
++Q = P / 'shared-first-cycle-qa-r5'
+ I = P / 'shared-first-cycle-inputs-r1'
+ OLD = P / 'current-native-inputs-r1/prepare-r2.public.json'
+ OLD_SHA = '3ae1e850de5bd7feed62598705529dcad06493467ccbd671d72865f7fc127ccb'
+@@ -101,7 +101,7 @@
+         consumerSha256=source_pins[str(Q / 'pocket_first_cycle_consumer_r1.mjs')],
+         controllerSha256=source_pins[str(Q / 'pocket_shared_first_cycle_live_r2.py')],
+         sourcePins={**old['sourcePins'], **source_pins, str(Q / 'qa-pins.public.json'): args.qa_pins_sha256})
+-    target = I / 'prepare-r4.public.json'
++    target = I / 'prepare-r5.public.json'
+     raw = json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()
+     fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+     with os.fdopen(fd, 'wb') as f:
+--- candidate-r4/pocket_shared_first_cycle_live_r2.py
++++ candidate-r5/pocket_shared_first_cycle_live_r2.py
+@@ -481,7 +481,7 @@
+               'deferredEventsObserved':outcome['deferred']>0,
+               'remainingGrants':0,'manifestUnchanged':True,'executionScope':'exact_core_api_owned_fixture'})
+         def consumer_phase(name):
+-            work=root/('consumer-'+name);work.mkdir(mode=0o700);state=work/'state'
++            work=root/{'initial':'current-native-initial','cold-new-process':'current-native-cold'}[name];work.mkdir(mode=0o700);state=work/'state'
+             documents=copy.deepcopy(captured)
+             helper.materialize(state,documents)
+             materialize_caches(state,source_caches,put)

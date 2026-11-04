@@ -1,0 +1,164 @@
+--- pocket_r8_artifact_relay_r1.py
++++ pocket_r8_artifact_relay_r2.py
+@@ -1,10 +1,10 @@
+ #!/usr/bin/env python3
+ """One fixed public R8 artifact relay; never starts HeptaBao or a consumer."""
+ from pathlib import Path
+-import argparse, hashlib, json, os, shlex, signal, stat, subprocess, time
++import argparse, hashlib, json, os, re, shlex, signal, stat, subprocess, time
+ 
+ BASE = Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-CONTROL = BASE / 'pocket-r8-artifact-relay-control-r1'
++CONTROL = BASE / 'pocket-r8-artifact-relay-control-r2'
+ ROOT = BASE / 'pocket-r8-artifact-relay-r1'
+ SOURCE = BASE / 'normal-r8-standby-oracle-source-r1'
+ UPSTREAM = BASE / 'normal-r8-standby-oracle-control-r1'
+@@ -131,18 +131,93 @@
+     return value
+ 
+ 
++def validate_receiver_response(value):
++    expected_path = '/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r8-artifacts-r1/receive-result.public.json'
++    if not isinstance(value, dict) or set(value) != {'ok', 'receipt', 'filesReceived', 'errorClass'}:
++        raise ValueError('receiver_response_shape')
++    receipt = value['receipt']
++    if (value['ok'] is not True or type(value['filesReceived']) is not int
++            or value['filesReceived'] != 3 or value['errorClass'] is not None
++            or not isinstance(receipt, dict) or set(receipt) != {'path', 'bytes', 'sha256'}
++            or receipt['path'] != expected_path or type(receipt['bytes']) is not int
++            or not 0 < receipt['bytes'] <= 65536 or not isinstance(receipt['sha256'], str)
++            or re.fullmatch('[a-f0-9]{64}', receipt['sha256']) is None):
++        raise ValueError('receiver_result_not_verified')
++    return True
++
++
++def observed_group_members(pgid, until):
++    remaining = until - time.monotonic()
++    if remaining <= 0:
++        raise TimeoutError('artifact_cleanup_deadline')
++    result = subprocess.run(['/usr/bin/ps', '-eo', 'pid=,pgid='], capture_output=True,
++        text=True, timeout=min(2, remaining))
++    if result.returncode != 0 or not result.stdout.strip() or len(result.stdout.encode()) > 1048576:
++        raise RuntimeError('owned_group_observation_failed')
++    members = []
++    for line in result.stdout.splitlines():
++        columns = line.split()
++        if len(columns) != 2 or not all(c.isdecimal() for c in columns):
++            raise RuntimeError('owned_group_observation_shape')
++        pid, group = map(int, columns)
++        if group == pgid:
++            members.append(pid)
++    return sorted(members)
++
++
++def cleanup_ssh(child, started):
++    until = time.monotonic() + 10
++    error = None; members = None; group_empty = child is None
++    if child is not None and child.poll() is None:
++        try:
++            # A still unreaped direct Popen child owns this PID; no PID reuse
++            # is possible here. Never signal a group after that child is reaped.
++            if os.getpgid(child.pid) != child.pid:
++                raise RuntimeError('owned_ssh_process_group_mismatch')
++            os.killpg(child.pid, signal.SIGTERM)
++            try:
++                child.wait(timeout=min(5, max(0, until - time.monotonic())))
++            except subprocess.TimeoutExpired:
++                os.killpg(child.pid, signal.SIGKILL)
++                child.wait(timeout=max(0, until - time.monotonic()))
++        except BaseException as exc:
++            error = type(exc).__name__
++    if child is not None:
++        try:
++            while True:
++                members = observed_group_members(child.pid, until)
++                if not members:
++                    group_empty = True
++                    break
++                remaining = until - time.monotonic()
++                if remaining <= 0:
++                    raise TimeoutError('artifact_cleanup_deadline')
++                time.sleep(min(0.05, remaining))
++            # In particular, a completed ssh cannot hide a remaining proxy
++            # helper. This read-only check never signals a potentially reused
++            # PGID after the direct child has already been reaped.
++        except BaseException as exc:
++            error = type(exc).__name__
++    return {'sshStarted': started, 'pid': child.pid if child is not None else None,
++        'returncode': child.returncode if child is not None else None,
++        'directChildReaped': child is None or child.returncode is not None,
++        'ownedProcessGroupObservedEmpty': group_empty, 'observedRemainingPids': members,
++        'errorClass': error}
++
++
+ def main():
+     parser = argparse.ArgumentParser(description=__doc__)
+     parser.add_argument('--expected-controller-sha256', required=True)
+     args = parser.parse_args(); os.umask(0o077)
+     script = Path(__file__)
+-    assert script.resolve(strict=True) == CONTROL / 'pocket_r8_artifact_relay_r1.py'
++    assert script.resolve(strict=True) == CONTROL / 'pocket_r8_artifact_relay_r2.py'
+     raw, _ = read_file(script, script.lstat().st_size, args.expected_controller_sha256, 0o600)
+     assert hashlib.sha256(Path('/etc/machine-id').read_bytes()).hexdigest() == DESKTOP_MACHINE
+     assert os.getuid() == 1000 and BASE.resolve(strict=True) == BASE
+     ROOT.mkdir(mode=0o700); sync_dir(BASE)
+     started = time.time_ns(); child = None; created = False; pending = None
+-    error = None; remote = None; before = None; after = None; records = []; out = b''; err = b''
++    error = None; remote = None; response_valid = False
++    before = None; after = None; records = []; out = b''; err = b''
+     creating_child = False
+     def interrupted(signum, _frame):
+         nonlocal pending
+@@ -193,7 +268,7 @@
+         out, err = child.communicate(payload, timeout=remaining)
+         assert child.returncode == 0 and len(out) <= 16384 and len(err) <= 16384
+         remote = json.loads(out)
+-        assert remote['ok'] is True and remote['filesReceived'] == 3
++        response_valid = validate_receiver_response(remote)
+         for record, (origin, _, size, expected, mode) in zip(records, FILES):
+             _, ident = read_file(UPSTREAM / 'incoming' / origin, size, expected, mode)
+             assert ident == record['sourceIdentityBefore']
+@@ -204,32 +279,25 @@
+     except BaseException as exc:
+         error = type(exc).__name__
+     finally:
+-        cleanup_error = None
+-        if child is not None and child.poll() is None:
+-            try:
+-                if os.getpgid(child.pid) != child.pid:
+-                    raise RuntimeError('owned_ssh_process_group_mismatch')
+-                os.killpg(child.pid, signal.SIGTERM)
+-                try:
+-                    child.wait(timeout=5)
+-                except subprocess.TimeoutExpired:
+-                    os.killpg(child.pid, signal.SIGKILL); child.wait(timeout=5)
+-            except BaseException as exc:
+-                cleanup_error = type(exc).__name__
+-        cleanup = {'sshStarted': created, 'pid': child.pid if child is not None else None,
+-            'returncode': child.returncode if child is not None else None,
+-            'directChildReaped': child is None or child.returncode is not None, 'errorClass': cleanup_error}
+-        ok = error is None and cleanup_error is None and cleanup['directChildReaped']
++        cleanup = cleanup_ssh(child, created)
++        cleanup_qualified = (cleanup['errorClass'] is None and cleanup['directChildReaped']
++            and cleanup['ownedProcessGroupObservedEmpty'])
++        ok = error is None and response_valid and cleanup_qualified
++        public_receiver = remote if response_valid else None
+         result = {'schema': 'heptabao.pocket-r8-artifact-relay-result.v1', 'ok': ok,
+             'errorClass': error, 'sourceBefore': before, 'sourceAfter': after, 'files': records,
+-            'receiver': remote, 'remoteOutcomeUnknown': child is not None and remote is None,
++            'receiver': public_receiver, 'receiverResponseParsed': remote is not None,
++            'receiverResponseValidated': response_valid,
++            'remoteOutcomeUnknown': child is not None and not response_valid,
++            'ownedProcessOutcomeUnknown': not cleanup_qualified,
++            'outcomeUnknown': (child is not None and not response_valid) or not cleanup_qualified,
+             'stdoutBytes': len(out), 'stdoutSha256': hashlib.sha256(out).hexdigest(),
+             'stderrBytes': len(err), 'stderrSha256': hashlib.sha256(err).hexdigest(),
+             'cleanup': cleanup, 'controllerSha256': args.expected_controller_sha256,
+             'startedUnixNs': started, 'finishedUnixNs': time.time_ns(), 'automaticRetry': False,
+             'productionChanged': False, 'serverOrConsumerStarted': False, 'privateInputsTransferred': False}
+         record = put(ROOT / 'result.public.json', result)
+-        print(json.dumps({'ok': ok, 'receipt': record, 'receiver': remote, 'cleanup': cleanup}, sort_keys=True))
++        print(json.dumps({'ok': ok, 'receipt': record, 'receiver': public_receiver, 'cleanup': cleanup}, sort_keys=True))
+     return 0 if ok else 1
+ 
+ 

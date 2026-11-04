@@ -1,0 +1,9 @@
+{
+  "schema": "heptabao.x230-r8-assessor-authoring-failure.v1",
+  "source_sha256": "271a6414178211f61d9015004d4464160bbcb61aa1ea68568307a37a397e019e",
+  "failure": "before/after whole dict compared to assumed uniform schema",
+  "line": 23,
+  "runtime_rerun": false,
+  "original_receipts_changed": false,
+  "assessment_result_written": false
+}

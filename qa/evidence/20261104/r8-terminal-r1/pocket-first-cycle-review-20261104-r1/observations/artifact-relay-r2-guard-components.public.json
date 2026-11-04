@@ -1,0 +1,101 @@
+{
+  "actualNetworkOperations": 0,
+  "actualOwnedPythonChildren": 0,
+  "artifactTransferExecuted": false,
+  "checks": [
+    {
+      "case": "exact_receiver_shape_accepts",
+      "passed": true
+    },
+    {
+      "case": "receiver_rejects_missing_receipt",
+      "passed": true
+    },
+    {
+      "case": "receiver_rejects_wrong_receipt_path",
+      "passed": true
+    },
+    {
+      "case": "receiver_rejects_wrong_sha_shape",
+      "passed": true
+    },
+    {
+      "case": "receiver_rejects_boolean_byte_count",
+      "passed": true
+    },
+    {
+      "case": "receiver_rejects_oversize_byte_count",
+      "passed": true
+    },
+    {
+      "case": "receiver_rejects_wrong_file_count",
+      "passed": true
+    },
+    {
+      "case": "receiver_rejects_false_ok",
+      "passed": true
+    },
+    {
+      "case": "receiver_rejects_error_with_ok",
+      "passed": true
+    },
+    {
+      "case": "receiver_rejects_unexpected_public_field",
+      "passed": true
+    },
+    {
+      "case": "parsed_unvalidated_reply_is_unknown",
+      "passed": true
+    },
+    {
+      "case": "unvalidated_reply_omitted_from_public",
+      "passed": true
+    },
+    {
+      "case": "cleanup_failure_still_overall_unknown",
+      "passed": true
+    },
+    {
+      "case": "completed_child_synthetic_empty_group_qualifies",
+      "passed": true
+    },
+    {
+      "case": "reaped_child_with_synthetic_residual_group_refused",
+      "passed": true
+    },
+    {
+      "case": "never_signal_group_after_direct_child_reaped",
+      "passed": true
+    },
+    {
+      "case": "unreadable_group_is_not_empty_evidence",
+      "passed": true
+    },
+    {
+      "case": "actual_group_parser_filters_exact_group",
+      "passed": true
+    },
+    {
+      "case": "empty_process_table_refused",
+      "passed": true
+    },
+    {
+      "case": "malformed_process_table_refused",
+      "passed": true
+    },
+    {
+      "case": "receiver_exact_original_bytes",
+      "passed": true
+    }
+  ],
+  "ok": true,
+  "passed": 21,
+  "priorCloudActualFailurePreserved": true,
+  "productionChanged": false,
+  "schema": "heptabao.pocket-artifact-relay-r2-guard-components.v1",
+  "sourceSha256": "a3dfbde3750b2651d1e687d28c9c19fdebcb37b7d113e25708b62fa8b7b5dbfd",
+  "syntheticResidualGroupAndParserFaultCases": true,
+  "targetHostRuntimeExecuted": false,
+  "testSourceSha256": "c8817a91fff1b9a435fc3138e6da135665e7cf937d3214f3e3f07dab15747398",
+  "total": 21
+}

@@ -1,0 +1,89 @@
+[
+  {
+    "status": "fulfilled",
+    "value": {
+      "name": "heptabao-server",
+      "v": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 448,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 448,
+        "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r8-artifacts-r1/heptabao-server",
+        "sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+        "size": 110064840,
+        "version": "66306:44082411:110064840:1793806908996168489:1793806908996168489"
+      },
+      "expected": [
+        "heptabao-server",
+        110064840,
+        "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+        448
+      ]
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "name": "native-build.public.json",
+      "v": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r8-artifacts-r1/native-build.public.json",
+        "sha256": "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9",
+        "size": 777,
+        "version": "66306:44082412:777:1793806909082383942:1793806909082383942"
+      },
+      "expected": [
+        "native-build.public.json",
+        777,
+        "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9",
+        384
+      ]
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "name": "normal-build.result.public.json",
+      "v": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r8-artifacts-r1/normal-build.result.public.json",
+        "sha256": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5",
+        "size": 3164,
+        "version": "66306:44082413:3164:1793806909083982947:1793806909083982947"
+      },
+      "expected": [
+        "normal-build.result.public.json",
+        3164,
+        "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5",
+        384
+      ]
+    }
+  }
+]

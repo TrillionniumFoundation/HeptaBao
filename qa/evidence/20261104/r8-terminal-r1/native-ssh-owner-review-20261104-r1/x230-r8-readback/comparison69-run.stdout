@@ -1,0 +1,1 @@
+{"status": "passed_scoped_cases", "cases_match": true, "mismatched_cases": [], "output": "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1/evidence/comparison69-r1/private-run/comparison-bound.json", "oracle_version": "2.7.1", "oracle_storage_backend": "pebbledb", "candidate_source_sha": "384c957612186d64c5a530044af0ae62c568cc3d", "candidate_source_dirty": false}

@@ -1,0 +1,62 @@
+2026-11-04T14:58:47.0110770Z     Checking heptabao-server v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-server)
+2026-11-04T14:59:09.1179800Z error: this function has too many arguments (8/7)
+2026-11-04T14:59:09.1180577Z   --> crates/heptabao-server/src/engine_native_kv2_lossless_export.rs:63:5
+2026-11-04T14:59:09.1181072Z    |
+2026-11-04T14:59:09.1181346Z 63 | /     pub(crate) fn write_native_kv2_lossless_export_parallel(
+2026-11-04T14:59:09.1181587Z 64 | |         &self,
+2026-11-04T14:59:09.1181708Z 65 | |         mount: &str,
+2026-11-04T14:59:09.1181844Z 66 | |         output: &mut impl Write,
+2026-11-04T14:59:09.1182025Z ...  |
+2026-11-04T14:59:09.1182235Z 74 | |         stop: &std::sync::atomic::AtomicBool,
+2026-11-04T14:59:09.1182474Z 75 | |     ) -> Result<()> {
+2026-11-04T14:59:09.1182669Z    | |___________________^
+2026-11-04T14:59:09.1182817Z    |
+2026-11-04T14:59:09.1183247Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#too_many_arguments
+2026-11-04T14:59:09.1183793Z    = note: `-D clippy::too-many-arguments` implied by `-D warnings`
+2026-11-04T14:59:09.1184189Z    = help: to override `-D warnings` add `#[allow(clippy::too_many_arguments)]`
+2026-11-04T14:59:09.1184459Z 
+2026-11-04T14:59:09.5591017Z error: this `if` statement can be collapsed
+2026-11-04T14:59:09.5591419Z     --> crates/heptabao-server/src/ha_forward.rs:1060:5
+2026-11-04T14:59:09.5591673Z      |
+2026-11-04T14:59:09.5592021Z 1060 | /     if let Some(UnwrapFramingWire::StaticKv1Lease { projection }) = response.unwrapped_json {
+2026-11-04T14:59:09.5592607Z 1061 | |         if response.raw_wrapped_reply.is_some() || projection.validate(&response.body).is_err() {
+2026-11-04T14:59:09.5593065Z 1062 | |             return Err("HA signed KV1 static reply projection differs".into());
+2026-11-04T14:59:09.5593362Z 1063 | |         }
+2026-11-04T14:59:09.5593473Z 1064 | |     }
+2026-11-04T14:59:09.5593587Z      | |_____^
+2026-11-04T14:59:09.5593899Z      |
+2026-11-04T14:59:09.5594149Z      = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+2026-11-04T14:59:09.5594464Z      = note: `-D clippy::collapsible-if` implied by `-D warnings`
+2026-11-04T14:59:09.5594702Z      = help: to override `-D warnings` add `#[allow(clippy::collapsible_if)]`
+2026-11-04T14:59:09.5594905Z help: collapse nested if block
+2026-11-04T14:59:09.5595031Z      |
+2026-11-04T14:59:09.5595229Z 1060 ~     if let Some(UnwrapFramingWire::StaticKv1Lease { projection }) = response.unwrapped_json
+2026-11-04T14:59:09.5595556Z 1061 ~         && (response.raw_wrapped_reply.is_some() || projection.validate(&response.body).is_err()) {
+2026-11-04T14:59:09.5595843Z 1062 |             return Err("HA signed KV1 static reply projection differs".into());
+2026-11-04T14:59:09.5596041Z 1063 ~         }
+2026-11-04T14:59:09.5596144Z      |
+2026-11-04T14:59:09.5596281Z 
+2026-11-04T14:59:10.0863350Z error: this `if` statement can be collapsed
+2026-11-04T14:59:10.0863750Z     --> crates/heptabao-server/src/service_native_auth.rs:1425:9
+2026-11-04T14:59:10.0864040Z      |
+2026-11-04T14:59:10.0864211Z 1425 | /         if method != "GET" {
+2026-11-04T14:59:10.0864523Z 1426 | |             if let Err(error) = candidate.auth.authorize_request_observed(
+2026-11-04T14:59:10.0864844Z 1427 | |                 actor,
+2026-11-04T14:59:10.0865203Z 1428 | |                 request.namespace,
+2026-11-04T14:59:10.0865420Z ...    |
+2026-11-04T14:59:10.0865574Z 1435 | |         }
+2026-11-04T14:59:10.0865691Z      | |_________^
+2026-11-04T14:59:10.0865799Z      |
+2026-11-04T14:59:10.0866059Z      = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+2026-11-04T14:59:10.0866348Z help: collapse nested if block
+2026-11-04T14:59:10.0866479Z      |
+2026-11-04T14:59:10.0866580Z 1425 ~         if method != "GET"
+2026-11-04T14:59:10.0866783Z 1426 ~             && let Err(error) = candidate.auth.authorize_request_observed(
+2026-11-04T14:59:10.0866979Z 1427 |                 actor,
+2026-11-04T14:59:10.0867102Z  ...
+2026-11-04T14:59:10.0867280Z 1433 |                 return Response::error(error.status, &error.message);
+2026-11-04T14:59:10.0867465Z 1434 ~             }
+2026-11-04T14:59:10.0867574Z      |
+2026-11-04T14:59:10.0867637Z 
+2026-11-04T14:59:11.5113626Z error: could not compile `heptabao-server` (lib) due to 3 previous errors
+2026-11-04T14:59:11.5426616Z ##[error]Process completed with exit code 101.

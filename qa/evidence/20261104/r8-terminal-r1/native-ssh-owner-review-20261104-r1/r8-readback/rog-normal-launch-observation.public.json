@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.r8-normal-launch-observation.v1",
+  "observedUtc": "2026-11-04T14:44:06.331012+00:00",
+  "job_id": "1a1a701ddd9-fc05-29dc",
+  "source_commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+  "source_tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04",
+  "source_stage_authoritative_exit0": true,
+  "normal_controller_sha256": "e4a01bfd2b63d313fb8c982d85862bd23d8f64b79b6ba423ee15439e174359dc",
+  "original_groups_25_1_5_preserved": true,
+  "additional_actor_names": 2,
+  "exact_disjoint_count": 33,
+  "preflight_receipt_sha256": "54da601cb6d8ffe0fafdac2851f6b27e0eabb88f2f8b11247761f27d603ce627",
+  "target_lock_nonblocking_probe_passed": true,
+  "target_holders_at_admission": [],
+  "retained_r7_artifacts_exact_sha256_verified": 3,
+  "normal_output_root": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/normal-release-tests-r8-r1",
+  "stage_timeout_was_mcp_transport_not_execution_failure": true,
+  "original_r7_results_preserved": true,
+  "normal_build_or_runtime_terminal_observed": false,
+  "r8_qualified": false,
+  "production_changed": false
+}

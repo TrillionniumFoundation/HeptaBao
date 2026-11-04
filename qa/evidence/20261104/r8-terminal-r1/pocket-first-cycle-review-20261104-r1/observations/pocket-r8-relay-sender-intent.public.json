@@ -1,0 +1,43 @@
+{
+  "controllerSha256": "a3dfbde3750b2651d1e687d28c9c19fdebcb37b7d113e25708b62fa8b7b5dbfd",
+  "destination": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r8-artifacts-r1",
+  "manifest": {
+    "files": [
+      {
+        "bytes": 110064840,
+        "mode": 448,
+        "name": "heptabao-server",
+        "sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed"
+      },
+      {
+        "bytes": 777,
+        "mode": 384,
+        "name": "native-build.public.json",
+        "sha256": "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9"
+      },
+      {
+        "bytes": 3164,
+        "mode": 384,
+        "name": "normal-build.result.public.json",
+        "sha256": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5"
+      }
+    ],
+    "nativeBuildHost": "rog",
+    "schema": "heptabao.pocket-r8-public-artifact-transfer.v1",
+    "sourceCommit": "384c957612186d64c5a530044af0ae62c568cc3d",
+    "sourceTree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04",
+    "upstreamReceiptSha256": "28b3c22c34bc7719e1fd9a3e666dc43945962d096bc24246f78769b78bc8e1cf"
+  },
+  "privateInputsTransferred": false,
+  "productionChanged": false,
+  "receiverSha256": "9e0de5bf9ee2ecb647c57f3485e4ce005013781434262d7420b4c6c4c0a09432",
+  "sourceBefore": {
+    "commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+    "status": "",
+    "tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04"
+  },
+  "sshAlias": "pocket4-ts",
+  "strictHostKeyChecking": true,
+  "transferSeconds": 180,
+  "updateHostKeys": false
+}

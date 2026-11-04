@@ -1,0 +1,46 @@
+{
+  "acceptance_contains_501": false,
+  "acceptance_contains_ssh": false,
+  "acceptance_standalone_default_omits_identity": true,
+  "files": [
+    {
+      "bytes": 49393,
+      "path": "original/source/qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581"
+    },
+    {
+      "bytes": 36827,
+      "path": "original/source/qa/openbao-acceptance/acceptance.py",
+      "sha256": "8312c400ec5f0946f8a87fb3241bf8db832ddd04763010af7245d6557f55f94d"
+    },
+    {
+      "bytes": 9261,
+      "path": "original/native271_comparison_final_r1.py",
+      "sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e"
+    }
+  ],
+  "full34_only_501": "NativeInstance.start GET sys/health accepts 200/501/503 while waiting for readiness",
+  "original69_per_side_predicates_unchanged": true,
+  "runtime_started": false,
+  "schema": "heptabao.x230-r8-old-ssh-negative-audit.v1",
+  "selected_module_count": 13,
+  "selected_modules": [
+    "approle",
+    "core",
+    "edge_tls",
+    "identity",
+    "kv",
+    "operations",
+    "pki",
+    "system",
+    "token",
+    "totp",
+    "transit",
+    "userpass",
+    "wrapping"
+  ],
+  "source_only": true,
+  "ssh_coverage_claimed": false,
+  "ssh_refusal_changes_needed": false,
+  "wrapper_passes_its_13_module_default_explicitly": true
+}

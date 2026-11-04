@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.ci.clippy-source-diagnostic.v1",
+  "repo": "TrillionniumFoundation/HeptaBao",
+  "run_id": 41837754898,
+  "head_job": 126600985114,
+  "head_commit": "f9139c3b37b6373df3e4b4c61ebdd4f847afac4d",
+  "errors": [
+    {
+      "path": "crates/heptabao-server/src/engine_native_kv2_lossless_export.rs",
+      "line": 63,
+      "lint": "clippy::too_many_arguments",
+      "observed": "8/7"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_forward.rs",
+      "line": 1060,
+      "lint": "clippy::collapsible_if"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_auth.rs",
+      "line": 1425,
+      "lint": "clippy::collapsible_if"
+    }
+  ],
+  "log_content_characters": 2673579,
+  "raw_log_saved": false,
+  "raw_log_source": "github_fetch_workflow_job_logs structuredContent.content",
+  "excerpt_complete_for_three_errors": true,
+  "workspace_test_step10": "success",
+  "strict_clippy_step11": "failure",
+  "later_job_steps": "skipped",
+  "whole_workflow_pass": false,
+  "source_fix_not_compiled": true
+}

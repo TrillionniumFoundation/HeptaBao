@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.r8-terminal-publication-base-binding.v1",
+  "base_validation_commit": "173603791bf19bb5a7148caf2173ab19b1ac2463",
+  "base_validation_tree": "910f178539d2bd0edf2874f8d8dd6769449af331",
+  "files": [
+    {
+      "source": "publication/validation-r7-terminal-r1/CHECKPOINT.md",
+      "bytes": 69393,
+      "sha256": "c5ad1773636baa1809e5047ce484e908c59c8d71d26729f8ddba4ea21563057a",
+      "git_blob": "d2608f8363134c0ee2949e50611403f9874d6bf4"
+    },
+    {
+      "source": "publication/validation-r7-terminal-r1/index.public.json",
+      "bytes": 105646,
+      "sha256": "6de1d84a2a923a196b438d3ef6203c9749b4f95944c57cc6ea020cf494f9cb95",
+      "git_blob": "36bc37b29214b5e18468b205d6d8979af6029c1d"
+    }
+  ],
+  "scope": "Exact prior root-published packet bytes; parent confirmed exact GitHub doc/index readback at 1736037.",
+  "base_bytes_retrieved_from_local_immutable_packet": true,
+  "github_mutations_performed": false,
+  "root_continuation_state_read_or_written": false
+}

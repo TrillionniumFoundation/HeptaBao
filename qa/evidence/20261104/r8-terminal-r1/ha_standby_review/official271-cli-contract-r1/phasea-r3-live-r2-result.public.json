@@ -1,0 +1,159 @@
+{
+  "actual_bao_servers_started": 0,
+  "all_owned_stopped": true,
+  "case_count_observed": 0,
+  "case_count_planned": 10,
+  "cases": [],
+  "child_provenance": [
+    {
+      "actual_argc": 1,
+      "actual_cmdline_bytes": 0,
+      "actual_cmdline_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "arg_projection_limit": 32,
+      "args": [
+        {
+          "bytes": 0,
+          "equal": false,
+          "expected_bytes": 16,
+          "expected_sha256": "1afb0e3c1a5a2267a9915404e45a289d765039192e7a5ff73df5840e3865e46f",
+          "index": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "captured_only_by_original_child_guard": true,
+      "expected_argc": 16,
+      "extra_args_omitted": 0,
+      "guard_accepted": false,
+      "identity": {
+        "exe": "/usr/bin/openssl",
+        "pgid": 2628761,
+        "pid": 2628761,
+        "ppid": 2628739,
+        "start_ticks": 88087095,
+        "state": "D"
+      },
+      "pid": 2628761,
+      "stage": "exact_executable_and_argv"
+    }
+  ],
+  "children_without_guard_projection": [],
+  "cli_contract_observation_only": true,
+  "elapsed_ms": 1219.191315,
+  "failure_code": "owned_child_executable_or_argv_changed",
+  "fence_error": null,
+  "full_replacement_qualification": false,
+  "intent_count": 0,
+  "intent_labels_without_durable_outcome": [],
+  "outcome_count": 0,
+  "peer_cleanup": [],
+  "prepared": {
+    "case_labels": [
+      "S01_save_direct_200",
+      "S02_save_307_then_200",
+      "S03_restore_direct_400",
+      "S04_restore_direct_500",
+      "S05_restore_307_then_400",
+      "S06_save_redirects_disabled",
+      "S07_restore_redirects_disabled",
+      "S08_save_redirect_untrusted_CA",
+      "S09_save_redirect_protocol_downgrade",
+      "S10_save_second_redirect_limit"
+    ],
+    "controller_sha256": "3cc4ed07fc0d59b89f39d55efdd86dbd86614287414d6d0fa9f372f05bc40723",
+    "credential_helpers_used": false,
+    "http_seconds": 15.0,
+    "inherited_bao_vault_proxy_environment": false,
+    "loopback_only": true,
+    "original_restore_input_bytes": 22,
+    "ports": [
+      48740,
+      48742
+    ],
+    "schema": "openbao271.snapshot-cli-transport-prepare.v1",
+    "source_predictions_are_not_pass_predicates": true,
+    "static": {
+      "binary_bytes": 181760103,
+      "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+      "official_binary": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+      "official_source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+      "old_evidence": {
+        "normal33-standby-oracle-live-r2/result.public.json": {
+          "bytes": 20381,
+          "sha256": "12cdeb32dc89a7f0af5d1950a2c14a02581a8e98cefd3719c0673a0bd38e68d4"
+        },
+        "normal33-standby-oracle-live-r3/result.public.json": {
+          "bytes": 19915,
+          "sha256": "f5a44d25e6f33e562b492e050242f36cc2744417a13a01db4beab1c0422ae590"
+        },
+        "official271-cli-openssl-identity-diag-r1/owned-projection.public.json": {
+          "bytes": 7544,
+          "sha256": "426077ea0efdbb496a35dd2d6e1eb57bdf56fe2ec3775c6b00c885e9b5d94810"
+        },
+        "official271-cli-transport-live-r1/result.public.json": {
+          "bytes": 4208,
+          "sha256": "ae4a8d0af3e9e8dcf838adce201f1985256b506f7ad2c565c8e92918148c21e6"
+        },
+        "official271-standby-oracle-live-r1/boundary-assessment.public.json": {
+          "bytes": 112921,
+          "sha256": "4588e9f3a8fff060d4ac7ea035f85b5bcf58cc9874e839d9797bc75023068391"
+        },
+        "official271-standby-oracle-live-r1/result.public.json": {
+          "bytes": 6521,
+          "sha256": "d84a783d817ee7827496182b6f750a1cd995424e554b287f602fd9204f289975"
+        }
+      }
+    },
+    "tls_skip_verify": false,
+    "valid_restore_bodies": 0,
+    "whole_phase_seconds": 300.0,
+    "work_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-cli-transport-live-r2"
+  },
+  "process_cleanup": [
+    {
+      "owned_stopped": true,
+      "pid": 2628761,
+      "remaining": [],
+      "start_ticks": 88087095,
+      "wait_returncode": -15
+    }
+  ],
+  "production_services_changed": false,
+  "schema": "openbao271.snapshot-cli-transport-observation.v1",
+  "source_predictions_are_not_pass_predicates": true,
+  "static_after": {
+    "binary_bytes": 181760103,
+    "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+    "official_binary": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+    "official_source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "old_evidence": {
+      "normal33-standby-oracle-live-r2/result.public.json": {
+        "bytes": 20381,
+        "sha256": "12cdeb32dc89a7f0af5d1950a2c14a02581a8e98cefd3719c0673a0bd38e68d4"
+      },
+      "normal33-standby-oracle-live-r3/result.public.json": {
+        "bytes": 19915,
+        "sha256": "f5a44d25e6f33e562b492e050242f36cc2744417a13a01db4beab1c0422ae590"
+      },
+      "official271-cli-openssl-identity-diag-r1/owned-projection.public.json": {
+        "bytes": 7544,
+        "sha256": "426077ea0efdbb496a35dd2d6e1eb57bdf56fe2ec3775c6b00c885e9b5d94810"
+      },
+      "official271-cli-transport-live-r1/result.public.json": {
+        "bytes": 4208,
+        "sha256": "ae4a8d0af3e9e8dcf838adce201f1985256b506f7ad2c565c8e92918148c21e6"
+      },
+      "official271-standby-oracle-live-r1/boundary-assessment.public.json": {
+        "bytes": 112921,
+        "sha256": "4588e9f3a8fff060d4ac7ea035f85b5bcf58cc9874e839d9797bc75023068391"
+      },
+      "official271-standby-oracle-live-r1/result.public.json": {
+        "bytes": 6521,
+        "sha256": "d84a783d817ee7827496182b6f750a1cd995424e554b287f602fd9204f289975"
+      }
+    }
+  },
+  "status": "failed_observation",
+  "terminal_unix_ns": 1793803205738053751,
+  "unknown": false,
+  "valid_restore_bodies": 0
+}

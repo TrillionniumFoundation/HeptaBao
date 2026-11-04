@@ -1,0 +1,47 @@
+{
+  "comparison69_required_per_side": 69,
+  "diff_sha256": "ac1fa4337f136532dca57502b211d643be18f6d23d82a03dca74361c9352f45e",
+  "files": [
+    {
+      "before_sha256": "741b91cf97cff02cba287ac7443f62b98444f5193424eb0f96778e76a469e575",
+      "bytes": 6941,
+      "name": "comparison69_r8_controller_r1.py",
+      "sha256": "f0db9fee048641ec5641705c48702686626f93837ff1f7c15229658d3e8fd01f",
+      "unchanged": false
+    },
+    {
+      "before_sha256": "3903b5fdc914500b3e0b58a7a427a289561f37c036892fb0dd263bd4b71cfd88",
+      "bytes": 5309,
+      "name": "full34_r8_controller_r1.py",
+      "sha256": "3903b5fdc914500b3e0b58a7a427a289561f37c036892fb0dd263bd4b71cfd88",
+      "unchanged": true
+    },
+    {
+      "before_sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+      "bytes": 9261,
+      "name": "native271_comparison_final_r1.py",
+      "sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+      "unchanged": true
+    }
+  ],
+  "full34_required": 31,
+  "normal_artifact_pins": {
+    "candidate-from-r7.bundle": "b9a64f258aa6c0ecfac366d57c675d4f9d712edf5f1fe7ddc0929b69d5769aef",
+    "candidate-from33-r7-r1.bundle": "a0f284839b4a1e781af62464bcea919f938f9037a23f7269c403b4f122ed9244",
+    "heptabao-server": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+    "native-build.public.json": "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9",
+    "result.public.json": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5"
+  },
+  "original_business_predicates_unchanged": true,
+  "original_http_seconds": 15,
+  "original_migration_seconds": 360,
+  "production_changed": false,
+  "runtime_go_pending": true,
+  "runtime_started": false,
+  "schema": "heptabao.x230-r8-final-controller-bindings.v1",
+  "source_and_transport_groups_stopped": true,
+  "source_commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+  "source_tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04",
+  "transport_complete": true,
+  "transport_result_sha256": "3ebfd7d224efd1b08f69e0b99aeba7bc493ea4f9af32c6320ba6dabf2e6b767d"
+}
