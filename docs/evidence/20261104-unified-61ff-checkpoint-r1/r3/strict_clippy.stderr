@@ -1,0 +1,83 @@
+    Checking heptabao-server v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-server)
+    Checking heptabao-protocol v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-protocol)
+    Checking xattr v1.6.1
+    Checking filetime v0.2.27
+    Checking tar v0.4.45
+    Checking heptabao-durable-core v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-durable-core)
+    Checking heptabao-operation-ledger v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-operation-ledger)
+    Checking heptabao-migration v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-migration)
+    Checking heptabao-p0-server v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-p0-server)
+    Checking heptabao-rollback-anchor v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-rollback-anchor)
+    Checking pem v4.0.0
+    Checking heptabao-single-node-journal v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-single-node-journal)
+    Checking yasna v0.6.0
+    Checking heptabao-single-node-store v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-single-node-store)
+    Checking heptabao-token v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-token)
+    Checking heptabao-namespace v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-namespace)
+    Checking heptabao-telemetry v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-telemetry)
+    Checking heptabao-operator-api v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-operator-api)
+    Checking heptabao-kv-engine v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-kv-engine)
+    Checking heptabao-identity v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-identity)
+    Checking heptabao-mount-router v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-mount-router)
+    Checking heptabao-policy v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-policy)
+    Checking rcgen v0.14.10
+    Checking heptabao-journaled-core v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-journaled-core)
+    Checking heptabao-openbao-grpc v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-openbao-grpc)
+    Checking heptabao-service-core v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-service-core)
+    Checking heptabao-recovery-core v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-recovery-core)
+    Checking heptabao-authbus-contracts v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-authbus-contracts)
+error: unnecessary `>= y + 1` or `x - 1 >=`
+  --> crates/heptabao-server/src/engines/kv2_native_lossless_prefetch_tests.rs:91:25
+   |
+91 |                 assert!(window.pending.len() + 1 <= MAX_OUTSTANDING);
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: change it to: `window.pending.len() < MAX_OUTSTANDING`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#int_plus_one
+   = note: `-D clippy::int-plus-one` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::int_plus_one)]`
+
+error[E0277]: `service::Response` doesn't implement `std::fmt::Debug`
+   --> crates/heptabao-server/src/ha_snapshot_clock.rs:725:18
+    |
+725 |                 .unwrap()
+    |                  ^^^^^^ unsatisfied trait bound
+    |
+help: the trait `std::fmt::Debug` is not implemented for `service::Response`
+   --> crates/heptabao-server/src/service.rs:821:1
+    |
+821 | pub struct Response {
+    | ^^^^^^^^^^^^^^^^^^^
+    = note: add `#[derive(Debug)]` to `service::Response` or manually `impl std::fmt::Debug for service::Response`
+note: required by a bound in `std::result::Result::<T, E>::unwrap`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:1225:4
+
+error[E0277]: `service::Response` doesn't implement `std::fmt::Debug`
+   --> crates/heptabao-server/src/ha_snapshot_clock.rs:783:64
+    |
+783 |             check_response_binding(reply, expected(&original)).unwrap(),
+    |                                                                ^^^^^^ unsatisfied trait bound
+    |
+help: the trait `std::fmt::Debug` is not implemented for `service::Response`
+   --> crates/heptabao-server/src/service.rs:821:1
+    |
+821 | pub struct Response {
+    | ^^^^^^^^^^^^^^^^^^^
+    = note: add `#[derive(Debug)]` to `service::Response` or manually `impl std::fmt::Debug for service::Response`
+note: required by a bound in `std::result::Result::<T, E>::unwrap`
+   --> /rustc/88d9e12ae178fab0fb5cc050a94da85685d449ea/library/core/src/result.rs:1225:4
+
+error[E0063]: missing field `snapshot_clock_handler` in initializer of `ha::HaProcess`
+  --> crates/heptabao-server/src/ha_request_deadline_tests.rs:64:8
+   |
+64 |     Ok(HaProcess {
+   |        ^^^^^^^^^ missing `snapshot_clock_handler`
+
+error[E0063]: missing field `snapshot_clock_handler` in initializer of `ha::HaProcess`
+   --> crates/heptabao-server/src/ha_snapshot_test_support.rs:124:48
+    |
+124 |             processes.push(Arc::new(Mutex::new(HaProcess {
+    |                                                ^^^^^^^^^ missing `snapshot_clock_handler`
+
+Some errors have detailed explanations: E0063, E0277.
+For more information about an error, try `rustc --explain E0063`.
+error: could not compile `heptabao-server` (lib test) due to 5 previous errors

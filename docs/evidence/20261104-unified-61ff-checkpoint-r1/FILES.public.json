@@ -1,0 +1,211 @@
+{
+  "schema": "sha256_file_manifest_v1",
+  "files": [
+    {
+      "path": "source/input-r1.tar.gz",
+      "bytes": 514152,
+      "sha256": "3f25959b3a7f613be779c5849eb18622649cee95bc07353d8f593ea4bffbd3a0",
+      "encoding": "base64"
+    },
+    {
+      "path": "source/input-r1-manifest.public.json",
+      "bytes": 27085,
+      "sha256": "9ab2666658818f6af03a662d365006aef47470b42aa5ef6f6d46d99b6acd03ef",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r3/frozen-source-r3.public.json",
+      "bytes": 24979,
+      "sha256": "e8492bff7ae331205c5c83232b7fc94f6471b99d7be3ae4f1c4fe2005cd831a3",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r3/source-transfer.public.json",
+      "bytes": 3101,
+      "sha256": "5b3272ad108c8fe367152dcbbc7f88a3eb1be3aee5f1a7a90184630dedb023af",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r3/initial-compile-admission.public.json",
+      "bytes": 4956,
+      "sha256": "2f6c1e47d87b556c1d3dee908ca312e12f7b8da86952f20d9aae7e26a5660487",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r3/strict_clippy-compile-admission.public.json",
+      "bytes": 4957,
+      "sha256": "43ff0a67bd6407f3b99cfd78bb1bc8024665d6e502c11aa7da3fe56be47850f8",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "source/r3-formatted-source-packet.json.gz",
+      "bytes": 195781,
+      "sha256": "7544c07a2f3f8fc7c862ef16753e89f7b0a4251233a8171292cda04a2e1b09d3",
+      "encoding": "base64"
+    },
+    {
+      "path": "r3/strict_clippy.stderr",
+      "bytes": 6112,
+      "sha256": "034471356ac69df6bbd7840e851b3681af085eb492883b4decc28b4ff63cf418",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r3/strict_clippy.public.json",
+      "bytes": 653,
+      "sha256": "8bec9aaea032e555f1cd04d023fc5b6ede952c1b59fc8c33a3ac22611bd3b426",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r3/result.public.json",
+      "bytes": 1479,
+      "sha256": "0a81dd2a752132d902a74c61a677d985280b820792e62d180d6bd9d985d4436a",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r3/controller-first-read.public.json",
+      "bytes": 2431,
+      "sha256": "c907c5c33056a1a5a7a20bc8e6789ed71ea6c802824864a1bfdcf1f36360e19f",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r3/controller-second-read.public.json",
+      "bytes": 3483,
+      "sha256": "1d07979ff37ae71e16ff3beb4c76941c2e12d723089e46e0d09cc621b7f47962",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r3/controller-terminal.public.json",
+      "bytes": 731,
+      "sha256": "9ae5bb23770d8fa713134ce5bc4b1180b9807e8719a46136dffeae0c6d5b126e",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "controls/r3-exact-process-start-request.public.json",
+      "bytes": 166941,
+      "sha256": "570d1b719f9aaa06475b0809871d65152dc11c1ae907766684c85c36249c83a9",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "controls/r3-resume.py",
+      "bytes": 27772,
+      "sha256": "fb7756c8f68ede2ca444ff57e6ec8d62fa6590f920392220d52380df6b3ccefe",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "controls/r4-exact-process-start-request.public.json",
+      "bytes": 122158,
+      "sha256": "482fa093db264c3f041357a11051013f51d286040c1452d9519a0fb7c88c5d60",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "controls/r4-resume.py",
+      "bytes": 27940,
+      "sha256": "12de34fe1c5aa84fd0699b8ed0ec5ef8aab1897f70f858e177db0323a73218e8",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "controls/r4-stdin.public.json",
+      "bytes": 90543,
+      "sha256": "b5fe976793917a113aa994e91a76bb0959324d6a444d55218365cc1e5b1c3484",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r4-candidate/crates/heptabao-server/src/engines/kv2_native_lossless_prefetch_tests.rs",
+      "bytes": 16172,
+      "sha256": "2389b98613db0d9899d1a8ed5aa947cbd897d997d7411c887f710ef604fe68cc",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r4-candidate/crates/heptabao-server/src/ha_request_deadline_tests.rs",
+      "bytes": 4677,
+      "sha256": "d5d788d74022b8da1484eb1c8ca8abe332c701410496389e762bd08ff550871f",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r4-candidate/crates/heptabao-server/src/ha_snapshot_clock.rs",
+      "bytes": 32720,
+      "sha256": "835af0f15d8bacffcea379439632055b6d3e63585940b77d308b18ce0b637216",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r4-candidate/crates/heptabao-server/src/ha_snapshot_test_support.rs",
+      "bytes": 8237,
+      "sha256": "6376f188488e892c6eb10b718adff1b1633c3890fe307771c060f61979b9331e",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r4/controller-admission-read.public.json",
+      "bytes": 1736,
+      "sha256": "47af8c6bafd6c97f376c57bde74b8f20c11c500e8ed090c51a71fc165a908b44",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r9/resource-observation-original-page.public.json",
+      "bytes": 9081,
+      "sha256": "3e5604ddeafad0ede133ff70fa731c53ef0895caf993be3f8eb9caeb1a026fb1",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r9/exact-cgroup-observation.public.json",
+      "bytes": 2005,
+      "sha256": "2253e7497e57a785ca4b174d3b80e1150d11e00035a856ea4ee039c1cb3f1239",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r9/exact-job-running.original-sdk.json",
+      "bytes": 618,
+      "sha256": "ddb41ca9993e6e3a0bd287e8da42a6906088eb960b83d6ddccf47f9b43c3b3f1",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r2/strict-clippy-original.stderr.gz",
+      "bytes": 57983,
+      "sha256": "0c5e20506d1acc38f1ef31c7b5149d1657f4d2f12de0509bc608a03cff2bf9b4",
+      "encoding": "base64"
+    },
+    {
+      "path": "ci/head-terminal.log",
+      "bytes": 2674063,
+      "sha256": "23f2bb906d5d0a24bea48ab9f510027e401ee04f9bacbb7f8c651dcd441ebc4e",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "ci/merge-terminal.log",
+      "bytes": 2763895,
+      "sha256": "a00b509b29dbacb2b95126e80b7fbdb6bfcc012fca9d65e45818a80789610d9d",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r4-original/crates/heptabao-server/src/engines/kv2_native_lossless_prefetch_tests.rs",
+      "bytes": 16177,
+      "sha256": "9c7700293bdc2612135c29b1d0b7fb241106265f5996cb7cc57a94b0a82daefc",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r4-original/crates/heptabao-server/src/ha_request_deadline_tests.rs",
+      "bytes": 4576,
+      "sha256": "5b1d932e1ca9ab49226cc9459ca1cadb8cf147abab797ed5d8c3f0dd876828cd",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "r4-original/crates/heptabao-server/src/ha_snapshot_test_support.rs",
+      "bytes": 8120,
+      "sha256": "41bd4c12c7fb55979c4f3bde6316353a0d5f6d510dd62f9650d8b1d64188e08d",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "CHECKPOINT.public.json",
+      "bytes": 5731,
+      "sha256": "1b01f345f36a66989e9b8fffb526e85de925938c4d8f535a1e3e629a0909468f",
+      "encoding": "utf-8"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2904,
+      "sha256": "c392cad550b95222c4db212a388351901d6573213e7fc57216cf4c2b12ca41cf",
+      "encoding": "utf-8"
+    }
+  ],
+  "archive_scope": "repository source and public build/resource evidence only; no credentials/private runtime archives",
+  "qualification": false
+}

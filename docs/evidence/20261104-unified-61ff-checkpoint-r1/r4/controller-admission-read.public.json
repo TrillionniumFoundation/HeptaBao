@@ -1,0 +1,20 @@
+{
+  "audit_recorded": true,
+  "job_id": "1a1a77a3c81-fc05-2b93",
+  "stderr": {
+    "bytes_hex": "54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0a202046696c6520223c737472696e673e222c206c696e65203531382c20696e203c6d6f64756c653e0a202020206d61696e28290a202020207e7e7e7e5e5e0a202046696c6520223c737472696e673e222c206c696e65203430322c20696e206d61696e0a20202020696e697469616c5f636f6d70696c655f61646d697373696f6e203d20636f6d70696c655f61646d697373696f6e28290a202046696c6520223c737472696e673e222c206c696e65203335352c20696e20636f6d70696c655f61646d697373696f6e0a2020202061737365727420616c6c2869735f666f726569676e5f64657363656e64616e7428726f775b27706964275d2c2070726f6365737365732920666f7220726f7720696e20616374697665292c2027756e6b6e6f776e206e6577206275696c646572206f776e6572270a20202020202020202020207e7e7e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e0a417373657274696f6e4572726f723a20756e6b6e6f776e206e6577206275696c646572206f776e65720a",
+    "eof": true,
+    "next_offset": 466,
+    "offset": 0,
+    "size": 466,
+    "text": "Traceback (most recent call last):\n  File \"<string>\", line 518, in <module>\n    main()\n    ~~~~^^\n  File \"<string>\", line 402, in main\n    initial_compile_admission = compile_admission()\n  File \"<string>\", line 355, in compile_admission\n    assert all(is_foreign_descendant(row['pid'], processes) for row in active), 'unknown new builder owner'\n           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: unknown new builder owner\n"
+  },
+  "stdout": {
+    "bytes_hex": "",
+    "eof": true,
+    "next_offset": 0,
+    "offset": 0,
+    "size": 0,
+    "text": ""
+  }
+}

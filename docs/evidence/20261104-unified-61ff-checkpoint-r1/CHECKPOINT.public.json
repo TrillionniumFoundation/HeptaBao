@@ -1,0 +1,112 @@
+{
+  "schema": "heptabao_unified_61ff_environment_interruption_checkpoint_v1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "checkpoint_branch": "codex/heptabao-bao-acceptance-checkpoint-20261104",
+  "last_observed_pr152_head": "f9139c3b37b6373df3e4b4c61ebdd4f847afac4d",
+  "pr152_ref_changed_by_checkpoint": false,
+  "actual_rog_source": "3961275d27e4a4e64e2d28619ef3b1b8d76e9980",
+  "actual_rog_tree": "d6dffaf4627ac16961e67c94b99f84122adc2e1d",
+  "actual_rog_root": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1",
+  "actual_rog_source_file_count": 56,
+  "critical_tests": 56,
+  "local_environment_available": false,
+  "source_recovery": "Git base33 or f913 plus input-r1 tar, then exact r3 formatted14 packet; verify r3 manifest SHA256/Git blobs and full tree",
+  "full_replacement_qualified": false,
+  "normal_production_link_completed": false,
+  "workspace_tests_started": false,
+  "current_candidate_strict_clippy_green": false,
+  "mac_candidate_build_started": false,
+  "production_traffic_switched": false,
+  "old_openbao_deleted": false,
+  "preserved_r3": {
+    "job": "1a1a7730b93-fc05-2b7b",
+    "terminal_exit": 1,
+    "format_passed": true,
+    "strict_clippy_exit": 101,
+    "strict_clippy_seconds": 75.166325290018,
+    "strict_clippy_original_bytes": 6112,
+    "strict_clippy_sha256": "034471356ac69df6bbd7840e851b3681af085eb492883b4decc28b4ff63cf418",
+    "errors": {
+      "E0277": 2,
+      "E0063": 2,
+      "int_plus_one": 1
+    },
+    "runtime_tests_executed": false
+  },
+  "r4": {
+    "terminal_admission_job": "1a1a77a3c81-fc05-2b93",
+    "exit_code": 1,
+    "reason": "unknown new builder owner; refused before any source edit",
+    "source_changes_applied": false,
+    "normal_build_r4_control_created": false,
+    "reviewed_candidate_files": 4,
+    "expected_future_manifest_files": 59,
+    "script_sha256": "12de34fe1c5aa84fd0699b8ed0ec5ef8aab1897f70f858e177db0323a73218e8",
+    "stdin_sha256": "b5fe976793917a113aa994e91a76bb0959324d6a444d55218365cc1e5b1c3484",
+    "exact_request_sha256": "482fa093db264c3f041357a11051013f51d286040c1452d9519a0fb7c88c5d60",
+    "guard_sha256": "108ea3a050eb5f1596b8c6cab3aeffbce8a220e91ae1b15ac70b3b6176c097cb",
+    "response_Debug_added": false,
+    "fake_receipt_added": false,
+    "fixture_budgets_changed": false,
+    "original_overall_deadline_unchanged": true
+  },
+  "earlier_reds": {
+    "format_only_job": "1a1a741e78c-fc05-2ab6",
+    "r2_clippy_job": "1a1a74aabf0-fc05-2add",
+    "r2_error_lints": 1640,
+    "r2_rust_type_errors": 0,
+    "r2_stderr_original_bytes": 1009443,
+    "r2_stderr_original_sha256": "5f50ed761dcaa6d1e526a9dc6ec276048ecbd8b4afa4c492599918228915bc5e",
+    "r3_first_admission_job": "1a1a75eaff9-fc05-2b29",
+    "r3_metadata_admission_job": "1a1a76bcaaa-fc05-2b63"
+  },
+  "shared_resource_blocker": {
+    "exact_job_from_live_cgroup": "1a1a7738839-fc05-2b7f",
+    "last_authoritative_state": "running",
+    "cargo_pid": 3104976,
+    "python_parent": 3094511,
+    "source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r9-http-routing-r1/source",
+    "shared_cargo_home": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+    "shared_original_target": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target",
+    "observed_owned_boundary_descriptor_overlaps": 5,
+    "interrupted": false,
+    "allowed_by_foreign_compile_exception": false
+  },
+  "existing_ci": {
+    "head": "f9139c3b37b6373df3e4b4c61ebdd4f847afac4d",
+    "full_run": 41837754898,
+    "overall": "failure at strict Clippy",
+    "head_full_workspace": "success",
+    "merge_full_workspace": "success",
+    "each_matrix": {
+      "top_level_rust_groups": 67,
+      "passed": 4721,
+      "failed": 0,
+      "ignored": 9,
+      "filtered": 0
+    },
+    "nested_filesystem_guard_child_groups_excluded_from_totals": 2,
+    "strict_clippy_errors": 3,
+    "trust_run": 41837754906,
+    "trust_head_and_merge": "success"
+  },
+  "known_remaining_product_gaps": [
+    "ordinary KV NoForward + global TTL/precision still redirects307",
+    "non-clock resource-maintenance states still redirect307",
+    "post-admission early refusal before snapshot plan on TTL standby lacks delegated floor custody",
+    "snapshot root-only admission differs from fixed OpenBao2.7.1 nonroot read-only ACL200"
+  ],
+  "deferred_design_only": {
+    "denied_receipt": "sealed403 completion with true leader floor receipt, original binding, actual follower sync/ReadIndex; no code applied",
+    "http_kv_bound": "HTTP MAX_HEADERS includes request line; token+namespace+rawtarget share a 16KiB bound; SDK direct Request needs separate proof",
+    "mac_stage_helper": "not created before local environment loss"
+  },
+  "evidence_limit": "Formal cfg(test) Raft/Service cases do not qualify production start_with_storage, public HTTPS, physical LAN or X230; no component pass is a combined pass.",
+  "recovery_instructions": [
+    "Preserve 3961 and original overall-bound.public.json; verify boot_id and remaining original bound before any new attempt.",
+    "Wait for exact r9 job and actual shared locks/builders to exit; do not interrupt unknown jobs or copy changing mutable cache.",
+    "Reviewed r4 original key is already terminal admission-only. Reusing it returns that result. A new attempt needs a recorded new key, unchanged reviewed argv/stdin, clean pinned source and missing destination run/control.",
+    "Strict Clippy, normal production build, workspace no-run and full workspace remain required. Do not widen fixture budgets, ignore tests, claim release or delete OpenBao.",
+    "For restored source files, verify every archive entry SHA256 and Git blob against frozen r3 manifest before applying the reviewed four-file r4 delta."
+  ]
+}

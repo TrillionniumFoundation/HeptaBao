@@ -1,0 +1,130 @@
+{
+  "observed_unix_ns": 1793810709354098343,
+  "resources": {
+    "cpu_count": 32,
+    "load_average_1m": 1.94580078125,
+    "memory": {
+      "MemTotal": 128039612416,
+      "MemAvailable": 83795501056
+    },
+    "disk_free_bytes": 91629010944
+  },
+  "observed_builders": [
+    {
+      "pid": 3058880,
+      "name": "cargo",
+      "cwd": "/home/qian-qi/work/trill-g2-native-rog-20261104-v1/hepta-6b715",
+      "parent_pid": 3058822,
+      "start_clock_ticks": 13955583,
+      "executable_basename": "cargo",
+      "executable_path": "/home/qian-qi/work/trill-g2-native-rog-20261104-v1/rustup-home/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo"
+    },
+    {
+      "pid": 3093575,
+      "name": "rustc",
+      "cwd": "/home/qian-qi/work/trill-g2-native-rog-20261104-v1/hepta-6b715/codex-rs",
+      "parent_pid": 3058880,
+      "start_clock_ticks": 14090045,
+      "executable_basename": "rustc",
+      "executable_path": "/home/qian-qi/work/trill-g2-native-rog-20261104-v1/rustup-home/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc"
+    }
+  ],
+  "argv_or_environment_read": false,
+  "foreign_processes_changed": false,
+  "valid_only_for_compiler_phase_admission": true,
+  "process_scope": "configured_operator_uid_only",
+  "operator_uid": 1000,
+  "other_uids_assessed": false,
+  "whole_host_exclusivity_claimed": false,
+  "exact_public_session_daemon_classifications": [
+    {
+      "pid": 2217,
+      "uid": 1000,
+      "name": "systemd",
+      "parent_pid": 1,
+      "start_clock_ticks": 971,
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/init.scope",
+      "category": "exact_observed_persistent_session_daemon",
+      "protected_exe_or_fd_read": false,
+      "descendants_excluded": false
+    },
+    {
+      "pid": 2282,
+      "uid": 1000,
+      "name": "(sd-pam)",
+      "parent_pid": 2217,
+      "start_clock_ticks": 977,
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/init.scope",
+      "category": "exact_observed_persistent_session_daemon",
+      "protected_exe_or_fd_read": false,
+      "descendants_excluded": false
+    },
+    {
+      "pid": 9026,
+      "uid": 1000,
+      "name": "ssh-agent",
+      "parent_pid": 2217,
+      "start_clock_ticks": 2526,
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/ssh-agent.service",
+      "category": "exact_observed_persistent_session_daemon",
+      "protected_exe_or_fd_read": false,
+      "descendants_excluded": false
+    },
+    {
+      "pid": 17987,
+      "uid": 1000,
+      "name": "ssh-agent",
+      "parent_pid": 9023,
+      "start_clock_ticks": 12193,
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/gcr-ssh-agent.service",
+      "category": "exact_observed_persistent_session_daemon",
+      "protected_exe_or_fd_read": false,
+      "descendants_excluded": false
+    }
+  ],
+  "admission": "exact_observed_foreign_build_with_independent_locks",
+  "foreign_cargo": {
+    "pid": 3058880,
+    "name": "cargo",
+    "cwd": "/home/qian-qi/work/trill-g2-native-rog-20261104-v1/hepta-6b715",
+    "parent_pid": 3058822,
+    "start_clock_ticks": 13955583,
+    "executable_basename": "cargo",
+    "executable_path": "/home/qian-qi/work/trill-g2-native-rog-20261104-v1/rustup-home/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo"
+  },
+  "checked_descendants": [
+    {
+      "pid": 3058880,
+      "name": "cargo",
+      "cwd": "/home/qian-qi/work/trill-g2-native-rog-20261104-v1/hepta-6b715",
+      "parent_pid": 3058822,
+      "start_clock_ticks": 13955583,
+      "executable_basename": "cargo",
+      "executable_path": "/home/qian-qi/work/trill-g2-native-rog-20261104-v1/rustup-home/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "lock_paths": [
+        "/home/qian-qi/work/trill-g2-native-rog-20261104-v1/cargo-home/.global-cache",
+        "/home/qian-qi/work/trill-g2-native-rog-20261104-v1/cargo-home/.package-cache-mutate",
+        "/home/qian-qi/work/trill-g2-native-rog-20261104-v1/static-target/release/.cargo-lock",
+        "/home/qian-qi/work/trill-g2-native-rog-20261104-v1/static-target/x86_64-unknown-linux-gnu/release/.cargo-lock"
+      ],
+      "owned_boundary_overlaps": []
+    },
+    {
+      "pid": 3093575,
+      "name": "rustc",
+      "cwd": "/home/qian-qi/work/trill-g2-native-rog-20261104-v1/hepta-6b715/codex-rs",
+      "parent_pid": 3058880,
+      "start_clock_ticks": 14090045,
+      "executable_basename": "rustc",
+      "executable_path": "/home/qian-qi/work/trill-g2-native-rog-20261104-v1/rustup-home/toolchains/1.96.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "lock_paths": [],
+      "owned_boundary_overlaps": []
+    }
+  ],
+  "owned_boundaries": [
+    "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source",
+    "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/cargo-target-normal",
+    "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target",
+    "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home"
+  ]
+}

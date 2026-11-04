@@ -1,0 +1,25 @@
+{
+  "label": "strict_clippy",
+  "args": [
+    "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "clippy",
+    "--release",
+    "--locked",
+    "--offline",
+    "--workspace",
+    "--all-targets",
+    "--exclude",
+    "qrcode",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "exit_code": 101,
+  "timed_out": false,
+  "elapsed_seconds": 75.166325290018,
+  "owned_pgid": 3094192,
+  "remaining": [],
+  "original_outer_remaining_seconds": 18368.711024266,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "034471356ac69df6bbd7840e851b3681af085eb492883b4decc28b4ff63cf418"
+}

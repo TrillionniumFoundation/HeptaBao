@@ -1,0 +1,67 @@
+{
+  "source": "3961275d27e4a4e64e2d28619ef3b1b8d76e9980",
+  "tree": "d6dffaf4627ac16961e67c94b99f84122adc2e1d",
+  "files": 14,
+  "original_bytes": 1060350,
+  "original_sha256": "2b9672e61543a6d215277ef2700ca78a72502b5cb49dfa71607a2cf41b143a2d",
+  "compressed_bytes": 195781,
+  "compressed_sha256": "7544c07a2f3f8fc7c862ef16753e89f7b0a4251233a8171292cda04a2e1b09d3",
+  "chunks": [
+    {
+      "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r3/frozen-source.b64.0",
+      "bytes": 24000,
+      "sha256": "6417a27bfcb342fe75caa85745e320ff8fbf7921ccdd40c6daf68f6b91be29e7"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r3/frozen-source.b64.24000",
+      "bytes": 24000,
+      "sha256": "601d9f99380636ab6ceb057db1a55b30b02e9d689ee960fd8f178557b6bb83a1"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r3/frozen-source.b64.48000",
+      "bytes": 24000,
+      "sha256": "b105fe896951315eee01f1001e68c83d1b0406691f4c3c87869713ec4cdb1d62"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r3/frozen-source.b64.72000",
+      "bytes": 24000,
+      "sha256": "71f6ce13d880fef37500b01d1e16f9edc249524b3b3603604433936b24e296e8"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r3/frozen-source.b64.96000",
+      "bytes": 24000,
+      "sha256": "c401b2fb05c1c1f042892c13548caa75eba5f1d70a005aa3fe891ab5dbbf0453"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r3/frozen-source.b64.120000",
+      "bytes": 24000,
+      "sha256": "7ea7f7a29e90f5985b9af9d65640b82e8422f3a6258ca895c32c8f4f2af23b35"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r3/frozen-source.b64.144000",
+      "bytes": 24000,
+      "sha256": "7ba9bbee95564f9d9bec64e58abb2cda2d17210e0b47799dffb27db5bbd895af"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r3/frozen-source.b64.168000",
+      "bytes": 24000,
+      "sha256": "368498b1dc27dd7e90e6318921eee7ea8ff781aab34b8bb31161348ad018a655"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r3/frozen-source.b64.192000",
+      "bytes": 24000,
+      "sha256": "873d2c1e158a41f8444298ac2d573c678cc399c2b0c16cd7f60c6793b18aabd0"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r3/frozen-source.b64.216000",
+      "bytes": 24000,
+      "sha256": "a56958dbb9251cd97327391be1af3f3a63976fe5f38a357ad15b6fc860079ad1"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r3/frozen-source.b64.240000",
+      "bytes": 21044,
+      "sha256": "b82620e7edf944d503261994d88c7b6c4476a9f3f58bc05c552b65d2509e213a"
+    }
+  ],
+  "frozen_manifest_sha256": "e8492bff7ae331205c5c83232b7fc94f6471b99d7be3ae4f1c4fe2005cd831a3"
+}
