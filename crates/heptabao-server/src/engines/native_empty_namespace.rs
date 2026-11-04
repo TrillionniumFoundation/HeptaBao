@@ -1,5 +1,6 @@
-//! A namespace catalog entry may own only pristine
-//! Engine metadata. It cannot install mounts, identity epochs or secret graphs.
+//! Pristine engine metadata and exact retired namespace cleanup.
+//! Cleanup requires the enclosing catalog incarnation retirement; it never
+//! turns mount history into pristine metadata or removes live secret graphs.
 use super::*;
 use std::collections::BTreeSet;
 
@@ -26,6 +27,60 @@ impl EngineState {
         root.namespaces.retain(|name, _| name.is_empty());
         // Original root profile still checks SDK/external/secret owners.
         root.supports_native_v6_root_storage()
+    }
+
+    /// Retire an already-disabled plain namespace's engine metadata only after
+    /// the catalog and paired Auth ledger have retired its exact incarnation.
+    /// Mount epochs are not pristine: the enclosing retired namespace now
+    /// fences every old mount owner. No live payload or external owner is removed.
+    pub(crate) fn retire_native_flat_namespace_engines(
+        &mut self,
+        cluster_id: &str,
+        binding: &crate::namespace_custody::Binding,
+        lifecycle: &crate::auth::batch_namespace::Registry,
+    ) -> Result<()> {
+        let namespace = binding.namespace();
+        binding
+            .validate_cluster_namespace(cluster_id, namespace)
+            .map_err(|_| error(503, "namespace engine retirement binding changed"))?;
+        lifecycle
+            .validate(cluster_id)
+            .map_err(|_| error(503, "namespace engine retirement ledger changed"))?;
+        if lifecycle.current_incarnation(namespace).is_some()
+            || !lifecycle.knows_retired_incarnation(namespace, binding.incarnation())
+        {
+            return Err(error(503, "namespace engine owner has not retired"));
+        }
+        let owner = self
+            .namespaces
+            .get(namespace)
+            .ok_or_else(|| error(503, "namespace engine owner missing"))?;
+        if !owner.mounts.is_empty()
+            || !owner.sdk_owners.is_empty()
+            || !owner.sdk_leases.is_empty()
+            || !owner.identity.is_pristine()
+            || !owner.external_keys.is_empty()
+        {
+            return Err(error(409, "namespace still contains owned resources"));
+        }
+        // An absent mount is insufficient evidence that its record payload
+        // disappeared. Check both authenticated views without rewriting them.
+        if let Some(runtime) = &self.records {
+            for view in [&runtime.index, &runtime.protected] {
+                view.visit_keys(|key| {
+                    kv_versioning::deadline()
+                        .map_err(|_| crate::state_records::RecordError::Invalid)?;
+                    if key.namespace() == namespace {
+                        return Err(crate::state_records::RecordError::Corrupt);
+                    }
+                    Ok(())
+                })
+                .map_err(kv1_records::record_error)?;
+            }
+        }
+        kv_versioning::deadline()?;
+        self.namespaces.remove(namespace);
+        Ok(())
     }
 }
 

@@ -385,3 +385,114 @@ fn pipeline_fixture(lose_first_reply: bool) -> TestResult {
     runtime.block_on(shutdown_nodes(nodes, &router))?;
     result
 }
+
+// Exercise rustls itself rather than treating Write::write_vectored support as
+// an assumption. The physical socket and durable-receiver cases above cover
+// the same production helper over TCP and real fsync.
+#[test]
+fn coalesced_pinned_frame_uses_one_fewer_actual_tls_record() -> TestResult {
+    use std::io::{self, Cursor, Read};
+
+    #[derive(Default)]
+    struct CiphertextWire(Vec<u8>);
+    impl Read for CiphertextWire {
+        fn read(&mut self, _buffer: &mut [u8]) -> io::Result<usize> {
+            Err(io::Error::from(io::ErrorKind::WouldBlock))
+        }
+    }
+    impl Write for CiphertextWire {
+        fn write(&mut self, buffer: &[u8]) -> io::Result<usize> {
+            self.0.extend_from_slice(buffer);
+            Ok(buffer.len())
+        }
+        fn flush(&mut self) -> io::Result<()> {
+            Ok(())
+        }
+    }
+    fn records(wire: &[u8]) -> usize {
+        let mut cursor = 0;
+        let mut count = 0;
+        while cursor < wire.len() {
+            assert!(wire.len() - cursor >= 5);
+            assert_eq!(wire[cursor], 23, "post-handshake TLS application record");
+            let length = u16::from_be_bytes([wire[cursor + 3], wire[cursor + 4]]) as usize;
+            cursor += 5 + length;
+            assert!(cursor <= wire.len());
+            count += 1;
+        }
+        count
+    }
+    let root = Root::new()?;
+    let fixture = tls_fixture(&root.directory("pki")?)?;
+    let mut counts = Vec::new();
+    for coalesced in [false, true] {
+        let mut client = rustls::ClientConnection::new(
+            fixture.clients.get(&1).ok_or("missing client")?.clone(),
+            rustls::pki_types::ServerName::try_from("localhost")?,
+        )?;
+        let mut server = rustls::ServerConnection::new(
+            fixture.servers.get(&2).ok_or("missing server")?.clone(),
+        )?;
+        for _ in 0..16 {
+            let mut flight = Vec::new();
+            while client.wants_write() {
+                client.write_tls(&mut flight)?;
+            }
+            if !flight.is_empty() {
+                server.read_tls(&mut Cursor::new(flight))?;
+                server.process_new_packets()?;
+            }
+            let mut flight = Vec::new();
+            while server.wants_write() {
+                server.write_tls(&mut flight)?;
+            }
+            if !flight.is_empty() {
+                client.read_tls(&mut Cursor::new(flight))?;
+                client.process_new_packets()?;
+            }
+            if !client.is_handshaking()
+                && !server.is_handshaking()
+                && !client.wants_write()
+                && !server.wants_write()
+            {
+                break;
+            }
+        }
+        assert!(!client.is_handshaking() && !server.is_handshaking());
+        assert_eq!(client.alpn_protocol(), Some(RAFT_ALPN_PROTOCOL));
+        assert_eq!(server.alpn_protocol(), Some(RAFT_ALPN_PROTOCOL));
+        let leaf = client.peer_certificates().ok_or("missing server chain")?;
+        assert_eq!(
+            digest(&SHA256, leaf[0].as_ref()).as_ref(),
+            fixture.pins.get(&2).ok_or("missing pin")?.as_slice()
+        );
+        let payload = vec![0x61; 16 * 1024 - 4];
+        let mut wire = CiphertextWire::default();
+        if coalesced {
+            crate::write_coalesced_bounded_frame(
+                &mut rustls::Stream::new(&mut client, &mut wire),
+                &payload,
+            )?;
+        } else {
+            crate::write_bounded_frame(&mut rustls::Stream::new(&mut client, &mut wire), &payload)?;
+        }
+        counts.push(records(&wire.0));
+        let mut incoming = Cursor::new(wire.0);
+        // read_tls may accept only part of one encrypted record. Deliver this
+        // finite captured flight completely before asking for its plaintext.
+        while incoming.position() < incoming.get_ref().len() as u64 {
+            assert!(server.read_tls(&mut incoming)? > 0);
+            server.process_new_packets()?;
+        }
+        let mut plain = vec![0; payload.len() + 4];
+        server.reader().read_exact(&mut plain)?;
+        assert_eq!(&plain[..4], &(payload.len() as u32).to_be_bytes());
+        assert_eq!(&plain[4..], payload);
+    }
+    assert_eq!(
+        counts,
+        [2, 1],
+        "header must share the first encrypted record"
+    );
+    Ok(())
+}

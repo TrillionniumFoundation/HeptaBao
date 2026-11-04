@@ -2,6 +2,9 @@
 //! durable catalog changes after the real mandatory response audit.
 use super::*;
 
+#[path = "service_native_retired_mount_namespace_tests.rs"]
+mod retired_mount_tests;
+
 fn scoped(
     service: &mut Service,
     namespace: &str,

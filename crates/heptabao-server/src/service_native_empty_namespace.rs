@@ -511,20 +511,36 @@ impl NativeEmptyNamespaceDraft {
                 next.auth
                     .retire_native_flat_namespace_auth(&self.target, &binding)
                     .map_err(|error| Response::error(error.status, &error.message))?;
-                if !next.namespace_payload_is_empty(&self.target) {
+                if !next.auth.namespace_is_empty(&self.target)
+                    || !next.database.namespace_is_empty(&self.target)
+                    || !next.namespaces.workflows.namespace_is_empty(&self.target)
+                {
                     return Err(Response::error(
                         409,
                         "namespace still contains owned resources",
                     ));
                 }
-                next.engines
-                    .remove_empty_namespace(&self.target)
-                    .map_err(Response::from_engine_error)?;
                 next.namespaces.remove(&self.target)?;
                 if !next.namespaces.has_native_plain_tree_state() {
                     next.namespaces.native_flat_retirement_format = Some(1);
                 }
                 next.sync_namespace_batch_registry()?;
+                // A disabled KV mount retains its mount incarnation frontier.
+                // It may leave with this exact namespace incarnation, never
+                // through the pristine-owner predicate or an isolated removal.
+                if next.namespaces.contains(&self.target)
+                    || binding.incarnation().checked_add(1)
+                        != next.namespaces.next_incarnation.get(&self.target).copied()
+                {
+                    return Err(unavailable());
+                }
+                let lifecycle = next
+                    .auth
+                    .namespace_batch_registry()
+                    .ok_or_else(unavailable)?;
+                next.engines
+                    .retire_native_flat_namespace_engines(&next.cluster_id, &binding, lifecycle)
+                    .map_err(Response::from_engine_error)?;
             }
         } else if self.creating {
             next.namespaces

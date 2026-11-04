@@ -902,7 +902,14 @@ impl MutualTlsPeerTransport {
             return Err(HaError::PeerAuthenticationFailed);
         }
         forward_remaining(deadline).map_err(|_| HaError::Transport)?;
-        write_bounded_frame(&mut tls, frame)?;
+        // rustls 0.23.44 StreamOwned does not implement write_vectored. Borrow
+        // Stream so the length and body reach its plaintext writer together,
+        // instead of flushing a separate four-byte TLS application record.
+        // The underlying ForwardDeadlineStream still bounds every syscall.
+        write_coalesced_bounded_frame(
+            &mut rustls::Stream::new(&mut tls.conn, &mut tls.sock),
+            frame,
+        )?;
         let mut response = zeroize::Zeroizing::new(read_bounded_frame(&mut tls)?);
         forward_remaining(deadline).map_err(|_| HaError::Transport)?;
         Ok(std::mem::take(&mut *response))
@@ -1624,6 +1631,49 @@ fn create_lock(path: &Path) -> Result<File, HaError> {
         .map_err(|_| HaError::Io)?;
     Ok(file)
 }
+
+// Only the pinned native closure transport uses this helper, after its full
+// TLS authentication and exact server-leaf check. It changes framing writes,
+// not the wire bytes, request count, original deadline or storage admission.
+#[cfg(feature = "native-v6-peer-ingress")]
+fn write_coalesced_bounded_frame(writer: &mut impl Write, frame: &[u8]) -> Result<(), HaError> {
+    if frame.is_empty() || frame.len() > MAX_PAYLOAD_BYTES + 4096 {
+        return Err(HaError::InvalidFrame);
+    }
+    let length = u32::try_from(frame.len())
+        .map_err(|_| HaError::InvalidFrame)?
+        .to_be_bytes();
+    let mut parts = [io::IoSlice::new(&length), io::IoSlice::new(frame)];
+    let mut pending = parts.as_mut_slice();
+    // A short write advances across the header/body boundary exactly once.
+    // Interrupted consumes no bytes; all other errors end this one exchange.
+    let sent = observe_closure_phase!(
+        FrameWriteBody,
+        (|| -> io::Result<()> {
+            while !pending.is_empty() {
+                match writer.write_vectored(pending) {
+                    Ok(0) => {
+                        return Err(io::Error::new(
+                            io::ErrorKind::WriteZero,
+                            "peer frame write made no progress",
+                        ));
+                    }
+                    Ok(count) => io::IoSlice::advance_slices(&mut pending, count),
+                    Err(error) if error.kind() == io::ErrorKind::Interrupted => continue,
+                    Err(error) => return Err(error),
+                }
+            }
+            Ok(())
+        })()
+    );
+    sent.map_err(|error| forward_transport_io_error("frame_write_coalesced", &error))?;
+    observe_closure_phase!(FrameFlush, writer.flush())
+        .map_err(|error| forward_transport_io_error("frame_flush", &error))
+}
+
+#[cfg(all(test, feature = "native-v6-peer-ingress"))]
+#[path = "coalesced_frame_tests.rs"]
+mod coalesced_frame_tests;
 
 fn write_bounded_frame(writer: &mut impl Write, frame: &[u8]) -> Result<(), HaError> {
     if frame.is_empty() || frame.len() > MAX_PAYLOAD_BYTES + 4096 {
