@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.mac-normal-launch-controls.v3",
+  "status": "prepared_not_executed",
+  "source": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-unified-normal-61ff-r1",
+  "launcher_arguments": [],
+  "preparation_budget_seconds": 300,
+  "original_builder_cargo_budget_seconds": 1800,
+  "controller_outer_budget_changed": false,
+  "expected_control_names": [
+    "launch_mac_normal_build_r3.py",
+    "build_normal.py",
+    "frozen-source.public.json",
+    "clippy-qualified-source.public.json"
+  ],
+  "original_builder_byte_identical": true,
+  "old_launcher_r2_recovered": false,
+  "python_syntax_validation": "not yet executed; source review only",
+  "product_build_started": false,
+  "production_service_started": false,
+  "qualified_full_replacement": false,
+  "files": [
+    {
+      "path": "control/launch_mac_normal_build_r3.py",
+      "bytes": 22034,
+      "sha256": "d52c828ac3173f7bde169b42f5f1c91df92809595bbff1ac04c5bb4b324befe7",
+      "git_blob": "f735d3e1eb29ae04e301aab1309aad8dfa3fc107"
+    },
+    {
+      "path": "control/build_normal.py",
+      "bytes": 5531,
+      "sha256": "f902727e82a3c7a8942006b056ecfca9258a856d456f4b1aa2131b2aa3a35d82",
+      "git_blob": "a4ad120ceb40cc42494f32525aab7fe148681157"
+    },
+    {
+      "path": "control/frozen-source.public.json",
+      "bytes": 26585,
+      "sha256": "ad59fb02e3affc08720c13f7349d93a99df646ca7616f9a10e41e1cc6ddbeff1",
+      "git_blob": "7aac4aa1af2757875d42e7886443e6bb7bc3a0b5"
+    },
+    {
+      "path": "control/clippy-qualified-source.public.json",
+      "bytes": 1703,
+      "sha256": "510de9e176b77e771a3233d56620c32975c161970213d7f83d1b7eceb37624db",
+      "git_blob": "ca4ddaf1b177f7f5dc6078a08a82592722acf32e"
+    }
+  ]
+}
