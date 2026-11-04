@@ -1,0 +1,164 @@
+{
+  "schema": "heptabao.r10.x230-transfer-source-reuse.v1",
+  "kind": "source-only text comparison",
+  "interdefinition_blanklines_excluded": true,
+  "ast_executed": false,
+  "host_executed": false,
+  "checks": [
+    {
+      "kind": "parent",
+      "function": "signal_handler",
+      "bytes": 187,
+      "sha256": "48cda88f5fff2a625d132b61a1e9b81aac0ed7c399afe4975b258170328cd4f5",
+      "identical": true
+    },
+    {
+      "kind": "parent",
+      "function": "remaining",
+      "bytes": 112,
+      "sha256": "5ae60a5115c01cbfcc5812112a0a42e01820766947b8f7738f661f343648f165",
+      "identical": true
+    },
+    {
+      "kind": "parent",
+      "function": "identity",
+      "bytes": 122,
+      "sha256": "ed9ec8b7a13deeb2c537616b0e210fabf1924afe4a05c25394c031d7f852bc62",
+      "identical": true
+    },
+    {
+      "kind": "parent",
+      "function": "stable",
+      "bytes": 708,
+      "sha256": "5d4a92c0087526d6ace0361f3b355b83b8fe4fdb73f06df8a795f2f2f1059c9a",
+      "identical": true
+    },
+    {
+      "kind": "parent",
+      "function": "fsync_dir",
+      "bytes": 120,
+      "sha256": "76a653c903bf6e694c507e50827fc76d0f56148b1962776f5f7bf9e917bc5640",
+      "identical": true
+    },
+    {
+      "kind": "parent",
+      "function": "create",
+      "bytes": 167,
+      "sha256": "e80601ca731403673aa8d665f4326c8fec56014a3eef19e74129fee75bcdfc08",
+      "identical": true
+    },
+    {
+      "kind": "parent",
+      "function": "public",
+      "bytes": 119,
+      "sha256": "b8847070d3057fa5c31a14cf9a6cea401fcfb2fcedadc71bfdccf8a1617d74e6",
+      "identical": true
+    },
+    {
+      "kind": "parent",
+      "function": "snapshot",
+      "bytes": 359,
+      "sha256": "2a683ba1b9a1f4d7b5393f9f195b9c39c16e53b30e7389e19496b5fbc7d7e4a0",
+      "identical": true
+    },
+    {
+      "kind": "parent",
+      "function": "stop_active",
+      "bytes": 267,
+      "sha256": "54bdb9d465fdf2bce48a7ec29d108c92e7b3bdc46d32364a9b02bc1f68121034",
+      "identical": true
+    },
+    {
+      "kind": "parent",
+      "function": "log_file",
+      "bytes": 172,
+      "sha256": "8acb1bfcbb2b79e053f2af497dfd4ed1da2f3ffac4c609ff08fc0783773f3b72",
+      "identical": true
+    },
+    {
+      "kind": "parent",
+      "function": "read_log",
+      "bytes": 63,
+      "sha256": "f43e424a382c38c91ff73f51b2ed560d9826425c62327a462c5e2b080a46bbd3",
+      "identical": true
+    },
+    {
+      "kind": "parent",
+      "function": "known_hosts_state",
+      "bytes": 459,
+      "sha256": "66228ddf6a21b7f7b423f34e190da8aed28c074ec04961c059d91ca700577ac2",
+      "identical": true
+    },
+    {
+      "kind": "sender",
+      "function": "handler",
+      "bytes": 187,
+      "sha256": "4ec982763db8332004a67ca66806fad660723eed4b1b2f408d61973ad6fd244c",
+      "identical": true
+    },
+    {
+      "kind": "sender",
+      "function": "remaining",
+      "bytes": 116,
+      "sha256": "4ed3d20e60f2a5ef0620b2125e8437380d55bf80c5c926fc91c79be2981358a2",
+      "identical": true
+    },
+    {
+      "kind": "sender",
+      "function": "identity",
+      "bytes": 122,
+      "sha256": "ed9ec8b7a13deeb2c537616b0e210fabf1924afe4a05c25394c031d7f852bc62",
+      "identical": true
+    },
+    {
+      "kind": "sender",
+      "function": "stop_active",
+      "bytes": 267,
+      "sha256": "54bdb9d465fdf2bce48a7ec29d108c92e7b3bdc46d32364a9b02bc1f68121034",
+      "identical": true
+    },
+    {
+      "kind": "sender",
+      "function": "snapshot",
+      "bytes": 362,
+      "sha256": "d889d89eb80b4b606193dfe8aeb7e78855e91fcdec1a131b38d952a04732f156",
+      "identical": true
+    },
+    {
+      "kind": "sender",
+      "function": "read_file",
+      "bytes": 361,
+      "sha256": "e47cbf7b32c8965bb8151be42b3d122eee1dc6bbbda8d6d66780816299690508",
+      "identical": true
+    },
+    {
+      "kind": "sender",
+      "function": "dir_fsync",
+      "bytes": 120,
+      "sha256": "f7ae5b3f76f5cd1a3c161830035d39cc76d54a21380143ad9ff49da7b3476616",
+      "identical": true
+    },
+    {
+      "kind": "sender",
+      "function": "run_and_report",
+      "bytes": 1491,
+      "sha256": "84c42bd3d5108cc3759005ef79f4b24f33765412acfb54f800b151c6f68afb19",
+      "identical": true
+    },
+    {
+      "kind": "sender",
+      "function": "send",
+      "bytes": 1962,
+      "sha256": "82ec6126c01b83b07be123c653486fb64943940c6dad74a213e85d7ba6374a17",
+      "identical": true
+    }
+  ],
+  "receiver_reference": "R2 owned Git functions reused; named-only limit defaults bind the original X230 Git60/clone90/overall300 contract. SIGHUP added to the cancellation handler list for the remote endpoint.",
+  "parent_changed_functions": [
+    "start_child explicit limit",
+    "wait_child recorded limit",
+    "inspect_config fixed x230 identity",
+    "remote_command actual -c source SHA"
+  ],
+  "new_outer_seconds_proposed": 360
+}

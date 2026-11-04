@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.r10.desktop-source-control-r2-root-terminal-review.v1",
+  "status": "passed",
+  "job_id": "1a1a7f8d48c-fc05-2d26",
+  "result": {
+    "bytes": 141578,
+    "sha256": "d8569895d7bf7d1c15dea6159853e4f4b000b921e136cd17e778b6827081b622",
+    "blob": "2a4e12ef566bdf1eca0ba9e2dd87ce2b31d50525"
+  },
+  "authority": {
+    "bytes": 732,
+    "sha256": "dc9327ed11d2035b41eb5aaae2648494e8247324c4fca3961f3f4511ca5cc239",
+    "blob": "2ff5b22242d8df706c761c3aa06c1885afa1e61d"
+  },
+  "stdout": {
+    "bytes": 2263,
+    "sha256": "1d5fe9eb9a1c24760b4719f69a1511a090d398e95271a38f4182ed99399876b2",
+    "blob": "49e02289da2e12c6662d2ab88ba9dcbc277a2f0c"
+  },
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-validation-source-r1",
+  "complete_commits": 3752,
+  "sole_parent": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+  "root": "67d79b3b5442ed033d38929eab2010403463e56d",
+  "full_strict_fsck": true,
+  "full_worktree_index_entries": 3911,
+  "no_sparse_or_skip_or_assume_flags": true,
+  "independent_git_directory_inventory": {
+    "all_regular_files_single_link": true,
+    "no_alternates": true,
+    "no_symlinks": true,
+    "regular_files": 30,
+    "total_bytes": 21746811
+  },
+  "old_source_alternate_explicit_and_unchanged": true,
+  "original_fence_file_count": 5,
+  "old_failure_not_reclassified": true,
+  "original_ha_eight_comparison_fences_not_rechecked_by_this_source_stage": true,
+  "all_local_owned_groups_reaped": 64,
+  "all_remote_owned_git_groups_reaped": 20,
+  "terminal_seconds": 11.438868400058709,
+  "original_300_second_controller_budget": true,
+  "known_trusted_proxy_exactly_bound": true,
+  "r9_two_prerequisites_observed": true,
+  "only_local_bundle_fetches": true,
+  "source_input_qualification": true,
+  "product_runtime_qualification": false,
+  "production_changed": false
+}

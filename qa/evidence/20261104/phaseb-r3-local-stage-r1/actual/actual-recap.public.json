@@ -1,0 +1,119 @@
+{
+  "schema": "heptabao.phaseb-r3-local-stage.actual-recap.v1",
+  "new_identity": true,
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "candidate_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "candidate_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "job_id": "1a1a7fca2e6-fc05-2d32",
+  "host": "desktop",
+  "idempotency_key": "heptabao-phaseb-r3-local-stage-c8ecd9-20261104-r1",
+  "invocation_verified_against_exact_ack": true,
+  "reused": false,
+  "controller": {
+    "bytes": 22935,
+    "sha256": "c8ecd9daf62a7f38fa3940cd6bb3a0400f3a6d6ad39ab206c1d007031da128ed",
+    "blob": "80549c6b3a8aa05efaa2abf66e4177239e0b9134"
+  },
+  "stdin": {
+    "bytes": 257060,
+    "sha256": "ebba9c57a95ba659c079fe937ff7dae5d5be14b3e80980e10041a0c1e3bf0b34",
+    "blob": "ecad1df703f911f44e74dd57a5ea3ae245189f3a"
+  },
+  "prerequisites": {
+    "canonical_source": {
+      "root_accepted": true,
+      "job_id": "1a1a7f8d48c-fc05-2d26"
+    },
+    "shared_artifacts": {
+      "root_accepted": true,
+      "job_id": "1a1a7f6109f-fc05-2d1d",
+      "receipt_sha256": "f8fd7d32498cb8d291407f5cc352f79584c57e55d48f028f26048097bb0bd7bf"
+    }
+  },
+  "status": "passed",
+  "authoritative_exit_code": 0,
+  "timed_out": false,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "stdout_bytes": 11497,
+  "stderr_bytes": 0,
+  "stream_hex_matches_exact_utf8": true,
+  "original_stage_file_fd_close_pending": true,
+  "final_stdout_fd_close_pending": false,
+  "all_stage_fds_closed": true,
+  "fd_close_errors": [],
+  "elapsed_after_closure_ms": 2427.250557,
+  "internal_budget_seconds": 300,
+  "outer_budget_seconds": 330,
+  "within_stage_deadline": true,
+  "created_control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r1",
+  "copied_three_artifacts_same_fd_hash_readback": true,
+  "raw_receipts_unchanged": true,
+  "five_qa_sources_unchanged": true,
+  "exact_combined44_and_groups_materialized": true,
+  "original_assets_replaced": false,
+  "source_metadata_unchanged": true,
+  "source_tree_modified": false,
+  "full_git_verification_by_localstage": false,
+  "full_git_verification_in_readonly_prepare_still_required": true,
+  "children_spawned": 0,
+  "network_calls": 0,
+  "product_started": false,
+  "readonly_prepare_started": false,
+  "production_changed": false,
+  "runtime_qualification": false,
+  "full_replacement": false,
+  "original_large_integer_metadata_preserved_as_raw_json_bytes": true,
+  "next_step": "Root review of these originals before a separately authorized readonly prepare; no product runtime authorization.",
+  "files": [
+    {
+      "path": "runtime-ack.original.json",
+      "bytes": 25102,
+      "sha256": "a910ad407f2c32d1767989f28b079a00a78c0c57eb6033126593a703b7fbd525",
+      "blob": "3e0f547e35221fa9d152b357c2481ea7ac581341"
+    },
+    {
+      "path": "runtime-status.original.json",
+      "bytes": 733,
+      "sha256": "e19d38c43e6a4f8ef4e8bc9b31f0435f7e7dc8fa6516812768bac494a9bf6786",
+      "blob": "fe37da0e5c58c66ed5a627021c2a0f290f5a5146"
+    },
+    {
+      "path": "runtime-read.original.json",
+      "bytes": 35677,
+      "sha256": "361984171d6f0775cebcb0663e3eceeab17aebadd17697ed91ef13ec2a5a9799",
+      "blob": "2fd14adda903e385e03dc43695cc757f377c4a55"
+    },
+    {
+      "path": "stage.stdout.original.json",
+      "bytes": 11497,
+      "sha256": "4c582c9f33d58bf43c4e3acec1b1e4b0fd5d9fc26ae1409b43f6928aeda6c01e",
+      "blob": "e7728f0a1dcfccad87e62a43b9c3c34c4fb4c9f6"
+    },
+    {
+      "path": "stage.stderr.original.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "created-files-readback.original.json",
+      "bytes": 22795,
+      "sha256": "c07fb19c8386cb3c24d3cd1e10774cd226eec6f860f6a0d2a24ff37679eb9c7b",
+      "blob": "cdeacbff444ee9ad0d069e03d851eb9c0ce1f46f"
+    },
+    {
+      "path": "stage-file.original.public.json",
+      "bytes": 13903,
+      "sha256": "309bd991ef549fe163d9bc32ed0541828ac06d15f7ecce01f6949388602e4e9d",
+      "blob": "944e652d2c223cff85c7cf4b45290a568558c08b"
+    },
+    {
+      "path": "binding.original.metadata-only.json",
+      "bytes": 6366,
+      "sha256": "8e73ca7f0ed52056035ed82878b5f5c200e50013bfc36f1ad3dd647879043736",
+      "blob": "b0cf9ee08057363ea5476254a0a960e9f75a1d6b"
+    }
+  ]
+}

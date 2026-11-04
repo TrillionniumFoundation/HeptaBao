@@ -1,0 +1,70 @@
+{
+  "compiler_started": false,
+  "files": [
+    {
+      "bytes": 7518,
+      "identity": [
+        2050,
+        58643569,
+        1000,
+        1000,
+        33152,
+        1,
+        7518,
+        1793820669143373033,
+        1793820669174988268
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-x230-transfer-controls-r1/sender.py",
+      "publication": "created",
+      "sha256": "bf11cc174afea339c5f199e7d7251464afb249c7a36333564361e4884e03ab5b"
+    },
+    {
+      "bytes": 24595,
+      "identity": [
+        2050,
+        58643570,
+        1000,
+        1000,
+        33152,
+        1,
+        24595,
+        1793820669205552860,
+        1793820669207447512
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-x230-transfer-controls-r1/receiver.py",
+      "publication": "created",
+      "sha256": "5de344fdae21c1852513f21b891121246cff649b2fff001c2791c026ebb70521"
+    },
+    {
+      "bytes": 19562,
+      "identity": [
+        2050,
+        58643571,
+        1000,
+        1000,
+        33152,
+        1,
+        19562,
+        1793820669209500228,
+        1793820669211354242
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-x230-transfer-controls-r1/relay.py",
+      "publication": "created",
+      "sha256": "46c77941e647e0a3b2b12c2dc5ebc8b6c7158f829d8935232b93d02ee92b09c8"
+    }
+  ],
+  "git_started": false,
+  "python_compile_only": true,
+  "schema": "heptabao.r10-x230-transfer-inert-carrier.v1",
+  "service_started": false,
+  "source_executed": false,
+  "source_transfer_started": false,
+  "started_ns": 1793820669060817989,
+  "status": "prepared",
+  "stdin_bytes": 69010,
+  "stdin_sha256": "c91d3660a84e60b6fe083194e8eb5480632911ac6917c2f5f206f1fa730122bf",
+  "terminal_ns": 1793820669213130448
+}

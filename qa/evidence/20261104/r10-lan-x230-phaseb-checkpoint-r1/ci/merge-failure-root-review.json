@@ -1,0 +1,188 @@
+{
+  "schema": "heptabao.r10-ci-merge-failure-review.v1",
+  "status": "FAIL",
+  "run_id": 41879510413,
+  "job_id": 126748711283,
+  "job_name": "OpenBao replacement / merge",
+  "log": {
+    "bytes": 2753048,
+    "sha256": "3a7a9d749060b8151ee0f39a3a40410c210f60c62ebb8e80f18b42737d09d72f",
+    "job_id": 126748711283,
+    "run_id": 41879510413,
+    "complete_tool_log": true
+  },
+  "log_git_blob": "521012c56a42e6b428bb99b47add189e4d6c038f",
+  "whole_log_readback": true,
+  "server_lib_passed": 3708,
+  "server_lib_failed": 4,
+  "server_lib_ignored": 8,
+  "test_elapsed_seconds": 2800,
+  "process_exit": 101,
+  "failures": [
+    {
+      "n": 13829,
+      "text": "2026-11-04T19:54:15.8632854Z failures:"
+    },
+    {
+      "n": 13830,
+      "text": "2026-11-04T19:54:15.8633116Z "
+    },
+    {
+      "n": 13831,
+      "text": "2026-11-04T19:54:15.8634111Z ---- service::native_auth::pki_tests::native_pki_formal_selectors_retain_acme_external_and_foreign_owner_fences stdout ----"
+    },
+    {
+      "n": 13832,
+      "text": "2026-11-04T19:54:15.8635647Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true"
+    },
+    {
+      "n": 13833,
+      "text": "2026-11-04T19:54:15.8636827Z "
+    },
+    {
+      "n": 13834,
+      "text": "2026-11-04T19:54:15.8637695Z thread 'service::native_auth::pki_tests::native_pki_formal_selectors_retain_acme_external_and_foreign_owner_fences' (59528) panicked at crates/heptabao-server/src/service_native_pki_tests.rs:1101:5:"
+    },
+    {
+      "n": 13835,
+      "text": "2026-11-04T19:54:15.8638581Z assertion `left == right` failed: native PKI error shape=None"
+    },
+    {
+      "n": 13836,
+      "text": "2026-11-04T19:54:15.8638908Z   left: 204"
+    },
+    {
+      "n": 13837,
+      "text": "2026-11-04T19:54:15.8639212Z  right: 501"
+    },
+    {
+      "n": 13838,
+      "text": "2026-11-04T19:54:15.8639321Z "
+    },
+    {
+      "n": 13839,
+      "text": "2026-11-04T19:54:15.8639683Z ---- service::native_auth::transit_tests::native_transit_acl_source_create_capability_cas_and_refusal_scope stdout ----"
+    },
+    {
+      "n": 13840,
+      "text": "2026-11-04T19:54:15.8640632Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true"
+    },
+    {
+      "n": 13841,
+      "text": "2026-11-04T19:54:15.8641435Z Error: \"native Transit stage=unmigrated-owner-refused expected=501 observed=204\""
+    },
+    {
+      "n": 13842,
+      "text": "2026-11-04T19:54:15.8641760Z "
+    },
+    {
+      "n": 13843,
+      "text": "2026-11-04T19:54:15.8642141Z ---- service::native_storage::tests::configured_native_activation_rejects_unsupported_live_engine_without_retiring_v5 stdout ----"
+    },
+    {
+      "n": 13844,
+      "text": "2026-11-04T19:54:15.8643108Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true"
+    },
+    {
+      "n": 13845,
+      "text": "2026-11-04T19:54:15.8643688Z "
+    },
+    {
+      "n": 13846,
+      "text": "2026-11-04T19:54:15.8645087Z thread 'service::native_storage::tests::configured_native_activation_rejects_unsupported_live_engine_without_retiring_v5' (63589) panicked at crates/heptabao-server/src/service_native_storage_tests.rs:304:5:"
+    },
+    {
+      "n": 13847,
+      "text": "2026-11-04T19:54:15.8646019Z assertion `left == right` failed"
+    },
+    {
+      "n": 13848,
+      "text": "2026-11-04T19:54:15.8646259Z   left: 204"
+    },
+    {
+      "n": 13849,
+      "text": "2026-11-04T19:54:15.8646435Z  right: 409"
+    },
+    {
+      "n": 13850,
+      "text": "2026-11-04T19:54:15.8646540Z "
+    },
+    {
+      "n": 13851,
+      "text": "2026-11-04T19:54:15.8647063Z ---- service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss stdout ----"
+    },
+    {
+      "n": 13852,
+      "text": "2026-11-04T19:54:15.8648180Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true"
+    },
+    {
+      "n": 13853,
+      "text": "2026-11-04T19:54:15.8649253Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=true original_deadline_present=true"
+    },
+    {
+      "n": 13854,
+      "text": "2026-11-04T19:54:15.8650309Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true"
+    },
+    {
+      "n": 13855,
+      "text": "2026-11-04T19:54:15.8651461Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=true activation=false original_deadline_present=true"
+    },
+    {
+      "n": 13856,
+      "text": "2026-11-04T19:54:15.8652396Z Error: \"native HA Service pipeline stage=unsupported-cold-ssh-activated-before: expected HTTP 501, observed 200\""
+    },
+    {
+      "n": 13857,
+      "text": "2026-11-04T19:54:15.8652860Z "
+    },
+    {
+      "n": 13858,
+      "text": "2026-11-04T19:54:15.8652929Z "
+    },
+    {
+      "n": 13859,
+      "text": "2026-11-04T19:54:15.8653007Z failures:"
+    },
+    {
+      "n": 13860,
+      "text": "2026-11-04T19:54:15.8653430Z     service::native_auth::pki_tests::native_pki_formal_selectors_retain_acme_external_and_foreign_owner_fences"
+    },
+    {
+      "n": 13861,
+      "text": "2026-11-04T19:54:15.8654440Z     service::native_auth::transit_tests::native_transit_acl_source_create_capability_cas_and_refusal_scope"
+    },
+    {
+      "n": 13862,
+      "text": "2026-11-04T19:54:15.8655179Z     service::native_storage::tests::configured_native_activation_rejects_unsupported_live_engine_without_retiring_v5"
+    },
+    {
+      "n": 13863,
+      "text": "2026-11-04T19:54:15.8656089Z     service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss"
+    },
+    {
+      "n": 13864,
+      "text": "2026-11-04T19:54:15.8656659Z "
+    },
+    {
+      "n": 13865,
+      "text": "2026-11-04T19:54:15.8656940Z test result: FAILED. 3708 passed; 4 failed; 8 ignored; 0 measured; 0 filtered out; finished in 2800.00s"
+    },
+    {
+      "n": 13866,
+      "text": "2026-11-04T19:54:15.8657323Z "
+    },
+    {
+      "n": 13867,
+      "text": "2026-11-04T19:54:15.9098365Z error: test failed, to rerun pass `-p heptabao-server --lib`"
+    },
+    {
+      "n": 13868,
+      "text": "2026-11-04T19:54:15.9099496Z      Running unittests src/bin/heptabao-seed.rs (target/debug/deps/heptabao_seed-69ba244a9271f656)"
+    }
+  ],
+  "head_job": 126748711370,
+  "head_status_at_observation": "in_progress",
+  "diagnosis_pending": true,
+  "source_or_expectations_changed": false,
+  "full_replacement_qualification": false
+}

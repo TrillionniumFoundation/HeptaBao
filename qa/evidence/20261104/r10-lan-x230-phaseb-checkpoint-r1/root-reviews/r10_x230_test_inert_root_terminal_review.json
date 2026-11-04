@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.r10-x230-test-inert.root-terminal-review.v1",
+  "status": "PASS",
+  "job_id": "1a1a8161e19-fc05-2d9f",
+  "original_source_bytes_and_git_pins_verified": true,
+  "files_created": 3,
+  "python_compile_only": true,
+  "product_executed": false,
+  "transfer_receipt_exact_same_file_identity_before_after": true,
+  "independent_file_infos": [
+    {
+      "bytes": 469,
+      "sha256": "8581fa4cec923f9a388c820f62f9f064cba76a0fb89b56e3dc046849fdc80e0d",
+      "blob": "e0d3cf83fd0126463fa73d92426033ae3377ac0e"
+    },
+    {
+      "bytes": 463,
+      "sha256": "cb56a4a6a4bb994a11e688ad3685dfc1467eef8f89e98baeab07df6d1762b718",
+      "blob": "76e8fe0616b3a73ba9e6302a53a01be687bfc4c0"
+    },
+    {
+      "bytes": 475,
+      "sha256": "b271057d3da08b8aacb6ad108c232e2c492ad6de86a2140256a95234bc5e6248",
+      "blob": "2d841e0339331724968e684c792af4730bc01128"
+    }
+  ],
+  "full_ns_lexemes_preserved": true,
+  "receipt": {
+    "bytes": 2485,
+    "sha256": "5ffd00b329cc5d678b156d4c465e3ec513e0efb5b96e28c30051b01a7bad3519",
+    "blob": "8f3ccc2320bcd4ff1c053c79285d9a47a9cee222"
+  },
+  "authority": {
+    "bytes": 731,
+    "sha256": "17e369eb8126ccd6370658011d7f29542810e126e278c7a2d24cf1c5b36d5436",
+    "blob": "7d092122cffa80f69f2e125ae8bcc452c187952a"
+  },
+  "runtime_qualification": false
+}

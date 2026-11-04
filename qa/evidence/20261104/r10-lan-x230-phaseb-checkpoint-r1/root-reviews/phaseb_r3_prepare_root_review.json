@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.phaseb-r3.prepare.root-review.v1",
+  "status": "PASS",
+  "job_id": "1a1a7ff6a65-fc05-2d3f",
+  "result": {
+    "bytes": 22852,
+    "sha256": "97b21460b67f2ef14f2edf8573a22f4ba7ac82c1a8d5a44e9d246675b5cb87ee",
+    "blob": "8498fbe761640098b57f8e02185b77d8fa1e4393"
+  },
+  "authority": {
+    "bytes": 729,
+    "sha256": "f0697feadb355c5df2cce4a4c92e3d2a5384be7c19984839318dfbc0908bedd1",
+    "blob": "e8ee9c3ae4300a5774731108d77b5513f2a83d3d"
+  },
+  "ack": {
+    "bytes": 1462,
+    "sha256": "d523e0f7a37624f9a72d6fe024978345757baaaf73da9e7ba53a9944c042f3bc",
+    "blob": "7c065d3ba3715b0e643f060fdc337f9c49f6d5cc"
+  },
+  "binding_sha256": "8e73ca7f0ed52056035ed82878b5f5c200e50013bfc36f1ad3dd647879043736",
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "exact_guarded_git_children_reaped": 3,
+  "qa_files": 5,
+  "artifacts": 5,
+  "archive_audit_source_contracts": 4,
+  "old_fences": 4,
+  "official_cli_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+  "product_qualification": false,
+  "runtime_started": false,
+  "new_outer_seconds_for_later_live": 3000,
+  "original_phase_budgets_unchanged": true
+}

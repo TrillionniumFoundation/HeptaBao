@@ -1,0 +1,120 @@
+{
+  "schema": "heptabao.r10-x230-qualification-controls-actual-inert-manifest.v1",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "inert_job_id": "1a1a8161e19-fc05-2d9f",
+  "inert_verdict": "PASS: original three sources compile-only, atomic create-only publication, whole FD readbacks, actual transfer receipt unchanged, authoritative exit0 complete/durable",
+  "accepted_transfer_receipt_sha256": "725f9a7e51a202a2139618b933c55b1f387ef53af61035a3aa59d21394b0669a",
+  "new_outer_product_caps_seconds": 1800,
+  "old_outer_cap_recovered": false,
+  "inner_budgets_and_case_inventory_unchanged": true,
+  "actual_product_results_included": false,
+  "source_executed_by_inert": false,
+  "full_replacement_qualified": false,
+  "entries": [
+    {
+      "path": "source/full34_controller.py",
+      "bytes": 5313,
+      "sha256": "001079203a066e5d69b3aa756622593f108f93a56a0537188a672d06e273b0bc",
+      "blob": "837fb661a1c3a51a8fe253c2cb9907aec8a00566"
+    },
+    {
+      "path": "source/comparison69_controller.py",
+      "bytes": 6944,
+      "sha256": "c2f96586d735d21b9cf17040242e96371d27239b80fdf1756ba1b175b9e900eb",
+      "blob": "1c4e046d2e430c7c715b57b2a0c8a8e8c9bb55e3"
+    },
+    {
+      "path": "source/native271_comparison_final_r1.py",
+      "bytes": 9261,
+      "sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+      "blob": "c822522ee80e4a713eee4cb42e91cfeb143e6468"
+    },
+    {
+      "path": "source/x230_test_controls_inert.py",
+      "bytes": 5533,
+      "sha256": "d686d064d4b9af4c41727db864662e4f9cfa30233c2b7ba011b1d5b92805ee91",
+      "blob": "55710c77fd597d15ed3c218a5a886d6f38bf3fec"
+    },
+    {
+      "path": "review/x230-test-controls-inert.diff",
+      "bytes": 4476,
+      "sha256": "9d1a23349c84ea6409251188f698f4be4d1ddb9e332386763bfea893fa661699",
+      "blob": "728387ada34ea4b53d40963a1fa6c5a81250eb69"
+    },
+    {
+      "path": "launch-plan.public.json",
+      "bytes": 2356,
+      "sha256": "9786a04bba07d6efa3f7d2fdb060887bd1ba78cd303a31957911a11ff8ff6cc3",
+      "blob": "4601a34e50eb94b93420c904a6d4cd80bb8c673d"
+    },
+    {
+      "path": "review/comparison69-actual-transfer-binding.diff",
+      "bytes": 1320,
+      "sha256": "e3a3b00ece8f106a1e1e698f1e3f6086bbe36e17ccb1b65feadb35650eb6b982",
+      "blob": "faa8d047144a71a2f5144730db51ca36d79fd9d7"
+    },
+    {
+      "path": "inert/intent.public.json",
+      "bytes": 552,
+      "sha256": "223f377158a35417416402df377515c8ca3856c565d7336293d2ed47fbf2bdad",
+      "blob": "3d27a82d6f32f3a99c526433e0f94a3aead3fc82"
+    },
+    {
+      "path": "inert/ack.public.json",
+      "bytes": 6744,
+      "sha256": "b71f3bb9d5a522ab25b33a0fce6487b2e6174c533e7d099595a9313435ae776d",
+      "blob": "30982c2bdf31b063bd18362d09c2771518d338b9"
+    },
+    {
+      "path": "inert/authority.public.json",
+      "bytes": 731,
+      "sha256": "17e369eb8126ccd6370658011d7f29542810e126e278c7a2d24cf1c5b36d5436",
+      "blob": "7d092122cffa80f69f2e125ae8bcc452c187952a"
+    },
+    {
+      "path": "inert/result.public.json",
+      "bytes": 2485,
+      "sha256": "5ffd00b329cc5d678b156d4c465e3ec513e0efb5b96e28c30051b01a7bad3519",
+      "blob": "8f3ccc2320bcd4ff1c053c79285d9a47a9cee222"
+    },
+    {
+      "path": "inert/stdout",
+      "bytes": 1911,
+      "sha256": "d9e2f104ece12914323d527727c49bf6f37621fa7d2c4669efa665b207d4c892",
+      "blob": "63631f9706c47e6d593bebc9d3330136520b2cdb"
+    },
+    {
+      "path": "inert/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "inert/process-read.public.json",
+      "bytes": 6177,
+      "sha256": "1398114760cb697a71ffe955ec9a95510362e11bccd41f7367f679bd3cd9917f",
+      "blob": "688470c05b931e3838ab56d5797d395ceb3ead5d"
+    },
+    {
+      "path": "inert/file-info-full34_controller.py.json",
+      "bytes": 463,
+      "sha256": "cb56a4a6a4bb994a11e688ad3685dfc1467eef8f89e98baeab07df6d1762b718",
+      "blob": "76e8fe0616b3a73ba9e6302a53a01be687bfc4c0"
+    },
+    {
+      "path": "inert/file-info-comparison69_controller.py.json",
+      "bytes": 469,
+      "sha256": "8581fa4cec923f9a388c820f62f9f064cba76a0fb89b56e3dc046849fdc80e0d",
+      "blob": "e0d3cf83fd0126463fa73d92426033ae3377ac0e"
+    },
+    {
+      "path": "inert/file-info-native271_comparison_final_r1.py.json",
+      "bytes": 475,
+      "sha256": "b271057d3da08b8aacb6ad108c232e2c492ad6de86a2140256a95234bc5e6248",
+      "blob": "2d841e0339331724968e684c792af4730bc01128"
+    }
+  ],
+  "payload_file_count": 17,
+  "payload_bytes": 55210
+}

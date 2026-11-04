@@ -1,0 +1,27 @@
+--- before/stage_phaseb_r3_local_inputs_r1.py
++++ after/stage_phaseb_r3_local_inputs_r1.py
+@@ -323,9 +323,11 @@
+             source = {"path": str(path), **identity(before), "sha256": expected_sha}
+             target = {"path": str(CONTROL / "artifacts" / name), **identity(st), "sha256": expected_sha}
+         finally:
++            try:
++                if targetfd is not None:
++                    os.close(targetfd)
++            finally:
++                os.close(sourcefd)
+-            if targetfd is not None:
+-                os.close(targetfd)
+-            os.close(sourcefd)
+         os.fsync(self.artfd)
+         self.check()
+         self.written.append(name)
+@@ -462,7 +464,8 @@
+     finally:
+         result["fd_close_errors"] = [] if owned is None else owned.close()
+         result["fd_close_pending"] = False
++        result["all_stage_fds_closed"] = (result["status"] == "passed"
++                                          and not result["fd_close_errors"])
+-        result["all_stage_fds_closed"] = not result["fd_close_errors"]
+         if result["fd_close_errors"]:
+             result["status"] = "failed"
+     print(json.dumps(result, sort_keys=True))

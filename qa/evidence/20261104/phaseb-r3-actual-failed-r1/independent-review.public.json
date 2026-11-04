@@ -1,0 +1,136 @@
+{
+  "schema": "phaseb-r3-live-r1-independent-public-review-v1",
+  "candidate": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+  },
+  "job": "1a1a8177aec-fc05-2da5",
+  "result": {
+    "bytes": 270785,
+    "sha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184",
+    "blob": "7a2238125a983bbe657d99d460aae9a9b5b1ae71"
+  },
+  "qualification": false,
+  "status": "failed",
+  "failure_code": "unknown_cli_or_server_boundary_no_replay",
+  "outcome_unknown": true,
+  "final_errors": [
+    {
+      "code": "input_fence_changed_after_run",
+      "stage": "input_after"
+    }
+  ],
+  "actual_window": {
+    "completed_action_names": [
+      "normal_native_setup"
+    ],
+    "attempted_case_ids": [
+      "B01"
+    ],
+    "cli_exit": 2,
+    "cli_timed_out": false,
+    "private_stderr": {
+      "bytes": 178,
+      "sha256": "bce4e0993df8aa57859efc05b509ad6ea36d8f2d0df9dd23d63ae3640e537df8",
+      "content_not_retrieved": true
+    },
+    "archive_exists": false,
+    "audit_request_count": 1,
+    "audit_statuses": [
+      503
+    ],
+    "audit_is_not_route_mac_or_client_framing_proof": true,
+    "server_boundary_known": false
+  },
+  "counts": {
+    "dynamic_pass": 84,
+    "dynamic_total": 84,
+    "incomplete_http_intents": 0,
+    "incomplete_cli_intents": 0,
+    "cli_cases": 1,
+    "cold_results": 0
+  },
+  "owned_cleanup": {
+    "rows": 81,
+    "provenance_rows": 81,
+    "all_owned_stopped": true,
+    "all_rows_stopped_reaped_empty_without_error": true
+  },
+  "public_literal_scan": {
+    "encoding_variants": 129,
+    "hits": 0,
+    "literal_inputs": 9,
+    "members": 144,
+    "members_sha256": "140215fe7152d34cd125a0c1cda3e2ffa69141e507371b492b3610c036d7014f",
+    "scope": "actual_fixture_literals_and_captured_encoding_variants",
+    "universal_secret_detection_claimed": false
+  },
+  "input_fence_diagnosis": {
+    "schema": "phaseb-r3-live-r1-input-fence-source-diagnosis-v1",
+    "scope": "lossless_original_result_projection_and_frozen_python_source_only",
+    "raw_result_sha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184",
+    "before_and_after_lossless_serialized_values_equal": true,
+    "canonical_comparison_sha256": "f02a78c01b2b97e24eb91720a74ed70dc20278601c47e4a7c628464ac361aa14",
+    "numeric_lexemes_preserved": true,
+    "raw_final_error_not_rewritten": true,
+    "input_dict_keys_before_and_after": [
+      "api_ports",
+      "archive_and_audit_product_sources",
+      "binding_sha256",
+      "budgets",
+      "files",
+      "host",
+      "official_source_commit",
+      "raft_ports",
+      "schema",
+      "source",
+      "whole_replacement_qualification"
+    ],
+    "binding_integer_key_constant_lines": [
+      {
+        "line": 58,
+        "text": "API_PORTS = {1: 48630, 2: 48632, 3: 48634}"
+      },
+      {
+        "line": 59,
+        "text": "RAFT_PORTS = {node: port + 1 for node, port in API_PORTS.items()}"
+      },
+      {
+        "line": 352,
+        "text": "            \"budgets\": BUDGETS, \"api_ports\": API_PORTS, \"raft_ports\": RAFT_PORTS,"
+      }
+    ],
+    "controller_parsed_prepare_and_comparison_lines": [
+      {
+        "line": 281,
+        "text": "            self.verified = verified"
+      },
+      {
+        "line": 920,
+        "text": "                require(after == self.verified, \"input_fence_changed_after_run\")"
+      },
+      {
+        "line": 1068,
+        "text": "    binding.quick_fence(prepared[\"inputs\"])"
+      },
+      {
+        "line": 1078,
+        "text": "    fixture = make_fixture(native, cli, bm, evidence, binding, prepared[\"inputs\"], prepared)"
+      }
+    ],
+    "source_derived_interpretation": "prepare JSON parses nested port-object keys as str; Binding.verify constructs fresh integer-key API_PORTS/RAFT_PORTS dicts; Python dict equality therefore rejects despite exact equal serialized projections",
+    "b01_unknown_preserved": true,
+    "b01_cause_determined": false,
+    "actual_python_reproduction_executed": false
+  },
+  "original_failure_and_unknown_preserved": true,
+  "no_replay_performed": true,
+  "production_changed": false,
+  "provider_requests": 0,
+  "j3160_requests": 0,
+  "normal_startup_scope": "normal_v5_seed_then_normal_native_v6_raft_and_formal_activate",
+  "fixture_feature_startup": false,
+  "remaining_evidence_scope": "core embeds CLI intent/response/audit observations; all 144 individual public files and private captures have not been downloaded; private logs preserved only on owned host root",
+  "desktop_window_released_based_on_all_81_original_cleanup_rows": true,
+  "full_replacement": false
+}

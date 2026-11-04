@@ -1,0 +1,10 @@
+{
+  "direct_child_reaped": true,
+  "elapsed_seconds": 1.610854099970311,
+  "exit_code": 0,
+  "label": "send-rog",
+  "limit_seconds": 90,
+  "pid": 3399425,
+  "remaining": [],
+  "timed_out": false
+}

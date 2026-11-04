@@ -1,0 +1,507 @@
+{
+  "all_local_owned_stopped": true,
+  "all_owned_stopped": true,
+  "automatic_retry": false,
+  "cleanup": [
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "rog-ts-effective-config",
+      "pid": 3399422,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "receive-desktop",
+      "pid": 3399424,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "send-rog",
+      "pid": 3399425,
+      "remaining": []
+    }
+  ],
+  "cleanup_errors": [],
+  "commands": [
+    {
+      "direct_child_reaped": true,
+      "elapsed_seconds": 0.05581468401942402,
+      "exit_code": 0,
+      "label": "rog-ts-effective-config",
+      "limit_seconds": 90,
+      "pid": 3399422,
+      "remaining": [],
+      "timed_out": false
+    },
+    {
+      "direct_child_reaped": true,
+      "elapsed_seconds": 1.610854099970311,
+      "exit_code": 0,
+      "label": "send-rog",
+      "limit_seconds": 90,
+      "pid": 3399425,
+      "remaining": [],
+      "timed_out": false
+    },
+    {
+      "direct_child_reaped": true,
+      "elapsed_seconds": 2.3477475279942155,
+      "exit_code": 0,
+      "label": "receive-desktop",
+      "limit_seconds": 90,
+      "pid": 3399424,
+      "remaining": [],
+      "timed_out": false
+    }
+  ],
+  "compiler_started": false,
+  "controller": {
+    "bytes": 15815,
+    "identity": [
+      2050,
+      58119155,
+      1000,
+      1000,
+      33152,
+      1,
+      15815,
+      1793819017607213264,
+      1793819017612384772
+    ],
+    "sha256": "29048225ac700e4ac290ccbf3d6cdec2a7623f17faef20f512f24142c4df38bf"
+  },
+  "destination_host": "desktop",
+  "destination_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1",
+  "elapsed_seconds": 2.5106801219517365,
+  "endpoint_seconds": 90,
+  "files": [
+    {
+      "bytes": 109091112,
+      "name": "heptabao-server",
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/artifacts/heptabao-server",
+      "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+      "source_mode": 320,
+      "target_mode": 320,
+      "version": "66306:32420767:109091112:1793816931326390006:1793816931458389281"
+    },
+    {
+      "bytes": 801,
+      "name": "native-build.public.json",
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/native-build.public.json",
+      "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:32420770:801:1793816931839994753:1793816931839994753"
+    },
+    {
+      "bytes": 3227,
+      "name": "normal-release-result.public.json",
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/normal-release-result.public.json",
+      "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:32420769:3227:1793816931839107644:1793816931839107644"
+    }
+  ],
+  "git_operations": 0,
+  "helpers": {
+    "receiver.py": {
+      "bytes": 8270,
+      "identity": [
+        2050,
+        58119154,
+        1000,
+        1000,
+        33152,
+        1,
+        8270,
+        1793819017596478370,
+        1793819017601833263
+      ],
+      "sha256": "2b14e32feaa2d94de4c86477be85e469f9bb2df2fa0d5f57aa4f5e9e53cef91b"
+    },
+    "sender.py": {
+      "bytes": 6752,
+      "identity": [
+        2050,
+        58119153,
+        1000,
+        1000,
+        33152,
+        1,
+        6752,
+        1793819017586076452,
+        1793819017591144997
+      ],
+      "sha256": "1cd76f2e8c0f851b2d8346f3bb5098362fc84524f4fd2b0adbbfa0860c9984b8"
+    }
+  },
+  "original_ha_controller_after": {
+    "bytes": 12409,
+    "identity": [
+      2050,
+      1742404,
+      1000,
+      1000,
+      33152,
+      1,
+      12409,
+      1793787427894245554,
+      1793787427894245554
+    ],
+    "sha256": "c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e"
+  },
+  "original_ha_controller_before": {
+    "bytes": 12409,
+    "identity": [
+      2050,
+      1742404,
+      1000,
+      1000,
+      33152,
+      1,
+      12409,
+      1793787427894245554,
+      1793787427894245554
+    ],
+    "sha256": "c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e"
+  },
+  "overall_seconds": 300,
+  "production_changed": false,
+  "receiver": {
+    "all_owned_stopped": true,
+    "cleanup": [],
+    "cleanup_errors": [],
+    "compiler_started": false,
+    "destination_created_exclusive": true,
+    "destination_directory_mode": 320,
+    "destination_fsynced": true,
+    "elapsed_seconds": 2.2120021999580786,
+    "files": [
+      {
+        "bytes": 109091112,
+        "create_only": true,
+        "fsynced": true,
+        "identity": [
+          2050,
+          58120239,
+          1000,
+          1000,
+          33088,
+          1,
+          109091112,
+          1793819286714153802,
+          1793819286714153802
+        ],
+        "mode": 320,
+        "name": "heptabao-server",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1/incoming/heptabao-server",
+        "same_fd_readback": {
+          "bytes": 109091112,
+          "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113"
+        },
+        "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113"
+      },
+      {
+        "bytes": 801,
+        "create_only": true,
+        "fsynced": true,
+        "identity": [
+          2050,
+          58120241,
+          1000,
+          1000,
+          33024,
+          1,
+          801,
+          1793819287399134926,
+          1793819287399134926
+        ],
+        "mode": 256,
+        "name": "native-build.public.json",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1/incoming/native-build.public.json",
+        "same_fd_readback": {
+          "bytes": 801,
+          "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77"
+        },
+        "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77"
+      },
+      {
+        "bytes": 3227,
+        "create_only": true,
+        "fsynced": true,
+        "identity": [
+          2050,
+          58120242,
+          1000,
+          1000,
+          33024,
+          1,
+          3227,
+          1793819287404134788,
+          1793819287404134788
+        ],
+        "mode": 256,
+        "name": "normal-release-result.public.json",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1/incoming/normal-release-result.public.json",
+        "same_fd_readback": {
+          "bytes": 3227,
+          "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee"
+        },
+        "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee"
+      }
+    ],
+    "git_operations": 0,
+    "normal_release_provenance_verified": true,
+    "partial_directory_retained_on_failure": true,
+    "raw_receipts_preserved": true,
+    "request_seconds": 90,
+    "role": "receiver",
+    "schema": "heptabao.r10.fixed-public-artifacts-endpoint.v1",
+    "server_started": false,
+    "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "status": "complete",
+    "within_original_deadline": true
+  },
+  "remote_cleanup_unknown": false,
+  "remote_endpoint_completion_verified": true,
+  "runtime_qualification": false,
+  "schema": "heptabao.r10.shared-public-artifacts-relay.v1",
+  "sender": {
+    "all_owned_stopped": true,
+    "cleanup": [],
+    "cleanup_errors": [],
+    "compiler_started": false,
+    "elapsed_seconds": 1.1699510690232273,
+    "files": [
+      {
+        "initial_file": {
+          "bytes": 109091112,
+          "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113"
+        },
+        "name": "heptabao-server",
+        "source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/artifacts/heptabao-server",
+        "source_identity_after": [
+          66306,
+          32420767,
+          1000,
+          1000,
+          33088,
+          1,
+          109091112,
+          1793816931326390006,
+          1793816931458389281
+        ],
+        "source_identity_before": [
+          66306,
+          32420767,
+          1000,
+          1000,
+          33088,
+          1,
+          109091112,
+          1793816931326390006,
+          1793816931458389281
+        ],
+        "source_version": "66306:32420767:109091112:1793816931326390006:1793816931458389281",
+        "stream": {
+          "bytes": 109091112,
+          "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113"
+        }
+      },
+      {
+        "initial_file": {
+          "bytes": 801,
+          "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77"
+        },
+        "name": "native-build.public.json",
+        "source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/native-build.public.json",
+        "source_identity_after": [
+          66306,
+          32420770,
+          1000,
+          1000,
+          33152,
+          1,
+          801,
+          1793816931839994753,
+          1793816931839994753
+        ],
+        "source_identity_before": [
+          66306,
+          32420770,
+          1000,
+          1000,
+          33152,
+          1,
+          801,
+          1793816931839994753,
+          1793816931839994753
+        ],
+        "source_version": "66306:32420770:801:1793816931839994753:1793816931839994753",
+        "stream": {
+          "bytes": 801,
+          "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77"
+        }
+      },
+      {
+        "initial_file": {
+          "bytes": 3227,
+          "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee"
+        },
+        "name": "normal-release-result.public.json",
+        "source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/normal-release-result.public.json",
+        "source_identity_after": [
+          66306,
+          32420769,
+          1000,
+          1000,
+          33152,
+          1,
+          3227,
+          1793816931839107644,
+          1793816931839107644
+        ],
+        "source_identity_before": [
+          66306,
+          32420769,
+          1000,
+          1000,
+          33152,
+          1,
+          3227,
+          1793816931839107644,
+          1793816931839107644
+        ],
+        "source_version": "66306:32420769:3227:1793816931839107644:1793816931839107644",
+        "stream": {
+          "bytes": 3227,
+          "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee"
+        }
+      }
+    ],
+    "git_operations": 0,
+    "request_seconds": 90,
+    "role": "sender",
+    "schema": "heptabao.r10.fixed-public-artifacts-endpoint.v1",
+    "server_started": false,
+    "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "status": "complete",
+    "within_original_deadline": true
+  },
+  "server_started": false,
+  "source_alias": "rog-ts",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "ssh_child_seconds": 90,
+  "ssh_preflight": {
+    "rog-ts": {
+      "effective_config_sha256": "9228489a625661b16e643d1bde2d4b81bb95c2d23798b92024f700309400cf08",
+      "known_hosts_before": {
+        "/home/qian-qi/.ssh/hepta-transport/known_hosts": {
+          "bytes": 5391,
+          "identity": [
+            2050,
+            52599357,
+            1000,
+            1000,
+            33152,
+            1,
+            5391,
+            1793703653819681345,
+            1793703653854741609
+          ],
+          "sha256": "1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034"
+        }
+      },
+      "projection": {
+        "batchmode": "yes",
+        "clearallforwardings": "yes",
+        "connectionattempts": "1",
+        "connecttimeout": "10",
+        "controlmaster": "false",
+        "controlpath": null,
+        "forwardagent": "no",
+        "host": "rog-ts",
+        "hostkeyalias": "hepta-node-rog",
+        "hostname": "192.168.0.10",
+        "port": "22",
+        "stricthostkeychecking": "true",
+        "updatehostkeys": "false",
+        "user": "qian-qi"
+      }
+    }
+  },
+  "status": "transferred",
+  "terminal_unix_ns": 1793819287575265865,
+  "trust_after": {
+    "/home/qian-qi/.ssh/config": {
+      "bytes": 1455,
+      "identity": [
+        2050,
+        49940462,
+        1000,
+        1000,
+        33152,
+        1,
+        1455,
+        1793704010712920454,
+        1793704010881088876
+      ],
+      "sha256": "e7b887aad30f6642876c09744c317387b143e4a4b21ddc4879df2b558379ccf4"
+    },
+    "/home/qian-qi/.ssh/hepta-transport/known_hosts": {
+      "bytes": 5391,
+      "identity": [
+        2050,
+        52599357,
+        1000,
+        1000,
+        33152,
+        1,
+        5391,
+        1793703653819681345,
+        1793703653854741609
+      ],
+      "sha256": "1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034"
+    }
+  },
+  "trust_before": {
+    "/home/qian-qi/.ssh/config": {
+      "bytes": 1455,
+      "identity": [
+        2050,
+        49940462,
+        1000,
+        1000,
+        33152,
+        1,
+        1455,
+        1793704010712920454,
+        1793704010881088876
+      ],
+      "sha256": "e7b887aad30f6642876c09744c317387b143e4a4b21ddc4879df2b558379ccf4"
+    },
+    "/home/qian-qi/.ssh/hepta-transport/known_hosts": {
+      "bytes": 5391,
+      "identity": [
+        2050,
+        52599357,
+        1000,
+        1000,
+        33152,
+        1,
+        5391,
+        1793703653819681345,
+        1793703653854741609
+      ],
+      "sha256": "1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034"
+    }
+  }
+}

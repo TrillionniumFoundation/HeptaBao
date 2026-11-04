@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.r10.x230-standalone-export-root-source-review.v1",
+  "status": "passed_source_review",
+  "source": {
+    "bytes": 15303,
+    "sha256": "b337bdbecc2fda8c42e3e7bba0014b59fcc5d65635a7a6657bd3afb687f0ac8b",
+    "blob": "59b59eccd94463da2ddf78ecd7dc3d5b4b2d3b4b"
+  },
+  "full_source_read": true,
+  "source_readonly_except_new_owned_export_directory": true,
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "source_commit_count": 3752,
+  "sole_parent": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+  "full_fsck_required": true,
+  "expected_bundle_header": "v2, one HEAD, no prerequisites",
+  "maximum_completed_bundle_bytes": 67108864,
+  "origin_and_refs_bound_by_actual_before_after_bytes": true,
+  "source_origin_url_not_assumed_public_github": true,
+  "git_seconds": 90,
+  "controller_seconds": 300,
+  "new_outer_seconds": 360,
+  "network_git_disabled": true,
+  "compiler_or_product": false,
+  "execution_authorized_after_desktop_source_root_terminal_pass": true,
+  "product_runtime_qualification": false
+}

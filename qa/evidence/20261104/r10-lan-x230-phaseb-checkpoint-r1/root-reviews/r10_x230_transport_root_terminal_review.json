@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.r10.x230-source-artifact-transfer.root-terminal-review.v1",
+  "status": "PASS",
+  "job_id": "1a1a80c2068-fc05-2d76",
+  "parent": {
+    "bytes": 50638,
+    "sha256": "9e2f1dff236b78b92bdb1b25e7e4b8b620577b8925440cec0762ae1d4bf8c85b",
+    "blob": "91e3afa849f6ca0e3b45cfddd6af4b5f0c514d86"
+  },
+  "authority": {
+    "bytes": 729,
+    "sha256": "183876b10518dd4a987b4d3208c4ba62c87883be00186e0dc571861929c17dc0",
+    "blob": "d2e9efaac0b8c2c1a443534fee01e90a663ffa15"
+  },
+  "terminal": {
+    "bytes": 350,
+    "sha256": "7a10701a64dbe43b8fe4109635d42d7a674ae839e98b6d979836422b4589aaea",
+    "blob": "293a63054315f017a30becc8489e6fe2d41ad7ec"
+  },
+  "target_receipt": {
+    "bytes": 33818,
+    "sha256": "725f9a7e51a202a2139618b933c55b1f387ef53af61035a3aa59d21394b0669a",
+    "blob": "0baa532eddb878f6ac1af225eb1d2e4eadcf960c"
+  },
+  "independent_files": [
+    {
+      "name": "server",
+      "bytes": 478,
+      "sha256": "f4854fc89c5b0ba7eb75a54d59cd370ea14c1581b708419ccd5d1ff0459685b7",
+      "blob": "cb5ead40a1ea4d0e79e2bd0a11ef6c5b381dea88"
+    },
+    {
+      "name": "native",
+      "bytes": 475,
+      "sha256": "b14ab3dc597e41d2405b09ff98c8198729f95243686f937e3c262ef4d5102eec",
+      "blob": "7a4e121c924c96c54158722f641a9d82159bfcf9"
+    },
+    {
+      "name": "normal",
+      "bytes": 471,
+      "sha256": "9e9f1db179703264bf2b146e2fa47992f3b6ed4852b2543275a455a3844786d3",
+      "blob": "1a225eb00728ec646f3ed34438a56adfea5bcdd2"
+    },
+    {
+      "name": "bundle",
+      "bytes": 486,
+      "sha256": "0b9522cabe303f13d0473701d69e1bae10dbcf6c926efd46258514d017620a33",
+      "blob": "d19ecb045fc5bb37ac733bd5772f0547b8ddf1d6"
+    },
+    {
+      "name": "export",
+      "bytes": 487,
+      "sha256": "5cb0fea0e0dd5e5bf253ed42921afcbc22f1b4947b8f854bb8be3e5232686ae9",
+      "blob": "f933858ac3cb42a559926748815784536297ee9c"
+    }
+  ],
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "elapsed_after_publication_seconds": 24.296306082047522,
+  "local_owned_reaped": 3,
+  "remote_git_owned_reaped": 21,
+  "full_history_commits": 3752,
+  "materialized_files": 3911,
+  "fsynced_files": 3935,
+  "fsynced_directories": 369,
+  "known_target_and_no_remote_cleanup_unknown": true,
+  "source_trust_before_after_equal": true,
+  "product_qualification": false,
+  "production_changed": false,
+  "readonly_rpc_batch_timeout_did_not_change_actual_transfer_result": true,
+  "checks_completed_in_prior_exec_before_diff_header_parser_error": true
+}

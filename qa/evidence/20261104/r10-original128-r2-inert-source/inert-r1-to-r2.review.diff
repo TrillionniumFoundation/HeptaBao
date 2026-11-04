@@ -1,0 +1,15 @@
+--- inert-full128-r1.py
++++ inert-full128-r2.py
+@@ -5,10 +5,10 @@
+ 
+ os.umask(0o077)
+ PARENT = Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-BASE = PARENT / 'normal-r10-full128-control-r1'
++BASE = PARENT / 'normal-r10-full128-control-r2'
+ RECEIPT = BASE / 'inert-stage.result.public.json'
+ PINS = {
+-    "launch_normal_r10_full128_r1.py": (14009, "0c249a8d0cdec7912346394084ba0da638e3b83f41a1bbd70fdfe924eab21a3a"),
++    "launch_normal_r10_full128_r2.py": (14687, "1c7f6b254a5a4acde704fff145b315b9fbe7ade186513dc0411c7e1a64506817"),
+     "probe_normal_build_r10_r1.py": (6445, "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee"),
+ }
+ 

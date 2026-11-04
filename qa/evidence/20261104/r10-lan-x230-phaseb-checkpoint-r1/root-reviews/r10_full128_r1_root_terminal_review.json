@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.r10.full128-r1.root-terminal-review.v1",
+  "evidence_review": "PASS",
+  "test_status": "FAIL",
+  "qualification": false,
+  "job_id": "1a1a805fd5c-fc05-2d57",
+  "summary": {
+    "bytes": 14735,
+    "sha256": "99b78fe5021248cd9f00af681df8a176442a59c54d446fa3d9f5f0adab414d76",
+    "blob": "5151f549fff98d48e366150fc12a75f1c79b8c70"
+  },
+  "authority": {
+    "bytes": 726,
+    "sha256": "7fafdb3714a2294393db8aeddaeca77cb5ae60cc1aef79d5ffc7381b4e5e6e4e",
+    "blob": "4607455db2f82dfbb23f116937eda38bcff89964"
+  },
+  "exit": {
+    "bytes": 444,
+    "sha256": "d9c9b628ceb135ace41d6c7990668dce2cd73c0784d028b1361b42346e7c504c",
+    "blob": "15f44b650c77ec110f0f6584e20dc2a0e3ac9d14"
+  },
+  "stdout": {
+    "bytes": 412,
+    "sha256": "590bbfa66aa2a5682a7b78524b8c82f6b58ca63cb44e9fa4b2d9ff9d24e7320e",
+    "blob": "28e187648ef7a813c13db49defd1dfe08c0d440d"
+  },
+  "required_checks": 128,
+  "observed_checks": 16,
+  "passed_checks": 16,
+  "missing_checks": 112,
+  "failure_stage": "new_physical_roots_and_tls",
+  "failure_type": "CalledProcessError",
+  "failure_code": "owned_remote_operation_rejected",
+  "mutation_intents": 0,
+  "mutation_responses": 0,
+  "unknown_transport_outcomes": 0,
+  "initialization_custody_saved": false,
+  "foreground_sessions": [],
+  "tunnel_children": 0,
+  "cleanup_scope": "No service was started and no tunnel existed; the two successful cleanup checks do not demonstrate a running service stop.",
+  "original_inner_exception_stderr_unavailable": true,
+  "source_artifacts_qa_prior_receipts_unchanged": true,
+  "automatic_retry": false,
+  "production_authority": false,
+  "full_replacement": false
+}

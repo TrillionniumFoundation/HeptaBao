@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.r10.full128-r2.root-source-review.v1",
+  "status": "PASS",
+  "old": {
+    "bytes": 14009,
+    "sha256": "0c249a8d0cdec7912346394084ba0da638e3b83f41a1bbd70fdfe924eab21a3a",
+    "blob": "6913170456bcb81cb8a50cff49c770bce474bafb"
+  },
+  "candidate": {
+    "bytes": 14687,
+    "sha256": "1c7f6b254a5a4acde704fff145b315b9fbe7ade186513dc0411c7e1a64506817",
+    "blob": "8cce32eab312b54633cae44c4cae162dfda192cb"
+  },
+  "diff": {
+    "bytes": 4153,
+    "sha256": "1dd3b2792a9b4bb5ba702de70897227cc6ff7794f82c6ae686a09c839c9352bf",
+    "blob": "0c1b3014355c3a5ee90cb61088910d8911aedea5"
+  },
+  "strict_apply_hunks": 4,
+  "scope": [
+    "new r2 control/work/three physical node directories and controller basename",
+    "replace stale expected watchdog interpreter digest with independently observed current same-path digest",
+    "add four immutable r1 failure fences"
+  ],
+  "preserved": {
+    "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "required_checks": 128,
+    "old_fences": 8,
+    "qa_files": 5,
+    "internal_qa_seconds": 2400,
+    "native_large_http_seconds": 5,
+    "ordinary_http_seconds": 15,
+    "native_admission_seconds": 8
+  },
+  "original_failed_run_preserved": true,
+  "automatic_replay": false,
+  "qualification": false,
+  "readonly_prepare_only_after_transport_window": true
+}

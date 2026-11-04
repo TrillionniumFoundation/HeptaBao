@@ -1,0 +1,144 @@
+{
+  "schema": "heptabao.native-snapshot-relay.concrete-api-source-design.v2",
+  "canonical": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+  },
+  "design": {
+    "bytes": 18558,
+    "sha256": "f115b15ee8d1b8edd748e7584eb351b97ff680c8e77f3e531948128d45caa9e8"
+  },
+  "sources": [
+    {
+      "key": "http",
+      "path": "crates/heptabao-server/src/http.rs",
+      "blob": "58706d8d92e5e4a3c38a0b5843ead700ab2c4825",
+      "bytes": 231923,
+      "sha256": "6d90383db0dabca25b6f6806e2b5923352976f4c4a69b2cce9a0a2dde7d727eb"
+    },
+    {
+      "key": "ha",
+      "path": "crates/heptabao-server/src/ha.rs",
+      "blob": "95533302d0a7afa31078b712624c1701f5edb9c8",
+      "bytes": 169489,
+      "sha256": "a56ab6524b658b204cd998fc054ae5124ed615420ded443517bbf49988d6fd1c"
+    },
+    {
+      "key": "transport",
+      "path": "crates/heptabao-ha-service/src/lib.rs",
+      "blob": "6e8947315c14e50c2424de90b11c99888e7bd0a5",
+      "bytes": 84895,
+      "sha256": "f7eac8103954260134e244a1d5d5bf0045ed74f0d7123a01ac5f0b6b7089e7b8"
+    },
+    {
+      "key": "authenticated_frame",
+      "path": "crates/heptabao-ha-service/src/authenticated_peer_frame.rs",
+      "blob": "2abb0190d59f0385b378355a8f3d9573575ac988",
+      "bytes": 5927,
+      "sha256": "02b1f11284b1463a3bbd2f35b2f7173a7a4d42758214b4cb73db7f497964caab"
+    },
+    {
+      "key": "native_runtime",
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000",
+      "bytes": 60854,
+      "sha256": "620f2e70342971394a8e70696ebaef3740d0f15d8ee186088666d8dba27b425e"
+    },
+    {
+      "key": "committed_root_read",
+      "path": "crates/heptabao-raft-runtime/src/process/v6_committed_root_read.rs",
+      "blob": "c1dafa922ff627f24301c694520a2d9e305dac74",
+      "bytes": 15940,
+      "sha256": "504e113ef3a234e1bfacfad24cb3c34339bcbf87f4fdca540146c8191ddbf346"
+    },
+    {
+      "key": "service_snapshot_transfer",
+      "name": "service_snapshot_transfer",
+      "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+      "bytes": 50683,
+      "sha256": "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9",
+      "lines": 1218,
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs"
+    },
+    {
+      "key": "http_snapshot",
+      "name": "http_snapshot",
+      "blob": "4a5743d757b79493400b712bf57a5fa552b50bda",
+      "bytes": 35170,
+      "sha256": "1cc98a78d6a037a47456b7c6b93dc13647a261e8217f12a6a4edff3d91fe41e2",
+      "lines": 886,
+      "path": "crates/heptabao-server/src/http_snapshot.rs"
+    },
+    {
+      "key": "restore",
+      "blob": "0a94044292493853c7770cb36aa69544c1488aca",
+      "bytes": 43899,
+      "sha256": "3802288e0f2e3f58b94df509c928467fa2d3d11ee47bb9c68128c6143b9138ff",
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs"
+    },
+    {
+      "key": "epoch_restore",
+      "path": "crates/heptabao-server/src/ha_native_v6_epoch_restore.rs",
+      "blob": "374a59fa84c8ef6e86f23b80074f898c8621d8f4",
+      "bytes": 29328,
+      "sha256": "67c120496d2a80701c3c1da5587c2e1eed4a4ae6c32fd114483aeb0e7c299bc1"
+    },
+    {
+      "key": "epoch_process",
+      "path": "crates/heptabao-raft-runtime/src/process/v6_epoch_restore.rs",
+      "blob": "5a06b6805a0ab3b2253693a46be7ff0dd9b05545",
+      "bytes": 17052,
+      "sha256": "bce056c2081ca6594348391a553b655c17634fe9e7aca4e45564b7d418c3b92f"
+    },
+    {
+      "key": "epoch_ledger",
+      "path": "crates/heptabao-raft-runtime/src/v6_epoch_restore.rs",
+      "blob": "b64b1e4f7dc25abe5667911614ae7e856a4b2153",
+      "bytes": 23916,
+      "sha256": "cb0cd28ed9fab7ec1010b762702b7c20c2046d301214f110562671b4da7cc4a5"
+    },
+    {
+      "key": "retirement_ledger",
+      "path": "crates/heptabao-durable-service/src/native_ha_retirement_ledger.rs",
+      "blob": "8782ec616d7fc34c478342185e8cadc02380df47",
+      "bytes": 30322,
+      "sha256": "4fd14f3d41c71a0b7cb913c3408874a133863e9b7929c9f6f508e02f8a451db6"
+    },
+    {
+      "key": "prepared_projection",
+      "path": "crates/heptabao-durable-service/src/prepared_restore_projection.rs",
+      "blob": "2f1821f152d216ef231e1005e277e2ad4afe4955",
+      "bytes": 6023,
+      "sha256": "89bb4c9cb6e2b69dd7fd4f7c7535874b7fd480d74519097859e494a8d4130625"
+    },
+    {
+      "key": "negative_publication",
+      "path": "crates/heptabao-durable-service/src/negative_current_publication.rs",
+      "blob": "9ec3205accf9226f4cd2ada543a88190f462b91e",
+      "bytes": 10119,
+      "sha256": "00cb945f6577b8dab49b920a7b313ff258053fd31bb953dab7cf858523eaf51c"
+    },
+    {
+      "key": "local_restore_tx",
+      "path": "crates/heptabao-durable-service/src/restore_transaction.rs",
+      "blob": "4d7b71d8525c5296483a7bf9a2c1d6589d103f9d",
+      "bytes": 8362,
+      "sha256": "63f3a9914367e5cb6dfb263dde742816da7b203015544e2b4b785913bae2db25"
+    }
+  ],
+  "read_scope": "Complete exact blob bytes fetched and identity checked; indicated integration and owner blocks read. No whole-product audit.",
+  "chosen_reuse": "Existing DurableService barrier/conditional journal/request ledger for new negative-only typed resource; existing Raft restore pending/lineage remains the sole restore truth. No separate sidecar recovery engine.",
+  "not_already_supported": [
+    "Pre-Ready negative custody record and snapshot relay session.",
+    "Ready-bound affine attempt identifier; current nonrelay allocation is only immediately before Begin.",
+    "Exact live custody preservation across historical replacement; current projection starts from incoming state and creates only its new derivation replay ledger.",
+    "Native NoForward bound capsule; current ordinary capsule excludes deferred bodies.",
+    "Native overlapping current/next leaf pins; current native eligibility explicitly refuses overlap."
+  ],
+  "host_io": false,
+  "product_edits": false,
+  "requests_sent": false,
+  "tests_executed": false,
+  "runtime_qualification": false,
+  "full_replacement": false
+}

@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.r10-physical-ha-source-draft-manifest.v1",
+  "files": [
+    {
+      "path": "original/full.py",
+      "bytes": 12409,
+      "sha256": "c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e",
+      "git_blob": "4bff25328e6b212399e173da0b625cf27869da7e"
+    },
+    {
+      "path": "original/direction.py",
+      "bytes": 13396,
+      "sha256": "da68bd962fb16305bc67bae50b97dc97069d4242de276778d5798344e0ac7ce0",
+      "git_blob": "6975914196fa279cb0a74b74639ea81c151c050a"
+    },
+    {
+      "path": "original/runner.py",
+      "bytes": 10838,
+      "sha256": "fa6ed593833e7aa37c86935469c83d2731a112bd2a441ae9dbcd32db9a9bb718",
+      "git_blob": "5505ceec7362a13321413ed8bd78959b16e732d2"
+    },
+    {
+      "path": "original/probe.py",
+      "bytes": 5718,
+      "sha256": "a075109504728a6a95f16d2945b22b43b56d4b72d4ef85b34976426b50b76667",
+      "git_blob": "c6895d925c619687141d5f830266b22535a2eb72"
+    },
+    {
+      "path": "draft/launch_normal_r10_full128_r1.py",
+      "bytes": 13249,
+      "sha256": "3644ae4fd58609a3b375687090f09dbfe0ac15cbaaa4a11e93c2cb90bb20310f",
+      "git_blob": "d2bbe87929606fb26e5ca1076541a8cd7c860ff9"
+    },
+    {
+      "path": "draft/launch_normal_r10_pocket_direct98_r1.py",
+      "bytes": 14094,
+      "sha256": "0862aa647223282a5b1331d3ab966888f83a6c3ac2bdcc154921a8ef86095ae3",
+      "git_blob": "1af59432f6590f2f829761cbbb6bdc193a83cb35"
+    },
+    {
+      "path": "draft/native_v6_pocket_source_direct98_r10_r1.py",
+      "bytes": 10798,
+      "sha256": "2600d2b346b4b9dfdf54b7f01aff013fe474291b67866011fd518dbfe4e45030",
+      "git_blob": "e57ddcd57bb0ae8910431bfaf213a08bd2571406"
+    },
+    {
+      "path": "draft/probe_normal_build_r10_r1.py",
+      "bytes": 6445,
+      "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+      "git_blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a"
+    },
+    {
+      "path": "review/launch_normal_r10_full128_r1.py.review.diff",
+      "bytes": 12752,
+      "sha256": "dca9beab95a11449381cf99f344bc98a190764c9c3bad7766754b9fe3bfa0912",
+      "git_blob": "4ef88606a338bf649470e55426ce8d588879d17f"
+    },
+    {
+      "path": "review/launch_normal_r10_pocket_direct98_r1.py.review.diff",
+      "bytes": 13326,
+      "sha256": "10badfdae1ac82be27a8f32fe04aa154183c364e70afa5b0dd1e87d451b44d30",
+      "git_blob": "18520f62249cd12dcc61e0e8e7cedd1f956f2775"
+    },
+    {
+      "path": "review/native_v6_pocket_source_direct98_r10_r1.py.review.diff",
+      "bytes": 2965,
+      "sha256": "3ec9d669e9f300b6376310d03f0b16086d0e8d7a119ff51fb3b5e403f07f7142",
+      "git_blob": "782666c47cdd23c9acd3fc2ca16cfb37e1dd56b4"
+    },
+    {
+      "path": "review/probe_normal_build_r10_r1.py.review.diff",
+      "bytes": 4861,
+      "sha256": "2336cc3091de9c6c77c61b17b10cb93ed61b0821ff71ffb861618b3195fdad96",
+      "git_blob": "e7e567aba12896802d7ee96cea1505d3bc20bd7a"
+    },
+    {
+      "path": "scope.public.json",
+      "bytes": 6004,
+      "sha256": "f20fe4726269bd16bf8ed6a6c02aefbbfbff69dcda55faad1dbe220da8af2749",
+      "git_blob": "09e29fcceed517b4cdc2426b804e3430c9571708"
+    }
+  ],
+  "all_files_ascii": true,
+  "unreferenced_git_tree_only": true,
+  "refs_updated": false,
+  "runtime_started": false
+}

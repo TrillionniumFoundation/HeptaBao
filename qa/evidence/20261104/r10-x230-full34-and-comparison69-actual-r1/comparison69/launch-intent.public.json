@@ -1,0 +1,22 @@
+{
+  "host": "x230",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1/comparison69_controller.py"
+  ],
+  "cwd": "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1",
+  "timeout_seconds": 1800,
+  "idempotency_key": "heptabao-r10-x230-comparison69-495033-20261104-r1",
+  "outer_cap_provenance": "NEW supervised overall cap explicitly authorized by root; old outer cap was not recovered",
+  "controller_sha256": "c2f96586d735d21b9cf17040242e96371d27239b80fdf1756ba1b175b9e900eb",
+  "driver_sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+  "predecessor_actual_full34_job": "1a1a8170415-fc05-2da3",
+  "predecessor_result_sha256": "9316c7154ad68b5f4333d4056b1a72f9b97b26d9b946c1f041d0059a477d8620",
+  "predecessor_summary_sha256": "0990e3ab77f3b428fe77e4e4a36a6a60678f2f50edf43f476f7c595e79c48319",
+  "predecessor_actual31_and_cleanup_verified": true,
+  "network_scope": "X230 loopback only",
+  "product_run_attempt": 1
+}

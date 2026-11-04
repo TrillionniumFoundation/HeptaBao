@@ -1,0 +1,14 @@
+diff --git a/x230_receive_r10.py b/x230_receive_r10.py
+--- a/x230_receive_r10.py
++++ b/x230_receive_r10.py
+@@ -378,7 +378,9 @@
+         finally:os.close(fd)
+         tracked_fsynced.add(path)
+     files=0;directories=0
+-    for directory,dirs,names in os.walk(SOURCE,followlinks=False):
++    def walk_error(error):
++        raise error
++    for directory,dirs,names in os.walk(SOURCE,followlinks=False,onerror=walk_error):
+         remaining();directory=Path(directory)
+         assert directory.resolve(strict=True)==directory
+         for name in dirs:

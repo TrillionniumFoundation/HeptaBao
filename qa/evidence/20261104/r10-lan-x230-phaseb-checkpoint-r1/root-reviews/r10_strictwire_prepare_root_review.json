@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.r10.strictwire-prepare.root-review.v1",
+  "status": "PASS",
+  "job_id": "1a1a8046ff6-fc05-2d54",
+  "result": {
+    "bytes": 3509,
+    "sha256": "c7ea24d129e6bf8ac9d0112591e28126fff4cb3a4fc704cafe3d66520bad6e81",
+    "blob": "083ae7e083df86db9a12d2fd1dbc6d541a930fa4"
+  },
+  "authority": {
+    "bytes": 731,
+    "sha256": "36906639a165d4af74bd6caa76e011fc4e9ad933f7cdbd61204bc2e78679f8f2",
+    "blob": "99da63252e26fd72ab4da11ae9900c15ddb92de3"
+  },
+  "stage": {
+    "bytes": 4706,
+    "sha256": "31629fc948e72282ea012bc0340088ac68b50fa08259bacf8c60df2dee447c66",
+    "blob": "b73b4c7a78a76a9ded867e8fe3db3d9221288145"
+  },
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "old_fences": 9,
+  "physical_hosts": 1,
+  "process_nodes": 3,
+  "loopback_only": true,
+  "valid_restore_bodies": 0,
+  "product_qualification": false,
+  "live_not_started": true
+}

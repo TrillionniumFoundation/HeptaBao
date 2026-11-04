@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.r10-x230-comparison69.root-terminal-review.v1",
+  "status": "PASS_SCOPED_69",
+  "job_id": "1a1a81beb21-fc05-2db3",
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "binary_sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+  "core_files": [
+    {
+      "bytes": 104035,
+      "sha256": "2b696bfbc041b72fe0f725cd32efaa0e66cf3a692f3a08857020ae1a3d8d332e",
+      "blob": "b5504a0a48e068f7366e9c354deb93974a1af5e6"
+    },
+    {
+      "bytes": 2109,
+      "sha256": "5d028511da8fd3e6480ff1dcbcd46027ef213aa73d83168483e64652af6a809e",
+      "blob": "1740b22d4483272f949cf266bca61dbf862eb107"
+    },
+    {
+      "bytes": 729,
+      "sha256": "b865b612c79716014cb5a8134ccc35ddd9400f12a68f194b6ce86f2e14c4602f",
+      "blob": "52c2cdc6fd5b4d30ad30251bbf3579d327a41acf"
+    },
+    {
+      "bytes": 561,
+      "sha256": "fae62b4595a8ab3dce3d76d51ef56c9043a24c868b34a3de4d7f2ffc6b84039b",
+      "blob": "e75c4586ebf06591de7bfda4bf5761aa2463045c"
+    }
+  ],
+  "modules": [
+    "approle",
+    "core",
+    "edge_tls",
+    "identity",
+    "kv",
+    "operations",
+    "pki",
+    "system",
+    "token",
+    "totp",
+    "transit",
+    "userpass",
+    "wrapping"
+  ],
+  "each_side_cases": 69,
+  "every_case_normalized_object_equal": true,
+  "numeric_http_cases": 67,
+  "normalized_rejection_cases": [
+    {
+      "case": "pki.lease_expire_lookup",
+      "value": "rejected_after_ttl"
+    },
+    {
+      "case": "pki.revoked_lease_absent",
+      "value": "rejected_400_or_404"
+    }
+  ],
+  "original_driver_sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+  "normal_build_receipt_sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+  "original_driver_unmodified": true,
+  "original_modules_unmodified": true,
+  "original_http_seconds": 15,
+  "new_controller_outer_seconds": 1800,
+  "owned_cleanup_completed": true,
+  "source_binary_unchanged": true,
+  "uncovered": [
+    "full_endpoint_error_precedence",
+    "other_auth_methods",
+    "other_secret_engines",
+    "persistent_restart",
+    "ha",
+    "migration",
+    "upgrade",
+    "agent_proxy_cli",
+    "production_security"
+  ],
+  "full_replacement_qualification": false,
+  "production_changed": false
+}

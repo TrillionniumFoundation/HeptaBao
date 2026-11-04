@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.r10-original128-watchdog-precondition-assessment.v1",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "original_run": {
+    "job_id": "1a1a805fd5c-fc05-2d57",
+    "run_id": "03d31de210dca9a20c5c0e82ff1bdf8e",
+    "status": "failed",
+    "observed": 16,
+    "required": 128,
+    "mutation_intents": 0,
+    "unknown": 0,
+    "summary_sha256": "99b78fe5021248cd9f00af681df8a176442a59c54d446fa3d9f5f0adab414d76",
+    "failure_stage": "new_physical_roots_and_tls",
+    "failure_type": "CalledProcessError",
+    "captured_original_child_stderr": false
+  },
+  "facts": {
+    "helper_file_exact": true,
+    "current_same_executable_path": true,
+    "current_version": "3.14.3",
+    "current_machine": "arm64",
+    "current_required_symbols_all_present": true,
+    "current_interpreter_sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13",
+    "expected_original_interpreter_sha256": "cbf84109626aa1013bbe408fbb9590bd0f1c1548f038b2221c6b8b87de26ca43",
+    "current_matches_original_pin": false
+  },
+  "causal_scope": {
+    "source_has_exact_sha_assert_in_verify_foreground_helper": true,
+    "sufficient_current_refusal_predicate_observed": true,
+    "original_child_command_and_line_not_retained": true,
+    "interpreter_change_reason_not_proven": true,
+    "current_readonly_diagnostic_not_original_failure_replay": true,
+    "product_or_deadline_failure_not_established": true
+  },
+  "cleanup_scope": {
+    "original_foreground_sessions_empty": true,
+    "seed_bootstrap_not_started": true,
+    "original_started_set_empty_from_control_flow": true,
+    "original_owned_processes_stopped_check": true,
+    "original_owned_mesh_stopped_check": true,
+    "original_direct_tunnel_children": 0,
+    "diagnostic_service_or_http_count": 0
+  },
+  "qualification": {
+    "formal_128_pass": false,
+    "new_interpreter_runtime_watchdog_qualified": false,
+    "new_run_authorized_by_this_assessment": false
+  }
+}

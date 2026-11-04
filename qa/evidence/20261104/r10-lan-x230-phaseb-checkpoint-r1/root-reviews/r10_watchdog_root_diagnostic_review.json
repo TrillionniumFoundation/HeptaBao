@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.r10.watchdog-tool.root-review.v1",
+  "status": "PASS",
+  "job_id": "1a1a80a4433-fc05-2d6b",
+  "stdout": {
+    "bytes": 1926,
+    "sha256": "7e1929a0257415696b9f51ca0a3dffcbbe283d06d538abf12dcbcec96c57a2e6",
+    "blob": "ed2ed7355f3e49e0a963242a93a8cf275200a968"
+  },
+  "authority": {
+    "bytes": 731,
+    "sha256": "c2c2e2e58b008d5262e5c3fae9ac99d3cfe3775b56a8aba5c007470015c37746",
+    "blob": "0d8aef34b9fa4f41ea5e08696d47571e7d9a7d3d"
+  },
+  "interpreter_file_info": {
+    "bytes": 488,
+    "sha256": "a67bad0d0dc2ea5866f9abcbb05fefba11a6dcba203206aa0fdc8d319ca6853d",
+    "blob": "aa9a0a5b4a421c6e55dd4a303e52b0ca59bb056c"
+  },
+  "helper_file_info": {
+    "bytes": 527,
+    "sha256": "28c7dab820f669f4f916b2509fbd6631a6a4b1e990dd780457e83948ceba4a14",
+    "blob": "1c233c1ea77747d2305506fc5af4bd4f9a987387"
+  },
+  "actual_interpreter_sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13",
+  "old_expected_sha256": "cbf84109626aa1013bbe408fbb9590bd0f1c1548f038b2221c6b8b87de26ca43",
+  "version": "3.14.3",
+  "system": "Darwin",
+  "machine": "arm64",
+  "exact_executable_and_same_fd_metadata_verified": true,
+  "required_os_symbols": 8,
+  "all_required_os_symbols": true,
+  "original_failure_stderr_available": false,
+  "reason_for_interpreter_change_proven": false,
+  "recursive_stdlib_provenance_proven": false,
+  "product_run": false
+}

@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.root.r10.shared-artifact-transport-source-review.v1",
+  "reviewed_at_utc": "2026-11-04T19:02:22Z",
+  "verdict": "source_review_pass",
+  "parent": {
+    "bytes": 15815,
+    "sha256": "29048225ac700e4ac290ccbf3d6cdec2a7623f17faef20f512f24142c4df38bf",
+    "blob": "0c266d6576c1b20e763826ee0d6647883f8ff8f9"
+  },
+  "sender": {
+    "bytes": 6752,
+    "sha256": "1cd76f2e8c0f851b2d8346f3bb5098362fc84524f4fd2b0adbbfa0860c9984b8",
+    "blob": "203bc427c26aa4692fa332f6cb64191e67b76c56"
+  },
+  "receiver": {
+    "bytes": 8270,
+    "sha256": "2b14e32feaa2d94de4c86477be85e469f9bb2df2fa0d5f57aa4f5e9e53cef91b",
+    "blob": "1c3ed9ee10baf4da5ea4fa3bb5d5887c786fd749"
+  },
+  "reviewed_full_text": true,
+  "independent_utf8_sha256_git_blob_verified": true,
+  "manifest": {
+    "bytes": 2534,
+    "sha256": "d7fdf8f1c356c2b53c076449a25191633458e4f6fd184f7801ecfe3fcfb35fc3",
+    "blob": "15a2416b7601756d88410713497448463d5d1185"
+  },
+  "expected_server": {
+    "bytes": 109091112,
+    "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+    "mode": "0500"
+  },
+  "expected_raw_receipts": [
+    "native-build.public.json:801:0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+    "normal-release-result.public.json:3227:75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee"
+  ],
+  "checked": [
+    "fixed source immutable versions/owner/nlink/modes before and after each send",
+    "single fixed strict rog-ts identity with exact existing config/known-host hashes",
+    "90-second endpoint/child deadlines and 300-second controller retained",
+    "exact length/digest per file, one final EOF, same-fd readback, fsync, new-only destination",
+    "raw native/release provenance agrees on canonical commit/tree, normal default features, ABI, server bytes/SHA",
+    "sender and receiver complete receipts plus process-group reaping required before transfer qualification",
+    "failed or unknown endpoint stops qualification and prohibits automatic replay"
+  ],
+  "new_supervisor_seconds": 360,
+  "new_supervisor_is_historical_budget_claim": false,
+  "execution_authorized": "one inert source carrier and one exact transfer after independent HA parent review finds no blocker",
+  "runtime_qualification": false,
+  "git_or_compiler_or_product_started": false,
+  "production_changed": false
+}

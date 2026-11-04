@@ -1,5 +1,44 @@
 # HeptaBao：正常 V6 存储、三机 HA 与完整替代检查点
 
+## 当前 R10：X230 31/31 与双侧 69/69 通过；三机 HA 进行中，CLI 快照与 CI 仍阻塞
+
+更新于 2026-11-04T20:01:46Z。**当前仍不具备全量替代 OpenBao 2.7.1 的资格，也未进行生产初始化、解封、加载、切流或旧版删除。** 本轮候选固定为 `49503322c7f446e5eb41e7744f1fdbd7f1192ecc`，tree `1d4211f91e1b34a2ed087a3bbef2e2884bac88e9`；使用正常默认功能的 Mac arm64 和 Linux x86_64 构建，前述两端 44/44 结果保持有效。
+
+| 当前实际验证 | 已确认的结果 | 范围与证据 |
+|---|---|---|
+| X230：34MiB KV2 正式存储 | **31/31**；95 次变更均收到明确响应，零重放；143.885 秒 | 正式 native V6，实际 OpenBao 2.7.1 导出一次、导入一次，冷重启、快照保存/恢复及恢复后冷重启；3 组各 19 个直接存储见证与原始存储精度绑定。[完整原件](../../qa/evidence/20261104/r10-x230-full34-and-comparison69-actual-r1/full34/summary.public.json) |
+| X230：OpenBao 2.7.1 对照 | 两侧各 **69/69**；13 个模块；每个规范化结果对象相等 | 67 项为数字 HTTP 状态，PKI 的 2 项是原测试合同的拒绝状态归一化，不能写成 69 个原始状态码全等。原驱动和模块未修改。[完整对照](../../qa/evidence/20261104/r10-x230-full34-and-comparison69-actual-r1/comparison69/summary.public.json) |
+| Mac、ROG、Pocket4：本轮 128 项 HA | **R2 仍在运行，未授予终态资格** | job `1a1a81dde69-fc05-2dbc`；原内部 2400 秒、导入 5 秒、普通请求 15 秒、admission 8 秒均保持，外层 3000 秒明确为新控制器预算。Pocket→Mac 98 项尚未在 R10 运行。 |
+| 严格 HTTP 观察 | 86 个操作全部有已知结果：85 个完整响应、1 个明确连接前失败；unknown=0 | 单主机三进程，68 个动态观察检查；仍有 **8 项官方状态差异**，未发送有效恢复体。172 份单操作文件补充归档待共享窗口结束。[核心原件](../../qa/evidence/20261104/r10-strictwire-actual-core-r1/result.public.json) |
+| 官方 CLI 快照 Phase B | **FAIL / UNKNOWN** | 只执行 B01 leader save；CLI 退出 2，没有归档文件；node1 审计 request61/response62 为 503，但审计不能证明客户端响应帧完整。B02–B05、恢复及冷启未执行；81 个受控进程全部回收。[原始失败](../../qa/evidence/20261104/phaseb-r3-actual-failed-r1/result.public.json) |
+| 完整 CI | 合并结果作业 **FAILURE**；head 作业观察时仍运行 | server lib 为 3708 passed / 4 failed / 8 ignored；四条失败需区分旧测试前提和真实安全回归。[完整日志](../../qa/evidence/20261104/r10-lan-x230-phaseb-checkpoint-r1/ci/126748711283-merge.log) |
+
+### KV2 的新证据与限制
+
+本轮 34MiB 指 35,651,584 字节有效载荷和 17 个保留的有效版本。源端 API 对大整数、长小数的舍入也被原样记录；精度验证使用 lossless 原始存储/protobuf 与目标的直接存储见证，不能把舍入后的 API 读回当成原始精度证明。导入后、冷重启后、快照恢复再冷重启后的 3 组见证，除各次发布的 root/generation 外，19 个版本的有效载荷摘要、删除、销毁、时间和版本信息完全相同。
+
+X230 使用独立完整源码副本：3752 个提交、3911 个实际跟踪文件、完整 fsck，无共享对象依赖。传输完成后逐一核对二进制、构建收据、bundle 与来源收据；只读 MCP 观察超时被单独保留，不曾作为业务重放理由。测试保留原 HTTP 15 秒和单次迁移 360 秒预算。外层每个 1800 秒是明确记录的新控制器预算。当前这些结果关闭的是已列明的隔离测试范围，尚不能替代真实生产、全部备份路径或全体 OpenBao API 的验收。
+
+### HA、快照与 CI 的失败保留
+
+HA R1 在 16/128 时失败，尚未启动产品服务、没有变更或未知结果。实际诊断确认 Mac 固定 Python 路径的文件 SHA 与旧预期不同；R2 只改为实际验证的解释器 SHA、全新路径，并增加 R1 原件保护。原故障内部 stderr 未捕获，不能声称已证明解释器为何变化或完整重现了原故障。R1 原始失败和 R2 的完整四段差分都保留，R2 必须以最终 128 项、原时限、断主/选主/ReadIndex/持久化/重启和清理证据判定。
+
+Phase B 原件仍包含 `input_fence_changed_after_run`。根审阅逐项比较完整原始 before/after 输入，保留全部不安全整数词面后其值完全相等；源码显示 fresh Python dict 的整数端口键与 parsed JSON 的字符串键被直接比较。这支持“观察器键类型错误”的源码推断，不能据此指称实际文件漂移，也不能把独立的 CLI unknown 改判成功或已知拒绝。原错误字段未重写，B01 未重试。
+
+新 snapshot relay 文稿仍只是方案。正常 native V6/HA 的负向交付持久记录究竟走哪个真实 typed writer/admission，以及该记录改变共享 root 后怎样保留原授权、原源状态和 deadline 而不重复扣减，仍是两项实施前 OPEN。[完整约束](../../qa/evidence/20261104/r10-native-snapshot-relay-open-r3/OPEN_IMPLEMENTATION_REQUIREMENTS_R3.md)。不能通过放宽 frame、deadline、fsync 或退回 flat State 关闭这些门槛。
+
+### 下一步和生产门槛
+
+1. 收齐本轮三机 128 项的终态与受控进程清理；通过后才绑定实际通过摘要，执行 Pocket→Mac 98 项方向回归。
+2. 读取既有失败的精确诊断，修复 CLI 快照阻塞与 CI 四条失败，保留原失败，使用新的明确身份和完整合同验证修复。
+3. 将真实 AuthBus 消费者、可信凭证来源、AppRole/TLS/KV/Policy/续期/撤销、冷启动及 CAS 回滚合同绑定至当前 R10，再执行；旧 R8 通过结果保持历史身份。
+4. 逐台真实凭证、重启和回滚完成，生产凭证托管与所有客户端/备份路径核实后，才可切流和清理。当前未满足这些条件。
+
+本次新增证据包含 25 个原件包、294 个完整文件、58 个 Git Merkle 目录与 191 个 manifest 成员核对，并另存根审阅、完整 CI 日志和汇总。[本次索引](../../qa/evidence/20261104/r10-lan-x230-phaseb-checkpoint-r1/checkpoint.public.json)；[全文件清单](../../qa/evidence/20261104/r10-lan-x230-phaseb-checkpoint-r1/manifest.public.json)。以下保留此前检查点原文，日期较早的“当前”描述应按历史记录阅读。
+
+---
+
+
 ## 当前 R10：Mac 与 ROG 正常 44 项均通过；Phase B 组件检查通过，实际快照待运行
 
 更新于 2026-11-04 19:04 UTC。当前候选是 `49503322c7f446e5eb41e7744f1fdbd7f1192ecc`，tree `1d4211f91e1b34a2ed087a3bbef2e2884bac88e9`。**Mac 与 ROG 都已完成本轮正常默认功能的 44/44 回归，零失败、零忽略；两端各 14 个受控进程组全部回收。** 根审阅逐一核对了每端 20 份原始文件的完整 UTF-8 字节、SHA256、Git blob、固定测试名称、真实 stdout 终态以及运行服务的权威完成记录。每端原有构建、列表和测试时限保持不变。

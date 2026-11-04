@@ -1,0 +1,68 @@
+{
+  "schema": "heptabao.r10.x230-standalone-relay.root-source-review.v1",
+  "status": "PASS",
+  "parent": {
+    "bytes": 19562,
+    "sha256": "46c77941e647e0a3b2b12c2dc5ebc8b6c7158f829d8935232b93d02ee92b09c8",
+    "blob": "0ccb5a2388286693772dee3785e3f88fc6d2f2a5"
+  },
+  "sender": {
+    "bytes": 7518,
+    "sha256": "bf11cc174afea339c5f199e7d7251464afb249c7a36333564361e4884e03ab5b",
+    "blob": "db3ff2edb773dab2c8336a6a1881f20b3987217d"
+  },
+  "receiver": {
+    "bytes": 24595,
+    "sha256": "5de344fdae21c1852513f21b891121246cff649b2fff001c2791c026ebb70521",
+    "blob": "1e406faf1eaec0dfd14b5d04311c257005bd013c"
+  },
+  "receiver_walk_fix": {
+    "status": "PASS",
+    "from": {
+      "bytes": 24529,
+      "sha256": "f63a6bd0314bfe68c363355e0bd9caa62856168400910b472f26cb4600f46630",
+      "blob": "1890e06b03949025c0c583aefd3162b1f3ec71f4"
+    },
+    "to": {
+      "bytes": 24595,
+      "sha256": "5de344fdae21c1852513f21b891121246cff649b2fff001c2791c026ebb70521",
+      "blob": "1e406faf1eaec0dfd14b5d04311c257005bd013c"
+    },
+    "diff": {
+      "bytes": 555,
+      "sha256": "640139ca9aa66fb0ce7f7f1ad7fed85c84fa2cde55891d641789e0a7d0210d2f",
+      "blob": "f929c6df595c3f9edb656af70828599aaa2d5200"
+    },
+    "strict_apply_hunks": 1,
+    "scope": "raise original os.walk traversal error; all other receiver bytes unchanged",
+    "product_execution": false
+  },
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "input_files": 5,
+  "source_host": "desktop",
+  "destination_alias": "x230-ts",
+  "destination_root": "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1",
+  "source_no_old_x230_prerequisites": true,
+  "strict_pinned_existing_ssh": true,
+  "full_source_required_commits": 3752,
+  "full_source_required_tracked_files": 3911,
+  "source_files_expected_mode_owner_link_and_versions": true,
+  "source_files_same_fd_pre_stream_post_checks": true,
+  "receiver_exact_stream_hash_length_and_eof": true,
+  "receiver_create_only_and_same_fd_readback": true,
+  "partial_root_retained_on_failure": true,
+  "no_server_or_compiler_execution": true,
+  "owned_group_and_endpoint_terminal_required": true,
+  "receiver_unknown_completion_not_success": true,
+  "original_budgets": {
+    "git": 60,
+    "clone": 90,
+    "sender": 90,
+    "receiver": 300,
+    "parent": 300
+  },
+  "new_runtime_outer_seconds": 360,
+  "product_qualification": false,
+  "execution_held_for_exclusive_fixture_window": true
+}

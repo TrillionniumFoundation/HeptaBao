@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.root.r10.desktop-source-stage-review.v1",
+  "reviewed_at_utc": "2026-11-04T19:02:22Z",
+  "verdict": "source_review_pass",
+  "controller": {
+    "bytes": 26983,
+    "sha256": "372a019ad50be02351fdba5de4837c52a7243290d7253fda8046c0eeafe02b30",
+    "blob": "be6075be9878acd93ddc0d2cd918c1a09b29a009"
+  },
+  "sender": {
+    "bytes": 10148,
+    "sha256": "410ff7b90622f0cdc36ba397e3e5c0a5674748b1356b9bd9d6b727d4dc9cd392",
+    "blob": "e5b51fea4eed86af6f0e75958fe3ce4449242d17"
+  },
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "reviewed_full_text": true,
+  "independent_utf8_sha256_git_blob_verified": true,
+  "source_operations": [
+    "Read-only old R8 HEAD/tree/refs/clean/single actual alternate and preserved failing receipt fence",
+    "Read-only fixed ROG 1886365-byte canonical R9 bundle over previously trusted strict rog-ts",
+    "Original 300-second controller, 90-second Git/SSH/sender deadlines",
+    "Fresh intermediate clone retains the actual borrowed prerequisite closure, imports only two fixed local bundles, and exposes canonical ref",
+    "Fresh no-hardlinks+dissociate final clone, full 3752-commit strict fsck, sole parent, root, full index paths, no sparse/skip/assume flags",
+    "Final .git traversal raises on walk errors and requires every file to be singly linked, no symlinks/alternates",
+    "Owned session lifecycle and terminal-authority checks retained"
+  ],
+  "execution_authorized": "one create-only inert carrier, actual source compile/readback, and one exact stage invocation after fixed trust-file read admission",
+  "new_supervisor_seconds": 360,
+  "new_supervisor_is_historical_budget_claim": false,
+  "trust_scope": "Controller checks required effective identity and before/after known-host files; fixed historical config and known-host SHA admission additionally required before launch. Do not misdescribe controller as containing the external fixed config pin.",
+  "runtime_qualification": false,
+  "product_or_compiler_started": false,
+  "production_change_authorized": false
+}

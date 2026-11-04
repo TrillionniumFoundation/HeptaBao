@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.phaseb-r3.local-stage-carrier-root-review.v1",
+  "bytes": 257060,
+  "sha256": "ebba9c57a95ba659c079fe937ff7dae5d5be14b3e80980e10041a0c1e3bf0b34",
+  "exact_files": [
+    {
+      "name": "phaseb_controller_r3.py",
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c"
+    },
+    {
+      "name": "phaseb_binding_r3.py",
+      "bytes": 20742,
+      "sha256": "39795f901ffac84236411f4b89ce2ee2ae573446ce30f490f9b8d0c603131501"
+    },
+    {
+      "name": "phaseb_evidence_r3.py",
+      "bytes": 15201,
+      "sha256": "4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024"
+    },
+    {
+      "name": "native_fixture_reference_r8.py",
+      "bytes": 68149,
+      "sha256": "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416"
+    },
+    {
+      "name": "official_cli_reference_r4.py",
+      "bytes": 46586,
+      "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9"
+    },
+    {
+      "name": "normal-release-tests-result.public.json",
+      "bytes": 24311,
+      "sha256": "409b8a02557cc5d2985d15f01ff28ff64a6fb43c4a8b1e0f50f03bb748fcbeee"
+    },
+    {
+      "name": "groups.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+    },
+    {
+      "name": "binding.partially-resolved.json",
+      "bytes": 5088,
+      "sha256": "6ba4c570b6d48d3194b640fa891832c24229e54d2ba2d9fd694616205fac5fa0"
+    }
+  ],
+  "raw_combined_result_not_reserialized": true,
+  "all_five_QA_sources_unchanged": true,
+  "partial_binding_ready": false,
+  "runtime_qualified": false
+}

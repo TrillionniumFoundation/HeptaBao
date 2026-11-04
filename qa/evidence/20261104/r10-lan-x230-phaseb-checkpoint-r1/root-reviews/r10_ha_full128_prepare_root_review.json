@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.r10.full128-prepare.root-review.v1",
+  "status": "PASS",
+  "job_id": "1a1a7fe8048-fc05-2d3d",
+  "result": {
+    "bytes": 28820,
+    "sha256": "64855330cb0beb840869fe601c707a4f2897e7bf3688af85dfdddc5e4ab9e01c",
+    "blob": "67b924770bef41516dc508d8a65e3e7c2ff5156c"
+  },
+  "authority": {
+    "bytes": 730,
+    "sha256": "8bed69a318e1068030ec53a3bdac462b83beb8513365a6296a8ed666328d7933",
+    "blob": "c536d865a7232c4ec4ccb7eb61aa3dd345874f32"
+  },
+  "stdout": {
+    "bytes": 257,
+    "sha256": "c9ede7f8e27ce635425173e443e5344fd5603cbd9fb5c8e038d4bb113f657579",
+    "blob": "935e869d189d34915bf8dda66da2aa97a86c10f3"
+  },
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "required_checks": 128,
+  "original_98_plus_30_preserved": true,
+  "actual_build_files_verified": 10,
+  "old_comparison_fences": 8,
+  "physical_hosts": [
+    "Mac",
+    "ROG",
+    "Pocket4"
+  ],
+  "product_qualification": false,
+  "production_changed": false,
+  "actual_live_job": "1a1a805fd5c-fc05-2d57",
+  "actual_live_key": "heptabao-r10-original128-live-r1-0c249a8d-prepared64855330",
+  "new_runtime_outer_seconds": 3000,
+  "original_internal_qa_seconds": 2400
+}

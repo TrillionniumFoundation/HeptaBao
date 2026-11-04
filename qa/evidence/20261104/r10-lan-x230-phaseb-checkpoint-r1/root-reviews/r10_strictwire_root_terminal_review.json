@@ -1,0 +1,88 @@
+{
+  "schema": "heptabao.r10.strictwire.root-terminal-review.v1",
+  "status": "PASS_SCOPED_OBSERVATION",
+  "job_id": "1a1a814d2b8-fc05-2d99",
+  "result": {
+    "bytes": 27267,
+    "sha256": "ad3653c8cc697d6a89bf243657612c003c77724c0f8cb640a439905487fe9fe2",
+    "blob": "a78242c35ef3d37ace99d867f9273bbe2d4715fc"
+  },
+  "authority": {
+    "bytes": 729,
+    "sha256": "45c7102b6cb71e70c0a17bfd505305228cd4658215b291f554bf18b4d651107c",
+    "blob": "c401437f67a01e4067172c8b6488db2039ad823a"
+  },
+  "stdout": {
+    "bytes": 675,
+    "sha256": "a66bef759033191b3941daa4f079875e740ab25b761746aece57bc130ad76de3",
+    "blob": "0779cb8180685b80ddcdb0db5db888df60b64145"
+  },
+  "wire": {
+    "bytes": 54066,
+    "sha256": "4d2d21baab9c6522bf433ce42e131a25914d2a023be739789a9f8a71df3bf067",
+    "blob": "632c848d699a1af7492b19a6653f45b19ff604f9"
+  },
+  "actual_http_intents": 86,
+  "actual_http_outcomes": 86,
+  "complete_http_responses": 85,
+  "known_preconnect_failures": 1,
+  "unknown_outcomes": 0,
+  "selected_wire_case_rows_verified": 22,
+  "all_selected_headers_and_body_boundaries_complete": true,
+  "owned_server_children_reaped": 4,
+  "owned_client_children_reaped": 86,
+  "dynamic_invariants_passed": 68,
+  "dynamic_invariants_are_not_compatibility_denominator": true,
+  "physical_hosts": 1,
+  "process_nodes": 3,
+  "valid_restore_bodies": 0,
+  "ordinary_no_forward_307_and_post_read_404": true,
+  "compatibility_status_differences": [
+    {
+      "case": "node2_snapshot_get_root",
+      "candidate": 307,
+      "official": 200
+    },
+    {
+      "case": "node3_snapshot_get_root",
+      "candidate": 307,
+      "official": 200
+    },
+    {
+      "case": "node1_snapshot_invalid_restore",
+      "candidate": 400,
+      "official": 500
+    },
+    {
+      "case": "node1_snapshot-force_invalid_restore",
+      "candidate": 400,
+      "official": 500
+    },
+    {
+      "case": "node2_snapshot_invalid_restore",
+      "candidate": 307,
+      "official": 500
+    },
+    {
+      "case": "node2_snapshot-force_invalid_restore",
+      "candidate": 307,
+      "official": 500
+    },
+    {
+      "case": "node3_snapshot_invalid_restore",
+      "candidate": 307,
+      "official": 500
+    },
+    {
+      "case": "node3_snapshot-force_invalid_restore",
+      "candidate": 307,
+      "official": 500
+    }
+  ],
+  "original_nine_fences_unchanged": true,
+  "all_86_individual_intent_response_files_independently_archived": false,
+  "per_operation_public_files_archive_pending": true,
+  "historical_r8_unknown_failure_preserved": true,
+  "full_replacement_qualification": false,
+  "production_changed": false
+}

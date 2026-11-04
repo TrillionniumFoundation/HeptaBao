@@ -1,0 +1,137 @@
+{
+  "schema": "heptabao.r10-x230-source-artifact-transfer-actual-review.v1",
+  "verdict": "PASS within source and artifact transport scope",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "job_id": "1a1a80c2068-fc05-2d76",
+  "authority": {
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "timed_out": false
+  },
+  "parent": {
+    "bytes": 50638,
+    "sha256": "9e2f1dff236b78b92bdb1b25e7e4b8b620577b8925440cec0762ae1d4bf8c85b",
+    "elapsed_seconds": 24.290902475011535,
+    "terminal_publication_seconds": 24.296306082047522,
+    "local_owned": 3,
+    "remote_git_owned": 21,
+    "all_reaped_no_remaining": true,
+    "remote_cleanup_unknown": false,
+    "endpoint_complete": true
+  },
+  "destination": {
+    "raw_receipt": {
+      "bytes": 33818,
+      "sha256": "725f9a7e51a202a2139618b933c55b1f387ef53af61035a3aa59d21394b0669a"
+    },
+    "nested_receiver_exact_lossless_comparison": "Target raw receipt equals parent.receiver after removing only receipt and publication_within_original_deadline, added after durable receipt write.",
+    "canonical_proof": {
+      "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "commit_count": 3752,
+      "full_fsck_passed": true,
+      "parents": [
+        "1d12abc45a83d4b32e7185d01a876eb93110b1e2"
+      ],
+      "root": "67d79b3b5442ed033d38929eab2010403463e56d",
+      "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+    },
+    "materialized": {
+      "actual_git_blob_bytes_verified": true,
+      "fsynced_directories": 369,
+      "fsynced_files": 3935,
+      "no_sparse_checkout": true,
+      "no_symlinks_or_hardlinks": true,
+      "tracked_files": 3911,
+      "tree_equals_index": true
+    },
+    "source_after": {
+      "clean": true,
+      "git_common_directory": "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1/source/.git",
+      "git_directory": "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1/source/.git",
+      "head": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "independent_git_directory": true,
+      "lock_files": {
+        "config.lock": false,
+        "index.lock": false,
+        "packed-refs.lock": false,
+        "shallow.lock": false
+      },
+      "no_alternates": true,
+      "no_partial_clone": true,
+      "shallow": false,
+      "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+    },
+    "independent_file_info_count": 5,
+    "independent_sha_mode_uid_nlink_version_matches": true
+  },
+  "original_limits": {
+    "sender_seconds": 90,
+    "receiver_seconds": 300,
+    "parent_seconds": 300,
+    "receiver_git_seconds": 60,
+    "receiver_clone_seconds": 90
+  },
+  "new_supervisor_outer_seconds": 360,
+  "source_inputs": [
+    {
+      "name": "heptabao-server",
+      "bytes": 109091112,
+      "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+      "version": "2050:58120239:109091112:1793819286714153802:1793819286714153802",
+      "source_mode": 320,
+      "target_mode": 320
+    },
+    {
+      "name": "native-build.public.json",
+      "bytes": 801,
+      "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+      "version": "2050:58120241:801:1793819287399134926:1793819287399134926",
+      "source_mode": 256,
+      "target_mode": 256
+    },
+    {
+      "name": "result.public.json",
+      "bytes": 3227,
+      "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+      "version": "2050:58120242:3227:1793819287404134788:1793819287404134788",
+      "source_mode": 256,
+      "target_mode": 256
+    },
+    {
+      "name": "canonical-r10-full.bundle",
+      "bytes": 20091909,
+      "sha256": "6fb2b73c52a880475ce8c45c67a4179575834313ee24ed761af94ea3faaaa858",
+      "version": "2050:58372900:20091909:1793819761984976492:1793819761988976381",
+      "source_mode": 384,
+      "target_mode": 256
+    },
+    {
+      "name": "source-export.result.public.json",
+      "bytes": 40100,
+      "sha256": "6342a59b3a953c5e701887cceac8cc7274850f76f65b718b427485bd5b29951e",
+      "version": "2050:58372937:40100:1793819763173944963:1793819763173944963",
+      "source_mode": 384,
+      "target_mode": 256
+    }
+  ],
+  "read_only_observation_errors": {
+    "first_round_calls": 6,
+    "error": "MCP -32603 timeout",
+    "business_replayed": false,
+    "followup": "Sequential read-only target receipt and file_info calls completed, exact whole bytes and current metadata independently verified.",
+    "stored_raw_errors": true
+  },
+  "scope": {
+    "old_x230_source_opened": false,
+    "network_git_transport": false,
+    "server_or_compiler_started": false,
+    "product_tests_executed": 0,
+    "production_changed": false,
+    "full_replacement_qualified": false
+  },
+  "artifact_packet_limitations": "This packet contains complete parent and target receipts, original authority/terminal and independent file_info plus reviewed sources. It does not duplicate artifact or bundle bodies. Separate per-Git stdout/stderr files remain in the new target control root; complete command/cleanup records and their hashes are in the target receipt."
+}

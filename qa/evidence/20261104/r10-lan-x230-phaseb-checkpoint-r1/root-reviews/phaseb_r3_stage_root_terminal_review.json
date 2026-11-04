@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.phaseb-r3-root-local-stage-terminal-review.v1",
+  "status": "passed",
+  "job_id": "1a1a7fca2e6-fc05-2d32",
+  "stdout": {
+    "bytes": 11497,
+    "sha256": "4c582c9f33d58bf43c4e3acec1b1e4b0fd5d9fc26ae1409b43f6928aeda6c01e",
+    "blob": "e7728f0a1dcfccad87e62a43b9c3c34c4fb4c9f6"
+  },
+  "authority": {
+    "bytes": 733,
+    "sha256": "e19d38c43e6a4f8ef4e8bc9b31f0435f7e7dc8fa6516812768bac494a9bf6786",
+    "blob": "fe37da0e5c58c66ed5a627021c2a0f290f5a5146"
+  },
+  "binding": {
+    "bytes": 6366,
+    "sha256": "8e73ca7f0ed52056035ed82878b5f5c200e50013bfc36f1ad3dd647879043736",
+    "blob": "b0cf9ee08057363ea5476254a0a960e9f75a1d6b"
+  },
+  "whole_original_bytes_verified": true,
+  "source_version_and_new_target_identity_verified": true,
+  "concrete_binding_exactly_matches_partial_plus_observed_fields": true,
+  "all_five_QA_sources_unchanged": true,
+  "raw_combined44_and_native_release_receipts_unchanged": true,
+  "all_fds_closed": true,
+  "elapsed_after_closure_ms": 2427.250557,
+  "new_stage_300_second_deadline_met": true,
+  "no_children_network_or_product": true,
+  "source_full_git_gate_separately_passed_by_root": true,
+  "readonly_prepare_authorized": true,
+  "live_runtime_authorized": false,
+  "full_replacement_qualification": false
+}

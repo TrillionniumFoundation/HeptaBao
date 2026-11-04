@@ -1,0 +1,162 @@
+{
+  "schema": "heptabao.r10-lan-x230-phaseb-checkpoint.v1",
+  "as_of_utc": "2026-11-04T20:01:46Z",
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "normal_default_features": true,
+  "normal_binaries": {
+    "linux": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+    "mac": "bc1fc6b8ded5a43a60ab4c562cd5e092e63ae9df77afd654c9af8c096c128c98"
+  },
+  "normal44": {
+    "mac": "PASS_44_44_NO_IGNORES",
+    "rog": "PASS_44_44_NO_IGNORES",
+    "published_before_this_checkpoint": true
+  },
+  "x230": {
+    "source_transport": "PASS_INDEPENDENT_FULL_HISTORY",
+    "full34": {
+      "status": "PASS_SCOPED_31_31",
+      "job": "1a1a8170415-fc05-2da3",
+      "summary": {
+        "bytes": 90929,
+        "sha256": "0990e3ab77f3b428fe77e4e4a36a6a60678f2f50edf43f476f7c595e79c48319",
+        "blob": "7195696088fadd61dd735b5eb064ed094b2a27e9"
+      },
+      "original_http_seconds": 15,
+      "original_migration_seconds": 360,
+      "new_outer_seconds": 1800,
+      "live_payload_bytes": 35651584,
+      "retained_live_versions": 17,
+      "raw_bound_storage_witnesses": 3,
+      "versions_per_witness": 19,
+      "known_mutations": 95,
+      "unknown": 0,
+      "replays": 0
+    },
+    "comparison": {
+      "status": "PASS_SCOPED_69_69_EACH_SIDE",
+      "job": "1a1a81beb21-fc05-2db3",
+      "summary": {
+        "bytes": 104035,
+        "sha256": "2b696bfbc041b72fe0f725cd32efaa0e66cf3a692f3a08857020ae1a3d8d332e",
+        "blob": "b5504a0a48e068f7366e9c354deb93974a1af5e6"
+      },
+      "numeric_cases": 67,
+      "normalized_rejection_cases": 2,
+      "modules": 13,
+      "original_driver_unmodified": true,
+      "new_outer_seconds": 1800
+    }
+  },
+  "physical_ha": {
+    "r1": {
+      "status": "FAIL_16_OF_128",
+      "job": "1a1a805fd5c-fc05-2d57",
+      "stage": "new_physical_roots_and_tls",
+      "mutations": 0,
+      "services_started": 0,
+      "summary": {
+        "bytes": 14735,
+        "sha256": "99b78fe5021248cd9f00af681df8a176442a59c54d446fa3d9f5f0adab414d76",
+        "blob": "5151f549fff98d48e366150fc12a75f1c79b8c70"
+      }
+    },
+    "watchdog_diagnostic": "PASS_ACTUAL_INTERPRETER_ONLY",
+    "r2_source": "PASS_EXACT_FOUR_HUNKS",
+    "r2_prepare": "PASS",
+    "r2_actual": {
+      "status": "RUNNING_NO_TERMINAL_QUALIFICATION",
+      "job": "1a1a81dde69-fc05-2dbc",
+      "internal_seconds": 2400,
+      "new_outer_seconds": 3000,
+      "original_import_http_seconds": 5,
+      "original_http_seconds": 15,
+      "original_admission_seconds": 8
+    },
+    "pocket_to_mac_direction98": "NOT_RUN_ON_R10"
+  },
+  "strictwire": {
+    "status": "PASS_SCOPED_OBSERVATION_WITH_8_COMPATIBILITY_DIFFERENCES",
+    "job": "1a1a814d2b8-fc05-2d99",
+    "http_intents": 86,
+    "known_outcomes": 86,
+    "strict_complete": 85,
+    "known_preconnect": 1,
+    "unknown": 0,
+    "dynamic_checks": 68,
+    "dynamic_checks_not_replacement_denominator": true,
+    "physical_hosts": 1,
+    "process_nodes": 3,
+    "valid_restore_bodies": 0,
+    "individual_operation_files_172_archival_pending": true,
+    "old_r8_unknown_preserved": true
+  },
+  "phaseb": {
+    "status": "FAIL_UNKNOWN",
+    "job": "1a1a8177aec-fc05-2da5",
+    "result": {
+      "bytes": 270785,
+      "sha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184",
+      "blob": "7a2238125a983bbe657d99d460aae9a9b5b1ae71"
+    },
+    "executed_cases": [
+      "B01"
+    ],
+    "cli_exit": 2,
+    "archive_exists": false,
+    "audit_status": 503,
+    "audit_does_not_prove_client_response_framing": true,
+    "replays": 0,
+    "all_owned_81_stopped": true,
+    "original_final_error_preserved": "input_fence_changed_after_run",
+    "serialized_input_fences_equal": true,
+    "input_comparison_key_type_bug": "source_inference_separate_from_unknown_cli_failure",
+    "b02_b05_not_executed": true
+  },
+  "ci": {
+    "run": 41879510413,
+    "merge_job": 126748711283,
+    "merge_status": "FAILURE",
+    "failed_server_tests": 4,
+    "passed_server_tests": 3708,
+    "ignored_server_tests": 8,
+    "head_job": 126748711370,
+    "head_status_at_observation": "IN_PROGRESS",
+    "full_ci_pass": false,
+    "source_or_test_expectations_not_modified_for_failure": true
+  },
+  "relay": {
+    "status": "SOURCE_ONLY_NOT_IMPLEMENTATION_READY",
+    "open": [
+      "normal_native_typed_writer_and_HA_admission_for_negative_custody",
+      "exact_source_handoff_after_shared_root_negative_custody_without_readmission_or_redebit"
+    ],
+    "runtime": false
+  },
+  "remaining_required": {
+    "current_r10_real_authbus_consumer": "PENDING",
+    "per_machine_real_credentials_restart_rollback": "PENDING_CURRENT_FULL_CANDIDATE",
+    "production_custodian_assignment": "UNRESOLVED",
+    "all_client_and_backup_inventory_migrated": false,
+    "full_openbao_271_surface": false
+  },
+  "full_replacement_qualification": false,
+  "production_initialized": false,
+  "production_unsealed": false,
+  "production_loaded": false,
+  "production_cutover": false,
+  "old_service_or_binary_deletion": false,
+  "provider_requests": 0,
+  "j3160_requests": 0,
+  "evidence": {
+    "raw_packets": 25,
+    "raw_files": 294,
+    "raw_utf8_bytes": 2675364,
+    "packet_merkle_directories": 58,
+    "manifest_members": 191,
+    "root_reviews": 28,
+    "original_unsafe_integer_tokens_preserved": true,
+    "old_failures_and_unknowns_not_rewritten": true
+  }
+}

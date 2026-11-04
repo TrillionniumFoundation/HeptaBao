@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.r10.shared-artifact-transfer-root-terminal-review.v1",
+  "status": "passed",
+  "job_id": "1a1a7f6109f-fc05-2d1d",
+  "result": {
+    "bytes": 14209,
+    "sha256": "f8fd7d32498cb8d291407f5cc352f79584c57e55d48f028f26048097bb0bd7bf",
+    "blob": "e41d0284577f32c051ee724188861ceaa9befcbe"
+  },
+  "authority": {
+    "bytes": 729,
+    "sha256": "018b682bd37192d339ccb8e7e4bac55518a688e7225a879c9489fd4f0478a440",
+    "blob": "b9dab78cdf4894bbf943b99d0510f6a5adeb87f8"
+  },
+  "terminal": {
+    "bytes": 347,
+    "sha256": "5e64eb1f6c7b799adaa62eca7a5b287baef7a2af761c9ea1bf59e188c9acd7f3",
+    "blob": "8b215748b78e9846252d3c2b77f71caf9821f37a"
+  },
+  "root_full_original_json_reviewed": true,
+  "unsafe_nanosecond_integer_tokens_preserved": true,
+  "all_three_owned_groups_reaped": true,
+  "both_endpoints_complete_before_90_seconds": true,
+  "controller_seconds": 2.5106801219517365,
+  "terminal_seconds": 2.5174954310059547,
+  "trust_and_original_source_assets_unchanged": true,
+  "independent_target_file_info_verified": [
+    {
+      "name": "heptabao-server",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1/incoming/heptabao-server",
+      "bytes": 109091112,
+      "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+      "mode": 320,
+      "version": "2050:58120239:109091112:1793819286714153802:1793819286714153802"
+    },
+    {
+      "name": "native-build.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1/incoming/native-build.public.json",
+      "bytes": 801,
+      "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+      "mode": 256,
+      "version": "2050:58120241:801:1793819287399134926:1793819287399134926"
+    },
+    {
+      "name": "normal-release-result.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1/incoming/normal-release-result.public.json",
+      "bytes": 3227,
+      "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+      "mode": 256,
+      "version": "2050:58120242:3227:1793819287404134788:1793819287404134788"
+    }
+  ],
+  "raw_normal_receipts_not_rewritten": true,
+  "normal_default_provenance": true,
+  "transport_consumer_input_gate": true,
+  "product_runtime_qualification": false,
+  "production_changed": false
+}

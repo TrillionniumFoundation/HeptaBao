@@ -1,0 +1,92 @@
+{
+  "schema": "heptabao.r10.desktop-source-stage-r1-failure-assessment.v1",
+  "source_only": true,
+  "job_id": "1a1a7f278ca-fc05-2d0d",
+  "authoritative_exit_code": 1,
+  "complete": true,
+  "durable": true,
+  "timed_out": false,
+  "result_bytes": 18123,
+  "result_sha256": "43695ba4777612aaed337f71f093a1c7fdb93c9c70bf81a701e0657cbd809b83",
+  "controller_sha256": "372a019ad50be02351fdba5de4837c52a7243290d7253fda8046c0eeafe02b30",
+  "exact_failure_frames": [
+    {
+      "function": "<module>",
+      "line": 403
+    },
+    {
+      "function": "inspect_ssh",
+      "line": 285
+    }
+  ],
+  "failed_assertion": "config.get('proxycommand') in (None,'none')",
+  "reason": "New controller incorrectly presumed the already proven SSH alias had no ProxyCommand; actual current effective config whole SHA equals the previously successful R9 transport.",
+  "observed_effective_config_bytes": 4313,
+  "observed_effective_config_sha256": "9228489a625661b16e643d1bde2d4b81bb95c2d23798b92024f700309400cf08",
+  "observed_existing_proxycommand_bytes": 141,
+  "observed_existing_proxycommand_sha256": "92e3d728c643c8dbb9cfa27c7d015c10a7579a0832243bc44e2d97541c02058c",
+  "safe_existing_proxy_command": [
+    "/usr/bin/python3",
+    "/home/qian-qi/.ssh/hepta-transport/ssh_transport.py",
+    "--inventory",
+    "/home/qian-qi/.ssh/hepta-transport/inventory.json",
+    "--peer",
+    "rog"
+  ],
+  "original_trust_config_and_known_hosts_actual_hashes_verified_before_exec": true,
+  "owned_git_readonly_commands": 9,
+  "owned_ssh_effective_config_commands": 1,
+  "remote_sender_dispatched": false,
+  "clone_or_fetch_started": false,
+  "all_owned_stopped": true,
+  "remote_cleanup_unknown": false,
+  "git_mutations": 0,
+  "compiler_started": false,
+  "server_started": false,
+  "old_source_before": {
+    "alternate": {
+      "file": {
+        "bytes": 93,
+        "identity": [
+          2050,
+          56653905,
+          1000,
+          1000,
+          33152,
+          1,
+          93,
+          1793805470872337000,
+          1793805470872337000
+        ],
+        "sha256": "dbb4a9708da32a75373f6d11b53fa04334c2706454ca1da17f3450d80df864e2"
+      },
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/pipelined-packed-frames-source-r1/.git/objects",
+      "single_known_dependency_bounded_under_base": true
+    },
+    "clean": true,
+    "commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+    "git_common_directory": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r8-standby-oracle-source-r1/.git",
+    "git_directory": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r8-standby-oracle-source-r1/.git",
+    "independent_object_store": false,
+    "locks": {
+      "config.lock": false,
+      "index.lock": false,
+      "packed-refs.lock": false,
+      "shallow.lock": false
+    },
+    "no_grafts": true,
+    "no_partial_clone": true,
+    "refs_bytes": 846,
+    "refs_sha256": "88409147a6d950453f1675b8ab4c8adfd62361938352a65c9960a595f949f6e5",
+    "shallow": false,
+    "tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04"
+  },
+  "old_fences_verified_before": true,
+  "old_source_after_not_reobserved_in_this_failed_run": true,
+  "failed_control_preserved": true,
+  "fresh_candidate_control": "normal-r10-validation-source-control-r2",
+  "fresh_candidate_does_not_modify_ssh_config_or_route": true,
+  "original_300_90_deadlines_unchanged": true,
+  "parent_final_source_will_still_be_required_absent": true,
+  "no_failed_operation_replayed": true
+}

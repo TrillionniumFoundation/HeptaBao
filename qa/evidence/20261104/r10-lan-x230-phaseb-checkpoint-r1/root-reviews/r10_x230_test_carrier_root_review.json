@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.r10.x230-test-controls-carrier.root-source-review.v1",
+  "status": "PASS",
+  "source": {
+    "bytes": 5533,
+    "sha256": "d686d064d4b9af4c41727db864662e4f9cfa30233c2b7ba011b1d5b92805ee91",
+    "blob": "55710c77fd597d15ed3c218a5a886d6f38bf3fec"
+  },
+  "diff": {
+    "bytes": 4476,
+    "sha256": "9d1a23349c84ea6409251188f698f4be4d1ddb9e332386763bfea893fa661699",
+    "blob": "728387ada34ea4b53d40963a1fa6c5a81250eb69"
+  },
+  "strict_apply_hunks": 4,
+  "unchanged_functions": [
+    "sha",
+    "ident",
+    "sync_dir",
+    "exact",
+    "publish"
+  ],
+  "only_existing_test_root_and_three_pins_plus_exact_transfer_guard": true,
+  "transfer_receipt_bytes": 33818,
+  "transfer_receipt_sha256": "725f9a7e51a202a2139618b933c55b1f387ef53af61035a3aa59d21394b0669a",
+  "stdin_bytes": 73973,
+  "stdin_sha256": "245435ac86cf68bafaf7c382cd7b03a686307b0d8327d17eb5ff4892dc346a65",
+  "inert_outer_seconds": 60,
+  "product_outer_seconds_each": 1800,
+  "product_budgets_are_new_outer_only": true,
+  "production_changed": false
+}

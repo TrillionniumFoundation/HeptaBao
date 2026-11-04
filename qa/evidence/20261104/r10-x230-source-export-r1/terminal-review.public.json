@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.r10.x230-full-source-export-terminal-review.v1",
+  "status": "PASS",
+  "scope": "Actual source export only; no X230 transfer, compiler or product execution.",
+  "author": "authbus_migration",
+  "root_independent_actual_review_accepted": true,
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "sole_parent": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+  "commit_count": 3752,
+  "full_strict_fsck_passed": true,
+  "source_before_after_equal": true,
+  "no_alternate_graft_partial_or_shallow_dependency": true,
+  "owned_git_commands": 27,
+  "normal_zero_exits": 25,
+  "expected_missing_partial_config_exit_one": 2,
+  "all_owned_reaped_and_groups_empty": true,
+  "authority_complete_durable_exit_zero": true,
+  "publication_within_original_deadline": true,
+  "new_outer_supervisor_seconds": 360,
+  "original_total_seconds": 300,
+  "original_git_seconds": 90,
+  "actual_terminal_seconds": 7.190481874044053,
+  "endpoint_bundle": {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-x230-source-export-r1/canonical-r10-full.bundle",
+    "bytes": 20091909,
+    "sha256": "6fb2b73c52a880475ce8c45c67a4179575834313ee24ed761af94ea3faaaa858",
+    "version": "2050:58372900:20091909:1793819761984976492:1793819761988976381",
+    "mode": "0600",
+    "uid": 1000,
+    "links": 1,
+    "heads": [
+      [
+        "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+        "HEAD"
+      ]
+    ],
+    "prerequisites": []
+  },
+  "inert_job": "1a1a7fc7588-fc05-2d30",
+  "export_job": "1a1a7fd3a6d-fc05-2d36",
+  "raw_numeric_fidelity_preserved": true,
+  "raw_capture_scope": "Complete inert and exporter final receipts, process ACK/status/output, exact executed sources, all 27 command records inside the complete result, and independent bundle/source file_info. Separate per-command stdout/stderr files remain at the owned export root; this packet does not claim to include those separate files or the 20 MB bundle body.",
+  "runtime_qualification": false,
+  "production_changed": false,
+  "automatic_retry": false
+}

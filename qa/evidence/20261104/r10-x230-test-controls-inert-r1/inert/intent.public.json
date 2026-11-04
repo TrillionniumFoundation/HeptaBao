@@ -1,0 +1,18 @@
+{
+  "host": "x230",
+  "executable": "/usr/bin/python3",
+  "args_prefix": [
+    "-I",
+    "-S",
+    "-B",
+    "-c"
+  ],
+  "source_bytes": 5533,
+  "source_sha256": "d686d064d4b9af4c41727db864662e4f9cfa30233c2b7ba011b1d5b92805ee91",
+  "stdin_bytes": 73973,
+  "stdin_sha256": "245435ac86cf68bafaf7c382cd7b03a686307b0d8327d17eb5ff4892dc346a65",
+  "cwd": "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1",
+  "timeout_seconds": 60,
+  "idempotency_key": "heptabao-r10-x230-test-controls-inert-d686d064-20261104-r1",
+  "products_executed": false
+}

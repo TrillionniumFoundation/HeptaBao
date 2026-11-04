@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.native-snapshot-relay-implementation-prerequisites.r3",
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "supersedes_no_original_files": true,
+  "prior_design_tree": "f4109bab0f558c67b7212f9df1621a5900b087d5",
+  "source_only": true,
+  "implementation": false,
+  "runtime": false,
+  "production": false,
+  "qualified": false,
+  "open_requirements": [
+    "actual_normal_native_typed_writer_admission_for_negative_custody",
+    "non_forged_source_handoff_after_origin_shared_root_publication_without_second_debit"
+  ],
+  "phaseb_unknown_replay_authorized": false
+}

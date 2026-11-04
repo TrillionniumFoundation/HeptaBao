@@ -1,0 +1,57 @@
+--- before/binding.partially-resolved-r10.json
++++ after/binding.partially-resolved-r10.json
+@@ -4,7 +4,7 @@
+   "candidate_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+   "host": {
+     "uid": null,
++    "machine_id_sha256": "d90fa41f7e59edf2f2a732ea082cac83085a2a3695a503cd82b6b4eef9cab9f3",
+-    "machine_id_sha256": null,
+     "system": "Linux",
+     "machine": "x86_64"
+   },
+@@ -54,36 +54,36 @@
+   "artifacts": {
+     "server": {
+       "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r1/artifacts/heptabao-server",
++      "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
++      "bytes": 109091112,
+-      "sha256": null,
+-      "bytes": null,
+       "uid": null,
+       "mode": 320
+     },
+     "native_receipt": {
+       "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r1/artifacts/native-build.public.json",
++      "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
++      "bytes": 801,
+-      "sha256": null,
+-      "bytes": null,
+       "uid": null,
+       "mode": 384
+     },
+     "release_receipt": {
+       "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r1/artifacts/normal-release-result.public.json",
++      "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
++      "bytes": 3227,
+-      "sha256": null,
+-      "bytes": null,
+       "uid": null,
+       "mode": 384
+     },
+     "combined_tests": {
+       "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r1/artifacts/normal-release-tests-result.public.json",
++      "sha256": "409b8a02557cc5d2985d15f01ff28ff64a6fb43c4a8b1e0f50f03bb748fcbeee",
++      "bytes": 24311,
+-      "sha256": null,
+-      "bytes": null,
+       "uid": null,
+       "mode": 384
+     },
+     "test_groups": {
+       "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r1/artifacts/groups.json",
+       "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
++      "bytes": 6249,
+-      "bytes": null,
+       "uid": null,
+       "mode": 384
+     }

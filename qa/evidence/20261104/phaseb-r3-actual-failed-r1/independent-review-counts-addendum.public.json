@@ -1,0 +1,15 @@
+{
+  "schema": "phaseb-r3-live-r1-review-counts-addendum-v1",
+  "original_review_blob": "eaf6af530039b283a1425a16ca64628fdc1324f8",
+  "original_result_blob": "7a2238125a983bbe657d99d460aae9a9b5b1ae71",
+  "reason": "The core's http_intents/http_outcomes are scalar counts; the first derived review omitted these two fields when using an array-length projection. No original result changed.",
+  "actual_scalar_counts": {
+    "http_intents": 66,
+    "http_outcomes": 66
+  },
+  "original_dynamic_checks": {
+    "passed": 84,
+    "total": 84
+  },
+  "all_original_failure_unknown_cleanup_and_other_review_facts_preserved": true
+}

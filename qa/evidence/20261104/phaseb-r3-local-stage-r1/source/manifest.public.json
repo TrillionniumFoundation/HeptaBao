@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.phaseb-r3.local-stage-source-draft.v1",
+  "source_only": true,
+  "files": [
+    {
+      "name": "stage_phaseb_r3_local_inputs_r1.py",
+      "bytes": 22935,
+      "sha256": "c8ecd9daf62a7f38fa3940cd6bb3a0400f3a6d6ad39ab206c1d007031da128ed",
+      "blob": "80549c6b3a8aa05efaa2abf66e4177239e0b9134"
+    },
+    {
+      "name": "source-carrier.public.json",
+      "bytes": 257060,
+      "sha256": "ebba9c57a95ba659c079fe937ff7dae5d5be14b3e80980e10041a0c1e3bf0b34",
+      "blob": "ecad1df703f911f44e74dd57a5ea3ae245189f3a"
+    },
+    {
+      "name": "binding.partially-resolved-r10.json",
+      "bytes": 5088,
+      "sha256": "6ba4c570b6d48d3194b640fa891832c24229e54d2ba2d9fd694616205fac5fa0",
+      "blob": "38e70200523d71fa3c0455d15b1e08098f0bcd83"
+    },
+    {
+      "name": "binding-known-r10-pins.review.diff",
+      "bytes": 2232,
+      "sha256": "d130d1ebaa972ef9141317967dc6e6d2aaa13669aa6fead8874bce2bab083771",
+      "blob": "22d729a2866ac0d4d53e8f5e9835e195504a3f25"
+    },
+    {
+      "name": "LOCAL_STAGE.md",
+      "bytes": 5361,
+      "sha256": "40bb0ffadb70f2a1f03c024e9055675d46ca250f4ba36504805ec60ea6486fe5",
+      "blob": "5bbd502de4897dc875a942cbee40dfbd29709822"
+    },
+    {
+      "name": "local-stage-close-review.diff",
+      "bytes": 1176,
+      "sha256": "61f1e004741900400516bfb1d76d7d72b45223886405b78b5c12e0c70ca6ceeb",
+      "blob": "0d6d4537c18388b4f2a8c18d5c0694140c40fe0f"
+    },
+    {
+      "name": "local-stage-terminal-deadline.review.diff",
+      "bytes": 896,
+      "sha256": "0adc07c04a87dc2415b45d9269eb1d08842e0aad230f2635f7eb5707d6816c6a",
+      "blob": "2d324f311f06c84f32d62674deaceccd0f32026e"
+    },
+    {
+      "name": "local-stage-final-review.diff",
+      "bytes": 1640,
+      "sha256": "1c5f02622184100378e38eb9796c5f16e39b44a7a1bcd2327b114734d7124eca",
+      "blob": "3266671d7b20be6982c683820503cd5f61a6b186"
+    }
+  ],
+  "controller_qa_tree": "1536ca640675167147a1917fc95fddbc18bdce03",
+  "controller_main_unchanged": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+  "linux44_actual_receipt": {
+    "blob": "3e0a0ce5f20de8bb892436c1e1a38872b45f27d6",
+    "bytes": 24311,
+    "sha256": "409b8a02557cc5d2985d15f01ff28ff64a6fb43c4a8b1e0f50f03bb748fcbeee"
+  },
+  "original_frozen_qa_runtime_pass_claimed": false,
+  "desktop_canonical_source_stage_receipt_bound": false,
+  "desktop_shared_artifact_transfer_receipt_bound": false,
+  "actual_existing_file_custody_captured": false,
+  "read_only_prepare_started": false,
+  "product_runtime_started": false,
+  "execution_pending_root_source_and_prerequisite_review": true,
+  "draft_revision": 2,
+  "previous_tree": "f28e8cf272baba2c861da1b2b37d018aed7065eb"
+}

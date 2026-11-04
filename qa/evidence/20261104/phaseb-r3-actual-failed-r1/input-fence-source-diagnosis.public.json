@@ -1,0 +1,58 @@
+{
+  "schema": "phaseb-r3-live-r1-input-fence-source-diagnosis-v1",
+  "scope": "lossless_original_result_projection_and_frozen_python_source_only",
+  "raw_result_sha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184",
+  "before_and_after_lossless_serialized_values_equal": true,
+  "canonical_comparison_sha256": "f02a78c01b2b97e24eb91720a74ed70dc20278601c47e4a7c628464ac361aa14",
+  "numeric_lexemes_preserved": true,
+  "raw_final_error_not_rewritten": true,
+  "input_dict_keys_before_and_after": [
+    "api_ports",
+    "archive_and_audit_product_sources",
+    "binding_sha256",
+    "budgets",
+    "files",
+    "host",
+    "official_source_commit",
+    "raft_ports",
+    "schema",
+    "source",
+    "whole_replacement_qualification"
+  ],
+  "binding_integer_key_constant_lines": [
+    {
+      "line": 58,
+      "text": "API_PORTS = {1: 48630, 2: 48632, 3: 48634}"
+    },
+    {
+      "line": 59,
+      "text": "RAFT_PORTS = {node: port + 1 for node, port in API_PORTS.items()}"
+    },
+    {
+      "line": 352,
+      "text": "            \"budgets\": BUDGETS, \"api_ports\": API_PORTS, \"raft_ports\": RAFT_PORTS,"
+    }
+  ],
+  "controller_parsed_prepare_and_comparison_lines": [
+    {
+      "line": 281,
+      "text": "            self.verified = verified"
+    },
+    {
+      "line": 920,
+      "text": "                require(after == self.verified, \"input_fence_changed_after_run\")"
+    },
+    {
+      "line": 1068,
+      "text": "    binding.quick_fence(prepared[\"inputs\"])"
+    },
+    {
+      "line": 1078,
+      "text": "    fixture = make_fixture(native, cli, bm, evidence, binding, prepared[\"inputs\"], prepared)"
+    }
+  ],
+  "source_derived_interpretation": "prepare JSON parses nested port-object keys as str; Binding.verify constructs fresh integer-key API_PORTS/RAFT_PORTS dicts; Python dict equality therefore rejects despite exact equal serialized projections",
+  "b01_unknown_preserved": true,
+  "b01_cause_determined": false,
+  "actual_python_reproduction_executed": false
+}

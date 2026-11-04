@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.r10.desktop-source-control-r2-root-review.v1",
+  "previous_source": {
+    "bytes": 26983,
+    "sha256": "372a019ad50be02351fdba5de4837c52a7243290d7253fda8046c0eeafe02b30",
+    "blob": "be6075be9878acd93ddc0d2cd918c1a09b29a009"
+  },
+  "new_source": {
+    "bytes": 27885,
+    "sha256": "6322aee9dea18b58dcd8c2c073c493ffea6ef175afee5812ef506a1538962298",
+    "blob": "a78f5e29d15a6d470110cbad757eaa51d8eba06d"
+  },
+  "exact_full_diff_verified": true,
+  "hunks": 4,
+  "preserved_failed_job": "1a1a7f278ca-fc05-2d0d",
+  "preserved_failed_result": {
+    "bytes": 18123,
+    "sha256": "43695ba4777612aaed337f71f093a1c7fdb93c9c70bf81a701e0657cbd809b83",
+    "blob": "07b18c604015740ef00908ef7536ea8619054bca"
+  },
+  "known_exit": 1,
+  "failed_controller_extra_assumption": "proxycommand must be absent contradicted the established fixed SSH transport",
+  "known_failure_boundary": {
+    "owned_groups": 10,
+    "all_reaped": true,
+    "remote_sender_launched": false,
+    "clone_or_bundle_fetch_started": false
+  },
+  "correction": "Bind the exact existing effective configuration and existing ProxyCommand hash; retain all hostname, user, enrolled host-key alias and strict checking gates. No SSH configuration, route, trust file or policy is modified.",
+  "effective_configuration": {
+    "bytes": 4313,
+    "sha256": "9228489a625661b16e643d1bde2d4b81bb95c2d23798b92024f700309400cf08",
+    "blob": "ca43eb32f8185216cc5c5119cff265f8ee532048"
+  },
+  "proxycommand_sha256": "92e3d728c643c8dbb9cfa27c7d015c10a7579a0832243bc44e2d97541c02058c",
+  "existing_fixed_proxycommand": "/usr/bin/python3 /home/qian-qi/.ssh/hepta-transport/ssh_transport.py --inventory /home/qian-qi/.ssh/hepta-transport/inventory.json --peer rog",
+  "new_source_control_directory": "normal-r10-validation-source-control-r2",
+  "unchanged_final_source_directory": "normal-r10-validation-source-r1",
+  "new_three_failure_fences": true,
+  "internal_seconds": 300,
+  "outer_supervisor_seconds": 360,
+  "execution_authorized": "one inert create-only controller staging and one new control-r2 attempt after shared artifact transfer is terminal and cleaned",
+  "product_runtime_qualification": false
+}

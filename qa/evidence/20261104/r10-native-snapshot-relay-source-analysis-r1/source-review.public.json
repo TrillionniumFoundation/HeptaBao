@@ -1,0 +1,95 @@
+{
+  "schema": "heptabao.native-snapshot-pending-ownership.r10.r1",
+  "new_identity": true,
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "source_only": true,
+  "old_unavailable_relay_draft_reconstructed": false,
+  "old_relay_approval_inherited": false,
+  "product_files_modified": false,
+  "product_processes_started": 0,
+  "business_requests": 0,
+  "current_final_writer_loss_reproduced_at_runtime": false,
+  "current_outside_lock_phase_claimed_to_commit_restore": false,
+  "proposal_is_implemented": false,
+  "full_replacement_qualified": false,
+  "key_findings": [
+    "NativeRequestBinding carries typed negative outcome only, not positive Actor or delivery authority.",
+    "Plan plus outer Pending retain real original admission/fingerprint/clock; take into Pending clears idle Service binding.",
+    "Current external snapshot transfer exports or spools/parses; current historical Begin/root CAS occurs inside writer-held finalization.",
+    "HTTP final writer acquisition failure drops Pending without Service completion; this source observation is not a runtime reproduced committed-restore failure.",
+    "A future remotely committed relay requires explicit bounded settlement custody and durable uncertain-operation binding; Ready is not CompletedForwardReceipt."
+  ],
+  "source_files": [
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+      "bytes": 50683,
+      "sha256": "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9",
+      "complete_bytes_fetched_and_gitblob_verified": true,
+      "review_scope": "Named ownership/admission/transfer/finalization functions and relevant definitions; not a whole-file product audit."
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "blob": "4a5743d757b79493400b712bf57a5fa552b50bda",
+      "bytes": 35170,
+      "sha256": "1cc98a78d6a037a47456b7c6b93dc13647a261e8217f12a6a4edff3d91fe41e2",
+      "complete_bytes_fetched_and_gitblob_verified": true,
+      "review_scope": "Named ownership/admission/transfer/finalization functions and relevant definitions; not a whole-file product audit."
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_forward.rs",
+      "blob": "c4f67654fc940285233ad3db47d78681cb1e0ef5",
+      "bytes": 78860,
+      "sha256": "8c8d95ed29f7e01143ccccce400283c76f4007469f427a5141d3a9991756d84b",
+      "complete_bytes_fetched_and_gitblob_verified": true,
+      "review_scope": "Named ownership/admission/transfer/finalization functions and relevant definitions; not a whole-file product audit."
+    },
+    {
+      "path": "crates/heptabao-server/src/service_forward_delivery.rs",
+      "blob": "3203475bf2d08dde01570b8fe473e6343cdc4c4f",
+      "bytes": 28987,
+      "sha256": "8581fa455395fcdf3933e67360c677d2f53bdcefa8c86c4199d6c7948cad5e26",
+      "complete_bytes_fetched_and_gitblob_verified": true,
+      "review_scope": "Named ownership/admission/transfer/finalization functions and relevant definitions; not a whole-file product audit."
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+      "bytes": 518245,
+      "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2",
+      "complete_bytes_fetched_and_gitblob_verified": true,
+      "review_scope": "Named ownership/admission/transfer/finalization functions and relevant definitions; not a whole-file product audit."
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_writer.rs",
+      "blob": "713b6906ad6a566fb6e5580b28083e2292b53565",
+      "bytes": 129750,
+      "sha256": "9690f3658febcab99bd36b266868f25c29d3ba65c2dcb97df5918430b5cbcf11",
+      "complete_bytes_fetched_and_gitblob_verified": true,
+      "review_scope": "Named ownership/admission/transfer/finalization functions and relevant definitions; not a whole-file product audit."
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "blob": "0a94044292493853c7770cb36aa69544c1488aca",
+      "bytes": 43899,
+      "sha256": "3802288e0f2e3f58b94df509c928467fa2d3d11ee47bb9c68128c6143b9138ff",
+      "complete_bytes_fetched_and_gitblob_verified": true,
+      "review_scope": "Named ownership/admission/transfer/finalization functions and relevant definitions; not a whole-file product audit."
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_forward_completion.rs",
+      "blob": "ba0306a44de2c507e251241e6c443151549ef7d1",
+      "bytes": 29836,
+      "sha256": "4bd82380b247cc51fc72f97400fdc8b7b7336e4c6c9749f6617fa28c1128d2ce",
+      "complete_bytes_fetched_and_gitblob_verified": true,
+      "review_scope": "Named ownership/admission/transfer/finalization functions and relevant definitions; not a whole-file product audit."
+    }
+  ],
+  "analysis": {
+    "path": "ANALYSIS.md",
+    "bytes": 14212,
+    "sha256": "7547f8a7d4fb649c4058c8f0f169d359f46b28b6da3f308e495897f150e018cb",
+    "blob": "629cace1c8bbe05f6f93061c3fe9f33fee73137f"
+  }
+}

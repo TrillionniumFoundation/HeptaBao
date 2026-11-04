@@ -1,0 +1,120 @@
+{
+  "schema": "phaseb-r3-live-r1-original-evidence-manifest-v1",
+  "candidate": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "job": "1a1a8177aec-fc05-2da5",
+  "status": "failed",
+  "outcome_unknown": true,
+  "originals_preserved": true,
+  "no_runtime_replay": true,
+  "production": false,
+  "files": [
+    {
+      "path": "result.public.json",
+      "blob": "7a2238125a983bbe657d99d460aae9a9b5b1ae71",
+      "bytes": 270785,
+      "sha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184"
+    },
+    {
+      "path": "authority.raw.json",
+      "blob": "4d09ba9d0625d07a8f92147d054df1a9f6eff2a4",
+      "bytes": 726,
+      "sha256": "7b4d99907e834b2ba5d5faf642fdf9bc8601b8a47a6e0acbec3a08695355c230"
+    },
+    {
+      "path": "stdout.txt",
+      "blob": "6efc84a7a59b44fd22578a922e2536a91fb448fe",
+      "bytes": 437,
+      "sha256": "65acffe0f02aa90aba92bb2634503b1d6033caec4995990a18092cd6c4e63575"
+    },
+    {
+      "path": "process-start-ack.raw.json",
+      "blob": "2dcf712afdac19a1d89294843355fff563b30fa8",
+      "bytes": 1557,
+      "sha256": "41b4c97921d4f6162c7f102cacdbf70ccd00c52fd4b2b6b574272518ce74e21e"
+    },
+    {
+      "path": "stderr.txt",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "process-read.raw.json",
+      "blob": "f45896f1030e38df7fb1a156e13100840e96a9f3",
+      "bytes": 1665,
+      "sha256": "d171a6c2fd582e213a27c780271d5b73a11773fb23e01a2ec311713de3b6f2f0"
+    },
+    {
+      "path": "result-file-info.raw.json",
+      "blob": "a4f5cf6cd8a398ee93e2f4bd49bf55fce397b4ee",
+      "bytes": 494,
+      "sha256": "86d0abb902593d763ff6353bf053094a3c2cb3b0e7c596522dff7947afabe639"
+    },
+    {
+      "path": "public-literal-scan.public.json",
+      "blob": "5c2b30bd8f7a53951a3bd73bb8ab5d1d44cfd873",
+      "bytes": 289,
+      "sha256": "ccb57ffe335627438227a816dc71f44f4d289e3b016375d699d7a24b5d73e932"
+    },
+    {
+      "path": "public-literal-scan.readback.raw.json",
+      "blob": "899ce1968ef39ef9b7a6a6947717733797493f26",
+      "bytes": 732,
+      "sha256": "06dcb27ee4aa91f70946857ed8306e9bab1a6e8fa4e59e70efc2e2060505a102"
+    },
+    {
+      "path": "result-readback/chunk-0.raw.json",
+      "blob": "b4904677aae6d779838eb8e0f7d2d0073e3835fc",
+      "bytes": 87729,
+      "sha256": "8dfe20ac11e2a7193631594ff880cc75dcc69ea2d1b4151a9c62d8ca45e295d9"
+    },
+    {
+      "path": "result-readback/chunk-65536.raw.json",
+      "blob": "7e4a675e5172d64be21423d20eb91462c57f7dea",
+      "bytes": 87734,
+      "sha256": "c0fd9e638a013e96f676575045a061746a9d009b41f43f33017f11dc423d76d2"
+    },
+    {
+      "path": "result-readback/chunk-131072.raw.json",
+      "blob": "a5831dabeefefb9f02902acc35524dba8f7a8718",
+      "bytes": 87735,
+      "sha256": "8d422cee559d1c6662a4df7f2879d861292cf263ab01a44c7e7ba029d0e8b0c0"
+    },
+    {
+      "path": "result-readback/chunk-196608.raw.json",
+      "blob": "c9342f52acf59945f69141cf148d84bd7c2695c9",
+      "bytes": 87735,
+      "sha256": "6e1b3c021f2a593abf206a0255fae45b746658bb15b458a647443d5d2999384f"
+    },
+    {
+      "path": "result-readback/chunk-262144.raw.json",
+      "blob": "ab95c34fd9997d06f2e0fc9462d6c6f6caf14324",
+      "bytes": 11874,
+      "sha256": "016ea0747771bf6ac72bcdfbd20b55bec96aac0ba64a1f887fd4342f6cf592a0"
+    },
+    {
+      "path": "input-fence-source-diagnosis.public.json",
+      "blob": "cf307683a0a078ee98e6bff1f5a844562e30160c",
+      "bytes": 2014,
+      "sha256": "82314adb6eeb65945df330fbda81840790de7cc1630cd2268d22bff3b004f6b0"
+    },
+    {
+      "path": "independent-review.public.json",
+      "blob": "eaf6af530039b283a1425a16ca64628fdc1324f8",
+      "bytes": 4635,
+      "sha256": "ba0653841dc4005069a1d1d06b19dd77f0ce869f4ab7720654adc1a3c811496f"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3686,
+      "sha256": "d22940a9c00f808788602275aae0c0924979c1500e2bfcf971535fccd2107649",
+      "blob": "f9fd1ab76604445e7386927b43b394618aa366af"
+    },
+    {
+      "path": "compare-inputs-losslessly.mjs",
+      "bytes": 1086,
+      "sha256": "6c152c7f468667599631d7d47adc729cac2f2ca13d45fcb0cc87642ce64a921d",
+      "blob": "a6f472b9bf7d181a5f929576cb06b0000e84236f"
+    }
+  ]
+}

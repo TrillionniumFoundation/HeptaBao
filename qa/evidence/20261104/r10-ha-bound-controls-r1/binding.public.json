@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.r10.original-ha-actual-build-binding.v1",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "build_pins": {
+    "linux": {
+      "abi": "x86_64-unknown-linux-gnu",
+      "actual_native_build_host": "rog",
+      "alias": "rog-ts",
+      "build": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1",
+      "source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+      "python": "/usr/bin/python3",
+      "cargo": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "build_driver_sha256": "7aa39562fde6d96eeca9b1d0e53f600c9629de09613d052fad8e68e9c734d176",
+      "files": {
+        "artifacts/heptabao-seed": "6befec74076fb891e12a9dd3a1b2563c995ec7f7f1c7df18dc787d1163e0e018",
+        "artifacts/heptabao-server": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+        "normal-release-build.stdout": "47694694edb5ef1e5c10aec8d24d12de44f5537c18488ec2c879f6031f2fbe0f",
+        "native-build.public.json": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+        "normal-release-result.public.json": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee"
+      }
+    },
+    "mac": {
+      "abi": "aarch64-apple-darwin",
+      "actual_native_build_host": "mac",
+      "alias": "mac-ts",
+      "build": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/normal-release-tests-r1",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/source",
+      "python": "/opt/homebrew/bin/python3",
+      "cargo": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+      "build_driver_sha256": "f925684275b42215300fa91f9b90478c75b822ce2d6f2e4be165b5e8e44e353d",
+      "files": {
+        "artifacts/heptabao-seed": "cbfbb57a63a971ce35701a5629d07f2e54e461c7774e4b27d56c8a34a0d26cf4",
+        "artifacts/heptabao-server": "bc1fc6b8ded5a43a60ab4c562cd5e092e63ae9df77afd654c9af8c096c128c98",
+        "normal-release-build.stdout": "8eefe497192295e5e8016ba3a1938ac534e4bf3746853164e9616c37b0eb6442",
+        "native-build.public.json": "16fa488ed8d7a9a46541b5aea5007e27b538e5c37f9246c14de0e5fe24b05ad1",
+        "normal-release-result.public.json": "f5746eaf7fd79c8001ac927c9738922297d6e5e575cbd12bc092aafa2c13f544"
+      }
+    }
+  },
+  "actual_receipts_whole_github_readback_verified": true,
+  "direct_artifact_hash_recheck_pending_in_prepare": true,
+  "original_source_draft_tree": "4fa2d3d91e47666604b27eb5dba412fdaff47eba",
+  "original_full128_controller_sha256": "c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e",
+  "full128_denominator": 128,
+  "direction98_denominator": 98,
+  "original_qa5_unchanged": true,
+  "original_full128_natural_roles_preserved": true,
+  "original_direction_method_unchanged": true,
+  "source_or_artifact_host_runtime_executed_by_this_binding": false,
+  "desktop_canonical_stage_pending": true,
+  "direction_required_r10_full128_pass_summary_sha256": null,
+  "direction_remains_fail_closed_until_actual_new_pass_summary_bound": true,
+  "original_deadlines": {
+    "import_http_seconds": 5,
+    "ordinary_http_seconds": 15,
+    "server_cold_readindex_seconds": 14,
+    "admission_seconds": 8,
+    "runner_outer_seconds": 2400
+  },
+  "qualification": false
+}

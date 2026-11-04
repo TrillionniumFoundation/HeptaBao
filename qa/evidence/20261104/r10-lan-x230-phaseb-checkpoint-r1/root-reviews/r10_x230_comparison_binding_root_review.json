@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.r10.x230-comparison-actual-transfer-binding.root-review.v1",
+  "status": "PASS",
+  "original": {
+    "bytes": 6939,
+    "sha256": "f999d1848ae7c4987d9539b14abd682db84c8475bd453573235aaa3ff8e29611",
+    "blob": "4282163615e46f1ae791a20a42e65f6e940e6d31"
+  },
+  "candidate": {
+    "bytes": 6944,
+    "sha256": "c2f96586d735d21b9cf17040242e96371d27239b80fdf1756ba1b175b9e900eb",
+    "blob": "1c4e046d2e430c7c715b57b2a0c8a8e8c9bb55e3"
+  },
+  "diff": {
+    "bytes": 1320,
+    "sha256": "e3a3b00ece8f106a1e1e698f1e3f6086bbe36e17ccb1b65feadb35650eb6b982",
+    "blob": "faa8d047144a71a2f5144730db51ca36d79fd9d7"
+  },
+  "strict_apply_hunks": 1,
+  "only_actual_transfer_sha_changed": true,
+  "transfer_sha256": "725f9a7e51a202a2139618b933c55b1f387ef53af61035a3aa59d21394b0669a",
+  "original_13_modules_and_69_driver_unchanged": true,
+  "full34_controller_unchanged": true,
+  "new_outer_seconds_each": 1800,
+  "product_execution": false
+}

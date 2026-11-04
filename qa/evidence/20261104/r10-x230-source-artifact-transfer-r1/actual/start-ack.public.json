@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-x230-transfer-controls-r1/relay.py"
+    ],
+    "created_unix_ms": 1793820729448,
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1a80c2068-fc05-2d76",
+    "idempotency_key": "heptabao-r10-x230-source-artifacts-transfer-46c77941-20261104-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1a80c2068-fc05-2d76",
+    "request_digest": "732204daefe2de8d6d75a66bcb066882934175b80247e81e66589f2ccfee5830",
+    "request_fingerprint": 8296198801943879309,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1a80c2068-fc05-2d76"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1a80c2068-fc05-2d76"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

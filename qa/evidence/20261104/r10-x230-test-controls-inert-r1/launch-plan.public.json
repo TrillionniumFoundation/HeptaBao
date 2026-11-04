@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.r10-x230-product-qualification-launch-plan.v1",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "root": "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1",
+  "input_qualification": "actual transfer core+5 target metadata await root independent review",
+  "carrier": {
+    "bytes": 5533,
+    "sha256": "d686d064d4b9af4c41727db864662e4f9cfa30233c2b7ba011b1d5b92805ee91",
+    "stdin_bytes": 73973,
+    "stdin_sha256": "245435ac86cf68bafaf7c382cd7b03a686307b0d8327d17eb5ff4892dc346a65",
+    "outer_seconds": 60,
+    "compile_only": true,
+    "source_executed": false,
+    "pins": {
+      "full34_controller.py": [
+        5313,
+        "001079203a066e5d69b3aa756622593f108f93a56a0537188a672d06e273b0bc"
+      ],
+      "comparison69_controller.py": [
+        6944,
+        "c2f96586d735d21b9cf17040242e96371d27239b80fdf1756ba1b175b9e900eb"
+      ],
+      "native271_comparison_final_r1.py": [
+        9261,
+        "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e"
+      ]
+    }
+  },
+  "transfer_receipt": {
+    "bytes": 33818,
+    "sha256": "725f9a7e51a202a2139618b933c55b1f387ef53af61035a3aa59d21394b0669a"
+  },
+  "runs": [
+    {
+      "name": "full34",
+      "controller": "full34_controller.py",
+      "schema": "original31-check full34",
+      "outer_seconds": 1800,
+      "outer_cap_provenance": "NEW supervised overall cap explicitly authorized by root; old outer cap not recovered",
+      "request_seconds": 15,
+      "migration_seconds": 360,
+      "idempotency_key": "heptabao-r10-x230-full34-495033-20261104-r1"
+    },
+    {
+      "name": "comparison69",
+      "controller": "comparison69_controller.py",
+      "schema": "original13modules/69cases each side",
+      "outer_seconds": 1800,
+      "outer_cap_provenance": "NEW supervised overall cap explicitly authorized by root; old outer cap not recovered",
+      "driver_unchanged_sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+      "idempotency_key": "heptabao-r10-x230-comparison69-495033-20261104-r1"
+    }
+  ],
+  "sequence": "one full34 actual terminal+owned cleanup before one comparison69; no unknown retry",
+  "scope": "X230 loopback only; no production and no full replacement qualification",
+  "actual_product_started": false
+}

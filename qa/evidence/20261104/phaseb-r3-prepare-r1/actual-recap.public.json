@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.phaseb-r3-readonly-prepare.actual-recap.v1",
+  "new_identity": true,
+  "scope": "Actual readonly source/input/owned-Git/port eligibility only. No product or CLI snapshot run.",
+  "job_id": "1a1a7ff6a65-fc05-2d3f",
+  "host": "desktop",
+  "idempotency_key": "heptabao-phaseb-r3-prepare-10816-20261104-r1",
+  "invocation_exactly_matches_ack": true,
+  "reused": false,
+  "controller_sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+  "binding_sha256": "8e73ca7f0ed52056035ed82878b5f5c200e50013bfc36f1ad3dd647879043736",
+  "prior_local_stage_tree": "f79ea88323d90fed0f90884257e33117709fc5a5",
+  "candidate_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "candidate_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "status": "passed",
+  "exit_code": 0,
+  "timed_out": false,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "stdout_bytes": 292,
+  "stderr_bytes": 0,
+  "output_utf8_matches_hex": true,
+  "actual_git_children": 3,
+  "all_three_exact_executable_argv_guards_passed": true,
+  "all_three_reaped": true,
+  "all_owned_process_groups_empty": true,
+  "source_head_tree_clean_verified": true,
+  "original_reference_child_guard_kept": true,
+  "artifact_normal44_group_contract_verified": true,
+  "original_five_qa_and_four_product_contract_sources_verified": true,
+  "old_fences_retained": true,
+  "all_defined_ports_free_at_check": true,
+  "source_input_pins_preserved": true,
+  "server_processes": 0,
+  "cli_snapshot_commands": 0,
+  "runtime_started": false,
+  "production_changed": false,
+  "whole_replacement_qualification": false,
+  "prepare_result_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r1/prepare-r1/result.public.json",
+  "prepare_result_sha256": "97b21460b67f2ef14f2edf8573a22f4ba7ac82c1a8d5a44e9d246675b5cb87ee",
+  "original_large_integer_metadata_preserved_as_raw_json_bytes": true,
+  "next_step": "Root review of this complete result plus a separate exclusive runtime window and live authorization.",
+  "files": [
+    {
+      "path": "runtime-ack.original.json",
+      "bytes": 1462,
+      "sha256": "d523e0f7a37624f9a72d6fe024978345757baaaf73da9e7ba53a9944c042f3bc",
+      "blob": "7c065d3ba3715b0e643f060fdc337f9c49f6d5cc"
+    },
+    {
+      "path": "runtime-status.original.json",
+      "bytes": 729,
+      "sha256": "f0697feadb355c5df2cce4a4c92e3d2a5384be7c19984839318dfbc0908bedd1",
+      "blob": "e8ee9c3ae4300a5774731108d77b5513f2a83d3d"
+    },
+    {
+      "path": "runtime-read.original.json",
+      "bytes": 1214,
+      "sha256": "b37f3e0d85138fcadc9d478f24bc02e50cef886c7e0b9110436c0e6796899cf1",
+      "blob": "369a3c46a125ede5384c3d54ebe9109caea33700"
+    },
+    {
+      "path": "prepare.stdout.original.json",
+      "bytes": 292,
+      "sha256": "901e338f4ec34194f1c2192cc396c906906c67837f9a608de6bd4a74678320e7",
+      "blob": "e6b8f426f7c9f7bfa0d908caaddb621d9331d1e8"
+    },
+    {
+      "path": "prepare.stderr.original.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "result-file-info.original.json",
+      "bytes": 506,
+      "sha256": "9d49dd607f07700539a5baf30eb8bf24816a91806a7dd923d56334ef2a7ae2d2",
+      "blob": "a973da56f5956d1aeb0820b7fa2f245ee52e0f13"
+    },
+    {
+      "path": "result-readback.original.json",
+      "bytes": 25209,
+      "sha256": "f2085adcdae9e8e2ec9bb59cfeda40f7252be4fd31b8efa7fe9dbfab8eb52acc",
+      "blob": "30a0720c2a8036d144eecb294ed2ff0689718adc"
+    },
+    {
+      "path": "prepare-result.original.public.json",
+      "bytes": 22852,
+      "sha256": "97b21460b67f2ef14f2edf8573a22f4ba7ac82c1a8d5a44e9d246675b5cb87ee",
+      "blob": "8498fbe761640098b57f8e02185b77d8fa1e4393"
+    }
+  ]
+}

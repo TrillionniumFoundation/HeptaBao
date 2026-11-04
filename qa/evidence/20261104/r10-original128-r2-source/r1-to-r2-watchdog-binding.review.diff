@@ -1,0 +1,50 @@
+--- launch_normal_r10_full128_r1.py
++++ launch_normal_r10_full128_r2.py
+@@ -15,8 +15,8 @@
+ os.umask(0o077)
+ sys.dont_write_bytecode = True
+ ROOT = Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-CONTROL = ROOT / 'normal-r10-full128-control-r1'
+-WORK = ROOT / 'formal-r10-normal-full128-r1'
++CONTROL = ROOT / 'normal-r10-full128-control-r2'
++WORK = ROOT / 'formal-r10-normal-full128-r2'
+ SOURCE = ROOT / 'normal-r10-validation-source-r1'
+ COMMIT = '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
+ TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
+@@ -67,6 +67,10 @@
+     }
+ }
+ COMPARISON_PINS = {
++  "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-normal-full128-r1/summary.json": "99b78fe5021248cd9f00af681df8a176442a59c54d446fa3d9f5f0adab414d76",
++  "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-full128-control-r1/exit.public.json": "d9c9b628ceb135ace41d6c7990668dce2cd73c0784d028b1361b42346e7c504c",
++  "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-full128-control-r1/launch_normal_r10_full128_r1.py": "0c249a8d0cdec7912346394084ba0da638e3b83f41a1bbd70fdfe924eab21a3a",
++  "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-full128-control-r1/prepared.public.json": "64855330cb0beb840869fe601c707a4f2897e7bf3688af85dfdddc5e4ab9e01c",
+   "/home/qian-qi/heptabao-ha-closure-20261103-r1/combined-blocker-closure-build-control-r1/import-failure-boundary.public.json": "352d797c58371547ccfd125d4ceed7ca54baf5f756ebf81a2dd81224951e5a90",
+   "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-36076-normal-full128-r1/summary.json": "6c0c51c2e155db952dfb154b5d5418e2a66beb21b3548f63d1b25f4787deab8b",
+   "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-normal-full128-r1/summary.json": "41af5de59863ec2d430674d0b6272b040276d2777dda383a25a2e195cdab9f44",
+@@ -135,12 +139,12 @@
+         '--source-commit', COMMIT, '--source-tree', TREE]
+     for alias, platform in [('mac-ts', 'mac'), ('rog-ts', 'linux'), ('pocket4-ts', 'linux')]:
+         v += ['--native-build-receipt', alias + ',local:' + str(CONTROL / (platform + '-native-build.public.json')) + ',' + BUILDS[platform]['files']['native-build.public.json']]
+-    v += ['--node', 'mac-ts,192.168.0.8,/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-normal-full128-node1-r1',
+-          '--node', 'rog-ts,192.168.0.10,/home/qian-qi/heptabao-ha-closure-20261103-r1/r10-normal-full128-node2-r1',
+-          '--node', 'pocket4-ts,192.168.0.9,/home/alex/heptabao-ha-closure-20261103-r1/r10-normal-full128-node3-r1',
++    v += ['--node', 'mac-ts,192.168.0.8,/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-normal-full128-node1-r2',
++          '--node', 'rog-ts,192.168.0.10,/home/qian-qi/heptabao-ha-closure-20261103-r1/r10-normal-full128-node2-r2',
++          '--node', 'pocket4-ts,192.168.0.9,/home/alex/heptabao-ha-closure-20261103-r1/r10-normal-full128-node3-r2',
+           '--api-port', '46230', '--raft-port', '46231', '--allow-private-lan', '--work-root', str(WORK),
+           '--darwin-watchdog-python', '/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14',
+-          '--darwin-watchdog-python-sha256', 'cbf84109626aa1013bbe408fbb9590bd0f1c1548f038b2221c6b8b87de26ca43',
++          '--darwin-watchdog-python-sha256', 'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13',
+           '--official-full34-root', '/home/qian-qi/heptabao-unified-ha-20261103-r1/official-full34-mac-input-r1',
+           '--official-full34-summary-sha256', '0b6ccb83c43517b9a66fd5971b9a890809a79c773668bc97cfeeeb5dd738c8d7']
+     return v
+@@ -153,7 +157,7 @@
+ parser.add_argument('--prepared-sha256')
+ option = parser.parse_args()
+ require_bound_artifact_pins()
+-assert Path(__file__).resolve(strict=True) == CONTROL / 'launch_normal_r10_full128_r1.py'
++assert Path(__file__).resolve(strict=True) == CONTROL / 'launch_normal_r10_full128_r2.py'
+ assert CONTROL.resolve(strict=True) == CONTROL
+ assert CONTROL.stat().st_uid == os.getuid() and stat.S_IMODE(CONTROL.stat().st_mode) == 0o700
+ assert not WORK.exists() and not WORK.is_symlink()

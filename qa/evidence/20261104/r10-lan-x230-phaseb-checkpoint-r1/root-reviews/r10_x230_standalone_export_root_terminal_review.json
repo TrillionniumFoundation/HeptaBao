@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.r10.x230-source-export.root-terminal-review.v1",
+  "status": "PASS",
+  "job_id": "1a1a7fd3a6d-fc05-2d36",
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "result": {
+    "bytes": 40100,
+    "sha256": "6342a59b3a953c5e701887cceac8cc7274850f76f65b718b427485bd5b29951e",
+    "blob": "df551442ac14e42cf2e68b56b418749ca50be5b1"
+  },
+  "authority": {
+    "bytes": 729,
+    "sha256": "42c560e49474dd715d5f732d9f0cb081fab0fc79584f0118a55dd09a21afbba4",
+    "blob": "e4305ac2d87c5176893291a569824e752d49019d"
+  },
+  "terminal": {
+    "bytes": 517,
+    "sha256": "ad231120f50c7a04f513c02fc8a819a7cf41160155915f0d24109c9d4b0d4873",
+    "blob": "c50219692831303df46efc738523db89ccb6be5b"
+  },
+  "file_info": {
+    "bytes": 497,
+    "sha256": "0f14d33936a97d79d64a5605d074922dba78ce078cbedfdcb2e171511f2f43e9",
+    "blob": "2ab7844c4c9983eb5f89e5d115f0011a1c5d250a"
+  },
+  "bundle": {
+    "bytes": 20091909,
+    "sha256": "6fb2b73c52a880475ce8c45c67a4179575834313ee24ed761af94ea3faaaa858",
+    "version": "2050:58372900:20091909:1793819761984976492:1793819761988976381"
+  },
+  "owned_children_reaped": 27,
+  "source_before_after_equal": true,
+  "standalone_full_history": true,
+  "elapsed_seconds": 7.190481874044053,
+  "product_qualification": false,
+  "production_cutover_authorized": false
+}

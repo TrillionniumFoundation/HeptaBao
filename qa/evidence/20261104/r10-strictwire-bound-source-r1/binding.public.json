@@ -1,0 +1,160 @@
+{
+  "schema": "heptabao.r10.strict-wire-source-binding.v1",
+  "source_only": true,
+  "host_runtime_executed": false,
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "exact_original": {
+    "bytes": 68149,
+    "sha256": "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416",
+    "blob": "7e465b3ea72814726ed2e01355ab91412190a747"
+  },
+  "candidate": {
+    "bytes": 68360,
+    "sha256": "1f9ceba884653329116c1339fd6c1996fd49082785195cc632ea71f1e23681c3"
+  },
+  "constants_and_one_root_regex_only": [
+    {
+      "before": "loopback-only normal R8 HeptaBao",
+      "after": "loopback-only normal R10 HeptaBao",
+      "occurrences": 1
+    },
+    {
+      "before": "EXPECTED_SHA = '666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed'",
+      "after": "EXPECTED_SHA = '67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113'",
+      "occurrences": 1
+    },
+    {
+      "before": "COMMIT = '384c957612186d64c5a530044af0ae62c568cc3d'",
+      "after": "COMMIT = '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'",
+      "occurrences": 1
+    },
+    {
+      "before": "TREE = 'd5a0f91a4d47f7c8d5f34170ea167d10dc036e04'",
+      "after": "TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'",
+      "occurrences": 1
+    },
+    {
+      "before": "CONTROL = BASE / 'normal-r8-standby-oracle-control-r1'",
+      "after": "CONTROL = BASE / 'normal-r10-standby-oracle-control-r1'",
+      "occurrences": 1
+    },
+    {
+      "before": "SOURCE = BASE / 'normal-r8-standby-oracle-source-r1'",
+      "after": "SOURCE = BASE / 'normal-r10-validation-source-r1'",
+      "occurrences": 1
+    },
+    {
+      "before": "CONTROL / 'incoming/heptabao-server'",
+      "after": "BASE / 'normal-r10-shared-artifacts-r1/incoming/heptabao-server'",
+      "occurrences": 1
+    },
+    {
+      "before": "CONTROL / 'incoming/native-build.public.json'",
+      "after": "BASE / 'normal-r10-shared-artifacts-r1/incoming/native-build.public.json'",
+      "occurrences": 1
+    },
+    {
+      "before": "CONTROL / 'incoming/normal-release-result.public.json'",
+      "after": "BASE / 'normal-r10-shared-artifacts-r1/incoming/normal-release-result.public.json'",
+      "occurrences": 1
+    },
+    {
+      "before": "'f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9'",
+      "after": "'0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77'",
+      "occurrences": 1
+    },
+    {
+      "before": "'2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5'",
+      "after": "'75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee'",
+      "occurrences": 1
+    },
+    {
+      "before": "OLD_FENCES = {\n",
+      "after": "OLD_FENCES = {\n    'normal-r8-standby-oracle-live-r1/result.public.json': '88477fe316686727aca2439ecd839beb2403a607b05ede1e1df63441aef2567b',\n",
+      "occurrences": 1
+    },
+    {
+      "before": "r'normal-r8-standby-oracle-live-r[0-9]+'",
+      "after": "r'normal-r10-standby-oracle-live-r[0-9]+'",
+      "occurrences": 1
+    }
+  ],
+  "source_method_byte_proofs": [
+    {
+      "method": "observe",
+      "bytes": 5686,
+      "sha256": "c848107d2a0dd372f30957c551ade60bc24c2c90ddcca50194611a5623b13c62",
+      "byte_identical": true
+    },
+    {
+      "method": "request",
+      "bytes": 4659,
+      "sha256": "f70f7ad613c7057deeda511ad5d280072ba6bf97e96667fd0dbf405b8f09d422",
+      "byte_identical": true
+    },
+    {
+      "method": "ready",
+      "bytes": 893,
+      "sha256": "302c395bf7a0ce0563729bf52ff5d493bbe2b282e1f4d2421733dfb15b5630df",
+      "byte_identical": true
+    },
+    {
+      "method": "stable_leader",
+      "bytes": 1687,
+      "sha256": "1efe91877661139d3fb92ca65e4bf3d0915fa84468755ab60d10ccabcdc830c0",
+      "byte_identical": true
+    },
+    {
+      "method": "finish",
+      "bytes": 3983,
+      "sha256": "d61e91706b881e9eaca2ca9977f7fa6a38b8d18a5ca38e84437d27494f1487e9",
+      "byte_identical": true
+    },
+    {
+      "method": "setup",
+      "bytes": 8238,
+      "sha256": "6fd7dc8baf9e4e2fc1584a875eb64e32a2ea216a91626438d5134d7b45de3b9e",
+      "byte_identical": true
+    },
+    {
+      "method": "start_owned_child",
+      "bytes": 804,
+      "sha256": "2bb14661c5b299d70be63e1e10c90920b392808da89d9a6c1fab24bf375f0e08",
+      "byte_identical": true
+    },
+    {
+      "method": "interrupted",
+      "bytes": 244,
+      "sha256": "999f77b0cd70bb7c1fb9f340dedb7da73f6a7846ab88ee269280aacea6106c8c",
+      "byte_identical": true
+    }
+  ],
+  "original_all_headers_cl_chunked_unknown_and_cleanup_preserved": true,
+  "old_r8_terminal": {
+    "sha256": "88477fe316686727aca2439ecd839beb2403a607b05ede1e1df63441aef2567b",
+    "intents": 73,
+    "unknown": 1,
+    "all_owned_stopped": true,
+    "not_replayed": true
+  },
+  "shared_artifact_transfer_pending": true,
+  "desktop_canonical_source_pending": true,
+  "observation": {
+    "physical_hosts": 1,
+    "process_nodes": 3,
+    "loopback_only": true,
+    "no_failure_injection": true,
+    "strict_tls": true,
+    "follow_redirects": false,
+    "valid_restore_bodies": 0,
+    "http_seconds": 15,
+    "readiness_seconds": 45,
+    "election_seconds": 60,
+    "fixture_sequence_unchanged": true,
+    "dynamic_checks_not_fixed_qualification_denominator": true
+  },
+  "preserved_known_compatibility_gap": "Default standby native snapshot remains separately assessed against actual official 2.7.1 wire and CLI; completion here cannot imply full compatibility.",
+  "legacy_normal33_fixture_labels_preserved": true,
+  "full_replacement_qualification": false
+}

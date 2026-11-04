@@ -1,0 +1,18 @@
+--- before/stage_phaseb_r3_local_inputs_r1.py
++++ after/stage_phaseb_r3_local_inputs_r1.py
+@@ -466,10 +466,12 @@
+         result["fd_close_pending"] = False
+         result["all_stage_fds_closed"] = (result["status"] == "passed"
+                                           and not result["fd_close_errors"])
++        result["elapsed_after_closure_ms"] = (time.monotonic_ns() - started) / 1e6
++        result["within_stage_deadline"] = time.monotonic_ns() < UNTIL
++        if result["fd_close_errors"] or not result["within_stage_deadline"]:
+-        if result["fd_close_errors"]:
+             result["status"] = "failed"
++    print(json.dumps(result, sort_keys=True), flush=True)
++    return 0 if result["status"] == "passed" and time.monotonic_ns() < UNTIL else 1
+-    print(json.dumps(result, sort_keys=True))
+-    return 0 if result["status"] == "passed" else 1
+ 
+ 
+ if __name__ == "__main__":

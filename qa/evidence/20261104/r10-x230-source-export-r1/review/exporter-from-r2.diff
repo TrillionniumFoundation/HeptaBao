@@ -1,0 +1,327 @@
+diff --git a/source_export_r10.py b/source_export_r10.py
+--- a/source_export_r10.py
++++ b/source_export_r10.py
+@@ -1,56 +1,27 @@
+ #!/usr/bin/env python3
+-"""Reviewed-source candidate: fixed canonical Git bundle export or local-only resume.
++"""New fixed R10 standalone source export; no source import or application runs.
+ 
+-No application, compiler, HTTP request or network Git transport is started.
+-This is a new controller, not a reconstruction of the failed R3 stager.
++The source is the independently completed desktop canonical clone. The bundle
++contains exactly HEAD and its complete ancestry, with zero prerequisites.
+ """
+ from pathlib import Path
+-import argparse, hashlib, json, os, platform, plistlib, re, signal, stat, subprocess, sys, time
++import hashlib, json, os, platform, re, signal, stat, subprocess, sys, time
+ 
+ os.umask(0o077)
+-parser=argparse.ArgumentParser()
+-parser.add_argument('--action',choices=('export-rog','resume-mac'),required=True)
+-parser.add_argument('--bundle-bytes',type=int)
+-parser.add_argument('--bundle-sha256')
+-args=parser.parse_args()
+-CANONICAL='1d12abc45a83d4b32e7185d01a876eb93110b1e2'
+-TREE='e1faeaa3ed49d26fb01a7617a8879cb693a12907'
+-PARENT='f9139c3b37b6373df3e4b4c61ebdd4f847afac4d'
+-ANCHOR='7a552330df821b358161628120a8b5d064f37367'
++BASE=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
++SOURCE=BASE/'normal-r10-validation-source-r1'
++ROOT=BASE/'normal-r10-x230-source-export-r1'
++CONTROL=ROOT
++BUNDLE=ROOT/'canonical-r10-full.bundle'
++CANONICAL='49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
++TREE='1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
++PARENT='1d12abc45a83d4b32e7185d01a876eb93110b1e2'
+ ROOT_COMMIT='67d79b3b5442ed033d38929eab2010403463e56d'
+-CANONICAL_COUNT=3751
+-ANCHOR_COUNT=3735
+-LOCAL_HEAD='f0c6171ce2a269ba3122aa5eac2e8fbe8f079eeb'
+-OLD_HEAD='2d9a2efd4cfc3a9ee60a450eee58866828a3f5ad'
+-OLD_TREE='d5a0f91a4d47f7c8d5f34170ea167d10dc036e04'
+-BACKUP_REF='refs/heptabao/canonical-resume-r2-materialized'
++CANONICAL_COUNT=3752
+ MAX_BUNDLE=64*1024*1024
+-if args.action=='export-rog':
+-    BASE=Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1')
+-    ROOT=BASE/'r9-http-routing-r1'
+-    SOURCE=ROOT/'source'
+-    CONTROL=ROOT/'control/canonical-export-r2'
+-    BUNDLE=CONTROL/'canonical-from-7a552330-r2.bundle'
+-    UID=1000
+-    SYSTEM=('Linux','x86_64')
+-    assert args.bundle_bytes is None and args.bundle_sha256 is None
+-else:
+-    BASE=Path('/Volumes/T5/hepta-vnext-recovery-20261013')
+-    ROOT=BASE/'continuation-20261104-native-http-r9'
+-    SOURCE=ROOT/'source'
+-    OLD=BASE/'continuation-20261104-native-ssh-http-r8/source'
+-    OLD_CONTROL=ROOT/'control'
+-    CONTROL=OLD_CONTROL/'canonical-resume-r2'
+-    BUNDLE=OLD_CONTROL/'canonical-from-7a552330-r2.bundle'
+-    UID=501
+-    SYSTEM=('Darwin','arm64')
+-    assert isinstance(args.bundle_bytes,int) and 0<args.bundle_bytes<=MAX_BUNDLE
+-    assert re.fullmatch(r'[0-9a-f]{64}',args.bundle_sha256 or '')
+-FENCES={
+- 'stage-result.public.json':'1f60d0bbdab00feee4e0d5d1593fa3543b74ff05fae8ec60f9d17b3ddd381166',
+- '021-git-fetch.public.json':'89e4865c8bb30bc500b05cd1fd0a79d0d39bb49fbe1830250d155f9797ff19a5',
+- '021-git-fetch.stderr':'dbcc4dce38066a3223043b215a80a7acdd2dd1e2f52063de42801d63d931e5ff',
+- '021-git-fetch.stdout':'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}
++UID=1000
++SYSTEM=('Linux','x86_64')
++ACTION='export-standalone-r10'
+ START=time.monotonic()
+ UNTIL=START+300
+ children,commands=[],[]
+@@ -58,12 +29,13 @@
+ protected=0
+ pending_signal=None
+ created_control=False
+-result={'schema':'heptabao.r9.offline-canonical-controller.v2','action':args.action,
++result={'schema':'heptabao.r10.x230-standalone-source-export.v1','action':ACTION,
+  'started_unix_ns':time.time_ns(),'canonical_commit':CANONICAL,'canonical_tree':TREE,
+- 'prerequisite':ANCHOR,'expected_full_commit_count':CANONICAL_COUNT,
+- 'network_git_protocols_enabled':False,'server_started':False,'compiler_started':False,
+- 'runtime_qualification':False,'product_tests_executed':0,'overall_seconds':300,
+- 'git_command_seconds':90,'status':'failed'}
++ 'expected_full_commit_count':CANONICAL_COUNT,'expected_prerequisites':[],
++ 'source_imported':False,'network_git_protocols_enabled':False,
++ 'server_started':False,'compiler_started':False,'runtime_qualification':False,
++ 'product_tests_executed':0,'overall_seconds':300,'git_command_seconds':90,
++ 'maximum_bundle_bytes':MAX_BUNDLE,'status':'failed'}
+ 
+ class Cancelled(BaseException):pass
+ 
+@@ -220,167 +192,81 @@
+        'independent_git_directory':gitdir==path/'.git' and common_path==gitdir,
+        'no_alternates':True,'no_partial_clone':True,'lock_files':locks}
+ 
+-def source_origin():
+-    _,raw=owned('source-origin',SOURCE,'config','--local','--get','remote.origin.url')
+-    assert raw==b'https://github.com/TrillionniumFoundation/HeptaBao.git\n'
+-    return digest(raw)
+-
+-def failed_fences():
+-    found={}
+-    for name,expected in FENCES.items():
+-        raw,row=stable(OLD_CONTROL/name)
+-        assert row['sha256']==expected
+-        found[name]=row
+-    return found
++def source_snapshot(label):
++    snapshot=freeze(label,SOURCE,CANONICAL,TREE,True)
++    gitdir=Path(snapshot['git_directory'])
++    for relative in ('info/grafts','objects/info/alternates'):
++        path=gitdir/relative
++        assert not path.exists() and not path.is_symlink()
++    _,origin=owned(label+'-origin',SOURCE,'config','--local','--get','remote.origin.url')
++    assert origin.endswith(b'\n') and len(origin)<=4096
++    _,refs=owned(label+'-refs',SOURCE,'for-each-ref','--format=%(refname) %(objectname)')
++    snapshot['origin_bytes']=len(origin)
++    snapshot['origin_sha256']=digest(origin)
++    snapshot['refs_bytes']=len(refs)
++    snapshot['refs_sha256']=digest(refs)
++    snapshot['no_grafts']=True
++    return snapshot
+ 
+-def bundle_header(raw,closure):
++def bundle_header(raw):
+     end=raw.find(b'\n\n',0,65536)
+     assert end>0 and raw[end+2:end+6]==b'PACK'
+     lines=raw[:end].split(b'\n')
+-    assert lines.pop(0)==b'# v2 git bundle'
+-    prerequisites=[];heads=[]
+-    for line in lines:
+-        if line.startswith(b'-'):
+-            h,sep,message=line[1:].partition(b' ')
+-            assert sep and re.fullmatch(rb'[0-9a-f]{40}',h)
+-            prerequisites.append(h.decode())
+-        else:
+-            h,sep,name=line.partition(b' ')
+-            assert sep and re.fullmatch(rb'[0-9a-f]{40}',h)
+-            heads.append([h.decode(),name.decode('ascii')])
+-    assert prerequisites and len(prerequisites)==len(set(prerequisites))
+-    assert ANCHOR in prerequisites and set(prerequisites)<=closure
+-    assert heads==[[CANONICAL,'HEAD']]
+-    return {'version':2,'prerequisites':prerequisites,'heads':heads,
++    assert lines==[b'# v2 git bundle',(CANONICAL+' HEAD').encode('ascii')]
++    return {'version':2,'prerequisites':[],'heads':[[CANONICAL,'HEAD']],
+             'header_bytes':end+2,'header_sha256':digest(raw[:end+2])}
+ 
+-def anchor_closure():
+-    _,raw=owned('anchor-closure',SOURCE,'rev-list',ANCHOR)
+-    rows=raw.decode('ascii').splitlines()
+-    assert len(rows)==ANCHOR_COUNT and len(set(rows))==ANCHOR_COUNT
+-    assert all(re.fullmatch(r'[0-9a-f]{40}',row) for row in rows)
+-    closure=set(rows)
+-    assert ANCHOR in closure and ROOT_COMMIT in closure
+-    result['anchor_closure']={'commit_count':len(closure),'raw_sha256':digest(raw)}
+-    return closure
+-
+-def actual_export_boundary(closure):
+-    _,raw=owned('export-boundary',SOURCE,'rev-list','--boundary',CANONICAL,'^'+ANCHOR)
+-    positive=[];boundary=[]
+-    for line in raw.decode('ascii').splitlines():
+-        if line.startswith('-'):
+-            value=line[1:];boundary.append(value)
+-        else:
+-            value=line;positive.append(value)
+-        assert re.fullmatch(r'[0-9a-f]{40}',value)
+-    assert len(positive)==CANONICAL_COUNT-ANCHOR_COUNT==16
+-    assert len(set(positive))==len(positive) and CANONICAL in positive
+-    assert boundary and len(set(boundary))==len(boundary) and ANCHOR in boundary
+-    assert set(boundary)<=closure and not (set(positive)&closure)
+-    result['export_boundary']={'new_commits':positive,'prerequisites':sorted(boundary),
+-                              'raw_sha256':digest(raw)}
+-    return set(boundary)
+-
+ def prove_canonical(label):
+     _,kind=git(label+'-kind',SOURCE,'cat-file','-t',CANONICAL);assert kind=='commit'
+     _,tree=git(label+'-tree',SOURCE,'rev-parse',CANONICAL+'^{tree}');assert tree==TREE
+     _,parents=git(label+'-parents',SOURCE,'show','-s','--format=%P',CANONICAL);assert parents==PARENT
+-    owned(label+'-anchor',SOURCE,'merge-base','--is-ancestor',ANCHOR,CANONICAL)
+     _,count=git(label+'-count',SOURCE,'rev-list','--count',CANONICAL);assert count==str(CANONICAL_COUNT)
+-    _,anchor_count=git(label+'-anchor-count',SOURCE,'rev-list','--count',ANCHOR);assert anchor_count==str(ANCHOR_COUNT)
+     _,roots=git(label+'-roots',SOURCE,'rev-list','--max-parents=0',CANONICAL);assert roots==ROOT_COMMIT
+     owned(label+'-full-fsck',SOURCE,'fsck','--full','--strict','--no-reflogs','--no-dangling',CANONICAL)
+     return {'commit':CANONICAL,'tree':tree,'parents':[parents],'root':roots,
+-            'commit_count':int(count),'anchor_count':int(anchor_count),'full_fsck_passed':True}
++            'commit_count':int(count),'full_fsck_passed':True}
+ 
+ try:
+     assert (platform.system(),platform.machine())==SYSTEM and os.getuid()==UID
+-    assert BASE.resolve(strict=True)==BASE and BASE.stat().st_uid==UID
+-    assert ROOT.resolve(strict=True)==ROOT and ROOT.is_dir() and ROOT.stat().st_uid==UID
+-    assert CONTROL.parent.resolve(strict=True)==CONTROL.parent and CONTROL.parent.stat().st_uid==UID
+-    assert not CONTROL.exists() and not CONTROL.is_symlink()
+-    if args.action=='resume-mac':
+-        _,volume_raw=owned_argv('t5-volume-identity',
+-            ['/usr/sbin/diskutil','info','-plist','/Volumes/T5'],30)
+-        info=plistlib.loads(volume_raw)
+-        assert info.get('VolumeUUID')=='FB804D1B-24CB-4D6E-AEA7-A9E180807758'
+-        result['external_volume_uuid']=info['VolumeUUID']
++    assert BASE.resolve(strict=True)==BASE and BASE.is_dir() and BASE.stat().st_uid==UID
++    assert SOURCE.resolve(strict=True)==SOURCE and SOURCE.is_dir() and SOURCE.stat().st_uid==UID
++    assert not ROOT.exists() and not ROOT.is_symlink()
+     remaining()
+-    CONTROL.mkdir(mode=0o700);created_control=True
++    ROOT.mkdir(mode=0o700);created_control=True
++    fsync_dir(BASE)
+     (CONTROL/'empty-hooks').mkdir(mode=0o700)
+     source_raw,source_id=stable(Path(__file__).resolve(strict=True))
+     result['controller']=source_id
+     result['source']=str(SOURCE)
+-    for prefix,out,err,row in deferred_logs:
+-        persist_command(prefix,out,err,row)
+-    deferred_logs.clear()
+-    public(CONTROL/'intent.public.json',{'schema':result['schema'],'action':args.action,
++    public(CONTROL/'intent.public.json',{'schema':result['schema'],'action':ACTION,
+       'controller':source_id,'canonical_commit':CANONICAL,'canonical_tree':TREE,
+-      'prerequisite':ANCHOR,'source':str(SOURCE),'bundle':str(BUNDLE),
+-      'old_failure_fences':FENCES if args.action=='resume-mac' else None,
++      'expected_prerequisites':[],'expected_full_commit_count':CANONICAL_COUNT,
++      'source':str(SOURCE),'bundle':str(BUNDLE),'maximum_bundle_bytes':MAX_BUNDLE,
+       'overall_seconds':300,'git_command_seconds':90,
+       'network_git_protocols_enabled':False,'compiler_started':False,'server_started':False})
+-    if args.action=='export-rog':
+-        result['source_before']=freeze('source-before',SOURCE,CANONICAL,TREE,True)
+-        result['origin_before']=source_origin()
+-        result['canonical_proof']=prove_canonical('export-proof')
+-        closure=anchor_closure()
+-        expected_boundary=actual_export_boundary(closure)
+-        assert not BUNDLE.exists() and not BUNDLE.is_symlink()
+-        owned('bundle-create',SOURCE,'bundle','create','--version=2',str(BUNDLE),'HEAD','^'+ANCHOR)
+-        raw,binding=stable(BUNDLE,MAX_BUNDLE)
+-        assert 0<len(raw)<=MAX_BUNDLE
+-        fd=os.open(BUNDLE,os.O_RDONLY|os.O_NOFOLLOW)
+-        try:os.fsync(fd)
+-        finally:os.close(fd)
+-        fsync_dir(CONTROL)
+-        header=bundle_header(raw,closure)
+-        assert set(header['prerequisites'])==expected_boundary
+-        result['bundle']={'path':str(BUNDLE),**binding,'header':header}
+-        owned('bundle-verify',SOURCE,'bundle','verify',str(BUNDLE))
+-        _,heads=git('bundle-heads',SOURCE,'bundle','list-heads',str(BUNDLE))
+-        assert heads==CANONICAL+' HEAD'
+-        result['source_after']=freeze('source-after',SOURCE,CANONICAL,TREE,True)
+-        result['origin_after']=source_origin()
+-        assert result['source_before']==result['source_after']
+-        assert result['origin_before']==result['origin_after']
+-        assert stable(BUNDLE,MAX_BUNDLE)[1]==binding
+-        result['status']='exported'
+-    else:
+-        result['old_failed_fences_before']=failed_fences()
+-        result['old_source_before']=freeze('old-before',OLD,OLD_HEAD,OLD_TREE,False)
+-        result['source_before']=freeze('source-before',SOURCE,LOCAL_HEAD,TREE,True)
+-        result['origin_before']=source_origin()
+-        owned('local-anchor',SOURCE,'merge-base','--is-ancestor',ANCHOR,LOCAL_HEAD)
+-        closure=anchor_closure()
+-        raw,binding=stable(BUNDLE,MAX_BUNDLE)
+-        assert binding['bytes']==args.bundle_bytes and binding['sha256']==args.bundle_sha256
+-        result['bundle']={'path':str(BUNDLE),**binding,'header':bundle_header(raw,closure)}
+-        owned('bundle-verify',SOURCE,'bundle','verify',str(BUNDLE))
+-        _,heads=git('bundle-heads',SOURCE,'bundle','list-heads',str(BUNDLE))
+-        assert heads==CANONICAL+' HEAD'
+-        owned('local-bundle-fetch',SOURCE,'fetch','--no-tags','--no-recurse-submodules',
+-             '--no-write-fetch-head',str(BUNDLE),'HEAD')
+-        result['canonical_proof']=prove_canonical('import-proof')
+-        code,_=owned('backup-ref-absent',SOURCE,'show-ref','--verify','--quiet',BACKUP_REF,allowed=(1,))
+-        assert code==1
+-        owned('preserve-materialized-commit',SOURCE,'update-ref','--create-reflog',
+-              BACKUP_REF,LOCAL_HEAD,'0'*40)
+-        owned('canonical-checkout',SOURCE,'checkout','--detach',CANONICAL)
+-        result['source_after']=freeze('source-after',SOURCE,CANONICAL,TREE,True)
+-        _,preserved=git('preserved-materialization',SOURCE,'rev-parse',BACKUP_REF)
+-        assert preserved==LOCAL_HEAD
+-        result['materialized_commit_preserved_ref']=BACKUP_REF
+-        result['materialized_commit_preserved']=preserved
+-        result['origin_after']=source_origin()
+-        result['old_source_after']=freeze('old-after',OLD,OLD_HEAD,OLD_TREE,False)
+-        result['old_failed_fences_after']=failed_fences()
+-        assert result['old_source_before']==result['old_source_after']
+-        assert result['old_failed_fences_before']==result['old_failed_fences_after']
+-        assert result['origin_before']==result['origin_after']
+-        assert stable(BUNDLE,MAX_BUNDLE)[1]==binding
+-        result['status']='prepared'
++    result['source_before']=source_snapshot('source-before')
++    result['canonical_proof']=prove_canonical('export-proof')
++    assert not BUNDLE.exists() and not BUNDLE.is_symlink()
++    owned('bundle-create',SOURCE,'bundle','create','--version=2',str(BUNDLE),'HEAD')
++    raw,binding=stable(BUNDLE,MAX_BUNDLE)
++    assert 0<len(raw)<=MAX_BUNDLE
++    fd=os.open(BUNDLE,os.O_RDONLY|os.O_NOFOLLOW)
++    try:
++        assert identity(os.fstat(fd))==binding['identity']
++        os.fsync(fd)
++        assert identity(os.fstat(fd))==identity(BUNDLE.lstat())==binding['identity']
++    finally:os.close(fd)
++    fsync_dir(CONTROL)
++    result['bundle']={'path':str(BUNDLE),**binding,'header':bundle_header(raw)}
++    owned('bundle-verify',SOURCE,'bundle','verify',str(BUNDLE))
++    _,heads=git('bundle-heads',SOURCE,'bundle','list-heads',str(BUNDLE))
++    assert heads==CANONICAL+' HEAD'
++    result['source_after']=source_snapshot('source-after')
++    assert result['source_before']==result['source_after']
++    assert stable(BUNDLE,MAX_BUNDLE)[1]==binding
+     assert stable(Path(__file__).resolve(strict=True))[1]==source_id
++    remaining()
++    result['status']='exported'
+ except BaseException as error:
+     result['status']='failed'
+     result['error_type']=type(error).__name__
+@@ -425,7 +311,7 @@
+         fsync_dir(ROOT)
+     publication_within_deadline=time.monotonic()<UNTIL
+     terminal_status=result['status'] if publication_within_deadline else 'failed'
+-    terminal={'status':terminal_status,'action':args.action,
++    terminal={'status':terminal_status,'action':ACTION,
+        'receipt':str(CONTROL/'result.public.json') if created_control else None,
+        'receipt_candidate_status':result['status'],
+        'canonical_commit':CANONICAL,'canonical_tree':TREE,
+@@ -436,4 +322,4 @@
+     if not created_control:
+         terminal['unpublished_failed_result']=result
+     print(json.dumps(terminal,sort_keys=True),flush=True)
+-sys.exit(0 if terminal_status in ('exported','prepared') and time.monotonic()<UNTIL else 1)
++sys.exit(0 if terminal_status=='exported' and time.monotonic()<UNTIL else 1)

@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.phaseb-r3-local-stage.evidence-manifest.v1",
+  "original_bytes_preserved": true,
+  "original_unsafe_integer_metadata_not_reserialized": true,
+  "scope": "Actual local artifact/source materialization only. No prepare or product runtime.",
+  "files": [
+    {
+      "path": "runtime-ack.original.json",
+      "bytes": 25102,
+      "sha256": "a910ad407f2c32d1767989f28b079a00a78c0c57eb6033126593a703b7fbd525",
+      "blob": "3e0f547e35221fa9d152b357c2481ea7ac581341"
+    },
+    {
+      "path": "runtime-status.original.json",
+      "bytes": 733,
+      "sha256": "e19d38c43e6a4f8ef4e8bc9b31f0435f7e7dc8fa6516812768bac494a9bf6786",
+      "blob": "fe37da0e5c58c66ed5a627021c2a0f290f5a5146"
+    },
+    {
+      "path": "runtime-read.original.json",
+      "bytes": 35677,
+      "sha256": "361984171d6f0775cebcb0663e3eceeab17aebadd17697ed91ef13ec2a5a9799",
+      "blob": "2fd14adda903e385e03dc43695cc757f377c4a55"
+    },
+    {
+      "path": "stage.stdout.original.json",
+      "bytes": 11497,
+      "sha256": "4c582c9f33d58bf43c4e3acec1b1e4b0fd5d9fc26ae1409b43f6928aeda6c01e",
+      "blob": "e7728f0a1dcfccad87e62a43b9c3c34c4fb4c9f6"
+    },
+    {
+      "path": "stage.stderr.original.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "created-files-readback.original.json",
+      "bytes": 22795,
+      "sha256": "c07fb19c8386cb3c24d3cd1e10774cd226eec6f860f6a0d2a24ff37679eb9c7b",
+      "blob": "cdeacbff444ee9ad0d069e03d851eb9c0ce1f46f"
+    },
+    {
+      "path": "stage-file.original.public.json",
+      "bytes": 13903,
+      "sha256": "309bd991ef549fe163d9bc32ed0541828ac06d15f7ecce01f6949388602e4e9d",
+      "blob": "944e652d2c223cff85c7cf4b45290a568558c08b"
+    },
+    {
+      "path": "binding.original.metadata-only.json",
+      "bytes": 6366,
+      "sha256": "8e73ca7f0ed52056035ed82878b5f5c200e50013bfc36f1ad3dd647879043736",
+      "blob": "b0cf9ee08057363ea5476254a0a960e9f75a1d6b"
+    },
+    {
+      "path": "actual-recap.public.json",
+      "bytes": 4412,
+      "sha256": "ca135fa2d76793eaed49e06702b7239827da0d6b268013f9ca0a2976abc8e456",
+      "blob": "be2557ebbc4df08860935c2ee48658365299025c"
+    }
+  ]
+}

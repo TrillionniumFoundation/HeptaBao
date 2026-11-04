@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "from": {
+    "bytes": 24529,
+    "sha256": "f63a6bd0314bfe68c363355e0bd9caa62856168400910b472f26cb4600f46630",
+    "blob": "1890e06b03949025c0c583aefd3162b1f3ec71f4"
+  },
+  "to": {
+    "bytes": 24595,
+    "sha256": "5de344fdae21c1852513f21b891121246cff649b2fff001c2791c026ebb70521",
+    "blob": "1e406faf1eaec0dfd14b5d04311c257005bd013c"
+  },
+  "diff": {
+    "bytes": 555,
+    "sha256": "640139ca9aa66fb0ce7f7f1ad7fed85c84fa2cde55891d641789e0a7d0210d2f",
+    "blob": "f929c6df595c3f9edb656af70828599aaa2d5200"
+  },
+  "strict_apply_hunks": 1,
+  "scope": "raise original os.walk traversal error; all other receiver bytes unchanged",
+  "product_execution": false
+}

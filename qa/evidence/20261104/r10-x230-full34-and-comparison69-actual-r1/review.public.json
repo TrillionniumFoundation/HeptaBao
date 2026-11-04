@@ -1,0 +1,103 @@
+{
+  "schema": "heptabao.r10-x230-full34-and-scoped69-actual-review.v1",
+  "verdict": "PASS for the unchanged original full34 31 checks and scoped comparison69",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "binary_sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+  "full34": {
+    "job_id": "1a1a8170415-fc05-2da3",
+    "authority_exit_code": 0,
+    "complete_durable": true,
+    "original_checks": 31,
+    "passed": 31,
+    "missing": 0,
+    "full34_qualified": true,
+    "elapsed_seconds": 143.885,
+    "mutations": 95,
+    "all_mutations_response_received_no_replay": true,
+    "all_mutation_leaf_waits_completed": true,
+    "migration_export_attempts": 1,
+    "migration_import_attempts": 1,
+    "migration_each_original_seconds": 360,
+    "original_http_seconds": 15,
+    "storage_witnesses": [
+      19,
+      19,
+      19
+    ],
+    "live_payload_bytes": 35651584,
+    "retained_live_versions": 17,
+    "snapshot_archive_bytes": 9018297,
+    "source_and_binary_unchanged": true,
+    "owned_processes_stopped": true,
+    "summary_sha256": "0990e3ab77f3b428fe77e4e4a36a6a60678f2f50edf43f476f7c595e79c48319"
+  },
+  "comparison69": {
+    "job_id": "1a1a81beb21-fc05-2db3",
+    "authority_exit_code": 0,
+    "complete_durable": true,
+    "elapsed_seconds": 37.394,
+    "original_modules": 13,
+    "candidate_passed": 69,
+    "oracle_passed": 69,
+    "failed_each": 0,
+    "not_run_each": 0,
+    "normalized_case_objects_exactly_equal": 69,
+    "numeric_http_status_fields_each": 67,
+    "explicit_normalized_status_fields": [
+      {
+        "case": "pki.lease_expire_lookup",
+        "value": "rejected_after_ttl",
+        "expected": [
+          400,
+          404
+        ]
+      },
+      {
+        "case": "pki.revoked_lease_absent",
+        "value": "rejected_400_or_404",
+        "expected": [
+          400,
+          404
+        ]
+      }
+    ],
+    "owned_cleanup_completed": true,
+    "cleanup_errors": [],
+    "source_and_binary_unchanged": true,
+    "summary_sha256": "2b696bfbc041b72fe0f725cd32efaa0e66cf3a692f3a08857020ae1a3d8d332e"
+  },
+  "execution_sequence": "One full34 run completed with its original owned cleanup before one comparison69 run was launched.",
+  "supervisor_caps": {
+    "each_outer_seconds": 1800,
+    "provenance": "NEW explicit root-authorized overall supervision cap; old outer limits not recovered, no equivalence or end-to-end time comparison claimed.",
+    "original_internal_caps_and_case_inventory_unchanged": true
+  },
+  "read_only_observation_errors": {
+    "comparison_intent_first_read": "MCP -32603 timeout; sequential read-only retry returned exact bytes matching result.intent_sha256. No business replay."
+  },
+  "limits": {
+    "one_physical_host": "x230",
+    "network_scope": "owned loopback TLS only",
+    "full_openbao_compatibility": false,
+    "production_qualified": false,
+    "production_changed": false,
+    "three_host_ha_qualified": false,
+    "official_cli_qualified": false,
+    "original_uncovered": [
+      "full_endpoint_error_precedence",
+      "other_auth_methods",
+      "other_secret_engines",
+      "persistent_restart",
+      "ha",
+      "migration",
+      "upgrade",
+      "agent_proxy_cli",
+      "production_security"
+    ]
+  },
+  "source_provenance_packets": {
+    "transport": "48b1c7b431d4d39f8bfb7d2bd006201333642cd6",
+    "actual_inert_controls": "1b3ef14fccc9b137ef33fd0ae799ca5205b366f5"
+  }
+}

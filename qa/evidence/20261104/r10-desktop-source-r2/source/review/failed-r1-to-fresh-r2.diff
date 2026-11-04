@@ -1,0 +1,51 @@
+--- failed-control-r1/stage_desktop_r10.py
++++ candidate-control-r2/stage_desktop_r10.py
+@@ -9,8 +9,8 @@
+ 
+ os.umask(0o077)
+ BASE=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-SOURCES=BASE/'normal-r10-validation-source-controllers-r1'
+-CONTROL=BASE/'normal-r10-validation-source-control-r1'
++SOURCES=BASE/'normal-r10-validation-source-controllers-r2'
++CONTROL=BASE/'normal-r10-validation-source-control-r2'
+ SOURCE=BASE/'normal-r10-validation-source-r1'
+ INTERMEDIATE=CONTROL/'borrowed-intermediate-source'
+ OLD=BASE/'normal-r8-standby-oracle-source-r1'
+@@ -19,6 +19,13 @@
+ ORIGINAL_SHA='c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e'
+ OLD_RESULT=BASE/'normal-r8-standby-oracle-live-r1/result.public.json'
+ OLD_RESULT_SHA='88477fe316686727aca2439ecd839beb2403a607b05ede1e1df63441aef2567b'
++FAILED_SOURCE_FENCES={
++ BASE/'normal-r10-validation-source-control-r1/result.public.json':'43695ba4777612aaed337f71f093a1c7fdb93c9c70bf81a701e0657cbd809b83',
++ BASE/'normal-r10-validation-source-controllers-r1/stage_desktop_r10.py':'372a019ad50be02351fdba5de4837c52a7243290d7253fda8046c0eeafe02b30',
++ BASE/'normal-r10-validation-source-control-r1/009-rog-effective-config.stdout':'9228489a625661b16e643d1bde2d4b81bb95c2d23798b92024f700309400cf08'
++}
++EXPECTED_EFFECTIVE_SSH_SHA='9228489a625661b16e643d1bde2d4b81bb95c2d23798b92024f700309400cf08'
++EXPECTED_EXISTING_PROXY_SHA='92e3d728c643c8dbb9cfa27c7d015c10a7579a0832243bc44e2d97541c02058c'
+ OLD_HEAD='384c957612186d64c5a530044af0ae62c568cc3d'
+ OLD_TREE='d5a0f91a4d47f7c8d5f34170ea167d10dc036e04'
+ OLD_REFS_SHA='88409147a6d950453f1675b8ab4c8adfd62361938352a65c9960a595f949f6e5'
+@@ -244,7 +251,7 @@
+ 
+ def old_fences():
+     found={}
+-    for path,expected in ((ORIGINAL,ORIGINAL_SHA),(OLD_RESULT,OLD_RESULT_SHA)):
++    for path,expected in ((ORIGINAL,ORIGINAL_SHA),(OLD_RESULT,OLD_RESULT_SHA),*FAILED_SOURCE_FENCES.items()):
+         raw,binding=stable(path)
+         assert binding['sha256']==expected
+         found[str(path)]=binding
+@@ -282,10 +289,13 @@
+     assert config.get('controlmaster') in ('false','no')
+     assert config.get('controlpath') in (None,'none','null')
+     assert config.get('permitlocalcommand') in (None,'no','false')
+-    assert config.get('proxycommand') in (None,'none')
++    assert digest(raw)==EXPECTED_EFFECTIVE_SSH_SHA
++    assert isinstance(config.get('proxycommand'),str)
++    assert digest(config['proxycommand'].encode('utf-8'))==EXPECTED_EXISTING_PROXY_SHA
+     assert config.get('proxyjump') in (None,'none')
+     keys=tuple(required)+('stricthostkeychecking','updatehostkeys','controlmaster','controlpath')
+     return config,{'effective_config_sha256':digest(raw),'projection':{k:config.get(k) for k in keys},
++                   'existing_proxycommand_sha256':digest(config['proxycommand'].encode('utf-8')),
+                    'known_hosts':known_hosts_state(config)}
+ 
+ def bundle_header(raw,head,prerequisites):

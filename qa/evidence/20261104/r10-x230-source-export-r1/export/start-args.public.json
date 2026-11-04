@@ -1,0 +1,13 @@
+{
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-x230-export-controls-r1/source_export_r10.py"
+  ],
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "timeout_seconds": 360,
+  "idempotency_key": "heptabao-r10-x230-standalone-export-b337bdbe-20261104-r1"
+}

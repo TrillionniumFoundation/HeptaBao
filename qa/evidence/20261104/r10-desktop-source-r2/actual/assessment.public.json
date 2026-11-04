@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.r10.desktop-complete-source-assessment.v1",
+  "authoritative_job": "1a1a7f8d48c-fc05-2d26",
+  "authoritative_exit_code": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "raw_result": {
+    "bytes": 141578,
+    "sha256": "d8569895d7bf7d1c15dea6159853e4f4b000b921e136cd17e778b6827081b622",
+    "source_file": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-validation-source-control-r2/result.public.json"
+  },
+  "publication_within_original_300_seconds": true,
+  "elapsed_after_publication_seconds": 11.438868400058709,
+  "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-validation-source-r1",
+  "canonical_proof": {
+    "closure_raw_sha256": "fd37e0a5eca55010cc3c1aa89930ce13d48c331981ac5907519529911509168b",
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "commit_count": 3752,
+    "full_fsck_passed": true,
+    "root": "67d79b3b5442ed033d38929eab2010403463e56d",
+    "sole_parent": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+  },
+  "full_checkout": {
+    "index_paths_sha256": "e4925b7c10002e6404c7c689ecbd77e5612e440b8f60a8a6e190dece34fac56a",
+    "no_skip_worktree_or_assume_unchanged": true,
+    "no_sparse_checkout": true,
+    "tracked_entries": 3911,
+    "tree_paths_sha256": "e4925b7c10002e6404c7c689ecbd77e5612e440b8f60a8a6e190dece34fac56a"
+  },
+  "independent_git_objects": {
+    "all_regular_files_single_link": true,
+    "no_alternates": true,
+    "no_symlinks": true,
+    "regular_files": 30,
+    "total_bytes": 21746811
+  },
+  "local_command_and_cleanup_count": 64,
+  "remote_readonly_git_and_cleanup_count": 20,
+  "all_owned_stopped": true,
+  "remote_cleanup_unknown": false,
+  "old_source_and_all_failure_fences_before_after_exact": true,
+  "source_terminal_clean": true,
+  "rog_source_before_after_exact": true,
+  "original_config_and_known_hosts_guard_verified": true,
+  "existing_proxycommand_fixed_to_previously_successful_transport": true,
+  "large_json_integers_compared_losslessly_as_decimal_strings": true,
+  "raw_result_bytes_preserved_without_json_reserialization": true,
+  "prior_control_r1_failure_preserved": {
+    "sha256": "43695ba4777612aaed337f71f093a1c7fdb93c9c70bf81a701e0657cbd809b83",
+    "known_exit": 1,
+    "remote_dispatched": false
+  },
+  "compiler_started": false,
+  "server_started": false,
+  "product_runtime_executed": false,
+  "qualification": "complete independent source preparation only"
+}

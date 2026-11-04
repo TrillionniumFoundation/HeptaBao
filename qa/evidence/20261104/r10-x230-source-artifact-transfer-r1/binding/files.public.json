@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.r10.x230-five-fixed-inputs.v1",
+  "files": [
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1/incoming/heptabao-server",
+      "name": "heptabao-server",
+      "bytes": 109091112,
+      "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+      "source_mode": 320,
+      "target_mode": 320,
+      "version": "2050:58120239:109091112:1793819286714153802:1793819286714153802"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1/incoming/native-build.public.json",
+      "name": "native-build.public.json",
+      "bytes": 801,
+      "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": "2050:58120241:801:1793819287399134926:1793819287399134926"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1/incoming/normal-release-result.public.json",
+      "name": "result.public.json",
+      "bytes": 3227,
+      "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+      "source_mode": 256,
+      "target_mode": 256,
+      "version": "2050:58120242:3227:1793819287404134788:1793819287404134788"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-x230-source-export-r1/canonical-r10-full.bundle",
+      "name": "canonical-r10-full.bundle",
+      "bytes": 20091909,
+      "sha256": "6fb2b73c52a880475ce8c45c67a4179575834313ee24ed761af94ea3faaaa858",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "2050:58372900:20091909:1793819761984976492:1793819761988976381"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-x230-source-export-r1/result.public.json",
+      "name": "source-export.result.public.json",
+      "bytes": 40100,
+      "sha256": "6342a59b3a953c5e701887cceac8cc7274850f76f65b718b427485bd5b29951e",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "2050:58372937:40100:1793819763173944963:1793819763173944963"
+    }
+  ],
+  "source": "actual shared artifact transfer and actual standalone export",
+  "shared_transfer_result_blob": "e41d0284577f32c051ee724188861ceaa9befcbe",
+  "standalone_export_result_blob": "df551442ac14e42cf2e68b56b418749ca50be5b1",
+  "source_preparation_only": true,
+  "source_review_accepted": true,
+  "runtime_executed": false,
+  "source_transfer_outer_seconds": 360,
+  "later_full34_new_outer_seconds": 1800,
+  "later_comparison69_new_outer_seconds": 1800,
+  "old_suite_outer_limits_recovered": false
+}

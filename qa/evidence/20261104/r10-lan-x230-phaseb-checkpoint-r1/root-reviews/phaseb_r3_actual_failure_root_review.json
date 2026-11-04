@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.phaseb-r3.actual-failure.root-review.v1",
+  "evidence_status": "PASS_WHOLE_RAW_TERMINAL_REVIEW",
+  "test_status": "FAIL_UNKNOWN",
+  "job_id": "1a1a8177aec-fc05-2da5",
+  "core_files": [
+    {
+      "bytes": 270785,
+      "sha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184",
+      "blob": "7a2238125a983bbe657d99d460aae9a9b5b1ae71"
+    },
+    {
+      "bytes": 726,
+      "sha256": "7b4d99907e834b2ba5d5faf642fdf9bc8601b8a47a6e0acbec3a08695355c230",
+      "blob": "4d09ba9d0625d07a8f92147d054df1a9f6eff2a4"
+    },
+    {
+      "bytes": 437,
+      "sha256": "65acffe0f02aa90aba92bb2634503b1d6033caec4995990a18092cd6c4e63575",
+      "blob": "6efc84a7a59b44fd22578a922e2536a91fb448fe"
+    }
+  ],
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "input_binding_sha256": "8e73ca7f0ed52056035ed82878b5f5c200e50013bfc36f1ad3dd647879043736",
+  "prepared_whole_raw_parsed_losslessly_equal": true,
+  "original_raw_integer_lexemes_preserved": true,
+  "original_final_errors": [
+    {
+      "code": "input_fence_changed_after_run",
+      "stage": "input_after"
+    }
+  ],
+  "before_after_input_serialized_values_exact_equal": true,
+  "observer_input_fence_inference": {
+    "cause": "Integer API/RAFT dict keys from binding.verify compared directly to string-key parsed prepare inputs",
+    "source_files": [
+      {
+        "path": "qa/evidence/20261104/phaseb-r3-source-draft2/phaseb_binding_r3.py",
+        "bytes": 20742,
+        "sha256": "39795f901ffac84236411f4b89ce2ee2ae573446ce30f490f9b8d0c603131501",
+        "git_blob": "236c35803f07f2b6bfeb06b0abfe108baef27215"
+      },
+      {
+        "path": "qa/evidence/20261104/phaseb-r3-source-draft2/phaseb_controller_r3.py",
+        "bytes": 61210,
+        "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+        "git_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0"
+      }
+    ],
+    "binding_lines": [
+      58,
+      59,
+      352
+    ],
+    "controller_lines": [
+      920,
+      1078
+    ],
+    "byte_drift_not_established": true,
+    "original_final_error_retained": true,
+    "does_not_change_cli_unknown": true
+  },
+  "cli_cases_executed": [
+    "B01"
+  ],
+  "b01": {
+    "action": "leader save archive A",
+    "actual_leader": 1,
+    "cli_exit": 2,
+    "stderr_bytes": 178,
+    "stderr_sha256": "bce4e0993df8aa57859efc05b509ad6ea36d8f2d0df9dd23d63ae3640e537df8",
+    "archive_exists": false,
+    "audit_node": 1,
+    "request_sequence": 61,
+    "response_sequence": 62,
+    "audit_status": 503,
+    "client_response_framing_proved": false,
+    "server_boundary_known": false,
+    "outcome_unknown": true
+  },
+  "cases_b02_b05_executed": false,
+  "cold_results": 0,
+  "restore_or_request_replays": 0,
+  "http_intents": 66,
+  "http_outcomes": 66,
+  "dynamic_checks_passed": 84,
+  "dynamic_checks_are_not_replacement_denominator": true,
+  "owned_processes": 81,
+  "all_reaped": true,
+  "remaining": 0,
+  "full_replacement_qualification": false,
+  "production_changed": false,
+  "j3160_requests": 0,
+  "provider_requests": 0
+}

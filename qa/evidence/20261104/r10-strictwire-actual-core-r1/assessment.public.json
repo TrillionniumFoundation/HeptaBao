@@ -1,0 +1,43 @@
+{
+  "schema": "heptabao.r10-strictwire-terminal-core-assessment.v1",
+  "job_id": "1a1a814d2b8-fc05-2d99",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "controller_sha256": "1f9ceba884653329116c1339fd6c1996fd49082785195cc632ea71f1e23681c3",
+  "result_sha256": "ad3653c8cc697d6a89bf243657612c003c77724c0f8cb640a439905487fe9fe2",
+  "wire_sha256": "4d2d21baab9c6522bf433ce42e131a25914d2a023be739789a9f8a71df3bf067",
+  "status": "completed_observation",
+  "counts_from_exact_terminal": {
+    "intents": 86,
+    "outcomes": 86,
+    "unknown": 0,
+    "complete_http": 85,
+    "preconnect": 1,
+    "dynamic_checks": 68,
+    "dynamic_checks_passed": 68
+  },
+  "all_90_owned_terminal_rows_checked": true,
+  "scope": {
+    "physical_hosts": 1,
+    "process_nodes": 3,
+    "loopback_only": true,
+    "no_failure_injection": true,
+    "valid_restore_bodies": 0,
+    "formal_128_qualification": false,
+    "full_replacement_qualification": false,
+    "dynamic_checks_not_fixed_compatibility_denominator": true
+  },
+  "compatibility_status_differences": [
+    "node2_snapshot_get_root",
+    "node3_snapshot_get_root",
+    "node1_snapshot_invalid_restore",
+    "node1_snapshot-force_invalid_restore",
+    "node2_snapshot_invalid_restore",
+    "node2_snapshot-force_invalid_restore",
+    "node3_snapshot_invalid_restore",
+    "node3_snapshot-force_invalid_restore"
+  ],
+  "unknown_r8_receipt_preserved": true,
+  "operation_file_full_raw_independent_collection_pending": true,
+  "no_new_host_read_for_this_assessment": true
+}
