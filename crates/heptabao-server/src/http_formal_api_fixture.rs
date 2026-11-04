@@ -23,7 +23,10 @@ struct RequestWorker {
 
 impl RequestWorker {
     fn join(mut self) -> FixtureResult<()> {
-        let thread = self.thread.take().ok_or("formal TLS worker already joined")?;
+        let thread = self
+            .thread
+            .take()
+            .ok_or("formal TLS worker already joined")?;
         thread.join().map_err(|_| "formal TLS worker panicked")??;
         Ok(())
     }
@@ -54,7 +57,11 @@ impl FormalApiListener {
         let key_bytes = bounded_file(&key_path, true)?;
         let certificates = rustls_pemfile::certs(&mut BufReader::new(cert_bytes.as_slice()))
             .collect::<Result<Vec<_>, _>>()?;
-        let expected_leaf = certificates.first().ok_or("formal API leaf absent")?.as_ref().to_vec();
+        let expected_leaf = certificates
+            .first()
+            .ok_or("formal API leaf absent")?
+            .as_ref()
+            .to_vec();
         let key = rustls_pemfile::private_key(&mut BufReader::new(key_bytes.as_slice()))?
             .ok_or("formal API private key absent")?;
         let provider = Arc::new(rustls::crypto::ring::default_provider());
@@ -100,9 +107,12 @@ impl FormalApiListener {
         deadline: Instant,
         missing_forward: bool,
     ) -> FixtureResult<Zeroizing<Vec<u8>>> {
-        let remaining = || deadline.checked_duration_since(Instant::now())
-            .filter(|duration| !duration.is_zero())
-            .ok_or("formal TLS original deadline");
+        let remaining = || {
+            deadline
+                .checked_duration_since(Instant::now())
+                .filter(|duration| !duration.is_zero())
+                .ok_or("formal TLS original deadline")
+        };
         let client_socket = TcpStream::connect_timeout(&self.address()?, remaining()?)?;
         let client_address = client_socket.local_addr()?;
         let (server_socket, peer) = loop {
@@ -123,48 +133,79 @@ impl FormalApiListener {
         let server_tls = Arc::clone(&self.server_tls);
         let service = Arc::clone(service);
         let settings = consistency::Settings::checked(None, None, missing_forward)?;
-        let thread = std::thread::Builder::new().name("formal-api-tls".into()).spawn(move || {
-            let _scope = RequestDeadlineScope::enter(deadline);
-            let connection = rustls::ServerConnection::new(server_tls)
-                .map_err(io::Error::other)?;
-            let mut stream = StreamOwned::new(connection, DeadlineStream {
-                stream: server_socket, deadline,
-            });
-            stream.sock.deadline = execution_deadline_with_response_reserve(Instant::now(), deadline);
-            let budget = stream.sock.deadline.saturating_duration_since(Instant::now());
-            let parsed = read_request_with_ui(&mut stream, budget, true, false);
-            stream.sock.deadline = deadline;
-            if stream.conn.alpn_protocol() != Some(b"http/1.1".as_slice()) {
-                return Err(io::Error::other("formal API ALPN changed"));
-            }
-            let attempt = crypto::random::<16>()
-                .map_err(|_| io::Error::other("formal API ingress randomness unavailable"))?;
-            let client_certificates = stream.conn.peer_certificates().map(|certificates| {
-                certificates.iter().map(|certificate| certificate.as_ref().to_vec()).collect()
-            });
-            let (reply, head, namespace) = process_parsed_request(
-                &service, None, parsed, &mut stream, client_certificates,
-                peer.ip(), &attempt, settings, deadline,
-            );
-            let redirect = matches!(&reply, snapshot::NativeReply::Redirect { .. });
-            write_http1_reply(&mut stream, reply, head, &namespace, deadline);
-            if redirect {
-                snapshot::finish_redirect_connection(&mut stream);
-            }
-            Ok(())
-        })?;
-        let worker = RequestWorker { thread: Some(thread), client: close_client, server: close_server };
+        let thread = std::thread::Builder::new()
+            .name("formal-api-tls".into())
+            .spawn(move || {
+                let _scope = RequestDeadlineScope::enter(deadline);
+                let connection =
+                    rustls::ServerConnection::new(server_tls).map_err(io::Error::other)?;
+                let mut stream = StreamOwned::new(
+                    connection,
+                    DeadlineStream {
+                        stream: server_socket,
+                        deadline,
+                    },
+                );
+                stream.sock.deadline =
+                    execution_deadline_with_response_reserve(Instant::now(), deadline);
+                let budget = stream
+                    .sock
+                    .deadline
+                    .saturating_duration_since(Instant::now());
+                let parsed = read_request_with_ui(&mut stream, budget, true, false);
+                stream.sock.deadline = deadline;
+                if stream.conn.alpn_protocol() != Some(b"http/1.1".as_slice()) {
+                    return Err(io::Error::other("formal API ALPN changed"));
+                }
+                let attempt = crypto::random::<16>()
+                    .map_err(|_| io::Error::other("formal API ingress randomness unavailable"))?;
+                let client_certificates = stream.conn.peer_certificates().map(|certificates| {
+                    certificates
+                        .iter()
+                        .map(|certificate| certificate.as_ref().to_vec())
+                        .collect()
+                });
+                let (reply, head, namespace) = process_parsed_request(
+                    &service,
+                    None,
+                    parsed,
+                    &mut stream,
+                    client_certificates,
+                    peer.ip(),
+                    &attempt,
+                    settings,
+                    deadline,
+                );
+                let redirect = matches!(&reply, snapshot::NativeReply::Redirect { .. });
+                write_http1_reply(&mut stream, reply, head, &namespace, deadline);
+                if redirect {
+                    snapshot::finish_redirect_connection(&mut stream);
+                }
+                Ok(())
+            })?;
+        let worker = RequestWorker {
+            thread: Some(thread),
+            client: close_client,
+            server: close_server,
+        };
         let connection = rustls::ClientConnection::new(
             Arc::clone(&self.client_tls),
             rustls::pki_types::ServerName::try_from("localhost".to_owned())?,
         )?;
-        let mut client = StreamOwned::new(connection, DeadlineStream {
-            stream: client_socket, deadline,
-        });
+        let mut client = StreamOwned::new(
+            connection,
+            DeadlineStream {
+                stream: client_socket,
+                deadline,
+            },
+        );
         client.write_all(request)?;
         client.flush()?;
         if client.conn.alpn_protocol() != Some(b"http/1.1".as_slice())
-            || client.conn.peer_certificates().and_then(|chain| chain.first())
+            || client
+                .conn
+                .peer_certificates()
+                .and_then(|chain| chain.first())
                 .is_none_or(|leaf| leaf.as_ref() != self.expected_leaf.as_slice())
         {
             return Err("formal API authenticated peer or ALPN changed".into());
@@ -185,8 +226,11 @@ impl FormalApiListener {
         if !status.starts_with("HTTP/1.1 ") {
             return Err("formal API response status malformed".into());
         }
-        let status_code: u16 = status.split(' ').nth(1)
-            .ok_or("formal API response status malformed")?.parse()?;
+        let status_code: u16 = status
+            .split(' ')
+            .nth(1)
+            .ok_or("formal API response status malformed")?
+            .parse()?;
         let mut content_length = None;
         for line in lines {
             let (name, value) = line.split_once(':').ok_or("formal API header framing")?;
@@ -196,7 +240,9 @@ impl FormalApiListener {
                 }
                 content_length = Some(value.trim().parse::<usize>()?);
             } else if name.eq_ignore_ascii_case("transfer-encoding") {
-                return Err("formal API component requires explicit complete response length".into());
+                return Err(
+                    "formal API component requires explicit complete response length".into(),
+                );
             }
         }
         let body_length = match content_length {
@@ -210,7 +256,12 @@ impl FormalApiListener {
             return Err("formal API response archive bound".into());
         }
         let header_length = output.len();
-        output.resize(header_length.checked_add(body_length).ok_or("formal API length overflow")?, 0);
+        output.resize(
+            header_length
+                .checked_add(body_length)
+                .ok_or("formal API length overflow")?,
+            0,
+        );
         client.read_exact(&mut output[header_length..])?;
         remaining()?;
         // The complete Content-Length response is already owned. Close the

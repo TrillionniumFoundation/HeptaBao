@@ -604,21 +604,27 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
     let provider_address = provider_listener.local_addr()?;
     let provider_origin = format!("https://localhost:{}", provider_address.port());
     let provider_bearer = Zeroizing::new(hex(&crypto::random::<32>()?));
-    let source = Pipeline::start_with_initial_outbound_endpoints(vec![crate::outbound::EndpointConfig {
-        origin: provider_origin.clone(),
-        address: provider_address,
-        server_name: "localhost".to_owned(),
-        ca_pem: include_str!("testdata/kubernetes-api-ca.pem").to_owned(),
-        path_prefix: "/api/".to_owned(),
-        shared_secret: String::new(),
-    }])?;
+    let source =
+        Pipeline::start_with_initial_outbound_endpoints(vec![crate::outbound::EndpointConfig {
+            origin: provider_origin.clone(),
+            address: provider_address,
+            server_name: "localhost".to_owned(),
+            ca_pem: include_str!("testdata/kubernetes-api-ca.pem").to_owned(),
+            path_prefix: "/api/".to_owned(),
+            shared_secret: String::new(),
+        }])?;
     let leader = source.ready_leader()?;
     // A real root Kubernetes config carries a private bearer but performs no
     // provider I/O. Root SSH is now supported; unsupported child SSH cannot
     // pass the namespace admission needed to create this historical archive.
     expect(
-        source.call(leader, "POST", "sys/mounts/cold-kubernetes", source.admin(),
-                    json!({"type":"kubernetes"}))?,
+        source.call(
+            leader,
+            "POST",
+            "sys/mounts/cold-kubernetes",
+            source.admin(),
+            json!({"type":"kubernetes"}),
+        )?,
         204,
         "unsupported-cold-kubernetes-mount",
     )?;
@@ -629,10 +635,18 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
         "unsupported-cold-kubernetes-config",
     )?;
     let retained = expect(
-        source.call(leader, "GET", "cold-kubernetes/config", source.admin(), json!({}))?,
+        source.call(
+            leader,
+            "GET",
+            "cold-kubernetes/config",
+            source.admin(),
+            json!({}),
+        )?,
         200,
         "unsupported-cold-kubernetes-before",
-    )?.body["data"].clone();
+    )?
+    .body["data"]
+        .clone();
     assert_eq!(retained["service_account_token_set"], true);
     activate(&source, leader)?;
     let archive = export(&source, leader, source.admin())?;
@@ -642,7 +656,13 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
     // same boundary before and after recovery refusal; inspect the complete
     // authenticated native graph and private owner encoding below.
     let boundary_before = expect(
-        source.call(leader, "GET", "cold-kubernetes/config", source.admin(), json!({}))?,
+        source.call(
+            leader,
+            "GET",
+            "cold-kubernetes/config",
+            source.admin(),
+            json!({}),
+        )?,
         501,
         "unsupported-cold-kubernetes-activated-before",
     )?;
@@ -804,7 +824,11 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
         Ok((before, generation, owner_bytes))
     };
     let (before, generation_before, engine_owner_before) = inspect_retained()?;
-    assert!(engine_owner_before.windows(provider_bearer.len()).any(|part| part == provider_bearer.as_bytes()));
+    assert!(
+        engine_owner_before
+            .windows(provider_bearer.len())
+            .any(|part| part == provider_bearer.as_bytes())
+    );
     let mut bundle = Root::new();
     private_directory(&bundle.path)?;
     bundle.path = fs::canonicalize(&bundle.path)?;
@@ -842,12 +866,20 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
         share_hash
     );
     let boundary_after = expect(
-        source.call(leader, "GET", "cold-kubernetes/config", source.admin(), json!({}))?,
+        source.call(
+            leader,
+            "GET",
+            "cold-kubernetes/config",
+            source.admin(),
+            json!({}),
+        )?,
         501,
         "unsupported-cold-kubernetes-activated-after",
     )?;
     assert!(boundary_after.body == boundary_before.body);
-    assert!(matches!(provider_listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock));
+    assert!(
+        matches!(provider_listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)
+    );
     Ok(())
 }
 

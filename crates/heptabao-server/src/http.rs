@@ -27,6 +27,9 @@ use std::{
 #[cfg(test)]
 #[path = "http_api_alpn_tests.rs"]
 mod api_alpn_tests;
+#[cfg(all(test, feature = "native-v6-ha"))]
+#[path = "http_formal_api_fixture.rs"]
+pub(crate) mod formal_api_fixture;
 #[path = "http_h2.rs"]
 mod h2_transport;
 #[path = "http_logical.rs"]
@@ -35,9 +38,6 @@ mod logical;
 mod mutation_profile;
 #[path = "http_sanitized_config.rs"]
 mod sanitized_config;
-#[cfg(all(test, feature = "native-v6-ha"))]
-#[path = "http_formal_api_fixture.rs"]
-pub(crate) mod formal_api_fixture;
 #[cfg(all(test, feature = "native-v6-storage"))]
 #[path = "http_snapshot_accept_tests.rs"]
 mod snapshot_accept_tests;

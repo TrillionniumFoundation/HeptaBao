@@ -320,11 +320,18 @@ fn configured_native_activation_rejects_unsupported_live_engine_without_retiring
     let before = request(&mut service, "GET", "kubernetes/config", &token, json!({}));
     assert_eq!(before.status, 200);
     assert_eq!(before.body["data"]["service_account_token_set"], true);
-    let source = service.state.as_ref().ok_or("unsupported Kubernetes state")?;
+    let source = service
+        .state
+        .as_ref()
+        .ok_or("unsupported Kubernetes state")?;
     assert!(!source.engines.supports_native_v6_root_storage());
     let owner_before = crate::service::owner_store::serialize_owner(source)
         .map_err(|_| "unsupported Kubernetes complete owner before")?;
-    assert!(owner_before.windows(provider_bearer.len()).any(|part| part == provider_bearer.as_bytes()));
+    assert!(
+        owner_before
+            .windows(provider_bearer.len())
+            .any(|part| part == provider_bearer.as_bytes())
+    );
     let identity_before = service
         .current_state_identity()
         .map_err(|_| "unsupported Kubernetes v5 identity before")?;
@@ -337,7 +344,10 @@ fn configured_native_activation_rejects_unsupported_live_engine_without_retiring
     assert_eq!(retained.status, 200);
     assert_eq!(retained.body["data"], before.body["data"]);
     let owner_after = crate::service::owner_store::serialize_owner(
-        service.state.as_ref().ok_or("unsupported Kubernetes retained state")?,
+        service
+            .state
+            .as_ref()
+            .ok_or("unsupported Kubernetes retained state")?,
     )
     .map_err(|_| "unsupported Kubernetes complete retained owner")?;
     // Compare every secret-bearing owner byte without formatting it.
@@ -348,7 +358,9 @@ fn configured_native_activation_rejects_unsupported_live_engine_without_retiring
             .map_err(|_| "unsupported Kubernetes retained v5 identity")?,
         identity_before
     );
-    assert!(matches!(provider_listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock));
+    assert!(
+        matches!(provider_listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)
+    );
     Ok(())
 }
 

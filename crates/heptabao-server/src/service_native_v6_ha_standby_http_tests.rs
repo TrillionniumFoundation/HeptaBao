@@ -4,10 +4,10 @@
 use super::*;
 #[path = "service_native_v6_ha_formal_api_pipeline_tests.rs"]
 mod formal_api_pipeline;
-use formal_api_pipeline::{FormalApiPipeline, formal_api_source};
 use crate::crypto::AeadBarrier;
 use crate::ha::native_v6_backup::{NativeV6ArchiveSelection, validate_native_v6_archive};
 use crate::snapshot_file::SnapshotSpool;
+use formal_api_pipeline::{FormalApiPipeline, formal_api_source};
 use heptabao_durable_service::Barrier;
 
 struct WireReply {
@@ -110,7 +110,14 @@ fn wire_with_routing(
     }
     let body = Zeroizing::new(output[split + 4..].to_vec());
     if let Some(length) = headers.get("content-length") {
-        assert_eq!(if method == "HEAD" { 0 } else { length.parse::<usize>()? }, body.len());
+        assert_eq!(
+            if method == "HEAD" {
+                0
+            } else {
+                length.parse::<usize>()?
+            },
+            body.len()
+        );
     } else {
         assert_eq!(
             status, 204,
@@ -499,14 +506,17 @@ fn formal_native_standby_ttl_snapshot_commits_real_leader_floor_and_survives_col
     Ok(())
 }
 
-
 #[test]
 fn formal_native_standby_snapshot_missing_api_origin_remains_503() -> TestResult {
     // Retain the exact old configuration as an independent refusal. No origin
     // is synthesized and no permission, archive or transfer lease is created.
     let pipeline = formal_cold_source()?;
-    assert!(pipeline.configs.iter().all(|config| config.peers.values()
-        .all(|peer| peer.api_address.is_none())));
+    assert!(
+        pipeline
+            .configs
+            .iter()
+            .all(|config| config.peers.values().all(|peer| peer.api_address.is_none()))
+    );
     let leader = pipeline.ready_leader()?;
     activate_formal_cold(&pipeline, leader)?;
     let standby = (leader + 1) % 3;
@@ -514,17 +524,26 @@ fn formal_native_standby_snapshot_missing_api_origin_remains_503() -> TestResult
     let until = Instant::now() + REQUEST_BUDGET;
     let _scope = RequestDeadlineScope::enter(until);
     let mut input = Zeroizing::new(Vec::new());
-    write!(&mut *input,
+    write!(
+        &mut *input,
         "GET /v1/sys/storage/raft/snapshot HTTP/1.1\r\nHost: local\r\nX-Vault-Token: {}\r\nConnection: close\r\n\r\n",
-        pipeline.admin())?;
-    let service = pipeline.services[standby].as_ref().ok_or("missing API Service")?;
+        pipeline.admin()
+    )?;
+    let service = pipeline.services[standby]
+        .as_ref()
+        .ok_or("missing API Service")?;
     let output = crate::http::formal_standby_http_wire_fixture(service, &input, until)?;
-    let split = output.windows(4).position(|part| part == b"\r\n\r\n")
+    let split = output
+        .windows(4)
+        .position(|part| part == b"\r\n\r\n")
         .ok_or("missing API response framing")?;
     let header = std::str::from_utf8(&output[..split])?;
     assert!(header.starts_with("HTTP/1.1 503 "));
     let body: Value = serde_json::from_slice(&output[split + 4..])?;
-    assert_eq!(body["errors"], json!(["HA leader API address is unavailable"]));
+    assert_eq!(
+        body["errors"],
+        json!(["HA leader API address is unavailable"])
+    );
     assert!(body.get("data").is_none());
     pipeline.with_service(standby, |service| {
         assert!(service.pending_snapshot_transfer.is_none());

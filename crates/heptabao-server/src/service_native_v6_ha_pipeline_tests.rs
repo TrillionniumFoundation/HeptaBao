@@ -381,8 +381,8 @@ impl Pipeline {
                 let until = Instant::now() + REQUEST_BUDGET;
                 let _scope = RequestDeadlineScope::enter(until);
                 let service = service.as_ref().ok_or("initial outbound Service absent")?;
-                let mut writer = lock_until(service, until)
-                    .map_err(|_| "initial outbound Service deadline")?;
+                let mut writer =
+                    lock_until(service, until).map_err(|_| "initial outbound Service deadline")?;
                 assert!(writer.state.is_none());
                 writer.install_outbound_endpoints(endpoints.to_vec())?;
                 assert!(writer.state.is_none());

@@ -14,38 +14,67 @@ pub(super) struct FormalApiPipeline {
 }
 impl Deref for FormalApiPipeline {
     type Target = Pipeline;
-    fn deref(&self) -> &Self::Target { &self.inner }
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
 }
 impl DerefMut for FormalApiPipeline {
-    fn deref_mut(&mut self) -> &mut Self::Target { &mut self.inner }
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.inner
+    }
 }
 impl Drop for FormalApiPipeline {
     fn drop(&mut self) {
         // No per-request worker survives exchange(). Close public listeners
         // before Pipeline drops Services and then the actual Raft owners.
-        for api in &mut self.apis { drop(api.take()); }
+        for api in &mut self.apis {
+            drop(api.take());
+        }
     }
 }
 impl FormalApiPipeline {
     pub(super) fn exchange(
-        &self, index: usize, bytes: &[u8], deadline: Instant, missing_forward: bool,
+        &self,
+        index: usize,
+        bytes: &[u8],
+        deadline: Instant,
+        missing_forward: bool,
     ) -> TestResult<Zeroizing<Vec<u8>>> {
-        let api = self.apis.get(index).and_then(Option::as_ref)
+        let api = self
+            .apis
+            .get(index)
+            .and_then(Option::as_ref)
             .ok_or("formal API listener is not running")?;
-        let service = self.inner.services.get(index).and_then(Option::as_ref)
+        let service = self
+            .inner
+            .services
+            .get(index)
+            .and_then(Option::as_ref)
             .ok_or("formal API Service is not running")?;
         api.exchange(service, bytes, deadline, missing_forward)
     }
     pub(super) fn stop_process(&mut self, index: usize) -> TestResult {
-        drop(self.apis.get_mut(index).ok_or("formal API node index")?.take());
+        drop(
+            self.apis
+                .get_mut(index)
+                .ok_or("formal API node index")?
+                .take(),
+        );
         self.inner.stop_process(index)
     }
     pub(super) fn start_formal_process(&mut self, index: usize) -> TestResult {
-        if self.apis.get(index).ok_or("formal API node index")?.is_some() {
+        if self
+            .apis
+            .get(index)
+            .ok_or("formal API node index")?
+            .is_some()
+        {
             return Err("formal API listener already running".into());
         }
         let api = FormalApiListener::bind(
-            &self.inner.files.path, u64::try_from(index + 1)?, Some(self.addresses[index]),
+            &self.inner.files.path,
+            u64::try_from(index + 1)?,
+            Some(self.addresses[index]),
         )?;
         verify_actual_origin(&self.inner.configs, index, &api)?;
         // Rebind before this node's actual HA owner starts, using its unchanged
@@ -57,7 +86,9 @@ impl FormalApiPipeline {
 }
 
 fn verify_actual_origin(
-    configs: &[HaProcessConfig], index: usize, api: &FormalApiListener,
+    configs: &[HaProcessConfig],
+    index: usize,
+    api: &FormalApiListener,
 ) -> TestResult {
     let id = u64::try_from(index + 1)?;
     let origin = api.origin()?;
@@ -66,7 +97,11 @@ fn verify_actual_origin(
         let peer = config.peers.get(&id).ok_or("formal API peer is absent")?;
         assert_eq!(peer.api_address.as_deref(), Some(origin.as_str()));
         assert_eq!(peer.certificate_sha256, pin);
-        assert_ne!(peer.address, api.address()?, "API and Raft own separate listeners");
+        assert_ne!(
+            peer.address,
+            api.address()?,
+            "API and Raft own separate listeners"
+        );
     }
     Ok(())
 }
@@ -151,7 +186,10 @@ fn recovered_api_pipeline(
         let origin = api.origin()?;
         addresses.push(api.address()?);
         for config in &mut configs {
-            config.peers.get_mut(&id).ok_or("new formal API peer absent")?
+            config
+                .peers
+                .get_mut(&id)
+                .ok_or("new formal API peer absent")?
                 .api_address = Some(origin.clone());
         }
         verify_actual_origin(&configs, index, api)?;
@@ -183,7 +221,9 @@ fn recovered_api_pipeline(
         pipeline.with_service(index, |service| {
             assert!(service.native_candidate_profile.is_none());
             assert_eq!(
-                service.current_state_identity().map_err(|_| "new cold API seed identity")?,
+                service
+                    .current_state_identity()
+                    .map_err(|_| "new cold API seed identity")?,
                 seed_identity
             );
             assert!(service.native_root.is_none());
