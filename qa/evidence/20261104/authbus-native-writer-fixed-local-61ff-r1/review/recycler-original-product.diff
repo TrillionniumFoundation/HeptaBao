@@ -1,0 +1,102 @@
+--- installed/codex-client-recycler.js
++++ candidate/codex-client-recycler.js
+@@ -1,69 +1,39 @@
+-// The Codex extension owns its shared app-server clients in this process-wide
+-// state. AuthBus cannot import the extension directly because generated plugin
+-// paths differ across hosts, but the extension intentionally uses this stable
+-// Symbol.for key.
++// Paired with the factory's codex-writer-exit-v1 interface. AuthBus must not
++// remove shared entries itself: the factory owns pending startup, leases and
++// the actual transport exit barrier.
+ const SHARED_CODEX_APP_SERVER_CLIENT_STATE = Symbol.for("openclaw.codexAppServerClientState");
+-
+-function nonNegativeCount(value) {
+-  return Number.isFinite(value) && value > 0 ? Math.floor(value) : 0;
+-}
++const PROTOCOL = "codex-writer-exit-v1";
+ 
+-/**
+- * Retire every shared Codex app-server client without interrupting an active
+- * lease. It removes entries immediately so new work gets freshly authenticated
+- * clients, closes idle clients now, and marks leased clients for their normal
+- * release path to close.
+- */
+ export function retireSharedCodexAppServerClients() {
+   const state = globalThis[SHARED_CODEX_APP_SERVER_CLIENT_STATE];
+-  if (!state || !(state.clients instanceof Map)) {
+-    return {
+-      available: false,
+-      retired: 0,
+-      closed: 0,
+-      deferred: 0,
+-      invalid: 0,
+-      closeErrors: 0,
+-    };
++  const result = {available:false,retired:0,closed:0,closeRequested:0,deferred:0,invalid:0,closeErrors:0};
++  if (!state || !(state.clients instanceof Map)) return result;
++  const entries = [...state.clients.entries()];
++  if (state.retirementProtocol !== PROTOCOL || typeof state.retireEntry !== "function"
++    || !(state.retiring instanceof Map)) {
++    // Refuse a mixed old-factory/new-recycler installation. No legacy
++    // delete/close fallback is safe while an old writer may still exist.
++    if (entries.length > 0) throw new Error("Codex factory writer-exit retirement protocol is required");
++    return result;
+   }
+-
+-  const result = {
+-    available: true,
+-    retired: 0,
+-    closed: 0,
+-    deferred: 0,
+-    invalid: 0,
+-    closeErrors: 0,
+-  };
+-  for (const [key, entry] of state.clients.entries()) {
+-    state.clients.delete(key);
+-    if (!entry || typeof entry !== "object") {
+-      result.invalid += 1;
+-      continue;
+-    }
++  result.available = true;
++  // Validate the entire synchronous batch before asking the factory to mutate
++  // any entry. This does not grant authority to unknown entry generations.
++  for (const [key,entry] of entries) {
++    if (!entry || typeof entry !== "object" || entry.writerExitProtocol !== PROTOCOL
++      || !(entry.writerClients instanceof Set) || typeof entry.startupPending !== "boolean"
++      || !Number.isInteger(entry.activeLeases) || entry.activeLeases < 0
++      || !Number.isInteger(entry.pendingAcquires) || entry.pendingAcquires < 0
++      || entry.writerExitBarrier || state.retiring.has(key) || state.clients.get(key) !== entry)
++      throw new Error("Codex factory writer-exit entry contract is incompatible");
++  }
++  for (const [key,entry] of entries) {
++    const retired = state.retireEntry(key,entry);
++    if (retired?.retired !== true) throw new Error("Codex factory did not accept writer retirement");
+     result.retired += 1;
+-    entry.closeWhenIdle = true;
+-    const activeLeases = nonNegativeCount(entry.activeLeases);
+-    const pendingAcquires = nonNegativeCount(entry.pendingAcquires);
+-    if (activeLeases > 0 || pendingAcquires > 0) {
+-      result.deferred += 1;
+-      continue;
+-    }
+-    const client = entry.client;
+-    if (!client || typeof client.close !== "function") {
+-      // A startup path can populate entry.client later; its pending-acquire
+-      // release hook observes closeWhenIdle and closes it.
+-      result.deferred += 1;
+-      continue;
+-    }
+-    entry.closeWhenIdle = false;
+-    entry.client = undefined;
+-    try {
+-      client.close();
+-      result.closed += 1;
+-    } catch {
+-      result.closeErrors += 1;
+-    }
++    if (retired.closeRequested === true) result.closeRequested += 1;
++    else result.deferred += 1;
+   }
++  // closed remains zero: a synchronous request is not a confirmed process exit.
+   return result;
+ }

@@ -1,0 +1,189 @@
+{
+  "schema": "heptabao.native-fixed-overlay-esm-map.v1",
+  "parent": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-fixed-r1/control/factory-overlay/dist/shared-client-4ICy3U6d.js",
+  "originalParent": "file:///home/qian-qi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/shared-client-4ICy3U6d.js",
+  "expectedModules": [
+    {
+      "specifier": "openclaw/plugin-sdk/agent-runtime",
+      "resolved": "file:///home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/agent-runtime.js",
+      "real": "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/agent-runtime.js",
+      "sha256": "7831532d17eeaddd62889b2e8bb7b65ea7a7851901f69ceec23607a8c579dd95",
+      "bytes": 19513
+    },
+    {
+      "specifier": "openclaw/plugin-sdk/windows-spawn",
+      "resolved": "file:///home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/windows-spawn.js",
+      "real": "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/windows-spawn.js",
+      "sha256": "d97a1228e01c249bc2d7feabff40987beb8f8419f39c35002643fd05a2c590e4",
+      "bytes": 480
+    },
+    {
+      "specifier": "openclaw/plugin-sdk/agent-harness-runtime",
+      "resolved": "file:///home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/agent-harness-runtime.js",
+      "real": "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/agent-harness-runtime.js",
+      "sha256": "24aa2871df2ac3f8e533e6e4f8a6286a5b571adc4f938411f802a4e1f9528c6f",
+      "bytes": 12382
+    },
+    {
+      "specifier": "openclaw/plugin-sdk/provider-auth",
+      "resolved": "file:///home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/provider-auth.js",
+      "real": "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/provider-auth.js",
+      "sha256": "312c99637051c20f16268e1116cedbe5b741a663c1e80ca9707e73177e1c318a",
+      "bytes": 5383
+    },
+    {
+      "specifier": "openclaw/plugin-sdk/security-runtime",
+      "resolved": "file:///home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/security-runtime.js",
+      "real": "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/security-runtime.js",
+      "sha256": "636c536d36f8185a8da3e971f0d98c39e1d31b00332ed45dfacb98769f84c60d",
+      "bytes": 7738
+    },
+    {
+      "specifier": "openclaw/plugin-sdk/number-runtime",
+      "resolved": "file:///home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/number-runtime.js",
+      "real": "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/number-runtime.js",
+      "sha256": "a3bee4e705b68e1ade50351701309c5bb283500c7106c87fb2d755b5247c75e4",
+      "bytes": 2105
+    },
+    {
+      "specifier": "openclaw/plugin-sdk/exec-approvals-runtime",
+      "resolved": "file:///home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/exec-approvals-runtime.js",
+      "real": "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/exec-approvals-runtime.js",
+      "sha256": "c04ab26fd0e8b0631350b6f174c362b1c014d5356c5c33dc966b6f2ce7df18a6",
+      "bytes": 215
+    },
+    {
+      "specifier": "openclaw/plugin-sdk/routing",
+      "resolved": "file:///home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/routing.js",
+      "real": "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/routing.js",
+      "sha256": "39d30d249a0724a4c642048f90fce57767a97ac64b640d02f3cb7423d4e5876c",
+      "bytes": 2118
+    },
+    {
+      "specifier": "openclaw/plugin-sdk/secret-input",
+      "resolved": "file:///home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/secret-input.js",
+      "real": "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/secret-input.js",
+      "sha256": "fb400f7ef999c3ffa75c8de20a91810c2c26d862da432c1e92e4933a2348abae",
+      "bytes": 716
+    },
+    {
+      "specifier": "openclaw/plugin-sdk/string-coerce-runtime",
+      "resolved": "file:///home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/string-coerce-runtime.js",
+      "real": "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/string-coerce-runtime.js",
+      "sha256": "9dd1cca67fc93862a1a740230b251df2880eb53d1fc2ba86e9b503346d655174",
+      "bytes": 2628
+    },
+    {
+      "specifier": "ws",
+      "resolved": "file:///home/qian-qi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/ws/wrapper.mjs",
+      "real": "/home/qian-qi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/ws/wrapper.mjs",
+      "sha256": "fe154662301fd558f935f9c217fccbe7a7dac02ff39e648a000589403ff27c7f",
+      "bytes": 554
+    },
+    {
+      "specifier": "zod",
+      "resolved": "file:///home/qian-qi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/zod/index.js",
+      "real": "/home/qian-qi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/zod/index.js",
+      "sha256": "c733a1897d6b4b30dad6998597f6896b265b094a65534359ada34b08ecf8932c",
+      "bytes": 121
+    }
+  ],
+  "expectedPackages": [
+    {
+      "root": "/home/qian-qi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/ws",
+      "path": "/home/qian-qi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/ws/package.json",
+      "sha256": "584ce6e7516587ba249dc910b0c04e2753f6b3f451fc3a5bc324f7735bdacc71",
+      "bytes": 1753,
+      "name": "ws",
+      "version": "8.21.0",
+      "type": null,
+      "exports": {
+        ".": {
+          "browser": "./browser.js",
+          "import": "./wrapper.mjs",
+          "require": "./index.js"
+        },
+        "./package.json": "./package.json"
+      }
+    },
+    {
+      "root": "/home/qian-qi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/zod",
+      "path": "/home/qian-qi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/zod/package.json",
+      "sha256": "c630bd10b52dcf71c112a2bf78dbf2734b9db58d62de663b8d86c2ec2c8cda2e",
+      "bytes": 3796,
+      "name": "zod",
+      "version": "4.4.3",
+      "type": "module",
+      "exports": {
+        "./package.json": "./package.json",
+        ".": {
+          "@zod/source": "./src/index.ts",
+          "types": "./index.d.cts",
+          "import": "./index.js",
+          "require": "./index.cjs"
+        },
+        "./mini": {
+          "@zod/source": "./src/mini/index.ts",
+          "types": "./mini/index.d.cts",
+          "import": "./mini/index.js",
+          "require": "./mini/index.cjs"
+        },
+        "./locales": {
+          "@zod/source": "./src/locales/index.ts",
+          "types": "./locales/index.d.cts",
+          "import": "./locales/index.js",
+          "require": "./locales/index.cjs"
+        },
+        "./v3": {
+          "@zod/source": "./src/v3/index.ts",
+          "types": "./v3/index.d.cts",
+          "import": "./v3/index.js",
+          "require": "./v3/index.cjs"
+        },
+        "./v4": {
+          "@zod/source": "./src/v4/index.ts",
+          "types": "./v4/index.d.cts",
+          "import": "./v4/index.js",
+          "require": "./v4/index.cjs"
+        },
+        "./v4-mini": {
+          "@zod/source": "./src/v4-mini/index.ts",
+          "types": "./v4-mini/index.d.cts",
+          "import": "./v4-mini/index.js",
+          "require": "./v4-mini/index.cjs"
+        },
+        "./v4/mini": {
+          "@zod/source": "./src/v4/mini/index.ts",
+          "types": "./v4/mini/index.d.cts",
+          "import": "./v4/mini/index.js",
+          "require": "./v4/mini/index.cjs"
+        },
+        "./v4/core": {
+          "@zod/source": "./src/v4/core/index.ts",
+          "types": "./v4/core/index.d.cts",
+          "import": "./v4/core/index.js",
+          "require": "./v4/core/index.cjs"
+        },
+        "./v4/locales": {
+          "@zod/source": "./src/v4/locales/index.ts",
+          "types": "./v4/locales/index.d.cts",
+          "import": "./v4/locales/index.js",
+          "require": "./v4/locales/index.cjs"
+        },
+        "./v4/locales/*": {
+          "@zod/source": "./src/v4/locales/*",
+          "types": "./v4/locales/*",
+          "import": "./v4/locales/*",
+          "require": "./v4/locales/*"
+        }
+      }
+    }
+  ],
+  "links": {
+    "openclaw": "/home/qian-qi/.npm-global/lib/node_modules/openclaw",
+    "ws": "/home/qian-qi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/ws",
+    "zod": "/home/qian-qi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/zod"
+  },
+  "sourceResolutionJob": "1a1a7fb796d-fc05-2d2d",
+  "candidateMode": "fixed"
+}

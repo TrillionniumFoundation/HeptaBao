@@ -1,0 +1,28 @@
+{
+  "host": "rog",
+  "executable": "/usr/bin/bwrap",
+  "args": [
+    "--ro-bind",
+    "/",
+    "/",
+    "--proc",
+    "/proc",
+    "--dev",
+    "/dev",
+    "--unshare-net",
+    "--unshare-pid",
+    "--die-with-parent",
+    "--",
+    "/usr/bin/node",
+    "--experimental-import-meta-resolve",
+    "--input-type=module",
+    "-e",
+    "import fs from 'node:fs';import path from 'node:path';import {fileURLToPath,pathToFileURL}from'node:url';import {createHash}from'node:crypto';\nconst factory=\"/home/qian-qi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/shared-client-4ICy3U6d.js\";const parent=pathToFileURL(factory).href;const sha=b=>createHash('sha256').update(b).digest('hex');\nconst specs=['openclaw/plugin-sdk/agent-runtime','openclaw/plugin-sdk/windows-spawn','openclaw/plugin-sdk/agent-harness-runtime','openclaw/plugin-sdk/provider-auth','openclaw/plugin-sdk/security-runtime','openclaw/plugin-sdk/number-runtime','openclaw/plugin-sdk/exec-approvals-runtime','openclaw/plugin-sdk/routing','openclaw/plugin-sdk/secret-input','openclaw/plugin-sdk/string-coerce-runtime','ws','zod'];\nfunction read(p,max=262144){const fd=fs.openSync(p,fs.constants.O_RDONLY|fs.constants.O_NOFOLLOW);try{const s=fs.fstatSync(fd);if(!s.isFile()||s.size>max)throw Error('source_size');const b=fs.readFileSync(fd),t=fs.fstatSync(fd);if(s.ino!==t.ino||s.size!==t.size||s.mtimeMs!==t.mtimeMs||s.ctimeMs!==t.ctimeMs)throw Error('source_changed');return b;}finally{fs.closeSync(fd);}}\nconst modules=specs.map(spec=>{const u=import.meta.resolve(spec,parent);if(!u.startsWith('file:'))throw Error('not_file');const p=fs.realpathSync(fileURLToPath(u));if(!p.startsWith('/home/qian-qi/.openclaw/npm/')&&!p.startsWith('/home/qian-qi/.npm-global/lib/node_modules/openclaw/'))throw Error('dependency_scope');const b=read(p);return{specifier:spec,resolved:u,real:p,sha256:sha(b),bytes:b.length};});\nconst packageRoots=new Set();for(const spec of ['ws','zod']){const item=modules.find(x=>x.specifier===spec);let d=path.dirname(item.real),found=false;for(let n=0;n<6;n++){const p=path.join(d,'package.json');if(fs.existsSync(p)){const raw=read(p),x=JSON.parse(raw);if(x.name===spec){packageRoots.add(d);found=true;break;}}d=path.dirname(d);}if(!found)throw Error('package_owner_not_found');}\nconst packages=[...packageRoots].map(root=>{const p=path.join(root,'package.json'),raw=read(p),x=JSON.parse(raw);return{root,path:p,sha256:sha(raw),bytes:raw.length,name:x.name,version:x.version,type:x.type??null,exports:x.exports??null};});\nconsole.log(JSON.stringify({schema:'heptabao.native-overlay-original-esm-dependencies.v1',nativeStarted:false,providerCalled:false,productionChanged:false,resolutionMethod:'Node import.meta.resolve with exact original factory parent URL; no package evaluated',parent,factorySha256:sha(read(factory)),nodeVersion:process.version,modules,packages}));\n"
+  ],
+  "idempotency_key": "authbus61ff-native-overlay-esm-resolution-readonly-20261104-r1",
+  "timeout_seconds": 15,
+  "env": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/qian-qi"
+  }
+}

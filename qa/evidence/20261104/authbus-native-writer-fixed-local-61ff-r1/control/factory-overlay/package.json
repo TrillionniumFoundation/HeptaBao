@@ -1,0 +1,6 @@
+{
+  "name": "heptabao-private-native-factory-overlay",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module"
+}

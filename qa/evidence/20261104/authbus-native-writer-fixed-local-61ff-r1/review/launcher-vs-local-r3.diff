@@ -1,0 +1,42 @@
+--- a/launcher.py
++++ b/launcher.py
+@@ -26,6 +26,16 @@
+ assert ROOT in [Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')/n for n in ('authbus-native-writer-61ff8bef-baseline-local-r3','authbus-native-writer-61ff8bef-fixed-r1')]
+ assert not RUN.exists()
+ stage=json.loads((CONTROL/'stage.public.json').read_bytes())
++def dependency_links():
++    links=stage.get('dependencyLinks',{})
++    assert stage['candidateMode']=='fixed' and set(links)=={'openclaw','ws','zod'}
++    seen={}
++    for name,target in links.items():
++        link=CONTROL/'factory-overlay/node_modules'/name
++        assert link.is_symlink() and os.readlink(link)==target and str(link.resolve(strict=True))==target
++        seen[name]=target
++    return seen
++links_before=dependency_links()
+ before={p:sha(p) for p in stage['pins']};assert before==stage['pins']
+ protected=[LIVE/'openclaw.json',Path('/home/qian-qi/.codex/auth.json'),Path('/home/qian-qi/.codex/config.toml')]
+ boundaries={str(p):sha(p) for p in protected};unitbefore=units()
+@@ -57,7 +67,7 @@
+             p.wait(timeout=10)
+         stdout.flush();stderr.flush();os.fsync(stdout.fileno());os.fsync(stderr.fileno())
+ # Exiting this private PID namespace also kills any detached descendants.
+-after={x:sha(x) for x in before};protectedafter={str(x):sha(x) for x in protected};unitafter=units()
++after={x:sha(x) for x in before};protectedafter={str(x):sha(x) for x in protected};unitafter=units();links_after=dependency_links()
+ result=RUN/'live/result.public.json';core=json.loads(result.read_bytes()) if result.exists() else None
+ report={'schema':'heptabao.rog-native-retirement-isolated-result.v1','ok':False,'returnCode':rc,'timedOut':timed,'outcomeUnknown':timed or core is None,
+  'elapsedSeconds':round(time.monotonic()-started,3),'coreResultSha256':sha(result) if core else None,'intentSha256':sha(RUN/'intent.public.json'),
+@@ -66,11 +76,11 @@
+  'ownedNamespaceProcessExited':p.returncode is not None,'pidNamespaceTeardownEnforced':True,
+  'ownedServerStopped':core.get('ownedServerStopped') if core else False,'rollbackOutcomes':core.get('rollbackOutcomes') if core else None,
+  'productionUnitBefore':unitbefore,'productionUnitAfter':unitafter,'productionUnitUnchanged':unitbefore==unitafter,
+- 'protectedInputsUnchanged':boundaries==protectedafter,'frozenInputsUnchanged':before==after,
++ 'protectedInputsUnchanged':boundaries==protectedafter,'frozenInputsUnchanged':before==after,'dependencyLinksUnchanged':links_before==links_after,
+  'productionChanged':False,'productionTrafficCutover':False,'providerCalled':False,'providerAvailabilityQualified':False,
+  'productionGatewaySelectionQualified':False,'fullReplacementQualified':False,'automaticRetry':False,
+  'stdoutSha256':sha(RUN/'stdout.private'),'stderrSha256':sha(RUN/'stderr.private')}
+-report['ok']=rc==0 and not timed and core is not None and core.get('ok') is True and report['productionUnitUnchanged'] and report['protectedInputsUnchanged'] and report['frozenInputsUnchanged'] and report['ownedServerStopped'] is True
++report['ok']=rc==0 and not timed and core is not None and core.get('ok') is True and report['productionUnitUnchanged'] and report['protectedInputsUnchanged'] and report['frozenInputsUnchanged'] and report['ownedServerStopped'] is True and report['dependencyLinksUnchanged'] is True
+ put(RUN/'execution.result.public.json',report)
+ print(json.dumps({'ok':report['ok'],'result':str(RUN/'execution.result.public.json'),'sha256':sha(RUN/'execution.result.public.json'),'singleWriterGatePassed':report['singleWriterGatePassed'],'baselineActualConcurrencyRegressionObserved':report['baselineActualConcurrencyRegressionObserved'],'coreChecks':report['coreChecks'],'corePassed':report['corePassed'],'ownedServerStopped':report['ownedServerStopped'],'error':core.get('error') if core else None}))
+ raise SystemExit(0 if report['ok'] else 1)
