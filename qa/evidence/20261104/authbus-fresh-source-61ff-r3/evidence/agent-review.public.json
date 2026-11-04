@@ -1,0 +1,496 @@
+{
+  "boundaries": {
+    "activeRefreshAttempted": false,
+    "allManagedAccountsQualified": false,
+    "historicalManaged1HTTP200IsNotCurrentQualification": true,
+    "jwtFutureExpiryDoesNotOverrideProvider401": true,
+    "managed2NotYetObservedInThisRun": true,
+    "modelAvailabilityQualified": false,
+    "nativeFactoryRetireReopenQualified": false,
+    "newLoginAttempted": false,
+    "outerChildDeadlineSeconds": 35,
+    "productionCutover": false,
+    "rawProviderBodiesRemainHostPrivate": true,
+    "sdkRequestAbortMs": 18000,
+    "socketInactivityTimeoutMs": 15000,
+    "storageRecovery236IsIndependent": true
+  },
+  "checks": [
+    {
+      "name": "stage.identity",
+      "ok": true
+    },
+    {
+      "name": "stage.exit",
+      "ok": true
+    },
+    {
+      "name": "stage.durable",
+      "ok": true
+    },
+    {
+      "name": "stage.bounded",
+      "ok": true
+    },
+    {
+      "name": "stage.logs",
+      "ok": true
+    },
+    {
+      "name": "managed1.identity",
+      "ok": true
+    },
+    {
+      "name": "managed1.exit",
+      "ok": true
+    },
+    {
+      "name": "managed1.durable",
+      "ok": true
+    },
+    {
+      "name": "managed1.bounded",
+      "ok": true
+    },
+    {
+      "name": "managed1.logs",
+      "ok": true
+    },
+    {
+      "name": "native4.identity",
+      "ok": true
+    },
+    {
+      "name": "native4.exit",
+      "ok": true
+    },
+    {
+      "name": "native4.durable",
+      "ok": true
+    },
+    {
+      "name": "native4.bounded",
+      "ok": true
+    },
+    {
+      "name": "native4.logs",
+      "ok": true
+    },
+    {
+      "name": "classification.identity",
+      "ok": true
+    },
+    {
+      "name": "classification.exit",
+      "ok": true
+    },
+    {
+      "name": "classification.durable",
+      "ok": true
+    },
+    {
+      "name": "classification.bounded",
+      "ok": true
+    },
+    {
+      "name": "classification.logs",
+      "ok": true
+    },
+    {
+      "name": "stage15pins",
+      "ok": true
+    },
+    {
+      "name": "offlinePreflight",
+      "ok": true
+    },
+    {
+      "name": "source.fresh_usage_read.mjs",
+      "ok": true
+    },
+    {
+      "name": "source.launcher.py",
+      "ok": true
+    },
+    {
+      "name": "managedRaw.result.public.json",
+      "ok": true
+    },
+    {
+      "name": "managedRaw.outer-result.public.json",
+      "ok": true
+    },
+    {
+      "name": "managedRaw.request-started.public.json",
+      "ok": true
+    },
+    {
+      "name": "nativeRaw.result.public.json",
+      "ok": true
+    },
+    {
+      "name": "nativeRaw.outer-result.public.json",
+      "ok": true
+    },
+    {
+      "name": "nativeRaw.request-started.public.json",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.status",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.once",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.rawBinding",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.endpoint",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.helperPins",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.typedSource",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.generation",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.sourceTiming",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.responseCustody",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.TLS",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.unambiguous",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.noUnexpectedOperation",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.providerMutationAttempted",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.refreshAttempted",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.modelCalled",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.productionChanged",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.productionCutover",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.j3160Contacted",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.credentialValuesPublished",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.accountIdentitiesPublished",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.allAccountsQualified",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.nativeSourceAdoptedByAuthBus",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.productionGatewaySelectionQualified",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.automaticRetry",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.unit",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.cleanup",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.pinsUnchanged",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.noProductionMutation",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.tmpFallback",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.status",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.once",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.rawBinding",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.endpoint",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.helperPins",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.typedSource",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.generation",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.sourceTiming",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.responseCustody",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.TLS",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.unambiguous",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.noUnexpectedOperation",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.providerMutationAttempted",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.refreshAttempted",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.modelCalled",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.productionChanged",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.productionCutover",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.j3160Contacted",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.credentialValuesPublished",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.accountIdentitiesPublished",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.allAccountsQualified",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.nativeSourceAdoptedByAuthBus",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.productionGatewaySelectionQualified",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.automaticRetry",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.unit",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.cleanup",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.pinsUnchanged",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.noProductionMutation",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.tmpFallback",
+      "ok": true
+    },
+    {
+      "name": "managedProviderRed",
+      "ok": true
+    },
+    {
+      "name": "nativeProviderGreen",
+      "ok": true
+    },
+    {
+      "name": "separateIdentity",
+      "ok": true
+    },
+    {
+      "name": "sameUnmanagedNativeProtected",
+      "ok": true
+    },
+    {
+      "name": "classificationExact",
+      "ok": true
+    },
+    {
+      "name": "providerTokenExpired",
+      "ok": true
+    },
+    {
+      "name": "classificationReadOnly",
+      "ok": true
+    },
+    {
+      "name": "preservedPreDispatchRed",
+      "ok": true
+    },
+    {
+      "name": "sdkTimeoutSourcePin",
+      "ok": true
+    },
+    {
+      "name": "sdkAbsoluteRequestAbort",
+      "ok": true
+    }
+  ],
+  "checksPassed": 98,
+  "checksTotal": 98,
+  "evidenceConsistent": true,
+  "inputPins": {
+    "evidence/controller-receipts.public.json": {
+      "bytes": 11849,
+      "sha256": "1638aadea8087ca83a41db547c2d0a012755502ff12dffa738a23c858ca3d055"
+    },
+    "evidence/managed1-401-classification.public.json": {
+      "bytes": 1677,
+      "sha256": "5db2b409a4a15d90d943ceac23f426408df0dae4e5384ad4ab5fbda426108cba"
+    },
+    "evidence/managed1-r1/outer-result.public.json": {
+      "bytes": 1125,
+      "sha256": "0d87946715b26aceea714818ad290d6329c5badf317d11dc53fee3520895e37d"
+    },
+    "evidence/managed1-r1/request-started.public.json": {
+      "bytes": 1013,
+      "sha256": "f2c51a40668dd2c1fae99a07592c1bc0dd9fc76b24008c5468f38375b8a387cb"
+    },
+    "evidence/managed1-r1/result.public.json": {
+      "bytes": 2674,
+      "sha256": "697042efa3f085926dc8ea9382f6f3c4ffa9262d79f85d98f0e5ac2e08c230ab"
+    },
+    "evidence/native4-r1/outer-result.public.json": {
+      "bytes": 1106,
+      "sha256": "32a3353dfb900d4cfc19f0084190f662900d03631f402ca6166563f872f9f6ef"
+    },
+    "evidence/native4-r1/request-started.public.json": {
+      "bytes": 934,
+      "sha256": "0e0377d49b32f91b9999b2334c06d1570186cb6da6f5ba18acc2000ddd27791b"
+    },
+    "evidence/native4-r1/result.public.json": {
+      "bytes": 2482,
+      "sha256": "7d236193a822b3ea60333feadcc6ff4cef915162a63725b9b5ec25098432ee11"
+    },
+    "evidence/readonly-receipt-export-terminal.public.json": {
+      "bytes": 732,
+      "sha256": "1abab9c615d90f847c615c4f9681e58e122cca407eec5daa7a772acc9ae0200f"
+    },
+    "evidence/readonly-receipt-export.public.json": {
+      "bytes": 6768,
+      "sha256": "0af08899d05c31b8be64f2fdfd9bc3e1960e80effd1db651854367103acf2f6c"
+    },
+    "fresh_usage_read.mjs": {
+      "bytes": 14888,
+      "sha256": "3cea30a81a539277a3a344e3e09e6c4742156947b4fb7d821fa3da88edbeffda"
+    },
+    "launcher.py": {
+      "bytes": 4940,
+      "sha256": "4c2124978cffb3a47354e16a041def306cf7743d6f6a2ff5a90cc2dc2e88ae0f"
+    },
+    "read_receipts_and_classify.py": {
+      "bytes": 4215,
+      "sha256": "e800ea47e5c6e15904c5756f6ecf6ae7c0c3bad36ab4496e6396171f3cbc4335"
+    },
+    "stage-input.json": {
+      "bytes": 20384,
+      "sha256": "49b3f62d5ab8aef858a6acadcfad949dd38a65fff146b0aa9851eec39c41bbac"
+    }
+  },
+  "jobIds": {
+    "classification": "1a1a7582374-fc05-2b10",
+    "managed1": "1a1a750676e-fc05-2af5",
+    "native4": "1a1a7514ff4-fc05-2afc",
+    "stage": "1a1a74fae2d-fc05-2af2"
+  },
+  "observations": {
+    "managed1": {
+      "credentialSha256": "bca88c7adde84057871fd63f202e6aba80d453a04f75151df1d29f269dfaa5f1",
+      "currentProviderQualified": false,
+      "httpStatus": 401,
+      "providerErrorCode": "token_expired",
+      "requestCount": 1
+    },
+    "native4": {
+      "credentialSha256": "63a40b812af24584847961eeaff54e780eacc66625970ee40ea2d9b1e0a70398",
+      "currentReadOnlyProviderQualified": true,
+      "httpStatus": 200,
+      "remainsUnmanaged": true,
+      "requestCount": 1
+    }
+  },
+  "schema": "heptabao.typed-fresh-source-evidence-review.v1"
+}

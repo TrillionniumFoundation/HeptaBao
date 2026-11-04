@@ -1,0 +1,215 @@
+{
+  "schema": "heptabao.fresh-source-r3.controller-receipts.v1",
+  "stage": {
+    "terminal": {
+      "at_unix_ms": 1793808381207,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a74fae2d-fc05-2af2",
+      "launch_nonce": "32fc106b2ec8017dbdd51970b2c8d6fd",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 509,
+          "stored": 509
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "read": {
+      "audit_recorded": true,
+      "job_id": "1a1a74fae2d-fc05-2af2",
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0,
+        "text": ""
+      },
+      "stdout": {
+        "eof": true,
+        "next_offset": 509,
+        "offset": 0,
+        "size": 509,
+        "text": "{\"ok\": true, \"stage\": \"/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r3/control/stage.public.json\", \"sha256\": \"e7ba507dbd8becdcb1855df5d3af6ea94714070d54eeced450d8511585ebb662\", \"pins\": 15, \"selectedSdkFileSha256\": \"8be2895e6a9c818b6c460f8a79e6b9e18602985b6c200514b65cf2a9f4e68252\", \"providerCalled\": false}\n{\"ok\": true, \"prerequestImportAndHeadersValidated\": true, \"providerCalled\": false, \"diagnosticSha256\": \"fcd7f4392598c4103173e384d997813bf0360719585a004ebb831cb9741b28f1\"}\n"
+      }
+    }
+  },
+  "managed": {
+    "terminal": {
+      "at_unix_ms": 1793808431453,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 1,
+      "job_id": "1a1a750676e-fc05-2af5",
+      "launch_nonce": "df455c1cfbcecd13994fbb79479052bf",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 290,
+          "stored": 290
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "failed",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "read": {
+      "audit_recorded": true,
+      "job_id": "1a1a750676e-fc05-2af5",
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0,
+        "text": ""
+      },
+      "stdout": {
+        "eof": true,
+        "next_offset": 290,
+        "offset": 0,
+        "size": 290,
+        "text": "{\"ok\": false, \"caseId\": \"managed1-r1\", \"httpStatus\": 401, \"requestCount\": 1, \"result\": \"/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r3/managed1-r1/outer-result.public.json\", \"resultSha256\": \"0d87946715b26aceea714818ad290d6329c5badf317d11dc53fee3520895e37d\"}\n"
+      }
+    },
+    "receipts": {
+      "atomic_snapshot": false,
+      "encoding": "utf-8",
+      "files": [
+        {
+          "eof": true,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r3/managed1-r1/result.public.json",
+          "sha256": "697042efa3f085926dc8ea9382f6f3c4ffa9262d79f85d98f0e5ac2e08c230ab",
+          "size": 2674,
+          "text": "{\"schema\":\"heptabao.rog-current-typed-source-fresh-usage.v1\",\"ok\":false,\"providerCalled\":true,\"providerMutationAttempted\":false,\"refreshAttempted\":false,\"modelCalled\":false,\"productionChanged\":false,\"productionCutover\":false,\"j3160Contacted\":false,\"credentialValuesPublished\":false,\"accountIdentitiesPublished\":false,\"allAccountsQualified\":false,\"nativeSourceAdoptedByAuthBus\":false,\"productionGatewaySelectionQualified\":false,\"automaticRetry\":false,\"requestCount\":1,\"unexpectedOperations\":0,\"sourceKind\":\"managed-profile1-after-authbus-recovery\",\"sourceBindingBefore\":{\"credentialSha256\":\"bca88c7adde84057871fd63f202e6aba80d453a04f75151df1d29f269dfaa5f1\",\"nativeFileSha256\":\"f4aee2935351eaa6d56ce99166a0123c3c9e3260ae8737e6d7ad8ce2c8c12b78\",\"configurationSha256\":\"a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15\",\"accountIdSha256\":\"332c2cdd98cd0650de22a4506f7f67c3cbc69a9154e0cbafa4344f7a691640b9\",\"jwtExpiresUnixSeconds\":1794533944,\"sourceKind\":\"managed-profile1-after-authbus-recovery\",\"nativeSourceGeneration\":\"6f5bcf6e72e50f6ff757823239de74050f4a2841b0b4040829bb550a75572133\",\"actualSdkRecoveredSelectionSha256\":\"8be2895e6a9c818b6c460f8a79e6b9e18602985b6c200514b65cf2a9f4e68252\"},\"sourceKindPreserved\":true,\"sdkUsageModuleSha256\":\"cab428b63c6e8912f444089e120c95aea4a1d5edf4258c7fd1b20346558d12e6\",\"actualSdkPrivateTmpFallback\":true,\"currentSourceBoundImmediatelyBeforeDispatch\":true,\"requestLedgerSha256\":\"f2c51a40668dd2c1fae99a07592c1bc0dd9fc76b24008c5468f38375b8a387cb\",\"dnsResolved\":true,\"tcpConnected\":true,\"remoteFamily\":\"IPv4\",\"tlsConnected\":true,\"tlsVerified\":true,\"requestWritten\":true,\"httpStatus\":401,\"responseBytes\":334,\"responseSha256\":\"2dd8af6137cc2b1f408e76a00ccf6479db404b03f3d383befcb5bc67c3ba2cce\",\"responseDurableBeforeSdkParse\":true,\"sdkParsed\":false,\"usageWindowCount\":0,\"usageWindowStructureValid\":true,\"sdkErrorPresent\":true,\"sourceBindingAfter\":{\"credentialSha256\":\"bca88c7adde84057871fd63f202e6aba80d453a04f75151df1d29f269dfaa5f1\",\"nativeFileSha256\":\"f4aee2935351eaa6d56ce99166a0123c3c9e3260ae8737e6d7ad8ce2c8c12b78\",\"configurationSha256\":\"a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15\",\"accountIdSha256\":\"332c2cdd98cd0650de22a4506f7f67c3cbc69a9154e0cbafa4344f7a691640b9\",\"jwtExpiresUnixSeconds\":1794533944,\"sourceKind\":\"managed-profile1-after-authbus-recovery\",\"nativeSourceGeneration\":\"6f5bcf6e72e50f6ff757823239de74050f4a2841b0b4040829bb550a75572133\",\"actualSdkRecoveredSelectionSha256\":\"8be2895e6a9c818b6c460f8a79e6b9e18602985b6c200514b65cf2a9f4e68252\"},\"currentSourceGenerationUnchangedAfterResponse\":true,\"error\":\"current_source_provider_read_failed\",\"errorClass\":\"Error\",\"providerOutcomeUnknown\":false}",
+          "version": "66306:35680747:2674:1793808431274172665:1793808431274172665"
+        },
+        {
+          "eof": true,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r3/managed1-r1/outer-result.public.json",
+          "sha256": "0d87946715b26aceea714818ad290d6329c5badf317d11dc53fee3520895e37d",
+          "size": 1125,
+          "text": "{\"automaticRetry\":false,\"caseId\":\"managed1-r1\",\"elapsedSeconds\":1.821,\"httpStatus\":401,\"modelCalled\":false,\"ok\":false,\"ownedNamespaceProcessExited\":true,\"pidNamespaceTeardownEnforced\":true,\"productionChanged\":false,\"productionTrafficCutover\":false,\"productionUnitAfter\":{\"ActiveState\":\"active\",\"Id\":\"openclaw-gateway.service\",\"LoadState\":\"loaded\",\"MainPID\":\"2436\",\"SubState\":\"running\",\"UnitFileState\":\"enabled\"},\"productionUnitBefore\":{\"ActiveState\":\"active\",\"Id\":\"openclaw-gateway.service\",\"LoadState\":\"loaded\",\"MainPID\":\"2436\",\"SubState\":\"running\",\"UnitFileState\":\"enabled\"},\"productionUnitUnchanged\":true,\"providerOutcomeUnknown\":false,\"refreshDispatched\":false,\"requestCount\":1,\"requestLedgerExists\":true,\"resultSha256\":\"697042efa3f085926dc8ea9382f6f3c4ffa9262d79f85d98f0e5ac2e08c230ab\",\"returnCode\":1,\"schema\":\"heptabao.current-source-fresh-usage-outer.v1\",\"sourceKind\":\"managed-profile1-after-authbus-recovery\",\"sourcePinsUnchanged\":true,\"stderrSha256\":\"6e5eb8560b0b2b9b2f19d5b6dd16292436dfd4bf16b2baadb1520b74e08df7bc\",\"stdoutSha256\":\"14e14f61d0e287a28581d237d15d290f0e3fe0a633836f325d61612d18fef284\",\"timedOut\":false}",
+          "version": "66306:35680748:1125:1793808431423632405:1793808431423632405"
+        },
+        {
+          "eof": true,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r3/managed1-r1/request-started.public.json",
+          "sha256": "f2c51a40668dd2c1fae99a07592c1bc0dd9fc76b24008c5468f38375b8a387cb",
+          "size": 1013,
+          "text": "{\"schema\":\"heptabao.exact-once-readonly-provider-request.v1\",\"startedAt\":\"2026-11-04T16:07:09.837Z\",\"sourceBinding\":{\"credentialSha256\":\"bca88c7adde84057871fd63f202e6aba80d453a04f75151df1d29f269dfaa5f1\",\"nativeFileSha256\":\"f4aee2935351eaa6d56ce99166a0123c3c9e3260ae8737e6d7ad8ce2c8c12b78\",\"configurationSha256\":\"a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15\",\"accountIdSha256\":\"332c2cdd98cd0650de22a4506f7f67c3cbc69a9154e0cbafa4344f7a691640b9\",\"jwtExpiresUnixSeconds\":1794533944,\"sourceKind\":\"managed-profile1-after-authbus-recovery\",\"nativeSourceGeneration\":\"6f5bcf6e72e50f6ff757823239de74050f4a2841b0b4040829bb550a75572133\",\"actualSdkRecoveredSelectionSha256\":\"8be2895e6a9c818b6c460f8a79e6b9e18602985b6c200514b65cf2a9f4e68252\"},\"method\":\"GET\",\"endpoint\":\"https://chatgpt.com/backend-api/wham/usage\",\"retryAllowed\":false,\"helperSha256\":\"3cea30a81a539277a3a344e3e09e6c4742156947b4fb7d821fa3da88edbeffda\",\"sdkUsageModuleSha256\":\"cab428b63c6e8912f444089e120c95aea4a1d5edf4258c7fd1b20346558d12e6\"}",
+          "version": "66306:35680745:1013:1793808429837180283:1793808429837180283"
+        }
+      ],
+      "snapshot_scope": "independent_file",
+      "truncated": false
+    }
+  },
+  "native": {
+    "terminal": {
+      "at_unix_ms": 1793808490532,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a7514ff4-fc05-2afc",
+      "launch_nonce": "d867ed5f3a5f6e5f19fcdf304542018f",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 287,
+          "stored": 287
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "read": {
+      "audit_recorded": true,
+      "job_id": "1a1a7514ff4-fc05-2afc",
+      "stderr": {
+        "eof": true,
+        "next_offset": 0,
+        "offset": 0,
+        "size": 0,
+        "text": ""
+      },
+      "stdout": {
+        "eof": true,
+        "next_offset": 287,
+        "offset": 0,
+        "size": 287,
+        "text": "{\"ok\": true, \"caseId\": \"native4-r1\", \"httpStatus\": 200, \"requestCount\": 1, \"result\": \"/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r3/native4-r1/outer-result.public.json\", \"resultSha256\": \"32a3353dfb900d4cfc19f0084190f662900d03631f402ca6166563f872f9f6ef\"}\n"
+      }
+    },
+    "readDeliveryFailure": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `codex_apps/heptaruntime_mac_controller.read_multiple_files`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+        }
+      ],
+      "isError": true
+    }
+  }
+}

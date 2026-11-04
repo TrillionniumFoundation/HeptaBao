@@ -1,0 +1,29 @@
+--- r2/launcher.py
++++ r3/launcher.py
+@@ -2,7 +2,7 @@
+ """Run one typed read-only provider validation in one fresh private writable scope."""
+ import hashlib,json,os,pathlib,signal,subprocess,sys,time
+ os.umask(0o077)
+-ROOT=pathlib.Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r2')
++ROOT=pathlib.Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r3')
+ CONTROL=ROOT/'control'
+ CASE=sys.argv[1]
+ assert CASE in ('managed1-r1','native4-r1') and len(sys.argv)==2
+@@ -17,7 +17,7 @@
+     return dict(s.split('=',1)for s in p.stdout.splitlines()if '='in s)
+ stage=json.loads((CONTROL/'stage.public.json').read_text())
+ before={p:sha(p)for p in stage['pins']};assert before==stage['pins']
+-assert not WORK.exists();WORK.mkdir(mode=0o700)
++assert not WORK.exists();WORK.mkdir(mode=0o700);(WORK/'tmp').mkdir(mode=0o700)
+ plan=CONTROL/(CASE+'.plan.json');planvalue=json.loads(plan.read_text());assert planvalue['work']==str(WORK)
+ unitbefore=units();assert unitbefore['ActiveState']=='active'
+ for k in ('HTTP_PROXY','HTTPS_PROXY','ALL_PROXY','http_proxy','https_proxy','all_proxy','NODE_OPTIONS'):
+@@ -32,7 +32,7 @@
+  'httpTimeoutMs':15000,'sdkTimeoutMs':18000,'childTimeoutSeconds':35,'automaticRetry':False,'productionChanged':False})
+ started=time.monotonic();timed=False
+ with (WORK/'stdout.private').open('xb')as out,(WORK/'stderr.private').open('xb')as err:
+-    p=subprocess.Popen(argv,stdin=subprocess.DEVNULL,stdout=out,stderr=err,start_new_session=True)
++    p=subprocess.Popen(argv,stdin=subprocess.DEVNULL,stdout=out,stderr=err,start_new_session=True,env={**os.environ,'TMPDIR':str(WORK/'tmp')})
+     try:rc=p.wait(timeout=35)
+     except subprocess.TimeoutExpired:
+         timed=True

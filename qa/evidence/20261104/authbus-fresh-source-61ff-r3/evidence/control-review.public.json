@@ -1,0 +1,97 @@
+{
+  "checks": [
+    {
+      "name": "stage_exact_source_count",
+      "ok": true
+    },
+    {
+      "name": "stage_provider_not_called",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.all_before_pins",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.bound_plan",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.source_helper",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.private_work",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.readonly_root",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.host_network_preserved",
+      "ok": true
+    },
+    {
+      "name": "managed1-r1.bounded_one_get",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.all_before_pins",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.bound_plan",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.source_helper",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.private_work",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.readonly_root",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.host_network_preserved",
+      "ok": true
+    },
+    {
+      "name": "native4-r1.bounded_one_get",
+      "ok": true
+    },
+    {
+      "name": "offline_probe",
+      "ok": true
+    },
+    {
+      "name": "offline_actual_sdk_headers",
+      "ok": true
+    }
+  ],
+  "checksPassed": 18,
+  "nativePayloadSha256": "7d06e6cd730f0687452c90dcaefe6a077ddbff3ce01d85b65fcec94641ed518a",
+  "ok": true,
+  "schema": "heptabao.typed-fresh-source-control-review.v1",
+  "sourcePins": {
+    "/home/qian-qi/.codex/auth.json": "f4aee2935351eaa6d56ce99166a0123c3c9e3260ae8737e6d7ad8ce2c8c12b78",
+    "/home/qian-qi/.codex/config.toml": "57c13259d009c266c37d1c4578596c0a6236dae3862eccedb3eb74a99084c350",
+    "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/provider-usage-BxQS-VWA.js": "cab428b63c6e8912f444089e120c95aea4a1d5edf4258c7fd1b20346558d12e6",
+    "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/tmp-openclaw-dir-uPgNO8da.js": "c12ed50f959d17d9e4ca3e3cce60aa471ee160bdd705035a6d1ed63c47207b23",
+    "/home/qian-qi/.openclaw/openclaw.json": "a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-current-profile1-61ff8bef-r2/run-r2/execution.result.public.json": "c1a3c31b672ad333a609282e055d7773b803f24aa5a8048024cddc59ab6d7f96",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-current-profile1-61ff8bef-r2/run-r2/live/consumer-cold-new-process/runtime-selection.private.json": "8be2895e6a9c818b6c460f8a79e6b9e18602985b6c200514b65cf2a9f4e68252",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-current-profile1-61ff8bef-r2/run-r2/live/result.public.json": "ec431072ef6e5ecd7f6f167d54c5aef857d071c97d4a5116eec0d2c9145d3fd7",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r3/control/fresh_usage_read.mjs": "3cea30a81a539277a3a344e3e09e6c4742156947b4fb7d821fa3da88edbeffda",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r3/control/launcher.py": "4c2124978cffb3a47354e16a041def306cf7743d6f6a2ff5a90cc2dc2e88ae0f",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r3/control/managed1-r1.plan.json": "e4a21cc04ac9d9aae1f669647ec8876f5172a01c04fd46d4ba23a01cf8d2aa18",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r3/control/native4-r1.plan.json": "19b55c8593a9d54a71b52543ddc756679a2be37c927a0f39668bd0ad00199e64",
+    "/usr/bin/bwrap": "523da3e7399044be5163aee6f57a77a6bef7454376e28f0a0627920bae1b76b6",
+    "/usr/bin/node": "fde6a4bf8d0562f7751d1a2d6cb9b417c4cfe107bbcb0aa3e9a24e125e348f48",
+    "/usr/bin/python3": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41"
+  }
+}

@@ -1,0 +1,27 @@
+--- r1/fresh_usage_read.mjs
++++ r2/fresh_usage_read.mjs
+@@ -11,7 +11,7 @@
+ import { syncBuiltinESMExports } from 'node:module';
+ 
+ process.umask(0o077);
+-const ROOT = '/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r1';
++const ROOT = '/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r2';
+ const LIVE = '/home/qian-qi/.openclaw';
+ const NATIVE = '/home/qian-qi/.codex';
+ const SDK_MODULE = '/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/provider-usage-BxQS-VWA.js';
+@@ -167,12 +167,13 @@
+   };
+   const snapshot = await sdk.a(token, account, 18000, fetchOne);
+   report.sdkParsed = snapshot?.provider === 'openai' && Array.isArray(snapshot.windows) && !snapshot.error;
+-  report.usageWindows = Array.isArray(snapshot?.windows) ? snapshot.windows.map(w => ({label:w.label,usedPercent:w.usedPercent,resetAt:w.resetAt ?? null})) : [];
++  report.usageWindowCount = Array.isArray(snapshot?.windows) ? snapshot.windows.length : 0;
++  report.usageWindowStructureValid = Array.isArray(snapshot?.windows) && snapshot.windows.every(w => typeof w.label === 'string' && Number.isFinite(w.usedPercent) && (w.resetAt === undefined || Number.isFinite(w.resetAt)));
+   report.sdkErrorPresent = !!snapshot?.error;
+   const after = currentSource(); report.sourceBindingAfter = after.public;
+   report.currentSourceGenerationUnchangedAfterResponse = digest(initial.public) === digest(after.public);
+   need(report.currentSourceGenerationUnchangedAfterResponse && hash(fs.readFileSync(SDK_MODULE)) === MODULE_SHA, 'source_or_sdk_changed_after_response');
+-  need(report.httpStatus === 200 && report.tlsVerified && report.sdkParsed && report.requestCount === 1 && report.unexpectedOperations === 0, 'current_source_provider_read_failed');
++  need(report.httpStatus === 200 && report.tlsVerified && report.sdkParsed && report.usageWindowStructureValid && report.requestCount === 1 && report.unexpectedOperations === 0, 'current_source_provider_read_failed');
+   report.freshReadOnlyProviderValidityQualified = true; report.modelAvailabilityQualified = false; report.ok = true;
+ } catch (error) {
+   report.error = error?.safeCode ?? 'typed_source_read_failed'; report.errorClass = error?.constructor?.name ?? 'unknown';

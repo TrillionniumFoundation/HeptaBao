@@ -1,0 +1,11 @@
+--- r1/launcher.py
++++ r2/launcher.py
+@@ -2,7 +2,7 @@
+ """Run one typed read-only provider validation in one fresh private writable scope."""
+ import hashlib,json,os,pathlib,signal,subprocess,sys,time
+ os.umask(0o077)
+-ROOT=pathlib.Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r1')
++ROOT=pathlib.Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r2')
+ CONTROL=ROOT/'control'
+ CASE=sys.argv[1]
+ assert CASE in ('managed1-r1','native4-r1') and len(sys.argv)==2

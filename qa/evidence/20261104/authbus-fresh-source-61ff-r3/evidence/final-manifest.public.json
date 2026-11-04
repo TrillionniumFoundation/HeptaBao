@@ -1,0 +1,201 @@
+{
+  "files": [
+    {
+      "bytes": 10732,
+      "relative": "evidence/agent-review.public.json",
+      "sha256": "20f8766308866064f7513b2187d2ec7702b6f9281ceefbeec63b7b59653d62fe"
+    },
+    {
+      "bytes": 350,
+      "relative": "evidence/control/managed1-r1.plan.json",
+      "sha256": "e4a21cc04ac9d9aae1f669647ec8876f5172a01c04fd46d4ba23a01cf8d2aa18"
+    },
+    {
+      "bytes": 331,
+      "relative": "evidence/control/native4-r1.plan.json",
+      "sha256": "19b55c8593a9d54a71b52543ddc756679a2be37c927a0f39668bd0ad00199e64"
+    },
+    {
+      "bytes": 2504,
+      "relative": "evidence/control/stage.public.json",
+      "sha256": "e7ba507dbd8becdcb1855df5d3af6ea94714070d54eeced450d8511585ebb662"
+    },
+    {
+      "bytes": 15746,
+      "relative": "evidence/control-native-sdk-payload.public.json",
+      "sha256": "7d06e6cd730f0687452c90dcaefe6a077ddbff3ce01d85b65fcec94641ed518a"
+    },
+    {
+      "bytes": 3798,
+      "relative": "evidence/control-review.public.json",
+      "sha256": "892dc096d81ee08c00d0397a5eb32d7fdf259e61a7b3f263ffc997d64af3bfd9"
+    },
+    {
+      "bytes": 11849,
+      "relative": "evidence/controller-receipts.public.json",
+      "sha256": "1638aadea8087ca83a41db547c2d0a012755502ff12dffa738a23c858ca3d055"
+    },
+    {
+      "bytes": 938,
+      "relative": "evidence/import-probe-r1/result.public.json",
+      "sha256": "fcd7f4392598c4103173e384d997813bf0360719585a004ebb831cb9741b28f1"
+    },
+    {
+      "bytes": 1677,
+      "relative": "evidence/managed1-401-classification.public.json",
+      "sha256": "5db2b409a4a15d90d943ceac23f426408df0dae4e5384ad4ab5fbda426108cba"
+    },
+    {
+      "bytes": 3895,
+      "relative": "evidence/managed1-r1/intent.public.json",
+      "sha256": "7bbef7b6594c32910fd884a7c9d25904bdfbad84c5d987e0524b5da7b189c9e4"
+    },
+    {
+      "bytes": 1125,
+      "relative": "evidence/managed1-r1/outer-result.public.json",
+      "sha256": "0d87946715b26aceea714818ad290d6329c5badf317d11dc53fee3520895e37d"
+    },
+    {
+      "bytes": 1013,
+      "relative": "evidence/managed1-r1/request-started.public.json",
+      "sha256": "f2c51a40668dd2c1fae99a07592c1bc0dd9fc76b24008c5468f38375b8a387cb"
+    },
+    {
+      "bytes": 2674,
+      "relative": "evidence/managed1-r1/result.public.json",
+      "sha256": "697042efa3f085926dc8ea9382f6f3c4ffa9262d79f85d98f0e5ac2e08c230ab"
+    },
+    {
+      "bytes": 3872,
+      "relative": "evidence/native4-r1/intent.public.json",
+      "sha256": "ddc12c2cbd4d26b7441fc97513347c4b2f9c762e4162747b3cba9a39efaeb6a6"
+    },
+    {
+      "bytes": 1106,
+      "relative": "evidence/native4-r1/outer-result.public.json",
+      "sha256": "32a3353dfb900d4cfc19f0084190f662900d03631f402ca6166563f872f9f6ef"
+    },
+    {
+      "bytes": 934,
+      "relative": "evidence/native4-r1/request-started.public.json",
+      "sha256": "0e0377d49b32f91b9999b2334c06d1570186cb6da6f5ba18acc2000ddd27791b"
+    },
+    {
+      "bytes": 2482,
+      "relative": "evidence/native4-r1/result.public.json",
+      "sha256": "7d236193a822b3ea60333feadcc6ff4cef915162a63725b9b5ec25098432ee11"
+    },
+    {
+      "bytes": 732,
+      "relative": "evidence/readonly-receipt-export-terminal.public.json",
+      "sha256": "1abab9c615d90f847c615c4f9681e58e122cca407eec5daa7a772acc9ae0200f"
+    },
+    {
+      "bytes": 6768,
+      "relative": "evidence/readonly-receipt-export.public.json",
+      "sha256": "0af08899d05c31b8be64f2fdfd9bc3e1960e80effd1db651854367103acf2f6c"
+    },
+    {
+      "bytes": 14888,
+      "relative": "fresh_usage_read.mjs",
+      "sha256": "3cea30a81a539277a3a344e3e09e6c4742156947b4fb7d821fa3da88edbeffda"
+    },
+    {
+      "bytes": 1584,
+      "relative": "fresh_usage_read.mjs.review.diff",
+      "sha256": "669013a658f57fdc6a702d5adbb15c478c03c46ec954ce817d740f9ca5ce2251"
+    },
+    {
+      "bytes": 4940,
+      "relative": "launcher.py",
+      "sha256": "4c2124978cffb3a47354e16a041def306cf7743d6f6a2ff5a90cc2dc2e88ae0f"
+    },
+    {
+      "bytes": 1757,
+      "relative": "launcher.py.review.diff",
+      "sha256": "c3b3e3367d61afb5629965051d835b4169a2b9c8e9333d7b17a2e6a354dd0216"
+    },
+    {
+      "bytes": 4215,
+      "relative": "read_receipts_and_classify.py",
+      "sha256": "e800ea47e5c6e15904c5756f6ecf6ae7c0c3bad36ab4496e6396171f3cbc4335"
+    },
+    {
+      "bytes": 9824,
+      "relative": "review_evidence.py",
+      "sha256": "2a0e41ff0fd69ce50781adfd4298d894a4856f03f97e6aa68b9c18288fa8a430"
+    },
+    {
+      "bytes": 20384,
+      "relative": "stage-input.json",
+      "sha256": "49b3f62d5ab8aef858a6acadcfad949dd38a65fff146b0aa9851eec39c41bbac"
+    },
+    {
+      "bytes": 6604,
+      "relative": "stage_and_probe.py",
+      "sha256": "a79f22ebc33cb09b14060e751ee6dd94ac6bd8268774a99e5f029e4570895452"
+    }
+  ],
+  "rawProviderBodiesIncluded": false,
+  "reviewerDependencies": [
+    {
+      "bytes": 724,
+      "path": "/workspace/scratch/61ff8bef4cc9/authbus-fresh-source-61ff-r2/evidence/no-token-no-network-diagnostic.public.json",
+      "sha256": "17a3153a2ddebd239ae72ed0f803cb16b17a03a943402455b383d198a6a120cc"
+    },
+    {
+      "bytes": 1127,
+      "path": "/workspace/scratch/61ff8bef4cc9/authbus-fresh-source-61ff-r2/evidence/outer-result.public.json",
+      "sha256": "9a48feb7657dcbcc947e2195ff7e89d3eeab6477af56e7e33e50253edb758a07"
+    },
+    {
+      "bytes": 9385,
+      "path": "/workspace/scratch/61ff8bef4cc9/authbus-fresh-source-61ff-r2/evidence/prior-stage-and-predispatch-failure.public.json",
+      "sha256": "98c2e772d174c7c4b23a629c52f4b9a6e64d07dbefad4ca2a02be160e6c7a118"
+    },
+    {
+      "bytes": 1407,
+      "path": "/workspace/scratch/61ff8bef4cc9/authbus-fresh-source-61ff-r2/evidence/result.public.json",
+      "sha256": "c1fb1b9be09d2dc2d62d419dfa66c3d84ac38339258940d168493dd90f3522bc"
+    },
+    {
+      "bytes": 14356,
+      "path": "/workspace/scratch/61ff8bef4cc9/authbus-fresh-source-61ff-r2/fresh_usage_read.mjs",
+      "sha256": "24023b1b463444019696ed9cff24a38c3a988e884a04761ec2198a69ff56cc55"
+    },
+    {
+      "bytes": 2265,
+      "path": "/workspace/scratch/61ff8bef4cc9/authbus-fresh-source-61ff-r2/fresh_usage_read.mjs.review.diff",
+      "sha256": "05bdcb157bc71817ab6e48f8c18196a189f95e6907814db5d386c2cbc4386706"
+    },
+    {
+      "bytes": 4865,
+      "path": "/workspace/scratch/61ff8bef4cc9/authbus-fresh-source-61ff-r2/launcher.py",
+      "sha256": "3e6572078925f0154dc6fb2f87dd5c10d23548a2265ad3672dba013f68a990d0"
+    },
+    {
+      "bytes": 528,
+      "path": "/workspace/scratch/61ff8bef4cc9/authbus-fresh-source-61ff-r2/launcher.py.review.diff",
+      "sha256": "384003a054546a652f09965185cb90f0fa6812cc826c52923cfa981d53fb31b6"
+    },
+    {
+      "bytes": 19771,
+      "path": "/workspace/scratch/61ff8bef4cc9/authbus-fresh-source-61ff-r2/stage-input.json",
+      "sha256": "60ee57ca3713cf7913a72ae3972cb8e8835b71b1227b37c70584bb5c354aebae"
+    },
+    {
+      "bytes": 25590,
+      "path": "/workspace/scratch/61ff8bef4cc9/authbus-route-audit-61ff-r1/source/provider-usage-BxQS-VWA.js",
+      "sha256": "cab428b63c6e8912f444089e120c95aea4a1d5edf4258c7fd1b20346558d12e6"
+    },
+    {
+      "bytes": 4432,
+      "path": "/workspace/scratch/61ff8bef4cc9/authbus-route-audit-61ff-r1/source/tmp-openclaw-dir-uPgNO8da.js",
+      "sha256": "c12ed50f959d17d9e4ca3e3cce60aa471ee160bdd705035a6d1ed63c47207b23"
+    }
+  ],
+  "root": "/workspace/scratch/61ff8bef4cc9/authbus-fresh-source-61ff-r3",
+  "schema": "heptabao.typed-fresh-source-complete-public-manifest.v1",
+  "sourceCredentialValuesIncluded": false,
+  "status": "managed1_current_401_token_expired__unmanaged_native4_current_readonly_200__no_cutover"
+}

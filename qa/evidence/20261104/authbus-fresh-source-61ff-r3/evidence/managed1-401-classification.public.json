@@ -1,0 +1,57 @@
+{
+  "accountIdentitiesPublished": false,
+  "automaticRetry": false,
+  "freshCredentialUsed": false,
+  "messageCount": 2,
+  "messageDigests": [
+    "8832a19e819a8d6ea524b6ff006b1e42aacb9d12ff98cbf642c57d9d848e71a5",
+    "8832a19e819a8d6ea524b6ff006b1e42aacb9d12ff98cbf642c57d9d848e71a5"
+  ],
+  "messageTermPredicates": {
+    "accountDeactivated": false,
+    "accountDisabled": false,
+    "accountSuspended": false,
+    "geographyMentioned": false,
+    "invalidToken": false,
+    "permissionMentioned": false,
+    "signInAgainRequested": false,
+    "tokenExpired": true,
+    "tokenInvalidated": false,
+    "tokenRevoked": false
+  },
+  "providerCalled": false,
+  "rawBodyPublished": false,
+  "refreshAttempted": false,
+  "responseBytes": 334,
+  "responseJsonType": "dict",
+  "responseSha256": "2dd8af6137cc2b1f408e76a00ccf6479db404b03f3d383befcb5bc67c3ba2cce",
+  "safeErrorFields": [
+    {
+      "path": "error.code",
+      "recognized": true,
+      "safeValue": "token_expired",
+      "valueSha256": "b4269a0f3bd456c4e2275f8409a2b7f397cc427c1e0f5ec4f7641b977e202a18"
+    },
+    {
+      "path": "error.type",
+      "recognized": true,
+      "safeValue": "invalid_request_error",
+      "valueSha256": "fce6bf88bbadddd33f34104b7c4eb487c91d3d255839a022aa1ba98194146587"
+    },
+    {
+      "path": "detail.code",
+      "recognized": true,
+      "safeValue": "token_expired",
+      "valueSha256": "b4269a0f3bd456c4e2275f8409a2b7f397cc427c1e0f5ec4f7641b977e202a18"
+    }
+  ],
+  "schema": "heptabao.provider-401-safe-classification.v1",
+  "sourceReadOnly": true,
+  "topKnownKeys": {
+    "code": false,
+    "detail": true,
+    "error": true,
+    "message": false,
+    "type": false
+  }
+}

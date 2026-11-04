@@ -1,0 +1,25 @@
+--- r2/fresh_usage_read.mjs
++++ r3/fresh_usage_read.mjs
+@@ -11,7 +11,7 @@
+ import { syncBuiltinESMExports } from 'node:module';
+ 
+ process.umask(0o077);
+-const ROOT = '/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r2';
++const ROOT = '/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-fresh-source-61ff8bef-r3';
+ const LIVE = '/home/qian-qi/.openclaw';
+ const NATIVE = '/home/qian-qi/.codex';
+ const SDK_MODULE = '/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/provider-usage-BxQS-VWA.js';
+@@ -125,7 +125,13 @@
+   globalThis.fetch = deny; http.request = deny; http.get = deny; https.request = deny; https.get = deny;
+   for (const k of ['spawn','spawnSync','exec','execSync','execFile','execFileSync','fork']) childProcess[k] = deny;
+   syncBuiltinESMExports();
++  need(process.env.TMPDIR === work + '/tmp', 'private_tmpdir_scope');
++  const tmpModulePath = '/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/tmp-openclaw-dir-uPgNO8da.js';
++  need(hash(fs.readFileSync(tmpModulePath)) === 'c12ed50f959d17d9e4ca3e3cce60aa471ee160bdd705035a6d1ed63c47207b23', 'sdk_tmp_contract_pin');
+   const sdk = await import(pathToFileURL(SDK_MODULE));
++  const tmpApi = await import(pathToFileURL(tmpModulePath));
++  need(tmpApi.n() === work + '/tmp/openclaw-' + process.getuid(), 'actual_sdk_private_tmp_fallback');
++  report.actualSdkPrivateTmpFallback = true;
+   let calls = 0;
+   const fetchOne = async (input, init = {}) => {
+     need(++calls === 1 && String(input) === ENDPOINT && init.method === 'GET', 'one_fixed_readonly_usage_request');
