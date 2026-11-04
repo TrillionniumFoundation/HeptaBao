@@ -16,4 +16,12 @@ The physical-seal reader is moved without changing its checks from SnapshotLease
 
 No runtime pass is claimed for this draft. The next checks must cover actual nonroot policy, Denied and NoChange, original actor, physical seal, term/source changes, deadline and expiry, malformed and valid uploads, and the normal binary observer. A new expiry first observed only after the leader writer remains a conservative 503 without replay. Generic pre-plan quota/error paths, ordinary KV NoForward with precision state, and listener consistency precedence are still separate product work.
 
-The old 070f token oracle has 87 known operations and 83 dynamic checks but contains no TTL-token invalid restore request. That attribution was withdrawn. The prepared normal observer is blocked from scoped compatibility success until a fresh exact official observation supplies this missing reference. Snapshot archive shape checks are not restoration proof. This candidate is not qualified for full replacement or production cutover.
+The old 070f token oracle has 87 known operations and 83 dynamic checks but contains no TTL-token invalid restore request. That attribution was withdrawn and preserved in the earlier draft. The separate fresh official observation now supplies the missing reference, as recorded below. Snapshot archive shape checks are not restoration proof. This candidate is not qualified for full replacement or production cutover.
+
+## Revision 2: independent review and regression source
+
+The previous draft 34cf2c is retained. Independent review found that a final Actor 403 in the ordinary pending-snapshot completion could skip the physical-seal read at the bottom of the existing allowed-owner helper. Revision 2 explicitly reads and matches the original physical seal after the real B ReadIndex and local checkpoint, before final Actor classification and completion consumption. The separate denial capsule already has its complete physical-seal gate after B.
+
+Four new integration tests are present, but not yet executed: actual nonroot read/update policies and successful historical epoch restore; a refusal while the real transfer lease is occupied, one actual clock publication, cold restart and physical-seal corruption refusal; actual original-actor expiry before the leader floor; and real mTLS Allowed/Denied NoChange with full identity/publication checkpoints. They retain the original 15-second request budget and the existing cfg(test) startup qualification boundary.
+
+The separately missing official TTL invalid-restore reference was subsequently observed in fresh job 2c94, wire cd035b00, and is now bound to normal observer b4b3f8c. This resolves the reference gap only; it does not validate this product candidate or its new tests.

@@ -29,9 +29,9 @@
     {
       "key": "ha-v6",
       "path": "crates/heptabao-server/src/service_snapshot_v6_ha.rs",
-      "bytes": 22499,
-      "sha256": "772e26dacdc2c65daafc7e6597c6d38cda6e7ccba47c183eb6bd7081e7a9a6d3",
-      "git_blob": "1c92080d1133ddcd7dc16287a36c70e1f3545c62",
+      "bytes": 22960,
+      "sha256": "fd7d4801ed2f3e28823c311c360f26a828a83e27bcab69f946bf0acb6a640f3e",
+      "git_blob": "2b6281aba7d5fdf802f83a9fa1be25d3b50b4cec",
       "base_sha256": "a6afda6d9eac65cdd7b83ddb11fec5243936bcfc63d6c88d0df3f65c29b48bea",
       "base_git_blob": "2055d5255dccf242520bab7cb5634ca72aaf388f"
     },
@@ -88,12 +88,30 @@
       "git_blob": "ebb045e333f78144e5a9a035d74ce789f5c36a76",
       "base_sha256": "3802288e0f2e3f58b94df509c928467fa2d3d11ee47bb9c68128c6143b9138ff",
       "base_git_blob": "0a94044292493853c7770cb36aa69544c1488aca"
+    },
+    {
+      "key": "standby-tests",
+      "path": "crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs",
+      "bytes": 15598,
+      "sha256": "b48da36d74eca271c90f7466d1069558d7f6e1458ebd43a98540fc3dd002cc42",
+      "git_blob": "76bb3c7343cffde21eb13ddc500e5e8d0ea15f95",
+      "base_sha256": "28787c489d5a4156d50b4374ebf255dae9e674bcf4cea8a04319c09f10e42a93",
+      "base_git_blob": "eaa7c7ad9a7db00cc911d69349dea8130ae71ff9"
+    },
+    {
+      "key": "acl-tests",
+      "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs",
+      "bytes": 15404,
+      "sha256": "28b1fa0e84f4300a3e1d90ec414983a0430192fe306c50010359e61933ff4edc",
+      "git_blob": "783b93b60c0543b5b14ddeb17952e9de16745c09",
+      "base_sha256": null,
+      "base_git_blob": null
     }
   ],
   "patch": {
     "path": "qa/evidence/20261104/ha-snapshot-acl-denial-61ff-r1/product.patch",
-    "bytes": 58833,
-    "sha256": "8f51631612f92ac54918edad6300f2259522c10e48219ecc85d0666916b83815"
+    "bytes": 75430,
+    "sha256": "679377a2dbe5b5b164b31c5ce4cf75c19965b241ec6d55a0e0fcc0ddd2434953"
   },
   "imported_protocol": {
     "commit": "061f96a4b272b556329b89d461b918e370d21e45",
@@ -128,9 +146,27 @@
   "evidence_boundaries": {
     "fixed_openbao_policy_oracle": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
     "old_token_oracle_missing_ttl_invalid_restore": true,
-    "normal_observer_reference_complete": false,
+    "normal_observer_reference_complete": true,
     "valid_nonroot_restore_not_yet_runtime_verified": true,
     "full_replacement_qualified": false,
-    "production_or_current_physical_source_changed": false
-  }
+    "production_or_current_physical_source_changed": false,
+    "normal_observer_revision_commit": "b4b3f8c22b225ab28af1d7625281d19b965acea6",
+    "new_official_ttl_invalid_restore_wire_sha256": "cd035b00b7d382d9966652774281b18840b99ce77ad9adc7d10a8f3e2b3ef83b"
+  },
+  "revision": 2,
+  "previous_draft_commit": "34cf2c69b71db2ebf0674ea8745f000fc95d38dd",
+  "review_correction": {
+    "reviewer": "bao_acceptance",
+    "previous_draft": "34cf2c69b71db2ebf0674ea8745f000fc95d38dd",
+    "finding": "The pending snapshot Denied Actor path could short-circuit the old physical-seal check after the actual B ReadIndex.",
+    "fix": "Explicitly read and match the original physical seal after the B ReadIndex/local checkpoint and before final Actor classification/Denied completion.",
+    "source_path": "crates/heptabao-server/src/service_snapshot_v6_ha.rs"
+  },
+  "added_integration_tests": [
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update_actor",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_standby_acl_denial_commits_floor_without_transfer_lease_and_survives_cold",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_standby_original_snapshot_actor_expiry_before_floor_returns_proved_403",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoints"
+  ],
+  "test_scope": "Formal storage profile and actual pinned three-voter mTLS/Raft Service owners, using cfg(test) convenience startup. Public HTTP TLS and physical hosts are not claimed."
 }

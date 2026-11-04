@@ -465,3 +465,6 @@ fn formal_native_standby_ttl_snapshot_commits_real_leader_floor_and_survives_col
     )?);
     Ok(())
 }
+
+#[path = "service_native_v6_ha_snapshot_acl_tests.rs"]
+mod acl_denial_tests;

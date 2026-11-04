@@ -489,6 +489,13 @@ impl Service {
                     return Err(unavailable());
                 }
                 self.check_native_ha_snapshot_owner_before_identity(plan)?;
+                // A terminal Actor 403 returns before the ordinary owner's
+                // final physical-seal check. Both dispositions must read the
+                // retained seal after the actual B ReadIndex and before that
+                // refusal can short-circuit the allowed-owner path.
+                if self.current_snapshot_seal_identity_for_plan(plan)? != plan.seal_identity {
+                    return Err(unavailable());
+                }
                 let actor = self.check_native_ha_snapshot_owner_after_identity(plan);
                 if terminal.is_denied() {
                     match actor {
