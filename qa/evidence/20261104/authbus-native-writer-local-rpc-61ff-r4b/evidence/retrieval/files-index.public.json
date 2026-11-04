@@ -1,0 +1,100 @@
+[
+  {
+    "eof": true,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4b/run-r1/execution.result.public.json",
+    "sha256": "b856fa8d2c66a8364e4cd601f5d318cf05c014bda71fbe39f6446a08d9710d69",
+    "size": 1446,
+    "version": "66306:39106520:1446:1793822476675638100:1793822476675638100"
+  },
+  {
+    "eof": true,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4b/run-r1/intent.public.json",
+    "sha256": "c8971917f5b4fcf29430bd5954d453c6aa8fd2877e3a771d7777db26f324d819",
+    "size": 10321,
+    "version": "66306:39106503:10321:1793822449897583616:1793822449897583616"
+  },
+  {
+    "eof": true,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4b/run-r1/live/consumer-active-lease/result.public.json",
+    "sha256": "6e1d73f19ba0df49c2ee27da69414f7f48af2f76854498dcdf855832e3e130a4",
+    "size": 21240,
+    "version": "66306:39727364:21240:1793822457812510204:1793822457812510204"
+  },
+  {
+    "eof": true,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4b/run-r1/live/consumer-pending-initialize/result.public.json",
+    "sha256": "e5e9de565e1ad6bb6b0fc199f2aa7a4f1cb6122e79d04ca9cc2aa95048fa3129",
+    "size": 20857,
+    "version": "66306:39727481:20857:1793822465054598591:1793822465054598591"
+  },
+  {
+    "eof": true,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4b/run-r1/live/consumer-pending-before-client/result.public.json",
+    "sha256": "118430a9b3c9f0221f2598d1eac56cd1caea9b57184b7a9a4dc3176300c9ce82",
+    "size": 21097,
+    "version": "66306:39727595:21097:1793822472182867249:1793822472182867249"
+  },
+  {
+    "eof": true,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4b/run-r1/live/consumer-active-lease/native/progress.initial.public.ndjson",
+    "sha256": "e669ff3e8e0f66dc1afc87bf98d2a0799db1fa3175c1bc1b5c457fb082042532",
+    "size": 10978,
+    "version": "66306:39727356:10978:1793822457764207887:1793822457764207887"
+  },
+  {
+    "eof": true,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4b/run-r1/live/consumer-active-lease/rollback-result.public.json",
+    "sha256": "2ed95984af92b084e074414a021369b64a0effd409d9489d3f27f87cfe65fb80",
+    "size": 3249,
+    "version": "66306:39727605:3249:1793822473545094001:1793822473545094001"
+  },
+  {
+    "eof": true,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4b/run-r1/live/consumer-active-lease/native/progress.rollback.public.ndjson",
+    "sha256": "7a0d27e34a90142d7412f169adf6fecc7ab678791b6e87c5a7352e994f31803d",
+    "size": 251,
+    "version": "66306:39727598:251:1793822473506163734:1793822473506163734"
+  },
+  {
+    "eof": true,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4b/run-r1/live/consumer-pending-initialize/native/progress.initial.public.ndjson",
+    "sha256": "90b884ac8a4053b02b015727535c5674326650fcd84675a4a1e416247dc2cf98",
+    "size": 10890,
+    "version": "66306:39727472:10890:1793822465005187697:1793822465005187697"
+  },
+  {
+    "eof": true,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4b/run-r1/live/consumer-pending-initialize/rollback-result.public.json",
+    "sha256": "26852a492afdc3d7c6c1c32059e2dca374b96943f794237346b2fa13a6f64182",
+    "size": 3255,
+    "version": "66306:39727616:3255:1793822474806926664:1793822474806926664"
+  },
+  {
+    "eof": true,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4b/run-r1/live/consumer-pending-initialize/native/progress.rollback.public.ndjson",
+    "sha256": "d2556cf4d610b4e1450d0c8c918c89ef32e24b647d5740c88a700abb55058007",
+    "size": 251,
+    "version": "66306:39727611:251:1793822474766160159:1793822474766160159"
+  },
+  {
+    "eof": true,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4b/run-r1/live/consumer-pending-before-client/native/progress.initial.public.ndjson",
+    "sha256": "90a9694d4c9a9c22a4ef7f22535518d0dce05422ba42dd37c1d4f774ef862261",
+    "size": 11117,
+    "version": "66306:39727586:11117:1793822472130167632:1793822472130167632"
+  },
+  {
+    "eof": true,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4b/run-r1/live/consumer-pending-before-client/rollback-result.public.json",
+    "sha256": "3ae90474d14629ae82b54fcdc77bd3991e53e06f9abf1a8350807b3f5d1f4040",
+    "size": 3258,
+    "version": "66306:39727702:3258:1793822476082760684:1793822476082760684"
+  },
+  {
+    "eof": true,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4b/run-r1/live/consumer-pending-before-client/native/progress.rollback.public.ndjson",
+    "sha256": "80f78c457a7c91f4456bd095dcd10333e8935e9e5f98c4c0c4bedcb94c051ff4",
+    "size": 251,
+    "version": "66306:39727699:251:1793822476046156521:1793822476046156521"
+  }
+]

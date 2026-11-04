@@ -1,0 +1,12 @@
+{
+  "source": "/root",
+  "rootReviewedCommit": "834b544c178ebbc924df89d42d2aa092c0c5b054",
+  "rootApprovedExactFrozenStageAndLive": true,
+  "rootX230ReadOnlyTransferReleased": true,
+  "peer": "/root/bao_acceptance",
+  "peerReportsNoCompilerFixtureOrUnfinishedRpc": true,
+  "workerSeconds": 440,
+  "controllerCleanupDeliverySeconds": 480,
+  "hostExclusive": false,
+  "inheritedSourcePacketPreparationMetadataIsNotCurrentWindowState": true
+}

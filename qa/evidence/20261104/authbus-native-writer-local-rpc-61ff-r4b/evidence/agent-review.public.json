@@ -1,0 +1,328 @@
+{
+  "schema": "heptabao.native-baseline-local-r4b-independent-recomputation.v1",
+  "evidenceConsistent": true,
+  "reviewChecks": 69,
+  "checks": [
+    {
+      "case": "live.authoritative_complete",
+      "passed": true
+    },
+    {
+      "case": "stage.authoritative_complete",
+      "passed": true
+    },
+    {
+      "case": "syntax.authoritative_complete",
+      "passed": true
+    },
+    {
+      "case": "raw.core_exact_hash",
+      "passed": true
+    },
+    {
+      "case": "raw.intent_exact_hash",
+      "passed": true
+    },
+    {
+      "case": "stdout.outer_exact_hash",
+      "passed": true
+    },
+    {
+      "case": "stage.original_and_control_pins",
+      "passed": true
+    },
+    {
+      "case": "outer.complete_success_and_cleanup",
+      "passed": true
+    },
+    {
+      "case": "outer.production_boundary",
+      "passed": true
+    },
+    {
+      "case": "core.experiment_success_baseline_failure",
+      "passed": true
+    },
+    {
+      "case": "core.original_64_checks",
+      "passed": true
+    },
+    {
+      "case": "core.authority_scope",
+      "passed": true
+    },
+    {
+      "case": "core.formal_storage_cold_restart",
+      "passed": true
+    },
+    {
+      "case": "core.original_sdk_source_and_rollback",
+      "passed": true
+    },
+    {
+      "case": "core.exact_six_phases",
+      "passed": true
+    },
+    {
+      "case": "active-lease.embedded_phase_exact",
+      "passed": true
+    },
+    {
+      "case": "active-lease.consumer_68",
+      "passed": true
+    },
+    {
+      "case": "active-lease.actual_original_factory",
+      "passed": true
+    },
+    {
+      "case": "active-lease.two_responding_channels",
+      "passed": true
+    },
+    {
+      "case": "active-lease.monotonic_events",
+      "passed": true
+    },
+    {
+      "case": "active-lease.ready_before_old_release",
+      "passed": true
+    },
+    {
+      "case": "active-lease.actual_local_rpc_on_both",
+      "passed": true
+    },
+    {
+      "case": "active-lease.old_exit_classified_before_cleanup",
+      "passed": true
+    },
+    {
+      "case": "active-lease.actual_two_pid_pairs",
+      "passed": true
+    },
+    {
+      "case": "active-lease.exact_native_generation_checkpoints",
+      "passed": true
+    },
+    {
+      "case": "active-lease.per_identity_cleanup",
+      "passed": true
+    },
+    {
+      "case": "active-lease.both_promise_layers_settled",
+      "passed": true
+    },
+    {
+      "case": "active-lease.exact_tls_approle_profile_read_write",
+      "passed": true
+    },
+    {
+      "case": "active-lease.policy_renew_revoke_actual_status",
+      "passed": true
+    },
+    {
+      "case": "active-lease.rollback_51_and_whole_logical",
+      "passed": true
+    },
+    {
+      "case": "active-lease.explicit_scope_limits",
+      "passed": true
+    },
+    {
+      "case": "active-lease.progress_complete",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.embedded_phase_exact",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.consumer_68",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.actual_original_factory",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.two_responding_channels",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.monotonic_events",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.ready_before_old_release",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.actual_local_rpc_on_both",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.old_exit_classified_before_cleanup",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.actual_two_pid_pairs",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.exact_native_generation_checkpoints",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.per_identity_cleanup",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.both_promise_layers_settled",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.exact_tls_approle_profile_read_write",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.policy_renew_revoke_actual_status",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.rollback_51_and_whole_logical",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.explicit_scope_limits",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.progress_complete",
+      "passed": true
+    },
+    {
+      "case": "pending-initialize.second_ready_before_original_initialize",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.embedded_phase_exact",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.consumer_68",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.actual_original_factory",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.two_responding_channels",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.monotonic_events",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.ready_before_old_release",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.actual_local_rpc_on_both",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.old_exit_classified_before_cleanup",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.actual_two_pid_pairs",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.exact_native_generation_checkpoints",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.per_identity_cleanup",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.both_promise_layers_settled",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.exact_tls_approle_profile_read_write",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.policy_renew_revoke_actual_status",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.rollback_51_and_whole_logical",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.explicit_scope_limits",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.progress_complete",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.second_ready_before_original_initialize",
+      "passed": true
+    },
+    {
+      "case": "pending-before-client.original_recycler_pre_client_boundary",
+      "passed": true
+    }
+  ],
+  "actualDynamicChecks": 421,
+  "actualDynamicPassed": 421,
+  "baselineActualConcurrencyRegressionObserved": true,
+  "productSingleWriterGatePassed": false,
+  "coreSha256": "3539bd619d26f2a64b1b57bbeba94da11b1bc3d50aed0e4658f84caa30c948a7",
+  "outerSha256": "b856fa8d2c66a8364e4cd601f5d318cf05c014bda71fbe39f6446a08d9710d69",
+  "scenarios": [
+    {
+      "scenario": "active-lease",
+      "consumerChecks": 68,
+      "rollbackChecks": 51,
+      "twoInitializedNativeRpcChannelsObserved": true,
+      "oldRetirementWrapperSignal": "SIGKILL",
+      "oldNativeGoneBeforeHarnessCleanup": true,
+      "allOwnedStopped": true,
+      "productSingleWriterGatePassed": false
+    },
+    {
+      "scenario": "pending-initialize",
+      "consumerChecks": 68,
+      "rollbackChecks": 51,
+      "twoInitializedNativeRpcChannelsObserved": true,
+      "oldRetirementWrapperSignal": "SIGKILL",
+      "oldNativeGoneBeforeHarnessCleanup": true,
+      "allOwnedStopped": true,
+      "productSingleWriterGatePassed": false
+    },
+    {
+      "scenario": "pending-before-client",
+      "consumerChecks": 68,
+      "rollbackChecks": 51,
+      "twoInitializedNativeRpcChannelsObserved": true,
+      "oldRetirementWrapperSignal": "SIGKILL",
+      "oldNativeGoneBeforeHarnessCleanup": true,
+      "allOwnedStopped": true,
+      "productSingleWriterGatePassed": false
+    }
+  ],
+  "accountReadQualified": false,
+  "providerAvailabilityQualified": false,
+  "nativeCredentialMutationExercised": false,
+  "nativeCredentialOverwriteObserved": false,
+  "productionGatewayQualified": false,
+  "productionChanged": false,
+  "fullReplacementQualified": false
+}
