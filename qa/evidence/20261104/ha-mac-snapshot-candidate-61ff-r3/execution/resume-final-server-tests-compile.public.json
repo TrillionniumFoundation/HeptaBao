@@ -1,0 +1,38 @@
+{
+  "argv": [
+    "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+    "test",
+    "--release",
+    "--locked",
+    "--offline",
+    "-p",
+    "heptabao-server",
+    "--lib",
+    "--no-run",
+    "--message-format=json"
+  ],
+  "cleanup": {
+    "already_reaped": false,
+    "forced": false,
+    "group_cleanup_before_reap": true,
+    "group_signalled_after_reap": false,
+    "pid": 52204,
+    "remaining": [],
+    "returncode": -15
+  },
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+  "elapsed_seconds": 395.9550386671908,
+  "error_class": "RuntimeError",
+  "error_code": "original_absolute_deadline",
+  "exit_code": -15,
+  "label": "server-tests-compile",
+  "owned_pgid": 52204,
+  "remaining": [],
+  "remaining_at_end_seconds": 0,
+  "remaining_at_start_seconds": 395.8244595741853,
+  "stderr_bytes": 2605,
+  "stderr_sha256": "d452c22e65c17b5f0dbc7124ca01fdcc4db8519e4dfe93b754084bbdcd3aa623",
+  "stdout_bytes": 434681,
+  "stdout_sha256": "71c85671880cd17c231ece8805505dc46edaeb9ab70985760a263878b4844a84",
+  "timed_out": true
+}

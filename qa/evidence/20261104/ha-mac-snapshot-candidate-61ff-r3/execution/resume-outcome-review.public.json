@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.mac-snapshot-resume-outcome.v1",
+  "job_id": "1a1a8115a2f-fc05-2d89",
+  "authoritative_terminal": {
+    "state": "failed",
+    "exit_code": 1,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "supervisor_timed_out": false
+  },
+  "frozen_source": "c6a0b854c91715209aacadd2c4226ee340f95b13",
+  "frozen_tree": "3ecc607295bca877aad3f92b22b691ff84c76a9c",
+  "same_tree_review": "a40bf5d972ecefcd03b754fd56d5456bfca72310",
+  "strict_clippy": {
+    "passed": true,
+    "elapsed_seconds": 30.20814224984497,
+    "exit_code": 0,
+    "receipt_sha256": "789e3337fe36e12391719112bc597e3430f35c8abfa2c1ecb582b80a5fd480a7"
+  },
+  "original_deadline_utc": "2026-11-04T19:45:07Z",
+  "overall_result_sha256": "0986617eb338637bc30dfedae69dae6dea43ec8173b133ea3c08f2ff165f2d78",
+  "failure_code": "original_shared_cargo_deadline",
+  "test_compile": {
+    "timed_out": true,
+    "exit_code": -15,
+    "elapsed_seconds": 395.9550386671908,
+    "owned_pgid": 52204,
+    "remaining": [],
+    "forced": false
+  },
+  "named_tests_planned": 10,
+  "named_tests_executed": 0,
+  "production_binaries_linked": false,
+  "post_runtime_source_check_completed": false,
+  "all_owned_group_processes_stopped": true,
+  "full_replacement_qualified": false
+}
