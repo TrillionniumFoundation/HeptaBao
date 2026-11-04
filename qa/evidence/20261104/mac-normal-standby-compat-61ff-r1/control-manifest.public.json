@@ -1,0 +1,36 @@
+{
+  "files": [
+    {
+      "bytes": 71182,
+      "path": "qa/evidence/20261104/mac-normal-standby-compat-61ff-r1/control/normal_unified_standby_compat_observer_r4.py",
+      "sha256": "d1bf471e9cdae039750c20249313c372c7d95bdbb27c9e5c62a1425fe0f16096"
+    },
+    {
+      "bytes": 4358,
+      "path": "qa/evidence/20261104/mac-normal-standby-compat-61ff-r1/control/stage_and_run.py",
+      "sha256": "59b834a333049659b91df7a58c557b352e8a75981cbd8699c69496ce40858ae0"
+    },
+    {
+      "bytes": 6369,
+      "path": "qa/evidence/20261104/mac-normal-standby-compat-61ff-r1/observer-manifest.public.json",
+      "sha256": "bf057934c7f353d9f782839b3d569f9bed948b48ba0b2c1c7aa6952882e62206"
+    },
+    {
+      "bytes": 77476,
+      "path": "qa/evidence/20261104/mac-normal-standby-compat-61ff-r1/request.public.json",
+      "sha256": "98cc368e481fb72f735d585ccc4a678a08c33c8e4f6c02660161d988be97dfd7"
+    },
+    {
+      "bytes": 1423,
+      "path": "qa/evidence/20261104/mac-normal-standby-compat-61ff-r1/root-control-review.public.json",
+      "sha256": "fcfa272290ef23e85e3c9b4ba933044a8bf5d905b445c77b06cb0894297d8a23"
+    }
+  ],
+  "original_election_seconds": 60,
+  "original_http_seconds": 15,
+  "original_readiness_seconds": 45,
+  "original_stable_leader_seconds": 2.2,
+  "schema": "heptabao.mac-compat-control-manifest.v1",
+  "status": "prepared_not_executed",
+  "supervisor_seconds": 600
+}

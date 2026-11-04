@@ -1,0 +1,25 @@
+{
+  "business_method_exactly_unchanged_from_independently_reviewed_de16385": true,
+  "complete_official_reference_cases": 34,
+  "current_reference_completion_independently_verified": true,
+  "exact_actual_mac_artifact_pins": {
+    "build_result_sha256": "1213701925f1be075e5d538104cbc25f8b132054f61602fcb27eebf4a820b763",
+    "native_receipt_sha256": "22cfeed88871a0a5cb4fd7ffccce6e04a4ba5773c6d2d71cebbba0b8a2266444",
+    "physical_source": "70714605c39014bea93545f7f6aa4217d2a23544",
+    "runtime_must_verify_all": true,
+    "server_sha256": "976776d4183d76e6adf06dc0e765d30f59d0d433adea42aeed8a57a9877c1f26",
+    "tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f"
+  },
+  "full_replacement_qualified": false,
+  "live_executed": false,
+  "normal_artifact_verifier_and_source_guard_read": true,
+  "owned_process_cleanup_blocks_read": true,
+  "peer_business_coverage_and_partial_evidence_review": "/root/bao_acceptance",
+  "reference_commit": "df47f00f3289fe690f38a8fd433f11b6f530ecc9",
+  "schema": "heptabao.root-normal-compat-observer-controls-review.v1",
+  "scope": "Review and execute the fixed 34-case status observer on the actual normal binary; shape checks do not prove valid restore or interop.",
+  "source_bytes": 71182,
+  "source_commit": "b4b3f8c22b225ab28af1d7625281d19b965acea6",
+  "source_sha256": "d1bf471e9cdae039750c20249313c372c7d95bdbb27c9e5c62a1425fe0f16096",
+  "syntax_checked_by_this_review": false
+}
