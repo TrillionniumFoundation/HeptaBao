@@ -11,18 +11,18 @@
     {
       "key": "service",
       "path": "crates/heptabao-server/src/service.rs",
-      "bytes": 520137,
-      "sha256": "cc47d4241ce43b6bae0b78ea29b643e357c696b8795624514f7289bd03d3492b",
-      "git_blob": "9bd3e87098a7ffbc629ea10962989404d03468bd",
+      "bytes": 520380,
+      "sha256": "ecc34e93aeec0832943910aeab443009bfcad4f4cbc6d721b7a2fb213c599313",
+      "git_blob": "965df43d4bd0b43f15160d8d7387aa49c2432250",
       "base_sha256": "cdfef850d98df682507555c46fffe9f99d9f311c97c1bfa71a34a9352675ba6d",
       "base_git_blob": "166665836a0ac82c10f4fd95d1d8f88cc7e0c280"
     },
     {
       "key": "transfer",
       "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
-      "bytes": 63997,
-      "sha256": "2ca7cb0b446a4b50c11d1efeb0a5f92e86b3f198586d530103ef63dda61042e2",
-      "git_blob": "1e6777d7c2f171cbce3167633581c837d276bb9e",
+      "bytes": 64166,
+      "sha256": "a29b89e4efca56a28dbbaefccab89aac329e6cf75de1d75f62bc80545ddee4d1",
+      "git_blob": "0a4596c5b5cdb97dbd453862e1cdc26690eb8141",
       "base_sha256": "f0a55fac5295a579d760a33b88b5faf3471c3b1a96a2e3145ee9f1c7cebb5946",
       "base_git_blob": "56f983ba633e12ac180fcc0a20e45c9bf7204b72"
     },
@@ -92,26 +92,44 @@
     {
       "key": "standby-tests",
       "path": "crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs",
-      "bytes": 15598,
-      "sha256": "b48da36d74eca271c90f7466d1069558d7f6e1458ebd43a98540fc3dd002cc42",
-      "git_blob": "76bb3c7343cffde21eb13ddc500e5e8d0ea15f95",
+      "bytes": 16428,
+      "sha256": "f1676351ba8f74e2ac64dc07efd109657447e8241fc1872334a1200ddea811b0",
+      "git_blob": "c6040baa75c4cefc1d53d817032d04020cb0f6a2",
       "base_sha256": "28787c489d5a4156d50b4374ebf255dae9e674bcf4cea8a04319c09f10e42a93",
       "base_git_blob": "eaa7c7ad9a7db00cc911d69349dea8130ae71ff9"
     },
     {
       "key": "acl-tests",
       "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs",
-      "bytes": 15404,
-      "sha256": "28b1fa0e84f4300a3e1d90ec414983a0430192fe306c50010359e61933ff4edc",
-      "git_blob": "783b93b60c0543b5b14ddeb17952e9de16745c09",
+      "bytes": 17411,
+      "sha256": "a68cad2e3423dfe479d8b00e6e49f88b6bcbe6b2fdbeab326c7c167022693774",
+      "git_blob": "9a7959a991063572a172a6791835301e1bcc793d",
       "base_sha256": null,
       "base_git_blob": null
+    },
+    {
+      "key": "http",
+      "path": "crates/heptabao-server/src/http.rs",
+      "bytes": 231754,
+      "sha256": "6f855ab990ed6eba637a239cbdceda0b1172eae4173c68e34c950f88c22288cc",
+      "git_blob": "c7a4307e7a50075bb777f324aba48af929e46f2e",
+      "base_sha256": "5d28279270a09be5cc3a807dde43d6838263d50ca0619291ea95dab9243c18d4",
+      "base_git_blob": "7c401cb1bd161f507fc8d0722770aa3bf364007c"
+    },
+    {
+      "key": "consistency",
+      "path": "crates/heptabao-server/src/http_consistency.rs",
+      "bytes": 16843,
+      "sha256": "d8d20d8c69e6cf02a29801a3f05645d8ba58138d0d97c72cdd20994c2caa56cf",
+      "git_blob": "ed64b70e48cb8d549597e0102cf9003e0c1e606f",
+      "base_sha256": "6beeea5710dc3a2087216b7b9efea871f17d5c68f2ba0e24bd3a6122a8da5c43",
+      "base_git_blob": "e6d243427873b61b1a69f1a0ac63ddad27c4d0cd"
     }
   ],
   "patch": {
     "path": "qa/evidence/20261104/ha-snapshot-acl-denial-61ff-r1/product.patch",
-    "bytes": 75430,
-    "sha256": "679377a2dbe5b5b164b31c5ce4cf75c19965b241ec6d55a0e0fcc0ddd2434953"
+    "bytes": 84576,
+    "sha256": "4de10395d9c41a868619a4c6af0d8f8ccb59c404f7c927e367221cc7fecf3e37"
   },
   "imported_protocol": {
     "commit": "061f96a4b272b556329b89d461b918e370d21e45",
@@ -140,7 +158,7 @@
     "A first new expiry observed only after the one leader clock writer returns 503 without replay; it is not mislabeled as a proved entry-time Denied 403.",
     "Other pre-plan errors such as a quota refusal are not covered by the new snapshot denial capsule.",
     "Ordinary KV X-Vault-No-Request-Forwarding plus global precision still needs an independent closed authority and metadata-only leader clock path.",
-    "Listener consistency_missing_header_forward precedence still needs its independent product correction.",
+    "Listener consistency Forward restriction is implemented in revision 3; its new integration and normal-wire validation have not run.",
     "Other non-clock maintenance states remain ineligible for this local standby snapshot path."
   ],
   "evidence_boundaries": {
@@ -153,8 +171,8 @@
     "normal_observer_revision_commit": "b4b3f8c22b225ab28af1d7625281d19b965acea6",
     "new_official_ttl_invalid_restore_wire_sha256": "cd035b00b7d382d9966652774281b18840b99ce77ad9adc7d10a8f3e2b3ef83b"
   },
-  "revision": 2,
-  "previous_draft_commit": "34cf2c69b71db2ebf0674ea8745f000fc95d38dd",
+  "revision": 3,
+  "previous_draft_commit": "7f69e4a0311747d7ea2a904f22bdac4fe0829768",
   "review_correction": {
     "reviewer": "bao_acceptance",
     "previous_draft": "34cf2c69b71db2ebf0674ea8745f000fc95d38dd",
@@ -166,7 +184,36 @@
     "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update_actor",
     "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_standby_acl_denial_commits_floor_without_transfer_lease_and_survives_cold",
     "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_standby_original_snapshot_actor_expiry_before_floor_returns_proved_403",
-    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoints"
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoints",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_http_consistency_forward_restricts_local_snapshot_and_no_forward_kv"
   ],
-  "test_scope": "Formal storage profile and actual pinned three-voter mTLS/Raft Service owners, using cfg(test) convenience startup. Public HTTP TLS and physical hosts are not claimed."
+  "test_scope": "Formal storage profile and actual pinned three-voter mTLS/Raft Service owners, using cfg(test) convenience startup. Public HTTP TLS and physical hosts are not claimed.",
+  "routing_delta": {
+    "base": "7f69e4a0311747d7ea2a904f22bdac4fe0829768",
+    "path": "qa/evidence/20261104/ha-snapshot-acl-denial-61ff-r1/revision3-routing.patch",
+    "bytes": 9952,
+    "sha256": "9bc2687355e319a6e0ffdd35895d5c353c2616067eb8c7521e92ecb6efdd3c65",
+    "effect": "Retain the actual HTTP consistency Forward decision as an ingress/method/path/namespace-bound restriction against local standby dispatch. It creates no read, Actor, archive, retry or SDK authority."
+  },
+  "actual_previous_normal_observation": {
+    "physical_source": "70714605c39014bea93545f7f6aa4217d2a23544",
+    "observer_source_sha256": "d1bf471e9cdae039750c20249313c372c7d95bdbb27c9e5c62a1425fe0f16096",
+    "job_id": "1a1a7db0220-fc05-2cb5",
+    "wire_sha256": "da20bb9c76fcc435af625d703c081114375314b8ad06de450f697c06cc66f68b",
+    "result_sha256": "dd66db757e8c08c8168cab8f2c28efa4ae59a7f148edba46be7c4fe51341ca20",
+    "complete_status_cases": 34,
+    "status_matches": 18,
+    "status_differences": 16,
+    "differences_by_group": {
+      "nonroot_snapshot": 10,
+      "ordinary_kv_global_precision": 6
+    },
+    "observation_invariants": 98,
+    "known_outcomes": 168,
+    "complete_http": 134,
+    "definite_preconnect": 34,
+    "unknown_outcomes": 0,
+    "all_owned_stopped": true,
+    "source": "root exact raw receipt report; candidate itself not run"
+  }
 }

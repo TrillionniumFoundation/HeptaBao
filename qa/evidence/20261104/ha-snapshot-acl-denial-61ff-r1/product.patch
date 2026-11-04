@@ -11,7 +11,30 @@
          let observed = self.native_snapshot_clock.map_or_else(
              || {
                  SystemTime::now()
-@@ -5626,7 +5628,13 @@
+@@ -4139,7 +4141,11 @@
+                 if !allow_forward {
+                     return Response::error(503, "forwarded request reached a standby node");
+                 }
+-                if let Some(response) = self.legacy_immutable_kv_response(&request, Arc::clone(&ha))
++                let force_active_route =
++                    crate::http::consistency::requires_active(method, path, namespace);
++                if !force_active_route
++                    && let Some(response) =
++                        self.legacy_immutable_kv_response(&request, Arc::clone(&ha))
+                 {
+                     return response;
+                 }
+@@ -4154,7 +4160,8 @@
+                     // "false", selects this behavior. Authentication failures
+                     // before a read retain the redirect and consume no token.
+                     #[cfg(feature = "native-v6-storage")]
+-                    if self.native_root.is_some()
++                    if !force_active_route
++                        && self.native_root.is_some()
+                         && let Some(response) = self.immutable_kv_response_mode(&request, true)
+                     {
+                         return response;
+@@ -5626,7 +5633,13 @@
              )
          {
              if self.native_snapshot_transport {
@@ -99,16 +122,22 @@
          let previous_clock = self.native_snapshot_clock.replace((started, now));
          let previous = self.native_snapshot_transport;
          let previous_standby = self.native_snapshot_standby_read;
-@@ -578,7 +606,7 @@
+@@ -578,8 +606,13 @@
      fn prepare_native_standby_snapshot_read(
          &mut self,
          request: &ServiceRequest<'_>,
 -    ) -> Result<Option<Principal>, Response> {
 +    ) -> Result<StandbySnapshotAdmission, Response> {
          if !self.native_ha_snapshot_transport_enabled()
++            || crate::http::consistency::requires_active(
++                request.method,
++                request.path,
++                request.namespace,
++            )
              || !matches!(
                  (request.method, request.path),
-@@ -592,60 +620,84 @@
+                 ("GET" | "HEAD", "sys/storage/raft/snapshot")
+@@ -592,60 +625,84 @@
              || request.wrap_ttl_seconds.is_some()
              || request.body.as_object().is_none_or(|body| !body.is_empty())
          {
@@ -224,7 +253,7 @@
      }
  
      pub(super) fn stage_snapshot_transfer(
-@@ -696,6 +748,18 @@
+@@ -696,6 +753,18 @@
                  "native snapshot requires the root namespace and no query fields",
              );
          }
@@ -243,7 +272,7 @@
          let Some((started, now)) = self.native_snapshot_clock else {
              return Response::error(503, "snapshot admission clock unavailable");
          };
-@@ -708,6 +772,25 @@
+@@ -708,6 +777,25 @@
          if !download && !matches!(request.method, "POST" | "PUT") {
              return Response::error(405, "snapshot restore requires POST or PUT");
          }
@@ -1452,7 +1481,77 @@
      auth.authorize_request(
 --- a/crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs
 +++ b/crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs
-@@ -465,3 +465,6 @@
+@@ -13,6 +13,13 @@
+     body: Zeroizing<Vec<u8>>,
+ }
+ 
++#[derive(Default)]
++struct WireRouting<'a> {
++    no_forward: Option<&'a str>,
++    inconsistent: Option<&'a str>,
++    missing_forward: bool,
++}
++
+ fn wire(
+     pipeline: &Pipeline,
+     index: usize,
+@@ -22,6 +29,26 @@
+     body: &[u8],
+     no_forward: Option<&str>,
+ ) -> TestResult<WireReply> {
++    wire_with_routing(
++        pipeline,
++        index,
++        method,
++        path,
++        token,
++        body,
++        WireRouting { no_forward, ..WireRouting::default() },
++    )
++}
++
++fn wire_with_routing(
++    pipeline: &Pipeline,
++    index: usize,
++    method: &str,
++    path: &str,
++    token: &str,
++    body: &[u8],
++    routing: WireRouting<'_>,
++) -> TestResult<WireReply> {
+     let until = Instant::now() + REQUEST_BUDGET;
+     let _scope = RequestDeadlineScope::enter(until);
+     let mut input = Zeroizing::new(Vec::new());
+@@ -32,9 +59,12 @@
+     if !token.is_empty() {
+         write!(&mut *input, "X-Vault-Token: {token}\r\n")?;
+     }
+-    if let Some(value) = no_forward {
++    if let Some(value) = routing.no_forward {
+         write!(&mut *input, "X-Vault-No-Request-Forwarding: {value}\r\n")?;
+     }
++    if let Some(value) = routing.inconsistent {
++        write!(&mut *input, "X-Vault-Inconsistent: {value}\r\n")?;
++    }
+     if matches!(method, "POST" | "PUT") {
+         write!(
+             &mut *input,
+@@ -52,7 +82,13 @@
+     let service = pipeline.services[index]
+         .as_ref()
+         .ok_or("formal wire Service absent")?;
+-    let output = crate::http::formal_standby_http_wire_fixture(service, &input, until)?;
++    let output = if routing.missing_forward {
++        crate::http::formal_standby_http_wire_fixture_with_consistency(
++            service, &input, until, true,
++        )?
++    } else {
++        crate::http::formal_standby_http_wire_fixture(service, &input, until)?
++    };
+     let split = output
+         .windows(4)
+         .position(|part| part == b"\r\n\r\n")
+@@ -465,3 +501,6 @@
      )?);
      Ok(())
  }
@@ -1461,7 +1560,7 @@
 +mod acl_denial_tests;
 --- /dev/null
 +++ b/crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs
-@@ -0,0 +1,339 @@
+@@ -0,0 +1,392 @@
 +//! Actual formal three-voter mTLS/Service regressions for snapshot ACL and
 +//! receipt-bound refusal. These use the existing cfg(test) startup and HTTP
 +//! parser fixture; public TLS sockets and physical hosts remain separate.
@@ -1801,3 +1900,166 @@
 +    }
 +    Ok(())
 +}
++
++#[test]
++fn formal_native_http_consistency_forward_restricts_local_snapshot_and_no_forward_kv()
++-> TestResult {
++    let pipeline = formal_cold_source()?;
++    let leader = pipeline.ready_leader()?;
++    activate_formal_cold(&pipeline, leader)?;
++    let standby = (leader + 1) % 3;
++    assert_eq!(floor(&pipeline, leader)?, None);
++    for path in ["secret/data/pipeline/history", SNAPSHOT] {
++        let no_forward = (path != SNAPSHOT).then_some("1");
++        for (missing_forward, inconsistent, expected) in [
++            (false, None, 200),
++            (true, None, 307),
++            (true, Some("forward-active-node"), 200),
++        ] {
++            let reply = wire_with_routing(
++                &pipeline, standby, "GET", path, pipeline.admin(), b"",
++                WireRouting { no_forward, inconsistent, missing_forward },
++            )?;
++            assert_eq!(reply.status, expected);
++            if expected == 307 {
++                redirected(&reply);
++            } else if path == SNAPSHOT {
++                assert!(reply.body.starts_with(&[0x1f, 0x8b]));
++            } else {
++                let value: Value = serde_json::from_slice(&reply.body)?;
++                assert_eq!(value["data"]["data"]["value"], "seed-v5");
++            }
++        }
++    }
++    let reader = snapshot_policy_token(&pipeline, leader, "routing-reader", false, "120s")?;
++    for (missing_forward, inconsistent, expected) in [
++        (false, None, 200),
++        (true, None, 307),
++        (true, Some("forward-active-node"), 200),
++    ] {
++        let reply = wire_with_routing(
++            &pipeline, standby, "GET", SNAPSHOT, &reader, b"",
++            WireRouting {
++                no_forward: Some("false"), inconsistent, missing_forward,
++            },
++        )?;
++        assert_eq!(reply.status, expected);
++        if expected == 307 {
++            redirected(&reply);
++        } else {
++            assert!(reply.body.starts_with(&[0x1f, 0x8b]));
++        }
++    }
++    no_snapshot_custody(&pipeline, standby)?;
++    Ok(())
++}
+--- a/crates/heptabao-server/src/http.rs
++++ b/crates/heptabao-server/src/http.rs
+@@ -1087,6 +1087,13 @@
+                     );
+                 }
+             };
++            let _consistency_route = consistency::ForwardScope::enter(
++                matches!(consistency, Ok(true)),
++                *attempt_id,
++                service_request.method,
++                service_request.path,
++                service_request.namespace,
++            );
+             let mut reply = if let Err(response) = &consistency {
+                 let mut rejected = audited_wire_rejection(
+                     service,
+@@ -1185,6 +1192,16 @@
+     bytes: &[u8],
+     deadline: Instant,
+ ) -> Result<Zeroizing<Vec<u8>>, String> {
++    formal_standby_http_wire_fixture_with_consistency(service, bytes, deadline, false)
++}
++
++#[cfg(all(test, feature = "native-v6-ha"))]
++pub(crate) fn formal_standby_http_wire_fixture_with_consistency(
++    service: &Arc<Mutex<Service>>,
++    bytes: &[u8],
++    deadline: Instant,
++    missing_forward: bool,
++) -> Result<Zeroizing<Vec<u8>>, String> {
+     let _scope = RequestDeadlineScope::enter(deadline);
+     let mut reader = bytes;
+     let parsed = read_request_mode(
+@@ -1202,7 +1219,7 @@
+         None,
+         IpAddr::from([127, 0, 0, 1]),
+         &attempt,
+-        consistency::Settings::default(),
++        consistency::Settings::checked(None, None, missing_forward)?,
+         deadline,
+     );
+     let mut output = Zeroizing::new(Vec::new());
+--- a/crates/heptabao-server/src/http_consistency.rs
++++ b/crates/heptabao-server/src/http_consistency.rs
+@@ -340,6 +340,65 @@
+     }
+ }
+ 
++// The actual HTTP consistency decision can forbid a local standby read.
++// This request-scoped restriction carries no Actor, state proof, token use,
++// reply authority or permission to retry. SDK/direct requests cannot create
++// this scope, and a different ingress or logical target does not inherit it.
++struct ActiveRoute {
++    ingress: [u8; 16],
++    method: String,
++    path: Zeroizing<String>,
++    namespace: Zeroizing<String>,
++}
++thread_local! {
++    static ACTIVE_ROUTE: std::cell::RefCell<Option<ActiveRoute>> =
++        const { std::cell::RefCell::new(None) };
++}
++
++pub(super) struct ForwardScope {
++    previous: Option<ActiveRoute>,
++    _thread: std::marker::PhantomData<std::rc::Rc<()>>,
++}
++impl ForwardScope {
++    pub(super) fn enter(
++        forward: bool,
++        ingress: [u8; 16],
++        method: &str,
++        path: &str,
++        namespace: &str,
++    ) -> Self {
++        let route = forward.then(|| ActiveRoute {
++            ingress,
++            method: method.to_owned(),
++            path: Zeroizing::new(path.to_owned()),
++            namespace: Zeroizing::new(namespace.to_owned()),
++        });
++        Self {
++            previous: ACTIVE_ROUTE.with(|slot| slot.replace(route)),
++            _thread: std::marker::PhantomData,
++        }
++    }
++}
++impl Drop for ForwardScope {
++    fn drop(&mut self) {
++        ACTIVE_ROUTE.with(|slot| {
++            slot.replace(self.previous.take());
++        });
++    }
++}
++
++pub(crate) fn requires_active(method: &str, path: &str, namespace: &str) -> bool {
++    ACTIVE_ROUTE.with(|slot| {
++        slot.borrow().as_ref().is_some_and(|route| {
++            route.method == method
++                && route.path.as_str() == path
++                && route.namespace.as_str() == namespace
++                && crate::auth::current_ingress()
++                    .is_some_and(|ingress| ingress.attempt_id() == route.ingress)
++        })
++    })
++}
++
+ pub(super) fn forward(
+     service: &Arc<Mutex<Service>>,
+     request: ServiceRequest<'_>,

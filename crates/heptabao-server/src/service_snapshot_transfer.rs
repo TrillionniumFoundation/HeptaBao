@@ -608,6 +608,11 @@ impl Service {
         request: &ServiceRequest<'_>,
     ) -> Result<StandbySnapshotAdmission, Response> {
         if !self.native_ha_snapshot_transport_enabled()
+            || crate::http::consistency::requires_active(
+                request.method,
+                request.path,
+                request.namespace,
+            )
             || !matches!(
                 (request.method, request.path),
                 ("GET" | "HEAD", "sys/storage/raft/snapshot")

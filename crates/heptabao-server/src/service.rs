@@ -4141,7 +4141,11 @@ impl Service {
                 if !allow_forward {
                     return Response::error(503, "forwarded request reached a standby node");
                 }
-                if let Some(response) = self.legacy_immutable_kv_response(&request, Arc::clone(&ha))
+                let force_active_route =
+                    crate::http::consistency::requires_active(method, path, namespace);
+                if !force_active_route
+                    && let Some(response) =
+                        self.legacy_immutable_kv_response(&request, Arc::clone(&ha))
                 {
                     return response;
                 }
@@ -4156,7 +4160,8 @@ impl Service {
                     // "false", selects this behavior. Authentication failures
                     // before a read retain the redirect and consume no token.
                     #[cfg(feature = "native-v6-storage")]
-                    if self.native_root.is_some()
+                    if !force_active_route
+                        && self.native_root.is_some()
                         && let Some(response) = self.immutable_kv_response_mode(&request, true)
                     {
                         return response;

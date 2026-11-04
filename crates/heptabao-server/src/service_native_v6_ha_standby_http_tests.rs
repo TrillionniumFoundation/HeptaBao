@@ -13,6 +13,13 @@ struct WireReply {
     body: Zeroizing<Vec<u8>>,
 }
 
+#[derive(Default)]
+struct WireRouting<'a> {
+    no_forward: Option<&'a str>,
+    inconsistent: Option<&'a str>,
+    missing_forward: bool,
+}
+
 fn wire(
     pipeline: &Pipeline,
     index: usize,
@@ -21,6 +28,26 @@ fn wire(
     token: &str,
     body: &[u8],
     no_forward: Option<&str>,
+) -> TestResult<WireReply> {
+    wire_with_routing(
+        pipeline,
+        index,
+        method,
+        path,
+        token,
+        body,
+        WireRouting { no_forward, ..WireRouting::default() },
+    )
+}
+
+fn wire_with_routing(
+    pipeline: &Pipeline,
+    index: usize,
+    method: &str,
+    path: &str,
+    token: &str,
+    body: &[u8],
+    routing: WireRouting<'_>,
 ) -> TestResult<WireReply> {
     let until = Instant::now() + REQUEST_BUDGET;
     let _scope = RequestDeadlineScope::enter(until);
@@ -32,8 +59,11 @@ fn wire(
     if !token.is_empty() {
         write!(&mut *input, "X-Vault-Token: {token}\r\n")?;
     }
-    if let Some(value) = no_forward {
+    if let Some(value) = routing.no_forward {
         write!(&mut *input, "X-Vault-No-Request-Forwarding: {value}\r\n")?;
+    }
+    if let Some(value) = routing.inconsistent {
+        write!(&mut *input, "X-Vault-Inconsistent: {value}\r\n")?;
     }
     if matches!(method, "POST" | "PUT") {
         write!(
@@ -52,7 +82,13 @@ fn wire(
     let service = pipeline.services[index]
         .as_ref()
         .ok_or("formal wire Service absent")?;
-    let output = crate::http::formal_standby_http_wire_fixture(service, &input, until)?;
+    let output = if routing.missing_forward {
+        crate::http::formal_standby_http_wire_fixture_with_consistency(
+            service, &input, until, true,
+        )?
+    } else {
+        crate::http::formal_standby_http_wire_fixture(service, &input, until)?
+    };
     let split = output
         .windows(4)
         .position(|part| part == b"\r\n\r\n")

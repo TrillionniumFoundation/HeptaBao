@@ -337,3 +337,56 @@ fn formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoint
     }
     Ok(())
 }
+
+#[test]
+fn formal_native_http_consistency_forward_restricts_local_snapshot_and_no_forward_kv()
+-> TestResult {
+    let pipeline = formal_cold_source()?;
+    let leader = pipeline.ready_leader()?;
+    activate_formal_cold(&pipeline, leader)?;
+    let standby = (leader + 1) % 3;
+    assert_eq!(floor(&pipeline, leader)?, None);
+    for path in ["secret/data/pipeline/history", SNAPSHOT] {
+        let no_forward = (path != SNAPSHOT).then_some("1");
+        for (missing_forward, inconsistent, expected) in [
+            (false, None, 200),
+            (true, None, 307),
+            (true, Some("forward-active-node"), 200),
+        ] {
+            let reply = wire_with_routing(
+                &pipeline, standby, "GET", path, pipeline.admin(), b"",
+                WireRouting { no_forward, inconsistent, missing_forward },
+            )?;
+            assert_eq!(reply.status, expected);
+            if expected == 307 {
+                redirected(&reply);
+            } else if path == SNAPSHOT {
+                assert!(reply.body.starts_with(&[0x1f, 0x8b]));
+            } else {
+                let value: Value = serde_json::from_slice(&reply.body)?;
+                assert_eq!(value["data"]["data"]["value"], "seed-v5");
+            }
+        }
+    }
+    let reader = snapshot_policy_token(&pipeline, leader, "routing-reader", false, "120s")?;
+    for (missing_forward, inconsistent, expected) in [
+        (false, None, 200),
+        (true, None, 307),
+        (true, Some("forward-active-node"), 200),
+    ] {
+        let reply = wire_with_routing(
+            &pipeline, standby, "GET", SNAPSHOT, &reader, b"",
+            WireRouting {
+                no_forward: Some("false"), inconsistent, missing_forward,
+            },
+        )?;
+        assert_eq!(reply.status, expected);
+        if expected == 307 {
+            redirected(&reply);
+        } else {
+            assert!(reply.body.starts_with(&[0x1f, 0x8b]));
+        }
+    }
+    no_snapshot_custody(&pipeline, standby)?;
+    Ok(())
+}

@@ -1087,6 +1087,13 @@ fn process_parsed_request(
                     );
                 }
             };
+            let _consistency_route = consistency::ForwardScope::enter(
+                matches!(consistency, Ok(true)),
+                *attempt_id,
+                service_request.method,
+                service_request.path,
+                service_request.namespace,
+            );
             let mut reply = if let Err(response) = &consistency {
                 let mut rejected = audited_wire_rejection(
                     service,
@@ -1185,6 +1192,16 @@ pub(crate) fn formal_standby_http_wire_fixture(
     bytes: &[u8],
     deadline: Instant,
 ) -> Result<Zeroizing<Vec<u8>>, String> {
+    formal_standby_http_wire_fixture_with_consistency(service, bytes, deadline, false)
+}
+
+#[cfg(all(test, feature = "native-v6-ha"))]
+pub(crate) fn formal_standby_http_wire_fixture_with_consistency(
+    service: &Arc<Mutex<Service>>,
+    bytes: &[u8],
+    deadline: Instant,
+    missing_forward: bool,
+) -> Result<Zeroizing<Vec<u8>>, String> {
     let _scope = RequestDeadlineScope::enter(deadline);
     let mut reader = bytes;
     let parsed = read_request_mode(
@@ -1202,7 +1219,7 @@ pub(crate) fn formal_standby_http_wire_fixture(
         None,
         IpAddr::from([127, 0, 0, 1]),
         &attempt,
-        consistency::Settings::default(),
+        consistency::Settings::checked(None, None, missing_forward)?,
         deadline,
     );
     let mut output = Zeroizing::new(Vec::new());

@@ -25,3 +25,11 @@ The previous draft 34cf2c is retained. Independent review found that a final Act
 Four new integration tests are present, but not yet executed: actual nonroot read/update policies and successful historical epoch restore; a refusal while the real transfer lease is occupied, one actual clock publication, cold restart and physical-seal corruption refusal; actual original-actor expiry before the leader floor; and real mTLS Allowed/Denied NoChange with full identity/publication checkpoints. They retain the original 15-second request budget and the existing cfg(test) startup qualification boundary.
 
 The separately missing official TTL invalid-restore reference was subsequently observed in fresh job 2c94, wire cd035b00, and is now bound to normal observer b4b3f8c. This resolves the reference gap only; it does not validate this product candidate or its new tests.
+
+## Revision 3: keep the actual consistency routing restriction
+
+The existing consistency middleware already chooses Forward for an index-free standby request when missing-header forwarding is configured and no explicit consistency policy is present. A valid explicit policy makes that request Continue. The new private scope retains only the actual Forward restriction, bound to the original HTTP ingress and logical method/path/namespace. It prevents both snapshot local admission and immutable KV shortcuts from bypassing that earlier decision. The actual configured leader origin and existing redirect audit are retained. The scope creates no actor, proof, payload authority, deadline or retry permission, and direct SDK requests cannot construct it.
+
+A fifth integration test uses the actual HTTP parser and checked consistency settings with real three-voter Service owners. It compares default local reads, missing-header redirects and explicit-policy continuation, before and after actual nonroot TTL token creation. This test source is still unformatted/uncompiled/unexecuted.
+
+The real normal 7071 binary observation has now completed with all 34 status cases, 18 matches and 16 differences: ten nonroot snapshot cases and six ordinary-KV reads under global precision. These are the red baseline for the product work; the 98 observation invariants are not compatibility passes. Revision 3 remains unqualified until its own runtime evidence exists.
