@@ -61,7 +61,6 @@
   ],
   "stage_input_sha256": "971052cef47d440f5a26bdf0d6c03d8d4b7e1d4c479db619c533ea30d57cb1f6",
   "stage_source_pins": 39,
-  "all_source_manifest_pins_matched": true,
   "static_blockers_found": [],
   "checks": {
     "candidate_mode_closed_to_baseline": true,
@@ -96,5 +95,8 @@
   ],
   "production_modified": false,
   "runtime_qualified": false,
-  "full_replacement_qualified": false
+  "full_replacement_qualified": false,
+  "reviewed_source_files_all_match_manifest": true,
+  "stage_input_all_embedded_control_hashes_match": true,
+  "remote_source_pin_validation_executed_by_reviewer": false
 }
