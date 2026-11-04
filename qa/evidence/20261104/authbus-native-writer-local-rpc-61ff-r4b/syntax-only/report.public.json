@@ -1,0 +1,26 @@
+{
+  "files": [
+    {
+      "bytes": 38066,
+      "name": "native_lifecycle.mjs",
+      "sha256": "ee1a7d26d9c329fbf16a4205895ee72708b0ac6148a476021a62ecb1687102e1",
+      "syntaxOk": true
+    },
+    {
+      "bytes": 6172,
+      "name": "launcher.py",
+      "sha256": "a28e09be8146c2f06f09ee31b0866cf30570a5d8a7ab5327187c61c311ddebcd",
+      "syntaxOk": true
+    },
+    {
+      "bytes": 2474,
+      "name": "stage.py",
+      "sha256": "27a303401e2375e3842b33980d77a716cb4c6d96cce0a134c5243777cb027c92",
+      "syntaxOk": true
+    }
+  ],
+  "nativeStarted": false,
+  "productionChanged": false,
+  "providerCalled": false,
+  "schema": "heptabao.native-control-syntax-only.v1"
+}

@@ -1,0 +1,16 @@
+--- a/stage.py
++++ b/stage.py
+@@ -1,11 +1,11 @@
+ import os,sys,pathlib,json,hashlib,stat
+ os.umask(0o077)
+-root=pathlib.Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4')
++root=pathlib.Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-local-r4b')
+ raw=sys.stdin.buffer.read(1048577);assert len(raw)<=1048576
+ x=json.loads(raw);assert x['schema']=='heptabao.native-retirement-isolated-stage-input.v1' and x['candidateMode']=='baseline'
+ assert set(x['files'])=={'consumer.mjs','native_lifecycle.mjs','driver.py','launcher.py','provider-proof.public.json'}
+ sha=lambda b:hashlib.sha256(b).hexdigest()
+-EXPECTED_INPUT_SHA256='10dfae8d1f295df7d3cfda659f3cb254cdc0b5f02f2e0ec1ad365aac95395376'
++EXPECTED_INPUT_SHA256='807b084575bb06d5ba9d5a006992b0cced01474ec82160c6ad55fd00965c2875'
+ assert sha(raw)==EXPECTED_INPUT_SHA256
+ assert not root.exists()
+ def file_sha(p):

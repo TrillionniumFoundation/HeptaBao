@@ -1,0 +1,18 @@
+--- a/native_lifecycle.mjs
++++ b/native_lifecycle.mjs
+@@ -295,6 +295,7 @@
+           rec.wrapper=current;rec.owned.confirmedWrapper=current;
+           event('actual_wrapper_node_identity_confirmed',{ordinal:rec.ordinal,wrapper:current,
+             absoluteDeadlineMonotonicMs:rec.acquireOwner.absoluteDeadline});
++          need(clock()<rec.acquireOwner.absoluteDeadline,'actual_wrapper_node_exec_deadline');
+           return current;
+         }
+         await delay(Math.min(20,Math.max(1,rec.acquireOwner.absoluteDeadline-clock())));
+@@ -335,6 +336,7 @@
+         need(!closed,'native_rpc_after_lifecycle_close_refused');
+         if (method === 'initialize') { rec.initializeDispatched = true; event('initialize_dispatched',{ordinal}); }
+         // Preserve the actual argument objects and actual native response.
++        if(method==='initialize')need(clock()<rec.acquireOwner.absoluteDeadline,'actual_initialize_dispatch_deadline');
+         return originalRequest(method,params,options).then(response => {
+           item.completed = true;
+           if (method === 'initialize') { rec.initializeCompleted = true; event('initialize_completed',{ordinal}); }
