@@ -19,7 +19,10 @@ jobs:
   qualify:
     name: OpenBao replacement / ${{ matrix.source_kind }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 90
+    # Compilation alone took 66m41s / 76m59s on the pinned hosted runners.
+    # This envelope covers compilation and the complete gate list. Each original
+    # request, fixture timeout and single-threaded runtime contract stays unchanged.
+    timeout-minutes: 360
     strategy:
       fail-fast: false
       matrix:
