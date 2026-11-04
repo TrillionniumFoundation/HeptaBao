@@ -452,7 +452,13 @@ fn native_missing_route_retains_reserved_and_known_backend_refusals() -> TestRes
     // actual namespace identity before it can deliver an observation.
     assert!(catalog.native_missing_mount_read("child", "GET", "absent"));
     let child_mount = catalog
-        .handle("child", "POST", "sys/mounts/child-owned", &json!({"type":"kv"}), 100)
+        .handle(
+            "child",
+            "POST",
+            "sys/mounts/child-owned",
+            &json!({"type":"kv"}),
+            100,
+        )
         .map_err(|error| error.message)?
         .ok_or("actual child mount result")?;
     assert_eq!(child_mount.status, 204);

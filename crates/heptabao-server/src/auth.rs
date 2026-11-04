@@ -224,8 +224,8 @@ pub(crate) use provider_renewal::{ProviderRenewalObservation, ProviderRenewalPla
 pub(crate) use radius::{RadiusRenewalObservation, RadiusRenewalPlan};
 pub(crate) use wrapping::validate_sdk_wrap_ttl;
 pub(crate) use wrapping::{
-    IngressReplyContext, IngressReplyScope, LexicalJson, StoredWrappedReply, UnwrappedJson,
-    current_ingress, encode_http_envelope, logical_envelope, StaticKv1LeaseProjection,
+    IngressReplyContext, IngressReplyScope, LexicalJson, StaticKv1LeaseProjection,
+    StoredWrappedReply, UnwrappedJson, current_ingress, encode_http_envelope, logical_envelope,
 };
 #[cfg(feature = "native-v6-storage")]
 pub(crate) use wrapping::{

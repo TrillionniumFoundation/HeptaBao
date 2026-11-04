@@ -1632,9 +1632,10 @@ fn create_lock(path: &Path) -> Result<File, HaError> {
     Ok(file)
 }
 
-// Only the pinned native closure transport uses this helper, after its full
-// TLS authentication and exact server-leaf check. It changes framing writes,
-// not the wire bytes, request count, original deadline or storage admission.
+// Pinned native closure requests and authenticated HBVP2 replies share this
+// helper after their respective TLS authentication and exact peer leaf checks.
+// It changes framing writes, not wire bytes, request count, original deadline
+// or storage admission.
 #[cfg(feature = "native-v6-peer-ingress")]
 fn write_coalesced_bounded_frame(writer: &mut impl Write, frame: &[u8]) -> Result<(), HaError> {
     if frame.is_empty() || frame.len() > MAX_PAYLOAD_BYTES + 4096 {

@@ -729,6 +729,5 @@ fn formal_v6_kv1_registry_owner_rejects_an_unrelated_record_change() -> TestResu
     Ok(())
 }
 
-
 #[path = "service_native_kv1_signed_lease_tests.rs"]
 mod signed_lease_tests;

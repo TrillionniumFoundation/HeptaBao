@@ -5847,11 +5847,18 @@ impl Service {
                     && !response.body.is_null()))
             && response.body.get("wrap_info").is_none_or(Value::is_null)
         {
-            let wrapped = if let Some(projection) = response.unwrapped_json.as_ref()
+            let wrapped = if let Some(projection) = response
+                .unwrapped_json
+                .as_ref()
                 .and_then(|origin| origin.static_kv1_lease())
             {
                 transaction.auth.wrap_static_kv1_response(
-                    namespace, path, ttl, &response.body, now, projection,
+                    namespace,
+                    path,
+                    ttl,
+                    &response.body,
+                    now,
+                    projection,
                 )
             } else if let Some(transport) = &raw_pki_reply {
                 transaction.auth.wrap_pki_raw_response(
@@ -6387,8 +6394,13 @@ impl Service {
             Err(error) => Response::error(error.status, &error.message),
         };
         response.unwrapped_json = match Self::project_kv1_read_lease(
-            state, request.namespace, request.method, request.path, request.body,
-            &mut response.body, response.status,
+            state,
+            request.namespace,
+            request.method,
+            request.path,
+            request.body,
+            &mut response.body,
+            response.status,
         ) {
             Ok(origin) => origin,
             Err(error) => return Some(error),
@@ -6479,8 +6491,15 @@ impl Service {
             }
         }
         crate::auth::UnwrappedJson::from_native_kv1_read(
-            &state.engines, namespace, method, path, body, response, status,
-        ).map_err(|error| Response::error(error.status, &error.message))
+            &state.engines,
+            namespace,
+            method,
+            path,
+            body,
+            response,
+            status,
+        )
+        .map_err(|error| Response::error(error.status, &error.message))
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -7103,7 +7122,13 @@ impl Service {
                     &mut response.body,
                 );
                 let static_kv1_origin = match Self::project_kv1_read_lease(
-                    state, namespace, method, path, body, &mut response.body, response.status,
+                    state,
+                    namespace,
+                    method,
+                    path,
+                    body,
+                    &mut response.body,
+                    response.status,
                 ) {
                     Ok(origin) => origin,
                     Err(error) => return error,

@@ -81,12 +81,19 @@ impl UnwrappedJson {
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn from_native_kv1_read(
         engines: &crate::engines::EngineState,
-        namespace: &str, method: &str, path: &str, request: &Value,
-        logical: &Value, status: u16,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        request: &Value,
+        logical: &Value,
+        status: u16,
     ) -> Result<Option<Self>, AuthError> {
         let Some(projection) = StaticKv1LeaseProjection::capture(
             engines, namespace, method, path, request, logical, status,
-        )? else { return Ok(None); };
+        )?
+        else {
+            return Ok(None);
+        };
         Ok(Some(Self {
             state: Box::new(UnwrappedJsonState {
                 #[cfg(feature = "native-v6-storage")]
@@ -104,12 +111,17 @@ impl UnwrappedJson {
         self.state.static_kv1_lease.as_ref()
     }
     pub(crate) fn project_static_kv1_envelope(
-        &self, logical: &Value, request_id: &str, namespace: &str, path: &str,
+        &self,
+        logical: &Value,
+        request_id: &str,
+        namespace: &str,
+        path: &str,
     ) -> Result<Option<Value>, AuthError> {
         let Some(projection) = self.state.static_kv1_lease.as_ref() else {
             return Ok(None);
         };
-        if self.state.stored_reply.is_some() || self.state.workflow_output_failure.is_some()
+        if self.state.stored_reply.is_some()
+            || self.state.workflow_output_failure.is_some()
             || !projection.matches_scope(namespace, path)
         {
             return Err(err(503, "signed KV1 reply differs from actual HTTP route"));
@@ -147,7 +159,9 @@ impl UnwrappedJson {
                 return Err(bad("signed KV1 response has conflicting origins"));
             }
             projection.validate(logical)?;
-            return Ok(crate::ha_forward::UnwrapFramingWire::StaticKv1Lease { projection: *projection });
+            return Ok(crate::ha_forward::UnwrapFramingWire::StaticKv1Lease {
+                projection: *projection,
+            });
         }
         if let Some(value) = &self.state.workflow_output_failure {
             if self.state.stored_reply.is_some() || !value.matches(logical) {
@@ -207,7 +221,9 @@ impl UnwrappedJson {
                 if response.status != 200 || response.raw_wrapped_reply.is_some() {
                     return Err("HA signed KV1 completion has conflicting origins".into());
                 }
-                projection.validate(&response.body).map_err(|_| "HA signed KV1 completion differs")?;
+                projection
+                    .validate(&response.body)
+                    .map_err(|_| "HA signed KV1 completion differs")?;
                 Some(projection)
             }
             _ => None,
@@ -245,7 +261,8 @@ impl UnwrappedJson {
         })
     }
     pub(crate) fn has_native_http_projection(&self) -> bool {
-        self.has_stored_reply() || self.state.workflow_output_failure.is_some()
+        self.has_stored_reply()
+            || self.state.workflow_output_failure.is_some()
             || self.state.static_kv1_lease.is_some()
     }
     pub(crate) fn has_stored_reply(&self) -> bool {
@@ -356,7 +373,9 @@ impl UnwrappedJson {
     }
     pub(crate) fn raw_bytes<'a>(&'a self, logical: &Value) -> Result<Option<&'a [u8]>, AuthError> {
         if self.state.static_kv1_lease.is_some() {
-            return Err(bad("signed KV1 reply requires actual scoped HTTP projection"));
+            return Err(bad(
+                "signed KV1 reply requires actual scoped HTTP projection",
+            ));
         }
         if let Some(value) = &self.state.workflow_output_failure {
             if !value.matches(logical) || !self.state.workflow_failure_audited {
@@ -572,14 +591,20 @@ impl AuthState {
     }
 
     pub(crate) fn wrap_static_kv1_response(
-        &mut self, namespace: &str, path: &str, ttl: u64, response: &Value,
-        now: u64, projection: &StaticKv1LeaseProjection,
+        &mut self,
+        namespace: &str,
+        path: &str,
+        ttl: u64,
+        response: &Value,
+        now: u64,
+        projection: &StaticKv1LeaseProjection,
     ) -> Result<AuthResponse, AuthError> {
         if !projection.matches_scope(namespace, path) {
             return Err(err(503, "signed KV1 wrapper scope differs"));
         }
         projection.validate(response)?;
-        let context = current_ingress().ok_or_else(|| err(503, "signed KV1 wrapper requires original ingress"))?;
+        let context = current_ingress()
+            .ok_or_else(|| err(503, "signed KV1 wrapper requires original ingress"))?;
         let stored = StoredWrappedReply::capture_static_kv1(response, &context, projection, path)?;
         self.wrap_response_with_stored(namespace, path, ttl, response, now, Some(stored))
     }
@@ -768,7 +793,10 @@ impl AuthState {
             token.raw_wrapped_reply_custody = Some(RawReplyTokenCustody::live(&token)?);
         }
         self.wrapping_clock = now;
-        if token.wrapping.as_ref().and_then(|owner| owner.stored_reply.as_ref())
+        if token
+            .wrapping
+            .as_ref()
+            .and_then(|owner| owner.stored_reply.as_ref())
             .is_some_and(StoredWrappedReply::is_static_kv1_reply)
         {
             self.raw_wrapped_reply_floor.observe_static_kv1();

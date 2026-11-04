@@ -23,9 +23,19 @@ fn reply_digest(response: &Response, deadline: OriginalDeadline) -> Result<[u8; 
     // A public JSON value cannot stand in for their private output ownership.
     if let Some(origin) = &response.unwrapped_json {
         let projection = origin.static_kv1_lease().ok_or_else(unavailable)?;
-        if response.status != 200 { return Err(unavailable()); }
+        if response.status != 200 {
+            return Err(unavailable());
+        }
         projection.validate(&response.body)?;
-        return digest(&("static-kv1-lease-v1", response.status, &response.body, projection), deadline);
+        return digest(
+            &(
+                "static-kv1-lease-v1",
+                response.status,
+                &response.body,
+                projection,
+            ),
+            deadline,
+        );
     }
     digest(&(response.status, &response.body), deadline)
 }
@@ -196,14 +206,27 @@ impl NativeResponseWrappingOwner {
         }
 
         let mut wrapped_auth = auth.clone();
-        let wrapped = if let Some(projection) = response.unwrapped_json.as_ref()
+        let wrapped = if let Some(projection) = response
+            .unwrapped_json
+            .as_ref()
             .and_then(|origin| origin.static_kv1_lease())
         {
-            wrapped_auth.wrap_static_kv1_response("", &self.path, self.ttl,
-                &response.body, time.seconds(), projection)
+            wrapped_auth.wrap_static_kv1_response(
+                "",
+                &self.path,
+                self.ttl,
+                &response.body,
+                time.seconds(),
+                projection,
+            )
         } else {
-            wrapped_auth.wrap_logical_response("", &self.path, self.ttl,
-                &response.body, time.seconds())
+            wrapped_auth.wrap_logical_response(
+                "",
+                &self.path,
+                self.ttl,
+                &response.body,
+                time.seconds(),
+            )
         };
         self.inner = Some(Box::new(response));
         let response = match wrapped {

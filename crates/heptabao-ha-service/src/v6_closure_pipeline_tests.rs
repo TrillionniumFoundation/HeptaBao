@@ -7,6 +7,9 @@ struct ParallelReceiver {
     receiver: Arc<NativeV6ClosureReceiver>,
     frames: Arc<Mutex<Vec<MissingFrameObservation>>>,
     packed_arrivals: Arc<AtomicU64>,
+    packed_finished: Arc<AtomicU64>,
+    packed_completed: Arc<AtomicU64>,
+    lost_replies: Arc<AtomicU64>,
     stop: Arc<AtomicBool>,
     workers: Vec<thread::JoinHandle<()>>,
 }
@@ -30,6 +33,9 @@ impl ParallelReceiver {
             receiver,
             frames: Arc::new(Mutex::new(Vec::new())),
             packed_arrivals: Arc::new(AtomicU64::new(0)),
+            packed_finished: Arc::new(AtomicU64::new(0)),
+            packed_completed: Arc::new(AtomicU64::new(0)),
+            lost_replies: Arc::new(AtomicU64::new(0)),
             stop: Arc::new(AtomicBool::new(false)),
             workers: Vec::new(),
         };
@@ -37,6 +43,9 @@ impl ParallelReceiver {
             let receiver = result.receiver.clone();
             let frames = result.frames.clone();
             let arrivals = result.packed_arrivals.clone();
+            let finished = result.packed_finished.clone();
+            let completed = result.packed_completed.clone();
+            let lost_replies = result.lost_replies.clone();
             let stop = result.stop.clone();
             let listener = listener.clone();
             let server = server.clone();
@@ -64,9 +73,37 @@ impl ParallelReceiver {
                                     kind: parsed.kind,
                                     payload: parsed.payload.to_vec(),
                                 });
-                            // Actual admission, checked storage and durable
+                            // Control only this fixture's dispatch order. Both
+                            // real TLS frames can arrive before the first ACK,
+                            // while a slow physical fsync cannot accidentally
+                            // turn this overlap test into the separate 100ms
+                            // handoff rejection test below. No new authenticated
+                            // frame or clock is minted: delayed dispatch still
+                            // receives this socket's original 4s deadline.
+                            while number > 1 && finished.load(Ordering::Acquire) < number - 1 {
+                                if Instant::now() >= frame.deadline() {
+                                    return Err(unknown());
+                                }
+                                thread::sleep(Duration::from_millis(1));
+                            }
+                            // Actual fresh admission, checked storage and durable
                             // receipts finish before this test-only ACK fault.
-                            let response = receiver.handle_authenticated(frame)?;
+                            let result = receiver.handle_authenticated(frame);
+                            if packed {
+                                if result.is_ok() {
+                                    completed.fetch_add(1, Ordering::AcqRel);
+                                }
+                                // Release fixture ordering on either result,
+                                // then propagate the real handler error unchanged.
+                                // An earlier failure cannot satisfy the positive
+                                // outcome or all-three durable-success assertion.
+                                assert_eq!(
+                                    finished.swap(number, Ordering::AcqRel),
+                                    number - 1,
+                                    "fixture dispatch must have one handler at a time"
+                                );
+                            }
+                            let response = result?;
                             if number == 1 {
                                 let until = Instant::now() + Duration::from_secs(1);
                                 while arrivals.load(Ordering::Acquire) < 2 {
@@ -76,6 +113,7 @@ impl ParallelReceiver {
                                     thread::sleep(Duration::from_millis(1));
                                 }
                                 if lose_first_reply {
+                                    lost_replies.fetch_add(1, Ordering::AcqRel);
                                     return Err(unknown());
                                 }
                             }
@@ -99,6 +137,9 @@ impl Drop for ParallelReceiver {
     }
 }
 
+/// Controlled authenticated dispatch proves real TLS overlap, actual durable
+/// receipts and exact cold reads. The unchanged storage_lane helper separately
+/// checks the production 100ms handoff; this is not a slow-fsync throughput test.
 #[test]
 fn packed_pipeline_overlaps_real_tls_without_parallel_storage_and_cold_reads_exact() -> TestResult {
     pipeline_fixture(false)
@@ -318,6 +359,11 @@ fn pipeline_fixture(lose_first_reply: bool) -> TestResult {
         assert!(router.read_index_requests.load(Ordering::Acquire) >= before_reads + arrivals);
         let published = if lose_first_reply {
             assert!(outcome.is_err());
+            assert_eq!(
+                observed.lost_replies.load(Ordering::Acquire),
+                1,
+                "the intended ACK fault must occur after actual durable storage"
+            );
             assert_eq!(arrivals, 2, "a failed window cannot launch its third frame");
             assert!(!frames.iter().any(|row| row.kind == Kind::Finalize));
             assert!(
@@ -329,6 +375,9 @@ fn pipeline_fixture(lose_first_reply: bool) -> TestResult {
             None
         } else {
             let quorum = outcome?;
+            assert_eq!(observed.lost_replies.load(Ordering::Acquire), 0);
+            assert_eq!(observed.packed_finished.load(Ordering::Acquire), 3);
+            assert_eq!(observed.packed_completed.load(Ordering::Acquire), 3);
             assert_eq!(quorum.voter_ids(), &[1, 2]);
             assert_eq!(arrivals, 3);
             transferred.sort_unstable_by_key(|reference| reference.id);
@@ -496,3 +545,6 @@ fn coalesced_pinned_frame_uses_one_fewer_actual_tls_record() -> TestResult {
     );
     Ok(())
 }
+
+#[path = "authenticated_root_pull_response_tests.rs"]
+mod authenticated_root_pull_response_tests;

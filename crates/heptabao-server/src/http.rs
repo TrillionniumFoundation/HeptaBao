@@ -1096,7 +1096,12 @@ fn process_parsed_request(
                     false,
                 ))
             };
-            logical::project_in_namespace(&mut reply, attempt_id, &request.path, &request.namespace);
+            logical::project_in_namespace(
+                &mut reply,
+                attempt_id,
+                &request.path,
+                &request.namespace,
+            );
             (reply, is_head, request.namespace)
         }
         Err(error) => {
@@ -5717,12 +5722,14 @@ mod transit_export_query_tests {
 #[path = "http_lossless_json_tests.rs"]
 mod lossless_json_tests;
 
-
 /// Tests feed an actual admitted Service response through the unchanged final
 /// HTTP projector and writer. No test marker creates a static-KV1 origin.
 #[cfg(test)]
 pub(crate) fn signed_kv1_wire_projection_fixture(
-    response: Response, namespace: &str, path: &str, attempt: &[u8; 16],
+    response: Response,
+    namespace: &str,
+    path: &str,
+    attempt: &[u8; 16],
 ) -> Result<Zeroizing<Vec<u8>>, &'static str> {
     let mut reply = snapshot::NativeReply::Json(response);
     logical::project_in_namespace(&mut reply, attempt, path, namespace);
