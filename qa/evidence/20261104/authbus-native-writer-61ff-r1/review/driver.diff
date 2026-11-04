@@ -1,0 +1,170 @@
+--- normal33-profile1-r2/driver.py
++++ native-retirement/driver.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""ROG current profile 1: normal KV, original SDK explicit selection and rollback.
++"""ROG current profile 2: actual native shared writer retirement around AuthBus import.
+ The launcher must provide a private network/PID namespace and read-only live roots.
+ No default-provider/order/exclusion override, provider call or refresh is permitted.
+ """
+@@ -10,8 +10,8 @@
+ TREE='cdc2376e7b39c1d8bbbeb10a813d58bfe923f336'
+ BINSHA='7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba'
+ CONFIGSHA='a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15'
+-CREDENTIALSHA='bca88c7adde84057871fd63f202e6aba80d453a04f75151df1d29f269dfaa5f1'
+-PROOFSHA='3050622c35bacb53ac47f532d4d5230c7c5c68bd2db243376c3c27385744a878'
++CREDENTIALSHA='131b8515d48433365dd84555e7659297d4d62de631f9a526a8a4293f03396175'
++PROOFSHA='5715a487fd8bee4d004539ca9e6830199bea72de33b1d78b06eabe3dd471a75c'
+ LIVE=Path('/home/qian-qi/.openclaw')
+ SDK=Path('/home/qian-qi/.npm-global/lib/node_modules/openclaw')
+ SOURCE=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/ha-root-pull-response-final-source-r1')
+@@ -94,8 +94,8 @@
+     parser.add_argument('--work-dir',type=Path,required=True);parser.add_argument('--control',type=Path,required=True)
+     parser.add_argument('--parent-netns',type=int,required=True);args=parser.parse_args();os.umask(0o077)
+     root=args.work_dir;root.mkdir(mode=0o700);(root/'tmp').mkdir(mode=0o700)
+-    consumer=args.control/'consumer.mjs';proof_path=args.control/'prior-provider-proof.public.json'
+-    report={'schema':'heptabao.rog-normal33-current-profile1-sdk-recovery.v1','ok':False,'checks':[],'phases':[],
++    consumer=args.control/'consumer.mjs';proof_path=args.control/'provider-proof.public.json'
++    report={'schema':'heptabao.rog-normal33-current-profile2-native-retirement.v1','ok':False,'checks':[],'phases':[],
+       'sourceCommit':COMMIT,'sourceTree':TREE,'binarySha256':BINSHA,'productionChanged':False,'productionTrafficCutover':False,
+       'providerCalled':False,'providerNetworkEgress':False,'refreshDispatched':False,'newLoginAttempted':False,'modelCalled':False,
+       'j3160Contacted':False,'accountIdentitiesPublished':False,'credentialValuesPublished':False,'productionGatewaySelectionQualified':False,
+@@ -121,6 +121,9 @@
+         check('kernel_production_and_code_readonly',all(os.statvfs(p).f_flag&os.ST_RDONLY for p in (LIVE,SDK,SOURCE,BUILD,args.control)) and not os.statvfs(root).f_flag&os.ST_RDONLY)
+         report['networkIsolation']={'privateNetworkNamespace':True,'onlyLoopback':True,'productionKernelReadOnly':True}
+         stage=json.loads(private(args.control/'stage.public.json'));pins=stage['pins']
++        mode=stage['candidateMode'];check('declared_candidate_mode',mode in ('baseline','fixed'))
++        report['candidateMode']=mode;report['knownConcurrentBuild']=stage.get('knownConcurrentBuild')
++        native_spec=stage['native'];check('native_source_metadata_scope',native_spec['nativeBinarySha256']=='1748767b230ebfc3d4ab7e4e254920d0c0ad9691fd8c11f190e7d44511a4a92e' and native_spec['wrapperSha256']=='61b0194f3bb6534439c8d26a3ed57d0805f84b884588b761795323eeb92fcf70')
+         check('all_frozen_inputs_exact',all(sha(p)==h for p,h in pins.items()))
+         build=json.loads(private(BUILD/'result.public.json'))
+         check('normal33_build_receipt_and_binary',sha(BUILD/'result.public.json')=='7fa76585e94fe2e60bbc3ce754f37e4d9d433e4cf576fcc2e39a1e95771f3f42'
+@@ -129,18 +132,19 @@
+         git=lambda *a:subprocess.check_output(['/usr/bin/git','-C',str(SOURCE),*a],text=True,timeout=10).strip()
+         check('normal33_helper_source_clean',git('rev-parse','HEAD')==COMMIT and git('rev-parse','HEAD^{tree}')==TREE and git('diff','--name-only')=='' and git('diff','--cached','--name-only')=='')
+         proof=json.loads(private(proof_path))
+-        check('prior_source_provider_proof_pin',sha(proof_path)==PROOFSHA and proof.get('selected_source_sha256')==CREDENTIALSHA
+-              and proof.get('single_current_credential_provider_validated') is True and proof['provider_read']['httpStatus']==200
+-              and proof['provider_read']['tlsVerified'] is True and proof['provider_read']['requestCount']==1 and proof['refresh_dispatched'] is False)
++        check('prior_source_provider_proof_pin',sha(proof_path)==PROOFSHA and proof.get('sourceKind')=='managed-profile2-current-sdk-explicit'
++              and proof.get('ok') is True and proof.get('httpStatus')==200 and proof.get('tlsVerified') is True
++              and proof.get('requestCount')==1 and proof.get('refreshAttempted') is False and proof.get('currentSourceGenerationUnchangedAfterResponse') is True
++              and proof['sourceBindingBefore']==proof['sourceBindingAfter'] and proof['sourceBindingBefore']['credentialSha256']==CREDENTIALSHA)
+         source,cfg=capture();put(root/'source-auth-tables.private.json',source)
+-        original=primary(source,'store');profiles=original['profiles'];selected_id=list(profiles)[0];credential=profiles[selected_id]
+-        check('exact_current_profile1_generation',len(profiles)==3 and digest(credential)==CREDENTIALSHA and credential.get('provider')=='openai' and credential.get('type')=='oauth')
++        original=primary(source,'store');profiles=original['profiles'];selected_id=list(profiles)[1];credential=profiles[selected_id]
++        check('exact_current_profile2_generation',len(profiles)==3 and digest(credential)==CREDENTIALSHA and credential.get('provider')=='openai' and credential.get('type')=='oauth')
+         claims=json.loads(base64.urlsafe_b64decode(credential['access'].split('.')[1]+'==='))
+         check('current_jwt_account_and_expiry',claims['https://api.openai.com/auth']['chatgpt_account_id']==credential['accountId'] and claims['exp']>time.time()+900 and credential['expires']>time.time()*1000+900000)
+         for pid,c in profiles.items():
+             confidential.append(pid);confidential.extend(v for k,v in c.items() if isinstance(v,str) and len(v)>=8 and k not in ('provider','type','chatgptPlanType'))
+         prod_plugin=cfg['plugins']['entries']['openclaw-authbus']['config'];exclusions=copy.deepcopy(prod_plugin.get('orderExcludeAgentIds',[]))
+-        report['source']={'database':str(LIVE/'agents/main/agent/openclaw-agent.sqlite'),'profileOrdinal':1,'credentialSha256':CREDENTIALSHA,
++        report['source']={'database':str(LIVE/'agents/main/agent/openclaw-agent.sqlite'),'profileOrdinal':2,'credentialSha256':CREDENTIALSHA,
+           'wholeAuthRowsSha256':digest(source['rows']),'configurationSha256':CONFIGSHA,'authConfigurationSha256':digest(cfg.get('auth',{})),
+           'orderExclusionsSha256':digest(exclusions),'authbusConfigurationSha256':digest(cfg['plugins']['entries']['openclaw-authbus']),
+           'sourceDefaultModel':cfg['agents']['defaults']['model'],'sourceProfileCount':len(profiles)}
+@@ -149,10 +153,14 @@
+         from native_v6_authbus_client_live import smoke
+         from cert_auth_live import cert_sha256
+         plugin=root/'installed-plugin-copy';plugin.mkdir(mode=0o700)
+-        sourcepins={str(consumer):sha(consumer)}
++        sourcepins={str(consumer):sha(consumer),str(args.control/'native_lifecycle.mjs'):sha(args.control/'native_lifecycle.mjs')}
++        for p,h in pins.items():
++            if '/@openclaw/codex/' in p or '/factory-' in p or p.endswith('/codex.js'):sourcepins[p]=h
+         for name in PLUGIN:
+-            p=LIVE/'extensions/openclaw-authbus'/name;b=p.read_bytes();put(plugin/name,b)
+-            sourcepins[str(p)]=sourcepins[str(plugin/name)]=hashlib.sha256(b).hexdigest()
++            p=LIVE/'extensions/openclaw-authbus'/name;b=p.read_bytes();sourcepins[str(p)]=hashlib.sha256(b).hexdigest()
++            overlay=args.control/'plugin-overlay'/name
++            if mode=='fixed' and overlay.exists():b=private(overlay);sourcepins[str(overlay)]=hashlib.sha256(b).hexdigest()
++            put(plugin/name,b);sourcepins[str(plugin/name)]=hashlib.sha256(b).hexdigest()
+         (plugin/'node_modules').mkdir(mode=0o700);(plugin/'node_modules/openclaw').symlink_to(SDK)
+         for p,h in pins.items():
+             if str(p).startswith(str(SDK)):sourcepins[p]=h
+@@ -173,35 +181,43 @@
+           'scheduler-assignments':{'schemaVersion':1,'generation':1,'assignments':[]},'manifest':{'schemaVersion':1,'generation':1,'profiles':[entry]}}
+         for name,data in documents.items():call('publish.'+name.split('/')[0],'POST','openclaw-auth/data/'+name,{'data':data,'options':{'cas':0}})
+         policy='\n'.join('path "openclaw-auth/data/'+name+'" { capabilities=["read"] }' for name in documents)
+-        policy+='\npath "openclaw-auth/data/inbox/rog-current-profile1/*" { capabilities=["create","update"] }\n'
++        policy+='\npath "openclaw-auth/data/inbox/rog-native-retirement/*" { capabilities=["create","update"] }\n'
+         policy+='\n'.join('path "auth/token/'+n+'" { capabilities=["'+v+'"] }' for n,v in [('lookup-self','read'),('renew-self','update'),('revoke-self','update')])
+-        role_name='rog-current-profile1-consumer';route='auth/approle/role/'+role_name
++        role_name='rog-native-retirement-consumer';route='auth/approle/role/'+role_name
+         call('consumer.policy','PUT','sys/policies/acl/'+role_name,{'policy':policy},expected=204)
+         call('consumer.role','POST',route,{'token_policies':[role_name],'token_ttl':'180s','token_max_ttl':'600s','secret_id_ttl':'1200s','secret_id_num_uses':0},expected=204)
+         role=call('consumer.role_id','GET',route+'/role-id')['data']['role_id'];secret=call('consumer.secret_id','POST',route+'/secret-id',{})['data']['secret_id'];confidential.extend((role,secret))
+         credentials=root/'credentials';credentials.mkdir(mode=0o700);put(credentials/'role_id',role.encode());put(credentials/'secret_id',secret.encode());put(credentials/'ca.crt',(instance.root/'ca.crt').read_bytes())
+         pluginconfig={'address':instance.address,'caFile':str(credentials/'ca.crt'),'roleIdFile':str(credentials/'role_id'),'secretIdFile':str(credentials/'secret_id'),
+-          'hostId':'rog-current-profile1','leader':False,'publishNew':False,'manageOrder':True,'orderExcludeAgentIds':exclusions,
++          'hostId':'rog-native-retirement','leader':False,'publishNew':False,'manageOrder':True,'orderExcludeAgentIds':exclusions,
+           'schedulerMode':'shadow','pollIntervalMs':300000,'maxRefreshesPerCycle':1}
+         def consume(name):
+             work=root/('consumer-'+name);work.mkdir(mode=0o700);state=work/'state';helper.materialize(state,[copy.deepcopy(source)])
+             privatecfg={'agents':{'defaults':copy.deepcopy(cfg['agents']['defaults']),'list':[{'id':'main','agentDir':str(state/'agents/main/agent')}]},
+-              'auth':copy.deepcopy(cfg.get('auth',{})),'models':copy.deepcopy(cfg.get('models',{}))}
++              'auth':copy.deepcopy(cfg.get('auth',{})),'models':copy.deepcopy(cfg.get('models',{})),
++              'plugins':{'entries':{'codex':copy.deepcopy(cfg['plugins']['entries']['codex'])}}}
+             (state/'openclaw.json').write_bytes(enc(privatecfg));(state/'home').mkdir(mode=0o700)
++            native_home=state/'home/.codex';native_home.mkdir(mode=0o700);native_output=work/'native';native_output.mkdir(mode=0o700)
++            for filename in ('auth.json','config.toml'):put(native_home/filename,private(Path('/home/qian-qi/.codex')/filename))
++            native={**native_spec,'scenario':name,'patched':mode=='fixed','home':str(state/'home'),'nativeHome':str(native_home),
++              'outputDir':str(native_output),'sourceCodexConfigurationSha256':digest(cfg['plugins']['entries']['codex'])}
+             plan={'mode':'initial','workRoot':str(root),'stateRoot':str(state),'sdkRoot':str(SDK),'pluginEntry':str(plugin/'index.js'),'pluginConfig':pluginconfig,
+               'expectedProfileId':selected_id,'expectedAccountId':credential['accountId'],'expectedCredentialSha256':CREDENTIALSHA,'expectedProfileKey':key,
+               'serverCertificateSha256':cert_sha256(instance.root/'tls.crt'),'model':cfg['agents']['defaults']['model'],
+               'sourcePins':sourcepins,'sourceAuthConfigSha256':digest(privatecfg['auth']),'sourceModelsConfigSha256':digest(privatecfg['models']),
+               'sourceDefaultModelSha256':digest(cfg['agents']['defaults']['model']),'sourceOrderExclusionsSha256':digest(exclusions),
+-              'selectionOutput':str(work/'runtime-selection.private.json'),'baselineOutput':str(work/'baseline-store.private.json'),'custodyOutput':str(work/'auth.private.json')}
++              'native':native,'selectionOutput':str(work/'runtime-selection.private.json'),'baselineOutput':str(work/'baseline-store.private.json'),'custodyOutput':str(work/'auth.private.json')}
+             path=work/'plan.private.json';put(path,plan)
+             env={'PATH':'/usr/bin:/bin:/usr/sbin:/sbin','HOME':str(state/'home'),'TMPDIR':str(root/'tmp'),'OPENCLAW_STATE_DIR':str(state),
+-              'OPENCLAW_CONFIG_PATH':str(state/'openclaw.json'),'OPENCLAW_OAUTH_DIR':str(state/'oauth'),'OPENCLAW_HOME':str(state/'home')}
++              'OPENCLAW_CONFIG_PATH':str(state/'openclaw.json'),'OPENCLAW_OAUTH_DIR':str(state/'oauth'),'OPENCLAW_HOME':str(state/'home'),
++              'CODEX_HOME':str(native_home)}
+             plans[name]={'work':work,'plan':plan,'env':env,'rollbackAttempted':False}
+             rc,out,err,timed=node(consumer,path,env,70);put(work/'stdout.private',out);put(work/'stderr.private',err);logs.extend((out,err))
+             result=json.loads(out) if out else {'ok':False,'error':'empty_consumer_result'};result.update(phase=name,returnCode=rc,timedOut=timed)
+             put(work/'result.public.json',result);report['phases'].append(result)
+             check('consumer.'+name,rc==0 and result.get('ok') is True and not timed)
++            native_result=result.get('native',{});check('consumer.'+name+'.actual_native_cleanup',native_result.get('evidenceCompleted') is True and native_result.get('cleanup',{}).get('allOwnedStopped') is True and native_result.get('generationsUnchanged') is True)
++            check('consumer.'+name+'.declared_regression_expectation',native_result.get('singleWriterInvariantPassed')==(mode=='fixed'))
+             selection=json.loads(private(work/'runtime-selection.private.json'))
+             check('consumer.'+name+'.exact_provider_proof_binding',selection['source']=='actual_installed_sdk_explicit_profile_resolver_after_actual_authbus_recovery'
+               and selection['credential']==credential and selection['resolvedApiKey']==credential['access'] and selection['credentialSha256']==CREDENTIALSHA)
+@@ -209,10 +225,12 @@
+             token=tokens[0];call(name+'.unassigned_denied','GET','openclaw-auth/data/profiles/unassigned',token=token,expected=403)
+             call(name+'.renew','POST','auth/token/renew-self',{},token=token);call(name+'.revoke','POST','auth/token/revoke-self',{},token=token,expected=204)
+             call(name+'.revoked_denied','GET','openclaw-auth/data/manifest',token=token,expected=403)
+-        consume('initial')
++        consume('active-lease')
+         originalprocess=instance.process;instance.stop();check('actual_sigkill_waited',originalprocess.returncode==-9)
+         instance.start();call('cold_sealed','GET','sys/health',expected=503);call('cold_unseal','POST','sys/unseal',{'key':unseal},token='')
+-        consume('cold-new-process')
++        consume('pending-initialize')
++        consume('pending-before-client')
++        if mode=='fixed':consume('abnormal-wrapper')
+         for name,entry in plans.items():rollback(name,entry);check('rollback.'+name,entry.get('rollbackOutcome')=='success')
+         fresh,freshcfg=capture()
+         check('production_credential_store_unchanged',source['rows']['store']==fresh['rows']['store'])
+@@ -223,7 +241,10 @@
+         check('encrypted_storage_no_source_credentials',bool(disk) and all(all(s.encode() not in p.read_bytes() for s in confidential if len(s)>=8) for p in disk))
+         diagnostics=logs+[(instance.root/'server.log').read_bytes(),enc(report)]
+         check('public_diagnostics_no_credential_values',all(all(s.encode() not in b for s in confidential if len(s)>=8) for b in diagnostics))
+-        report['priorProviderLink']={'priorProofSha256':PROOFSHA,'credentialSha256':CREDENTIALSHA,'currentCapturedAndSdkSelectedCredentialExact':True,'freshProviderRequest':False,'scope':'Historical single GET success for exact current ROG source credential; current storage/explicit SDK selection and recovery only.'}
++        report['priorProviderLink']={'priorProofSha256':PROOFSHA,'credentialSha256':CREDENTIALSHA,'currentCapturedAndSdkSelectedCredentialExact':True,'freshProviderRequest':False,'scope':'Earlier single GET 200 for this exact managed2 generation; no provider request in native retirement fixture.'}
++        report['singleWriterGatePassed']=all(p.get('native',{}).get('singleWriterInvariantPassed') is True for p in report['phases'] if not p['phase'].endswith('.rollback'))
++        report['baselineActualConcurrencyRegressionObserved']=mode=='baseline' and report['singleWriterGatePassed'] is False
++        report['regressionAssertions']=[{'phase':p['phase'],'oneWriterPerNativeHomePassed':p.get('native',{}).get('singleWriterInvariantPassed')} for p in report['phases'] if not p['phase'].endswith('.rollback')]
+         report.update(ok=True,actualOriginalSdkExplicitProfileQualified=True,actualMissingProfileRecovered=True,originalOrderAndExclusionsPreserved=True,
+           actualServerProcessColdRestartQualified=True,privateWholeLogicalStoreRollbackQualified=True,productionGatewaySelectionQualified=False)
+     except Exception as error:
+@@ -239,6 +260,6 @@
+         if instance is not None and instance.process is not None:
+             old=instance.process;instance.stop();report['ownedServerStopped']=old.returncode is not None
+         put(root/'result.public.json',report)
+-    print(json.dumps({'ok':report['ok'],'error':report.get('error'),'checks':len(report['checks']),'result':str(root/'result.public.json'),'ownedServerStopped':report.get('ownedServerStopped')}))
++    print(json.dumps({'ok':report['ok'],'singleWriterGatePassed':report.get('singleWriterGatePassed'),'baselineActualConcurrencyRegressionObserved':report.get('baselineActualConcurrencyRegressionObserved'),'error':report.get('error'),'checks':len(report['checks']),'result':str(root/'result.public.json'),'ownedServerStopped':report.get('ownedServerStopped')}))
+     return 0 if report['ok'] else 1
+ if __name__=='__main__':raise SystemExit(main())

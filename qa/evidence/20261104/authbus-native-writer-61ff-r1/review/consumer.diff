@@ -1,0 +1,110 @@
+--- normal33-profile1-r2/consumer.mjs
++++ native-retirement/consumer.mjs
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env node
+-/** Exercise ROG source profile 1 through the original installed SDK explicit-profile resolver.
++/** Exercise current ROG managed profile 2 and actual native writer retirement.
+  * The new private state is populated from the real HeptaBao TLS/AppRole API.
+  * No provider request, OAuth refresh or production write is permitted here.
+  */
+@@ -11,18 +11,19 @@
+ import { createHash } from 'node:crypto';
+ import { pathToFileURL } from 'node:url';
+ import { syncBuiltinESMExports } from 'node:module';
++import { createNativeLifecycle } from './native_lifecycle.mjs';
+ 
+ process.umask(0o077);
+ const hash = value => createHash('sha256').update(value).digest('hex');
+ const stable = value => Array.isArray(value) ? value.map(stable) : value && typeof value === 'object'
+   ? Object.fromEntries(Object.keys(value).sort().map(key => [key, stable(value[key])])) : value;
+ const digest = value => hash(JSON.stringify(stable(value)));
+-const report = { schema: 'heptabao.rog-current-explicit-profile-consumer.v1', ok: false,
++const report = { schema: 'heptabao.rog-current-profile2-native-retirement-consumer.v1', ok: false,
+   productionChanged: false, productionTrafficCutover: false, providerCalled: false,
+   refreshDispatched: false, modelCalled: false, j3160Contacted: false,
+   credentialValuesPublished: false, accountIdentitiesPublished: false,
+   allAccountsQualified: false, checks: [], wire: [] };
+-let service, baoAgent, plan;
++let service, baoAgent, plan, lifecycle;
+ let blockedOperations = 0;
+ const tokens = [];
+ const sensitive = [];
+@@ -64,6 +65,8 @@
+   check('private_work_scope', within(plan.workRoot, plan.stateRoot) && within(plan.workRoot, plan.pluginEntry)
+     && within(plan.workRoot, plan.selectionOutput) && within(plan.workRoot, plan.custodyOutput));
+   const cfg = JSON.parse(privateRead(path.join(plan.stateRoot, 'openclaw.json')));
++  check('native_clone_initial_exact', hash(privateRead(path.join(plan.native.nativeHome, 'auth.json'))) === plan.native.nativeAuthSha256
++    && hash(privateRead(path.join(plan.native.nativeHome, 'config.toml'))) === plan.native.nativeConfigSha256);
+   const agentDir = path.join(plan.stateRoot, 'agents/main/agent');
+   const target = new URL(plan.pluginConfig.address);
+   check('loopback_https_only', target.protocol === 'https:' && target.hostname === '127.0.0.1' && !!target.port);
+@@ -71,6 +74,7 @@
+     && plan.pluginConfig.schedulerMode === 'shadow' && plan.pluginConfig.manageOrder === true);
+   for (const [file, expected] of Object.entries(plan.sourcePins)) check('source.' + path.basename(file), hash(fs.readFileSync(file)) === expected);
+   const originalHttpsRequest = https.request;
++  const originalSpawn = childProcess.spawn;
+   for (const method of ['log', 'warn', 'error', 'info', 'debug']) console[method] = () => {};
+   globalThis.fetch = deny;
+   http.request = deny; http.get = deny;
+@@ -123,7 +127,7 @@
+     const candidate = JSON.parse(privateRead(plan.selectionOutput));
+     check('rollback_expected_candidate', digest(current) === candidate.storeSha256);
+     let applied = false;
+-    const result = await storeApi.m({ agentDir, updater: store => {
++    const result = await storeApi.m({ agentDir, saveOptions: { filterExternalAuthProfiles: false, syncExternalCli: false }, updater: store => {
+       if (digest(store) !== candidate.storeSha256) return false;
+       for (const key of Object.keys(store)) delete store[key];
+       Object.assign(store, structuredClone(before)); applied = true; return true;
+@@ -144,8 +148,11 @@
+       && digest(cfg.agents.defaults.model) === plan.sourceDefaultModelSha256
+       && digest(plan.pluginConfig.orderExcludeAgentIds ?? []) === plan.sourceOrderExclusionsSha256);
+     const effectiveOrderBefore = orderApi.i({ cfg, store: structuredClone(before), provider: before.profiles[plan.expectedProfileId].provider });
++    lifecycle = await createNativeLifecycle({ plan, cfg, agentDir, before, childProcess, originalSpawn, check, sensitive });
++    report.native = lifecycle.report;
++    await lifecycle.begin();
+     let removed = false;
+-    const missing = await storeApi.m({ agentDir, saveOptions: { preserveStateProfileIds: [plan.expectedProfileId] }, updater: store => {
++    const missing = await storeApi.m({ agentDir, saveOptions: { preserveStateProfileIds: [plan.expectedProfileId], filterExternalAuthProfiles: false, syncExternalCli: false }, updater: store => {
+       if (digest(store) !== digest(before) || !Object.hasOwn(store.profiles, plan.expectedProfileId)) return false;
+       delete store.profiles[plan.expectedProfileId]; removed = true; return true;
+     } });
+@@ -208,12 +215,19 @@
+       storeSha256: digest(committed), credentialSha256: digest(cred), model: plan.model,
+       source: 'actual_installed_sdk_explicit_profile_resolver_after_actual_authbus_recovery' });
+     report.actualExplicitProfileSelectionQualified = true;
++    report.native = await lifecycle.finish(status);
++    report.singleWriterInvariantPassed = report.native.singleWriterInvariantPassed;
++    check('native_experiment_matches_declared_baseline_or_fixed_expectation',
++      report.native.evidenceCompleted === true && report.singleWriterInvariantPassed === plan.native.patched);
++    report.regressionAssertions = [{ name: 'one_ready_writer_per_native_home', passed: report.singleWriterInvariantPassed }];
+     report.defaultGatewaySelectionQualified = false;
+     report.productionOrderOverrideQualified = false;
+     report.profileCount = Object.keys(after.profiles).length;
+     report.selectedProfileCount = 1;
+     report.sdkVersion = JSON.parse(fs.readFileSync(path.join(plan.sdkRoot, 'package.json'))).version;
+   }
++  check('native_clone_final_exact', hash(privateRead(path.join(plan.native.nativeHome, 'auth.json'))) === plan.native.nativeAuthSha256
++    && hash(privateRead(path.join(plan.native.nativeHome, 'config.toml'))) === plan.native.nativeConfigSha256);
+   check('no_unexpected_network_or_process_operations', blockedOperations === 0);
+   check('all_source_pins_unchanged', Object.entries(plan.sourcePins).every(([file, expected]) => hash(fs.readFileSync(file)) === expected));
+   check('report_contains_no_credential_values', sensitive.every(v => !JSON.stringify(report).includes(v)));
+@@ -225,10 +239,18 @@
+   report.sourceFrame = String(error?.stack ?? '').split('\n').slice(1, 5).map(line => line.match(/([A-Za-z0-9_.-]+\.(?:js|mjs)):(\d+):(\d+)/)?.slice(1) ?? ['native']);
+ } finally {
+   if (service) { try { await service.stop(); } catch {} }
++  if (lifecycle) {
++    try { report.native = await lifecycle.cleanup(); }
++    catch (error) { report.ok = false; report.nativeCleanupError = error?.safeCode ?? 'owned_native_cleanup_failed'; }
++  }
+   baoAgent?.destroy();
+   if (plan) {
+     try { save(plan.custodyOutput, { tokens }); } catch {}
+   }
+ }
+-process.stdout.write(JSON.stringify(report) + '\n');
++if (sensitive.some(v => v.length >= 8 && JSON.stringify(report).includes(v))) {
++  report.ok = false;
++  process.stdout.write(JSON.stringify({ ok: false, error: 'public_secret_guard_failed' }) + '\n');
++  process.exitCode = 1;
++} else process.stdout.write(JSON.stringify(report) + '\n');
+ process.exitCode = report.ok ? 0 : 1;
