@@ -1,6 +1,6 @@
 {
   "schema": "heptabao.36076-and-33cafa-checkpoint.v4",
-  "as_of_utc": "2026-11-04T18:47:00Z",
+  "as_of_utc": "2026-11-04T19:04:19Z",
   "compiled_source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
   "compiled_source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95",
   "published_source_commit": "a5c05856f23c395e590fd4e6eeec02bb669a2aa9",
@@ -3451,6 +3451,61 @@
     "current_candidate_physical128_or98_qualification": false,
     "current_candidate_x23031_or69_qualification": false,
     "full_replacement_qualification": false,
+    "production_cutover": false,
+    "old_installations_removed": false
+  },
+  "r10_dual_normal44_phaseb_r3_offline_20261104": {
+    "schema": "heptabao.r10.dual-normal44-and-phaseb-offline-checkpoint.v1",
+    "as_of_utc": "2026-11-04T19:04:19Z",
+    "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "normal44": {
+      "mac": {
+        "job_id": "1a1a7d89fad-fc05-2cb1",
+        "passed": 44,
+        "failed": 0,
+        "ignored": 0,
+        "result_bytes": 24522,
+        "result_sha256": "28f47931ad644e610d45af00545b343a8d5867546ea8d00a44cae0a3de13c961",
+        "root_verified": true,
+        "all_14_owned_groups_reaped": true,
+        "evidence_prefix": "qa/evidence/20261104/r10-mac-normal44-terminal-r1/"
+      },
+      "rog": {
+        "job_id": "1a1a7c83142-fc05-2c88",
+        "passed": 44,
+        "failed": 0,
+        "ignored": 0,
+        "result_bytes": 24311,
+        "result_sha256": "409b8a02557cc5d2985d15f01ff28ff64a6fb43c4a8b1e0f50f03bb748fcbeee",
+        "root_verified": true,
+        "all_14_owned_groups_reaped": true,
+        "evidence_prefix": "qa/evidence/20261104/r10-rog-normal44-terminal-r1/"
+      }
+    },
+    "exact_same_frozen_test_names_per_host": true,
+    "current_candidate_dual_normal44_gate": true,
+    "old_failure_results_preserved_and_not_reclassified": true,
+    "phaseb_r3": {
+      "new_identity_not_old_r2_reproduction": true,
+      "source_manifest_sha256": "5b20012832de947f6c4c34fd1dcfa7c7af60ec8c88673bb7ee4ab92a91662ed3",
+      "source_prefix": "qa/evidence/20261104/phaseb-r3-source-draft2/",
+      "offline_prefix": "qa/evidence/20261104/phaseb-r3-offline-actual-r1/",
+      "job_id": "1a1a7e773c5-fc05-2cdc",
+      "root_verified_seven_ast_compile": true,
+      "synthetic_memory_evidence_checks": 34,
+      "synthetic_memory_controller_checks": 32,
+      "product_executions": 0,
+      "source_row_compile_scope_clarified_in_root_review": true,
+      "prepare_executed": false,
+      "cli_live_executed": false
+    },
+    "current_candidate_x230_qualification": false,
+    "current_candidate_physical128_or98_qualification": false,
+    "current_candidate_strict_wire_terminal_qualification": false,
+    "current_candidate_native_snapshot_cli_qualification": false,
+    "whole_surface_admitted": false,
+    "full_openbao_2_7_1_replacement_qualified": false,
     "production_cutover": false,
     "old_installations_removed": false
   }

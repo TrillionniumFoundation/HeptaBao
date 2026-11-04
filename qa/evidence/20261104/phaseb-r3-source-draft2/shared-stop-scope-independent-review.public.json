@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.phaseb-r3.stop-custody-independent-review.v1",
+  "reviewer": "authbus_migration",
+  "mode": "source_only",
+  "base_review_blob": "2558ef27f8d0c5218744a199ddc8d0042c7995a5",
+  "previous_delta_review_blob": "0593116b84965267d1119481a8e62e6cfa6e777c",
+  "source": {
+    "git_blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+    "bytes": 61210,
+    "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c"
+  },
+  "delta": {
+    "git_blob": "44f0d2c8376a6c8d78712ca941889377f5923b02",
+    "bytes": 7990,
+    "sha256": "e44499954c9c2de4ad25ebccb22897ed3e8dc47ed11923637994dacb7a8535f1",
+    "hunks": 6,
+    "whole_application_byte_exact": true
+  },
+  "reviewed": [
+    "Owner.stop_once verifies the actual registered Popen/capture, installs failed custody before stop dispatch, retains the real result or original exception, and does not allocate a second explicit stop budget.",
+    "Seed setup uses the original FunctionType code/defaults/closure and a globals copy with only stop_owned replaced. The router requires the exact one newly spawned seed and calls the original native.stop_owned on its first attempt.",
+    "Cold restart uses the same explicit-stop ledger and marks failure unknown before unwinding. Later collection keeps failed outcomes and continues cleanup of other children.",
+    "No reference file or module global is modified. Original setup logic and all other globals keep their identities."
+  ],
+  "remaining_reference_timeout_contract": {
+    "native_reference_blob": "7e465b3ea72814726ed2e01355ab91412190a747",
+    "native_request_lines": "745-749",
+    "cli_reference_blob": "4a4a60d1d52a0fd835b467f1e4687ee95314d1de",
+    "cli_run_private_lines": "635-641",
+    "existing_timeout_path": "SIGKILL followed by original 5-second wait",
+    "separate_existing_finally_cleanup": "one TERM 5-second / KILL 5-second cleanup allocation",
+    "root_decision": "Preserve these two existing independent reference budgets. The new ledger prevents duplicate explicit seed/cold normal stops and repeated final collection; it does not claim all first signals globally prohibit the original independent finally cleanup.",
+    "timeout_is_unknown": true,
+    "business_replay_permitted": false
+  },
+  "additional_blocking_findings_under_explicit_root_contract": [],
+  "component_execution": false,
+  "ast_execution": false,
+  "host_execution": false,
+  "runtime_authorized": false,
+  "runtime_qualification": false
+}

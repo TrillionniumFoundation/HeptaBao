@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.official271-native-cli-phaseb-r3.actual-offline-review-recap.v1",
+  "host": "desktop",
+  "job_id": "1a1a7e773c5-fc05-2cdc",
+  "idempotency_key": "heptabao-phaseb-r3-draft2-offline-10816-20261104-r1",
+  "source_tree": "1536ca640675167147a1917fc95fddbc18bdce03",
+  "source_manifest": {
+    "name": "manifest.public.json",
+    "blob": "9d11d491d2c678b43b0b5afac5ea11f582eaf365",
+    "bytes": 6439,
+    "sha256": "5b20012832de947f6c4c34fd1dcfa7c7af60ec8c88673bb7ee4ab92a91662ed3"
+  },
+  "wrapper": {
+    "name": "offline_review_runner_r3.py",
+    "bytes": 8248,
+    "sha256": "f9452d67960c5382d64c2edc35aa35cf59cefe273c0768e6754430f37b72a32f",
+    "blob": "53ceda1aa528902ee5cab0a5fe23af91afe08e58"
+  },
+  "stdin": {
+    "name": "offline-input.public.json",
+    "bytes": 248493,
+    "sha256": "9b22cb511eb1dfdc33a4754821d1156d99bc2d6f3a799338bfa7e39f9681a685",
+    "blob": "7c4fba740512d83db15a5d8c766a44639835adbb"
+  },
+  "status": "passed",
+  "authoritative_exit_code": 0,
+  "timed_out": false,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "stdout_hex_and_text_byte_exact": true,
+  "complete_seven_source_sha_git_blob_match": true,
+  "source_compile_count": 7,
+  "checks": [
+    {
+      "component": "evidence",
+      "passed": 34,
+      "total": 34
+    },
+    {
+      "component": "controller",
+      "passed": 32,
+      "total": 32
+    }
+  ],
+  "elapsed_ms": 146.242437,
+  "side_effect_audit_denials": [],
+  "execution_scope": {
+    "target_main_called": false,
+    "reference_helpers_executed": false,
+    "binding_constructor_called": false,
+    "module_definitions_executed": [
+      "phaseb_evidence_r3.py",
+      "phaseb_controller_r3.py",
+      "phaseb_evidence_components_r3.py",
+      "phaseb_controller_components_r3.py"
+    ],
+    "synthetic_controller_dependencies": true,
+    "actual_product_archive": false,
+    "actual_stop_signals": false,
+    "network_calls": 0,
+    "children_spawned": 0,
+    "product_or_cli_started": false,
+    "production_changed": false
+  },
+  "budget_contract": {
+    "internal_seconds": 30,
+    "external_python_seconds": 45,
+    "explicit_stop_ledger": "seed/cold normal stop and final collection share one original5+5 allocation",
+    "inherited_timeout_stage": "separate original emergencySIGKILL wait5 unchanged; compile-only here"
+  },
+  "limits": [
+    "Offline parsing/components only; no native archive recovery or physical process cleanup qualification.",
+    "Actual R10 original44 PASS and full canonical desktop source/artifact custody, fresh read-only prepare and separate live GO remain required.",
+    "Earlier source manifest reflects its pre-execution state and remains unchanged."
+  ],
+  "runtime_qualification": false,
+  "full_replacement_qualification": false,
+  "raw_files": [
+    {
+      "name": "start-ack.original.json",
+      "bytes": 9943,
+      "sha256": "7c800671b32f90d2670437008a308ea13bf77eb221010fd9e35a9b19331a2da2",
+      "blob": "7b830b56b91185fd1689d89aea2b1380e2ddc7c9"
+    },
+    {
+      "name": "process-status.original.json",
+      "bytes": 731,
+      "sha256": "b2e6c81008380bf40b10eacbd5e877b4fde5edee70a364a3c28531a9dd85a572",
+      "blob": "3e1c2c8f75a8dd83d583c27c346fbbf7613e5255"
+    },
+    {
+      "name": "process-read.original.json",
+      "bytes": 24084,
+      "sha256": "59535d032cd8647fe043bb2ba9dc1b5763bc6b26d08c8fc7b5ce64bb51e5b023",
+      "blob": "fc0d1882b498aa2823a8c2763dc1568f57efd414"
+    },
+    {
+      "name": "stdout.original.json",
+      "bytes": 7700,
+      "sha256": "7882a3ea4a4f1d2be172aa275dbd269dd89947e8071869c8208905551fd1ae2d",
+      "blob": "0b9b857285ddbe25dacac7979850363c0a298aa3"
+    },
+    {
+      "name": "stderr.original.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    }
+  ]
+}

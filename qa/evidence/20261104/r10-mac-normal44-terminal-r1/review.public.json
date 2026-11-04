@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.r10.mac-normal44-terminal-review.v1",
+  "review_scope": "Exact canonical R10 macOS arm64 release, libtest, six frozen normal groups and owned cleanup; no full-release, HA or CLI qualification claim.",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "job_id": "1a1a7d89fad-fc05-2cb1",
+  "authority": {
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "timed_out": false
+  },
+  "result": {
+    "bytes": 24522,
+    "sha256": "28f47931ad644e610d45af00545b343a8d5867546ea8d00a44cae0a3de13c961",
+    "git_blob": "f1721688e97951506f728bc7ae639e8107641696"
+  },
+  "group_stdout_exact_names_verified": true,
+  "group_results": [
+    {
+      "label": "ssh25",
+      "passed": 25,
+      "failed": 0,
+      "ignored": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 68.61436520889401,
+      "original_runtime_cap_seconds": 600
+    },
+    {
+      "label": "mount1",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 1.7550427499227226,
+      "original_runtime_cap_seconds": 600
+    },
+    {
+      "label": "redirect5",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 2.1728185419924557,
+      "original_runtime_cap_seconds": 600
+    },
+    {
+      "label": "actor2",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 10.990302958060056,
+      "original_runtime_cap_seconds": 600
+    },
+    {
+      "label": "ordinary5",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 0.06105191586539149,
+      "original_runtime_cap_seconds": 600
+    },
+    {
+      "label": "no_forward6",
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "exit_code": 0,
+      "elapsed_seconds": 17.784171875100583,
+      "original_runtime_cap_seconds": 600
+    }
+  ],
+  "total_passed": 44,
+  "total_failed": 0,
+  "total_ignored": 0,
+  "unique_names": 44,
+  "source_unchanged": true,
+  "retained_libtest_unchanged": true,
+  "retained_libtest": {
+    "bytes": 155908848,
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/normal-release-tests-r1/retained-heptabao-server-libtest",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": true
+    },
+    "sha256": "b36998def7d3642f78a00dffbd3390f10d2b8f9ed1fcdeb8739ea4a6a7230549"
+  },
+  "release_artifacts_unchanged": true,
+  "cleanup_entries": 14,
+  "all_owned_direct_children_reaped": true,
+  "all_owned_groups_empty": true,
+  "normal_release_seconds": 259.6838330421597,
+  "normal_libtest_build_seconds": 463.1094459160231,
+  "normal_feature_set": [
+    "default",
+    "native-v6-ha",
+    "native-v6-storage"
+  ],
+  "fixture_features": [],
+  "original_caps": {
+    "each_listing": 30,
+    "each_runtime_group": 600,
+    "normal_libtest_build": 1800,
+    "normal_release_build": 1800
+  },
+  "root_approved_outer_cap_seconds": 8280,
+  "production_changed": false,
+  "historical_failures_preserved": true,
+  "readback_all_original_bytes_verified": true
+}

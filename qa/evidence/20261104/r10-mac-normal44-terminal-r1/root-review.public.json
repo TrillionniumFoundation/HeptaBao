@@ -1,0 +1,114 @@
+{
+  "schema": "heptabao.r10.mac-normal44-root-terminal-review.v1",
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "job_id": "1a1a7d89fad-fc05-2cb1",
+  "status": "passed",
+  "exact_test_count": 44,
+  "passed": 44,
+  "failed": 0,
+  "ignored": 0,
+  "groups": [
+    {
+      "label": "ssh25",
+      "passed": 25,
+      "failed": 0,
+      "ignored": 0,
+      "exact_names_match": true,
+      "stdout_sha256": "60419e3afaf23f6a2d7eb366ea8b15a51075dbf6d53f4bc82e8795a0ff77e431",
+      "stderr_sha256": "34608a613332fb0e9ffe06810dd8f16bde135228c637aa30be7a10a7ea76a8db",
+      "elapsed_seconds": 68.61436520889401
+    },
+    {
+      "label": "mount1",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "exact_names_match": true,
+      "stdout_sha256": "63732715d1bda8bd122cffedc40189cfcf1513664bff4702ad0bd144af304a85",
+      "stderr_sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0",
+      "elapsed_seconds": 1.7550427499227226
+    },
+    {
+      "label": "redirect5",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "exact_names_match": true,
+      "stdout_sha256": "ac2403be7b99034284780f385d2476216dc71b3ae5eec5103c688f466be39b37",
+      "stderr_sha256": "0d1b1bbb8ca8447a0d365222beef62eb6526abd06fb4462a4c7875287bdc90f9",
+      "elapsed_seconds": 2.1728185419924557
+    },
+    {
+      "label": "actor2",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "exact_names_match": true,
+      "stdout_sha256": "e4458cb98e13b2ce49de5493ad19c22c5577a03ff281b37b9eccba7262a10074",
+      "stderr_sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727",
+      "elapsed_seconds": 10.990302958060056
+    },
+    {
+      "label": "ordinary5",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "exact_names_match": true,
+      "stdout_sha256": "af76b07698a847573bf52fe937e8856f1f78107c699c2d80246ff477d8fdcbb5",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsed_seconds": 0.06105191586539149
+    },
+    {
+      "label": "no_forward6",
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "exact_names_match": true,
+      "stdout_sha256": "6bdba445d71fe0e02d856bc4f52eb1c34951c50f7a5c6b4c4ab17636d76ff698",
+      "stderr_sha256": "4685630188618fba8bf20efa69d508c3c74f55055c72adb9ce7586ad87b3136d",
+      "elapsed_seconds": 17.784171875100583
+    }
+  ],
+  "root_verified_raw_original_files": 20,
+  "result_sha256": "28f47931ad644e610d45af00545b343a8d5867546ea8d00a44cae0a3de13c961",
+  "authoritative_complete_and_durable": true,
+  "all_14_owned_groups_reaped": true,
+  "source_release_and_retained_libtest_unchanged": true,
+  "normal_default_features": true,
+  "fixture_features": [],
+  "original_caps": {
+    "each_listing": 30,
+    "each_runtime_group": 600,
+    "normal_libtest_build": 1800,
+    "normal_release_build": 1800
+  },
+  "release_elapsed_seconds": 259.6838330421597,
+  "libtest_build_elapsed_seconds": 463.1094459160231,
+  "retained_libtest": {
+    "bytes": 155908848,
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/normal-release-tests-r1/retained-heptabao-server-libtest",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": true
+    },
+    "sha256": "b36998def7d3642f78a00dffbd3390f10d2b8f9ed1fcdeb8739ea4a6a7230549"
+  },
+  "release_artifact_sha256": "bc1fc6b8ded5a43a60ab4c562cd5e092e63ae9df77afd654c9af8c096c128c98",
+  "prior_mac_r8_closed_peer_tls_failure_reclassified": false,
+  "r10_actual_closed_peer_tls_regression_passed": true,
+  "current_candidate_mac_normal_gate": true,
+  "current_candidate_dual_platform_normal44_gate": true,
+  "physical_ha_qualification": false,
+  "x230_qualification": false,
+  "whole_surface_admitted": false,
+  "production_changed": false
+}

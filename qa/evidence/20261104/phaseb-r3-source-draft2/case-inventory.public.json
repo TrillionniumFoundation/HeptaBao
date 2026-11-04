@@ -1,0 +1,93 @@
+{
+  "schema": "heptabao.official271-native-cli-phaseb-r3.case-inventory.v1",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "cases": [
+    {
+      "id": "B01",
+      "command": "save",
+      "target": "actual_current_leader",
+      "output": "archive_A",
+      "requires": [
+        "normal_native_raft_activation",
+        "official_cli_terminal",
+        "all_node_audit_pair_window",
+        "complete_actual_native_archive"
+      ],
+      "positive_control": true
+    },
+    {
+      "id": "B02",
+      "command": "restore",
+      "target": "actual_current_leader",
+      "input": "archive_A",
+      "before": "single_CAS_2_to_version_3_distinct_marker_A",
+      "requires": [
+        "known_cli_server_terminal",
+        "all_node_versions_1_2_and_whole_metadata_exact",
+        "version_3_absent",
+        "known_terminal_only_cold_restart",
+        "cold_exact_state"
+      ],
+      "positive_control": true
+    },
+    {
+      "id": "B03",
+      "command": "save",
+      "target": "actual_current_leader",
+      "output": "archive_B",
+      "requires": [
+        "B02_actual_restore_and_cold_pass",
+        "independent_cli_save",
+        "complete_actual_native_archive"
+      ],
+      "positive_control": true
+    },
+    {
+      "id": "B04",
+      "command": "save",
+      "target": "actual_current_standby",
+      "output": "independent_B04_file_only_if_official_cli_creates_it",
+      "requires": [
+        "default_official_cli_behavior",
+        "no_controller_redirect_or_retry",
+        "separate_exit_audit_archive_outcomes"
+      ],
+      "known_business_failure_may_continue_to_B05": true
+    },
+    {
+      "id": "B05",
+      "command": "restore",
+      "target": "actual_current_standby",
+      "input": "archive_B",
+      "before": "single_CAS_2_to_version_3_distinct_marker_B",
+      "requires": [
+        "known_cli_server_terminal",
+        "all_node_API_state_classification",
+        "known_terminal_only_cold_restart"
+      ],
+      "known_rejection_keeps_restore_qualification_false": true
+    }
+  ],
+  "budgets": {
+    "http_seconds": 15,
+    "cli_seconds": 15,
+    "action_seconds": 300,
+    "readiness_seconds": 45,
+    "election_seconds": 60,
+    "stable_leader_seconds": 2.2,
+    "peer_timeout_ms": 1500,
+    "forward_timeout_ms": 8000,
+    "cleanup_term_seconds": 5,
+    "cleanup_kill_seconds": 5
+  },
+  "no_manual_redirect": true,
+  "no_retry_of_mutation": true,
+  "unknown_allows_only_readonly_evidence_and_owned_cleanup": true,
+  "actual_native_archive_required": true,
+  "official_openbao_state_archive_interoperability_claimed": false,
+  "actual_r10_artifact_pending": true,
+  "source_only": true,
+  "runtime_qualification": false,
+  "full_replacement": false
+}

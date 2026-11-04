@@ -1,0 +1,43 @@
+{
+  "schema": "heptabao.official271-native-cli-phaseb-r3.actual-offline-evidence-manifest.v1",
+  "job_id": "1a1a7e773c5-fc05-2cdc",
+  "files": [
+    {
+      "name": "start-ack.original.json",
+      "bytes": 9943,
+      "sha256": "7c800671b32f90d2670437008a308ea13bf77eb221010fd9e35a9b19331a2da2",
+      "blob": "7b830b56b91185fd1689d89aea2b1380e2ddc7c9"
+    },
+    {
+      "name": "process-status.original.json",
+      "bytes": 731,
+      "sha256": "b2e6c81008380bf40b10eacbd5e877b4fde5edee70a364a3c28531a9dd85a572",
+      "blob": "3e1c2c8f75a8dd83d583c27c346fbbf7613e5255"
+    },
+    {
+      "name": "process-read.original.json",
+      "bytes": 24084,
+      "sha256": "59535d032cd8647fe043bb2ba9dc1b5763bc6b26d08c8fc7b5ce64bb51e5b023",
+      "blob": "fc0d1882b498aa2823a8c2763dc1568f57efd414"
+    },
+    {
+      "name": "stdout.original.json",
+      "bytes": 7700,
+      "sha256": "7882a3ea4a4f1d2be172aa275dbd269dd89947e8071869c8208905551fd1ae2d",
+      "blob": "0b9b857285ddbe25dacac7979850363c0a298aa3"
+    },
+    {
+      "name": "stderr.original.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "name": "recap.public.json",
+      "bytes": 3897,
+      "sha256": "6653b10d9fe0adc31771bca9556e5a8ebdbdd377a944a10792386890fdec1b67",
+      "blob": "a4f7acdfaebc3b50fffb06fac7c64ae9d491f774"
+    }
+  ],
+  "product_runtime_qualification": false
+}

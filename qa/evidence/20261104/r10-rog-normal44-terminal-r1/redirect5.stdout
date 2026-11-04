@@ -1,0 +1,10 @@
+
+running 5 tests
+test http::snapshot::redirect_tests::native_http_redirect_complete_head_preserves_short_writes_and_transport_errors ... ok
+test http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body ... ok
+test http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload ... ok
+test http::snapshot::redirect_tests::native_http_redirect_tcp_tls_flush_retains_original_deadline_failure ... ok
+test http::snapshot::redirect_tests::native_redirect_target_keeps_existing_query_validation_and_rejects_header_injection ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 3715 filtered out; finished in 0.09s
+

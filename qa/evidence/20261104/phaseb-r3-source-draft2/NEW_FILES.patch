@@ -1,0 +1,1843 @@
+--- /dev/null
++++ b/phaseb_controller_r3.py
+@@ -0,0 +1,1099 @@
++#!/usr/bin/env python3
++"""NEW Phase B R3: official OpenBao 2.7.1 CLI against real native HA archives.
++
++The unavailable R2 controller is not reproduced or granted its source review.
++Run only after the new binding, prepare receipt and this complete source are
++reviewed. No production state, provider, J3160, or old live fixture is used.
++"""
++from __future__ import annotations
++
++import argparse
++from contextlib import contextmanager
++import hashlib
++import importlib.util
++import json
++import os
++from pathlib import Path
++import re
++import signal
++import stat
++import subprocess
++import sys
++import time
++from types import FunctionType
++
++sys.dont_write_bytecode = True
++SCHEMA = "heptabao.official271-native-cli-phaseb-r3.controller.v1"
++BASE = Path("/home/qian-qi/heptabao-ha-closure-20261103-r1")
++SNAPSHOT_ROUTE = "/v1/sys/storage/raft/snapshot"
++CASES = (
++    ("B01", "leader_save_archive_A", "save", "leader"),
++    ("B02", "leader_restore_archive_A", "restore", "leader"),
++    ("B03", "leader_save_archive_B", "save", "leader"),
++    ("B04", "default_standby_save", "save", "standby"),
++    ("B05", "default_standby_restore_archive_B", "restore", "standby"),
++)
++
++
++class Failure(RuntimeError):
++    pass
++
++
++def require(ok: bool, code: str) -> None:
++    if not ok:
++        raise Failure(code)
++
++
++def sha(raw: bytes) -> str:
++    return hashlib.sha256(raw).hexdigest()
++
++
++def fixed_error(error: BaseException) -> str:
++    value = str(error)
++    if re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,159}", value or ""):
++        return value
++    return type(error).__name__
++
++
++def stable_identity(st) -> tuple:
++    return (st.st_dev, st.st_ino, st.st_uid, st.st_gid, st.st_mode, st.st_nlink,
++            st.st_size, st.st_mtime_ns, st.st_ctime_ns)
++
++
++def write_new(path: Path, raw: bytes) -> None:
++    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
++    try:
++        with os.fdopen(fd, "wb", closefd=False) as stream:
++            stream.write(raw)
++            stream.flush()
++            os.fsync(fd)
++    finally:
++        os.close(fd)
++    parent = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
++    try:
++        os.fsync(parent)
++    finally:
++        os.close(parent)
++
++
++def write_json(path: Path, value: object) -> None:
++    write_new(path, (json.dumps(value, sort_keys=True, indent=2) + "\n").encode())
++
++
++def bootstrap_modules(binding_path: Path, expected_sha: str):
++    require(sys.flags.isolated == 1 and sys.flags.no_site == 1 and sys.flags.dont_write_bytecode == 1,
++            "explicit_python_I_S_B_required")
++    require(binding_path.is_absolute() and binding_path.parent.parent == BASE
++            and re.fullmatch(r"official271-native-cli-phaseb-r3-control-r[0-9]+",
++                             binding_path.parent.name) is not None
++            and binding_path.name == "binding.private.json", "bootstrap_binding_path")
++    st = binding_path.lstat()
++    require(stat.S_ISREG(st.st_mode) and st.st_nlink == 1 and st.st_uid == os.getuid()
++            and stat.S_IMODE(st.st_mode) == 0o600 and st.st_size <= 2 * 1024 * 1024,
++            "bootstrap_binding_custody")
++    require(binding_path.parent.resolve(strict=True) == binding_path.parent, "bootstrap_parent_custody")
++    fd = os.open(binding_path, os.O_RDONLY | os.O_NOFOLLOW)
++    try:
++        require(stable_identity(os.fstat(fd)) == stable_identity(st), "bootstrap_binding_fd_identity")
++        raw = b""
++        while True:
++            block = os.read(fd, 65536)
++            if not block:
++                break
++            raw += block
++            require(len(raw) <= 2 * 1024 * 1024, "bootstrap_binding_bound")
++        require(stable_identity(os.fstat(fd)) == stable_identity(st) and stable_identity(binding_path.lstat()) == stable_identity(st), "bootstrap_binding_stable")
++    finally:
++        os.close(fd)
++    require(sha(raw) == expected_sha, "bootstrap_binding_digest")
++    def no_duplicates(pairs):
++        result = {}
++        for key, value in pairs:
++            require(key not in result, "bootstrap_duplicate_json_key")
++            result[key] = value
++        return result
++    spec = json.loads(raw, object_pairs_hook=no_duplicates)
++    require(spec.get("ready_for_readonly_prepare") is True, "binding_still_unresolved")
++    expected = {
++        "phaseb_controller_r3.py", "phaseb_binding_r3.py", "phaseb_evidence_r3.py",
++        "native_fixture_reference_r8.py", "official_cli_reference_r4.py",
++    }
++    require(set(spec["qa_files"]) == expected, "bootstrap_exact_qa_set")
++    recovered = {
++        "native_fixture_reference_r8.py": (68149, "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416"),
++        "official_cli_reference_r4.py": (46586, "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9"),
++    }
++    loaded = {}
++    for name in sorted(expected):
++        pin = spec["qa_files"][name]
++        path = binding_path.parent / "qa" / name
++        require(pin["path"] == str(path), "bootstrap_qa_location")
++        require(path.parent.resolve(strict=True) == path.parent, "bootstrap_qa_parent")
++        before = path.lstat()
++        require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1
++                and before.st_uid == os.getuid() and stat.S_IMODE(before.st_mode) == 0o600
++                and before.st_size == pin["bytes"] <= 512 * 1024, "bootstrap_qa_custody")
++        fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
++        try:
++            require(stable_identity(os.fstat(fd)) == stable_identity(before), "bootstrap_qa_fd")
++            content = b""
++            while True:
++                block = os.read(fd, 65536)
++                if not block:
++                    break
++                content += block
++                require(len(content) <= 512 * 1024, "bootstrap_qa_bound")
++            require(stable_identity(os.fstat(fd)) == stable_identity(before) and stable_identity(path.lstat()) == stable_identity(before), "bootstrap_qa_stable")
++        finally:
++            os.close(fd)
++        require(sha(content) == pin["sha256"] and len(content) == pin["bytes"], "bootstrap_qa_digest")
++        if name in recovered:
++            require((len(content), sha(content)) == recovered[name], "exact_recovered_reference_before_exec")
++        if name == "phaseb_controller_r3.py":
++            require(path == Path(__file__).absolute(), "executed_controller_exact_location")
++            continue
++        module_spec = importlib.util.spec_from_file_location("phaseb_r3_" + name[:-3], path)
++        require(module_spec is not None and module_spec.loader is not None, "bootstrap_module_spec")
++        module = importlib.util.module_from_spec(module_spec)
++        sys.modules[module_spec.name] = module
++        exec(compile(content, str(path), "exec"), module.__dict__)
++        loaded[name] = module
++    return (loaded["phaseb_binding_r3.py"], loaded["phaseb_evidence_r3.py"],
++            loaded["native_fixture_reference_r8.py"], loaded["official_cli_reference_r4.py"])
++
++
++def owner_class(cli):
++    class Owned(cli.Owner):
++        def __init__(self, root: Path):
++            # Do not call Phase A Owner.__init__: no synthetic archive, token,
++            # peer socket or Phase A case is created.
++            self.private = root / "private"
++            self.children = []
++            self.child_provenance = []
++            self.child_exec_visibility = []
++            self.creating_child = False
++            self.pending_signal = None
++            self.counter = 0
++            self.cleanup_records = []
++            self.cleanup_attempted = set()
++            self.cleanup_by_child = {}
++            self.operation = None
++
++        def invoke(self, argv: list[str], label: str, until: int, env: dict) -> dict:
++            self.counter += 1
++            unique = "%04d-%s" % (self.counter, label)
++            record = None
++            try:
++                record = self.run_private(argv, unique, until, env)
++                record["private_capture_label"] = unique
++                return record
++            finally:
++                # Any exception after Popen still leaves the original Popen in
++                # self.children. The outer owner cleanup runs for every child.
++                pass
++
++        def stop_once(self, process, captured, *, stopper=None, propagate=False) -> dict:
++            require(any(child is process and saved == captured for child, saved in self.children),
++                    "stop_requires_actual_owned_popen_and_capture")
++            key = id(process)
++            if key in self.cleanup_attempted:
++                result = {**self.cleanup_by_child[key], "prior_cleanup_result_retained": True}
++                if propagate:
++                    require(result.get("owned_stopped") and result.get("direct_child_reaped"),
++                            "original_owned_stop_unknown_not_retried")
++                return result
++            # Reserve the single original 5+5 s stop budget before dispatch.
++            # A signal/error before completion retains a failed placeholder.
++            self.cleanup_by_child[key] = {
++                "pid": process.pid, "owned_stopped": False,
++                "direct_child_reaped": process.returncode is not None,
++                "stop_attempt_started": True, "stop_terminal_captured": False,
++            }
++            self.cleanup_attempted.add(key)
++            try:
++                if stopper is not None:
++                    result = stopper(process, captured)
++                elif captured is not None:
++                    result = cli.stop_owned(process, captured)
++                else:
++                    result = cli.stop_provisional(process)
++                result["direct_child_reaped"] = process.returncode is not None
++                result["stop_terminal_captured"] = True
++                self.cleanup_by_child[key] = result
++            except BaseException as error:
++                result = {
++                    "pid": process.pid, "owned_stopped": False,
++                    "direct_child_reaped": process.returncode is not None,
++                    "error_type": type(error).__name__, "stop_terminal_captured": False,
++                }
++                self.cleanup_by_child[key] = result
++                if propagate:
++                    raise
++            if propagate:
++                require(result.get("owned_stopped") and result.get("direct_child_reaped"),
++                        "original_owned_stop_not_confirmed")
++            return result
++
++        def cleanup(self) -> list[dict]:
++            records = []
++            seen = set()
++            for process, captured in reversed(self.children):
++                if id(process) in seen:
++                    continue
++                seen.add(id(process))
++                try:
++                    records.append(self.stop_once(process, captured))
++                except BaseException as error:
++                    # A collection/identity error must not skip other children.
++                    records.append({"pid": process.pid, "owned_stopped": False,
++                                    "direct_child_reaped": process.returncode is not None,
++                                    "error_type": type(error).__name__})
++            self.cleanup_records = records
++            return records
++    return Owned
++
++
++def neutral_environment(home: Path) -> dict:
++    return {"PATH": "/usr/bin:/bin", "HOME": str(home), "LANG": "C", "LC_ALL": "C",
++            "GIT_CONFIG_NOSYSTEM": "1", "GIT_OPTIONAL_LOCKS": "0",
++            "GIT_TERMINAL_PROMPT": "0", "PYTHONDONTWRITEBYTECODE": "1"}
++
++
++def readonly_runner(owner, root: Path, evidence):
++    def run(argv: list[str], label: str, until: int) -> bytes:
++        result = owner.invoke(argv, label, until, neutral_environment(root))
++        require(result["returncode"] == 0 and not result["timed_out"]
++                and result["direct_child_reaped"] and not result["remaining"],
++                "readonly_command_not_complete")
++        raw, _ = evidence.checked_bytes(owner.private / (result["private_capture_label"] + ".stdout"),
++                                         64 * 1024, until, owner=os.getuid())
++        return raw
++    return run
++
++
++def make_fixture(native, cli, bm, evidence, binding, verified, prepared):
++    Owned = owner_class(cli)
++
++    class PhaseB(native.Fixture):
++        def __init__(self):
++            super().__init__(binding.server, binding.work, prepared)
++            self.binding = binding
++            self.verified = verified
++            self.owner = Owned(self.root)
++            self.action_until = 0
++            self.action_name = None
++            self.actions = []
++            self.cli_cases = []
++            self.cli_intents = []
++            self.cli_inflight = None
++            self.operation_inflight = None
++            self.last_exchange = None
++            self.nodes = {}
++            self.seed_owned = None
++            self.spawn_counts = {}
++            self.cold_results = []
++            self.secret_values = []
++            self.checks = []
++            self.failures = []
++            self.generation = 0
++            self.setup_complete = False
++            self.generated_fences = {}
++            self.boundary_known = True
++            self.audit_postmortem = None
++            self.reference_startup_scope = "normal_v5_seed_then_normal_native_v6_raft_and_formal_activate"
++
++        def interrupted(self, signum, frame):
++            if self.owner.creating_child:
++                return self.owner.interrupted(signum, frame)
++            return super().interrupted(signum, frame)
++
++        def deadline(self) -> int:
++            bm.remaining(self.action_until)
++            return self.action_until
++
++        @contextmanager
++        def action(self, name: str):
++            require(self.action_name is None, "nested_action_not_allowed")
++            self.action_name = name
++            self.action_until = time.monotonic_ns() + 300_000_000_000
++            started = time.monotonic_ns()
++            record = {"action": name, "original_action_seconds": 300,
++                      "deadline_monotonic_ns": self.action_until, "started_unix_ns": time.time_ns()}
++            try:
++                self.binding.quick_fence(self.verified)
++                yield
++                self.deadline()
++                record["completed"] = True
++            except BaseException as error:
++                # Reference setup parses mutation replies outside request().
++                # A malformed successful init/unseal/KV reply can raise before
++                # check() sees a boolean. Keep that mutation boundary unknown.
++                exchange = self.last_exchange
++                if (exchange and exchange["method"] not in ("GET", "HEAD")
++                        and self.seq > exchange["sequence_before"]
++                        and exchange.get("status") not in (400, 403)):
++                    self.outcome_unknown = True
++                    self.boundary_known = False
++                record["completed"] = False
++                record["failure_code"] = fixed_error(error)
++                record["outcome_unknown"] = self.outcome_unknown
++                raise
++            finally:
++                record["elapsed_ms"] = (time.monotonic_ns() - started) / 1e6
++                self.actions.append(record)
++                self.action_name = None
++
++        def check(self, name: str, ok: bool) -> None:
++            self.checks.append({"name": name, "passed": bool(ok)})
++            if not ok:
++                if self.operation_inflight is not None:
++                    self.outcome_unknown = True
++                    self.boundary_known = False
++                elif self.last_exchange and self.last_exchange["method"] not in ("GET", "HEAD"):
++                    if self.last_exchange.get("status") not in (400, 403):
++                        self.outcome_unknown = True
++                        self.boundary_known = False
++                raise Failure(name)
++
++        def mutation_allowed(self) -> None:
++            self.deadline()
++            require(not self.outcome_unknown and self.boundary_known
++                    and self.cli_inflight is None and self.operation_inflight is None,
++                    "unknown_boundary_forbids_new_mutation_or_restart")
++
++        def request(self, node, method, path, label, **options):
++            self.deadline()
++            if method not in ("GET", "HEAD"):
++                require(not self.outcome_unknown and self.boundary_known
++                        and self.cli_inflight is None, "unknown_boundary_forbids_http_mutation")
++            requested_parent = options.pop("parent_deadline_ns", None)
++            until = self.action_until if requested_parent is None else min(self.action_until, requested_parent)
++            self.last_exchange = {"node": node, "method": method, "label": label,
++                                  "status": None, "sequence_before": self.seq}
++            before = self.seq
++            try:
++                observation, body = super().request(node, method, path, label,
++                                                     parent_deadline_ns=until, **options)
++                self.last_exchange["status"] = observation.get("status")
++                self.deadline()
++                return observation, body
++            except BaseException:
++                terminal = next((item for item in reversed(self.observations)
++                                 if item.get("sequence") == self.seq), None)
++                if self.seq > before and (terminal is None or terminal.get("outcome_unknown")):
++                    self.outcome_unknown = True
++                    self.boundary_known = False
++                raise
++
++        def start_owned_child(self, collection: list, *args, **options):
++            self.deadline()
++            require(len(args) == 1 and type(args[0]) is list, "exact_http_child_argv")
++            argv = args[0]
++            require(len(argv) == 4 and argv[:3] == [
++                sys.executable, str(Path(native.__file__).resolve()), "--child-request"
++            ], "only_original_http_child_entry")
++            spec_path = Path(argv[3])
++            require(spec_path.parent == self.private and spec_path.name.endswith(".spec.json"),
++                    "owned_http_child_spec_path")
++            raw, _ = evidence.checked_bytes(spec_path, 64 * 1024, self.action_until, owner=os.getuid())
++            spec = evidence.decode_json(raw)
++            until = spec["deadline_monotonic_ns"]
++            require(type(until) is int and until <= self.action_until, "http_original_parent_deadline")
++            process = self.owner.start_child(argv, until=until, **options)
++            captured = self.owner.children[-1][1]
++            collection.append((process, captured))
++            return process
++
++        def openssl(self, args: list[str], label: str) -> None:
++            self.mutation_allowed()
++            until = min(self.deadline(), time.monotonic_ns() + 15_000_000_000)
++            result = self.owner.invoke(["/usr/bin/openssl", *args], "tls-" + label, until,
++                                       neutral_environment(self.root))
++            require(result["returncode"] == 0 and not result["timed_out"]
++                    and result["direct_child_reaped"] and not result["remaining"],
++                    "owned_tls_generation_failed")
++
++        def spawn(self, node: int, *, native: bool):
++            self.mutation_allowed()
++            directory = self.root / ("node%d" % node)
++            kind = "native" if native else "seed"
++            key = (node, kind)
++            attempt = self.spawn_counts.get(key, 0)
++            self.spawn_counts[key] = attempt + 1
++            argv = [str(self.binary), "--config", str(directory / ("server-%s.json" % kind))]
++            if native:
++                argv.extend(["--ha-config", str(directory / "ha.json")])
++            require("--native-v6-isolated-fixture" not in argv, "fixture_entry_forbidden")
++            until = min(self.deadline(), time.monotonic_ns() + 15_000_000_000)
++            out_path = directory / ("%s-start%d.stdout.private.log" % (kind, attempt))
++            err_path = directory / ("%s-start%d.stderr.private.log" % (kind, attempt))
++            with out_path.open("xb") as out, err_path.open("xb") as err:
++                process = self.owner.start_child(
++                    argv, until=until, stdin=subprocess.DEVNULL, stdout=out, stderr=err,
++                    start_new_session=True, cwd=self.root,
++                    env={"PATH": "/usr/bin:/bin", "HOME": str(directory), "LANG": "C", "LC_ALL": "C"})
++                captured = self.owner.children[-1][1]
++                self.procs.append((process, captured))
++            require(captured is not None, "server_identity_missing")
++            if native:
++                self.nodes[node] = (process, captured)
++            else:
++                require(self.seed_owned is None and node == 1, "single_fresh_seed_process")
++                self.seed_owned = (process, captured)
++            write_json(directory / ("%s-start%d.identity.public.json" % (kind, attempt)), captured)
++            return process, captured
++
++        def generated_fence(self) -> None:
++            self.deadline()
++            for value, original in self.generated_fences.items():
++                _, current = evidence.checked_bytes(Path(value), 128 * 1024,
++                                                      self.deadline(), owner=os.getuid())
++                require(current == original, "owned_config_or_credential_source_changed")
++
++        def node_fence(self) -> list[dict]:
++            self.deadline()
++            self.generated_fence()
++            results = []
++            for node in (1, 2, 3):
++                process, captured = self.nodes[node]
++                current = cli.process_identity(process.pid)
++                require(process.poll() is None and current is not None
++                        and current["start_ticks"] == captured["start_ticks"]
++                        and current["pgid"] == process.pid and current["ppid"] == os.getpid()
++                        and current["exe"] == str(self.binary), "live_owned_node_identity")
++                results.append({"node": node, "pid": process.pid, "start_ticks": current["start_ticks"],
++                                "pgid": current["pgid"], "same_executable": True})
++            return results
++
++        def collect_secrets(self) -> None:
++            self.deadline()
++            if not self.created_root:
++                return
++            values = []
++            bootstrap_path = self.private / "bootstrap.json"
++            if bootstrap_path.exists():
++                raw, _ = evidence.checked_bytes(bootstrap_path, 64 * 1024, self.action_until, owner=os.getuid())
++                bootstrap = evidence.decode_json(raw)
++                token = bootstrap.get("root_token")
++                if isinstance(token, str) and token:
++                    values.append(token.encode())
++                for name in ("keys", "keys_base64", "recovery_keys", "recovery_keys_base64"):
++                    for value in bootstrap.get(name, []):
++                        if isinstance(value, str) and value:
++                            values.append(value.encode())
++                            if name.endswith("base64"):
++                                try:
++                                    import base64
++                                    decoded = base64.b64decode(value, validate=True)
++                                    if decoded:
++                                        values.append(decoded)
++                                except ValueError:
++                                    pass
++                            elif re.fullmatch(r"[0-9a-fA-F]+", value) and len(value) % 2 == 0:
++                                values.append(bytes.fromhex(value))
++            fixed = [self.root / "ca.key"]
++            for node in (1, 2, 3):
++                fixed.extend([self.root / ("node%d" % node) / "tls.key",
++                              self.root / ("node%d" % node) / "replication.key"])
++            for path in fixed:
++                try:
++                    path.lstat()
++                except FileNotFoundError:
++                    continue
++                raw, _ = evidence.checked_bytes(path, 64 * 1024, self.action_until, owner=os.getuid())
++                values.append(raw)
++            self.secret_values = list(dict.fromkeys(values))
++
++        def stop_fixture_owned_once(self, process, captured, *, stopper=None) -> dict:
++            try:
++                return self.owner.stop_once(process, captured, stopper=stopper, propagate=True)
++            except BaseException:
++                self.outcome_unknown = True
++                self.boundary_known = False
++                raise
++
++        def setup_phase(self) -> None:
++            with self.action("normal_native_setup"):
++                original_setup = native.Fixture.setup
++                original_stop = native.stop_owned
++                def stop_seed_once(process, captured):
++                    require(self.seed_owned is not None and process is self.seed_owned[0]
++                            and captured == self.seed_owned[1], "reference_stop_is_exact_owned_seed")
++                    return self.stop_fixture_owned_once(process, captured, stopper=original_stop)
++                # Preserve the exact recovered setup bytecode/defaults/closure.
++                # Only its one stop symbol is routed into the shared budget.
++                # The reference module itself and every other global are untouched.
++                setup_globals = dict(original_setup.__globals__)
++                require(setup_globals.get("stop_owned") is original_stop,
++                        "reference_original_stop_callable")
++                setup_globals["stop_owned"] = stop_seed_once
++                require(all(setup_globals[key] is value for key, value in original_setup.__globals__.items()
++                            if key != "stop_owned"), "reference_setup_other_globals_unchanged")
++                setup = FunctionType(original_setup.__code__, setup_globals, original_setup.__name__,
++                                     original_setup.__defaults__, original_setup.__closure__)
++                setup.__kwdefaults__ = original_setup.__kwdefaults__
++                setup(self)
++                self.collect_secrets()
++                self.node_fence()
++                self.setup_complete = True
++                configs = {}
++                for node in (1, 2, 3):
++                    directory = self.root / ("node%d" % node)
++                    raw, fence = evidence.checked_bytes(directory / "server-native.json", 128 * 1024,
++                                                          self.deadline(), owner=os.getuid())
++                    server = evidence.decode_json(raw)
++                    require(set(server["storage"]) == {"native_v6_raft"}
++                            and "native_v6_file" not in server["storage"], "actual_formal_native_raft_config")
++                    ha_raw, ha_fence = evidence.checked_bytes(directory / "ha.json", 128 * 1024,
++                                                               self.deadline(), owner=os.getuid())
++                    ha = evidence.decode_json(ha_raw)
++                    require(ha["peer_timeout_ms"] == 1500 and ha["forward_timeout_ms"] == 8000
++                            and ha["max_inflight"] == 32
++                            and ha["node_id"] == node, "original_ha_budgets")
++                    configs[str(node)] = {"server_sha256": fence["sha256"], "ha_sha256": ha_fence["sha256"]}
++                self.config_pins = configs
++                generated = [self.root / "ca.crt", self.root / "ca.key", self.private / "bootstrap.json"]
++                for node in (1, 2, 3):
++                    directory = self.root / ("node%d" % node)
++                    generated.extend(directory / name for name in
++                                     ("server-native.json", "ha.json", "ca.crt",
++                                      "tls.crt", "tls.key", "replication.key"))
++                for path in generated:
++                    _, fence = evidence.checked_bytes(path, 128 * 1024,
++                                                        self.deadline(), owner=os.getuid())
++                    self.generated_fences[str(path)] = fence
++                self.initial_state = self.state_view("initial-two-version-state")
++                for node in (1, 2, 3):
++                    values = self.initial_state["nodes"][str(node)]
++                    for version in (1, 2):
++                        self.check("initial_node%d_version%d_value" % (node, version),
++                                   values["versions"][str(version)]["data"] ==
++                                   {"marker": "normal33-wire-seed-%d" % version})
++                    self.check("initial_node%d_current_version2" % node,
++                               values["metadata"]["current_version"] == 2)
++                    self.check("initial_node%d_version3_absent" % node, values["version3_status"] == 404)
++
++        def read_json(self, node: int, route: str, label: str, expected: int = 200) -> dict:
++            observation, raw = self.request(node, "GET", route, label)
++            self.check(label + "_status", observation["status"] == expected)
++            value = evidence.decode_json(raw)
++            self.check(label + "_object", type(value) is dict)
++            return value
++
++        def state_view(self, label: str) -> dict:
++            self.deadline()
++            nodes = {}
++            for node in (1, 2, 3):
++                versions = {}
++                for version in (1, 2):
++                    body = self.read_json(node, "/v1/wire/data/seed?version=%d" % version,
++                                          "%s-node%d-version%d" % (label, node, version))
++                    value = body.get("data")
++                    self.check(label + "_version_data_shape", type(value) is dict
++                               and value.get("metadata", {}).get("version") == version)
++                    versions[str(version)] = value
++                metadata = self.read_json(node, "/v1/wire/metadata/seed",
++                                          "%s-node%d-metadata" % (label, node)).get("data")
++                self.check(label + "_metadata_shape", type(metadata) is dict)
++                observation, raw = self.request(node, "GET", "/v1/wire/data/seed?version=3",
++                                                "%s-node%d-version3" % (label, node))
++                self.check(label + "_version3_bounded_status", observation["status"] in (200, 404))
++                third = None
++                if observation["status"] == 200:
++                    third = evidence.decode_json(raw).get("data")
++                    self.check(label + "_version3_shape", type(third) is dict
++                               and third.get("metadata", {}).get("version") == 3)
++                capacity = self.read_json(node, "/v1/sys/internal/capacity",
++                                          "%s-node%d-capacity" % (label, node)).get("data", {})
++                self.check(label + "_actual_native_v6", capacity.get("state_storage_format") == "heptabao-state-records-v6"
++                           and capacity.get("native_kv2_reader_format") == 2)
++                nodes[str(node)] = {"versions": versions, "metadata": metadata,
++                                    "version3_status": observation["status"], "version3": third}
++            canonical = nodes["1"]
++            self.check(label + "_three_actual_nodes_same_data", all(value == canonical for value in nodes.values()))
++            value = {"nodes": nodes}
++            write_json(self.private / (label + ".state.private.json"), value)
++            write_json(self.root / (label + ".state.public.json"), {
++                "label": label, "all_nodes_equal": True,
++                "state_sha256": sha(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()),
++                "versions": [1, 2], "current_version": canonical["metadata"]["current_version"],
++                "version3_status": canonical["version3_status"], "actual_api_readback": True,
++            })
++            self.deadline()
++            return value
++
++        def mutate_version3(self, marker: str, label: str) -> dict:
++            self.mutation_allowed()
++            role = self.roles(label + "-roles")
++            self.actual_leader = role["actual_leader"]
++            self.operation_inflight = {"kind": "single_cas2_write_version3", "label": label,
++                                       "node": self.actual_leader}
++            try:
++                observation, raw = self.request(
++                    self.actual_leader, "POST", "/v1/wire/data/seed", label + "-cas2-once",
++                    body={"options": {"cas": 2}, "data": {"marker": marker}})
++                self.check(label + "_single_cas2_ack", observation["status"] == 200
++                           and evidence.decode_json(raw).get("data", {}).get("version") == 3)
++                self.operation_inflight = None
++            except BaseException:
++                self.outcome_unknown = True
++                self.boundary_known = False
++                raise
++            current = self.state_view(label + "-readback")
++            for node, values in current["nodes"].items():
++                self.check(label + "_node" + node + "_new_distinct_version3",
++                           values["version3"]["data"] == {"marker": marker}
++                           and values["metadata"]["current_version"] == 3
++                           and values["versions"] == self.initial_state["nodes"][node]["versions"])
++            return current
++
++        def audit_window(self, before: dict) -> dict:
++            after = evidence.capture_audits(self.root, self.deadline())
++            return evidence.audit_delta(before, after, self.deadline())
++
++        def audit_cli_terminal(self, audit: dict, command: str, target: int) -> dict:
++            pairs = audit["pairs"]
++            complete = (audit["complete_known_request_response_pairs"]
++                        and not audit["historical_delivery_veto_observed"]
++                        and len(pairs) in (1, 2)
++                        and all(pair["kind"] == "request" for pair in pairs)
++                        and len({pair["node"] for pair in pairs}) == len(pairs)
++                        and sum(pair["node"] == target for pair in pairs) == 1)
++            statuses = [pair["status"] for pair in pairs]
++            redirects = [pair for pair in pairs if pair["status"] == 307]
++            terminal = [pair for pair in pairs if pair["status"] != 307]
++            if redirects:
++                complete = (complete and len(redirects) == 1 and redirects[0]["node"] == target
++                            and len(terminal) == 1)
++            else:
++                complete = complete and len(pairs) == 1 and len(terminal) == 1
++            status = terminal[0]["status"] if len(terminal) == 1 else None
++            # 202, conflicts and server failures may retain committed history
++            # with uncertain delivery. Never infer retry permission from them.
++            known_status = status in (200, 204, 400, 403, 404, 405)
++            if command == "restore":
++                known_status = status in (200, 204, 400, 403)
++            return {"single_cli_window_pair_pattern": bool(complete),
++                    "terminal_status": status, "statuses": statuses,
++                    "server_boundary_known": bool(complete and known_status),
++                    "client_http_framing_observed": False,
++                    "redirects_followed_by_controller": 0}
++
++        def cli_case(self, case_id: str, label: str, command: str, role: str,
++                     archive_input: Path | None = None) -> dict:
++            self.mutation_allowed()
++            self.binding.quick_fence(self.verified)
++            before_nodes = self.node_fence()
++            roles = self.roles(case_id + "-before-cli")
++            self.actual_leader = roles["actual_leader"]
++            target = self.actual_leader if role == "leader" else next(
++                node for node in (1, 2, 3) if node != self.actual_leader)
++            directory = self.root / "cases" / case_id
++            directory.mkdir(mode=0o700)
++            output = self.private / (case_id + ".snapshot")
++            input_fence = None
++            if command == "restore":
++                require(archive_input is not None and archive_input.parent == self.private,
++                        "owned_verified_archive_input")
++                archive, _ = evidence.archive_observation(archive_input, self.deadline())
++                self.check(case_id + "_valid_real_native_input", archive["archive_valid"])
++                input_fence = archive["file"]
++            before_audit = evidence.capture_audits(self.root, self.deadline())
++            until = min(self.deadline(), time.monotonic_ns() + 15_000_000_000)
++            intent = {
++                "case": case_id, "label": label, "command": command, "role_before": role,
++                "actual_leader_before": self.actual_leader, "target_node": target,
++                "address": "https://127.0.0.1:%d" % bm.API_PORTS[target],
++                "path": SNAPSHOT_ROUTE, "cli_seconds": 15, "deadline_monotonic_ns": until,
++                "action_deadline_monotonic_ns": self.action_until, "started_unix_ns": time.time_ns(),
++                "official_cli_sha256": bm.OFFICIAL_SHA, "valid_restore_input": command == "restore",
++                "input_file": input_fence, "input_source": "actual_prior_native_cli_save" if archive_input else None,
++                "controller_retry_count": 0, "manual_redirect_count": 0,
++                "default_official_cli_redirect_behavior": True, "tls_skip_verify": False,
++                "private_credentials": "owned_synthetic_fixture_only", "before_nodes": before_nodes,
++            }
++            write_json(directory / "intent.public.json", intent)
++            self.cli_intents.append(case_id)
++            self.cli_inflight = case_id
++            record = {"case": case_id, "intent": intent, "outcome_unknown": True}
++            process = None
++            try:
++                raw, _ = evidence.checked_bytes(self.private / "bootstrap.json", 64 * 1024,
++                                                 self.deadline(), owner=os.getuid())
++                bootstrap = evidence.decode_json(raw)
++                env = {
++                    "PATH": "/usr/bin:/bin", "HOME": str(self.private / "cli-home"),
++                    "LANG": "C", "LC_ALL": "C", "BAO_ADDR": intent["address"],
++                    "BAO_CACERT": str(self.root / "ca.crt"), "BAO_TOKEN": bootstrap["root_token"],
++                    "BAO_CLIENT_TIMEOUT": "15s", "BAO_TLS_SKIP_VERIFY": "false",
++                }
++                argv = [str(self.binding.cli), "operator", "raft", "snapshot", command,
++                        str(archive_input if command == "restore" else output)]
++                process = self.owner.invoke(argv, case_id + "-official-cli", until, env)
++                record["process"] = process
++                self.deadline()
++                require(process["direct_child_reaped"] and not process["remaining"]
++                        and not process["timed_out"] and process["returncode"] in (0, 1, 2),
++                        "unknown_cli_process_boundary")
++                record["after_nodes"] = self.node_fence()
++                audit = self.audit_window(before_audit)
++                record["audit"] = audit
++                terminal = self.audit_cli_terminal(audit, command, target)
++                record["server_terminal"] = terminal
++                if archive_input is not None:
++                    _, after_input = evidence.checked_bytes(archive_input, evidence.MAX_ARCHIVE,
++                                                              self.deadline(), owner=os.getuid())
++                    require(after_input == input_fence, "restore_input_file_changed")
++                    record["restore_input_unchanged"] = True
++                output_observation, _ = evidence.archive_observation(output, self.deadline())
++                record["output"] = output_observation
++                category = process["error_class"]
++                # These are observed process/server outcomes. Audit does not
++                # stand in for TLS framing or a successful native restore.
++                recognized = (category == "cli_success"
++                              or command == "save" and category == "incomplete_snapshot"
++                              or category == "api_400")
++                require(terminal["server_boundary_known"] and recognized,
++                        "unknown_cli_or_server_boundary_no_replay")
++                if process["returncode"] == 0 and command == "save":
++                    require(output_observation["archive_valid"], "successful_save_file_not_complete")
++                record["known_complete_business_terminal"] = True
++                record["outcome_unknown"] = False
++                record["cli_exit_zero"] = process["returncode"] == 0
++                record["archive_save_qualified"] = bool(
++                    command == "save" and process["returncode"] == 0
++                    and output_observation["archive_valid"] and terminal["terminal_status"] == 200)
++                record["restore_success_not_inferred_from_exit"] = command == "restore"
++                self.cli_inflight = None
++                self.boundary_known = True
++            except BaseException as error:
++                self.outcome_unknown = True
++                self.boundary_known = False
++                record["outcome_unknown"] = True
++                record["failure_code"] = fixed_error(error)
++                raise
++            finally:
++                record["terminal_unix_ns"] = time.time_ns()
++                self.cli_cases.append(record)
++                write_json(directory / "outcome.public.json", record)
++            return record
++
++        def finish_restore_readback(self, case_id: str, record: dict, before: dict) -> dict:
++            require(record.get("known_complete_business_terminal") and not record["outcome_unknown"]
++                    and self.cli_inflight is None, "restore_readback_requires_known_terminal")
++            # The CLI/server terminal is distinct from verified restoration.
++            # Keep an explicit pending boundary across all API/JSON/state
++            # checks; any unavailable or malformed observation is unknown.
++            self.operation_inflight = {"kind": "restore_state_verification", "case": case_id}
++            self.boundary_known = False
++            try:
++                actual = self.state_view(case_id + "-after-cli")
++                restored = actual == self.initial_state
++                unchanged = actual == before
++                terminal_status = record["server_terminal"]["terminal_status"]
++                qualifies = bool(record["cli_exit_zero"] and terminal_status in (200, 204) and restored)
++                known_rejection = terminal_status in (400, 403) and unchanged
++                # A success status with different state, or a rejection with an
++                # unaccounted mutation, is uncertain. Stop rather than restart it.
++                if not qualifies and not known_rejection:
++                    raise Failure("restore_terminal_state_unaccounted_no_replay")
++                report = {
++                    "case": case_id, "cli_exit_zero": record["cli_exit_zero"],
++                    "terminal_status": terminal_status, "actual_restored_baseline": restored,
++                    "actual_unchanged_mutated_state": unchanged, "known_rejection": known_rejection,
++                    "native_restore_qualified": qualifies, "version_values_metadata_exact_on_all_nodes": True,
++                    "no_replay": True,
++                }
++                write_json(self.root / (case_id + "-restore-readback.public.json"), report)
++                record["restore_readback"] = report
++                self.operation_inflight = None
++                self.boundary_known = True
++            except BaseException:
++                self.outcome_unknown = True
++                self.boundary_known = False
++                raise
++            self.cold_restart(case_id, actual)
++            return report
++
++        def cold_restart(self, case_id: str, expected: dict) -> None:
++            self.mutation_allowed()
++            require(case_id in ("B02", "B05")
++                    and any(item["case"] == case_id and item.get("known_complete_business_terminal")
++                            and not item["outcome_unknown"] for item in self.cli_cases),
++                    "cold_restart_requires_known_original_cli_terminal")
++            pre_audit = evidence.capture_audits(self.root, self.deadline())
++            self.node_fence()
++            stopped = []
++            for node in (1, 2, 3):
++                process, captured = self.nodes[node]
++                result = self.stop_fixture_owned_once(process, captured)
++                stopped.append({"node": node, **result})
++            self.check(case_id + "_all_owned_nodes_stopped_before_restart",
++                       all(item["owned_stopped"] for item in stopped))
++            self.nodes = {}
++            self.generated_fence()
++            for node in (2, 3, 1):
++                self.spawn(node, native=True)
++            for node in (1, 2, 3):
++                self.ready(node, initialized=True, sealed=True)
++            self.stable_leader(sealed=True)
++            raw, _ = evidence.checked_bytes(self.private / "bootstrap.json", 64 * 1024,
++                                             self.deadline(), owner=os.getuid())
++            bootstrap = evidence.decode_json(raw)
++            for node in (1, 2, 3):
++                observation, body = self.request(
++                    node, "POST", "/v1/sys/unseal", case_id + "-cold-unseal-node%d-once" % node,
++                    body={"key": bootstrap["keys_base64"][0]}, credential="none")
++                self.check(case_id + "_cold_unseal_node%d" % node,
++                           observation["status"] == 200 and evidence.decode_json(body).get("sealed") is False)
++            self.actual_leader = self.stable_leader(sealed=False)
++            actual = self.state_view(case_id + "-cold-readback")
++            self.check(case_id + "_cold_state_exact_pre_restart", actual == expected)
++            post_audit = evidence.capture_audits(self.root, self.deadline())
++            audit = evidence.audit_delta(pre_audit, post_audit, self.deadline())
++            self.check(case_id + "_audit_chain_preserved_through_cold", not audit["historical_delivery_veto_observed"])
++            result = {
++                "case": case_id, "cold_restart_completed": True, "stopped_before_restart": stopped,
++                "actual_leader_after": self.actual_leader, "same_native_state_after_cold": True,
++                "all_node_audit_prefix_and_chain_preserved": True,
++                "audit_delta": audit,
++                "activation_repeated": False, "restore_upload_repeated": False,
++                "known_terminal_authorized_owned_restart": True,
++            }
++            self.cold_results.append(result)
++            write_json(self.root / (case_id + "-cold.public.json"), result)
++
++        def execute(self) -> None:
++            self.setup_phase()
++            (self.root / "cases").mkdir(mode=0o700)
++            (self.private / "cli-home").mkdir(mode=0o700)
++            with self.action("B01_leader_save_archive_A"):
++                a = self.cli_case(*CASES[0])
++                self.check("B01_leader_save_positive_control", a["archive_save_qualified"])
++                self.archive_a = self.private / "B01.snapshot"
++            with self.action("B02_leader_restore_archive_A"):
++                before = self.mutate_version3("phaseb-r3-before-restore-A", "before-B02")
++                result = self.cli_case(*CASES[1], archive_input=self.archive_a)
++                restored = self.finish_restore_readback("B02", result, before)
++                self.check("B02_actual_leader_restore_positive_control", restored["native_restore_qualified"])
++            with self.action("B03_leader_save_archive_B"):
++                b = self.cli_case(*CASES[2])
++                self.check("B03_independent_leader_save_positive_control", b["archive_save_qualified"])
++                self.archive_b = self.private / "B03.snapshot"
++                self.check("B03_distinct_archive_files", self.archive_b != self.archive_a)
++            with self.action("B04_default_standby_save"):
++                self.cli_case(*CASES[3])
++                # A recognized complete business failure is preserved. Archive B
++                # came from a separate verified leader save, so B05 need not
++                # substitute or retry the failed B04 save.
++            with self.action("B05_default_standby_restore_archive_B"):
++                before = self.mutate_version3("phaseb-r3-before-restore-B", "before-B05")
++                result = self.cli_case(*CASES[4], archive_input=self.archive_b)
++                self.finish_restore_readback("B05", result, before)
++
++        def finish(self, failure: str | None) -> int:
++            # Once a signal/failure ends the action, only read-only observations
++            # and cleanup are permitted. No service respawn or upload occurs here.
++            signal.signal(signal.SIGTERM, signal.SIG_IGN)
++            signal.signal(signal.SIGINT, signal.SIG_IGN)
++            final_until = time.monotonic_ns() + 300_000_000_000
++            final_errors = []
++            self.action_until = final_until
++            if self.created_root:
++                try:
++                    self.collect_secrets()
++                    if self.setup_complete:
++                        capture = evidence.capture_audits(self.root, final_until)
++                        self.audit_postmortem = {
++                            str(node): {"file": item["file"], "records": len(item["records"])}
++                            for node, item in capture.items()
++                        }
++                except BaseException as error:
++                    final_errors.append({"stage": "readonly_final_evidence", "code": fixed_error(error)})
++                    self.outcome_unknown = True
++            cleanup = self.owner.cleanup()
++            clean = all(item.get("owned_stopped")
++                                         and item.get("direct_child_reaped") for item in cleanup)
++            after = None
++            try:
++                after = binding.verify(readonly_runner(self.owner, self.root, evidence), final_until)
++                require(after == self.verified, "input_fence_changed_after_run")
++            except BaseException as error:
++                final_errors.append({"stage": "input_after", "code": fixed_error(error)})
++            # Include the read-only after-fence Git children in final cleanup too.
++            cleanup = self.owner.cleanup()
++            clean = all(item.get("owned_stopped")
++                                         and item.get("direct_child_reaped") for item in cleanup)
++            incomplete_http = sorted(set(range(1, self.seq + 1)) -
++                                     {item["sequence"] for item in self.observations})
++            incomplete_cli = sorted(set(self.cli_intents) -
++                                    {item["case"] for item in self.cli_cases})
++            unknown = (self.outcome_unknown or bool(incomplete_http) or bool(incomplete_cli)
++                       or self.cli_inflight is not None or self.operation_inflight is not None
++                       or any(item.get("outcome_unknown") for item in self.cli_cases)
++                       or any(item.get("outcome_unknown") for item in self.observations)
++                       or not clean)
++            case_map = {item["case"]: item for item in self.cli_cases}
++            qualifications = {
++                "B01": bool(case_map.get("B01", {}).get("archive_save_qualified")),
++                "B02": bool(case_map.get("B02", {}).get("restore_readback", {}).get("native_restore_qualified")),
++                "B03": bool(case_map.get("B03", {}).get("archive_save_qualified")),
++                "B04": bool(case_map.get("B04", {}).get("archive_save_qualified")),
++                "B05": bool(case_map.get("B05", {}).get("restore_readback", {}).get("native_restore_qualified")),
++            }
++            complete = (len(self.cli_cases) == 5 and self.cli_intents == [item[0] for item in CASES]
++                        and len(self.cold_results) == 2 and not unknown and not final_errors and failure is None)
++            passed = complete and all(qualifications.values()) and all(item["passed"] for item in self.checks)
++            status = "passed" if passed else "completed_with_compatibility_failures" if complete else "failed"
++            report = {
++                "schema": SCHEMA, "status": status, "failure_code": failure,
++                "final_errors": final_errors, "candidate_commit": bm.COMMIT, "candidate_tree": bm.TREE,
++                "input_binding_sha256": binding.sha256, "prepared": prepared,
++                "verified_inputs_before": self.verified, "verified_inputs_after": after,
++                "actions": self.actions, "cli_cases": self.cli_cases, "case_qualifications": qualifications,
++                "cold_results": self.cold_results, "checks": self.checks,
++                "checks_total": len(self.checks), "checks_passed": sum(item["passed"] for item in self.checks),
++                "checks_are_dynamic_invariants_not_full_replacement_denominator": True,
++                "http_intents": self.seq, "http_outcomes": len(self.observations),
++                "incomplete_http_intents": incomplete_http, "incomplete_cli_intents": incomplete_cli,
++                "outcome_unknown": bool(unknown), "all_owned_stopped": bool(clean),
++                "owned_cleanup": cleanup, "child_provenance": self.owner.child_provenance,
++                "child_exec_visibility": self.owner.child_exec_visibility,
++                "final_all_node_audit_observation": self.audit_postmortem,
++                "reference_startup_scope": self.reference_startup_scope,
++                "normal_default_features": True, "fixture_feature_startup": False,
++                "production_changed": False, "provider_requests": 0, "j3160_requests": 0,
++                "physical_hosts": 1, "process_nodes": 3, "native_archive_only": True,
++                "official_openbao_state_archive_interoperability_claimed": False,
++                "cli_exit_zero_is_not_restore_success": True,
++                "audit_is_not_client_response_framing_proof": True,
++                "controller_request_or_restore_replays": 0,
++                "full_replacement_qualification": False,
++                "original_r2_source_or_qualification_inherited": False,
++                "terminal_unix_ns": time.time_ns(),
++            }
++            try:
++                encoded = (json.dumps(report, sort_keys=True, indent=2) + "\n").encode()
++                variants = evidence.secret_variants(self.secret_values)
++                require(not any(value in encoded for value in variants), "fixture_secret_in_final_report")
++                write_new(self.root / "result.public.json", encoded)
++                public_files = sorted(self.root.rglob("*.public.json"))
++                # Enumeration is confined to this newly created owned fixture.
++                scan = evidence.public_literal_scan(public_files, self.secret_values, final_until)
++                write_json(self.root / "public-literal-scan.public.json", scan)
++                print(json.dumps({
++                    "status": status, "result": str(self.root / "result.public.json"),
++                    "result_sha256": sha(encoded), "case_qualifications": qualifications,
++                    "outcome_unknown": bool(unknown), "all_owned_stopped": bool(clean),
++                    "literal_scan_hits": 0, "full_replacement_qualification": False,
++                }, sort_keys=True), flush=True)
++            except BaseException as error:
++                # Do not print the rejected public bytes or any raw exception.
++                print(json.dumps({"status": "public_evidence_withheld", "error_type": type(error).__name__,
++                                  "outcome_unknown": bool(unknown), "all_owned_stopped": bool(clean)},
++                                 sort_keys=True), flush=True)
++                return 1
++            return 0 if passed else 1
++    return PhaseB()
++
++
++def prepare(binding, bm, evidence, cli) -> int:
++    binding.fresh_path(binding.prepare)
++    binding.fresh_path(binding.work)
++    binding.prepare.mkdir(mode=0o700)
++    (binding.prepare / "private").mkdir(mode=0o700)
++    cli.ROOT = binding.prepare
++    owner = owner_class(cli)(binding.prepare)
++    signal.signal(signal.SIGTERM, owner.interrupted)
++    signal.signal(signal.SIGINT, owner.interrupted)
++    until = time.monotonic_ns() + 300_000_000_000
++    inputs = None
++    failure = None
++    try:
++        inputs = binding.verify(readonly_runner(owner, binding.prepare, evidence), until)
++        binding.check_ports()
++        binding.fresh_path(binding.work)
++        bm.remaining(until)
++    except BaseException as error:
++        failure = fixed_error(error)
++    finally:
++        signal.signal(signal.SIGTERM, signal.SIG_IGN)
++        signal.signal(signal.SIGINT, signal.SIG_IGN)
++        cleanup = owner.cleanup()
++    clean = all(item.get("owned_stopped") and item.get("direct_child_reaped")
++                                  for item in cleanup)
++    report = {
++        "schema": "heptabao.official271-native-cli-phaseb-r3.prepare.v1",
++        "status": "passed" if failure is None and clean else "failed",
++        "binding_sha256": binding.sha256, "inputs": inputs, "failure_code": failure,
++        "owned_cleanup": cleanup, "all_owned_stopped": clean,
++        "child_provenance": owner.child_provenance, "child_exec_visibility": owner.child_exec_visibility,
++        "runtime_started": False, "server_processes": 0, "cli_snapshot_commands": 0,
++        "production_changed": False, "readiness_is_not_runtime_qualification": True,
++        "terminal_unix_ns": time.time_ns(),
++    }
++    raw = (json.dumps(report, sort_keys=True, indent=2) + "\n").encode()
++    write_new(binding.prepare / "result.public.json", raw)
++    print(json.dumps({"status": report["status"], "result": str(binding.prepare / "result.public.json"),
++                      "result_sha256": sha(raw), "runtime_started": False,
++                      "all_owned_stopped": clean}, sort_keys=True), flush=True)
++    return 0 if report["status"] == "passed" else 1
++
++
++def main() -> int:
++    parser = argparse.ArgumentParser()
++    parser.add_argument("--binding", required=True, type=Path)
++    parser.add_argument("--binding-sha256", required=True)
++    modes = parser.add_mutually_exclusive_group(required=True)
++    modes.add_argument("--prepare-only", action="store_true")
++    modes.add_argument("--run", action="store_true")
++    parser.add_argument("--prepare-result-sha256")
++    args = parser.parse_args()
++    os.umask(0o077)
++    bm, evidence, native, cli = bootstrap_modules(args.binding, args.binding_sha256)
++    binding = bm.Binding(args.binding, args.binding_sha256, time.monotonic_ns() + 300_000_000_000)
++    if args.prepare_only:
++        require(args.prepare_result_sha256 is None, "prepare_has_no_prior_result")
++        return prepare(binding, bm, evidence, cli)
++    require(args.prepare_result_sha256 is not None, "reviewed_prepare_result_required")
++    until = time.monotonic_ns() + 300_000_000_000
++    raw, _ = bm.read_file(binding.prepare / "result.public.json", 4 * 1024 * 1024, until)
++    require(sha(raw) == args.prepare_result_sha256, "exact_prior_prepare_result")
++    prepared = bm.parse(raw)
++    require(prepared["schema"] == "heptabao.official271-native-cli-phaseb-r3.prepare.v1"
++            and prepared["status"] == "passed" and prepared["all_owned_stopped"] is True
++            and prepared["binding_sha256"] == binding.sha256
++            and prepared["runtime_started"] is False, "prior_prepare_admission")
++    binding.fresh_path(binding.work)
++    binding.quick_fence(prepared["inputs"])
++    binding.check_ports()
++    cli.ROOT = binding.work
++    # The imported native HTTP child keeps its original fixed loopback ports,
++    # 15 s framing checks and no-redirect transport. Old artifact globals are
++    # never invoked; only the exact source methods named in the scope are used.
++    require(native.API_PORTS == bm.API_PORTS and native.CLUSTER_PORTS == bm.RAFT_PORTS
++            and native.HTTP_SECONDS == 15 and native.READINESS_SECONDS == 45
++            and native.ELECTION_SECONDS == 60 and native.STABLE_LEADER_SECONDS == 2.2,
++            "reference_original_time_and_port_contract")
++    fixture = make_fixture(native, cli, bm, evidence, binding, prepared["inputs"], prepared)
++    signal.signal(signal.SIGTERM, fixture.interrupted)
++    signal.signal(signal.SIGINT, fixture.interrupted)
++    failure = None
++    try:
++        fixture.execute()
++    except BaseException as error:
++        failure = fixed_error(error)
++    finally:
++        if fixture.created_root:
++            return fixture.finish(failure)
++    require(False, failure or "failed_before_owned_root")
++    return 2
++
++
++if __name__ == "__main__":
++    try:
++        raise SystemExit(main())
++    except Exception as error:
++        print(json.dumps({"status": "failed_before_live", "error_code": fixed_error(error),
++                          "runtime_qualification": False}, sort_keys=True), flush=True)
++        raise SystemExit(2) from None
+--- /dev/null
++++ b/phaseb_binding_r3.py
+@@ -0,0 +1,383 @@
++#!/usr/bin/env python3
++"""Explicit NEW R3 binding. No artifact placeholder authorizes prepare or runtime."""
++from __future__ import annotations
++
++import hashlib
++import importlib.util
++import json
++import os
++from pathlib import Path
++import platform
++import re
++import socket
++import stat
++import sys
++import time
++
++SCHEMA = "heptabao.official271-native-cli-phaseb-r3.binding.v1"
++COMMIT = "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
++TREE = "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
++BASE = Path("/home/qian-qi/heptabao-ha-closure-20261103-r1")
++OFFICIAL_SHA = "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea"
++OFFICIAL_BYTES = 181760103
++OFFICIAL_SOURCE_COMMIT = "a5db72cef75c24b920ade02065b18dd8eb666bac"
++GROUPS_SHA = "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
++FEATURES = ["default", "native-v6-ha", "native-v6-storage"]
++PROFILE = {"debug_assertions": True, "debuginfo": 0, "opt_level": "3",
++           "overflow_checks": True, "test": False}
++QA_NAMES = (
++    "phaseb_controller_r3.py", "phaseb_binding_r3.py", "phaseb_evidence_r3.py",
++    "native_fixture_reference_r8.py", "official_cli_reference_r4.py",
++)
++REFERENCE_PINS = {
++    "native_fixture_reference_r8.py": (
++        68149, "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416"),
++    "official_cli_reference_r4.py": (
++        46586, "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9"),
++}
++PRODUCT_PINS = {
++    "crates/heptabao-server/src/snapshot_archive.rs": (
++        "6828ae88590184830da949001b13abd82a4f9b10",
++        "77c9565ac4efcfe8d387ae7955c4c977bdd4913bcf770981a9b28facdeb2313d"),
++    "crates/heptabao-server/src/service.rs": (
++        "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
++        "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2"),
++    "crates/heptabao-server/src/service_snapshot_transfer.rs": (
++        "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
++        "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9"),
++    "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs": (
++        "0a94044292493853c7770cb36aa69544c1488aca",
++        "3802288e0f2e3f58b94df509c928467fa2d3d11ee47bb9c68128c6143b9138ff"),
++}
++BUDGETS = {
++    "http_seconds": 15, "cli_seconds": 15, "action_seconds": 300,
++    "readiness_seconds": 45, "election_seconds": 60,
++    "stable_leader_seconds": 2.2, "peer_timeout_ms": 1500,
++    "forward_timeout_ms": 8000, "cleanup_term_seconds": 5, "cleanup_kill_seconds": 5,
++}
++API_PORTS = {1: 48630, 2: 48632, 3: 48634}
++RAFT_PORTS = {node: port + 1 for node, port in API_PORTS.items()}
++
++
++class BindingError(RuntimeError):
++    pass
++
++
++def need(ok: bool, code: str) -> None:
++    if not ok:
++        raise BindingError(code)
++
++
++def remaining(until: int) -> float:
++    value = (until - time.monotonic_ns()) / 1e9
++    need(value > 0, "original_action_deadline")
++    return value
++
++
++def sha(raw: bytes) -> str:
++    return hashlib.sha256(raw).hexdigest()
++
++
++def identity(st: os.stat_result) -> dict:
++    return {"device": st.st_dev, "inode": st.st_ino, "uid": st.st_uid, "gid": st.st_gid,
++            "links": st.st_nlink, "mode": stat.S_IMODE(st.st_mode),
++            "bytes": st.st_size, "mtime_ns": st.st_mtime_ns, "ctime_ns": st.st_ctime_ns}
++
++
++def exact_path(value: str) -> Path:
++    need(type(value) is str and value.startswith("/") and "\0" not in value, "absolute_path_required")
++    path = Path(value)
++    need(str(path) == value and ".." not in path.parts, "canonical_path_spelling")
++    return path
++
++
++def no_symlink_ancestors(path: Path) -> None:
++    for parent in reversed(path.parents):
++        st = parent.lstat()
++        need(stat.S_ISDIR(st.st_mode) and not stat.S_ISLNK(st.st_mode), "symlink_or_nondirectory_ancestor")
++    need(path.parent.resolve(strict=True) == path.parent, "resolved_parent_changed")
++
++
++def duplicate_free(pairs: list[tuple[str, object]]) -> dict:
++    out = {}
++    for key, value in pairs:
++        need(key not in out, "duplicate_json_key")
++        out[key] = value
++    return out
++
++
++def parse(raw: bytes) -> object:
++    return json.loads(raw.decode(), object_pairs_hook=duplicate_free)
++
++
++def read_file(path: Path, maximum: int, until: int, *, retain: bool = True) -> tuple[bytes | None, dict]:
++    remaining(until)
++    no_symlink_ancestors(path)
++    before = path.lstat()
++    need(stat.S_ISREG(before.st_mode) and before.st_nlink == 1, "regular_single_link_file_required")
++    need(0 <= before.st_size <= maximum, "file_size_bound")
++    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
++    digest = hashlib.sha256()
++    data = bytearray() if retain else None
++    try:
++        need(identity(os.fstat(fd)) == identity(before), "file_identity_before_read")
++        count = 0
++        while True:
++            remaining(until)
++            block = os.read(fd, min(1024 * 1024, maximum + 1 - count))
++            if not block:
++                break
++            count += len(block)
++            need(count <= maximum, "file_size_bound")
++            digest.update(block)
++            if data is not None:
++                data.extend(block)
++        need(identity(os.fstat(fd)) == identity(before)
++             and identity(path.lstat()) == identity(before), "file_identity_after_read")
++        remaining(until)
++        return (bytes(data) if data is not None else None), {
++            **identity(before), "path": str(path), "sha256": digest.hexdigest()}
++    finally:
++        os.close(fd)
++
++
++def pin_file(pin: dict, until: int, *, retain: bool = False) -> tuple[bytes | None, dict]:
++    need(type(pin) is dict and set(pin) == {"path", "sha256", "bytes", "uid", "mode"}, "exact_file_pin_fields")
++    need(type(pin["sha256"]) is str and re.fullmatch(r"[0-9a-f]{64}", pin["sha256"]) is not None
++         and pin["sha256"] != "0" * 64, "real_file_sha_required")
++    need(type(pin["bytes"]) is int and 0 < pin["bytes"] <= 512 * 1024 * 1024, "real_file_size_required")
++    need(type(pin["uid"]) is int and pin["uid"] in (0, os.getuid()), "allowed_file_owner")
++    need(type(pin["mode"]) is int and 0 <= pin["mode"] <= 0o777
++         and not pin["mode"] & 0o022, "pinned_nonwritable_by_others_mode")
++    raw, observation = read_file(exact_path(pin["path"]), pin["bytes"], until, retain=retain)
++    need(all(observation[key] == pin[key] for key in ("sha256", "bytes", "uid", "mode")), "file_pin_mismatch")
++    return raw, observation
++
++
++def load_verified_module(name: str, path: Path, expected_sha: str, expected_bytes: int, until: int):
++    raw, observation = read_file(path, expected_bytes, until)
++    need(observation["sha256"] == expected_sha and len(raw) == expected_bytes, "module_pin_mismatch")
++    spec = importlib.util.spec_from_file_location(name, path)
++    need(spec is not None and spec.loader is not None, "module_loader_unavailable")
++    module = importlib.util.module_from_spec(spec)
++    sys.modules[name] = module
++    # Execute the exact already-hashed source bytes, rather than reopen the path.
++    exec(compile(raw, str(path), "exec"), module.__dict__)
++    remaining(until)
++    return module
++
++
++class Binding:
++    def __init__(self, path: Path, expected_sha: str, until: int):
++        raw, observed = read_file(path, 2 * 1024 * 1024, until)
++        need(observed["sha256"] == expected_sha, "binding_sha_mismatch")
++        need(observed["uid"] == os.getuid() and observed["mode"] == 0o600, "private_binding_custody")
++        spec = parse(raw)
++        need(type(spec) is dict and set(spec) == {
++            "schema", "candidate_commit", "candidate_tree", "host", "layout",
++            "qa_files", "artifacts", "official_cli", "utilities", "old_fences",
++            "budgets", "ready_for_readonly_prepare",
++        }, "exact_binding_fields")
++        need(spec["schema"] == SCHEMA and spec["candidate_commit"] == COMMIT
++             and spec["candidate_tree"] == TREE, "canonical_r10_binding")
++        need(spec["ready_for_readonly_prepare"] is True, "unresolved_binding_is_not_admission")
++        need(spec["budgets"] == BUDGETS, "original_budgets_unchanged")
++        self.spec, self.path, self.sha256, self.initial_file = spec, path, expected_sha, observed
++        layout = spec["layout"]
++        need(type(layout) is dict and set(layout) == {"control", "source", "work", "prepare"}, "layout_fields")
++        self.control, self.source, self.work, self.prepare = [exact_path(layout[key])
++                                                           for key in ("control", "source", "work", "prepare")]
++        need(self.control.parent == BASE
++             and re.fullmatch(r"official271-native-cli-phaseb-r3-control-r[0-9]+", self.control.name) is not None,
++             "owned_control_namespace")
++        need(self.work.parent == BASE
++             and re.fullmatch(r"official271-native-cli-phaseb-r3-live-r[0-9]+", self.work.name) is not None,
++             "owned_work_namespace")
++        need(self.source.parent == BASE
++             and re.fullmatch(r"normal-r10-validation-source-r[0-9]+", self.source.name) is not None,
++             "canonical_source_namespace")
++        need(self.prepare.parent == self.control
++             and re.fullmatch(r"prepare-r[0-9]+", self.prepare.name) is not None, "prepare_namespace")
++        need(path.parent == self.control and path.name == "binding.private.json", "exact_binding_location")
++        no_symlink_ancestors(self.control)
++        st = self.control.lstat()
++        need(stat.S_ISDIR(st.st_mode) and st.st_uid == os.getuid()
++             and stat.S_IMODE(st.st_mode) == 0o700, "owned_control_custody")
++        self.qa = spec["qa_files"]
++        need(type(self.qa) is dict and set(self.qa) == set(QA_NAMES), "exact_five_qa_members")
++        for name, pin in self.qa.items():
++            need(pin["path"] == str(self.control / "qa" / name)
++                 and pin["uid"] == os.getuid() and pin["mode"] == 0o600, "qa_owned_layout")
++        for name, (size, digest) in REFERENCE_PINS.items():
++            need(self.qa[name]["bytes"] == size and self.qa[name]["sha256"] == digest, "exact_reference_source")
++        self.artifacts = spec["artifacts"]
++        need(type(self.artifacts) is dict and set(self.artifacts) == {
++            "server", "native_receipt", "release_receipt", "combined_tests", "test_groups"
++        }, "artifact_members")
++        artifact_names = {
++            "server": "heptabao-server", "native_receipt": "native-build.public.json",
++            "release_receipt": "normal-release-result.public.json",
++            "combined_tests": "normal-release-tests-result.public.json", "test_groups": "groups.json",
++        }
++        for role, pin in self.artifacts.items():
++            need(pin["path"] == str(self.control / "artifacts" / artifact_names[role])
++                 and pin["uid"] == os.getuid()
++                 and pin["mode"] == (0o500 if role == "server" else 0o600), "owned_artifact_layout")
++        self.server = exact_path(self.artifacts["server"]["path"])
++        self.cli = exact_path(spec["official_cli"]["path"])
++        need(spec["official_cli"]["sha256"] == OFFICIAL_SHA
++             and spec["official_cli"]["bytes"] == OFFICIAL_BYTES, "official271_exact_artifact")
++        need(type(spec["utilities"]) is dict and set(spec["utilities"]) == {"python", "git", "openssl"},
++             "utility_members")
++        need(exact_path(spec["utilities"]["python"]["path"]) == Path(sys.executable).resolve(strict=True),
++             "actual_python_binding")
++        need(spec["utilities"]["git"]["path"] == "/usr/bin/git"
++             and spec["utilities"]["openssl"]["path"] == "/usr/bin/openssl", "fixed_utilities")
++        need(type(spec["old_fences"]) is list and 1 <= len(spec["old_fences"]) <= 32, "finite_existing_fences")
++        paths = [item["path"] for item in spec["old_fences"]]
++        need(len(paths) == len(set(paths)), "unique_existing_fences")
++        for value in paths:
++            p = exact_path(value)
++            need(p.is_relative_to(BASE) and p != BASE
++                 and not p.is_relative_to(self.work), "old_fence_scope")
++
++    def check_host(self, until: int) -> dict:
++        host = self.spec["host"]
++        need(type(host) is dict and set(host) == {"uid", "machine_id_sha256", "system", "machine"}, "host_fields")
++        need(host["uid"] == os.getuid() and host["system"] == platform.system() == "Linux"
++             and host["machine"] == platform.machine() == "x86_64", "physical_native_host")
++        raw, _ = read_file(Path("/etc/machine-id"), 256, until)
++        need(re.fullmatch(r"[0-9a-f]{64}", host["machine_id_sha256"]) is not None
++             and sha(raw) == host["machine_id_sha256"], "exact_desktop_identity")
++        return dict(host)
++
++    def verify(self, run_readonly, until: int) -> dict:
++        remaining(until)
++        host = self.check_host(until)
++        observations = {}
++        for category, pins in (("qa", self.qa), ("artifacts", self.artifacts),
++                               ("utilities", self.spec["utilities"])):
++            observations[category] = {}
++            for key, pin in pins.items():
++                _, observations[category][key] = pin_file(pin, until)
++        _, observations["official_cli"] = pin_file(self.spec["official_cli"], until)
++        observations["old_fences"] = [pin_file(pin, until)[1] for pin in self.spec["old_fences"]]
++        _, binding_now = read_file(self.path, 2 * 1024 * 1024, until)
++        need(binding_now == self.initial_file, "binding_file_identity_changed")
++        receipt = {}
++        for name in ("native_receipt", "release_receipt", "combined_tests", "test_groups"):
++            raw, _ = pin_file(self.artifacts[name], until, retain=True)
++            receipt[name] = parse(raw)
++        native, release, combined, groups = [receipt[key] for key in
++                                            ("native_receipt", "release_receipt", "combined_tests", "test_groups")]
++        for item in (native, release):
++            need(item.get("source_commit") == COMMIT and item.get("source_tree") == TREE
++                 and item.get("source_freeze_verified") is True and item.get("build_exit_code") == 0
++                 and item.get("native_abi") == "x86_64-unknown-linux-gnu", "normal_build_source_identity")
++        artifact = release["artifacts"]["heptabao-server"]
++        need(native.get("schema") == "heptabao.native-build.v1"
++             and release.get("schema") == "heptabao.native-default-build-result.v1"
++             and native.get("binary_sha256") == self.artifacts["server"]["sha256"]
++             and native.get("features") == FEATURES and artifact.get("features") == FEATURES
++             and artifact.get("profile") == PROFILE
++             and artifact.get("sha256") == self.artifacts["server"]["sha256"]
++             and artifact.get("bytes") == self.artifacts["server"]["bytes"],
++             "normal_default_abi_profile_artifact")
++        need(release.get("normal_default_candidate") is True
++             and release.get("timed_out") is False
++             and release.get("owned_group_survivors_after_wait") is False
++             and release.get("build_finished_success") is True
++             and native["provenance"]["result_sha256"] == self.artifacts["release_receipt"]["sha256"]
++             and native["provenance"]["cargo_events_sha256"] == release["cargo_events_sha256"],
++             "normal_release_provenance")
++        command = release["command"]
++        need(type(command) is list and command[1:] == [
++            "build", "--release", "--locked", "--offline", "-p", "heptabao-server",
++            "--bin", "heptabao-server", "--bin", "heptabao-seed",
++            "--message-format=json-render-diagnostics"
++        ] and str(command[0]).endswith("/bin/cargo"), "normal_release_exact_command")
++        need(self.artifacts["test_groups"]["sha256"] == GROUPS_SHA, "original_44_group_file")
++        need(combined.get("schema") == "heptabao.linux-normal-release-and-exact-libtest-r10.v1"
++             and combined.get("source_commit") == COMMIT and combined.get("source_tree") == TREE
++             and combined.get("status") == "passed"
++             and combined.get("normal_default_features") is True
++             and combined.get("fixture_features") == []
++             and combined.get("test_count") == 44 and combined.get("groups_sha256") == GROUPS_SHA
++             and combined.get("groups") == groups and combined.get("runtime_tests_started") is True
++             and combined.get("binary_unchanged") is True
++             and combined.get("release_artifacts_unchanged") is True
++             and combined.get("source_unchanged") is True
++             and combined.get("native_build_receipt_sha256") == self.artifacts["native_receipt"]["sha256"],
++             "r10_original44_terminal_pass_required")
++        shapes = [("ssh25", 25), ("mount1", 1), ("redirect5", 5), ("actor2", 2),
++                  ("ordinary5", 5), ("no_forward6", 6)]
++        need(type(groups) is list and [(g["label"], len(g["tests"])) for g in groups] == shapes,
++             "original_group_denominator")
++        actual = combined.get("group_results")
++        need(type(actual) is list and len(actual) == len(groups), "complete_44_group_results")
++        for group, observed in zip(groups, actual):
++            test = observed["tests"]
++            need(observed["label"] == group["label"]
++                 and len(observed["actual_test_names"]) == len(group["tests"])
++                 and set(observed["actual_test_names"]) == set(group["tests"])
++                 and test.get("exit_code") == 0 and test.get("timed_out") is False
++                 and test.get("direct_child_reaped") is True and test.get("remaining") == [],
++                 "original_group_terminal_and_ownership")
++        cleanup = combined.get("cleanup")
++        need(type(cleanup) is list and bool(cleanup)
++             and all(item.get("direct_child_reaped") is True and item.get("remaining") == []
++                     and not item.get("cleanup_error_type") for item in cleanup), "build_all_owned_stopped")
++        source_observation = {}
++        commands = {
++            "commit": ["rev-parse", "HEAD"], "tree": ["rev-parse", "HEAD^{tree}"],
++            "status": ["status", "--porcelain", "--untracked-files=all"],
++        }
++        for key, suffix in commands.items():
++            remaining(until)
++            argv = ["/usr/bin/git", "-c", "core.fsmonitor=false", "-c", "core.hooksPath=/dev/null",
++                    "-C", str(self.source), *suffix]
++            source_observation[key] = run_readonly(argv, "source-" + key, min(until, time.monotonic_ns() + 15_000_000_000)).decode().strip()
++        need(source_observation == {"commit": COMMIT, "tree": TREE, "status": ""}, "canonical_clean_source")
++        product = {}
++        for relative, (blob, expected) in PRODUCT_PINS.items():
++            raw, observed = read_file(self.source / relative, 2 * 1024 * 1024, until)
++            actual_blob = hashlib.sha1(b"blob " + str(len(raw)).encode() + b"\0" + raw).hexdigest()
++            need(observed["sha256"] == expected and actual_blob == blob, "exact_product_archive_audit_source")
++            product[relative] = {"sha256": expected, "git_blob": blob, "bytes": len(raw)}
++        remaining(until)
++        return {
++            "schema": "heptabao.official271-native-cli-phaseb-r3.inputs.v1",
++            "binding_sha256": self.sha256, "host": host, "files": observations,
++            "source": source_observation, "archive_and_audit_product_sources": product,
++            "budgets": BUDGETS, "api_ports": API_PORTS, "raft_ports": RAFT_PORTS,
++            "official_source_commit": OFFICIAL_SOURCE_COMMIT,
++            "whole_replacement_qualification": False,
++        }
++
++    def quick_fence(self, verified: dict) -> None:
++        files = verified["files"]
++        pins = []
++        for category in ("qa", "artifacts", "utilities"):
++            pins.extend(files[category].values())
++        pins.append(files["official_cli"])
++        pins.extend(files["old_fences"])
++        for item in pins:
++            now = exact_path(item["path"]).lstat()
++            need(identity(now) == {key: item[key] for key in identity(now)}, "pinned_input_metadata_changed")
++        need(identity(self.path.lstat()) == {key: self.initial_file[key] for key in identity(self.path.lstat())},
++             "binding_metadata_changed")
++
++    def fresh_path(self, path: Path) -> None:
++        need(path in (self.work, self.prepare), "fresh_path_scope")
++        no_symlink_ancestors(path)
++        try:
++            path.lstat()
++        except FileNotFoundError:
++            return
++        raise BindingError("fresh_owned_path_required")
++
++    def check_ports(self) -> None:
++        for port in [*API_PORTS.values(), *RAFT_PORTS.values()]:
++            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
++                sock.bind(("127.0.0.1", port))
++        # This is an availability observation only, not a persistent reservation.
+--- /dev/null
++++ b/phaseb_evidence_r3.py
+@@ -0,0 +1,352 @@
++#!/usr/bin/env python3
++"""Phase B R3 evidence: bounded native archive and append-only audit observations.
++
++This is a NEW implementation. It does not reproduce the unavailable R2 helper.
++A valid archive here means the exact public envelope contract and clear sums.
++It does not authenticate sealed checksums, decrypt state, or prove CLI framing.
++"""
++from __future__ import annotations
++
++import base64
++import hashlib
++import json
++import os
++from pathlib import Path
++import re
++import stat
++import time
++import zlib
++
++SCHEMA = "heptabao.official271-native-cli-phaseb-r3.evidence.v1"
++MAX_ARCHIVE = 16 * 1024 * 1024
++MAX_EXPANDED = 32 * 1024 * 1024
++MAX_AUDIT = 8 * 1024 * 1024
++MAX_PUBLIC_FILE = 16 * 1024 * 1024
++NODES = (1, 2, 3)
++MEMBERS = ("meta.json", "state.bin", "SHA256SUMS", "SHA256SUMS.sealed")
++
++
++class EvidenceError(RuntimeError):
++    pass
++
++
++def need(ok: bool, code: str) -> None:
++    if not ok:
++        raise EvidenceError(code)
++
++
++def remaining(until_ns: int) -> float:
++    need(type(until_ns) is int, "deadline_type")
++    value = (until_ns - time.monotonic_ns()) / 1e9
++    need(value > 0, "original_deadline_expired")
++    return value
++
++
++def sha(data: bytes) -> str:
++    return hashlib.sha256(data).hexdigest()
++
++
++def duplicate_free(pairs: list[tuple[str, object]]) -> dict:
++    result = {}
++    for key, value in pairs:
++        need(key not in result, "duplicate_json_key")
++        result[key] = value
++    return result
++
++
++def decode_json(data: bytes) -> object:
++    return json.loads(data.decode("utf-8"), object_pairs_hook=duplicate_free)
++
++
++def identity(st: os.stat_result) -> dict:
++    return {
++        "device": st.st_dev, "inode": st.st_ino, "uid": st.st_uid,
++        "gid": st.st_gid, "mode": stat.S_IMODE(st.st_mode),
++        "links": st.st_nlink, "bytes": st.st_size,
++        "mtime_ns": st.st_mtime_ns, "ctime_ns": st.st_ctime_ns,
++    }
++
++
++def checked_bytes(path: Path, maximum: int, until_ns: int, *,
++                  owner: int | None = None, private: bool = True) -> tuple[bytes, dict]:
++    remaining(until_ns)
++    before = path.lstat()
++    need(stat.S_ISREG(before.st_mode) and before.st_nlink == 1, "regular_single_link_required")
++    need(owner is None or before.st_uid == owner, "file_owner_changed")
++    need(not private or not stat.S_IMODE(before.st_mode) & 0o077, "private_file_permissions")
++    need(0 <= before.st_size <= maximum, "file_size_bound")
++    fd = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
++    try:
++        need(identity(os.fstat(fd)) == identity(before), "file_changed_before_open")
++        data = bytearray()
++        while True:
++            remaining(until_ns)
++            piece = os.read(fd, min(65536, maximum + 1 - len(data)))
++            if not piece:
++                break
++            data.extend(piece)
++            need(len(data) <= maximum, "file_size_bound")
++        after = os.fstat(fd)
++        need(identity(after) == identity(before), "file_changed_during_read")
++        need(identity(path.lstat()) == identity(before), "file_name_changed_during_read")
++        remaining(until_ns)
++        return bytes(data), {**identity(before), "sha256": sha(data)}
++    finally:
++        os.close(fd)
++
++
++def canonical_header(name: str, length: int) -> bytes:
++    need(type(length) is int and 0 <= length < 8 ** 11, "tar_length_bound")
++    encoded = name.encode("ascii")
++    need(len(encoded) <= 99, "tar_name_bound")
++    block = bytearray(512)
++    block[:len(encoded)] = encoded
++    block[100:108] = b"0000600\0"
++    block[108:116] = b"0000000\0"
++    block[116:124] = b"0000000\0"
++    block[124:136] = ("%011o\0" % length).encode("ascii")
++    block[136:148] = b"00000000000\0"
++    block[148:156] = b"        "
++    block[156] = ord("0")
++    block[257:263] = b"ustar\0"
++    block[263:265] = b"00"
++    block[148:156] = ("%06o\0 " % sum(block)).encode("ascii")
++    return bytes(block)
++
++
++def inspect_archive_bytes(raw: bytes, until_ns: int) -> dict:
++    remaining(until_ns)
++    need(10 <= len(raw) <= MAX_ARCHIVE and raw[:4] == b"\x1f\x8b\x08\x00", "native_gzip_header")
++    inflater = zlib.decompressobj(16 + zlib.MAX_WBITS)
++    expanded = inflater.decompress(raw, MAX_EXPANDED + 1)
++    remaining(until_ns)
++    need(len(expanded) <= MAX_EXPANDED, "expanded_archive_bound")
++    need(inflater.eof and not inflater.unused_data and not inflater.unconsumed_tail,
++         "single_complete_gzip_member")
++    offset = 0
++    values = {}
++    for name in MEMBERS:
++        remaining(until_ns)
++        block = expanded[offset:offset + 512]
++        need(len(block) == 512 and block[135] == 0
++             and all(48 <= byte <= 55 for byte in block[124:135]), "canonical_tar_length")
++        length = int(block[124:135], 8)
++        maximum = MAX_EXPANDED if name == "state.bin" else 8191
++        need(length <= maximum and block == canonical_header(name, length), "canonical_tar_header")
++        offset += 512
++        value = expanded[offset:offset + length]
++        need(len(value) == length, "complete_tar_member")
++        offset += length
++        padding = (-length) % 512
++        need(expanded[offset:offset + padding] == b"\0" * padding, "zero_tar_padding")
++        offset += padding
++        values[name] = value
++    need(expanded[offset:] == b"\0" * 1024, "exact_tar_terminator_no_trailing_data")
++    metadata = decode_json(values["meta.json"])
++    need(type(metadata) is dict and set(metadata) == {
++        "format", "state_format", "generation", "state_bytes", "seal_identity"
++    }, "native_ha_metadata_exact_fields")
++    need(metadata["format"] == "heptabao-native-ha-object-snapshot-v1"
++         and metadata["state_format"] == "heptabao-encrypted-ha-object-backup/HBV6HA01",
++         "native_ha_metadata_format")
++    need(type(metadata["generation"]) is int and 0 < metadata["generation"] < 2 ** 64,
++         "native_ha_generation")
++    state = values["state.bin"]
++    need(type(metadata["state_bytes"]) is int
++         and 237 <= metadata["state_bytes"] == len(state) <= MAX_EXPANDED
++         and state[:8] == b"HBV6HA01", "native_ha_state_magic_and_length")
++    seal = metadata["seal_identity"]
++    need(type(seal) is dict and set(seal) == {"format", "sha256"}
++         and seal["format"] == "heptabao-seal-metadata-digest-v1"
++         and isinstance(seal["sha256"], str)
++         and re.fullmatch(r"[0-9a-f]{64}", seal["sha256"]) is not None,
++         "native_seal_identity_shape")
++    sums = (sha(values["meta.json"]) + "  meta.json\n"
++            + sha(state) + "  state.bin\n").encode("ascii")
++    need(values["SHA256SUMS"] == sums, "native_clear_checksums")
++    need(bool(values["SHA256SUMS.sealed"]), "sealed_checksums_present")
++    remaining(until_ns)
++    return {
++        "archive_valid": True, "archive_bytes": len(raw), "archive_sha256": sha(raw),
++        "expanded_bytes": len(expanded), "member_names": list(MEMBERS),
++        "members": [{"name": name, "bytes": len(values[name]), "sha256": sha(values[name])}
++                    for name in MEMBERS],
++        "format": metadata["format"], "state_format": metadata["state_format"],
++        "generation": metadata["generation"], "state_bytes": metadata["state_bytes"],
++        "seal_identity_sha256": seal["sha256"],
++        "sealed_checksum_cryptographically_authenticated": False,
++        "state_decrypted_by_observer": False,
++        "official_openbao_state_format_claimed": False,
++    }
++
++
++def archive_observation(path: Path, until_ns: int) -> tuple[dict, bytes | None]:
++    try:
++        path.lstat()
++    except FileNotFoundError:
++        return {"exists": False, "archive_valid": False}, None
++    raw, fence = checked_bytes(path, MAX_ARCHIVE, until_ns, owner=os.getuid())
++    result = {"exists": True, "file": fence, "archive_valid": False}
++    try:
++        result.update(inspect_archive_bytes(raw, until_ns))
++    except (EvidenceError, ValueError, UnicodeError, zlib.error) as error:
++        result["archive_error_type"] = type(error).__name__
++        result["archive_error_code"] = str(error) if isinstance(error, EvidenceError) else None
++    return result, raw
++
++
++def b64_32(value: object) -> bytes:
++    need(type(value) is str, "audit_digest_type")
++    try:
++        raw = base64.b64decode(value, validate=True)
++    except (ValueError, TypeError):
++        raise EvidenceError("audit_digest_encoding") from None
++    need(len(raw) == 32 and base64.b64encode(raw).decode("ascii") == value, "audit_digest_shape")
++    return raw
++
++
++def parse_audit(raw: bytes, until_ns: int) -> list[dict]:
++    remaining(until_ns)
++    need(len(raw) <= MAX_AUDIT and (not raw or raw.endswith(b"\n")), "complete_bounded_audit_lines")
++    records = []
++    previous = b"\0" * 32
++    sequence = 0
++    for line in raw.splitlines(keepends=True):
++        remaining(until_ns)
++        need(line.endswith(b"\n") and line != b"\n", "audit_line_termination")
++        record = decode_json(line[:-1])
++        need(type(record) is dict and set(record) == {"event", "mac"}, "audit_record_exact_fields")
++        event = record["event"]
++        need(type(event) is dict and set(event) == {
++            "schema", "sequence", "previous", "time", "kind", "path_digest", "status"
++        }, "audit_event_exact_fields")
++        need(type(event["schema"]) is int and event["schema"] == 2, "audit_schema")
++        need(type(event["sequence"]) is int and event["sequence"] == sequence + 1
++             and event["sequence"] < 2 ** 64, "audit_sequence_contiguous")
++        need(type(event["time"]) is int and 0 <= event["time"] < 2 ** 64, "audit_time_u64")
++        need(b64_32(event["previous"]) == previous, "audit_previous_mac_chain")
++        mac = b64_32(record["mac"])
++        b64_32(event["path_digest"])
++        need(type(event["kind"]) is str and len(event["kind"]) <= 128
++             and re.fullmatch(r"[a-z][a-z0-9-]*", event["kind"]) is not None, "audit_kind_shape")
++        status = event["status"]
++        need(status is None or type(status) is int and 100 <= status <= 599, "audit_status_shape")
++        records.append({
++            "sequence": event["sequence"], "kind": event["kind"], "status": status,
++            "path_digest": event["path_digest"], "line_sha256": sha(line),
++        })
++        sequence, previous = event["sequence"], mac
++    remaining(until_ns)
++    return records
++
++
++def capture_audits(root: Path, until_ns: int) -> dict:
++    captured = {}
++    for node in NODES:
++        raw, fence = checked_bytes(root / ("node%d" % node) / "audit.jsonl",
++                                   MAX_AUDIT, until_ns, owner=os.getuid())
++        captured[node] = {"bytes": raw, "file": fence, "records": parse_audit(raw, until_ns)}
++    remaining(until_ns)
++    return captured
++
++
++def audit_delta(before: dict, after: dict, until_ns: int) -> dict:
++    remaining(until_ns)
++    nodes = []
++    pairs = []
++    complete = True
++    unexpected = False
++    veto = False
++    for node in NODES:
++        old, new = before[node], after[node]
++        for key in ("device", "inode", "uid", "gid", "mode", "links"):
++            need(new["file"][key] == old["file"][key], "audit_file_identity_changed")
++        need(new["bytes"].startswith(old["bytes"]), "audit_prefix_changed")
++        old_count = len(old["records"])
++        events = new["records"][old_count:]
++        need(new["records"][:old_count] == old["records"], "audit_record_prefix_changed")
++        pending = None
++        local_pairs = []
++        projected = []
++        for event in events:
++            remaining(until_ns)
++            projected.append({key: event[key] for key in ("sequence", "kind", "status", "line_sha256")})
++            kind = event["kind"]
++            if kind in ("request", "wire-rejection"):
++                if pending is not None or event["status"] is not None:
++                    complete = False
++                pending = event
++            elif kind in ("response", "wire-response"):
++                expected_kind = "request" if kind == "response" else "wire-rejection"
++                if (pending is None or pending["kind"] != expected_kind
++                        or pending["path_digest"] != event["path_digest"]
++                        or event["status"] is None):
++                    complete = False
++                else:
++                    local_pairs.append({
++                        "node": node, "request_sequence": pending["sequence"],
++                        "response_sequence": event["sequence"], "status": event["status"],
++                        "kind": expected_kind, "same_opaque_fingerprint": True,
++                    })
++                pending = None
++            else:
++                unexpected = True
++                veto = veto or kind == "native-ha-historical-restore-delivery-veto"
++        complete = complete and pending is None
++        pairs.extend(local_pairs)
++        nodes.append({
++            "node": node, "before_file": old["file"], "after_file": new["file"],
++            "before_records": old_count, "after_records": len(new["records"]),
++            "delta_records": len(events), "events": projected, "pairs": local_pairs,
++        })
++    remaining(until_ns)
++    return {
++        "nodes": nodes, "pairs": pairs,
++        "complete_known_request_response_pairs": complete and not unexpected,
++        "unexpected_event_kind": unexpected, "historical_delivery_veto_observed": veto,
++        "request_count": len(pairs),
++        "route_authenticated_or_reversed_from_fingerprint": False,
++        "audit_mac_authenticated_by_observer": False,
++        "client_http_framing_proven_by_audit": False,
++        "association_scope": "single_owned_cli_window_without_other_controller_http",
++    }
++
++
++def secret_variants(values: list[bytes]) -> set[bytes]:
++    variants = set()
++    for raw in values:
++        need(type(raw) is bytes and bool(raw), "secret_literal_type")
++        if len(raw) >= 8:
++            variants.add(raw)
++            variants.add(base64.b64encode(raw))
++            variants.add(raw.hex().encode("ascii"))
++        try:
++            decoded = raw.decode("utf-8")
++        except UnicodeError:
++            decoded = None
++        if decoded is not None:
++            for ensure_ascii in (False, True):
++                escaped = json.dumps(decoded, ensure_ascii=ensure_ascii)[1:-1].encode("utf-8")
++                if len(escaped) >= 8:
++                    variants.add(escaped)
++            if b"-----BEGIN " in raw and b"PRIVATE KEY-----" in raw:
++                for line in raw.splitlines():
++                    if len(line) >= 32 and re.fullmatch(rb"[A-Za-z0-9+/=]+", line):
++                        variants.add(line)
++    return variants
++
++
++def public_literal_scan(files: list[Path], values: list[bytes], until_ns: int) -> dict:
++    variants = secret_variants(values)
++    members = []
++    for path in files:
++        raw, fence = checked_bytes(path, MAX_PUBLIC_FILE, until_ns, owner=os.getuid())
++        need(not any(value in raw for value in variants), "fixture_secret_literal_in_public_output")
++        members.append({"name": path.name, "bytes": len(raw), "sha256": fence["sha256"]})
++    return {
++        "scope": "actual_fixture_literals_and_captured_encoding_variants",
++        "members": len(members), "literal_inputs": len(values),
++        "encoding_variants": len(variants), "hits": 0,
++        "universal_secret_detection_claimed": False,
++        "members_sha256": sha(json.dumps(members, sort_keys=True, separators=(",", ":")).encode()),
++    }

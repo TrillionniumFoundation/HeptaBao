@@ -1,0 +1,114 @@
+{
+  "schema": "heptabao.r10.linux-normal44-root-terminal-review.v1",
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "job_id": "1a1a7c83142-fc05-2c88",
+  "status": "passed",
+  "exact_test_count": 44,
+  "passed": 44,
+  "failed": 0,
+  "ignored": 0,
+  "groups": [
+    {
+      "label": "ssh25",
+      "passed": 25,
+      "failed": 0,
+      "ignored": 0,
+      "exact_names_match": true,
+      "stdout_sha256": "d2f35fb2e0f3f26de41524b9e3e4d9faecd6afe38ac571086eb7ef2798fb4743",
+      "stderr_sha256": "cb645c44669b47c6e5ac2fa49935208907b62331a8721c3454c39e0435df64c0",
+      "elapsed_seconds": 43.875716383976396
+    },
+    {
+      "label": "mount1",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "exact_names_match": true,
+      "stdout_sha256": "a407528dd1b95ccc285ea87d8808ccb153f0bd1f56d346286bfec5b08a5d8fa3",
+      "stderr_sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0",
+      "elapsed_seconds": 0.2831328430038411
+    },
+    {
+      "label": "redirect5",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "exact_names_match": true,
+      "stdout_sha256": "ac1bccba45d73e07f9c0948e9947c900a4a8ce90b9f48f1e407002bc409a5e05",
+      "stderr_sha256": "0d1b1bbb8ca8447a0d365222beef62eb6526abd06fb4462a4c7875287bdc90f9",
+      "elapsed_seconds": 0.12912490099552087
+    },
+    {
+      "label": "actor2",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "exact_names_match": true,
+      "stdout_sha256": "50dbbede5dfe985c73601ad4e4b916225fc458c757cd6d64748d679f1319483a",
+      "stderr_sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727",
+      "elapsed_seconds": 10.111542424012441
+    },
+    {
+      "label": "ordinary5",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "exact_names_match": true,
+      "stdout_sha256": "79864277a85c8aa2eb7efd9acbef5f0751507349e43e53a30fb5111b2dc3f76f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsed_seconds": 0.045412469014991075
+    },
+    {
+      "label": "no_forward6",
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0,
+      "exact_names_match": true,
+      "stdout_sha256": "379835b83b3fedd9446a83cbbfb9024d26f9b96bbb8d6bc7215f396f9044cd84",
+      "stderr_sha256": "078e91400638071a5d52a0d24ae1adddad5035a371ba848398c7e08c51731f83",
+      "elapsed_seconds": 8.06792614099686
+    }
+  ],
+  "root_verified_raw_original_files": 20,
+  "result_sha256": "409b8a02557cc5d2985d15f01ff28ff64a6fb43c4a8b1e0f50f03bb748fcbeee",
+  "authoritative_complete_and_durable": true,
+  "all_14_owned_groups_reaped": true,
+  "source_release_and_retained_libtest_unchanged": true,
+  "normal_default_features": true,
+  "fixture_features": [],
+  "original_caps": {
+    "each_listing": 30,
+    "each_runtime_group": 600,
+    "normal_libtest_build": 3600,
+    "normal_release_build": 1800
+  },
+  "release_elapsed_seconds": 651.5203325269977,
+  "libtest_build_elapsed_seconds": 1081.7005982089904,
+  "retained_libtest": {
+    "bytes": 187607928,
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": true
+    },
+    "sha256": "248dac36e0ba89732ef6c3c0055dab38a6458d762171b4883cbdbd50286467bf"
+  },
+  "release_artifact_sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+  "r9_two_failed_cases_pass_here": true,
+  "prior_failed_r9_run_reclassified": false,
+  "current_candidate_linux_normal_gate": true,
+  "mac_normal_gate": "independent result pending",
+  "physical_ha_qualification": false,
+  "x230_qualification": false,
+  "whole_surface_admitted": false,
+  "production_changed": false
+}

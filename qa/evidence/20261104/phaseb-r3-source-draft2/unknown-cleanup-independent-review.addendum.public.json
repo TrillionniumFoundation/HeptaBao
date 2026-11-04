@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.phaseb-r3.independent-source-review.addendum.v1",
+  "previous_review_blob": "2558ef27f8d0c5218744a199ddc8d0042c7995a5",
+  "before": {
+    "git_blob": "f15ac9eb5ac74042cdc1594586dd4a23ecfca396",
+    "bytes": 56333,
+    "sha256": "c9b090a9069c68b520005ec80185f574a2bf65c96dc4abdb264577532ceb333f"
+  },
+  "after": {
+    "git_blob": "6070094db4cec344f209df4b7c28cf4c9f1320ca",
+    "bytes": 57599,
+    "sha256": "052e3ba165153ade35f86c67c3d4e49b21294ac3b45be61f30f6791d82f79c87"
+  },
+  "diff": {
+    "git_blob": "136b269b944c4f7c065a515679b51f9b0bf46f0d",
+    "bytes": 3736,
+    "sha256": "8bff4a5b7778e449eb8aa3a05b2e2928b5522dbeeaac9348e80d8d0dea3b4781"
+  },
+  "reviewed_changes": [
+    "Cleanup records each Popen attempt before stop, retains failure results, and does not grant a second TERM/KILL budget when final collection repeats. Newly added after-fence Git children retain their first cleanup attempt.",
+    "Action exception after an actually dispatched non-GET/HEAD exchange, except explicit 400/403 rejection, marks the boundary unknown. This covers reference setup reply-shape exceptions before check().",
+    "No requests, command deadlines, five-case inventory, restore state criteria, retained reference sources or product code changed."
+  ],
+  "additional_blocking_findings": [],
+  "host_execution": false,
+  "tests_executed": 0,
+  "runtime_qualification": false
+}

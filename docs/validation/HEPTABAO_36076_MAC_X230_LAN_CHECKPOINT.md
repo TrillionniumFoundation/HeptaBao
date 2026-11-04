@@ -1,5 +1,23 @@
 # HeptaBao：正常 V6 存储、三机 HA 与完整替代检查点
 
+## 当前 R10：Mac 与 ROG 正常 44 项均通过；Phase B 组件检查通过，实际快照待运行
+
+更新于 2026-11-04 19:04 UTC。当前候选是 `49503322c7f446e5eb41e7744f1fdbd7f1192ecc`，tree `1d4211f91e1b34a2ed087a3bbef2e2884bac88e9`。**Mac 与 ROG 都已完成本轮正常默认功能的 44/44 回归，零失败、零忽略；两端各 14 个受控进程组全部回收。** 根审阅逐一核对了每端 20 份原始文件的完整 UTF-8 字节、SHA256、Git blob、固定测试名称、真实 stdout 终态以及运行服务的权威完成记录。每端原有构建、列表和测试时限保持不变。
+
+| 实际运行 | 结果 | 原始结果 SHA256 | 证据 |
+|---|---|---|---|
+| Mac arm64，job `1a1a7d89fad-fc05-2cb1` | 44/44，0 failed，0 ignored | `28f47931ad644e610d45af00545b343a8d5867546ea8d00a44cae0a3de13c961` | [原件清单](../../qa/evidence/20261104/r10-mac-normal44-terminal-r1/manifest.public.json)、[根审阅](../../qa/evidence/20261104/r10-mac-normal44-terminal-r1/root-review.public.json) |
+| ROG Linux，job `1a1a7c83142-fc05-2c88` | 44/44，0 failed，0 ignored | `409b8a02557cc5d2985d15f01ff28ff64a6fb43c4a8b1e0f50f03bb748fcbeee` | [原件清单](../../qa/evidence/20261104/r10-rog-normal44-terminal-r1/manifest.public.json)、[根审阅](../../qa/evidence/20261104/r10-rog-normal44-terminal-r1/root-review.public.json) |
+
+此前 R9 ROG 的两个 native KV2 witness 失败用例在本轮真实运行通过，Mac 的 closed-peer TLS 回归也通过。旧 R9 42/44 失败和旧 R8 Mac 失败记录继续保留，资格仅授予本轮候选。Linux release server 完整哈希仍为 `67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113`，Mac 为 `bc1fc6b8ded5a43a60ab4c562cd5e092e63ae9df77afd654c9af8c096c128c98`；R10 是 test-helper 修正，Linux release 字节与 R9 相同，实际 R10 构建收据与测试身份均单独验证。
+
+官方 OpenBao 2.7.1 CLI 的有效 native archive 验证使用新 **Phase B R3 draft 2** 身份。旧 R2 完整主控字节未恢复，因此没有继承旧 R2 源码或运行资格。新源码及原始参考控制器的完整 22 件材料已归档于 [源码清单](../../qa/evidence/20261104/phaseb-r3-source-draft2/manifest.public.json)。实际离线 job `1a1a7e773c5-fc05-2cdc` 已完成 7 份源码解析与编译、34 项证据组件和 32 项控制器组件检查，0.146 秒退出 0；运行后文件操作、网络调用和子进程均为零。[完整执行证据](../../qa/evidence/20261104/phaseb-r3-offline-actual-r1/manifest.public.json)和[根审阅](../../qa/evidence/20261104/phaseb-r3-offline-actual-r1/root-review.public.json)明确：四个模块的定义及纯内存方法确实被执行；“compiled_not_executed”单行记录只描述此前编译阶段，不表示这些模块从未执行。
+
+这些组件检查没有运行产品、官方 CLI、目标 main、参考帮助方法或 host binding 构造器。有效快照保存、恢复、所有节点精确状态以及冷重启仍待真实 Phase B 运行。控制器保留 15 秒 CLI/HTTP、300 秒动作、原 readiness/election 时限；正常 seed/cold/final 停止采用一次共享 TERM5/KILL5 分配，参考控制器原有超时 SIGKILL/wait5 阶段另行保留，不声称所有停止阶段只共享一次预算。未知业务结果仍禁止新变更与重放。
+
+当前完整 workspace CI head/merge 两项仍在第 10 步实际 workspace 测试，未获得完整 CI PASS。新候选的 X230 34MiB/69 项、真实三机 128/98 项、严格 wire 与官方 native snapshot CLI 均尚无本轮终态资格。后续条目是保留的历史检查点，当前状态以本节及[本轮范围记录](../../qa/evidence/20261104/r10-dual-normal44-phaseb-checkpoint-r1/scope.public.json)为准。59 个完整功能面、真实凭证与逐台回滚、备份迁移仍须继续闭合；**全量替代、生产切换、旧版清理均未获资格或执行。**
+
+
 ## R10 运行进度：ROG 正常构建中，Mac 离线 canonical 恢复完成
 
 更新于 2026-11-04 18:26 UTC。ROG 的 R10 源准备已实际完成：独立干净 clone 为 canonical `49503322c7f446e5eb41e7744f1fdbd7f1192ecc` / tree `1d4211f91e1b34a2ed087a3bbef2e2884bac88e9`，唯一父提交 `1d12abc45a83d4b32e7185d01a876eb93110b1e2`；完整历史 3,752 个提交，strict fsck 通过，42 个受控命令全部回收。唯一已审 test helper 和五份控制输入的完整哈希、原 R9 源树均已复核。实际导出的单提交 Git bundle 为 1,522 字节，SHA256=`543ad493d0b3e224f9620b5418e7eda260a000ccc1d8c3c0153bc49a963dad36`。[完整源准备原件](../../qa/evidence/20261104/r10-rog-source-stage-r1/manifest.public.json)及[根审阅](../../qa/evidence/20261104/r10-rog-source-stage-r1/root-review.public.json)保留原始 JSON 字节。

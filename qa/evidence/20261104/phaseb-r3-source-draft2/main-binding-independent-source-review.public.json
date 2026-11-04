@@ -1,0 +1,112 @@
+{
+  "schema": "heptabao.phaseb-r3.main-binding-independent-source-review.v1",
+  "reviewer": "authbus_migration",
+  "scope": "source_only_no_host_execution",
+  "inputs": [
+    {
+      "path": "phaseb_controller_r3.py",
+      "git_blob": "8276ada7920bdff02c2bf735a7a80696490e7c4e",
+      "bytes": 55734,
+      "sha256": "9ef468ab8bbde2af3c97f3a08e4aa38854ba2249db1fa38942aa87f5a3f527aa"
+    },
+    {
+      "path": "phaseb_controller_r3.py.draft2",
+      "git_blob": "f15ac9eb5ac74042cdc1594586dd4a23ecfca396",
+      "bytes": 56333,
+      "sha256": "c9b090a9069c68b520005ec80185f574a2bf65c96dc4abdb264577532ceb333f"
+    },
+    {
+      "path": "phaseb_binding_r3.py",
+      "git_blob": "236c35803f07f2b6bfeb06b0abfe108baef27215",
+      "bytes": 20742,
+      "sha256": "39795f901ffac84236411f4b89ce2ee2ae573446ce30f490f9b8d0c603131501"
+    },
+    {
+      "path": "official_cli_reference_r4.py",
+      "git_blob": "4a4a60d1d52a0fd835b467f1e4687ee95314d1de",
+      "bytes": 46586,
+      "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9"
+    },
+    {
+      "path": "case-inventory.public.json",
+      "git_blob": "78f8816e05165209837fadc8c243b7f894573354",
+      "bytes": 2779,
+      "sha256": "a17b77fa768ef368799757db1a9d5af823d9d1a00ea8167d139a5a41884e5cb1"
+    }
+  ],
+  "full_read": [
+    "phaseb_controller_r3.py",
+    "phaseb_binding_r3.py",
+    "phaseb_controller_r3.py.draft2"
+  ],
+  "targeted_reference_read": [
+    "Owner.start_child",
+    "Owner.await_owned_cmdline",
+    "Owner.run_private",
+    "stop_owned",
+    "stop_provisional",
+    "classify_error"
+  ],
+  "draft2_delta": {
+    "only_method": "finish_restore_readback",
+    "bytes_added": 599,
+    "prefix_bytes_identical": true,
+    "suffix_bytes_identical": true,
+    "known_author_gap_closed_at_source": true
+  },
+  "findings": [
+    {
+      "kind": "resolved_author_finding",
+      "detail": "Restore API, JSON and report failures remain under operation_inflight and boundary_known=false until complete state/report verification; any exception makes outcome_unknown true and prevents cold_restart."
+    },
+    {
+      "kind": "reviewed",
+      "detail": "A known CLI/server boundary alone does not qualify restore. All-node data/metadata/version3 absence or exactly unchanged known rejection is required before cold restart; rejection remains unqualified."
+    },
+    {
+      "kind": "reviewed",
+      "detail": "Unknown process, HTTP, CLI or state boundary blocks later mutation windows. Finish performs read-only evidence and cleanup, with no upload or service respawn."
+    },
+    {
+      "kind": "reviewed",
+      "detail": "Popen ownership uses the recovered reference provisional registration and exact process identity. Cleanup retains all registered children and attempts later children even when an earlier cleanup fails."
+    },
+    {
+      "kind": "reviewed",
+      "detail": "Normal default R10 release, canonical source/tree, ABI/profile, exact original44 group set and terminal cleanup are explicitly bound before live admission; unresolved artifact pins do not admit prepare."
+    },
+    {
+      "kind": "scope",
+      "detail": "B03 proves a distinct actual CLI save and fresh owned output after B02, not a separately compared archive epoch value."
+    },
+    {
+      "kind": "scope",
+      "detail": "The NEW R3 B04 contract permits a complete recognized business failure before independent B05. Audit is explicitly not client framing proof; partial and unknown outcomes do not continue."
+    }
+  ],
+  "additional_blocking_findings": [],
+  "budgets_unchanged": {
+    "http": 15,
+    "cli": 15,
+    "action": 300,
+    "readiness": 45,
+    "election": 60,
+    "stable_leader": 2.2,
+    "peer_timeout_ms": 1500,
+    "forward_timeout_ms": 8000,
+    "cleanup_term": 5,
+    "cleanup_kill": 5
+  },
+  "not_performed": [
+    "python_ast_execution",
+    "component_test_execution",
+    "prepare",
+    "server_start",
+    "official_cli_runtime",
+    "provider_request"
+  ],
+  "runtime_authorized": false,
+  "runtime_qualification": false,
+  "full_replacement_qualification": false,
+  "remaining_admission": "Root review of frozen final source/binding, real R10 artifact and original44 receipts, actual parse/prepare and separately authorized single live run."
+}

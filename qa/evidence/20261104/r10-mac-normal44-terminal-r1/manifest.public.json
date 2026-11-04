@@ -1,0 +1,116 @@
+{
+  "schema": "heptabao.r10.mac-normal44-terminal-packet.v1",
+  "files": [
+    {
+      "path": "result.public.json",
+      "bytes": 24522,
+      "sha256": "28f47931ad644e610d45af00545b343a8d5867546ea8d00a44cae0a3de13c961",
+      "git_blob": "f1721688e97951506f728bc7ae639e8107641696"
+    },
+    {
+      "path": "authority.public.json",
+      "bytes": 731,
+      "sha256": "6db63fffdbbdd7b5d2feb535d759a2170fe1fe28fcf3565b9d34a7eda19097bd",
+      "git_blob": "525a3c2577a290b6ef136b0d572941216529f51f"
+    },
+    {
+      "path": "process-read.public.json",
+      "bytes": 7069,
+      "sha256": "894f343021e36c6deeb2f3cf5e8b21d1bd7dfa5d72184bf4d93a07e17eeee7d7",
+      "git_blob": "1713b5072c21a9722e56cebb29df9359f295ce03"
+    },
+    {
+      "path": "controller.stdout",
+      "bytes": 2201,
+      "sha256": "57ca6a15107aab121f1b9de1bf99d3e3236f2ed05c533883416a96ebc7d761d0",
+      "git_blob": "011194fe31e4b10ba19f600e8a98641d9e1d908f"
+    },
+    {
+      "path": "normal-release-result.public.json",
+      "bytes": 3326,
+      "sha256": "f5746eaf7fd79c8001ac927c9738922297d6e5e575cbd12bc092aafa2c13f544",
+      "git_blob": "5d0f6fd01dfd4415610e6f30afe4b2ea203a4297"
+    },
+    {
+      "path": "native-build.public.json",
+      "bytes": 798,
+      "sha256": "16fa488ed8d7a9a46541b5aea5007e27b538e5c37f9246c14de0e5fe24b05ad1",
+      "git_blob": "3daa9c7e0537b066502606430b9289b39a249712"
+    },
+    {
+      "path": "ssh25.stdout",
+      "bytes": 3163,
+      "sha256": "60419e3afaf23f6a2d7eb366ea8b15a51075dbf6d53f4bc82e8795a0ff77e431",
+      "git_blob": "5f929d769495102d183025531cb55a1a51de9650"
+    },
+    {
+      "path": "ssh25.stderr",
+      "bytes": 18017,
+      "sha256": "34608a613332fb0e9ffe06810dd8f16bde135228c637aa30be7a10a7ea76a8db",
+      "git_blob": "b3b532146d4410dcd4749c94531b494a204b7a00"
+    },
+    {
+      "path": "mount1.stdout",
+      "bytes": 233,
+      "sha256": "63732715d1bda8bd122cffedc40189cfcf1513664bff4702ad0bd144af304a85",
+      "git_blob": "0d29f4b1cc0f78764a9484346c59544d59bbf1d7"
+    },
+    {
+      "path": "mount1.stderr",
+      "bytes": 162,
+      "sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0",
+      "git_blob": "4f2ce7d7af93c803e41e01c94730d01caca9ae78"
+    },
+    {
+      "path": "redirect5.stdout",
+      "bytes": 722,
+      "sha256": "ac2403be7b99034284780f385d2476216dc71b3ae5eec5103c688f466be39b37",
+      "git_blob": "867fb9411cace94b1793b5b0cbb0232f71a1f2fb"
+    },
+    {
+      "path": "redirect5.stderr",
+      "bytes": 1304,
+      "sha256": "0d1b1bbb8ca8447a0d365222beef62eb6526abd06fb4462a4c7875287bdc90f9",
+      "git_blob": "11801edbcde0236291f5dca4cace5c3078e8b772"
+    },
+    {
+      "path": "actor2.stdout",
+      "bytes": 440,
+      "sha256": "e4458cb98e13b2ce49de5493ad19c22c5577a03ff281b37b9eccba7262a10074",
+      "git_blob": "460f96bc1fd2852ab6662a202d88bcfd8ae8adab"
+    },
+    {
+      "path": "actor2.stderr",
+      "bytes": 324,
+      "sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727",
+      "git_blob": "5841b7131d95cedb13516476519651df7aceac2e"
+    },
+    {
+      "path": "ordinary5.stdout",
+      "bytes": 699,
+      "sha256": "af76b07698a847573bf52fe937e8856f1f78107c699c2d80246ff477d8fdcbb5",
+      "git_blob": "37186dc23ab5546cc99f99e587af5453e6c4f602"
+    },
+    {
+      "path": "ordinary5.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "no_forward6.stdout",
+      "bytes": 877,
+      "sha256": "6bdba445d71fe0e02d856bc4f52eb1c34951c50f7a5c6b4c4ab17636d76ff698",
+      "git_blob": "12424cd68d53c4ab4793b1258bcb6e6d122d471c"
+    },
+    {
+      "path": "no_forward6.stderr",
+      "bytes": 14319,
+      "sha256": "4685630188618fba8bf20efa69d508c3c74f55055c72adb9ce7586ad87b3136d",
+      "git_blob": "6f87b72ea3a48c2217b9655a1811ec6e78908f51"
+    }
+  ],
+  "original_file_bytes_not_json_reserialized": true,
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+}

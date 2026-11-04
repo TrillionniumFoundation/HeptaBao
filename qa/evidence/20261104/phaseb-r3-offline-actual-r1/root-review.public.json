@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.phaseb-r3-root-offline-terminal-review.v1",
+  "job_id": "1a1a7e773c5-fc05-2cdc",
+  "status": "passed",
+  "actual_stdin_sha256": "9b22cb511eb1dfdc33a4754821d1156d99bc2d6f3a799338bfa7e39f9681a685",
+  "manifest_sha256": "5b20012832de947f6c4c34fd1dcfa7c7af60ec8c88673bb7ee4ab92a91662ed3",
+  "wrapper_sha256": "f9452d67960c5382d64c2edc35aa35cf59cefe273c0768e6754430f37b72a32f",
+  "stdout_sha256": "7882a3ea4a4f1d2be172aa275dbd269dd89947e8071869c8208905551fd1ae2d",
+  "stderr_bytes": 0,
+  "authoritative_complete_and_durable": true,
+  "seven_sources_verified_parsed_compiled": true,
+  "pure_memory_components": {
+    "evidence": 34,
+    "controller": 32
+  },
+  "elapsed_ms": 146.242437,
+  "module_definitions_executed": [
+    "phaseb_evidence_r3.py",
+    "phaseb_controller_r3.py",
+    "phaseb_evidence_components_r3.py",
+    "phaseb_controller_components_r3.py"
+  ],
+  "compile_only_source_row_scope": "The seven per-source compile observations precede execution of the four named module definitions and synthetic component methods; they do not imply those four modules were never executed.",
+  "target_main_called": false,
+  "reference_helpers_executed": false,
+  "binding_constructor_called": false,
+  "after_guard_file_operations": 0,
+  "network_calls": 0,
+  "children_spawned": 0,
+  "product_runtime_qualification": false,
+  "actual_host_prepare_authorized": false,
+  "full_replacement_qualified": false
+}

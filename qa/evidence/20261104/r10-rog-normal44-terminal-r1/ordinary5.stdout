@@ -1,0 +1,10 @@
+
+running 5 tests
+test http::response_coalescing_tests::ordinary_http_complete_small_prefix_keeps_body_and_bounded_metadata ... ok
+test http::response_coalescing_tests::ordinary_http_original_head_no_body_chunked_and_large_raw_framing_remain ... ok
+test http::response_coalescing_tests::ordinary_http_prefix_keeps_partial_writes_and_original_io_failures ... ok
+test http::response_coalescing_tests::ordinary_http_tcp_tls_first_record_contains_full_small_response_with_unread_upload ... ok
+test http::response_coalescing_tests::ordinary_http_tcp_tls_response_preserves_original_expired_deadline ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 3715 filtered out; finished in 0.02s
+

@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.phaseb-r3-evidence-independent-source-review.v1",
+  "reviewer": "ha_validation",
+  "candidate": {
+    "git_blob": "e507fef5b87305f4b8e8a0d729aecec6da284bed",
+    "bytes": 15201,
+    "sha256": "4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024"
+  },
+  "primary_source": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "path": "crates/heptabao-server/src/snapshot_archive.rs",
+    "bytes": 14013,
+    "sha256": "77c9565ac4efcfe8d387ae7955c4c977bdd4913bcf770981a9b28facdeb2313d"
+  },
+  "whole_candidate_read": true,
+  "whole_primary_archive_source_read": true,
+  "review_scope": [
+    "bounded single complete gzip member and exact native canonical four-member tar envelope",
+    "native HA metadata and clear checksums",
+    "audit exact schema, u64 time/sequence, public digest chain and append prefix",
+    "single-request pending audit pairing and safe status projection",
+    "generated fixture literal variants and bounded stable-FD public scan"
+  ],
+  "blocking_source_findings": [],
+  "checks": {
+    "gzip_eof_unused_data_unconsumed_tail": true,
+    "exact_tar_headers_and_1024_zero_terminator": true,
+    "native_small_member_limit_8191": true,
+    "native_ha_positive_u64_generation_and_237_minimum": true,
+    "opaque_sealed_sums_presence_not_authentication": true,
+    "audit_previous_mac_shape_chain_not_authentication": true,
+    "audit_prefix_identity_and_pending_pair_errors_fail_closed": true,
+    "no_route_or_client_framing_claim": true,
+    "public_literal_scan_explicitly_limited": true
+  },
+  "caller_obligation": {
+    "empty_delta_can_have_complete_pairs_boolean_true": true,
+    "empty_delta_request_count": 0,
+    "required": "Each window expected to dispatch an actual CLI request must separately assert a nonempty or exact expected paired-request count; the completeness boolean alone is not dispatch evidence."
+  },
+  "not_run": {
+    "python_components": true,
+    "archive_or_audit_runtime": true,
+    "network_or_subprocess": true,
+    "product_or_cli_fixture": true
+  },
+  "qualification": false,
+  "conclusion": "No blocking source finding in this limited helper review; controller association/count gates and actual runtime qualification remain separate."
+}

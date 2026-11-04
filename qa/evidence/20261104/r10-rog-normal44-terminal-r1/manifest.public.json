@@ -1,0 +1,116 @@
+{
+  "schema": "heptabao.r10.linux-normal44-terminal-packet.v1",
+  "files": [
+    {
+      "path": "result.public.json",
+      "bytes": 24311,
+      "sha256": "409b8a02557cc5d2985d15f01ff28ff64a6fb43c4a8b1e0f50f03bb748fcbeee",
+      "git_blob": "3e0a0ce5f20de8bb892436c1e1a38872b45f27d6"
+    },
+    {
+      "path": "authority.public.json",
+      "bytes": 731,
+      "sha256": "961195247edbe6a22b3d6ad16a99ccd1d1e8f99d1474e6834d27140560709cd8",
+      "git_blob": "23938673acd9512b73e08e39cce6866f379c710c"
+    },
+    {
+      "path": "process-read.public.json",
+      "bytes": 6712,
+      "sha256": "c5c84096c6d53b04125560588c0aaf0b754c78d0f6a885aa61096dbd37782aae",
+      "git_blob": "4b13cac6c03284891205598df68edf23d16f943c"
+    },
+    {
+      "path": "controller.stdout",
+      "bytes": 2082,
+      "sha256": "7c33c8ba80f76579f546fe64b533710a3adc5d59a8a09cc03b76ff1a9009f1d8",
+      "git_blob": "dc3184beef35b8b004eb2a3624fcc9487c0f2c2b"
+    },
+    {
+      "path": "normal-release-result.public.json",
+      "bytes": 3227,
+      "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+      "git_blob": "849d45f07a53007f6e927530900783e23197999b"
+    },
+    {
+      "path": "native-build.public.json",
+      "bytes": 801,
+      "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+      "git_blob": "8b70873f6ee251a7cc403d781e70a9e505b91f95"
+    },
+    {
+      "path": "ssh25.stdout",
+      "bytes": 3163,
+      "sha256": "d2f35fb2e0f3f26de41524b9e3e4d9faecd6afe38ac571086eb7ef2798fb4743",
+      "git_blob": "b12ce4753989fc43e75ee11d84321252e601a6a5"
+    },
+    {
+      "path": "ssh25.stderr",
+      "bytes": 17910,
+      "sha256": "cb645c44669b47c6e5ac2fa49935208907b62331a8721c3454c39e0435df64c0",
+      "git_blob": "e53fc1bd065f89fd78b356b49fa5148b1b2d2fc1"
+    },
+    {
+      "path": "mount1.stdout",
+      "bytes": 233,
+      "sha256": "a407528dd1b95ccc285ea87d8808ccb153f0bd1f56d346286bfec5b08a5d8fa3",
+      "git_blob": "7b11728783935c6368b0152bc0061dd8eef006af"
+    },
+    {
+      "path": "mount1.stderr",
+      "bytes": 162,
+      "sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0",
+      "git_blob": "4f2ce7d7af93c803e41e01c94730d01caca9ae78"
+    },
+    {
+      "path": "redirect5.stdout",
+      "bytes": 722,
+      "sha256": "ac1bccba45d73e07f9c0948e9947c900a4a8ce90b9f48f1e407002bc409a5e05",
+      "git_blob": "77788d250a99370e3f00fd5f8d20c47796575e57"
+    },
+    {
+      "path": "redirect5.stderr",
+      "bytes": 1304,
+      "sha256": "0d1b1bbb8ca8447a0d365222beef62eb6526abd06fb4462a4c7875287bdc90f9",
+      "git_blob": "11801edbcde0236291f5dca4cace5c3078e8b772"
+    },
+    {
+      "path": "actor2.stdout",
+      "bytes": 440,
+      "sha256": "50dbbede5dfe985c73601ad4e4b916225fc458c757cd6d64748d679f1319483a",
+      "git_blob": "3d0d98fcf7fc99f869cb8b480c52adba6a4ba5c0"
+    },
+    {
+      "path": "actor2.stderr",
+      "bytes": 324,
+      "sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727",
+      "git_blob": "5841b7131d95cedb13516476519651df7aceac2e"
+    },
+    {
+      "path": "ordinary5.stdout",
+      "bytes": 699,
+      "sha256": "79864277a85c8aa2eb7efd9acbef5f0751507349e43e53a30fb5111b2dc3f76f",
+      "git_blob": "47dcc9c1a3deb6dfb23c04506b4400e4aa3da5fd"
+    },
+    {
+      "path": "ordinary5.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "no_forward6.stdout",
+      "bytes": 876,
+      "sha256": "379835b83b3fedd9446a83cbbfb9024d26f9b96bbb8d6bc7215f396f9044cd84",
+      "git_blob": "e6db0cbbdbae28ae54ea47347444d3d871fb36ce"
+    },
+    {
+      "path": "no_forward6.stderr",
+      "bytes": 14297,
+      "sha256": "078e91400638071a5d52a0d24ae1adddad5035a371ba848398c7e08c51731f83",
+      "git_blob": "5d243e07a5f78452b04117a3943e089b2b931ab9"
+    }
+  ],
+  "original_file_bytes_not_json_reserialized": true,
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+}

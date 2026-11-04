@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.r10.ci-status-projection.v1",
+  "observed_at_utc": "2026-11-04T19:02:22Z",
+  "run_id": 41879510413,
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "projection_not_original_tool_response": true,
+  "jobs": [
+    {
+      "id": 126748711283,
+      "name": "OpenBao replacement / merge",
+      "status": "in_progress",
+      "conclusion": null,
+      "completed_success_steps": 9,
+      "current_steps": [
+        {
+          "number": 10,
+          "name": "Test the complete locked Rust workspace",
+          "status": "in_progress"
+        }
+      ],
+      "pending_steps": 67
+    },
+    {
+      "id": 126748711370,
+      "name": "OpenBao replacement / head",
+      "status": "in_progress",
+      "conclusion": null,
+      "completed_success_steps": 9,
+      "current_steps": [
+        {
+          "number": 10,
+          "name": "Test the complete locked Rust workspace",
+          "status": "in_progress"
+        }
+      ],
+      "pending_steps": 67
+    }
+  ],
+  "full_ci_pass": false,
+  "manually_cancelled": false
+}
