@@ -1,5 +1,5 @@
 {
-  "schema": "heptabao.36076-and-33cafa-checkpoint.v3",
+  "schema": "heptabao.36076-and-33cafa-checkpoint.v4",
   "as_of_utc": "2026-11-04T08:17:22.431016+00:00",
   "compiled_source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
   "compiled_source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95",
@@ -316,7 +316,7 @@
     "current_full_qualification_terminal_observed": false,
     "current_run_id": 41797943393,
     "current_status": "in_progress",
-    "current_trust_boundary_run_id": 41792816878,
+    "current_trust_boundary_run_id": 41797943632,
     "current_trust_boundary_conclusion": "success",
     "current_attempt": 1,
     "attempt1_conclusion": "failure",
@@ -514,7 +514,50 @@
       61,
       61
     ],
-    "next": "Review parent-owned libproc observer + anonymous acknowledgement pipe before first RPC; wait HA window."
+    "next": "Commit reviewed QA scope and prepare exact production cutover/inverse plan; full production gateway and latest final-candidate binding remain open.",
+    "r4_state": "incomplete: QA phase name overwritten, initial rollback omitted; original receipt ok flag is insufficient",
+    "r4_result_sha256": "2c79b976d1cb3bdc18735a2e5c6d313515fb9b41be804154bfbbd21df2884086",
+    "r4_independent_initial_cleanup_sha256": "8ebbdc7b15818d2dc4e213eccddf0486b112bb123b5a3c1e080c040e72c10024",
+    "r4_independent_cleanup_checks": [
+      62,
+      62
+    ],
+    "r5_state": "passed_local_native_scope",
+    "r5_result_sha256": "6caa9ebfc2a3bf3ae637676a8055022817ec0efa85b09c6ffc304ac854ca6236",
+    "r5_parent_checks": [
+      60,
+      60
+    ],
+    "r5_initial_checks": [
+      95,
+      95
+    ],
+    "r5_cold_checks": [
+      95,
+      95
+    ],
+    "r5_each_rollback_checks": [
+      62,
+      62
+    ],
+    "r5_exact_four_phases_root_reviewed": true,
+    "r5_outer_unknown": false,
+    "r5_all_owned_stopped": true,
+    "r5_driver_sha256": "c384de8d1ada71f5fc4461a1cb5c03faaa178d42d88bfe6a652aa77c0ca101d0",
+    "r5_consumer_sha256": "a0faff4f0da0f9afd505476715495bf2ae4af040693020cf46e56b707aa7a733",
+    "r5_observer_sha256": "5cdebff7fc0f3350838abf02f0cbcd4a2b98862cd11b54a5d7ee683d48d3ca51",
+    "r5_native_version": "0.144.3",
+    "r5_selected_ordinal": 1,
+    "r5_isolated_order": [
+      1,
+      2
+    ],
+    "production_original_order": [
+      1,
+      2,
+      3
+    ],
+    "production_order_preservation_still_required": true
   },
   "profile3_current_finite_binding": {
     "mac_receipt_sha256": "6a059b7f4b69b5cb37808b2e447eea6a89dda4a003d2eb5c4816510a0d0aba4e",
@@ -542,6 +585,59 @@
     ],
     "all_five_identities_and_order_and_usage_preserved": true,
     "native_factory_exercised": false,
-    "provider_requests": 0
+    "provider_requests": 0,
+    "tg_local_profile_count": 0,
+    "tg_auth_profile_store_rows": 1,
+    "tg_auth_profile_state_rows": 0,
+    "tg_exact_rows_sha256": "76f1ceb53832209d67692c17ba4967df8fa0114f2365989fa5a8c963b095c4e6",
+    "shape_correction_sha256": "158fb3da106d0b81abb110a002938aa2df86a1a76cc85d927e8dd6306b249adb",
+    "previous_empty_raw_tables_claim_corrected": true
+  },
+  "pocket_native_full_current_r2": {
+    "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "parent_checks": [
+      49,
+      49
+    ],
+    "two_agent_initial_checks": [
+      111,
+      111
+    ],
+    "two_agent_cold_checks": [
+      111,
+      111
+    ],
+    "each_rollback_checks": [
+      80,
+      80
+    ],
+    "exact_four_phases_root_reviewed": true,
+    "actual_native_version": "0.144.3",
+    "actual_default_ordinal": 5,
+    "native_factory_count": 4,
+    "real_rpc_response_count": 8,
+    "login_response_type": "chatgptAuthTokens",
+    "raw_and_logical_changes": false,
+    "scope": "Current full state idempotent import; missing ordinal5 recovery is separate. No provider or production cutover qualification.",
+    "core_sha256": "9006c6d0eae73de89dd62ed381877c873cabd1fff94f790ded7c3e2e2241c7dd",
+    "execution_sha256": "0f7c864cdb6bdeee544dfa645e5d102fe9956454f44fdeec66ae5b40024b74a1",
+    "original_source_and_hold_markers_unchanged": true,
+    "all_owned_stopped": true
+  },
+  "async_root_request_record_baseline": {
+    "base_source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "production_transport_unchanged": true,
+    "actual_single_exchange_complete": true,
+    "new_single_record_assertion_passed": false,
+    "plaintext_record_bytes": [
+      4,
+      479
+    ],
+    "record_arrival_gap_us": 4,
+    "total_exchange_us": 2789,
+    "both_tcp_nodelay": true,
+    "original_deadline_ms": 2000,
+    "physical_cold_timeout_cause_proven": false,
+    "receipt_sha256": "b90c9660e69ed85ae84017cc856b94abb0dc648920162dc0a950f41a73be8325"
   }
 }

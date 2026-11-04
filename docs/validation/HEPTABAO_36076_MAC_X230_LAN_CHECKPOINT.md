@@ -8,7 +8,7 @@
 
 新候选的三机原 128 项已经终态失败，90 项通过、38 项未执行。该轮自然角色为 ROG 节点 2 向空缺 Mac 节点 1 恢复；seq47 单次冷解封在 14,099.923ms 返回完整 HTTP 503，服务内部原 14 秒恢复期限已耗尽。47 个 mutation intents 均有确定 response，unknown=0，owned 服务、mesh 和观察器全部停止。原 5 秒导入、15 秒 HTTP 和 8 秒 admission 限制均未改；响应端修复不足以关闭冷恢复门槛，旧 Pocket4 节点 3 向 Mac 节点 1 的失败方向也未覆盖。下文 `36076` 的旧证据分别保留其身份，不能自动改标为新候选。
 
-同一份正常构建源码已完成 Mac 和 X230 的 34MiB 正式 KV2 迁移恢复验证。命名空间退休问题和 TLS 请求分帧问题已有修复及对应测试。三机 HA 正常构建首轮原始 128 项测试通过 100 项，停在官方历史导入；这一轮导入超过原有 5 秒调用期限后结果未知，未重放。随后相同源码的私有诊断构建完成了全新隔离运行的 128/128 项。再后的一次全新正常构建运行通过 90 项，在密文缺失恢复中的节点 1 冷解封收到明确 503；诊断通过不能代替正常构建验收，两次正常失败均保留。
+既有 `36076` 正常构建源码已完成 Mac 和 X230 的 34MiB 正式 KV2 迁移恢复验证。命名空间退休问题和 TLS 请求分帧问题已有修复及对应测试。三机 HA 正常构建首轮原始 128 项测试通过 100 项，停在官方历史导入；这一轮导入超过原有 5 秒调用期限后结果未知，未重放。随后相同源码的私有诊断构建完成了全新隔离运行的 128/128 项。再后的一次全新正常构建运行通过 90 项，在密文缺失恢复中的节点 1 冷解封收到明确 503；诊断通过不能代替正常构建验收，两次正常失败均保留。
 
 实际安装版 AuthBus 插件已完成真实凭证导入、SDK 凭证选择、重启、续期、撤销及隔离状态回滚。Mac 隔离网关已通过启动和完整状态回滚；一次沿内置 HTTP 路径的真实默认模型请求返回完整 HTTP 429。后续核查发现生产还安装并启用了 Codex 原生插件，r8 的插件允许集合未覆盖它，因此该轮不能代表完整生产运行时。现用 Mac、ROG、Pocket4 的 AuthBus 配置仍指向旧来源，逐台迁移尚未完成。
 
@@ -88,13 +88,15 @@ seq55 导入的实际 owned caller 耗时为 5,011.837ms。调用器在原有 5 
 
 33cafa 原运行的停止日志确认：changed_root_recover 为 13,933,476µs，committed scope 为 13,948,275µs，入口 ReadIndex 为 14,782µs；服务请求总耗时 13,999,921µs 时 original deadline 剩余为零，密文和 barrier 未激活。Mac 在 08:04:37.825–08:04:38.098 UTC 有一次已报告的背景证据落盘：24 文件、353,180 字节、逐文件与目录 fsync。该 273ms 窗口的时间和 manifest 已纳入 assessment；跨主机时钟未校准，不能据时间差排除影响或把它认定为唯一原因。不得称该轮完全没有其他 I/O。新诊断将先在真实 TCP/mTLS 上观察请求端分帧；已核对客户端 TCP_NODELAY=true，因此不能凭两个 write 就声称 Nagle 是根因。
 
+随后实际异步请求观察在真实 TCP/mTLS 上调用原生产方法一次，双方 TCP_NODELAY=true，原 2 秒绝对期限内完整返回；已解密的应用记录长度为 4、479 字节，首段至完整请求相隔 4µs，总 exchange 为 2.789ms。新增的单记录预期断言在完整响应后失败，作为基线保存；它只证明请求多分了一条记录，不能解释三机 14 秒超时。最初测试编译因遗漏 import 失败，也保留为测试前置失败。正在同一 33cafa 基线上准备带有限阶段计时的私有真实冷恢复诊断，请求实际写法、ReadIndex、fsync 和固定并发窗口不变。
+
 ## AuthBus 与逐台切换
 
 已发现两个可验证的非 J3160 凭证来源：Mac 当前原生凭证对应既有 profile-2；ROG 上存在与既有 profile-1 相同身份的有效代。凭证有效与模型额度可用分开判断：profile-2 的真实业务响应为 usage_limit_reached；profile-1 捕获的来源状态含 subscription_limit / wham，blockedUntil=1793774885494 在当时尚属未来。后续必须重新执行真实 SDK 的时间相关排序，不能假定该时间仍在未来或强制选择 profile-2。迁移不会清除这些真实限制来制造成功。
 
 profile-3 已进行一次受控原生续期，实际 provider 返回完整 HTTP 401，error.type=invalid_request_error、code=invalid_refresh_token。没有新代、未知结果或重试，原生产 stores 保持不变。Pocket4 与 desktop 找到的是同一已拒绝代，ROG 已确认路径没有目标账户的新代，ai395 的三个标准候选路径不存在。这些精确范围内尚未发现替代来源；需要准备同账户的原生重新登录，不能以其他账户冒充。
 
-补充有限范围归因：Mac 已捕获的实际 main SDK 顺序中，profile-3 是第三个 fallback，配置没有非元数据的明确绑定；未观察生产会话覆盖，不能称其已全局停用。Pocket4 当前两个默认 agent 的真实 SDK/原生选择器均只选择本机凭证 ordinal5，tg 的空本地认证表实际继承 main 的全部五身份、order 与 usage；profile-3 在这两个默认消费者中不是候选。其失效恢复应与 Bao 存储正确性分开记录；迁移必须保留原身份、失效代际和恢复材料，也不能把隔离测试排除该条目的顺序外推为生产行为。尚未启动重新登录。
+补充有限范围归因：Mac 已捕获的实际 main SDK 顺序中，profile-3 是第三个 fallback，配置没有非元数据的明确绑定；未观察生产会话覆盖，不能称其已全局停用。Pocket4 当前两个默认 agent 的真实 SDK/原生选择器均只选择本机凭证 ordinal5。tg 本地 profiles 数量为零，但 auth_profile_store 保有一条原始 primary 行，auth_profile_state 为零行；实际 SDK 继承 main 的全部五身份、order 与 usage。此前“空本地认证表”的文字不准确，完整两表哈希与旧捕获完全相同，原 selector 结论不变。profile-3 在这两个默认消费者中不是候选。其失效恢复应与 Bao 存储正确性分开记录；迁移必须保留原身份、失效代际和恢复材料，也不能把隔离测试排除该条目的顺序外推为生产行为。尚未启动重新登录。
 
 版本锁定的 Codex 0.133.0 官方源码确认 CLI 凭证存储默认是 File，缺省读取其 CODEX_HOME/auth.json；MCP OAuth 的默认 Auto 是另一种存储配置。当前未发现有效配置覆盖证据，因此没有任意探测 Keychain。该结论不声称所有历史系统凭证条目不存在。重新登录准备必须保护当前原生账户，不注销或覆盖现用凭证。
 
@@ -114,9 +116,11 @@ Mac 的生产配置允许 Codex 自动运行时，而 r8 隔离配置只允许�
 
 精确官方 0.144.3 源码确认 account/read(refreshToken=false) 使用缓存身份，外部 tokens 写入 Ephemeral 状态；但整个 app-server 启动会产生 models/cloud/plugin 后台网络路径，不能称为纯离线。Mac 正在用实际 installed registry、harness selector 和原生 factory 补充隔离消费验证，原业务 POST 和失败 refresh 未重放。
 
-Mac 原生消费者的三次新隔离尝试均保留失败：r1 的观察器误拒绝 POSIX shell=undefined，尚未 spawn；r2 的嵌套 sandbox_apply 收到 EPERM，尚未原生 RPC；r3 改为经 9/9 无凭证预检查的单层 kernel sandbox，实际 spawn 成功，但 sandbox 内只读 /bin/ps 观察器收到 EPERM。r3 父检查 37/38，实际 RPC 列表为空，Node 超过原 120 秒预算后按原逻辑终止，outcomeUnknown=true 保留；单次全库 CAS 回滚 61/61，owned 进程和 Bao 服务均已退出，生产状态未改。r3 的 81 条已通过子检查不构成整轮通过。下一版拟由原 Python 父进程在沙箱外只读检查自己 owned 的进程关系，不扩大 native 文件或网络权限。
+Mac 原生消费者的三次新隔离尝试均保留失败：r1 的观察器误拒绝 POSIX shell=undefined，尚未 spawn；r2 的嵌套 sandbox_apply 收到 EPERM，尚未原生 RPC；r3 改为经 9/9 无凭证预检查的单层 kernel sandbox，实际 spawn 成功，但 sandbox 内只读 /bin/ps 观察器收到 EPERM。r3 父检查 37/38，实际 RPC 列表为空，Node 超过原 120 秒预算后按原逻辑终止，outcomeUnknown=true 保留；单次全库 CAS 回滚 61/61，owned 进程和 Bao 服务均已退出，生产状态未改。r3 的 81 条已通过子检查不构成整轮通过。此失败促使后续版本由原 Python 父进程在沙箱外只读检查自己 owned 的进程关系；新增权限仅允许向子进程发信号以完成清理，未扩大文件或网络范围。
 
-Pocket4 双 agent 的独立真实 selector 回归为 30/30：实际 installed registry、model runtime、harness auth provider 和默认 native builder 均保留，未注入 profile、store 或顺序覆盖，两个候选都为当前 ordinal5。它尚未启动原生 factory，也未调用 provider。新的实际 native 消费与缺失 ordinal5 恢复场景仍待独立验证。
+Mac 后续 r4 已真实完成初始和冷启原生消费，但 QA 中两个循环重用了阶段变量，覆盖初始回滚计划。原回执的 56/56 不构成双阶段回滚通过；r4 保留为不完整，随后对从未尝试的初始回滚只执行了一次严格 CAS 清理，62/62，原回执未改。修复局部变量并增加阶段名称、计划数量、尝试集合和实际四阶段断言后，全新 r5 父检查 60/60、初始及冷启消费各 95/95、两次完整逻辑存储 CAS 回滚各 62/62，四个阶段已独立核对，unknown=0，所有 owned 进程组及服务停止。实际安装的 loader 和默认 selector 选择 Codex 0.144.3；真实 initialize、精确 chatgptAuthTokens 登录和 account/read(false) 响应完整。两阶段均保留源额度状态及控制文件字节，生产五个 stores、native 输入及 relay PID 不变。外网被内核拒绝，后台网络尝试未计数；该证据绑定 `36076`，隔离候选顺序为 1、2，不能外推为生产当前 1、2、3 的完整顺序迁移，也不证明模型可用或生产网关切流。
+
+Pocket4 双 agent 的独立真实 selector 回归为 30/30：实际 installed registry、model runtime、harness auth provider 和默认 native builder 均保留，未注入 profile、store 或顺序覆盖，两个候选都为当前 ordinal5。该 selector 轮次未启动原生 factory。后续 full-current-baseline r1 在运行前因“零 profiles 等于零 raw rows”的错误前提失败，未启动 Bao 或原生进程；该失败保留。修正为精确原始两表形状和哈希后，全新 full-r2 绑定正常 `33cafa`，父检查 49/49，初始和冷启的双 agent 消费各 111/111，两次 SDK-local/effective/raw CAS 回滚各 80/80。四个真实原生 factory 使用本机当前 ordinal5，八个显式 RPC 均收到真实响应，四次 account/login/start 的响应类型为 chatgptAuthTokens；没有强制账户或 store、没有 provider 请求，owned 进程均停止。全量当前状态导入是幂等的，两 agent 的 logicalProfilesChanged 与 rawAuthRowsChanged 均为 false；另一个隔离缺失 ordinal5 场景正在独立验证，不将幂等导入称为实际补回。
 
 ROG 的 r3 已独立核对完整回执：两个实际 factory 只显式调用 initialize，六次 CLI 状态检查均只读打开精确 auth/config 各一次，其他 auth 文件打开数为零。真实插件初始和冷启动各 94/94，两次严格逻辑回滚各 64/64，父检查 60/60；源 usage 状态、生产 auth/config、PID 与启动身份均未变，全部 owned 进程组已退出。此前 r1 的 WAL 预检查失败、r2 的 syscall 观察器漏记经典 open、原 generic SDK 41/42 失败均保留。r3 没有显式 account/read、account/login/start 或模型请求；原生后台尝试未计数，内核无外网。该结果不授予 provider 可用、生产网关重启或正式切流资格。
 
@@ -195,3 +199,10 @@ AuthBus 可复核辅助源码先发布 a78bdadc（tree=76ad1d16），再追加�
 
 原始失败回执均保留，包括构建环境选择错误、选错旧版 oracle observer、SDK 回滚检查点与持久化状态不一致，以及网关首次业务派发前的隔离环境限制。修复后的通过结果没有覆盖原始失败记录。
 
+
+| Mac native r4 不完整原回执 | `2c79b976d1cb3bdc18735a2e5c6d313515fb9b41be804154bfbbd21df2884086` |
+| Mac r4 未尝试初始回滚的独立清理 | `8ebbdc7b15818d2dc4e213eccddf0486b112bb123b5a3c1e080c040e72c10024` |
+| Mac native r5 完整四阶段 | `6caa9ebfc2a3bf3ae637676a8055022817ec0efa85b09c6ffc304ac854ca6236` |
+| Pocket tg 原始表形状纠正 | `158fb3da106d0b81abb110a002938aa2df86a1a76cc85d927e8dd6306b249adb` |
+| Pocket 当前凭证双 agent full-r2 | `9006c6d0eae73de89dd62ed381877c873cabd1fff94f790ded7c3e2e2241c7dd` |
+| 实际异步 root-pull 两记录基线 | `b90c9660e69ed85ae84017cc856b94abb0dc648920162dc0a950f41a73be8325` |
