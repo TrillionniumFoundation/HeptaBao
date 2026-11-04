@@ -1,0 +1,265 @@
+--- a/run_candidate_normal_r1.py
++++ b/resume_normal_r1.py
+@@ -19,13 +19,14 @@
+ BASE = Path('/Volumes/T5/hepta-vnext-recovery-20261013')
+ ROOT = BASE / 'continuation-20261104-ha-snapshot-acl-denial-61ff-r1'
+ SOURCE = ROOT / 'source'
+-CONTROL = ROOT / 'control'
++ORIGINAL_CONTROL = ROOT / 'control'
++CONTROL = ORIGINAL_CONTROL / 'resume-normal-r1'
+ BASE_ROOT = BASE / 'continuation-20261104-ha-unified-normal-61ff-r1'
+ BASE_SOURCE = BASE_ROOT / 'source'
+ BASE_COMMIT = '70714605c39014bea93545f7f6aa4217d2a23544'
+ BASE_TREE = 'ef0ae63704a06b7dda1038e02abcc3233a2a438f'
+-REVIEW_COMMIT = '4609acf94695508ea49097039b8355897a1b20f2'
+-INPUT_TREE = '6708710421a4407e0d098fcc9ecc9aea479441db'
++REVIEW_COMMIT = 'a40bf5d972ecefcd03b754fd56d5456bfca72310'
++INPUT_TREE = '3ecc607295bca877aad3f92b22b691ff84c76a9c'
+ PYTHON = Path('/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python')
+ PYTHON_SHA = '7ecc1ecbf9daa9303c4bf502ff62ffdd9010ed5c08729d470ae9380c10ce1211'
+ TOOLCHAIN = Path('/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin')
+@@ -367,7 +368,7 @@
+ CACHE = BASE_ROOT / 'runtime.noindex' / 'target'
+ TARGET = ROOT / 'runtime.noindex' / 'target'
+ CARGO_HOME = BASE / 'r13-full-native-cargo-home-r1'
+-OUTPUT = ROOT / 'normal-default-r1'
++OUTPUT = ROOT / 'normal-default-r2'
+ PREPARATION_SECONDS = 300.0
+ CARGO_SECONDS = 1800.0
+ NORMAL_PROFILE = {
+@@ -488,86 +489,115 @@
+             'profile': profile, 'fresh': event.get('fresh')}
+ 
+ 
++
++ORIGINAL_DRIVER_SHA = '7a6a3c484d8219bb5e2faa4f71a3341685b53ac5306c1760136b8923a6a2cf74'
++ORIGINAL_RESULT_SHA = '9204dc0dc95d344fe36a2a719a0dd48915f4720083b153967888d200ea8d1bd4'
++ORIGINAL_FROZEN_SHA = '160af1b9c52b31ff5d38ebb25d5c94f7d17f1a64d8de58a584a19efcde43ef76'
++ORIGINAL_STRICT_SHA = '96b0283ed02100a36e03f8621cd0e7a88b3aec7021951dbae3ef32749fa4f5b7'
++ORIGINAL_SOURCE = '786f2c151ff2054937b3e743e97363085089ee5e'
++ORIGINAL_TREE = 'af01b7700b513272f9ed20a92725b23eff6de1d2'
++ORIGINAL_STARTED = 2705554.807201625
++ORIGINAL_DEADLINE = 2707354.807201625
++ORIGINAL_DEADLINE_UTC = 1793821507.0
++REPAIR_PATCH_SHA = '0c11a3df4dcbc3c282d71464f5250beab03797d2fcb302c1461030842286a9b2'
++REPAIRED_FILES = [{"path":"crates/heptabao-server/src/service_snapshot_transfer.rs","bytes":64338,"sha256":"2959b1a386e80a55d2eb81926ffeb54bcd6dd2faf0b0fe142490ed63aa04d657","git_blob":"028219f62f38bef82cb584ddf82eccbef9d14778","base_sha256":"e592a28ce6e6d037beb294614fa932ae818c96fa0a1186cca2b2322629f2a290"},{"path":"crates/heptabao-server/src/service_snapshot_denial.rs","bytes":14526,"sha256":"9524a08f9636b9e068ffaa156acbc8081314454698bb71fa2c07b01209d3f522","git_blob":"d19daa78b09a443fa1fcb55447e256b8372ba41f","base_sha256":"7b305d3fb0facb3379acc2dd47c1ffbad0de9ad2d65c257f0f16d4181f4efc48"}]
++
++
+ def main():
+     global work_started
+     os.umask(0o077)
+     began = time.monotonic()
+-    prep_until = began + PREPARATION_SECONDS
+-    need(len(sys.argv) == 3 and all(re.fullmatch('[0-9a-f]{64}', value)
+-                                   for value in sys.argv[1:]), 'build_and_stage_pins_required')
+-    need(hash_owned(Path(__file__), prep_until) == sys.argv[1], 'actual_build_driver_pin')
+-    device = preflight_host(prep_until)
+-    need(hash_owned(TOOLCHAIN / 'cargo', prep_until, single_link=False) == CARGO_SHA
+-         and hash_owned(TOOLCHAIN / 'rustc', prep_until, single_link=False) == RUSTC_SHA, 'actual_toolchain_pins')
+-    for path in (ROOT, SOURCE, CONTROL, CACHE, CARGO_HOME):
++    need(ORIGINAL_STARTED <= began < ORIGINAL_DEADLINE, 'original_monotonic_window')
++    need(time.time() < ORIGINAL_DEADLINE_UTC, 'original_utc_deadline')
++    cargo_until = min(ORIGINAL_DEADLINE, began + ORIGINAL_DEADLINE_UTC - time.time())
++    prep_until = cargo_until
++    need(len(sys.argv) == 3 and sha(__source_raw__) == sys.argv[1]
++         and sha(__packet_raw__) == sys.argv[2], 'exact_resume_sources')
++    device = preflight_host(cargo_until)
++    need(hash_owned(TOOLCHAIN / 'cargo', cargo_until, single_link=False) == CARGO_SHA
++         and hash_owned(TOOLCHAIN / 'rustc', cargo_until, single_link=False) == RUSTC_SHA,
++         'actual_toolchain_pins')
++    for path in (ROOT, SOURCE, ORIGINAL_CONTROL, TARGET, CARGO_HOME):
+         owned_ancestors(path, device)
+-    stage_raw = read_owned(CONTROL / 'source-stage-result.public.json')
+-    need(sha(stage_raw) == sys.argv[2], 'actual_stage_receipt_pin')
+-    stage = json.loads(stage_raw)
+-    need(stage['status'] == 'staged_uncompiled_candidate'
+-         and stage['input_tree'] == INPUT_TREE and stage['review_commit'] == REVIEW_COMMIT
+-         and stage['root'] == str(ROOT) and stage['source_path'] == str(SOURCE)
+-         and stage['build_source_sha256'] == sys.argv[1]
+-         and stage['source_file_count'] == 13 and stage['evidence_file_count'] == 5,
+-         'actual_staged_candidate')
+-    need(stage['last_owned_child_cleanup']['remaining'] == []
+-         and all(record['exit_code'] == 0 and record['remaining'] == []
+-                 and not record['timed_out'] for record in stage['commands']), 'stage_cleanup_or_command')
+-    packet_raw = read_owned(CONTROL / 'stage-input.public.json')
+-    need(sha(packet_raw) == stage['packet_sha256'], 'staged_packet_pin')
+-    packet = json.loads(packet_raw)
+-    need(sha(packet['build_source'].encode()) == sys.argv[1]
+-         and sha(packet['stage_source'].encode()) == stage['stage_source_sha256']
+-         and hash_owned(CONTROL / 'stage_source_r1.py', prep_until) == stage['stage_source_sha256'],
+-         'staged_controls_binding')
+-    manifest_raw = read_owned(CONTROL / 'candidate-manifest.public.json')
+-    need(sha(manifest_raw) == CANDIDATE_MANIFEST_SHA, 'candidate_manifest_pin')
+-    manifest = json.loads(manifest_raw)
+-    need(not OUTPUT.exists() and not OUTPUT.is_symlink()
+-         and not TARGET.parent.exists() and not TARGET.parent.is_symlink()
+-         and not (CONTROL / 'candidate-normal-result.public.json').exists(),
+-         'fresh_build_run_required')
++    need(hash_owned(ORIGINAL_CONTROL / 'run_candidate_normal_r1.py', cargo_until)
++         == ORIGINAL_DRIVER_SHA, 'original_driver_unchanged')
++    previous_raw = read_owned(ORIGINAL_CONTROL / 'candidate-normal-result.public.json')
++    frozen_raw = read_owned(ORIGINAL_CONTROL / 'frozen-source.public.json')
++    strict_raw = read_owned(ROOT / 'normal-default-r1/strict-clippy.public.json')
++    need(sha(previous_raw) == ORIGINAL_RESULT_SHA and sha(frozen_raw) == ORIGINAL_FROZEN_SHA
++         and sha(strict_raw) == ORIGINAL_STRICT_SHA, 'actual_red_receipt_pins')
++    previous, old_frozen, old_strict = map(json.loads, (previous_raw, frozen_raw, strict_raw))
++    need(previous['status'] == 'failed' and previous['failure_code'] == 'command_nonzero_strict-clippy'
++         and previous['cargo_started_monotonic'] == ORIGINAL_STARTED
++         and previous['cargo_deadline_monotonic'] == ORIGINAL_DEADLINE
++         and previous['shared_cargo_budget_seconds'] == CARGO_SECONDS
++         and previous['completed_tests'] == []
++         and previous['last_owned_child_cleanup']['remaining'] == []
++         and all(record.get('remaining') == [] and not record['timed_out']
++                 and not record['cleanup']['forced'] for record in previous['commands']),
++         'actual_prior_failure_and_cleanup')
++    need(old_strict['exit_code'] == 101 and not old_strict['timed_out']
++         and old_strict['remaining'] == [] and not old_strict['cleanup']['forced'],
++         'actual_strict_red')
++    need(old_frozen['source'] == ORIGINAL_SOURCE and old_frozen['tree'] == ORIGINAL_TREE
++         and old_frozen['source_path'] == str(SOURCE) and old_frozen['formatted']
++         and not old_frozen['compiled'] and len(old_frozen['files']) == 13,
++         'original_frozen_identity')
++    manifest = old_frozen
++    need(__payload__['files'] == REPAIRED_FILES
++         and sha(__payload__['patch'].encode()) == REPAIR_PATCH_SHA, 'closed_repair_payload')
++    need(not CONTROL.exists() and not CONTROL.is_symlink()
++         and not OUTPUT.exists() and not OUTPUT.is_symlink(), 'fresh_resume_output')
+     need(shutil.disk_usage(ROOT).free >= 1024 * 1024 * 1024, 'build_disk_space')
+-    remaining(prep_until)
++    source_file_pins(old_frozen, device)
++    remaining(cargo_until)
+     work_started = True
++    CONTROL.mkdir(mode=0o700)
+     OUTPUT.mkdir(mode=0o700)
+     (OUTPUT / 'artifacts').mkdir(mode=0o700)
++    write_raw(CONTROL / 'resume_normal_r1.py', __source_raw__)
++    write_raw(CONTROL / 'resume-input.public.json', __packet_raw__)
++    patch_path = CONTROL / 'repair.patch'
++    write_raw(patch_path, __payload__['patch'].encode())
+     env = clean_environment()
+     env.update(NORMAL_PROFILE)
+     env.update({'CARGO_HOME': str(CARGO_HOME), 'CARGO_TARGET_DIR': str(TARGET),
+-                'CARGO_BUILD_JOBS': '2', 'CARGO_TERM_COLOR': 'never',
+-                'RUSTFLAGS': ''})
++                'CARGO_BUILD_JOBS': '2', 'CARGO_TERM_COLOR': 'never', 'RUSTFLAGS': ''})
+     runner = OwnedRunner(OUTPUT, env)
+     result = {
+-        'schema': 'heptabao.mac-snapshot-candidate-normal.v1', 'status': 'failed',
++        'schema': 'heptabao.mac-snapshot-candidate-normal-resume.v1', 'status': 'failed',
+         'root': str(ROOT), 'source_path': str(SOURCE), 'target_path': str(TARGET),
+         'review_commit': REVIEW_COMMIT, 'input_tree': INPUT_TREE,
+-        'driver_sha256': sys.argv[1], 'stage_receipt_sha256': sys.argv[2],
++        'driver_sha256': sys.argv[1], 'packet_sha256': sys.argv[2],
++        'original_driver_sha256': ORIGINAL_DRIVER_SHA,
++        'original_red_result_sha256': ORIGINAL_RESULT_SHA,
++        'original_frozen_sha256': ORIGINAL_FROZEN_SHA, 'repair_patch_sha256': REPAIR_PATCH_SHA,
+         'python_sha256': PYTHON_SHA, 'cargo_sha256': CARGO_SHA, 'rustc_sha256': RUSTC_SHA,
+-        'preparation_budget_seconds': PREPARATION_SECONDS,
+         'shared_cargo_budget_seconds': CARGO_SECONDS,
++        'cargo_started_monotonic': ORIGINAL_STARTED,
++        'original_cargo_deadline_monotonic': ORIGINAL_DEADLINE,
++        'cargo_deadline_monotonic': cargo_until, 'cargo_started_utc': previous['cargo_started_utc'],
++        'original_deadline_utc': '2026-11-04T19:45:07Z',
++        'resume_budget_refreshed': False, 'cache_cloned_again': False,
+         'normal_profile': NORMAL_PROFILE, 'cargo_build_jobs': 2,
+         'strict_clippy_inherited_excluded_package': 'qrcode',
+-        'source_cache_scope': 'release build-directory lock; not whole cache or host reservation',
+-        'source_cache_path': str(CACHE), 'copy_mode': 'APFS cp -cR, no fallback',
+         'product_service_started': False, 'production_changed': False,
+         'multi_physical_host_ha_executed': False, 'full_replacement_qualified': False,
+         'critical_tests': CRITICAL_TESTS, 'completed_tests': [],
+         'known_remaining_product_gaps': manifest['known_remaining_product_gaps'],
+     }
+     lock_fd = None
+-    cargo_until = None
+     signal.signal(signal.SIGTERM, interrupted)
+     signal.signal(signal.SIGINT, interrupted)
+     try:
+-        before = source_state(runner, 'input', prep_until)
+-        need(before == {'commit': stage['physical_source_commit'], 'tree': INPUT_TREE, 'status': ''},
+-             'input_source_changed')
++        before = source_state(runner, 'input', cargo_until)
++        need(before == {'commit': ORIGINAL_SOURCE, 'tree': ORIGINAL_TREE, 'status': ''},
++             'original_source_changed')
+         result['input_source'] = before
+-        result['input_product_files'] = source_file_pins(manifest, device)
++        result['input_product_files'] = source_file_pins(old_frozen, device)
+         processes = runner.run('preparation-process-snapshot',
+                                ['/bin/ps', '-axo', 'pid=,ppid=,pgid=,comm='],
+-                               prep_until).decode('utf-8', 'strict')
++                               cargo_until).decode('utf-8', 'strict')
+         blockers = []
+         for row in processes.splitlines():
+             fields = row.split(maxsplit=3)
+@@ -579,40 +609,41 @@
+                                  'pgid': int(fields[2]), 'executable': fields[3]})
+         result['preparation_process_blockers'] = blockers
+         need(not blockers, 'external_compiler_or_product_process_present')
+-        lock_path = CACHE / 'release' / '.cargo-lock'
++        lock_path = TARGET / 'release/.cargo-lock'
+         owned_ancestors(lock_path.parent, device)
+         lock_fd = os.open(lock_path, os.O_RDONLY | os.O_NOFOLLOW)
+         lock_info = os.fstat(lock_fd)
+         need(stat.S_ISREG(lock_info.st_mode) and lock_info.st_uid == 501
+-             and lock_info.st_dev == device and lock_info.st_nlink == 1, 'source_release_lock_custody')
++             and lock_info.st_dev == device and lock_info.st_nlink == 1, 'owned_target_lock_custody')
+         fcntl.flock(lock_fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+-        held_at = time.monotonic_ns()
+         need(identity(lock_info) == identity(os.fstat(lock_fd)) == identity(lock_path.lstat()),
+-             'source_release_lock_changed')
+-        TARGET.parent.mkdir(mode=0o700)
+-        runner.run('apfs-cache-clone', ['/bin/cp', '-cR', str(CACHE), str(TARGET)], prep_until)
+-        result['clone_inode_verification'] = verify_clone(device, prep_until)
++             'owned_target_lock_changed')
++        runner.git('repair-apply', cargo_until, 'apply', '--index', '--whitespace=error',
++                   str(patch_path))
++        changed = runner.git('repair-paths', cargo_until, 'diff', '--cached', '--name-only').splitlines()
++        need(set(changed) == {item['path'] for item in REPAIRED_FILES}
++             and runner.git('repair-tree', cargo_until, 'write-tree') == INPUT_TREE,
++             'exact_repair_tree')
++        for item in REPAIRED_FILES:
++            remaining(cargo_until)
++            raw = read_owned(SOURCE / item['path'])
++            need(len(raw) == item['bytes'] and sha(raw) == item['sha256']
++                 and blob(raw) == item['git_blob'], 'actual_repaired_file_pin')
++        runner.git('repair-freeze', cargo_until, 'commit', '--quiet', '-m',
++                   'Preserve snapshot method binding and borrow original denial certificate list')
++        repaired = source_state(runner, 'repaired', cargo_until)
++        need(repaired['tree'] == INPUT_TREE and repaired['status'] == '', 'repaired_source_changed')
++        result['repaired_source'] = repaired
+         need(identity(lock_info) == identity(os.fstat(lock_fd)) == identity(lock_path.lstat()),
+-             'source_release_lock_changed')
+-        result['source_release_lock'] = {
+-            'path': str(lock_path), 'device': lock_info.st_dev, 'inode': lock_info.st_ino,
+-            'descriptor_mode': 'O_RDONLY|O_NOFOLLOW', 'primitive': 'flock LOCK_EX|LOCK_NB',
+-            'held_since_monotonic_ns': held_at,
+-            'verified_through_monotonic_ns': time.monotonic_ns()}
++             'owned_target_lock_changed')
+         fcntl.flock(lock_fd, fcntl.LOCK_UN)
+         os.close(lock_fd)
+         lock_fd = None
+         rustc_vv = runner.run('rustc-version', [str(TOOLCHAIN / 'rustc'), '-vV'],
+-                              prep_until).decode('utf-8', 'strict')
++                              cargo_until).decode('utf-8', 'strict')
+         need('host: aarch64-apple-darwin' in rustc_vv, 'native_toolchain_abi')
+         result['rustc_vv'] = rustc_vv
+-        result['preparation_elapsed_seconds'] = time.monotonic() - began
+-        remaining(prep_until)
+-        cargo_started = time.monotonic()
+-        cargo_until = cargo_started + CARGO_SECONDS
+-        result.update(cargo_started_monotonic=cargo_started,
+-                      cargo_deadline_monotonic=cargo_until,
+-                      cargo_started_utc=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()))
++        result['resume_preparation_elapsed_seconds'] = time.monotonic() - began
+         write_json(CONTROL / 'candidate-normal-intent.public.json', result)
+         cargo = str(TOOLCHAIN / 'cargo')
+         runner.run('cargo-fmt', [cargo, 'fmt', '--all'], cargo_until)
+@@ -756,7 +787,7 @@
+         except Exception as error:
+             result.update(status='failed', cleanup_error_class=type(error).__name__)
+         finally:
+-            # A failed clone is stopped before its source lock is released.
++            # An owned subprocess is stopped before its target lock is released.
+             if lock_fd is not None:
+                 fcntl.flock(lock_fd, fcntl.LOCK_UN)
+                 os.close(lock_fd)
