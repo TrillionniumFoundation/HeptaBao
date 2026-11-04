@@ -35,6 +35,9 @@ mod logical;
 mod mutation_profile;
 #[path = "http_sanitized_config.rs"]
 mod sanitized_config;
+#[cfg(all(test, feature = "native-v6-ha"))]
+#[path = "http_formal_api_fixture.rs"]
+pub(crate) mod formal_api_fixture;
 #[cfg(all(test, feature = "native-v6-storage"))]
 #[path = "http_snapshot_accept_tests.rs"]
 mod snapshot_accept_tests;

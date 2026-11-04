@@ -599,76 +599,52 @@ fn cold_dr_complete_archive_old_shamir_new_quorum_and_second_cold_restart() -> T
 // must refuse it before publishing a destination, without deleting its owner.
 #[test]
 fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss() -> TestResult {
-    let source = Pipeline::start()?;
+    let provider_listener = std::net::TcpListener::bind("127.0.0.1:0")?;
+    provider_listener.set_nonblocking(true)?;
+    let provider_address = provider_listener.local_addr()?;
+    let provider_origin = format!("https://localhost:{}", provider_address.port());
+    let provider_bearer = Zeroizing::new(hex(&crypto::random::<32>()?));
+    let source = Pipeline::start_with_initial_outbound_endpoints(vec![crate::outbound::EndpointConfig {
+        origin: provider_origin.clone(),
+        address: provider_address,
+        server_name: "localhost".to_owned(),
+        ca_pem: include_str!("testdata/kubernetes-api-ca.pem").to_owned(),
+        path_prefix: "/api/".to_owned(),
+        shared_secret: String::new(),
+    }])?;
     let leader = source.ready_leader()?;
-    const CHILD_NAMESPACE: &str = "unsupported-cold-ssh-child";
+    // A real root Kubernetes config carries a private bearer but performs no
+    // provider I/O. Root SSH is now supported; unsupported child SSH cannot
+    // pass the namespace admission needed to create this historical archive.
     expect(
-        source.call(
-            leader,
-            "POST",
-            "sys/namespaces/unsupported-cold-ssh-child",
-            source.admin(),
-            json!({}),
-        )?,
-        200,
-        "unsupported-cold-ssh-child-namespace",
-    )?;
-    // Match Pipeline::call's original request budget, writer lock and phase
-    // observation. Only the actual request namespace differs from root.
-    let child_call = |method: &str, path: &str, body: Value| -> TestResult<Response> {
-        let began = Instant::now();
-        let until = began + REQUEST_BUDGET;
-        let _scope = RequestDeadlineScope::enter(until);
-        let service = source.services[leader]
-            .as_ref()
-            .ok_or("unsupported cold child Service absent")?;
-        let mut writer = lock_until(service, until)
-            .map_err(|_| "unsupported cold child Service lock deadline")?;
-        let timing =
-            crate::ha::NativeV6RequestObservation::start(until, "cold_child_ssh_test", false);
-        let response = writer.handle(method, path, CHILD_NAMESPACE, source.admin(), body);
-        timing.finish(Some(response.status));
-        errors_only(path, &response);
-        if began.elapsed() >= REQUEST_BUDGET {
-            return Err("unsupported cold child original request deadline".into());
-        }
-        Ok(response)
-    };
-    // Root SSH, local Transit and TOTP have formal native owners. This
-    // still-refused child SSH CA carries real private key state through the archive;
-    // keep complete-graph rejection and every source-retention assertion.
-    expect(
-        child_call("POST", "sys/mounts/cold-ssh", json!({"type":"ssh"}))?,
+        source.call(leader, "POST", "sys/mounts/cold-kubernetes", source.admin(),
+                    json!({"type":"kubernetes"}))?,
         204,
-        "unsupported-cold-ssh-mount",
+        "unsupported-cold-kubernetes-mount",
     )?;
     expect(
-        child_call(
-            "POST",
-            "cold-ssh/config/ca",
-            json!({"generate_signing_key":true,"key_type":"ssh-ed25519"}),
-        )?,
-        200,
-        "unsupported-cold-ssh-key",
+        source.call(leader, "POST", "cold-kubernetes/config", source.admin(),
+                    json!({"kubernetes_host":provider_origin,"service_account_token":provider_bearer.as_str()}))?,
+        204,
+        "unsupported-cold-kubernetes-config",
     )?;
     let retained = expect(
-        child_call("GET", "cold-ssh/config/ca", json!({}))?,
+        source.call(leader, "GET", "cold-kubernetes/config", source.admin(), json!({}))?,
         200,
-        "unsupported-cold-ssh-before",
-    )?
-    .body["data"]
-        .clone();
+        "unsupported-cold-kubernetes-before",
+    )?.body["data"].clone();
+    assert_eq!(retained["service_account_token_set"], true);
     activate(&source, leader)?;
     let archive = export(&source, leader, source.admin())?;
     let seal_bytes = fs::read(source.directory(leader).join("data/seal.json"))?;
-    // Native activation deliberately closes the child SSH config/ca route.
-    // This is not the separate public_key fast path. Observe the same activated
-    // path before and after recovery refusal, and inspect the stored EngineState
-    // clone below. The authenticated full-state encoding retains its private CA.
+    // Experimental migration retains this opaque owner, while the native
+    // dispatcher refuses its unsupported public config route. Observe the
+    // same boundary before and after recovery refusal; inspect the complete
+    // authenticated native graph and private owner encoding below.
     let boundary_before = expect(
-        child_call("GET", "cold-ssh/config/ca", json!({}))?,
+        source.call(leader, "GET", "cold-kubernetes/config", source.admin(), json!({}))?,
         501,
-        "unsupported-cold-ssh-activated-before",
+        "unsupported-cold-kubernetes-activated-before",
     )?;
     let observed_at = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)?
@@ -789,15 +765,19 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
         };
         let owner_bytes = project(engines)?;
         let mut inspected = engines.clone();
-        let response = inspected
-            .handle(
-                CHILD_NAMESPACE,
+        let dispatch = inspected
+            .kubernetes_dispatch(
+                "",
+                "cold-kubernetes/config",
                 "GET",
-                "cold-ssh/config/ca",
                 &json!({}),
                 observed_at,
+                None,
             )?
-            .ok_or("unsupported cold retained SSH CA route absent")?;
+            .ok_or("unsupported cold retained Kubernetes route absent")?;
+        let crate::engines::kubernetes::Dispatch::Immediate(response) = dispatch else {
+            return Err("retained Kubernetes config unexpectedly requested provider I/O".into());
+        };
         assert_eq!(response.status, 200);
         assert!(!response.mutated);
         assert!(response.body["data"] == retained);
@@ -824,6 +804,7 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
         Ok((before, generation, owner_bytes))
     };
     let (before, generation_before, engine_owner_before) = inspect_retained()?;
+    assert!(engine_owner_before.windows(provider_bearer.len()).any(|part| part == provider_bearer.as_bytes()));
     let mut bundle = Root::new();
     private_directory(&bundle.path)?;
     bundle.path = fs::canonicalize(&bundle.path)?;
@@ -861,11 +842,12 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
         share_hash
     );
     let boundary_after = expect(
-        child_call("GET", "cold-ssh/config/ca", json!({}))?,
+        source.call(leader, "GET", "cold-kubernetes/config", source.admin(), json!({}))?,
         501,
-        "unsupported-cold-ssh-activated-after",
+        "unsupported-cold-kubernetes-activated-after",
     )?;
     assert!(boundary_after.body == boundary_before.body);
+    assert!(matches!(provider_listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock));
     Ok(())
 }
 

@@ -428,7 +428,8 @@ class Run:
                     json.dumps({"argv": argv, "end": end}).encode(),
                     timeout=max(0, end - time.monotonic()))
             except subprocess.TimeoutExpired as error:
-                os.killpg(process.pid, signal.SIGKILL)
+                if process.returncode is None:
+                    os.killpg(process.pid, signal.SIGKILL)
                 process.communicate(timeout=5)
                 raise Failure("migration_original_deadline_unknown_outcome") from error
             need(len(stdout) <= 4096 and len(errors) <= 4096, "migration_worker_output_bound")
@@ -450,14 +451,14 @@ class Run:
         finally:
             # Kill the original owned group on every abnormal exit, including
             # KeyboardInterrupt after the worker created its HTTP leaf.
-            if row["status"] != "completed":
+            if row["status"] != "completed" and process.returncode is None:
                 try:
                     os.killpg(process.pid, signal.SIGKILL)
                 except ProcessLookupError:
                     pass
-            if process.poll() is None:
+            if process.returncode is None:
                 process.communicate(timeout=5)
-            row["original_wait_completed"] = process.poll() is not None
+            row["original_wait_completed"] = process.returncode is not None
             row["returncode"] = process.returncode
             self.phase("migration_outcome", row)
 

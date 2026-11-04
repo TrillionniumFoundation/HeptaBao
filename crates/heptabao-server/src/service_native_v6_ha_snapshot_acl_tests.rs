@@ -1,6 +1,6 @@
 //! Actual formal three-voter mTLS/Service regressions for snapshot ACL and
-//! receipt-bound refusal. These use the existing cfg(test) startup and HTTP
-//! parser fixture; public TLS sockets and physical hosts remain separate.
+//! receipt-bound refusal. These use cfg(test) startup and actual owned loopback
+//! API TLS sockets; production serve and physical hosts remain separate.
 use super::*;
 use crate::auth::{IngressReplyScope, Timestamp};
 use crate::ha::snapshot_clock::{SnapshotClockContext, SnapshotClockOperation};
@@ -82,7 +82,7 @@ fn no_snapshot_custody(pipeline: &Pipeline, index: usize) -> TestResult {
 #[test]
 fn formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update_actor()
 -> TestResult {
-    let pipeline = formal_cold_source()?;
+    let pipeline = formal_api_source()?;
     let leader = pipeline.ready_leader()?;
     let migration_source = activate_formal_cold(&pipeline, leader)?;
     let standby = (leader + 1) % 3;
@@ -200,7 +200,7 @@ fn formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update
 #[test]
 fn formal_native_standby_acl_denial_commits_floor_without_transfer_lease_and_survives_cold()
 -> TestResult {
-    let mut pipeline = formal_cold_source()?;
+    let mut pipeline = formal_api_source()?;
     let leader = pipeline.ready_leader()?;
     activate_formal_cold(&pipeline, leader)?;
     let standby = (leader + 1) % 3;
@@ -248,7 +248,7 @@ fn formal_native_standby_acl_denial_commits_floor_without_transfer_lease_and_sur
     drop((occupied, spool, first));
 
     pipeline.stop_process(standby)?;
-    start_formal_process(&mut pipeline, standby)?;
+    pipeline.start_formal_process(standby)?;
     pipeline.wait_cold_native_readindex_ready(standby)?;
     pipeline.unseal(standby)?;
     assert!(floor(&pipeline, standby)?.is_some_and(|actual| actual >= committed));
@@ -303,7 +303,7 @@ fn formal_native_standby_acl_denial_commits_floor_without_transfer_lease_and_sur
 #[test]
 fn formal_native_standby_original_snapshot_actor_expiry_before_floor_returns_proved_403()
 -> TestResult {
-    let pipeline = formal_cold_source()?;
+    let pipeline = formal_api_source()?;
     let leader = pipeline.ready_leader()?;
     activate_formal_cold(&pipeline, leader)?;
     let standby = (leader + 1) % 3;
@@ -348,7 +348,7 @@ fn formal_native_standby_original_snapshot_actor_expiry_before_floor_returns_pro
 
 #[test]
 fn formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoints() -> TestResult {
-    let pipeline = formal_cold_source()?;
+    let pipeline = formal_api_source()?;
     let leader = pipeline.ready_leader()?;
     activate_formal_cold(&pipeline, leader)?;
     let standby = (leader + 1) % 3;
@@ -454,7 +454,7 @@ fn formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoint
 #[test]
 fn formal_native_http_consistency_forward_restricts_local_snapshot_and_no_forward_kv() -> TestResult
 {
-    let pipeline = formal_cold_source()?;
+    let pipeline = formal_api_source()?;
     let leader = pipeline.ready_leader()?;
     activate_formal_cold(&pipeline, leader)?;
     let standby = (leader + 1) % 3;

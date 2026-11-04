@@ -296,7 +296,8 @@ def supervise(argv, *, end=None):
                 timeout=max(0, end - time.monotonic()))
         except subprocess.TimeoutExpired as error:
             lifecycle["planned_signal"] = signal.SIGKILL
-            os.killpg(process.pid, signal.SIGKILL)
+            if process.returncode is None:
+                os.killpg(process.pid, signal.SIGKILL)
             process.communicate(timeout=5)
             raise DecodeError("native-large original absolute deadline exceeded") from error
         legacy.check_deadline(end)
@@ -309,16 +310,16 @@ def supervise(argv, *, end=None):
         complete = True
         return 0, lifecycle
     finally:
-        if not complete:
+        if not complete and process.returncode is None:
             try:
                 lifecycle["planned_signal"] = signal.SIGKILL
                 os.killpg(process.pid, signal.SIGKILL)
             except ProcessLookupError:
                 pass
-        if process.poll() is None:
+        if process.returncode is None:
             process.communicate(timeout=5)
         lifecycle["returncode"] = process.returncode
-        lifecycle["original_wait_completed"] = process.poll() is not None
+        lifecycle["original_wait_completed"] = process.returncode is not None
 
 
 def owned_worker():

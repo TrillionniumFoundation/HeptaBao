@@ -274,84 +274,81 @@ fn configured_native_activation_requires_a_bound_profile_and_original_root_actor
 fn configured_native_activation_rejects_unsupported_live_engine_without_retiring_v5() -> TestResult
 {
     let root = super::super::tests::Root::new();
+    // An actual bound loopback endpoint is enrolled while sealed. Config GET
+    // and POST are local owner operations; no provider request is authorized.
+    let provider_listener = std::net::TcpListener::bind("127.0.0.1:0")?;
+    provider_listener.set_nonblocking(true)?;
+    let provider_address = provider_listener.local_addr()?;
+    let provider_origin = format!("https://localhost:{}", provider_address.port());
+    let provider_bearer = Zeroizing::new(hex(&crypto::random::<32>()?));
     let mut service = root.service()?;
+    service.install_outbound_endpoints(vec![crate::outbound::EndpointConfig {
+        origin: provider_origin.clone(),
+        address: provider_address,
+        server_name: "localhost".to_owned(),
+        ca_pem: include_str!("testdata/kubernetes-api-ca.pem").to_owned(),
+        path_prefix: "/api/".to_owned(),
+        shared_secret: String::new(),
+    }])?;
     service.configure_native_v6_storage(NativeStorageProfile::File)?;
     let (_, token) = initialize(&mut service)?;
-    // Root SSH has a formal native owner. Preserve the real CA/private
-    // owner in a child namespace whose native owner is still unsupported.
-    const CHILD_NAMESPACE: &str = "unsupported-ssh-child";
+    // Root Kubernetes still lacks a formal native owner. Keep its genuine
+    // secret-bearing config in root, so catalog validation reaches the
+    // configured-storage refusal instead of an earlier child-profile refusal.
     assert_eq!(
         request(
             &mut service,
             "POST",
-            "sys/namespaces/unsupported-ssh-child",
+            "sys/mounts/kubernetes",
             &token,
-            json!({})
-        )
-        .status,
-        200
-    );
-    let child_request = |service: &mut Service, method: &str, path: &str, body: Value| {
-        let _deadline = crate::request_deadline::RequestDeadlineScope::enter(
-            std::time::Instant::now() + Duration::from_secs(15),
-        );
-        service.handle(method, path, CHILD_NAMESPACE, &token, body)
-    };
-    assert_eq!(
-        child_request(
-            &mut service,
-            "POST",
-            "sys/mounts/ssh",
-            json!({"type":"ssh"})
+            json!({"type":"kubernetes"})
         )
         .status,
         204
     );
     assert_eq!(
-        child_request(
+        request(
             &mut service,
             "POST",
-            "ssh/config/ca",
-            json!({"generate_signing_key":true,"key_type":"ssh-ed25519"})
+            "kubernetes/config",
+            &token,
+            json!({"kubernetes_host":provider_origin,"service_account_token":provider_bearer.as_str()})
         )
         .status,
-        200
+        204
     );
-    let before = child_request(&mut service, "GET", "ssh/config/ca", json!({}));
+    let before = request(&mut service, "GET", "kubernetes/config", &token, json!({}));
     assert_eq!(before.status, 200);
-    let source = service
-        .state
-        .as_ref()
-        .ok_or("unsupported child SSH state")?;
+    assert_eq!(before.body["data"]["service_account_token_set"], true);
+    let source = service.state.as_ref().ok_or("unsupported Kubernetes state")?;
     assert!(!source.engines.supports_native_v6_root_storage());
     let owner_before = crate::service::owner_store::serialize_owner(source)
-        .map_err(|_| "unsupported child SSH complete owner before")?;
+        .map_err(|_| "unsupported Kubernetes complete owner before")?;
+    assert!(owner_before.windows(provider_bearer.len()).any(|part| part == provider_bearer.as_bytes()));
     let identity_before = service
         .current_state_identity()
-        .map_err(|_| "unsupported child SSH v5 identity before")?;
+        .map_err(|_| "unsupported Kubernetes v5 identity before")?;
     assert_eq!(
         request(&mut service, "POST", ACTIVATE_PATH, &token, json!({})).status,
         409
     );
     assert!(service.native_root.is_none());
-    let retained = child_request(&mut service, "GET", "ssh/config/ca", json!({}));
+    let retained = request(&mut service, "GET", "kubernetes/config", &token, json!({}));
     assert_eq!(retained.status, 200);
     assert_eq!(retained.body["data"], before.body["data"]);
     let owner_after = crate::service::owner_store::serialize_owner(
-        service
-            .state
-            .as_ref()
-            .ok_or("unsupported child SSH retained state")?,
+        service.state.as_ref().ok_or("unsupported Kubernetes retained state")?,
     )
-    .map_err(|_| "unsupported child SSH complete retained owner")?;
-    // Compare the complete secret-bearing encoding without formatting it.
+    .map_err(|_| "unsupported Kubernetes complete retained owner")?;
+    // Compare every secret-bearing owner byte without formatting it.
     assert!(owner_after.as_slice() == owner_before.as_slice());
     assert_eq!(
         service
             .current_state_identity()
-            .map_err(|_| "unsupported child SSH retained v5 identity")?,
+            .map_err(|_| "unsupported Kubernetes retained v5 identity")?,
         identity_before
     );
+    assert!(matches!(provider_listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock));
     Ok(())
 }
 

@@ -1,7 +1,10 @@
-//! Formal storage profile, real three-voter mTLS/Raft, actual HTTP parser and
-//! Service owners. Public API TLS sockets and physical hosts are qualified by
-//! the normal-binary wire runner separately; this file makes neither claim.
+//! Formal storage profile, real three-voter mTLS/Raft and owned loopback API
+//! TLS listeners use the actual parser, Service and response writer. Production
+//! serve startup and physical-host qualification remain separate.
 use super::*;
+#[path = "service_native_v6_ha_formal_api_pipeline_tests.rs"]
+mod formal_api_pipeline;
+use formal_api_pipeline::{FormalApiPipeline, formal_api_source};
 use crate::crypto::AeadBarrier;
 use crate::ha::native_v6_backup::{NativeV6ArchiveSelection, validate_native_v6_archive};
 use crate::snapshot_file::SnapshotSpool;
@@ -21,7 +24,7 @@ struct WireRouting<'a> {
 }
 
 fn wire(
-    pipeline: &Pipeline,
+    pipeline: &FormalApiPipeline,
     index: usize,
     method: &str,
     path: &str,
@@ -44,7 +47,7 @@ fn wire(
 }
 
 fn wire_with_routing(
-    pipeline: &Pipeline,
+    pipeline: &FormalApiPipeline,
     index: usize,
     method: &str,
     path: &str,
@@ -82,16 +85,7 @@ fn wire_with_routing(
     }
     input.extend_from_slice(b"\r\n");
     input.extend_from_slice(body);
-    let service = pipeline.services[index]
-        .as_ref()
-        .ok_or("formal wire Service absent")?;
-    let output = if routing.missing_forward {
-        crate::http::formal_standby_http_wire_fixture_with_consistency(
-            service, &input, until, true,
-        )?
-    } else {
-        crate::http::formal_standby_http_wire_fixture(service, &input, until)?
-    };
+    let output = pipeline.exchange(index, &input, until, routing.missing_forward)?;
     let split = output
         .windows(4)
         .position(|part| part == b"\r\n\r\n")
@@ -116,7 +110,7 @@ fn wire_with_routing(
     }
     let body = Zeroizing::new(output[split + 4..].to_vec());
     if let Some(length) = headers.get("content-length") {
-        assert_eq!(length.parse::<usize>()?, body.len());
+        assert_eq!(if method == "HEAD" { 0 } else { length.parse::<usize>()? }, body.len());
     } else {
         assert_eq!(
             status, 204,
@@ -153,7 +147,7 @@ fn redirected(reply: &WireReply) {
 #[test]
 fn formal_native_standby_snapshot_read_restore_validation_and_no_forward_use_real_owners()
 -> TestResult {
-    let pipeline = formal_cold_source()?;
+    let pipeline = formal_api_source()?;
     let leader = pipeline.ready_leader()?;
     activate_formal_cold(&pipeline, leader)?;
     let standby = (leader + 1) % 3;
@@ -315,7 +309,7 @@ fn formal_native_standby_snapshot_read_restore_validation_and_no_forward_use_rea
 
 #[test]
 fn formal_native_standby_snapshot_finite_tokens_redirect_without_consumption() -> TestResult {
-    let pipeline = formal_cold_source()?;
+    let pipeline = formal_api_source()?;
     let leader = pipeline.ready_leader()?;
     activate_formal_cold(&pipeline, leader)?;
     let standby = (leader + 1) % 3;
@@ -366,7 +360,7 @@ fn formal_native_standby_snapshot_finite_tokens_redirect_without_consumption() -
 
 #[test]
 fn formal_native_standby_snapshot_late_root_change_and_lost_quorum_refuse_delivery() -> TestResult {
-    let mut pipeline = formal_cold_source()?;
+    let mut pipeline = formal_api_source()?;
     let leader = pipeline.ready_leader()?;
     activate_formal_cold(&pipeline, leader)?;
     let standby = (leader + 1) % 3;
@@ -421,7 +415,7 @@ fn formal_native_standby_snapshot_late_root_change_and_lost_quorum_refuse_delive
 #[test]
 fn formal_native_standby_ttl_snapshot_commits_real_leader_floor_and_survives_cold_restart()
 -> TestResult {
-    let mut pipeline = formal_cold_source()?;
+    let mut pipeline = formal_api_source()?;
     let leader = pipeline.ready_leader()?;
     activate_formal_cold(&pipeline, leader)?;
     let standby = (leader + 1) % 3;
@@ -465,7 +459,7 @@ fn formal_native_standby_ttl_snapshot_commits_real_leader_floor_and_survives_col
     );
     assert_eq!(pipeline.native_selection(standby)?, after);
     pipeline.stop_process(standby)?;
-    start_formal_process(&mut pipeline, standby)?;
+    pipeline.start_formal_process(standby)?;
     pipeline.wait_cold_native_readindex_ready(standby)?;
     pipeline.unseal(standby)?;
     assert!(
@@ -502,6 +496,44 @@ fn formal_native_standby_ttl_snapshot_commits_real_leader_floor_and_survives_col
     redirected(&wire(
         &pipeline, standby, "GET", SNAPSHOT, &token, b"", None,
     )?);
+    Ok(())
+}
+
+
+#[test]
+fn formal_native_standby_snapshot_missing_api_origin_remains_503() -> TestResult {
+    // Retain the exact old configuration as an independent refusal. No origin
+    // is synthesized and no permission, archive or transfer lease is created.
+    let pipeline = formal_cold_source()?;
+    assert!(pipeline.configs.iter().all(|config| config.peers.values()
+        .all(|peer| peer.api_address.is_none())));
+    let leader = pipeline.ready_leader()?;
+    activate_formal_cold(&pipeline, leader)?;
+    let standby = (leader + 1) % 3;
+    let before = pipeline.native_selection(leader)?;
+    let until = Instant::now() + REQUEST_BUDGET;
+    let _scope = RequestDeadlineScope::enter(until);
+    let mut input = Zeroizing::new(Vec::new());
+    write!(&mut *input,
+        "GET /v1/sys/storage/raft/snapshot HTTP/1.1\r\nHost: local\r\nX-Vault-Token: {}\r\nConnection: close\r\n\r\n",
+        pipeline.admin())?;
+    let service = pipeline.services[standby].as_ref().ok_or("missing API Service")?;
+    let output = crate::http::formal_standby_http_wire_fixture(service, &input, until)?;
+    let split = output.windows(4).position(|part| part == b"\r\n\r\n")
+        .ok_or("missing API response framing")?;
+    let header = std::str::from_utf8(&output[..split])?;
+    assert!(header.starts_with("HTTP/1.1 503 "));
+    let body: Value = serde_json::from_slice(&output[split + 4..])?;
+    assert_eq!(body["errors"], json!(["HA leader API address is unavailable"]));
+    assert!(body.get("data").is_none());
+    pipeline.with_service(standby, |service| {
+        assert!(service.pending_snapshot_transfer.is_none());
+        assert!(service.pending_native_auth_delivery.is_none());
+        assert!(service.native_request_binding.is_none());
+        Ok(())
+    })?;
+    assert_eq!(pipeline.native_selection(leader)?, before);
+    assert!(Instant::now() < until);
     Ok(())
 }
 
