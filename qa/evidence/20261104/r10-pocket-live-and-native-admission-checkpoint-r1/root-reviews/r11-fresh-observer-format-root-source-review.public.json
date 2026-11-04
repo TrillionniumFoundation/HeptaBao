@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.normal-observer-format-root-source-review.v1",
+  "status": "PASS_FORMAT_DISPATCH_ONLY",
+  "packet_tree": "61e0494f578837e9c9a8da23a1432e1e0910a7eb",
+  "all_13_blobs_whole_verified": true,
+  "controller": {
+    "bytes": 6541,
+    "sha256": "5ea8c303b1bd9de2d801e6653f84664c3435d940d698908e99185a2f2c30f01b",
+    "blob": "2585f257dc1843e187948c06423ad39a1b47d563"
+  },
+  "stdin": {
+    "bytes": 63659,
+    "sha256": "8fb51a2965849cf327ba067e6dd447edefe0954923f8d4aa1b67e01aed60fa3d",
+    "blob": "7728d1a1e2864f9ebe057243e8f007b228d66ee7"
+  },
+  "exact_candidate_embedded": true,
+  "previous_successful_controller": {
+    "bytes": 6916,
+    "sha256": "2a8cfa630c4346edcd88a3f47dbb6fcc8bbc73a5b12b3671fab3fa719423b146",
+    "blob": "b726ad84c254a43aa1ced57d93292b59625b4553"
+  },
+  "strict_hunks": 2,
+  "whole_after_exact": true,
+  "all_functions_and_execution_cleanup_final_deadline_body_byte_identical": true,
+  "actual_context_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "intended_parent": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+  "actual_context_not_integration_checkout": true,
+  "original_internal_seconds": 50,
+  "per_child_seconds": 10,
+  "new_outer_seconds": 60,
+  "compile_or_product_execution_allowed": false,
+  "source_ref_update_allowed": false
+}

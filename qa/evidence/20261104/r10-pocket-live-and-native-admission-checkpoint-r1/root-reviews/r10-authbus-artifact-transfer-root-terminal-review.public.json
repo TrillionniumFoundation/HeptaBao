@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.r10-pocket-artifact-transfer-root-terminal-review.v1",
+  "status": "PASS_TRANSFER_ONLY",
+  "job": "1a1a853acab-fc05-2e55",
+  "sender": {
+    "bytes": 5713,
+    "sha256": "dcc39a49ee0347a29c7b03bc529078542ccd32a1bf1adcc8c78eeb7da2c3e4d9",
+    "blob": "3b039f441b01a19588b4d57efaff1edc31691f24"
+  },
+  "receiver": {
+    "bytes": 2393,
+    "sha256": "2760c60e51087aebe7123a559b320574c4c054a2143b3e49b0659973d05dbe12",
+    "blob": "404f0508c073181728e1ef6f5833c39fdd865e30"
+  },
+  "authority": {
+    "bytes": 729,
+    "sha256": "be519651db9eb448c21dee4250c0ec0e51abdcfd3905a5b048c83eb234db4ec9",
+    "blob": "08daa65eaca9592c5f988d315f6f6eb78527130c"
+  },
+  "terminal": {
+    "bytes": 717,
+    "sha256": "8bb19d46ba940d9b96df15646f07bbb5096ae601364f3296d5ccd0b6c8c9ecbe",
+    "blob": "6de483696a62447600a631da8a3730eb86cabd46"
+  },
+  "all_three_target_file_info_whole_verified": true,
+  "source_and_trust_before_after_lossless_equal": true,
+  "elapsed_ns_exact": "3033029011",
+  "all_owned_reaped": true,
+  "unknown": false,
+  "automatic_retry": false,
+  "server_or_consumer_started": false,
+  "production_changed": false,
+  "original_budgets_unchanged": true,
+  "consumer_qualification": false,
+  "packet_tree": "6954cbe6d3f18a601d7192b2972aad1c98bf71bb",
+  "whole_packet_blobs_verified": 15,
+  "whole_manifest_verified": true
+}

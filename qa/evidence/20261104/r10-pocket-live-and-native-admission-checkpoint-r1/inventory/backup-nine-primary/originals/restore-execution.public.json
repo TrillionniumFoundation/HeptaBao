@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-B",
+    "/home/qian/heptabao-offhost-current-recovery-20261103-r2/offhost_recovery_driver.py",
+    "restore"
+  ],
+  "controllerTimedOut": false,
+  "elapsedSeconds": 289.174,
+  "exitCode": 0,
+  "host": "x230",
+  "liveSourceOrProviderAccess": false,
+  "originalRestoreBudgetSeconds": 300,
+  "phase": "restore",
+  "pythonVersion": "3.12.3",
+  "schema": "heptabao.offhost-recovery-bound-execution.v1",
+  "sourceSha256After": {
+    "current_db_snapshot_capture_main_applied_coherent_r5.py": "fc3710afd04ac86e4d4eaa15cbc779e0b8f66de61fd7043149d0894cc3035432",
+    "current_snapshot_recovery_r4.py": "3e0df47743f87e1324b9f88619cedc1805074426552977a35a828a476186691a",
+    "offhost_recovery_driver.py": "cf8c7a32b30208c8e8218ffb26282f4f2b58e2800dfe52ca338ed21abd8c7a6b"
+  },
+  "sourceSha256Before": {
+    "current_db_snapshot_capture_main_applied_coherent_r5.py": "fc3710afd04ac86e4d4eaa15cbc779e0b8f66de61fd7043149d0894cc3035432",
+    "current_snapshot_recovery_r4.py": "3e0df47743f87e1324b9f88619cedc1805074426552977a35a828a476186691a",
+    "offhost_recovery_driver.py": "cf8c7a32b30208c8e8218ffb26282f4f2b58e2800dfe52ca338ed21abd8c7a6b"
+  },
+  "sourceUnchanged": true,
+  "status": "passed"
+}

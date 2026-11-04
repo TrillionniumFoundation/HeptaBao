@@ -1,0 +1,528 @@
+{
+  "binary": {
+    "bytes": 187607928,
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": true
+    },
+    "sha256": "248dac36e0ba89732ef6c3c0055dab38a6458d762171b4883cbdbd50286467bf"
+  },
+  "binary_unchanged": true,
+  "build": {
+    "argv": [
+      "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "test",
+      "--release",
+      "--locked",
+      "--offline",
+      "-p",
+      "heptabao-server",
+      "--lib",
+      "--no-run",
+      "--message-format=json-render-diagnostics"
+    ],
+    "direct_child_reaped": true,
+    "elapsed_seconds": 1081.7005982089904,
+    "exit_code": 0,
+    "label": "build",
+    "outer_cap_seconds": 3600,
+    "owned_pgid": 3194073,
+    "remaining": [],
+    "stderr_sha256": "0c61b00649eb408fe81e4587cca3a6884034b7a5a56aec4c7177f957d58e4d6e",
+    "stdout_sha256": "5264488dcfcd33ff6127eb7aa4265f60c13deb04a3cfe5cd83d089668114137e",
+    "timed_out": false
+  },
+  "build_artifact_path": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/deps/heptabao_server-46a8765afad8ea76",
+  "cleanup": [
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "no_forward6",
+      "pid": 3208597,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "no_forward6-list",
+      "pid": 3208583,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ordinary5",
+      "pid": 3208573,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ordinary5-list",
+      "pid": 3208561,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "actor2",
+      "pid": 3208475,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "actor2-list",
+      "pid": 3208461,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "redirect5",
+      "pid": 3208410,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "redirect5-list",
+      "pid": 3208398,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "mount1",
+      "pid": 3208395,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "mount1-list",
+      "pid": 3208383,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ssh25",
+      "pid": 3205804,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "ssh25-list",
+      "pid": 3205792,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "build",
+      "pid": 3194073,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "normal-release-build",
+      "pid": 3183492,
+      "remaining": []
+    }
+  ],
+  "controller_sha256": "7aa39562fde6d96eeca9b1d0e53f600c9629de09613d052fad8e68e9c734d176",
+  "fixture_features": [],
+  "group_results": [
+    {
+      "actual_test_names": [
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_does_not_upgrade_ordinary_suffix_or_shrink_large_json",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_refuses_missing_ingress_nonce_or_wrong_root_get",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_rejects_wire_downgrade_and_missing_or_unknown_metadata",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_retains_original_ingress_nonce_and_custom_route",
+        "service::native_auth::ssh_tests::archive::native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_actor_revocation_never_delivers_otp",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign",
+        "service::native_auth::ssh_tests::native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv",
+        "service::native_auth::ssh_tests::native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed",
+        "service::native_auth::ssh_tests::native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit",
+        "service::native_auth::ssh_tests::native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix",
+        "service::native_auth::ssh_tests::native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable",
+        "service::native_auth::ssh_tests::native_ssh_formal_ca_real_signature_cold_typed_public_transport",
+        "service::native_auth::ssh_tests::native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold",
+        "service::native_auth::ssh_tests::native_ssh_formal_otp_promotion_cold_verify_and_replay",
+        "service::native_auth::ssh_tests::native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs",
+        "service::native_auth::ssh_tests::native_ssh_public_reply_cannot_lose_affine_transport_after_audit",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key"
+      ],
+      "label": "ssh25",
+      "tests": {
+        "argv": [
+          "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+          "native_ssh_",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 43.875716383976396,
+        "exit_code": 0,
+        "label": "ssh25",
+        "outer_cap_seconds": 600,
+        "owned_pgid": 3205804,
+        "remaining": [],
+        "stderr_sha256": "cb645c44669b47c6e5ac2fa49935208907b62331a8721c3454c39e0435df64c0",
+        "stdout_sha256": "d2f35fb2e0f3f26de41524b9e3e4d9faecd6afe38ac571086eb7ef2798fb4743",
+        "timed_out": false
+      }
+    },
+    {
+      "actual_test_names": [
+        "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs"
+      ],
+      "label": "mount1",
+      "tests": {
+        "argv": [
+          "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+          "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+          "--exact",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.2831328430038411,
+        "exit_code": 0,
+        "label": "mount1",
+        "outer_cap_seconds": 600,
+        "owned_pgid": 3208395,
+        "remaining": [],
+        "stderr_sha256": "b1b6a5231fd9cccbe919c8f65a55c58c18686e8c2e1a61f72df6ceb6e0df59c0",
+        "stdout_sha256": "a407528dd1b95ccc285ea87d8808ccb153f0bd1f56d346286bfec5b08a5d8fa3",
+        "timed_out": false
+      }
+    },
+    {
+      "actual_test_names": [
+        "http::snapshot::redirect_tests::native_http_redirect_complete_head_preserves_short_writes_and_transport_errors",
+        "http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_flush_retains_original_deadline_failure",
+        "http::snapshot::redirect_tests::native_redirect_target_keeps_existing_query_validation_and_rejects_header_injection"
+      ],
+      "label": "redirect5",
+      "tests": {
+        "argv": [
+          "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+          "http::snapshot::redirect_tests::",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.12912490099552087,
+        "exit_code": 0,
+        "label": "redirect5",
+        "outer_cap_seconds": 600,
+        "owned_pgid": 3208410,
+        "remaining": [],
+        "stderr_sha256": "0d1b1bbb8ca8447a0d365222beef62eb6526abd06fb4462a4c7875287bdc90f9",
+        "stdout_sha256": "ac1bccba45d73e07f9c0948e9947c900a4a8ce90b9f48f1e407002bc409a5e05",
+        "timed_out": false
+      }
+    },
+    {
+      "actual_test_names": [
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead",
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead"
+      ],
+      "label": "actor2",
+      "tests": {
+        "argv": [
+          "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+          "lossless_export_parallel_worker_",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 10.111542424012441,
+        "exit_code": 0,
+        "label": "actor2",
+        "outer_cap_seconds": 600,
+        "owned_pgid": 3208475,
+        "remaining": [],
+        "stderr_sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727",
+        "stdout_sha256": "50dbbede5dfe985c73601ad4e4b916225fc458c757cd6d64748d679f1319483a",
+        "timed_out": false
+      }
+    },
+    {
+      "actual_test_names": [
+        "http::response_coalescing_tests::ordinary_http_complete_small_prefix_keeps_body_and_bounded_metadata",
+        "http::response_coalescing_tests::ordinary_http_original_head_no_body_chunked_and_large_raw_framing_remain",
+        "http::response_coalescing_tests::ordinary_http_prefix_keeps_partial_writes_and_original_io_failures",
+        "http::response_coalescing_tests::ordinary_http_tcp_tls_first_record_contains_full_small_response_with_unread_upload",
+        "http::response_coalescing_tests::ordinary_http_tcp_tls_response_preserves_original_expired_deadline"
+      ],
+      "label": "ordinary5",
+      "tests": {
+        "argv": [
+          "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+          "http::response_coalescing_tests::",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 0.045412469014991075,
+        "exit_code": 0,
+        "label": "ordinary5",
+        "outer_cap_seconds": 600,
+        "owned_pgid": 3208573,
+        "remaining": [],
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "79864277a85c8aa2eb7efd9acbef5f0751507349e43e53a30fb5111b2dc3f76f",
+        "timed_out": false
+      }
+    },
+    {
+      "actual_test_names": [
+        "http::no_forward_tests::no_forward271_binding_and_wire_metadata_cannot_replay_original_ingress",
+        "http::no_forward_tests::no_forward271_header_uses_first_value_and_preserves_original_target",
+        "service::legacy_immutable_kv::tests::no_forward271_keeps_actual_legacy_local_readindex_get",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_location",
+        "service::request_redirect_tests::no_forward271_capsule_keeps_origin_codec_audit_and_original_deadline"
+      ],
+      "label": "no_forward6",
+      "tests": {
+        "argv": [
+          "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+          "no_forward271_",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "direct_child_reaped": true,
+        "elapsed_seconds": 8.06792614099686,
+        "exit_code": 0,
+        "label": "no_forward6",
+        "outer_cap_seconds": 600,
+        "owned_pgid": 3208597,
+        "remaining": [],
+        "stderr_sha256": "078e91400638071a5d52a0d24ae1adddad5035a371ba848398c7e08c51731f83",
+        "stdout_sha256": "379835b83b3fedd9446a83cbbfb9024d26f9b96bbb8d6bc7215f396f9044cd84",
+        "timed_out": false
+      }
+    }
+  ],
+  "groups": [
+    {
+      "exact": false,
+      "filter": "native_ssh_",
+      "label": "ssh25",
+      "runtime_seconds": 600,
+      "tests": [
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_does_not_upgrade_ordinary_suffix_or_shrink_large_json",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_refuses_missing_ingress_nonce_or_wrong_root_get",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_rejects_wire_downgrade_and_missing_or_unknown_metadata",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_retains_original_ingress_nonce_and_custom_route",
+        "service::native_auth::ssh_tests::archive::native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_actor_revocation_never_delivers_otp",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign",
+        "service::native_auth::ssh_tests::native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv",
+        "service::native_auth::ssh_tests::native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed",
+        "service::native_auth::ssh_tests::native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit",
+        "service::native_auth::ssh_tests::native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix",
+        "service::native_auth::ssh_tests::native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable",
+        "service::native_auth::ssh_tests::native_ssh_formal_ca_real_signature_cold_typed_public_transport",
+        "service::native_auth::ssh_tests::native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold",
+        "service::native_auth::ssh_tests::native_ssh_formal_otp_promotion_cold_verify_and_replay",
+        "service::native_auth::ssh_tests::native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs",
+        "service::native_auth::ssh_tests::native_ssh_public_reply_cannot_lose_affine_transport_after_audit",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key"
+      ]
+    },
+    {
+      "exact": true,
+      "filter": "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs",
+      "label": "mount1",
+      "runtime_seconds": 600,
+      "tests": [
+        "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs"
+      ]
+    },
+    {
+      "exact": false,
+      "filter": "http::snapshot::redirect_tests::",
+      "label": "redirect5",
+      "runtime_seconds": 600,
+      "tests": [
+        "http::snapshot::redirect_tests::native_http_redirect_complete_head_preserves_short_writes_and_transport_errors",
+        "http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_flush_retains_original_deadline_failure",
+        "http::snapshot::redirect_tests::native_redirect_target_keeps_existing_query_validation_and_rejects_header_injection"
+      ]
+    },
+    {
+      "exact": false,
+      "filter": "lossless_export_parallel_worker_",
+      "label": "actor2",
+      "runtime_seconds": 600,
+      "tests": [
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead",
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead"
+      ]
+    },
+    {
+      "exact": false,
+      "filter": "http::response_coalescing_tests::",
+      "label": "ordinary5",
+      "runtime_seconds": 600,
+      "tests": [
+        "http::response_coalescing_tests::ordinary_http_complete_small_prefix_keeps_body_and_bounded_metadata",
+        "http::response_coalescing_tests::ordinary_http_original_head_no_body_chunked_and_large_raw_framing_remain",
+        "http::response_coalescing_tests::ordinary_http_prefix_keeps_partial_writes_and_original_io_failures",
+        "http::response_coalescing_tests::ordinary_http_tcp_tls_first_record_contains_full_small_response_with_unread_upload",
+        "http::response_coalescing_tests::ordinary_http_tcp_tls_response_preserves_original_expired_deadline"
+      ]
+    },
+    {
+      "exact": false,
+      "filter": "no_forward271_",
+      "label": "no_forward6",
+      "runtime_seconds": 600,
+      "tests": [
+        "http::no_forward_tests::no_forward271_binding_and_wire_metadata_cannot_replay_original_ingress",
+        "http::no_forward_tests::no_forward271_header_uses_first_value_and_preserves_original_target",
+        "service::legacy_immutable_kv::tests::no_forward271_keeps_actual_legacy_local_readindex_get",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_location",
+        "service::request_redirect_tests::no_forward271_capsule_keeps_origin_codec_audit_and_original_deadline"
+      ]
+    }
+  ],
+  "groups_sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+  "native_build_receipt_sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+  "normal_default_features": true,
+  "normal_release_build": {
+    "argv": [
+      "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "build",
+      "--release",
+      "--locked",
+      "--offline",
+      "-p",
+      "heptabao-server",
+      "--bin",
+      "heptabao-server",
+      "--bin",
+      "heptabao-seed",
+      "--message-format=json-render-diagnostics"
+    ],
+    "direct_child_reaped": true,
+    "elapsed_seconds": 651.5203325269977,
+    "exit_code": 0,
+    "label": "normal-release-build",
+    "outer_cap_seconds": 1800,
+    "owned_pgid": 3183492,
+    "remaining": [],
+    "stderr_sha256": "1e2ffd7ac0ced0ad72b6f5c278ad44f0ca05b91b764f19c682edc079682585ba",
+    "stdout_sha256": "47694694edb5ef1e5c10aec8d24d12de44f5537c18488ec2c879f6031f2fbe0f",
+    "timed_out": false
+  },
+  "outer_phase_caps_seconds": {
+    "each_listing": 30,
+    "each_runtime_group": 600,
+    "normal_libtest_build": 3600,
+    "normal_release_build": 1800
+  },
+  "production_changed": false,
+  "profile": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_HOME": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_PANIC": "unwind",
+    "CARGO_TARGET_DIR": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target",
+    "CARGO_TERM_COLOR": "never",
+    "PATH": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin:/usr/bin:/bin",
+    "RUSTFLAGS": ""
+  },
+  "release_artifacts": {
+    "heptabao-seed": {
+      "bytes": 101159496,
+      "compiler_executable": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/heptabao-seed",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/artifacts/heptabao-seed",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "6befec74076fb891e12a9dd3a1b2563c995ec7f7f1c7df18dc787d1163e0e018"
+    },
+    "heptabao-server": {
+      "bytes": 109091112,
+      "compiler_executable": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/heptabao-server",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/artifacts/heptabao-server",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113"
+    }
+  },
+  "release_artifacts_unchanged": true,
+  "runtime_tests_started": true,
+  "rustc_vv": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.0\nLLVM version: 22.1.8\n",
+  "schema": "heptabao.linux-normal-release-and-exact-libtest-r10.v1",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "source_unchanged": true,
+  "started_ns": 1793816279724242937,
+  "status": "passed",
+  "terminal_ns": 1793818077545566230,
+  "test_count": 44
+}

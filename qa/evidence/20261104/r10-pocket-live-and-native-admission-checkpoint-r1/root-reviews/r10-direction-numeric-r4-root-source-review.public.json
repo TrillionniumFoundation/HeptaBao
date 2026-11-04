@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.stopped-numeric-r4-root-source-review.v1",
+  "status": "PASS_READ_ONLY_WITH_DIRECTORY_PATH_SCOPE_LIMIT",
+  "source": {
+    "bytes": 15562,
+    "sha256": "ecea803b16419202116b7b428fc794335da259cb4e68635073de6bc0b8f03e82",
+    "blob": "600740120f5c21e3318fd6098e80b10b26b23652"
+  },
+  "tree": "6d54fc9dfc854459a8e23546b6bea45303a74eb2",
+  "strict_hunks": 4,
+  "whole_after_exact": true,
+  "only_observed_mode_binding_and_directory_facts_changed": true,
+  "projection_and_final_cleanup_deadline_body_byte_identical": true,
+  "exact_modes": {
+    "mac": {
+      "ancestors": [
+        "0700",
+        "0700"
+      ],
+      "log_dir": "0755",
+      "marker": "0600",
+      "log_files": "0644"
+    },
+    "rog": {
+      "ancestors": [
+        "0700",
+        "0700"
+      ],
+      "log_dir": "0775",
+      "marker": "0600",
+      "log_files": "0664"
+    }
+  },
+  "actual_metadata_authorities": [
+    "1a1a85c7406-fc05-2e70",
+    "1a1a85e0788-fc05-2e79"
+  ],
+  "all_mode_facts_from_each_actual_host": true,
+  "product_permissions_changed": false,
+  "root_and_raft_private_ancestors_preserved": true,
+  "all_existing_fd_owner_single_link_crc_frame_eof_bounds_preserved": true,
+  "upstream_serde_and_log_order_verified_from_exact_primary_commit": "dfee06ca9a8193f061149ce784caa6bcbe92a0c4",
+  "registry_cache_bytes_not_independently_verified": true,
+  "per_node_seconds": 15,
+  "new_outer_seconds": 45,
+  "ordered_nodes": [
+    1,
+    2
+  ],
+  "old_known_refusal_preserved": true,
+  "numeric_read_or_product_not_yet_executed": true,
+  "post_dispatch_peer_finding": {
+    "reviewer": "compatibility_audit",
+    "actual_rename_observed": false,
+    "scope": "R4 rechecks held raft/log directory FDs, root path, and file names relative to held directory FDs. It does not independently rebind both descendant directory names against parent FDs at end.",
+    "historical_originals_unchanged": true,
+    "new_fixture_reader_requires_parent_relative_directory_name_recheck": true,
+    "replay_original_r4": false
+  }
+}

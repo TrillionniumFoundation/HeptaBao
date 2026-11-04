@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.phaseb.normal-fresh-ingress-observation-independent-source-review.v1",
+  "reviewer": "authbus_migration",
+  "result": "no_blocking_finding_in_reviewed_source_scope",
+  "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+  "base": {
+    "bytes": 60854,
+    "sha256": "620f2e70342971394a8e70696ebaef3740d0f15d8ee186088666d8dba27b425e",
+    "git_blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000"
+  },
+  "candidate": {
+    "bytes": 61578,
+    "sha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d",
+    "git_blob": "7bbd34e86039d0f640ac12a48cd81b2f836e600a"
+  },
+  "diff": {
+    "bytes": 3162,
+    "sha256": "b76f91a684305d452be25d6735b4ad2fc82ee33086dda33c890223a497e713a7",
+    "git_blob": "57bc167b34cf3ddc684b89893c347b0312aff9b4"
+  },
+  "strict_diff": {
+    "hunks": 6,
+    "whole_after_exact": true,
+    "only_one_method_changed": true,
+    "prefix_and_suffix_byte_identical": true
+  },
+  "inspected_context": [
+    "native_v6_committed_fresh_ingress_read whole method",
+    "NativeV6FailureObservation start/step/refused/complete/Drop",
+    "bounded thread-owned NativeV6RequestObservation and timing buckets",
+    "existing committed_read_inner_bound observation precedent",
+    "existing phase_advance_is_distinct_from_operation_success regression"
+  ],
+  "checks": [
+    "All business calls, arguments, original deadline objects, ? error propagation, witness checks and refuse_reselection calls retain order and content. Additional calls are observer bookkeeping only.",
+    "The single observer starts with the original deadline.instant(); no new deadline, read witness, actor, source, receipt or authority is minted.",
+    "Eight fixed step labels supplement the fixed initial label. Error output uses the unchanged observer's fixed code and digest of the already-produced error; the original Result is returned unchanged.",
+    "Existing no-selection and Superseded Ok branches reach failure.complete at the outer Result classification; completion describes this ingress scope, not snapshot success or custody settlement.",
+    "The final if-let borrows the original error only for refused hashing and retains permission.refuse_reselection; success consumes the observer once via complete. No new retry, network call, task or provider operation.",
+    "The unchanged observer records bounded thread-local timing and emits no failure line on success. Existing stderr behavior is retained and does not extend the request deadline."
+  ],
+  "step_labels": [
+    "fresh_ingress_runtime",
+    "fresh_ingress_storage_operation",
+    "fresh_ingress_read_index",
+    "fresh_ingress_enrollment",
+    "fresh_ingress_same_root_closure",
+    "fresh_ingress_original_repair",
+    "fresh_ingress_changed_root_recover",
+    "fresh_ingress_final_witness"
+  ],
+  "limitations": [
+    "Static source review only; no Rust compiler, formatting, unit test, host or fixture was executed.",
+    "This observation patch cannot establish why the prior PhaseB B01 request returned503 and cannot qualify snapshot export or restore.",
+    "The previous unknown result remains historical; any later execution requires a fresh reviewed candidate and explicit root window."
+  ],
+  "product_modified_by_reviewer": false,
+  "host_io": false,
+  "original_unknown_replayed": false
+}

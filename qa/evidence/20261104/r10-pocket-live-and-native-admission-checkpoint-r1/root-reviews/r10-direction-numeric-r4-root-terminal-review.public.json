@@ -1,0 +1,157 @@
+{
+  "schema": "heptabao.stopped-numeric-r4-root-terminal-review.v1",
+  "status": "PASS_BOUNDED_CURRENT_NUMERIC_PROJECTION",
+  "tree": "cc9db8c7d3962fce1e108212bff71611e1fbe700",
+  "whole_packet": {
+    "tree": "cc9db8c7d3962fce1e108212bff71611e1fbe700",
+    "leaves": 7,
+    "bytes": 18489,
+    "merkle": {
+      "root_sha": "cc9db8c7d3962fce1e108212bff71611e1fbe700",
+      "trees_verified": 1
+    },
+    "records": [
+      {
+        "path": "assessment.public.json",
+        "bytes": 8175,
+        "sha256": "0ca59ae1499a6c00a9201e06db79ce0ec56f79d6d7cccac68ea47bd05bb7c334",
+        "blob": "8f26612fa54ae7a5b21822bde7590f62c23fe051"
+      },
+      {
+        "path": "mac-authority.api.json",
+        "bytes": 732,
+        "sha256": "d3f464cbffe447655b470f157ff9f20b4be262f59cf09fcdf9043843ac54cb85",
+        "blob": "84186ff6511d44c13dc8036c7ba7da906b726d70"
+      },
+      {
+        "path": "mac-result.public.json",
+        "bytes": 4465,
+        "sha256": "f985cbcab8956bb57f503def0b007ac11d4bce609da181d989c5b6cf655cd13b",
+        "blob": "341d46d72c1684dc417a12ab7ce178e8b39c5a66"
+      },
+      {
+        "path": "mac-terminal.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      {
+        "path": "rog-authority.api.json",
+        "bytes": 732,
+        "sha256": "5a046f8fde7fadfa052a5737c457d34b6fea3a9263a0b90e6606cbd246fecca9",
+        "blob": "e004a3418f2316b943cab9f737de40d0ee464570"
+      },
+      {
+        "path": "rog-result.public.json",
+        "bytes": 4385,
+        "sha256": "c97eff758a3f1ad5fe5225d9430235e37c645bf6bb525e0cccad6124f518bb8c",
+        "blob": "5bf412fc4c2c35398b89f7d26574896fc2ebead0"
+      },
+      {
+        "path": "rog-terminal.stderr",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      }
+    ]
+  },
+  "raw_lossless_identities_unchanged": true,
+  "rows": [
+    {
+      "host": "mac",
+      "job": "1a1a8600c27-fc05-2e80",
+      "result": {
+        "bytes": 4465,
+        "sha256": "f985cbcab8956bb57f503def0b007ac11d4bce609da181d989c5b6cf655cd13b",
+        "blob": "341d46d72c1684dc417a12ab7ce178e8b39c5a66"
+      },
+      "authority": {
+        "bytes": 732,
+        "sha256": "d3f464cbffe447655b470f157ff9f20b4be262f59cf09fcdf9043843ac54cb85",
+        "blob": "84186ff6511d44c13dc8036c7ba7da906b726d70"
+      },
+      "elapsed_seconds": 0.0013012909330427647,
+      "files": [
+        {
+          "file": "native-ha-fixture.json",
+          "sha256": "c00d7d4e000f929e0e2306c65f804bb5b49b29a1f519725ad994661988c8bee8"
+        },
+        {
+          "file": "raft-log.bin",
+          "sha256": "da9c76a02ad375e16e27a2831d8226f6dd3398e265be17a3665534cbd1a1770b"
+        },
+        {
+          "file": "raft-log.journal",
+          "sha256": "711e5efa2c1d2defe9471b4c36036f7b13dcd877e24738f0f4ea885b45bdc062"
+        }
+      ],
+      "log_id": {
+        "index": 61,
+        "leader_id": {
+          "node_id": 2,
+          "term": 2
+        }
+      },
+      "final_vote": {
+        "committed": true,
+        "leader_id": {
+          "node_id": 2,
+          "term": 2
+        }
+      },
+      "event_count": 122
+    },
+    {
+      "host": "rog",
+      "job": "1a1a8605a3a-fc05-2e81",
+      "result": {
+        "bytes": 4385,
+        "sha256": "c97eff758a3f1ad5fe5225d9430235e37c645bf6bb525e0cccad6124f518bb8c",
+        "blob": "5bf412fc4c2c35398b89f7d26574896fc2ebead0"
+      },
+      "authority": {
+        "bytes": 732,
+        "sha256": "5a046f8fde7fadfa052a5737c457d34b6fea3a9263a0b90e6606cbd246fecca9",
+        "blob": "e004a3418f2316b943cab9f737de40d0ee464570"
+      },
+      "elapsed_seconds": 0.0014429500151891261,
+      "files": [
+        {
+          "file": "native-ha-fixture.json",
+          "sha256": "15b06205df0caf75ea6a548c283b22f7d6665fbe7f98e7daf680513b764a3f28"
+        },
+        {
+          "file": "raft-log.bin",
+          "sha256": "da9c76a02ad375e16e27a2831d8226f6dd3398e265be17a3665534cbd1a1770b"
+        },
+        {
+          "file": "raft-log.journal",
+          "sha256": "2ce4f89d3ae186b470849e778708ee0c0449b6fb28f7abd82e453685d5a24783"
+        }
+      ],
+      "log_id": {
+        "index": 61,
+        "leader_id": {
+          "node_id": 2,
+          "term": 2
+        }
+      },
+      "final_vote": {
+        "committed": true,
+        "leader_id": {
+          "node_id": 2,
+          "term": 2
+        }
+      },
+      "event_count": 123
+    }
+  ],
+  "scope_limit": "Held raft/log directory FDs were stable, root path and file names relative to held directories were rechecked. Descendant directory names were not rebound against parent FDs at the end. No rename was observed; no historical replay is authorized.",
+  "numeric_inference": "Both terminal logs are equally fresh at term 2 / node 2 / index 61. The persisted committed self-vote on node 2 supports, but does not prove uniquely, restoration of node 2 leadership in the prior fixture.",
+  "historical_causality_proven": false,
+  "applied_frontier_proven": false,
+  "read_index_authority": false,
+  "direction98_result_unchanged": "87/98; requested Mac leader guard stopped before target unseal",
+  "new_fixture_requires_descendant_named_rechecks": true,
+  "product_changed": false
+}

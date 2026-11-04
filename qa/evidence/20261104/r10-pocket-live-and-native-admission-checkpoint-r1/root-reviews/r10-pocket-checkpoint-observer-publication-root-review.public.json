@@ -1,0 +1,141 @@
+{
+  "schema": "heptabao.observer-publication-current-root-review.v1",
+  "status": "PASS_SOURCE_AND_FORMAT_ONLY",
+  "branch": "codex/heptabao-native-ingress-observer-20261104",
+  "head": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+  "tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a",
+  "parent": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+  "parent_tree": "2ec2be733f5499cb632e529159a296f3c6f62cd1",
+  "parent_merkle": {
+    "root_sha": "2ec2be733f5499cb632e529159a296f3c6f62cd1",
+    "trees_verified": 358
+  },
+  "new_merkle": {
+    "root_sha": "ac4027db88fec69381ea0c6bba953d9a99c4e82a",
+    "trees_verified": 358
+  },
+  "leaves": 3911,
+  "unchanged_leaves": 3910,
+  "changed": [
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "before": "e9f804f749c6e335c430e6246b9e1a74f76b0000",
+      "after": "7bbd34e86039d0f640ac12a48cd81b2f836e600a"
+    }
+  ],
+  "source_semantic_review": {
+    "schema": "heptabao.normal-fresh-ingress-observer-root-source-review.v1",
+    "status": "PASS_SOURCE_ONLY",
+    "base_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "test_only_parent": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+    "candidate": {
+      "bytes": 61578,
+      "sha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d",
+      "blob": "7bbd34e86039d0f640ac12a48cd81b2f836e600a"
+    },
+    "diff": {
+      "bytes": 3162,
+      "sha256": "b76f91a684305d452be25d6735b4ad2fc82ee33086dda33c890223a497e713a7",
+      "blob": "57bc167b34cf3ddc684b89893c347b0312aff9b4"
+    },
+    "strict_hunks": 6,
+    "whole_applied_exact": true,
+    "outside_one_function_byte_identical": true,
+    "observation_insertions": 9,
+    "one_result_classification_replacement": true,
+    "exact_inverse_restores_original": true,
+    "semantics": "Original business calls, arguments, deadlines, ?, None/Ready/Superseded returns and refuse_reselection remain. Existing observer records static phase/code/error digest, bounded timing; success is this read scope only. Adds small observation overhead, no new authority/read/network/retry.",
+    "admission_evidence": {
+      "original_job": "1a1a8177aec-fc05-2da5",
+      "original_complete_503_before_external_export": true,
+      "remaining_request_ns": 14980422592,
+      "exact_inner_reason": "unknown",
+      "fresh_ingress_path": "supported inference",
+      "old_unknown_unchanged": true
+    },
+    "primary": [
+      {
+        "path": "crates/heptabao-server/src/service.rs",
+        "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+        "whole_verified": true,
+        "ranges_verified": 3
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+        "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+        "whole_verified": true,
+        "ranges_verified": 2
+      },
+      {
+        "path": "crates/heptabao-server/src/http_snapshot.rs",
+        "blob": "4a5743d757b79493400b712bf57a5fa552b50bda",
+        "whole_verified": true,
+        "ranges_verified": 1
+      },
+      {
+        "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+        "blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000",
+        "whole_verified": true,
+        "ranges_verified": 3
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_writer.rs",
+        "blob": "713b6906ad6a566fb6e5580b28083e2292b53565",
+        "whole_verified": true,
+        "ranges_verified": 2
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_ingress.rs",
+        "blob": "ebf24ee641caa06874d54c963b8dc80919a64c57",
+        "whole_verified": true,
+        "ranges_verified": 0
+      },
+      {
+        "path": "crates/heptabao-ha-service/src/v6_ingress_reselection.rs",
+        "blob": "d3789a93c8bc3a4678e831c886315527ec086902",
+        "whole_verified": true,
+        "ranges_verified": 0
+      }
+    ],
+    "peer_blob": "bfa29dd31c1e5777d9ca9f32a582895158f9be79",
+    "format_compile_runtime_performed": false,
+    "snapshot_qualification": false,
+    "full_replacement": false
+  },
+  "actual_format_review": {
+    "schema": "heptabao.normal-observer-root-actual-format-review.v1",
+    "status": "PASS_FORMAT_ONLY",
+    "job": "1a1a85b6070-fc05-2e6d",
+    "packet_tree": "e3dbfa577ed40976630736bd9851e69e92389b8c",
+    "whole_packet_blobs": 27,
+    "core": {
+      "bytes": 3508,
+      "sha256": "8d1355b5323b27ac1b1f7d18775c752035a5dc452e9a1ce1bffe363b0157007c",
+      "blob": "2a16c13255a8a2319d87ca6af7f2af2cfbe989a9"
+    },
+    "authority": {
+      "bytes": 729,
+      "sha256": "28f50e123024be0488ca7c3dcdccb8477f30332d835152a8a6758c353a389bda",
+      "blob": "dcdcaba1f7099aee9632dab2055d2fb7ea5ea874"
+    },
+    "formatted": {
+      "bytes": 61578,
+      "sha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d",
+      "blob": "7bbd34e86039d0f640ac12a48cd81b2f836e600a"
+    },
+    "format_only_diff_empty": true,
+    "candidate_byte_identical": true,
+    "canonical_and_tool_full_identity_lossless_equal": true,
+    "child_count": 1,
+    "all_owned_reaped": true,
+    "original_internal_seconds": 50,
+    "elapsed_seconds": 0.03433593799127266,
+    "compile_executed": false,
+    "product_executed": false,
+    "production_changed": false
+  },
+  "compile_executed": false,
+  "product_fix_proven": false,
+  "original_runtime_candidate_unchanged": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "ci_branch_head_unchanged": "6d3040a2dbd06661a67f5c62df259ff446eb8515"
+}

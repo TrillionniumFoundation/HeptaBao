@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.r10.pocket-relay-inert-terminal-review.v1",
+  "status": "passed_inert_only",
+  "job_id": "1a1a84bbf62-fc05-2e36",
+  "host": "desktop",
+  "root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/pocket-r10-artifact-relay-control-r1",
+  "idempotency_key": "heptabao-r10-pocket-relay-inert-651df235-20261104-r1",
+  "new_outer_seconds": 60,
+  "actual_exit_code": 0,
+  "complete_durable": true,
+  "timed_out": false,
+  "receipt_stdout_lossless_equal": true,
+  "files": [
+    {
+      "bytes": 19343,
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/pocket-r10-artifact-relay-control-r1/pocket_r10_artifact_relay_r1.py",
+      "publication": "created",
+      "sha256": "651df23534c8410f1a34691968a1d1a1c76c4931675622aef41aae34ff02f96f",
+      "uid": 1000,
+      "gid": 1000,
+      "link_count": 1
+    },
+    {
+      "bytes": 4204,
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/pocket-r10-artifact-relay-control-r1/pocket_r10_artifact_receiver.extracted.py",
+      "publication": "created",
+      "sha256": "ba6529b8d27ebaced29eaac5468c859810e7ef74484c96bea0a7b699f37d2323",
+      "uid": 1000,
+      "gid": 1000,
+      "link_count": 1
+    }
+  ],
+  "python_compile_only": true,
+  "files_executed": false,
+  "artifact_transfer": false,
+  "consumer_started": false,
+  "provider_called": false,
+  "production_mutated": false,
+  "source_review": "Root and independent peer approved exact paths/pins; only source distribution is evidenced here.",
+  "sha256_closure": [
+    {
+      "path": "receipt.public.json",
+      "bytes": 1455,
+      "sha256": "53c3bc2e5688f92f638b809a414901c86906456b60188cefc42020cc8254d5b0",
+      "git_blob": "4809e4d5a304927ba852c4d730956c7348916e71",
+      "mode": "100644"
+    },
+    {
+      "path": "authority.public.json",
+      "bytes": 731,
+      "sha256": "92f905d89602c43718214f7bd21e8569aa50593a00db1d6d49277e9e1096d93f",
+      "git_blob": "aa204a4842f2c8989b7b1562a61b06f0ccd1937d",
+      "mode": "100644"
+    },
+    {
+      "path": "stdout",
+      "bytes": 1171,
+      "sha256": "f2416a5e74af5107d205c13f3557bf7dc09b7b6c8332f7b0f1b7ec1976a913e9",
+      "git_blob": "6dc37163d5823fe1424a91913eb1e740ca81eecd",
+      "mode": "100644"
+    },
+    {
+      "path": "stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644"
+    }
+  ]
+}

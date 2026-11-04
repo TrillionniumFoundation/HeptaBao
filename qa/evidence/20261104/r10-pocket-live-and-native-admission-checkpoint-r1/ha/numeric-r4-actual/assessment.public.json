@@ -1,0 +1,232 @@
+{
+  "schema": "heptabao.stopped-direction-numeric-read-assessment.v1",
+  "status": "PASS_SCOPED_DIAGNOSTIC",
+  "product_qualification": false,
+  "source": {
+    "bytes": 15562,
+    "sha256": "ecea803b16419202116b7b428fc794335da259cb4e68635073de6bc0b8f03e82",
+    "blob": "600740120f5c21e3318fd6098e80b10b26b23652",
+    "tree": "6d54fc9dfc854459a8e23546b6bea45303a74eb2"
+  },
+  "old_fixture_run_id": "2f514650d5a5cbd46daa2a899858b833",
+  "old_fixture_qualification": "FAIL_DIRECTION_UNCOVERED",
+  "old_fixture_summary_sha256": "bd7cc8949faca6bebcad6c847f2f1506526a6329ed6392f865892f253cf0c912",
+  "nodes": [
+    {
+      "host": "mac",
+      "job_id": "1a1a8600c27-fc05-2e80",
+      "original_observer_seconds": 15,
+      "new_outer_seconds": 45,
+      "elapsed_seconds": 0.0013012909330427647,
+      "publication_within_original_observer_deadline": true,
+      "result": {
+        "bytes": 4465,
+        "sha256": "f985cbcab8956bb57f503def0b007ac11d4bce609da181d989c5b6cf655cd13b",
+        "blob": "341d46d72c1684dc417a12ab7ce178e8b39c5a66"
+      },
+      "projection": {
+        "applied_frontier_read_from_state_machine": false,
+        "checkpoint_epoch": 1,
+        "checkpoint_vote": null,
+        "committed_log_id": {
+          "index": 61,
+          "leader_id": {
+            "node_id": 2,
+            "term": 2
+          }
+        },
+        "committed_not_beyond_last_log": true,
+        "complete_current_epoch_journal": true,
+        "entry_payload_semantics_validated": false,
+        "event_count": 122,
+        "event_counts": {
+          "Append": 60,
+          "Committed": 59,
+          "Purge": 0,
+          "Truncate": 0,
+          "Vote": 3
+        },
+        "final_vote": {
+          "committed": true,
+          "leader_id": {
+            "node_id": 2,
+            "term": 2
+          }
+        },
+        "journal_epoch": 1,
+        "journal_format": 1,
+        "last_log_id": {
+          "index": 61,
+          "leader_id": {
+            "node_id": 2,
+            "term": 2
+          }
+        },
+        "last_purged_log_id": null,
+        "projection_is_read_authority": false,
+        "retained_entry_count": 62,
+        "retained_log_contiguous": true,
+        "stale_journal_ignored_by_product_rule": false,
+        "vote_events": [
+          {
+            "event_ordinal": 2,
+            "event_payload_sha256": "2e548b2650d13cd9f705785834322befcc1eb3a089bbcb734eb96b7726ca41b0",
+            "file_offset": 194,
+            "vote": {
+              "committed": false,
+              "leader_id": {
+                "node_id": 1,
+                "term": 1
+              }
+            }
+          },
+          {
+            "event_ordinal": 3,
+            "event_payload_sha256": "d3ad6905cda42ea5c17adfb5b2e307546040e5b2bb303dec5ae80e9b0b69b28a",
+            "file_offset": 277,
+            "vote": {
+              "committed": true,
+              "leader_id": {
+                "node_id": 1,
+                "term": 1
+              }
+            }
+          },
+          {
+            "event_ordinal": 112,
+            "event_payload_sha256": "5e104c81ab5669365da22c2696ec4f7d9efa0d10ba9c8949cdf9957c65731638",
+            "file_offset": 147641,
+            "vote": {
+              "committed": true,
+              "leader_id": {
+                "node_id": 2,
+                "term": 2
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "host": "rog",
+      "job_id": "1a1a8605a3a-fc05-2e81",
+      "original_observer_seconds": 15,
+      "new_outer_seconds": 45,
+      "elapsed_seconds": 0.0014429500151891261,
+      "publication_within_original_observer_deadline": true,
+      "result": {
+        "bytes": 4385,
+        "sha256": "c97eff758a3f1ad5fe5225d9430235e37c645bf6bb525e0cccad6124f518bb8c",
+        "blob": "5bf412fc4c2c35398b89f7d26574896fc2ebead0"
+      },
+      "projection": {
+        "applied_frontier_read_from_state_machine": false,
+        "checkpoint_epoch": 1,
+        "checkpoint_vote": null,
+        "committed_log_id": {
+          "index": 61,
+          "leader_id": {
+            "node_id": 2,
+            "term": 2
+          }
+        },
+        "committed_not_beyond_last_log": true,
+        "complete_current_epoch_journal": true,
+        "entry_payload_semantics_validated": false,
+        "event_count": 123,
+        "event_counts": {
+          "Append": 60,
+          "Committed": 60,
+          "Purge": 0,
+          "Truncate": 0,
+          "Vote": 3
+        },
+        "final_vote": {
+          "committed": true,
+          "leader_id": {
+            "node_id": 2,
+            "term": 2
+          }
+        },
+        "journal_epoch": 1,
+        "journal_format": 1,
+        "last_log_id": {
+          "index": 61,
+          "leader_id": {
+            "node_id": 2,
+            "term": 2
+          }
+        },
+        "last_purged_log_id": null,
+        "projection_is_read_authority": false,
+        "retained_entry_count": 62,
+        "retained_log_contiguous": true,
+        "stale_journal_ignored_by_product_rule": false,
+        "vote_events": [
+          {
+            "event_ordinal": 1,
+            "event_payload_sha256": "d3ad6905cda42ea5c17adfb5b2e307546040e5b2bb303dec5ae80e9b0b69b28a",
+            "file_offset": 16,
+            "vote": {
+              "committed": true,
+              "leader_id": {
+                "node_id": 1,
+                "term": 1
+              }
+            }
+          },
+          {
+            "event_ordinal": 108,
+            "event_payload_sha256": "37f84e0605a97121255385c1b347d3a21b42d548f492f946aaaebaa92a308f36",
+            "file_offset": 147414,
+            "vote": {
+              "committed": false,
+              "leader_id": {
+                "node_id": 2,
+                "term": 2
+              }
+            }
+          },
+          {
+            "event_ordinal": 109,
+            "event_payload_sha256": "5e104c81ab5669365da22c2696ec4f7d9efa0d10ba9c8949cdf9957c65731638",
+            "file_offset": 147497,
+            "vote": {
+              "committed": true,
+              "leader_id": {
+                "node_id": 2,
+                "term": 2
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "scope": {
+    "fixed_stopped_nodes": 2,
+    "product_requests": 0,
+    "children": 0,
+    "writes": 0,
+    "service_starts": 0,
+    "log_repairs": 0,
+    "mode_changes": 0,
+    "retries": 0
+  },
+  "observed": [
+    "Both stopped stores ended at the same committed vote: term2/node2/committed=true.",
+    "Both committed and last retained LogId are term2/node2/index61; each retains62 contiguous entries.",
+    "Both current-epoch journals are complete and CRC-checked, with epoch1 and no truncation/purge events.",
+    "Mac journal has122 events, ROG123; vote sequence includes node2 term2 committed on both and node2 term2 candidacy on ROG."
+  ],
+  "interpretation": "There is no observed final persisted-log freshness advantage for Mac in this failed-direction fixture. Exact upstream startup rules permit node2 to restore leadership from its persisted committed self-vote. This is a supported mechanism for a new controlled experiment, not unique historical causal proof.",
+  "limits": [
+    "Current terminal-state numeric read does not establish exact persisted state at any earlier process-start boundary.",
+    "No state-machine file was opened; committed metadata is not a full applied-frontier or application-authority proof.",
+    "Held directory descriptors were stable; the root path and files relative to held parent descriptors were checked. The raft/log descendant directory names were not each independently rebound to their parent paths at the final instant.",
+    "No actual rename was observed. The preceding directory-binding scope is a proof limitation, not an observed fault.",
+    "The original direction98 result remains87/98 with11 unexecuted and actual source3/leader2; target3-to1 recovery was not attempted.",
+    "R4 source fixes only diagnostic expectations using per-node observed permissions. Original R2 refusal and unexecuted R3 draft remain immutable.",
+    "Upstream exact version Git sources were reviewed; registry-cache bytes were not independently verified."
+  ]
+}

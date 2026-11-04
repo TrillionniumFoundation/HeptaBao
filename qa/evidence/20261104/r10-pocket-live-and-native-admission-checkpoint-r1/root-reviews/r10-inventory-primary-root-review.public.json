@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.finite-client-backup-primary-root-review.v1",
+  "status": "PASS_PUBLIC_PRIMARY_SCOPE_ONLY",
+  "f458": {
+    "original": {
+      "bytes": 18231,
+      "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+      "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924"
+    },
+    "chunk_count": 1,
+    "whole_binary_reconstructed": true,
+    "version": "2053:6343000:18231:1793773204377238571:1793773204377238571",
+    "metadata": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/finite-cutover-registration-scope-r2.public.json",
+      "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+      "size": 18231,
+      "version": "2053:6343000:18231:1793773204377238571:1793773204377238571"
+    }
+  },
+  "aa23": {
+    "original": {
+      "bytes": 96796,
+      "sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0",
+      "blob": "16a6217e0163265b27a2e79f9aeffb26431b47ca"
+    },
+    "chunk_count": 2,
+    "whole_binary_reconstructed": true,
+    "version": "2053:6342755:96796:1793769213445673455:1793769213445673455",
+    "metadata": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/four-host-cutover-cleanup-assessment.public.json",
+      "sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0",
+      "size": 96796,
+      "version": "2053:6342755:96796:1793769213445673455:1793769213445673455"
+    }
+  },
+  "original_bytes_and_unsafe_integers_preserved": true,
+  "all_16_packet_blobs_whole_verified": true,
+  "registration_hold_references": 9,
+  "captured_backup_chain_references": 9,
+  "captured_backup_chains": 1,
+  "reference_classifications_distinct": true,
+  "backup_chain_scope": "Historical Nov3 encrypted capture recovery, 23 files / 7 nonempty databases / 6 captured auth stores; not current credential validity or current SDK recovery",
+  "finite_planning_scope_closed": true,
+  "scope_reopen_trigger": "A newly observed active command/configuration or restore entry referencing Bao/AuthBus outside this finite list, not a hypothetical possibility.",
+  "current_collector_executed": false,
+  "next_exact_9_public_receipt_reads_allowed": true,
+  "private_payload_or_key_reads": false,
+  "all_clients_and_backups_migrated": false,
+  "full_replacement": false,
+  "cleanup_qualified": false
+}

@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.phaseb-normal-observer.normal-build-fresh-runtime-source-plan.v1",
+  "files": [
+    {
+      "path": "PLAN.md",
+      "bytes": 9590,
+      "sha256": "78c81d0052ffa13441c172dee8af9b3ab9277395e33598e3f0854f5ba9c537d9",
+      "blob": "355ae4fc759d6f17e78782120ba7a1bc748b524f"
+    },
+    {
+      "path": "draft/phaseb_binding_r3.py",
+      "bytes": 21577,
+      "sha256": "827c3546d74f7d739db5bc0962f4971dd3a480657156665d4528733f8a84678e",
+      "blob": "eb65e08376cb9f3c3efefe1b00051bfbdbb75791"
+    },
+    {
+      "path": "draft/phaseb-binding.review.diff",
+      "bytes": 5096,
+      "sha256": "a9ff9349c0d46629bfb68aedd0a99c2751a8cd9fcdd410258323f7c47c01103e",
+      "blob": "5dbe8aecc500e4de905257c012f0f5d0027ccb83"
+    },
+    {
+      "path": "draft/normal_phaseb_observer_build.py",
+      "bytes": 17153,
+      "sha256": "ab1a0255cca04604253939bc837a1591f55e91cb00ba1e26ebf490f7e90c659a",
+      "blob": "e060b24dee961e412ab9c889043abda2c7ffb646"
+    },
+    {
+      "path": "draft/normal-build.review.diff",
+      "bytes": 1943,
+      "sha256": "d4ce974a99a45d3b9d103863b1084e0e6c22cfcb1aa51509553f901c13abd8f6",
+      "blob": "e1c206268267fd7764439e975344d46f71fb8641"
+    },
+    {
+      "path": "draft/binding.partial.json",
+      "bytes": 6264,
+      "sha256": "dc4274eca52d8404efa7b5c81ba833370a9a56ca236caa32041e881fb59f6a68",
+      "blob": "29ce7ec7511b41442fe926a5f6a9699319145d29"
+    },
+    {
+      "path": "draft/build-dispatch-proposal.public.json",
+      "bytes": 2622,
+      "sha256": "6cae7f0052f72db5b958ed4bfdabce11800a0b53d165606f56916c256d6ce66e",
+      "blob": "b145ba7c8e845ba4369df4daa06b182e124d5cae"
+    },
+    {
+      "path": "evidence/preparation-invariance.public.json",
+      "bytes": 2562,
+      "sha256": "862820e8ad5c4889f73db6ae060757990f31d17b8c8ba91da6fa590dd5bf02e6",
+      "blob": "45dba20d95a435d8fa1a13cd1963fb0f58ab53fe"
+    },
+    {
+      "path": "evidence/input-representation-only.review.diff",
+      "bytes": 731,
+      "sha256": "053b9fa1355aa514826da47b8df973f49907a169b98db58e0ece0720baeb26ef",
+      "blob": "e8572db76b6598830b4998bb20e21769c0acc8fb"
+    },
+    {
+      "path": "reference/phaseb_controller_r3.py",
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+      "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0"
+    },
+    {
+      "path": "reference/phaseb_binding_r3.py",
+      "bytes": 20742,
+      "sha256": "39795f901ffac84236411f4b89ce2ee2ae573446ce30f490f9b8d0c603131501",
+      "blob": "236c35803f07f2b6bfeb06b0abfe108baef27215"
+    },
+    {
+      "path": "reference/normal_build_r10.py",
+      "bytes": 16900,
+      "sha256": "7aa39562fde6d96eeca9b1d0e53f600c9629de09613d052fad8e68e9c734d176",
+      "blob": "686b824755f193e4ae777de22fb682d9510528a2"
+    },
+    {
+      "path": "reference/r10-normal44-result.public.json",
+      "bytes": 24311,
+      "sha256": "409b8a02557cc5d2985d15f01ff28ff64a6fb43c4a8b1e0f50f03bb748fcbeee",
+      "blob": "3e0a0ce5f20de8bb892436c1e1a38872b45f27d6"
+    }
+  ],
+  "actual_format_packet_tree": "e3dbfa577ed40976630736bd9851e69e92389b8c",
+  "new_build_runtime_permission": false,
+  "missing": {
+    "candidate_commit": true,
+    "candidate_tree": true,
+    "new_normal_artifact": true,
+    "new_native_receipt": true,
+    "new_combined44": true,
+    "desktop_stage": true,
+    "prepare": true
+  }
+}

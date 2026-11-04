@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.r10-direction98-r2-operations-root-review.v1",
+  "status": "PASS_EVIDENCE_NOT_DIRECTION_QUALIFICATION",
+  "tree": "55d6c722884caecfd0d1368069b297b5d8d6479c",
+  "files": 92,
+  "raw_operation_files": 90,
+  "raw_operation_bytes": 44798,
+  "exact_sequence": "1..45",
+  "known_responses": 45,
+  "unknown_responses": 0,
+  "all_summary_events_exact": true,
+  "budgets": {
+    "seconds12": 1,
+    "seconds15": 44
+  },
+  "all_within_original_budgets": true,
+  "quorum_denied": {
+    "sequence": 35,
+    "budget": 15,
+    "status": 503,
+    "elapsed_ms": 14011.895,
+    "stage": "actual_native_quorum_loss"
+  },
+  "target_missing_cipher_unseal_attempted": false,
+  "qualification": "FAIL_DIRECTION_UNCOVERED",
+  "original_87_of_98_not_upgraded": true,
+  "transport_alone_not_effect_proof": true,
+  "no_private_request_or_response_bodies_read": true
+}

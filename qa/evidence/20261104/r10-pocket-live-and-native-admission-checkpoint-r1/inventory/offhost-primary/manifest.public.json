@@ -1,0 +1,63 @@
+{
+  "schema": "heptabao.four-host-inventory.second-primary-packet.v1",
+  "first_primary_packet_tree": "1d4cf9f9f40bc93933bdd3854b4c95e315f74a23",
+  "scope": "Exact aa23 public matrix readback, one captured-backup chain and historical material interpretation; no new collector or payload reads.",
+  "files": [
+    {
+      "path": "original/four-host-cutover-cleanup-assessment.public.json",
+      "bytes": 96796,
+      "sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0",
+      "git_blob": "16a6217e0163265b27a2e79f9aeffb26431b47ca",
+      "mode": "100644"
+    },
+    {
+      "path": "observations/file-info.public.json",
+      "bytes": 492,
+      "sha256": "1767d6cd91656a5c41ae02db84b5629e1ae22e379e1de635a5055b7530372108",
+      "git_blob": "69522b00cfb0683f39523829e505a4a455714507",
+      "mode": "100644"
+    },
+    {
+      "path": "observations/binary-read-000.public.json",
+      "bytes": 87727,
+      "sha256": "8628350d1e0392a23f577027435ffd0fc69512635c03d0de18fa794da394bfd6",
+      "git_blob": "788644aea823a6a64f29e8a079d7fc8af660e693",
+      "mode": "100644"
+    },
+    {
+      "path": "observations/binary-read-001.public.json",
+      "bytes": 42026,
+      "sha256": "f75e700e21cb73973db998dbc9efedeb87ffff71731fec386df3ca9cd82792fd",
+      "git_blob": "c834dea3714bad1dc764fcff649f54c065b9649f",
+      "mode": "100644"
+    },
+    {
+      "path": "read-intent.public.json",
+      "bytes": 551,
+      "sha256": "47e56ca661e568d2db1c2de98084a8c7ac8192e4e6393768c8536e57f51c209a",
+      "git_blob": "9a2551a4fe49915194519c7e4910a568f6fc3a16",
+      "mode": "100644"
+    },
+    {
+      "path": "readback-review.public.json",
+      "bytes": 1328,
+      "sha256": "0c321a0182d40ef64781504197d3e23ad74aaaacc3f20469dd7af23ef816bcbe",
+      "git_blob": "4cde7d6d00b83fff8b4436d59b8c8140ce3fc262",
+      "mode": "100644"
+    },
+    {
+      "path": "backup-chain-next-readset.public.json",
+      "bytes": 3807,
+      "sha256": "d8b2cb2551094454723d6d9ae3e42668d74f3dea5ca0de867e694a00dfbc5db4",
+      "git_blob": "e0e7ac9b0a59083555d24acb239a4432d68b0ff9",
+      "mode": "100644"
+    },
+    {
+      "path": "finite-backup-denominator.public.json",
+      "bytes": 17392,
+      "sha256": "7e99ba5dfc6a8515d327bbe6e8dce18195fca68424cc1e40d0ce785d978b91a8",
+      "git_blob": "2baf8b350b1ea14423bc39e1e90a116d3c62a2bf",
+      "mode": "100644"
+    }
+  ]
+}

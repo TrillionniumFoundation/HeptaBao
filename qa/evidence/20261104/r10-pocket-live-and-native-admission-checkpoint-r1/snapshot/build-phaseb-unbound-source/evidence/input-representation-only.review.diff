@@ -1,0 +1,13 @@
+--- a/phaseb_binding_r3.py
++++ b/phaseb_binding_r3.py
+@@ -349,7 +349,9 @@
+             "schema": "heptabao.official271-native-cli-phaseb-r3.inputs.v1",
+             "binding_sha256": self.sha256, "host": host, "files": observations,
+             "source": source_observation, "archive_and_audit_product_sources": product,
+-            "budgets": BUDGETS, "api_ports": API_PORTS, "raft_ports": RAFT_PORTS,
++            "budgets": BUDGETS,
++            "api_ports": {str(node): port for node, port in API_PORTS.items()},
++            "raft_ports": {str(node): port for node, port in RAFT_PORTS.items()},
+             "official_source_commit": OFFICIAL_SOURCE_COMMIT,
+             "whole_replacement_qualification": False,
+         }

@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.phaseb-fresh-ingress-observation-candidate.v1",
+  "baseProductCommit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "futureIntegrationParent": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+  "futureParentDifference": "Root independently proved only four test files differ from R10; this runtime source is unchanged.",
+  "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+  "before": {
+    "bytes": 60854,
+    "sha256": "620f2e70342971394a8e70696ebaef3740d0f15d8ee186088666d8dba27b425e",
+    "blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000"
+  },
+  "after": {
+    "bytes": 61578,
+    "sha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d",
+    "blob": "7bbd34e86039d0f640ac12a48cd81b2f836e600a"
+  },
+  "diff": {
+    "bytes": 3162,
+    "sha256": "b76f91a684305d452be25d6735b4ad2fc82ee33086dda33c890223a497e713a7",
+    "blob": "57bc167b34cf3ddc684b89893c347b0312aff9b4"
+  },
+  "exactEdits": 9,
+  "diffHunks": 6,
+  "allOutsideFunctionByteIdentical": true,
+  "reverseEditsByteExact": true,
+  "ordinaryHelperUnmodified": true,
+  "existingFailureObserverUnmodified": true,
+  "actualFormatExecuted": false,
+  "actualCompileExecuted": false,
+  "productExecuted": false,
+  "sourceBranchChanged": false,
+  "businessCallArgumentsOrDeadlinesOrCustodyChanges": false
+}

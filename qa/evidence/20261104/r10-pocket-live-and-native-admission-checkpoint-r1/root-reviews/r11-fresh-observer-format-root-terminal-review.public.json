@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.normal-observer-root-actual-format-review.v1",
+  "status": "PASS_FORMAT_ONLY",
+  "job": "1a1a85b6070-fc05-2e6d",
+  "packet_tree": "e3dbfa577ed40976630736bd9851e69e92389b8c",
+  "whole_packet_blobs": 27,
+  "core": {
+    "bytes": 3508,
+    "sha256": "8d1355b5323b27ac1b1f7d18775c752035a5dc452e9a1ce1bffe363b0157007c",
+    "blob": "2a16c13255a8a2319d87ca6af7f2af2cfbe989a9"
+  },
+  "authority": {
+    "bytes": 729,
+    "sha256": "28f50e123024be0488ca7c3dcdccb8477f30332d835152a8a6758c353a389bda",
+    "blob": "dcdcaba1f7099aee9632dab2055d2fb7ea5ea874"
+  },
+  "formatted": {
+    "bytes": 61578,
+    "sha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d",
+    "blob": "7bbd34e86039d0f640ac12a48cd81b2f836e600a"
+  },
+  "format_only_diff_empty": true,
+  "candidate_byte_identical": true,
+  "canonical_and_tool_full_identity_lossless_equal": true,
+  "child_count": 1,
+  "all_owned_reaped": true,
+  "original_internal_seconds": 50,
+  "elapsed_seconds": 0.03433593799127266,
+  "compile_executed": false,
+  "product_executed": false,
+  "production_changed": false
+}

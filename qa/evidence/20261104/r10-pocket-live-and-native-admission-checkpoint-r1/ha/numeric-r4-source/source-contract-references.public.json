@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.direction-readonly-source-contracts.v1",
+  "source_only": true,
+  "product": {
+    "repository": "TrillionniumFoundation/HeptaBao",
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "path": "crates/heptabao-raft-runtime/src/store.rs",
+    "bytes": 128469,
+    "sha256": "3d90b8c3f702659798fa23076a652b4de45ba91371b7f5c0aa1443a2edc04ae6",
+    "blob": "010e2b96343ce02d4ff39467d0816abe6bdc47a0",
+    "directory_lines": [
+      118,
+      153
+    ],
+    "raw_file_create_lines": [
+      341,
+      393
+    ],
+    "facts": [
+      "ensure_real_directory uses create_dir_all and real-directory validation; it does not chmod descendant directories.",
+      "atomic_write_raw uses create_new/write/open without an explicit0600 mode; umask controls creation permissions.",
+      "These product facts explain why diagnostic all-descendant-private permissions were not a valid universal assumption; actual modes come from the independent fixed-path lstat receipts."
+    ]
+  },
+  "upstream": [
+    {
+      "repository": "databendlabs/openraft",
+      "commit": "dfee06ca9a8193f061149ce784caa6bcbe92a0c4",
+      "path": "openraft/src/config/config.rs",
+      "url": "https://github.com/databendlabs/openraft/blob/dfee06ca9a8193f061149ce784caa6bcbe92a0c4/openraft/src/config/config.rs",
+      "bytes": 33292,
+      "sha256": "b6e1f1beded50971c3165ba8a2ffd3fc3ad692862883335a6e35f71f628efc8c",
+      "blob": "912986bf9aad55ad92c50be249034b852c976929",
+      "relevant_lines": [
+        637,
+        644
+      ],
+      "fact": "enable_leader_restore() defaults to true when None."
+    },
+    {
+      "repository": "databendlabs/openraft",
+      "commit": "dfee06ca9a8193f061149ce784caa6bcbe92a0c4",
+      "path": "openraft/src/engine/engine_impl.rs",
+      "url": "https://github.com/databendlabs/openraft/blob/dfee06ca9a8193f061149ce784caa6bcbe92a0c4/openraft/src/engine/engine_impl.rs",
+      "bytes": 43876,
+      "sha256": "24b2adffaea3397c2e6733e002443ca4a7b41215381da37f9d502b8b6f8d7410",
+      "blob": "fc2e77e88b542939b4e3d9122471aae7459dd262",
+      "relevant_lines": [
+        171,
+        217
+      ],
+      "fact": "A persisted committed self-vote may restore leadership on startup. Pre-vote behavior is separately at303–337 and freshness/lease gates at366–463."
+    },
+    {
+      "repository": "databendlabs/openraft",
+      "commit": "dfee06ca9a8193f061149ce784caa6bcbe92a0c4",
+      "path": "openraft/src/vote/leader_id/leader_id_adv.rs",
+      "url": "https://github.com/databendlabs/openraft/blob/dfee06ca9a8193f061149ce784caa6bcbe92a0c4/openraft/src/vote/leader_id/leader_id_adv.rs",
+      "bytes": 3315,
+      "sha256": "c74ad69544b17421dedc0cdf9f8036ac19562da76e9b6079a6adc28fcc5d22f8",
+      "blob": "17d718a969118c0083c0c5ba657a8e0e38ea28c7",
+      "relevant_lines": null,
+      "fact": "Advanced LeaderId fields and derived ordering are term then node_id."
+    },
+    {
+      "repository": "databendlabs/openraft",
+      "commit": "dfee06ca9a8193f061149ce784caa6bcbe92a0c4",
+      "path": "openraft/src/vote/vote.rs",
+      "url": "https://github.com/databendlabs/openraft/blob/dfee06ca9a8193f061149ce784caa6bcbe92a0c4/openraft/src/vote/vote.rs",
+      "bytes": 8226,
+      "sha256": "c5cb5249eba0e9b857895da00d30ff6691409c78cc565ef4d296d039565f65db",
+      "blob": "60ef50bd675a88c66ee54da0c79ca7b8b61a799d",
+      "relevant_lines": null,
+      "fact": "Vote serde carries leader_id and committed."
+    },
+    {
+      "repository": "databendlabs/openraft",
+      "commit": "dfee06ca9a8193f061149ce784caa6bcbe92a0c4",
+      "path": "openraft/src/log_id/mod.rs",
+      "url": "https://github.com/databendlabs/openraft/blob/dfee06ca9a8193f061149ce784caa6bcbe92a0c4/openraft/src/log_id/mod.rs",
+      "bytes": 6344,
+      "sha256": "c9e4aaa4d095cf432bf0cd14b883067e40c57a648abb3ea6db0a41c6f9f2edc2",
+      "blob": "2a2fdf45b9354e73f90c68a313b35f2c51239f2e",
+      "relevant_lines": null,
+      "fact": "LogId fields and derived ordering are leader_id then index."
+    }
+  ],
+  "limits": [
+    "Source references are exact Git blobs and byte-hashed UTF-8.",
+    "The lockfile pins version0.10.0-alpha.34; this is not independent byte verification of a local registry cache.",
+    "No source-only inference proves the cause of the prior role2 election or guarantees role1 in a future run.",
+    "No product/source files, permissions, Raft state, budgets, or previous receipts were changed."
+  ]
+}

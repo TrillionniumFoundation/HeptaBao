@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.r10.pocket-preflight-terminal-review.v1",
+  "status": "passed_preflight_only",
+  "job": "1a1a85956ce-fc05-2e67",
+  "checks": 18,
+  "passed": 18,
+  "unknown": false,
+  "elapsed_seconds": 0.984,
+  "authority_complete_durable_exit_zero": true,
+  "terminal_outer_core_intent_sha_closure": true,
+  "exact_canonical": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "registry": {
+    "source_bytes": 111644672,
+    "stable_copy": true,
+    "sidecars_absent": true,
+    "only_owned_copy_sidecars_permitted": true,
+    "complete_original_row_matches": true,
+    "source_write": false
+  },
+  "auth_config_cache_native4_fences": true,
+  "production_units_held_inactive_unchanged": true,
+  "kernel_private_net_pid_namespace": true,
+  "owned_namespace_exited": true,
+  "owned_all_stopped": true,
+  "product_runtime": false,
+  "provider": false,
+  "production_mutation": false,
+  "live_qualification": false,
+  "original_budgets": {
+    "http": 10,
+    "consumer": 70,
+    "rollback": 35,
+    "launcher": 440
+  },
+  "new_remote_outer": 600
+}

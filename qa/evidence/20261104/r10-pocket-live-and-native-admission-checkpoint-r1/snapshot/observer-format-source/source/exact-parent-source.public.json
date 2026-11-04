@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.phaseb-normal-observer.exact-parent-source.v1",
+  "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+  "commit": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+  "bytes": 60854,
+  "sha256": "620f2e70342971394a8e70696ebaef3740d0f15d8ee186088666d8dba27b425e",
+  "blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000",
+  "readbackEqualR10": true,
+  "display_url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/6d3040a2dbd06661a67f5c62df259ff446eb8515/crates/heptabao-server/src/ha_native_v6_runtime.rs",
+  "host_access": false,
+  "source_ref_modified": false
+}

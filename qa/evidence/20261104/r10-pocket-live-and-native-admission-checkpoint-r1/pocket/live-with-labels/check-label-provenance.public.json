@@ -1,0 +1,995 @@
+{
+  "schema": "heptabao.r10.pocket-first-cycle-check-label-provenance.v1",
+  "scope": "Append-only interpretation of exact completed Pocket R10 evidence; no new execution, private plan read, source edit, or denominator change.",
+  "live_packet_tree": "9375299d13463c6b389486a1b1d41581db44312a",
+  "raw_core_sha256": "b55436c3622263112b429517e821f41c9a58225619e1e375d65804e1484f1ef6",
+  "actual_prepare_sha256": "e567bb2fe77159ca96716ac7ad0d2924956e46516b39c6950f20e38fc92e1232",
+  "actual_intent_sha256": "0856b1f98557715407ef9af6f4bbf78055bdba8b6bdc7b2ba2ae398eab8e6e3e",
+  "source_pins": {
+    "consumer": {
+      "sha256": "6455180970f37831bb1a4084aab8583822c900586f9fabcbd7536332bc45429e",
+      "bytes": 24016
+    },
+    "controller": {
+      "sha256": "97f982832d79916deb6dbfe0ddfae56c8b4070246d52e65c6ab498483d0f9992",
+      "bytes": 45061
+    }
+  },
+  "source_mapping": {
+    "prepared_paths": 51,
+    "owned_plugin_copy_paths": 8,
+    "owned_config_paths_per_scope": 1,
+    "total_per_invocation": 60,
+    "pin_key": "full absolute path",
+    "public_check_label": "source. + path.basename(file)",
+    "consumer_line": 84,
+    "controller_lines": [
+      368,
+      369,
+      370,
+      371,
+      497,
+      498,
+      499,
+      500,
+      510
+    ],
+    "serialized_plan_key_order": "Controller put→encoded uses json.dumps(sort_keys=True); source-pin object iteration order is lexicographic full path.",
+    "private_plan_accessed": false,
+    "raw_names_not_mutated": true
+  },
+  "phase_names_unique": true,
+  "all_check_labels_unique": false,
+  "original_records_all_passed": true,
+  "interpretation": "Repeated public labels are separate original check records. Full path selects each source hash. Equal basename labels do not collapse verification; counts are records, not distinct named test cases. Two rollback SDK capture records for each agent correspond to before/after capture of the same owned store.",
+  "phases": [
+    {
+      "phase": "initial",
+      "records": 128,
+      "unique_case_labels": 112,
+      "unique_whole_check_objects": 112,
+      "source_records": 60,
+      "source_label_sequence_exactly_matches_reconstructed_full_path_order": true,
+      "duplicate_labels": [
+        {
+          "label": "source.package.json",
+          "record_count": 6,
+          "occurrences": [
+            {
+              "path": "/home/alex/.npm-global/lib/node_modules/openclaw/package.json",
+              "sha256": "695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/package.json",
+              "sha256": "e6b3faf6d7b11342cbc78fffd33f67203b2969c8926bb619d442224a3f51348a",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex-linux-x64/package.json",
+              "sha256": "9725a988d144d3c51e8dc1b1c5ba4911fa9313da14230155c6d43ff1ef5f3552",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex/package.json",
+              "sha256": "66d383ce5fef10d874cbec37ab0405287c76d10b2e746f9ac8726059db038a1a",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/package.json",
+              "sha256": "a11aced690f9a6e1d8c85a66bc0abd5bd6f397301609a2b15cf066fcd75ffdb8",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/package.json",
+              "sha256": "e6b3faf6d7b11342cbc78fffd33f67203b2969c8926bb619d442224a3f51348a",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.bad-refresh-quarantine.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/bad-refresh-quarantine.js",
+              "sha256": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/bad-refresh-quarantine.js",
+              "sha256": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.codex-client-recycler.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/codex-client-recycler.js",
+              "sha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/codex-client-recycler.js",
+              "sha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.index.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/index.js",
+              "sha256": "8e10c52df53d6d16d0e5890a6ccdaaff9515469e4419b46270b9bdc62b9be7af",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/index.js",
+              "sha256": "8e10c52df53d6d16d0e5890a6ccdaaff9515469e4419b46270b9bdc62b9be7af",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.lease-assignments.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/lease-assignments.js",
+              "sha256": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/lease-assignments.js",
+              "sha256": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.order-policy.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/order-policy.js",
+              "sha256": "a1a9923368a1a6bd9adf691aa1beba02d443cf511232e17118c9868160a96e82",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/order-policy.js",
+              "sha256": "a1a9923368a1a6bd9adf691aa1beba02d443cf511232e17118c9868160a96e82",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.provider-error-classifier.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/provider-error-classifier.js",
+              "sha256": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/provider-error-classifier.js",
+              "sha256": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.runtime-refresh-policy.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/runtime-refresh-policy.js",
+              "sha256": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/runtime-refresh-policy.js",
+              "sha256": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.openclaw.json",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/openclaw.json",
+              "sha256": "3611380b8c77282e785e00e20d9eba8bc8cf0164b3b3f00e2ea5d1f52a441c98",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/current-native-initial/state/openclaw.json",
+              "sha256": null,
+              "origin": "Dynamically computed by file_sha of the owned four-connection-field config at line 498; private plan was not read"
+            }
+          ]
+        },
+        {
+          "label": "source.pocket_native_auth_rows_cas_r1.mjs",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/pocket_native_auth_rows_cas_r1.mjs",
+              "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/pocket_native_auth_rows_cas_r1.mjs",
+              "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+              "origin": "Exact actual prepare sourcePins"
+            }
+          ]
+        },
+        {
+          "label": "source.pocket_native_observer_r3.mjs",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/pocket_native_observer_r3.mjs",
+              "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/pocket_native_observer_r3.mjs",
+              "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027",
+              "origin": "Exact actual prepare sourcePins"
+            }
+          ]
+        },
+        {
+          "label": "source.qa-pins.public.json",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/qa-pins.public.json",
+              "sha256": "6d211ec446805fb2a13d422f521447ccb5803ba025746c44c9b3e45d067a163c",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/qa-pins.public.json",
+              "sha256": "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3",
+              "origin": "Exact actual prepare sourcePins"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "cold-new-process",
+      "records": 128,
+      "unique_case_labels": 112,
+      "unique_whole_check_objects": 112,
+      "source_records": 60,
+      "source_label_sequence_exactly_matches_reconstructed_full_path_order": true,
+      "duplicate_labels": [
+        {
+          "label": "source.package.json",
+          "record_count": 6,
+          "occurrences": [
+            {
+              "path": "/home/alex/.npm-global/lib/node_modules/openclaw/package.json",
+              "sha256": "695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/package.json",
+              "sha256": "e6b3faf6d7b11342cbc78fffd33f67203b2969c8926bb619d442224a3f51348a",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex-linux-x64/package.json",
+              "sha256": "9725a988d144d3c51e8dc1b1c5ba4911fa9313da14230155c6d43ff1ef5f3552",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex/package.json",
+              "sha256": "66d383ce5fef10d874cbec37ab0405287c76d10b2e746f9ac8726059db038a1a",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/package.json",
+              "sha256": "a11aced690f9a6e1d8c85a66bc0abd5bd6f397301609a2b15cf066fcd75ffdb8",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/package.json",
+              "sha256": "e6b3faf6d7b11342cbc78fffd33f67203b2969c8926bb619d442224a3f51348a",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.bad-refresh-quarantine.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/bad-refresh-quarantine.js",
+              "sha256": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/bad-refresh-quarantine.js",
+              "sha256": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.codex-client-recycler.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/codex-client-recycler.js",
+              "sha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/codex-client-recycler.js",
+              "sha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.index.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/index.js",
+              "sha256": "8e10c52df53d6d16d0e5890a6ccdaaff9515469e4419b46270b9bdc62b9be7af",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/index.js",
+              "sha256": "8e10c52df53d6d16d0e5890a6ccdaaff9515469e4419b46270b9bdc62b9be7af",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.lease-assignments.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/lease-assignments.js",
+              "sha256": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/lease-assignments.js",
+              "sha256": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.order-policy.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/order-policy.js",
+              "sha256": "a1a9923368a1a6bd9adf691aa1beba02d443cf511232e17118c9868160a96e82",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/order-policy.js",
+              "sha256": "a1a9923368a1a6bd9adf691aa1beba02d443cf511232e17118c9868160a96e82",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.provider-error-classifier.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/provider-error-classifier.js",
+              "sha256": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/provider-error-classifier.js",
+              "sha256": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.runtime-refresh-policy.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/runtime-refresh-policy.js",
+              "sha256": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/runtime-refresh-policy.js",
+              "sha256": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.openclaw.json",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/openclaw.json",
+              "sha256": "3611380b8c77282e785e00e20d9eba8bc8cf0164b3b3f00e2ea5d1f52a441c98",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/current-native-cold/state/openclaw.json",
+              "sha256": null,
+              "origin": "Dynamically computed by file_sha of the owned four-connection-field config at line 498; private plan was not read"
+            }
+          ]
+        },
+        {
+          "label": "source.pocket_native_auth_rows_cas_r1.mjs",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/pocket_native_auth_rows_cas_r1.mjs",
+              "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/pocket_native_auth_rows_cas_r1.mjs",
+              "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+              "origin": "Exact actual prepare sourcePins"
+            }
+          ]
+        },
+        {
+          "label": "source.pocket_native_observer_r3.mjs",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/pocket_native_observer_r3.mjs",
+              "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/pocket_native_observer_r3.mjs",
+              "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027",
+              "origin": "Exact actual prepare sourcePins"
+            }
+          ]
+        },
+        {
+          "label": "source.qa-pins.public.json",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/qa-pins.public.json",
+              "sha256": "6d211ec446805fb2a13d422f521447ccb5803ba025746c44c9b3e45d067a163c",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/qa-pins.public.json",
+              "sha256": "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3",
+              "origin": "Exact actual prepare sourcePins"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "initial.rollback",
+      "records": 95,
+      "unique_case_labels": 77,
+      "unique_whole_check_objects": 77,
+      "source_records": 60,
+      "source_label_sequence_exactly_matches_reconstructed_full_path_order": true,
+      "duplicate_labels": [
+        {
+          "label": "source.package.json",
+          "record_count": 6,
+          "occurrences": [
+            {
+              "path": "/home/alex/.npm-global/lib/node_modules/openclaw/package.json",
+              "sha256": "695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/package.json",
+              "sha256": "e6b3faf6d7b11342cbc78fffd33f67203b2969c8926bb619d442224a3f51348a",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex-linux-x64/package.json",
+              "sha256": "9725a988d144d3c51e8dc1b1c5ba4911fa9313da14230155c6d43ff1ef5f3552",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex/package.json",
+              "sha256": "66d383ce5fef10d874cbec37ab0405287c76d10b2e746f9ac8726059db038a1a",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/package.json",
+              "sha256": "a11aced690f9a6e1d8c85a66bc0abd5bd6f397301609a2b15cf066fcd75ffdb8",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/package.json",
+              "sha256": "e6b3faf6d7b11342cbc78fffd33f67203b2969c8926bb619d442224a3f51348a",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.bad-refresh-quarantine.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/bad-refresh-quarantine.js",
+              "sha256": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/bad-refresh-quarantine.js",
+              "sha256": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.codex-client-recycler.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/codex-client-recycler.js",
+              "sha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/codex-client-recycler.js",
+              "sha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.index.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/index.js",
+              "sha256": "8e10c52df53d6d16d0e5890a6ccdaaff9515469e4419b46270b9bdc62b9be7af",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/index.js",
+              "sha256": "8e10c52df53d6d16d0e5890a6ccdaaff9515469e4419b46270b9bdc62b9be7af",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.lease-assignments.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/lease-assignments.js",
+              "sha256": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/lease-assignments.js",
+              "sha256": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.order-policy.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/order-policy.js",
+              "sha256": "a1a9923368a1a6bd9adf691aa1beba02d443cf511232e17118c9868160a96e82",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/order-policy.js",
+              "sha256": "a1a9923368a1a6bd9adf691aa1beba02d443cf511232e17118c9868160a96e82",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.provider-error-classifier.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/provider-error-classifier.js",
+              "sha256": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/provider-error-classifier.js",
+              "sha256": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.runtime-refresh-policy.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/runtime-refresh-policy.js",
+              "sha256": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/runtime-refresh-policy.js",
+              "sha256": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.openclaw.json",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/openclaw.json",
+              "sha256": "3611380b8c77282e785e00e20d9eba8bc8cf0164b3b3f00e2ea5d1f52a441c98",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/current-native-initial/state/openclaw.json",
+              "sha256": null,
+              "origin": "Dynamically computed by file_sha of the owned four-connection-field config at line 498; private plan was not read"
+            }
+          ]
+        },
+        {
+          "label": "source.pocket_native_auth_rows_cas_r1.mjs",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/pocket_native_auth_rows_cas_r1.mjs",
+              "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/pocket_native_auth_rows_cas_r1.mjs",
+              "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+              "origin": "Exact actual prepare sourcePins"
+            }
+          ]
+        },
+        {
+          "label": "source.pocket_native_observer_r3.mjs",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/pocket_native_observer_r3.mjs",
+              "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/pocket_native_observer_r3.mjs",
+              "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027",
+              "origin": "Exact actual prepare sourcePins"
+            }
+          ]
+        },
+        {
+          "label": "source.qa-pins.public.json",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/qa-pins.public.json",
+              "sha256": "6d211ec446805fb2a13d422f521447ccb5803ba025746c44c9b3e45d067a163c",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/qa-pins.public.json",
+              "sha256": "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3",
+              "origin": "Exact actual prepare sourcePins"
+            }
+          ]
+        },
+        {
+          "label": "actual_sdk_local_store_capture.main",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "call": "localStores at consumer line 165, before rollback CAS",
+              "agent_directory": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/current-native-initial/state/agents/main/agent"
+            },
+            {
+              "call": "localStores at consumer line 197, after SDK+raw-row rollback CAS",
+              "agent_directory": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/current-native-initial/state/agents/main/agent"
+            }
+          ]
+        },
+        {
+          "label": "actual_sdk_local_store_capture.tg8687951891",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "call": "localStores at consumer line 165, before rollback CAS",
+              "agent_directory": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/current-native-initial/state/agents/tg8687951891/agent"
+            },
+            {
+              "call": "localStores at consumer line 197, after SDK+raw-row rollback CAS",
+              "agent_directory": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/current-native-initial/state/agents/tg8687951891/agent"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "phase": "cold-new-process.rollback",
+      "records": 95,
+      "unique_case_labels": 77,
+      "unique_whole_check_objects": 77,
+      "source_records": 60,
+      "source_label_sequence_exactly_matches_reconstructed_full_path_order": true,
+      "duplicate_labels": [
+        {
+          "label": "source.package.json",
+          "record_count": 6,
+          "occurrences": [
+            {
+              "path": "/home/alex/.npm-global/lib/node_modules/openclaw/package.json",
+              "sha256": "695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/package.json",
+              "sha256": "e6b3faf6d7b11342cbc78fffd33f67203b2969c8926bb619d442224a3f51348a",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex-linux-x64/package.json",
+              "sha256": "9725a988d144d3c51e8dc1b1c5ba4911fa9313da14230155c6d43ff1ef5f3552",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex/package.json",
+              "sha256": "66d383ce5fef10d874cbec37ab0405287c76d10b2e746f9ac8726059db038a1a",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/package.json",
+              "sha256": "a11aced690f9a6e1d8c85a66bc0abd5bd6f397301609a2b15cf066fcd75ffdb8",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/package.json",
+              "sha256": "e6b3faf6d7b11342cbc78fffd33f67203b2969c8926bb619d442224a3f51348a",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.bad-refresh-quarantine.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/bad-refresh-quarantine.js",
+              "sha256": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/bad-refresh-quarantine.js",
+              "sha256": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.codex-client-recycler.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/codex-client-recycler.js",
+              "sha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/codex-client-recycler.js",
+              "sha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.index.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/index.js",
+              "sha256": "8e10c52df53d6d16d0e5890a6ccdaaff9515469e4419b46270b9bdc62b9be7af",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/index.js",
+              "sha256": "8e10c52df53d6d16d0e5890a6ccdaaff9515469e4419b46270b9bdc62b9be7af",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.lease-assignments.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/lease-assignments.js",
+              "sha256": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/lease-assignments.js",
+              "sha256": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.order-policy.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/order-policy.js",
+              "sha256": "a1a9923368a1a6bd9adf691aa1beba02d443cf511232e17118c9868160a96e82",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/order-policy.js",
+              "sha256": "a1a9923368a1a6bd9adf691aa1beba02d443cf511232e17118c9868160a96e82",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.provider-error-classifier.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/provider-error-classifier.js",
+              "sha256": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/provider-error-classifier.js",
+              "sha256": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.runtime-refresh-policy.js",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/extensions/openclaw-authbus/runtime-refresh-policy.js",
+              "sha256": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/installed-plugin-copy/runtime-refresh-policy.js",
+              "sha256": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547",
+              "origin": "Controller copies these exact source bytes and checks hash against sourcePins at lines 368–371"
+            }
+          ]
+        },
+        {
+          "label": "source.openclaw.json",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/.openclaw/openclaw.json",
+              "sha256": "3611380b8c77282e785e00e20d9eba8bc8cf0164b3b3f00e2ea5d1f52a441c98",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/current-native-cold/state/openclaw.json",
+              "sha256": null,
+              "origin": "Dynamically computed by file_sha of the owned four-connection-field config at line 498; private plan was not read"
+            }
+          ]
+        },
+        {
+          "label": "source.pocket_native_auth_rows_cas_r1.mjs",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/pocket_native_auth_rows_cas_r1.mjs",
+              "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/pocket_native_auth_rows_cas_r1.mjs",
+              "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+              "origin": "Exact actual prepare sourcePins"
+            }
+          ]
+        },
+        {
+          "label": "source.pocket_native_observer_r3.mjs",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/pocket_native_observer_r3.mjs",
+              "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/pocket_native_observer_r3.mjs",
+              "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027",
+              "origin": "Exact actual prepare sourcePins"
+            }
+          ]
+        },
+        {
+          "label": "source.qa-pins.public.json",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/qa-pins.public.json",
+              "sha256": "6d211ec446805fb2a13d422f521447ccb5803ba025746c44c9b3e45d067a163c",
+              "origin": "Exact actual prepare sourcePins"
+            },
+            {
+              "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/qa-pins.public.json",
+              "sha256": "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3",
+              "origin": "Exact actual prepare sourcePins"
+            }
+          ]
+        },
+        {
+          "label": "actual_sdk_local_store_capture.main",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "call": "localStores at consumer line 165, before rollback CAS",
+              "agent_directory": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/current-native-cold/state/agents/main/agent"
+            },
+            {
+              "call": "localStores at consumer line 197, after SDK+raw-row rollback CAS",
+              "agent_directory": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/current-native-cold/state/agents/main/agent"
+            }
+          ]
+        },
+        {
+          "label": "actual_sdk_local_store_capture.tg8687951891",
+          "record_count": 2,
+          "occurrences": [
+            {
+              "call": "localStores at consumer line 165, before rollback CAS",
+              "agent_directory": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/current-native-cold/state/agents/tg8687951891/agent"
+            },
+            {
+              "call": "localStores at consumer line 197, after SDK+raw-row rollback CAS",
+              "agent_directory": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1/live/current-native-cold/state/agents/tg8687951891/agent"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "other_hosts_qualified": false,
+  "provider_qualified": false,
+  "real_service_manager_qualified": false,
+  "production_cutover_qualified": false
+}

@@ -1,0 +1,112 @@
+{
+  "schema": "heptabao.phaseb-r3.b01-minimal-admission-review-index.v1",
+  "product_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "exact_chain": [
+    {
+      "order": 1,
+      "path": "crates/heptabao-server/src/http.rs",
+      "blob": "58706d8d92e5e4a3c38a0b5843ead700ab2c4825",
+      "lines": [
+        2035,
+        2060
+      ],
+      "claim": "GET/HEAD exact snapshot route selects deferred native download irrespective of Accept:application/json; help selection is separate."
+    },
+    {
+      "order": 2,
+      "path": "crates/heptabao-server/src/http.rs",
+      "lines": [
+        1115,
+        1117,
+        1168,
+        1180
+      ],
+      "claim": "Selected native body dispatches through execute_deferred_native_body to snapshot::execute; this path is not native-large KV2.",
+      "blob": "58706d8d92e5e4a3c38a0b5843ead700ab2c4825"
+    },
+    {
+      "order": 3,
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "blob": "4a5743d757b79493400b712bf57a5fa552b50bda",
+      "lines": [
+        338,
+        367
+      ],
+      "claim": "Writer calls begin_native_snapshot_before. A Complete response returns immediately through rejected_upload_response; no pending execution follows."
+    },
+    {
+      "order": 4,
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+      "lines": [
+        374,
+        462
+      ],
+      "claim": "Snapshot begin checks route/local leader, sets native_snapshot_clock and native_snapshot_transport=true, and calls begin_request_before(request,deadline,false); afterwards it restores the prior fields."
+    },
+    {
+      "order": 5,
+      "path": "crates/heptabao-server/src/service.rs",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+      "lines": [
+        2287,
+        2313
+      ],
+      "claim": "Creates health/ordinary observation. finish receives Some(status) only for Complete, None for External."
+    },
+    {
+      "order": 6,
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000",
+      "lines": [
+        174,
+        209
+      ],
+      "claim": "failure_report returns only when status>=500. finish emits the fixed HBHA-REQUEST-TIMING-FAIL JSON; Drop only detaches. The later observed starts in this file are cfg(test)."
+    },
+    {
+      "order": 7,
+      "path": "crates/heptabao-server/src/service.rs",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+      "lines": [
+        10644,
+        10677
+      ],
+      "claim": "The captured generic committed-root error string has one occurrence in this file: observed read Err maps to503. This does not retain the lower error."
+    }
+  ],
+  "observed_link": {
+    "case": "B01",
+    "single_owned_cli_window": true,
+    "other_controller_http_in_window": false,
+    "target": 1,
+    "request_count": 1,
+    "request_sequence": 61,
+    "response_sequence": 62,
+    "status": 503,
+    "other_node_delta_records": 0,
+    "one_non_health_timing_in_all_three_logs": true,
+    "ordinary_timing_line_sha256": "acf5f07d02f6b28efff22961bcd6ca36fb68145196fa6f0105046e40a75ed111"
+  },
+  "phase_conclusion": "Complete503 returned during begin_request_before admission; no external archive execution or finalization entered for this result.",
+  "distinction": {
+    "actual_wire_alpn_not_observed": true,
+    "audit_route_not_cryptographically_reversed": true,
+    "client_http_framing_not_proved": true,
+    "inner_error_unknown": true,
+    "fresh_ingress_branch_inference_only": true,
+    "normal_observer_is_diagnostic_not_product_fix": true
+  },
+  "original_unknown_unchanged": true,
+  "http2_source": {
+    "blob": "b15a68b5ba882c7f00d3f6b5b347ad807d500d3d",
+    "bytes": 13613,
+    "sha256": "f24ccfc27aabf1b938eb34b8fa07e8a41f1f243b7d47eab9c9a452c3fac7262f",
+    "path": "crates/heptabao-server/src/http_h2.rs",
+    "lines": [
+      257,
+      278
+    ],
+    "claim": "H2 passes native_wire=true into the same read_request_with_ui and process_parsed_request. No ALPN-specific bypass is inferred from this failure."
+  }
+}

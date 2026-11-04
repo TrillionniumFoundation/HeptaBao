@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.pocket-r10-first-cycle-preflight-actual-intent.v1",
+  "command": {
+    "host": "pocket4",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/pocket_first_cycle_launch_r10.py",
+      "--phase",
+      "preflight",
+      "--qa-pins-sha256",
+      "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3"
+    ],
+    "cwd": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1",
+    "timeout_seconds": 600,
+    "idempotency_key": "heptabao-r10-pocket-first-cycle-preflight-495033-20261104-r1"
+  },
+  "source": {
+    "bytes": 13062,
+    "sha256": "1cbec91c3b19c3c488ae8976c01fee2b6eb40c03c56b1c55064ccbd5268f93ee",
+    "blob": "4edd7b02e750b82f473169c400c9060ea455c030"
+  },
+  "qa_sha256": "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3",
+  "preparation": {
+    "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-inputs-r1/prepare-r10-r1.public.json",
+    "sha256": "e567bb2fe77159ca96716ac7ad0d2924956e46516b39c6950f20e38fc92e1232",
+    "job": "1a1a856a5cb-fc05-2e60"
+  },
+  "authorization": "Root formally accepted actual prepare and authorized this one preflight only.",
+  "new_outer_seconds": 600,
+  "unchanged_inner_budgets": {
+    "launcher": 440,
+    "http": 10,
+    "consumer": 70,
+    "rollback": 35
+  },
+  "kernel_network_pid_isolation_preserved": true,
+  "production_held": true,
+  "live_authorized": false
+}

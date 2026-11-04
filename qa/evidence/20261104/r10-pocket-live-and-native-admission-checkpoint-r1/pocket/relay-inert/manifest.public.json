@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.r10.pocket-relay-inert-actual-packet.v1",
+  "scope": "Two reviewed relay sources created/compile/readback only; artifact transfer and consumers not run.",
+  "files": [
+    {
+      "path": "receipt.public.json",
+      "bytes": 1455,
+      "sha256": "53c3bc2e5688f92f638b809a414901c86906456b60188cefc42020cc8254d5b0",
+      "git_blob": "4809e4d5a304927ba852c4d730956c7348916e71",
+      "mode": "100644"
+    },
+    {
+      "path": "authority.public.json",
+      "bytes": 731,
+      "sha256": "92f905d89602c43718214f7bd21e8569aa50593a00db1d6d49277e9e1096d93f",
+      "git_blob": "aa204a4842f2c8989b7b1562a61b06f0ccd1937d",
+      "mode": "100644"
+    },
+    {
+      "path": "stdout",
+      "bytes": 1171,
+      "sha256": "f2416a5e74af5107d205c13f3557bf7dc09b7b6c8332f7b0f1b7ec1976a913e9",
+      "git_blob": "6dc37163d5823fe1424a91913eb1e740ca81eecd",
+      "mode": "100644"
+    },
+    {
+      "path": "stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644"
+    },
+    {
+      "path": "intent.public.json",
+      "bytes": 1031,
+      "sha256": "a3eb3fed05a1e0b10d2a3e54713965c75962839c679364bc59ae56e2458a27ff",
+      "git_blob": "175cd6466ba7c8653a01b25f986558ac7403c543",
+      "mode": "100644"
+    },
+    {
+      "path": "start-ack.public.json",
+      "bytes": 6170,
+      "sha256": "24a3022bd57114b9c6afba5555e53fd4e8951ddc0536e23999fed42dea802ce4",
+      "git_blob": "b949b80ac9287ae669b8e9610f10a5a9b6938463",
+      "mode": "100644"
+    },
+    {
+      "path": "process-read.public.json",
+      "bytes": 3909,
+      "sha256": "4c330249a51e62558c862e293bba2452640f38755791e0cf9154f9787d838919",
+      "git_blob": "8d881fe942f8d53c3c313049f6a12a6e159b0c33",
+      "mode": "100644"
+    },
+    {
+      "path": "receipt-binary-read.public.json",
+      "bytes": 2287,
+      "sha256": "d1f1cd10fb60cc6337699b60d5624100c1a1d0986c4cafd7f424860f803af011",
+      "git_blob": "0d4514f368680ba25780084dd3d6257002fa4c01",
+      "mode": "100644"
+    },
+    {
+      "path": "review.public.json",
+      "bytes": 2485,
+      "sha256": "dba7d1bb202005ba1359555ee363ff303bde971937aaa5d9f2ffdc256f75689e",
+      "git_blob": "55867a90b5fb406a2a55f24563861aaebce18fb8",
+      "mode": "100644"
+    }
+  ]
+}

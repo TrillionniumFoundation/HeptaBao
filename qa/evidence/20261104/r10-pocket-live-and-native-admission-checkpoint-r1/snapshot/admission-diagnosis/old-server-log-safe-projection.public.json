@@ -1,0 +1,467 @@
+{
+  "schema": "heptabao.phaseb-r3.old-server-log-safe-projection.v1",
+  "candidate_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "candidate_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "original_run": "1a1a8177aec-fc05-2da5",
+  "original_result_sha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184",
+  "scope": "Six exact original native-start0 log files; metadata and bounded version-pinned reads only. No directory scan, process start, new HTTP, CLI, snapshot, restore, or old-root restart.",
+  "files": [
+    {
+      "node": 1,
+      "stream": "stderr",
+      "metadata": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node1/native-start0.stderr.private.log",
+        "sha256": "e8babdd0b94878e5838238e28bbdeb8f9cfbf058db5e0bf42ee19f0adde88c3e",
+        "size": 2081,
+        "version": "2050:58644797:2081:1793821507854774486:1793821507854774486"
+      },
+      "projection": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node1/native-start0.stderr.private.log",
+        "bytes": 2081,
+        "sha256": "e8babdd0b94878e5838238e28bbdeb8f9cfbf058db5e0bf42ee19f0adde88c3e",
+        "version": "2050:58644797:2081:1793821507854774486:1793821507854774486",
+        "line_count": 10,
+        "events": [
+          {
+            "line": 3,
+            "line_sha256": "a6a9e142252e24804eafe6d2c29c53df5052df0182bc1d13df58b39bda3bcd5b",
+            "prefix": "HBHA-REQUEST-TIMING-FAIL",
+            "schema": "heptabao.native-ha.request-failure-timing.v1",
+            "request_class": "health",
+            "forwarded": false,
+            "status": 503,
+            "elapsed_us": 2170,
+            "entry_remaining_ns": 999998149,
+            "exit_remaining_ns": 997827484,
+            "bucket_limit": 64,
+            "bucket_bound_reached": false,
+            "phases": []
+          },
+          {
+            "line": 4,
+            "line_sha256": "5cefbbb22a8087504b3c1ff208de494bd7e3b38c9f76fd0c788d423b9fce53d1",
+            "prefix": "HBHA-REQUEST-TIMING-FAIL",
+            "schema": "heptabao.native-ha.request-failure-timing.v1",
+            "request_class": "health",
+            "forwarded": false,
+            "status": 503,
+            "elapsed_us": 1557,
+            "entry_remaining_ns": 999998163,
+            "exit_remaining_ns": 998441000,
+            "bucket_limit": 64,
+            "bucket_bound_reached": false,
+            "phases": []
+          },
+          {
+            "line": 5,
+            "line_sha256": "16e891141258d396de4280f0e3fe43dbfd794b7021e4936814db6e0fcbd2d187",
+            "prefix": "HBHA-REQUEST-TIMING-FAIL",
+            "schema": "heptabao.native-ha.request-failure-timing.v1",
+            "request_class": "health",
+            "forwarded": false,
+            "status": 503,
+            "elapsed_us": 1830,
+            "entry_remaining_ns": 999997914,
+            "exit_remaining_ns": 998166972,
+            "bucket_limit": 64,
+            "bucket_bound_reached": false,
+            "phases": []
+          },
+          {
+            "line": 6,
+            "line_sha256": "17dee0d45eb86a80eeb1025fbef562d0043b0d062ec8443d3f8daaacee5dae0b",
+            "prefix": "HBHA-REQUEST-TIMING-FAIL",
+            "schema": "heptabao.native-ha.request-failure-timing.v1",
+            "request_class": "health",
+            "forwarded": false,
+            "status": 503,
+            "elapsed_us": 2092,
+            "entry_remaining_ns": 999998460,
+            "exit_remaining_ns": 997906368,
+            "bucket_limit": 64,
+            "bucket_bound_reached": false,
+            "phases": []
+          },
+          {
+            "line": 7,
+            "line_sha256": "1f45ffe521e2de90e8c55c286554545e326cc7adf7cdddd5d3ef98d4202d56f7",
+            "prefix": "HBHA-REQUEST-TIMING-FAIL",
+            "schema": "heptabao.native-ha.request-failure-timing.v1",
+            "request_class": "health",
+            "forwarded": false,
+            "status": 503,
+            "elapsed_us": 1409,
+            "entry_remaining_ns": 999997917,
+            "exit_remaining_ns": 998588370,
+            "bucket_limit": 64,
+            "bucket_bound_reached": false,
+            "phases": []
+          },
+          {
+            "line": 9,
+            "line_sha256": "e501c08d616f28f56af4c6a4144487428ff01b03821297e62b9008e9e6969cc6",
+            "prefix": "heptabao-r72-sync",
+            "stage": "sync_inner_error",
+            "status": 503,
+            "loaded": true,
+            "recovery": false,
+            "record_root": false
+          },
+          {
+            "line": 10,
+            "line_sha256": "acf5f07d02f6b28efff22961bcd6ca36fb68145196fa6f0105046e40a75ed111",
+            "prefix": "HBHA-REQUEST-TIMING-FAIL",
+            "schema": "heptabao.native-ha.request-failure-timing.v1",
+            "request_class": "ordinary",
+            "forwarded": false,
+            "status": 503,
+            "elapsed_us": 16501,
+            "entry_remaining_ns": 14996924359,
+            "exit_remaining_ns": 14980422592,
+            "bucket_limit": 64,
+            "bucket_bound_reached": false,
+            "phases": []
+          }
+        ],
+        "unmatched_lines": 3,
+        "rejected_prefix_lines": 0
+      },
+      "content_read": "version-pinned complete binary chunk; per-chunk and whole SHA256 verified"
+    },
+    {
+      "node": 1,
+      "stream": "stdout",
+      "metadata": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node1/native-start0.stdout.private.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0,
+        "version": "2050:58644796:0:1793821481382556411:1793821481382556411"
+      },
+      "projection": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node1/native-start0.stdout.private.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "version": "2050:58644796:0:1793821481382556411:1793821481382556411",
+        "line_count": 0,
+        "events": [],
+        "unmatched_lines": 0,
+        "rejected_prefix_lines": 0
+      },
+      "content_read": "file_info exact size=0 and whole SHA256(empty); no content read needed"
+    },
+    {
+      "node": 2,
+      "stream": "stderr",
+      "metadata": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node2/native-start0.stderr.private.log",
+        "sha256": "57ab074ae5b98b95270b19510433cbc86cc4185f24046d0079c4069cfab8633e",
+        "size": 1591,
+        "version": "2050:58644791:1591:1793821486068417976:1793821486068417976"
+      },
+      "projection": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node2/native-start0.stderr.private.log",
+        "bytes": 1591,
+        "sha256": "57ab074ae5b98b95270b19510433cbc86cc4185f24046d0079c4069cfab8633e",
+        "version": "2050:58644791:1591:1793821486068417976:1793821486068417976",
+        "line_count": 7,
+        "events": [
+          {
+            "line": 2,
+            "line_sha256": "0c25522669adf089acc106068e217e3192ea5ca44eb33f854c03929a0bf5bfca",
+            "prefix": "HBHA-REQUEST-TIMING-FAIL",
+            "schema": "heptabao.native-ha.request-failure-timing.v1",
+            "request_class": "health",
+            "forwarded": false,
+            "status": 503,
+            "elapsed_us": 1521,
+            "entry_remaining_ns": 999998336,
+            "exit_remaining_ns": 998476810,
+            "bucket_limit": 64,
+            "bucket_bound_reached": false,
+            "phases": []
+          },
+          {
+            "line": 3,
+            "line_sha256": "1c41cf1dfee7a7b5a4f4a82b9438fc751198bf1ec2d2b628d08dcc049be3059e",
+            "prefix": "HBHA-REQUEST-TIMING-FAIL",
+            "schema": "heptabao.native-ha.request-failure-timing.v1",
+            "request_class": "health",
+            "forwarded": false,
+            "status": 503,
+            "elapsed_us": 91,
+            "entry_remaining_ns": 999998717,
+            "exit_remaining_ns": 999907592,
+            "bucket_limit": 64,
+            "bucket_bound_reached": false,
+            "phases": []
+          },
+          {
+            "line": 4,
+            "line_sha256": "f8707f9904f182b9fb0374dcfdaff0d194a61a0d14833aac22b53ea1a10a07ce",
+            "prefix": "HBHA-REQUEST-TIMING-FAIL",
+            "schema": "heptabao.native-ha.request-failure-timing.v1",
+            "request_class": "health",
+            "forwarded": false,
+            "status": 503,
+            "elapsed_us": 107,
+            "entry_remaining_ns": 999998533,
+            "exit_remaining_ns": 999890841,
+            "bucket_limit": 64,
+            "bucket_bound_reached": false,
+            "phases": []
+          },
+          {
+            "line": 5,
+            "line_sha256": "e8ec8969445c8e24696e3c2af377d5edf772e8d30dadb46adbcf25d857f20807",
+            "prefix": "HBHA-REQUEST-TIMING-FAIL",
+            "schema": "heptabao.native-ha.request-failure-timing.v1",
+            "request_class": "health",
+            "forwarded": false,
+            "status": 503,
+            "elapsed_us": 117,
+            "entry_remaining_ns": 999998684,
+            "exit_remaining_ns": 999881360,
+            "bucket_limit": 64,
+            "bucket_bound_reached": false,
+            "phases": []
+          },
+          {
+            "line": 6,
+            "line_sha256": "eb6c400dad02387c85ff2e1bf758dfce5bc4ab23f82bee0aef904c9171d2580c",
+            "prefix": "HBHA-REQUEST-TIMING-FAIL",
+            "schema": "heptabao.native-ha.request-failure-timing.v1",
+            "request_class": "health",
+            "forwarded": false,
+            "status": 503,
+            "elapsed_us": 128,
+            "entry_remaining_ns": 999998450,
+            "exit_remaining_ns": 999869823,
+            "bucket_limit": 64,
+            "bucket_bound_reached": false,
+            "phases": []
+          }
+        ],
+        "unmatched_lines": 2,
+        "rejected_prefix_lines": 0
+      },
+      "content_read": "version-pinned complete binary chunk; per-chunk and whole SHA256 verified"
+    },
+    {
+      "node": 2,
+      "stream": "stdout",
+      "metadata": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node2/native-start0.stdout.private.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0,
+        "version": "2050:58644790:0:1793821481375556618:1793821481375556618"
+      },
+      "projection": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node2/native-start0.stdout.private.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "version": "2050:58644790:0:1793821481375556618:1793821481375556618",
+        "line_count": 0,
+        "events": [],
+        "unmatched_lines": 0,
+        "rejected_prefix_lines": 0
+      },
+      "content_read": "file_info exact size=0 and whole SHA256(empty); no content read needed"
+    },
+    {
+      "node": 3,
+      "stream": "stderr",
+      "metadata": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node3/native-start0.stderr.private.log",
+        "sha256": "b1b9915914acb3c030dba0dcba0543f1a6dcbd38dec2639122af0115cbea495b",
+        "size": 1591,
+        "version": "2050:58644794:1591:1793821486324410413:1793821486324410413"
+      },
+      "projection": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node3/native-start0.stderr.private.log",
+        "bytes": 1591,
+        "sha256": "b1b9915914acb3c030dba0dcba0543f1a6dcbd38dec2639122af0115cbea495b",
+        "version": "2050:58644794:1591:1793821486324410413:1793821486324410413",
+        "line_count": 7,
+        "events": [
+          {
+            "line": 2,
+            "line_sha256": "02a2811d1ff3ea15286cd37139532ecd9a0ec9f577d2271d59b5a2efd1527adf",
+            "prefix": "HBHA-REQUEST-TIMING-FAIL",
+            "schema": "heptabao.native-ha.request-failure-timing.v1",
+            "request_class": "health",
+            "forwarded": false,
+            "status": 503,
+            "elapsed_us": 1419,
+            "entry_remaining_ns": 999998225,
+            "exit_remaining_ns": 998579187,
+            "bucket_limit": 64,
+            "bucket_bound_reached": false,
+            "phases": []
+          },
+          {
+            "line": 3,
+            "line_sha256": "4714beb6140fefbded04db068a2339a9eda6cee338accff391bdb5baad193d21",
+            "prefix": "HBHA-REQUEST-TIMING-FAIL",
+            "schema": "heptabao.native-ha.request-failure-timing.v1",
+            "request_class": "health",
+            "forwarded": false,
+            "status": 503,
+            "elapsed_us": 109,
+            "entry_remaining_ns": 999998323,
+            "exit_remaining_ns": 999888339,
+            "bucket_limit": 64,
+            "bucket_bound_reached": false,
+            "phases": []
+          },
+          {
+            "line": 4,
+            "line_sha256": "5daf3ce1175117988456e595c9ae6c886449e5cb453d74a308732a9e34cfa64a",
+            "prefix": "HBHA-REQUEST-TIMING-FAIL",
+            "schema": "heptabao.native-ha.request-failure-timing.v1",
+            "request_class": "health",
+            "forwarded": false,
+            "status": 503,
+            "elapsed_us": 122,
+            "entry_remaining_ns": 999997803,
+            "exit_remaining_ns": 999875008,
+            "bucket_limit": 64,
+            "bucket_bound_reached": false,
+            "phases": []
+          },
+          {
+            "line": 5,
+            "line_sha256": "9bd93225f8b8dafb8c40e6257b86b5fac4f7283cb795a9961b13d3cc4190cffe",
+            "prefix": "HBHA-REQUEST-TIMING-FAIL",
+            "schema": "heptabao.native-ha.request-failure-timing.v1",
+            "request_class": "health",
+            "forwarded": false,
+            "status": 503,
+            "elapsed_us": 88,
+            "entry_remaining_ns": 999998539,
+            "exit_remaining_ns": 999910045,
+            "bucket_limit": 64,
+            "bucket_bound_reached": false,
+            "phases": []
+          },
+          {
+            "line": 6,
+            "line_sha256": "370c6c36b350d97249d4d41ac09758dbeb309cc5c21602e6f54ba9ac555241c5",
+            "prefix": "HBHA-REQUEST-TIMING-FAIL",
+            "schema": "heptabao.native-ha.request-failure-timing.v1",
+            "request_class": "health",
+            "forwarded": false,
+            "status": 503,
+            "elapsed_us": 131,
+            "entry_remaining_ns": 999998469,
+            "exit_remaining_ns": 999867030,
+            "bucket_limit": 64,
+            "bucket_bound_reached": false,
+            "phases": []
+          }
+        ],
+        "unmatched_lines": 2,
+        "rejected_prefix_lines": 0
+      },
+      "content_read": "version-pinned complete binary chunk; per-chunk and whole SHA256 verified"
+    },
+    {
+      "node": 3,
+      "stream": "stdout",
+      "metadata": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node3/native-start0.stdout.private.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0,
+        "version": "2050:58644793:0:1793821481378556529:1793821481378556529"
+      },
+      "projection": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node3/native-start0.stdout.private.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "version": "2050:58644793:0:1793821481378556529:1793821481378556529",
+        "line_count": 0,
+        "events": [],
+        "unmatched_lines": 0,
+        "rejected_prefix_lines": 0
+      },
+      "content_read": "file_info exact size=0 and whole SHA256(empty); no content read needed"
+    }
+  ],
+  "raw_private_log_content_published": false,
+  "allowed_prefixes": [
+    "HBHA-NATIVE-SYNC-FAIL",
+    "HBHA-REQUEST-TIMING-FAIL",
+    "heptabao-r72-sync"
+  ],
+  "allowed_event_count": 17,
+  "unmatched_lines_not_published": 7,
+  "rejected_prefix_count": 0,
+  "native_sync_failure_prefix_count": 0,
+  "b01_original_unknown_unchanged": true,
+  "original_final_input_fence_error_unchanged": true
+}

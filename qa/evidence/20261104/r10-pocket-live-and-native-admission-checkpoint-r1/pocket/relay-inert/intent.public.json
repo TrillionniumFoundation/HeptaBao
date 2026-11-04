@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.r10.pocket-relay-inert-actual-intent.v1",
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "isolation_arguments": [
+    "-I",
+    "-S",
+    "-B",
+    "-c"
+  ],
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "timeout_seconds": 60,
+  "outer_is_new_supervisor_cap": true,
+  "idempotency_key": "heptabao-r10-pocket-relay-inert-651df235-20261104-r1",
+  "controller": {
+    "bytes": 4980,
+    "sha256": "526a147f53b7b0d817308610b032f7a25b4e5cd97ebe56924d8db408e0458356",
+    "git_blob": "6f2c6d395949631cefc1cbb6f82ca1e83238bed3"
+  },
+  "input": {
+    "bytes": 31549,
+    "sha256": "a8cc3d12bc349b606fb86afafda40eb0bc16c0db7b2a2a06aab889fe46da21c6",
+    "git_blob": "de50945a01348958ac14b07b2f810fc67d47e177"
+  },
+  "authorization": "Root explicitly released Direct98 quiet and authorized this unique inert stage; artifact transfer not yet authorized.",
+  "product_source_executed": false,
+  "artifact_transfer_started": false,
+  "consumer_started": false,
+  "production_mutation": false
+}

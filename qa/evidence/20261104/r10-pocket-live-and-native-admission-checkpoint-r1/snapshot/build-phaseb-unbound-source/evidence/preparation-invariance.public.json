@@ -1,0 +1,76 @@
+{
+  "schema": "heptabao.phaseb-normal-observer.preparation-invariance.v1",
+  "main_controller": {
+    "bytes": 61210,
+    "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+    "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+    "byte_identical": true
+  },
+  "binding": {
+    "before": {
+      "bytes": 20742,
+      "sha256": "39795f901ffac84236411f4b89ce2ee2ae573446ce30f490f9b8d0c603131501",
+      "blob": "236c35803f07f2b6bfeb06b0abfe108baef27215"
+    },
+    "after": {
+      "bytes": 21577,
+      "sha256": "827c3546d74f7d739db5bc0962f4971dd3a480657156665d4528733f8a84678e",
+      "blob": "eb65e08376cb9f3c3efefe1b00051bfbdbb75791"
+    },
+    "diff": {
+      "bytes": 5096,
+      "sha256": "a9ff9349c0d46629bfb68aedd0a99c2751a8cd9fcdd410258323f7c47c01103e",
+      "blob": "5dbe8aecc500e4de905257c012f0f5d0027ccb83"
+    },
+    "hunks": 8,
+    "source_slots_unbound": true,
+    "actual_runtime": false
+  },
+  "build_runner": {
+    "before": {
+      "bytes": 16900,
+      "sha256": "7aa39562fde6d96eeca9b1d0e53f600c9629de09613d052fad8e68e9c734d176",
+      "blob": "686b824755f193e4ae777de22fb682d9510528a2"
+    },
+    "after": {
+      "bytes": 17153,
+      "sha256": "ab1a0255cca04604253939bc837a1591f55e91cb00ba1e26ebf490f7e90c659a",
+      "blob": "e060b24dee961e412ab9c889043abda2c7ffb646"
+    },
+    "diff": {
+      "bytes": 1943,
+      "sha256": "d4ce974a99a45d3b9d103863b1084e0e6c22cfcb1aa51509553f901c13abd8f6",
+      "blob": "e1c206268267fd7764439e975344d46f71fb8641"
+    },
+    "literalEdits": 4,
+    "hunks": 4,
+    "reverseExact": true,
+    "profileTestDeadlinesFunctionsByteUnchanged": true,
+    "source_slots_unbound": true,
+    "actual_runtime": false
+  },
+  "representation_only_fix": {
+    "source": {
+      "bytes": 20854,
+      "sha256": "9593f13abd0a27e23efca99c034a1ee08915e5ba78f2130d62d32c719d85a2d5",
+      "blob": "09fd8b8a295d8ca06eb5b825f516934e9b0b52f7"
+    },
+    "diff": {
+      "bytes": 731,
+      "sha256": "053b9fa1355aa514826da47b8df973f49907a169b98db58e0ece0720baeb26ef",
+      "blob": "e8572db76b6598830b4998bb20e21769c0acc8fb"
+    },
+    "original_integer_runtime_constants_unchanged": true,
+    "original_final_equality_unchanged": true
+  },
+  "old_sealed_core": {
+    "bytes": 270785,
+    "sha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184",
+    "blob": "7a2238125a983bbe657d99d460aae9a9b5b1ae71",
+    "unknown": true,
+    "unmodified": true
+  },
+  "source_only": true,
+  "compile_or_prepare_or_product": false,
+  "unresolved_actual_source_and_artifact_gates": true
+}

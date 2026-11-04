@@ -1,0 +1,34 @@
+--- a/format_normal_fresh_ingress_observer_r1.py
++++ b/format_normal_fresh_ingress_observer_r1.py
+@@ -1,16 +1,13 @@
+ import hashlib,json,os,signal,stat,subprocess,sys,time
+ from pathlib import Path
+ START=time.monotonic(); LIMIT=50.0
+-ROOT=Path('/home/qian-qi/heptabao-ci-four-unsupported-fixtures-format-20261104-r2')
++ROOT=Path('/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-format-20261104-r1')
+ SOURCE=Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source')
+ SRC=SOURCE/'crates/heptabao-server/src'
+ FMT=Path('/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt')
+ FMT_SHA='5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877'
+ EXPECTED={
+- 'service_native_pki_tests.rs':('cd2a36696281904076b5943e4b9cce0a9feb37d4755d0cbf4e0b70553d11ff79','c6040b9b2850b3fcf6cc1b17b9f4e8e53217f64cc6f1d26e3c33b37248e16d84'),
+- 'service_native_transit_tests.rs':('9a620357a6b0ef168d3291e0e36a40e8b129cb4ee10cd2b710d3ddd42d02833e','f1f6beca7cbf01ba2f1411646ec9a744d58e85e42937311d5d264780e0573299'),
+- 'service_native_storage_tests.rs':('4b219daf9b8ff0464dd11ce464888dace7576e70d3fce91da695928574ebe09f','bb15990f5851af63afa548c3e5cbe56911ea0332a6db3a458cb9a26ca571c7bd'),
+- 'service_native_v6_ha_cold_restore_tests.rs':('1ae927b441b0fccddb85f50aa0c7a4ca070e59b26de47bfffa249b015c71ae9c','8ed048c97e624d81ce3ff2478e776b461c81013173821d20ea3faf795e5345bd')}
++ 'ha_native_v6_runtime.rs':('620f2e70342971394a8e70696ebaef3740d0f15d8ee186088666d8dba27b425e','cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d')}
+ os.umask(0o077)
+ def remain():
+  r=LIMIT-(time.monotonic()-START)
+@@ -46,9 +43,11 @@
+  fd=os.open(p,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+  try: os.fsync(fd)
+  finally: os.close(fd)
+-report={'schema':'heptabao.ci-four-native-owner-fixture-rustfmt.v1','status':'failed','productExecuted':False,
++report={'schema':'heptabao.phaseb-normal-fresh-ingress-observer-rustfmt.v1','status':'failed','productExecuted':False,
+  'compileExecuted':False,'productionChanged':False,'sourceCommit':'49503322c7f446e5eb41e7744f1fdbd7f1192ecc',
+  'sourceTree':'1d4211f91e1b34a2ed087a3bbef2e2884bac88e9','edition':'2024',
++ 'expectedIntegrationParent':'6d3040a2dbd06661a67f5c62df259ff446eb8515',
++ 'formatContextIsIntegrationCheckout':False,'normalObservationOnly':True,
+  'internalSeconds':50,'newRemoteSupervisorSeconds':60,'files':[],'children':[]}
+ created=False;before={};tool_before=None
+ try:

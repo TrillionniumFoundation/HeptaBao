@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.four-host-inventory.observed-backup-evidence-readset.v1",
+  "source": {
+    "host": "x230",
+    "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/four-host-cutover-cleanup-assessment.public.json",
+    "bytes": 96796,
+    "sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0"
+  },
+  "exact_json_pointer": "/hosts/3/backup_recovery_assessment/receipts",
+  "chain_count": 1,
+  "reference_count": 9,
+  "classification": "Nine public receipts for one declared captured encrypted-backup transport and restore chain; not nine independent backup payloads or mandatory recovery gates.",
+  "references": [
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/input-binding.public.json",
+      "sha256": "1ec6333a77536cee407da153416e255cab8a1cfe756aa3983ffd3800f6a1539f",
+      "schema": "heptabao.offhost-cipher-input-binding.v1"
+    },
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/recovery.public.json",
+      "sha256": "c2ab6efe5962279688f648feb04e27fec1f7e34bc45efd3fcae734467c6f912f",
+      "schema": "heptabao.offhost-captured-backup-recovery.v1"
+    },
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restore-execution.public.json",
+      "sha256": "a87a41066552903662051ecb4353ce72cfdb25324ed753b8fb627c7e4a2177cc",
+      "schema": "heptabao.offhost-recovery-bound-execution.v1"
+    },
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restore-module.public.json",
+      "sha256": "419113ce5eb7b7b9d911aac54ae31c212b62f9e422fbfdff41e0e281e502bade",
+      "schema": "heptabao.closed-current-snapshot-fernet-chunks.v1"
+    },
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-copy.public.json",
+      "sha256": "c54fb129905794e3edc9d11283c9d40a060d1138118534994a0cd6a36fbefaba",
+      "schema": "heptabao.offhost-cipher-transport-copy.v1"
+    },
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-execution.public.json",
+      "sha256": "043dd7b7b381c0f7336ed9e0fbb249235145ed2c267e68f6b9ef0c92e61254c2",
+      "schema": "heptabao.offhost-recovery-bound-execution.v1"
+    },
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-verify.public.json",
+      "sha256": "fa98ca05b0dda7b81887c7a5e56b8fddd6069d76892a6ccecaa0c8ab01cab88d",
+      "schema": "heptabao.offhost-captured-cipher-transport-verification.v1"
+    },
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restored-capture/capture.public.json",
+      "sha256": "013168479eca30d070821806a5c3e415bdbbcb5eb56cb1774ae912951a08cbc7",
+      "schema": "heptabao.full-current-db-private-snapshot.r3"
+    },
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport/source-map.public.json",
+      "sha256": "bf6c17dfef14cc8026cba0f7da371d835207c285d284770bb17b596e44b30500",
+      "schema": "heptabao.current-encrypted-only-transport-source-map.r1"
+    }
+  ],
+  "proposed_method": "Only if separately authorized: sequential named public files via file_info and whole version-pinned binary_read, reject wrong SHA or size >2 MiB; no path guessing or traversal.",
+  "additional_reads_executed": false,
+  "payload_or_key_reads_permitted": false,
+  "nine_registration_hold_references": {
+    "source_sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+    "source_pointer": "/evidence",
+    "count": 9,
+    "distinct_classification": true
+  },
+  "current_inventory_collector_executed": false
+}

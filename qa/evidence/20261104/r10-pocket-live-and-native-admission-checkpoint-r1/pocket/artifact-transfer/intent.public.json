@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.r10.pocket-artifact-transfer-actual-intent.v1",
+  "dispatch_authorized": true,
+  "status": "authorized_for_single_dispatch",
+  "command": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/pocket-r10-artifact-relay-control-r1/pocket_r10_artifact_relay_r1.py",
+      "--expected-controller-sha256",
+      "651df23534c8410f1a34691968a1d1a1c76c4931675622aef41aae34ff02f96f"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-r10-pocket-artifact-relay-495033-20261104-r1"
+  },
+  "controller_source": {
+    "bytes": 19343,
+    "sha256": "651df23534c8410f1a34691968a1d1a1c76c4931675622aef41aae34ff02f96f",
+    "blob": "010a3af9c67c04a6a29c2e057533eeadebb496f0"
+  },
+  "source_review_tree": "78ce26df5cc8aee2751b485c89f97c8db06cda98",
+  "inert_job": "1a1a84bbf62-fc05-2e36",
+  "inert_actual_tree": "2f31734bed9ce775a5b70ace3cddba2dc4f6fc9f",
+  "artifact_source_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1",
+  "artifact_target_root": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-artifacts-r1",
+  "unchanged_inner_seconds": {
+    "sender_ssh": 180,
+    "receiver_alarm": 180,
+    "cleanup": 10,
+    "git": 15
+  },
+  "new_remote_outer_seconds": 360,
+  "no_business_runtime": true,
+  "automatic_retry": false,
+  "authorization": "Root explicitly accepted exact inert actual and granted one fixed-key transfer; no prepare/preflight/consumer authorized by this dispatch."
+}

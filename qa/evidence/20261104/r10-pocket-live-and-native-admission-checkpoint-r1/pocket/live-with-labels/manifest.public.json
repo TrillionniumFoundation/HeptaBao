@@ -1,0 +1,97 @@
+{
+  "schema": "heptabao.r10.pocket-first-cycle-live-actual-packet.v1",
+  "scope": "Actual current Pocket managed1/2 first-cycle with original local5/native4 preservation, two native phases and two full CAS rollbacks, isolated fixture only.",
+  "files": [
+    {
+      "path": "core.public.json",
+      "bytes": 58853,
+      "sha256": "b55436c3622263112b429517e821f41c9a58225619e1e375d65804e1484f1ef6",
+      "git_blob": "e36e19e00b75dc313ce1a750751dfa5f2f1aafb4",
+      "mode": "100644"
+    },
+    {
+      "path": "outer.public.json",
+      "bytes": 2072,
+      "sha256": "f1e6f62507c1c104df8cb457e871cac24c3714433bca733d1e30f6a26fce9efd",
+      "git_blob": "06b054350c0d5e4b31b4edd7f30a45602a9cfea6",
+      "mode": "100644"
+    },
+    {
+      "path": "intent.public.json",
+      "bytes": 5965,
+      "sha256": "0856b1f98557715407ef9af6f4bbf78055bdba8b6bdc7b2ba2ae398eab8e6e3e",
+      "git_blob": "5879b348c98b1100fa56cdf056dfd12d9257f22c",
+      "mode": "100644"
+    },
+    {
+      "path": "authority.public.json",
+      "bytes": 729,
+      "sha256": "51cc70c04d5b0d73e86137489298ce8bc3b484790be4b4ac3c766ff161f3d1b4",
+      "git_blob": "3ac574eec470a308954bd68bef2c3de127071146",
+      "mode": "100644"
+    },
+    {
+      "path": "terminal.stdout",
+      "bytes": 269,
+      "sha256": "f44684d798f7154614354dca5518a80cb6b72ccd06eba273fe2bf6a86c16c984",
+      "git_blob": "a8e369095b27e2c4129a1963d5cbbcf398b08882",
+      "mode": "100644"
+    },
+    {
+      "path": "terminal.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644"
+    },
+    {
+      "path": "dispatch-intent.public.json",
+      "bytes": 1821,
+      "sha256": "300047fd286720b4559c20d0a7c6998a0c550f902bd11e34058c49d4de5453c6",
+      "git_blob": "3e6a19a84328c9db132c477aee094c189227e35c",
+      "mode": "100644"
+    },
+    {
+      "path": "start-ack.public.json",
+      "bytes": 1324,
+      "sha256": "7b74c7ec00462d23c354e0e7eacb537f20a156b017d70e22c98ce475610020c4",
+      "git_blob": "95444d3e9a96a3a864d7c571a4cfefa488cf4c37",
+      "mode": "100644"
+    },
+    {
+      "path": "process-read.public.json",
+      "bytes": 1145,
+      "sha256": "efa06f09c0e7de27fc93fc16de599c77a870716e52660ed04637b8b08b6b1900",
+      "git_blob": "a84979c35e8fe606fdfc1a3485ef9fe1e1995395",
+      "mode": "100644"
+    },
+    {
+      "path": "core-binary-read.public.json",
+      "bytes": 78829,
+      "sha256": "727740e0387eae27eb130e20899a3175de86809a3036adcfba046be30fee03c5",
+      "git_blob": "4290313b11568955681d9bafa0bf6f09b0063186",
+      "mode": "100644"
+    },
+    {
+      "path": "outer-binary-read.public.json",
+      "bytes": 3123,
+      "sha256": "3a6660c5349cdd2ccc8ecb7461ceb84847ebc0b25a04bd132a869aa7c9e0f8d4",
+      "git_blob": "dbd452f32caec83790808dfb8291a7b7c603357f",
+      "mode": "100644"
+    },
+    {
+      "path": "intent-binary-read.public.json",
+      "bytes": 8305,
+      "sha256": "a78797e2771029037f7287b59eb7e3e3903c0bed03107df010fe7436ec5d059f",
+      "git_blob": "d10b3ae805c6d5c4c3a6ab225b4ea81147ed4ba8",
+      "mode": "100644"
+    },
+    {
+      "path": "review.public.json",
+      "bytes": 6210,
+      "sha256": "40a1d593b3e93b2bac76ba3106f73c1a3c338d7528ea544988e2431143fbfa06",
+      "git_blob": "b3d52a984e43a48aa87d77421375e588a7605164",
+      "mode": "100644"
+    }
+  ]
+}

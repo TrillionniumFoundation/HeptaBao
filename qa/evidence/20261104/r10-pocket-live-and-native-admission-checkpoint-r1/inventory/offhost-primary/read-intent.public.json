@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.four-host-inventory.named-public-read.v1",
+  "host": "x230",
+  "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/four-host-cutover-cleanup-assessment.public.json",
+  "expected_bytes": 96796,
+  "expected_version": "2053:6342755:96796:1793769213445673455:1793769213445673455",
+  "expected_sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0",
+  "maximum_bytes": 2097152,
+  "source_of_path": "Exact f458 prior_matrix",
+  "read_only": true,
+  "private_inputs": false,
+  "collector": false
+}

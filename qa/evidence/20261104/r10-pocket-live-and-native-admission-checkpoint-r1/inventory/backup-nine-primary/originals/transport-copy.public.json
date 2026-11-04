@@ -1,0 +1,18 @@
+{
+  "destination": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport",
+  "elapsedSeconds": 681.12,
+  "exitCode": 0,
+  "hostKeyAlias": "100.97.179.109",
+  "lan": "192.168.0.13",
+  "observedUnixMs": 1793683615337,
+  "originalRestoreBudgetSeconds": 300,
+  "plaintextCopied": false,
+  "schema": "heptabao.offhost-cipher-transport-copy.v1",
+  "secretKeyCopied": false,
+  "sourceIdentity9Unchanged": true,
+  "sourceMapSha256": "bf6c17dfef14cc8026cba0f7da371d835207c285d284770bb17b596e44b30500",
+  "sourceTarExpectedBytes": 6986526720,
+  "sourceTarExpectedSha256": "a45093149d2a8083b852d38d3d896f39044dfe5e8cfd8289b42f4b9e1211c9eb",
+  "stage": "ciphertext_copy_finished",
+  "strictHostKeyChecking": true
+}

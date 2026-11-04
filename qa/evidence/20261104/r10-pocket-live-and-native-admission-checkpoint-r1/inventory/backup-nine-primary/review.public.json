@@ -1,0 +1,328 @@
+{
+  "schema": "heptabao.r10.exact-nine-public-backup-chain-review.v1",
+  "status": "verified_public_originals_only",
+  "read_scope": {
+    "host": "x230",
+    "fixed_public_paths": 9,
+    "file_info_calls": 9,
+    "version_pinned_chunks": 13,
+    "maximum_bytes_per_file": 2097152,
+    "payload_or_key_read": false,
+    "ciphertext_read": false,
+    "sqlite_opened": false,
+    "provider_called": false,
+    "sdk_called": false,
+    "collector_executed": false,
+    "new_restore_executed": false
+  },
+  "source_evidence": {
+    "f458_sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+    "aa23_sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0",
+    "approved_next_readset_sha256": "d8b2cb2551094454723d6d9ae3e42668d74f3dea5ca0de867e694a00dfbc5db4"
+  },
+  "denominator": {
+    "public_receipts": 9,
+    "distinct_captured_recovery_chains": 1,
+    "restored_files": 23,
+    "nonempty_database_families": 7,
+    "captured_auth_stores": 6,
+    "declared_absent_database_families": 5,
+    "plaintext_chunks": 1260,
+    "ciphertext_members_including_manifest": 1261,
+    "total_logical_snapshot_bytes": 5238976512,
+    "restored_plaintext_bytes": 5239055378
+  },
+  "dates_and_source": {
+    "capture_date": "2026-11-02",
+    "recovery_run_directory": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/",
+    "transport_copy_observed_utc": "2026-11-03T05:26:55.337Z",
+    "restore_execution_scope": "The 2026-11-03 offhost recovery run documented by these fixed receipts; no new recovery run.",
+    "capture_host_label": "main",
+    "capture_owner_uid": 1000,
+    "capture_source_style": "Linux /home/qian-qi/.openclaw and one declared /data/toshiba-dev path",
+    "current_physical_host_from_label_proven": false,
+    "mac_capture_claimed": false,
+    "source_freshness_only_at_capture": true
+  },
+  "captured_database_inventory": [
+    {
+      "agent_id": "main",
+      "kind": "agent",
+      "source_path": "/home/qian-qi/.openclaw/agents/main/agent/openclaw-agent.sqlite",
+      "target_relative_path": "agents/main/agent/openclaw-agent.sqlite",
+      "present": true,
+      "snapshot_bytes": 2539085824
+    },
+    {
+      "agent_id": "resident-helper",
+      "kind": "agent",
+      "source_path": "/home/qian-qi/.openclaw/agents/resident-helper/agent/openclaw-agent.sqlite",
+      "target_relative_path": "agents/resident-helper/agent/openclaw-agent.sqlite",
+      "present": true,
+      "snapshot_bytes": 328282112
+    },
+    {
+      "agent_id": "independent-helper",
+      "kind": "agent",
+      "source_path": "/home/qian-qi/.openclaw/agents/independent-helper/agent/openclaw-agent.sqlite",
+      "target_relative_path": "agents/independent-helper/agent/openclaw-agent.sqlite",
+      "present": true,
+      "snapshot_bytes": 762224640
+    },
+    {
+      "agent_id": "telegram-bot-8681289317",
+      "kind": "agent",
+      "source_path": "/home/qian-qi/.openclaw/agents/telegram-bot-8681289317/agent/openclaw-agent.sqlite",
+      "target_relative_path": "agents/telegram-bot-8681289317/agent/openclaw-agent.sqlite",
+      "present": true,
+      "snapshot_bytes": 930381824
+    },
+    {
+      "agent_id": "telegram-bot-8449317572",
+      "kind": "agent",
+      "source_path": "/home/qian-qi/.openclaw/agents/telegram-bot-8449317572/agent/openclaw-agent.sqlite",
+      "target_relative_path": "agents/telegram-bot-8449317572/agent/openclaw-agent.sqlite",
+      "present": true,
+      "snapshot_bytes": 413655040
+    },
+    {
+      "agent_id": "hepta-paper-worker",
+      "kind": "agent",
+      "source_path": "/home/qian-qi/.openclaw/agents/hepta-paper-worker/agent/openclaw-agent.sqlite",
+      "target_relative_path": "agents/hepta-paper-worker/agent/openclaw-agent.sqlite",
+      "present": true,
+      "snapshot_bytes": 462848
+    },
+    {
+      "agent_id": "trillionnium-os-agent",
+      "kind": "agent",
+      "source_path": "/data/toshiba-dev/TrillionniumOS/rootfs/home/qian-qi/.openclaw/agents/trillionnium-os-agent/agent/openclaw-agent.sqlite",
+      "target_relative_path": "agents/trillionnium-os-agent/agent/openclaw-agent.sqlite",
+      "present": false,
+      "snapshot_bytes": null
+    },
+    {
+      "agent_id": "hepta-luna-teacher",
+      "kind": "agent",
+      "source_path": "/home/qian-qi/.openclaw/agents/hepta-luna-teacher/agent/openclaw-agent.sqlite",
+      "target_relative_path": "agents/hepta-luna-teacher/agent/openclaw-agent.sqlite",
+      "present": false,
+      "snapshot_bytes": null
+    },
+    {
+      "agent_id": null,
+      "kind": "shared",
+      "source_path": "/home/qian-qi/.openclaw/state/openclaw.sqlite",
+      "target_relative_path": "state/openclaw.sqlite",
+      "present": true,
+      "snapshot_bytes": 264884224
+    },
+    {
+      "agent_id": null,
+      "kind": "quarantine",
+      "source_path": "/home/qian-qi/.openclaw/state/openclaw-quarantine.sqlite",
+      "target_relative_path": "state/openclaw-quarantine.sqlite",
+      "present": false,
+      "snapshot_bytes": null
+    },
+    {
+      "agent_id": null,
+      "kind": "transport",
+      "source_path": "/home/qian-qi/.openclaw/authbus/production-transport/state.sqlite",
+      "target_relative_path": "authbus/production-transport/state.sqlite",
+      "present": false,
+      "snapshot_bytes": null
+    },
+    {
+      "agent_id": null,
+      "kind": "transport",
+      "source_path": "/home/qian-qi/.openclaw/authbus/production-transport/operation.sqlite",
+      "target_relative_path": "authbus/production-transport/operation.sqlite",
+      "present": false,
+      "snapshot_bytes": null
+    }
+  ],
+  "historical_original_results": {
+    "captured_backup_recovery_qualified": true,
+    "all_captured_bytes_and_absences_exact": true,
+    "all_ciphertext_authenticated_before_destination_creation": true,
+    "seven_immutable_database_checks_exact": true,
+    "six_auth_stores_exact": true,
+    "no_sidecars_created": true,
+    "helper_before_after_sha_maps_equal": true,
+    "transport_copy_seconds": 681.12,
+    "transport_verify_seconds": 134.541,
+    "transport_controller_seconds": 134.622,
+    "restore_module_seconds": 189.6,
+    "restore_full_verification_seconds": 289.068,
+    "restore_controller_seconds": 289.174,
+    "original_restore_budget_seconds": 300,
+    "restore_controller_within_original_budget": true,
+    "transport_copy_is_separate_from_restore_deadline": true
+  },
+  "scope_limits": {
+    "not_nine_backup_payloads_or_nine_mandatory_restore_gates": true,
+    "f458_nine_registration_hold_references_are_separate": true,
+    "current_credential_validity": false,
+    "current_sdk_recovery": false,
+    "full_current_inventory": false,
+    "full_host_safety_inventory": false,
+    "production_cutover": false,
+    "all_current_profiles": false,
+    "cross_agent_transaction_snapshot_proven": false,
+    "external_writer_fence_claimed": false,
+    "source_physical_byte_equality_claimed": false,
+    "raw_security_metadata_cohort_stable": false,
+    "security_metadata_cohort_stable": false,
+    "security_state_coherence_qualified_under_original_policy": true,
+    "key_or_plaintext_in_source_map": false
+  },
+  "raw_originals": [
+    {
+      "path": "input-binding.public.json",
+      "host": "x230",
+      "absolute_path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/input-binding.public.json",
+      "bytes": 954,
+      "sha256": "1ec6333a77536cee407da153416e255cab8a1cfe756aa3983ffd3800f6a1539f",
+      "version": "2053:3031021:954:1793683719924138080:1793683719924138080",
+      "mode": 384,
+      "schema": "heptabao.offhost-cipher-input-binding.v1"
+    },
+    {
+      "path": "recovery.public.json",
+      "host": "x230",
+      "absolute_path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/recovery.public.json",
+      "bytes": 5390,
+      "sha256": "c2ab6efe5962279688f648feb04e27fec1f7e34bc45efd3fcae734467c6f912f",
+      "version": "2053:3032401:5390:1793684215232606931:1793684215232606931",
+      "mode": 384,
+      "schema": "heptabao.offhost-captured-backup-recovery.v1"
+    },
+    {
+      "path": "restore-execution.public.json",
+      "host": "x230",
+      "absolute_path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restore-execution.public.json",
+      "bytes": 1241,
+      "sha256": "a87a41066552903662051ecb4353ce72cfdb25324ed753b8fb627c7e4a2177cc",
+      "version": "2053:3032402:1241:1793684215284606976:1793684215284606976",
+      "mode": 384,
+      "schema": "heptabao.offhost-recovery-bound-execution.v1"
+    },
+    {
+      "path": "restore-module.public.json",
+      "host": "x230",
+      "absolute_path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restore-module.public.json",
+      "bytes": 1192,
+      "sha256": "419113ce5eb7b7b9d911aac54ae31c212b62f9e422fbfdff41e0e281e502bade",
+      "version": "2053:3032400:1192:1793684115815519592:1793684115815519592",
+      "mode": 384,
+      "schema": "heptabao.closed-current-snapshot-fernet-chunks.v1"
+    },
+    {
+      "path": "transport-copy.public.json",
+      "host": "x230",
+      "absolute_path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-copy.public.json",
+      "bytes": 717,
+      "sha256": "c54fb129905794e3edc9d11283c9d40a060d1138118534994a0cd6a36fbefaba",
+      "version": "2053:3031019:717:1793683616187008413:1793683616187008413",
+      "mode": 384,
+      "schema": "heptabao.offhost-cipher-transport-copy.v1"
+    },
+    {
+      "path": "transport-execution.public.json",
+      "host": "x230",
+      "absolute_path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-execution.public.json",
+      "bytes": 1245,
+      "sha256": "043dd7b7b381c0f7336ed9e0fbb249235145ed2c267e68f6b9ef0c92e61254c2",
+      "version": "2053:3032366:1245:1793683821286258711:1793683821286258711",
+      "mode": 384,
+      "schema": "heptabao.offhost-recovery-bound-execution.v1"
+    },
+    {
+      "path": "transport-verify.public.json",
+      "host": "x230",
+      "absolute_path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport-verify.public.json",
+      "bytes": 1247,
+      "sha256": "fa98ca05b0dda7b81887c7a5e56b8fddd6069d76892a6ccecaa0c8ab01cab88d",
+      "version": "2053:3032365:1247:1793683821260258680:1793683821260258680",
+      "mode": 384,
+      "schema": "heptabao.offhost-captured-cipher-transport-verification.v1"
+    },
+    {
+      "path": "restored-capture/capture.public.json",
+      "host": "x230",
+      "absolute_path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/restored-capture/capture.public.json",
+      "bytes": 32616,
+      "sha256": "013168479eca30d070821806a5c3e415bdbbcb5eb56cb1774ae912951a08cbc7",
+      "version": "2053:3032369:32616:1793683967889390832:1793683967889390832",
+      "mode": 384,
+      "schema": "heptabao.full-current-db-private-snapshot.r3"
+    },
+    {
+      "path": "transport/source-map.public.json",
+      "host": "x230",
+      "absolute_path": "/home/qian/heptabao-offhost-current-recovery-20261103-r2/transport/source-map.public.json",
+      "bytes": 304644,
+      "sha256": "bf6c17dfef14cc8026cba0f7da371d835207c285d284770bb17b596e44b30500",
+      "version": "2053:3031015:304644:1793682935160861261:1793682935160861261",
+      "mode": 384,
+      "schema": "heptabao.current-encrypted-only-transport-source-map.r1"
+    }
+  ],
+  "readback_validation": [
+    {
+      "index": 0,
+      "chunks": 1,
+      "whole_bytes_and_hash_verified": true,
+      "version_pinned": true
+    },
+    {
+      "index": 1,
+      "chunks": 1,
+      "whole_bytes_and_hash_verified": true,
+      "version_pinned": true
+    },
+    {
+      "index": 2,
+      "chunks": 1,
+      "whole_bytes_and_hash_verified": true,
+      "version_pinned": true
+    },
+    {
+      "index": 3,
+      "chunks": 1,
+      "whole_bytes_and_hash_verified": true,
+      "version_pinned": true
+    },
+    {
+      "index": 4,
+      "chunks": 1,
+      "whole_bytes_and_hash_verified": true,
+      "version_pinned": true
+    },
+    {
+      "index": 5,
+      "chunks": 1,
+      "whole_bytes_and_hash_verified": true,
+      "version_pinned": true
+    },
+    {
+      "index": 6,
+      "chunks": 1,
+      "whole_bytes_and_hash_verified": true,
+      "version_pinned": true
+    },
+    {
+      "index": 7,
+      "chunks": 1,
+      "whole_bytes_and_hash_verified": true,
+      "version_pinned": true
+    },
+    {
+      "index": 8,
+      "chunks": 5,
+      "whole_bytes_and_hash_verified": true,
+      "version_pinned": true
+    }
+  ]
+}

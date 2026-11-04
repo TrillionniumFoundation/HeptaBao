@@ -1,0 +1,1 @@
+{"resultType":"complete","content":[{"type":"text","text":"remote helper on desktop-ts failed with 1\nstdout:\n\nstderr:\nFileNotFoundError: [Errno 2] No such file or directory: 'native.stderr.private.log'"}],"isError":true}

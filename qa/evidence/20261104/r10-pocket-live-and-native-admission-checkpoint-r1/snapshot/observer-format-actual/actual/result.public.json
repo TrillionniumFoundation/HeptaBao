@@ -1,0 +1,118 @@
+{
+  "allOwnedStopped": true,
+  "canonicalAfter": {
+    "ha_native_v6_runtime.rs": {
+      "bytes": 60854,
+      "identity": [
+        66306,
+        30558144,
+        60854,
+        1793816160999980237,
+        1793816160999980237,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source/crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "sha256": "620f2e70342971394a8e70696ebaef3740d0f15d8ee186088666d8dba27b425e"
+    }
+  },
+  "canonicalBefore": {
+    "ha_native_v6_runtime.rs": {
+      "bytes": 60854,
+      "identity": [
+        66306,
+        30558144,
+        60854,
+        1793816160999980237,
+        1793816160999980237,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source/crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "sha256": "620f2e70342971394a8e70696ebaef3740d0f15d8ee186088666d8dba27b425e"
+    }
+  },
+  "children": [
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source/crates/heptabao-server/src",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 3488859,
+      "pid": 3488862,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 3488859,
+      "timeoutSeconds": 10
+    }
+  ],
+  "compileExecuted": false,
+  "edition": "2024",
+  "elapsedSeconds": 0.03433593799127266,
+  "expectedIntegrationParent": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+  "files": [
+    {
+      "afterBytes": 61578,
+      "afterSha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d",
+      "beforeBytes": 61578,
+      "beforeSha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d",
+      "name": "ha_native_v6_runtime.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "formatContextIsIntegrationCheckout": false,
+  "inputCarrierSha256": "8fb51a2965849cf327ba067e6dd447edefe0954923f8d4aa1b67e01aed60fa3d",
+  "internalSeconds": 50,
+  "newRemoteSupervisorSeconds": 60,
+  "normalObservationOnly": true,
+  "productExecuted": false,
+  "productionChanged": false,
+  "rustfmtAfter": {
+    "bytes": 5255144,
+    "identity": [
+      66306,
+      28970682,
+      5255144,
+      1791677524979153708,
+      1791677525080580886,
+      33261,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  },
+  "rustfmtBefore": {
+    "bytes": 5255144,
+    "identity": [
+      66306,
+      28970682,
+      5255144,
+      1791677524979153708,
+      1791677525080580886,
+      33261,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  },
+  "schema": "heptabao.phaseb-normal-fresh-ingress-observer-rustfmt.v1",
+  "sourceCommit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "sourceTree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "status": "passed",
+  "withinDeadline": true
+}

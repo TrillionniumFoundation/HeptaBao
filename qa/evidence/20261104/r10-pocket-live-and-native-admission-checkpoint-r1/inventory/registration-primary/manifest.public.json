@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.four-host-inventory.first-primary-packet.v1",
+  "description": "Exact readback of f458 public registration scope and its observed next public readset. No collector, production or backup-payload reads.",
+  "files": [
+    {
+      "path": "original/finite-cutover-registration-scope-r2.public.json",
+      "bytes": 18231,
+      "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+      "git_blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+      "mode": "100644"
+    },
+    {
+      "path": "observations/file-info.public.json",
+      "bytes": 492,
+      "sha256": "b6049ce9e483198bad166fd7576b15e281730b151fbe267530b981724068b08a",
+      "git_blob": "fa4c52de1ac71824a516ead492a9322bb84d83ab",
+      "mode": "100644"
+    },
+    {
+      "path": "observations/binary-read-000.public.json",
+      "bytes": 24650,
+      "sha256": "205ad0b97e6d8cc921d1b6638b288f0ef23942efc36ccd1a74711fb934c11dbe",
+      "git_blob": "13271a1fac2c607f63830501cd4aaf37c4fe8cf4",
+      "mode": "100644"
+    },
+    {
+      "path": "read-intent.public.json",
+      "bytes": 537,
+      "sha256": "ae875a7f4756bd81157aba6809e12a19cc250b81bd8ec67a33cfd1556736fca8",
+      "git_blob": "60312289b01258fe2c867e83119ed063cd486c07",
+      "mode": "100644"
+    },
+    {
+      "path": "next-readset.public.json",
+      "bytes": 3791,
+      "sha256": "18d1d9a3ceb1916ef6973eb6b9933309ae963b8e44340ec85a85d38d4c00abca",
+      "git_blob": "82ad4de3153693dc64988546222ab10648e87f05",
+      "mode": "100644"
+    },
+    {
+      "path": "readback-review.public.json",
+      "bytes": 2173,
+      "sha256": "9bb213381b42cf03b8ab3bd1e7c784f55ebb5598db4fb294d0a7a2af2f3fb2bb",
+      "git_blob": "6d106d23adf07c32849cb1af158e1b3a52f8c127",
+      "mode": "100644"
+    }
+  ]
+}

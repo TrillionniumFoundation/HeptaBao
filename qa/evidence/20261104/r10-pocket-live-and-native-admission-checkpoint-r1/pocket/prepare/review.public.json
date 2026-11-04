@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.r10.pocket-prepare-terminal-review.v1",
+  "status": "passed_preparation_only",
+  "job": "1a1a856a5cb-fc05-2e60",
+  "qa_sha256": "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3",
+  "source_pin_count": 51,
+  "normal_receipts_exact": true,
+  "original_managed_native": "0.144.3",
+  "frozen_managed_packet_and_projection_exact": true,
+  "authority_complete_durable_exit_zero": true,
+  "terminal_receipt_size_sha_exact": true,
+  "registry_and_stores_cache_binding_pending_at_this_phase": true,
+  "runtime": false,
+  "provider": false,
+  "refresh": false,
+  "production_mutation": false,
+  "preflight_claimed": false
+}

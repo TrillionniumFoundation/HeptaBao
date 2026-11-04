@@ -1,0 +1,329 @@
+{
+  "all_clients_and_backups_migrated": false,
+  "created_unix_ms": 1793773200200,
+  "evidence": [
+    {
+      "host": "mac",
+      "path": "/Users/qianqi/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+      "sha256": "51636e6bccc57ecff7f221522d45bc72e357c137cda26969217ad3d6413eb757"
+    },
+    {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+      "sha256": "1b0efcdcef80e059ac46bc56bff08d71c0856f251e4340ecdc710582dea94fec"
+    },
+    {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-coverage-r2.public.json",
+      "sha256": "ce4179cab478b925c99d05e1a80e34df21d911e242c827323f0c17b3a6d8d64c"
+    },
+    {
+      "host": "pocket4",
+      "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+      "sha256": "401b596105ed9e1610e2119246438a53346293c83e3635739511d3f6041be2bf"
+    },
+    {
+      "host": "pocket4",
+      "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-coverage-r2.public.json",
+      "sha256": "fb745eead3657d514db27ac2f83a3e10a5744550d980201ccf1363fff86053be"
+    },
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+      "sha256": "c716ec63afaafdebf40c5bba604130c62f3b8a2e47903931c8b2077c68a1aa8c"
+    },
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-coverage-r2.public.json",
+      "sha256": "792b6968d566e42b50df0f7d262ba92fae3c52f78e4058ea7eb00663634b3abd"
+    },
+    {
+      "host": "pocket4",
+      "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/exact-hold-directives-r1.public.json",
+      "sha256": "f4eeb5dfa1cf014bf6699c9c433d29493bdfb61f478292ce627d97f5ca194872"
+    },
+    {
+      "host": "pocket4",
+      "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/hold-marker-source-binding-r1.public.json",
+      "sha256": "6325f3da5c79dc560be35d7f92bceab2c13cd8c944513ac436d8e46fb8e0d1a1"
+    }
+  ],
+  "full_replacement_qualified": false,
+  "host_rows": [
+    {
+      "active_consumers": [
+        {
+          "actual_authbus_endpoint": "https://100.66.117.33:8200",
+          "classification": "active current gateway",
+          "entry": "ai.openclaw.gateway",
+          "model_and_transport_evidence": "Current default model through OpenAI/ChatGPT Responses; no relay endpoint in standard Codex config or standard gateway proxy env. This alone does not cover every possible per-request choice."
+        },
+        {
+          "business_client_binding": "not established by process presence; proxy HTTP(S)_PROXY binds its internal egressguard localhost:8819; front reads bridge.json",
+          "classification": "four active installed legacy relay components",
+          "entry": "ai.openclaw.authbus-relay.proxy|bridge|egressguard|front"
+        }
+      ],
+      "backup_registration": "No confirmed Bao/AuthBus backup/restore registration among the selected local launchd entries or owner crontab. All seven selected local plists have no StartInterval/StartCalendarInterval/WatchPaths/QueueDirectories; RunAtLoad is true. Loaded Apple SecureBackupDaemon is recorded as a system label outside the local registration scope, not classified as Bao.",
+      "cleanup_qualified": false,
+      "cutover_qualified": false,
+      "historical_materials": [
+        ".openclaw/backups/mac-trnm-auth-fallback-repair-20260824T001934+0800 three archived files",
+        "heptabao-backup-reference-projection-chat-20261025-r1 query/report bundle"
+      ],
+      "host": "mac",
+      "installed_startup_entries": [
+        "ai.openclaw.gateway",
+        "ai.openclaw.authbus-relay.proxy",
+        "ai.openclaw.authbus-relay.bridge",
+        "ai.openclaw.authbus-relay.egressguard",
+        "ai.openclaw.authbus-relay.front",
+        "ai.openclaw.mlx-openai-server",
+        "com.openclaw.ssh-controller-x230"
+      ],
+      "reviewable_future_change": {
+        "file": "/Users/qianqi/.openclaw/openclaw.json",
+        "keys": [
+          "plugins.entries.openclaw-authbus.config.address",
+          "plugins.entries.openclaw-authbus.config.caFile",
+          "plugins.entries.openclaw-authbus.config.roleIdFile",
+          "plugins.entries.openclaw-authbus.config.secretIdFile"
+        ],
+        "startup": "ai.openclaw.gateway exact current plist/wrapper/env pins; four relay startup entries require bounded consumer retirement decision separately"
+      }
+    },
+    {
+      "active_consumers": [
+        {
+          "actual_authbus_endpoint": "https://100.66.117.33:8200",
+          "classification": "enabled active current gateway; PID 2436 unchanged through isolated core",
+          "entry": "openclaw-gateway.service",
+          "model": "codex/gpt-6.1-sol",
+          "runtime": "selected model agentRuntime.id=codex; actual runtime/registry consumer chain under investigation"
+        }
+      ],
+      "actual_core": "Installed plugin TLS/AppRole/KV import passed; frozen original consumer failed 41/42 at single_managed_default_candidate; strict full-store failure rollback 39/39. No source usage state cleared. Generic isolated SDK scope failure is retained; production runtime blocker status awaits registry/native-chain proof.",
+      "backup_registration": "No confirmed Bao/AuthBus backup/restore timer or owner/system crontab entry in the finite registration scope. Generic OS font/audio restore and dpkg backup labels are recorded separately; uninstantiated PostgreSQL templates have no observed instance.",
+      "cleanup_qualified": false,
+      "cutover_qualified": false,
+      "dormant_startup_entries": [
+        "openclaw-authbus-accept-after-restart.service (static inactive, persistent hold drop-in)",
+        "openclaw-authbus-restart-when-idle.service (static inactive, persistent hold drop-in)",
+        "openclaw-telegram-curl-proxy.service (disabled inactive)",
+        "openclaw-telegram-ipv6-proxy.service (disabled inactive)"
+      ],
+      "historical_materials": [
+        "heptabao-client-backup-routes-20261024-r1",
+        "heptabao-client-startup-backup-20261024-r1",
+        "heptabao-legacy-consumer-backup-20261024-r2"
+      ],
+      "host": "rog",
+      "reviewable_future_change": {
+        "file": "/home/qian-qi/.openclaw/openclaw.json",
+        "keys": [
+          "plugins.entries.openclaw-authbus.config.address",
+          "plugins.entries.openclaw-authbus.config.caFile",
+          "plugins.entries.openclaw-authbus.config.roleIdFile",
+          "plugins.entries.openclaw-authbus.config.secretIdFile"
+        ],
+        "startup": "Current gateway and two dormant restart/accept helper registrations; source markers must be bound and qualified before release."
+      }
+    },
+    {
+      "active_consumers": [
+        {
+          "classification": "active local model service, not shown to consume Bao directly",
+          "entry": "openclaw-local-ollama.service"
+        }
+      ],
+      "actual_authbus_endpoint": "https://100.66.117.33:8200",
+      "actual_core": "One existing account: normal360 installed plugin/SDK initial and SIGKILL/cold phases plus full-store CAS rollbacks passed. Other credentials, native runtime/provider quota, production startup and traffic remain separate gates.",
+      "backup_registration": "No confirmed Bao/AuthBus backup/restore registration in selected systemd/cron scope; generic OS font/audio/dpkg entries are kept outside Bao cleanup.",
+      "cleanup_qualified": false,
+      "cutover_qualified": false,
+      "dormant_startup_entries": [
+        "openclaw-gateway.service (enabled inactive, exact negative ConditionPathExists hold)",
+        "openclaw-authbus-restart-when-idle.service (static inactive, exact negative ConditionPathExists hold)",
+        "openclaw-ollama-desktop-tunnel.service (disabled inactive)"
+      ],
+      "hold": {
+        "dropins": [
+          {
+            "bytes": 218,
+            "comment_path_references": [],
+            "directives": [
+              {
+                "key": "ConditionPathExists",
+                "line": 3,
+                "section": "Unit",
+                "value": "!/home/alex/heptabao-authbus-persistent-guard-hb3-r1/hold-0dcbd843db6bbaf3fb0fdab97ae4775029d63660a7365b8da5b498385917c5e5.json"
+              }
+            ],
+            "path": "/home/alex/.config/systemd/user/openclaw-gateway.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+            "sha256": "3e46cac521594bbc6bab2133f55ce9cdaf26d8f30f8b6a0e60ba0a41214db1f0"
+          },
+          {
+            "bytes": 218,
+            "comment_path_references": [],
+            "directives": [
+              {
+                "key": "ConditionPathExists",
+                "line": 3,
+                "section": "Unit",
+                "value": "!/home/alex/heptabao-authbus-persistent-guard-hb3-r1/hold-89902581f0d98cb21706f6dfdb9e879d2d6dffc7b8f4f3f4a9c654645f9624a1.json"
+              }
+            ],
+            "path": "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+            "sha256": "d9d6ef9c576e9a8de9311bc87d3521b887c59b7726523f5942b0e1675491b0a9"
+          }
+        ],
+        "markers": [
+          {
+            "automatic_release_permitted": false,
+            "dropin_path": "/home/alex/.config/systemd/user/openclaw-gateway.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+            "marker_exists": true,
+            "marker_path": "/home/alex/heptabao-authbus-persistent-guard-hb3-r1/hold-0dcbd843db6bbaf3fb0fdab97ae4775029d63660a7365b8da5b498385917c5e5.json",
+            "marker_sha256": "0fccbd0c976d259d01b359c3fd7e82552d182a656eb0af44faac89a863ceef9d",
+            "original_observation_sha256": "1c298dfb9158905b80f2327791f9074b4e4aa9f48bfd7f7793eab5619fff0d8f",
+            "provider_grant_admitted": false,
+            "source_map_sha256": "749d63b4590fe5a2ea51444f6cff6fc453ffd7a8948b98c7203c1282c8bd381c",
+            "unit_sha256": "0dcbd843db6bbaf3fb0fdab97ae4775029d63660a7365b8da5b498385917c5e5"
+          },
+          {
+            "automatic_release_permitted": false,
+            "dropin_path": "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+            "marker_exists": true,
+            "marker_path": "/home/alex/heptabao-authbus-persistent-guard-hb3-r1/hold-89902581f0d98cb21706f6dfdb9e879d2d6dffc7b8f4f3f4a9c654645f9624a1.json",
+            "marker_sha256": "370fc76cad249542b4b73763909fb546624071a4febd437501aa3a3b543cabc4",
+            "original_observation_sha256": "1c298dfb9158905b80f2327791f9074b4e4aa9f48bfd7f7793eab5619fff0d8f",
+            "provider_grant_admitted": false,
+            "source_map_sha256": "749d63b4590fe5a2ea51444f6cff6fc453ffd7a8948b98c7203c1282c8bd381c",
+            "unit_sha256": "89902581f0d98cb21706f6dfdb9e879d2d6dffc7b8f4f3f4a9c654645f9624a1"
+          }
+        ]
+      },
+      "host": "pocket4",
+      "reviewable_future_change": {
+        "file": "/home/alex/.openclaw/openclaw.json",
+        "keys": [
+          "plugins.entries.openclaw-authbus.config.address",
+          "plugins.entries.openclaw-authbus.config.caFile",
+          "plugins.entries.openclaw-authbus.config.roleIdFile",
+          "plugins.entries.openclaw-authbus.config.secretIdFile"
+        ],
+        "startup": "Two exact marker/drop-in pairs; remove/release only through reviewed source-bound readiness transition, not by filename inference."
+      }
+    },
+    {
+      "active_consumers": [
+        {
+          "classification": "OpenBao 2.7.1 server -dev oracle, separate from disabled proxy",
+          "entry": "Docker f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9",
+          "host_ports": [],
+          "mounts": [],
+          "network": "none",
+          "retained_state_classification": "Container writable-layer contents not inspected; no empty/disposable inference."
+        }
+      ],
+      "backup_registration": "No confirmed Bao/AuthBus producer or scheduled restore in selected systemd/cron scope. Three failed transient hepta-runtime-native-dev restore/history/compiler-cache units have MainPID 0, no Triggers/TriggeredBy and explicit separate source scripts; not current Bao backup services.",
+      "cleanup_qualified": false,
+      "cutover_qualified": false,
+      "dormant_startup_entries": [
+        "openclaw-authbus-x230-openbao-proxy.service (disabled inactive)"
+      ],
+      "failed_transient_sources": [
+        {
+          "active_state": "failed",
+          "inline_program_and_arguments_not_published": true,
+          "main_pid": "0",
+          "openbao_heptabao_authbus_openclaw_literal_present": false,
+          "path": "/run/user/1000/systemd/transient/hepta-native-history-restore-v58-a2.service",
+          "selected_interpreter_or_project_paths": [
+            "/home/qian/.local/state/hepta-runtime-native-dev-20261018/x230_restore_history_v58_a2.py"
+          ],
+          "sha256": "79ac1b323cd885fa78036cb5b1371c6bcb59cae94d1a1286120b47e52e105e8e",
+          "triggered_by": "",
+          "triggers": "",
+          "unit": "hepta-native-history-restore-v58-a2.service",
+          "unit_file_state": "transient",
+          "working_directory": "/home/qian/.local/state/hepta-runtime-native-dev-20261018"
+        },
+        {
+          "active_state": "failed",
+          "inline_program_and_arguments_not_published": true,
+          "main_pid": "0",
+          "openbao_heptabao_authbus_openclaw_literal_present": false,
+          "path": "/run/user/1000/systemd/transient/hepta-native-restore-compiler-v45-20261020.service",
+          "selected_interpreter_or_project_paths": [
+            "/home/qian/.local/state/hepta-runtime-native-dev-20261018/x230_restore_compiler_cache_v45.py"
+          ],
+          "sha256": "a357418fd8cab8a2d955886194934277ce45d9942d965a172348d3e225841dbe",
+          "triggered_by": "",
+          "triggers": "",
+          "unit": "hepta-native-restore-compiler-v45-20261020.service",
+          "unit_file_state": "transient",
+          "working_directory": null
+        },
+        {
+          "active_state": "failed",
+          "inline_program_and_arguments_not_published": true,
+          "main_pid": "0",
+          "openbao_heptabao_authbus_openclaw_literal_present": false,
+          "path": "/run/user/1000/systemd/transient/hepta-native-restore-compiler-v45-a2-20261020.service",
+          "selected_interpreter_or_project_paths": [
+            "/home/qian/.local/state/hepta-runtime-native-dev-20261018/x230_restore_compiler_cache_v45a2.py"
+          ],
+          "sha256": "bdac8af9a578082b3fef4f581df145da0945f323c38dba8416fcf21ad6f274ff",
+          "triggered_by": "",
+          "triggers": "",
+          "unit": "hepta-native-restore-compiler-v45-a2-20261020.service",
+          "unit_file_state": "transient",
+          "working_directory": null
+        }
+      ],
+      "historical_materials": [
+        "Nov3 closed capture/recovery: 23 files, 7 nonempty DBs, 6 auth stores; current credentials/runtime not implied",
+        "heptabao-r28-archive-recovery-20261022-r1 historical validation material"
+      ],
+      "host": "x230",
+      "oracle_metadata_receipt": {
+        "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/x230-oracle-metadata-r2/assessment-corrected.public.json",
+        "sha256": "fd9765ce0c573ae0853ad8a72d909b5cf5f656e569bac15874d357aca24a8864"
+      },
+      "standard_openclaw_entry": "Absent in exact standard application paths; per-host isolated real credential proof remains separate."
+    }
+  ],
+  "legacy_cleanup_qualified": false,
+  "prior_matrix": {
+    "host": "x230",
+    "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/four-host-cutover-cleanup-assessment.public.json",
+    "sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0"
+  },
+  "production_changes": false,
+  "production_traffic_cutover": false,
+  "readiness_contract": [
+    "Close the three currently installed J3160 AuthBus configuration bindings with exact qualified HeptaBao endpoint, CA and AppRole identities.",
+    "Complete each actual selected installed runtime's credential consumption, cold restart and strict rollback; retain precise failed SDK and gateway evidence.",
+    "Bind and explicitly release the finite Pocket4 and ROG dormant helper hold registrations only after their consumer qualifications.",
+    "Treat current launchd/systemd/cron and exact client configuration list as the planning inventory. Historical query bundles and unrelated system backup entries are not added as active migrations merely because they exist.",
+    "After all required qualifications and actual cutover, close the explicit legacy relay, disabled proxy, dev oracle and old Bao asset entries individually before deletion."
+  ],
+  "schema": "heptabao.four-host-finite-cutover-registration-scope.v2",
+  "scope_closed_for_planning": true,
+  "scope_contract": {
+    "arbitrary_unregistered_manual_paths_are_not_an_added_gate": true,
+    "backup_payloads_opened": false,
+    "client_configs": "Previously pinned OpenClaw source files, installed startup units and exact standard Codex config addendum; actual credentials and runtime qualification remain separately scoped.",
+    "hosts": [
+      "mac",
+      "rog",
+      "pocket4",
+      "x230"
+    ],
+    "mac_main_same_physical_host": true,
+    "paperraid_payloads_or_source_definitions_opened": false,
+    "real_backup_restore_executed": false,
+    "registration_scope": "Mac owner/local-system launchd direct registrations selected by application or backup names; Linux system and owner-user systemd registered names and metadata; owner crontabs and /etc/crontab application command matches; /etc/cron.* immediate application-named registration files.",
+    "scope_reopen_trigger": "A newly observed active command/configuration or restore entry referencing Bao/AuthBus outside this finite list, not a hypothetical possibility."
+  }
+}

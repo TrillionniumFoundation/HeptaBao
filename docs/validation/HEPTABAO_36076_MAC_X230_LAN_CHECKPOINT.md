@@ -1,3 +1,64 @@
+# HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
+
+## 当前检查点：Pocket 实际首轮完成；快照准入 503 已定位阶段，完整替代尚未获资格
+
+更新于 2026-11-04T21:12:15Z。**Pocket R10 已完成实际产物传输、准备、18/18 预检和 66/66 主检查，两次当前消费者运行与两次回滚全部通过。三机 HA 128/128、X230 正式 KV2 31/31 和 OpenBao 2.7.1 两侧各 69/69 对照结果继续有效。全量替代资格仍为 false；逐台真实服务切流、全部客户端和备份迁移、旧版删除尚未完成。**
+
+当前实际运行结果仍绑定 `49503322c7f446e5eb41e7744f1fdbd7f1192ecc`，正常默认 features。新增请求准入观察器独立发布在 `bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24`，已实际格式检查通过，尚未构建或运行产品。原 PR CI 仍绑定 `6d3040a2dbd06661a67f5c62df259ff446eb8515`，两条资格 job 正在完整 Rust workspace 测试阶段，已完成的前九步均成功。
+
+| 用户要求的门槛 | 已有完整原始证据 | 仍须完成 |
+|---|---|---|
+| KV2 正式迁移、恢复 | X230 31/31；三机正式 KV2 额外 30 项；三份各 19 历史版本的导出见证完全一致；34 MiB 导入保留原五秒预算 | 全部实际生产数据、当前备份及客户端覆盖 |
+| HA | 真实三机 128/128，SIGKILL、自然选主、ReadIndex、多数派丢失拒绝读写、冷启、ROG→空 Mac 密文恢复 | 请求的 Pocket→空 Mac 方向仍为 87/98；新自然选主准备与恢复后重启回归 |
+| AuthBus 无 J3160 | Pocket 当前 native 0.144.3 消费者实际 AppRole/TLS/KV/Policy/续期/撤销，两轮 managed1/2 写入、SDK/raw-row/cache 回滚、SIGKILL 和冷启均通过 | 当前全部账号、实际安装 coordinator 入口与真实服务管理器；Mac、ROG 逐台闭环 |
+| 逐台切换 | 可信凭证输入固定、旧输入与原账号顺序保护、一次回滚和退出证据 | 每台真实服务的凭证读写、重启、回滚和正式流量切换；生产密钥保管与解封安排 |
+| 旧版清理 | 九份历史备份回执及完整原始读取链已核验 | 以当前客户端与恢复路径的实际迁移结果决定清理；本轮无服务、二进制或恢复资产删除 |
+
+### Pocket 的实际通过范围
+
+独立隔离的 Pocket job `1a1a85b63d4-fc05-2e6e` 完成，所有自有 server、Node、native 子进程均退出，未知结果和重试均为零。四个不同阶段记录为：
+
+| 阶段 | 通过检查记录 | 唯一公开标签 | 完整路径源码校验 |
+|---|---:|---:|---:|
+| initial | 128 | 112 | 60 |
+| cold-new-process | 128 | 112 | 60 |
+| initial.rollback | 95 | 77 | 60 |
+| cold-new-process.rollback | 95 | 77 | 60 |
+
+公开标签使用 basename，因此不同源码文件可能同名。独立回读已将每轮 60 项对应到 51 个准备阶段完整路径、8 个安装插件副本与 1 个自有配置；四阶段的源路径排序与原始检查序列完全一致。回滚中同名 SDK 标签表示同一 agent 回滚前后分别取样。**这些数目是原始通过记录，不能改写为相同数量的独立用例。** 原始 14 文件全部不变，标签说明为追加的两文件。
+
+实际进行了四次 native factory 创建和八次本地 RPC，十八个消费者 TLS 响应和二十四个外层已知 HTTP 结果。Policy 的未授权拒绝、token renew、revoke 和撤销后拒绝都有实际结果。保留 Pocket local5/native4、主 agent 与 tg agent 的原始身份、顺序和缓存；不声明最新 active managed generation、全部凭证修复、provider 可用性、真实服务管理器或生产切流。本轮未调用 J3160、provider、模型、refresh 或 quota。
+
+### HA 方向失败的数字证据与下一轮边界
+
+方向 R2 的九十份操作 metadata 原件与四十五个已知 HTTP 结果已全部回读。87/98 的原始失败不变：目标要求 Mac1，但实际选出 ROG2，故在目标解封前停止。停机后的有界只读观察器在 Mac 和 ROG 均完整结束，authority exit 0、日志完整持久，未运行产品请求、子进程或文件写入。
+
+两台终态都是 committed vote `term2/node2`，committed 与 last LogId 均为 `term2/node2/index61`，保留 62 个连续 entry。Mac 122 个 journal event，ROG 123 个；CRC、当前 epoch 与完整 EOF 均通过。结果支持“Mac 在旧 fixture 终态没有更鲜日志、ROG 具有可恢复的 committed self-vote”的解释，不能证明历史启动唯一因果，也不提供 state-machine applied 或 ReadIndex 权限证明。
+
+R4 最终对持有的 raft/log 目录 FD、根路径及相对文件名做了校验，但未将两个后代目录名重新绑定到父 FD；未观察到 rename。此范围限制与原始结果一同保留。新 fixture 的 reader 将补上逐层 named 绑定。下一轮只准备一次自然选主流程：先停 ROG2，让 Mac1/Pocket3 的真实多数派推进并观察实际 committed/applied 前沿，再验证停机日志的新鲜度。原来的 98 项、HTTP 15 秒、准入 8 秒及 controller 2400 秒边界保持；尚未执行新一轮。
+
+### 快照 CLI：准入阶段已证明，内部失败原因仍未解决
+
+旧 B01 只有一次实际 CLI save，退出码 2，没有 archive，状态仍为 FAIL_UNKNOWN，未重放。原始日志的安全投影与七份确切源码表明：该 503 从 `begin_native_snapshot_before → begin_request_before` 返回 Complete，archive export 和最终 archive writer 尚未进入。缺少内部阶段信息，因此不能将问题归因于序列化、传输 flag 或某一个 guard。
+
+独立观察器提交只修改一个 runtime 文件中的 fresh-ingress read 函数，为原有步骤记录静态阶段、静态错误码和原始错误摘要，原业务调用、参数、ReadIndex、repair、拒绝、`?` 顺序与 deadline 保持。3911 个 source leaf 中另外 3910 个逐件不变，实际 rustfmt 1.98.0 退出 0，61578 字节格式输出与源文件一致。下一步仍须新的完整 checkout、正常构建、原 44 项和额外七项既有负向测试，再运行全新 Phase B fixture。公开 port map 的 string-key 修复仅在源码准备中，保留原 whole-equality 校验和历史失败。
+
+### 九份备份回执属于一条历史恢复链
+
+X230 的九个确切 public 文件、九份 file_info 和十三个固定版本读取回包已经独立重建字节流，全部 EOF、SHA256 与版本一致。它们证明 **2026-11-02 capture、2026-11-03 offhost transport/restore** 的一条链：23 个恢复文件、7 个非空数据库、6 个精确 auth store、5 个声明不存在的数据库族、1260 个明文 chunk。原始完整恢复 controller 为 289.174 秒，保留原 300 秒预算。
+
+capture 的 host 标签为 `main`、UID 1000、Linux `/home/qian-qi` 路径；这些标签不证明当前 Mac 或当前 ROG 的物理归属。原策略下 security-state coherence qualified=true 与 raw/security metadata cohort stable=false 同时保留；不声明跨 agent 事务快照、当前凭证有效、当前 SDK 恢复或全量当前清单。本轮只读公开回执，未读取密钥、密文或 SQLite，也没有新恢复。九个注册/hold 引用是另一组分母，不能扩张成九份备份 payload 或九个强制恢复门槛。三机有限当前 collector 仍在源码准备。
+
+### 证据与全量资格
+
+本次提交保留 21 个包、307 个原始文件共 2,640,197 字节，逐 blob 字节数、SHA256、Git blob 和所有 packet Merkle 根已核对。原始 JSON 从未经 Number 重序列化，纳秒整数原文保留。主入口：[当前机器可读检查点](../../qa/evidence/20261104/r10-pocket-live-and-native-admission-checkpoint-r1/overview.public.json)、[本次完整清单](../../qa/evidence/20261104/r10-pocket-live-and-native-admission-checkpoint-r1/manifest.public.json)、[Pocket 原始主结果](../../qa/evidence/20261104/r10-pocket-live-and-native-admission-checkpoint-r1/pocket/live-with-labels/core.public.json)、[HA 数字观察结果](../../qa/evidence/20261104/r10-pocket-live-and-native-admission-checkpoint-r1/ha/numeric-r4-actual/assessment.public.json)。
+
+完整替代还受到完整产品表面账本约束：59 个面仍为 2 个 runtime complete、52 个 partial、5 个 tooling，不能用上述专项通过代替 native auth、engine、admin、外部 provider 及全部兼容行为的资格。当前生产 initialization/unseal/load/cutover 均未发生，旧版清理未发生。后续以实际新结果追加证据，保留已有失败与未覆盖项。
+
+---
+
+## 历史检查点原文（截至上一提交 c18898b；上方为当前状态）
+
 # HeptaBao：正常 V6 存储、三机 HA 与完整替代检查点
 
 ## 最新检查点：三机 128/128 通过；方向性 98 项未覆盖目标，完整替代仍未获资格

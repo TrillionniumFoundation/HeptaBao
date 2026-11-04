@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.append-only-public-evidence-addendum.v1",
+  "original_tree": "9375299d13463c6b389486a1b1d41581db44312a",
+  "original_manifest": {
+    "path": "manifest.public.json",
+    "bytes": 3409,
+    "sha256": "bc4d6cb27b89a8c9b4523cac515450ef40790480303d81e0a39ad0b1d4bd6fea",
+    "git_blob": "b4d49c52192b2f9773403416408780ef78a280bd",
+    "mode": "100644"
+  },
+  "original_files_unchanged": true,
+  "additions": [
+    {
+      "path": "check-label-provenance.public.json",
+      "bytes": 50517,
+      "sha256": "edd356eda2210274aa815b812aa5bc793bef771ef3cf8a22e1cdc21c88de9be0",
+      "git_blob": "7c163ce3d882e64685696a66980330292001a883",
+      "mode": "100644"
+    }
+  ],
+  "scope": "Only source-derived duplicate-label interpretation; original 66/128/128/95/95 records, raw outcomes and test source unchanged; no runtime."
+}

@@ -1,0 +1,39 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/pocket_first_cycle_launch_r10.py",
+      "--phase",
+      "live",
+      "--qa-pins-sha256",
+      "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3"
+    ],
+    "created_unix_ms": 1793825924052,
+    "cwd": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "pocket4",
+    "id": "1a1a85b63d4-fc05-2e6e",
+    "idempotency_key": "heptabao-r10-pocket-first-cycle-live-495033-20261104-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/alex/.local/state/hepta-runtime-mac-worker/jobs/1a1a85b63d4-fc05-2e6e",
+    "request_digest": "f0d1bd4094dbaa6c87964bd5cb80751d9dc7669cc21359921679abe13c0a785b",
+    "request_fingerprint": 17352858924308212332,
+    "ssh_target": "hepta-pocket4",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1a85b63d4-fc05-2e6e"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1a85b63d4-fc05-2e6e"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

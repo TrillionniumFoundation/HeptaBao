@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.pocket-r10-first-cycle-prepare-actual-intent.v1",
+  "command": {
+    "host": "pocket4",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/pocket_first_cycle_prepare_r10.py",
+      "--qa-pins-sha256",
+      "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3"
+    ],
+    "cwd": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1",
+    "timeout_seconds": 600,
+    "idempotency_key": "heptabao-r10-pocket-first-cycle-prepare-495033-20261104-r1"
+  },
+  "source": {
+    "bytes": 7091,
+    "sha256": "900be9fdafb575a47a29c74779b5aad298054f593884d81e15c60d20a0b2ae1d",
+    "blob": "8059186a2c6d4fd23c7c244760ad885fdb1f01ce"
+  },
+  "qa_sha256": "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3",
+  "actual_artifact_job": "1a1a853acab-fc05-2e55",
+  "actual_artifact_packet_tree": "6954cbe6d3f18a601d7192b2972aad1c98bf71bb",
+  "authorization": "Root accepted actual transfer and authorized this one prepare only.",
+  "new_outer_seconds": 600,
+  "changed_inner_budget": false,
+  "private_inputs_reused_readonly": true,
+  "preflight_started": false,
+  "consumer_started": false,
+  "production_mutation": false
+}

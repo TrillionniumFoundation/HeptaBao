@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.r10-pocket-prepare-root-terminal-review.v1",
+  "status": "PASS_PREPARATION_ONLY",
+  "job": "1a1a856a5cb-fc05-2e60",
+  "receipt": {
+    "bytes": 12021,
+    "sha256": "e567bb2fe77159ca96716ac7ad0d2924956e46516b39c6950f20e38fc92e1232",
+    "blob": "8f407e8de2efa85327017e22cadd06feccdd7b4e"
+  },
+  "authority": {
+    "bytes": 729,
+    "sha256": "5da659060793da52eb10d5ce06a5030e0f1112e5a65d5d7653b7df917520e497",
+    "blob": "d7a004df5152d10c750d3ae3c333918c456ee7cf"
+  },
+  "stdout": {
+    "bytes": 318,
+    "sha256": "e886d6ae717c66e40c11ddd69ba5ca13a29a8d3d99f022159cb8fc97f868060f",
+    "blob": "afae4f6a8316eea2b0ebabf94f9d51b8b1fee5c8"
+  },
+  "qa_files": 10,
+  "source_pins": 51,
+  "all_qa_bindings_exact": true,
+  "prior_prepare_independently_compared": false,
+  "prior_prepare_verified_by_exact_preparer_sha": true,
+  "actual_runtime_executed": false,
+  "provider_or_refresh_called": false,
+  "production_changed": false,
+  "current_registry_and_agent_store_binding": "pending preflight",
+  "consumer_qualification": false,
+  "packet_tree": "6a195e5bb0c2bd70f3a5bf0ae45c6ed5fc87c191",
+  "whole_packet_blobs_verified": 10,
+  "whole_manifest_verified": true
+}

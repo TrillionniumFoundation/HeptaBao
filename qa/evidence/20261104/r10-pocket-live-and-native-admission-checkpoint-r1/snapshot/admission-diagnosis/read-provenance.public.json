@@ -1,0 +1,156 @@
+{
+  "schema": "heptabao.phaseb-r3.old-log-read-provenance.v1",
+  "reads": [
+    {
+      "node": 1,
+      "stream": "stderr",
+      "file": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node1/native-start0.stderr.private.log",
+        "sha256": "e8babdd0b94878e5838238e28bbdeb8f9cfbf058db5e0bf42ee19f0adde88c3e",
+        "size": 2081,
+        "version": "2050:58644797:2081:1793821507854774486:1793821507854774486"
+      },
+      "original_file_info_sdk_sha256": "9ee0d56cea8ce867444f1b762bb84c86e8cc0ddcf491b5c6f328c7f144dfe431",
+      "read_original_sdk_sha256": "a699e7cf02b5bca1b92ee326433a717e67d80c242e2b8f61ba9f67848a7c6dde"
+    },
+    {
+      "node": 1,
+      "stream": "stdout",
+      "file": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node1/native-start0.stdout.private.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0,
+        "version": "2050:58644796:0:1793821481382556411:1793821481382556411"
+      },
+      "original_file_info_sdk_sha256": "bf9e1061873a82805c59911765c1604b251cd66403a33d0eac917d30856d3960",
+      "read_original_sdk_sha256": null
+    },
+    {
+      "node": 2,
+      "stream": "stderr",
+      "file": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node2/native-start0.stderr.private.log",
+        "sha256": "57ab074ae5b98b95270b19510433cbc86cc4185f24046d0079c4069cfab8633e",
+        "size": 1591,
+        "version": "2050:58644791:1591:1793821486068417976:1793821486068417976"
+      },
+      "original_file_info_sdk_sha256": "e3fc2e5b79d8213f7c1ce472a78b81bf40b696878a7abe52ed460deac7d1c596",
+      "read_original_sdk_sha256": "3cd56948fb4c5af01dd05abbdd0f02b94360139fe55f71292f373e1f1f35e67b"
+    },
+    {
+      "node": 2,
+      "stream": "stdout",
+      "file": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node2/native-start0.stdout.private.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0,
+        "version": "2050:58644790:0:1793821481375556618:1793821481375556618"
+      },
+      "original_file_info_sdk_sha256": "b68caa4a0915475ccb086c8aed2161b371627e0d8c2cfe3d0622db4bbed6ef81",
+      "read_original_sdk_sha256": null
+    },
+    {
+      "node": 3,
+      "stream": "stderr",
+      "file": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node3/native-start0.stderr.private.log",
+        "sha256": "b1b9915914acb3c030dba0dcba0543f1a6dcbd38dec2639122af0115cbea495b",
+        "size": 1591,
+        "version": "2050:58644794:1591:1793821486324410413:1793821486324410413"
+      },
+      "original_file_info_sdk_sha256": "fa0180e6003bdddc21b354a90bc7fb3396ca886babd56a308c6ef118ed6576d1",
+      "read_original_sdk_sha256": "1987e83ff6d93003a5b059d9ff06e2d3a9d5a70417e9e12485dd6f772700384c"
+    },
+    {
+      "node": 3,
+      "stream": "stdout",
+      "file": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/node3/native-start0.stdout.private.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0,
+        "version": "2050:58644793:0:1793821481378556529:1793821481378556529"
+      },
+      "original_file_info_sdk_sha256": "d8e8f6f1562db44e66e243eb23300acc23d270f53d8790d722bdc3dff3459a80",
+      "read_original_sdk_sha256": null
+    }
+  ],
+  "scope": "No private data bytes in this public projection. Original private log bytes remain in original host fixture.",
+  "discarded_path_probes": [
+    {
+      "path": "node1/native.stderr.private.log",
+      "outcome": "ENOENT",
+      "original_sdk_sha256": "ab5043568e3b29a46b0a33e7d5aad156d4536c353781be155bf5f9980e5fd307"
+    },
+    {
+      "path": "node1/native-start1.stderr.private.log",
+      "outcome": "ENOENT",
+      "original_sdk_sha256": "9b31ec28953d34e28002b9c60aadd4881811924c89940f7d4ac8347f1874c896"
+    }
+  ]
+}

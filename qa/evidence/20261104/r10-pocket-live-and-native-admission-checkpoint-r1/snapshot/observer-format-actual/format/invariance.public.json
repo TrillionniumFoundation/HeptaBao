@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.phaseb-normal-observer.format-controller-invariance.v1",
+  "before": {
+    "bytes": 6916,
+    "sha256": "2a8cfa630c4346edcd88a3f47dbb6fcc8bbc73a5b12b3671fab3fa719423b146",
+    "blob": "b726ad84c254a43aa1ced57d93292b59625b4553"
+  },
+  "after": {
+    "bytes": 6541,
+    "sha256": "5ea8c303b1bd9de2d801e6653f84664c3435d940d698908e99185a2f2c30f01b",
+    "blob": "2585f257dc1843e187948c06423ad39a1b47d563"
+  },
+  "carrier": {
+    "bytes": 63659,
+    "sha256": "8fb51a2965849cf327ba067e6dd447edefe0954923f8d4aa1b67e01aed60fa3d",
+    "blob": "7728d1a1e2864f9ebe057243e8f007b228d66ee7"
+  },
+  "diff": {
+    "bytes": 2474,
+    "sha256": "c4d9a69d12454a63f80d83ae860f3fab300fa1d2a4e22158a73737511592a92e",
+    "blob": "e04e0a8d88ecf9457e67c448b0ce7a094f0f0168"
+  },
+  "literalEdits": 4,
+  "hunks": 2,
+  "reverseExact": true,
+  "functions_and_loop_implementation_byte_unchanged": true,
+  "retained_internal_total_seconds": 50,
+  "retained_per_child_seconds": 10,
+  "new_remote_supervisor_seconds": 60,
+  "retained_same_supervisor_pgid": true,
+  "retained_source_and_tool_full_identity_and_hash_fences": true,
+  "retained_fresh_create_only_output": true,
+  "retained_final_deadline_exit_guard": true,
+  "actual_execution": false
+}

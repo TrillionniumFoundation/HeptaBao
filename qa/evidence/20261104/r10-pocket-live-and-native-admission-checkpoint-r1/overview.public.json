@@ -1,0 +1,227 @@
+{
+  "schema": "heptabao.pocket-live-native-admission-checkpoint.v1",
+  "as_of_utc": "2026-11-04T21:12:15Z",
+  "prior_evidence_commit": "c18898b09f1bda9d306c67d13100b6320a1adad2",
+  "actual_runtime_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "actual_runtime_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "normal_default_features": true,
+  "kv2": {
+    "x230_formal_checks": 31,
+    "required": 31,
+    "openbao271_each_side_checks": 69,
+    "modules": 13,
+    "three_host_formal_kv_ha_extra_checks": 30,
+    "history_versions_per_export": 19,
+    "matching_export_count": 3,
+    "shared_export_sha256": "df3d8087d29f91ce201f9df252bd0dcda2fdccfd0e95537d0ab028f4fcff2086",
+    "production_inventory_complete": false
+  },
+  "ha": {
+    "physical_three_host_r2": {
+      "passed": 128,
+      "required": 128,
+      "job": "1a1a81dde69-fc05-2dbc",
+      "http_known": 67,
+      "http_unknown": 0,
+      "actual_missing_cipher_direction": "ROG2 to empty Mac1"
+    },
+    "direction98_r2": {
+      "passed": 87,
+      "required": 98,
+      "job": "1a1a83fdca1-fc05-2e17",
+      "http_known": 45,
+      "http_unknown": 0,
+      "operation_metadata_originals": 90,
+      "requested_direction": "Pocket3 to empty Mac1",
+      "observed_target_leader": 2,
+      "requested_target_leader": 1,
+      "guard_stopped_before_target_unseal": true,
+      "all_owned_processes_stopped": true,
+      "qualified": false
+    },
+    "stopped_numeric_r4": {
+      "mac_job": "1a1a8600c27-fc05-2e80",
+      "rog_job": "1a1a8605a3a-fc05-2e81",
+      "both_final_vote": {
+        "term": 2,
+        "node_id": 2,
+        "committed": true
+      },
+      "both_committed_and_last": {
+        "term": 2,
+        "node_id": 2,
+        "index": 61
+      },
+      "retained_contiguous_entries_each": 62,
+      "mac_events": 122,
+      "rog_events": 123,
+      "actual_observer_seconds": [
+        0.0013012909330427647,
+        0.0014429500151891261
+      ],
+      "read_only": true,
+      "historical_startup_causality_proven": false,
+      "applied_frontier_proven": false,
+      "directory_descendant_name_recheck_limit": true
+    },
+    "r3_natural_election_preparation": "source preparation only; no runtime",
+    "physical_power_loss_qualified": false
+  },
+  "pocket_authbus": {
+    "transport_job": "1a1a853acab-fc05-2e55",
+    "prepare_job": "1a1a856a5cb-fc05-2e60",
+    "preflight_job": "1a1a85956ce-fc05-2e67",
+    "live_job": "1a1a85b63d4-fc05-2e6e",
+    "preflight_checks": 18,
+    "live_checks": 66,
+    "phase_checks": [
+      {
+        "phase": "initial",
+        "records": 128,
+        "unique_labels": 112,
+        "source_checks": 60,
+        "source_full_paths_unique": true
+      },
+      {
+        "phase": "cold-new-process",
+        "records": 128,
+        "unique_labels": 112,
+        "source_checks": 60,
+        "source_full_paths_unique": true
+      },
+      {
+        "phase": "initial.rollback",
+        "records": 95,
+        "unique_labels": 77,
+        "source_checks": 60,
+        "source_full_paths_unique": true
+      },
+      {
+        "phase": "cold-new-process.rollback",
+        "records": 95,
+        "unique_labels": 77,
+        "source_checks": 60,
+        "source_full_paths_unique": true
+      }
+    ],
+    "duplicate_public_labels_documented": true,
+    "actual_native_factories": 4,
+    "native_version": "0.144.3",
+    "actual_native_rpc": 8,
+    "consumer_tls_responses": 18,
+    "outer_known_http": 24,
+    "unknown_outcomes": 0,
+    "retries": 0,
+    "approle_tls_kv_policy_renew_revoke_qualified_in_owned_scope": true,
+    "actual_sigkill_and_cold_unseal_qualified": true,
+    "two_agent_sdk_raw_cas_cache_rollback_qualified": true,
+    "current_default_local5_native4_preserved": true,
+    "managed_profiles": [
+      1,
+      2
+    ],
+    "trusted_credential_inputs_frozen": true,
+    "current_all_accounts_qualified": false,
+    "latest_active_managed_generation_qualified": false,
+    "missing_current_credentials_restored": false,
+    "provider_qualified": false,
+    "installed_coordinator_entry_exercised": false,
+    "real_service_manager_exercised": false,
+    "production_cutover": false,
+    "all_owned_children_stopped": true,
+    "original_deadlines_seconds": {
+      "http": 10,
+      "consumer": 70,
+      "rollback": 35,
+      "launcher": 440
+    }
+  },
+  "snapshot_cli": {
+    "historical_b01_status": "FAIL_UNKNOWN; single archive-save attempt exited 2; no archive",
+    "admission_503_proven": true,
+    "inner_reason_unresolved": true,
+    "archive_serialization_entered": false,
+    "old_operation_replayed": false,
+    "guard_bypass": false,
+    "new_observer_commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+    "new_observer_tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a",
+    "new_observer_parent": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+    "changed_runtime_files": 1,
+    "actual_format_job": "1a1a85b6070-fc05-2e6d",
+    "format_pass": true,
+    "normal_build_executed": false,
+    "new_phaseb_executed": false,
+    "public_port_map_string_key_fix": "source-only; original whole equality and historical failure preserved"
+  },
+  "inventory": {
+    "registration_original_sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+    "offhost_original_sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0",
+    "nine_original_public_receipts_and_13_chunks_root_verified": true,
+    "distinct_captured_recovery_chains": 1,
+    "capture_date": "2026-11-02",
+    "transport_restore_date": "2026-11-03",
+    "captured_host_label": "main",
+    "captured_uid": 1000,
+    "current_physical_host_mapping_proven": false,
+    "restored_files": 23,
+    "nonempty_db_families": 7,
+    "exact_auth_stores": 6,
+    "declared_absent_db_families": 5,
+    "original_restore_seconds": 300,
+    "actual_full_controller_seconds": 289.174,
+    "raw_security_metadata_stable": false,
+    "security_state_coherence_qualified_under_original_policy": true,
+    "current_credential_validity": false,
+    "current_sdk_recovery": false,
+    "current_full_inventory": false,
+    "finite_current_collector": "source preparation only"
+  },
+  "ci": {
+    "run_id": 41907498576,
+    "source_head": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+    "jobs": [
+      {
+        "id": 126845968973,
+        "status": "in_progress",
+        "conclusion": null,
+        "completed_success_steps": 9,
+        "active_steps": [
+          "Test the complete locked Rust workspace"
+        ]
+      },
+      {
+        "id": 126845969276,
+        "status": "in_progress",
+        "conclusion": null,
+        "completed_success_steps": 9,
+        "active_steps": [
+          "Test the complete locked Rust workspace"
+        ]
+      }
+    ],
+    "pending_not_qualification": true,
+    "cancelled_or_rerun": false
+  },
+  "evidence": {
+    "prefix": "qa/evidence/20261104/r10-pocket-live-and-native-admission-checkpoint-r1",
+    "packet_count": 21,
+    "raw_files": 307,
+    "raw_bytes": 2640197,
+    "raw_original_json_integer_tokens_preserved": true
+  },
+  "full_openbao271_replacement_qualified": false,
+  "production_initialized": false,
+  "production_unsealed": false,
+  "production_loaded": false,
+  "production_cutover": false,
+  "old_service_binary_or_recovery_asset_deleted": false,
+  "j3160_contacted": false,
+  "provider_model_refresh_quota_calls": false,
+  "remaining_required": [
+    "Requested Pocket3 to empty Mac1 natural-election direction and post-restore cold regression",
+    "Actual official CLI native-archive save/restore and cold recovery after locating admission error",
+    "All current credential/client/service/backup dependencies, then per-host real service restart and rollback",
+    "Production custodian and actual durable deployment lifecycle",
+    "Outstanding full product-surface and full CI qualification"
+  ]
+}

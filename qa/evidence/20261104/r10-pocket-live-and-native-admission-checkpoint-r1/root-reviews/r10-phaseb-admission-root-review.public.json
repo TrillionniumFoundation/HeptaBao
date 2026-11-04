@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.phaseb-b01-admission-root-evidence-review.v1",
+  "status": "PASS_BOUNDED_DIAGNOSIS_NOT_FIX",
+  "original_job": "1a1a8177aec-fc05-2da5",
+  "diagnostic_packet_tree": "266023792a9e066915c32a88648746c34fb66a59",
+  "projector": {
+    "bytes": 3284,
+    "sha256": "ed0b4230ee8cb9c8e6e97230e4182f312a28471f66be123480f6800bb5439c11",
+    "blob": "266893b65f6770b2275a5d26ab7fd959b76a5ac9"
+  },
+  "projection": {
+    "bytes": 18586,
+    "sha256": "259e2df89d16d1c1cf85d2bf041b38a1b269a2afd5298fc10548d559ec56de80",
+    "blob": "2720dfd4d936e6e8e6e2fe9f4c12270bf7d8bead"
+  },
+  "private_log_files_read_by_task_agent": 6,
+  "private_log_bytes": 5263,
+  "root_read_raw_private_logs": false,
+  "root_whole_public_packet_and_metadata_verified": true,
+  "accepted_public_structures": 17,
+  "other_lines_retained_private": 7,
+  "admission_complete_503_before_external_export": true,
+  "remaining_outer_http_ns": 14980422592,
+  "exact_inner_error": "unknown",
+  "fresh_ingress_branch": "source-supported inference",
+  "snapshot_fix_or_qualification": false,
+  "old_unknown_unchanged": true
+}

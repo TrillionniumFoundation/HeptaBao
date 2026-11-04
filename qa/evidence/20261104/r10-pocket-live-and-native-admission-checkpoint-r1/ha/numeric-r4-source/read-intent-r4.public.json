@@ -1,0 +1,101 @@
+{
+  "schema": "heptabao.stopped-direction-readonly-numeric-intent.v4",
+  "status": "source-only-awaiting-root-reviewed-read-window",
+  "source": {
+    "bytes": 15562,
+    "sha256": "ecea803b16419202116b7b428fc794335da259cb4e68635073de6bc0b8f03e82",
+    "blob": "600740120f5c21e3318fd6098e80b10b26b23652"
+  },
+  "stopped_run_id": "2f514650d5a5cbd46daa2a899858b833",
+  "terminal_summary_sha256": "bd7cc8949faca6bebcad6c847f2f1506526a6329ed6392f865892f253cf0c912",
+  "roots": [
+    {
+      "host": "mac",
+      "node": 1,
+      "root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-direct98-node1-r2",
+      "uid": 501
+    },
+    {
+      "host": "rog",
+      "node": 2,
+      "root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-direct98-node2-r2",
+      "uid": 1000
+    }
+  ],
+  "fixed_reads": [
+    "native-ha-fixture.json",
+    "raft/log/raft-log.bin",
+    "raft/log/raft-log.journal"
+  ],
+  "new_read_limits": {
+    "per_node_seconds": 15,
+    "outer_supervisor_seconds": 45,
+    "marker_bytes": 4096,
+    "per_log_file_bytes": 8388608,
+    "total_log_bytes_per_node": 16777216,
+    "log_entries": 4096,
+    "journal_events": 16384,
+    "vote_events": 256,
+    "public_output_bytes": 65536,
+    "child_processes": 0
+  },
+  "existing_product_schema": {
+    "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "store_blob": "010e2b96343ce02d4ff39467d0816abe6bdc47a0",
+    "type_config_blob": "ec6bcf6100d63783e0fe137e8b4f344da5ecffae",
+    "checkpoint_magic": "HBRLOG01",
+    "journal_magic": "HBRLJ001",
+    "event_magic": "HBRLE001",
+    "framing": "little-endian u64 payload length, full JSON, IEEE CRC32; same epoch; five exact event variants"
+  },
+  "effect": "Readonly stdlib FD reads only. Does not invoke product open_existing/recovery, truncate journal, write files, open ciphertext/state-machine data, dispatch HTTP, signal any process, or start children.",
+  "observations": [
+    "whole fixed-file hash and stable FD/named identity",
+    "real persisted vote term/node/committed",
+    "last retained/purged and committed LogId",
+    "bounded vote event history and complete current-epoch journal shape"
+  ],
+  "limits": [
+    "current terminal-state observation alone cannot reconstruct prior process startup timestamps or prove the exact election cause",
+    "partial journal is rejected without repair, unlike product recovery's allowed tail truncation; this is a diagnostic refusal",
+    "no application authority or full state-machine/applied frontier proof from log metadata",
+    "official upstream version tag is source reference; not an independent registry-cache byte verification"
+  ],
+  "ordering": "After fresh source review, execute Mac1 once. Only its complete authority exit0 plus within15s publication permits the one sequential ROG2 read. ROG format is known terminal. Each uses a fresh fixed operation key. No HA runtime; partial/mismatch/timeout stops this chain.",
+  "old_source_and_observed_refusal": {
+    "source_sha256": "968d0be1ff1fbc5ef7544c181e50cc111da4b160e720141cef5e0e65d3484ea5",
+    "failure_result_sha256": "8f2b99adbea5c343b4c12a2480b10947803675fc068c6be2ce6da9952ecfe22b",
+    "failure_packet_tree": "deafae772781f894b856f1336a5d7630f982b723",
+    "conclusion": "Old diagnostic refused a directory precondition before opening either Raft log file; it did not record the failing layer. No numeric observation and no ROG dispatch."
+  },
+  "exact_mode_policy": {
+    "private_ancestors": {
+      "root": "0700",
+      "raft": "0700"
+    },
+    "marker": "0600",
+    "by_node": {
+      "1": {
+        "log_directory": "0755",
+        "checkpoint": "0644",
+        "journal": "0644",
+        "uid": 501
+      },
+      "2": {
+        "log_directory": "0775",
+        "checkpoint": "0664",
+        "journal": "0664",
+        "uid": 1000
+      }
+    },
+    "mac_directory_lstat_tree": "02c0f634376d74625dbc23dcbb8bd84d535dd9a3",
+    "mac_file_lstat_tree": "e777087786847eacfbcbf7616ba158df8117c2d6",
+    "rog_six_object_lstat_tree": "283bd2f2baaecc37e34747194b1ebf3cdc5c034a",
+    "qualification": "All exact modes come from each node's independent stopped-fixture lstat. Both strict0700 ancestors remain mandatory. Mode mismatch refuses; no chmod, repair, alternate path, or retry."
+  },
+  "unexecuted_r3_draft": {
+    "tree": "efb35f657fb4c3c4bf6cb29d35cd3c950a45e9ea",
+    "source_sha256": "7a3dd350c25ca50d145256056ae4ee4cf9e6c4832db27ededdc6ee056dedb89d",
+    "status": "never executed; replaced before runtime by per-node observed mode mapping"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.four-host-original-scope-recovery.r1",
+  "host": "x230",
+  "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/finite-cutover-registration-scope-r2.public.json",
+  "expectedSha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+  "expectedVersion": "2053:6343000:18231:1793773204377238571:1793773204377238571",
+  "bytes": 18231,
+  "capBytes": 2097152,
+  "readOnly": true,
+  "firstPublicOriginalOnly": true,
+  "collectorExecuted": false,
+  "secondGuessedFilenameRead": false
+}

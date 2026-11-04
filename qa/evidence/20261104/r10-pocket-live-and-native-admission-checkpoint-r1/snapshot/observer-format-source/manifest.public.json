@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.phaseb-normal-observer.format-packet.v1",
+  "files": [
+    {
+      "path": "format/format_normal_fresh_ingress_observer_r1.py",
+      "bytes": 6541,
+      "sha256": "5ea8c303b1bd9de2d801e6653f84664c3435d940d698908e99185a2f2c30f01b",
+      "blob": "2585f257dc1843e187948c06423ad39a1b47d563"
+    },
+    {
+      "path": "format/candidate-input.json",
+      "bytes": 63659,
+      "sha256": "8fb51a2965849cf327ba067e6dd447edefe0954923f8d4aa1b67e01aed60fa3d",
+      "blob": "7728d1a1e2864f9ebe057243e8f007b228d66ee7"
+    },
+    {
+      "path": "format/format-controller.review.diff",
+      "bytes": 2474,
+      "sha256": "c4d9a69d12454a63f80d83ae860f3fab300fa1d2a4e22158a73737511592a92e",
+      "blob": "e04e0a8d88ecf9457e67c448b0ce7a094f0f0168"
+    },
+    {
+      "path": "format/dispatch-proposal.public.json",
+      "bytes": 1310,
+      "sha256": "91e0ea1b3822e88c9d40cadcbf237bd97b6b0555cdf2fda2fc150929bc50afe9",
+      "blob": "9c8e013b5ff7faa4d8c4a745e83e373940712939"
+    },
+    {
+      "path": "format/invariance.public.json",
+      "bytes": 1243,
+      "sha256": "5d858c85d9d9c758d10fef49d551c73155e9ea6f57568910377bb16fc3cac7e7",
+      "blob": "d6f1e5bb9f32b94ea3ef616de0870f66aa7bdda4"
+    },
+    {
+      "path": "source/exact-parent-source.public.json",
+      "bytes": 597,
+      "sha256": "a5ea340ddbb4dd27306bb6dcaaaff27fcfbc5f203284ac231b3727851619cd87",
+      "blob": "da51491463594d12d5d03cfa7971713d9d374205"
+    },
+    {
+      "path": "evidence/b01-minimal-admission-review-index.public.json",
+      "bytes": 4125,
+      "sha256": "88d7746e7fda6a19836778a3dd073986418ee76695d00e44d1b723c442c94d20",
+      "blob": "6c392ab27d3f155636bf10d36e52a0ac1fbbf10f"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3591,
+      "sha256": "e7fd2a1465353216dc94344e0194356bce4977e35cfea2ab7d4c44dea0720898",
+      "blob": "b0c25cf6cf38ef68cce9777bde3e9502383ea6e0"
+    },
+    {
+      "path": "reference/actual-successful-four-test-format-r2.py",
+      "bytes": 6916,
+      "sha256": "2a8cfa630c4346edcd88a3f47dbb6fcc8bbc73a5b12b3671fab3fa719423b146",
+      "blob": "b726ad84c254a43aa1ced57d93292b59625b4553"
+    },
+    {
+      "path": "source/ha_native_v6_runtime.rs",
+      "bytes": 61578,
+      "sha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d",
+      "blob": "7bbd34e86039d0f640ac12a48cd81b2f836e600a"
+    },
+    {
+      "path": "source/normal-observer.review.diff",
+      "bytes": 3162,
+      "sha256": "b76f91a684305d452be25d6735b4ad2fc82ee33086dda33c890223a497e713a7",
+      "blob": "57bc167b34cf3ddc684b89893c347b0312aff9b4"
+    },
+    {
+      "path": "reviews/normal-observer-independent-review.public.json",
+      "bytes": 3312,
+      "sha256": "8f50e5e53665464595fe29949cb0daaf16b17b3cf4842155754a207dfba6fcd9",
+      "blob": "bfa29dd31c1e5777d9ca9f32a582895158f9be79"
+    }
+  ],
+  "source_only": true,
+  "host_started": false
+}

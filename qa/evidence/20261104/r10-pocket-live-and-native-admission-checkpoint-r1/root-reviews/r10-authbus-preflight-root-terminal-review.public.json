@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.r10-pocket-preflight-root-terminal-review.v1",
+  "status": "PASS_PREFLIGHT_ONLY",
+  "job": "1a1a85956ce-fc05-2e67",
+  "core": {
+    "bytes": 8773,
+    "sha256": "a3d2add30c9ffec888ff7ff452aff934fe3eb61ef25d8b05141f2672502cfd2d",
+    "blob": "3eb98f6a5b73352bda03359195a71491534dd904"
+  },
+  "outer": {
+    "bytes": 2081,
+    "sha256": "9265928fbc39f5b902b1ef52a1bf8df75cf36c9453d290772987db3af20e8bed",
+    "blob": "3483e2cec14a1a046f9724a058cbdff1438eab90"
+  },
+  "intent": {
+    "bytes": 6014,
+    "sha256": "acb7ccd414e5afc484c5f1f1d501c7a88e61761b2a6628cb9e582dd187739253",
+    "blob": "6b029356a52a28ad81636148dab0bc5fa047deab"
+  },
+  "authority": {
+    "bytes": 729,
+    "sha256": "016152658abcf02ecc4719fdea83d401058894424ea43394913c8348aebcbfaf",
+    "blob": "32fa80b6786722312690f04220f909e46eb5ab10"
+  },
+  "checks": {
+    "passed": 18,
+    "total": 18
+  },
+  "source51pins_bound": true,
+  "current_registry_row_matches_frozen_capture": true,
+  "actual_registry_copy_bytes": 111644672,
+  "registry_sidecars_absent": true,
+  "exact_main_tg_auth_cache_local5_native4_fences": true,
+  "all_owned_stopped": true,
+  "elapsed_seconds": 0.984,
+  "budgets": {
+    "consumerSeconds": 70,
+    "httpSeconds": 10,
+    "outerSeconds": 440,
+    "rollbackSeconds": 35
+  },
+  "actual_runtime_executed": false,
+  "unknown": false,
+  "provider_or_j3160": false,
+  "production_changed": false,
+  "consumer_qualification": false,
+  "packet_tree": "5364ac75d3b2c988d81fc8ef23744320b35d3615",
+  "whole_packet_blobs_verified": 14,
+  "whole_manifest_verified": true
+}

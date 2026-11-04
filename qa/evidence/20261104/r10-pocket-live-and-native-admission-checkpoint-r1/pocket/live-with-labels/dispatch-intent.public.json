@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.pocket-r10-first-cycle-live-actual-intent.v1",
+  "command": {
+    "host": "pocket4",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/pocket_first_cycle_launch_r10.py",
+      "--phase",
+      "live",
+      "--qa-pins-sha256",
+      "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3"
+    ],
+    "cwd": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1",
+    "timeout_seconds": 600,
+    "idempotency_key": "heptabao-r10-pocket-first-cycle-live-495033-20261104-r1"
+  },
+  "authorization": "Root independently accepted complete preflight and granted exactly one live attempt.",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "qa_sha256": "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3",
+  "launcher_sha256": "1cbec91c3b19c3c488ae8976c01fee2b6eb40c03c56b1c55064ccbd5268f93ee",
+  "accepted_preflight": {
+    "job": "1a1a85956ce-fc05-2e67",
+    "core_sha256": "a3d2add30c9ffec888ff7ff452aff934fe3eb61ef25d8b05141f2672502cfd2d",
+    "outer_sha256": "9265928fbc39f5b902b1ef52a1bf8df75cf36c9453d290772987db3af20e8bed",
+    "packet_tree": "5364ac75d3b2c988d81fc8ef23744320b35d3615"
+  },
+  "new_outer_seconds": 600,
+  "unchanged_inner_budgets": {
+    "launcher": 440,
+    "http": 10,
+    "consumer": 70,
+    "rollback": 35
+  },
+  "scope": "Owned fixture only: original two Pocket agents with shared managed1/2; retain default local5 and independent native4; initial/cold native flow and strict auth/cache CAS rollback.",
+  "provider_or_j3160_calls_authorized": false,
+  "production_cutover_authorized": false,
+  "automatic_retry": false
+}

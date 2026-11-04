@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.four-host-inventory.exact-primary-next-readset.v1",
+  "derived_from": {
+    "host": "x230",
+    "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/finite-cutover-registration-scope-r2.public.json",
+    "bytes": 18231,
+    "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64"
+  },
+  "next_authorized_public_original": {
+    "host": "x230",
+    "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/four-host-cutover-cleanup-assessment.public.json",
+    "sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0",
+    "method": "file_info then complete version-pinned binary_read",
+    "maximum_bytes": 2097152,
+    "actual_read_complete": false
+  },
+  "nine_public_evidence_references": [
+    {
+      "host": "mac",
+      "path": "/Users/qianqi/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+      "sha256": "51636e6bccc57ecff7f221522d45bc72e357c137cda26969217ad3d6413eb757"
+    },
+    {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+      "sha256": "1b0efcdcef80e059ac46bc56bff08d71c0856f251e4340ecdc710582dea94fec"
+    },
+    {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-coverage-r2.public.json",
+      "sha256": "ce4179cab478b925c99d05e1a80e34df21d911e242c827323f0c17b3a6d8d64c"
+    },
+    {
+      "host": "pocket4",
+      "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+      "sha256": "401b596105ed9e1610e2119246438a53346293c83e3635739511d3f6041be2bf"
+    },
+    {
+      "host": "pocket4",
+      "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-coverage-r2.public.json",
+      "sha256": "fb745eead3657d514db27ac2f83a3e10a5744550d980201ccf1363fff86053be"
+    },
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+      "sha256": "c716ec63afaafdebf40c5bba604130c62f3b8a2e47903931c8b2077c68a1aa8c"
+    },
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-coverage-r2.public.json",
+      "sha256": "792b6968d566e42b50df0f7d262ba92fae3c52f78e4058ea7eb00663634b3abd"
+    },
+    {
+      "host": "pocket4",
+      "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/exact-hold-directives-r1.public.json",
+      "sha256": "f4eeb5dfa1cf014bf6699c9c433d29493bdfb61f478292ce627d97f5ca194872"
+    },
+    {
+      "host": "pocket4",
+      "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/hold-marker-source-binding-r1.public.json",
+      "sha256": "6325f3da5c79dc560be35d7f92bceab2c13cd8c944513ac436d8e46fb8e0d1a1"
+    }
+  ],
+  "reference_count": 9,
+  "reference_classification": "Public registration, coverage and hold evidence references. These nine items are not nine backup payloads or nine mandatory recovery scopes.",
+  "reference_reads_authorized_by_this_document": false,
+  "source_denominator_status": "The actual backup/recovery dependency denominator remains pending complete inspection of the exact prior_matrix; neither name counting nor the absence of timers establishes it.",
+  "no_collector": true,
+  "no_private_database_opened": true,
+  "no_backup_payload_read": true,
+  "no_provider_request": true,
+  "no_production_write": true,
+  "historical_scope_note": "The original f458 bytes are preserved. Its earlier ROG under-investigation wording is historical and is not substituted for later actual native-preservation evidence.",
+  "original_plan_preserved": true
+}

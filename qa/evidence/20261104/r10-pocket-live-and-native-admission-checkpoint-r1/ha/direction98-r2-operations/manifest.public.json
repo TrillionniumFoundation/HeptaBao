@@ -1,0 +1,729 @@
+{
+  "schema": "heptabao.exact-public-boundary-manifest.v1",
+  "fixture_run_id": "2f514650d5a5cbd46daa2a899858b833",
+  "scope": "R10 direct98 R2 failed direction-uncovered; existing metadata only",
+  "count": 90,
+  "total_bytes": 44798,
+  "files": [
+    {
+      "path": "public-mutations/mutation-00001.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00001.intent.json",
+      "bytes": 442,
+      "sha256": "72d663fb9e8245edbf614570ddd4aa47e064c3b1049330e74f9db68f154efd08",
+      "git_blob": "5d5822d48eecf288831948c6114e36579cd56465",
+      "immutable_read_version": "2050:58903200:442:1793824161646937548:1793824161646937548"
+    },
+    {
+      "path": "public-mutations/mutation-00001.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00001.outcome.json",
+      "bytes": 425,
+      "sha256": "8db0b1376524ff3d2f70ac244993781f7d6771d3e1f0afc1ed69d06cda2062d1",
+      "git_blob": "47baa7703aa460bac4a4171611c22285bf812c39",
+      "immutable_read_version": "2050:58903202:425:1793824161759643506:1793824161759643506"
+    },
+    {
+      "path": "public-mutations/mutation-00002.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00002.intent.json",
+      "bytes": 444,
+      "sha256": "3ff41af7107d3a345d688fbc69eec30c1cbf3f0ec4560b01e2b216022518c423",
+      "git_blob": "e777312426eb8694a1248ab1cba620255e11eb1a",
+      "immutable_read_version": "2050:58903206:444:1793824161783407746:1793824161783407746"
+    },
+    {
+      "path": "public-mutations/mutation-00002.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00002.outcome.json",
+      "bytes": 425,
+      "sha256": "e6686400eebb23046726d5f0df884fe819e26ed54499fb5b602d1c402cf21e7a",
+      "git_blob": "db2ceda942f1d315d8e852504d0b8ca91ea755da",
+      "immutable_read_version": "2050:58903212:425:1793824161851263959:1793824161851263959"
+    },
+    {
+      "path": "public-mutations/mutation-00003.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00003.intent.json",
+      "bytes": 451,
+      "sha256": "41de1434879b2d7cb4c40c809c6d92b5e92a2bd1f24beaa96540eab7b4a47368",
+      "git_blob": "926a6f8f11c13182694a7560d35edfa2411245b3",
+      "immutable_read_version": "2050:58903222:451:1793824161859609250:1793824161859609250"
+    },
+    {
+      "path": "public-mutations/mutation-00003.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00003.outcome.json",
+      "bytes": 425,
+      "sha256": "93d180bb3c93da09ce660822daa4641dabb6a87170af43ea3cd189495b70d910",
+      "git_blob": "7f1dd879f67fe2d5f2d6edc3956687cc37bcedba",
+      "immutable_read_version": "2050:58903223:425:1793824161904311203:1793824161904311203"
+    },
+    {
+      "path": "public-mutations/mutation-00004.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00004.intent.json",
+      "bytes": 447,
+      "sha256": "dae2f6d7cce74e3e1b9b2657cd5db3d6c2c5b0f0741c0bfaa01dd6158d2047ef",
+      "git_blob": "9ab0c7a9f2f98526d30e2cbd6a5bd65e573d0527",
+      "immutable_read_version": "2050:58903225:447:1793824161937272261:1793824161937272261"
+    },
+    {
+      "path": "public-mutations/mutation-00004.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00004.outcome.json",
+      "bytes": 425,
+      "sha256": "018fc180951e3b6b14bfd5b8b127f7b5dd884ba976dfe5af821c514c69804a92",
+      "git_blob": "1e907bcd0c588a8f056c4c3b360f522bd50d5563",
+      "immutable_read_version": "2050:58903226:425:1793824161991566017:1793824161991566017"
+    },
+    {
+      "path": "public-mutations/mutation-00005.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00005.intent.json",
+      "bytes": 624,
+      "sha256": "42724919a1207d3db3950cdf519db4bc9d5a9544df0192cbc3dd59d39c57d270",
+      "git_blob": "d45e31a5d59a78f3403ab78d3947f03bcdd80437",
+      "immutable_read_version": "2050:58903228:624:1793824161997312419:1793824161997312419"
+    },
+    {
+      "path": "public-mutations/mutation-00005.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00005.outcome.json",
+      "bytes": 451,
+      "sha256": "71b9da8076f9471ecf1a4860e214838b314b2df47e2308c09b7679d968311b21",
+      "git_blob": "410ef19e9366d295c4e6c4d283e8c95651ae39f0",
+      "immutable_read_version": "2050:58903229:451:1793824162034623649:1793824162034623649"
+    },
+    {
+      "path": "public-mutations/mutation-00006.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00006.intent.json",
+      "bytes": 624,
+      "sha256": "4f2b932d335a73d84039bb4427c43e2b22c6eb04cf40827f3a3caffb1776ef07",
+      "git_blob": "3f87c3fb853b81a4b5fece913450a6e435774d92",
+      "immutable_read_version": "2050:58903231:624:1793824162040469145:1793824162040469145"
+    },
+    {
+      "path": "public-mutations/mutation-00006.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00006.outcome.json",
+      "bytes": 451,
+      "sha256": "6f4772f4bcedc66d250f5586752a2a2fa8d35a08c95cc9f033a065dcebee9962",
+      "git_blob": "2473ed281ed2c12452a604bba94b33a7e086142b",
+      "immutable_read_version": "2050:58903232:451:1793824162081561089:1793824162081561089"
+    },
+    {
+      "path": "public-mutations/mutation-00007.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00007.intent.json",
+      "bytes": 443,
+      "sha256": "a8d80719ef8bcef1445d262d0087a16be1f4dfc9404fdaacdbd9e0b1ef95be52",
+      "git_blob": "1adc223e38aa43607485af521178daab3068ff81",
+      "immutable_read_version": "2050:58903257:443:1793824179022388563:1793824179022388563"
+    },
+    {
+      "path": "public-mutations/mutation-00007.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00007.outcome.json",
+      "bytes": 426,
+      "sha256": "e318659983af072f0dc71480c7ea308ebd57481546d93892421c53685a6aeea9",
+      "git_blob": "bc3efe49b04f58527882b722ca062a8bf7dc00f4",
+      "immutable_read_version": "2050:58903258:426:1793824179352627468:1793824179352627468"
+    },
+    {
+      "path": "public-mutations/mutation-00008.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00008.intent.json",
+      "bytes": 443,
+      "sha256": "ce5e4fa21bb89daa56e33d5a35b4dfb6914060acc798aff4e90597b800ca4146",
+      "git_blob": "70c41ba0a536732c76cae864bc3ad196b5cd8366",
+      "immutable_read_version": "2050:58903261:443:1793824179373955474:1793824179373955474"
+    },
+    {
+      "path": "public-mutations/mutation-00008.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00008.outcome.json",
+      "bytes": 425,
+      "sha256": "65863bbfae16c02b1515d7246e4b95340937ad25824077c8f0d3e471f9dba646",
+      "git_blob": "9426bd91fe2dc69f9f44522cbf32e8a32ecd979f",
+      "immutable_read_version": "2050:58903262:425:1793824179421874310:1793824179421874310"
+    },
+    {
+      "path": "public-mutations/mutation-00009.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00009.intent.json",
+      "bytes": 443,
+      "sha256": "efe9036dfeaacc5cb34bb55a3aad79f6d2e9e0cb599b7bcbd39d75e730367d3b",
+      "git_blob": "b8bd0c25381258632a9c125d6d813350df62f911",
+      "immutable_read_version": "2050:58903265:443:1793824179440407383:1793824179440407383"
+    },
+    {
+      "path": "public-mutations/mutation-00009.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00009.outcome.json",
+      "bytes": 424,
+      "sha256": "d179a22e93af914645971ce8e1590384ff0065f26fa0895ce61e44fd4701f93a",
+      "git_blob": "ffa805f2f11a31b225107e97b28d57ae1f3b9d0f",
+      "immutable_read_version": "2050:58903266:424:1793824179485527742:1793824179485527742"
+    },
+    {
+      "path": "public-mutations/mutation-00010.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00010.intent.json",
+      "bytes": 468,
+      "sha256": "a5392b85d6871d3a9399012cdb23ac589d4e3723e066de402e0a6bc24217ce92",
+      "git_blob": "b9abc8859c875bd530ac454057942235f9efa51b",
+      "immutable_read_version": "2050:58903514:468:1793824188729674261:1793824188729674261"
+    },
+    {
+      "path": "public-mutations/mutation-00010.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00010.outcome.json",
+      "bytes": 427,
+      "sha256": "9e2c204c8b28911ea5f0ec8f9741a7356f237f8d86cbeaa2e0c6829a6f1d8e57",
+      "git_blob": "bba94468c39c6fae592648179adf8ca223e9bbe2",
+      "immutable_read_version": "2050:58903519:427:1793824189491584461:1793824189491584461"
+    },
+    {
+      "path": "public-mutations/mutation-00011.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00011.intent.json",
+      "bytes": 451,
+      "sha256": "edeeaaf742db4f14893224fffa88be688ac49839e62ce14a586851de8a43783b",
+      "git_blob": "4c721d606bbe406dbdaef669d5ca58af7e26a34d",
+      "immutable_read_version": "2050:58903523:451:1793824192199328548:1793824192199328548"
+    },
+    {
+      "path": "public-mutations/mutation-00011.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00011.outcome.json",
+      "bytes": 427,
+      "sha256": "eab4b19fc8b88f5527871e6be03da40a1d593c8b502193ced48d9c2f20e4eb8b",
+      "git_blob": "cc81969beac22d3dd4fd79fd4fb0e8e87b4a765d",
+      "immutable_read_version": "2050:58903525:427:1793824192390033151:1793824192390033151"
+    },
+    {
+      "path": "public-mutations/mutation-00012.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00012.intent.json",
+      "bytes": 512,
+      "sha256": "c8313c45959438b3665b5ee15379dbb3940ef7e267c4b1ea251b7e416d477dd4",
+      "git_blob": "d30a92de2bdcff939fc95adeb7edf537e6796c19",
+      "immutable_read_version": "2050:58903528:512:1793824192671442597:1793824192671442597"
+    },
+    {
+      "path": "public-mutations/mutation-00012.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00012.outcome.json",
+      "bytes": 427,
+      "sha256": "b93bf3c9e5ce010a6374d30704621d11012ccb1be07a4292c986ffcbd36e29ce",
+      "git_blob": "4fe24f4ff0d6b59ee10a9c4806cdb6a5367b27f5",
+      "immutable_read_version": "2050:58903529:427:1793824192870153946:1793824192870153946"
+    },
+    {
+      "path": "public-mutations/mutation-00013.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00013.intent.json",
+      "bytes": 639,
+      "sha256": "30dea15db56737fad58f6b788162ab5892c29b1ca53cecaee30d9580ee1d8655",
+      "git_blob": "119ac43bb1d3793414525ce6f8497820c14eeacd",
+      "immutable_read_version": "2050:58903532:639:1793824193291154680:1793824193291154680"
+    },
+    {
+      "path": "public-mutations/mutation-00013.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00013.outcome.json",
+      "bytes": 454,
+      "sha256": "c03d960a132c2cc8d49645f4bd04b9f58703af13ef3484e08a548aa94824d200",
+      "git_blob": "ceafadccb31ab9656d963efe75c810b6a37263f6",
+      "immutable_read_version": "2050:58903533:454:1793824194602237210:1793824194602237210"
+    },
+    {
+      "path": "public-mutations/mutation-00014.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00014.intent.json",
+      "bytes": 639,
+      "sha256": "349d9a50b07d1d4d2d252362f9ab6d7e9b67177b0b01823bbd3b8699e937e106",
+      "git_blob": "c815e6b8e37057ee07813ac7b0193ab0a51c5d2b",
+      "immutable_read_version": "2050:58903536:639:1793824195217767752:1793824195217767752"
+    },
+    {
+      "path": "public-mutations/mutation-00014.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00014.outcome.json",
+      "bytes": 454,
+      "sha256": "62ac3ba6e9d1da52074e032e727d04d5b9e27b26ed841476edace693b17f561a",
+      "git_blob": "75409e45ddcd70a15f3e6653085257daabf19062",
+      "immutable_read_version": "2050:58903537:454:1793824196494642504:1793824196494642504"
+    },
+    {
+      "path": "public-mutations/mutation-00015.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00015.intent.json",
+      "bytes": 639,
+      "sha256": "2a9232c214bda0804d8bf3d80d025ead5063265a63744330c1aed72f7e386ce6",
+      "git_blob": "426d8d7f56e7ffd06a22ed63bea3b997e09eb56b",
+      "immutable_read_version": "2050:58903540:639:1793824196971225395:1793824196971225395"
+    },
+    {
+      "path": "public-mutations/mutation-00015.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00015.outcome.json",
+      "bytes": 454,
+      "sha256": "186368b3cd1a7804887fb352c3d62f45055046617ed9a6bda9c0ba2e5c9e95e7",
+      "git_blob": "447c82ec68bd53c75098a058bd569532e7de778d",
+      "immutable_read_version": "2050:58903541:454:1793824198548559782:1793824198548559782"
+    },
+    {
+      "path": "public-mutations/mutation-00016.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00016.intent.json",
+      "bytes": 639,
+      "sha256": "b58141a213ee17a0531184706fe935596b5c0b62f69ee5e212e3e560b0b87371",
+      "git_blob": "50465e963cbc4b18612967c19907042d86acfc9e",
+      "immutable_read_version": "2050:58903545:639:1793824198948190272:1793824198948190272"
+    },
+    {
+      "path": "public-mutations/mutation-00016.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00016.outcome.json",
+      "bytes": 454,
+      "sha256": "bc5d75b890587ecf2ccb12d5f0992060f7e2d9acd8a2b8799953dc0341cc9ea5",
+      "git_blob": "db4772140f129a7688df2381436e76d458ff3e08",
+      "immutable_read_version": "2050:58903548:454:1793824200563672857:1793824200563672857"
+    },
+    {
+      "path": "public-mutations/mutation-00017.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00017.intent.json",
+      "bytes": 639,
+      "sha256": "9f4167de8f7e111e53ee06d0c476eb0dd068cbc29d8764a22fa0eea658dbdaec",
+      "git_blob": "cd1826a7ae74d477cec8f348e5d970dff63c97d3",
+      "immutable_read_version": "2050:58903551:639:1793824200972579345:1793824200972579345"
+    },
+    {
+      "path": "public-mutations/mutation-00017.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00017.outcome.json",
+      "bytes": 454,
+      "sha256": "574717911868c77fcc083054f1bb7ea8890701e805427163f541c567d78c97be",
+      "git_blob": "28dc2d2fc8484f52288bf757742d5fc52ca0a615",
+      "immutable_read_version": "2050:58903552:454:1793824202961354794:1793824202961354794"
+    },
+    {
+      "path": "public-mutations/mutation-00018.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00018.intent.json",
+      "bytes": 639,
+      "sha256": "26bbd766dbc7b592d625ea841412ce7d28e73b962587356b4f3272213e235430",
+      "git_blob": "a81f637d31b74891cb42bda33a98ff9a11900b6b",
+      "immutable_read_version": "2050:58903555:639:1793824203545340310:1793824203545340310"
+    },
+    {
+      "path": "public-mutations/mutation-00018.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00018.outcome.json",
+      "bytes": 454,
+      "sha256": "057949be71785aa452dc9d7c1f8cf60c614fd1551889b4022acfc89d5c4440c0",
+      "git_blob": "ce94f6a4cf84b72fe5210c2bba010a51e585871c",
+      "immutable_read_version": "2050:58903556:454:1793824205369992269:1793824205369992269"
+    },
+    {
+      "path": "public-mutations/mutation-00019.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00019.intent.json",
+      "bytes": 638,
+      "sha256": "8b980be207705dbed205714cd0b34020c1da6b83c4460d4cd5bfb70f4f9e6903",
+      "git_blob": "bb6b0e4d7b16d11d6a95b90abddce9906c8345e3",
+      "immutable_read_version": "2050:58903559:638:1793824205806203650:1793824205806203650"
+    },
+    {
+      "path": "public-mutations/mutation-00019.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00019.outcome.json",
+      "bytes": 454,
+      "sha256": "85e492861247d621e99d7f37d6e2d145bb5022f33855ce1120a2c8e2520215b0",
+      "git_blob": "d8a398994c7a57b26d2afd1872c7ccbc430ceef4",
+      "immutable_read_version": "2050:58903560:454:1793824208084287993:1793824208084287993"
+    },
+    {
+      "path": "public-mutations/mutation-00020.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00020.intent.json",
+      "bytes": 640,
+      "sha256": "51776af2ef0db44faae5adaad343d72bf5823d0f4dec6dbbaf5067b4ce6faf07",
+      "git_blob": "dac92b484ac99a1acf9241768cc711998a853099",
+      "immutable_read_version": "2050:58903563:640:1793824208883331209:1793824208883331209"
+    },
+    {
+      "path": "public-mutations/mutation-00020.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00020.outcome.json",
+      "bytes": 455,
+      "sha256": "7a7bf92e4394072192ad677f3a1348ae633df8e3458e2e7155011e5b42f443af",
+      "git_blob": "be18f6d008cca7db843b5ea61b3896a708696f2a",
+      "immutable_read_version": "2050:58903564:455:1793824210904856750:1793824210904856750"
+    },
+    {
+      "path": "public-mutations/mutation-00021.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00021.intent.json",
+      "bytes": 641,
+      "sha256": "eb79bdc35eb997057ddcf85bd93e9b5f55be0a0084c044b6538bf43e564b6ff7",
+      "git_blob": "37585daf595bc6795d44297b30839008c5dca9bd",
+      "immutable_read_version": "2050:58903567:641:1793824211503641958:1793824211503641958"
+    },
+    {
+      "path": "public-mutations/mutation-00021.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00021.outcome.json",
+      "bytes": 455,
+      "sha256": "721f39707fe7f6b9e1f9e0f3d2870a515e96be26594d98abed29cebca3101f8f",
+      "git_blob": "1d28896112cdd94666c56c1e92369e485a0e95bb",
+      "immutable_read_version": "2050:58903568:455:1793824213926225024:1793824213926225024"
+    },
+    {
+      "path": "public-mutations/mutation-00022.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00022.intent.json",
+      "bytes": 641,
+      "sha256": "28b80f250daa02fb314ac7d06f6ca9b05565ff51a46f279117a838ddcddee8cc",
+      "git_blob": "bb52296fa6af113003f248db2ce0903314b166b8",
+      "immutable_read_version": "2050:58903571:641:1793824214523166207:1793824214523166207"
+    },
+    {
+      "path": "public-mutations/mutation-00022.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00022.outcome.json",
+      "bytes": 455,
+      "sha256": "207bffb83029660082365bfb997fe168a2baab60fa0aea07009bd98850f6282e",
+      "git_blob": "d692a6b456e77c378a52eb76ed4c1d9e75905bd0",
+      "immutable_read_version": "2050:58903572:455:1793824216866278873:1793824216866278873"
+    },
+    {
+      "path": "public-mutations/mutation-00023.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00023.intent.json",
+      "bytes": 641,
+      "sha256": "3fe4f3cab60f57ca3fb0b7b30d505d22cdc0464229e1234c2040272e32e482ba",
+      "git_blob": "18ee0dfe456e592d5f88bb8246ba264631a375aa",
+      "immutable_read_version": "2050:58903575:641:1793824217782437654:1793824217782437654"
+    },
+    {
+      "path": "public-mutations/mutation-00023.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00023.outcome.json",
+      "bytes": 454,
+      "sha256": "48b8a03485b4fc6c72f6f7dd4b26f094384cf0d14d5da4f973c3986fc3ea2ac1",
+      "git_blob": "d045c77ea561d063068ff7d0b7f21375fb7bf1b8",
+      "immutable_read_version": "2050:58903576:454:1793824220366456707:1793824220366456707"
+    },
+    {
+      "path": "public-mutations/mutation-00024.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00024.intent.json",
+      "bytes": 641,
+      "sha256": "21f0ab2f5988c3514fc2ed55ce5b56c193771aa46b40ec9bff50cbbccac923a4",
+      "git_blob": "e0f81711fecc8ee7c8784de7c93a402e6748ac8c",
+      "immutable_read_version": "2050:58903579:641:1793824221102607315:1793824221102607315"
+    },
+    {
+      "path": "public-mutations/mutation-00024.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00024.outcome.json",
+      "bytes": 455,
+      "sha256": "7661ae292b7c5341483130f2b8aac4e3dba24221f58fe39cf0da4824fd34abe1",
+      "git_blob": "dccc9d69ff0b8f7907450be7776dc3331b3804e8",
+      "immutable_read_version": "2050:58903580:455:1793824223670946341:1793824223670946341"
+    },
+    {
+      "path": "public-mutations/mutation-00025.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00025.intent.json",
+      "bytes": 640,
+      "sha256": "a368ddac55a425bf4e85fc0073c12bf7827a327d62d6b15c93bf4532bea7aadb",
+      "git_blob": "08344dc8a281f149ca1320acba426aa4ffe32304",
+      "immutable_read_version": "2050:58903583:640:1793824224268355725:1793824224268355725"
+    },
+    {
+      "path": "public-mutations/mutation-00025.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00025.outcome.json",
+      "bytes": 455,
+      "sha256": "6e3213476b25866e10782e479f17d5d5b5e4aa78274ee042c3e9b755597fbe7c",
+      "git_blob": "66c9e2bd5ef2020effb25acaa7d8a660d3c393c8",
+      "immutable_read_version": "2050:58903584:455:1793824227369955696:1793824227369955696"
+    },
+    {
+      "path": "public-mutations/mutation-00026.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00026.intent.json",
+      "bytes": 641,
+      "sha256": "5b2fe862c24336e170636141b9180a33274af72fef7cbb51092735cf3f6ad00b",
+      "git_blob": "6c342acd6a1939684dd0fcc860a1fc74c227393a",
+      "immutable_read_version": "2050:58903587:641:1793824228042032535:1793824228042032535"
+    },
+    {
+      "path": "public-mutations/mutation-00026.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00026.outcome.json",
+      "bytes": 455,
+      "sha256": "f060ad1e2417f3a7d2ab713e1bab8586d240197f3c6405bd4084432dd831f5fc",
+      "git_blob": "1fdebcc805213005f2582d5428607f80ccb75a68",
+      "immutable_read_version": "2050:58903588:455:1793824231010204283:1793824231010204283"
+    },
+    {
+      "path": "public-mutations/mutation-00027.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00027.intent.json",
+      "bytes": 641,
+      "sha256": "a7ca1c16f13765a3240639b27b6cbe5213f02dfc0d704dc46dce3ca9243c56b8",
+      "git_blob": "3c03bcf724e83fb52041ab0c880eee34efa01b96",
+      "immutable_read_version": "2050:58903591:641:1793824231521193423:1793824231521193423"
+    },
+    {
+      "path": "public-mutations/mutation-00027.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00027.outcome.json",
+      "bytes": 455,
+      "sha256": "11082d98417be79d7f3ba9c0452c8d8f72cc95abe9cf4e49830788b9cbd51666",
+      "git_blob": "cf3b6872c6d4737545900099bbdbcafb5565094e",
+      "immutable_read_version": "2050:58903592:455:1793824234617981974:1793824234617981974"
+    },
+    {
+      "path": "public-mutations/mutation-00028.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00028.intent.json",
+      "bytes": 640,
+      "sha256": "9177891b32ba014cb6d934cbd9044cbd9c10e8752d33088c48c4f4fe3cbc3e0c",
+      "git_blob": "669e21b4268fef97894800aabd57bdaff052638a",
+      "immutable_read_version": "2050:58903595:640:1793824235128911457:1793824235128911457"
+    },
+    {
+      "path": "public-mutations/mutation-00028.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00028.outcome.json",
+      "bytes": 455,
+      "sha256": "dc5c81e9726be78b4c1bc4dd9fe4257be42d5d5e74630f48e9ccc2f4469d40fd",
+      "git_blob": "27adfa54d3619873d67461194e0aa2f8d3bae7a7",
+      "immutable_read_version": "2050:58903596:455:1793824238388484974:1793824238388484974"
+    },
+    {
+      "path": "public-mutations/mutation-00029.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00029.intent.json",
+      "bytes": 641,
+      "sha256": "a7332327ba6231e4c1990ffc509aa722758027d63d1088684cd04632eab1e04e",
+      "git_blob": "fa9e3aa3d0105335a21f10f57adcc4ed5762b7d3",
+      "immutable_read_version": "2050:58903599:641:1793824238974416154:1793824238974416154"
+    },
+    {
+      "path": "public-mutations/mutation-00029.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00029.outcome.json",
+      "bytes": 455,
+      "sha256": "f20d99c75b27856b256ef12e8e64601e945ea36443281ae7015f5dbed434402b",
+      "git_blob": "6cc81d90d5db46e9609467c05c8cebd930ec5b8d",
+      "immutable_read_version": "2050:58903600:455:1793824242182672570:1793824242182672570"
+    },
+    {
+      "path": "public-mutations/mutation-00030.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00030.intent.json",
+      "bytes": 513,
+      "sha256": "4bf41e38c16472ba8e9ba6a636d3e553f84623f6267ca07a6fbb7de90607604c",
+      "git_blob": "e7325fc81d99f0ca910d3235198b1bee7b30226c",
+      "immutable_read_version": "2050:58903605:513:1793824251248811354:1793824251248811354"
+    },
+    {
+      "path": "public-mutations/mutation-00030.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00030.outcome.json",
+      "bytes": 428,
+      "sha256": "0c6f716d531197e8985e51bcec940a3bd91c401fdd7db1120594513899df58cc",
+      "git_blob": "047c9ba06e8f177a9289a156766c3c70132d2953",
+      "immutable_read_version": "2050:58903606:428:1793824254563890170:1793824254563890170"
+    },
+    {
+      "path": "public-mutations/mutation-00031.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00031.intent.json",
+      "bytes": 513,
+      "sha256": "5e511482ffccf0cd0a06f735be6dc2bd8b3a0053953e9dd265d4e456f837aff4",
+      "git_blob": "aefc8eb1664984624eddb3db17a9bb1b65f7161a",
+      "immutable_read_version": "2050:58903609:513:1793824254834119269:1793824254834119269"
+    },
+    {
+      "path": "public-mutations/mutation-00031.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00031.outcome.json",
+      "bytes": 427,
+      "sha256": "8df1d392f466436b036cbb3d956a9c1326b7f6fd69aee48615a9b0ba2987f278",
+      "git_blob": "dc9278fe25cb1157df4ba1594812187127d278cb",
+      "immutable_read_version": "2050:58903610:427:1793824258220471204:1793824258220471204"
+    },
+    {
+      "path": "public-mutations/mutation-00032.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00032.intent.json",
+      "bytes": 649,
+      "sha256": "a5994106f63d4e97ecbc1e2d209e5b2f191dc0db26e74f44b0a54619c0d9f078",
+      "git_blob": "2b4737f35a284057172d81a1b5458e8e86635223",
+      "immutable_read_version": "2050:58903614:649:1793824268820508318:1793824268820508318"
+    },
+    {
+      "path": "public-mutations/mutation-00032.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00032.outcome.json",
+      "bytes": 454,
+      "sha256": "8aee1a0b6b89330b6422aa23d4538ff9d377bb4f70224b2b3fea72ccc4c0a6f3",
+      "git_blob": "d53ccd2eecdaafa90e2268446a9bc9ddc09fff27",
+      "immutable_read_version": "2050:58903615:454:1793824273900148658:1793824273900148658"
+    },
+    {
+      "path": "public-mutations/mutation-00033.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00033.intent.json",
+      "bytes": 636,
+      "sha256": "aeaedd9a8d4600ad0f42812c32a91844a856eaaf6fbc9652e490f1ba3f6997ff",
+      "git_blob": "9d4ae0902409cb15eba68f3d5e8e75586e899c5f",
+      "immutable_read_version": "2050:58903625:636:1793824293675675916:1793824293675675916"
+    },
+    {
+      "path": "public-mutations/mutation-00033.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00033.outcome.json",
+      "bytes": 454,
+      "sha256": "b01d9f1e6a21e0f2b19255315bc2b4e295279affa251ba33a20461917605333f",
+      "git_blob": "2e75fef433c6a0ca52ccb9880b72be16507d543c",
+      "immutable_read_version": "2050:58903626:454:1793824295050112462:1793824295050112462"
+    },
+    {
+      "path": "public-mutations/mutation-00034.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00034.intent.json",
+      "bytes": 448,
+      "sha256": "05beee3239cf0009893b64faadb01a5f89aca5ff9d52dd9255906123910f6bee",
+      "git_blob": "39fbf0af678401dd1b51714e3702a985570b8770",
+      "immutable_read_version": "2050:58903636:448:1793824298340792654:1793824298340792654"
+    },
+    {
+      "path": "public-mutations/mutation-00034.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00034.outcome.json",
+      "bytes": 427,
+      "sha256": "288a9a002386d66b091ac94033b286935c5bf0aab5144d932424e53e9ae468a4",
+      "git_blob": "709c0e4c6560697ec3e39375dd26859707b94080",
+      "immutable_read_version": "2050:58903637:427:1793824301337680739:1793824301337680739"
+    },
+    {
+      "path": "public-mutations/mutation-00035.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00035.intent.json",
+      "bytes": 632,
+      "sha256": "4a8359f47e4a0a3e1aa4bee5af12a033c7c5139a55cb446184ece19b2ef8209c",
+      "git_blob": "fdd9978ea5dc29f33b17a3e16562de657dff0d68",
+      "immutable_read_version": "2050:58903647:632:1793824308746836905:1793824308746836905"
+    },
+    {
+      "path": "public-mutations/mutation-00035.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00035.outcome.json",
+      "bytes": 429,
+      "sha256": "208a636d0fe549ae779a1e9d4c34901c8b82fe80ec0bbc1836fedb7bba1f65fb",
+      "git_blob": "3f75e9235301b0a62817ae831cf1b768cf7c56e4",
+      "immutable_read_version": "2050:58903648:429:1793824322761179069:1793824322761179069"
+    },
+    {
+      "path": "public-mutations/mutation-00036.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00036.intent.json",
+      "bytes": 445,
+      "sha256": "7a36ae936711a29d8065372724aa074ce8acc0a9c42025669e91a6026f2285b9",
+      "git_blob": "2965d6c6108f7bd87dbeb62fe06cb7ef0c6a8339",
+      "immutable_read_version": "2050:58903659:445:1793824332846881568:1793824332846881568"
+    },
+    {
+      "path": "public-mutations/mutation-00036.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00036.outcome.json",
+      "bytes": 427,
+      "sha256": "b7ba338130de636b5c516207c86e2d69482b7c675b0e532589052a7d4b80364a",
+      "git_blob": "10dce3ef60a70ad48b16e8cdc56d5e6d037235a5",
+      "immutable_read_version": "2050:58903660:427:1793824333463504583:1793824333463504583"
+    },
+    {
+      "path": "public-mutations/mutation-00037.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00037.intent.json",
+      "bytes": 446,
+      "sha256": "97cf8dcc720d7a14344136c4605c7ab8a3ef38467788ad76700e1f360e49773d",
+      "git_blob": "e097ed527e5a23d90b3ae3e4a0a6a26b22b1f451",
+      "immutable_read_version": "2050:58903662:446:1793824333638367876:1793824333638367876"
+    },
+    {
+      "path": "public-mutations/mutation-00037.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00037.outcome.json",
+      "bytes": 427,
+      "sha256": "b4587cb33998c898fc515cde834adc0855eaf729ea00ff34a0633e716ce03b27",
+      "git_blob": "291a473a1d5a46cff76459dcd334c03bdc64b4f1",
+      "immutable_read_version": "2050:58903663:427:1793824333973683215:1793824333973683215"
+    },
+    {
+      "path": "public-mutations/mutation-00038.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00038.intent.json",
+      "bytes": 640,
+      "sha256": "36c9de8b868c4673fcc324dc051bfd8059dbbd63753962f4bb52aaf19c09bd4e",
+      "git_blob": "0a11110b393dab954a1340c3d5efd4bea74238b5",
+      "immutable_read_version": "2050:58903667:640:1793824338926577690:1793824338926577690"
+    },
+    {
+      "path": "public-mutations/mutation-00038.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00038.outcome.json",
+      "bytes": 454,
+      "sha256": "ee104553657ff993dc58d79e556de86eb4c8cabb9443c0ba2422747d2a82affe",
+      "git_blob": "6212074b69e893facdb86456752ac1ced8815702",
+      "immutable_read_version": "2050:58903668:454:1793824340268255654:1793824340268255654"
+    },
+    {
+      "path": "public-mutations/mutation-00039.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00039.intent.json",
+      "bytes": 453,
+      "sha256": "06d5bf65956ab0c17c438cef7b7e0f63d143437570cb943cd41347c4b63516bb",
+      "git_blob": "befed915c0d807814d18b6bfedf92919ca6ce222",
+      "immutable_read_version": "2050:58903685:453:1793824357435876998:1793824357435876998"
+    },
+    {
+      "path": "public-mutations/mutation-00039.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00039.outcome.json",
+      "bytes": 427,
+      "sha256": "34c62a9afce1e2b68e30c1189e8eedb4b7fcbe36c5fa9d9cb0804bcdae4f410a",
+      "git_blob": "2de645b76b7373d8ba3aea709d61127f97ea0bda",
+      "immutable_read_version": "2050:58903686:427:1793824358096255850:1793824358096255850"
+    },
+    {
+      "path": "public-mutations/mutation-00040.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00040.intent.json",
+      "bytes": 454,
+      "sha256": "83e5a3e759576311221cb34e5c90e4df47f7afcf0111b7bd6b188ed3750d69d0",
+      "git_blob": "55891f31ce877f99f20b2b3ada3981b6c6cc68e0",
+      "immutable_read_version": "2050:58903688:454:1793824358239524200:1793824358239524200"
+    },
+    {
+      "path": "public-mutations/mutation-00040.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00040.outcome.json",
+      "bytes": 427,
+      "sha256": "7a3b0bc4b4f41c5343ed210bfd337326ec5c5235f6667d46fdd3297220ed375a",
+      "git_blob": "8ee328b5840929b4d727ffb2fc0ac3028af8ed01",
+      "immutable_read_version": "2050:58903689:427:1793824358700037521:1793824358700037521"
+    },
+    {
+      "path": "public-mutations/mutation-00041.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00041.intent.json",
+      "bytes": 454,
+      "sha256": "36b98a928f844df418908bdbdb9831c1505dec64a2e3e3fe3f20a35c5e1bc88a",
+      "git_blob": "edc41b21cd435301014ba55805626edac57de56a",
+      "immutable_read_version": "2050:58903691:454:1793824358759406980:1793824358759406980"
+    },
+    {
+      "path": "public-mutations/mutation-00041.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00041.outcome.json",
+      "bytes": 427,
+      "sha256": "8d3434facc99be50d94d7ea1545259d40b3ae0de3e8c8a3517e078e5b2071b46",
+      "git_blob": "86900754f2c08ec6030af24d6f851af937bede4d",
+      "immutable_read_version": "2050:58903692:427:1793824359084260840:1793824359084260840"
+    },
+    {
+      "path": "public-mutations/mutation-00042.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00042.intent.json",
+      "bytes": 649,
+      "sha256": "1fac4a3da0b23fb53e52d9cd02eb65c5a2b2caa9cab6d2a875279851dcce5ee1",
+      "git_blob": "09e363e62a0d012ed872ca4046c1f68d0045ead9",
+      "immutable_read_version": "2050:58903697:649:1793824371131905835:1793824371131905835"
+    },
+    {
+      "path": "public-mutations/mutation-00042.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00042.outcome.json",
+      "bytes": 454,
+      "sha256": "9d2b180d10aba798f1a7ca99a97aa52092c64a0e0a01a317fe3dadaf96692a29",
+      "git_blob": "0bca39d58bdc6784592d7891c015f4443ce17e6d",
+      "immutable_read_version": "2050:58903698:454:1793824372632329311:1793824372632329311"
+    },
+    {
+      "path": "public-mutations/mutation-00043.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00043.intent.json",
+      "bytes": 456,
+      "sha256": "f8df53c695672be4aca42eac324dd7021f44385910cc3dd548eb8569bb93b754",
+      "git_blob": "953aa8ab02d0b3bc60a8ccb0c5397cae2855cee5",
+      "immutable_read_version": "2050:58903711:456:1793824385978407797:1793824385978407797"
+    },
+    {
+      "path": "public-mutations/mutation-00043.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00043.outcome.json",
+      "bytes": 427,
+      "sha256": "66bccbb01a106bdbf1e961eafba7f44a7c15b70c6f7d0f7fdf55b9107a18f573",
+      "git_blob": "51148f4ad274a7dd34c0f3939a3ec0c2e827bc16",
+      "immutable_read_version": "2050:58903712:427:1793824386559057300:1793824386559057300"
+    },
+    {
+      "path": "public-mutations/mutation-00044.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00044.intent.json",
+      "bytes": 456,
+      "sha256": "37b7aa10f905ab9cb020f5e02eab4b9fec389b1c9557b685a52d3c7568287a28",
+      "git_blob": "e02a02be2b6bc0e17d7d4ab165b31985b53b35dc",
+      "immutable_read_version": "2050:58903716:456:1793824388370497197:1793824388370497197"
+    },
+    {
+      "path": "public-mutations/mutation-00044.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00044.outcome.json",
+      "bytes": 427,
+      "sha256": "7fc882b90eb0f2d7ef2e87fe736c78fd1b293c0a3a5a8a98a9ba9c295ebf066f",
+      "git_blob": "efc288ec03376ef806b9a36978b8e2b47b2ef0b3",
+      "immutable_read_version": "2050:58903717:427:1793824388737595266:1793824388737595266"
+    },
+    {
+      "path": "public-mutations/mutation-00045.intent.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00045.intent.json",
+      "bytes": 455,
+      "sha256": "ff40f69e5cc32dc4fab2b18ac5fa4cd04c180802c208e91ca20b057f3fae7a5e",
+      "git_blob": "86bca11f5ac22c8edb1d325b5a05d500e66dee16",
+      "immutable_read_version": "2050:58903721:455:1793824390547257196:1793824390547257196"
+    },
+    {
+      "path": "public-mutations/mutation-00045.outcome.json",
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-direct98-r2/private-recovery/mutation-00045.outcome.json",
+      "bytes": 427,
+      "sha256": "ec641cbd2bdd0944d3305a2d081dceb846e2a05927cb500804a50eb329dbac64",
+      "git_blob": "1ac652253c8d960268307c3925457baceb81f657",
+      "immutable_read_version": "2050:58903722:427:1793824390886938189:1793824390886938189"
+    }
+  ]
+}

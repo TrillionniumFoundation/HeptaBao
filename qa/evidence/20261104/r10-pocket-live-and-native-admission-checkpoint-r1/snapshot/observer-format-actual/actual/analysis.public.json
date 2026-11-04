@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.phaseb-normal-observer.actual-format-analysis.v1",
+  "status": "passed",
+  "job_id": "1a1a85b6070-fc05-2e6d",
+  "root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-format-20261104-r1",
+  "authority_exit_code": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "timed_out": false,
+  "internal_elapsed_seconds": 0.03433593799127266,
+  "reported_stdout_elapsed_seconds": 0.03534646701882593,
+  "internal_total_limit_seconds": 50,
+  "per_formatter_limit_seconds": 10,
+  "remote_supervisor_limit_seconds": 60,
+  "actual_formatter_children": 1,
+  "actual_exit_codes": [
+    0
+  ],
+  "actual_stderr_bytes": 0,
+  "actual_children_reaped": true,
+  "children_shared_real_supervisor_group": true,
+  "same_format_output_as_reviewed_candidate": true,
+  "formatted": {
+    "bytes": 61578,
+    "sha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d",
+    "blob": "7bbd34e86039d0f640ac12a48cd81b2f836e600a"
+  },
+  "inputCarrier": {
+    "bytes": 63659,
+    "sha256": "8fb51a2965849cf327ba067e6dd447edefe0954923f8d4aa1b67e01aed60fa3d",
+    "blob": "7728d1a1e2864f9ebe057243e8f007b228d66ee7"
+  },
+  "canonical_input_file_identity_and_sha_before_after_lossless_equal": true,
+  "rustfmt_identity_and_sha_before_after_lossless_equal": true,
+  "whole_checkout_git_scan_performed": false,
+  "intended_integration_parent": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+  "format_context_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "format_context_is_integration_checkout": false,
+  "product_executed": false,
+  "compile_executed": false,
+  "source_branch_changed": false,
+  "old_b01_unknown_unchanged": true,
+  "new_product_runtime_qualified": false,
+  "original_file_payload": {
+    "bytes": 138060,
+    "sha256": "7db5dae42ee5179283f1b45261ebfb7fd1a1ab5df4cc371b786c010deaba19d9",
+    "operation_id": "da69e37855e068fc5bfbd9948d414f5b0eda757f4ebbfa3584e3313075d92c5c",
+    "pages": 9
+  }
+}

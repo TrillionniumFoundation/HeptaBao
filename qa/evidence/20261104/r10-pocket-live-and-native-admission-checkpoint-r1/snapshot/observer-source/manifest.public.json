@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.phaseb-fresh-ingress-observer-r1.manifest.v1",
+  "files": [
+    {
+      "path": "candidate/crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "bytes": 61578,
+      "sha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d",
+      "blob": "7bbd34e86039d0f640ac12a48cd81b2f836e600a"
+    },
+    {
+      "path": "native-fresh-ingress-failure-observer.review.diff",
+      "bytes": 3162,
+      "sha256": "b76f91a684305d452be25d6735b4ad2fc82ee33086dda33c890223a497e713a7",
+      "blob": "57bc167b34cf3ddc684b89893c347b0312aff9b4"
+    },
+    {
+      "path": "source-invariance.public.json",
+      "bytes": 1312,
+      "sha256": "d0561eb07eefb39db92e1b1e34ef5875e433092253acc6d6d166cde0a9129ba5",
+      "blob": "526045b02c15f8e58d50106ed892ef9b35e36b2e"
+    },
+    {
+      "path": "README.md",
+      "bytes": 8749,
+      "sha256": "0493a18b4c88a5cfed17bf088d6371c2767b681eb50847311dd97a02fba096da",
+      "blob": "bf188dfe8c9bdb0d5e7905c3a708cfb5d8445191"
+    },
+    {
+      "path": "public-static-reason-catalog.json",
+      "bytes": 2291,
+      "sha256": "294c109528e48fdaf0dfbaa0b7d74fb2d6a948fc32d608324f0a5b0a3f263f9e",
+      "blob": "98d85f9852fa3d964705b30dbea69c67eee81264"
+    }
+  ],
+  "source_only": true,
+  "product_behavior_fix_claimed": false,
+  "root_review_required": true,
+  "format_compile_runtime": false,
+  "old_phaseb_unknown_preserved": true
+}

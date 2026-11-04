@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.phaseb-normal-observer.build-dispatch-proposal.v1",
+  "status": "source_only_unbound_not_dispatchable",
+  "parent_commit": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+  "candidate_commit": null,
+  "candidate_tree": null,
+  "actual_formatted_source": {
+    "bytes": 61578,
+    "sha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d",
+    "blob": "7bbd34e86039d0f640ac12a48cd81b2f836e600a"
+  },
+  "host": "rog",
+  "executable": "/usr/bin/python3",
+  "python_prefix": [
+    "-I",
+    "-S",
+    "-B"
+  ],
+  "root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1",
+  "source": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source",
+  "output": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1",
+  "toolchain": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin",
+  "cargo_home": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+  "target": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target",
+  "groups_relative_path": "groups.json",
+  "groups_bytes": 6249,
+  "groups_sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+  "groups_git_blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f",
+  "original_normal_profile": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_HOME": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_PANIC": "unwind",
+    "CARGO_TARGET_DIR": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target",
+    "CARGO_TERM_COLOR": "never",
+    "PATH": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin:/usr/bin:/bin",
+    "RUSTFLAGS": ""
+  },
+  "original_test_count": 44,
+  "original_group_limits_seconds": 600,
+  "original_build_limits_seconds": {
+    "release": 1800,
+    "libtest": 3600,
+    "listing": 30
+  },
+  "supervisor_limit_seconds": null,
+  "supervisor_limit_reason": "Use the reviewed actual combined build launcher cap; this preparation does not invent an existing value.",
+  "idempotency_key_proposal": "heptabao-phaseb-native-ingress-observer-normal44-20261104-r1",
+  "shared_target_exclusive_lock_required": true,
+  "do_not_change_running_pr_branch": true,
+  "actual_source_staging": false,
+  "actual_build": false,
+  "actual_product": false
+}

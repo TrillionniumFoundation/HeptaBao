@@ -1,0 +1,212 @@
+{
+  "schema": "heptabao.phaseb-r3.b01-admission-source-diagnosis.v1",
+  "candidate_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "candidate_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "actual_observation": {
+    "original_cli_exit": 2,
+    "original_cli_stderr_sha256": "bce4e0993df8aa57859efc05b509ad6ea36d8f2d0df9dd23d63ae3640e537df8",
+    "public_static_error": "native HA committed root is unavailable",
+    "node1_ordinary_timing": {
+      "elapsed_us": 16501,
+      "entry_remaining_ns": 14996924359,
+      "exit_remaining_ns": 14980422592,
+      "phases": []
+    },
+    "native_sync_failure_prefix_count_all_three": 0
+  },
+  "proved_boundaries": [
+    "The normal ordinary failure timing is emitted by begin_request_before for a Complete(503) admission response; an External result supplies no status and emits no failure timing.",
+    "http_snapshot::execute returns Complete before executing the archive transfer and before reacquiring the final writer. The B01 observed failure therefore precedes the external export/finalization phase.",
+    "The recorded ordinary operation deadline retained about 14.98 seconds; this observation does not prove every inner ReadIndex or closure deadline was live.",
+    "The snapshot ingress transport flag is set before begin_request_before and restored afterwards. Neither NativeFreshIngressBinding::check nor NativeIngressSelectionPermit::check_initial_read tests that flag. No direct flag-vs-permit contradiction is established."
+  ],
+  "inferred_not_proved": [
+    "A fresh-ingress path is strongly supported by the absence of the unconditional ordinary-reader failure observer and empty request buckets. This absence is not a substitute for a captured inner error or a branch receipt.",
+    "The existing logs cannot distinguish permission/root/deadline binding rejection, storage operation rejection, real ReadIndex rejection, enrollment rejection, same-root closure/repair/reselection failure, changed-root recovery, or final witness rejection."
+  ],
+  "preserved_limits": {
+    "actual_alpn_proven": false,
+    "exact_inner_error_proven": false,
+    "old_outcome_unknown_unchanged": true,
+    "old_final_input_fence_error_unchanged": true,
+    "archive_export_success": false,
+    "restore_attempted": false,
+    "new_product_execution": false,
+    "new_snapshot_or_replay": false,
+    "private_log_raw_published": false
+  },
+  "source_anchors": [
+    {
+      "key": "service",
+      "path": "crates/heptabao-server/src/service.rs",
+      "ranges": [
+        {
+          "first": 2258,
+          "last": 2317,
+          "claim": "begin_request_before: timing creates health/ordinary class; emits >=500 only for Complete, not External",
+          "exact_excerpt_sha256": "2b8a39a35cdc088e64d268f93114b3bf9def2966ef3ac1875002f3ecdb37c2d4"
+        },
+        {
+          "first": 4273,
+          "last": 4295,
+          "claim": "leader ingress before actor authorization",
+          "exact_excerpt_sha256": "7f6da41acc1589b680935640c5880403eedd6c27ad6a846619cda3b3a798ff17"
+        },
+        {
+          "first": 10538,
+          "last": 10677,
+          "claim": "fresh permit selection and observed error -> generic503",
+          "exact_excerpt_sha256": "3bfcfb6e6dced65e0790c9081f449637ca6a1e38c04e1da1a6f6f35f1c4beaed"
+        }
+      ],
+      "meta": {
+        "path": "crates/heptabao-server/src/service.rs",
+        "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+        "bytes": 518245,
+        "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2"
+      }
+    },
+    {
+      "key": "service_snapshot_transfer",
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "ranges": [
+        {
+          "first": 374,
+          "last": 462,
+          "claim": "native snapshot ingress flag/clock around ordinary begin_request_before",
+          "exact_excerpt_sha256": "97b9ba5055878b8a12e559885e49006ccbafaaa301c9a7a70bcb0344b4b7c952"
+        },
+        {
+          "first": 119,
+          "last": 159,
+          "claim": "pending plan/source custody fields; outside this admission failure",
+          "exact_excerpt_sha256": "458344b7a38369dbbe89456e179a9a92d9f0bf5c3f67cd370e626ce7fc6cef63"
+        }
+      ],
+      "meta": {
+        "name": "service_snapshot_transfer",
+        "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+        "bytes": 50683,
+        "sha256": "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9",
+        "lines": 1218
+      }
+    },
+    {
+      "key": "http_snapshot",
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "ranges": [
+        {
+          "first": 338,
+          "last": 396,
+          "claim": "Complete returns before execute_snapshot_transfer and final writer",
+          "exact_excerpt_sha256": "5e62c58c7dac9357eb54fa46780116b71b6f70ea620ebd2a74d3f1999bf97d39"
+        }
+      ],
+      "meta": {
+        "name": "http_snapshot",
+        "blob": "4a5743d757b79493400b712bf57a5fa552b50bda",
+        "bytes": 35170,
+        "sha256": "1cc98a78d6a037a47456b7c6b93dc13647a261e8217f12a6a4edff3d91fe41e2",
+        "lines": 886
+      }
+    },
+    {
+      "key": "native_runtime",
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "ranges": [
+        {
+          "first": 333,
+          "last": 449,
+          "claim": "normal failure-only observer and bounded static fields",
+          "exact_excerpt_sha256": "7f1c73a3e02ec85eeb6c41d0c3699a748b1e999abe0d76e079d66749a734d5e4"
+        },
+        {
+          "first": 681,
+          "last": 775,
+          "claim": "fresh ingress has unobserved Err paths",
+          "exact_excerpt_sha256": "342f48ca4765863f55472f582e2b457344ea0ae4408415a8ac4e59d2da61f187"
+        },
+        {
+          "first": 1088,
+          "last": 1212,
+          "claim": "ordinary committed reader creates failure observer on every invocation",
+          "exact_excerpt_sha256": "54f1a13e51bd43fe6fa962b1a30082de9e378d4946d29a9db026184e4ac3911d"
+        }
+      ],
+      "meta": {
+        "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+        "blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000",
+        "bytes": 60854,
+        "sha256": "620f2e70342971394a8e70696ebaef3740d0f15d8ee186088666d8dba27b425e"
+      }
+    },
+    {
+      "key": "writer",
+      "path": "crates/heptabao-server/src/service_native_v6_writer.rs",
+      "ranges": [
+        {
+          "first": 38,
+          "last": 99,
+          "claim": "binding check contains no native_snapshot_transport veto",
+          "exact_excerpt_sha256": "b1f825f2ec4e5c3cc764e206561ec09d1a70ff86f25f876c847c0195881f3645"
+        },
+        {
+          "first": 179,
+          "last": 226,
+          "claim": "fresh request binding consumed once",
+          "exact_excerpt_sha256": "85ca46a625239449803b363537abb07f6a83e6aeefeff4347ad2a08b72a97f98"
+        }
+      ],
+      "meta": {
+        "bytes": 129750,
+        "sha256": "9690f3658febcab99bd36b266868f25c29d3ba65c2dcb97df5918430b5cbcf11",
+        "blob": "713b6906ad6a566fb6e5580b28083e2292b53565",
+        "path": "crates/heptabao-server/src/service_native_v6_writer.rs"
+      }
+    },
+    {
+      "key": "ingress",
+      "path": "crates/heptabao-server/src/service_native_v6_ha_ingress.rs",
+      "blob": "ebf24ee641caa06874d54c963b8dc80919a64c57",
+      "size": 4781,
+      "sha256": "67b95378b3fca9b9cdecb5ddb09bbf1aa3e7b12a11500b0e7c2293c778964388",
+      "whole_source_in_canonical_blob": true,
+      "claims": [
+        "capture/check and check_initial_read neither inspect nor reject native_snapshot_transport",
+        "check_initial_read binds exact original root/deadline/current scope and consumes initial_read_started exactly once"
+      ]
+    },
+    {
+      "key": "reselection",
+      "path": "crates/heptabao-ha-service/src/v6_ingress_reselection.rs",
+      "blob": "d3789a93c8bc3a4678e831c886315527ec086902",
+      "size": 9898,
+      "sha256": "90352982a7ec464405447a1174b5e0df22c7d98dffc682c6447ca5aa1c6928bd",
+      "whole_source_in_canonical_blob": true,
+      "claims": [
+        "superseded requires complete historical DATA closure then actual fresh quorum read plus old witness refusal",
+        "NeedsOriginalRepair retains first original repair; Other refusal/partial physical pass fails closed"
+      ]
+    }
+  ],
+  "short_callsite_excerpts": [
+    {
+      "source": "service.rs",
+      "first": 2300,
+      "last": 2316,
+      "text": "        let execution = if forwarded {\n            self.begin_forwarded(request)\n        } else {\n            self.begin_request(request)\n        };\n        #[cfg(feature = \"native-v6-ha\")]\n        if let Some(timing) = timing {\n            timing.finish(match &execution {\n                RequestExecution::Complete(response) => Some(response.status),\n                RequestExecution::External(_) => None,\n            });\n        }\n        execution\n    }\n\n    /// Start a network request while holding the Service writer. A database\n    /// provider effect may be returned as an owned external plan after its\n"
+    },
+    {
+      "source": "service_snapshot_transfer.rs",
+      "first": 447,
+      "last": 459,
+      "text": "        let started = Instant::now();\n        let now = SystemTime::now()\n            .duration_since(UNIX_EPOCH)\n            .unwrap_or(Duration::ZERO);\n        let previous_clock = self.native_snapshot_clock.replace((started, now));\n        let previous = self.native_snapshot_transport;\n        self.native_snapshot_transport = true;\n        let result = self.begin_request_before(request, deadline, false);\n        self.native_snapshot_transport = previous;\n        self.native_snapshot_clock = previous_clock;\n        NativeSnapshotAdmission::Execute(result)\n    }\n\n"
+    },
+    {
+      "source": "http_snapshot.rs",
+      "first": 360,
+      "last": 374,
+      "text": "        }\n    };\n    let mut pending = match execution {\n        RequestExecution::Complete(response) => {\n            return rejected_upload_response(reader, native.body, deadline, response);\n        }\n        RequestExecution::External(pending) => pending,\n    };\n    #[cfg(feature = \"native-v6-storage\")]\n    let lossless_download = pending.has_lossless_download();\n    let (observation, file) = match BodyReader::new(reader, native.body, deadline) {\n        Ok(mut reader) => pending.execute_snapshot_transfer(&mut reader),\n        Err(_) => (\n            crate::service::ExternalEffectResult::SnapshotTransfer(Err(Response::error(\n                400,\n"
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "schema": "heptabao.r10.pocket-artifact-transfer-terminal-review.v1",
+  "status": "passed_artifact_transfer_only",
+  "job_id": "1a1a853acab-fc05-2e55",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "authority": {
+    "exit_code": 0,
+    "complete": true,
+    "durable": true,
+    "timed_out": false,
+    "terminal_publication_confirmed": true
+  },
+  "inner_seconds": {
+    "sender_ssh": 180,
+    "receiver_alarm": 180,
+    "cleanup": 10,
+    "git": 15
+  },
+  "new_supervisor_outer_seconds": 360,
+  "elapsed_sender_seconds": 3.033029011,
+  "unknown": false,
+  "automatic_retry": false,
+  "source_and_trust_before_after_exact": true,
+  "receiver_response_validated": true,
+  "terminal_receipt_sha_matches_actual_raw": true,
+  "receiver_receipt_sha_matches_actual_raw": true,
+  "target_independent_file_info_count": 3,
+  "all_target_content_mode_owner_nlink_versions_exact": true,
+  "all_owned_ssh_reaped_and_group_empty": true,
+  "transfer_scope": "Exactly one normal server and two original public build receipts. Source receipts preserved byte-for-byte; target normal receipt is named normal-build.result.public.json.",
+  "source_review_tree": "78ce26df5cc8aee2751b485c89f97c8db06cda98",
+  "inert_actual_tree": "2f31734bed9ce775a5b70ace3cddba2dc4f6fc9f",
+  "source_runtime_started": false,
+  "prepare_started": false,
+  "preflight_started": false,
+  "consumer_started": false,
+  "provider_called": false,
+  "production_changed": false,
+  "qualification_limit": "Artifact custody only; no current consumer/backup migration qualification.",
+  "preserved_receiver_bound_note": "The inherited receiver alarm is cancelled before final receipt publication; success also requires actual outer authority and the complete parent/receiver receipts. No new end-to-end 180-second claim.",
+  "core_files": [
+    {
+      "path": "sender-result.public.json",
+      "bytes": 5713,
+      "sha256": "dcc39a49ee0347a29c7b03bc529078542ccd32a1bf1adcc8c78eeb7da2c3e4d9",
+      "git_blob": "3b039f441b01a19588b4d57efaff1edc31691f24",
+      "mode": "100644"
+    },
+    {
+      "path": "receiver-result.public.json",
+      "bytes": 2393,
+      "sha256": "2760c60e51087aebe7123a559b320574c4c054a2143b3e49b0659973d05dbe12",
+      "git_blob": "404f0508c073181728e1ef6f5833c39fdd865e30",
+      "mode": "100644"
+    },
+    {
+      "path": "authority.public.json",
+      "bytes": 729,
+      "sha256": "be519651db9eb448c21dee4250c0ec0e51abdcfd3905a5b048c83eb234db4ec9",
+      "git_blob": "08daa65eaca9592c5f988d315f6f6eb78527130c",
+      "mode": "100644"
+    },
+    {
+      "path": "terminal.stdout",
+      "bytes": 717,
+      "sha256": "8bb19d46ba940d9b96df15646f07bbb5096ae601364f3296d5ccd0b6c8c9ecbe",
+      "git_blob": "6de483696a62447600a631da8a3730eb86cabd46",
+      "mode": "100644"
+    },
+    {
+      "path": "terminal.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "mode": "100644"
+    },
+    {
+      "path": "target-file-info-0.public.json",
+      "bytes": 512,
+      "sha256": "6bdbc492fbb2991fda3dcbe26a38e760f5146dec7f8c41552e3bc8e413744afb",
+      "git_blob": "6ef879ceb2b4b1889ba3759f2f89c80a9dcf9889",
+      "mode": "100644"
+    },
+    {
+      "path": "target-file-info-1.public.json",
+      "bytes": 509,
+      "sha256": "7b13476af9a037b71db21e2f0e5a2facf9f0161502dcea871571ac7eb3cbc74e",
+      "git_blob": "8f88884b9aa61bc0a21c7161e65b8cc8c11d490f",
+      "mode": "100644"
+    },
+    {
+      "path": "target-file-info-2.public.json",
+      "bytes": 518,
+      "sha256": "89407f1292c796c2bb8a1f948423b246e1df1d8169ab1dfdd5f6328984a15ced",
+      "git_blob": "2bddf00cc62f5246e38b80a8d493254ae6d753f8",
+      "mode": "100644"
+    }
+  ]
+}

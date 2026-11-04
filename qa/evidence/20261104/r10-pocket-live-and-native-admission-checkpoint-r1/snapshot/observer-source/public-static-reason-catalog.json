@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.native-ingress-static-reason-catalog.v1",
+  "candidate_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_only": true,
+  "actual_b01_inner_reason_known": false,
+  "entries": [
+    {
+      "literal": "native ingress selection permission is not fresh or bound",
+      "sha256": "77205535bd0d13d26b42791cd35de5b53878b32583695f40b97b0b027faf6683",
+      "path": "service_native_v6_ha_ingress.rs",
+      "canonical_blob": "ebf24ee641caa06874d54c963b8dc80919a64c57",
+      "scope": "Exact public source literal only; no claim it occurred in B01."
+    },
+    {
+      "literal": "native HA was not explicitly enabled",
+      "sha256": "0d2201010d7a71978c2f6c942386829ea0f01ce47437dabdea2cc89ce80c00b8",
+      "path": "ha_native_v6_runtime.rs",
+      "canonical_blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000",
+      "scope": "Exact public source literal only; no claim it occurred in B01."
+    },
+    {
+      "literal": "HA process is shut down",
+      "sha256": "688d5f6cc477a7f747820313b3fdff8297982464a1b90973cc7e63cc017519cb",
+      "path": "ha_native_v6_runtime.rs",
+      "canonical_blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000",
+      "scope": "Exact public source literal only; no claim it occurred in B01."
+    },
+    {
+      "literal": "native ciphertext store absent",
+      "sha256": "e28889c0d58b81b8debbfab2a8a4025435c7d862c39039b611196bd452e9be1d",
+      "path": "ha_native_v6_runtime.rs",
+      "canonical_blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000",
+      "scope": "Exact public source literal only; no claim it occurred in B01."
+    },
+    {
+      "literal": "native HA runtime absent",
+      "sha256": "c3967030fc2dcc180f617394a14584bbfddd425e5988ab48bb3ff5873d597f22",
+      "path": "ha_native_v6_runtime.rs",
+      "canonical_blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000",
+      "scope": "Exact public source literal only; no claim it occurred in B01."
+    },
+    {
+      "literal": "native HA read belongs to a different process instance",
+      "sha256": "3c298c7ed6e540fb8e057e04afff96625f82780dbba33107d817e441d3fec752",
+      "path": "ha_native_v6_runtime.rs",
+      "canonical_blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000",
+      "scope": "Exact public source literal only; no claim it occurred in B01."
+    }
+  ]
+}

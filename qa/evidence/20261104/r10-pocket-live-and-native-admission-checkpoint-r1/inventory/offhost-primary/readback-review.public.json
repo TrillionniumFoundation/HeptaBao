@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.four-host-inventory.second-primary-readback.v1",
+  "status": "read_verified",
+  "host": "x230",
+  "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/four-host-cutover-cleanup-assessment.public.json",
+  "bytes": 96796,
+  "sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0",
+  "version": "2053:6342755:96796:1793769213445673455:1793769213445673455",
+  "chunk_count": 2,
+  "chunk_bytes": [
+    65536,
+    31260
+  ],
+  "all_chunk_hashes_verified": true,
+  "whole_sha256_verified": true,
+  "complete_eof": true,
+  "source_of_exact_path": "Actual f458 prior_matrix, not inferred filename",
+  "semantic_review_scope": "Complete backup_recovery_assessment, historical_backup_material_inventory, historical_dependency_receipt, observation_gaps, next_gates, distinctions and publication receipt references for all four hosts; original 96,796 bytes preserved.",
+  "nine_registration_hold_refs_are_not_backup_gates": true,
+  "nine_x230_recovery_receipts_are_one_declared_chain": true,
+  "finite_backup_denominator_not_inferred_from_path_count": true,
+  "no_collector_started": true,
+  "no_live_private_db_opened": true,
+  "no_payload_or_key_read": true,
+  "no_provider_request": true,
+  "no_production_mutation": true,
+  "old_failed_or_incomplete_evidence_preserved": true
+}

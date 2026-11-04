@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.r10-pocket-relay-inert-root-terminal-review.v1",
+  "status": "PASS_INERT_ONLY",
+  "job": "1a1a84bbf62-fc05-2e36",
+  "receipt": {
+    "bytes": 1455,
+    "sha256": "53c3bc2e5688f92f638b809a414901c86906456b60188cefc42020cc8254d5b0",
+    "blob": "4809e4d5a304927ba852c4d730956c7348916e71"
+  },
+  "authority": {
+    "bytes": 731,
+    "sha256": "92f905d89602c43718214f7bd21e8569aa50593a00db1d6d49277e9e1096d93f",
+    "blob": "aa204a4842f2c8989b7b1562a61b06f0ccd1937d"
+  },
+  "stdout": {
+    "bytes": 1171,
+    "sha256": "f2416a5e74af5107d205c13f3557bf7dc09b7b6c8332f7b0f1b7ec1976a913e9",
+    "blob": "6dc37163d5823fe1424a91913eb1e740ca81eecd"
+  },
+  "raw_lossless_stdout_receipt_identical": true,
+  "both_approved_sources_created_whole_bytes_owner_mode_nlink_exact": true,
+  "python_compile_only": true,
+  "product_or_private_input_or_transfer_started": false,
+  "production_changed": false
+}

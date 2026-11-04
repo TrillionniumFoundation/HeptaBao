@@ -1,0 +1,74 @@
+{
+  "schema": "heptabao.r10-pocket-live-root-terminal-review.v1",
+  "status": "PASS_EXACT_POCKET_ISOLATED_SCOPE",
+  "job": "1a1a85b63d4-fc05-2e6e",
+  "core": {
+    "bytes": 58853,
+    "sha256": "b55436c3622263112b429517e821f41c9a58225619e1e375d65804e1484f1ef6",
+    "blob": "e36e19e00b75dc313ce1a750751dfa5f2f1aafb4"
+  },
+  "outer": {
+    "bytes": 2072,
+    "sha256": "f1e6f62507c1c104df8cb457e871cac24c3714433bca733d1e30f6a26fce9efd",
+    "blob": "06b054350c0d5e4b31b4edd7f30a45602a9cfea6"
+  },
+  "intent": {
+    "bytes": 5965,
+    "sha256": "0856b1f98557715407ef9af6f4bbf78055bdba8b6bdc7b2ba2ae398eab8e6e3e",
+    "blob": "5879b348c98b1100fa56cdf056dfd12d9257f22c"
+  },
+  "authority": {
+    "bytes": 729,
+    "sha256": "51cc70c04d5b0d73e86137489298ce8bc3b484790be4b4ac3c766ff161f3d1b4",
+    "blob": "3ac574eec470a308954bd68bef2c3de127071146"
+  },
+  "core_checks": 66,
+  "phases": [
+    {
+      "phase": "initial",
+      "passing_assertion_records": 128,
+      "unique_case_labels": 112
+    },
+    {
+      "phase": "cold-new-process",
+      "passing_assertion_records": 128,
+      "unique_case_labels": 112
+    },
+    {
+      "phase": "initial.rollback",
+      "passing_assertion_records": 95,
+      "unique_case_labels": 77
+    },
+    {
+      "phase": "cold-new-process.rollback",
+      "passing_assertion_records": 95,
+      "unique_case_labels": 77
+    }
+  ],
+  "case_label_caveat": "Original basename-only source assertions repeat for distinct source pins. Counts describe passing assertion records, not unique product surfaces; four phase labels are unique.",
+  "native_factories": 4,
+  "native_rpc": 8,
+  "tls_consumer_wire_responses": 18,
+  "outer_http_responses": 24,
+  "auth_policy_renewal_revoke_verified": true,
+  "actual_sigkill_cold_restart_and_2_once_only_full_cas_rollbacks": true,
+  "all_source_profiles_order_usage_six_caches_and_native4_preserved": true,
+  "all_owned_stopped": true,
+  "unknown": false,
+  "elapsed_seconds": 20.599,
+  "original_budgets": {
+    "consumerSeconds": 70,
+    "httpSeconds": 10,
+    "outerSeconds": 440,
+    "rollbackSeconds": 35
+  },
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "provider_or_j3160_contacted": false,
+  "all_accounts_qualified": false,
+  "real_service_manager_exercised": false,
+  "production_cutover": false,
+  "full_replacement": false,
+  "packet_tree": "9375299d13463c6b389486a1b1d41581db44312a",
+  "whole_packet_blobs_verified": 14,
+  "whole_manifest_verified": true
+}

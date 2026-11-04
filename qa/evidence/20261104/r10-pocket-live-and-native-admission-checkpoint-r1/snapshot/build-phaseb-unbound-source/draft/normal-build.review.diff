@@ -1,0 +1,37 @@
+--- a/normal_phaseb_observer_build.py
++++ b/normal_phaseb_observer_build.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Build frozen R10 normal server/seed and libtest, then execute exact reviewed groups."""
++"""Build a frozen independent normal observer candidate; retain the original exact 44 tests."""
+ from pathlib import Path
+ import argparse
+ import hashlib
+@@ -16,6 +16,8 @@
+     parser.add_argument('--' + name, required=True)
+ args = parser.parse_args()
+ source, output = Path(args.source), Path(args.output)
++DIAGNOSTIC_COMMIT = None  # Freeze after actual format; this draft cannot compile.
++DIAGNOSTIC_TREE = None
+ children = []
+ protected = 0
+ pending_signal = None
+@@ -140,7 +142,8 @@
+ 
+ assert os.uname().sysname == 'Linux' and os.uname().machine == 'x86_64'
+ # Physical commit is pinned by the reviewed launcher and the clean-tree freeze below.
+-assert args.tree == '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
++assert isinstance(DIAGNOSTIC_COMMIT, str) and isinstance(DIAGNOSTIC_TREE, str), 'diagnostic source identity unresolved'
++assert args.commit == DIAGNOSTIC_COMMIT and args.tree == DIAGNOSTIC_TREE
+ assert args.groups_sha256 == '0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1'
+ assert sha(args.groups) == args.groups_sha256
+ groups = json.loads(Path(args.groups).read_text())
+@@ -160,7 +163,7 @@
+ before = freeze()
+ assert before == {'commit': args.commit, 'tree': args.tree, 'status': ''}
+ output.mkdir(mode=0o700)
+-intent = {'schema': 'heptabao.linux-normal-release-and-exact-libtest-r10.v1', 'source_commit': args.commit,
++intent = {'schema': 'heptabao.linux-normal-release-and-exact-libtest-phaseb-observer.v1', 'source_commit': args.commit,
+           'source_tree': args.tree, 'normal_default_features': True, 'fixture_features': [],
+           'profile': profile, 'groups': groups, 'test_count': len(all_names),
+           'groups_sha256': args.groups_sha256, 'controller_sha256': sha(__file__),

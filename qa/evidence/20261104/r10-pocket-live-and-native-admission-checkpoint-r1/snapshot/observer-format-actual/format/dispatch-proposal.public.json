@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.phaseb-normal-observer.format-dispatch-proposal.v1",
+  "host": "rog",
+  "executable": "/usr/bin/python3",
+  "args_prefix": [
+    "-I",
+    "-S",
+    "-B",
+    "-c"
+  ],
+  "controller": {
+    "path": "format/format_normal_fresh_ingress_observer_r1.py",
+    "bytes": 6541,
+    "sha256": "5ea8c303b1bd9de2d801e6653f84664c3435d940d698908e99185a2f2c30f01b",
+    "blob": "2585f257dc1843e187948c06423ad39a1b47d563"
+  },
+  "stdin": {
+    "path": "format/candidate-input.json",
+    "bytes": 63659,
+    "sha256": "8fb51a2965849cf327ba067e6dd447edefe0954923f8d4aa1b67e01aed60fa3d",
+    "blob": "7728d1a1e2864f9ebe057243e8f007b228d66ee7"
+  },
+  "idempotency_key": "heptabao-phaseb-native-ingress-normal-observer-format-6d3040-20261104-r1",
+  "timeout_seconds": 60,
+  "internal_seconds": 50,
+  "per_rustfmt_seconds": 10,
+  "execute_only_after_root_review_and_exclusive_window": true,
+  "actual_execution": false,
+  "scope": "Exact one-file rustfmt stdin; fresh owned output; same frozen canonical R10 source only as read-only cwd; no cargo/compiler/service/network",
+  "source_context_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "intended_candidate_parent": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+  "root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-format-20261104-r1"
+}

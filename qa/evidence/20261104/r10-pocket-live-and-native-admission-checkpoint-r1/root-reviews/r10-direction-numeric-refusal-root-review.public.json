@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.direction-numeric-refusal-and-directory-root-review.v1",
+  "status": "PASS_EVIDENCE_ONLY",
+  "failed_job": "1a1a8576cc0-fc05-2e62",
+  "failed_result": {
+    "bytes": 682,
+    "sha256": "8f2b99adbea5c343b4c12a2480b10947803675fc068c6be2ce6da9952ecfe22b",
+    "blob": "7d50b59bd2e86feb8f28c73a6ea5b7740d8c49a8"
+  },
+  "known_failure": true,
+  "numeric_vote_or_log_observed": false,
+  "exact_failure_directory_not_recorded": true,
+  "subsequent_metadata_job": "1a1a858a903-fc05-2e65",
+  "subsequent_metadata_result": {
+    "bytes": 1206,
+    "sha256": "0b5a7d4992be21030bb013634cb0aa333655393be938aa248b3111acef87c798",
+    "blob": "d73b74dce4416881dc7b622e5ce3458155949016"
+  },
+  "subsequent_actual_modes": [
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-direct98-node1-r2",
+      "mode": "0o700",
+      "uid": 501,
+      "device": 16777244,
+      "inode": 72539871
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-direct98-node1-r2/raft",
+      "mode": "0o700",
+      "uid": 501,
+      "device": 16777244,
+      "inode": 72539907
+    },
+    {
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-direct98-node1-r2/raft/log",
+      "mode": "0o755",
+      "uid": 501,
+      "device": 16777244,
+      "inode": 72539908
+    }
+  ],
+  "actual_product_permissions_changed": false,
+  "source_guard_assumption": "The newly written read-only diagnostic incorrectly required all descendant directories to be private; actual product log directory is 0755 under verified private root and raft ancestors. Product safeguards unchanged.",
+  "original_fail_preserved": true,
+  "rog_observer_started": false
+}
