@@ -1,0 +1,51 @@
+--- normal33_standby_oracle_r4.py
++++ normal33_standby_oracle_r5.py
+@@ -366,14 +366,30 @@
+                        phase=phase, error_type=type(exc).__name__)
+         returncode = 2
+     finally:
+-        if captured_responses:
+-            captured = captured_responses[-1]
+-            summary.update(safe_response_head_projection(captured, spec['path']))
+-            write_new(Path(spec['response_head_file']), bytes(captured.header_capture.raw))
+-        if connection is not None:
+-            connection.close()
+-        summary['elapsed_ms'] = (time.monotonic_ns() - started) / 1e6
+-        write_json(Path(spec['response_meta_file']), summary)
++        try:
++            if captured_responses:
++                captured = captured_responses[-1]
++                summary.update(safe_response_head_projection(captured, spec['path']))
++                write_new(Path(spec['response_head_file']), bytes(captured.header_capture.raw))
++        except Exception as exc:
++            # Diagnostic persistence cannot turn an unrecorded head into a
++            # completed exchange or skip the original connection cleanup.
++            summary.update(response_complete=False, request_sent=sent, outcome_unknown=sent,
++                           phase='response_header_capture_failed', capture_error_type=type(exc).__name__)
++            returncode = 2
++        finally:
++            try:
++                if connection is not None:
++                    connection.close()
++            except Exception as exc:
++                summary.update(response_complete=False, request_sent=sent, outcome_unknown=sent,
++                               phase='connection_close_failed', close_error_type=type(exc).__name__)
++                returncode = 2
++            finally:
++                summary['elapsed_ms'] = (time.monotonic_ns() - started) / 1e6
++                # If this write also fails, the parent keeps the durable intent
++                # and its existing missing-terminal-outcome unknown fence.
++                write_json(Path(spec['response_meta_file']), summary)
+     return returncode
+ 
+ 
+@@ -571,7 +587,8 @@
+         write_json(self.public / f'{number}.intent.public.json', intent)
+         spec = dict(port=API_PORTS[node], method=method, path=path, credential=credential,
+                     body_file=str(body_file), response_meta_file=str(meta_file),
+-                    response_body_file=str(response_file), content_type=content_type,
++                    response_body_file=str(response_file),
++                    response_head_file=str(self.private / f'{number}.response-head'), content_type=content_type,
+                     headers=headers or {}, ca_file=str(self.root / 'ca.crt'),
+                     bootstrap_file=str(self.private / 'bootstrap.json'), deadline_monotonic_ns=until)
+         spec_path = self.private / f'{number}.spec.json'

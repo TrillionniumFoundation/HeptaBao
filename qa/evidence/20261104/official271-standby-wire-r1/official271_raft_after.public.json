@@ -1,0 +1,36 @@
+{
+  "expected_nodes": [
+    1,
+    2,
+    3
+  ],
+  "healthy": true,
+  "leader_node": 1,
+  "observation_only_no_term_inference": true,
+  "observed_servers": [
+    {
+      "healthy": true,
+      "last_index": 39,
+      "last_term": 3,
+      "node": 1,
+      "node_status": "alive",
+      "status": "leader"
+    },
+    {
+      "healthy": true,
+      "last_index": 37,
+      "last_term": 3,
+      "node": 2,
+      "node_status": "alive",
+      "status": "non-voter"
+    },
+    {
+      "healthy": true,
+      "last_index": 37,
+      "last_term": 3,
+      "node": 3,
+      "node_status": "alive",
+      "status": "non-voter"
+    }
+  ]
+}

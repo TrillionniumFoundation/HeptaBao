@@ -1,0 +1,62 @@
+{
+  "actualManagerQualifiedInThisScope": false,
+  "allCurrentOwnedProcessesStopped": true,
+  "evidence": [
+    {
+      "bytes": 72976,
+      "path": "existing-r1-full-result.public.json",
+      "sha256": "f153bfc82b65e5b96d09221eea43849d69a9fc84811fa29f6a9bf2a3fbccc1dc"
+    },
+    {
+      "bytes": 3129,
+      "path": "existing-r1-stage.public.json",
+      "sha256": "dffd12e2199265f252093807616c067674328b0a67fe8ba597801cc2499b6752"
+    },
+    {
+      "bytes": 4759,
+      "path": "existing-r1-outer-result.public.json",
+      "sha256": "b092dc4702dd80a0fcfa7646cb31e8035654a05107e1c6b524d550cde965b1a1"
+    },
+    {
+      "bytes": 2544,
+      "path": "existing-r1-live-intent.public.json",
+      "sha256": "227d8f8e1e90ef67c939a23020f32068c6d761967c7ad69166902fa1c931ea7a"
+    },
+    {
+      "bytes": 2918,
+      "path": "existing-r1-job-provenance.public.json",
+      "sha256": "2c701cd8a772c8bfa30450c3fe15c231853d7f772d0a952bcdd6033b16339864"
+    },
+    {
+      "bytes": 732,
+      "path": "existing-r1-authoritative-terminal.public.json",
+      "sha256": "7e69b0fba9e04d9096e414e1c86d8493518627fe1bf9e3e59e57e65a6d180b97"
+    },
+    {
+      "bytes": 270,
+      "path": "existing-r1-current-owned-process.public.json",
+      "sha256": "e25be349d3ad42aa4d06bd564f984ee1251348e22910c28e407acbcd8cb38956"
+    },
+    {
+      "bytes": 1841,
+      "path": "existing-r1-source-readback.public.json",
+      "sha256": "951ec4574f3b8784ecacd7de5886d848cd0c1e46fcd681274fba6515883cdad5"
+    },
+    {
+      "bytes": 1450,
+      "path": "duplicate-stage-refusal.public.json",
+      "sha256": "cbd16d8eab3d815888b20f10cfbfe4fa99133a2f5263016be98e00d8a4e6b11e"
+    }
+  ],
+  "fullResultChecksPassed": 330,
+  "launcherAgentAttribution": "not_recorded_in_observed_durable_metadata",
+  "liveRunRepeated": false,
+  "newStageRefusalPreserved": true,
+  "parentIndependentReviewPending": true,
+  "preexistingLiveJobId": "1a1a67182ff-fc05-2559",
+  "productionChanged": false,
+  "providerCalled": false,
+  "realProviderCredentials": false,
+  "sameFixtureInstalledEntryAndSdkResult": true,
+  "schema": "heptabao.preexisting-installed-sdk-reconciliation-manifest.v1"
+}

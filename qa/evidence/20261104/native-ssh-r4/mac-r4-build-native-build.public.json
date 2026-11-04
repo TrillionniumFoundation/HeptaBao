@@ -1,0 +1,19 @@
+{
+  "binary_sha256": "b1238d851d507c26c67258e77106987e0c69e0d229893a2d2c814b339786dceb",
+  "build_exit_code": 0,
+  "features": [
+    "default",
+    "native-v6-ha",
+    "native-v6-storage"
+  ],
+  "native_abi": "aarch64-apple-darwin",
+  "provenance": {
+    "cargo_events_sha256": "ebf2a49b54f980dc3cf5a9b205be34f31d353506f9e4d74b9bf1180ad4e04a3d",
+    "result_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-owner-r4/build-normal-r1/result.public.json",
+    "result_sha256": "b26066b348907606cb494999a77ec257102c72271b6d192d661af53ba41764cf"
+  },
+  "schema": "heptabao.native-build.v1",
+  "source_commit": "498a5c0297d7dee93c510bf12e0493a101ca1145",
+  "source_freeze_verified": true,
+  "source_tree": "20a7065b96e16b946c00e09841e0621d813457d6"
+}

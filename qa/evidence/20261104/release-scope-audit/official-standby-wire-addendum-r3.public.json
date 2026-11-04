@@ -1,0 +1,259 @@
+{
+  "schema": "official271-standby-later-observation-r3",
+  "priorR2Preserved": true,
+  "officialSource": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "officialBinary": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+  "cacheSha256": "0cfbd3d9ae36d3533d881cf7e7dadc071ca5f32e40ad0454fbc36aec53254dd0",
+  "inputOriginalHashes": {
+    "raft_after.public.json": "f99cd5d2b26322b8f92d926a8421de428a556368263009189d8e8cbc2ba76a55",
+    "raft_before.public.json": "47388d3e173c75293165077238f01ab479852eae4d7284240a831c141bef59eb",
+    "result.public.json": "d84a783d817ee7827496182b6f750a1cd995424e554b287f602fd9204f289975",
+    "roles_after.public.json": "d6de091ff6326698baad28ea862262b82174f0398ec6143f91ba3f49c63c6d75",
+    "roles_before.public.json": "543c2f2d1f964b97f624f66fe113535945b7020da1cb44863060e562542f1fa0",
+    "wire-observations.public.json": "45d2039f2e68e006cb10dc80925f9d6719fa16dfa433bf22bf5b538e9adfae02"
+  },
+  "behaviorChecks": [
+    49,
+    49
+  ],
+  "operationBoundaries": {
+    "all_original15s": true,
+    "complete_http_responses": 48,
+    "intents": 51,
+    "max_caller_elapsed_ms": 8931.88456,
+    "outcomes": 51,
+    "preconnect_failures": 3,
+    "sequences": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23,
+      24,
+      25,
+      26,
+      27,
+      28,
+      29,
+      30,
+      31,
+      32,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51
+    ],
+    "unknown": 0
+  },
+  "leader": 1,
+  "standbys": [
+    2,
+    3
+  ],
+  "standbyVoters": false,
+  "validRestoreBodies": 0,
+  "rawArchiveContentCopied": false,
+  "heptabaoWireExecuted": false,
+  "newQualification": "officialBehaviorObservationOnly",
+  "cases": [
+    {
+      "label": "node1_snapshot_get_none",
+      "node": 1,
+      "status": 403,
+      "response_bytes": 33,
+      "location_node": null,
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "outcome_unknown": false
+    },
+    {
+      "label": "node1_snapshot_get_invalid",
+      "node": 1,
+      "status": 403,
+      "response_bytes": 33,
+      "location_node": null,
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "outcome_unknown": false
+    },
+    {
+      "label": "node1_snapshot_get_root",
+      "node": 1,
+      "status": 200,
+      "response_bytes": 19993,
+      "location_node": null,
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "outcome_unknown": false
+    },
+    {
+      "label": "node2_snapshot_get_none",
+      "node": 2,
+      "status": 307,
+      "response_bytes": 0,
+      "location_node": 1,
+      "location_matches_enrolled_origin_and_exact_target": true,
+      "outcome_unknown": false
+    },
+    {
+      "label": "node2_snapshot_get_invalid",
+      "node": 2,
+      "status": 307,
+      "response_bytes": 0,
+      "location_node": 1,
+      "location_matches_enrolled_origin_and_exact_target": true,
+      "outcome_unknown": false
+    },
+    {
+      "label": "node2_snapshot_get_root",
+      "node": 2,
+      "status": 200,
+      "response_bytes": 19993,
+      "location_node": null,
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "outcome_unknown": false
+    },
+    {
+      "label": "node3_snapshot_get_none",
+      "node": 3,
+      "status": 307,
+      "response_bytes": 0,
+      "location_node": 1,
+      "location_matches_enrolled_origin_and_exact_target": true,
+      "outcome_unknown": false
+    },
+    {
+      "label": "node3_snapshot_get_invalid",
+      "node": 3,
+      "status": 307,
+      "response_bytes": 0,
+      "location_node": 1,
+      "location_matches_enrolled_origin_and_exact_target": true,
+      "outcome_unknown": false
+    },
+    {
+      "label": "node3_snapshot_get_root",
+      "node": 3,
+      "status": 307,
+      "response_bytes": 0,
+      "location_node": 1,
+      "location_matches_enrolled_origin_and_exact_target": true,
+      "outcome_unknown": false
+    },
+    {
+      "label": "node1_snapshot_invalid_restore",
+      "node": 1,
+      "status": 500,
+      "response_bytes": 94,
+      "location_node": null,
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "outcome_unknown": false
+    },
+    {
+      "label": "node1_snapshot-force_invalid_restore",
+      "node": 1,
+      "status": 500,
+      "response_bytes": 94,
+      "location_node": null,
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "outcome_unknown": false
+    },
+    {
+      "label": "node2_snapshot_invalid_restore",
+      "node": 2,
+      "status": 500,
+      "response_bytes": 94,
+      "location_node": null,
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "outcome_unknown": false
+    },
+    {
+      "label": "node2_snapshot-force_invalid_restore",
+      "node": 2,
+      "status": 500,
+      "response_bytes": 94,
+      "location_node": null,
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "outcome_unknown": false
+    },
+    {
+      "label": "node3_snapshot_invalid_restore",
+      "node": 3,
+      "status": 307,
+      "response_bytes": 0,
+      "location_node": 1,
+      "location_matches_enrolled_origin_and_exact_target": true,
+      "outcome_unknown": false
+    },
+    {
+      "label": "node3_snapshot-force_invalid_restore",
+      "node": 3,
+      "status": 307,
+      "response_bytes": 0,
+      "location_node": 1,
+      "location_matches_enrolled_origin_and_exact_target": true,
+      "outcome_unknown": false
+    },
+    {
+      "label": "node2_ordinary_256k_write_once",
+      "node": 2,
+      "status": 200,
+      "response_bytes": 279,
+      "location_node": null,
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "outcome_unknown": false
+    },
+    {
+      "label": "node3_ordinary_256k_write_once",
+      "node": 3,
+      "status": 200,
+      "response_bytes": 279,
+      "location_node": null,
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "outcome_unknown": false
+    },
+    {
+      "label": "ordinary_write_explicit_no_forward",
+      "node": 2,
+      "status": 307,
+      "response_bytes": 0,
+      "location_node": 1,
+      "location_matches_enrolled_origin_and_exact_target": true,
+      "outcome_unknown": false
+    }
+  ],
+  "document": {
+    "path": "OFFICIAL_STANDBY_WIRE_ADDENDUM-r3.md",
+    "sha256": "b37af74023e7d5a76cb145f6546faaf0bd6cd3d033a6f678ce2b1f1541a688de"
+  }
+}

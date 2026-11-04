@@ -1,0 +1,95 @@
+{
+  "after_error_type": null,
+  "boundary_after": {
+    "binary_sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+    "build_receipts": {
+      "native-build.public.json": "2fa263744917e1d71658daa4f34e09ea448fe77ec0b2c0f8ec22c01e2cd84e8e",
+      "result.public.json": "7fa76585e94fe2e60bbc3ce754f37e4d9d433e4cf576fcc2e39a1e95771f3f42"
+    },
+    "commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "plugin_sha256": {
+      "bad-refresh-quarantine.js": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+      "codex-client-recycler.js": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+      "index.js": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b",
+      "lease-assignments.js": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+      "order-policy.js": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301",
+      "provider-error-classifier.js": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+      "runtime-refresh-policy.js": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547"
+    },
+    "sdk_source_sha256": {
+      "dist/plugin-sdk/agent-runtime.js": "7831532d17eeaddd62889b2e8bb7b65ea7a7851901f69ceec23607a8c579dd95",
+      "dist/profiles-DyU-YCq2.js": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+      "dist/store-DH33UrUj.js": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf"
+    },
+    "sdk_version": "2026.7.1-2",
+    "source_clean": true,
+    "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+  },
+  "boundary_before": {
+    "binary_sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+    "build_receipts": {
+      "native-build.public.json": "2fa263744917e1d71658daa4f34e09ea448fe77ec0b2c0f8ec22c01e2cd84e8e",
+      "result.public.json": "7fa76585e94fe2e60bbc3ce754f37e4d9d433e4cf576fcc2e39a1e95771f3f42"
+    },
+    "commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "plugin_sha256": {
+      "bad-refresh-quarantine.js": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+      "codex-client-recycler.js": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+      "index.js": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b",
+      "lease-assignments.js": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+      "order-policy.js": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301",
+      "provider-error-classifier.js": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+      "runtime-refresh-policy.js": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547"
+    },
+    "sdk_source_sha256": {
+      "dist/plugin-sdk/agent-runtime.js": "7831532d17eeaddd62889b2e8bb7b65ea7a7851901f69ceec23607a8c579dd95",
+      "dist/profiles-DyU-YCq2.js": "075f9d6ecd43103c32a6908816bf42720076fd0aaedb2b5e7e96481d64a29ba5",
+      "dist/store-DH33UrUj.js": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf"
+    },
+    "sdk_version": "2026.7.1-2",
+    "source_clean": true,
+    "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+  },
+  "checks": 314,
+  "elapsed_seconds": 19.109378887995263,
+  "error_type": null,
+  "exit_code": 0,
+  "installed_entry_executed": false,
+  "ok": true,
+  "production_changed": false,
+  "protected_files_unchanged": true,
+  "protected_metadata_after": {
+    "/home/qian-qi/.codex/auth.json": {
+      "bytes": 4188,
+      "sha256": "f4aee2935351eaa6d56ce99166a0123c3c9e3260ae8737e6d7ad8ce2c8c12b78"
+    },
+    "/home/qian-qi/.codex/config.toml": {
+      "bytes": 2747,
+      "sha256": "57c13259d009c266c37d1c4578596c0a6236dae3862eccedb3eb74a99084c350"
+    },
+    "/home/qian-qi/.openclaw/openclaw.json": {
+      "bytes": 27079,
+      "sha256": "a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15"
+    }
+  },
+  "protected_metadata_before": {
+    "/home/qian-qi/.codex/auth.json": {
+      "bytes": 4188,
+      "sha256": "f4aee2935351eaa6d56ce99166a0123c3c9e3260ae8737e6d7ad8ce2c8c12b78"
+    },
+    "/home/qian-qi/.codex/config.toml": {
+      "bytes": 2747,
+      "sha256": "57c13259d009c266c37d1c4578596c0a6236dae3862eccedb3eb74a99084c350"
+    },
+    "/home/qian-qi/.openclaw/openclaw.json": {
+      "bytes": 27079,
+      "sha256": "a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15"
+    }
+  },
+  "remaining_owned_processes": [],
+  "result_bytes": 65943,
+  "result_error": null,
+  "result_ok": true,
+  "result_sha256": "c4105c0e933237058dd24aee70eabce2f2e244510c0a4deffa76e1c9e7eae185",
+  "schema": "heptabao.authbus-normal-sdk-outer.v1"
+}

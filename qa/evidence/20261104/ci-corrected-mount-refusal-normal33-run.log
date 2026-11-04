@@ -1,0 +1,23 @@
+   Compiling heptabao-filesystem-guard v0.1.0 (/home/qian-qi/heptabao-ha-closure-20261103-r1/ci-mount-refusal-corrected-normal33-r1/source/crates/heptabao-filesystem-guard)
+   Compiling heptabao-domain v0.1.0 (/home/qian-qi/heptabao-ha-closure-20261103-r1/ci-mount-refusal-corrected-normal33-r1/source/crates/heptabao-domain)
+   Compiling heptabao-raft-runtime v0.1.0 (/home/qian-qi/heptabao-ha-closure-20261103-r1/ci-mount-refusal-corrected-normal33-r1/source/crates/heptabao-raft-runtime)
+   Compiling heptabao-plugin-contracts v0.1.0 (/home/qian-qi/heptabao-ha-closure-20261103-r1/ci-mount-refusal-corrected-normal33-r1/source/crates/heptabao-plugin-contracts)
+   Compiling heptabao-durable-service v0.1.0 (/home/qian-qi/heptabao-ha-closure-20261103-r1/ci-mount-refusal-corrected-normal33-r1/source/crates/heptabao-durable-service)
+   Compiling heptabao-linux-parent-death v0.1.0 (/home/qian-qi/heptabao-ha-closure-20261103-r1/ci-mount-refusal-corrected-normal33-r1/source/crates/heptabao-linux-parent-death)
+   Compiling heptabao-workflow-template v0.6.1 (/home/qian-qi/heptabao-ha-closure-20261103-r1/ci-mount-refusal-corrected-normal33-r1/source/third_party/workflow-gotmpl)
+   Compiling bcrypt v0.19.3 (/home/qian-qi/heptabao-ha-closure-20261103-r1/ci-mount-refusal-corrected-normal33-r1/source/vendor/bcrypt-0.19.3)
+   Compiling heptabao-plugin-host v0.1.0 (/home/qian-qi/heptabao-ha-closure-20261103-r1/ci-mount-refusal-corrected-normal33-r1/source/crates/heptabao-plugin-host)
+   Compiling heptabao-openbao-grpc v0.1.0 (/home/qian-qi/heptabao-ha-closure-20261103-r1/ci-mount-refusal-corrected-normal33-r1/source/crates/heptabao-openbao-grpc)
+   Compiling heptabao-ha-service v0.1.0 (/home/qian-qi/heptabao-ha-closure-20261103-r1/ci-mount-refusal-corrected-normal33-r1/source/crates/heptabao-ha-service)
+   Compiling heptabao-kms-contracts v0.1.0 (/home/qian-qi/heptabao-ha-closure-20261103-r1/ci-mount-refusal-corrected-normal33-r1/source/crates/heptabao-kms-contracts)
+   Compiling qrcode v0.14.1 (/home/qian-qi/heptabao-ha-closure-20261103-r1/ci-mount-refusal-corrected-normal33-r1/source/vendor/qrcode-0.14.1)
+   Compiling heptabao-server v0.1.0 (/home/qian-qi/heptabao-ha-closure-20261103-r1/ci-mount-refusal-corrected-normal33-r1/source/crates/heptabao-server)
+    Finished `release` profile [optimized] target(s) in 18m 49s
+     Running unittests src/lib.rs (/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/deps/heptabao_server-46a8765afad8ea76)
+
+running 1 test
+test service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs ... HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3680 filtered out; finished in 0.21s
+

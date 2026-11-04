@@ -1,0 +1,21 @@
+{
+  "schema": "native-ssh-normal20-r4-assessment.v1",
+  "source": "71e1cfff25a124d77ee1771c840c4c69b58c573e",
+  "tree": "20a7065b96e16b946c00e09841e0621d813457d6",
+  "resultSha256": "b8aaad7020d819c2eaf690ad3bf56543c9613fc69f2d85104a62eb4c51999166",
+  "normalBuildPassed": true,
+  "runtimePassed": false,
+  "passed": 18,
+  "failed": 2,
+  "notRun": 0,
+  "failures": [
+    "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply",
+    "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex"
+  ],
+  "ownedGroupsGone": true,
+  "binaryUnchanged": true,
+  "sourceUnchanged": true,
+  "testsReplayed": false,
+  "frozenR4Modified": false,
+  "failureAnalysisPending": true
+}

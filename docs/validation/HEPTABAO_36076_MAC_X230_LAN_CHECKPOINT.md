@@ -4,7 +4,7 @@
 
 本检查点记录 2026-11-04 已完成且可复核的工作。**正常构建的原始三机 128 项和 Pocket4 → Mac 独立方向 98 项已经通过；完整 OpenBao 2.7.1 替代、生产切流及旧版清理仍未获完整证据。** 下文明确区分已通过的合同、历史失败和仍开放的能力。
 
-当前物理候选为 `33cafa4c6e29f0bde1553e041550d21b4c725d9c`，tree=`cdc2376e7b39c1d8bbbeb10a813d58bfe923f336`，GitHub 同 tree 发布 commit=`054d17cd50951efa46d78db3911ad1d277a0c584`。正常 Mac server SHA256=`d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20`，Linux server=`7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba`。两者使用原 release profile、默认 native-v6-storage/native-v6-ha，未启用私有诊断或 fixture 功能。X230 同 Linux 产物的正式 full34 已通过 31/31；原 13 模块官方 2.7.1 对照双方均为 69/69。这些合同不代表全部 OpenBao API。
+已完成以下 KV2／三机 HA 合同的物理候选为 `33cafa4c6e29f0bde1553e041550d21b4c725d9c`，tree=`cdc2376e7b39c1d8bbbeb10a813d58bfe923f336`，GitHub 同 tree 发布 commit=`054d17cd50951efa46d78db3911ad1d277a0c584`。正常 Mac server SHA256=`d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20`，Linux server=`7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba`。两者使用原 release profile、默认 native-v6-storage/native-v6-ha，未启用私有诊断或 fixture 功能。X230 同 Linux 产物的正式 full34 已通过 31/31；原 13 模块官方 2.7.1 对照双方均为 69/69。这些合同不代表全部 OpenBao API。
 
 ### 正常三机原始 128 项
 
@@ -28,15 +28,45 @@ Mac/ROG 原生 SDK 的管理顺序预览证据已发布到 QA commit `682c063994
 
 Mac 已在 `/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1` 创建只供后续部署使用的离线材料：精确正常二进制、新 CA 与 Mac TLS 证书、私有复制密钥、配置、未加载的 launchd plist 及绑定 T5 VolumeUUID 的启动检查程序。已核对证书用途、SAN、密钥匹配、权限、配置及 plist。该步骤没有启动服务、调用 API、初始化、创建 AppRole、激活存储、配置 HA 或切换流量。最初在 T5 顶层创建失败的 PermissionError 保留；只读检查确认现有用户拥有的工作目录可写，随后使用其子目录，未修改磁盘根权限。生产解封门槛与密钥托管尚未绑定，不能把测试的单份解封配置直接当生产策略。
 
-X230 的真实安装版协调器已有三次失败记录：r1 在全新 inactive unit 上多余 reset-failed 被拒；清理另有精确回执。r2 走过实际服务启动及身份检查，但文件系统只读隔离失败。r3 加 PrivateUsers 后确实进入独立用户命名空间，代码、配置和状态所在真实挂载仍均可写，故仍失败，未降低断言。三轮 owned 服务均清理。正在准备 root-owned 系统级 runtime unit，服务进程以普通用户 qian 运行；系统级方案尚未执行或通过，不作为用户级方案成功。没有全局改动 AppArmor/sysctl。
+X230 的独立系统级新一轮 `live-system-r5` 已通过 **547 项动态检查**。实际两个 root:root 0644 runtime unit 启动普通用户 qian（UID/GID 1000）的服务，五次实际进程核对覆盖 argv/exe/cgroup/PID/starttime、NoNewPrivs 和独立 user namespace；代码及配置在 mountinfo 与 fstatvfs 均只读，唯一 owner 状态可写。两 unit 的删除严格核对最初安装 inode，所有 owned 进程和注册项均已清理。
+
+该轮在服务、源 fixture 生产者静止且两把原锁持有期间，配对捕获全部 9 个 owner 文件与 238,621 字节真实快照。在观察到后续变更后，执行一次真实恢复、SIGKILL/wait、冷解封，并由新安装绑定恢复原 `manifest_dispatched` journal；manifest CAS 没有重放。实际配置漂移导致 exit2，实际 CAS 已成功而本地回包验证失败后保持 unknown 并导致 exit3；两者均观察 6 秒（超过 RestartSec 5 秒）且无自动重启，后者经过明确只读历史对账才撤销和重启服务。使用合成 OAuth 数据，无 provider 调用；此轮没有安装版 SDK，不能代表 ROG manager 或生产切流。此前 user r1/r2/r3 及 system r4 的四次失败和各自清理均完整保留。系统级通过没有把用户级只读隔离失败改成通过，也没有改变全局 AppArmor/sysctl。
+
+ROG 另外完成正常 33 构建的 **真实 SDK／协调器核心 314 项动态检查**，19.109 秒、exit0、owned 进程全部清理。使用当前安装的 OpenClaw SDK 2026.7.1-2 和七文件均未修改的 AuthBus 插件，10 个客户端进程中 8 个成功、2 个预期拒绝，50 个成功 HTTPS 观测均有独立完整 TLS 握手。真实 producer inbox、七字段授权、不可变凭证与 manifest CAS、follower 消费、竞争 CAS、提交后 exit73、冷启动历史恢复不重放、完整 SQLite 回滚、错误 CA 回滚均通过；21 个真实签发 token 撤销后再次冷启动仍拒绝，3 个 SecretID 销毁后原 follower 拒绝登录。续期使用真实 renew-self 且保持原 bearer，但只推进客户端本地 due 时钟，没有声称等待完整租期到期。
+
+上述 314 项 SDK 证明执行的是 direct core API，未执行 installed entry；X230 的系统级证明是另一个 fixture。这两份旧结果仍分别保留，不能拼接成一次安装入口 SDK 执行。对应源、全量报告、失败历史及根复核已提交到 QA `b08cdaf17d6c83991d3ed991a686a0bacb371562`，tree=`77f953d68ced8db7fcd60442f202bd36cf2ddd22`。原 HTTP 10 秒、readiness 12 秒、worker 75 秒不变；SDK 结果显式不授予 OAuth 刷新所有权或 enforced scheduler。三个有限生产文件——OpenClaw 主配置及 native Codex auth/config——前后指纹一致，未泛化为全盘不变。
+
+ROG 现已另有同一 fixture 内的 **installed-entry API／真实 SDK 330 项动态检查通过**，19.257 秒。五份源码精确匹配已审稿；原 installed Binding、GuardedBao、service/operation locks、operator inspect/version/head 与七字段 grant、实际 service_cycle、渲染和错误分类均执行。12 个协调器 action、10 个 SDK client、50 个完整 TLS 正向观测、21 token／3 SecretID 撤销、两次 SIGKILL 冷重启及真实备份／错误绑定回滚均经独立根复核。该轮没有注册或启动服务管理器，不能据此标作 ROG manager 通过；使用合成 OAuth 凭证，provider/J3160 调用为零，OAuth 刷新与 enforced scheduler 仍未授予资格。
+
+这份运行在后续 create-only staging 前已经存在。后续 staging 在 mkdir／启动之前按 `fresh_control_required` 拒绝，旧文件未覆盖。限定窗口内只读对账定位到真实 durable job `1a1a67182ff-fc05-2559`，独立权威状态确认 exit0、output_complete/durable、无 timeout；当前有限 owned 进程集与三个原 PID 均为空。观察到的 durable metadata 不包含 launcher agent 身份，未作归因，未重跑 live。完整结果、确切源码、来源回执、独立复核和后续拒绝一并发布到 QA `15c5827dd7a8cfc06131d4901903ebf7e8090599`，tree=`42949d788d481b47a7cea80b93b36c00e1aec5ac`。
 
 ### 完整 CI 与替代能力分母
 
 CI 候选现为 `0dc39624d1266a6fca98760757b9482bf6f98a7a`，tree=`959c65d6782b288c41730da869c86007c268547c`，prospective merge=`186570233517b2295de7384ef96a5815ba7db06f`。旧完整 run `41797943393` 在原 90 分钟总上限附近 cancelled，部分测试中原 KV2 挂载用例 FAILED；ROG 用未改原源码独立重现了 204 与旧预期 501 不同。源码证据表明 KV1 已被正式支持，所以修订仅把“应拒绝”的 KV version1 改为确实不支持的 version3，保留该用例全部 ACL/CAS/图不变断言。SSH 仍为独立拒绝项，未借此次修正开启支持。
 
-工作流总 job 包络改为仓库已有完整矩阵采用的 360 分钟，全部 fixture/request 原期限、features、profile、断言及 gate 列表保持不变。新完整 run `41814525698` 的 head 与 prospective-merge 两个 job 正在工作区测试步骤；步骤标签不证明编译已结束。trust boundary run `41814525725` 已通过。CodeQL run `41814520252` 是单独扫描，不能代替完整资格。ROG 对修改后用例的独立正常构建验证仍在执行。
+工作流总 job 包络改为仓库已有完整矩阵采用的 360 分钟，全部 fixture/request 原期限、features、profile、断言及 gate 列表保持不变。新完整 run `41814525698` 的 head 与 prospective-merge 两个 job 正在工作区测试步骤；步骤标签不证明编译已结束。trust boundary run `41814525725` 已通过。CodeQL run `41814520252` 是单独扫描，不能代替完整资格。ROG 对修改后用例的独立正常构建已经通过：编译 18 分 49 秒，原精确用例 1/1、0.21 秒，3680 项过滤；source=`45d45a79349d8feaed35cb60335edc76ae81bd29`、tree=`7c66c145435dfa32afafc20dfb9e5c3a5f96cdaf`。它验证这一次 fixture 修正，完整 CI 仍须等待真实终态。
 
 精确源码审计已发现正式 V6 的完整替代分母大于当前部署五项：某些 auth/engine/provider 的业务代码虽已存在，尚无正式 V6 存储 owner；SSH 挂载就是明确的运行路径拒绝。外部 KMS/plugin/postgres 等受 native profile 限制，未覆盖的根/子命名空间 system 操作亦需分别闭合。发布清单中的 OPEN/null 只是未授予完整资格，不能反过来当作所有功能都未实现，既有 full34/HA 等新证明继续有效。快照尤其要区分已存在的 HTTP frontend Redirect 与 service 内层拒绝直接 standby stream；其真实入口和官方行为正在核实，不能只凭一个内层 503 宣称整个快照路径缺失。
+
+### 官方备用节点的真实 HTTP 基线
+
+官方 OpenBao 2.7.1 独立三进程 loopback TLS fixture 已完成 49 项动态观测，记录 51 intents/51 outcomes：旧解析器报告 48 个 complete HTTP 回包与 3 个明确发生于连接前的 readiness 失败、unknown=0，全部 owned 进程清理。它没有保存原始响应头终止符；这些完成性字段属于原解析器报告，不能额外充当严格 HTTP framing 证明。实际 leader 为节点 1；默认配置 standby 2 在带 root token 的 snapshot GET 返回 200，未带 token／无效 token 返回 307；设置 disable_standby_reads 的 standby 3 均返回 307。leader 的无凭证 snapshot GET 返回 403。无效 snapshot／snapshot-force POST 在 leader 与默认 standby 为 500，在禁用 standby reads 的节点为 307。普通 256KiB KV 写在两 standby 均成功且 leader 精确读回；显式 No-Request-Forwarding 写返回 307，目标未落盘。
+
+这轮两个 follower 仍是 non-voter，不能标作官方三 voter 故障验证；snapshot 只验证 archive shape，没有有效 restore 或内容完整性证明。每个请求仍是原 15 秒，不跟随 redirect。HeptaBao 已有前端 snapshot redirect，并非整条路径缺失；但默认 authorized standby 200 与现有选路是否兼容，需要另行实际 HeptaBao 请求及客户端行为证据。HeptaBao observer 保留原观测顺序，并收紧父 deadline、root 创建所有权、源码前后身份与进程登记／信号清理围栏。下列实际失败仍使 HTTP 对照不通过。
+
+### 正常 33 snapshot observer 的真实失败与完成性更正
+
+在 desktop 的全新 `normal33-standby-oracle-live-r2` 上，正常 33 构建完成 42/43 动态不变量后失败。记录 67 intents/67 outcomes；旧解析器报告 66 complete HTTP、1 个明确连接前失败（seq10）、unknown=0。第 67 个请求是节点 2 的无效 snapshot POST，解析状态 307，但 exact enrolled leader origin+target 谓词失败；只保存了 `Location` header name，未保存原始值或 CRLFCRLF 终止符。四个 owned 服务和 67 个 HTTP 子进程均已停止，原源码、二进制、控制器及五份旧证据均未变。
+
+独立复核确认 Python `http.client` 可以接受头部终止前 EOF。因此原始 `response_complete=true` 与 `http_unknown=0` 字段只能按原解析器语义引用，**不能证明第 67 个响应严格完整，也不能断言是地址拼接错误**。完整旧失败原样保留；严格捕获原始头部的后继 observer r5 已获准在全新 live-r3 上单次执行，当前尚无可引用终态。捕获 r4 的 39 项手工 spec 组件通过后，根审阅另发现父进程没有传递 `response_head_file` 的真实接口遗漏；该版本阻断于运行前，后继 r5 已在 desktop 真实父进程到 owned Python 子进程路径完成 61/61 无网络检查，包含 EOF、捕获文件写入失败、连接关闭及回收。未以缩小矩阵、改请求顺序或放宽期限换取通过。
+
+该部分运行已观察到 leader snapshot GET 403/403/200，两个 standby GET 均为 307，leader 无效 snapshot／snapshot-force POST 为 400；与官方默认 standby 的 authorized GET 200、无效 restore 500 存在差别。case 矩阵未完成，roles_after 不存在，不能宣布完整兼容或从旧头部证据唯一归因。
+
+### SSH native owner 的正常构建和失败测试
+
+SSH root owner 独立 r4 的 ROG source=`71e1cfff25a124d77ee1771c840c4c69b58c573e`，Mac source=`498a5c0297d7dee93c510bf12e0493a101ca1145`，GitHub source=`e44dcd87cd9249cf5459ab4d916161971f26222b`，三者 tree 均为 `20a7065b96e16b946c00e09841e0621d813457d6`。正常 release check 与 Linux libtest 构建通过；实际 20 项测试为 **18 通过、2 失败**，原日志和结果保留。一个测试在真实 audit I/O 失败后尚未调用正常 delivery completion 就断言 pending owner 已清除；修复将补实际 completion 调用，保留签名仅一次、无凭证泄露、冷恢复等全部断言。另一个揭示实际 HA forwarding 没有携带 SSH public-key reply 所需的原始 ingress，候选修复仍在审查。
+
+Mac 同 tree 已在原 release/default profile 正常构建成功，耗时 256.753 秒，server SHA256=`b1238d851d507c26c67258e77106987e0c69e0d229893a2d2c814b339786dceb`；此处只证明构建，未证明 Mac SSH 运行。Mac worktree 依赖旧 common Git 目录，清理必须保护该依赖。首次 r2 的 Debug 测试断言编译错误也保留，未给秘密类型添加 Debug。后继修复不得把所有 `*/public_key` 升级为 1MiB 完整回复格式而让原 32MiB 普通 KV 降容；该宽泛方案已否决。所有旧正常 33／CI 0dc 的通过仍只属于各自确切 source/tree/binary。
 
 完整替代、所有客户端及备份迁移、生产切流、旧版清理均仍为 false。后续修改将在独立候选上验证；本页的正常构建通过只属于上列精确 source/tree/binary。
 

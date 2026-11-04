@@ -1,0 +1,398 @@
+{
+  "checks": [
+    {
+      "name": "complete_same_parser_readline_calls",
+      "passed": true
+    },
+    {
+      "name": "complete_same_parsed_headers",
+      "passed": true
+    },
+    {
+      "name": "complete_same_status",
+      "passed": true
+    },
+    {
+      "name": "complete_exact_raw_bytes_captured",
+      "passed": true
+    },
+    {
+      "name": "complete_no_raw_location_in_public_projection",
+      "passed": true
+    },
+    {
+      "name": "complete_strict_and_safe",
+      "passed": true
+    },
+    {
+      "name": "eof_same_parser_readline_calls",
+      "passed": true
+    },
+    {
+      "name": "eof_same_parsed_headers",
+      "passed": true
+    },
+    {
+      "name": "eof_same_status",
+      "passed": true
+    },
+    {
+      "name": "eof_exact_raw_bytes_captured",
+      "passed": true
+    },
+    {
+      "name": "eof_no_raw_location_in_public_projection",
+      "passed": true
+    },
+    {
+      "name": "old_parser_accepts_eof_without_terminator",
+      "passed": true
+    },
+    {
+      "name": "new_eof_distinguished",
+      "passed": true
+    },
+    {
+      "name": "eof_origin_only_disambiguated",
+      "passed": true
+    },
+    {
+      "name": "duplicate_same_parser_readline_calls",
+      "passed": true
+    },
+    {
+      "name": "duplicate_same_parsed_headers",
+      "passed": true
+    },
+    {
+      "name": "duplicate_same_status",
+      "passed": true
+    },
+    {
+      "name": "duplicate_exact_raw_bytes_captured",
+      "passed": true
+    },
+    {
+      "name": "duplicate_no_raw_location_in_public_projection",
+      "passed": true
+    },
+    {
+      "name": "old_duplicate_location_is_joined",
+      "passed": true
+    },
+    {
+      "name": "duplicate_preserved_without_values",
+      "passed": true
+    },
+    {
+      "name": "foreign_same_parser_readline_calls",
+      "passed": true
+    },
+    {
+      "name": "foreign_same_parsed_headers",
+      "passed": true
+    },
+    {
+      "name": "foreign_same_status",
+      "passed": true
+    },
+    {
+      "name": "foreign_exact_raw_bytes_captured",
+      "passed": true
+    },
+    {
+      "name": "foreign_no_raw_location_in_public_projection",
+      "passed": true
+    },
+    {
+      "name": "unknown_location_only_hash_booleans",
+      "passed": true
+    },
+    {
+      "name": "normal33_r3_component_one_dispatch",
+      "passed": true
+    },
+    {
+      "name": "frozen_r3_eof_reports_completed",
+      "passed": true
+    },
+    {
+      "name": "normal33_r5_component_one_dispatch",
+      "passed": true
+    },
+    {
+      "name": "r5_complete_private_raw_byteexact",
+      "passed": true
+    },
+    {
+      "name": "r5_complete_complete_original_boundary",
+      "passed": true
+    },
+    {
+      "name": "normal33_r5_component_one_dispatch",
+      "passed": true
+    },
+    {
+      "name": "r5_eof_private_raw_byteexact",
+      "passed": true
+    },
+    {
+      "name": "r5_incomplete_headers_fail_unknown_before_body",
+      "passed": true
+    },
+    {
+      "name": "normal33_r5_component_one_dispatch",
+      "passed": true
+    },
+    {
+      "name": "r5_duplicate_private_raw_byteexact",
+      "passed": true
+    },
+    {
+      "name": "r5_duplicate_complete_original_boundary",
+      "passed": true
+    },
+    {
+      "name": "r5_duplicate_original_location_predicate_still_fails",
+      "passed": true
+    },
+    {
+      "name": "complete_actual_child_fully_reaped",
+      "passed": true
+    },
+    {
+      "name": "complete_actual_parent_spec_contains_owned_head_path",
+      "passed": true
+    },
+    {
+      "name": "complete_exactly_one_intent_and_terminal",
+      "passed": true
+    },
+    {
+      "name": "complete_real_child_connection_closed",
+      "passed": true
+    },
+    {
+      "name": "complete_original_15s_and_no_follow",
+      "passed": true
+    },
+    {
+      "name": "complete_raw_head_private_mode",
+      "passed": true
+    },
+    {
+      "name": "actual_parent_complete_success",
+      "passed": true
+    },
+    {
+      "name": "eof_actual_child_fully_reaped",
+      "passed": true
+    },
+    {
+      "name": "eof_actual_parent_spec_contains_owned_head_path",
+      "passed": true
+    },
+    {
+      "name": "eof_exactly_one_intent_and_terminal",
+      "passed": true
+    },
+    {
+      "name": "eof_real_child_connection_closed",
+      "passed": true
+    },
+    {
+      "name": "eof_original_15s_and_no_follow",
+      "passed": true
+    },
+    {
+      "name": "eof_raw_head_private_mode",
+      "passed": true
+    },
+    {
+      "name": "eof_actual_parent_refuses_unknown_no_replay",
+      "passed": true
+    },
+    {
+      "name": "head_write_failure_actual_child_fully_reaped",
+      "passed": true
+    },
+    {
+      "name": "head_write_failure_actual_parent_spec_contains_owned_head_path",
+      "passed": true
+    },
+    {
+      "name": "head_write_failure_exactly_one_intent_and_terminal",
+      "passed": true
+    },
+    {
+      "name": "head_write_failure_real_child_connection_closed",
+      "passed": true
+    },
+    {
+      "name": "head_write_failure_original_15s_and_no_follow",
+      "passed": true
+    },
+    {
+      "name": "head_write_failure_raw_head_private_mode",
+      "passed": true
+    },
+    {
+      "name": "head_write_failure_actual_parent_refuses_unknown_no_replay",
+      "passed": true
+    },
+    {
+      "name": "capture_write_error_keeps_metadata_and_close",
+      "passed": true
+    }
+  ],
+  "checks_passed": 61,
+  "checks_total": 61,
+  "network_connections": 0,
+  "old_r3_eof_library_completion_is_not_strict_wire_completion": true,
+  "original_matrix_and_budgets_retained": true,
+  "product_changed": false,
+  "projections": [
+    {
+      "case": "complete",
+      "projection": {
+        "location_distinct_value_count": 1,
+        "location_header_count": 1,
+        "location_projections": [
+          {
+            "enrolled_origin_exact_match": true,
+            "enrolled_origin_node": 1,
+            "fragment_present": false,
+            "known_route": "snapshot",
+            "parse_succeeded": true,
+            "printable_ascii_uri": true,
+            "requested_path_exact_match": true,
+            "requested_query_exact_match": true,
+            "scheme_is_https": true,
+            "userinfo_present": false,
+            "value_bytes": 52,
+            "value_sha256": "4b2b9704403f3f31ec03dd4100595b58f1cb00954603f99a640c92893e767982"
+          }
+        ],
+        "raw_response_head_private_only": true,
+        "response_header_bytes": 137,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 5,
+        "response_header_sha256": "cc09790d5c42a5d40c6880719b90376108fe01ab037a4d4dec88add2cb2a1796",
+        "response_header_strict_termination": true
+      }
+    },
+    {
+      "case": "eof",
+      "projection": {
+        "location_distinct_value_count": 1,
+        "location_header_count": 1,
+        "location_projections": [
+          {
+            "enrolled_origin_exact_match": true,
+            "enrolled_origin_node": 1,
+            "fragment_present": false,
+            "known_route": "other",
+            "parse_succeeded": true,
+            "printable_ascii_uri": true,
+            "requested_path_exact_match": false,
+            "requested_query_exact_match": true,
+            "scheme_is_https": true,
+            "userinfo_present": false,
+            "value_bytes": 23,
+            "value_sha256": "16af04479cfc02e5af1f88f77def45bfa544086450f0f7c88e349c9a2ccaa44c"
+          }
+        ],
+        "raw_response_head_private_only": true,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": false,
+        "response_header_eof_during_headers": true,
+        "response_header_line_reads": 3,
+        "response_header_sha256": "5233472c4774118520752981d7f7b9eb6c7293b9d4ca74899446b0be6116e55b",
+        "response_header_strict_termination": false
+      }
+    },
+    {
+      "case": "duplicate",
+      "projection": {
+        "location_distinct_value_count": 1,
+        "location_header_count": 2,
+        "location_projections": [
+          {
+            "enrolled_origin_exact_match": true,
+            "enrolled_origin_node": 1,
+            "fragment_present": false,
+            "known_route": "snapshot",
+            "parse_succeeded": true,
+            "printable_ascii_uri": true,
+            "requested_path_exact_match": true,
+            "requested_query_exact_match": true,
+            "scheme_is_https": true,
+            "userinfo_present": false,
+            "value_bytes": 52,
+            "value_sha256": "4b2b9704403f3f31ec03dd4100595b58f1cb00954603f99a640c92893e767982"
+          },
+          {
+            "enrolled_origin_exact_match": true,
+            "enrolled_origin_node": 1,
+            "fragment_present": false,
+            "known_route": "snapshot",
+            "parse_succeeded": true,
+            "printable_ascii_uri": true,
+            "requested_path_exact_match": true,
+            "requested_query_exact_match": true,
+            "scheme_is_https": true,
+            "userinfo_present": false,
+            "value_bytes": 52,
+            "value_sha256": "4b2b9704403f3f31ec03dd4100595b58f1cb00954603f99a640c92893e767982"
+          }
+        ],
+        "raw_response_head_private_only": true,
+        "response_header_bytes": 182,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 5,
+        "response_header_sha256": "d7ec4bc523307d35e20fb3482e8586646bbbda7874229193461dbe1b11137c7b",
+        "response_header_strict_termination": true
+      }
+    },
+    {
+      "case": "foreign",
+      "projection": {
+        "location_distinct_value_count": 1,
+        "location_header_count": 1,
+        "location_projections": [
+          {
+            "enrolled_origin_exact_match": false,
+            "enrolled_origin_node": null,
+            "fragment_present": false,
+            "known_route": "other",
+            "parse_succeeded": true,
+            "printable_ascii_uri": true,
+            "requested_path_exact_match": false,
+            "requested_query_exact_match": false,
+            "scheme_is_https": true,
+            "userinfo_present": false,
+            "value_bytes": 74,
+            "value_sha256": "c984ca2bdf847b4c481c9dc07b7e9722e5f5e3f37f7685c2c9c2ab937757ed0c"
+          }
+        ],
+        "raw_response_head_private_only": true,
+        "response_header_bytes": 140,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "7b1b118b7d9f0b4f892a24978b3cc81242ff32ac15c847af2793d1e0573808ce",
+        "response_header_strict_termination": true
+      }
+    }
+  ],
+  "runtime_started": false,
+  "schema": "normal33-header-capture-no-network-component-review-r3",
+  "source_sha256": "f6770eea97846adaf67aa0672d9f50596a1800b13d00c074aa16bef6f886765d",
+  "test_sha256": "5ce1658f51786025a78ca9582debdac7963f0fa78f420256316a69fe0ab4156c"
+}

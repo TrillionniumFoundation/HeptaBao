@@ -1,0 +1,43 @@
+{
+  "full_replacement_qualified": false,
+  "mac": {
+    "build_passed": true,
+    "elapsed_seconds": 256.7533535002731,
+    "job": "1a1a66dd150-fc05-2513",
+    "native_build_sha256": "0efb0b0fa1371510a8f3e7629ba6dbf5ab32a1aedb8de2c015c9fd02c81fcf38",
+    "result_sha256": "b26066b348907606cb494999a77ec257102c72271b6d192d661af53ba41764cf",
+    "runtime_tested": false,
+    "server_sha256": "b1238d851d507c26c67258e77106987e0c69e0d229893a2d2c814b339786dceb",
+    "shared_common_git_directory_dependency": true
+  },
+  "normal_profile_preserved": true,
+  "production_changed": false,
+  "r4_failure_retained": true,
+  "rog": {
+    "all_owned_groups_gone": true,
+    "compile_seconds": 1216.6551243279973,
+    "failure_names": [
+      "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply",
+      "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex"
+    ],
+    "job": "1a1a666aa43-fc05-24a3",
+    "normal_libtest_build_passed": true,
+    "normal_runtime_passed": false,
+    "result_sha256": "b8aaad7020d819c2eaf690ad3bf56543c9613fc69f2d85104a62eb4c51999166",
+    "runtime_seconds": 38.28250628200476,
+    "source_and_binary_unchanged": true,
+    "tests": {
+      "failed": 2,
+      "passed": 18,
+      "total": 20
+    }
+  },
+  "runtime_qualification": false,
+  "schema": "heptabao.native-ssh-r4-root-build-and-runtime-review.v1",
+  "source_aliases": {
+    "github": "e44dcd87cd9249cf5459ab4d916161971f26222b",
+    "mac": "498a5c0297d7dee93c510bf12e0493a101ca1145",
+    "rog": "71e1cfff25a124d77ee1771c840c4c69b58c573e"
+  },
+  "source_tree": "20a7065b96e16b946c00e09841e0621d813457d6"
+}

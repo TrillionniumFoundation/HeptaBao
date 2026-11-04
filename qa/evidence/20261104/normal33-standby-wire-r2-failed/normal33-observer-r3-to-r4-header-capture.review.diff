@@ -1,0 +1,190 @@
+--- normal33_standby_oracle_r3.py
++++ normal33_standby_oracle_r4.py
+@@ -25,6 +25,7 @@
+ import sys
+ import tarfile
+ import time
++from urllib.parse import urlsplit
+ 
+ BASE = Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+ EXPECTED_SHA = '7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba'
+@@ -39,6 +40,8 @@
+     'build-result.public.json': (BASE / 'normal-33cafa-full128-control-r2/linux-result.public.json', '7fa76585e94fe2e60bbc3ce754f37e4d9d433e4cf576fcc2e39a1e95771f3f42'),
+ }
+ OLD_FENCES = {
++    'normal33-standby-oracle-live-r2/result.public.json': '12cdeb32dc89a7f0af5d1950a2c14a02581a8e98cefd3719c0673a0bd38e68d4',
++    'normal33-standby-oracle-live-r2/partial-wire-assessment.public.json': '3172100f22faa9f23992bf8c6f806ead6c20ff8b68f5821203745c86424c74db',
+     'formal-33cafa-normal-full128-r2/summary.json': '8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1',
+     'formal-33cafa-pocket3-mac1-direct98-r1/summary.json': 'b02a111b487e33065117fc88596113c7e8a7695feb283331165381fafd3c167f',
+     'official271-standby-oracle-live-r1/result.public.json': 'd84a783d817ee7827496182b6f750a1cd995424e554b287f602fd9204f289975',
+@@ -52,6 +55,7 @@
+ HTTP_SECONDS = 15.0
+ READINESS_SECONDS = 45.0
+ MAX_RESPONSE = 16 * 1024 * 1024
++MAX_RESPONSE_HEADERS = 64 * 1024
+ API_PORTS = {1: 48630, 2: 48632, 3: 48634}
+ CLUSTER_PORTS = {n: p + 1 for n, p in API_PORTS.items()}
+ os.umask(0o077)
+@@ -186,6 +190,100 @@
+             'owned_stopped': p.returncode is not None and not group_changed and not members}
+ 
+ 
++class HeaderLineCapture:
++    """Observe only the exact readline calls made by HTTPResponse.begin.
++
++    This does not read ahead, issue an extra socket read, change the socket
++    timeout, or infer that bytes accepted by http.client form a complete head.
++    Raw bytes are bounded and later written only to the owned private folder.
++    """
++    def __init__(self, source):
++        self.source = source
++        self.raw = bytearray()
++        self.enabled = True
++        self.eof_during_headers = False
++        self.line_reads = 0
++        self.bound_exceeded = False
++
++    def readline(self, size=-1):
++        line = self.source.readline(size)
++        if self.enabled:
++            self.line_reads += 1
++            if not line:
++                self.eof_during_headers = True
++            room = MAX_RESPONSE_HEADERS - len(self.raw)
++            self.raw.extend(line[:room])
++            if len(line) > room:
++                self.bound_exceeded = True
++                raise Refused('response_header_capture_exceeds_fixed_bound')
++        return line
++
++    def __getattr__(self, name):
++        return getattr(self.source, name)
++
++
++class CapturedHTTPResponse(http.client.HTTPResponse):
++    def __init__(self, *args, **kwargs):
++        super().__init__(*args, **kwargs)
++        self.header_capture = HeaderLineCapture(self.fp)
++        self.fp = self.header_capture
++
++    def begin(self):
++        try:
++            return super().begin()
++        finally:
++            self.header_capture.enabled = False
++
++
++def safe_response_head_projection(response, target: str) -> dict:
++    capture = response.header_capture
++    raw = bytes(capture.raw)
++    fields = response.headers.get_all('Location', []) if response.headers is not None else []
++    target_parts = urlsplit(target)
++    projections = []
++    for value in fields:
++        encoded = value.encode('iso-8859-1')
++        projected = {
++            'value_bytes': len(encoded), 'value_sha256': hashlib.sha256(encoded).hexdigest(),
++            'printable_ascii_uri': bool(value) and all(33 <= ord(c) <= 126 for c in value),
++            'parse_succeeded': False, 'enrolled_origin_node': None,
++            'enrolled_origin_exact_match': False, 'requested_path_exact_match': False,
++            'requested_query_exact_match': False, 'known_route': 'other',
++            'scheme_is_https': False, 'userinfo_present': False, 'fragment_present': False,
++        }
++        if projected['printable_ascii_uri']:
++            try:
++                parts = urlsplit(value)
++                # Parsing is observational. No parsed location is ever opened.
++                origin = parts.scheme + '://' + parts.netloc
++                node = next((n for n, port in API_PORTS.items()
++                             if origin == f'https://127.0.0.1:{port}'
++                             and value.startswith(origin)), None)
++                route = {'/v1/sys/storage/raft/snapshot': 'snapshot',
++                         '/v1/sys/storage/raft/snapshot-force': 'snapshot_force',
++                         '/v1/sys/storage/raft/snapshot-repair': 'snapshot_repair'}.get(parts.path, 'other')
++                projected.update(parse_succeeded=True, enrolled_origin_node=node,
++                                 enrolled_origin_exact_match=node is not None,
++                                 requested_path_exact_match=parts.path == target_parts.path,
++                                 requested_query_exact_match=parts.query == target_parts.query,
++                                 known_route=route, scheme_is_https=parts.scheme == 'https',
++                                 userinfo_present='@' in parts.netloc, fragment_present=bool(parts.fragment))
++            except ValueError:
++                pass
++        projections.append(projected)
++    return {'response_header_bytes': len(raw), 'response_header_sha256': hashlib.sha256(raw).hexdigest(),
++            'response_header_line_reads': capture.line_reads,
++            'response_header_capture_bound_exceeded': capture.bound_exceeded,
++            'response_header_eof_during_headers': capture.eof_during_headers,
++            'response_header_ends_crlf_crlf': raw.endswith(b'\r\n\r\n'),
++            'response_header_strict_termination': bool(raw) and raw.endswith(b'\r\n\r\n')
++                and not capture.eof_during_headers and not capture.bound_exceeded,
++            'location_header_count': len(fields),
++            'location_distinct_value_count': len(set(fields)),
++            'location_projections': projections,
++            'raw_response_head_private_only': True}
++
++
+ def child_request(spec_path: Path) -> int:
+     """One exchange.  The parent also enforces the same absolute deadline."""
+     spec = json.loads(spec_path.read_text())
+@@ -193,6 +291,7 @@
+     phase = 'before_connect'
+     sent = False
+     connection = None
++    captured_responses = []
+     summary = {'response_complete': False, 'request_sent': False,
+                'outcome_unknown': False, 'phase': phase}
+     started = time.monotonic_ns()
+@@ -208,6 +307,11 @@
+         context.verify_mode = ssl.CERT_REQUIRED
+         connection = http.client.HTTPSConnection('127.0.0.1', spec['port'],
+                                                  context=context, timeout=remaining())
++        def record_response(*args, **kwargs):
++            response = CapturedHTTPResponse(*args, **kwargs)
++            captured_responses.append(response)
++            return response
++        connection.response_class = record_response
+         connection.connect()
+         phase = 'connected_tls'
+         connection.sock.settimeout(remaining())
+@@ -226,6 +330,10 @@
+         connection.sock.settimeout(remaining())
+         phase = 'response_headers'
+         response = connection.getresponse()
++        head_projection = safe_response_head_projection(response, spec['path'])
++        summary.update(status=response.status, http_client_accepted_headers=True, **head_projection)
++        if not head_projection['response_header_strict_termination']:
++            raise Refused('response_header_missing_strict_terminator')
+         raw = bytearray()
+         phase = 'response_body'
+         while True:
+@@ -258,6 +366,10 @@
+                        phase=phase, error_type=type(exc).__name__)
+         returncode = 2
+     finally:
++        if captured_responses:
++            captured = captured_responses[-1]
++            summary.update(safe_response_head_projection(captured, spec['path']))
++            write_new(Path(spec['response_head_file']), bytes(captured.header_capture.raw))
+         if connection is not None:
+             connection.close()
+         summary['elapsed_ms'] = (time.monotonic_ns() - started) / 1e6
+@@ -378,7 +490,9 @@
+             'http_seconds': HTTP_SECONDS, 'readiness_seconds': READINESS_SECONDS,
+             'election_seconds': ELECTION_SECONDS, 'stable_leader_seconds': STABLE_LEADER_SECONDS,
+             'original_peer_timeout_ms': 1500, 'original_forward_timeout_ms': 8000,
+-            'max_response_bytes': MAX_RESPONSE, 'normal_default_features': True,
++            'max_response_bytes': MAX_RESPONSE, 'max_response_header_capture_bytes': MAX_RESPONSE_HEADERS,
++            'response_header_capture': 'passive_readline_tap_private_raw_strict_crlf_terminator',
++            'normal_default_features': True,
+             'node_disable_standby_reads_config': 'not_set_by_this_observer',
+             'redirect_following': False, 'valid_restore_bodies': 0,
+             'old_generations_reopened': False,
+@@ -890,7 +1004,7 @@
+         incomplete_sequences = sorted(set(range(1, self.seq + 1)) - {o['sequence'] for o in self.observations})
+         complete = not incomplete_sequences and self.seq == len(self.observations) and not self.outcome_unknown
+         status = 'completed_observation' if not failed and not verification_error and clean and complete else 'failed'
+-        report = {'schema': 'heptabao-normal33-standby-wire-r1', 'prepared': self.prepared,
++        report = {'schema': 'heptabao-normal33-standby-wire-header-diagnostic-r1', 'prepared': self.prepared,
+                   'status': status, 'failure_code': failed, 'verification_error': verification_error,
+                   'checks': self.checks, 'checks_total': len(self.checks),
+                   'checks_passed': sum(x['passed'] for x in self.checks),

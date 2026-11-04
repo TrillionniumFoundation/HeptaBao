@@ -1,0 +1,273 @@
+{
+  "all_owned_stopped": true,
+  "checks": [
+    {
+      "name": "node_1_official_version",
+      "passed": true
+    },
+    {
+      "name": "node_2_official_version",
+      "passed": true
+    },
+    {
+      "name": "node_3_official_version",
+      "passed": true
+    },
+    {
+      "name": "initialize_complete",
+      "passed": true
+    },
+    {
+      "name": "node1_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "node_1_official_version",
+      "passed": true
+    },
+    {
+      "name": "node2_joined",
+      "passed": true
+    },
+    {
+      "name": "node2_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "node_2_official_version",
+      "passed": true
+    },
+    {
+      "name": "node3_joined",
+      "passed": true
+    },
+    {
+      "name": "node3_unseal_complete",
+      "passed": true
+    },
+    {
+      "name": "node_3_official_version",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_1_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_2_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_before_node_3_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_before_single_actual_leader",
+      "passed": true
+    },
+    {
+      "name": "roles_before_all_report_same_leader",
+      "passed": true
+    },
+    {
+      "name": "both_configured_observation_nodes_are_actual_standbys",
+      "passed": true
+    },
+    {
+      "name": "raft_before_complete",
+      "passed": true
+    },
+    {
+      "name": "mount_kv2_created",
+      "passed": true
+    },
+    {
+      "name": "seed_written",
+      "passed": true
+    },
+    {
+      "name": "node1_snapshot_get_root_complete_archive",
+      "passed": true
+    },
+    {
+      "name": "node2_snapshot_get_none_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node2_snapshot_get_invalid_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node2_snapshot_get_root_complete_archive",
+      "passed": true
+    },
+    {
+      "name": "node3_snapshot_get_none_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node3_snapshot_get_invalid_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node3_snapshot_get_root_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node1_snapshot_invalid_restore_no_success",
+      "passed": true
+    },
+    {
+      "name": "node1_snapshot-force_invalid_restore_no_success",
+      "passed": true
+    },
+    {
+      "name": "node2_snapshot_invalid_restore_no_success",
+      "passed": true
+    },
+    {
+      "name": "node2_snapshot-force_invalid_restore_no_success",
+      "passed": true
+    },
+    {
+      "name": "node3_snapshot_invalid_restore_no_success",
+      "passed": true
+    },
+    {
+      "name": "node3_snapshot_invalid_restore_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node3_snapshot-force_invalid_restore_no_success",
+      "passed": true
+    },
+    {
+      "name": "node3_snapshot-force_invalid_restore_safe_exact_leader_location",
+      "passed": true
+    },
+    {
+      "name": "node2_ordinary_256k_write_once_forward_completed",
+      "passed": true
+    },
+    {
+      "name": "node2_ordinary_256k_write_once_exact_persisted_body",
+      "passed": true
+    },
+    {
+      "name": "node3_ordinary_256k_write_once_forward_completed",
+      "passed": true
+    },
+    {
+      "name": "node3_ordinary_256k_write_once_exact_persisted_body",
+      "passed": true
+    },
+    {
+      "name": "explicit_no_forward_redirect",
+      "passed": true
+    },
+    {
+      "name": "no_forward_mutation_absent",
+      "passed": true
+    },
+    {
+      "name": "roles_after_node_1_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_after_node_2_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_after_node_3_leader_response",
+      "passed": true
+    },
+    {
+      "name": "roles_after_single_actual_leader",
+      "passed": true
+    },
+    {
+      "name": "roles_after_all_report_same_leader",
+      "passed": true
+    },
+    {
+      "name": "observed_roles_remained_exact",
+      "passed": true
+    },
+    {
+      "name": "raft_after_complete",
+      "passed": true
+    }
+  ],
+  "checks_passed": 49,
+  "checks_total": 49,
+  "controller_sha256_after": "4db83e886743f969e10c9590dafa463a2fa7d4a4b75f4af746902d16863dbc01",
+  "elapsed_ms": 30858.928714,
+  "failure_code": null,
+  "formal_heptabao_qualification": false,
+  "http_intents": 51,
+  "http_outcomes": 51,
+  "http_unknown": 0,
+  "official_binary_unchanged": true,
+  "operation_boundary_complete": true,
+  "owned_cleanup": [
+    {
+      "owned_stopped": true,
+      "pid": 1727583,
+      "remaining": [],
+      "start_ticks": 86868060,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 1727524,
+      "remaining": [],
+      "start_ticks": 86867891,
+      "wait_returncode": 0
+    },
+    {
+      "owned_stopped": true,
+      "pid": 1727414,
+      "remaining": [],
+      "start_ticks": 86867704,
+      "wait_returncode": 0
+    }
+  ],
+  "prepared": {
+    "api_ports": {
+      "1": 48620,
+      "2": 48622,
+      "3": 48624
+    },
+    "binary": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-control-r1/artifacts/bao",
+    "binary_bytes": 181760103,
+    "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+    "cluster_ports": {
+      "1": 48621,
+      "2": 48623,
+      "3": 48625
+    },
+    "controller_sha256": "4db83e886743f969e10c9590dafa463a2fa7d4a4b75f4af746902d16863dbc01",
+    "http_seconds": 15.0,
+    "loopback_only": true,
+    "max_response_bytes": 16777216,
+    "node_disable_standby_reads_config": {
+      "1": "omitted",
+      "2": "omitted",
+      "3": true
+    },
+    "official_source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "official_tag": "v2.7.1",
+    "old_generations_reopened": false,
+    "readiness_seconds": 45.0,
+    "redirect_following": false,
+    "valid_restore_bodies": 0,
+    "version_stdout_sha256": "caddfa04794e5e3cdda1564951a2e184bb22ac4ffced9e631fcbf7ec8e94759f",
+    "work_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-oracle-live-r1"
+  },
+  "production_services_touched": false,
+  "schema": "openbao-271-standby-wire-r1",
+  "started_unix_ns": 1793791010398784548,
+  "status": "passed_observation",
+  "terminal_unix_ns": 1793791041257711996,
+  "valid_restore_bodies": 0
+}

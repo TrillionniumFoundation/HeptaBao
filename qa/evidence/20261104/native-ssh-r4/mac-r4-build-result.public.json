@@ -1,0 +1,82 @@
+{
+  "artifacts": {
+    "heptabao-seed": {
+      "bytes": 86641936,
+      "compiler_executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/heptabao-seed",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-owner-r4/build-normal-r1/artifacts/heptabao-seed",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "244da03855182a716e345a2b4f35b7ecc1bcccf334ad108b415b2bbc4b8fcc2a"
+    },
+    "heptabao-server": {
+      "bytes": 92225600,
+      "compiler_executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/heptabao-server",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-owner-r4/build-normal-r1/artifacts/heptabao-server",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "b1238d851d507c26c67258e77106987e0c69e0d229893a2d2c814b339786dceb"
+    }
+  },
+  "build_driver_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-owner-r4/control/build_normal.py",
+  "build_driver_sha256": "026aa2ab4a1af663424ae2d0dcc678a48c4f3b9ba0429574f4bb60345a83dea2",
+  "build_exit_code": 0,
+  "build_finished_success": true,
+  "cargo_events_sha256": "ebf2a49b54f980dc3cf5a9b205be34f31d353506f9e4d74b9bf1180ad4e04a3d",
+  "cargo_stderr_sha256": "0dd027c1d2df60867307f731713e3009900eb27291d064ba545a9cf0ec1b429f",
+  "command": [
+    "cargo",
+    "build",
+    "--release",
+    "--locked",
+    "--offline",
+    "-p",
+    "heptabao-server",
+    "--bin",
+    "heptabao-server",
+    "--bin",
+    "heptabao-seed",
+    "--message-format=json"
+  ],
+  "elapsed_seconds": 256.7533535002731,
+  "formal_qualification": false,
+  "native_abi": "aarch64-apple-darwin",
+  "normal_default_candidate": true,
+  "owned_group_survivors_after_wait": false,
+  "requested_release_profile": {
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_PANIC": "unwind"
+  },
+  "rustc_vv": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: aarch64-apple-darwin\nrelease: 1.98.0\nLLVM version: 22.1.8\n",
+  "schema": "heptabao.native-default-build-result.v1",
+  "source_commit": "498a5c0297d7dee93c510bf12e0493a101ca1145",
+  "source_freeze_verified": true,
+  "source_tree": "20a7065b96e16b946c00e09841e0621d813457d6",
+  "timed_out": false
+}

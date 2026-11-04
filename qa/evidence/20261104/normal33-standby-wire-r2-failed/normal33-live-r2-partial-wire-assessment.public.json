@@ -1,0 +1,5199 @@
+{
+  "boundaries": [
+    {
+      "intent": {
+        "bytes": 492,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871229570263671,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793548577973633,
+          "label": "readiness",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": 871259567832765,
+          "path": "/v1/sys/health?standbyok=true",
+          "redirect_following": false,
+          "sequence": 1,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0001.intent.public.json",
+        "sha256": "84cfa946ffa027c80a99b136fcbf9f4c476c93e646bbc09a68bbf4c3c6442aff"
+      },
+      "outcome": {
+        "bytes": 788,
+        "json": {
+          "caller_elapsed_ms": 309.968017,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "329",
+          "content_type": "application/json",
+          "elapsed_ms": 78.346393,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "readiness",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 329,
+          "response_complete": true,
+          "response_sha256": "009f472396d335be374f6865e846e917a7548492b452e8efe739163c2b972310",
+          "sequence": 1,
+          "status": 501
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0001.outcome.public.json",
+        "sha256": "0bbf2f099cbb3f376a25f2c24db8819df4cb08121c0b43d7e9a11a88dc305d00"
+      },
+      "sequence": 1
+    },
+    {
+      "intent": {
+        "bytes": 477,
+        "json": {
+          "body_bytes": 40,
+          "body_sha256": "183bda49c99399f33998884843250452ba3e020735223e4146a94312d9732a69",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871229890030351,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793548897746348,
+          "label": "seed_initialize_once",
+          "method": "POST",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/init",
+          "redirect_following": false,
+          "sequence": 2,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0002.intent.public.json",
+        "sha256": "ef1c49efd76dcc1bf2e4e816e5863bd5d0e707cf3d722ebca2be3c749ca9e300"
+      },
+      "outcome": {
+        "bytes": 799,
+        "json": {
+          "caller_elapsed_ms": 265.541144,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "287",
+          "content_type": "application/json",
+          "elapsed_ms": 30.735311,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "seed_initialize_once",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 287,
+          "response_complete": true,
+          "response_sha256": "7a870832f447114b2b4a41f615c3bf8734ab5ce64d60c3c2b37a508278d6109b",
+          "sequence": 2,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0002.outcome.public.json",
+        "sha256": "8085bb43e1563226525ac2c513722e2d79d05bdb90d1eaa3305ed4565a4a37c0"
+      },
+      "sequence": 2
+    },
+    {
+      "intent": {
+        "bytes": 475,
+        "json": {
+          "body_bytes": 70,
+          "body_sha256": "79522f6dcac8f245705adc219675eee5dcfbfc045d06c1a7557d78951ef806aa",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871230176830882,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793549184546340,
+          "label": "seed_unseal_once",
+          "method": "POST",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/unseal",
+          "redirect_following": false,
+          "sequence": 3,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0003.intent.public.json",
+        "sha256": "4d3cff7af7e29a65ece83362b765c63cc3bf4489d26bacf9d51774fa2ad32de1"
+      },
+      "outcome": {
+        "bytes": 794,
+        "json": {
+          "caller_elapsed_ms": 280.87041,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "302",
+          "content_type": "application/json",
+          "elapsed_ms": 23.536629,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "seed_unseal_once",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 302,
+          "response_complete": true,
+          "response_sha256": "ab714f9c59d98a20a7e1560257eae5878c440304f2f7299d129fadb44902c380",
+          "sequence": 3,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0003.outcome.public.json",
+        "sha256": "e30aea2fe7bb464377d2b0a55a081a034c607ba709ced87a63ca76e9a291ad29"
+      },
+      "sequence": 3
+    },
+    {
+      "intent": {
+        "bytes": 492,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871230467191349,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793549474901382,
+          "label": "readiness",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": 871260465825514,
+          "path": "/v1/sys/health?standbyok=true",
+          "redirect_following": false,
+          "sequence": 4,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0004.intent.public.json",
+        "sha256": "59235085571f8543874a1f3bc39074de2fda7fe618027fb56cd4cac302b8a281"
+      },
+      "outcome": {
+        "bytes": 787,
+        "json": {
+          "caller_elapsed_ms": 261.32556,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "363",
+          "content_type": "application/json",
+          "elapsed_ms": 11.574087,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "readiness",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 363,
+          "response_complete": true,
+          "response_sha256": "0c3f1fe2df53b208922628d1dc738cfa85b03b2e5bb8f1a4e292e95fe1f17716",
+          "sequence": 4,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0004.outcome.public.json",
+        "sha256": "097643dc9012c55f11deffb20553f6cccfbab7c4a361bbba7d343664655adcf2"
+      },
+      "sequence": 4
+    },
+    {
+      "intent": {
+        "bytes": 483,
+        "json": {
+          "body_bytes": 39,
+          "body_sha256": "c3d74e38f3a73ed4f46b635eb4f27fa6b53f5c92b0357ec35a4fd8a82cd91de7",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871230736638608,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793549744345551,
+          "label": "seed_mount_kv2_once",
+          "method": "POST",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/mounts/wire",
+          "redirect_following": false,
+          "sequence": 5,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0005.intent.public.json",
+        "sha256": "74c8a5f53b6a24c6e6babeec34c348a822eb43d83e085fbc21cd70b4afa4a1de"
+      },
+      "outcome": {
+        "bytes": 772,
+        "json": {
+          "caller_elapsed_ms": 269.09671,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": null,
+          "content_type": "application/json",
+          "elapsed_ms": 18.858684,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "seed_mount_kv2_once",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 0,
+          "response_complete": true,
+          "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "sequence": 5,
+          "status": 204
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0005.outcome.public.json",
+        "sha256": "32e102bc1e5bfceaadf3ca5e5d4c11c8ecc225256d91e983a97be7998f37f0d2"
+      },
+      "sequence": 5
+    },
+    {
+      "intent": {
+        "bytes": 482,
+        "json": {
+          "body_bytes": 62,
+          "body_sha256": "f5c5c53b05db253e2e4cea495990d0e6e3382bf09025c8e45ef8d29de9e8084d",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871231012464445,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793550020172241,
+          "label": "seed_version_1_once",
+          "method": "POST",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/wire/data/seed",
+          "redirect_following": false,
+          "sequence": 6,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0006.intent.public.json",
+        "sha256": "7975f1cc4f542ed702a8619dd05e8fd608ace9653b3aedaffb13c0b551740cfd"
+      },
+      "outcome": {
+        "bytes": 797,
+        "json": {
+          "caller_elapsed_ms": 282.58642,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "279",
+          "content_type": "application/json",
+          "elapsed_ms": 22.773881,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "seed_version_1_once",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 279,
+          "response_complete": true,
+          "response_sha256": "136d8b1c836854e2a28ea027e9892e20adc78b690fa20ec45fb7b1cbea0b7c92",
+          "sequence": 6,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0006.outcome.public.json",
+        "sha256": "9b2782bc8f698e6bd484f01ac197b5660b6c9d3a8c0bbc74da5a86a18db74954"
+      },
+      "sequence": 6
+    },
+    {
+      "intent": {
+        "bytes": 482,
+        "json": {
+          "body_bytes": 62,
+          "body_sha256": "571f8eb09ebd399de5f6a7482cdaae93b2c51d001a865b914fe4f7db5200047b",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871231302066515,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793550309779819,
+          "label": "seed_version_2_once",
+          "method": "POST",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/wire/data/seed",
+          "redirect_following": false,
+          "sequence": 7,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0007.intent.public.json",
+        "sha256": "ace67eb84b3d9ea5da20a032db30b48a4f04818982a5762774be9c04cb6caa3f"
+      },
+      "outcome": {
+        "bytes": 797,
+        "json": {
+          "caller_elapsed_ms": 264.224036,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "279",
+          "content_type": "application/json",
+          "elapsed_ms": 19.87845,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "seed_version_2_once",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 279,
+          "response_complete": true,
+          "response_sha256": "c2a052551c35fc838217d48ab1fec0e7c7553633926fac271df895f3261a30a1",
+          "sequence": 7,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0007.outcome.public.json",
+        "sha256": "e6f4aa0266fde80ac15db38a4128936aa279f09e62797100e50bcd22d70de340"
+      },
+      "sequence": 7
+    },
+    {
+      "intent": {
+        "bytes": 481,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871231573380632,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793550581093475,
+          "label": "seed_capacity",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/internal/capacity",
+          "redirect_following": false,
+          "sequence": 8,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0008.intent.public.json",
+        "sha256": "004f57ccb53a96573235c3d240e6236d703cb49f36eba6bb4d9f1e79d7139bcf"
+      },
+      "outcome": {
+        "bytes": 794,
+        "json": {
+          "caller_elapsed_ms": 264.012349,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "1904",
+          "content_type": "application/json",
+          "elapsed_ms": 13.946744,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "seed_capacity",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 1904,
+          "response_complete": true,
+          "response_sha256": "fe247ad14ff68712c4c7d0725d894aeb0182acc03c0ab297bcb608304c9f41c6",
+          "sequence": 8,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0008.outcome.public.json",
+        "sha256": "89fc7f5010c6284c6f285994c97f194b44ccb0998a474137a21f8e48bf23fb28"
+      },
+      "sequence": 8
+    },
+    {
+      "intent": {
+        "bytes": 478,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871231844852533,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793550852559520,
+          "label": "seed_cluster_identity",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 9,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0009.intent.public.json",
+        "sha256": "de04f435e5a34c7f39b664a4ed5c11b41a1ae7810335a6930d8adbb775f6f275"
+      },
+      "outcome": {
+        "bytes": 800,
+        "json": {
+          "caller_elapsed_ms": 273.321178,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "363",
+          "content_type": "application/json",
+          "elapsed_ms": 10.926063,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "seed_cluster_identity",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 363,
+          "response_complete": true,
+          "response_sha256": "ac506c81b3d8546696a8bb568a313e3b35e00943c2eb33d26d17e1c58677bb18",
+          "sequence": 9,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0009.outcome.public.json",
+        "sha256": "28e0f82290a3a24103c3ad6d3586b61540b7cf7783d285e24551b8731fff3f40"
+      },
+      "sequence": 9
+    },
+    {
+      "intent": {
+        "bytes": 493,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871232262929486,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793551270641009,
+          "label": "readiness",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": 871262259077938,
+          "path": "/v1/sys/health?standbyok=true",
+          "redirect_following": false,
+          "sequence": 10,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0010.intent.public.json",
+        "sha256": "cdf07b248b42525bbc2582eef4e34d91bb61215581f1e0be244ee83dcb0ec21e"
+      },
+      "outcome": {
+        "bytes": 376,
+        "json": {
+          "caller_elapsed_ms": 260.508839,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 2,
+          "elapsed_ms": 4.368309,
+          "error_type": "ConnectionRefusedError",
+          "label": "readiness",
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "before_connect",
+          "request_sent": false,
+          "response_complete": false,
+          "sequence": 10
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0010.outcome.public.json",
+        "sha256": "67ab3bc64253b81ace883d1bf67adf3a4e0c80ac7af303ca49d0b96fdf27d302"
+      },
+      "sequence": 10
+    },
+    {
+      "intent": {
+        "bytes": 493,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871232638206671,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793551645921635,
+          "label": "readiness",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": 871262259077938,
+          "path": "/v1/sys/health?standbyok=true",
+          "redirect_following": false,
+          "sequence": 11,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0011.intent.public.json",
+        "sha256": "4b60202fb30feb343b622f9bd3c181bcc35f1166b900d4ec917ec9393a701e64"
+      },
+      "outcome": {
+        "bytes": 789,
+        "json": {
+          "caller_elapsed_ms": 238.810725,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "318",
+          "content_type": "application/json",
+          "elapsed_ms": 13.647561,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "readiness",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 318,
+          "response_complete": true,
+          "response_sha256": "1ad2facab4c348c6871dc324cb052678aa90a7e0901799bc14cbd65bc6a3a1c9",
+          "sequence": 11,
+          "status": 503
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0011.outcome.public.json",
+        "sha256": "3f99b0a3a34e8a5bb2ca18df62eff52df6161ec053c05a04478bd9a560886d43"
+      },
+      "sequence": 11
+    },
+    {
+      "intent": {
+        "bytes": 493,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871232884067178,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793551891780282,
+          "label": "readiness",
+          "method": "GET",
+          "node": 2,
+          "parent_deadline_monotonic_ns": 871262881730471,
+          "path": "/v1/sys/health?standbyok=true",
+          "redirect_following": false,
+          "sequence": 12,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0012.intent.public.json",
+        "sha256": "a3bda9e9e094ec35202fce6dd4834e705624b4acfc500d4f68fe7e7ec2bd288e"
+      },
+      "outcome": {
+        "bytes": 789,
+        "json": {
+          "caller_elapsed_ms": 234.568636,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "318",
+          "content_type": "application/json",
+          "elapsed_ms": 11.252799,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "readiness",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 318,
+          "response_complete": true,
+          "response_sha256": "99703959f56842f957a50083cb46f0f34fefb430f109718860fc9e95e15567ac",
+          "sequence": 12,
+          "status": 503
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0012.outcome.public.json",
+        "sha256": "b2f4f6a15fe1cca083424a6d4e0f7a993c81ec02cfcfa1df0a527f64169b450f"
+      },
+      "sequence": 12
+    },
+    {
+      "intent": {
+        "bytes": 493,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871233124505610,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793552132212267,
+          "label": "readiness",
+          "method": "GET",
+          "node": 3,
+          "parent_deadline_monotonic_ns": 871263123031681,
+          "path": "/v1/sys/health?standbyok=true",
+          "redirect_following": false,
+          "sequence": 13,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0013.intent.public.json",
+        "sha256": "acf855dddd5b2f14f6b80335cab3aab7bf93b15a83f8cdf5e79bb4a9908c36d1"
+      },
+      "outcome": {
+        "bytes": 789,
+        "json": {
+          "caller_elapsed_ms": 235.374818,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "318",
+          "content_type": "application/json",
+          "elapsed_ms": 12.328356,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "readiness",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 318,
+          "response_complete": true,
+          "response_sha256": "99703959f56842f957a50083cb46f0f34fefb430f109718860fc9e95e15567ac",
+          "sequence": 13,
+          "status": 503
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0013.outcome.public.json",
+        "sha256": "708adbf21316cc054d21109b61fd7f09acd853c8a7cf754be8262421ccaa3787"
+      },
+      "sequence": 13
+    },
+    {
+      "intent": {
+        "bytes": 484,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871233367121280,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793552374831913,
+          "label": "sealed_election",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": 871278365453371,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 14,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0014.intent.public.json",
+        "sha256": "b8c5ef6dc217a501a7f3595b1223ca82e3d1edfbdb7167cfc9dcf387ea86ec94"
+      },
+      "outcome": {
+        "bytes": 795,
+        "json": {
+          "caller_elapsed_ms": 235.089599,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "318",
+          "content_type": "application/json",
+          "elapsed_ms": 10.717074,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "sealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 318,
+          "response_complete": true,
+          "response_sha256": "f84229c1c77fb8d5890ee1ad5fe6b2de1a4f31a73d4deeeeee5ecd1b8b30bccd",
+          "sequence": 14,
+          "status": 503
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0014.outcome.public.json",
+        "sha256": "6012c9b9f60e4b651ac3f3d511e0ed94c26c795d6102aef5d7d4c50ad209fc44"
+      },
+      "sequence": 14
+    },
+    {
+      "intent": {
+        "bytes": 484,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871233608428723,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793552616136477,
+          "label": "sealed_election",
+          "method": "GET",
+          "node": 2,
+          "parent_deadline_monotonic_ns": 871278365453371,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 15,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0015.intent.public.json",
+        "sha256": "180a54d83fad9d7c7887d67322ed84c04e1e4bbead05497bda7d10e087a06b72"
+      },
+      "outcome": {
+        "bytes": 794,
+        "json": {
+          "caller_elapsed_ms": 234.410471,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "318",
+          "content_type": "application/json",
+          "elapsed_ms": 9.043458,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "sealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 318,
+          "response_complete": true,
+          "response_sha256": "99703959f56842f957a50083cb46f0f34fefb430f109718860fc9e95e15567ac",
+          "sequence": 15,
+          "status": 503
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0015.outcome.public.json",
+        "sha256": "72d1fa924fbc6ceb1bcb56140e94b35d7ee12dffa43f6bfdd97e4da206c378b9"
+      },
+      "sequence": 15
+    },
+    {
+      "intent": {
+        "bytes": 484,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871233848646871,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793552856355251,
+          "label": "sealed_election",
+          "method": "GET",
+          "node": 3,
+          "parent_deadline_monotonic_ns": 871278365453371,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 16,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0016.intent.public.json",
+        "sha256": "7c3c9ab65908d785350fd494f8b358425e40a2072a132b351784acae209b3fd7"
+      },
+      "outcome": {
+        "bytes": 794,
+        "json": {
+          "caller_elapsed_ms": 233.458137,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "318",
+          "content_type": "application/json",
+          "elapsed_ms": 9.609025,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "sealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 318,
+          "response_complete": true,
+          "response_sha256": "99703959f56842f957a50083cb46f0f34fefb430f109718860fc9e95e15567ac",
+          "sequence": 16,
+          "status": 503
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0016.outcome.public.json",
+        "sha256": "9923aa2723d55d19cf69f121162d3c05da71fed944328c728a7243d22f60cbee"
+      },
+      "sequence": 16
+    },
+    {
+      "intent": {
+        "bytes": 484,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871234188194581,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793553195902900,
+          "label": "sealed_election",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": 871278365453371,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 17,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0017.intent.public.json",
+        "sha256": "746dad02573ec9ed58ed412c316455167e0cbf9abd820d7cc55d0d0c0779738f"
+      },
+      "outcome": {
+        "bytes": 795,
+        "json": {
+          "caller_elapsed_ms": 235.414333,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "318",
+          "content_type": "application/json",
+          "elapsed_ms": 11.122254,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "sealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 318,
+          "response_complete": true,
+          "response_sha256": "3ea1054b68d21ea767d46b9b93a5656e4adc901259c5cf1bfff2b3bb511d336a",
+          "sequence": 17,
+          "status": 503
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0017.outcome.public.json",
+        "sha256": "6f06c1d43206c6c70001a06018ac6ee07e67541fb6a73bf0d8f1890b001964e1"
+      },
+      "sequence": 17
+    },
+    {
+      "intent": {
+        "bytes": 484,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871234429330296,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793553437039357,
+          "label": "sealed_election",
+          "method": "GET",
+          "node": 2,
+          "parent_deadline_monotonic_ns": 871278365453371,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 18,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0018.intent.public.json",
+        "sha256": "dbeb6715fb042fd15e0898872072f892cf81ffc65420d838b2ad2b0d6f8868ec"
+      },
+      "outcome": {
+        "bytes": 793,
+        "json": {
+          "caller_elapsed_ms": 235.026776,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "318",
+          "content_type": "application/json",
+          "elapsed_ms": 9.07247,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "sealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 318,
+          "response_complete": true,
+          "response_sha256": "b9ab2bc4d4a26faa72dc5a6bd2f424e032855b0441e4099a2e52677bb55fe800",
+          "sequence": 18,
+          "status": 503
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0018.outcome.public.json",
+        "sha256": "d79485f0c1ab2905817315a6cf8740ba094edbb6ccd4d64e7852a24d0f94dc55"
+      },
+      "sequence": 18
+    },
+    {
+      "intent": {
+        "bytes": 484,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871234682097508,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793553689806405,
+          "label": "sealed_election",
+          "method": "GET",
+          "node": 3,
+          "parent_deadline_monotonic_ns": 871278365453371,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 19,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0019.intent.public.json",
+        "sha256": "9fb7c224041c58e6663681c1d3e5dd49d1b6d8a33f527818f34db56f09ed6fdd"
+      },
+      "outcome": {
+        "bytes": 794,
+        "json": {
+          "caller_elapsed_ms": 240.021212,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "318",
+          "content_type": "application/json",
+          "elapsed_ms": 9.360124,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "sealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 318,
+          "response_complete": true,
+          "response_sha256": "b9ab2bc4d4a26faa72dc5a6bd2f424e032855b0441e4099a2e52677bb55fe800",
+          "sequence": 19,
+          "status": 503
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0019.outcome.public.json",
+        "sha256": "777e09c7a32b23f10b24e6f243ffe2add591d80d635122a9cb974eeed6537571"
+      },
+      "sequence": 19
+    },
+    {
+      "intent": {
+        "bytes": 484,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871235028289012,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793554035999192,
+          "label": "sealed_election",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": 871278365453371,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 20,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0020.intent.public.json",
+        "sha256": "556a04bfb8cd6954715e2dd607fdbc706299c7eca15a37a8435da70d308105fe"
+      },
+      "outcome": {
+        "bytes": 795,
+        "json": {
+          "caller_elapsed_ms": 233.679235,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "318",
+          "content_type": "application/json",
+          "elapsed_ms": 11.611788,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "sealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 318,
+          "response_complete": true,
+          "response_sha256": "12b63e0a13119141ac9a3eb27c0aa05502ab7336f5051d0ffeae2140b8efab51",
+          "sequence": 20,
+          "status": 503
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0020.outcome.public.json",
+        "sha256": "784a624e027c95de7776b7b789c5c9268c1a8fd419fd6604584794760f148bf1"
+      },
+      "sequence": 20
+    },
+    {
+      "intent": {
+        "bytes": 484,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871235268101163,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793554275808513,
+          "label": "sealed_election",
+          "method": "GET",
+          "node": 2,
+          "parent_deadline_monotonic_ns": 871278365453371,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 21,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0021.intent.public.json",
+        "sha256": "fd312a8ec60ba0aac8068fb701a8e5a75b161916a2da9ed71cc123129db05039"
+      },
+      "outcome": {
+        "bytes": 795,
+        "json": {
+          "caller_elapsed_ms": 333.374592,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "318",
+          "content_type": "application/json",
+          "elapsed_ms": 96.908113,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "sealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 318,
+          "response_complete": true,
+          "response_sha256": "93bbadeb89d97e6eca74e988f3f11e0e0113dd90cf5584d7d6e06f7be566c4d0",
+          "sequence": 21,
+          "status": 503
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0021.outcome.public.json",
+        "sha256": "88e0bc39498b33ace7239b1ee6e92a7b6a1a21e8f38214bf54f308684b709770"
+      },
+      "sequence": 21
+    },
+    {
+      "intent": {
+        "bytes": 484,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871235618959411,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793554626668035,
+          "label": "sealed_election",
+          "method": "GET",
+          "node": 3,
+          "parent_deadline_monotonic_ns": 871278365453371,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 22,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0022.intent.public.json",
+        "sha256": "42b59348748ff0e9cd987c2503a16e49332316e7f6230e11868bfde47a092331"
+      },
+      "outcome": {
+        "bytes": 795,
+        "json": {
+          "caller_elapsed_ms": 232.944468,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "318",
+          "content_type": "application/json",
+          "elapsed_ms": 43.665815,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "sealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 318,
+          "response_complete": true,
+          "response_sha256": "93bbadeb89d97e6eca74e988f3f11e0e0113dd90cf5584d7d6e06f7be566c4d0",
+          "sequence": 22,
+          "status": 503
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0022.outcome.public.json",
+        "sha256": "d3cdc88d6eea074f9f1695544c9c67375999fbf38e23b90b5156558a66c805cb"
+      },
+      "sequence": 22
+    },
+    {
+      "intent": {
+        "bytes": 484,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871235999689714,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793555007399036,
+          "label": "sealed_election",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": 871278365453371,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 23,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0023.intent.public.json",
+        "sha256": "d8ba0aae79d094a2cdd63a66fac1f76de6e4daab32514ac4f43aa75cdc0b5a6e"
+      },
+      "outcome": {
+        "bytes": 794,
+        "json": {
+          "caller_elapsed_ms": 234.128958,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "318",
+          "content_type": "application/json",
+          "elapsed_ms": 12.11631,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "sealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 318,
+          "response_complete": true,
+          "response_sha256": "33e595ed3573c3fcade9be796a996f9ddbeb732f770a9afa2e28b3a517effbe9",
+          "sequence": 23,
+          "status": 503
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0023.outcome.public.json",
+        "sha256": "530e2607593b77f0fba31045fe0eee7d2f7141dfb7f1484a781f305fe9560a53"
+      },
+      "sequence": 23
+    },
+    {
+      "intent": {
+        "bytes": 484,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871236240991802,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793555248715600,
+          "label": "sealed_election",
+          "method": "GET",
+          "node": 2,
+          "parent_deadline_monotonic_ns": 871278365453371,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 24,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0024.intent.public.json",
+        "sha256": "e93aa4994915a110a49787e06250732aed711ce9abeea9891342999ba65df428"
+      },
+      "outcome": {
+        "bytes": 794,
+        "json": {
+          "caller_elapsed_ms": 245.019433,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "318",
+          "content_type": "application/json",
+          "elapsed_ms": 11.15524,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "sealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 318,
+          "response_complete": true,
+          "response_sha256": "580ab4328f52c48105f56e1e11d13a3fc2b09da6bde5ec883fd262089c0abe83",
+          "sequence": 24,
+          "status": 503
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0024.outcome.public.json",
+        "sha256": "c54bcb99e898ceefad4b3b537644db89943fbe493a870164c6402c462c2b4576"
+      },
+      "sequence": 24
+    },
+    {
+      "intent": {
+        "bytes": 484,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871236492295061,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793555500003273,
+          "label": "sealed_election",
+          "method": "GET",
+          "node": 3,
+          "parent_deadline_monotonic_ns": 871278365453371,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 25,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0025.intent.public.json",
+        "sha256": "69bd0568df60852d8017ceb64ca6980ae432f8469a94edd0bae1a938bcdf5fd5"
+      },
+      "outcome": {
+        "bytes": 794,
+        "json": {
+          "caller_elapsed_ms": 243.154706,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "318",
+          "content_type": "application/json",
+          "elapsed_ms": 9.423653,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "sealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 318,
+          "response_complete": true,
+          "response_sha256": "580ab4328f52c48105f56e1e11d13a3fc2b09da6bde5ec883fd262089c0abe83",
+          "sequence": 25,
+          "status": 503
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0025.outcome.public.json",
+        "sha256": "a89b57c281300475285218056a3766d11da2d7f0fbb89ca92a65bd48c3200c6f"
+      },
+      "sequence": 25
+    },
+    {
+      "intent": {
+        "bytes": 484,
+        "json": {
+          "body_bytes": 70,
+          "body_sha256": "79522f6dcac8f245705adc219675eee5dcfbfc045d06c1a7557d78951ef806aa",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871236741284636,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793555748989795,
+          "label": "node1_native_unseal_once",
+          "method": "POST",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/unseal",
+          "redirect_following": false,
+          "sequence": 26,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0026.intent.public.json",
+        "sha256": "cf0aec89dbafc897147c26d7afd1e77b4e0c4dc97e605e94351b8d161882c99d"
+      },
+      "outcome": {
+        "bytes": 825,
+        "json": {
+          "caller_elapsed_ms": 292.949123,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "290",
+          "content_type": "application/json",
+          "elapsed_ms": 97.570153,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security",
+            "x-vault-index"
+          ],
+          "label": "node1_native_unseal_once",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 290,
+          "response_complete": true,
+          "response_sha256": "22961cff700397c39bbca7d498c586e6457d0cab620ce551ae967d08f44e3b92",
+          "sequence": 26,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0026.outcome.public.json",
+        "sha256": "6e77d5fbca9acc48c4a9c57245d42a6c6b0ebb07ce15db1bd8a654ed8ca69111"
+      },
+      "sequence": 26
+    },
+    {
+      "intent": {
+        "bytes": 484,
+        "json": {
+          "body_bytes": 70,
+          "body_sha256": "79522f6dcac8f245705adc219675eee5dcfbfc045d06c1a7557d78951ef806aa",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871237040472798,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793556048180207,
+          "label": "node2_native_unseal_once",
+          "method": "POST",
+          "node": 2,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/unseal",
+          "redirect_following": false,
+          "sequence": 27,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0027.intent.public.json",
+        "sha256": "3717120c42d5e005e604e468b640f8810df4d5fb9479a4704a31ba1faa9788a2"
+      },
+      "outcome": {
+        "bytes": 804,
+        "json": {
+          "caller_elapsed_ms": 238.968486,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "290",
+          "content_type": "application/json",
+          "elapsed_ms": 32.180549,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "node2_native_unseal_once",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 290,
+          "response_complete": true,
+          "response_sha256": "22961cff700397c39bbca7d498c586e6457d0cab620ce551ae967d08f44e3b92",
+          "sequence": 27,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0027.outcome.public.json",
+        "sha256": "7e0808f8444e2545cdc73da05499cfb6b5369b82d97312351cdcc4b9f0a6cfcf"
+      },
+      "sequence": 27
+    },
+    {
+      "intent": {
+        "bytes": 484,
+        "json": {
+          "body_bytes": 70,
+          "body_sha256": "79522f6dcac8f245705adc219675eee5dcfbfc045d06c1a7557d78951ef806aa",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871237285480246,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793556293186974,
+          "label": "node3_native_unseal_once",
+          "method": "POST",
+          "node": 3,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/unseal",
+          "redirect_following": false,
+          "sequence": 28,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0028.intent.public.json",
+        "sha256": "2e2d742ef5cec19d02efa841c2797fd50a9a59f1513b0e63c06753bd58962ddc"
+      },
+      "outcome": {
+        "bytes": 804,
+        "json": {
+          "caller_elapsed_ms": 234.467349,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "290",
+          "content_type": "application/json",
+          "elapsed_ms": 29.928046,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "node3_native_unseal_once",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 290,
+          "response_complete": true,
+          "response_sha256": "22961cff700397c39bbca7d498c586e6457d0cab620ce551ae967d08f44e3b92",
+          "sequence": 28,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0028.outcome.public.json",
+        "sha256": "396cdc86250fc2929db2d18a5d242b69fa11f1f35f91bbc5bfebec3451a22901"
+      },
+      "sequence": 28
+    },
+    {
+      "intent": {
+        "bytes": 486,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871237526090749,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793556533797168,
+          "label": "unsealed_election",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": 871282524822915,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 29,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0029.intent.public.json",
+        "sha256": "487ec5167bda06e3ca7b624a423f22a31cda08d80a8e4d382df0355404b3933a"
+      },
+      "outcome": {
+        "bytes": 796,
+        "json": {
+          "caller_elapsed_ms": 232.59146,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "352",
+          "content_type": "application/json",
+          "elapsed_ms": 12.709894,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "unsealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 352,
+          "response_complete": true,
+          "response_sha256": "6fa47d78e429e0e9cfd22defd3ecab4c0e5678aed6219eaf641214ecf9380bce",
+          "sequence": 29,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0029.outcome.public.json",
+        "sha256": "1bba68213e15da8d1986542869a538eb295dc4a29ba49d9556a30422f62d0b81"
+      },
+      "sequence": 29
+    },
+    {
+      "intent": {
+        "bytes": 486,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871237764341462,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793556772050726,
+          "label": "unsealed_election",
+          "method": "GET",
+          "node": 2,
+          "parent_deadline_monotonic_ns": 871282524822915,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 30,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0030.intent.public.json",
+        "sha256": "a334d64a2af834cb22ad1be345f82902b36f7813d257be58def004bf977790f7"
+      },
+      "outcome": {
+        "bytes": 796,
+        "json": {
+          "caller_elapsed_ms": 235.359344,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "353",
+          "content_type": "application/json",
+          "elapsed_ms": 9.727265,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "unsealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 353,
+          "response_complete": true,
+          "response_sha256": "415d8625e9e58b710be1d28420787e0811d0685880c9344b8aa2c56aa9f72d9d",
+          "sequence": 30,
+          "status": 429
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0030.outcome.public.json",
+        "sha256": "7c434bb319720e48dcb3b5054b0f56ed1473c9297ad0c23bf7b5db3933446d50"
+      },
+      "sequence": 30
+    },
+    {
+      "intent": {
+        "bytes": 486,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871238005400262,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793557013109163,
+          "label": "unsealed_election",
+          "method": "GET",
+          "node": 3,
+          "parent_deadline_monotonic_ns": 871282524822915,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 31,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0031.intent.public.json",
+        "sha256": "43d374debf9ad0ba406f9eb31f342c60d5849db7871ae3522e2a12b8d4c7a013"
+      },
+      "outcome": {
+        "bytes": 796,
+        "json": {
+          "caller_elapsed_ms": 235.423462,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "353",
+          "content_type": "application/json",
+          "elapsed_ms": 9.282635,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "unsealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 353,
+          "response_complete": true,
+          "response_sha256": "d94b1c72724da822d5f8fbca3fc66cce24d74bda08ab2b71a0acb64ece0a692c",
+          "sequence": 31,
+          "status": 429
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0031.outcome.public.json",
+        "sha256": "32e3278509cdf4f16a83d401a72dfa63633ef079913ed37da489632c3f359839"
+      },
+      "sequence": 31
+    },
+    {
+      "intent": {
+        "bytes": 486,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871238346884062,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793557354589476,
+          "label": "unsealed_election",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": 871282524822915,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 32,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0032.intent.public.json",
+        "sha256": "16729054ccb82d469014311ff75f941e4bb0480aed668ff55a52495a6875cf72"
+      },
+      "outcome": {
+        "bytes": 797,
+        "json": {
+          "caller_elapsed_ms": 236.619421,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "352",
+          "content_type": "application/json",
+          "elapsed_ms": 13.200757,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "unsealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 352,
+          "response_complete": true,
+          "response_sha256": "16dddb170f25cd43ae0b995cb76da97a8d967b0c897074a0d32a092c57e36b97",
+          "sequence": 32,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0032.outcome.public.json",
+        "sha256": "1723da38651b96fb5c34d65e6698330c776564a87f1d55e55e1fc301412eb1f9"
+      },
+      "sequence": 32
+    },
+    {
+      "intent": {
+        "bytes": 486,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871238590452770,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793557598160087,
+          "label": "unsealed_election",
+          "method": "GET",
+          "node": 2,
+          "parent_deadline_monotonic_ns": 871282524822915,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 33,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0033.intent.public.json",
+        "sha256": "966d829200ae0c41a297d144f2f088dd5c4ffbf9dfb3dc472b2e42ae91084d61"
+      },
+      "outcome": {
+        "bytes": 795,
+        "json": {
+          "caller_elapsed_ms": 233.13039,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "353",
+          "content_type": "application/json",
+          "elapsed_ms": 8.948357,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "unsealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 353,
+          "response_complete": true,
+          "response_sha256": "d94b1c72724da822d5f8fbca3fc66cce24d74bda08ab2b71a0acb64ece0a692c",
+          "sequence": 33,
+          "status": 429
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0033.outcome.public.json",
+        "sha256": "6932b3796d95bbbf4b56c22bdd8f047a320ecd034ac0ec8412f2f9be2d49884f"
+      },
+      "sequence": 33
+    },
+    {
+      "intent": {
+        "bytes": 486,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871238829354886,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793557837063245,
+          "label": "unsealed_election",
+          "method": "GET",
+          "node": 3,
+          "parent_deadline_monotonic_ns": 871282524822915,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 34,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0034.intent.public.json",
+        "sha256": "eecf556586336e70a973eb01212fd57beb10c4ce1c457b876057a616d58c9c1c"
+      },
+      "outcome": {
+        "bytes": 796,
+        "json": {
+          "caller_elapsed_ms": 233.367523,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "353",
+          "content_type": "application/json",
+          "elapsed_ms": 8.948473,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "unsealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 353,
+          "response_complete": true,
+          "response_sha256": "d94b1c72724da822d5f8fbca3fc66cce24d74bda08ab2b71a0acb64ece0a692c",
+          "sequence": 34,
+          "status": 429
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0034.outcome.public.json",
+        "sha256": "4686ff9749bb6e805a136d107dafd555f381bd7b81c31d99809b083e561dd822"
+      },
+      "sequence": 34
+    },
+    {
+      "intent": {
+        "bytes": 486,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871239168748496,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793558176453796,
+          "label": "unsealed_election",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": 871282524822915,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 35,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0035.intent.public.json",
+        "sha256": "261d5a913483d6577d09c14025f21cd3f69b07d08dd22854f55d925ccfa25ed2"
+      },
+      "outcome": {
+        "bytes": 796,
+        "json": {
+          "caller_elapsed_ms": 276.77866,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "352",
+          "content_type": "application/json",
+          "elapsed_ms": 11.526532,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "unsealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 352,
+          "response_complete": true,
+          "response_sha256": "8ff5dec8e7611d772a6905776e2c9a72673226dfdfeadc18b30e92850fc76205",
+          "sequence": 35,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0035.outcome.public.json",
+        "sha256": "9b8cac6822cd4a782e73ff7081609f715b66e41b77063d5be369747478c7b50b"
+      },
+      "sequence": 35
+    },
+    {
+      "intent": {
+        "bytes": 486,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871239451754189,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793558459466505,
+          "label": "unsealed_election",
+          "method": "GET",
+          "node": 2,
+          "parent_deadline_monotonic_ns": 871282524822915,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 36,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0036.intent.public.json",
+        "sha256": "632b28075d1ae947cb2ab5604f5df4ad854e85a64a9e316d01459d47449070ab"
+      },
+      "outcome": {
+        "bytes": 796,
+        "json": {
+          "caller_elapsed_ms": 244.113226,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "353",
+          "content_type": "application/json",
+          "elapsed_ms": 10.07443,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "unsealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 353,
+          "response_complete": true,
+          "response_sha256": "278cf48718f73ea74ca0fa09555db1b61c65c0162d234173c1b927d21d744caa",
+          "sequence": 36,
+          "status": 429
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0036.outcome.public.json",
+        "sha256": "805b7e73e4870e867a7b74d19b9ed30e9f47ff3eac5aca127c2e23f472544fa6"
+      },
+      "sequence": 36
+    },
+    {
+      "intent": {
+        "bytes": 486,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871239701900338,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793558709610238,
+          "label": "unsealed_election",
+          "method": "GET",
+          "node": 3,
+          "parent_deadline_monotonic_ns": 871282524822915,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 37,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0037.intent.public.json",
+        "sha256": "e9fab13a5a15b9a9c8d1ad2d82a897cef116df71efe26756821ee5c8b80fc27b"
+      },
+      "outcome": {
+        "bytes": 797,
+        "json": {
+          "caller_elapsed_ms": 301.694806,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "353",
+          "content_type": "application/json",
+          "elapsed_ms": 29.314844,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "unsealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 353,
+          "response_complete": true,
+          "response_sha256": "278cf48718f73ea74ca0fa09555db1b61c65c0162d234173c1b927d21d744caa",
+          "sequence": 37,
+          "status": 429
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0037.outcome.public.json",
+        "sha256": "ac76248e9e1ba13b0cc7704770857c4e256d41d8fafc26e4a1ca2c46ce4478e0"
+      },
+      "sequence": 37
+    },
+    {
+      "intent": {
+        "bytes": 486,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871240147910236,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793559155626925,
+          "label": "unsealed_election",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": 871282524822915,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 38,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0038.intent.public.json",
+        "sha256": "4bf18418326665d2cab73c43746cd409549599e2ca12fb0f6a5c5eed17e1d254"
+      },
+      "outcome": {
+        "bytes": 797,
+        "json": {
+          "caller_elapsed_ms": 236.220758,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "352",
+          "content_type": "application/json",
+          "elapsed_ms": 13.306612,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "unsealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 352,
+          "response_complete": true,
+          "response_sha256": "ffa56a7001b135b2159be14673e22b4e4e691784e45e2c8ea75dbf296849c1ba",
+          "sequence": 38,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0038.outcome.public.json",
+        "sha256": "feb79e6f59ba465ce7e3d7981d3ea1f6687001c8e4b5d746b2f85ec8c6bd3adb"
+      },
+      "sequence": 38
+    },
+    {
+      "intent": {
+        "bytes": 486,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871240570161669,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793559577869720,
+          "label": "unsealed_election",
+          "method": "GET",
+          "node": 2,
+          "parent_deadline_monotonic_ns": 871282524822915,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 39,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0039.intent.public.json",
+        "sha256": "1980ec520b67806970d7130728ac7e46893ce3f38ae8c157f56ad96998d8ed23"
+      },
+      "outcome": {
+        "bytes": 797,
+        "json": {
+          "caller_elapsed_ms": 285.385783,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "353",
+          "content_type": "application/json",
+          "elapsed_ms": 22.429892,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "unsealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 353,
+          "response_complete": true,
+          "response_sha256": "2cc4747616337a1aae24c73c9aff2c55d2920d7ca2475c30671fe32543144a3f",
+          "sequence": 39,
+          "status": 429
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0039.outcome.public.json",
+        "sha256": "792aae76e4c1bcf55c5331de8235469140553701176c482f18f4006337ca8732"
+      },
+      "sequence": 39
+    },
+    {
+      "intent": {
+        "bytes": 486,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871241008455241,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793560016170849,
+          "label": "unsealed_election",
+          "method": "GET",
+          "node": 3,
+          "parent_deadline_monotonic_ns": 871282524822915,
+          "path": "/v1/sys/health",
+          "redirect_following": false,
+          "sequence": 40,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0040.intent.public.json",
+        "sha256": "0187cf844f286b6f4aa8d1ffee4ed73d06f8f6aa42cf4b0242979d2094eaadfe"
+      },
+      "outcome": {
+        "bytes": 796,
+        "json": {
+          "caller_elapsed_ms": 384.203637,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "353",
+          "content_type": "application/json",
+          "elapsed_ms": 63.57858,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "unsealed_election",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 353,
+          "response_complete": true,
+          "response_sha256": "fd0cc2a80793a5dfde8081affaad4e98f912f79adfae722e0adbd0d535f9fae0",
+          "sequence": 40,
+          "status": 429
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0040.outcome.public.json",
+        "sha256": "9e27922bc15e209d79787fd6c86b03c49beb8c77ef89271dd5de54f805efc3f8"
+      },
+      "sequence": 40
+    },
+    {
+      "intent": {
+        "bytes": 502,
+        "json": {
+          "body_bytes": 2,
+          "body_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871241398515728,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793560406228782,
+          "label": "native_v6_activate_once",
+          "method": "POST",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/storage/native-v6/activate",
+          "redirect_following": false,
+          "sequence": 41,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0041.intent.public.json",
+        "sha256": "c781128f7e5e8b4fc74c47377326b4dba6dce45bc8421e15b2d30fcf78cf9929"
+      },
+      "outcome": {
+        "bytes": 799,
+        "json": {
+          "caller_elapsed_ms": 585.53808,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": null,
+          "content_type": "application/json",
+          "elapsed_ms": 381.377031,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-type",
+            "date",
+            "strict-transport-security",
+            "x-vault-index"
+          ],
+          "label": "native_v6_activate_once",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 0,
+          "response_complete": true,
+          "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "sequence": 41,
+          "status": 204
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0041.outcome.public.json",
+        "sha256": "56fc9ef8fea20d63ff31bbe0615d1965a9c3f6eeb6b6cc18384abe9490599a51"
+      },
+      "sequence": 41
+    },
+    {
+      "intent": {
+        "bytes": 487,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871241989906743,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793560997613499,
+          "label": "native_v6_capacity",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/internal/capacity",
+          "redirect_following": false,
+          "sequence": 42,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0042.intent.public.json",
+        "sha256": "a522c594ddbef0dae1c0ae4ea41af544e807e0cf096e674bc656cd14568d90bb"
+      },
+      "outcome": {
+        "bytes": 821,
+        "json": {
+          "caller_elapsed_ms": 242.708291,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "1939",
+          "content_type": "application/json",
+          "elapsed_ms": 29.205795,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security",
+            "x-vault-index"
+          ],
+          "label": "native_v6_capacity",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 1939,
+          "response_complete": true,
+          "response_sha256": "86d7dbba7639ecbdfefa8839f428abf4732bed04cd3b914588ad38b46e9d7e11",
+          "sequence": 42,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0042.outcome.public.json",
+        "sha256": "c9e4397373ddd12094037b3dc6dcd390a44469b5149dd370b87519974406c73d"
+      },
+      "sequence": 42
+    },
+    {
+      "intent": {
+        "bytes": 499,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871242240341133,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793561248052548,
+          "label": "node1_native_seed_version_1",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/wire/data/seed?version=1",
+          "redirect_following": false,
+          "sequence": 43,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0043.intent.public.json",
+        "sha256": "691ac355c992cc173bedbe64cd1d0f0ba57f0b89f0d92e39e599cccd4fbbc518"
+      },
+      "outcome": {
+        "bytes": 827,
+        "json": {
+          "caller_elapsed_ms": 235.11572,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "333",
+          "content_type": "application/json",
+          "elapsed_ms": 30.543794,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security",
+            "x-vault-index"
+          ],
+          "label": "node1_native_seed_version_1",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 333,
+          "response_complete": true,
+          "response_sha256": "367bf2251cecef31691640e45b8e8ae724760053335dbab24bab393d3470520a",
+          "sequence": 43,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0043.outcome.public.json",
+        "sha256": "09f22f7de6bb7f6dc5394c4da26624ceee2dae5cbd4091b3b48ce327fb9792d2"
+      },
+      "sequence": 43
+    },
+    {
+      "intent": {
+        "bytes": 499,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871242481667688,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793561489378954,
+          "label": "node1_native_seed_version_2",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/wire/data/seed?version=2",
+          "redirect_following": false,
+          "sequence": 44,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0044.intent.public.json",
+        "sha256": "e1bbce1b5390e690f890f3d2494ac526396f84ef3c6027d5f46a43a77d2d5e42"
+      },
+      "outcome": {
+        "bytes": 828,
+        "json": {
+          "caller_elapsed_ms": 247.786367,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "333",
+          "content_type": "application/json",
+          "elapsed_ms": 29.755694,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security",
+            "x-vault-index"
+          ],
+          "label": "node1_native_seed_version_2",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 333,
+          "response_complete": true,
+          "response_sha256": "62819b489bf48bd8e5f4177ab753a3988fa31d1439e478fdd96a4b7a9e4dc70a",
+          "sequence": 44,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0044.outcome.public.json",
+        "sha256": "0e68a6c2428d9146b41f59911b6755dd4cca435ad721f64f724817ade8060984"
+      },
+      "sequence": 44
+    },
+    {
+      "intent": {
+        "bytes": 499,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871242737611303,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793561745318676,
+          "label": "node2_native_seed_version_1",
+          "method": "GET",
+          "node": 2,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/wire/data/seed?version=1",
+          "redirect_following": false,
+          "sequence": 45,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0045.intent.public.json",
+        "sha256": "9fad4397f1c5cffbca0b4e47ed74f3fd5d8c8d770e917aafd6aeb1cd2897a58a"
+      },
+      "outcome": {
+        "bytes": 829,
+        "json": {
+          "caller_elapsed_ms": 354.389516,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "333",
+          "content_type": "application/json",
+          "elapsed_ms": 145.716525,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security",
+            "x-vault-index"
+          ],
+          "label": "node2_native_seed_version_1",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 333,
+          "response_complete": true,
+          "response_sha256": "2fa00254aebcc6bdfbf02bf83d378c84a613f1a54826c5f3f17605df35599ca4",
+          "sequence": 45,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0045.outcome.public.json",
+        "sha256": "4ff2fa9865b69f8a6fdc193dcc7e68609b75f348e112415462afde02ca7b22f3"
+      },
+      "sequence": 45
+    },
+    {
+      "intent": {
+        "bytes": 499,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871243100928055,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793562108634864,
+          "label": "node2_native_seed_version_2",
+          "method": "GET",
+          "node": 2,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/wire/data/seed?version=2",
+          "redirect_following": false,
+          "sequence": 46,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0046.intent.public.json",
+        "sha256": "771a21831697cfcf6d474e21f21f28a6d2f192feac8c49895a97a1365d429298"
+      },
+      "outcome": {
+        "bytes": 829,
+        "json": {
+          "caller_elapsed_ms": 339.383106,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "333",
+          "content_type": "application/json",
+          "elapsed_ms": 102.909733,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security",
+            "x-vault-index"
+          ],
+          "label": "node2_native_seed_version_2",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 333,
+          "response_complete": true,
+          "response_sha256": "bf520c606d0416761347e027a46cda9f186d187435bdc0e62eacd1029f6e3f40",
+          "sequence": 46,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0046.outcome.public.json",
+        "sha256": "b0c027867d78a43e85748db9e9603bd7986354dfa2cdde4cef87f10d746ca32e"
+      },
+      "sequence": 46
+    },
+    {
+      "intent": {
+        "bytes": 499,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871243446297963,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793562454004941,
+          "label": "node3_native_seed_version_1",
+          "method": "GET",
+          "node": 3,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/wire/data/seed?version=1",
+          "redirect_following": false,
+          "sequence": 47,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0047.intent.public.json",
+        "sha256": "6634cf7c5e0c62eb1dbb2d1c627f693632b61d22356709bfc6d145741b528a1e"
+      },
+      "outcome": {
+        "bytes": 829,
+        "json": {
+          "caller_elapsed_ms": 388.275662,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "333",
+          "content_type": "application/json",
+          "elapsed_ms": 154.918476,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security",
+            "x-vault-index"
+          ],
+          "label": "node3_native_seed_version_1",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 333,
+          "response_complete": true,
+          "response_sha256": "bbf03838478a646c464f82231b7fb6447fa5515e23d503b119b61ba132b54dd4",
+          "sequence": 47,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0047.outcome.public.json",
+        "sha256": "3ce6909b17011f30544d13b379ee265ffbba7c4b453cfbde69a264a831bf3c76"
+      },
+      "sequence": 47
+    },
+    {
+      "intent": {
+        "bytes": 499,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871243840593791,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793562848301478,
+          "label": "node3_native_seed_version_2",
+          "method": "GET",
+          "node": 3,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/wire/data/seed?version=2",
+          "redirect_following": false,
+          "sequence": 48,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0048.intent.public.json",
+        "sha256": "e191b23b7df75b2b65d57a2c556df87f98136f22d324e05afcbb2521d2523f52"
+      },
+      "outcome": {
+        "bytes": 829,
+        "json": {
+          "caller_elapsed_ms": 333.272872,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "333",
+          "content_type": "application/json",
+          "elapsed_ms": 121.588146,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security",
+            "x-vault-index"
+          ],
+          "label": "node3_native_seed_version_2",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 333,
+          "response_complete": true,
+          "response_sha256": "8808f1c433f6a282c4670aadf81aa37cb703d1251f012580c551358d79ea9042",
+          "sequence": 48,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0048.outcome.public.json",
+        "sha256": "4f7a8a0c678d15010642dcecd3b41b89157b4acd859e282bf2a12f10898b5c1e"
+      },
+      "sequence": 48
+    },
+    {
+      "intent": {
+        "bytes": 470,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871244180316962,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793563188023573,
+          "label": "roles_before",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/leader",
+          "redirect_following": false,
+          "sequence": 49,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0049.intent.public.json",
+        "sha256": "3343384477d56606a51c84c52c4fa76717bc301a8f9dfe02e2943a5a5d6784aa"
+      },
+      "outcome": {
+        "bytes": 791,
+        "json": {
+          "caller_elapsed_ms": 271.469301,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "226",
+          "content_type": "application/json",
+          "elapsed_ms": 9.546405,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "roles_before",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 226,
+          "response_complete": true,
+          "response_sha256": "b463db66b7645bb115c09a912f8273f1fab21049321b35f6898c86cd0f74cc99",
+          "sequence": 49,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0049.outcome.public.json",
+        "sha256": "e65ec7977ecc7287df126258ae787388d760141a1da6dae4a512e8c6441502d9"
+      },
+      "sequence": 49
+    },
+    {
+      "intent": {
+        "bytes": 492,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871244460790376,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793563468492956,
+          "label": "roles_before_health",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/health?standbyok=true",
+          "redirect_following": false,
+          "sequence": 50,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0050.intent.public.json",
+        "sha256": "9f647a2aa640d8dbdc81f4115e83007fbbecdc1ddfdf4f8b33f9a66052158855"
+      },
+      "outcome": {
+        "bytes": 799,
+        "json": {
+          "caller_elapsed_ms": 240.014464,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "352",
+          "content_type": "application/json",
+          "elapsed_ms": 16.968349,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "roles_before_health",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 352,
+          "response_complete": true,
+          "response_sha256": "cec9e058ef2472ae14b2a19589328b829842d847050062d7a4df7273a9519b72",
+          "sequence": 50,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0050.outcome.public.json",
+        "sha256": "7c43f9b57ef4d007a9ff2e2c6947fb357f0cfcc40ca235828a27c5145abc2c4a"
+      },
+      "sequence": 50
+    },
+    {
+      "intent": {
+        "bytes": 470,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871244708431023,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793563716137399,
+          "label": "roles_before",
+          "method": "GET",
+          "node": 2,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/leader",
+          "redirect_following": false,
+          "sequence": 51,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0051.intent.public.json",
+        "sha256": "f19c74a3da8b2cf1756a2674f34b2bfb01dc2b12c92ef831f1127d821c9b2b54"
+      },
+      "outcome": {
+        "bytes": 791,
+        "json": {
+          "caller_elapsed_ms": 236.647282,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "180",
+          "content_type": "application/json",
+          "elapsed_ms": 9.312793,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "roles_before",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 180,
+          "response_complete": true,
+          "response_sha256": "44aaeb03ddac155a7572d0dc4be110cc6561bed6545042f2f3cfa75a8b3beda4",
+          "sequence": 51,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0051.outcome.public.json",
+        "sha256": "02e9a95b94ff53c8c2ded8272031db829916f04053b24602a098afc443ec2bef"
+      },
+      "sequence": 51
+    },
+    {
+      "intent": {
+        "bytes": 492,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871244952036073,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793563959744161,
+          "label": "roles_before_health",
+          "method": "GET",
+          "node": 2,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/health?standbyok=true",
+          "redirect_following": false,
+          "sequence": 52,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0052.intent.public.json",
+        "sha256": "7eda3b1bb7e05819e45574e2c0d8a502d2b424ef228512c6a170466c590a3ee5"
+      },
+      "outcome": {
+        "bytes": 798,
+        "json": {
+          "caller_elapsed_ms": 241.970388,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "353",
+          "content_type": "application/json",
+          "elapsed_ms": 11.81423,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "roles_before_health",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 353,
+          "response_complete": true,
+          "response_sha256": "3ca6ee5172fe6a06364fbe1951cd29fb86d899dbf25e0544c03d56af15564ec7",
+          "sequence": 52,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0052.outcome.public.json",
+        "sha256": "7b43c2b947d39495e6f0c36ca40c3db9be6707c0c920b78d6c49a05fc39a71bd"
+      },
+      "sequence": 52
+    },
+    {
+      "intent": {
+        "bytes": 470,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871245200104992,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793564207812466,
+          "label": "roles_before",
+          "method": "GET",
+          "node": 3,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/leader",
+          "redirect_following": false,
+          "sequence": 53,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0053.intent.public.json",
+        "sha256": "fbb77aa5b077be87f87289f76d1e81982003a9b7cbe46b3235a4f98fdcc016e2"
+      },
+      "outcome": {
+        "bytes": 791,
+        "json": {
+          "caller_elapsed_ms": 242.809965,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "180",
+          "content_type": "application/json",
+          "elapsed_ms": 9.683817,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "roles_before",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 180,
+          "response_complete": true,
+          "response_sha256": "44aaeb03ddac155a7572d0dc4be110cc6561bed6545042f2f3cfa75a8b3beda4",
+          "sequence": 53,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0053.outcome.public.json",
+        "sha256": "fa2808be5699338bf9569d9e3adc103e3a5561c9e2e405a62d3a094e73dc278e"
+      },
+      "sequence": 53
+    },
+    {
+      "intent": {
+        "bytes": 492,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871245448962988,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793564456670521,
+          "label": "roles_before_health",
+          "method": "GET",
+          "node": 3,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/health?standbyok=true",
+          "redirect_following": false,
+          "sequence": 54,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0054.intent.public.json",
+        "sha256": "90a30def8be05be59b59672f09d2e894ccee052b3c6752273b5d13c133667b51"
+      },
+      "outcome": {
+        "bytes": 799,
+        "json": {
+          "caller_elapsed_ms": 240.133157,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "353",
+          "content_type": "application/json",
+          "elapsed_ms": 12.876082,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "roles_before_health",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 353,
+          "response_complete": true,
+          "response_sha256": "3ca6ee5172fe6a06364fbe1951cd29fb86d899dbf25e0544c03d56af15564ec7",
+          "sequence": 54,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0054.outcome.public.json",
+        "sha256": "4da1d537d9c4cd63cdd7a12d9f60fc7429827951c57de32783d85d3c71b323d3"
+      },
+      "sequence": 54
+    },
+    {
+      "intent": {
+        "bytes": 491,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871245696518369,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793564704224401,
+          "label": "raft_before",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/storage/raft/autopilot/state",
+          "redirect_following": false,
+          "sequence": 55,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0055.intent.public.json",
+        "sha256": "1744b6326abee119ad9d3d3254bb02d6e59bedf7a057e2d71a9978bbc9b8b6d2"
+      },
+      "outcome": {
+        "bytes": 813,
+        "json": {
+          "caller_elapsed_ms": 444.333136,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "869",
+          "content_type": "application/json",
+          "elapsed_ms": 173.984065,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security",
+            "x-vault-index"
+          ],
+          "label": "raft_before",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 869,
+          "response_complete": true,
+          "response_sha256": "0d7ba52f75c760b47c40bd00f2c45588606ad265f532e773f9ef9de42cf97003",
+          "sequence": 55,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0055.outcome.public.json",
+        "sha256": "ed9901e2a2cdbd86d9772206ef6034a1b63d3496dc062a8ab7a45bc5db41d2d6"
+      },
+      "sequence": 55
+    },
+    {
+      "intent": {
+        "bytes": 496,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871246211314833,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793565219024721,
+          "label": "node1_snapshot_get_none",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/storage/raft/snapshot",
+          "redirect_following": false,
+          "sequence": 56,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0056.intent.public.json",
+        "sha256": "e6f4b01d69c401d524fbe9b930e48d6d18cd532b086ba9ee0dc826f8a6be293c"
+      },
+      "outcome": {
+        "bytes": 801,
+        "json": {
+          "caller_elapsed_ms": 436.900121,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "33",
+          "content_type": "application/json",
+          "elapsed_ms": 150.18754,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "node1_snapshot_get_none",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 33,
+          "response_complete": true,
+          "response_sha256": "bcda155df5bb958fb164416ab19fda49f3691dea3805b277d8986601ded6e06c",
+          "sequence": 56,
+          "status": 403
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0056.outcome.public.json",
+        "sha256": "52436aff74449a810dd404209aae6747afe87832a0dbf80753709fe0c4db3461"
+      },
+      "sequence": 56
+    },
+    {
+      "intent": {
+        "bytes": 502,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "invalid",
+          "deadline_monotonic_ns": 871246885595895,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793565893306232,
+          "label": "node1_snapshot_get_invalid",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/storage/raft/snapshot",
+          "redirect_following": false,
+          "sequence": 57,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0057.intent.public.json",
+        "sha256": "e57309102c23f5a9bdd52eb8b1afed45104e4437edf97ee7df374d8882c560d7"
+      },
+      "outcome": {
+        "bytes": 804,
+        "json": {
+          "caller_elapsed_ms": 238.178718,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "33",
+          "content_type": "application/json",
+          "elapsed_ms": 21.411838,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "node1_snapshot_get_invalid",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 33,
+          "response_complete": true,
+          "response_sha256": "bcda155df5bb958fb164416ab19fda49f3691dea3805b277d8986601ded6e06c",
+          "sequence": 57,
+          "status": 403
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0057.outcome.public.json",
+        "sha256": "5f2e590cd502724daa4082e062d0dad3b4c74472e42886e83c169c899835dc29"
+      },
+      "sequence": 57
+    },
+    {
+      "intent": {
+        "bytes": 496,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871247192423286,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793566200129636,
+          "label": "node1_snapshot_get_root",
+          "method": "GET",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/storage/raft/snapshot",
+          "redirect_following": false,
+          "sequence": 58,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0058.intent.public.json",
+        "sha256": "6a3dfb262e1fa1a8ec9b1f1d9ab3f38a17d3d836f5c81210b4c7c835aa28fc19"
+      },
+      "outcome": {
+        "bytes": 835,
+        "json": {
+          "caller_elapsed_ms": 342.068535,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "39322",
+          "content_type": "application/gzip",
+          "elapsed_ms": 134.192895,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-disposition",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "node1_snapshot_get_root",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 39322,
+          "response_complete": true,
+          "response_sha256": "6bc2624a24d2a2580191954e239e7cd4042f8973fee62a0ee9a5d5cb639cc5e7",
+          "sequence": 58,
+          "status": 200
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0058.outcome.public.json",
+        "sha256": "45dd3578649718ad9072d28774dfa89efebb77d09b202d5956323f7c8b067655"
+      },
+      "sequence": 58
+    },
+    {
+      "intent": {
+        "bytes": 496,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871247540317242,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793566548020835,
+          "label": "node2_snapshot_get_none",
+          "method": "GET",
+          "node": 2,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/storage/raft/snapshot",
+          "redirect_following": false,
+          "sequence": 59,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0059.intent.public.json",
+        "sha256": "6fe01c6eb22cf3a5c7ffa158db7aa80fdb4ee7672b715f174a02f9934391cbb6"
+      },
+      "outcome": {
+        "bytes": 776,
+        "json": {
+          "caller_elapsed_ms": 238.747643,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "0",
+          "content_type": null,
+          "elapsed_ms": 11.861655,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "date",
+            "location",
+            "strict-transport-security"
+          ],
+          "label": "node2_snapshot_get_none",
+          "location_matches_enrolled_origin_and_exact_target": true,
+          "location_node": 1,
+          "location_present": true,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 0,
+          "response_complete": true,
+          "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "sequence": 59,
+          "status": 307
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0059.outcome.public.json",
+        "sha256": "5849916ff5f9886fbe5eba009b2724fc1779496951f04a69a839d1b359605979"
+      },
+      "sequence": 59
+    },
+    {
+      "intent": {
+        "bytes": 502,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "invalid",
+          "deadline_monotonic_ns": 871247786015469,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793566793722678,
+          "label": "node2_snapshot_get_invalid",
+          "method": "GET",
+          "node": 2,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/storage/raft/snapshot",
+          "redirect_following": false,
+          "sequence": 60,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0060.intent.public.json",
+        "sha256": "678a10525f58818cb5620fe7bf6fe100e40ce2049e9434baaa420a519e0798fb"
+      },
+      "outcome": {
+        "bytes": 779,
+        "json": {
+          "caller_elapsed_ms": 236.430417,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "0",
+          "content_type": null,
+          "elapsed_ms": 10.873772,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "date",
+            "location",
+            "strict-transport-security"
+          ],
+          "label": "node2_snapshot_get_invalid",
+          "location_matches_enrolled_origin_and_exact_target": true,
+          "location_node": 1,
+          "location_present": true,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 0,
+          "response_complete": true,
+          "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "sequence": 60,
+          "status": 307
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0060.outcome.public.json",
+        "sha256": "8381b08b8dcd6eaa51eb0f12994f65afecf066b2a2b75cb87f7cd5eaae426e57"
+      },
+      "sequence": 60
+    },
+    {
+      "intent": {
+        "bytes": 496,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871248028262670,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793567035967306,
+          "label": "node2_snapshot_get_root",
+          "method": "GET",
+          "node": 2,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/storage/raft/snapshot",
+          "redirect_following": false,
+          "sequence": 61,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0061.intent.public.json",
+        "sha256": "2fe407ceb8bf0f993dc64908680e9b30cb5f1af558d5b6afacc92a0aa349f8ba"
+      },
+      "outcome": {
+        "bytes": 775,
+        "json": {
+          "caller_elapsed_ms": 237.47297,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "0",
+          "content_type": null,
+          "elapsed_ms": 12.498743,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "date",
+            "location",
+            "strict-transport-security"
+          ],
+          "label": "node2_snapshot_get_root",
+          "location_matches_enrolled_origin_and_exact_target": true,
+          "location_node": 1,
+          "location_present": true,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 0,
+          "response_complete": true,
+          "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "sequence": 61,
+          "status": 307
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0061.outcome.public.json",
+        "sha256": "19c90271bc3ff258d458eceaf890508c5ffafaed025b5e261c0cbc89d852e78c"
+      },
+      "sequence": 61
+    },
+    {
+      "intent": {
+        "bytes": 496,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "none",
+          "deadline_monotonic_ns": 871248271594906,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793567279301189,
+          "label": "node3_snapshot_get_none",
+          "method": "GET",
+          "node": 3,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/storage/raft/snapshot",
+          "redirect_following": false,
+          "sequence": 62,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0062.intent.public.json",
+        "sha256": "f60bc0aef8901e71deb430eb7f2cf65cf6466f2d3dc767c0d62968013047067a"
+      },
+      "outcome": {
+        "bytes": 776,
+        "json": {
+          "caller_elapsed_ms": 236.920472,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "0",
+          "content_type": null,
+          "elapsed_ms": 12.993035,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "date",
+            "location",
+            "strict-transport-security"
+          ],
+          "label": "node3_snapshot_get_none",
+          "location_matches_enrolled_origin_and_exact_target": true,
+          "location_node": 1,
+          "location_present": true,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 0,
+          "response_complete": true,
+          "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "sequence": 62,
+          "status": 307
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0062.outcome.public.json",
+        "sha256": "052bea719fe49e96beb492188d4fc63fe2c2f4544ce686391f0cfb654d71c014"
+      },
+      "sequence": 62
+    },
+    {
+      "intent": {
+        "bytes": 502,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "invalid",
+          "deadline_monotonic_ns": 871248514412083,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793567522118036,
+          "label": "node3_snapshot_get_invalid",
+          "method": "GET",
+          "node": 3,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/storage/raft/snapshot",
+          "redirect_following": false,
+          "sequence": 63,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0063.intent.public.json",
+        "sha256": "cdbc549e132ec2886d657679b456cc58087a9b21509e5edacab30d498c19a0cb"
+      },
+      "outcome": {
+        "bytes": 777,
+        "json": {
+          "caller_elapsed_ms": 234.926065,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "0",
+          "content_type": null,
+          "elapsed_ms": 10.7245,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "date",
+            "location",
+            "strict-transport-security"
+          ],
+          "label": "node3_snapshot_get_invalid",
+          "location_matches_enrolled_origin_and_exact_target": true,
+          "location_node": 1,
+          "location_present": true,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 0,
+          "response_complete": true,
+          "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "sequence": 63,
+          "status": 307
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0063.outcome.public.json",
+        "sha256": "f3d31bd678ce7fa84e6edea350ac7fbd46b3f54615e5fe7b697ffb35e08e7f9a"
+      },
+      "sequence": 63
+    },
+    {
+      "intent": {
+        "bytes": 496,
+        "json": {
+          "body_bytes": 0,
+          "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871248755213098,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793567762918371,
+          "label": "node3_snapshot_get_root",
+          "method": "GET",
+          "node": 3,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/storage/raft/snapshot",
+          "redirect_following": false,
+          "sequence": 64,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0064.intent.public.json",
+        "sha256": "a7f7afa04bc1f4c0aa59cd4ef889b22bd38cfc777fedd9860ef214645bdff7f3"
+      },
+      "outcome": {
+        "bytes": 776,
+        "json": {
+          "caller_elapsed_ms": 237.595703,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "0",
+          "content_type": null,
+          "elapsed_ms": 11.036276,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "date",
+            "location",
+            "strict-transport-security"
+          ],
+          "label": "node3_snapshot_get_root",
+          "location_matches_enrolled_origin_and_exact_target": true,
+          "location_node": 1,
+          "location_present": true,
+          "node": 3,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 0,
+          "response_complete": true,
+          "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "sequence": 64,
+          "status": 307
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0064.outcome.public.json",
+        "sha256": "1c08c70a006464d23dfe7afc82843012e34adf69e793646ab0c3e724449c69e7"
+      },
+      "sequence": 64
+    },
+    {
+      "intent": {
+        "bytes": 505,
+        "json": {
+          "body_bytes": 22,
+          "body_sha256": "e57744e6940b15f3055f206c34ada9f50f0e2af9eacd46bf6f79c9ae150521cf",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871248998974299,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793568006680983,
+          "label": "node1_snapshot_invalid_restore",
+          "method": "POST",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/storage/raft/snapshot",
+          "redirect_following": false,
+          "sequence": 65,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0065.intent.public.json",
+        "sha256": "3e8c8025d281a4919e0e60858b3bb0a7f2a7ed057ca20be89e9138787092e398"
+      },
+      "outcome": {
+        "bytes": 808,
+        "json": {
+          "caller_elapsed_ms": 236.254195,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "47",
+          "content_type": "application/json",
+          "elapsed_ms": 27.180959,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "node1_snapshot_invalid_restore",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 47,
+          "response_complete": true,
+          "response_sha256": "191caf7fd3ec7440f67f8d0529f8e70af2f4176298452e2659c01e81f4a25cd6",
+          "sequence": 65,
+          "status": 400
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0065.outcome.public.json",
+        "sha256": "ad13c4ae07394fea9e51680c7e65a7421cf44d908a0c16a829d0b612fcf9d371"
+      },
+      "sequence": 65
+    },
+    {
+      "intent": {
+        "bytes": 517,
+        "json": {
+          "body_bytes": 22,
+          "body_sha256": "e57744e6940b15f3055f206c34ada9f50f0e2af9eacd46bf6f79c9ae150521cf",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871249243173838,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793568250875437,
+          "label": "node1_snapshot-force_invalid_restore",
+          "method": "POST",
+          "node": 1,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/storage/raft/snapshot-force",
+          "redirect_following": false,
+          "sequence": 66,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0066.intent.public.json",
+        "sha256": "3a0e4db42885f6baed4e260637b96800caf88d1fd86e9d17ae483b3bfdf19f3c"
+      },
+      "outcome": {
+        "bytes": 813,
+        "json": {
+          "caller_elapsed_ms": 246.598287,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": "47",
+          "content_type": "application/json",
+          "elapsed_ms": 28.00071,
+          "header_names": [
+            "cache-control",
+            "connection",
+            "content-length",
+            "content-type",
+            "date",
+            "strict-transport-security"
+          ],
+          "label": "node1_snapshot-force_invalid_restore",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": false,
+          "node": 1,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 47,
+          "response_complete": true,
+          "response_sha256": "191caf7fd3ec7440f67f8d0529f8e70af2f4176298452e2659c01e81f4a25cd6",
+          "sequence": 66,
+          "status": 400
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0066.outcome.public.json",
+        "sha256": "3768f68cf870cb9ebddc32d4730a495180c44f3b156fe8e535aa4978d44477ee"
+      },
+      "sequence": 66
+    },
+    {
+      "intent": {
+        "bytes": 505,
+        "json": {
+          "body_bytes": 22,
+          "body_sha256": "e57744e6940b15f3055f206c34ada9f50f0e2af9eacd46bf6f79c9ae150521cf",
+          "credential_class": "root",
+          "deadline_monotonic_ns": 871249495771403,
+          "headers": {},
+          "http_seconds": 15.0,
+          "intent_unix_ns": 1793793568503473830,
+          "label": "node2_snapshot_invalid_restore",
+          "method": "POST",
+          "node": 2,
+          "parent_deadline_monotonic_ns": null,
+          "path": "/v1/sys/storage/raft/snapshot",
+          "redirect_following": false,
+          "sequence": 67,
+          "valid_restore_body": false
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0067.intent.public.json",
+        "sha256": "ab6ce7399f5325a512c618f26b3868d39d574b5084888e27a0f48b0442f2836f"
+      },
+      "outcome": {
+        "bytes": 680,
+        "json": {
+          "caller_elapsed_ms": 236.5231,
+          "caller_timed_out": false,
+          "child_reaped": true,
+          "child_remaining": [],
+          "child_returncode": 0,
+          "content_length": null,
+          "content_type": null,
+          "elapsed_ms": 10.932223,
+          "header_names": [
+            "location"
+          ],
+          "label": "node2_snapshot_invalid_restore",
+          "location_matches_enrolled_origin_and_exact_target": false,
+          "location_node": null,
+          "location_present": true,
+          "node": 2,
+          "outcome_unknown": false,
+          "phase": "complete",
+          "request_sent": true,
+          "response_bytes": 0,
+          "response_complete": true,
+          "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "sequence": 67,
+          "status": 307
+        },
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/operations/0067.outcome.public.json",
+        "sha256": "e77c670c7d8cf5716e3a105f881ecde6ab90b4ff8b92a766438212c291047b63"
+      },
+      "sequence": 67
+    }
+  ],
+  "case_matrix_complete": false,
+  "completed_case_observation_not_claimed": true,
+  "created_unix_ns": 1793793769604771043,
+  "full_replacement_qualification": false,
+  "partial_snapshot_cases": [
+    {
+      "caller_elapsed_ms": 436.900121,
+      "credential_class": "none",
+      "label": "node1_snapshot_get_none",
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "location_node": null,
+      "location_present": false,
+      "method": "GET",
+      "node": 1,
+      "outcome_unknown": false,
+      "path": "/v1/sys/storage/raft/snapshot",
+      "response_bytes": 33,
+      "response_complete": true,
+      "response_sha256": "bcda155df5bb958fb164416ab19fda49f3691dea3805b277d8986601ded6e06c",
+      "role_at_roles_before": "leader",
+      "sequence": 56,
+      "status": 403
+    },
+    {
+      "caller_elapsed_ms": 238.178718,
+      "credential_class": "invalid",
+      "label": "node1_snapshot_get_invalid",
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "location_node": null,
+      "location_present": false,
+      "method": "GET",
+      "node": 1,
+      "outcome_unknown": false,
+      "path": "/v1/sys/storage/raft/snapshot",
+      "response_bytes": 33,
+      "response_complete": true,
+      "response_sha256": "bcda155df5bb958fb164416ab19fda49f3691dea3805b277d8986601ded6e06c",
+      "role_at_roles_before": "leader",
+      "sequence": 57,
+      "status": 403
+    },
+    {
+      "caller_elapsed_ms": 342.068535,
+      "credential_class": "root",
+      "label": "node1_snapshot_get_root",
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "location_node": null,
+      "location_present": false,
+      "method": "GET",
+      "node": 1,
+      "outcome_unknown": false,
+      "path": "/v1/sys/storage/raft/snapshot",
+      "response_bytes": 39322,
+      "response_complete": true,
+      "response_sha256": "6bc2624a24d2a2580191954e239e7cd4042f8973fee62a0ee9a5d5cb639cc5e7",
+      "role_at_roles_before": "leader",
+      "sequence": 58,
+      "status": 200
+    },
+    {
+      "caller_elapsed_ms": 238.747643,
+      "credential_class": "none",
+      "label": "node2_snapshot_get_none",
+      "location_matches_enrolled_origin_and_exact_target": true,
+      "location_node": 1,
+      "location_present": true,
+      "method": "GET",
+      "node": 2,
+      "outcome_unknown": false,
+      "path": "/v1/sys/storage/raft/snapshot",
+      "response_bytes": 0,
+      "response_complete": true,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role_at_roles_before": "standby",
+      "sequence": 59,
+      "status": 307
+    },
+    {
+      "caller_elapsed_ms": 236.430417,
+      "credential_class": "invalid",
+      "label": "node2_snapshot_get_invalid",
+      "location_matches_enrolled_origin_and_exact_target": true,
+      "location_node": 1,
+      "location_present": true,
+      "method": "GET",
+      "node": 2,
+      "outcome_unknown": false,
+      "path": "/v1/sys/storage/raft/snapshot",
+      "response_bytes": 0,
+      "response_complete": true,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role_at_roles_before": "standby",
+      "sequence": 60,
+      "status": 307
+    },
+    {
+      "caller_elapsed_ms": 237.47297,
+      "credential_class": "root",
+      "label": "node2_snapshot_get_root",
+      "location_matches_enrolled_origin_and_exact_target": true,
+      "location_node": 1,
+      "location_present": true,
+      "method": "GET",
+      "node": 2,
+      "outcome_unknown": false,
+      "path": "/v1/sys/storage/raft/snapshot",
+      "response_bytes": 0,
+      "response_complete": true,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role_at_roles_before": "standby",
+      "sequence": 61,
+      "status": 307
+    },
+    {
+      "caller_elapsed_ms": 236.920472,
+      "credential_class": "none",
+      "label": "node3_snapshot_get_none",
+      "location_matches_enrolled_origin_and_exact_target": true,
+      "location_node": 1,
+      "location_present": true,
+      "method": "GET",
+      "node": 3,
+      "outcome_unknown": false,
+      "path": "/v1/sys/storage/raft/snapshot",
+      "response_bytes": 0,
+      "response_complete": true,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role_at_roles_before": "standby",
+      "sequence": 62,
+      "status": 307
+    },
+    {
+      "caller_elapsed_ms": 234.926065,
+      "credential_class": "invalid",
+      "label": "node3_snapshot_get_invalid",
+      "location_matches_enrolled_origin_and_exact_target": true,
+      "location_node": 1,
+      "location_present": true,
+      "method": "GET",
+      "node": 3,
+      "outcome_unknown": false,
+      "path": "/v1/sys/storage/raft/snapshot",
+      "response_bytes": 0,
+      "response_complete": true,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role_at_roles_before": "standby",
+      "sequence": 63,
+      "status": 307
+    },
+    {
+      "caller_elapsed_ms": 237.595703,
+      "credential_class": "root",
+      "label": "node3_snapshot_get_root",
+      "location_matches_enrolled_origin_and_exact_target": true,
+      "location_node": 1,
+      "location_present": true,
+      "method": "GET",
+      "node": 3,
+      "outcome_unknown": false,
+      "path": "/v1/sys/storage/raft/snapshot",
+      "response_bytes": 0,
+      "response_complete": true,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role_at_roles_before": "standby",
+      "sequence": 64,
+      "status": 307
+    },
+    {
+      "caller_elapsed_ms": 236.254195,
+      "credential_class": "root",
+      "label": "node1_snapshot_invalid_restore",
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "location_node": null,
+      "location_present": false,
+      "method": "POST",
+      "node": 1,
+      "outcome_unknown": false,
+      "path": "/v1/sys/storage/raft/snapshot",
+      "response_bytes": 47,
+      "response_complete": true,
+      "response_sha256": "191caf7fd3ec7440f67f8d0529f8e70af2f4176298452e2659c01e81f4a25cd6",
+      "role_at_roles_before": "leader",
+      "sequence": 65,
+      "status": 400
+    },
+    {
+      "caller_elapsed_ms": 246.598287,
+      "credential_class": "root",
+      "label": "node1_snapshot-force_invalid_restore",
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "location_node": null,
+      "location_present": false,
+      "method": "POST",
+      "node": 1,
+      "outcome_unknown": false,
+      "path": "/v1/sys/storage/raft/snapshot-force",
+      "response_bytes": 47,
+      "response_complete": true,
+      "response_sha256": "191caf7fd3ec7440f67f8d0529f8e70af2f4176298452e2659c01e81f4a25cd6",
+      "role_at_roles_before": "leader",
+      "sequence": 66,
+      "status": 400
+    },
+    {
+      "caller_elapsed_ms": 236.5231,
+      "credential_class": "root",
+      "label": "node2_snapshot_invalid_restore",
+      "location_matches_enrolled_origin_and_exact_target": false,
+      "location_node": null,
+      "location_present": true,
+      "method": "POST",
+      "node": 2,
+      "outcome_unknown": false,
+      "path": "/v1/sys/storage/raft/snapshot",
+      "response_bytes": 0,
+      "response_complete": true,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "role_at_roles_before": "standby",
+      "sequence": 67,
+      "status": 307
+    }
+  ],
+  "result": {
+    "bytes": 20381,
+    "json": {
+      "all_owned_stopped": true,
+      "artifacts_after": {
+        "build-result.public.json": {
+          "bytes": 3084,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-control-r1/artifacts/build-result.public.json",
+          "sha256": "7fa76585e94fe2e60bbc3ce754f37e4d9d433e4cf576fcc2e39a1e95771f3f42"
+        },
+        "heptabao-server": {
+          "bytes": 107991504,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-control-r1/artifacts/heptabao-server",
+          "sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba"
+        },
+        "native-build.public.json": {
+          "bytes": 771,
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-control-r1/artifacts/native-build.public.json",
+          "sha256": "2fa263744917e1d71658daa4f34e09ea448fe77ec0b2c0f8ec22c01e2cd84e8e"
+        }
+      },
+      "checks": [
+        {
+          "name": "seed_initialize_complete",
+          "passed": true
+        },
+        {
+          "name": "seed_exact_single_unseal_share",
+          "passed": true
+        },
+        {
+          "name": "seed_unseal_complete",
+          "passed": true
+        },
+        {
+          "name": "seed_mount_kv2_created",
+          "passed": true
+        },
+        {
+          "name": "seed_version_1_acknowledged_once",
+          "passed": true
+        },
+        {
+          "name": "seed_version_2_acknowledged_once",
+          "passed": true
+        },
+        {
+          "name": "actual_v5_seed",
+          "passed": true
+        },
+        {
+          "name": "fresh_cluster_identity",
+          "passed": true
+        },
+        {
+          "name": "seed_reaped_before_cold_copy",
+          "passed": true
+        },
+        {
+          "name": "node2_stopped_seed_exact_clone",
+          "passed": true
+        },
+        {
+          "name": "node3_stopped_seed_exact_clone",
+          "passed": true
+        },
+        {
+          "name": "stopped_seed_source_unchanged",
+          "passed": true
+        },
+        {
+          "name": "node1_native_unseal_complete",
+          "passed": true
+        },
+        {
+          "name": "node2_native_unseal_complete",
+          "passed": true
+        },
+        {
+          "name": "node3_native_unseal_complete",
+          "passed": true
+        },
+        {
+          "name": "native_v6_activate_complete",
+          "passed": true
+        },
+        {
+          "name": "actual_normal_native_v6",
+          "passed": true
+        },
+        {
+          "name": "node1_actual_native_seed_version_1",
+          "passed": true
+        },
+        {
+          "name": "node1_actual_native_seed_version_2",
+          "passed": true
+        },
+        {
+          "name": "node2_actual_native_seed_version_1",
+          "passed": true
+        },
+        {
+          "name": "node2_actual_native_seed_version_2",
+          "passed": true
+        },
+        {
+          "name": "node3_actual_native_seed_version_1",
+          "passed": true
+        },
+        {
+          "name": "node3_actual_native_seed_version_2",
+          "passed": true
+        },
+        {
+          "name": "roles_before_node_1_leader_response",
+          "passed": true
+        },
+        {
+          "name": "roles_before_node_1_unsealed_ha",
+          "passed": true
+        },
+        {
+          "name": "roles_before_node_2_leader_response",
+          "passed": true
+        },
+        {
+          "name": "roles_before_node_2_unsealed_ha",
+          "passed": true
+        },
+        {
+          "name": "roles_before_node_3_leader_response",
+          "passed": true
+        },
+        {
+          "name": "roles_before_node_3_unsealed_ha",
+          "passed": true
+        },
+        {
+          "name": "roles_before_single_actual_leader",
+          "passed": true
+        },
+        {
+          "name": "roles_before_all_report_same_leader",
+          "passed": true
+        },
+        {
+          "name": "roles_before_health_agrees_with_actual_roles",
+          "passed": true
+        },
+        {
+          "name": "leader_stable_from_activation",
+          "passed": true
+        },
+        {
+          "name": "node2_snapshot_get_none_safe_exact_leader_location",
+          "passed": true
+        },
+        {
+          "name": "node2_snapshot_get_invalid_safe_exact_leader_location",
+          "passed": true
+        },
+        {
+          "name": "node2_snapshot_get_root_safe_exact_leader_location",
+          "passed": true
+        },
+        {
+          "name": "node3_snapshot_get_none_safe_exact_leader_location",
+          "passed": true
+        },
+        {
+          "name": "node3_snapshot_get_invalid_safe_exact_leader_location",
+          "passed": true
+        },
+        {
+          "name": "node3_snapshot_get_root_safe_exact_leader_location",
+          "passed": true
+        },
+        {
+          "name": "node1_snapshot_invalid_restore_no_success",
+          "passed": true
+        },
+        {
+          "name": "node1_snapshot-force_invalid_restore_no_success",
+          "passed": true
+        },
+        {
+          "name": "node2_snapshot_invalid_restore_no_success",
+          "passed": true
+        },
+        {
+          "name": "node2_snapshot_invalid_restore_safe_exact_leader_location",
+          "passed": false
+        }
+      ],
+      "checks_are_dynamic_observation_invariants_not_a_qualification_denominator": true,
+      "checks_passed": 42,
+      "checks_total": 43,
+      "client_cleanup": [
+        {
+          "owned_stopped": true,
+          "pid": 1952043,
+          "remaining": [],
+          "start_ticks": 87123449,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951958,
+          "remaining": [],
+          "start_ticks": 87123424,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951947,
+          "remaining": [],
+          "start_ticks": 87123400,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951838,
+          "remaining": [],
+          "start_ticks": 87123375,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951830,
+          "remaining": [],
+          "start_ticks": 87123351,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951815,
+          "remaining": [],
+          "start_ticks": 87123327,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951757,
+          "remaining": [],
+          "start_ticks": 87123303,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951753,
+          "remaining": [],
+          "start_ticks": 87123278,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951654,
+          "remaining": [],
+          "start_ticks": 87123254,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951648,
+          "remaining": [],
+          "start_ticks": 87123219,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951538,
+          "remaining": [],
+          "start_ticks": 87123195,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951440,
+          "remaining": [],
+          "start_ticks": 87123132,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951316,
+          "remaining": [],
+          "start_ticks": 87123070,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951312,
+          "remaining": [],
+          "start_ticks": 87123045,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951303,
+          "remaining": [],
+          "start_ticks": 87123020,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951251,
+          "remaining": [],
+          "start_ticks": 87122995,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951247,
+          "remaining": [],
+          "start_ticks": 87122971,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951192,
+          "remaining": [],
+          "start_ticks": 87122946,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951188,
+          "remaining": [],
+          "start_ticks": 87122918,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951179,
+          "remaining": [],
+          "start_ticks": 87122884,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951150,
+          "remaining": [],
+          "start_ticks": 87122844,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951139,
+          "remaining": [],
+          "start_ticks": 87122810,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951100,
+          "remaining": [],
+          "start_ticks": 87122774,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951091,
+          "remaining": [],
+          "start_ticks": 87122748,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951089,
+          "remaining": [],
+          "start_ticks": 87122724,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1951065,
+          "remaining": [],
+          "start_ticks": 87122699,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950914,
+          "remaining": [],
+          "start_ticks": 87122640,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950859,
+          "remaining": [],
+          "start_ticks": 87122601,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950833,
+          "remaining": [],
+          "start_ticks": 87122569,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950811,
+          "remaining": [],
+          "start_ticks": 87122527,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950776,
+          "remaining": [],
+          "start_ticks": 87122470,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950706,
+          "remaining": [],
+          "start_ticks": 87122445,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950650,
+          "remaining": [],
+          "start_ticks": 87122417,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950640,
+          "remaining": [],
+          "start_ticks": 87122383,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950621,
+          "remaining": [],
+          "start_ticks": 87122359,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950527,
+          "remaining": [],
+          "start_ticks": 87122335,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950501,
+          "remaining": [],
+          "start_ticks": 87122300,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950494,
+          "remaining": [],
+          "start_ticks": 87122276,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950488,
+          "remaining": [],
+          "start_ticks": 87122252,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950483,
+          "remaining": [],
+          "start_ticks": 87122228,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950461,
+          "remaining": [],
+          "start_ticks": 87122204,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950411,
+          "remaining": [],
+          "start_ticks": 87122174,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950407,
+          "remaining": [],
+          "start_ticks": 87122149,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950378,
+          "remaining": [],
+          "start_ticks": 87122124,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950351,
+          "remaining": [],
+          "start_ticks": 87122100,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950344,
+          "remaining": [],
+          "start_ticks": 87122063,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950336,
+          "remaining": [],
+          "start_ticks": 87122027,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950318,
+          "remaining": [],
+          "start_ticks": 87122003,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950298,
+          "remaining": [],
+          "start_ticks": 87121968,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950284,
+          "remaining": [],
+          "start_ticks": 87121943,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950267,
+          "remaining": [],
+          "start_ticks": 87121919,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950248,
+          "remaining": [],
+          "start_ticks": 87121885,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950241,
+          "remaining": [],
+          "start_ticks": 87121861,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950230,
+          "remaining": [],
+          "start_ticks": 87121837,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950225,
+          "remaining": [],
+          "start_ticks": 87121812,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950206,
+          "remaining": [],
+          "start_ticks": 87121788,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950198,
+          "remaining": [],
+          "start_ticks": 87121764,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950068,
+          "remaining": [],
+          "start_ticks": 87121727,
+          "wait_returncode": 2
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950036,
+          "remaining": [],
+          "start_ticks": 87121684,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950033,
+          "remaining": [],
+          "start_ticks": 87121657,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950026,
+          "remaining": [],
+          "start_ticks": 87121630,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950003,
+          "remaining": [],
+          "start_ticks": 87121601,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1949955,
+          "remaining": [],
+          "start_ticks": 87121574,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1949943,
+          "remaining": [],
+          "start_ticks": 87121547,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1949932,
+          "remaining": [],
+          "start_ticks": 87121518,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1949920,
+          "remaining": [],
+          "start_ticks": 87121489,
+          "wait_returncode": 0
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1949907,
+          "remaining": [],
+          "start_ticks": 87121457,
+          "wait_returncode": 0
+        }
+      ],
+      "compatibility_status_differences": [
+        "node2_snapshot_get_root",
+        "node3_snapshot_get_root",
+        "node1_snapshot_invalid_restore",
+        "node1_snapshot-force_invalid_restore"
+      ],
+      "complete_http_responses": 66,
+      "controller_sha256_after": "365258018813269701fc9332bde852db93ce55153da9e5b9b50a2f4e82ae28c6",
+      "elapsed_ms": 27266.929595,
+      "failure_code": "node2_snapshot_invalid_restore_safe_exact_leader_location",
+      "full_replacement_qualification": false,
+      "http_intents": 67,
+      "http_outcomes": 67,
+      "http_unknown": 0,
+      "intent_sequences_without_terminal_outcome": [],
+      "operation_boundary_complete": true,
+      "owned_cleanup": [
+        {
+          "owned_stopped": true,
+          "pid": 1950060,
+          "remaining": [],
+          "start_ticks": 87121725,
+          "wait_returncode": -15
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950054,
+          "remaining": [],
+          "start_ticks": 87121724,
+          "wait_returncode": -15
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1950053,
+          "remaining": [],
+          "start_ticks": 87121724,
+          "wait_returncode": -15
+        },
+        {
+          "owned_stopped": true,
+          "pid": 1949899,
+          "remaining": [],
+          "start_ticks": 87121456,
+          "wait_returncode": -15
+        }
+      ],
+      "physical_hosts": 1,
+      "preconnect_failures": 1,
+      "prepared": {
+        "api_ports": {
+          "1": 48630,
+          "2": 48632,
+          "3": 48634
+        },
+        "artifacts": {
+          "build-result.public.json": {
+            "bytes": 3084,
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-control-r1/artifacts/build-result.public.json",
+            "sha256": "7fa76585e94fe2e60bbc3ce754f37e4d9d433e4cf576fcc2e39a1e95771f3f42"
+          },
+          "heptabao-server": {
+            "bytes": 107991504,
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-control-r1/artifacts/heptabao-server",
+            "sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba"
+          },
+          "native-build.public.json": {
+            "bytes": 771,
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-control-r1/artifacts/native-build.public.json",
+            "sha256": "2fa263744917e1d71658daa4f34e09ea448fe77ec0b2c0f8ec22c01e2cd84e8e"
+          }
+        },
+        "binary": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-control-r1/artifacts/heptabao-server",
+        "binary_bytes": 107991504,
+        "binary_sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+        "comparison_scope": "actual_wire_observation_not_full_replacement_qualification",
+        "controller_sha256": "365258018813269701fc9332bde852db93ce55153da9e5b9b50a2f4e82ae28c6",
+        "election_seconds": 60.0,
+        "http_seconds": 15.0,
+        "loopback_only": true,
+        "max_response_bytes": 16777216,
+        "node_disable_standby_reads_config": "not_set_by_this_observer",
+        "normal_default_features": true,
+        "old_fences": {
+          "formal-33cafa-normal-full128-r2/summary.json": {
+            "bytes": 109148,
+            "sha256": "8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1"
+          },
+          "formal-33cafa-pocket3-mac1-direct98-r1/summary.json": {
+            "bytes": 45176,
+            "sha256": "b02a111b487e33065117fc88596113c7e8a7695feb283331165381fafd3c167f"
+          },
+          "official271-standby-oracle-live-r1/boundary-assessment.public.json": {
+            "bytes": 112921,
+            "sha256": "4588e9f3a8fff060d4ac7ea035f85b5bcf58cc9874e839d9797bc75023068391"
+          },
+          "official271-standby-oracle-live-r1/result.public.json": {
+            "bytes": 6521,
+            "sha256": "d84a783d817ee7827496182b6f750a1cd995424e554b287f602fd9204f289975"
+          },
+          "official271-standby-oracle-live-r1/wire-observations.public.json": {
+            "bytes": 18036,
+            "sha256": "45d2039f2e68e006cb10dc80925f9d6719fa16dfa433bf22bf5b538e9adfae02"
+          }
+        },
+        "old_generations_reopened": false,
+        "original_forward_timeout_ms": 8000,
+        "original_peer_timeout_ms": 1500,
+        "physical_hosts": 1,
+        "process_nodes": 3,
+        "raft_ports": {
+          "1": 48631,
+          "2": 48633,
+          "3": 48635
+        },
+        "readiness_seconds": 45.0,
+        "redirect_following": false,
+        "source_clean": true,
+        "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+        "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+        "stable_leader_seconds": 2.2,
+        "valid_restore_bodies": 0,
+        "work_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2"
+      },
+      "production_services_touched": false,
+      "schema": "heptabao-normal33-standby-wire-r1",
+      "source_and_fences_after": {
+        "old_fences": {
+          "formal-33cafa-normal-full128-r2/summary.json": {
+            "bytes": 109148,
+            "sha256": "8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1"
+          },
+          "formal-33cafa-pocket3-mac1-direct98-r1/summary.json": {
+            "bytes": 45176,
+            "sha256": "b02a111b487e33065117fc88596113c7e8a7695feb283331165381fafd3c167f"
+          },
+          "official271-standby-oracle-live-r1/boundary-assessment.public.json": {
+            "bytes": 112921,
+            "sha256": "4588e9f3a8fff060d4ac7ea035f85b5bcf58cc9874e839d9797bc75023068391"
+          },
+          "official271-standby-oracle-live-r1/result.public.json": {
+            "bytes": 6521,
+            "sha256": "d84a783d817ee7827496182b6f750a1cd995424e554b287f602fd9204f289975"
+          },
+          "official271-standby-oracle-live-r1/wire-observations.public.json": {
+            "bytes": 18036,
+            "sha256": "45d2039f2e68e006cb10dc80925f9d6719fa16dfa433bf22bf5b538e9adfae02"
+          }
+        },
+        "source_clean": true,
+        "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+        "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+      },
+      "started_unix_ns": 1793793546993970461,
+      "status": "failed",
+      "terminal_unix_ns": 1793793574260899840,
+      "valid_restore_bodies": 0,
+      "verification_error": null
+    },
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/result.public.json",
+    "sha256": "12cdeb32dc89a7f0af5d1950a2c14a02581a8e98cefd3719c0673a0bd38e68d4"
+  },
+  "roles_after_exists": false,
+  "roles_before": {
+    "bytes": 1416,
+    "json": {
+      "actual_leader": 1,
+      "label": "roles_before",
+      "nodes": {
+        "1": {
+          "ha_enabled": true,
+          "health": {
+            "ha_active": true,
+            "ha_application_ready": true,
+            "initialized": true,
+            "recovery_required": false,
+            "sealed": false,
+            "standby": false
+          },
+          "health_status": 200,
+          "is_self": true,
+          "leader_node": 1,
+          "performance_standby": null,
+          "raft_applied_index": 14,
+          "raft_committed_index": 14
+        },
+        "2": {
+          "ha_enabled": true,
+          "health": {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "initialized": true,
+            "recovery_required": false,
+            "sealed": false,
+            "standby": true
+          },
+          "health_status": 200,
+          "is_self": false,
+          "leader_node": 1,
+          "performance_standby": null,
+          "raft_applied_index": 14,
+          "raft_committed_index": 14
+        },
+        "3": {
+          "ha_enabled": true,
+          "health": {
+            "ha_active": false,
+            "ha_application_ready": false,
+            "initialized": true,
+            "recovery_required": false,
+            "sealed": false,
+            "standby": true
+          },
+          "health_status": 200,
+          "is_self": false,
+          "leader_node": 1,
+          "performance_standby": null,
+          "raft_applied_index": 14,
+          "raft_committed_index": 14
+        }
+      },
+      "role_observation_does_not_grant_application_authority": true
+    },
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal33-standby-oracle-live-r2/roles_before.public.json",
+    "sha256": "f56deb2f0a6e163c5560545f05e83358435a71af299c5c051a95a2fe2c1098b6"
+  },
+  "schema": "normal33-standby-wire-partial-public-assessment-v1",
+  "scope": "stopped_fresh_fixture_readback_no_requests_no_private_body_read",
+  "wire_observations_terminal_exists": false
+}
