@@ -4345,7 +4345,7 @@ impl Service {
         if !owner_manifest_migration {
             #[cfg(feature = "native-v6-storage")]
             let native_pki_maintenance =
-                self.native_root.is_some() && admitted.engines.has_native_local_pki();
+                self.native_root.is_some() && admitted.engines.has_native_local_lease_owner();
             #[cfg(not(feature = "native-v6-storage"))]
             let native_pki_maintenance = false;
             #[cfg(feature = "native-v6-storage")]
@@ -4430,6 +4430,9 @@ impl Service {
             && admitted.engines.native_local_pki_mounted(namespace, path);
         #[cfg(not(feature = "native-v6-storage"))]
         let native_pki_mounted = false;
+        #[cfg(feature = "native-v6-storage")]
+        let native_ssh_mounted = self.native_root.is_some()
+            && admitted.engines.native_local_ssh_mounted(namespace, path);
         if !native_pki_mounted && let Some(response) = self.handle_pki_acme(&request, &mut admitted)
         {
             return response;
@@ -4446,6 +4449,10 @@ impl Service {
             None
         };
         if help_projection.as_ref().is_some_and(|help| help.anonymous) {
+            #[cfg(feature = "native-v6-storage")]
+            if native_ssh_mounted {
+                return self.dispatch_native_ssh_request(admitted, None, &request);
+            }
             #[cfg(feature = "native-v6-storage")]
             if native_pki_mounted {
                 return self.dispatch_native_pki_request(
@@ -4502,6 +4509,13 @@ impl Service {
                 .engines
                 .is_public_ssh_key_read(namespace, method, path)
         {
+            #[cfg(feature = "native-v6-storage")]
+            if self.native_root.is_some() {
+                if !native_ssh_mounted {
+                    return Response::error(501, "native SSH public key requires its root owner");
+                }
+                return self.dispatch_native_ssh_request(admitted, None, &request);
+            }
             return Self::native_ssh_public_response(&admitted, namespace, method, path, body)
                 .unwrap_or_else(|| Response::error(503, "SSH public key owner changed"));
         }
@@ -4857,6 +4871,13 @@ impl Service {
                     .engines
                     .native_totp_registry_route(method, path, request.body));
         #[cfg(feature = "native-v6-storage")]
+        let native_local_ssh = self.native_root.is_some()
+            && namespace.is_empty()
+            && (admitted.engines.native_local_ssh_route(namespace, path)
+                || admitted
+                    .engines
+                    .native_ssh_registry_route(method, path, request.body));
+        #[cfg(feature = "native-v6-storage")]
         let native_local_pki = self.native_root.is_some()
             && namespace.is_empty()
             && (admitted.engines.native_local_pki_route(namespace, path)
@@ -4889,6 +4910,7 @@ impl Service {
             && !native_local_transit
             && !native_local_totp
             && !native_local_pki
+            && !native_local_ssh
             && !native_metadata_read;
         #[cfg(feature = "native-v6-storage")]
         let native_capabilities = self.native_root.is_some()
@@ -4999,6 +5021,7 @@ impl Service {
                 && !native_local_transit
                 && !native_local_totp
                 && !native_local_pki
+                && !native_local_ssh
                 && !native_kv2_mount
                 && !native_kv1_mount
                 && !native_remount
@@ -5148,6 +5171,10 @@ impl Service {
         #[cfg(feature = "native-v6-storage")]
         if native_local_totp {
             return self.dispatch_native_totp_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_local_ssh {
+            return self.dispatch_native_ssh_request(admitted, principal.take(), &request);
         }
         #[cfg(feature = "native-v6-storage")]
         if native_local_pki {

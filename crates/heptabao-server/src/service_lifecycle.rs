@@ -70,7 +70,7 @@ impl Service {
         let now = time.seconds();
         #[cfg(feature = "native-v6-storage")]
         if self.native_root.is_some() {
-            if current.engines.has_native_local_pki() {
+            if current.engines.has_native_local_lease_owner() {
                 return self.maintain_native_pki_lifetimes(now, clock);
             }
             return self.maintain_native_transit_lifetimes(now, clock);
