@@ -1,0 +1,24 @@
+{
+  "archive_sha256": "4b733b7f017564039d33f7827ba0f752190ff7089bf08ad16f37b6b5070ac05a",
+  "file_bytes": 149486,
+  "file_count": 10,
+  "host": "rog",
+  "match_counts": {
+    "credential": 0,
+    "identity": 0,
+    "profile_identifier": 0
+  },
+  "matched_file_count": 0,
+  "ok": true,
+  "private_input_file_count": 2,
+  "production_changed": false,
+  "profile_records_count": 11,
+  "provider_called": false,
+  "publication_manifest_sha256": "2fd8be9a748926623ec97a607b96b81cfadecfc7bd79d29482b2e19257a80929",
+  "schema": "heptabao.cutover-publication-actual-literal-scan.v1",
+  "unique_literal_counts": {
+    "credential": 11,
+    "identity": 46,
+    "profile_identifier": 3
+  }
+}

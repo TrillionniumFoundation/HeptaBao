@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.cutover-publication-root-review.v1",
+  "sourceQaParent": "c4adf3468c042f673228e3c0297dc592d94304ae",
+  "publicationManifestSha256": "2fd8be9a748926623ec97a607b96b81cfadecfc7bd79d29482b2e19257a80929",
+  "originalPacketByteExact": true,
+  "originalMacScanPreserved": true,
+  "macOriginalScanOk": false,
+  "macGenericIdentityMatches": 10,
+  "macMatchAttribution": "Two existing bindings.accountId values are agent or channel routing aliases. Exact actual OAuth credential identity matches were zero. No matches remain unclassified.",
+  "credentialLiteralMatches": {
+    "mac": 0,
+    "rog": 0
+  },
+  "actualCredentialIdentityLiteralMatches": {
+    "mac": 0,
+    "rog": 0
+  },
+  "allElevenActualSdkEffectiveOrdersPreservedWithPreview": [
+    2,
+    1
+  ],
+  "counterexamplePreviewRetained": [
+    1,
+    2
+  ],
+  "scope": "Actual installed resolver previews and a concrete migration plan. No complete plugin startup, credential mutation, service restart, provider call, or production cutover was performed by this packet.",
+  "productionChanged": false,
+  "fullReplacementQualified": false,
+  "scanReceiptsSha256": {
+    "mac-scan.public.json": "fb66a8ba5e15a4e6911a1c9d328b3ca9a12627bd44242420cbb6b781195d6c30",
+    "rog-scan.public.json": "574574627e39226830debc24a31efa4799841d5787676958f19f5b247087bfde",
+    "mac-attribution.public.json": "1c5fcf47e0c822a2db9eb42de73b8d34f3fb4e6fbfead736f00889f35deba8ed"
+  }
+}

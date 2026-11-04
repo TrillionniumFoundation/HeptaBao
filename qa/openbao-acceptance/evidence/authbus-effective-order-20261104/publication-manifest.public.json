@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.mac-rog-cutover-publication.v1",
+  "productionChanged": false,
+  "publishedGitBranchManagedByRoot": true,
+  "files": {
+    "qa/openbao-acceptance/authbus_effective_order_preview.mjs": {
+      "sha256": "1b23fe9d5a0e0f43657b1e9218bf71fff1dfc8983813202e5439716822779833",
+      "bytes": 11051
+    },
+    "qa/openbao-acceptance/AUTHBUS_MAC_ROG_CUTOVER_PLAN.md": {
+      "sha256": "a1be08b3c11aaa428c16909dd96fb4cb495b79b97d0ec9479d70279eb90178cd",
+      "bytes": 19937
+    },
+    "qa/openbao-acceptance/authbus_effective_order_preview.py": {
+      "sha256": "4df0c468e1a15e333c6bd57a0ec5961e8f909053dae66be5ab6c18f8df9aa968",
+      "bytes": 17684
+    },
+    "qa/openbao-acceptance/evidence/authbus-effective-order-20261104/rog-result.public.json": {
+      "sha256": "244be61bad65a3c1f059188fe96960ed57d9ff8c27f5246b2e99813fd4ea3677",
+      "bytes": 23085
+    },
+    "qa/openbao-acceptance/evidence/authbus-effective-order-20261104/mac-result.public.json": {
+      "sha256": "f6522d170c06276f82088264d7a5c77a8a87225911d9d3235d96051c76afee0e",
+      "bytes": 22294
+    },
+    "qa/openbao-acceptance/evidence/authbus-effective-order-20261104/source-observations.public.json": {
+      "sha256": "7685a8dd41a555804f106fb880c1c75652d75af447aa2b5494c66ba2a7670bd2",
+      "bytes": 39830
+    },
+    "qa/openbao-acceptance/evidence/authbus-effective-order-20261104/rog-controller.public.json": {
+      "sha256": "7e1bed344052b72bdfe08efd0b06551ad20b2ac6550d767e5d3e99e88b6e4a83",
+      "bytes": 2254
+    },
+    "qa/openbao-acceptance/evidence/authbus-effective-order-20261104/mac-controller.public.json": {
+      "sha256": "84a6796d70dddd290da61e8817f811755d10fec4aac3a84cee5469cbdb337b61",
+      "bytes": 2268
+    },
+    "qa/openbao-acceptance/evidence/authbus-effective-order-20261104/cutover-plan-r2.public.json": {
+      "sha256": "d211187aec0f5555fc6cbfb852c7eede6692f2a7040c9a1cf1dee750a0186a36",
+      "bytes": 9095
+    }
+  },
+  "sourceReceiptsCopiedByteExact": true
+}

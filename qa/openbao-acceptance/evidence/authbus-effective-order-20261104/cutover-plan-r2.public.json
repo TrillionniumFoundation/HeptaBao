@@ -1,0 +1,251 @@
+{
+  "schema": "heptabao.mac-rog-production-transition-plan.v1",
+  "status": "prepared_not_executable_target_unbound",
+  "productionCutover": false,
+  "finalNormalProduct": null,
+  "localTlsTopology": "client_to_own_qualified_HA_node_API_then_server_leader_forwarding",
+  "hosts": {
+    "mac": {
+      "oldConfig": {
+        "path": "/Users/qianqi/.openclaw/openclaw.json",
+        "sha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d"
+      },
+      "preserveAuthBusFlags": {
+        "address": "https://100.66.117.33:8200",
+        "caFile": "/Users/qianqi/.openclaw/credentials/authbus/ca.crt",
+        "roleIdFile": "/Users/qianqi/.openclaw/credentials/authbus/role_id",
+        "secretIdFile": "/Users/qianqi/.openclaw/credentials/authbus/secret_id",
+        "hostId": "mac",
+        "leader": false,
+        "publishNew": true,
+        "manageOrder": true,
+        "orderExcludeAgentIds": null,
+        "schedulerMode": null,
+        "enforceRefreshLeases": null,
+        "releaseGeneration": 200,
+        "pollIntervalMs": 15000,
+        "refreshMarginMs": 900000,
+        "maxRefreshesPerCycle": 1,
+        "schedulerReportIntervalMs": null
+      },
+      "configuredAgents": [
+        "main",
+        "trnm",
+        "hepta-ui",
+        "hepta",
+        "hepta-backend"
+      ],
+      "service": {
+        "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.gateway.plist",
+        "sha256": "e176c41f40b462b288177c20ced94c0e645b3a58f6bda024e53366f1592e8d08",
+        "mode": "0o600",
+        "label": "ai.openclaw.gateway",
+        "program": null,
+        "argv0": "/bin/sh",
+        "argumentCount": 8,
+        "argumentFlags": [
+          "--port"
+        ],
+        "workingDirectory": "/Users/qianqi/.openclaw",
+        "runAtLoad": true,
+        "keepAlive": true,
+        "environmentKeys": [],
+        "standardOutPath": "/Users/qianqi/Library/Logs/openclaw/gateway.log",
+        "standardErrorPath": "/dev/null",
+        "loadedProjection": [
+          "path = /Users/qianqi/Library/LaunchAgents/ai.openclaw.gateway.plist",
+          "state = running",
+          "program = /bin/sh",
+          "pid = 18437",
+          "state = active",
+          "state = active"
+        ],
+        "launchctlReturnCode": 0
+      },
+      "target": {
+        "apiAddress": null,
+        "apiPort": null,
+        "clusterIdentity": null,
+        "nodeIdentity": null,
+        "caFile": null,
+        "caSha256": null,
+        "leafSha256": null,
+        "roleIdFile": null,
+        "roleIdentitySha256": null,
+        "secretIdFile": null,
+        "secretIdIssuanceReceipt": null,
+        "policySha256": null,
+        "serverSupervisorReceipt": null
+      },
+      "editPaths": [
+        "plugins.entries.openclaw-authbus.config.address",
+        "plugins.entries.openclaw-authbus.config.caFile",
+        "plugins.entries.openclaw-authbus.config.roleIdFile",
+        "plugins.entries.openclaw-authbus.config.secretIdFile"
+      ],
+      "freshStoppedBaselineRequired": true,
+      "actualForwardRestartAndInverseRequired": true
+    },
+    "rog": {
+      "oldConfig": {
+        "path": "/home/qian-qi/.openclaw/openclaw.json",
+        "sha256": "a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15"
+      },
+      "preserveAuthBusFlags": {
+        "address": "https://100.66.117.33:8200",
+        "caFile": "/home/qian-qi/.openclaw/credentials/authbus/ca.crt",
+        "roleIdFile": "/home/qian-qi/.openclaw/credentials/authbus/role_id",
+        "secretIdFile": "/home/qian-qi/.openclaw/credentials/authbus/secret_id",
+        "hostId": "rog",
+        "leader": false,
+        "publishNew": true,
+        "manageOrder": true,
+        "orderExcludeAgentIds": [
+          "main"
+        ],
+        "schedulerMode": null,
+        "enforceRefreshLeases": null,
+        "releaseGeneration": 203,
+        "pollIntervalMs": 15000,
+        "refreshMarginMs": 900000,
+        "maxRefreshesPerCycle": 1,
+        "schedulerReportIntervalMs": null
+      },
+      "configuredAgents": [
+        "main",
+        "azi2",
+        "azi3",
+        "azi4",
+        "azi5",
+        "zbj-llm-runtime"
+      ],
+      "service": {
+        "host": "rog",
+        "unit": "openclaw-gateway.service",
+        "show": {
+          "ActiveState": "active",
+          "SubState": "running",
+          "FragmentPath": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service",
+          "DropInPaths": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/10-telegram-dns-verbatim.conf /home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/20-drain-timeout.conf /home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/30-telegram-spooled-handler-timeout.conf",
+          "UnitFileState": "enabled",
+          "TimeoutStopUSec": "6min",
+          "MainPID": "2436",
+          "KillMode": "control-group",
+          "KillSignal": "15"
+        },
+        "returncode": 0,
+        "files": [
+          {
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service",
+            "sha256": "987e55191a1a607ce3b56a79d115d58c8071e7e708ed5ee18208e60a45450f88",
+            "bytes": 1082,
+            "mode": "0o644"
+          },
+          {
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/10-telegram-dns-verbatim.conf",
+            "sha256": "c28f7d2c30ad9ee1ccafe10be981f7b1de391eafab3592188809251ce45f7f3b",
+            "bytes": 179,
+            "mode": "0o644"
+          },
+          {
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/20-drain-timeout.conf",
+            "sha256": "8e8a6132204886a1ac652627f590fc47c319dea3b6813a990744edac6dadf1cc",
+            "bytes": 180,
+            "mode": "0o644"
+          },
+          {
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/30-telegram-spooled-handler-timeout.conf",
+            "sha256": "4f90104dc1b9d6f5ec391e3d8b1b5c3b8b4fca16960913da1764840a0ab2a49a",
+            "bytes": 75,
+            "mode": "0o644"
+          }
+        ]
+      },
+      "target": {
+        "apiAddress": null,
+        "apiPort": null,
+        "clusterIdentity": null,
+        "nodeIdentity": null,
+        "caFile": null,
+        "caSha256": null,
+        "leafSha256": null,
+        "roleIdFile": null,
+        "roleIdentitySha256": null,
+        "secretIdFile": null,
+        "secretIdIssuanceReceipt": null,
+        "policySha256": null,
+        "serverSupervisorReceipt": null
+      },
+      "editPaths": [
+        "plugins.entries.openclaw-authbus.config.address",
+        "plugins.entries.openclaw-authbus.config.caFile",
+        "plugins.entries.openclaw-authbus.config.roleIdFile",
+        "plugins.entries.openclaw-authbus.config.secretIdFile"
+      ],
+      "freshStoppedBaselineRequired": true,
+      "actualForwardRestartAndInverseRequired": true
+    }
+  },
+  "coordinator": {
+    "implementationSha256": "cc46822439dfd33c86d1068c886941a92c5581871474cef846d2aee14ce80fe0",
+    "productionEntryQualified": false,
+    "ownerHost": null,
+    "ownerId": null,
+    "ownerStateDirectory": null,
+    "distributedPublisherHaClaimed": false,
+    "inboxPublicationPreserved": true,
+    "unapprovedIdentityPromotion": "defer without shared manifest/order changes",
+    "newManagedProfiles": [
+      1,
+      2
+    ],
+    "macProfile3": "preserve original local fallback and exact recovery generation; do not falsely revalidate or inject into ROG"
+  },
+  "order": {
+    "selection": "managed_2_then_1 selected by actual installed SDK pure previews",
+    "managedProfileOrder": [
+      2,
+      1
+    ],
+    "activeProfile": null,
+    "enforceManagedOrder": false,
+    "scheduler": null,
+    "existingUsageAndOrderRequired": true,
+    "rejectedAlternative": {
+      "managedProfileOrder": [
+        1,
+        2
+      ],
+      "reason": "Actual ROG zbj effective order changes from independent4,2,1 to independent4,1,2"
+    },
+    "scope": "Pure current-store ordering only; no credential replacement, full plugin cycle, provider request, native factory or production cutover"
+  },
+  "sourceObservations": {
+    "path": "cutover-preparation-r1/source-observations.public.json",
+    "sha256": "7685a8dd41a555804f106fb880c1c75652d75af447aa2b5494c66ba2a7670bd2",
+    "globalSnapshotQualified": false
+  },
+  "actualPreviewEvidence": {
+    "mac": {
+      "controllerSha256": "84a6796d70dddd290da61e8817f811755d10fec4aac3a84cee5469cbdb337b61",
+      "resultSha256": "f6522d170c06276f82088264d7a5c77a8a87225911d9d3235d96051c76afee0e",
+      "checks": [
+        9,
+        44
+      ],
+      "configuredAgents": 5
+    },
+    "rog": {
+      "controllerSha256": "7e1bed344052b72bdfe08efd0b06551ad20b2ac6550d767e5d3e99e88b6e4a83",
+      "resultSha256": "244be61bad65a3c1f059188fe96960ed57d9ff8c27f5246b2e99813fd4ea3677",
+      "checks": [
+        9,
+        47
+      ],
+      "configuredAgents": 6
+    },
+    "sameRunCombinedClaim": false,
+    "driverSha256": "4df0c468e1a15e333c6bd57a0ec5961e8f909053dae66be5ab6c18f8df9aa968",
+    "consumerSha256": "1b23fe9d5a0e0f43657b1e9218bf71fff1dfc8983813202e5439716822779833"
+  }
+}

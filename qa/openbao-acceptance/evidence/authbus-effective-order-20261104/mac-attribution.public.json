@@ -1,0 +1,19 @@
+{
+  "actual_credential_identity_literal_count": 6,
+  "actual_credential_identity_match_count": 0,
+  "archive_sha256": "4b733b7f017564039d33f7827ba0f752190ff7089bf08ad16f37b6b5070ac05a",
+  "config_identity_match_count": 10,
+  "config_identity_unique_match_count": 2,
+  "config_match_fields": {
+    "bindings.accountid": 10
+  },
+  "matched_config_values_also_credential_identity_count": 0,
+  "matched_config_values_are_agent_or_channel_alias_count": 2,
+  "original_scan_sha256": "fb66a8ba5e15a4e6911a1c9d328b3ca9a12627bd44242420cbb6b781195d6c30",
+  "private_input_file_count": 2,
+  "production_changed": false,
+  "provider_called": false,
+  "publication_manifest_sha256": "2fd8be9a748926623ec97a607b96b81cfadecfc7bd79d29482b2e19257a80929",
+  "schema": "heptabao.cutover-publication-literal-attribution.v1",
+  "unclassified_config_identity_unique_match_count": 0
+}

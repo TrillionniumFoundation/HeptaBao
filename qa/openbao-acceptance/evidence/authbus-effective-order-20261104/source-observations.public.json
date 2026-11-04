@@ -1,0 +1,994 @@
+{
+  "mac": {
+    "configuration": {
+      "configPath": "/Users/qianqi/.openclaw/openclaw.json",
+      "configSha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+      "authbusEnabled": true,
+      "flags": {
+        "address": "https://100.66.117.33:8200",
+        "caFile": "/Users/qianqi/.openclaw/credentials/authbus/ca.crt",
+        "roleIdFile": "/Users/qianqi/.openclaw/credentials/authbus/role_id",
+        "secretIdFile": "/Users/qianqi/.openclaw/credentials/authbus/secret_id",
+        "hostId": "mac",
+        "leader": false,
+        "publishNew": true,
+        "manageOrder": true,
+        "orderExcludeAgentIds": null,
+        "schedulerMode": null,
+        "enforceRefreshLeases": null,
+        "releaseGeneration": 200,
+        "pollIntervalMs": 15000,
+        "refreshMarginMs": 900000,
+        "maxRefreshesPerCycle": 1,
+        "schedulerReportIntervalMs": null
+      },
+      "explicitKeys": [
+        "address",
+        "caFile",
+        "roleIdFile",
+        "secretIdFile",
+        "hostId",
+        "leader",
+        "publishNew",
+        "manageOrder",
+        "releaseGeneration",
+        "pollIntervalMs",
+        "refreshMarginMs",
+        "maxRefreshesPerCycle"
+      ],
+      "configuredAgentIds": [
+        "main",
+        "trnm",
+        "hepta-ui",
+        "hepta",
+        "hepta-backend"
+      ],
+      "defaultModel": "openai/gpt-5.6-sol",
+      "nativeAppServer": {
+        "homeScope": null,
+        "command": null,
+        "transport": null
+      },
+      "configOtherKeyNamesOnly": []
+    },
+    "authProjection": {
+      "host": "mac",
+      "configSha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+      "configuredAgents": [
+        {
+          "agent": "main",
+          "db": "/Users/qianqi/.openclaw/agents/main/agent/openclaw-agent.sqlite",
+          "exists": true,
+          "rowsCanonicalSha256": "b23861bcaf7a84d101e943da432d213c52bd28687b33dac2377d993d3188d3e9",
+          "rawStoreRowCount": 1,
+          "rawStateRowCount": 1,
+          "profiles": [
+            {
+              "ordinal": 1,
+              "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+              "knownIdentity": [
+                "profile1"
+              ],
+              "accountIdSha256": "332c2cdd98cd0650de22a4506f7f67c3cbc69a9154e0cbafa4344f7a691640b9",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1791706382264,
+              "credentialCanonicalSha256": "55e99420a597c47e6944e01e0300bacf5bb8dfb17989cb914389beec58e617d8"
+            },
+            {
+              "ordinal": 2,
+              "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+              "knownIdentity": [
+                "profile2"
+              ],
+              "accountIdSha256": "899445c0e083199d67988e1db5bc7ac6d4d158bf913bb54669e5afc7714f2fb2",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1792031446209,
+              "credentialCanonicalSha256": "6a2f6bddaef67707ed172c3198d389d1731e3206414b26a51f85d8f5545ad97d"
+            },
+            {
+              "ordinal": 3,
+              "profileIdSha256": "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2",
+              "knownIdentity": [
+                "profile3"
+              ],
+              "accountIdSha256": "dfe45608d591590e55167d33f097a2a7f7119cd2256d8ebdc149e06d1befd1ae",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1791603060530,
+              "credentialCanonicalSha256": "193b4fcb8cf669fd967ba468dd33b9d98b72dafee461c2c8d36dbefd8a510aba"
+            }
+          ],
+          "stateOrder": {
+            "openai": [
+              {
+                "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+                "localOrdinal": 1
+              },
+              {
+                "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+                "localOrdinal": 2
+              },
+              {
+                "profileIdSha256": "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2",
+                "localOrdinal": 3
+              }
+            ]
+          },
+          "wholeStoreCanonicalSha256": "6fb7a0e24c82820a0665f0c4f7bfbc6bb3b15cb82cf6a33eded97dddda31bed6",
+          "wholeStateCanonicalSha256": "004b20fddd28fbc0ab8233260311c88af383dee173f974fa95e3d1ad103e5645",
+          "metadataUnchanged": true
+        },
+        {
+          "agent": "trnm",
+          "db": "/Users/qianqi/.openclaw/agents/trnm/agent/openclaw-agent.sqlite",
+          "exists": true,
+          "rowsCanonicalSha256": "d5bb81a17ec31c9d8e1367e2982508fb3b402fa8d3fdc07cd0684808a9c14b8f",
+          "rawStoreRowCount": 1,
+          "rawStateRowCount": 0,
+          "profiles": [],
+          "stateOrder": {},
+          "wholeStoreCanonicalSha256": "67d82c25cee9879aa641a9988622147511968e3956ca3407d73550757a539c86",
+          "wholeStateCanonicalSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+          "metadataUnchanged": false
+        },
+        {
+          "agent": "hepta-ui",
+          "db": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/openclaw-agent.sqlite",
+          "exists": true,
+          "rowsCanonicalSha256": "494ce58decb76b06754b5612d87fbe62509e396fa6a0b70621a194cce73d0fa7",
+          "rawStoreRowCount": 1,
+          "rawStateRowCount": 1,
+          "profiles": [
+            {
+              "ordinal": 1,
+              "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+              "knownIdentity": [
+                "profile1"
+              ],
+              "accountIdSha256": "332c2cdd98cd0650de22a4506f7f67c3cbc69a9154e0cbafa4344f7a691640b9",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1791706382264,
+              "credentialCanonicalSha256": "55e99420a597c47e6944e01e0300bacf5bb8dfb17989cb914389beec58e617d8"
+            },
+            {
+              "ordinal": 2,
+              "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+              "knownIdentity": [
+                "profile2"
+              ],
+              "accountIdSha256": "899445c0e083199d67988e1db5bc7ac6d4d158bf913bb54669e5afc7714f2fb2",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1792031446209,
+              "credentialCanonicalSha256": "6a2f6bddaef67707ed172c3198d389d1731e3206414b26a51f85d8f5545ad97d"
+            },
+            {
+              "ordinal": 3,
+              "profileIdSha256": "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2",
+              "knownIdentity": [
+                "profile3"
+              ],
+              "accountIdSha256": "dfe45608d591590e55167d33f097a2a7f7119cd2256d8ebdc149e06d1befd1ae",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1791603060530,
+              "credentialCanonicalSha256": "193b4fcb8cf669fd967ba468dd33b9d98b72dafee461c2c8d36dbefd8a510aba"
+            }
+          ],
+          "stateOrder": {
+            "openai": [
+              {
+                "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+                "localOrdinal": 1
+              },
+              {
+                "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+                "localOrdinal": 2
+              },
+              {
+                "profileIdSha256": "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2",
+                "localOrdinal": 3
+              }
+            ]
+          },
+          "wholeStoreCanonicalSha256": "6fb7a0e24c82820a0665f0c4f7bfbc6bb3b15cb82cf6a33eded97dddda31bed6",
+          "wholeStateCanonicalSha256": "917b01499fafc862731fd73dd30100610625e1588f2880c8ecf0774f10d7ab98",
+          "metadataUnchanged": false
+        },
+        {
+          "agent": "hepta",
+          "db": "/Users/qianqi/.openclaw/agents/hepta/agent/openclaw-agent.sqlite",
+          "exists": true,
+          "rowsCanonicalSha256": "2b8d8fbcec6a222d837f7da157e0663b4108ea7e14744e3c4aa1c3e491d23841",
+          "rawStoreRowCount": 1,
+          "rawStateRowCount": 1,
+          "profiles": [
+            {
+              "ordinal": 1,
+              "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+              "knownIdentity": [
+                "profile1"
+              ],
+              "accountIdSha256": "332c2cdd98cd0650de22a4506f7f67c3cbc69a9154e0cbafa4344f7a691640b9",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1791706382264,
+              "credentialCanonicalSha256": "55e99420a597c47e6944e01e0300bacf5bb8dfb17989cb914389beec58e617d8"
+            },
+            {
+              "ordinal": 2,
+              "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+              "knownIdentity": [
+                "profile2"
+              ],
+              "accountIdSha256": "899445c0e083199d67988e1db5bc7ac6d4d158bf913bb54669e5afc7714f2fb2",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1792031446209,
+              "credentialCanonicalSha256": "6a2f6bddaef67707ed172c3198d389d1731e3206414b26a51f85d8f5545ad97d"
+            },
+            {
+              "ordinal": 3,
+              "profileIdSha256": "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2",
+              "knownIdentity": [
+                "profile3"
+              ],
+              "accountIdSha256": "dfe45608d591590e55167d33f097a2a7f7119cd2256d8ebdc149e06d1befd1ae",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1791603060530,
+              "credentialCanonicalSha256": "193b4fcb8cf669fd967ba468dd33b9d98b72dafee461c2c8d36dbefd8a510aba"
+            }
+          ],
+          "stateOrder": {
+            "openai": [
+              {
+                "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+                "localOrdinal": 1
+              },
+              {
+                "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+                "localOrdinal": 2
+              },
+              {
+                "profileIdSha256": "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2",
+                "localOrdinal": 3
+              }
+            ]
+          },
+          "wholeStoreCanonicalSha256": "6fb7a0e24c82820a0665f0c4f7bfbc6bb3b15cb82cf6a33eded97dddda31bed6",
+          "wholeStateCanonicalSha256": "917b01499fafc862731fd73dd30100610625e1588f2880c8ecf0774f10d7ab98",
+          "metadataUnchanged": false
+        },
+        {
+          "agent": "hepta-backend",
+          "db": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/openclaw-agent.sqlite",
+          "exists": true,
+          "rowsCanonicalSha256": "65c2e510c6a38de10cbb82c2f6544b48efef7774aa6eabea3690fdf893a4b58c",
+          "rawStoreRowCount": 1,
+          "rawStateRowCount": 1,
+          "profiles": [
+            {
+              "ordinal": 1,
+              "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+              "knownIdentity": [
+                "profile1"
+              ],
+              "accountIdSha256": "332c2cdd98cd0650de22a4506f7f67c3cbc69a9154e0cbafa4344f7a691640b9",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1791706382264,
+              "credentialCanonicalSha256": "55e99420a597c47e6944e01e0300bacf5bb8dfb17989cb914389beec58e617d8"
+            },
+            {
+              "ordinal": 2,
+              "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+              "knownIdentity": [
+                "profile2"
+              ],
+              "accountIdSha256": "899445c0e083199d67988e1db5bc7ac6d4d158bf913bb54669e5afc7714f2fb2",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1792031446209,
+              "credentialCanonicalSha256": "6a2f6bddaef67707ed172c3198d389d1731e3206414b26a51f85d8f5545ad97d"
+            },
+            {
+              "ordinal": 3,
+              "profileIdSha256": "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2",
+              "knownIdentity": [
+                "profile3"
+              ],
+              "accountIdSha256": "dfe45608d591590e55167d33f097a2a7f7119cd2256d8ebdc149e06d1befd1ae",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1791603060530,
+              "credentialCanonicalSha256": "193b4fcb8cf669fd967ba468dd33b9d98b72dafee461c2c8d36dbefd8a510aba"
+            }
+          ],
+          "stateOrder": {
+            "openai": [
+              {
+                "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+                "localOrdinal": 1
+              },
+              {
+                "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+                "localOrdinal": 2
+              },
+              {
+                "profileIdSha256": "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2",
+                "localOrdinal": 3
+              }
+            ]
+          },
+          "wholeStoreCanonicalSha256": "6fb7a0e24c82820a0665f0c4f7bfbc6bb3b15cb82cf6a33eded97dddda31bed6",
+          "wholeStateCanonicalSha256": "6a544bfd86d6d1d759b808978b700a58b48e51e9f6691b8871d6ad50f98bdcad",
+          "metadataUnchanged": false
+        }
+      ],
+      "cache": [
+        {
+          "name": "applied-profiles.json",
+          "path": "/Users/qianqi/.openclaw/authbus/applied-profiles.json",
+          "exists": true,
+          "sha256": "ef35a9164d569ebd57e5c34debd1ba549e3b32995a71a261d7130a407650e13c",
+          "bytes": 372,
+          "keys": [
+            "profiles",
+            "schemaVersion",
+            "updatedAt"
+          ],
+          "entries": [
+            {
+              "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+              "knownIdentity": [
+                "profile1"
+              ],
+              "digest": "55e99420a597c47e6944e01e0300bacf5bb8dfb17989cb914389beec58e617d8",
+              "reason": null
+            },
+            {
+              "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+              "knownIdentity": [
+                "profile2"
+              ],
+              "digest": "6a2f6bddaef67707ed172c3198d389d1731e3206414b26a51f85d8f5545ad97d",
+              "reason": null
+            },
+            {
+              "profileIdSha256": "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2",
+              "knownIdentity": [
+                "profile3"
+              ],
+              "digest": "193b4fcb8cf669fd967ba468dd33b9d98b72dafee461c2c8d36dbefd8a510aba",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "publish-baseline.json",
+          "path": "/Users/qianqi/.openclaw/authbus/publish-baseline.json",
+          "exists": true,
+          "sha256": "f13dfa1a44764f5767d5a9afc625a832562b448b5aa4d4f3c2215c1724f9564b",
+          "bytes": 278,
+          "keys": [
+            "profiles",
+            "schemaVersion",
+            "updatedAt"
+          ],
+          "entries": [
+            {
+              "profileIdSha256": "7b41fd2b9e4981c881c2135604fb15284b5eb2fff5ffa4edb6fe9c0c004fe4c2",
+              "knownIdentity": [],
+              "digest": "95633ebfb4c923ca8351b70bdf0cc6583e184482a7f3b898dbb9463103bf0a14",
+              "reason": null
+            },
+            {
+              "profileIdSha256": "b06271cb4944091791c1a66410a5bf789ed6e90861d28be2aad29b941bd90abd",
+              "knownIdentity": [],
+              "digest": "50d624e37dc54e4b050c9fe3667e939bb0f74c31683a4adcb3ee372babb25310",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "bad-refresh-quarantine.json",
+          "path": "/Users/qianqi/.openclaw/authbus/bad-refresh-quarantine.json",
+          "exists": true,
+          "sha256": "2ed277d7cbf7389dc039ba1a52cfc6578650cd23485f65f464e814b0e51b18b1",
+          "bytes": 73,
+          "keys": [
+            "profiles",
+            "schemaVersion",
+            "updatedAt"
+          ],
+          "entries": []
+        },
+        {
+          "name": "refresh-backoff.json",
+          "exists": false
+        },
+        {
+          "name": "lease-epochs.json",
+          "exists": false
+        },
+        {
+          "name": "status.json",
+          "path": "/Users/qianqi/.openclaw/authbus/status.json",
+          "exists": true,
+          "sha256": "f0d5e182339b8ca9559f7e824834e6ba0234e51ec2fc3b07594c4625eb275701",
+          "bytes": 150,
+          "keys": [
+            "elapsedMs",
+            "error",
+            "hostId",
+            "lastCycleAt",
+            "leader",
+            "ok"
+          ],
+          "safeStatus": {
+            "ok": false,
+            "hostId": "mac",
+            "leader": false,
+            "lastCycleAt": 1793783193673,
+            "elapsedMs": 15007,
+            "manifestGeneration": null,
+            "importedProfiles": null,
+            "publishedEvents": null,
+            "schedulerReports": null,
+            "releaseGeneration": null
+          }
+        }
+      ],
+      "productionMutated": false,
+      "providerRequests": 0,
+      "scope": "Exact current configured agent auth rows and six source-defined AuthBus state files; private credential values not emitted."
+    },
+    "service": {
+      "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.gateway.plist",
+      "sha256": "e176c41f40b462b288177c20ced94c0e645b3a58f6bda024e53366f1592e8d08",
+      "mode": "0o600",
+      "label": "ai.openclaw.gateway",
+      "program": null,
+      "argv0": "/bin/sh",
+      "argumentCount": 8,
+      "argumentFlags": [
+        "--port"
+      ],
+      "workingDirectory": "/Users/qianqi/.openclaw",
+      "runAtLoad": true,
+      "keepAlive": true,
+      "environmentKeys": [],
+      "standardOutPath": "/Users/qianqi/Library/Logs/openclaw/gateway.log",
+      "standardErrorPath": "/dev/null",
+      "loadedProjection": [
+        "path = /Users/qianqi/Library/LaunchAgents/ai.openclaw.gateway.plist",
+        "state = running",
+        "program = /bin/sh",
+        "pid = 18437",
+        "state = active",
+        "state = active"
+      ],
+      "launchctlReturnCode": 0
+    }
+  },
+  "rog": {
+    "configuration": {
+      "configPath": "/home/qian-qi/.openclaw/openclaw.json",
+      "configSha256": "a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15",
+      "authbusEnabled": true,
+      "flags": {
+        "address": "https://100.66.117.33:8200",
+        "caFile": "/home/qian-qi/.openclaw/credentials/authbus/ca.crt",
+        "roleIdFile": "/home/qian-qi/.openclaw/credentials/authbus/role_id",
+        "secretIdFile": "/home/qian-qi/.openclaw/credentials/authbus/secret_id",
+        "hostId": "rog",
+        "leader": false,
+        "publishNew": true,
+        "manageOrder": true,
+        "orderExcludeAgentIds": [
+          "main"
+        ],
+        "schedulerMode": null,
+        "enforceRefreshLeases": null,
+        "releaseGeneration": 203,
+        "pollIntervalMs": 15000,
+        "refreshMarginMs": 900000,
+        "maxRefreshesPerCycle": 1,
+        "schedulerReportIntervalMs": null
+      },
+      "explicitKeys": [
+        "address",
+        "caFile",
+        "roleIdFile",
+        "secretIdFile",
+        "hostId",
+        "leader",
+        "publishNew",
+        "manageOrder",
+        "orderExcludeAgentIds",
+        "releaseGeneration",
+        "pollIntervalMs",
+        "refreshMarginMs",
+        "maxRefreshesPerCycle"
+      ],
+      "configuredAgentIds": [
+        "main",
+        "azi2",
+        "azi3",
+        "azi4",
+        "azi5",
+        "zbj-llm-runtime"
+      ],
+      "defaultModel": {
+        "primary": "codex/gpt-6.1-sol"
+      },
+      "nativeAppServer": {
+        "homeScope": "user",
+        "command": "/home/qian-qi/.openclaw/runtime/openai-codex-0.159.2/node_modules/.bin/codex",
+        "transport": "stdio"
+      },
+      "configOtherKeyNamesOnly": []
+    },
+    "authProjection": {
+      "host": "rog",
+      "configSha256": "a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15",
+      "configuredAgents": [
+        {
+          "agent": "main",
+          "db": "/home/qian-qi/.openclaw/agents/main/agent/openclaw-agent.sqlite",
+          "exists": true,
+          "rowsCanonicalSha256": "2a1e26d58d083a2b830eb726dae0641c5eabfc1dd50bdb97e04d0759ef6ad8d7",
+          "rawStoreRowCount": 1,
+          "rawStateRowCount": 1,
+          "profiles": [
+            {
+              "ordinal": 1,
+              "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+              "knownIdentity": [
+                "profile1"
+              ],
+              "accountIdSha256": "332c2cdd98cd0650de22a4506f7f67c3cbc69a9154e0cbafa4344f7a691640b9",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1794533945016,
+              "credentialCanonicalSha256": "bca88c7adde84057871fd63f202e6aba80d453a04f75151df1d29f269dfaa5f1"
+            },
+            {
+              "ordinal": 2,
+              "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+              "knownIdentity": [
+                "profile2"
+              ],
+              "accountIdSha256": "899445c0e083199d67988e1db5bc7ac6d4d158bf913bb54669e5afc7714f2fb2",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1793840722317,
+              "credentialCanonicalSha256": "131b8515d48433365dd84555e7659297d4d62de631f9a526a8a4293f03396175"
+            },
+            {
+              "ordinal": 3,
+              "profileIdSha256": "685cd54f9ba187eec2a27153bdce1e88f781455377076dba33aae8b7107cc10d",
+              "knownIdentity": [
+                "rog_native4"
+              ],
+              "accountIdSha256": "e5468eb4b53f3d882f62275b75730a18d0630f57fbcc19d6bfce77405d823c46",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1794365041000,
+              "credentialCanonicalSha256": "63a40b812af24584847961eeaff54e780eacc66625970ee40ea2d9b1e0a70398"
+            }
+          ],
+          "stateOrder": {
+            "openai": [
+              {
+                "profileIdSha256": "685cd54f9ba187eec2a27153bdce1e88f781455377076dba33aae8b7107cc10d",
+                "localOrdinal": 3
+              },
+              {
+                "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+                "localOrdinal": 2
+              },
+              {
+                "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+                "localOrdinal": 1
+              }
+            ]
+          },
+          "wholeStoreCanonicalSha256": "28fdce224d90a6d4a5a5ec2313130fbef13ce82e483774174d66d52a198823ea",
+          "wholeStateCanonicalSha256": "4b1782edf5018b5b3332ad14fa55ff6d80a744c0581d0d17db95302751508e94",
+          "metadataUnchanged": true
+        },
+        {
+          "agent": "azi2",
+          "db": "/home/qian-qi/.openclaw/agents/azi2/agent/openclaw-agent.sqlite",
+          "exists": true,
+          "rowsCanonicalSha256": "861671f1622f2832a4e918b896939de1eae371c4e93209437615cc8a203e37f4",
+          "rawStoreRowCount": 1,
+          "rawStateRowCount": 1,
+          "profiles": [
+            {
+              "ordinal": 1,
+              "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+              "knownIdentity": [
+                "profile1"
+              ],
+              "accountIdSha256": "332c2cdd98cd0650de22a4506f7f67c3cbc69a9154e0cbafa4344f7a691640b9",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1793669512761,
+              "credentialCanonicalSha256": "90f83d95f8666cd51c51a8c0e85361cc219ef83632f64afb9e6b21c750973af1"
+            },
+            {
+              "ordinal": 2,
+              "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+              "knownIdentity": [
+                "profile2"
+              ],
+              "accountIdSha256": "899445c0e083199d67988e1db5bc7ac6d4d158bf913bb54669e5afc7714f2fb2",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1792974870019,
+              "credentialCanonicalSha256": "70313f04c1ffbd1ee1aae2d3619c20b602d8cc1ec7b3f832f67f28850b20d66c"
+            }
+          ],
+          "stateOrder": {
+            "openai": [
+              {
+                "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+                "localOrdinal": 2
+              },
+              {
+                "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+                "localOrdinal": 1
+              }
+            ]
+          },
+          "wholeStoreCanonicalSha256": "b13170d6b03955f7e6e5c6ba25230aac25ef95f842008f30d2b4a97a9c2369b5",
+          "wholeStateCanonicalSha256": "2f180b8973528e525c5741271ff69ba09a6388a4b63629ac5baa61fe1556cb59",
+          "metadataUnchanged": false
+        },
+        {
+          "agent": "azi3",
+          "db": "/home/qian-qi/.openclaw/agents/azi3/agent/openclaw-agent.sqlite",
+          "exists": true,
+          "rowsCanonicalSha256": "861671f1622f2832a4e918b896939de1eae371c4e93209437615cc8a203e37f4",
+          "rawStoreRowCount": 1,
+          "rawStateRowCount": 1,
+          "profiles": [
+            {
+              "ordinal": 1,
+              "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+              "knownIdentity": [
+                "profile1"
+              ],
+              "accountIdSha256": "332c2cdd98cd0650de22a4506f7f67c3cbc69a9154e0cbafa4344f7a691640b9",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1793669512761,
+              "credentialCanonicalSha256": "90f83d95f8666cd51c51a8c0e85361cc219ef83632f64afb9e6b21c750973af1"
+            },
+            {
+              "ordinal": 2,
+              "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+              "knownIdentity": [
+                "profile2"
+              ],
+              "accountIdSha256": "899445c0e083199d67988e1db5bc7ac6d4d158bf913bb54669e5afc7714f2fb2",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1792974870019,
+              "credentialCanonicalSha256": "70313f04c1ffbd1ee1aae2d3619c20b602d8cc1ec7b3f832f67f28850b20d66c"
+            }
+          ],
+          "stateOrder": {
+            "openai": [
+              {
+                "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+                "localOrdinal": 2
+              },
+              {
+                "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+                "localOrdinal": 1
+              }
+            ]
+          },
+          "wholeStoreCanonicalSha256": "b13170d6b03955f7e6e5c6ba25230aac25ef95f842008f30d2b4a97a9c2369b5",
+          "wholeStateCanonicalSha256": "2f180b8973528e525c5741271ff69ba09a6388a4b63629ac5baa61fe1556cb59",
+          "metadataUnchanged": false
+        },
+        {
+          "agent": "azi4",
+          "db": "/home/qian-qi/.openclaw/agents/azi4/agent/openclaw-agent.sqlite",
+          "exists": true,
+          "rowsCanonicalSha256": "861671f1622f2832a4e918b896939de1eae371c4e93209437615cc8a203e37f4",
+          "rawStoreRowCount": 1,
+          "rawStateRowCount": 1,
+          "profiles": [
+            {
+              "ordinal": 1,
+              "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+              "knownIdentity": [
+                "profile1"
+              ],
+              "accountIdSha256": "332c2cdd98cd0650de22a4506f7f67c3cbc69a9154e0cbafa4344f7a691640b9",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1793669512761,
+              "credentialCanonicalSha256": "90f83d95f8666cd51c51a8c0e85361cc219ef83632f64afb9e6b21c750973af1"
+            },
+            {
+              "ordinal": 2,
+              "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+              "knownIdentity": [
+                "profile2"
+              ],
+              "accountIdSha256": "899445c0e083199d67988e1db5bc7ac6d4d158bf913bb54669e5afc7714f2fb2",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1792974870019,
+              "credentialCanonicalSha256": "70313f04c1ffbd1ee1aae2d3619c20b602d8cc1ec7b3f832f67f28850b20d66c"
+            }
+          ],
+          "stateOrder": {
+            "openai": [
+              {
+                "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+                "localOrdinal": 2
+              },
+              {
+                "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+                "localOrdinal": 1
+              }
+            ]
+          },
+          "wholeStoreCanonicalSha256": "b13170d6b03955f7e6e5c6ba25230aac25ef95f842008f30d2b4a97a9c2369b5",
+          "wholeStateCanonicalSha256": "2f180b8973528e525c5741271ff69ba09a6388a4b63629ac5baa61fe1556cb59",
+          "metadataUnchanged": true
+        },
+        {
+          "agent": "azi5",
+          "db": "/home/qian-qi/.openclaw/agents/azi5/agent/openclaw-agent.sqlite",
+          "exists": true,
+          "rowsCanonicalSha256": "ed29d543ea5e80cf2566dfb39ac537afaa022da592806842eb3059b6f7120d55",
+          "rawStoreRowCount": 1,
+          "rawStateRowCount": 1,
+          "profiles": [
+            {
+              "ordinal": 1,
+              "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+              "knownIdentity": [
+                "profile1"
+              ],
+              "accountIdSha256": "332c2cdd98cd0650de22a4506f7f67c3cbc69a9154e0cbafa4344f7a691640b9",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1793669512761,
+              "credentialCanonicalSha256": "90f83d95f8666cd51c51a8c0e85361cc219ef83632f64afb9e6b21c750973af1"
+            },
+            {
+              "ordinal": 2,
+              "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+              "knownIdentity": [
+                "profile2"
+              ],
+              "accountIdSha256": "899445c0e083199d67988e1db5bc7ac6d4d158bf913bb54669e5afc7714f2fb2",
+              "provider": "openai",
+              "type": "oauth",
+              "expires": 1792974870019,
+              "credentialCanonicalSha256": "70313f04c1ffbd1ee1aae2d3619c20b602d8cc1ec7b3f832f67f28850b20d66c"
+            }
+          ],
+          "stateOrder": {
+            "openai": [
+              {
+                "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+                "localOrdinal": 2
+              },
+              {
+                "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+                "localOrdinal": 1
+              }
+            ]
+          },
+          "wholeStoreCanonicalSha256": "b13170d6b03955f7e6e5c6ba25230aac25ef95f842008f30d2b4a97a9c2369b5",
+          "wholeStateCanonicalSha256": "2f180b8973528e525c5741271ff69ba09a6388a4b63629ac5baa61fe1556cb59",
+          "metadataUnchanged": false
+        },
+        {
+          "agent": "zbj-llm-runtime",
+          "db": "/home/qian-qi/.openclaw/agents/zbj-llm-runtime/agent/openclaw-agent.sqlite",
+          "exists": true,
+          "rowsCanonicalSha256": "959ea1f99e18631c6583c2c9e24efdc54e9032f4791d9a1e69ea0ad0050fd963",
+          "rawStoreRowCount": 1,
+          "rawStateRowCount": 1,
+          "profiles": [],
+          "stateOrder": {},
+          "wholeStoreCanonicalSha256": "67d82c25cee9879aa641a9988622147511968e3956ca3407d73550757a539c86",
+          "wholeStateCanonicalSha256": "2430f1a2ad2982d0067885488a4c89e21ad1d7c83b115ba8f1b20acc88dfaea8",
+          "metadataUnchanged": true
+        }
+      ],
+      "cache": [
+        {
+          "name": "applied-profiles.json",
+          "path": "/home/qian-qi/.openclaw/authbus/applied-profiles.json",
+          "exists": true,
+          "sha256": "4cd15fc32d71112f03741b98aa34b2ab46debda5913dbc8d275e3315fd54df33",
+          "bytes": 372,
+          "keys": [
+            "profiles",
+            "schemaVersion",
+            "updatedAt"
+          ],
+          "entries": [
+            {
+              "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+              "knownIdentity": [
+                "profile1"
+              ],
+              "digest": "d546f183b13efd7c7c186b5f2955acf92a8795aa4dee17eefda53fad5e2b052d",
+              "reason": null
+            },
+            {
+              "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+              "knownIdentity": [
+                "profile2"
+              ],
+              "digest": "54f529dfa815b2d7e5eb171c02894ca8931a7056e51638f064a27c18fddf2fee",
+              "reason": null
+            },
+            {
+              "profileIdSha256": "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2",
+              "knownIdentity": [],
+              "digest": "193b4fcb8cf669fd967ba468dd33b9d98b72dafee461c2c8d36dbefd8a510aba",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "publish-baseline.json",
+          "path": "/home/qian-qi/.openclaw/authbus/publish-baseline.json",
+          "exists": true,
+          "sha256": "bd16ad374bc8d7a13585013be2ca22614b78fee1874d8dcbe71d8ff664e4ad6d",
+          "bytes": 174,
+          "keys": [
+            "profiles",
+            "schemaVersion",
+            "updatedAt"
+          ],
+          "entries": [
+            {
+              "profileIdSha256": "b06271cb4944091791c1a66410a5bf789ed6e90861d28be2aad29b941bd90abd",
+              "knownIdentity": [],
+              "digest": "50d624e37dc54e4b050c9fe3667e939bb0f74c31683a4adcb3ee372babb25310",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "bad-refresh-quarantine.json",
+          "path": "/home/qian-qi/.openclaw/authbus/bad-refresh-quarantine.json",
+          "exists": true,
+          "sha256": "4ccd0291fbc28966fd13c4269679daa77b5f14d75f857ca13052fadca9f4fa7d",
+          "bytes": 73,
+          "keys": [
+            "profiles",
+            "schemaVersion",
+            "updatedAt"
+          ],
+          "entries": []
+        },
+        {
+          "name": "refresh-backoff.json",
+          "exists": false
+        },
+        {
+          "name": "lease-epochs.json",
+          "exists": false
+        },
+        {
+          "name": "status.json",
+          "path": "/home/qian-qi/.openclaw/authbus/status.json",
+          "exists": true,
+          "sha256": "e1c0769474e72159b2cfb82c1d6f2ddf381fce0c6a333a64b7e01c985f75cd68",
+          "bytes": 150,
+          "keys": [
+            "elapsedMs",
+            "error",
+            "hostId",
+            "lastCycleAt",
+            "leader",
+            "ok"
+          ],
+          "safeStatus": {
+            "ok": false,
+            "hostId": "rog",
+            "leader": false,
+            "lastCycleAt": 1793783219231,
+            "elapsedMs": 15002,
+            "manifestGeneration": null,
+            "importedProfiles": null,
+            "publishedEvents": null,
+            "schedulerReports": null,
+            "releaseGeneration": null
+          }
+        }
+      ],
+      "productionMutated": false,
+      "providerRequests": 0,
+      "scope": "Exact current configured agent auth rows and six source-defined AuthBus state files; private credential values not emitted."
+    },
+    "service": {
+      "host": "rog",
+      "unit": "openclaw-gateway.service",
+      "show": {
+        "ActiveState": "active",
+        "SubState": "running",
+        "FragmentPath": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service",
+        "DropInPaths": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/10-telegram-dns-verbatim.conf /home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/20-drain-timeout.conf /home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/30-telegram-spooled-handler-timeout.conf",
+        "UnitFileState": "enabled",
+        "TimeoutStopUSec": "6min",
+        "MainPID": "2436",
+        "KillMode": "control-group",
+        "KillSignal": "15"
+      },
+      "returncode": 0,
+      "files": [
+        {
+          "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service",
+          "sha256": "987e55191a1a607ce3b56a79d115d58c8071e7e708ed5ee18208e60a45450f88",
+          "bytes": 1082,
+          "mode": "0o644"
+        },
+        {
+          "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/10-telegram-dns-verbatim.conf",
+          "sha256": "c28f7d2c30ad9ee1ccafe10be981f7b1de391eafab3592188809251ce45f7f3b",
+          "bytes": 179,
+          "mode": "0o644"
+        },
+        {
+          "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/20-drain-timeout.conf",
+          "sha256": "8e8a6132204886a1ac652627f590fc47c319dea3b6813a990744edac6dadf1cc",
+          "bytes": 180,
+          "mode": "0o644"
+        },
+        {
+          "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/30-telegram-spooled-handler-timeout.conf",
+          "sha256": "4f90104dc1b9d6f5ec391e3d8b1b5c3b8b4fca16960913da1764840a0ab2a49a",
+          "bytes": 75,
+          "mode": "0o644"
+        }
+      ]
+    }
+  },
+  "observationNotes": {
+    "purpose": "Planning observations only; not a stopped-service transactional backup or cutover qualification.",
+    "sourceConsistency": "Each auth database was read within a separate query_only BEGIN transaction. Several SQLite file/sidecar metadata tuples changed while production continued. The capture therefore does not establish a globally static snapshot or attribute the changes.",
+    "writeStatementExecuted": false,
+    "providerRequestFromProjectionProcess": false,
+    "originalProjectionProductionMutatedFlag": "The source program's false flag means it issued no intentional mutation API or SQL write; it is not evidence that all production file metadata was unchanged.",
+    "currentROGIdentityCorrection": "The independent user-native fourth identity also appears in the current main SDK store; original native user auth ownership remains separate. Its local ordinal is 3, not the managed historical profile3 identity.",
+    "actualTargetAndHaReadiness": "Not selected or qualified by this observation. Existing endpoints and production traffic unchanged by this preparation."
+  },
+  "inputJobs": {
+    "flags": {
+      "mac": "1a1a5bbc12a-fc05-2112",
+      "rog": "1a1a5bb7d1e-fc05-2111"
+    },
+    "auth": {
+      "mac": "1a1a5cfa20b-fc05-2192",
+      "rog": "1a1a5cfd54f-fc05-2194"
+    },
+    "services": {
+      "mac": "1a1a5c7e467-fc05-2167",
+      "rog": "1a1a5cb9fa4-fc05-217d"
+    }
+  },
+  "schema": "heptabao.mac-rog-connection-transition-source-observations.v1",
+  "productionCutover": false,
+  "globalSnapshotQualified": false
+}

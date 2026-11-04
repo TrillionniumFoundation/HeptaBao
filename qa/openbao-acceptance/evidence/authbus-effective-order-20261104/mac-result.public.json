@@ -1,0 +1,545 @@
+{
+  "schema": "heptabao.actual-sdk-effective-order-preview.v1",
+  "ok": true,
+  "host": "mac",
+  "checks": [
+    {
+      "case": "private_state_and_readonly_mode",
+      "passed": true
+    },
+    {
+      "case": "source.order-policy.js",
+      "passed": true
+    },
+    {
+      "case": "source.consumer.mjs",
+      "passed": true
+    },
+    {
+      "case": "source.order-CeBlX0NH.js",
+      "passed": true
+    },
+    {
+      "case": "source.agent-runtime.js",
+      "passed": true
+    },
+    {
+      "case": "source.store-DH33UrUj.js",
+      "passed": true
+    },
+    {
+      "case": "original_management_flags",
+      "passed": true
+    },
+    {
+      "case": "exact_configured_agents",
+      "passed": true
+    },
+    {
+      "case": "default_main_private_path",
+      "passed": true
+    },
+    {
+      "case": "database_scope.main",
+      "passed": true
+    },
+    {
+      "case": "database_scope.trnm",
+      "passed": true
+    },
+    {
+      "case": "database_scope.hepta-ui",
+      "passed": true
+    },
+    {
+      "case": "database_scope.hepta",
+      "passed": true
+    },
+    {
+      "case": "database_scope.hepta-backend",
+      "passed": true
+    },
+    {
+      "case": "unique_same_managed_identity.1",
+      "passed": true
+    },
+    {
+      "case": "unique_same_managed_identity.2",
+      "passed": true
+    },
+    {
+      "case": "cross_host_same_profile_ids",
+      "passed": true
+    },
+    {
+      "case": "fixed_readonly_mount_probe",
+      "passed": true
+    },
+    {
+      "case": "actual_auth_provider_openai",
+      "passed": true
+    },
+    {
+      "case": "non_enforced_policy_shape.0",
+      "passed": true
+    },
+    {
+      "case": "credential_and_usage_untouched.0.main",
+      "passed": true
+    },
+    {
+      "case": "credential_and_usage_untouched.0.trnm",
+      "passed": true
+    },
+    {
+      "case": "credential_and_usage_untouched.0.hepta-ui",
+      "passed": true
+    },
+    {
+      "case": "credential_and_usage_untouched.0.hepta",
+      "passed": true
+    },
+    {
+      "case": "credential_and_usage_untouched.0.hepta-backend",
+      "passed": true
+    },
+    {
+      "case": "non_enforced_policy_shape.1",
+      "passed": true
+    },
+    {
+      "case": "credential_and_usage_untouched.1.main",
+      "passed": true
+    },
+    {
+      "case": "credential_and_usage_untouched.1.trnm",
+      "passed": true
+    },
+    {
+      "case": "credential_and_usage_untouched.1.hepta-ui",
+      "passed": true
+    },
+    {
+      "case": "credential_and_usage_untouched.1.hepta",
+      "passed": true
+    },
+    {
+      "case": "credential_and_usage_untouched.1.hepta-backend",
+      "passed": true
+    },
+    {
+      "case": "whole_effective_store_unchanged.main",
+      "passed": true
+    },
+    {
+      "case": "whole_effective_store_unchanged.trnm",
+      "passed": true
+    },
+    {
+      "case": "whole_effective_store_unchanged.hepta-ui",
+      "passed": true
+    },
+    {
+      "case": "whole_effective_store_unchanged.hepta",
+      "passed": true
+    },
+    {
+      "case": "whole_effective_store_unchanged.hepta-backend",
+      "passed": true
+    },
+    {
+      "case": "source_unchanged.order-policy.js",
+      "passed": true
+    },
+    {
+      "case": "source_unchanged.consumer.mjs",
+      "passed": true
+    },
+    {
+      "case": "source_unchanged.order-CeBlX0NH.js",
+      "passed": true
+    },
+    {
+      "case": "source_unchanged.agent-runtime.js",
+      "passed": true
+    },
+    {
+      "case": "source_unchanged.store-DH33UrUj.js",
+      "passed": true
+    },
+    {
+      "case": "zero_network_or_unapproved_child_attempts",
+      "passed": true
+    },
+    {
+      "case": "at_least_one_original_semantics_policy_preserves_all_current_agents",
+      "passed": true
+    },
+    {
+      "case": "private_plan_bytes_unchanged",
+      "passed": true
+    }
+  ],
+  "agents": [
+    {
+      "agentId": "main",
+      "localProfileCount": 3,
+      "effectiveProfileCount": 3,
+      "effectiveStoreSha256": "8a8aa0f98af3ee42ec27a545486295810a1a5cd729538ddd3545081c01bf12cc",
+      "effectiveUsageSha256": "2d27ce91365919e6253a3972a9aa23a6f711f830a2113c0508a76824d13e70f6",
+      "inheritedMainCredential": false
+    },
+    {
+      "agentId": "trnm",
+      "localProfileCount": 0,
+      "effectiveProfileCount": 3,
+      "effectiveStoreSha256": "8a8aa0f98af3ee42ec27a545486295810a1a5cd729538ddd3545081c01bf12cc",
+      "effectiveUsageSha256": "2d27ce91365919e6253a3972a9aa23a6f711f830a2113c0508a76824d13e70f6",
+      "inheritedMainCredential": true
+    },
+    {
+      "agentId": "hepta-ui",
+      "localProfileCount": 3,
+      "effectiveProfileCount": 3,
+      "effectiveStoreSha256": "8a8aa0f98af3ee42ec27a545486295810a1a5cd729538ddd3545081c01bf12cc",
+      "effectiveUsageSha256": "2d27ce91365919e6253a3972a9aa23a6f711f830a2113c0508a76824d13e70f6",
+      "inheritedMainCredential": false
+    },
+    {
+      "agentId": "hepta",
+      "localProfileCount": 3,
+      "effectiveProfileCount": 3,
+      "effectiveStoreSha256": "8a8aa0f98af3ee42ec27a545486295810a1a5cd729538ddd3545081c01bf12cc",
+      "effectiveUsageSha256": "2d27ce91365919e6253a3972a9aa23a6f711f830a2113c0508a76824d13e70f6",
+      "inheritedMainCredential": false
+    },
+    {
+      "agentId": "hepta-backend",
+      "localProfileCount": 3,
+      "effectiveProfileCount": 3,
+      "effectiveStoreSha256": "8ee0a3f51ae76473ea763caccfbc622df305b548a46b14f75e11e8bac1aa8109",
+      "effectiveUsageSha256": "4e8d824635be167a4fedf2112cc47887137f0a642eeeec8dadae14099c31e64d",
+      "inheritedMainCredential": false
+    }
+  ],
+  "policies": [
+    {
+      "name": "managed_1_then_2",
+      "candidatesProfileIdSha256": [
+        "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+        "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1"
+      ],
+      "activeProfile": null,
+      "enforceManagedOrder": false,
+      "scheduler": null,
+      "credentialDigestsScope": "Candidate digests come from the current captured main store for a pure ordering preview; final trusted credential generations are a separate publication binding.",
+      "allStoredOrdersPreserved": true,
+      "allActualSdkOrdersPreserved": true,
+      "evaluations": [
+        {
+          "agentId": "main",
+          "excluded": false,
+          "effectiveProfileCount": 3,
+          "existingOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "proposedOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "exactStoredOrderPreserved": true,
+          "sdkResolvedBeforeProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "sdkResolvedAfterProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "actualResolvedOrderPreserved": true
+        },
+        {
+          "agentId": "trnm",
+          "excluded": false,
+          "effectiveProfileCount": 3,
+          "existingOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "proposedOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "exactStoredOrderPreserved": true,
+          "sdkResolvedBeforeProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "sdkResolvedAfterProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "actualResolvedOrderPreserved": true
+        },
+        {
+          "agentId": "hepta-ui",
+          "excluded": false,
+          "effectiveProfileCount": 3,
+          "existingOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "proposedOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "exactStoredOrderPreserved": true,
+          "sdkResolvedBeforeProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "sdkResolvedAfterProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "actualResolvedOrderPreserved": true
+        },
+        {
+          "agentId": "hepta",
+          "excluded": false,
+          "effectiveProfileCount": 3,
+          "existingOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "proposedOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "exactStoredOrderPreserved": true,
+          "sdkResolvedBeforeProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "sdkResolvedAfterProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "actualResolvedOrderPreserved": true
+        },
+        {
+          "agentId": "hepta-backend",
+          "excluded": false,
+          "effectiveProfileCount": 3,
+          "existingOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "proposedOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "exactStoredOrderPreserved": true,
+          "sdkResolvedBeforeProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "sdkResolvedAfterProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "actualResolvedOrderPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "managed_2_then_1",
+      "candidatesProfileIdSha256": [
+        "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+        "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d"
+      ],
+      "activeProfile": null,
+      "enforceManagedOrder": false,
+      "scheduler": null,
+      "credentialDigestsScope": "Candidate digests come from the current captured main store for a pure ordering preview; final trusted credential generations are a separate publication binding.",
+      "allStoredOrdersPreserved": true,
+      "allActualSdkOrdersPreserved": true,
+      "evaluations": [
+        {
+          "agentId": "main",
+          "excluded": false,
+          "effectiveProfileCount": 3,
+          "existingOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "proposedOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "exactStoredOrderPreserved": true,
+          "sdkResolvedBeforeProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "sdkResolvedAfterProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "actualResolvedOrderPreserved": true
+        },
+        {
+          "agentId": "trnm",
+          "excluded": false,
+          "effectiveProfileCount": 3,
+          "existingOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "proposedOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "exactStoredOrderPreserved": true,
+          "sdkResolvedBeforeProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "sdkResolvedAfterProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "actualResolvedOrderPreserved": true
+        },
+        {
+          "agentId": "hepta-ui",
+          "excluded": false,
+          "effectiveProfileCount": 3,
+          "existingOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "proposedOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "exactStoredOrderPreserved": true,
+          "sdkResolvedBeforeProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "sdkResolvedAfterProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "actualResolvedOrderPreserved": true
+        },
+        {
+          "agentId": "hepta",
+          "excluded": false,
+          "effectiveProfileCount": 3,
+          "existingOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "proposedOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "exactStoredOrderPreserved": true,
+          "sdkResolvedBeforeProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "sdkResolvedAfterProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "actualResolvedOrderPreserved": true
+        },
+        {
+          "agentId": "hepta-backend",
+          "excluded": false,
+          "effectiveProfileCount": 3,
+          "existingOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "proposedOrderProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "exactStoredOrderPreserved": true,
+          "sdkResolvedBeforeProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "sdkResolvedAfterProfileIdSha256": [
+            "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d",
+            "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1",
+            "35abfe9fa9ef1978191217a76dd098a225ab253ae4e49a695f0391800f8ac4f2"
+          ],
+          "actualResolvedOrderPreserved": true
+        }
+      ]
+    }
+  ],
+  "providerRequests": 0,
+  "nativeFactoriesStarted": 0,
+  "authStoreWriteApiInvoked": false,
+  "productionCutover": false,
+  "credentialsReplaced": false,
+  "blockedOperationAttempts": 0,
+  "scope": "Actual installed SDK loads every configured agent from private copies of its current raw auth rows, including main-store inheritance. Two explicit non-enforced central candidate permutations are evaluated using the installed pure order policy and resolver. This is not a full AuthBus import, production restart, or provider availability test.",
+  "qualifyingPolicies": [
+    "managed_1_then_2",
+    "managed_2_then_1"
+  ],
+  "sourcePins": {
+    "/Users/qianqi/.openclaw/extensions/openclaw-authbus/order-policy.js": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/cutover-preparation-r1/effective-order-mac-r1/consumer.mjs": "1b23fe9d5a0e0f43657b1e9218bf71fff1dfc8983813202e5439716822779833",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/order-CeBlX0NH.js": "4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/plugin-sdk/agent-runtime.js": "7831532d17eeaddd62889b2e8bb7b65ea7a7851901f69ceec23607a8c579dd95",
+    "/opt/homebrew/lib/node_modules/openclaw/dist/store-DH33UrUj.js": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf"
+  }
+}
