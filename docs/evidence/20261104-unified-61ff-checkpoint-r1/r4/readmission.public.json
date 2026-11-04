@@ -1,0 +1,22 @@
+{
+  "original_refused_job": "1a1a77a3c81-fc05-2b93",
+  "exact_external_job": "1a1a7738839-fc05-2b7f",
+  "external_terminal_exit": 1,
+  "all_external_owned_stopped_reported": true,
+  "source_unchanged_expected": "3961275d27e4a4e64e2d28619ef3b1b8d76e9980",
+  "guard_sha256": "108ea3a050eb5f1596b8c6cab3aeffbce8a220e91ae1b15ac70b3b6176c097cb",
+  "new_idempotency_key": "bao-acceptance-unified-61ff-testcompile-r4-after-r9-terminal-12de34fe1c5aa84f",
+  "new_budget": false,
+  "original_monotonic_bound_enforced": true,
+  "script_sha256": "12de34fe1c5aa84fd0699b8ed0ec5ef8aab1897f70f858e177db0323a73218e8",
+  "stdin_sha256": "b5fe976793917a113aa994e91a76bb0959324d6a444d55218365cc1e5b1c3484",
+  "new_job": "1a1a796b588-fc05-2bd6",
+  "actual_source": "d9c16a172cbc329fc90d857b0a2d32ff4eb81e9a",
+  "actual_tree": "e991b9948214bca1192e62638d429ecebad4de59",
+  "strict_clippy_exit": 101,
+  "unique_test_lints": 21,
+  "rust_error_codes": 0,
+  "production_linked": false,
+  "fullworkspace_started": false,
+  "qualified_full_replacement": false
+}

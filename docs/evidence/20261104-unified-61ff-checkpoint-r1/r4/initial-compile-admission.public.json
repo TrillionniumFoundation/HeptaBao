@@ -1,0 +1,67 @@
+{
+  "observed_unix_ns": 1793813035623107249,
+  "resources": {
+    "cpu_count": 32,
+    "load_average_1m": 0.29638671875,
+    "memory": {
+      "MemTotal": 128039612416,
+      "MemAvailable": 86716133376
+    },
+    "disk_free_bytes": 88784191488
+  },
+  "observed_builders": [],
+  "argv_or_environment_read": false,
+  "foreign_processes_changed": false,
+  "valid_only_for_compiler_phase_admission": true,
+  "process_scope": "configured_operator_uid_only",
+  "operator_uid": 1000,
+  "other_uids_assessed": false,
+  "whole_host_exclusivity_claimed": false,
+  "exact_public_session_daemon_classifications": [
+    {
+      "pid": 2217,
+      "uid": 1000,
+      "name": "systemd",
+      "parent_pid": 1,
+      "start_clock_ticks": 971,
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/init.scope",
+      "category": "exact_observed_persistent_session_daemon",
+      "protected_exe_or_fd_read": false,
+      "descendants_excluded": false
+    },
+    {
+      "pid": 2282,
+      "uid": 1000,
+      "name": "(sd-pam)",
+      "parent_pid": 2217,
+      "start_clock_ticks": 977,
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/init.scope",
+      "category": "exact_observed_persistent_session_daemon",
+      "protected_exe_or_fd_read": false,
+      "descendants_excluded": false
+    },
+    {
+      "pid": 9026,
+      "uid": 1000,
+      "name": "ssh-agent",
+      "parent_pid": 2217,
+      "start_clock_ticks": 2526,
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/ssh-agent.service",
+      "category": "exact_observed_persistent_session_daemon",
+      "protected_exe_or_fd_read": false,
+      "descendants_excluded": false
+    },
+    {
+      "pid": 17987,
+      "uid": 1000,
+      "name": "ssh-agent",
+      "parent_pid": 9023,
+      "start_clock_ticks": 12193,
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/gcr-ssh-agent.service",
+      "category": "exact_observed_persistent_session_daemon",
+      "protected_exe_or_fd_read": false,
+      "descendants_excluded": false
+    }
+  ],
+  "admission": "no_external_compiler_or_unit_test"
+}

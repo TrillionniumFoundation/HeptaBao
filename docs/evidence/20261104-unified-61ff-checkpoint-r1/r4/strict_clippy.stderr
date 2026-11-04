@@ -1,0 +1,225 @@
+    Checking heptabao-server v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-server)
+error: `panic` should not be present in production code
+   --> crates/heptabao-server/src/engines/kv2_native_lossless_prefetch_tests.rs:247:26
+    |
+247 |                     _ => panic!("synthetic bounded prefetch worker failure"),
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#panic
+    = note: requested on the command line with `-D clippy::panic`
+
+error: `panic` should not be present in production code
+   --> crates/heptabao-server/src/engines/kv2_native_lossless_prefetch_tests.rs:428:17
+    |
+428 |                 panic!("synthetic private writer unwind");
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#panic
+
+error: `panic` should not be present in production code
+   --> crates/heptabao-server/src/ha_snapshot_clock.rs:725:44
+    |
+725 |                   .unwrap_or_else(|response| panic!(
+    |  ____________________________________________^
+726 | |                     "unexpected clock metadata refusal: HTTP {}",
+727 | |                     response.status
+728 | |                 ))
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#panic
+
+error: used `unwrap_err()` on a `Result` value
+   --> crates/heptabao-server/src/ha_snapshot_clock.rs:745:17
+    |
+745 | /                 check_response_binding(reply, expected(&original))
+746 | |                     .unwrap_err()
+    | |_________________________________^
+    |
+    = note: if this value is an `Ok`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unwrap_used
+    = note: requested on the command line with `-D clippy::unwrap-used`
+
+error: used `unwrap_err()` on a `Result` value
+   --> crates/heptabao-server/src/ha_snapshot_clock.rs:759:13
+    |
+759 | /             check_response_binding(reply, expected(&original))
+760 | |                 .unwrap_err()
+    | |_____________________________^
+    |
+    = note: if this value is an `Ok`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unwrap_used
+
+error: `panic` should not be present in production code
+   --> crates/heptabao-server/src/ha_snapshot_clock.rs:786:90
+    |
+786 |               check_response_binding(reply, expected(&original)).unwrap_or_else(|response| panic!(
+    |  __________________________________________________________________________________________^
+787 | |                 "unexpected clock metadata refusal: HTTP {}",
+788 | |                 response.status
+789 | |             )),
+    | |_____________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#panic
+
+error: used `unwrap_err()` on a `Result` value
+   --> crates/heptabao-server/src/ha_snapshot_clock.rs:820:17
+    |
+820 | /                 check_response_binding(reply, expected(&original))
+821 | |                     .unwrap_err()
+    | |_________________________________^
+    |
+    = note: if this value is an `Ok`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unwrap_used
+
+error: used `unwrap_err()` on a `Result` value
+   --> crates/heptabao-server/src/ha_snapshot_clock.rs:829:13
+    |
+829 | /             check_response_binding(reply, expected(&original))
+830 | |                 .unwrap_err()
+    | |_____________________________^
+    |
+    = note: if this value is an `Ok`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unwrap_used
+
+error: used `unwrap()` on a `Result` value
+   --> crates/heptabao-server/src/ha_snapshot_clock.rs:854:38
+    |
+854 |         let encoded = Zeroizing::new(serde_json::to_vec(&wire).unwrap());
+    |                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unwrap_used
+
+error: used `unwrap()` on a `Result` value
+   --> crates/heptabao-server/src/ha_snapshot_clock.rs:856:36
+    |
+856 |         let decoded: RequestWire = serde_json::from_slice(&encoded).unwrap();
+    |                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unwrap_used
+
+error: used `unwrap()` on a `Result` value
+   --> crates/heptabao-server/src/ha_snapshot_clock.rs:858:46
+    |
+858 |         let mut invalid: serde_json::Value = serde_json::from_slice(&encoded).unwrap();
+    |                                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unwrap_used
+
+error: used `unwrap()` on a `Result` value
+   --> crates/heptabao-server/src/ha_snapshot_clock.rs:874:24
+    |
+874 |             assert_eq!(serde_json::to_vec(&outcome).unwrap(), original_bytes);
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unwrap_used
+
+error: used `unwrap()` on a `Result` value
+   --> crates/heptabao-server/src/ha_snapshot_clock.rs:875:40
+    |
+875 |             let decoded: OutcomeWire = serde_json::from_slice(original_bytes).unwrap();
+    |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unwrap_used
+
+error: `panic` should not be present in production code
+   --> crates/heptabao-server/src/ha_snapshot_clock.rs:884:49
+    |
+884 |                 OutcomeWire::Rejected { .. } => panic!("old completed shape changed"),
+    |                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#panic
+
+error: used `unwrap()` on a `Result` value
+   --> crates/heptabao-server/src/ha_snapshot_clock.rs:893:13
+    |
+893 |             serde_json::to_vec(&rejected).unwrap(),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unwrap_used
+
+error: used `unwrap_err()` on a `Result` value
+   --> crates/heptabao-server/src/service_native_plain_namespace.rs:229:20
+    |
+229 |         assert_eq!(scope.check(&poisoned).unwrap_err().status, 503);
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Ok`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unwrap_used
+
+error: used `unwrap_err()` on a `Result` value
+   --> crates/heptabao-server/src/service_native_plain_namespace.rs:280:13
+    |
+280 | /             validate_control_group_scope(&poisoned, &retained)
+281 | |                 .unwrap_err()
+    | |_____________________________^
+    |
+    = note: if this value is an `Ok`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#unwrap_used
+
+error: used `expect()` on a `Result` value
+   --> crates/heptabao-server/src/service_native_ssh_tests.rs:520:23
+    |
+520 |           let revoked = call(
+    |  _______________________^
+521 | |             service,
+522 | |             &mut hook_now,
+523 | |             &revoke_root,
+...   |
+528 | |         .expect("actual token revocation");
+    | |__________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#expect_used
+    = note: requested on the command line with `-D clippy::expect-used`
+
+error: used `expect()` on an `Option` value
+   --> crates/heptabao-server/src/service_native_ssh_tests.rs:549:13
+    |
+549 | /             service
+550 | |                 .state
+551 | |                 .as_ref()
+552 | |                 .expect("state")
+    | |________________________________^
+    |
+    = note: if this value is `None`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#expect_used
+
+error: used `expect()` on a `Result` value
+   --> crates/heptabao-server/src/service_native_ssh_tests.rs:705:14
+    |
+705 |               &call(
+    |  ______________^
+706 | |                 service,
+707 | |                 &mut hook_now,
+708 | |                 &revoke_root,
+...   |
+713 | |             .expect("actual issuer revoke"),
+    | |___________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#expect_used
+
+error: very complex type used. Consider factoring parts into `type` definitions
+  --> crates/heptabao-server/src/service_native_kv1_signed_lease_tests.rs:49:24
+   |
+49 |   fn signed_fixture() -> Result<
+   |  ________________________^
+50 | |     (
+51 | |         crate::service::tests::Root,
+52 | |         Service,
+...  |
+56 | |     Box<dyn std::error::Error>,
+57 | | > {
+   | |_^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#type_complexity
+   = note: `-D clippy::type-complexity` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::type_complexity)]`
+
+error: could not compile `heptabao-server` (lib test) due to 21 previous errors
