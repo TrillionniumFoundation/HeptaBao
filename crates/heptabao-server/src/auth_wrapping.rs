@@ -14,6 +14,12 @@ mod native_output;
 #[cfg(feature = "native-v6-storage")]
 pub(crate) use native_output::NativeResponseWrappingOwner;
 
+#[cfg(feature = "native-v6-storage")]
+#[path = "auth_native_ssh_reply.rs"]
+mod native_ssh_reply;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_ssh_reply::NativeSshPublicReplyOwner;
+
 /// Private, response-only origin. Local construction occurs only after an
 /// actual wrapper was consumed, including the admitted affine final-use view.
 /// Neither user JSON, a header, an SDK response nor the URL constructs it.

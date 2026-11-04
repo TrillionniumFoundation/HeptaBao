@@ -183,6 +183,21 @@ impl Role {
 }
 
 impl SshOtp {
+    #[cfg(feature = "native-v6-storage")]
+    pub(super) fn native_otp_lease(&self, raw: &str, consumed: bool) -> Option<&Lease> {
+        if raw.is_empty() || raw.len() > 256 {
+            return None;
+        }
+        self.leases
+            .get(&digest_hex(raw.as_bytes()))
+            .filter(|lease| lease.consumed == consumed)
+    }
+    #[cfg(test)]
+    pub(super) fn native_signature_count(&self) -> Option<u64> {
+        self.ca
+            .as_ref()
+            .map(super::ssh_ca::CaState::native_signature_count)
+    }
     pub(super) fn has_ca_state(&self) -> bool {
         self.ca.is_some()
     }

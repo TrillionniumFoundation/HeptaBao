@@ -11,6 +11,8 @@ pub(super) mod batch_issuer_test_observer;
 mod native_batch;
 #[path = "service_native_pki.rs"]
 mod native_pki;
+#[path = "service_native_ssh.rs"]
+mod native_ssh;
 #[path = "service_native_identity.rs"]
 mod root_identity;
 pub(super) use native_pki::NativePkiIdleCheckpoint;
@@ -109,6 +111,7 @@ enum NativeLocalOwner {
     Userpass(Box<crate::auth::NativeUserpassOwner>),
     Wrapping(Box<crate::auth::NativeWrappingOwner>),
     Pki(Box<native_pki::NativePkiOwner>),
+    Ssh(Box<native_ssh::NativeSshOwner>),
     Mount(Box<crate::engines::NativeKv2MountOwner>),
     Transit(Box<crate::engines::NativeTransitOwner>),
     Kv1(Box<crate::engines::NativeKv1Owner>),
@@ -142,6 +145,8 @@ pub(super) struct NativeAuthDelivery {
     batch_issuer_owner: Option<crate::auth::NativeBatchIssuerOwner>,
     batch_issuer_reply: Option<[u8; 32]>,
     pki_owner: Option<Box<native_pki::NativePkiOwner>>,
+    // Root SSH has its own exact mount/OTP/CA and typed public-response owner.
+    ssh_owner: Option<Box<native_ssh::NativeSshOwner>>,
     // Independent engine/graph constraint for the root KV2 registry route.
     // Authentication routes retain their original identity-only constraint.
     mount_owner: Option<crate::engines::NativeKv2MountOwner>,
@@ -274,6 +279,10 @@ impl NativeAuthDelivery {
                 .as_ref()
                 .is_some_and(|owner| owner.read_only())
             || self
+                .ssh_owner
+                .as_ref()
+                .is_some_and(|owner| owner.read_only())
+            || self
                 .wrapping_owner
                 .as_ref()
                 .is_some_and(|owner| owner.read_only())
@@ -295,6 +304,8 @@ impl NativeAuthDelivery {
             owner.authorization_method()
         } else if let Some(owner) = self.pki_owner.as_ref() {
             owner.authorization_method()
+        } else if let Some(owner) = self.ssh_owner.as_ref() {
+            owner.authorization_method()
         } else if let Some(owner) = self.identity_owner.as_ref() {
             owner.authorization_method()
         } else if let Some(owner) = self.totp_owner.as_ref() {
@@ -315,6 +326,7 @@ impl NativeAuthDelivery {
             || self.userpass_owner.is_some()
             || self.batch_issuer_owner.is_some()
             || self.pki_owner.is_some()
+            || self.ssh_owner.is_some()
             || self.transit_owner.is_some()
             || self.kv1_owner.is_some()
             || self.totp_owner.is_some()
@@ -334,6 +346,7 @@ impl NativeAuthDelivery {
             || self.userpass_owner.is_some()
             || self.batch_issuer_owner.is_some()
             || self.pki_owner.is_some()
+            || self.ssh_owner.is_some()
             || self.ha.is_some()
             || self.wrapping_owner.is_some()
             || self.response_wrapping_owner.is_some()
@@ -359,6 +372,9 @@ impl NativeAuthDelivery {
     fn check_source(&self, auth: &AuthState) -> Result<(), Response> {
         let time = self.time(auth)?;
         if let Some(owner) = self.pki_owner.as_ref() {
+            owner.authorize(auth, self.principal.as_ref(), time)?;
+        }
+        if let Some(owner) = self.ssh_owner.as_ref() {
             owner.authorize(auth, self.principal.as_ref(), time)?;
         }
         if let Some(owner) = self.userpass_owner.as_ref() {
@@ -712,6 +728,12 @@ impl NativeAuthDelivery {
                 service.native_root.as_ref().ok_or_else(rejected)?,
             )?;
         }
+        if let Some(owner) = self.ssh_owner.as_ref() {
+            owner.check_installed(
+                service.state.as_ref().ok_or_else(rejected)?,
+                service.native_root.as_ref().ok_or_else(rejected)?,
+            )?;
+        }
         match (&self.ha, &service.ha) {
             (None, None) => {}
             #[cfg(feature = "native-v6-ha")]
@@ -783,6 +805,7 @@ impl NativeAuthDelivery {
             || self.userpass_owner.is_some()
             || self.batch_issuer_owner.is_some()
             || self.pki_owner.is_some()
+            || self.ssh_owner.is_some()
             || self.mount_owner.is_some()
             || self.wrapping_owner.is_some()
             || self.response_wrapping_owner.is_some()
@@ -952,6 +975,13 @@ impl NativeAuthDelivery {
                 terminal_write,
             )?;
         }
+        if let Some(owner) = self.ssh_owner.as_mut() {
+            owner.bind_terminal(
+                service.state.as_ref().ok_or_else(rejected)?,
+                service.native_root.as_ref().ok_or_else(rejected)?,
+                terminal_write,
+            )?;
+        }
         if let Some(owner) = self.identity_owner.as_mut() {
             owner.bind_terminal(
                 service.state.as_ref().ok_or_else(rejected)?,
@@ -1010,6 +1040,9 @@ impl NativeAuthDelivery {
         if let Some(owner) = self.pki_owner.as_ref() {
             let time = self.time(&state.auth)?;
             owner.authorize_current(state, self.principal.as_mut(), time)
+        } else if let Some(owner) = self.ssh_owner.as_ref() {
+            let time = self.time(&state.auth)?;
+            owner.authorize_current(state, self.principal.as_mut(), time)
         } else if let Some(owner) = self.identity_owner.as_ref() {
             let time = self.time(&state.auth)?;
             owner.authorize_current(state, self.principal.as_mut().ok_or_else(rejected)?, time)
@@ -1027,6 +1060,9 @@ impl NativeAuthDelivery {
     fn check_reply_auth(&self, auth: &AuthState, status: u16) -> Result<(), Response> {
         let time = self.time(auth)?;
         if let Some(owner) = self.pki_owner.as_ref() {
+            owner.authorize(auth, self.principal.as_ref(), time)?;
+        }
+        if let Some(owner) = self.ssh_owner.as_ref() {
             owner.authorize(auth, self.principal.as_ref(), time)?;
         }
         if let Some(owner) = self.userpass_owner.as_ref() {
@@ -1056,6 +1092,7 @@ impl NativeAuthDelivery {
         // removed its own actor. It carries no credential or private payload.
         if (status != 204
             || self.pki_owner.is_some()
+            || self.ssh_owner.is_some()
             || self
                 .userpass_owner
                 .as_ref()
@@ -1694,9 +1731,10 @@ impl Service {
             missing_route_owner,
             pki_owner,
             capabilities_owner,
+            ssh_owner,
         ) = match owner {
             NativeLocalOwner::Auth => (
-                None, None, None, None, None, None, None, None, None, None, None, None,
+                None, None, None, None, None, None, None, None, None, None, None, None, None,
             ),
             NativeLocalOwner::Userpass(owner) => (
                 None,
@@ -1711,9 +1749,11 @@ impl Service {
                 None,
                 None,
                 None,
+                None,
             ),
             NativeLocalOwner::Mount(owner) => (
                 Some(*owner),
+                None,
                 None,
                 None,
                 None,
@@ -1739,11 +1779,13 @@ impl Service {
                 None,
                 None,
                 None,
+                None,
             ),
             NativeLocalOwner::Kv1(owner) => (
                 None,
                 None,
                 Some(*owner),
+                None,
                 None,
                 None,
                 None,
@@ -1767,6 +1809,7 @@ impl Service {
                 None,
                 None,
                 None,
+                None,
             ),
             NativeLocalOwner::Identity(owner) => (
                 None,
@@ -1774,6 +1817,7 @@ impl Service {
                 None,
                 None,
                 Some(owner),
+                None,
                 None,
                 None,
                 None,
@@ -1795,6 +1839,7 @@ impl Service {
                 None,
                 None,
                 None,
+                None,
             ),
             NativeLocalOwner::Totp(owner) => (
                 None,
@@ -1805,6 +1850,7 @@ impl Service {
                 None,
                 None,
                 Some(*owner),
+                None,
                 None,
                 None,
                 None,
@@ -1823,6 +1869,7 @@ impl Service {
                 None,
                 None,
                 None,
+                None,
             ),
             NativeLocalOwner::MissingRoute(owner) => (
                 None,
@@ -1835,6 +1882,7 @@ impl Service {
                 None,
                 None,
                 Some(owner),
+                None,
                 None,
                 None,
             ),
@@ -1851,8 +1899,25 @@ impl Service {
                 None,
                 Some(owner),
                 None,
+                None,
             ),
             NativeLocalOwner::Capabilities(owner) => (
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                Some(owner),
+                None,
+            ),
+            NativeLocalOwner::Ssh(owner) => (
+                None,
                 None,
                 None,
                 None,
@@ -1876,6 +1941,7 @@ impl Service {
                 && (userpass_owner.is_some()
                     || wrapping_owner.is_some()
                     || pki_owner.is_some()
+                    || ssh_owner.is_some()
                     || transit_owner.is_some()
                     || totp_owner.is_some()
                     || capabilities_owner.is_some()
@@ -1936,6 +2002,7 @@ impl Service {
             && namespace_owner.is_none()
             && wrapping_owner.is_none()
             && !pki_owner.as_ref().is_some_and(|owner| owner.public())
+            && !ssh_owner.as_ref().is_some_and(|owner| owner.public())
         {
             return Response::error(403, "missing client token");
         }
@@ -2017,6 +2084,7 @@ impl Service {
             batch_issuer_owner,
             batch_issuer_reply: None,
             pki_owner,
+            ssh_owner,
             mount_owner,
             transit_owner,
             transit_reply: None,
@@ -2089,6 +2157,11 @@ impl Service {
         {
             return error;
         }
+        if let Some(owner) = delivery.ssh_owner.as_ref()
+            && let Err(error) = owner.check_source(&source.engines)
+        {
+            return error;
+        }
         if let Some(owner) = delivery.identity_owner.as_ref()
             && let Err(error) = owner.check_source(&source.engines)
         {
@@ -2115,6 +2188,7 @@ impl Service {
             || delivery.userpass_owner.is_some()
             || delivery.batch_issuer_owner.is_some()
             || delivery.pki_owner.is_some()
+            || delivery.ssh_owner.is_some()
             || delivery.transit_owner.is_some()
             || delivery.kv1_owner.is_some()
             || delivery.totp_owner.is_some()
@@ -2160,6 +2234,8 @@ impl Service {
                 request,
                 pki_role_fields,
             )
+        } else if let Some(owner) = delivery.ssh_owner.as_mut() {
+            owner.execute(&mut candidate, delivery.principal.as_ref(), request)
         } else if let Some(owner) = delivery.wrapping_owner.as_mut() {
             match owner.execute(&mut candidate.auth, delivery.principal.as_ref()) {
                 Ok(response) => response,
@@ -2655,6 +2731,8 @@ impl Service {
             }
             if let Some(owner) = delivery.pki_owner.as_ref() {
                 owner.admit_candidate(&candidate)?;
+            } else if let Some(owner) = delivery.ssh_owner.as_ref() {
+                owner.admit_candidate(&candidate)?;
             } else if let Some(owner) = delivery.mount_owner.as_mut() {
                 owner
                     .admit_candidate(&candidate.engines, response.status, &|| {
@@ -2732,6 +2810,12 @@ impl Service {
                         .as_ref()
                         .and_then(|owner| owner.disabled_mount())
                 })
+                .or_else(|| {
+                    delivery
+                        .ssh_owner
+                        .as_ref()
+                        .and_then(|owner| owner.disabled_mount())
+                })
                 .map(|(namespace, mount)| (namespace.to_owned(), mount.to_owned()));
             if let Some((namespace, mount)) = &disabled_mount {
                 candidate
@@ -2772,6 +2856,16 @@ impl Service {
                 ));
             }
             if let Some(owner) = delivery.pki_owner.as_mut() {
+                match quota_retirement.take() {
+                    Some(retirement) => owner.admit_root_with_quota_retirement(
+                        prior,
+                        &plan.candidate,
+                        &plan.root,
+                        retirement,
+                    )?,
+                    None => owner.admit_root(prior, &plan.candidate, &plan.root)?,
+                }
+            } else if let Some(owner) = delivery.ssh_owner.as_mut() {
                 match quota_retirement.take() {
                     Some(retirement) => owner.admit_root_with_quota_retirement(
                         prior,
@@ -2867,7 +2961,9 @@ impl Service {
             if plan.root.identity().map_err(|_| rejected())?
                 != prior.identity().map_err(|_| rejected())?
             {
-                let purpose = if delivery.pki_owner.is_some() {
+                let purpose = if delivery.ssh_owner.is_some() {
+                    "ssh-local"
+                } else if delivery.pki_owner.is_some() {
                     "pki-local"
                 } else if delivery.userpass_owner.is_some() {
                     "userpass"
@@ -3077,6 +3173,7 @@ impl Service {
         }
         if response.status >= 300
             && delivery.pki_owner.is_none()
+            && delivery.ssh_owner.is_none()
             && delivery.userpass_owner.is_none()
             && delivery.batch_issuer_owner.is_none()
             && delivery.response_wrapping_owner.is_none()
@@ -3090,6 +3187,10 @@ impl Service {
             && delivery.raft_observation_owner.is_none()
         {
             return response;
+        }
+        #[cfg(test)]
+        if delivery.ssh_owner.is_some() {
+            ssh_tests::after_actual_ssh_audit(self, &mut response);
         }
         #[cfg(test)]
         if delivery.mount_owner.is_some() {
@@ -3139,6 +3240,9 @@ impl Service {
                     .map_err(|_| rejected())?;
             }
             if let Some(owner) = delivery.pki_owner.as_ref() {
+                owner.check_reply(&response)?;
+            }
+            if let Some(owner) = delivery.ssh_owner.as_ref() {
                 owner.check_reply(&response)?;
             }
             if let Some(owner) = delivery.identity_owner.as_ref() {
@@ -3333,3 +3437,7 @@ mod pki_tests;
 #[cfg(test)]
 #[path = "service_native_capabilities_tests.rs"]
 pub(super) mod capabilities_tests;
+
+#[cfg(test)]
+#[path = "service_native_ssh_tests.rs"]
+mod ssh_tests;

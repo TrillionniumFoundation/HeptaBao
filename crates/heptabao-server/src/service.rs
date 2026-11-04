@@ -4089,6 +4089,28 @@ impl Service {
                 {
                     return response;
                 }
+                // This choice follows the actual catch-up above, not a URL
+                // suffix or a stale standby registry. Resumed control-group
+                // work skips that catch-up and cannot select this new profile.
+                // The profile carries the original ingress only; the active
+                // node must still capture and complete its real SSH owner.
+                #[cfg(feature = "native-v6-storage")]
+                let native_original_reply_profile = if !resumed_control_group
+                    && namespace.is_empty()
+                    && self.native_root.is_some()
+                    && wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+                    && crate::auth::current_ingress().is_some()
+                    && self.state.as_ref().is_some_and(|state| {
+                        state
+                            .engines
+                            .is_public_ssh_key_read(namespace, method, path)
+                    }) {
+                    Some(crate::ha_forward::NativeOriginalReplyProfile::RootSshPublicKey)
+                } else {
+                    None
+                };
+                #[cfg(not(feature = "native-v6-storage"))]
+                let native_original_reply_profile = None;
                 self.pending_forward_delivery =
                     Some(forward_delivery::PendingForwardDelivery::Rejected);
                 #[cfg(feature = "native-v6-ha")]
@@ -4099,7 +4121,7 @@ impl Service {
                 );
                 let forwarded = match ha.lock_for_request() {
                     Ok(process) => {
-                        process.forward_request_completed(crate::ha_forward::ForwardContext {
+                        let context = crate::ha_forward::ForwardContext {
                             method,
                             path,
                             namespace,
@@ -4109,7 +4131,14 @@ impl Service {
                             origin_peer,
                             client_certificates,
                             caller_deadline: crate::request_deadline::current(),
-                        })
+                        };
+                        if let Some(profile) = native_original_reply_profile {
+                            process.forward_request_completed_with_native_original_reply(
+                                context, profile,
+                            )
+                        } else {
+                            process.forward_request_completed(context)
+                        }
                     }
                     Err(_) => return Response::error(503, "HA process lock is unavailable"),
                 };
@@ -4194,6 +4223,33 @@ impl Service {
             #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
             if let Some(phase) = phase {
                 phase.finish(true);
+            }
+        }
+        if let Some(crate::ha_forward::NativeOriginalReplyProfile::RootSshPublicKey) =
+            crate::ha_forward::current_native_original_reply_profile()
+        {
+            // Recheck the receiving leader's actual mount after its own HA
+            // admission. A peer's selection, or a concurrently replaced mount,
+            // cannot redirect this profile into an ordinary KV read or another
+            // backend. Refusal never downgrades or replays the request.
+            #[cfg(feature = "native-v6-storage")]
+            let actual_native_ssh = !resumed_control_group
+                && namespace.is_empty()
+                && self.native_root.is_some()
+                && wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+                && crate::auth::current_ingress().is_some()
+                && self.state.as_ref().is_some_and(|state| {
+                    state
+                        .engines
+                        .is_public_ssh_key_read(namespace, method, path)
+                });
+            #[cfg(not(feature = "native-v6-storage"))]
+            let actual_native_ssh = false;
+            if !actual_native_ssh {
+                return Response::error(
+                    503,
+                    "HA native SSH reply profile no longer has its root mount",
+                );
             }
         }
         // HA forwards the authenticated transport body above. Interpret this
@@ -4345,7 +4401,7 @@ impl Service {
         if !owner_manifest_migration {
             #[cfg(feature = "native-v6-storage")]
             let native_pki_maintenance =
-                self.native_root.is_some() && admitted.engines.has_native_local_pki();
+                self.native_root.is_some() && admitted.engines.has_native_local_lease_owner();
             #[cfg(not(feature = "native-v6-storage"))]
             let native_pki_maintenance = false;
             #[cfg(feature = "native-v6-storage")]
@@ -4430,6 +4486,9 @@ impl Service {
             && admitted.engines.native_local_pki_mounted(namespace, path);
         #[cfg(not(feature = "native-v6-storage"))]
         let native_pki_mounted = false;
+        #[cfg(feature = "native-v6-storage")]
+        let native_ssh_mounted = self.native_root.is_some()
+            && admitted.engines.native_local_ssh_mounted(namespace, path);
         if !native_pki_mounted && let Some(response) = self.handle_pki_acme(&request, &mut admitted)
         {
             return response;
@@ -4446,6 +4505,10 @@ impl Service {
             None
         };
         if help_projection.as_ref().is_some_and(|help| help.anonymous) {
+            #[cfg(feature = "native-v6-storage")]
+            if native_ssh_mounted {
+                return self.dispatch_native_ssh_request(admitted, None, &request);
+            }
             #[cfg(feature = "native-v6-storage")]
             if native_pki_mounted {
                 return self.dispatch_native_pki_request(
@@ -4502,6 +4565,13 @@ impl Service {
                 .engines
                 .is_public_ssh_key_read(namespace, method, path)
         {
+            #[cfg(feature = "native-v6-storage")]
+            if self.native_root.is_some() {
+                if !native_ssh_mounted {
+                    return Response::error(501, "native SSH public key requires its root owner");
+                }
+                return self.dispatch_native_ssh_request(admitted, None, &request);
+            }
             return Self::native_ssh_public_response(&admitted, namespace, method, path, body)
                 .unwrap_or_else(|| Response::error(503, "SSH public key owner changed"));
         }
@@ -4857,6 +4927,13 @@ impl Service {
                     .engines
                     .native_totp_registry_route(method, path, request.body));
         #[cfg(feature = "native-v6-storage")]
+        let native_local_ssh = self.native_root.is_some()
+            && namespace.is_empty()
+            && (admitted.engines.native_local_ssh_route(namespace, path)
+                || admitted
+                    .engines
+                    .native_ssh_registry_route(method, path, request.body));
+        #[cfg(feature = "native-v6-storage")]
         let native_local_pki = self.native_root.is_some()
             && namespace.is_empty()
             && (admitted.engines.native_local_pki_route(namespace, path)
@@ -4889,6 +4966,7 @@ impl Service {
             && !native_local_transit
             && !native_local_totp
             && !native_local_pki
+            && !native_local_ssh
             && !native_metadata_read;
         #[cfg(feature = "native-v6-storage")]
         let native_capabilities = self.native_root.is_some()
@@ -4999,6 +5077,7 @@ impl Service {
                 && !native_local_transit
                 && !native_local_totp
                 && !native_local_pki
+                && !native_local_ssh
                 && !native_kv2_mount
                 && !native_kv1_mount
                 && !native_remount
@@ -5148,6 +5227,10 @@ impl Service {
         #[cfg(feature = "native-v6-storage")]
         if native_local_totp {
             return self.dispatch_native_totp_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_local_ssh {
+            return self.dispatch_native_ssh_request(admitted, principal.take(), &request);
         }
         #[cfg(feature = "native-v6-storage")]
         if native_local_pki {

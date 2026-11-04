@@ -81,14 +81,38 @@ impl NativeReply {
             #[cfg(feature = "native-v6-storage")]
             Self::LosslessFile(file) => write_lossless_file_response(writer, file, head, namespace),
             Self::Redirect { origin, target } => {
-                write!(
-                    writer,
-                    "HTTP/1.1 307 Temporary Redirect\r\nLocation: {}{}\r\nContent-Length: 0\r\n",
-                    origin.as_str(),
-                    target.0.as_str(),
-                )?;
-                write_standard_headers(writer, namespace)?;
-                writer.write_all(b"\r\n")?;
+                // An unread upload can still be in another TLS record. Build
+                // the complete head before the first transport write, instead
+                // of emitting the status/Location prefix as its own record.
+                // The fixed allowance covers the standard/date/timing headers;
+                // existing variable fields keep their original input bounds.
+                let capacity = origin
+                    .as_str()
+                    .len()
+                    .checked_add(target.0.len())
+                    .and_then(|size| size.checked_add(namespace.len()))
+                    .and_then(|size| size.checked_add(512))
+                    .ok_or_else(|| {
+                        io::Error::new(
+                            io::ErrorKind::InvalidInput,
+                            "redirect header length overflow",
+                        )
+                    })?;
+                let mut buffer = Zeroizing::new(vec![0; capacity]);
+                let used = {
+                    // Cursor over a fixed slice cannot grow the allocation.
+                    let mut header = io::Cursor::new(buffer.as_mut_slice());
+                    write!(
+                        header,
+                        "HTTP/1.1 307 Temporary Redirect\r\nLocation: {}{}\r\nContent-Length: 0\r\n",
+                        origin.as_str(),
+                        target.0.as_str(),
+                    )?;
+                    write_standard_headers(&mut header, namespace)?;
+                    header.write_all(b"\r\n")?;
+                    header.position() as usize
+                };
+                writer.write_all(&buffer[..used])?;
                 writer.flush()
             }
         }

@@ -626,9 +626,11 @@ fn native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs() -> T
         call(&mut service, "GET", "sys/mounts/guarded", "", json!({})).status,
         403
     );
+    // SSH has an independent native owner and lifecycle suite. Keep this
+    // refusal oracle on an external backend and unsupported KV version.
     for body in [
-        json!({"type":"ssh"}),
-        json!({"type":"kv","options":{"version":"1"}}),
+        json!({"type":"database"}),
+        json!({"type":"kv","options":{"version":"3"}}),
     ] {
         assert_eq!(
             call(&mut service, "POST", "sys/mounts/guarded", &root, body).status,

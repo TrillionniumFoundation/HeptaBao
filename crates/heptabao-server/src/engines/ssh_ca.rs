@@ -115,6 +115,11 @@ fn signing_public_key(text: &str) -> Result<PublicKey> {
 }
 
 impl CaState {
+    #[cfg(test)]
+    pub(super) fn native_signature_count(&self) -> u64 {
+        self.signatures
+    }
+
     pub(super) fn roles(&self) -> impl Iterator<Item = &String> {
         self.roles.keys()
     }
