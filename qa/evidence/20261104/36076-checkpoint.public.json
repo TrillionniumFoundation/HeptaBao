@@ -1,6 +1,6 @@
 {
-  "schema": "heptabao.reviewed-36076-validation-checkpoint.v2",
-  "as_of_utc": "2026-11-04T07:33:25.746381+00:00",
+  "schema": "heptabao.36076-and-33cafa-checkpoint.v3",
+  "as_of_utc": "2026-11-04T08:17:22.431016+00:00",
   "compiled_source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
   "compiled_source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95",
   "published_source_commit": "a5c05856f23c395e590fd4e6eeec02bb669a2aa9",
@@ -265,7 +265,7 @@
     "frozen_source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
     "frozen_source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
     "published_tree_identical_commit": "054d17cd50951efa46d78db3911ad1d277a0c584",
-    "server_normal_builds_complete": false,
+    "server_normal_builds_complete": true,
     "async_request_path_changed": false
   },
   "mac_installed_native_source_audit": {
@@ -309,15 +309,28 @@
     "formatted_run_id": 41791159057,
     "formatted_conclusion": "failure",
     "formatted_failure": "Repository documentation validator required technical prose in the intentionally empty main README; fmt passed and Rust runtime tests not executed.",
-    "current_head": "fdc802e2e933a65f298ff449ce00f1c0a454b682",
-    "current_tree": "06852fd0349436edca875920026979d0a17c20bd",
+    "current_head": "1780833661058efff2e31cd2ce2733d485075ac3",
+    "current_tree": "3835532737b5a2369ea46947442b3c03a77d0271",
     "current_head_rust_matches_physical_33cafa_tree": true,
     "additional_integration_scope": "Intentional empty README; same technical documentation requirements moved to CURRENT_DOCUMENTATION with negative regressions; no runtime gate removed.",
     "current_full_qualification_terminal_observed": false,
-    "current_run_id": 41792816829,
+    "current_run_id": 41797943393,
     "current_status": "in_progress",
     "current_trust_boundary_run_id": 41792816878,
-    "current_trust_boundary_conclusion": "success"
+    "current_trust_boundary_conclusion": "success",
+    "current_attempt": 1,
+    "attempt1_conclusion": "failure",
+    "attempt1_cause": "Both runners received shutdown signal during Rust compilation, exit 143; root cause unproven, no Rust tests or runtime acceptance started.",
+    "attempt1_receipt_sha256": "48e0d207f3a2939994204d1836015818d1f60a525fc641928b8717a94f382ce5",
+    "previous_head": "fdc802e2e933a65f298ff449ce00f1c0a454b682",
+    "previous_run_id": 41792816829,
+    "attempt2_state": "failed",
+    "attempt2_failure_receipt_sha256": "fc149d259198ed285dbdab51c3fd72848b2be3157f3666535ac4baf439f65770",
+    "workflow_sha256": "b17c195652fa9e25113ec9a7a67593a7d28bed1eeb4038f07b5af1bdadb9dd0b",
+    "cargo_build_jobs": 1,
+    "compile_only_resource_sampler": true,
+    "workflow_exact_readback_verified": true,
+    "all_other_workflow_steps_preserved": true
   },
   "qa_publication": {
     "physical_followup_commit": "ccee5c8d1cd482fcb8fcadc578f8d045f823576a",
@@ -327,5 +340,208 @@
     "published_ref_readback_verified": true,
     "audit_source_readback_exact": true,
     "production_deployed": false
+  },
+  "latest_normal_candidate": {
+    "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+    "published_commit": "054d17cd50951efa46d78db3911ad1d277a0c584",
+    "published_tree_exact": true,
+    "physical128_prepared_sha256": "bbc0ea744caed7c19e6099c1ab912351ca600dc771f3d8fe530836c1b7f4b5af",
+    "physical128_controller_sha256": "5a4b8930b1f8aaae9e73f774f9a3959f1265e98f69ce408f6f68119fa3a36529",
+    "physical128_result": {
+      "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+      "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+      "fixture_run_id": "fc48c32973d28b761edb8ff28002a75f",
+      "status": "failed",
+      "passed_checks": 90,
+      "required_checks": 128,
+      "not_executed_check_count": 38,
+      "failure_code": "node_1_native_cold_unseal_failed",
+      "failure_stage": "owned_missing_cipher_leader_recovery",
+      "roles": {
+        "node_1": "mac",
+        "node_2": "rog",
+        "node_3": "pocket4",
+        "pocket4_to_mac_direction_executed": false,
+        "pocket4_to_mac_direction_recovery_passed": false,
+        "selected_empty_leader_node": 1,
+        "source_node": 2
+      },
+      "fixture_recovery": {
+        "automatic_resume_or_retry": false,
+        "initialization_custody_saved": true,
+        "mutation_intents": 47,
+        "mutation_responses": 47,
+        "relative_root": "private-recovery",
+        "schema": "heptabao.synthetic-fixture-recovery-public.v1",
+        "secret_values_emitted": false,
+        "synthetic_only": true,
+        "unknown_transport_outcomes": 0
+      },
+      "original_deadlines": {
+        "http_request_budget_seconds": 15,
+        "native_admission_budget_seconds": 8,
+        "native_large_http_budget_seconds": 5
+      },
+      "owned_cleanup_checks": [
+        {
+          "archive_sha256": "34f29e6ebd3fa3120a7a32ee47c0acb4b6067135bd3a16aae80c2cf01131e0aa",
+          "case": "seed_stopped_cold_archive",
+          "passed": true
+        },
+        {
+          "case": "all_voters_stopped_for_cold_restart",
+          "passed": true
+        },
+        {
+          "case": "missing_cipher_targets_stopped",
+          "passed": true
+        },
+        {
+          "case": "owned_processes_stopped",
+          "passed": true
+        },
+        {
+          "case": "owned_mesh_stopped",
+          "passed": true
+        }
+      ],
+      "owned_load_observers_stopped": true,
+      "reported_background_mac_io": {
+        "created_unix_ms": 1793779477825,
+        "file_count": 24,
+        "manifest_sha256": "e6ece04ba46c3399820fa1068ef24b528889b3fc303566554fe9b220c3f83c69",
+        "no_zero_extra_io_claim": true,
+        "not_claimed_unique_cause": true,
+        "per_file_and_directory_fsync": true,
+        "reported_by": "root",
+        "runtime_job": "1a1a596ad41-fc05-1fb8",
+        "terminal_at_unix_ms": 1793779478098,
+        "total_bytes": 353180,
+        "window_ms": 273
+      },
+      "cross_host_clock_synchronization_claimed": false,
+      "assessment_sha256": "30f3f88667cfb876833d4c84347c40ca9c20fc91c08e4f1d812cdf41b11cda4f",
+      "summary_sha256": "41af5de59863ec2d430674d0b6272b040276d2777dda383a25a2e195cdab9f44",
+      "cold_unseal_elapsed_ms": 14099.923,
+      "cold_unseal_http_status": 503,
+      "service_original_recovery_deadline_seconds": 14,
+      "original128_qualified": false
+    },
+    "known_pocket3_to_mac1_recovery_failure_closed": false,
+    "qualification": false,
+    "physical128_job": "1a1a591a045-fc05-1f8c",
+    "physical128_run_id": "fc48c32973d28b761edb8ff28002a75f",
+    "physical128_state": "failed",
+    "physical128_last_observed_checks": [
+      90,
+      128
+    ],
+    "builds": {
+      "mac": {
+        "binary_sha256": "d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20",
+        "elapsed_seconds": 624.0722482497804,
+        "normal_features": [
+          "default",
+          "native-v6-ha",
+          "native-v6-storage"
+        ],
+        "no_private_diagnostic": true,
+        "owned_group_survivors_after_wait": false
+      },
+      "rog_linux": {
+        "binary_sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+        "elapsed_seconds": 476.5786363600055,
+        "normal_features": [
+          "default",
+          "native-v6-ha",
+          "native-v6-storage"
+        ],
+        "no_private_diagnostic": true,
+        "owned_group_survivors_after_wait": false
+      }
+    },
+    "x230": {
+      "source_receipt_sha256": "fc72261a78570035657c556870c796f6f4d5531c644ccca31bd3838cbc6f85cf",
+      "controllers_receipt_sha256": "20d5d608ba41768e9345d5f65c94a773b089e20210f0cdb63be0748d9daddd08",
+      "transfer_receipt_sha256": "7ad9210c5516db73cea99b88a233606c4b7ca08a106a1f0b62e70933a0c00d78",
+      "full34_job": "1a1a58cd583-fc05-1f4c",
+      "full34_state": "passed",
+      "comparison69_state": "passed",
+      "original_assertions_and_deadlines_unchanged": true,
+      "full34": [
+        31,
+        31
+      ],
+      "full34_result_sha256": "5864b822e4b48833de5ef05ab8f3e402447122f0fbc74ab4ef76c029bcd6a051",
+      "full34_summary_sha256": "1a1d002d9484dae804c3d11e3ddb67f899307fd9b44c7512bcef320030bde662",
+      "comparison69_job": "1a1a590b121-fc05-1f80",
+      "comparison69": [
+        69,
+        69
+      ],
+      "comparison69_result_sha256": "8b9224e43aad89caa7118c24746a3800d1c1ce932a7786051c62c11a71565a6b",
+      "comparison69_summary_sha256": "c528fa297bf7d4c79d88437538da59a4b777051a8e7bb2db07b769c6a7cee8a0",
+      "all_owned_stopped": true
+    }
+  },
+  "mac_native_actual_consumer": {
+    "normal_source": "36076db5f5afe00db75eba9b607dee7802dae554",
+    "r1_state": "failed before native spawn; observer rejected POSIX shell=undefined",
+    "r2_state": "failed before RPC; actual nested sandbox_apply EPERM",
+    "r3_job": "1a1a58cd583-fc05-1f4a",
+    "r3_state": "failed",
+    "r3_consumer_sha256": "c0320de1ff1c64a95dda9f08605888cfe731a8b9370f5bde2f691e062c7957fe",
+    "r3_driver_sha256": "7f1a5399e404f86a0980903629a8b51c7e0f7a36515942f5144fac1747557f05",
+    "shared_single_layer_sandbox_preflight": [
+      9,
+      9
+    ],
+    "sandbox_preflight_sha256": "80d7f91ad6db69056768ad9233e324bf31ce27af519af0d397be0400b9d9998b",
+    "scope": "Node and native share fresh run files and exact Bao loopback. Other BASE contents and production credentials/config denied; external egress denied. Background attempts uncounted.",
+    "production_gateway_restart_rollback_qualified": false,
+    "r3_result_sha256": "0168c4a3a0703f2240145117366a42dbc31f7cd1ecdc5647282c53b369f5b4e6",
+    "r3_parent_checks": [
+      37,
+      38
+    ],
+    "r3_rpc_count": 0,
+    "r3_failure": "spawnSync /bin/ps EPERM within sandbox",
+    "r3_original_node_timeout_seconds": 120,
+    "r3_outer_outcome_unknown": true,
+    "r3_all_owned_stopped": true,
+    "r3_rollback": [
+      61,
+      61
+    ],
+    "next": "Review parent-owned libproc observer + anonymous acknowledgement pipe before first RPC; wait HA window."
+  },
+  "profile3_current_finite_binding": {
+    "mac_receipt_sha256": "6a059b7f4b69b5cb37808b2e447eea6a89dda4a003d2eb5c4816510a0d0aba4e",
+    "mac_actual_main_candidate_position": 3,
+    "mac_explicit_nonmetadata_config_refs": 0,
+    "mac_current_session_binding_observed": false,
+    "pocket_receipt_sha256": "79e232c4282796ffb07c174fbc32c5e4a4cb5f87167ec42851fd042cc8a8f3ea",
+    "pocket_two_default_consumers_candidate": false,
+    "login_started": false,
+    "interpretation": "Existing failed Mac fallback is retained with its failure/recovery evidence. This is separate from Bao storage correctness; migration must preserve current identity and candidate semantics rather than silently discard it."
+  },
+  "pocket_two_agent_current_selector": {
+    "checks": [
+      30,
+      30
+    ],
+    "sha256": "79e232c4282796ffb07c174fbc32c5e4a4cb5f87167ec42851fd042cc8a8f3ea",
+    "agents": [
+      "main",
+      "tg8687951891"
+    ],
+    "tg_inherits_main_using_actual_sdk": true,
+    "actual_default_candidate_ordinals": [
+      5
+    ],
+    "all_five_identities_and_order_and_usage_preserved": true,
+    "native_factory_exercised": false,
+    "provider_requests": 0
   }
 }

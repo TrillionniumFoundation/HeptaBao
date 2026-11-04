@@ -4,11 +4,15 @@
 
 本检查点记录 2026-11-04 已完成的可复核工作，**不授予全量替代、生产切流或旧版删除资格**。
 
+最新正常候选为 `33cafa4c`，Mac 和 ROG 均已按原 release profile 完成构建，没有启用 private diagnostic。Mac server SHA256=`d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20`；Linux server SHA256=`7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba`。该 Linux 产物在 X230 上的原 full34 已通过 31/31（147.112 秒），原官方 2.7.1 对照双方均为 69/69（44.541 秒）；源码和二进制前后相同，owned 服务全部停止。原断言、15 秒 HTTP、360 秒迁移预算和 13 模块对照入口均未改动。
+
+新候选的三机原 128 项已经终态失败，90 项通过、38 项未执行。该轮自然角色为 ROG 节点 2 向空缺 Mac 节点 1 恢复；seq47 单次冷解封在 14,099.923ms 返回完整 HTTP 503，服务内部原 14 秒恢复期限已耗尽。47 个 mutation intents 均有确定 response，unknown=0，owned 服务、mesh 和观察器全部停止。原 5 秒导入、15 秒 HTTP 和 8 秒 admission 限制均未改；响应端修复不足以关闭冷恢复门槛，旧 Pocket4 节点 3 向 Mac 节点 1 的失败方向也未覆盖。下文 `36076` 的旧证据分别保留其身份，不能自动改标为新候选。
+
 同一份正常构建源码已完成 Mac 和 X230 的 34MiB 正式 KV2 迁移恢复验证。命名空间退休问题和 TLS 请求分帧问题已有修复及对应测试。三机 HA 正常构建首轮原始 128 项测试通过 100 项，停在官方历史导入；这一轮导入超过原有 5 秒调用期限后结果未知，未重放。随后相同源码的私有诊断构建完成了全新隔离运行的 128/128 项。再后的一次全新正常构建运行通过 90 项，在密文缺失恢复中的节点 1 冷解封收到明确 503；诊断通过不能代替正常构建验收，两次正常失败均保留。
 
 实际安装版 AuthBus 插件已完成真实凭证导入、SDK 凭证选择、重启、续期、撤销及隔离状态回滚。Mac 隔离网关已通过启动和完整状态回滚；一次沿内置 HTTP 路径的真实默认模型请求返回完整 HTTP 429。后续核查发现生产还安装并启用了 Codex 原生插件，r8 的插件允许集合未覆盖它，因此该轮不能代表完整生产运行时。现用 Mac、ROG、Pocket4 的 AuthBus 配置仍指向旧来源，逐台迁移尚未完成。
 
-## 源码和二进制身份
+## 既有 36076 源码和二进制身份
 
 | 项目 | 精确身份 |
 | --- | --- |
@@ -23,7 +27,7 @@
 
 正常二进制启用 default、native-v6-ha、native-v6-storage；未启用私有诊断或 fixture feature。测试前后均检查源码和二进制身份。后续带私有诊断 feature 的构建只用于定位，不会替代正常二进制验收。
 
-## 已通过的具体证据
+## 既有 36076 已通过的具体证据
 
 | 主机或范围 | 结果 | 已证明的范围 |
 | --- | --- | --- |
@@ -80,13 +84,17 @@ seq55 导入的实际 owned caller 耗时为 5,011.837ms。调用器在原有 5 
 
 后续 ROG 的正常组件验证已完成 15/15，source staged tree=ac1d3187f9a7c882b9dc0b709d73ce68ff6f2c94。临时目录明确位于真实 NVMe ext 文件系统，未用 /tmp 内存盘；feature 未启用 private diagnostic。原 cold blackhole 测试整个进程耗时 7.133 秒并通过其 14 秒断言，成功输出被默认 Rust capture 收起，因此没有独立的精确 repair 毫秒数。原 desktop 失败保持失败，不从换主机后的通过推断其唯一根因。
 
-在该组件源码上合入已验证的 14 个 server 文件格式修复后，新的正常候选已冻结为 33cafa4c6e29f0bde1553e041550d21b4c725d9c，tree=cdc2376e7b39c1d8bbbeb10a813d58bfe923f336；GitHub 发布 054d17cd50951efa46d78db3911ad1d277a0c584 的 tree 完全一致。新的 Mac/ROG 正常 server 构建及原三机 128 项回归仍是独立门槛。异步 root-pull 请求仍保持原实现，未将尚无确定因果证据的另一项优化混入此候选。
+在该组件源码上合入已验证的 14 个 server 文件格式修复后，新的正常候选已冻结为 33cafa4c6e29f0bde1553e041550d21b4c725d9c，tree=cdc2376e7b39c1d8bbbeb10a813d58bfe923f336；GitHub 发布 054d17cd50951efa46d78db3911ad1d277a0c584 的 tree 完全一致。新的 Mac/ROG 正常 server 构建均已成功，分别为 624.072 秒和 476.579 秒，原三机回归终态为 90/128。异步 root-pull 请求仍保持原实现，未将另一项优化混入该冻结候选。
+
+33cafa 原运行的停止日志确认：changed_root_recover 为 13,933,476µs，committed scope 为 13,948,275µs，入口 ReadIndex 为 14,782µs；服务请求总耗时 13,999,921µs 时 original deadline 剩余为零，密文和 barrier 未激活。Mac 在 08:04:37.825–08:04:38.098 UTC 有一次已报告的背景证据落盘：24 文件、353,180 字节、逐文件与目录 fsync。该 273ms 窗口的时间和 manifest 已纳入 assessment；跨主机时钟未校准，不能据时间差排除影响或把它认定为唯一原因。不得称该轮完全没有其他 I/O。新诊断将先在真实 TCP/mTLS 上观察请求端分帧；已核对客户端 TCP_NODELAY=true，因此不能凭两个 write 就声称 Nagle 是根因。
 
 ## AuthBus 与逐台切换
 
 已发现两个可验证的非 J3160 凭证来源：Mac 当前原生凭证对应既有 profile-2；ROG 上存在与既有 profile-1 相同身份的有效代。凭证有效与模型额度可用分开判断：profile-2 的真实业务响应为 usage_limit_reached；profile-1 捕获的来源状态含 subscription_limit / wham，blockedUntil=1793774885494 在当时尚属未来。后续必须重新执行真实 SDK 的时间相关排序，不能假定该时间仍在未来或强制选择 profile-2。迁移不会清除这些真实限制来制造成功。
 
 profile-3 已进行一次受控原生续期，实际 provider 返回完整 HTTP 401，error.type=invalid_request_error、code=invalid_refresh_token。没有新代、未知结果或重试，原生产 stores 保持不变。Pocket4 与 desktop 找到的是同一已拒绝代，ROG 已确认路径没有目标账户的新代，ai395 的三个标准候选路径不存在。这些精确范围内尚未发现替代来源；需要准备同账户的原生重新登录，不能以其他账户冒充。
+
+补充有限范围归因：Mac 已捕获的实际 main SDK 顺序中，profile-3 是第三个 fallback，配置没有非元数据的明确绑定；未观察生产会话覆盖，不能称其已全局停用。Pocket4 当前两个默认 agent 的真实 SDK/原生选择器均只选择本机凭证 ordinal5，tg 的空本地认证表实际继承 main 的全部五身份、order 与 usage；profile-3 在这两个默认消费者中不是候选。其失效恢复应与 Bao 存储正确性分开记录；迁移必须保留原身份、失效代际和恢复材料，也不能把隔离测试排除该条目的顺序外推为生产行为。尚未启动重新登录。
 
 版本锁定的 Codex 0.133.0 官方源码确认 CLI 凭证存储默认是 File，缺省读取其 CODEX_HOME/auth.json；MCP OAuth 的默认 Auto 是另一种存储配置。当前未发现有效配置覆盖证据，因此没有任意探测 Keychain。该结论不声称所有历史系统凭证条目不存在。重新登录准备必须保护当前原生账户，不注销或覆盖现用凭证。
 
@@ -105,6 +113,10 @@ ROG 的隔离安装版插件能够导入凭证，但原 SDK consumer 在 single_
 Mac 的生产配置允许 Codex 自动运行时，而 r8 隔离配置只允许内置 openai 与 AuthBus 插件。原 r8 的一次真实 HTTP 429、凭证身份绑定和隔离回滚证据仍然成立，但不证明生产的 Codex 插件已经完成等价验证。新的只读审查通过 22/22 项，实际 managed 原生版本已锁定为 0.144.3，SHA256=718724d7221cf1298071ca92411cb74caa8422809154150cedca7b569a4518e3；它不同于独立登录准备的全局 Codex 0.133.0。当前配置缺省 homeScope=agent，实际 shared-client 构建器从 SDK openai 顺序选择并传递 chatgptAuthTokens。22 项只证明静态源码与配置，尚未查询生产进程 registry 或现有 session 的覆盖策略。
 
 精确官方 0.144.3 源码确认 account/read(refreshToken=false) 使用缓存身份，外部 tokens 写入 Ephemeral 状态；但整个 app-server 启动会产生 models/cloud/plugin 后台网络路径，不能称为纯离线。Mac 正在用实际 installed registry、harness selector 和原生 factory 补充隔离消费验证，原业务 POST 和失败 refresh 未重放。
+
+Mac 原生消费者的三次新隔离尝试均保留失败：r1 的观察器误拒绝 POSIX shell=undefined，尚未 spawn；r2 的嵌套 sandbox_apply 收到 EPERM，尚未原生 RPC；r3 改为经 9/9 无凭证预检查的单层 kernel sandbox，实际 spawn 成功，但 sandbox 内只读 /bin/ps 观察器收到 EPERM。r3 父检查 37/38，实际 RPC 列表为空，Node 超过原 120 秒预算后按原逻辑终止，outcomeUnknown=true 保留；单次全库 CAS 回滚 61/61，owned 进程和 Bao 服务均已退出，生产状态未改。r3 的 81 条已通过子检查不构成整轮通过。下一版拟由原 Python 父进程在沙箱外只读检查自己 owned 的进程关系，不扩大 native 文件或网络权限。
+
+Pocket4 双 agent 的独立真实 selector 回归为 30/30：实际 installed registry、model runtime、harness auth provider 和默认 native builder 均保留，未注入 profile、store 或顺序覆盖，两个候选都为当前 ordinal5。它尚未启动原生 factory，也未调用 provider。新的实际 native 消费与缺失 ordinal5 恢复场景仍待独立验证。
 
 ROG 的 r3 已独立核对完整回执：两个实际 factory 只显式调用 initialize，六次 CLI 状态检查均只读打开精确 auth/config 各一次，其他 auth 文件打开数为零。真实插件初始和冷启动各 94/94，两次严格逻辑回滚各 64/64，父检查 60/60；源 usage 状态、生产 auth/config、PID 与启动身份均未变，全部 owned 进程组已退出。此前 r1 的 WAL 预检查失败、r2 的 syscall 观察器漏记经典 open、原 generic SDK 41/42 失败均保留。r3 没有显式 account/read、account/login/start 或模型请求；原生后台尝试未计数，内核无外网。该结果不授予 provider 可用、生产网关重启或正式切流资格。
 
@@ -127,6 +139,10 @@ ROG 使用的 Codex 0.159.2 已通过精确官方 tag/commit 核对：CLI 默认
 AuthBus 可复核辅助源码先发布 a78bdadc（tree=76ad1d16），再追加范围修正与只读 audit 到 97f67bb5（tree=530cdab18a5caa1d92928ed6f901e9136b939ade）。后者与 Mac 实际提交 ccee5c8d 的 tree 一致，原始 401/429/SDK 失败未改写。发布辅助源码不是生产插件部署或切流。
 
 第二次 CI run 41791159057 的两项矩阵均通过格式检查，但旧 validator 仍要求 main 有意清空的 README 承载工程说明，故在仓库一致性阶段失败。已把同样的 plan、精确包数、全部构建命令、状态格式、兼容语料与执行真实性检查放到既有 docs/CURRENT_DOCUMENTATION.md，并增加缺失命令、错误包数和过期声明的拒绝回归；没有关闭 runtime 检查。最新草稿 head=fdc802e2e933a65f298ff449ce00f1c0a454b682、tree=06852fd0349436edca875920026979d0a17c20bd，其全 Rust 文件与物理 33cafa 候选一致，额外差异限于空主页、文档和相应检查/测试。该新轮 CI 终态仍待核验，前两轮失败保留。
+
+该提交的 run 41792816829 两次 attempt 均通过格式、全部仓库/Python 验证，但两个 worker 都在 Rust 编译阶段收到 shutdown signal，以 143 退出。日志未显示 Rust 编译错误或 Rust 用例开始，具体上游关闭原因尚未证明；两次均保持失败。第二次在同一不可变提交和 workflow 上执行，没有修改断言或预算。
+
+当前 PR head 已追加为 1780833661058efff2e31cd2ce2733d485075ac3，tree=3835532737b5a2369ea46947442b3c03a77d0271，仅变更 CI workflow：Cargo 编译并发固定为 1，编译阶段记录有限内存、磁盘和进程资源计数；采样器在任何 Rust 用例开始前停止并 wait。原完整测试命令、matrix、所有其他步骤、features/profile 和 90 分钟 job 预算保持不变，产品 Rust 文件仍与物理 33cafa 一致。新的 run 41797943393 尚待终态；记录资源计数不代表已证明内存或磁盘耗尽。
 
 ## 主要回执 SHA256
 
@@ -164,6 +180,18 @@ AuthBus 可复核辅助源码先发布 a78bdadc（tree=76ad1d16），再追加�
 | Mac managed 官方 0.144.3 源码合同 | `f9de7db17bf33d0195ccad087b333bf8a83957b35417be0ca4712fda33775adc` |
 | ROG native-preservation r3 core | `4c905377b40663d972839117579fa3e0a317528ac6e6b9fddfd0765cd18c7472` |
 | ROG 正常 HA 组件 15/15 | `a2a84c4869aeb552262fc0d8479d8eeaeb0fdfa2f5a17b78c89a4e2de965f030` |
+| 新 33cafa Mac 正常构建 | `b53967aac8d06547473f68f907047fd34a89f4ab6295cb9765b24f2202853f33` |
+| 新 33cafa ROG Linux 正常构建 | `7fa76585e94fe2e60bbc3ce754f37e4d9d433e4cf576fcc2e39a1e95771f3f42` |
+| 新 33cafa X230 full34 31/31 | `5864b822e4b48833de5ef05ab8f3e402447122f0fbc74ab4ef76c029bcd6a051` |
+| 新 33cafa X230 双方 69/69 | `8b9224e43aad89caa7118c24746a3800d1c1ce932a7786051c62c11a71565a6b` |
+| 新 33cafa 原 128 项 prepare-only | `bbc0ea744caed7c19e6099c1ab912351ca600dc771f3d8fe530836c1b7f4b5af` |
+| Mac native r3 原始失败与清理 | `0168c4a3a0703f2240145117366a42dbc31f7cd1ecdc5647282c53b369f5b4e6` |
+| Mac profile3 有限当前绑定归因 | `6a059b7f4b69b5cb37808b2e447eea6a89dda4a003d2eb5c4816510a0d0aba4e` |
+| Pocket4 双 agent 当前原生 selector 30/30 | `79e232c4282796ffb07c174fbc32c5e4a4cb5f87167ec42851fd042cc8a8f3ea` |
+| CI 41792816829 attempt 1 关闭边界 | `48e0d207f3a2939994204d1836015818d1f60a525fc641928b8717a94f382ce5` |
+| 新 33cafa 三机原 128 项完整 assessment | `30f3f88667cfb876833d4c84347c40ca9c20fc91c08e4f1d812cdf41b11cda4f` |
+| 新 33cafa 三机原始失败 summary | `41af5de59863ec2d430674d0b6272b040276d2777dda383a25a2e195cdab9f44` |
+| CI 41792816829 attempt 2 关闭边界 | `fc149d259198ed285dbdab51c3fd72848b2be3157f3666535ac4baf439f65770` |
 
 原始失败回执均保留，包括构建环境选择错误、选错旧版 oracle observer、SDK 回滚检查点与持久化状态不一致，以及网关首次业务派发前的隔离环境限制。修复后的通过结果没有覆盖原始失败记录。
 
