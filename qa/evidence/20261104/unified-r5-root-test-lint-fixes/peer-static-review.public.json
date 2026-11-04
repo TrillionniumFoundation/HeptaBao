@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.r5-peer-test-lint-static-review.v1",
+  "source_commit": "63ad2172a1e93dd9d70234753cbd3c80b0a9b804",
+  "clock_production_prefix_identical": true,
+  "frozen_some_none_wire_literals_identical": true,
+  "clock_test_count_unchanged": true,
+  "prefetch_exact_two_injections_plus_comments": true,
+  "panic_hook_invocation_preserved": false,
+  "panic_hook_required_by_these_test_assertions": false,
+  "actual_unwind_cleanup_and_join_remain_under_test": true,
+  "remaining_runtime_gate": "Run the actual strict Clippy and full workspace tests on the combined frozen candidate.",
+  "qualified_runtime_pass": false
+}

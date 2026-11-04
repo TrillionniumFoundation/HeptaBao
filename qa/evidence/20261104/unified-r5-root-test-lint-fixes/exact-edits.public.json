@@ -1,0 +1,22 @@
+[
+  {
+    "file": "service_native_ssh_tests.rs",
+    "before": "        )\n        .expect(\"actual token revocation\");\n        status(&revoked, 204);",
+    "after": "        );\n        assert!(\n            matches!(revoked, Ok(response) if response.status == 204),\n            \"actual token revocation must return HTTP 204\"\n        );"
+  },
+  {
+    "file": "service_native_ssh_tests.rs",
+    "before": "            service\n                .state\n                .as_ref()\n                .expect(\"state\")\n                .engines\n                .native_ssh_signature_count(\"ssh/\"),\n            Some(1)",
+    "after": "            service\n                .state\n                .as_ref()\n                .map(|state| state.engines.native_ssh_signature_count(\"ssh/\")),\n            Some(Some(1))"
+  },
+  {
+    "file": "service_native_ssh_tests.rs",
+    "before": "        status(\n            &call(\n                service,\n                &mut hook_now,\n                &revoke_root,\n                \"POST\",\n                \"auth/token/revoke\",\n                json!({\"token\":revoke_actor.as_str()}),\n            )\n            .expect(\"actual issuer revoke\"),\n            204,\n        );",
+    "after": "        let revoked = call(\n            service,\n            &mut hook_now,\n            &revoke_root,\n            \"POST\",\n            \"auth/token/revoke\",\n            json!({\"token\":revoke_actor.as_str()}),\n        );\n        assert!(\n            matches!(revoked, Ok(response) if response.status == 204),\n            \"actual issuer revocation must return HTTP 204\"\n        );"
+  },
+  {
+    "file": "service_native_kv1_signed_lease_tests.rs",
+    "before": "fn signed_fixture() -> Result<\n    (\n        crate::service::tests::Root,\n        Service,\n        Zeroizing<String>,\n        Zeroizing<String>,\n    ),\n    Box<dyn std::error::Error>,\n> {",
+    "after": "type SignedKv1Fixture = (\n    crate::service::tests::Root,\n    Service,\n    Zeroizing<String>,\n    Zeroizing<String>,\n);\n\nfn signed_fixture() -> Result<SignedKv1Fixture, Box<dyn std::error::Error>> {"
+  }
+]

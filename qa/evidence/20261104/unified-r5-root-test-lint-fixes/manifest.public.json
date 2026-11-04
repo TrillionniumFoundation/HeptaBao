@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.root-test-only-lint-repair.v1",
+  "baseline_checkpoint": "a4f5e301a3e701575abfe5bae7f45fb0a6b82b5e",
+  "actual_source_commit": "d9c16a172cbc329fc90d857b0a2d32ff4eb81e9a",
+  "actual_source_tree": "e991b9948214bca1192e62638d429ecebad4de59",
+  "files": [
+    {
+      "name": "service_native_ssh_tests.rs",
+      "sha256": "064a0bdfbc96bbb729006eec0c7a57c1a4227e33d30c7881c0a68b9d50faf34b",
+      "git_blob_sha": "b46753135554cc05100471e81c72b8d0782b5a54",
+      "bytes": 36418,
+      "baseline_sha256": "55574d4f306d8a99011523cd2382d6edf8c93d716700c008a80b6a0c799595f8"
+    },
+    {
+      "name": "service_native_kv1_signed_lease_tests.rs",
+      "sha256": "34cd13e792a3265cce9f2fb575f3b73b8caa92c614c3fd83bf16e6eca0b466ba",
+      "git_blob_sha": "ec8069ce19757116e45f9e2d5ea89c174c61affe",
+      "bytes": 28150,
+      "baseline_sha256": "e39a674e7c29548f0df03f8ba6eca6747bdfba0e6ed5659b1000bb0624fa4f9e"
+    }
+  ],
+  "scope": "Three SSH test expects and one KV1 fixture tuple type; no production behavior, hook signature, actor, deadline, credential or state owner changes.",
+  "assertions": {
+    "revocation_requires_actual_ok_http204": true,
+    "state_and_signature_count_both_required": true,
+    "kv1_tuple_order_and_ownership_unchanged": true,
+    "tests_ignored_and_lint_allows_unchanged": true
+  },
+  "validation": {
+    "static_review": true,
+    "rustfmt_run": false,
+    "strict_clippy_passed": false,
+    "runtime_tests_passed": false
+  }
+}
