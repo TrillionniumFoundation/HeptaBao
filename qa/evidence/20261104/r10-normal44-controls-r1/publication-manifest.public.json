@@ -1,0 +1,308 @@
+{
+  "schema": "heptabao.r10-controller-and-r9-source-export-publication.v1",
+  "as_of_utc": "2026-11-04T18:04:23Z",
+  "parent_commit": "1197a56a396e8b6aee2928c2503983cba9e2ce19",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "scope": "complete source controllers, real format/AST checks and R9 offline export; no R10 build/test or Mac import PASS",
+  "r9_normal44_failure_preserved": true,
+  "all_older_unrelated_blobs_preserved": true,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "files": [
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/candidate/normal-r10-source-stager-r1.py",
+      "bytes": 27150,
+      "sha256": "90bc84593ba4a2845cbce6141277e22e01dfc9be3fce126a31448a9428f8c990",
+      "git_blob": "3b012a9df21060bf582e97da537ff9c9bcc9027d",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/candidate/normal-r10-launcher-r1.py",
+      "bytes": 20167,
+      "sha256": "d1542351492f9efb41ba18c3b25e9548be7eb658db5cb13c5b4bf80f097a55ad",
+      "git_blob": "af34201f8930265a8813028ba6cc21a07166e43d",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/candidate/linux_normal_release_and_tests_r10.py",
+      "bytes": 16900,
+      "sha256": "7aa39562fde6d96eeca9b1d0e53f600c9629de09613d052fad8e68e9c734d176",
+      "git_blob": "686b824755f193e4ae777de22fb682d9510528a2",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/candidate/mac_normal_exact_tests_r10.py",
+      "bytes": 16894,
+      "sha256": "f925684275b42215300fa91f9b90478c75b822ce2d6f2e4be165b5e8e44e353d",
+      "git_blob": "031ab151262f50ed7db4ecad16cb9c04750c5930",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/original/normal-r9-source-stager-r3.py",
+      "bytes": 18846,
+      "sha256": "1cbe3b54397ab268a1d6239b0021f500146cd3fbcd4bfb05d289f588f84c313b",
+      "git_blob": "8770b5cc7bb213fc60489af95ca0ca9a96aba296",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/original/normal-r9-launcher-r1.py",
+      "bytes": 13252,
+      "sha256": "37aeb8588653bb19ac4658d9e24ccaa1b81035bb74cd4a3da10fdbfdfb8ac646",
+      "git_blob": "1fbeb20df69cb3f1f6f20bb14e7d5a610afc8b11",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/original/linux_normal_release_and_tests_r9.py",
+      "bytes": 16898,
+      "sha256": "5811796d15ab79b7dd1f1c961eaf208fda1b0caa49f855dd03d22485c99afe7f",
+      "git_blob": "0f87eb0cf85e60a99ce9dece019aa91a9134c9d1",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/original/mac_normal_exact_tests_r9.py",
+      "bytes": 16892,
+      "sha256": "1ba4433d97a56730cbb9203566fc3303844424a7916f24d851778fb5a5e81640",
+      "git_blob": "c68ab6d5d37230ad91c6aecb24b72f1c4a26659a",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/original/normal-test-groups.public.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "git_blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/original/build_normal.py",
+      "bytes": 5473,
+      "sha256": "026aa2ab4a1af663424ae2d0dcc678a48c4f3b9ba0429574f4bb60345a83dea2",
+      "git_blob": "8d66cb160c8ea0dd5b15806d06884d690627a676",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/original/r8-normal-test-groups.public.json",
+      "bytes": 4648,
+      "sha256": "c725fd978f4d730b28cbf90335d8cc6e673003a5dc64b6fb965c7b1ae3485deb",
+      "git_blob": "9ae5eff463f8db0d419d6cd5e13e435b88ae0067",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/diffs/source-stager-r9-to-r10.diff",
+      "bytes": 20866,
+      "sha256": "c399c58f887f2205f579dcf23b69cdffcc997970e01ed919f21edd6f60ae1368",
+      "git_blob": "b01fb66290ce4ac21d10483787822e738e2e4a29",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/diffs/launcher-r9-to-r10.diff",
+      "bytes": 11922,
+      "sha256": "a620838affd7f70e0d6c6aea4fb4a6e808e3eee28aa34ca23f1f8ad4e262ad49",
+      "git_blob": "8bedfff97b191c78830342d0b64849a89d0f259c",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/diffs/linux-runner-r9-to-r10.diff",
+      "bytes": 1565,
+      "sha256": "0979d938a57eda3718e8ef3dfe88a76e3a91ee355595bfc40d9a5d9b08f25339",
+      "git_blob": "a7f23cce914da3ba110e45a1686cf13e737afd3a",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/diffs/mac-runner-r9-to-r10.diff",
+      "bytes": 1509,
+      "sha256": "48cd028743ef19fd3c878f23bdc0163f9f99e5b2c425cd51441df67a199063b2",
+      "git_blob": "587be3dc62d938dee0911c6599a1ff985cc08386",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/candidate/normal-test-groups.public.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "git_blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/payload/source-bundle.json",
+      "bytes": 70390,
+      "sha256": "18e15b9eb97587015eb27c65d0ecfb73b5c96e6e7c2ecf1a88f664a6176a7913",
+      "git_blob": "66229e8040befb81f78e064c1402df7e373b26df",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/source-invariance.public.json",
+      "bytes": 6965,
+      "sha256": "a72d150200d5cbbfcf78108949ddffbb34da188de3e51adc615d714d40b17bda",
+      "git_blob": "5ca58d85649db5a79b91b72e2b4028386c9d2e5e",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/README.md",
+      "bytes": 9274,
+      "sha256": "8017f9cf471779ab229cc62a16e061bab71b146d043a426472e7a953d2035937",
+      "git_blob": "09732143948bfd882a4da7be6d7ad0b5de5b9c19",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/review-manifest.public.json",
+      "bytes": 6729,
+      "sha256": "5a576554635e0d8c22d737ead04623a3f6a7b7f9884401729ec68105ccfe1490",
+      "git_blob": "fd5d0888f62985c61fd10a6e3c5262df8ccea475",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/root-full-source-review.public.json",
+      "bytes": 1959,
+      "sha256": "4d5a8223ef233d1f9e88a54e68a5c287dfaa4276df8bd47e0b3b47fc2f4689d1",
+      "git_blob": "d5db982938478c1a827d6edb65732ab5f8d827eb",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/root-ast.stdout",
+      "bytes": 7081,
+      "sha256": "849a67861a23f7acbd302adddbc0afeae3fefb28b1c26b3475cf383fd4004892",
+      "git_blob": "da76ce1c5396ab3bfbae5b3b60ce73ec93fbb7d9",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/root-ast-authority.public.json",
+      "bytes": 732,
+      "sha256": "d8579488ef2c8a4e3aff4f12971b98d00e9361f9399dabd59e0e7a637eda6be6",
+      "git_blob": "ea124362a52f91e62ab6bb60c3eb5b972dae604a",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/root-current-surface-scope.public.json",
+      "bytes": 659,
+      "sha256": "c9e9d33e2b3fa951e2e3c72f48f346a5864be12cdc0a63eedc8425e29b3cebeb",
+      "git_blob": "d00df4e76853505c711dda3b73fa39f23e4f2424",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-offline-canonical-export-r2/result.public.json",
+      "bytes": 44620,
+      "sha256": "3ad7930e965c305ce326d4f44c7844b4fc021f57ec20ea5c201329bcdb96c77a",
+      "git_blob": "4980578af91182dd72dc90851f08d10d3dfecd51",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-offline-canonical-export-r2/boundary.stdout",
+      "bytes": 740,
+      "sha256": "d01554e265441626e1443151a40698397350eea82660907c507aeb54ecd170bb",
+      "git_blob": "c08e190414e720d7abc642a559cb62213ed959c3",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-offline-canonical-export-r2/bundleInfo.public.json",
+      "bytes": 525,
+      "sha256": "848143c6f31541596637243065aa26ca950eb9ca70f139a9a3e8ba29ce462b00",
+      "git_blob": "b1dcdf62d4c9a57d37334f7763f63148dcaf4e6c",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-offline-canonical-export-r2/status.public.json",
+      "bytes": 730,
+      "sha256": "e33c8589e1d0bf6655b9a44e34cc8a528efb7991d2f2fcb22014bb000d610373",
+      "git_blob": "f3104958e66958fefc09f7698959c117ff88059d",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-offline-canonical-export-r2/terminal.public.json",
+      "bytes": 527,
+      "sha256": "2b88458dfacfd4ae5c95ffef7c831a2c118c195f8f302af541f1d886151200c7",
+      "git_blob": "3d47976c89fb97f1a25ac89ef58cd568b59be044",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-offline-canonical-export-r2/manifest.public.json",
+      "bytes": 3227,
+      "sha256": "d1903d7ec716cab813fb64fc55a71eec351c943e5a85f79d87cc59af45f99721",
+      "git_blob": "2415ee7417e737edd44d9a913248557b82a159fa",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-offline-canonical-export-r2/root-whole-export-review.public.json",
+      "bytes": 1597,
+      "sha256": "72fbc348b9e422305e1e51f8f8e52054d1cc48dea23e04d41c0f558584bb2ce4",
+      "git_blob": "de74c4a920cff96b263b9514b9debdfec4a6e1b8",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-canonical-bundle-ssh-source-r1/relay.py",
+      "bytes": 13141,
+      "sha256": "14f6f1617b4194ec54fb69d6492cb74f16f6af7733e43dfd2a33e7cf93f80c47",
+      "git_blob": "8d6c900faaf655bee2ce42aa0c434455dae6974b",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-canonical-bundle-ssh-source-r1/sender.py",
+      "bytes": 5978,
+      "sha256": "e855a5deefe27ef4cbccc28e7e654c6c23d7ce0b86c3d8c5e5284c5228f2488b",
+      "git_blob": "29492d05b7a1a1647e2d04162338a3569309243f",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-canonical-bundle-ssh-source-r1/receiver.py",
+      "bytes": 6965,
+      "sha256": "28b594cd10f9a15633ce54eaf8ab66d8d789f55543e47bb3b5e842bc1fb46e99",
+      "git_blob": "26968e1ddbc0b049bce39484bdf7d292f8b2949a",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-canonical-bundle-ssh-source-r1/original-success-launcher.py",
+      "bytes": 12409,
+      "sha256": "c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e",
+      "git_blob": "4bff25328e6b212399e173da0b625cf27869da7e",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-canonical-bundle-ssh-source-r1/previous-mcp-upload-abort.api.json",
+      "bytes": 17,
+      "sha256": "68bc6d76bcc39e33df91a8a3dbfe53855410faf1712896152164d53f1904bddb",
+      "git_blob": "e81697a28b4021ab8e88c95cd07189cd24d688e5",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-canonical-bundle-ssh-source-r1/manifest.public.json",
+      "bytes": 3055,
+      "sha256": "2c540501e97ce6eb2bdda391fb904245f4cad100c77d59c107ced9250fdfe68b",
+      "git_blob": "15ea154964a81b118d0df94cc61f51dde792060f",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/root-test-helper-source-and-format-review.public.json",
+      "bytes": 2298,
+      "sha256": "c1ab670b3b519da05c2807ed67dfc94c8e8d66438aa29f631d878d5f0360d27a",
+      "git_blob": "1115181d781740070ef594bc56397808b8f3be3a",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/r9-ci-terminal-jobs.public.json",
+      "bytes": 31010,
+      "sha256": "214acd885444a7fcebe9e27180c276a58a961436bd13d0f597005751e54ca921",
+      "git_blob": "b9c88bb04034632539be928060ca590b55ff2e4d",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r10-normal44-controls-r1/r10-ci-running-jobs.public.json",
+      "bytes": 29038,
+      "sha256": "3e32709296b47ff1fb5aa88a4f8775b739c7db95cb57cf091b82e5462941a747",
+      "git_blob": "0e492aa240d8cfa8a9194b425dd1858e7902566d",
+      "mode": "100644"
+    },
+    {
+      "path": "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+      "bytes": 89277,
+      "sha256": "77d6a346a1ffb7956382741eb5cf5592c9a6c4f0eef131558824ef108afc7946",
+      "git_blob": "276ab63dadab2954fd03e5ca93f99aa05afba2c1",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/36076-checkpoint.public.json",
+      "bytes": 136840,
+      "sha256": "f4317350fba0a0e81b95e42bb54646c5d6402b09ae17b50d5f429e045ec28f24",
+      "git_blob": "f51b86b775213387c35b0dea643ec764b3943f08",
+      "mode": "100644"
+    }
+  ]
+}

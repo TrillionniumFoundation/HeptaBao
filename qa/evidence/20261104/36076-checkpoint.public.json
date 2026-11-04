@@ -1,6 +1,6 @@
 {
   "schema": "heptabao.36076-and-33cafa-checkpoint.v4",
-  "as_of_utc": "2026-11-04T17:32:00Z",
+  "as_of_utc": "2026-11-04T18:04:23Z",
   "compiled_source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
   "compiled_source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95",
   "published_source_commit": "a5c05856f23c395e590fd4e6eeec02bb669a2aa9",
@@ -3270,5 +3270,47 @@
     "full_openbao_271_replacement": false,
     "production_cutover": false,
     "legacy_cleanup": false
+  },
+  "r10_source_and_controls_review_r1": {
+    "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "parent": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+    "source_change": "one cfg(test) native state witness helper only",
+    "product_source_changed": false,
+    "normal44_names_and_test_bodies_unchanged": true,
+    "helper_bytes": 16529,
+    "helper_sha256": "3c5e9b2e8f306786e1c5ce1ef1a02b5442bb1dc12e9de08bfed78e0dfcec808f",
+    "rustfmt_actual_pass": true,
+    "controller_ast_actual_pass": true,
+    "root_ast_job": "1a1a7b602b4-fc05-2c5c",
+    "unchanged_control_functions": 32,
+    "source_stage_approved_on_rog": true,
+    "normal_build_qualification": false,
+    "normal44_qualification": false,
+    "mac_canonical_resume_qualification": false,
+    "physical_lan_qualification": false,
+    "phase_b_qualification": false,
+    "full_replacement_qualification": false,
+    "evidence_prefix": "qa/evidence/20261104/r10-normal44-controls-r1/"
+  },
+  "r9_offline_canonical_export_r2": {
+    "status": "EXPORTED",
+    "job_id": "1a1a7a5d73d-fc05-2c13",
+    "exit_code": 0,
+    "canonical_commit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+    "canonical_tree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907",
+    "bundle_bytes": 1886365,
+    "bundle_sha256": "49060b399899b9904aded82973589837062dace090fcb43102fa862a5ff7fb06",
+    "history_commits": 3751,
+    "anchor_commits": 3735,
+    "added_commits": 16,
+    "actual_prerequisites": [
+      "55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18",
+      "7a552330df821b358161628120a8b5d064f37367"
+    ],
+    "all_29_owned_commands_stopped": true,
+    "within_original_300_seconds": true,
+    "mac_import_qualification": false,
+    "evidence_prefix": "qa/evidence/20261104/r9-offline-canonical-export-r2/"
   }
 }

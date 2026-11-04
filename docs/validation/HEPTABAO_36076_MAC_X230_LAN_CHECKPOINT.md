@@ -1,6 +1,20 @@
 # HeptaBao：正常 V6 存储、三机 HA 与完整替代检查点
 
-## R9 最新终态：正式构建通过，精确回归 42/44，仍未准入
+## R10 当前进度：检查助手修正已发布，实际编译与运行尚未判定
+
+更新于 2026-11-04 18:04 UTC。当前 canonical 候选为 `49503322c7f446e5eb41e7744f1fdbd7f1192ecc`，tree=`1d4211f91e1b34a2ed087a3bbef2e2884bac88e9`，唯一父提交为 R9 `1d12abc45a83d4b32e7185d01a876eb93110b1e2`。本次仅修改一个 `cfg(test)` 状态检查助手：使用已有 checked native graph projection、完整元数据、KV1 root/key 以及 Zeroizing 的原生根编码见证；原有限令牌次数、耐久 generation、StateIdentity、pending delivery、原检查期限均保留。自 `finite_actor` 起的 12,674 字节、全部测试主体和 44 个测试名称没有改变。正式产品源码在 R9→R10 之间未改动。
+
+ROG 的真实 rustfmt stdin 检查完整返回原 16,529 字节，exit 0，无 stderr。新的两机控制包由根审阅者完整校验 19 份 payload 的字节数、SHA256 与 Git blob，并完整审阅 stager/launcher；两份 combined runner 只变更标题、固定 tree、回执 schema 三行。独立 ROG Python AST 作业 `1a1a7b602b4-fc05-2c5c` 实际 exit 0，完整持久化 7,081 字节输出，9 个文件语法通过，32 个原函数的完整源码内容相同；没有执行被解析的脚本，也没有写文件。以上是源代码和控制包检查，**不是 Cargo 编译或 44 项测试通过**。[完整控制包及范围](../../qa/evidence/20261104/r10-normal44-controls-r1/README.md)与[根审阅](../../qa/evidence/20261104/r10-normal44-controls-r1/root-full-source-review.public.json)保留精确绑定。
+
+ROG 的 R9 离线 canonical 导出已实际完成：作业 `1a1a7a5d73d-fc05-2c13` exit 0、输出完整持久化、300 秒原期限内发布；29 个 Git 受控命令均回收无残留。完整历史 3,751 个提交；相对真实 3,735 提交 anchor 的 16 个新增提交产生两个真实 bundle prerequisites。导出文件为 1,886,365 字节，SHA256=`49060b399899b9904aded82973589837062dace090fcb43102fa862a5ff7fb06`。[原导出回执](../../qa/evidence/20261104/r9-offline-canonical-export-r2/result.public.json)和[独立根审阅](../../qa/evidence/20261104/r9-offline-canonical-export-r2/root-whole-export-review.public.json)已保留；Mac 接收和 canonical 导入此时尚无通过结论。Mac 未进行 R9 编译，计划恢复 canonical R9 后直接准备 R10。
+
+新 R10 CI `41879510413` 的 head 与 prospective merge 两项均已进入完整 locked Rust workspace 测试，尚无终态。旧 R9 CI `41869016900` 的两项实际终态为 cancelled，其汇总门禁因 cancelled matrix 失败；不能将该终态写成 Clippy 通过或某项代码断言失败。
+
+后续正常构建保持原 Rust 1.98.0、release profile、默认 native-v6-storage/native-v6-ha、原 Linux/Mac 编译并发和期限、原 6 组 44 项及每组 600 秒上限。ROG 新 clone 必须校验 canonical R10 唯一父提交、完整 3,751→3,752 历史与 strict fsck；Mac 仅允许导入已实测绑定 SHA 的单提交 bundle。旧 R9 42/44 失败和 Mac 原 90 秒 fetch 失败均独立保留。
+
+**当前没有 R10 正常构建、真实三机 LAN、官方 CLI Phase B 或 native snapshot relay 的通过证据。完整 59 面准入、正式生产切流、所有客户端与备份迁移和旧版删除仍开放。** 此段为新的进度记录，下列 R9 与更早证据均保留原候选和原时间范围。
+
+## R9 归档终态：正式构建通过，精确回归 42/44，仍未准入
 
 更新于 2026-11-04 17:32 UTC。当前候选源码为 `1d12abc45a83d4b32e7185d01a876eb93110b1e2`，tree=`e1faeaa3ed49d26fb01a7617a8879cb693a12907`。下文较早的正常三机 128/128、方向 98/98 和 R8 结果继续保留其原候选绑定，不能转记为 R9 通过。
 

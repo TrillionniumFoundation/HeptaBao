@@ -1,0 +1,67 @@
+{
+  "schema": "heptabao.root.r10-controller-source-review.v1",
+  "sourceTree": "7172de5a1745abbe48dd74b19df6f8732b974d8d",
+  "productCommit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "all19PayloadsWholeShaAndGitBlobVerified": true,
+  "stagerFullyRead": true,
+  "launcherFullyRead": true,
+  "wholeRunnerOnlyThreeLineReversalsVerified": true,
+  "payloadReview": {
+    "schema": "heptabao.r10-reviewed-independent-source-bundle.v1",
+    "baseTree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907",
+    "expectedTree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "onlyCandidateExact": true,
+    "groupsExact": true,
+    "linuxExact": true,
+    "macExact": true,
+    "oldGroupsExact": true,
+    "oldBuilderExact": true
+  },
+  "ast": {
+    "jobId": "1a1a7b602b4-fc05-2c5c",
+    "authority": {
+      "at_unix_ms": 1793815087078,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a7b602b4-fc05-2c5c",
+      "launch_nonce": "1f42c3f5e79eda4c135d277f27fd9f22",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 7081,
+          "stored": 7081
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "stdoutBytes": 7081,
+    "stdoutSha256": "849a67861a23f7acbd302adddbc0afeae3fefb28b1c26b3475cf383fd4004892",
+    "sourceFilesParsed": 9,
+    "existingFunctionsExact": 32
+  },
+  "sourceStageApprovedOnROG": true,
+  "buildNotYetStarted": true,
+  "macBlockedOnActualCanonicalR2Resume": true
+}

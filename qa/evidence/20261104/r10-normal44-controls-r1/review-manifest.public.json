@@ -1,0 +1,189 @@
+{
+  "schema": "heptabao.r10-normal44-controller-review.v1",
+  "scope": "source_only_no_runtime_or_branch_mutation",
+  "product": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "parent": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+    "parent_tree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907",
+    "changed_files": 1,
+    "changed_file": "crates/heptabao-server/src/service_no_forwarding_ha_tests.rs",
+    "changed_file_sha256": "3c5e9b2e8f306786e1c5ce1ef1a02b5442bb1dc12e9de08bfed78e0dfcec808f"
+  },
+  "files": [
+    {
+      "path": "candidate/normal-r10-source-stager-r1.py",
+      "bytes": 27150,
+      "sha256": "90bc84593ba4a2845cbce6141277e22e01dfc9be3fce126a31448a9428f8c990",
+      "git_blob": "3b012a9df21060bf582e97da537ff9c9bcc9027d",
+      "byte_exact": true
+    },
+    {
+      "path": "candidate/normal-r10-launcher-r1.py",
+      "bytes": 20167,
+      "sha256": "d1542351492f9efb41ba18c3b25e9548be7eb658db5cb13c5b4bf80f097a55ad",
+      "git_blob": "af34201f8930265a8813028ba6cc21a07166e43d",
+      "byte_exact": true
+    },
+    {
+      "path": "candidate/linux_normal_release_and_tests_r10.py",
+      "bytes": 16900,
+      "sha256": "7aa39562fde6d96eeca9b1d0e53f600c9629de09613d052fad8e68e9c734d176",
+      "git_blob": "686b824755f193e4ae777de22fb682d9510528a2",
+      "byte_exact": true
+    },
+    {
+      "path": "candidate/mac_normal_exact_tests_r10.py",
+      "bytes": 16894,
+      "sha256": "f925684275b42215300fa91f9b90478c75b822ce2d6f2e4be165b5e8e44e353d",
+      "git_blob": "031ab151262f50ed7db4ecad16cb9c04750c5930",
+      "byte_exact": true
+    },
+    {
+      "path": "original/normal-r9-source-stager-r3.py",
+      "bytes": 18846,
+      "sha256": "1cbe3b54397ab268a1d6239b0021f500146cd3fbcd4bfb05d289f588f84c313b",
+      "git_blob": "8770b5cc7bb213fc60489af95ca0ca9a96aba296",
+      "byte_exact": true
+    },
+    {
+      "path": "original/normal-r9-launcher-r1.py",
+      "bytes": 13252,
+      "sha256": "37aeb8588653bb19ac4658d9e24ccaa1b81035bb74cd4a3da10fdbfdfb8ac646",
+      "git_blob": "1fbeb20df69cb3f1f6f20bb14e7d5a610afc8b11",
+      "byte_exact": true
+    },
+    {
+      "path": "original/linux_normal_release_and_tests_r9.py",
+      "bytes": 16898,
+      "sha256": "5811796d15ab79b7dd1f1c961eaf208fda1b0caa49f855dd03d22485c99afe7f",
+      "git_blob": "0f87eb0cf85e60a99ce9dece019aa91a9134c9d1",
+      "byte_exact": true
+    },
+    {
+      "path": "original/mac_normal_exact_tests_r9.py",
+      "bytes": 16892,
+      "sha256": "1ba4433d97a56730cbb9203566fc3303844424a7916f24d851778fb5a5e81640",
+      "git_blob": "c68ab6d5d37230ad91c6aecb24b72f1c4a26659a",
+      "byte_exact": true
+    },
+    {
+      "path": "original/normal-test-groups.public.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "git_blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f",
+      "byte_exact": true
+    },
+    {
+      "path": "original/build_normal.py",
+      "bytes": 5473,
+      "sha256": "026aa2ab4a1af663424ae2d0dcc678a48c4f3b9ba0429574f4bb60345a83dea2",
+      "git_blob": "8d66cb160c8ea0dd5b15806d06884d690627a676",
+      "byte_exact": true
+    },
+    {
+      "path": "original/r8-normal-test-groups.public.json",
+      "bytes": 4648,
+      "sha256": "c725fd978f4d730b28cbf90335d8cc6e673003a5dc64b6fb965c7b1ae3485deb",
+      "git_blob": "9ae5eff463f8db0d419d6cd5e13e435b88ae0067",
+      "byte_exact": true
+    },
+    {
+      "path": "diffs/source-stager-r9-to-r10.diff",
+      "bytes": 20866,
+      "sha256": "c399c58f887f2205f579dcf23b69cdffcc997970e01ed919f21edd6f60ae1368",
+      "git_blob": "b01fb66290ce4ac21d10483787822e738e2e4a29",
+      "byte_exact": true
+    },
+    {
+      "path": "diffs/launcher-r9-to-r10.diff",
+      "bytes": 11922,
+      "sha256": "a620838affd7f70e0d6c6aea4fb4a6e808e3eee28aa34ca23f1f8ad4e262ad49",
+      "git_blob": "8bedfff97b191c78830342d0b64849a89d0f259c",
+      "byte_exact": true
+    },
+    {
+      "path": "diffs/linux-runner-r9-to-r10.diff",
+      "bytes": 1565,
+      "sha256": "0979d938a57eda3718e8ef3dfe88a76e3a91ee355595bfc40d9a5d9b08f25339",
+      "git_blob": "a7f23cce914da3ba110e45a1686cf13e737afd3a",
+      "byte_exact": true
+    },
+    {
+      "path": "diffs/mac-runner-r9-to-r10.diff",
+      "bytes": 1509,
+      "sha256": "48cd028743ef19fd3c878f23bdc0163f9f99e5b2c425cd51441df67a199063b2",
+      "git_blob": "587be3dc62d938dee0911c6599a1ff985cc08386",
+      "byte_exact": true
+    },
+    {
+      "path": "candidate/normal-test-groups.public.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "git_blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f",
+      "byte_exact": true
+    },
+    {
+      "path": "payload/source-bundle.json",
+      "bytes": 70390,
+      "sha256": "18e15b9eb97587015eb27c65d0ecfb73b5c96e6e7c2ecf1a88f664a6176a7913",
+      "git_blob": "66229e8040befb81f78e064c1402df7e373b26df",
+      "byte_exact": true
+    },
+    {
+      "path": "source-invariance.public.json",
+      "bytes": 6965,
+      "sha256": "a72d150200d5cbbfcf78108949ddffbb34da188de3e51adc615d714d40b17bda",
+      "git_blob": "5ca58d85649db5a79b91b72e2b4028386c9d2e5e",
+      "byte_exact": true
+    },
+    {
+      "path": "README.md",
+      "bytes": 9274,
+      "sha256": "8017f9cf471779ab229cc62a16e061bab71b146d043a426472e7a953d2035937",
+      "git_blob": "09732143948bfd882a4da7be6d7ad0b5de5b9c19",
+      "byte_exact": true
+    }
+  ],
+  "profiles_and_budgets": {
+    "normal_default_features": true,
+    "fixture_features": [],
+    "rust": "1.98.0",
+    "linux_jobs": 1,
+    "mac_jobs": 2,
+    "release_build_seconds": 1800,
+    "linux_libtest_seconds": 3600,
+    "mac_libtest_seconds": 1800,
+    "listing_seconds": 30,
+    "each_group_seconds": 600,
+    "groups": 6,
+    "tests": 44,
+    "git_seconds": 90,
+    "local_clone_seconds": 180,
+    "mac_volume_guard_seconds": 30
+  },
+  "unexecuted_inputs": [
+    "Actual ROG exported R10 single-parent Git bundle bytes/SHA",
+    "Actual Mac R2 canonical resume result, terminal stdout and authority status SHA"
+  ],
+  "preserved_failures": {
+    "r9_linux": {
+      "status": "failed",
+      "passed": 42,
+      "failed": 2,
+      "result_sha256": "b4d3f25c0694dfa7cc24dd3d2a8bdf780ec9eb43716abb61a4581b26c8cc676f"
+    },
+    "mac_r9_build": "no artifact claim",
+    "r8_original_fences": "retained unchanged"
+  },
+  "review_limits": {
+    "python_ast_or_syntax_execution": false,
+    "host_source_or_files_mutated": false,
+    "compiler_started": false,
+    "tests_started": false,
+    "service_started": false,
+    "git_commit_created": false,
+    "git_ref_updated": false,
+    "readback_all_19_payloads_byte_exact": true
+  }
+}

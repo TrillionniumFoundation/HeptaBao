@@ -1,0 +1,357 @@
+diff --git a/normal_source_stager.py b/normal_source_stager.py
+--- a/normal_source_stager.py
++++ b/normal_source_stager.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Materialize one reviewed R9 tree in a new independent local checkout."""
++"""Materialize canonical R10 in a fresh clone; Mac imports one fixed local bundle."""
+ from pathlib import Path, PurePosixPath
+ import argparse
+ import hashlib
+@@ -19,23 +19,26 @@
+     parser.add_argument('--' + name, required=True)
+ for name in ('bundle-bytes', 'expanded-bytes'):
+     parser.add_argument('--' + name, type=int, required=True)
++parser.add_argument('--canonical-bundle')
++parser.add_argument('--canonical-bundle-bytes', type=int)
++parser.add_argument('--canonical-bundle-sha256')
+ args = parser.parse_args()
+ profiles = {
+     'mac': {
+         'system': ('Darwin', 'arm64'), 'uid': 501,
+         'base': '/Volumes/T5/hepta-vnext-recovery-20261013',
+-        'old': 'continuation-20261104-native-ssh-http-r8/source',
+-        'root': 'continuation-20261104-native-http-r9',
+-        'bundle': 'continuation-20261104-native-http-r9.bundle.zlib',
+-        'commit': '2d9a2efd4cfc3a9ee60a450eee58866828a3f5ad',
++        'old': 'continuation-20261104-native-http-r9/source',
++        'root': 'continuation-20261104-native-http-r10',
++        'bundle': 'continuation-20261104-native-http-r10.bundle.zlib',
++        'commit': '1d12abc45a83d4b32e7185d01a876eb93110b1e2',
+     },
+     'rog': {
+         'system': ('Linux', 'x86_64'), 'uid': 1000,
+         'base': '/home/qian-qi/heptabao-native-ssh-owner-20261104-r1',
+-        'old': 'source-r8-test-fixtures-r1',
+-        'root': 'r9-http-routing-r1',
+-        'bundle': 'normal-r9-source.bundle.zlib',
+-        'commit': '384c957612186d64c5a530044af0ae62c568cc3d',
++        'old': 'r9-http-routing-r1/source',
++        'root': 'r10-native-state-helper-r1',
++        'bundle': 'normal-r10-source.bundle.zlib',
++        'commit': '1d12abc45a83d4b32e7185d01a876eb93110b1e2',
+     },
+ }
+ profile = profiles[args.host]
+@@ -44,9 +47,19 @@
+ ROOT = BASE / profile['root']
+ SOURCE = ROOT / 'source'
+ CONTROL = ROOT / 'control'
+-BASE_TREE = 'd5a0f91a4d47f7c8d5f34170ea167d10dc036e04'
+-CANONICAL_COMMIT = '1d12abc45a83d4b32e7185d01a876eb93110b1e2'
+-CANONICAL_TREE = 'e1faeaa3ed49d26fb01a7617a8879cb693a12907'
++BASE_TREE = 'e1faeaa3ed49d26fb01a7617a8879cb693a12907'
++CANONICAL_COMMIT = '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
++CANONICAL_TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
++ROOT_COMMIT = '67d79b3b5442ed033d38929eab2010403463e56d'
++BASE_COUNT, CANONICAL_COUNT = 3751, 3752
++CHANGED_PATH = 'crates/heptabao-server/src/service_no_forwarding_ha_tests.rs'
++CHANGED_BEFORE = '5614d8249c36d66fa037238f36e40360d7b45593'
++CHANGED_AFTER = '89da5923651abd6d8ea87479bb66520375f7fe3d'
++CHANGED_SHA256 = '3c5e9b2e8f306786e1c5ce1ef1a02b5442bb1dc12e9de08bfed78e0dfcec808f'
++CANONICAL_BUNDLE_NAME = 'canonical-r10-from-r9.bundle'
++MAX_CANONICAL_BUNDLE = 4 * 1024 * 1024
++created_control = False
++prewrite_guard_record = None
+ children = []
+ protected = 0
+ pending_signal = None
+@@ -163,7 +176,9 @@
+ environment = dict(os.environ)
+ environment.update({'GIT_CONFIG_NOSYSTEM': '1', 'GIT_CONFIG_GLOBAL': '/dev/null',
+                     'GIT_TERMINAL_PROMPT': '0', 'GIT_OPTIONAL_LOCKS': '0',
+-                    'LANG': 'C', 'LC_ALL': 'C'})
++                    'LANG': 'C', 'LC_ALL': 'C', 'GIT_NO_LAZY_FETCH': '1',
++                    'GIT_NO_REPLACE_OBJECTS': '1',
++                    'GIT_ALLOW_PROTOCOL': 'file' if args.host == 'mac' else 'file:https'})
+ for key in list(environment):
+     if key in ('GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE', 'GIT_OBJECT_DIRECTORY',
+                'GIT_ALTERNATE_OBJECT_DIRECTORIES', 'GIT_CONFIG_COUNT') or key.startswith('GIT_CONFIG_KEY_') or key.startswith('GIT_CONFIG_VALUE_'):
+@@ -215,9 +230,88 @@
+ def git(path, *command):
+     return owned('git-' + command[0], ['/usr/bin/git', '-c', 'gc.auto=0',
+         '-c', 'maintenance.auto=false', '-c', 'core.hooksPath=' + str(CONTROL / 'empty-hooks'),
++        '-c', 'core.fsmonitor=false', '-c', 'log.showSignature=false',
++        '-c', 'protocol.allow=never', '-c', 'protocol.file.allow=always',
++        '-c', 'protocol.https.allow=' + ('never' if args.host == 'mac' else 'always'),
+         '-C', str(path), *command])
+ 
+ 
++def prewrite_volume_guard():
++    # Original diskutil 30-second cap, with the same protected Popen/owned group.
++    # No path on the candidate volume is written until its exact UUID is known.
++    global protected, prewrite_guard_record
++    argv = ['/usr/sbin/diskutil', 'info', '-plist', '/Volumes/T5']
++    prefix = '%03d-t5-volume-identity' % len(children)
++    start = time.monotonic()
++    timed_out = False
++    protected += 1
++    try:
++        process = subprocess.Popen(argv, env=environment, stdin=subprocess.DEVNULL,
++                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE,
++                                   start_new_session=True)
++        children.append((prefix, process))
++    finally:
++        protected -= 1
++    if pending_signal is not None:
++        raise Cancelled()
++    try:
++        out, err = process.communicate(timeout=30)
++    except subprocess.TimeoutExpired:
++        timed_out = True
++        stop_owned(process)
++        out, err = process.communicate(timeout=5)
++    finally:
++        if process.poll() is None:
++            stop_owned(process)
++    remaining = group_members(process.pid)
++    assert len(out) <= 65536 and len(err) <= 65536
++    receipt = {'argv': argv, 'exit_code': process.returncode, 'timed_out': timed_out,
++               'elapsed_seconds': time.monotonic() - start, 'limit_seconds': 30,
++               'pid': process.pid, 'direct_child_reaped': process.returncode is not None,
++               'remaining': remaining, 'stdout_sha256': digest(out), 'stderr_sha256': digest(err)}
++    prewrite_guard_record = (prefix, out, err, receipt)
++    assert process.returncode == 0 and not timed_out and not remaining
++    info = plistlib.loads(out)
++    assert info.get('VolumeUUID') == 'FB804D1B-24CB-4D6E-AEA7-A9E180807758'
++    return info['VolumeUUID']
++
++
++def canonical_bundle_header(raw):
++    end = raw.find(b'\n\n', 0, 65536)
++    assert end > 0 and raw[end + 2:end + 6] == b'PACK'
++    lines = raw[:end].split(b'\n')
++    assert lines.pop(0) == b'# v2 git bundle'
++    prerequisites, heads = [], []
++    for line in lines:
++        if line.startswith(b'-'):
++            object_id, separator, _message = line[1:].partition(b' ')
++            assert separator
++            prerequisites.append(object_id.decode('ascii'))
++        else:
++            object_id, separator, name = line.partition(b' ')
++            assert separator
++            heads.append([object_id.decode('ascii'), name.decode('ascii')])
++    assert prerequisites == [profile['commit']]
++    assert heads == [[CANONICAL_COMMIT, 'HEAD']]
++    return {'version': 2, 'prerequisites': prerequisites, 'heads': heads,
++            'header_sha256': digest(raw[:end + 2])}
++
++
++def prove_canonical():
++    assert git(SOURCE, 'cat-file', '-t', CANONICAL_COMMIT).decode().strip() == 'commit'
++    assert git(SOURCE, 'rev-parse', CANONICAL_COMMIT + '^{tree}').decode().strip() == CANONICAL_TREE
++    assert git(SOURCE, 'show', '-s', '--format=%P', CANONICAL_COMMIT).decode().strip() == profile['commit']
++    assert git(SOURCE, 'rev-list', '--count', profile['commit']).decode().strip() == str(BASE_COUNT)
++    assert git(SOURCE, 'rev-list', '--count', CANONICAL_COMMIT).decode().strip() == str(CANONICAL_COUNT)
++    assert git(SOURCE, 'rev-list', '--max-parents=0', CANONICAL_COMMIT).decode().strip() == ROOT_COMMIT
++    added = git(SOURCE, 'rev-list', CANONICAL_COMMIT, '^' + profile['commit']).decode().splitlines()
++    assert added == [CANONICAL_COMMIT]
++    git(SOURCE, 'fsck', '--full', '--strict', '--no-reflogs', '--no-dangling', CANONICAL_COMMIT)
++    return {'commit': CANONICAL_COMMIT, 'tree': CANONICAL_TREE,
++            'sole_parent': profile['commit'], 'base_commit_count': BASE_COUNT,
++            'commit_count': CANONICAL_COUNT, 'added_commits': added, 'full_fsck_passed': True}
++
++
+ def freeze(path):
+     return {'commit': git(path, 'rev-parse', 'HEAD').decode().strip(),
+             'tree': git(path, 'rev-parse', 'HEAD^{tree}').decode().strip(),
+@@ -237,32 +331,49 @@
+ assert len(expanded) == args.expanded_bytes and digest(expanded) == args.expanded_sha256
+ bundle = json.loads(expanded)
+ assert set(bundle) == {'schema', 'base_tree', 'expected_tree', 'files', 'controls', 'expected_groups'}
+-assert bundle['schema'] == 'heptabao.r9-reviewed-independent-source-bundle.v1'
++assert bundle['schema'] == 'heptabao.r10-reviewed-independent-source-bundle.v1'
+ assert bundle['base_tree'] == BASE_TREE and bundle['expected_tree'] == args.expected_tree == CANONICAL_TREE
+ assert not ROOT.exists() and not ROOT.is_symlink()
+-ROOT.mkdir(mode=0o700)
+-CONTROL.mkdir(mode=0o700)
+-(CONTROL / 'empty-hooks').mkdir(mode=0o700)
+-(CONTROL / 'empty-template').mkdir(mode=0o700)
+-result = {'schema': 'heptabao.r9-independent-source-stage-result.v1', 'status': 'failed',
++result = {'schema': 'heptabao.r10-independent-source-stage-result.v1', 'status': 'failed',
+           'host': args.host, 'root': str(ROOT), 'source': str(SOURCE),
+           'base_commit': profile['commit'], 'base_tree': BASE_TREE,
+           'expected_tree': args.expected_tree, 'bundle_sha256': args.bundle_sha256,
+           'expanded_sha256': args.expanded_sha256, 'stager_sha256': digest(Path(__file__).read_bytes()),
+           'started_ns': time.time_ns(), 'server_started': False, 'compiler_started': False,
+           'production_changed': False, 'source_qualification': False}
+-public(CONTROL / 'stage-intent.public.json', result)
+ try:
+     if args.host == 'mac':
+-        info = plistlib.loads(owned('t5-volume-identity',
+-            ['/usr/sbin/diskutil', 'info', '-plist', '/Volumes/T5'], 30))
+-        assert info.get('VolumeUUID') == 'FB804D1B-24CB-4D6E-AEA7-A9E180807758'
+-        result['external_volume_uuid'] = info['VolumeUUID']
++        result['external_volume_uuid'] = prewrite_volume_guard()
++        assert args.canonical_bundle == str(BASE / CANONICAL_BUNDLE_NAME)
++        assert isinstance(args.canonical_bundle_bytes, int) and 0 < args.canonical_bundle_bytes <= MAX_CANONICAL_BUNDLE
++        assert isinstance(args.canonical_bundle_sha256, str) and len(args.canonical_bundle_sha256) == 64
++        canonical_path = Path(args.canonical_bundle)
++        canonical_raw = stable_read(canonical_path, MAX_CANONICAL_BUNDLE,
++                                    args.canonical_bundle_bytes, args.canonical_bundle_sha256)
++        canonical_identity = identity(canonical_path.lstat())
++        assert stat.S_IMODE(canonical_path.stat().st_mode) == 0o600
++        canonical_header = canonical_bundle_header(canonical_raw)
++    else:
++        assert args.canonical_bundle is None and args.canonical_bundle_bytes is None and args.canonical_bundle_sha256 is None
++    ROOT.mkdir(mode=0o700)
++    CONTROL.mkdir(mode=0o700)
++    created_control = True
++    (CONTROL / 'empty-hooks').mkdir(mode=0o700)
++    (CONTROL / 'empty-template').mkdir(mode=0o700)
++    if prewrite_guard_record is not None:
++        prefix, out, err, receipt = prewrite_guard_record
++        create(CONTROL / (prefix + '.stdout'), out)
++        create(CONTROL / (prefix + '.stderr'), err)
++        public(CONTROL / (prefix + '.public.json'), receipt)
++    public(CONTROL / 'stage-intent.public.json', result)
+     before = freeze(OLD)
+     assert before == {'commit': profile['commit'], 'tree': BASE_TREE, 'status': ''}
+     result['old_source_before'] = before
+     records = bundle['files']
+-    assert 1 <= len(records) <= 80 and len({x['path'] for x in records}) == len(records)
++    assert len(records) == 1 and records[0]['path'] == CHANGED_PATH
++    assert records[0]['before_mode'] == records[0]['after_mode'] == '100644'
++    assert records[0]['before_git_blob'] == CHANGED_BEFORE and records[0]['after_git_blob'] == CHANGED_AFTER
++    assert records[0]['after_sha256'] == CHANGED_SHA256 and records[0]['after_bytes'] == 16529
+     for record in records:
+         assert set(record) == {'path', 'before_mode', 'before_git_blob', 'after_mode',
+                                'after_git_blob', 'after_sha256', 'after_bytes', 'content'}
+@@ -279,8 +390,8 @@
+         else:
+             assert blob(stable_read(old_path, 2 * 1024 * 1024)) == record['before_git_blob']
+     controls = bundle['controls']
+-    expected_controls = {'build_normal.py', 'mac_normal_exact_tests_r9.py',
+-                         'linux_normal_release_and_tests_r9.py',
++    expected_controls = {'build_normal.py', 'mac_normal_exact_tests_r10.py',
++                         'linux_normal_release_and_tests_r10.py',
+                          'normal-test-groups.public.json', 'r8-normal-test-groups.public.json'}
+     assert set(controls) == expected_controls
+     for name, control in controls.items():
+@@ -291,12 +402,15 @@
+     original_groups = json.loads(controls['r8-normal-test-groups.public.json']['content'])
+     assert controls['r8-normal-test-groups.public.json']['sha256'] == 'c725fd978f4d730b28cbf90335d8cc6e673003a5dc64b6fb965c7b1ae3485deb'
+     groups = json.loads(controls['normal-test-groups.public.json']['content'])
+-    assert groups[:4] == original_groups and len(groups) <= 12
++    assert groups[:4] == original_groups and len(groups) == 6
++    assert controls['normal-test-groups.public.json']['sha256'] == '0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1'
+     assert [(x['label'], len(x['tests'])) for x in groups] == [tuple(x) for x in bundle['expected_groups']]
+     names = [name for group in groups for name in group['tests']]
+-    assert len(names) == len(set(names)) and all(x['runtime_seconds'] == 600 for x in groups)
++    assert len(names) == len(set(names)) == 44 and all(x['runtime_seconds'] == 600 for x in groups)
+     owned('independent-local-clone', ['/usr/bin/git', '-c', 'gc.auto=0',
+-        '-c', 'maintenance.auto=false', 'clone', '--no-checkout', '--no-hardlinks', '--local',
++        '-c', 'maintenance.auto=false', '-c', 'core.fsmonitor=false', '-c', 'log.showSignature=false',
++        '-c', 'protocol.allow=never', '-c', 'protocol.file.allow=always',
++        'clone', '--no-checkout', '--no-hardlinks', '--local',
+         '--template=' + str(CONTROL / 'empty-template'), str(OLD), str(SOURCE)], 180)
+     git(SOURCE, 'remote', 'set-url', 'origin', 'https://github.com/TrillionniumFoundation/HeptaBao.git')
+     assert git(SOURCE, 'remote', 'get-url', 'origin').decode().strip() == 'https://github.com/TrillionniumFoundation/HeptaBao.git'
+@@ -327,7 +441,7 @@
+         else:
+             assert not path.exists() and not path.is_symlink()
+         raw = record['content'].encode('utf-8')
+-        temporary = path.parent / ('.r9-reviewed-file-%02d' % number)
++        temporary = path.parent / ('.r10-reviewed-file-%02d' % number)
+         create(temporary, raw, 0o755 if record['after_mode'] == '100755' else 0o644)
+         os.replace(temporary, path)
+         fsync_dir(path.parent)
+@@ -338,16 +452,26 @@
+     assert git(SOURCE, 'write-tree').decode().strip() == args.expected_tree
+     git(SOURCE, '-c', 'user.name=Codex', '-c', 'user.email=codex@local.invalid',
+         '-c', 'commit.gpgsign=false', 'commit', '-m',
+-        'Bind native HTTP redirect ownership and complete bounded response framing r9')
++        'Materialize reviewed test-only native graph inspection helper r10')
+     materialized = freeze(SOURCE)
+     assert materialized['tree'] == args.expected_tree and materialized['status'] == ''
+-    # Use the same actual commit on both ABIs. The original HA QA requires one
+-    # source commit, not merely equal trees. Fetch only the reviewed commit into
+-    # this new independent clone; the old source remains read-only.
+-    git(SOURCE, 'fetch', '--no-tags', '--no-recurse-submodules',
+-        '--no-write-fetch-head', 'origin', CANONICAL_COMMIT)
+-    assert git(SOURCE, 'cat-file', '-t', CANONICAL_COMMIT).decode().strip() == 'commit'
+-    assert git(SOURCE, 'rev-parse', CANONICAL_COMMIT + '^{tree}').decode().strip() == CANONICAL_TREE
++    # One canonical identity on both ABIs. Only ROG may fetch this exact commit;
++    # Mac accepts the fixed single-parent bundle, never a public network fallback.
++    if args.host == 'rog':
++        git(SOURCE, 'fetch', '--no-tags', '--no-recurse-submodules',
++            '--no-write-fetch-head', 'origin', CANONICAL_COMMIT)
++    else:
++        assert identity(canonical_path.lstat()) == canonical_identity
++        assert stable_read(canonical_path, MAX_CANONICAL_BUNDLE,
++                           args.canonical_bundle_bytes, args.canonical_bundle_sha256) == canonical_raw
++        git(SOURCE, 'bundle', 'verify', str(canonical_path))
++        assert git(SOURCE, 'bundle', 'list-heads', str(canonical_path)).decode().strip() == CANONICAL_COMMIT + ' HEAD'
++        git(SOURCE, 'fetch', '--no-tags', '--no-recurse-submodules',
++            '--no-write-fetch-head', str(canonical_path), 'HEAD')
++        assert identity(canonical_path.lstat()) == canonical_identity
++        assert stable_read(canonical_path, MAX_CANONICAL_BUNDLE,
++                           args.canonical_bundle_bytes, args.canonical_bundle_sha256) == canonical_raw
++    result['canonical_proof'] = prove_canonical()
+     git(SOURCE, 'checkout', '--detach', CANONICAL_COMMIT)
+     after = freeze(SOURCE)
+     assert after == {'commit': CANONICAL_COMMIT, 'tree': CANONICAL_TREE, 'status': ''}
+@@ -355,6 +479,26 @@
+     result['canonical_source_commit'] = CANONICAL_COMMIT
+     result['canonical_source_tree'] = CANONICAL_TREE
+     result['canonical_fetch_in_new_clone_only'] = True
++    result['public_network_fetch_used'] = args.host == 'rog'
++    if args.host == 'rog':
++        canonical_path = CONTROL / CANONICAL_BUNDLE_NAME
++        assert not canonical_path.exists() and not canonical_path.is_symlink()
++        git(SOURCE, 'bundle', 'create', '--version=2', str(canonical_path),
++            'HEAD', '^' + profile['commit'])
++        canonical_raw = stable_read(canonical_path, MAX_CANONICAL_BUNDLE)
++        assert 0 < len(canonical_raw) <= MAX_CANONICAL_BUNDLE
++        canonical_header = canonical_bundle_header(canonical_raw)
++        fd = os.open(canonical_path, os.O_RDONLY | os.O_NOFOLLOW)
++        try:
++            os.fsync(fd)
++        finally:
++            os.close(fd)
++        fsync_dir(CONTROL)
++        git(SOURCE, 'bundle', 'verify', str(canonical_path))
++        assert git(SOURCE, 'bundle', 'list-heads', str(canonical_path)).decode().strip() == CANONICAL_COMMIT + ' HEAD'
++    result['canonical_bundle'] = {'path': str(canonical_path), 'bytes': len(canonical_raw),
++                                  'sha256': digest(canonical_raw), 'header': canonical_header}
++    assert freeze(SOURCE) == after
+     assert freeze(OLD) == before
+     result.update(status='prepared', source_commit=after['commit'], source_tree=after['tree'],
+                   source_clean=True, old_source_after=before, old_source_unchanged=True,
+@@ -382,12 +526,17 @@
+     if pending_signal is not None or any(x.get('cleanup_error') or x.get('remaining') or not x.get('direct_child_reaped') for x in cleanup):
+         result['status'] = 'failed'
+     result['terminal_ns'] = time.time_ns()
+-    public(CONTROL / 'stage-result.public.json', result)
+-    fsync_dir(ROOT)
+-    fsync_dir(BASE)
+-    print(json.dumps({'status': result['status'], 'receipt': str(CONTROL / 'stage-result.public.json'),
+-                      'receipt_sha256': digest((CONTROL / 'stage-result.public.json').read_bytes()),
+-                      'source_commit': result.get('source_commit'), 'source_tree': result.get('source_tree'),
+-                      'independent_git_directory': result.get('independent_git_directory', False),
+-                      'server_started': False, 'compiler_started': False}), flush=True)
++    if created_control:
++        public(CONTROL / 'stage-result.public.json', result)
++        fsync_dir(ROOT)
++        fsync_dir(BASE)
++    terminal = {'status': result['status'],
++                'receipt': str(CONTROL / 'stage-result.public.json') if created_control else None,
++                'receipt_sha256': digest((CONTROL / 'stage-result.public.json').read_bytes()) if created_control else None,
++                'source_commit': result.get('source_commit'), 'source_tree': result.get('source_tree'),
++                'independent_git_directory': result.get('independent_git_directory', False),
++                'server_started': False, 'compiler_started': False}
++    if not created_control:
++        terminal['unpublished_failed_result'] = result
++    print(json.dumps(terminal), flush=True)
+ raise SystemExit(0 if result['status'] == 'prepared' else 1)

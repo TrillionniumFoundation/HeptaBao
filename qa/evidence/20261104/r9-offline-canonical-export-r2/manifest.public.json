@@ -1,0 +1,81 @@
+{
+  "schema": "heptabao.r9.offline-export-evidence-draft.v1",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "job_id": "1a1a7a5d73d-fc05-2c13",
+  "files": [
+    {
+      "path": "export-result.public.json",
+      "bytes": 44620,
+      "sha256": "3ad7930e965c305ce326d4f44c7844b4fc021f57ec20ea5c201329bcdb96c77a",
+      "blob": "4980578af91182dd72dc90851f08d10d3dfecd51"
+    },
+    {
+      "path": "export-boundary.stdout",
+      "bytes": 740,
+      "sha256": "d01554e265441626e1443151a40698397350eea82660907c507aeb54ecd170bb",
+      "blob": "c08e190414e720d7abc642a559cb62213ed959c3"
+    },
+    {
+      "path": "bundle-file-info.api.json",
+      "bytes": 525,
+      "sha256": "848143c6f31541596637243065aa26ca950eb9ca70f139a9a3e8ba29ce462b00",
+      "blob": "b1dcdf62d4c9a57d37334f7763f63148dcaf4e6c"
+    },
+    {
+      "path": "export-job-status.api.json",
+      "bytes": 730,
+      "sha256": "e33c8589e1d0bf6655b9a44e34cc8a528efb7991d2f2fcb22014bb000d610373",
+      "blob": "f3104958e66958fefc09f7698959c117ff88059d"
+    },
+    {
+      "path": "export-terminal.stdout",
+      "bytes": 527,
+      "sha256": "2b88458dfacfd4ae5c95ffef7c831a2c118c195f8f302af541f1d886151200c7",
+      "blob": "3d47976c89fb97f1a25ac89ef58cd568b59be044"
+    }
+  ],
+  "assessment": {
+    "schema": "heptabao.r9.offline-export-readback.v1",
+    "job_id": "1a1a7a5d73d-fc05-2c13",
+    "result": {
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r9-http-routing-r1/control/canonical-export-r2/result.public.json",
+      "bytes": 44620,
+      "sha256": "3ad7930e965c305ce326d4f44c7844b4fc021f57ec20ea5c201329bcdb96c77a"
+    },
+    "checks": {
+      "authority_exit0": true,
+      "stdout_fully_read": true,
+      "terminal_publication_before_deadline": true,
+      "source_exact_before_after": true,
+      "all29commands": true,
+      "all29cleanup": true,
+      "full_graph_proof": true,
+      "boundary_exact16plus2": true,
+      "mac_cached_actual_graph_satisfies_prerequisites": true,
+      "bundle_independent_whole_sha": true,
+      "no_product_runtime": true
+    },
+    "bundle": {
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r9-http-routing-r1/control/canonical-export-r2/canonical-from-7a552330-r2.bundle",
+      "bytes": 1886365,
+      "sha256": "49060b399899b9904aded82973589837062dace090fcb43102fa862a5ff7fb06",
+      "version": "66306:28228563:1886365:1793814029233278292:1793814029235278291",
+      "prerequisites": [
+        "7a552330df821b358161628120a8b5d064f37367",
+        "55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18"
+      ]
+    },
+    "canonical_commit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+    "canonical_tree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907",
+    "all_owned_stopped": true,
+    "elapsed_after_publication_seconds": 2.1609295289963484,
+    "mac_import_executed": false,
+    "mac_cargo_executed": false,
+    "qualification": "Git-source-export-only"
+  },
+  "api_json_storage_note": "Tool returned public JSON text preserved; one terminating LF appended only if absent. Durable result and stdout bytes unchanged.",
+  "unreferenced_git_tree_only": true,
+  "binary_bundle_included": false,
+  "private_key_or_credential_included": false,
+  "mac_import_executed": false
+}

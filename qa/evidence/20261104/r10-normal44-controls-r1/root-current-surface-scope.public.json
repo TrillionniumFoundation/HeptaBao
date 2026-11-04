@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.root.current-whole-surface-status.v1",
+  "sourceCommit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "ledgerGitBlob": "279310f8e329aca3f4ad8ed3d7d1f730095258fd",
+  "ledgerSha256": "4c5056414e12294ef56754faaba2f56f8acd25628b0987f3f3a08cc03d110b09",
+  "ledgerHistoricalTarget": "OpenBao 2.6.2",
+  "currentGoal": "OpenBao 2.7.1 full replacement",
+  "counts": {
+    "runtime_complete": 2,
+    "runtime_partial": 52,
+    "tooling_partial": 5
+  },
+  "surfaces": 59,
+  "wholeSurfaceAdmitted": 0,
+  "notInferredFromHistoricalFixtures": true,
+  "productionCutoverAuthorizedByEvidence": false,
+  "oldSystemCleanupPermittedByEvidence": false
+}

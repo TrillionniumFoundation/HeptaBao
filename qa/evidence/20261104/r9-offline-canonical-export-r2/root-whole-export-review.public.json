@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.root.offline-r9-export-review.v1",
+  "jobId": "1a1a7a5d73d-fc05-2c13",
+  "sourceCommit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+  "sourceTree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907",
+  "controllerSha256": "0df1b75480e6145d9713f00c91580e30c8a6cf0789fec97b7ce842d60b0352c4",
+  "receiptSha256": "3ad7930e965c305ce326d4f44c7844b4fc021f57ec20ea5c201329bcdb96c77a",
+  "sourceBeforeAfterEqual": true,
+  "originalControllerSeconds": 300,
+  "originalGitSeconds": 90,
+  "all29CommandsAndCleanupVerified": true,
+  "newCommits": 16,
+  "priorAnchorClosureCommits": 3735,
+  "fullCommits": 3751,
+  "actualPrerequisites": [
+    "55f27e4258ea3f71ab7872cd7a44e8cbd4da1f18",
+    "7a552330df821b358161628120a8b5d064f37367"
+  ],
+  "bundle": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r9-http-routing-r1/control/canonical-export-r2/canonical-from-7a552330-r2.bundle",
+    "sha256": "49060b399899b9904aded82973589837062dace090fcb43102fa862a5ff7fb06",
+    "size": 1886365,
+    "version": "66306:28228563:1886365:1793814029233278292:1793814029235278291"
+  },
+  "actualAuthorityExit": 0,
+  "publicationWithinOriginalDeadline": true,
+  "macImportPerformed": false,
+  "cargoOrProductRuntimePerformed": false,
+  "admission": "source export and inert file transfer only"
+}

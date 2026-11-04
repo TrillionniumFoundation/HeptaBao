@@ -1,0 +1,69 @@
+{
+  "path": "crates/heptabao-server/src/service_no_forwarding_ha_tests.rs",
+  "baseCommit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+  "baseBlob": "5614d8249c36d66fa037238f36e40360d7b45593",
+  "baseSha256": "7e17709705a409e25a70c52c5bd694476d85ab330e7455aabeb3f46b3d7220b8",
+  "candidateBytes": 16529,
+  "candidateSha256": "3c5e9b2e8f306786e1c5ce1ef1a02b5442bb1dc12e9de08bfed78e0dfcec808f",
+  "preservedBusinessSuffixBytes": 12674,
+  "preservedBusinessSuffixSha256": "118676f3b382d18da40a76abf217b8f7aa431c1df9c359c3324d7ffa009ceb5f",
+  "scope": "cfg(test) witness only, all 44 test names and all test bodies unchanged",
+  "nativePendingEditsChecked": true,
+  "kv1ActualRootAndKeyChecked": true,
+  "nativeRootEncodedZeroizing": true,
+  "fullMetadataSerialized": true,
+  "originalInspectionDeadlineRetained": true,
+  "productionCodeChanged": false,
+  "sourceReviewPassed": true,
+  "formatRuntimePending": false,
+  "compileAndRuntimePending": true,
+  "formatVerification": {
+    "jobId": "1a1a7a0f9de-fc05-2bff",
+    "exitCode": 0,
+    "bytes": 16529,
+    "sha256": "3c5e9b2e8f306786e1c5ce1ef1a02b5442bb1dc12e9de08bfed78e0dfcec808f",
+    "exactStdinEqualsCompleteStdout": true,
+    "stderrBytes": 0,
+    "status": {
+      "at_unix_ms": 1793813710161,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a7a0f9de-fc05-2bff",
+      "launch_nonce": "b8d2e3d76ddf98d20293c7fd48765187",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 16529,
+          "stored": 16529
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "sourceFilesModified": false,
+    "cargoOrProductTestsRun": false
+  },
+  "canonicalCommit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonicalTree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+}

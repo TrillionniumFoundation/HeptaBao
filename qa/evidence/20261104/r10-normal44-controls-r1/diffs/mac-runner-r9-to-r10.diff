@@ -1,0 +1,28 @@
+diff --git a/mac_normal_exact_tests.py b/mac_normal_exact_tests.py
+--- a/mac_normal_exact_tests.py
++++ b/mac_normal_exact_tests.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Build frozen Mac R9 normal server/seed and libtest with original budgets."""
++"""Build frozen Mac R10 normal server/seed and libtest with original budgets."""
+ from pathlib import Path
+ import argparse
+ import hashlib
+@@ -140,7 +140,7 @@
+ 
+ assert os.uname().sysname == 'Darwin' and os.uname().machine == 'arm64'
+ # Physical commit is pinned by the reviewed launcher and the clean-tree freeze below.
+-assert args.tree == 'e1faeaa3ed49d26fb01a7617a8879cb693a12907'
++assert args.tree == '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
+ assert args.groups_sha256 == '0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1'
+ assert sha(args.groups) == args.groups_sha256
+ groups = json.loads(Path(args.groups).read_text())
+@@ -160,7 +160,7 @@
+ before = freeze()
+ assert before == {'commit': args.commit, 'tree': args.tree, 'status': ''}
+ output.mkdir(mode=0o700)
+-intent = {'schema': 'heptabao.mac-normal-release-and-exact-libtest-r9.v1', 'source_commit': args.commit,
++intent = {'schema': 'heptabao.mac-normal-release-and-exact-libtest-r10.v1', 'source_commit': args.commit,
+           'source_tree': args.tree, 'normal_default_features': True, 'fixture_features': [],
+           'profile': profile, 'groups': groups, 'test_count': len(all_names),
+           'groups_sha256': args.groups_sha256, 'controller_sha256': sha(__file__),

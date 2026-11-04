@@ -1,0 +1,251 @@
+{
+  "schema": "heptabao.r10-controller-source-invariance.v1",
+  "scope": "source_only_not_executed",
+  "candidate_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "candidate_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "groups": {
+    "bytes": 6249,
+    "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+    "count": 44,
+    "group_shapes": [
+      [
+        "ssh25",
+        25
+      ],
+      [
+        "mount1",
+        1
+      ],
+      [
+        "redirect5",
+        5
+      ],
+      [
+        "actor2",
+        2
+      ],
+      [
+        "ordinary5",
+        5
+      ],
+      [
+        "no_forward6",
+        6
+      ]
+    ],
+    "byte_equal_to_r9": true
+  },
+  "combined_runners_only_changes": [
+    "title",
+    "fixed tree identity",
+    "receipt schema version"
+  ],
+  "preserved_function_source_bytes": {
+    "linux_runner": [
+      {
+        "name": "signal_received",
+        "bytes": 139,
+        "sha256": "d7b50170ce09cb53148a60fb8790c01524ab87563f46efd2e4b8dd09440de4a4",
+        "byte_equal": true
+      },
+      {
+        "name": "sha",
+        "bytes": 112,
+        "sha256": "6ba2242721e77c5053b502e8683c33d4c49f66f2c68f052760ffbcce0b1ddc82",
+        "byte_equal": true
+      },
+      {
+        "name": "write",
+        "bytes": 304,
+        "sha256": "f7eb01e1dc3c335bdb32736f2a067916c628858b88d2a8475c46e777b4789850",
+        "byte_equal": true
+      },
+      {
+        "name": "git",
+        "bytes": 167,
+        "sha256": "cfb30dd939500378faaf8f6bf0877d6f381670d23a142f333588fb1500fe71b1",
+        "byte_equal": true
+      },
+      {
+        "name": "freeze",
+        "bytes": 155,
+        "sha256": "1bbce732251e69ada6ed6239bdb4595cf6d768361f464a67cdb0828168d5bfc6",
+        "byte_equal": true
+      },
+      {
+        "name": "group_members",
+        "bytes": 402,
+        "sha256": "cca853ecb26255494d173314790644b34b5e8a3f94210abb46f7890a8814d6a8",
+        "byte_equal": true
+      },
+      {
+        "name": "terminate_owned",
+        "bytes": 781,
+        "sha256": "bddffdd269342c51bec1b8ba76ab1ad82332c641bd0f4f86e3853b2dffd11b22",
+        "byte_equal": true
+      },
+      {
+        "name": "owned",
+        "bytes": 1680,
+        "sha256": "244c2af2af8b811f0e0dc46322b37610f2d08a296b6c25c21b94333f0b5b957f",
+        "byte_equal": true
+      }
+    ],
+    "mac_runner": [
+      {
+        "name": "signal_received",
+        "bytes": 139,
+        "sha256": "d7b50170ce09cb53148a60fb8790c01524ab87563f46efd2e4b8dd09440de4a4",
+        "byte_equal": true
+      },
+      {
+        "name": "sha",
+        "bytes": 112,
+        "sha256": "6ba2242721e77c5053b502e8683c33d4c49f66f2c68f052760ffbcce0b1ddc82",
+        "byte_equal": true
+      },
+      {
+        "name": "write",
+        "bytes": 304,
+        "sha256": "f7eb01e1dc3c335bdb32736f2a067916c628858b88d2a8475c46e777b4789850",
+        "byte_equal": true
+      },
+      {
+        "name": "git",
+        "bytes": 167,
+        "sha256": "cfb30dd939500378faaf8f6bf0877d6f381670d23a142f333588fb1500fe71b1",
+        "byte_equal": true
+      },
+      {
+        "name": "freeze",
+        "bytes": 155,
+        "sha256": "1bbce732251e69ada6ed6239bdb4595cf6d768361f464a67cdb0828168d5bfc6",
+        "byte_equal": true
+      },
+      {
+        "name": "group_members",
+        "bytes": 402,
+        "sha256": "cca853ecb26255494d173314790644b34b5e8a3f94210abb46f7890a8814d6a8",
+        "byte_equal": true
+      },
+      {
+        "name": "terminate_owned",
+        "bytes": 781,
+        "sha256": "bddffdd269342c51bec1b8ba76ab1ad82332c641bd0f4f86e3853b2dffd11b22",
+        "byte_equal": true
+      },
+      {
+        "name": "owned",
+        "bytes": 1680,
+        "sha256": "244c2af2af8b811f0e0dc46322b37610f2d08a296b6c25c21b94333f0b5b957f",
+        "byte_equal": true
+      }
+    ],
+    "stager": [
+      {
+        "name": "on_signal",
+        "bytes": 134,
+        "sha256": "6c5f8efe841df71f978962697926b93c42aed7ab6cf99e2d09a52de4f9641f89",
+        "byte_equal": true
+      },
+      {
+        "name": "digest",
+        "bytes": 61,
+        "sha256": "bfeb39d7def0f085f5c03b87d1e2e2fae3cd80b87939d7268fa714ac62cad336",
+        "byte_equal": true
+      },
+      {
+        "name": "blob",
+        "bytes": 101,
+        "sha256": "153f5e6ce92600e02eb9a2a3fcbc08bafb65e7c4c3efca17bc20977730618d14",
+        "byte_equal": true
+      },
+      {
+        "name": "identity",
+        "bytes": 176,
+        "sha256": "0113f66ef12452c2eadac72c45ffb2a2a700483af078a4465879c5ef2ccccab3",
+        "byte_equal": true
+      },
+      {
+        "name": "stable_read",
+        "bytes": 1001,
+        "sha256": "0edf21d2d70346eae1a2f2898bcb0ebc6a92f50c3b1fb601ab85650246e4ea7f",
+        "byte_equal": true
+      },
+      {
+        "name": "fsync_dir",
+        "bytes": 155,
+        "sha256": "04b17404807a16cb2b0f23a9346b6cdc7b7785850691ee48fd09cfd5eedb59e1",
+        "byte_equal": true
+      },
+      {
+        "name": "create",
+        "bytes": 268,
+        "sha256": "2bbd033ba5fc21f95ca54ffd764f0840055ee0eea395d751a3c65604d34da925",
+        "byte_equal": true
+      },
+      {
+        "name": "public",
+        "bytes": 133,
+        "sha256": "dd74ada7d66298e5d89d2db79e2b8d73c4699a82f021b6f1e5bac6a70528a85a",
+        "byte_equal": true
+      },
+      {
+        "name": "group_members",
+        "bytes": 439,
+        "sha256": "5f5405ac8b452fe64caa49be116de0b4a097fb1bc8d8fdf143624391597c72d9",
+        "byte_equal": true
+      },
+      {
+        "name": "stop_owned",
+        "bytes": 619,
+        "sha256": "18f3a9e3ea028f5f26ced046e85c6476b8de5937fd17b2643db80e6788d3cadc",
+        "byte_equal": true
+      },
+      {
+        "name": "owned",
+        "bytes": 1793,
+        "sha256": "271f764a11e295e6e64d7359257074ade79b50be5e5a111aa76fec76ca39835b",
+        "byte_equal": true
+      },
+      {
+        "name": "freeze",
+        "bytes": 261,
+        "sha256": "64b77c3e79dae518fe2fe5aedcc32f6e386ded68a4119beb9fb60fb194c7384f",
+        "byte_equal": true
+      }
+    ],
+    "launcher": [
+      {
+        "name": "identity",
+        "bytes": 176,
+        "sha256": "0113f66ef12452c2eadac72c45ffb2a2a700483af078a4465879c5ef2ccccab3",
+        "byte_equal": true
+      },
+      {
+        "name": "read_bound",
+        "bytes": 1025,
+        "sha256": "d10e6dd6dbae95e2e390cadc6e81f86c55b5d6e228b7ad97324169a1f988017f",
+        "byte_equal": true
+      },
+      {
+        "name": "freeze",
+        "bytes": 365,
+        "sha256": "957fe4c9aa08c9c4b51c17339851849f7b84758cf0d3c19cf760963e7927dcc8",
+        "byte_equal": true
+      },
+      {
+        "name": "public",
+        "bytes": 438,
+        "sha256": "d782859e9b1068103385045d10d927b471ad8821f6f402a30d7b8516c1cd1ba8",
+        "byte_equal": true
+      }
+    ]
+  },
+  "no_claim_of_python_ast_or_syntax_execution": true,
+  "source_stage_only_new_paths": true,
+  "r9_failed_runtime_preserved": true,
+  "remote_host_mutations": false,
+  "compiler_or_tests_started": false,
+  "github_commit_ref_mutation": false
+}
