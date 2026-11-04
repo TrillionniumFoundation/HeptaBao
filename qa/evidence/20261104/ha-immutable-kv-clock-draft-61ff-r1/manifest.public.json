@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.immutable-kv-clock-service-draft.v1",
+  "status": "incomplete_source_draft_not_compiled_or_wired",
+  "base_review_commit": "a40bf5d972ecefcd03b754fd56d5456bfca72310",
+  "base_tree": "3ecc607295bca877aad3f92b22b691ff84c76a9c",
+  "draft_source_sha256": "9c338936c609255dae263c2ec487c93dcc4d11116cc08c2e72db424def992882",
+  "owner_split": {
+    "service_http": "ha",
+    "protocol_transport": "bao_acceptance"
+  },
+  "known_remaining": [
+    "Actual parser field/scope wiring and shared GET/LIST/SCAN normalization are not yet implemented",
+    "Service original OrdinaryKvAuthority custody and leader trusted-clock writer are not yet implemented",
+    "Deferred floor audit, B ReadIndex, physical seal and affine final completion are not yet implemented",
+    "Actual tests and production HTTPS observer remain pending"
+  ],
+  "authority_constraints": [
+    "Actual HTTP parser alone constructs original raw-target/token/namespace metadata",
+    "Combined raw field sum <= actual 16388-byte complete header bound; canonical base64 wire fields planned",
+    "SDK direct requests have no capsule and keep original entry/bounds",
+    "Wire GET/HEAD/LIST/SCAN and normalized GET/LIST/SCAN retained separately",
+    "No arbitrary floor, body or generic snapshot/SSH transport expansion",
+    "One original absolute deadline, real leader clock receipt and no unknown replay"
+  ],
+  "runtime_passed": false,
+  "full_replacement_qualified": false
+}
