@@ -1,0 +1,1273 @@
+diff --git a/crates/heptabao-server/src/http_formal_api_fixture.rs b/crates/heptabao-server/src/http_formal_api_fixture.rs
+new file mode 100644
+--- /dev/null
++++ b/crates/heptabao-server/src/http_formal_api_fixture.rs
+@@ -0,0 +1,227 @@
++//! Owned loopback TLS for the formal three-voter Service component fixture.
++//! The real listener address is configured before HA startup. This helper runs
++//! the production parser/dispatch/writer; it is not a production serve or a
++//! physical-host qualification.
++use super::*;
++use std::net::Shutdown;
++use std::thread::JoinHandle;
++
++type FixtureResult<T> = Result<T, Box<dyn std::error::Error>>;
++
++pub(crate) struct FormalApiListener {
++    listener: TcpListener,
++    server_tls: Arc<ServerConfig>,
++    client_tls: Arc<rustls::ClientConfig>,
++    expected_leaf: Vec<u8>,
++}
++
++struct RequestWorker {
++    thread: Option<JoinHandle<io::Result<()>>>,
++    client: TcpStream,
++    server: TcpStream,
++}
++
++impl RequestWorker {
++    fn join(mut self) -> FixtureResult<()> {
++        let thread = self.thread.take().ok_or("formal TLS worker already joined")?;
++        thread.join().map_err(|_| "formal TLS worker panicked")??;
++        Ok(())
++    }
++}
++impl Drop for RequestWorker {
++    fn drop(&mut self) {
++        let _ = self.client.shutdown(Shutdown::Both);
++        let _ = self.server.shutdown(Shutdown::Both);
++        if let Some(thread) = self.thread.take() {
++            // The worker owns the original request deadline. It must actually
++            // finish before the fixture releases its Service/Raft owners.
++            let _ = thread.join();
++        }
++    }
++}
++
++impl FormalApiListener {
++    pub(crate) fn bind(
++        directory: &std::path::Path,
++        node_id: u64,
++        address: Option<SocketAddr>,
++    ) -> FixtureResult<Self> {
++        let listener = TcpListener::bind(address.unwrap_or("127.0.0.1:0".parse()?))?;
++        listener.set_nonblocking(true)?;
++        let cert_path = directory.join(format!("voter-{node_id}.crt"));
++        let key_path = directory.join(format!("voter-{node_id}.key"));
++        let cert_bytes = bounded_file(&cert_path, false)?;
++        let key_bytes = bounded_file(&key_path, true)?;
++        let certificates = rustls_pemfile::certs(&mut BufReader::new(cert_bytes.as_slice()))
++            .collect::<Result<Vec<_>, _>>()?;
++        let expected_leaf = certificates.first().ok_or("formal API leaf absent")?.as_ref().to_vec();
++        let key = rustls_pemfile::private_key(&mut BufReader::new(key_bytes.as_slice()))?
++            .ok_or("formal API private key absent")?;
++        let provider = Arc::new(rustls::crypto::ring::default_provider());
++        let mut server_tls = ServerConfig::builder_with_provider(Arc::clone(&provider))
++            .with_safe_default_protocol_versions()?
++            .with_no_client_auth()
++            .with_single_cert(certificates, key)?;
++        configure_api_alpn(&mut server_tls);
++        let ca_bytes = bounded_file(&directory.join("ca.crt"), false)?;
++        let mut roots = RootCertStore::empty();
++        for certificate in rustls_pemfile::certs(&mut BufReader::new(ca_bytes.as_slice())) {
++            roots.add(certificate?)?;
++        }
++        let mut client_tls = rustls::ClientConfig::builder_with_provider(provider)
++            .with_safe_default_protocol_versions()?
++            .with_root_certificates(roots)
++            .with_no_client_auth();
++        client_tls.alpn_protocols = vec![b"http/1.1".to_vec()];
++        Ok(Self {
++            listener,
++            server_tls: Arc::new(server_tls),
++            client_tls: Arc::new(client_tls),
++            expected_leaf,
++        })
++    }
++
++    pub(crate) fn address(&self) -> FixtureResult<SocketAddr> {
++        Ok(self.listener.local_addr()?)
++    }
++
++    pub(crate) fn origin(&self) -> FixtureResult<String> {
++        Ok(format!("https://{}", self.address()?))
++    }
++
++    pub(crate) fn leaf_sha256(&self) -> [u8; 32] {
++        crypto::digest(&self.expected_leaf)
++    }
++
++    pub(crate) fn exchange(
++        &self,
++        service: &Arc<Mutex<Service>>,
++        request: &[u8],
++        deadline: Instant,
++        missing_forward: bool,
++    ) -> FixtureResult<Zeroizing<Vec<u8>>> {
++        let remaining = || deadline.checked_duration_since(Instant::now())
++            .filter(|duration| !duration.is_zero())
++            .ok_or("formal TLS original deadline");
++        let client_socket = TcpStream::connect_timeout(&self.address()?, remaining()?)?;
++        let client_address = client_socket.local_addr()?;
++        let (server_socket, peer) = loop {
++            match self.listener.accept() {
++                Ok(accepted) => break accepted,
++                Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
++                    remaining()?;
++                    std::thread::yield_now();
++                }
++                Err(error) => return Err(error.into()),
++            }
++        };
++        if peer != client_address || !peer.ip().is_loopback() {
++            return Err("formal TLS listener accepted a different client".into());
++        }
++        let close_client = client_socket.try_clone()?;
++        let close_server = server_socket.try_clone()?;
++        let server_tls = Arc::clone(&self.server_tls);
++        let service = Arc::clone(service);
++        let settings = consistency::Settings::checked(None, None, missing_forward)?;
++        let thread = std::thread::Builder::new().name("formal-api-tls".into()).spawn(move || {
++            let _scope = RequestDeadlineScope::enter(deadline);
++            let connection = rustls::ServerConnection::new(server_tls)
++                .map_err(io::Error::other)?;
++            let mut stream = StreamOwned::new(connection, DeadlineStream {
++                stream: server_socket, deadline,
++            });
++            stream.sock.deadline = execution_deadline_with_response_reserve(Instant::now(), deadline);
++            let budget = stream.sock.deadline.saturating_duration_since(Instant::now());
++            let parsed = read_request_with_ui(&mut stream, budget, true, false);
++            stream.sock.deadline = deadline;
++            if stream.conn.alpn_protocol() != Some(b"http/1.1".as_slice()) {
++                return Err(io::Error::other("formal API ALPN changed"));
++            }
++            let attempt = crypto::random::<16>()
++                .map_err(|_| io::Error::other("formal API ingress randomness unavailable"))?;
++            let client_certificates = stream.conn.peer_certificates().map(|certificates| {
++                certificates.iter().map(|certificate| certificate.as_ref().to_vec()).collect()
++            });
++            let (reply, head, namespace) = process_parsed_request(
++                &service, None, parsed, &mut stream, client_certificates,
++                peer.ip(), &attempt, settings, deadline,
++            );
++            let redirect = matches!(&reply, snapshot::NativeReply::Redirect { .. });
++            write_http1_reply(&mut stream, reply, head, &namespace, deadline);
++            if redirect {
++                snapshot::finish_redirect_connection(&mut stream);
++            }
++            Ok(())
++        })?;
++        let worker = RequestWorker { thread: Some(thread), client: close_client, server: close_server };
++        let connection = rustls::ClientConnection::new(
++            Arc::clone(&self.client_tls),
++            rustls::pki_types::ServerName::try_from("localhost".to_owned())?,
++        )?;
++        let mut client = StreamOwned::new(connection, DeadlineStream {
++            stream: client_socket, deadline,
++        });
++        client.write_all(request)?;
++        client.flush()?;
++        if client.conn.alpn_protocol() != Some(b"http/1.1".as_slice())
++            || client.conn.peer_certificates().and_then(|chain| chain.first())
++                .is_none_or(|leaf| leaf.as_ref() != self.expected_leaf.as_slice())
++        {
++            return Err("formal API authenticated peer or ALPN changed".into());
++        }
++        let mut output = Zeroizing::new(Vec::new());
++        let mut byte = [0u8; 1];
++        while !output.ends_with(b"\r\n\r\n") {
++            if output.len() >= 64 * 1024 {
++                return Err("formal API response header bound".into());
++            }
++            remaining()?;
++            client.read_exact(&mut byte)?;
++            output.push(byte[0]);
++        }
++        let headers = std::str::from_utf8(&output)?;
++        let mut lines = headers[..headers.len() - 4].split("\r\n");
++        let status = lines.next().ok_or("formal API response status absent")?;
++        if !status.starts_with("HTTP/1.1 ") {
++            return Err("formal API response status malformed".into());
++        }
++        let status_code: u16 = status.split(' ').nth(1)
++            .ok_or("formal API response status malformed")?.parse()?;
++        let mut content_length = None;
++        for line in lines {
++            let (name, value) = line.split_once(':').ok_or("formal API header framing")?;
++            if name.eq_ignore_ascii_case("content-length") {
++                if content_length.is_some() {
++                    return Err("formal API duplicate content length".into());
++                }
++                content_length = Some(value.trim().parse::<usize>()?);
++            } else if name.eq_ignore_ascii_case("transfer-encoding") {
++                return Err("formal API component requires explicit complete response length".into());
++            }
++        }
++        let body_length = match content_length {
++            Some(_) if request.starts_with(b"HEAD ") => 0,
++            Some(length) => length,
++            None if status_code == 204 => 0,
++            None => return Err("formal API response content length absent".into()),
++        };
++        let bound = usize::try_from(crate::snapshot_file::MAX_NATIVE_ARCHIVE)?;
++        if body_length > bound {
++            return Err("formal API response archive bound".into());
++        }
++        let header_length = output.len();
++        output.resize(header_length.checked_add(body_length).ok_or("formal API length overflow")?, 0);
++        client.read_exact(&mut output[header_length..])?;
++        remaining()?;
++        // The complete Content-Length response is already owned. Close the
++        // actual socket before joining the 307 response-side drain; a cloned
++        // cleanup descriptor must not keep that drain open until the deadline.
++        client.conn.send_close_notify();
++        let _ = client.flush();
++        let _ = client.sock.stream.shutdown(Shutdown::Both);
++        drop(client);
++        worker.join()?;
++        remaining()?;
++        Ok(output)
++    }
++}
+diff --git a/crates/heptabao-server/src/service_native_v6_ha_formal_api_pipeline_tests.rs b/crates/heptabao-server/src/service_native_v6_ha_formal_api_pipeline_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/crates/heptabao-server/src/service_native_v6_ha_formal_api_pipeline_tests.rs
+@@ -0,0 +1,194 @@
++//! Actual API origins for the formal three-voter component tests.
++//! Every configured origin comes from a live, separately bound API TLS socket.
++//! The same real Service/Raft owner handles its requests. Cold restart rebinds
++//! that exact API endpoint; a missing-origin negative retains the old fixture.
++use super::*;
++use crate::http::formal_api_fixture::FormalApiListener;
++use std::net::SocketAddr;
++use std::ops::{Deref, DerefMut};
++
++pub(super) struct FormalApiPipeline {
++    inner: Pipeline,
++    apis: Vec<Option<FormalApiListener>>,
++    addresses: Vec<SocketAddr>,
++}
++impl Deref for FormalApiPipeline {
++    type Target = Pipeline;
++    fn deref(&self) -> &Self::Target { &self.inner }
++}
++impl DerefMut for FormalApiPipeline {
++    fn deref_mut(&mut self) -> &mut Self::Target { &mut self.inner }
++}
++impl Drop for FormalApiPipeline {
++    fn drop(&mut self) {
++        // No per-request worker survives exchange(). Close public listeners
++        // before Pipeline drops Services and then the actual Raft owners.
++        for api in &mut self.apis { drop(api.take()); }
++    }
++}
++impl FormalApiPipeline {
++    pub(super) fn exchange(
++        &self, index: usize, bytes: &[u8], deadline: Instant, missing_forward: bool,
++    ) -> TestResult<Zeroizing<Vec<u8>>> {
++        let api = self.apis.get(index).and_then(Option::as_ref)
++            .ok_or("formal API listener is not running")?;
++        let service = self.inner.services.get(index).and_then(Option::as_ref)
++            .ok_or("formal API Service is not running")?;
++        api.exchange(service, bytes, deadline, missing_forward)
++    }
++    pub(super) fn stop_process(&mut self, index: usize) -> TestResult {
++        drop(self.apis.get_mut(index).ok_or("formal API node index")?.take());
++        self.inner.stop_process(index)
++    }
++    pub(super) fn start_formal_process(&mut self, index: usize) -> TestResult {
++        if self.apis.get(index).ok_or("formal API node index")?.is_some() {
++            return Err("formal API listener already running".into());
++        }
++        let api = FormalApiListener::bind(
++            &self.inner.files.path, u64::try_from(index + 1)?, Some(self.addresses[index]),
++        )?;
++        verify_actual_origin(&self.inner.configs, index, &api)?;
++        // Rebind before this node's actual HA owner starts, using its unchanged
++        // cold configuration and the original disposable PKI.
++        start_formal_process(&mut self.inner, index)?;
++        self.apis[index] = Some(api);
++        Ok(())
++    }
++}
++
++fn verify_actual_origin(
++    configs: &[HaProcessConfig], index: usize, api: &FormalApiListener,
++) -> TestResult {
++    let id = u64::try_from(index + 1)?;
++    let origin = api.origin()?;
++    let pin = hex(&api.leaf_sha256());
++    for config in configs {
++        let peer = config.peers.get(&id).ok_or("formal API peer is absent")?;
++        assert_eq!(peer.api_address.as_deref(), Some(origin.as_str()));
++        assert_eq!(peer.certificate_sha256, pin);
++        assert_ne!(peer.address, api.address()?, "API and Raft own separate listeners");
++    }
++    Ok(())
++}
++
++pub(super) fn formal_api_source() -> TestResult<FormalApiPipeline> {
++    let mut files = Root::new();
++    private_directory(&files.path)?;
++    files.path = fs::canonicalize(&files.path)?;
++    let mut service = Service::new(files.path.join("data"), &files.path.join("audit.jsonl"))?;
++    let (key, admin) = {
++        let _scope = scope();
++        crate::service::tests::bootstrap_unmounted(&mut service)?
++    };
++    let key = Zeroizing::new(key);
++    let admin = Zeroizing::new(admin);
++    for (path, body, status) in [
++        ("sys/init/ack", json!({}), 204),
++        (
++            "sys/mounts/secret",
++            json!({"type":"kv","options":{"version":"2"},"description":"Versioned secrets"}),
++            204,
++        ),
++        (
++            "secret/data/pipeline/history",
++            json!({"options":{"cas":0},"data":{"value":"seed-v5"}}),
++            200,
++        ),
++    ] {
++        let _scope = scope();
++        expect(
++            service.handle("POST", path, "", &admin, body),
++            status,
++            "formal-cold-seed",
++        )?;
++    }
++    let state = service.state.as_ref().ok_or("formal cold seed state")?;
++    assert!(state.engines.supports_native_v6_root_storage());
++    assert!(state.auth.supports_native_v6_root_storage());
++    assert!(!initialization_recovery_pending(&service.data_dir)?);
++    let cluster_id = state.cluster_id.clone();
++    let seed_identity = service
++        .current_state_identity()
++        .map_err(|_| "formal cold seed identity")?;
++    assert!(matches!(seed_identity, StateIdentity::RecordsV5(_)));
++    drop(service);
++    recovered_api_pipeline(
++        &files.path.join("data"),
++        &cluster_id,
++        key,
++        admin,
++        seed_identity,
++    )
++}
++
++fn recovered_api_pipeline(
++    seed: &Path,
++    cluster_id: &str,
++    key: Zeroizing<String>,
++    admin: Zeroizing<String>,
++    seed_identity: StateIdentity,
++) -> TestResult<FormalApiPipeline> {
++    let mut files = Root::new();
++    private_directory(&files.path)?;
++    files.path = fs::canonicalize(&files.path)?;
++    for id in 1..=3 {
++        let directory = files.path.join(format!("service-{id}"));
++        private_directory(&directory)?;
++        copy_cold_directory(seed, &directory.join("data"))?;
++    }
++    let pins = certificates(&files.path)?;
++    let mut apis = Vec::new();
++    for id in 1..=3 {
++        let api = FormalApiListener::bind(&files.path, id, None)?;
++        assert_eq!(api.leaf_sha256(), pins[&id]);
++        apis.push(Some(api));
++    }
++    let mut configs = configurations(&files.path, cluster_id, &pins)?;
++    let mut addresses = Vec::new();
++    for (index, api) in apis.iter().enumerate() {
++        let api = api.as_ref().ok_or("new formal API listener absent")?;
++        let id = u64::try_from(index + 1)?;
++        let origin = api.origin()?;
++        addresses.push(api.address()?);
++        for config in &mut configs {
++            config.peers.get_mut(&id).ok_or("new formal API peer absent")?
++                .api_address = Some(origin.clone());
++        }
++        verify_actual_origin(&configs, index, api)?;
++    }
++    let mut pipeline = FormalApiPipeline {
++        inner: Pipeline {
++            configured_native_storage: false,
++            files,
++            configs,
++            processes: vec![None, None, None],
++            services: vec![None, None, None],
++            key,
++            admin,
++            seed_identity,
++        },
++        apis,
++        addresses,
++    };
++    // All three API origins have already been bound and pinned. Start the real
++    // HA listeners with the same bootstrap order as recovered_pipeline().
++    for index in [1, 2, 0] {
++        start_formal_process(&mut pipeline.inner, index)?;
++    }
++    let leader = pipeline.ready_leader()?;
++    for index in std::iter::once(leader).chain((0..3).filter(|index| *index != leader)) {
++        pipeline.unseal(index)?;
++    }
++    for index in 0..3 {
++        pipeline.with_service(index, |service| {
++            assert!(service.native_candidate_profile.is_none());
++            assert_eq!(
++                service.current_state_identity().map_err(|_| "new cold API seed identity")?,
++                seed_identity
++            );
++            assert!(service.native_root.is_none());
++            Ok(())
++        })?;
++    }
++    Ok(pipeline)
++}
+--- a/crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs
+@@ -1,7 +1,10 @@
+-//! Formal storage profile, real three-voter mTLS/Raft, actual HTTP parser and
+-//! Service owners. Public API TLS sockets and physical hosts are qualified by
+-//! the normal-binary wire runner separately; this file makes neither claim.
++//! Formal storage profile, real three-voter mTLS/Raft and owned loopback API
++//! TLS listeners use the actual parser, Service and response writer. Production
++//! serve startup and physical-host qualification remain separate.
+ use super::*;
++#[path = "service_native_v6_ha_formal_api_pipeline_tests.rs"]
++mod formal_api_pipeline;
++use formal_api_pipeline::{FormalApiPipeline, formal_api_source};
+ use crate::crypto::AeadBarrier;
+ use crate::ha::native_v6_backup::{NativeV6ArchiveSelection, validate_native_v6_archive};
+ use crate::snapshot_file::SnapshotSpool;
+@@ -21,7 +24,7 @@
+ }
+ 
+ fn wire(
+-    pipeline: &Pipeline,
++    pipeline: &FormalApiPipeline,
+     index: usize,
+     method: &str,
+     path: &str,
+@@ -44,7 +47,7 @@
+ }
+ 
+ fn wire_with_routing(
+-    pipeline: &Pipeline,
++    pipeline: &FormalApiPipeline,
+     index: usize,
+     method: &str,
+     path: &str,
+@@ -82,16 +85,7 @@
+     }
+     input.extend_from_slice(b"\r\n");
+     input.extend_from_slice(body);
+-    let service = pipeline.services[index]
+-        .as_ref()
+-        .ok_or("formal wire Service absent")?;
+-    let output = if routing.missing_forward {
+-        crate::http::formal_standby_http_wire_fixture_with_consistency(
+-            service, &input, until, true,
+-        )?
+-    } else {
+-        crate::http::formal_standby_http_wire_fixture(service, &input, until)?
+-    };
++    let output = pipeline.exchange(index, &input, until, routing.missing_forward)?;
+     let split = output
+         .windows(4)
+         .position(|part| part == b"\r\n\r\n")
+@@ -116,7 +110,7 @@
+     }
+     let body = Zeroizing::new(output[split + 4..].to_vec());
+     if let Some(length) = headers.get("content-length") {
+-        assert_eq!(length.parse::<usize>()?, body.len());
++        assert_eq!(if method == "HEAD" { 0 } else { length.parse::<usize>()? }, body.len());
+     } else {
+         assert_eq!(
+             status, 204,
+@@ -153,7 +147,7 @@
+ #[test]
+ fn formal_native_standby_snapshot_read_restore_validation_and_no_forward_use_real_owners()
+ -> TestResult {
+-    let pipeline = formal_cold_source()?;
++    let pipeline = formal_api_source()?;
+     let leader = pipeline.ready_leader()?;
+     activate_formal_cold(&pipeline, leader)?;
+     let standby = (leader + 1) % 3;
+@@ -315,7 +309,7 @@
+ 
+ #[test]
+ fn formal_native_standby_snapshot_finite_tokens_redirect_without_consumption() -> TestResult {
+-    let pipeline = formal_cold_source()?;
++    let pipeline = formal_api_source()?;
+     let leader = pipeline.ready_leader()?;
+     activate_formal_cold(&pipeline, leader)?;
+     let standby = (leader + 1) % 3;
+@@ -366,7 +360,7 @@
+ 
+ #[test]
+ fn formal_native_standby_snapshot_late_root_change_and_lost_quorum_refuse_delivery() -> TestResult {
+-    let mut pipeline = formal_cold_source()?;
++    let mut pipeline = formal_api_source()?;
+     let leader = pipeline.ready_leader()?;
+     activate_formal_cold(&pipeline, leader)?;
+     let standby = (leader + 1) % 3;
+@@ -421,7 +415,7 @@
+ #[test]
+ fn formal_native_standby_ttl_snapshot_commits_real_leader_floor_and_survives_cold_restart()
+ -> TestResult {
+-    let mut pipeline = formal_cold_source()?;
++    let mut pipeline = formal_api_source()?;
+     let leader = pipeline.ready_leader()?;
+     activate_formal_cold(&pipeline, leader)?;
+     let standby = (leader + 1) % 3;
+@@ -465,7 +459,7 @@
+     );
+     assert_eq!(pipeline.native_selection(standby)?, after);
+     pipeline.stop_process(standby)?;
+-    start_formal_process(&mut pipeline, standby)?;
++    pipeline.start_formal_process(standby)?;
+     pipeline.wait_cold_native_readindex_ready(standby)?;
+     pipeline.unseal(standby)?;
+     assert!(
+@@ -505,5 +499,43 @@
+     Ok(())
+ }
+ 
++
++#[test]
++fn formal_native_standby_snapshot_missing_api_origin_remains_503() -> TestResult {
++    // Retain the exact old configuration as an independent refusal. No origin
++    // is synthesized and no permission, archive or transfer lease is created.
++    let pipeline = formal_cold_source()?;
++    assert!(pipeline.configs.iter().all(|config| config.peers.values()
++        .all(|peer| peer.api_address.is_none())));
++    let leader = pipeline.ready_leader()?;
++    activate_formal_cold(&pipeline, leader)?;
++    let standby = (leader + 1) % 3;
++    let before = pipeline.native_selection(leader)?;
++    let until = Instant::now() + REQUEST_BUDGET;
++    let _scope = RequestDeadlineScope::enter(until);
++    let mut input = Zeroizing::new(Vec::new());
++    write!(&mut *input,
++        "GET /v1/sys/storage/raft/snapshot HTTP/1.1\r\nHost: local\r\nX-Vault-Token: {}\r\nConnection: close\r\n\r\n",
++        pipeline.admin())?;
++    let service = pipeline.services[standby].as_ref().ok_or("missing API Service")?;
++    let output = crate::http::formal_standby_http_wire_fixture(service, &input, until)?;
++    let split = output.windows(4).position(|part| part == b"\r\n\r\n")
++        .ok_or("missing API response framing")?;
++    let header = std::str::from_utf8(&output[..split])?;
++    assert!(header.starts_with("HTTP/1.1 503 "));
++    let body: Value = serde_json::from_slice(&output[split + 4..])?;
++    assert_eq!(body["errors"], json!(["HA leader API address is unavailable"]));
++    assert!(body.get("data").is_none());
++    pipeline.with_service(standby, |service| {
++        assert!(service.pending_snapshot_transfer.is_none());
++        assert!(service.pending_native_auth_delivery.is_none());
++        assert!(service.native_request_binding.is_none());
++        Ok(())
++    })?;
++    assert_eq!(pipeline.native_selection(leader)?, before);
++    assert!(Instant::now() < until);
++    Ok(())
++}
++
+ #[path = "service_native_v6_ha_snapshot_acl_tests.rs"]
+ mod acl_denial_tests;
+--- a/crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs
+@@ -1,6 +1,6 @@
+ //! Actual formal three-voter mTLS/Service regressions for snapshot ACL and
+-//! receipt-bound refusal. These use the existing cfg(test) startup and HTTP
+-//! parser fixture; public TLS sockets and physical hosts remain separate.
++//! receipt-bound refusal. These use cfg(test) startup and actual owned loopback
++//! API TLS sockets; production serve and physical hosts remain separate.
+ use super::*;
+ use crate::auth::{IngressReplyScope, Timestamp};
+ use crate::ha::snapshot_clock::{SnapshotClockContext, SnapshotClockOperation};
+@@ -82,7 +82,7 @@
+ #[test]
+ fn formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update_actor()
+ -> TestResult {
+-    let pipeline = formal_cold_source()?;
++    let pipeline = formal_api_source()?;
+     let leader = pipeline.ready_leader()?;
+     let migration_source = activate_formal_cold(&pipeline, leader)?;
+     let standby = (leader + 1) % 3;
+@@ -200,7 +200,7 @@
+ #[test]
+ fn formal_native_standby_acl_denial_commits_floor_without_transfer_lease_and_survives_cold()
+ -> TestResult {
+-    let mut pipeline = formal_cold_source()?;
++    let mut pipeline = formal_api_source()?;
+     let leader = pipeline.ready_leader()?;
+     activate_formal_cold(&pipeline, leader)?;
+     let standby = (leader + 1) % 3;
+@@ -248,7 +248,7 @@
+     drop((occupied, spool, first));
+ 
+     pipeline.stop_process(standby)?;
+-    start_formal_process(&mut pipeline, standby)?;
++    pipeline.start_formal_process(standby)?;
+     pipeline.wait_cold_native_readindex_ready(standby)?;
+     pipeline.unseal(standby)?;
+     assert!(floor(&pipeline, standby)?.is_some_and(|actual| actual >= committed));
+@@ -303,7 +303,7 @@
+ #[test]
+ fn formal_native_standby_original_snapshot_actor_expiry_before_floor_returns_proved_403()
+ -> TestResult {
+-    let pipeline = formal_cold_source()?;
++    let pipeline = formal_api_source()?;
+     let leader = pipeline.ready_leader()?;
+     activate_formal_cold(&pipeline, leader)?;
+     let standby = (leader + 1) % 3;
+@@ -348,7 +348,7 @@
+ 
+ #[test]
+ fn formal_native_snapshot_clock_actual_mtls_nochange_keeps_full_local_checkpoints() -> TestResult {
+-    let pipeline = formal_cold_source()?;
++    let pipeline = formal_api_source()?;
+     let leader = pipeline.ready_leader()?;
+     activate_formal_cold(&pipeline, leader)?;
+     let standby = (leader + 1) % 3;
+@@ -454,7 +454,7 @@
+ #[test]
+ fn formal_native_http_consistency_forward_restricts_local_snapshot_and_no_forward_kv() -> TestResult
+ {
+-    let pipeline = formal_cold_source()?;
++    let pipeline = formal_api_source()?;
+     let leader = pipeline.ready_leader()?;
+     activate_formal_cold(&pipeline, leader)?;
+     let standby = (leader + 1) % 3;
+--- a/crates/heptabao-server/src/http.rs
++++ b/crates/heptabao-server/src/http.rs
+@@ -35,6 +35,9 @@
+ mod mutation_profile;
+ #[path = "http_sanitized_config.rs"]
+ mod sanitized_config;
++#[cfg(all(test, feature = "native-v6-ha"))]
++#[path = "http_formal_api_fixture.rs"]
++pub(crate) mod formal_api_fixture;
+ #[cfg(all(test, feature = "native-v6-storage"))]
+ #[path = "http_snapshot_accept_tests.rs"]
+ mod snapshot_accept_tests;
+--- a/crates/heptabao-server/src/service_native_storage_tests.rs
++++ b/crates/heptabao-server/src/service_native_storage_tests.rs
+@@ -274,84 +274,81 @@
+ fn configured_native_activation_rejects_unsupported_live_engine_without_retiring_v5() -> TestResult
+ {
+     let root = super::super::tests::Root::new();
++    // An actual bound loopback endpoint is enrolled while sealed. Config GET
++    // and POST are local owner operations; no provider request is authorized.
++    let provider_listener = std::net::TcpListener::bind("127.0.0.1:0")?;
++    provider_listener.set_nonblocking(true)?;
++    let provider_address = provider_listener.local_addr()?;
++    let provider_origin = format!("https://localhost:{}", provider_address.port());
++    let provider_bearer = Zeroizing::new(hex(&crypto::random::<32>()?));
+     let mut service = root.service()?;
++    service.install_outbound_endpoints(vec![crate::outbound::EndpointConfig {
++        origin: provider_origin.clone(),
++        address: provider_address,
++        server_name: "localhost".to_owned(),
++        ca_pem: include_str!("testdata/kubernetes-api-ca.pem").to_owned(),
++        path_prefix: "/api/".to_owned(),
++        shared_secret: String::new(),
++    }])?;
+     service.configure_native_v6_storage(NativeStorageProfile::File)?;
+     let (_, token) = initialize(&mut service)?;
+-    // Root SSH has a formal native owner. Preserve the real CA/private
+-    // owner in a child namespace whose native owner is still unsupported.
+-    const CHILD_NAMESPACE: &str = "unsupported-ssh-child";
++    // Root Kubernetes still lacks a formal native owner. Keep its genuine
++    // secret-bearing config in root, so catalog validation reaches the
++    // configured-storage refusal instead of an earlier child-profile refusal.
+     assert_eq!(
+         request(
+             &mut service,
+             "POST",
+-            "sys/namespaces/unsupported-ssh-child",
++            "sys/mounts/kubernetes",
+             &token,
+-            json!({})
+-        )
+-        .status,
+-        200
+-    );
+-    let child_request = |service: &mut Service, method: &str, path: &str, body: Value| {
+-        let _deadline = crate::request_deadline::RequestDeadlineScope::enter(
+-            std::time::Instant::now() + Duration::from_secs(15),
+-        );
+-        service.handle(method, path, CHILD_NAMESPACE, &token, body)
+-    };
+-    assert_eq!(
+-        child_request(
+-            &mut service,
+-            "POST",
+-            "sys/mounts/ssh",
+-            json!({"type":"ssh"})
++            json!({"type":"kubernetes"})
+         )
+         .status,
+         204
+     );
+     assert_eq!(
+-        child_request(
++        request(
+             &mut service,
+             "POST",
+-            "ssh/config/ca",
+-            json!({"generate_signing_key":true,"key_type":"ssh-ed25519"})
++            "kubernetes/config",
++            &token,
++            json!({"kubernetes_host":provider_origin,"service_account_token":provider_bearer.as_str()})
+         )
+         .status,
+-        200
++        204
+     );
+-    let before = child_request(&mut service, "GET", "ssh/config/ca", json!({}));
++    let before = request(&mut service, "GET", "kubernetes/config", &token, json!({}));
+     assert_eq!(before.status, 200);
+-    let source = service
+-        .state
+-        .as_ref()
+-        .ok_or("unsupported child SSH state")?;
++    assert_eq!(before.body["data"]["service_account_token_set"], true);
++    let source = service.state.as_ref().ok_or("unsupported Kubernetes state")?;
+     assert!(!source.engines.supports_native_v6_root_storage());
+     let owner_before = crate::service::owner_store::serialize_owner(source)
+-        .map_err(|_| "unsupported child SSH complete owner before")?;
++        .map_err(|_| "unsupported Kubernetes complete owner before")?;
++    assert!(owner_before.windows(provider_bearer.len()).any(|part| part == provider_bearer.as_bytes()));
+     let identity_before = service
+         .current_state_identity()
+-        .map_err(|_| "unsupported child SSH v5 identity before")?;
++        .map_err(|_| "unsupported Kubernetes v5 identity before")?;
+     assert_eq!(
+         request(&mut service, "POST", ACTIVATE_PATH, &token, json!({})).status,
+         409
+     );
+     assert!(service.native_root.is_none());
+-    let retained = child_request(&mut service, "GET", "ssh/config/ca", json!({}));
++    let retained = request(&mut service, "GET", "kubernetes/config", &token, json!({}));
+     assert_eq!(retained.status, 200);
+     assert_eq!(retained.body["data"], before.body["data"]);
+     let owner_after = crate::service::owner_store::serialize_owner(
+-        service
+-            .state
+-            .as_ref()
+-            .ok_or("unsupported child SSH retained state")?,
++        service.state.as_ref().ok_or("unsupported Kubernetes retained state")?,
+     )
+-    .map_err(|_| "unsupported child SSH complete retained owner")?;
+-    // Compare the complete secret-bearing encoding without formatting it.
++    .map_err(|_| "unsupported Kubernetes complete retained owner")?;
++    // Compare every secret-bearing owner byte without formatting it.
+     assert!(owner_after.as_slice() == owner_before.as_slice());
+     assert_eq!(
+         service
+             .current_state_identity()
+-            .map_err(|_| "unsupported child SSH retained v5 identity")?,
++            .map_err(|_| "unsupported Kubernetes retained v5 identity")?,
+         identity_before
+     );
++    assert!(matches!(provider_listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock));
+     Ok(())
+ }
+ 
+--- a/crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs
+@@ -303,63 +303,93 @@
+     }
+ 
+     fn start_with_configured_storage(configured_native_storage: bool) -> TestResult<Self> {
++        Self::start_with_initial_configuration(configured_native_storage, &[])
++    }
++
++    // The negative archive fixture installs its real process enrollment only
++    // before the initial unseal. It never restarts this source cohort.
++    pub(super) fn start_with_initial_outbound_endpoints(
++        endpoints: Vec<crate::outbound::EndpointConfig>,
++    ) -> TestResult<Self> {
++        Self::start_with_initial_configuration(false, &endpoints)
++    }
++
++    fn start_with_initial_configuration(
++        configured_native_storage: bool,
++        endpoints: &[crate::outbound::EndpointConfig],
++    ) -> TestResult<Self> {
+         let mut files = Root::new();
+         private_directory(&files.path)?;
+         files.path = fs::canonicalize(&files.path)?;
+         let seed = files.path.join("seed");
+         private_directory(&seed)?;
+         let mut service = Service::new(seed.join("data"), &seed.join("audit.jsonl"))?;
+         let (key, admin) = {
+             let _scope = scope();
+             bootstrap(&mut service)?
+         };
+         let key = Zeroizing::new(key);
+         let admin = Zeroizing::new(admin);
+         {
+             let _scope = scope();
+             expect(
+                 service.handle(
+                     "POST",
+                     "secret/data/pipeline/history",
+                     "",
+                     &admin,
+                     json!({"options":{"cas":0},"data":{"value":"seed-v5"}}),
+                 ),
+                 200,
+                 "standalone-v5-seed",
+             )?;
+         }
+         let state = service.state.as_ref().ok_or("pipeline V5 state absent")?;
+         let cluster_id = state.cluster_id.clone();
+         let seed_identity = service
+             .current_state_identity()
+             .map_err(|_| "pipeline V5 identity absent")?;
+         assert!(matches!(
+             seed_identity,
+             crate::state_record_root::StateIdentity::RecordsV5(_)
+         ));
+         drop(service);
+         for id in 1..=3 {
+             let directory = files.path.join(format!("service-{id}"));
+             private_directory(&directory)?;
+             copy_cold_directory(&seed.join("data"), &directory.join("data"))?;
+         }
+         let pins = certificates(&files.path)?;
+         let configs = configurations(&files.path, &cluster_id, &pins)?;
+         let mut pipeline = Self {
+             files,
+             configs,
+             processes: vec![None, None, None],
+             services: vec![None, None, None],
+             key,
+             admin,
+             seed_identity,
+             configured_native_storage,
+         };
+         // Actual production bootstrap owner starts after the other two real
+         // TLS endpoints. No manually initialized router or test-owned log CAS.
+         for index in [1, 2, 0] {
+             pipeline.start_process(index)?;
+         }
++        if !endpoints.is_empty() {
++            for service in &pipeline.services {
++                let until = Instant::now() + REQUEST_BUDGET;
++                let _scope = RequestDeadlineScope::enter(until);
++                let service = service.as_ref().ok_or("initial outbound Service absent")?;
++                let mut writer = lock_until(service, until)
++                    .map_err(|_| "initial outbound Service deadline")?;
++                assert!(writer.state.is_none());
++                writer.install_outbound_endpoints(endpoints.to_vec())?;
++                assert!(writer.state.is_none());
++                if Instant::now() >= until {
++                    return Err("initial outbound original startup deadline".into());
++                }
++            }
++        }
+         let leader = pipeline.ready_leader()?;
+         // Bootstrap configuration owns group construction. It does not
+--- a/crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs
+@@ -599,273 +599,255 @@
+ // must refuse it before publishing a destination, without deleting its owner.
+ #[test]
+ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss() -> TestResult {
+-    let source = Pipeline::start()?;
++    let provider_listener = std::net::TcpListener::bind("127.0.0.1:0")?;
++    provider_listener.set_nonblocking(true)?;
++    let provider_address = provider_listener.local_addr()?;
++    let provider_origin = format!("https://localhost:{}", provider_address.port());
++    let provider_bearer = Zeroizing::new(hex(&crypto::random::<32>()?));
++    let source = Pipeline::start_with_initial_outbound_endpoints(vec![crate::outbound::EndpointConfig {
++        origin: provider_origin.clone(),
++        address: provider_address,
++        server_name: "localhost".to_owned(),
++        ca_pem: include_str!("testdata/kubernetes-api-ca.pem").to_owned(),
++        path_prefix: "/api/".to_owned(),
++        shared_secret: String::new(),
++    }])?;
+     let leader = source.ready_leader()?;
+-    const CHILD_NAMESPACE: &str = "unsupported-cold-ssh-child";
+-    expect(
+-        source.call(
+-            leader,
+-            "POST",
+-            "sys/namespaces/unsupported-cold-ssh-child",
+-            source.admin(),
+-            json!({}),
+-        )?,
+-        200,
+-        "unsupported-cold-ssh-child-namespace",
+-    )?;
+-    // Match Pipeline::call's original request budget, writer lock and phase
+-    // observation. Only the actual request namespace differs from root.
+-    let child_call = |method: &str, path: &str, body: Value| -> TestResult<Response> {
+-        let began = Instant::now();
+-        let until = began + REQUEST_BUDGET;
+-        let _scope = RequestDeadlineScope::enter(until);
+-        let service = source.services[leader]
+-            .as_ref()
+-            .ok_or("unsupported cold child Service absent")?;
+-        let mut writer = lock_until(service, until)
+-            .map_err(|_| "unsupported cold child Service lock deadline")?;
+-        let timing =
+-            crate::ha::NativeV6RequestObservation::start(until, "cold_child_ssh_test", false);
+-        let response = writer.handle(method, path, CHILD_NAMESPACE, source.admin(), body);
+-        timing.finish(Some(response.status));
+-        errors_only(path, &response);
+-        if began.elapsed() >= REQUEST_BUDGET {
+-            return Err("unsupported cold child original request deadline".into());
+-        }
+-        Ok(response)
+-    };
+-    // Root SSH, local Transit and TOTP have formal native owners. This
+-    // still-refused child SSH CA carries real private key state through the archive;
+-    // keep complete-graph rejection and every source-retention assertion.
++    // A real root Kubernetes config carries a private bearer but performs no
++    // provider I/O. Root SSH is now supported; unsupported child SSH cannot
++    // pass the namespace admission needed to create this historical archive.
+     expect(
+-        child_call("POST", "sys/mounts/cold-ssh", json!({"type":"ssh"}))?,
++        source.call(leader, "POST", "sys/mounts/cold-kubernetes", source.admin(),
++                    json!({"type":"kubernetes"}))?,
+         204,
+-        "unsupported-cold-ssh-mount",
++        "unsupported-cold-kubernetes-mount",
+     )?;
+     expect(
+-        child_call(
+-            "POST",
+-            "cold-ssh/config/ca",
+-            json!({"generate_signing_key":true,"key_type":"ssh-ed25519"}),
+-        )?,
+-        200,
+-        "unsupported-cold-ssh-key",
++        source.call(leader, "POST", "cold-kubernetes/config", source.admin(),
++                    json!({"kubernetes_host":provider_origin,"service_account_token":provider_bearer.as_str()}))?,
++        204,
++        "unsupported-cold-kubernetes-config",
+     )?;
+     let retained = expect(
+-        child_call("GET", "cold-ssh/config/ca", json!({}))?,
++        source.call(leader, "GET", "cold-kubernetes/config", source.admin(), json!({}))?,
+         200,
+-        "unsupported-cold-ssh-before",
+-    )?
+-    .body["data"]
+-        .clone();
++        "unsupported-cold-kubernetes-before",
++    )?.body["data"].clone();
++    assert_eq!(retained["service_account_token_set"], true);
+     activate(&source, leader)?;
+     let archive = export(&source, leader, source.admin())?;
+     let seal_bytes = fs::read(source.directory(leader).join("data/seal.json"))?;
+-    // Native activation deliberately closes the child SSH config/ca route.
+-    // This is not the separate public_key fast path. Observe the same activated
+-    // path before and after recovery refusal, and inspect the stored EngineState
+-    // clone below. The authenticated full-state encoding retains its private CA.
++    // Experimental migration retains this opaque owner, while the native
++    // dispatcher refuses its unsupported public config route. Observe the
++    // same boundary before and after recovery refusal; inspect the complete
++    // authenticated native graph and private owner encoding below.
+     let boundary_before = expect(
+-        child_call("GET", "cold-ssh/config/ca", json!({}))?,
++        source.call(leader, "GET", "cold-kubernetes/config", source.admin(), json!({}))?,
+         501,
+-        "unsupported-cold-ssh-activated-before",
++        "unsupported-cold-kubernetes-activated-before",
+     )?;
+     let observed_at = std::time::SystemTime::now()
+         .duration_since(std::time::UNIX_EPOCH)?
+         .as_secs();
+     let inspect_retained = || -> TestResult<(StateIdentity, u64, Zeroizing<Vec<u8>>)> {
+         // One original read-only inspection budget, as with Pipeline::with_service.
+         // The actual mutable journal is borrowed only to authenticate and export
+         // its full native object closure; no application mutation is performed.
+         let until = Instant::now() + REQUEST_BUDGET;
+         let _scope = RequestDeadlineScope::enter(until);
+         let deadline = OriginalDeadline::capture()?;
+         let service = source.services[leader]
+             .as_ref()
+             .ok_or("unsupported cold source Service")?;
+         let mut service = lock_until(service, until).map_err(|_| "unsupported cold source lock")?;
+         assert!(service.native_storage_profile.is_none());
+         assert!(service.native_candidate_profile.is_none());
+         let before = service
+             .current_state_identity()
+             .map_err(|_| "unsupported cold source identity")?;
+         let generation = service
+             .durable
+             .as_ref()
+             .ok_or("unsupported cold source durable")?
+             .generation();
+         let seal_identity = crate::service::snapshot_transfer::canonical_seal_identity(
+             service
+                 .seal
+                 .as_ref()
+                 .ok_or("unsupported cold source seal")?,
+         )?;
+         let proof = service
+             .capture_native_ha_unseal_proof()
+             .map_err(|_| "unsupported cold actual source proof")?
+             .ok_or("unsupported cold native proof absent")?;
+         assert_eq!(proof.identity(), before);
+         assert_eq!(proof.generation(), generation);
+         let spool = service
+             .snapshot_spool
+             .as_ref()
+             .ok_or("unsupported cold prior export spool")?
+             .clone();
+         let lease = spool.lease()?;
+         let local = lease.file(crate::snapshot_file::MAX_V6_SNAPSHOT_STATE, until)?;
+         let output = lease.file(crate::snapshot_file::MAX_V6_HA_SNAPSHOT_STATE, until)?;
+         let (_authenticated_archive, report) = proof
+             .export_snapshot_archive(&mut service, local, output, seal_identity, &mut |current| {
+                 deadline
+                     .check()
+                     .map_err(|_| Response::error(503, "cold inspection deadline"))?;
+                 if current.current_state_identity()? != before
+                     || current.native_storage_profile.is_some()
+                     || current.native_candidate_profile.is_some()
+                 {
+                     return Err(Response::error(503, "cold inspection source changed"));
+                 }
+                 Ok(())
+             })
+             .map_err(|_| "unsupported cold complete authenticated snapshot")?;
+         assert_eq!(report.local.generation, generation);
+         proof
+             .check_warm(&service)
+             .map_err(|_| "unsupported cold post-export proof")?;
+         let state = service
+             .state
+             .as_ref()
+             .ok_or("unsupported cold retained state")?;
+         let root = service
+             .native_root
+             .as_ref()
+             .ok_or("unsupported cold retained native root")?;
+         let root_bytes = root
+             .encode()
+             .map_err(|_| "unsupported cold root encoding")?;
+         let parent = root
+             .kv2_parent_key()
+             .map_err(|_| "unsupported cold native parent")?;
+         let engines = &state.engines;
+         assert!(!engines.supports_native_v6_root_storage());
+         // This is the same split representation used by check_native_installed:
+         // complete opaque engine metadata plus exact authenticated KV2 graph
+         // roots, with every payload already reopened by the real exporter above.
+         // Preserve ALL State owners; do not serialize a live NativeReadView or
+         // replace native data with an empty engine to make Serde succeed.
+         let project = |engines: &crate::engines::EngineState| -> TestResult<Zeroizing<Vec<u8>>> {
+             let check = || {
+                 deadline
+                     .check()
+                     .map_err(|_| crate::state_records::RecordError::Invalid)
+             };
+             let (opaque, graphs) = engines
+                 .project_checked_native_roots(
+                     &parent,
+                     &root.kv2,
+                     root.reader_floor.native_kv2_format,
+                     &check,
+                 )
+                 .map_err(|_| "unsupported cold native engine projection")?;
+             let graph_bytes =
+                 crate::secret_serde::to_vec(&graphs, crate::state_record_root::MAX_ROOT_BYTES)
+                     .map_err(|_| "unsupported cold native graph encoding")?;
+             let expected_graph_bytes =
+                 crate::secret_serde::to_vec(&root.kv2, crate::state_record_root::MAX_ROOT_BYTES)
+                     .map_err(|_| "unsupported cold expected graph encoding")?;
+             assert!(graph_bytes.as_slice() == expected_graph_bytes.as_slice());
+             let mut all_owners = state.clone();
+             all_owners.engines = opaque.into();
+             let owner_bytes = crate::service::owner_store::serialize_owner(&all_owners)
+                 .map_err(|_| "unsupported cold all-owner encoding")?;
+             let mut snapshot = Zeroizing::new(Vec::new());
+             snapshot.extend_from_slice(b"cold-dr-complete-native-state-v1\0");
+             snapshot.extend_from_slice(&(root_bytes.len() as u64).to_be_bytes());
+             snapshot.extend_from_slice(&root_bytes);
+             snapshot.extend_from_slice(&(owner_bytes.len() as u64).to_be_bytes());
+             snapshot.extend_from_slice(&owner_bytes);
+             deadline.check()?;
+             Ok(snapshot)
+         };
+         let owner_bytes = project(engines)?;
+         let mut inspected = engines.clone();
+-        let response = inspected
+-            .handle(
+-                CHILD_NAMESPACE,
++        let dispatch = inspected
++            .kubernetes_dispatch(
++                "",
++                "cold-kubernetes/config",
+                 "GET",
+-                "cold-ssh/config/ca",
+                 &json!({}),
+                 observed_at,
++                None,
+             )?
+-            .ok_or("unsupported cold retained SSH CA route absent")?;
++            .ok_or("unsupported cold retained Kubernetes route absent")?;
++        let crate::engines::kubernetes::Dispatch::Immediate(response) = dispatch else {
++            return Err("retained Kubernetes config unexpectedly requested provider I/O".into());
++        };
+         assert_eq!(response.status, 200);
+         assert!(!response.mutated);
+         assert!(response.body["data"] == retained);
+         let inspected_bytes = project(&inspected)?;
+         assert!(owner_bytes.as_slice() == inspected_bytes.as_slice());
+         proof
+             .check_warm(&service)
+             .map_err(|_| "unsupported cold completed source proof")?;
+         assert_eq!(
+             service
+                 .current_state_identity()
+                 .map_err(|_| "unsupported cold completed identity")?,
+             before
+         );
+         assert_eq!(
+             service
+                 .durable
+                 .as_ref()
+                 .ok_or("unsupported cold completed durable")?
+                 .generation(),
+             generation
+         );
+         assert!(Instant::now() < until);
+         Ok((before, generation, owner_bytes))
+     };
+     let (before, generation_before, engine_owner_before) = inspect_retained()?;
++    assert!(engine_owner_before.windows(provider_bearer.len()).any(|part| part == provider_bearer.as_bytes()));
+     let mut bundle = Root::new();
+     private_directory(&bundle.path)?;
+     bundle.path = fs::canonicalize(&bundle.path)?;
+     let archive_path = bundle.path.join("snapshot.bin");
+     let seal_path = bundle.path.join("seal.json");
+     let shares_path = bundle.path.join("shares.json");
+     private_file(&archive_path, &archive)?;
+     private_file(&seal_path, &seal_bytes)?;
+     let shares = Zeroizing::new(serde_json::to_vec(&[source.key.as_str()])?);
+     private_file(&shares_path, &shares)?;
+     let share_hash = crypto::digest(&shares);
+     drop(shares);
+     let destination = bundle.path.join("must-remain-unpublished");
+     use crate::service::native_seed::{ColdSeedError, recover_ha_seed};
+     assert!(matches!(
+         recover_ha_seed(
+             &archive_path,
+             &seal_path,
+             &shares_path,
+             &destination,
+             &hex(&crypto::digest(&archive)),
+             &hex(&crypto::digest(&seal_bytes))
+         ),
+         Err(ColdSeedError::GraphRejected)
+     ));
+     assert!(!destination.exists());
+     let (after_identity, generation_after, engine_owner_after) = inspect_retained()?;
+     assert_eq!(after_identity, before);
+     assert_eq!(generation_after, generation_before);
+     assert!(engine_owner_after.as_slice() == engine_owner_before.as_slice());
+     assert!(fs::read(&archive_path)? == archive);
+     assert!(fs::read(&seal_path)? == seal_bytes);
+     assert_eq!(
+         crypto::digest(&Zeroizing::new(fs::read(&shares_path)?)),
+         share_hash
+     );
+     let boundary_after = expect(
+-        child_call("GET", "cold-ssh/config/ca", json!({}))?,
++        source.call(leader, "GET", "cold-kubernetes/config", source.admin(), json!({}))?,
+         501,
+-        "unsupported-cold-ssh-activated-after",
++        "unsupported-cold-kubernetes-activated-after",
+     )?;
+     assert!(boundary_after.body == boundary_before.body);
++    assert!(matches!(provider_listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock));
+     Ok(())
+ }
+ 
+--- a/qa/openbao-acceptance/kv2_271_lossless_native_live.py
++++ b/qa/openbao-acceptance/kv2_271_lossless_native_live.py
+@@ -428,7 +428,8 @@
+                     json.dumps({"argv": argv, "end": end}).encode(),
+                     timeout=max(0, end - time.monotonic()))
+             except subprocess.TimeoutExpired as error:
+-                os.killpg(process.pid, signal.SIGKILL)
++                if process.returncode is None:
++                    os.killpg(process.pid, signal.SIGKILL)
+                 process.communicate(timeout=5)
+                 raise Failure("migration_original_deadline_unknown_outcome") from error
+             need(len(stdout) <= 4096 and len(errors) <= 4096, "migration_worker_output_bound")
+@@ -450,14 +451,14 @@
+         finally:
+             # Kill the original owned group on every abnormal exit, including
+             # KeyboardInterrupt after the worker created its HTTP leaf.
+-            if row["status"] != "completed":
++            if row["status"] != "completed" and process.returncode is None:
+                 try:
+                     os.killpg(process.pid, signal.SIGKILL)
+                 except ProcessLookupError:
+                     pass
+-            if process.poll() is None:
++            if process.returncode is None:
+                 process.communicate(timeout=5)
+-            row["original_wait_completed"] = process.poll() is not None
++            row["original_wait_completed"] = process.returncode is not None
+             row["returncode"] = process.returncode
+             self.phase("migration_outcome", row)
+ 
+--- a/tools/migration/openbao271_kv2_native_large_migrate.py
++++ b/tools/migration/openbao271_kv2_native_large_migrate.py
+@@ -296,7 +296,8 @@
+                 timeout=max(0, end - time.monotonic()))
+         except subprocess.TimeoutExpired as error:
+             lifecycle["planned_signal"] = signal.SIGKILL
+-            os.killpg(process.pid, signal.SIGKILL)
++            if process.returncode is None:
++                os.killpg(process.pid, signal.SIGKILL)
+             process.communicate(timeout=5)
+             raise DecodeError("native-large original absolute deadline exceeded") from error
+         legacy.check_deadline(end)
+@@ -309,16 +310,16 @@
+         complete = True
+         return 0, lifecycle
+     finally:
+-        if not complete:
++        if not complete and process.returncode is None:
+             try:
+                 lifecycle["planned_signal"] = signal.SIGKILL
+                 os.killpg(process.pid, signal.SIGKILL)
+             except ProcessLookupError:
+                 pass
+-        if process.poll() is None:
++        if process.returncode is None:
+             process.communicate(timeout=5)
+         lifecycle["returncode"] = process.returncode
+-        lifecycle["original_wait_completed"] = process.poll() is not None
++        lifecycle["original_wait_completed"] = process.returncode is not None
+ 
+ 
+ def owned_worker():
+--- a/crates/heptabao-server/src/http_snapshot_accept_tests.rs
++++ b/crates/heptabao-server/src/http_snapshot_accept_tests.rs
+@@ -722,7 +722,7 @@
+         "denied HTTP requests cannot allocate a snapshot spool"
+     );
+     let corrupted = fixture.snapshot("POST", &root, "", b"invalid gzip archive")?;
+-    assert_eq!(corrupted.status, 400);
++    assert_eq!(corrupted.status, 500);
+     assert!(corrupted.json()?.get("data").is_none());
+     exact_history(&fixture, &root)?;
+     assert!(
