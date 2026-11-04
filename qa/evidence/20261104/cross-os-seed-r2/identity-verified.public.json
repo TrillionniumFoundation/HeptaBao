@@ -1,0 +1,12 @@
+{
+  "binary_sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+  "helper_sha256": "908e477fbd2470b2f7824caee35841a508b4c4a5d3afc66c495cacc9a7264a65",
+  "hostname": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+  "nonce": "ba2909ba268c47879a73de1760eb5aa9",
+  "ready": true,
+  "root": "/home/qian-qi/heptabao-production-20261104-r1",
+  "stage_sha256": "d7620ba81d28e39985980f0211086be6b5b18105a8c6bd39bff787e157940b53",
+  "transport_sha256": "b7b14b6fcbf767d76873b215ce10119fe58beb50ec3fbd164b4925ceb188cfea",
+  "uid": 1000,
+  "work": "/home/qian-qi/heptabao-production-20261104-r1/control/seed-cold-recovery-rog-61ff-r2"
+}

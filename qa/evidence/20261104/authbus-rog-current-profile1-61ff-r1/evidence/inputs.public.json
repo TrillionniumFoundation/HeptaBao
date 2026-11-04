@@ -1,0 +1,43 @@
+{
+  "agentCount": 6,
+  "authConfigurationSha256": "1e8947c991814e8e514184ec68e999263c11db5f73135705ef90c11f56685a52",
+  "authOrderSha256": "b0f4145e16287c0abfdac9b250dddfc8b56f99e37cbb71e40b611f5ad4370370",
+  "authbusConfigurationSha256": "7605b95ef61ce6fc51cbb2d7b673470fc3f86603b9035d673f6516b963b7e638",
+  "authbusKeys": [
+    "address",
+    "caFile",
+    "roleIdFile",
+    "secretIdFile",
+    "hostId",
+    "pollIntervalMs",
+    "refreshMarginMs",
+    "maxRefreshesPerCycle",
+    "leader",
+    "publishNew",
+    "manageOrder",
+    "releaseGeneration",
+    "orderExcludeAgentIds"
+  ],
+  "configurationSha256": "a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15",
+  "credentialRead": false,
+  "defaultModel": {
+    "primary": "codex/gpt-6.1-sol"
+  },
+  "mainConfigured": true,
+  "nodeSha256": "fde6a4bf8d0562f7751d1a2d6cb9b417c4cfe107bbcb0aa3e9a24e125e348f48",
+  "productionChanged": false,
+  "providerCalled": false,
+  "pythonSha256": "52e0a13e60a981d8c4b6478be2ba5176f69da07948a056bf49cf6f077e30cb41",
+  "schema": "heptabao.rog-current-profile1-readonly-inputs.v1",
+  "sdkPins": {
+    "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/model-auth-CJEm9SNp.js": "2b5e700c9f7a7b012f8e7d7b0b56b06267e58861b3ebf8ca3a092bd74dd90aa7",
+    "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/oauth-B4aOCsid.js": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e",
+    "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/order-CeBlX0NH.js": "4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732",
+    "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/plugin-sdk/agent-runtime.js": "7831532d17eeaddd62889b2e8bb7b65ea7a7851901f69ceec23607a8c579dd95",
+    "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/provider-usage-BxQS-VWA.js": "cab428b63c6e8912f444089e120c95aea4a1d5edf4258c7fd1b20346558d12e6",
+    "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/source-check-ZSz5NzGW.js": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9",
+    "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/sqlite-wal-Bhk2Ro-u.js": "ef69e7cad95ff5cd5fe3087331294daae557833bcbc3d0ae140394d16855c3da",
+    "/home/qian-qi/.npm-global/lib/node_modules/openclaw/dist/store-DH33UrUj.js": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf",
+    "/home/qian-qi/.npm-global/lib/node_modules/openclaw/package.json": "695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db"
+  }
+}

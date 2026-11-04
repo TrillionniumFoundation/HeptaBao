@@ -1,0 +1,224 @@
+{
+  "all_backup_restore_paths_migrated": false,
+  "all_clients_migrated": false,
+  "candidate_counts_are_not_service_or_backup_qualification_counts": true,
+  "changes": [],
+  "complete_asset_inventory": false,
+  "credential_values_read": false,
+  "desktop_eight_agent_local_provider_migration_required": true,
+  "docker_listing_failed_hosts_not_claimed_empty": [
+    "rog",
+    "pocket4"
+  ],
+  "hosts": [
+    {
+      "authbus_address": {
+        "hostname": "100.66.117.33",
+        "port": 8200,
+        "scheme": "https",
+        "userinfo_path_and_query_omitted": true
+      },
+      "config_metadata_stable": true,
+      "config_sha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+      "docker_probe": null,
+      "exit_code": 0,
+      "host": "mac",
+      "job": "mac/1a1a721926e-fc05-2a46",
+      "nonrecursive_backup_path_candidates": 34,
+      "report_sha256": "bee416209fe9a1029d3a7e735f72564c642bc479652fdb2bfc8e1dd4493abaf7",
+      "scope_errors": [],
+      "service_path_candidates": 7,
+      "stdout_sha256": "48222c227b44d3be4d5d2c9352d4f7e2e314dacbb53a045667b9cdaf7f417959"
+    },
+    {
+      "authbus_address": {
+        "hostname": "100.66.117.33",
+        "port": 8200,
+        "scheme": "https",
+        "userinfo_path_and_query_omitted": true
+      },
+      "config_metadata_stable": true,
+      "config_sha256": "a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15",
+      "docker_probe": {
+        "argv": [
+          "/usr/bin/docker",
+          "ps",
+          "-a",
+          "--format",
+          "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"
+        ],
+        "exit_code": 1,
+        "matched_rows": [],
+        "stderr_sha256": "d0527b91b88a4736c47893d33c0242b10f32454ed6cacf1081bc07594358dfc5",
+        "truncated": false
+      },
+      "exit_code": 0,
+      "host": "rog",
+      "job": "rog/1a1a6fa6a1e-fc05-29b6",
+      "nonrecursive_backup_path_candidates": 33,
+      "report_sha256": "60df1ea2b661482780ec2d856da4c620229b9d0d2d1096b534507cf3782b4d1e",
+      "scope_errors": [],
+      "service_path_candidates": 9,
+      "stdout_sha256": "84bf8960938be79f6bf30ab6add2def77c36bf66049e26e0949293d420ab828c"
+    },
+    {
+      "authbus_address": {
+        "hostname": "100.66.117.33",
+        "port": 8200,
+        "scheme": "https",
+        "userinfo_path_and_query_omitted": true
+      },
+      "config_metadata_stable": true,
+      "config_sha256": "3611380b8c77282e785e00e20d9eba8bc8cf0164b3b3f00e2ea5d1f52a441c98",
+      "docker_probe": {
+        "argv": [
+          "/usr/bin/docker",
+          "ps",
+          "-a",
+          "--format",
+          "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"
+        ],
+        "exit_code": 1,
+        "matched_rows": [],
+        "stderr_sha256": "d0527b91b88a4736c47893d33c0242b10f32454ed6cacf1081bc07594358dfc5",
+        "truncated": false
+      },
+      "exit_code": 0,
+      "host": "pocket4",
+      "job": "pocket4/1a1a722efde-fc05-2a4e",
+      "nonrecursive_backup_path_candidates": 7,
+      "report_sha256": "10ae2da00852f0729e5d770ddfdf5132000366990bb4b1d8866dcbb28bd4291f",
+      "scope_errors": [],
+      "service_path_candidates": 6,
+      "stdout_sha256": "611cef0063d7b047c267e11ea2cb90c61bbf320df0b4e875da4d822018b930b3"
+    },
+    {
+      "authbus_address": null,
+      "config_metadata_stable": null,
+      "config_sha256": null,
+      "docker_probe": {
+        "argv": [
+          "/usr/bin/docker",
+          "ps",
+          "-a",
+          "--format",
+          "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"
+        ],
+        "exit_code": 0,
+        "matched_rows": [
+          "f67985499a16\theptabao-openbao271-oracle-r46\tghcr.io/openbao/openbao:2.7.1\tUp 3 weeks"
+        ],
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "exit_code": 0,
+      "host": "x230",
+      "job": "x230/1a1a7220a13-fc05-2a4c",
+      "nonrecursive_backup_path_candidates": 5,
+      "report_sha256": "9a25dc24442e3b25b576304fe6c406584d5cc4acaaebbd0d026676a8b356552b",
+      "scope_errors": [],
+      "service_path_candidates": 2,
+      "stdout_sha256": "3a3644570564d3182017deb6fa8afe691f351726509f34ffceb852adac0bf6ed"
+    },
+    {
+      "active_provider_gateway_and_renewal_observed": true,
+      "authbus": {
+        "address": {
+          "hostname": "127.0.0.1",
+          "port": 18200,
+          "scheme": "https",
+          "userinfo_path_and_query_omitted": true
+        },
+        "configuration": {
+          "caFile": "/home/qian-qi/.openclaw/credentials/authbus/ci-provider-ca.pem",
+          "enforceRefreshLeases": null,
+          "hostId": "desktop",
+          "leader": false,
+          "manageOrder": true,
+          "orderExcludeAgentIds": null,
+          "pollIntervalMs": 15000,
+          "publishNew": true,
+          "releaseGeneration": 201,
+          "roleIdFile": "/home/qian-qi/.openclaw/credentials/authbus/ci-provider-role_id",
+          "schedulerMode": null,
+          "secretIdFile": "/home/qian-qi/.openclaw/credentials/authbus/ci-provider-secret_id"
+        },
+        "enabled": true
+      },
+      "configured_agent_ids": [
+        "main",
+        "resident-helper",
+        "independent-helper",
+        "telegram-bot-8681289317",
+        "telegram-bot-8449317572",
+        "hepta-paper-worker",
+        "trillionnium-os-agent",
+        "hepta-luna-teacher"
+      ],
+      "docker_probe": {
+        "argv": [
+          "/usr/bin/docker",
+          "ps",
+          "-a",
+          "--format",
+          "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"
+        ],
+        "exit_code": 0,
+        "matched_rows": [],
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "exit_code": 0,
+      "host": "desktop",
+      "job": "desktop/1a1a72bccd9-fc05-2a72",
+      "nonrecursive_backup_path_candidates": 12,
+      "report_sha256": "2071bfa4d2f01302551d6a96de7dfbafbd74c1680a6a0f8c2c6aad09e2e30e57",
+      "runtime_version_of_provider_qualified": false,
+      "scope_errors": [],
+      "service_path_candidates": 29,
+      "stdout_sha256": "b401226088d1255f6c041608f7f2270d696fb2e7b4645ab6f2727276f4120368"
+    },
+    {
+      "absence_scope": "Only configured operator home, common paths and filtered manager observations; not a whole-machine absence proof.",
+      "authbus": null,
+      "configured_agent_ids": null,
+      "docker_probe": {
+        "argv": [
+          "/usr/bin/docker",
+          "ps",
+          "-a",
+          "--format",
+          "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"
+        ],
+        "exit_code": 0,
+        "matched_rows": [],
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "exit_code": 0,
+      "host": "ai395",
+      "job": "ai395/1a1a72be711-fc05-2a75",
+      "nonrecursive_backup_path_candidates": 0,
+      "observed_client_config": {
+        "path": "/home/qq/.openclaw/openclaw.json",
+        "unavailable": "FileNotFoundError"
+      },
+      "report_sha256": "2f0a370cd108c649f79e1bab94cd5e52ecffa906605bf8881e2d0f69d27518c2",
+      "scope_errors": [],
+      "service_path_candidates": 0,
+      "stdout_sha256": "d288a235bee7e4e98c368e2446981df15693604993994cbcc6f49f316a67f7a4"
+    }
+  ],
+  "mac_main_alias_deduplicated": true,
+  "nonrecursive_backup_path_candidates": 91,
+  "observed_physical_hosts": 6,
+  "ok": true,
+  "old_installations_deleted": false,
+  "preserve_openbao271_x230_oracle": true,
+  "prior_four_host_review_sha256": "9070de4809e7f79388b8837bc7450e6e6da0cb70aea000f58c010c1a80b0a0a1",
+  "retirement_qualified": false,
+  "reviewer_sha256": "5f5ede71b2c912ee0014f89ec8d54937a6bf1c7d6883f8761df59fe40650927c",
+  "schema": "heptabao.root-reviewed-six-host-retirement-inventory.v1",
+  "script_sha256": "7b3f7e3283bc472cbf138d5bc01f4e8a5359cd756a1c7ef0d91cd83287fd99fa",
+  "service_path_candidates": 53
+}

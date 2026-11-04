@@ -1,0 +1,11 @@
+{
+  "archive_sha256": "c50dbae852e748763038d0e0dcdfe2eae7dbc2a254f2b29642dec47c3117e64b",
+  "helper_sha256": "908e477fbd2470b2f7824caee35841a508b4c4a5d3afc66c495cacc9a7264a65",
+  "initialize": false,
+  "nonce": "ba2909ba268c47879a73de1760eb5aa9",
+  "production_started": false,
+  "same_connection_identity_required": true,
+  "schema": "heptabao.cross-os-seed-intent.v1",
+  "source_mac_result_sha256": "ef640ced21b11be8cfd2dd8cac9342cff5cc0406e1ee17f0bb07cf85c37d7ecb",
+  "transport_sha256": "b7b14b6fcbf767d76873b215ce10119fe58beb50ec3fbd164b4925ceb188cfea"
+}

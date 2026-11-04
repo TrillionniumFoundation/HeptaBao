@@ -1,0 +1,118 @@
+{
+  "all_clients_migrated": false,
+  "backup_path_candidates": [
+    {
+      "directory": "/home/qq/.config",
+      "recursive": false,
+      "selected": [],
+      "total_directory_entries": 18,
+      "truncated": false
+    },
+    {
+      "directory": "/home/qq",
+      "recursive": false,
+      "selected": [],
+      "total_directory_entries": 170,
+      "truncated": false
+    }
+  ],
+  "changes": [],
+  "client_config": {
+    "path": "/home/qq/.openclaw/openclaw.json",
+    "unavailable": "FileNotFoundError"
+  },
+  "committed_backup_qualified": false,
+  "complete_asset_inventory": false,
+  "credential_files_read": false,
+  "docker_listing": {
+    "argv": [
+      "/usr/bin/docker",
+      "ps",
+      "-a",
+      "--format",
+      "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"
+    ],
+    "exit_code": 0,
+    "matched_rows": [],
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "truncated": false
+  },
+  "elapsed_seconds": 0.5272843329003081,
+  "errors": [],
+  "finished_unix_ns": 1793806036898372571,
+  "host": "ai395",
+  "installed_binary_candidates": [],
+  "manager_observations": [
+    {
+      "argv": [
+        "/usr/bin/systemctl",
+        "list-unit-files",
+        "--no-pager",
+        "--no-legend"
+      ],
+      "exit_code": 0,
+      "matched_rows": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "truncated": false
+    },
+    {
+      "argv": [
+        "/usr/bin/systemctl",
+        "list-units",
+        "--all",
+        "--no-pager",
+        "--no-legend"
+      ],
+      "exit_code": 0,
+      "matched_rows": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "truncated": false
+    },
+    {
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "list-unit-files",
+        "--no-pager",
+        "--no-legend"
+      ],
+      "exit_code": 0,
+      "matched_rows": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "truncated": false
+    },
+    {
+      "argv": [
+        "/usr/bin/systemctl",
+        "--user",
+        "list-units",
+        "--all",
+        "--no-pager",
+        "--no-legend"
+      ],
+      "exit_code": 0,
+      "matched_rows": [],
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "truncated": false
+    }
+  ],
+  "platform": "linux",
+  "process_arguments_read": false,
+  "process_environment_read": false,
+  "process_names_only": {
+    "argv": [
+      "/bin/ps",
+      "-axo",
+      "pid=,ppid=,comm="
+    ],
+    "exit_code": 0,
+    "matched_rows": [],
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "truncated": false
+  },
+  "retirement_authorized_by_this_report": false,
+  "schema": "heptabao.retirement-boundaries-readonly.v1",
+  "service_files": [],
+  "started_unix_ns": 1793806036371092388,
+  "uid": 1000
+}

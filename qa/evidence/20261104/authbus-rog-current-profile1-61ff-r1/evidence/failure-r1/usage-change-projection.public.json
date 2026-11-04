@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.rog-profile1-cas-usage-source-diagnostic.v1",
+  "usageChanges": [
+    {
+      "profileSourceOrdinal": 1,
+      "isSelected": true,
+      "presentBefore": true,
+      "presentAfter": false,
+      "changedKeys": [
+        "blockedReason",
+        "blockedSource",
+        "blockedUntil",
+        "errorCount",
+        "failureCounts",
+        "lastFailureAt",
+        "lastUsed"
+      ]
+    },
+    {
+      "profileSourceOrdinal": 2,
+      "isSelected": false,
+      "presentBefore": true,
+      "presentAfter": true,
+      "changedKeys": []
+    },
+    {
+      "profileSourceOrdinal": 3,
+      "isSelected": false,
+      "presentBefore": true,
+      "presentAfter": true,
+      "changedKeys": []
+    }
+  ],
+  "sdkStoreSha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf"
+}

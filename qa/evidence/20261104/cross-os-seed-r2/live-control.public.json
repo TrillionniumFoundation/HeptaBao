@@ -1,0 +1,15 @@
+{
+  "host": "mac",
+  "job_id": "1a1a7467b63-fc05-2acc",
+  "idempotency_key": "root61ff-cross-os-seed-verify-33575665-20261104-r2",
+  "request_digest": "02ef0af6581fc841b095b953b0a9a265c2f25d1a5513267c065a2d4b8ded2882",
+  "reused": false,
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 9896,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1a7467b63-fc05-2acc"
+  }
+}
+

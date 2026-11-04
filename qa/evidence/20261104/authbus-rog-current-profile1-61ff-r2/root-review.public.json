@@ -1,0 +1,74 @@
+{
+  "actual_formal_native_v6_activation_and_format2": true,
+  "actual_sigkill_cold_sealed_unseal_and_two_sdk_imports": true,
+  "agent_review_recomputed_exactly": true,
+  "agent_review_sha256": "73c1b25e517cc68d314673b178fd444fa5bd84aaaa556e017fcf5c80dfe3e417",
+  "all_owned_processes_stopped": true,
+  "archive_members": 11,
+  "archive_sha256": "9ab2d2822e78cb442496bb50a60c6c3bcb9ca182e51e98ad0a907daa99373eef",
+  "dynamic_assertions": 236,
+  "embedded_executed_source_pins": {
+    "consumer.mjs": "26758817d22047dbc056bf9a7e49921c657677990744c130e64eb18283190a8d",
+    "driver.py": "393d5b2a35fe6393665ec5a2fdb56eb5b59dbc0a50879cc8dfa4935ab945a3d2",
+    "launcher.py": "b82b74d9239e81715d54387032eba64e0b21422b35daefd63519699faed5c3a7",
+    "prior-provider-proof.public.json": "3050622c35bacb53ac47f532d4d5230c7c5c68bd2db243376c3c27385744a878"
+  },
+  "frozen_runtime_pins": 34,
+  "independent_post_rollback_sdk_reads": 2,
+  "job": "rog/1a1a719db42-fc05-2a20",
+  "late_export_usage_drift_retained": {
+    "causeAttributed": false,
+    "credentialGenerationExact": true,
+    "sourceOrdinal": 3,
+    "stateChangedKeys": [
+      "usageStats"
+    ],
+    "stateTimestampChanged": true,
+    "storeLogicalAndRowsExact": true,
+    "usageChangedKeys": [
+      "lastUsed"
+    ],
+    "usedAsRollbackTarget": false
+  },
+  "normal_binary_sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+  "ok": true,
+  "original_order_usage_defaults_exclusions_preserved": true,
+  "phase_counts": {
+    "coldRollback": 39,
+    "coldSdk": 55,
+    "independentPostRollbackSdkReads": 2,
+    "initialRollback": 39,
+    "initialSdk": 55,
+    "parent": 48
+  },
+  "production_unit_and_frozen_inputs_unchanged_during_run": true,
+  "r1_sdk_usage_pruning_failure_retained": true,
+  "reviewer_sha256": "bf54752692ab3c1c6fbd8b9d32217213f8cd16e3242e1277e208edf600362f58",
+  "schema": "heptabao.root-review.rog-current-profile1-authbus.v1",
+  "scope": {
+    "agent": "main",
+    "all_six_agents": false,
+    "complete_database_backup": false,
+    "default_gateway_selection": false,
+    "fresh_provider_call_this_run": false,
+    "full_openbao_271_replacement": false,
+    "host": "rog",
+    "j3160_contacted": false,
+    "migrated_sdk_primary_logical_store": true,
+    "model_request": false,
+    "native_codex_factory_reopen": false,
+    "nonprimary_rows_migration": false,
+    "oauth_refresh": false,
+    "os_service_manager_restart": false,
+    "production_traffic_cutover": false,
+    "profile_records_in_source": 3,
+    "selected_managed_profile_ordinal": 1,
+    "sql_auth_row_source_invariant": true
+  },
+  "selected_credential_sha256": "bca88c7adde84057871fd63f202e6aba80d453a04f75151df1d29f269dfaa5f1",
+  "source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "terminal_exit": 0,
+  "tls_approle_kv_policy_renew_revoke_both_phases": true,
+  "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "whole_logical_sdk_cas_rollbacks": 2
+}

@@ -1,0 +1,11 @@
+--- r1
++++ r2
+@@ -145,7 +145,7 @@
+       && digest(plan.pluginConfig.orderExcludeAgentIds ?? []) === plan.sourceOrderExclusionsSha256);
+     const effectiveOrderBefore = orderApi.i({ cfg, store: structuredClone(before), provider: before.profiles[plan.expectedProfileId].provider });
+     let removed = false;
+-    const missing = await storeApi.m({ agentDir, updater: store => {
++    const missing = await storeApi.m({ agentDir, saveOptions: { preserveStateProfileIds: [plan.expectedProfileId] }, updater: store => {
+       if (digest(store) !== digest(before) || !Object.hasOwn(store.profiles, plan.expectedProfileId)) return false;
+       delete store.profiles[plan.expectedProfileId]; removed = true; return true;
+     } });

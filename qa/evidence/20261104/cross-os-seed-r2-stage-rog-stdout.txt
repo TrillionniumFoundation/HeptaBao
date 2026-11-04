@@ -1,0 +1,1 @@
+{"ok": true, "node": "rog", "pins": {"recover_seed_linux_61ff_r2.py": "908e477fbd2470b2f7824caee35841a508b4c4a5d3afc66c495cacc9a7264a65", "recover_seed_transport_61ff_b7_r2.py": "b7b14b6fcbf767d76873b215ce10119fe58beb50ec3fbd164b4925ceb188cfea"}, "receipt_sha256": "380882c558cda58e67fa4f5a0a81b83adc1c133832932301b4bafdb077f9ef60", "service_started": false}

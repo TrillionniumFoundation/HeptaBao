@@ -1,0 +1,22 @@
+{
+  "bwrapSha256": "523da3e7399044be5163aee6f57a77a6bef7454376e28f0a0627920bae1b76b6",
+  "credentialRead": false,
+  "inside": {
+    "interfaces": [
+      "lo"
+    ],
+    "loopbackRoundtrip": true,
+    "netnsInode": 4026533132,
+    "pidnsInode": 4026533130,
+    "rootReadOnly": true,
+    "uid": 1000
+  },
+  "ok": true,
+  "parentNetnsInode": 4026531833,
+  "productionChanged": false,
+  "providerCalled": false,
+  "returnCode": 0,
+  "schema": "heptabao.rog-current-source-existing-containment-preflight.v1",
+  "stderrClass": "",
+  "systemPolicyChanged": false
+}

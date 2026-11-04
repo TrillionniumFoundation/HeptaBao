@@ -1,0 +1,163 @@
+{
+  "actualCurrentCredentialSha256": "bca88c7adde84057871fd63f202e6aba80d453a04f75151df1d29f269dfaa5f1",
+  "actualOriginalInstalledSdkExplicitProfileSelected": true,
+  "actualServerSigkillAndColdSealedUnseal": true,
+  "actualTlsAppRoleKvPolicyRenewRevokeBothPhases": true,
+  "allOriginalGuardsAndBudgetsRetained": true,
+  "archiveSha256": "9ab2d2822e78cb442496bb50a60c6c3bcb9ca182e51e98ad0a907daa99373eef",
+  "authoritativeJobs": {
+    "1a1a6f78de9-fc05-29ab": {
+      "exitCode": 0,
+      "state": "succeeded"
+    },
+    "1a1a6fab472-fc05-29b8": {
+      "exitCode": 0,
+      "state": "succeeded"
+    },
+    "1a1a6fcdf0f-fc05-29c4": {
+      "exitCode": 0,
+      "state": "succeeded"
+    },
+    "1a1a703da50-fc05-29e1": {
+      "exitCode": 0,
+      "state": "succeeded"
+    },
+    "1a1a705db11-fc05-29ea": {
+      "exitCode": 1,
+      "state": "failed"
+    },
+    "1a1a708a1a1-fc05-29f6": {
+      "exitCode": 1,
+      "state": "failed"
+    },
+    "1a1a70a0b3c-fc05-29fa": {
+      "exitCode": 0,
+      "state": "succeeded"
+    },
+    "1a1a70f2a36-fc05-2a06": {
+      "exitCode": 0,
+      "state": "succeeded"
+    },
+    "1a1a718f122-fc05-2a1c": {
+      "exitCode": 0,
+      "state": "succeeded"
+    },
+    "1a1a719db42-fc05-2a20": {
+      "exitCode": 0,
+      "state": "succeeded"
+    },
+    "1a1a71ff3e7-fc05-2a3d": {
+      "exitCode": 1,
+      "state": "failed"
+    },
+    "1a1a723c1a0-fc05-2a54": {
+      "exitCode": 0,
+      "state": "succeeded"
+    }
+  },
+  "counts": {
+    "coldRollback": 39,
+    "coldSdk": 55,
+    "independentPostRollbackSdkReads": 2,
+    "initialRollback": 39,
+    "initialSdk": 55,
+    "parent": 48
+  },
+  "fullLogicalSdkCasRollbackBothPhases": true,
+  "independentPostRollbackSdkWholeLogicalExact": true,
+  "lateDrift": {
+    "causeAttributed": false,
+    "credentialGenerationExact": true,
+    "sourceOrdinal": 3,
+    "stateChangedKeys": [
+      "usageStats"
+    ],
+    "stateTimestampChanged": true,
+    "storeLogicalAndRowsExact": true,
+    "usageChangedKeys": [
+      "lastUsed"
+    ],
+    "usedAsRollbackTarget": false
+  },
+  "lateSourceAllAuthRowsExact": false,
+  "namespaceProcessExited": true,
+  "normalBinarySha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+  "ok": true,
+  "originalOrderUsageDefaultsExclusionsPreserved": true,
+  "ownedServerStopped": true,
+  "pidNamespaceTeardownEnforced": true,
+  "productionUnitAnd34FrozenPinsUnchangedDuringRun": true,
+  "providerProofScope": "Historical exact-generation GET only; no fresh provider request in r2.",
+  "r1FailurePreserved": true,
+  "rawFiles": {
+    "control/stage.public.json": {
+      "bytes": 5296,
+      "sha256": "37ad7d9c35e8c775f3a3a59d048f9502908ddcb62b1d9bdd659dee08a6cd2689"
+    },
+    "evidence-export-r2/rollback-independent-sdk-read.public.json": {
+      "bytes": 3490,
+      "sha256": "e37c341b044c3bd7f8bc362ccd5340e518db7e42a64a7516fe4e86a8216e5bae"
+    },
+    "evidence-export-r2/source-second-read.public.json": {
+      "bytes": 2525,
+      "sha256": "d7752bd8b546c987588b3aadc8902239b92513aa34686322fe58dcb8d1453716"
+    },
+    "run-r2/execution.result.public.json": {
+      "bytes": 1321,
+      "sha256": "c1a3c31b672ad333a609282e055d7773b803f24aa5a8048024cddc59ab6d7f96"
+    },
+    "run-r2/intent.public.json": {
+      "bytes": 7524,
+      "sha256": "560502926ae77d0a0d564a5aff2f951b08f11544586080dacc433ec98be42e99"
+    },
+    "run-r2/live/consumer-cold-new-process/result.public.json": {
+      "bytes": 5305,
+      "sha256": "4bc25580e68a040761ac98c578d937d91307c943fc784327443f6a3268838f6e"
+    },
+    "run-r2/live/consumer-cold-new-process/rollback-result.public.json": {
+      "bytes": 2616,
+      "sha256": "20bf49f51db14bc1e019caefcee8ec25da01a09619b2c4848cdde5ee0c44bdc5"
+    },
+    "run-r2/live/consumer-initial/result.public.json": {
+      "bytes": 5296,
+      "sha256": "b95376fddac8199429d53e0820ecdcad79d9af8ccffde2b2f144acd6bddcfba8"
+    },
+    "run-r2/live/consumer-initial/rollback-result.public.json": {
+      "bytes": 2607,
+      "sha256": "02bc147df1a3994c180818bac9066aad5f27ec3d7289a363ec2ec5cf8cfee84a"
+    },
+    "run-r2/live/result.public.json": {
+      "bytes": 25144,
+      "sha256": "ec431072ef6e5ecd7f6f167d54c5aef857d071c97d4a5116eec0d2c9145d3fd7"
+    }
+  },
+  "reviewerSha256": "6ef2035f12bd8a9ae357cbaff26d09c3408f02632a8872af85901c2246d22c7e",
+  "schema": "heptabao.rog-current-profile1-local-evidence-review.v1",
+  "scope": {
+    "allAgentsOrAccounts": false,
+    "defaultModel": "codex/gpt-6.1-sol",
+    "freshProviderValidity": false,
+    "fullReplacementQualified": false,
+    "j3160Contacted": false,
+    "modelPost": false,
+    "oauthRefresh": false,
+    "privateStoreRecovery": true,
+    "productionGatewayDefaultSelection": false,
+    "productionServiceRestart": false,
+    "productionSourceWrites": false,
+    "productionTrafficCutover": false,
+    "singleRogMainProfileOrdinal": 1,
+    "sourceProfileCount": 3
+  },
+  "sdkSupportedPreserveStateOptionUsed": true,
+  "sourceCommit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "sourcePins": {
+    "consumer.mjs": "26758817d22047dbc056bf9a7e49921c657677990744c130e64eb18283190a8d",
+    "driver.py": "393d5b2a35fe6393665ec5a2fdb56eb5b59dbc0a50879cc8dfa4935ab945a3d2",
+    "launcher.py": "b82b74d9239e81715d54387032eba64e0b21422b35daefd63519699faed5c3a7",
+    "prior-provider-proof.public.json": "3050622c35bacb53ac47f532d4d5230c7c5c68bd2db243376c3c27385744a878"
+  },
+  "sourceTree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "synchronousSourceAllAuthRowsExact": true,
+  "terminalStatusesSha256": "e3606c636074845b83342f041e7d82ea2365c6be2e12bda76f4a66118129836d"
+}

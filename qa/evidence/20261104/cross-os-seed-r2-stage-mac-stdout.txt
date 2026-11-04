@@ -1,0 +1,1 @@
+{"ok": true, "node": "mac", "pins": {"verify_seed_cross_os_61ff_r2.py": "3357566596695c88e06fde82aab7b9ce09eb635b49c571cb17590c986bf104e8"}, "receipt_sha256": "98e0ff45995f8a3cfa45bc8e21bfdf93d862cccc75048c9fc41b09a7a16004ad", "service_started": false}

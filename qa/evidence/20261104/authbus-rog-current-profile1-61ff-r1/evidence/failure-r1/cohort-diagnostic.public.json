@@ -1,0 +1,65 @@
+{
+  "actualSourceCredentialUnchanged": true,
+  "baselineOrder": {
+    "entryCounts": {
+      "openai": 3
+    },
+    "isPresent": true,
+    "providers": [
+      "openai"
+    ],
+    "sha256": "f640d46aaa1019caef315e11b68b3cafd04306ec8b59164ae2098d469c655290"
+  },
+  "baselineOtherStateKeys": [
+    "lastGood",
+    "runtimePersistedProfileIds",
+    "version"
+  ],
+  "baselineProfile1Digest": "bca88c7adde84057871fd63f202e6aba80d453a04f75151df1d29f269dfaa5f1",
+  "baselineProfileCount": 3,
+  "baselineUsageSha256": "3b5821832575298790f58606864f6370c6fc8c014c8d77f71d9ac5d1d93e60d7",
+  "cohort": {
+    "": {
+      "identity": [
+        66306,
+        35134077,
+        122880,
+        1000,
+        1000,
+        33152,
+        1,
+        1793803547420339000,
+        1793803547420339000
+      ],
+      "sha256": "b87e49050fe388f558d097274ee3a15b9e9d4049cfed1f1b3a8a2e5fc5a86ce8"
+    }
+  },
+  "credentialValuesPublished": false,
+  "failedPrivateFixtureReadOnly": true,
+  "productionChanged": false,
+  "providerCalled": false,
+  "rawProfileCount": 2,
+  "rawSelectedAbsent": true,
+  "rawStateKeys": [
+    "version",
+    "order",
+    "lastGood",
+    "usageStats"
+  ],
+  "rawStateOrder": {
+    "entryCounts": {
+      "openai": 3
+    },
+    "isPresent": true,
+    "providers": [
+      "openai"
+    ],
+    "sha256": "f640d46aaa1019caef315e11b68b3cafd04306ec8b59164ae2098d469c655290"
+  },
+  "rawStateOrderExactBaseline": true,
+  "rawStateUsageExactBaseline": false,
+  "rawStateUsageSha256": "86d3cecbaceddbf0937e96312b448cd48e119a8e8ea18e7198e57e9944601b0f",
+  "schema": "heptabao.rog-profile1-failed-cas-readonly-diagnostic.v1",
+  "walHonored": true,
+  "wholeCohortCopiedExact": true
+}

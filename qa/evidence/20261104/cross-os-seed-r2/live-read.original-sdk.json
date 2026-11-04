@@ -1,0 +1,11 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1a7467b63-fc05-2acc\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b226f6b223a20747275652c2022726573756c74223a20222f566f6c756d65732f54352f68657074612d766e6578742d7265636f766572792d32303236313031332f686570746162616f2d70726f64756374696f6e2d32303236313130342d72312f617574686f726974792f736565642d637573746f64792f63726f73732d6f732d726f672d363166662d72322f726573756c742e7075626c69632e6a736f6e222c2022736861323536223a202235366239336238663861373032316263343134313532613532366166663037393538313438363738646434323364353663396433316161613930383435393965222c202272656d6f74655f6f7574636f6d65223a2022636f6e6669726d65645f73756363657373222c20226f776e65645f7373685f73746f70706564223a20747275652c20226175746f6d617469635f7265747279223a2066616c73652c202270726f64756374696f6e5f73746172746564223a2066616c73657d0a\",\n    \"eof\": true,\n    \"next_offset\": 362,\n    \"offset\": 0,\n    \"size\": 362,\n    \"text\": \"{\\\"ok\\\": true, \\\"result\\\": \\\"/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-20261104-r1/authority/seed-custody/cross-os-rog-61ff-r2/result.public.json\\\", \\\"sha256\\\": \\\"56b93b8f8a7021bc414152a526aff07958148678dd423d56c9d31aaa9084599e\\\", \\\"remote_outcome\\\": \\\"confirmed_success\\\", \\\"owned_ssh_stopped\\\": true, \\\"automatic_retry\\\": false, \\\"production_started\\\": false}\\n\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}
+

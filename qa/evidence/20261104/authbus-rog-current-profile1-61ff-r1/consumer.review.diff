@@ -1,0 +1,123 @@
+--- original-profile2-consumer
++++ rog-explicit-profile-consumer
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env node
+-/** Exercise the installed AuthBus plugin and SDK model credential resolver.
++/** Exercise ROG source profile 1 through the original installed SDK explicit-profile resolver.
+  * The new private state is populated from the real HeptaBao TLS/AppRole API.
+  * No provider request, OAuth refresh or production write is permitted here.
+  */
+@@ -17,7 +17,7 @@
+ const stable = value => Array.isArray(value) ? value.map(stable) : value && typeof value === 'object'
+   ? Object.fromEntries(Object.keys(value).sort().map(key => [key, stable(value[key])])) : value;
+ const digest = value => hash(JSON.stringify(stable(value)));
+-const report = { schema: 'heptabao.actual-plugin-default-consumer.v1', ok: false,
++const report = { schema: 'heptabao.rog-current-explicit-profile-consumer.v1', ok: false,
+   productionChanged: false, productionTrafficCutover: false, providerCalled: false,
+   refreshDispatched: false, modelCalled: false, j3160Contacted: false,
+   credentialValuesPublished: false, accountIdentitiesPublished: false,
+@@ -71,18 +71,10 @@
+     && plan.pluginConfig.schedulerMode === 'shadow' && plan.pluginConfig.manageOrder === true);
+   for (const [file, expected] of Object.entries(plan.sourcePins)) check('source.' + path.basename(file), hash(fs.readFileSync(file)) === expected);
+   const originalHttpsRequest = https.request;
+-  const originalExecFileSync = childProcess.execFileSync;
+   for (const method of ['log', 'warn', 'error', 'info', 'debug']) console[method] = () => {};
+   globalThis.fetch = deny;
+   http.request = deny; http.get = deny;
+   for (const method of ['spawn', 'spawnSync', 'exec', 'execSync', 'execFile', 'execFileSync', 'fork']) childProcess[method] = deny;
+-  childProcess.execFileSync = (file, args, options) => {
+-    if (file !== 'mount' || !Array.isArray(args) || args.length || options !== undefined) return deny();
+-    const s = fs.lstatSync('/sbin/mount');
+-    need(process.platform === 'darwin' && s.isFile() && s.uid === 0 && (s.mode & 0o022) === 0, 'trusted_mount_tool');
+-    return originalExecFileSync('/sbin/mount', [], { timeout: 3000, maxBuffer: 262144,
+-      stdio: ['ignore', 'pipe', 'pipe'], env: { PATH: '/usr/bin:/bin:/usr/sbin:/sbin' } });
+-  };
+   baoAgent = new https.Agent({ keepAlive: false, maxCachedSessions: 0 });
+   https.request = (options, callback) => {
+     need(options && typeof options === 'object' && !(options instanceof URL), 'https_shape');
+@@ -120,7 +112,7 @@
+   syncBuiltinESMExports();
+   const sdk = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/plugin-sdk/agent-runtime.js')));
+   const storeApi = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/store-DH33UrUj.js')));
+-  const modelAuth = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/model-auth-CJEm9SNp.js')));
++  const profileAuth = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/oauth-B4aOCsid.js')));
+   const orderApi = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/order-CeBlX0NH.js')));
+   check('sdk_default_scope', path.resolve(sdk.resolveDefaultAgentDir({})) === agentDir);
+   check('sdk_database_scope', path.resolve(sdk.resolveAuthStorePathForDisplay(agentDir)) === path.join(agentDir, 'openclaw-agent.sqlite'));
+@@ -140,12 +132,30 @@
+     sdk.clearRuntimeAuthProfileStoreSnapshots();
+     check('rollback_logical_store_exact', digest(sdk.loadAuthProfileStoreWithoutExternalProfiles(agentDir, { allowKeychainPrompt: false })) === digest(before));
+     report.rollbackScope = 'Isolated logical auth store restored with the installed SDK; original live stores untouched.';
+-    report.originalOrderRestored = digest(current.order) !== digest(before.order);
++    check('rollback_original_order_preserved', digest(current.order ?? null) === digest(before.order ?? null));
++    report.originalOrderPreserved = true;
+   } else {
+     const before = current;
+     check('original_selected_identity_present', Object.hasOwn(before.profiles, plan.expectedProfileId));
+     check('source_account_identity_matches', before.profiles[plan.expectedProfileId].accountId === plan.expectedAccountId);
+     if (plan.mode === 'initial') save(plan.baselineOutput, before);
++    check('original_config_order_and_exclusions_preserved', digest(cfg.auth ?? {}) === plan.sourceAuthConfigSha256
++      && digest(cfg.models ?? {}) === plan.sourceModelsConfigSha256
++      && digest(cfg.agents.defaults.model) === plan.sourceDefaultModelSha256
++      && digest(plan.pluginConfig.orderExcludeAgentIds ?? []) === plan.sourceOrderExclusionsSha256);
++    const effectiveOrderBefore = orderApi.i({ cfg, store: structuredClone(before), provider: before.profiles[plan.expectedProfileId].provider });
++    let removed = false;
++    const missing = await storeApi.m({ agentDir, updater: store => {
++      if (digest(store) !== digest(before) || !Object.hasOwn(store.profiles, plan.expectedProfileId)) return false;
++      delete store.profiles[plan.expectedProfileId]; removed = true; return true;
++    } });
++    check('isolated_sdk_cas_removes_only_selected_profile', missing !== null && removed);
++    sdk.clearRuntimeAuthProfileStoreSnapshots();
++    const recoveryStart = sdk.loadAuthProfileStoreWithoutExternalProfiles(agentDir, { allowKeychainPrompt: false });
++    check('selected_profile_absent_before_actual_plugin', !Object.hasOwn(recoveryStart.profiles, plan.expectedProfileId)
++      && digest(recoveryStart.order ?? null) === digest(before.order ?? null)
++      && digest(recoveryStart.usageStats ?? null) === digest(before.usageStats ?? null));
++
+     const plugin = (await import(pathToFileURL(plan.pluginEntry))).default;
+     check('installed_plugin_export', plugin?.id === 'openclaw-authbus' && typeof plugin.register === 'function');
+     let subscriptions = 0;
+@@ -171,25 +181,35 @@
+     check('account_identity_preserved', cred.accountId === plan.expectedAccountId);
+     check('other_profiles_unchanged', Object.entries(before.profiles).filter(([id]) => id !== plan.expectedProfileId)
+       .every(([id, v]) => digest(v) === digest(after.profiles[id])) && Object.keys(after.profiles).length === Object.keys(before.profiles).length);
+-    const order = orderApi.i({ cfg, store: structuredClone(after), provider: plan.model.provider });
+-    check('single_managed_default_candidate', order.length === 1 && order[0] === plan.expectedProfileId);
+-    // No profileId or preferredProfile is passed: the installed resolver chooses.
+-    const resolved = await modelAuth.o({ model: plan.model, cfg, store: after, agentDir, secretSentinels: false });
+-    check('actual_default_model_resolver_selected_profile', resolved.profileId === plan.expectedProfileId);
+-    check('actual_default_model_resolver_exact_access', resolved.apiKey === cred.access && resolved.mode === 'oauth');
++    check('actual_plugin_restores_missing_profile', status.importedProfiles === 1);
++    const order = orderApi.i({ cfg, store: structuredClone(after), provider: cred.provider });
++    check('original_effective_order_preserved', digest(order) === digest(effectiveOrderBefore));
++    check('original_stored_order_and_usage_preserved', digest(after.order ?? null) === digest(before.order ?? null)
++      && digest(after.usageStats ?? null) === digest(before.usageStats ?? null));
++    // Explicit-profile resolution proves this recovered credential without
++    // overriding the host's independent default profile or exclusion policy.
++    const resolved = await profileAuth.n({ cfg, store: after, profileId: plan.expectedProfileId, agentDir, forceRefresh: false });
++    check('original_sdk_explicit_profile_selected', resolved?.profileId === plan.expectedProfileId);
++    check('original_sdk_explicit_profile_exact_access', resolved.apiKey === cred.access);
++    report.sourceOrderSha256 = digest(before.order ?? null);
++    report.effectiveOrderSha256 = digest(order);
++    report.sourceUsageSha256 = digest(before.usageStats ?? null);
+     // Resolution may annotate its in-memory store. Bind rollback to a fresh
+     // installed-SDK read of the committed store, not those runtime annotations.
+     sdk.clearRuntimeAuthProfileStoreSnapshots();
+     const committed = sdk.loadAuthProfileStoreWithoutExternalProfiles(agentDir, { allowKeychainPrompt: false });
+     check('committed_selected_profile_exact', digest(committed.profiles[plan.expectedProfileId]) === plan.expectedCredentialSha256);
+-    check('committed_managed_order_exact', digest(committed.order) === digest(after.order));
++    check('committed_original_order_exact', digest(committed.order ?? null) === digest(before.order ?? null));
++    check('committed_original_usage_exact', digest(committed.usageStats ?? null) === digest(before.usageStats ?? null));
+     check('actual_login_and_tls_reads', tokens.length === 1 && report.wire.some(x => x.method === 'GET'
+       && x.path === '/v1/openclaw-auth/data/profiles/' + plan.expectedProfileKey && x.status === 200));
+     save(plan.selectionOutput, { schema: 'heptabao.private-default-model-selection.v1',
+       profileId: plan.expectedProfileId, credential: cred, resolvedApiKey: resolved.apiKey,
+       storeSha256: digest(committed), credentialSha256: digest(cred), model: plan.model,
+-      source: 'actual_installed_sdk_default_model_resolver_after_actual_authbus_cycle' });
+-    report.actualDefaultSelectionQualified = true;
++      source: 'actual_installed_sdk_explicit_profile_resolver_after_actual_authbus_recovery' });
++    report.actualExplicitProfileSelectionQualified = true;
++    report.defaultGatewaySelectionQualified = false;
++    report.productionOrderOverrideQualified = false;
+     report.profileCount = Object.keys(after.profiles).length;
+     report.selectedProfileCount = 1;
+     report.sdkVersion = JSON.parse(fs.readFileSync(path.join(plan.sdkRoot, 'package.json'))).version;

@@ -1,0 +1,83 @@
+--- export-r1
++++ export-r2
+@@ -3,7 +3,7 @@
+ import gzip,hashlib,importlib.util,io,json,os,sqlite3,stat,subprocess,tarfile
+ from pathlib import Path
+ ROOT=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-current-profile1-61ff8bef-r2')
+-CONTROL=ROOT/'control';RUN=ROOT/'run-r2';OUT=ROOT/'evidence-export-r1'
++CONTROL=ROOT/'control';RUN=ROOT/'run-r2';OUT=ROOT/'evidence-export-r2'
+ SDK=Path('/home/qian-qi/.npm-global/lib/node_modules/openclaw')
+ def enc(v):return json.dumps(v,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()
+ def digest(v):return hashlib.sha256(enc(v)).hexdigest()
+@@ -38,7 +38,13 @@
+ assert sha(CONTROL/'driver.py')=='393d5b2a35fe6393665ec5a2fdb56eb5b59dbc0a50879cc8dfa4935ab945a3d2'
+ assert sha(OUT/'current_sdk_read.mjs')=='30997cac2f2b38a5c43ea85d347bc14c02189005a21059b37a5d50bd6ae7f57e'
+ spec=importlib.util.spec_from_file_location('fixed_current_profile_driver',CONTROL/'driver.py');driver=importlib.util.module_from_spec(spec);spec.loader.exec_module(driver)
+-original=json.loads(driver.private(RUN/'live/source-auth-tables.private.json'));fresh,cfg=driver.capture()
++original=json.loads(driver.private(RUN/'live/source-auth-tables.private.json'))
++late_snapshot=ROOT/'evidence-export-r1/source-after.private.json'
++fresh=json.loads(driver.private(late_snapshot));cfg=json.loads(driver.private(driver.LIVE/'openclaw.json'))
++assert sha(driver.LIVE/'openclaw.json')==driver.CONFIGSHA
++original_profiles=driver.primary(original,'store')['profiles'];late_profiles=driver.primary(fresh,'store')['profiles']
++selected_ids=[k for k,v in original_profiles.items() if digest(v)==driver.CREDENTIALSHA];assert len(selected_ids)==1
++selected_id=selected_ids[0]
+ put(OUT/'source-after.private.json',fresh)
+ source_audit={'schema':'heptabao.rog-current-profile1-source-second-read.v1','sourceKernelReadOnly':True,'sourceCohortCaptureContractUnchanged':True,
+   'wholeRowsBeforeSha256':digest(original['rows']),'wholeRowsAfterSha256':digest(fresh['rows']),
+@@ -46,9 +52,28 @@
+   'stateRowsBeforeSha256':digest(original['rows']['state']),'stateRowsAfterSha256':digest(fresh['rows']['state']),
+   'wholeRowsExact':original['rows']==fresh['rows'],'configurationSha256':sha(driver.LIVE/'openclaw.json'),
+   'authConfigSha256':digest(cfg.get('auth',{})),'orderExclusionsSha256':digest(cfg['plugins']['entries']['openclaw-authbus']['config'].get('orderExcludeAgentIds',[])),
+-  'sourceDefaultModel':cfg['agents']['defaults']['model'],'profile1CredentialSha256':digest(list(driver.primary(fresh,'store')['profiles'].values())[0]),
++  'sourceDefaultModel':cfg['agents']['defaults']['model'],'profile1CredentialSha256':digest(late_profiles.get(selected_id)),
+   'productionChanged':False,'providerCalled':False,'credentialValuesPublished':False}
+-assert source_audit['wholeRowsExact'] and source_audit['profile1CredentialSha256']==driver.CREDENTIALSHA
++source_audit.update(lateSnapshotSha256=sha(late_snapshot),lateSnapshotOrigin='Stopped failed export job 1a1a71ff3e7-fc05-2a3d; later than live job 1a1a719db42-fc05-2a20',
++  notUsedAsRollbackTarget=True,sameCredentialGeneration=source_audit['profile1CredentialSha256']==driver.CREDENTIALSHA,
++  liveSynchronousSourceInvariantUnchanged=True,lateDriftCausalityNotAttributed=True)
++comparisons={}
++for kind in ('store','state'):
++    left=driver.primary(original,kind);right=driver.primary(fresh,kind)
++    comparisons[kind]={'logicalBeforeSha256':digest(left),'logicalAfterSha256':digest(right),'logicalExact':left==right,
++      'changedTopLevelKeys':[k for k in sorted(set(left)|set(right)) if left.get(k)!=right.get(k)],
++      'primaryUpdatedAtBefore':next(r[2] for r in original['rows'][kind] if r[0]=='primary'),
++      'primaryUpdatedAtAfter':next(r[2] for r in fresh['rows'][kind] if r[0]=='primary')}
++source_audit['fieldComparisons']=comparisons
++state_before=driver.primary(original,'state');state_after=driver.primary(fresh,'state')
++source_audit['usageFieldChanges']=[{'sourceProfileOrdinal':list(original_profiles).index(k)+1 if k in original_profiles else None,
++ 'profileIdSha256':hashlib.sha256(k.encode()).hexdigest(),
++ 'beforeSha256':digest(state_before.get('usageStats',{}).get(k)),'afterSha256':digest(state_after.get('usageStats',{}).get(k)),
++ 'changedKeys':[f for f in sorted(set(state_before.get('usageStats',{}).get(k,{}) or {})|set(state_after.get('usageStats',{}).get(k,{}) or {}))
++   if (state_before.get('usageStats',{}).get(k,{}) or {}).get(f)!=(state_after.get('usageStats',{}).get(k,{}) or {}).get(f)]}
++ for k in sorted(set(state_before.get('usageStats',{}))|set(state_after.get('usageStats',{})))
++ if state_before.get('usageStats',{}).get(k)!=state_after.get('usageStats',{}).get(k)]
++assert source_audit['sameCredentialGeneration']
+ put(OUT/'source-second-read.public.json',source_audit)
+ rollback_audits=[]
+ for name in ('initial','cold-new-process'):
+@@ -83,7 +108,7 @@
+ names=['control/stage.public.json','run-r2/intent.public.json','run-r2/execution.result.public.json','run-r2/live/result.public.json',
+  'run-r2/live/consumer-initial/result.public.json','run-r2/live/consumer-initial/rollback-result.public.json',
+  'run-r2/live/consumer-cold-new-process/result.public.json','run-r2/live/consumer-cold-new-process/rollback-result.public.json',
+- 'evidence-export-r1/source-second-read.public.json','evidence-export-r1/rollback-independent-sdk-read.public.json']
++ 'evidence-export-r2/source-second-read.public.json','evidence-export-r2/rollback-independent-sdk-read.public.json']
+ confidential=[]
+ for doc in (original,fresh):
+     for pid,c in driver.primary(doc,'store')['profiles'].items():
+@@ -94,7 +119,7 @@
+     b=p.read_bytes();json.loads(b);assert all(s.encode() not in b for s in confidential if len(s)>=8)
+     files[name]=b;manifest[name]={'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}
+ audit={'schema':'heptabao.rog-current-profile1-public-export.v1','files':manifest,'sourceCredentialsAndIdentitiesAbsent':True,
+- 'sourceSecondReadExact':True,'independentRollbackSdkBothExact':True,'originalR1AndR2FilesUnchanged':True,
++ 'sourceSecondReadExact':source_audit['wholeRowsExact'],'lateSourceSameCredentialGeneration':source_audit['sameCredentialGeneration'],'independentRollbackSdkBothExact':True,'originalR1AndR2FilesUnchanged':True,
+  'exporterSha256':sha(__file__),'sdkReaderSha256':sha(OUT/'current_sdk_read.mjs')}
+ files['export-manifest.public.json']=enc(audit);put(OUT/'export-manifest.public.json',files['export-manifest.public.json'])
+ buf=io.BytesIO()
+@@ -106,6 +131,6 @@
+ core=json.loads(files['run-r2/live/result.public.json']);outer=json.loads(files['run-r2/execution.result.public.json'])
+ print(json.dumps({'ok':core['ok'] and outer['ok'],'archiveBytes':len(archive),'archiveSha256':hashlib.sha256(archive).hexdigest(),'files':manifest,
+  'coreChecks':len(core['checks']),'phases':[{'phase':p['phase'],'ok':p['ok'],'checks':len(p['checks'])} for p in core['phases']],
+- 'sourceSecondReadExact':True,'independentRollbackBothExact':True,'productionUnitUnchanged':outer['productionUnitUnchanged'],
++ 'sourceSecondReadExact':source_audit['wholeRowsExact'],'lateSourceSameCredentialGeneration':source_audit['sameCredentialGeneration'],'independentRollbackBothExact':True,'productionUnitUnchanged':outer['productionUnitUnchanged'],
+  'protectedInputsUnchanged':outer['protectedInputsUnchanged'],'frozenInputsUnchanged':outer['frozenInputsUnchanged'],
+  'ownedServerStopped':outer['ownedServerStopped'],'pidNamespaceTeardownEnforced':outer['pidNamespaceTeardownEnforced'],'rollbackOutcomes':outer['rollbackOutcomes']}))

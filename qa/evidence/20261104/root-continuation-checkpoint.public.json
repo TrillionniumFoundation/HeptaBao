@@ -30,6 +30,7 @@
   "complete_replacement_qualified": false,
   "concurrent_workspace_boundary": "Old f86faac821c4 is shared with an unattributed active worker; read-only evidence reuse only. No overwrite, no uncertain job replay, no shutdown of unowned experiments.",
   "evidence_branch": "codex/heptabao-production-staging-20261104",
+  "full_openbao_271_replacement_qualified": false,
   "historical_root_reviewed_normal_gates": [
     {
       "intent": 67,
@@ -67,6 +68,39 @@
     }
   ],
   "intent": "Complete the five requested migration gates and complete OpenBao 2.7.1 replacement evidence, with real physical host and credential validation before cutover and cleanup.",
+  "latest_provider_boundary": {
+    "managed_profile1_credential_sha256": "bca88c7adde84057871fd63f202e6aba80d453a04f75151df1d29f269dfaa5f1",
+    "managed_profile1_fresh_http": 401,
+    "managed_profile1_fresh_job": "rog/1a1a750676e-fc05-2af5",
+    "native_fallback_profile4_fresh_http": 200,
+    "native_fallback_profile4_fresh_job": "rog/1a1a7514ff4-fc05-2afc",
+    "production_gateway_route_changed": false,
+    "proofs_are_separate_from_storage_and_sdk_recovery": true,
+    "provider_refresh_performed": false,
+    "public_archive_root_review_pending": true,
+    "source_identity_must_not_be_substituted": true
+  },
+  "latest_required_work": [
+    "Repair exact unified candidate compilation/lint diagnostics, freeze new source, build normal Mac/Linux artifacts, and run relevant complete gates.",
+    "Close ordinary KV NoForward, non-root snapshot ACL and consistency precedence against fixed OpenBao 2.7.1; finish shared token-floor and maintenance boundaries.",
+    "Rerun exact candidate formal V6 34MiB migration/restore on Mac and X230, plus real Mac/ROG/Pocket failover, ReadIndex, persistence and restart.",
+    "Archive fresh managed1 401/native4 200 separately; preserve managed1/2 vs unmanaged4 ownership and verify managed import retires/reopens actual native clients without replacing source identities.",
+    "Complete Desktop eight-agent/local-provider dependency and backup recovery evidence in addition to Mac/ROG/Pocket/X230.",
+    "Before production activation, bind all three provisional configs to the actually recovered cluster ID and qualify custody/rollback; current node state directories remain empty.",
+    "Switch each client only after actual credential, restart, backup and rollback gates; retire identified old installations only after every dependency and backup path is migrated."
+  ],
+  "latest_source_boundary": {
+    "integration_candidate_only": true,
+    "note": "Agent terminal report; complete primary stderr is being retrieved and classified. No prior normal33 result qualifies this changed source.",
+    "unified_r1_format_gate": "failed; retained",
+    "unified_r2_format_gate": "passed",
+    "unified_r2_job": "rog/1a1a74aabf0-fc05-2add",
+    "unified_r2_normal_binary_built": false,
+    "unified_r2_source": "06a2daca1bd0f6a8fbccccbe81c50b0cf439e444",
+    "unified_r2_strict_release_clippy_exit": 101,
+    "unified_r2_tests_executed": false,
+    "unified_r2_tree": "4e07561bdd774ad7adca528c878029eed8f6f23a"
+  },
   "next_production_steps": [
     "Bind recovered seed cluster_id 0c56fad8-4061-349e-84a8-0a4cbc7ca12a to all three staged configs after a single final candidate is qualified; current provisional configs remain unstarted.",
     "Establish recoverable split share custody; the private Mac transitional seed proves all three 2-of-3 cold recovery pairs but shares remain colocated.",
@@ -83,6 +117,75 @@
   "old_installations_deleted": false,
   "production_clients_switched": false,
   "published_current_root_reviews": {
+    "qa/evidence/20261104/authbus-mac-current-source-r1/root-review.public.json": {
+      "facts": {
+        "actual_current_primary_auth_row_migration": true,
+        "actual_server_process_cold_restart": true,
+        "agent_review_sha256": "a1f6db158dea1c8ae7324a2fc025923b98f90b6471051bdb50a339344ec1c509",
+        "all_owned_servers_stopped": true,
+        "archive_members_with_manifest": 15,
+        "binary_sha256": "d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20",
+        "bridge_guard": "geoip_disagreement",
+        "complete_public_archive_sha256": "8d8f43cafa85271c609fbfb5385b0f01e2839d1d611a18183396ea33a654158b",
+        "complete_sdk_logical_store_rollbacks": 2,
+        "configured_agents": 5,
+        "dynamic_assertions": 330,
+        "exact_selector_runtime_options_refused": true,
+        "executed_source_files_locally_verified": {
+          "embedded:controller.py": "ec5ceb231867008bb7eab378e6b9498d70c264a38972d5755d5c710bd4b8bd66",
+          "embedded:scripts/authbus_current_stage_custody.py": "78feda840b5c823aa37a73f92689ff051a7075051b093dd20464698bc24c5201",
+          "embedded:transport/package.json": "1239d4d885dcad42201a27ed9324f8f0f760b78700d8db9ced39a511cffe7eae",
+          "original/authbus_current_credential_stage.py": "1851ae94089dfb32c2f088164578044230a255239d11f598d41560899366936e",
+          "original/authbus_profile2_consumer.mjs": "40f3deaa00ace62f1e69912f6e91da8747cc61a9dfe9da0d9f7df2cad0def6c4",
+          "original/authbus_profile2_selector_live.py": "72f8b7031f2be9e1f4a4a224a8c04b77ac6985fed9360babe5b47d23004a0855",
+          "original/authbus_selected_usage.mjs": "426ad02701aa4cabcf43947d748bc6e203f513a3cf23fbe4e79bd4d74b333d22",
+          "original/current_sdk_read.mjs": "30997cac2f2b38a5c43ea85d347bc14c02189005a21059b37a5d50bd6ae7f57e",
+          "original/current_stage_read.mjs": "7116904030c3718858a7d10cb2129acaf0dd20ff5d5a887faec0124567540860",
+          "original/private-outbox-store.js": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d",
+          "original/strict-bao-client.js": "3c226b335257ff67c4f6e23091468d99cba97399eea40b396bb89a8e691e5294"
+        },
+        "expired_oauth_profile_records": 12,
+        "fresh_provider_read": false,
+        "full_openbao_271_replacement_qualified": false,
+        "installed_sdk_default_resolver_on_private_native_profile2_copy": true,
+        "j3160_contacted": false,
+        "job": "mac/1a1a6eccc77-fc05-2986",
+        "model_request": false,
+        "native_file_sha256": "d13068db6b55edc3e1ca798b3726e2c5fc6de659b160a4b10dfdd333d5b5682c",
+        "new_provider_login": false,
+        "oauth_profile_records": 12,
+        "ok": true,
+        "os_service_manager_restart_this_run": false,
+        "phase_assertions": {
+          "actualSdkCold": 51,
+          "actualSdkColdRollback": 40,
+          "actualSdkInitial": 51,
+          "actualSdkInitialRollback": 40,
+          "actualSelectorDriver": 54,
+          "coldAppRoleReadAclRevoke": 15,
+          "currentAuthRowDriver": 50,
+          "initialAppRoleReadAclRevoke": 15,
+          "outer": 14
+        },
+        "prior_provider_generation_exactly_linked": true,
+        "production_bridge_ready": false,
+        "production_files_and_relays_unchanged": true,
+        "production_gateway_selection_qualified": false,
+        "production_traffic_rollback_qualified": false,
+        "provider_refresh": false,
+        "provider_validity_proven_from_these_rows": false,
+        "public_raw_files": 14,
+        "runtime_source_pins_checked_by_actual_controller": 52,
+        "schema": "heptabao.root-review.mac-real-source-authbus.v1",
+        "selected_credential_sha256": "48e095587f180413f65274d6d25d88d4ee6f9f99d981575f54bc4fb3399c286e",
+        "source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+        "terminal_exit": 0,
+        "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+        "unique_account_count_proven": false,
+        "whole_database_backup_recovery": false
+      },
+      "sha256": "1f506e800d842cfa9789ef428dd462786c95f3825005b4b1b16f614ca906c912"
+    },
     "qa/evidence/20261104/authbus-manager-sdk-r3/root-review.public.json": {
       "facts": {
         "actual_installed_system_manager_and_sdk_same_fixture": true,
@@ -213,6 +316,160 @@
       },
       "sha256": "6d55aaca1c60b4c880e218136523da9f8d8ee4e8a86c0aef7076ede9927a022d"
     },
+    "qa/evidence/20261104/authbus-rog-current-profile1-61ff-r2/root-review.public.json": {
+      "facts": {
+        "actual_formal_native_v6_activation_and_format2": true,
+        "actual_sigkill_cold_sealed_unseal_and_two_sdk_imports": true,
+        "agent_review_recomputed_exactly": true,
+        "agent_review_sha256": "73c1b25e517cc68d314673b178fd444fa5bd84aaaa556e017fcf5c80dfe3e417",
+        "all_owned_processes_stopped": true,
+        "archive_members": 11,
+        "archive_sha256": "9ab2d2822e78cb442496bb50a60c6c3bcb9ca182e51e98ad0a907daa99373eef",
+        "dynamic_assertions": 236,
+        "embedded_executed_source_pins": {
+          "consumer.mjs": "26758817d22047dbc056bf9a7e49921c657677990744c130e64eb18283190a8d",
+          "driver.py": "393d5b2a35fe6393665ec5a2fdb56eb5b59dbc0a50879cc8dfa4935ab945a3d2",
+          "launcher.py": "b82b74d9239e81715d54387032eba64e0b21422b35daefd63519699faed5c3a7",
+          "prior-provider-proof.public.json": "3050622c35bacb53ac47f532d4d5230c7c5c68bd2db243376c3c27385744a878"
+        },
+        "frozen_runtime_pins": 34,
+        "independent_post_rollback_sdk_reads": 2,
+        "job": "rog/1a1a719db42-fc05-2a20",
+        "late_export_usage_drift_retained": {
+          "causeAttributed": false,
+          "credentialGenerationExact": true,
+          "sourceOrdinal": 3,
+          "stateChangedKeys": [
+            "usageStats"
+          ],
+          "stateTimestampChanged": true,
+          "storeLogicalAndRowsExact": true,
+          "usageChangedKeys": [
+            "lastUsed"
+          ],
+          "usedAsRollbackTarget": false
+        },
+        "normal_binary_sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+        "ok": true,
+        "original_order_usage_defaults_exclusions_preserved": true,
+        "phase_counts": {
+          "coldRollback": 39,
+          "coldSdk": 55,
+          "independentPostRollbackSdkReads": 2,
+          "initialRollback": 39,
+          "initialSdk": 55,
+          "parent": 48
+        },
+        "production_unit_and_frozen_inputs_unchanged_during_run": true,
+        "r1_sdk_usage_pruning_failure_retained": true,
+        "reviewer_sha256": "bf54752692ab3c1c6fbd8b9d32217213f8cd16e3242e1277e208edf600362f58",
+        "schema": "heptabao.root-review.rog-current-profile1-authbus.v1",
+        "scope": {
+          "agent": "main",
+          "all_six_agents": false,
+          "complete_database_backup": false,
+          "default_gateway_selection": false,
+          "fresh_provider_call_this_run": false,
+          "full_openbao_271_replacement": false,
+          "host": "rog",
+          "j3160_contacted": false,
+          "migrated_sdk_primary_logical_store": true,
+          "model_request": false,
+          "native_codex_factory_reopen": false,
+          "nonprimary_rows_migration": false,
+          "oauth_refresh": false,
+          "os_service_manager_restart": false,
+          "production_traffic_cutover": false,
+          "profile_records_in_source": 3,
+          "selected_managed_profile_ordinal": 1,
+          "sql_auth_row_source_invariant": true
+        },
+        "selected_credential_sha256": "bca88c7adde84057871fd63f202e6aba80d453a04f75151df1d29f269dfaa5f1",
+        "source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+        "terminal_exit": 0,
+        "tls_approle_kv_policy_renew_revoke_both_phases": true,
+        "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+        "whole_logical_sdk_cas_rollbacks": 2
+      },
+      "sha256": "47520d3dfc847828a6286d5065614b457236252571edfd53f4aa2e5670961a20"
+    },
+    "qa/evidence/20261104/cross-os-seed-r2/root-review.public.json": {
+      "facts": {
+        "actual_cluster_id": "0c56fad8-4061-349e-84a8-0a4cbc7ca12a",
+        "actual_same_directory_cold_restart": true,
+        "job": "mac/1a1a7467b63-fc05-2acc",
+        "known_http_outcomes": 16,
+        "linux_normal_binary_sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+        "mac_normal_binary_sha256": "d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20",
+        "ok": true,
+        "owned_file_plaintext_scan_checks": 47,
+        "owned_linux_servers_reaped": [
+          {
+            "forced_kill": false,
+            "name": "restored",
+            "owned_popen": true,
+            "pid": 3038553,
+            "port": 49253,
+            "returncode": -15,
+            "stopped": true
+          },
+          {
+            "forced_kill": false,
+            "name": "restored",
+            "owned_popen": true,
+            "pid": 3038578,
+            "port": 45131,
+            "returncode": -15,
+            "stopped": true
+          }
+        ],
+        "owned_ssh_returncode": 0,
+        "private_same_connection_identity_verified_before_transfer": true,
+        "public_report_pins": {
+          "controller-result.public.json": "56b93b8f8a7021bc414152a526aff07958148678dd423d56c9d31aaa9084599e",
+          "direct-linux-result.public.json": "1534b4075dba60731f4b651ee4ca350a2e24625bd7a4feeea5ffd1d011d2e1ce",
+          "identity-verified.public.json": "4f2ba4bebef9f34c27035ca1cfd8e70ea640e3a6c53bfb222ea3fb8dbff9d149",
+          "linux-intent.public.json": "2637d8bf39c7b4098f7192f6be37732ebf96827b32df0fabfd1209ff4b67d430",
+          "linux-result.public.json": "1534b4075dba60731f4b651ee4ca350a2e24625bd7a4feeea5ffd1d011d2e1ce",
+          "mac-intent.public.json": "3051546d860af802132da086a047ea30fe22b81ec26c928f4833a8c5d3b04b9c"
+        },
+        "r1_source_stage_transport_unknown_preserved": true,
+        "replayed_requests": 0,
+        "reviewer_sha256": "e541dae6b0e1d45832f3a49bffdfbba1f324b8a928643f94f064859d885a9566",
+        "same_report_received_via_verified_ssh_and_direct_runtime_read": true,
+        "schema": "heptabao.root-review.mac-to-rog-seed-recovery.v1",
+        "scope": {
+          "full_34_mib_dataset": false,
+          "full_openbao_271_replacement": false,
+          "native_v6": false,
+          "new_unified_candidate": false,
+          "production_client_change": false,
+          "production_start": false,
+          "split_custody": false,
+          "storage_format": "V5 seed"
+        },
+        "shares_persisted_on_linux": false,
+        "shares_received_in_linux_memory": 2,
+        "source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+        "source_archive_sha256": "c50dbae852e748763038d0e0dcdfe2eae7dbc2a254f2b29642dec47c3117e64b",
+        "source_mac_seed_and_receipts_unchanged": true,
+        "source_pins": {
+          "prepare_recoverable_seed.py": "b7b14b6fcbf767d76873b215ce10119fe58beb50ec3fbd164b4925ceb188cfea",
+          "recover_seed_linux.py": "908e477fbd2470b2f7824caee35841a508b4c4a5d3afc66c495cacc9a7264a65",
+          "stage_cross_os_helpers.py": "eaf63f498cd7e26e3e11b766e648939fb990082667f9e64db968ea61c93b2578",
+          "verify_seed_cross_os.py": "3357566596695c88e06fde82aab7b9ce09eb635b49c571cb17590c986bf104e8"
+        },
+        "stage_jobs": {
+          "mac": "1a1a742f9db-fc05-2abe",
+          "rog": "1a1a743436b-fc05-2ac1"
+        },
+        "substantive_dynamic_checks": 20,
+        "terminal_exit": 0,
+        "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+        "unknown_outcomes": 0
+      },
+      "sha256": "b2a8851065dbd92ab3624c96a655eb7ddbbc886f7197d1e2da42b1faac4c3a08"
+    },
     "qa/evidence/20261104/production-stage/root-review.public.json": {
       "facts": {
         "actual_linux_guards_and_systemd_templates_checked": true,
@@ -321,6 +578,233 @@
       },
       "sha256": "73e27872bd74da511b4c0a3d446fb173edfb58838ae3acdeaaf5c9dbe4418ee5"
     },
+    "qa/evidence/20261104/retirement-inventory/six-host-root-review.public.json": {
+      "facts": {
+        "all_backup_restore_paths_migrated": false,
+        "all_clients_migrated": false,
+        "candidate_counts_are_not_service_or_backup_qualification_counts": true,
+        "changes": [],
+        "complete_asset_inventory": false,
+        "credential_values_read": false,
+        "desktop_eight_agent_local_provider_migration_required": true,
+        "docker_listing_failed_hosts_not_claimed_empty": [
+          "rog",
+          "pocket4"
+        ],
+        "hosts": [
+          {
+            "authbus_address": {
+              "hostname": "100.66.117.33",
+              "port": 8200,
+              "scheme": "https",
+              "userinfo_path_and_query_omitted": true
+            },
+            "config_metadata_stable": true,
+            "config_sha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+            "docker_probe": null,
+            "exit_code": 0,
+            "host": "mac",
+            "job": "mac/1a1a721926e-fc05-2a46",
+            "nonrecursive_backup_path_candidates": 34,
+            "report_sha256": "bee416209fe9a1029d3a7e735f72564c642bc479652fdb2bfc8e1dd4493abaf7",
+            "scope_errors": [],
+            "service_path_candidates": 7,
+            "stdout_sha256": "48222c227b44d3be4d5d2c9352d4f7e2e314dacbb53a045667b9cdaf7f417959"
+          },
+          {
+            "authbus_address": {
+              "hostname": "100.66.117.33",
+              "port": 8200,
+              "scheme": "https",
+              "userinfo_path_and_query_omitted": true
+            },
+            "config_metadata_stable": true,
+            "config_sha256": "a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15",
+            "docker_probe": {
+              "argv": [
+                "/usr/bin/docker",
+                "ps",
+                "-a",
+                "--format",
+                "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"
+              ],
+              "exit_code": 1,
+              "matched_rows": [],
+              "stderr_sha256": "d0527b91b88a4736c47893d33c0242b10f32454ed6cacf1081bc07594358dfc5",
+              "truncated": false
+            },
+            "exit_code": 0,
+            "host": "rog",
+            "job": "rog/1a1a6fa6a1e-fc05-29b6",
+            "nonrecursive_backup_path_candidates": 33,
+            "report_sha256": "60df1ea2b661482780ec2d856da4c620229b9d0d2d1096b534507cf3782b4d1e",
+            "scope_errors": [],
+            "service_path_candidates": 9,
+            "stdout_sha256": "84bf8960938be79f6bf30ab6add2def77c36bf66049e26e0949293d420ab828c"
+          },
+          {
+            "authbus_address": {
+              "hostname": "100.66.117.33",
+              "port": 8200,
+              "scheme": "https",
+              "userinfo_path_and_query_omitted": true
+            },
+            "config_metadata_stable": true,
+            "config_sha256": "3611380b8c77282e785e00e20d9eba8bc8cf0164b3b3f00e2ea5d1f52a441c98",
+            "docker_probe": {
+              "argv": [
+                "/usr/bin/docker",
+                "ps",
+                "-a",
+                "--format",
+                "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"
+              ],
+              "exit_code": 1,
+              "matched_rows": [],
+              "stderr_sha256": "d0527b91b88a4736c47893d33c0242b10f32454ed6cacf1081bc07594358dfc5",
+              "truncated": false
+            },
+            "exit_code": 0,
+            "host": "pocket4",
+            "job": "pocket4/1a1a722efde-fc05-2a4e",
+            "nonrecursive_backup_path_candidates": 7,
+            "report_sha256": "10ae2da00852f0729e5d770ddfdf5132000366990bb4b1d8866dcbb28bd4291f",
+            "scope_errors": [],
+            "service_path_candidates": 6,
+            "stdout_sha256": "611cef0063d7b047c267e11ea2cb90c61bbf320df0b4e875da4d822018b930b3"
+          },
+          {
+            "authbus_address": null,
+            "config_metadata_stable": null,
+            "config_sha256": null,
+            "docker_probe": {
+              "argv": [
+                "/usr/bin/docker",
+                "ps",
+                "-a",
+                "--format",
+                "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"
+              ],
+              "exit_code": 0,
+              "matched_rows": [
+                "f67985499a16\theptabao-openbao271-oracle-r46\tghcr.io/openbao/openbao:2.7.1\tUp 3 weeks"
+              ],
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "truncated": false
+            },
+            "exit_code": 0,
+            "host": "x230",
+            "job": "x230/1a1a7220a13-fc05-2a4c",
+            "nonrecursive_backup_path_candidates": 5,
+            "report_sha256": "9a25dc24442e3b25b576304fe6c406584d5cc4acaaebbd0d026676a8b356552b",
+            "scope_errors": [],
+            "service_path_candidates": 2,
+            "stdout_sha256": "3a3644570564d3182017deb6fa8afe691f351726509f34ffceb852adac0bf6ed"
+          },
+          {
+            "active_provider_gateway_and_renewal_observed": true,
+            "authbus": {
+              "address": {
+                "hostname": "127.0.0.1",
+                "port": 18200,
+                "scheme": "https",
+                "userinfo_path_and_query_omitted": true
+              },
+              "configuration": {
+                "caFile": "/home/qian-qi/.openclaw/credentials/authbus/ci-provider-ca.pem",
+                "enforceRefreshLeases": null,
+                "hostId": "desktop",
+                "leader": false,
+                "manageOrder": true,
+                "orderExcludeAgentIds": null,
+                "pollIntervalMs": 15000,
+                "publishNew": true,
+                "releaseGeneration": 201,
+                "roleIdFile": "/home/qian-qi/.openclaw/credentials/authbus/ci-provider-role_id",
+                "schedulerMode": null,
+                "secretIdFile": "/home/qian-qi/.openclaw/credentials/authbus/ci-provider-secret_id"
+              },
+              "enabled": true
+            },
+            "configured_agent_ids": [
+              "main",
+              "resident-helper",
+              "independent-helper",
+              "telegram-bot-8681289317",
+              "telegram-bot-8449317572",
+              "hepta-paper-worker",
+              "trillionnium-os-agent",
+              "hepta-luna-teacher"
+            ],
+            "docker_probe": {
+              "argv": [
+                "/usr/bin/docker",
+                "ps",
+                "-a",
+                "--format",
+                "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"
+              ],
+              "exit_code": 0,
+              "matched_rows": [],
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "truncated": false
+            },
+            "exit_code": 0,
+            "host": "desktop",
+            "job": "desktop/1a1a72bccd9-fc05-2a72",
+            "nonrecursive_backup_path_candidates": 12,
+            "report_sha256": "2071bfa4d2f01302551d6a96de7dfbafbd74c1680a6a0f8c2c6aad09e2e30e57",
+            "runtime_version_of_provider_qualified": false,
+            "scope_errors": [],
+            "service_path_candidates": 29,
+            "stdout_sha256": "b401226088d1255f6c041608f7f2270d696fb2e7b4645ab6f2727276f4120368"
+          },
+          {
+            "absence_scope": "Only configured operator home, common paths and filtered manager observations; not a whole-machine absence proof.",
+            "authbus": null,
+            "configured_agent_ids": null,
+            "docker_probe": {
+              "argv": [
+                "/usr/bin/docker",
+                "ps",
+                "-a",
+                "--format",
+                "{{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}"
+              ],
+              "exit_code": 0,
+              "matched_rows": [],
+              "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "truncated": false
+            },
+            "exit_code": 0,
+            "host": "ai395",
+            "job": "ai395/1a1a72be711-fc05-2a75",
+            "nonrecursive_backup_path_candidates": 0,
+            "observed_client_config": {
+              "path": "/home/qq/.openclaw/openclaw.json",
+              "unavailable": "FileNotFoundError"
+            },
+            "report_sha256": "2f0a370cd108c649f79e1bab94cd5e52ecffa906605bf8881e2d0f69d27518c2",
+            "scope_errors": [],
+            "service_path_candidates": 0,
+            "stdout_sha256": "d288a235bee7e4e98c368e2446981df15693604993994cbcc6f49f316a67f7a4"
+          }
+        ],
+        "mac_main_alias_deduplicated": true,
+        "nonrecursive_backup_path_candidates": 91,
+        "observed_physical_hosts": 6,
+        "ok": true,
+        "old_installations_deleted": false,
+        "preserve_openbao271_x230_oracle": true,
+        "prior_four_host_review_sha256": "9070de4809e7f79388b8837bc7450e6e6da0cb70aea000f58c010c1a80b0a0a1",
+        "retirement_qualified": false,
+        "reviewer_sha256": "5f5ede71b2c912ee0014f89ec8d54937a6bf1c7d6883f8761df59fe40650927c",
+        "schema": "heptabao.root-reviewed-six-host-retirement-inventory.v1",
+        "script_sha256": "7b3f7e3283bc472cbf138d5bc01f4e8a5359cd756a1c7ef0d91cd83287fd99fa",
+        "service_path_candidates": 53
+      },
+      "sha256": "416e1fae54b0036b25827c7df303c46962caea0db077c992ee4c127ae7caaeab"
+    },
     "qa/evidence/20261104/ssh-r5/root-review.public.json": {
       "facts": {
         "actual_cargo_features": [
@@ -378,7 +862,7 @@
       "sha256": "39dae1e8fafd47d05f0adb380254228fddf3ecfd72b9b0bfb6503f3d7d9c85ac"
     }
   },
-  "published_head_before_checkpoint": "2701d2cf6c1a0092078e9b0c938ff7b3619e224a",
+  "published_head_before_checkpoint": "081b13a1ff243ced471d1ca5027aa882fc18f581",
   "qualification_limits": [
     "Dynamic assertion totals are not independent product feature counts.",
     "Historical normal33 passes cannot qualify newly changed SSH/HTTP source.",
@@ -386,9 +870,13 @@
     "The broad59-surface compatibility inventory and unsupported auth/engine/provider/namespace combinations remain separate replacement gates.",
     "Mac real-source snapshot contains12 expired OAuth records; current native Codex generation selected in private copy is separate. Primary SQLite rows and complete SDK logical rollback are not a complete SQLite database backup.",
     "ROG explicit profile1 private fixture success does not establish default production gateway selection or a fresh provider response.",
-    "Seed r3 proves clean V5 cold recovery; it does not qualify V6 activation or production start."
+    "Seed r3 proves clean V5 cold recovery; it does not qualify V6 activation or production start.",
+    "Mac-to-ROG proof is exact V5 seed recovery on normal33; 20 behavior checks plus47 file scans,16 known HTTP outcomes, not V6/34MiB/newcandidate qualification.",
+    "ROG r2 qualifies main managed profile1 private actualSDK/V6 recovery only; the fresh upstream401 is a distinct current validity failure despite historical exact-generation200.",
+    "Native fallback4 fresh200 does not qualify managed1/2 or authorize changing default provider/identity.",
+    "Six-host inventory contains53 service-related path candidates and91 nonrecursive backup candidates, not a complete asset inventory or retirement approval."
   ],
   "schema": "heptabao.root-continuation-checkpoint.v1",
-  "updated_at": "2026-11-04T15:15:30.539765+00:00",
+  "updated_at": "2026-11-04T16:14:57.902135+00:00",
   "workspace": "61ff8bef4cc9"
 }

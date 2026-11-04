@@ -1,0 +1,74 @@
+{
+  "actual_cluster_id": "0c56fad8-4061-349e-84a8-0a4cbc7ca12a",
+  "actual_same_directory_cold_restart": true,
+  "job": "mac/1a1a7467b63-fc05-2acc",
+  "known_http_outcomes": 16,
+  "linux_normal_binary_sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+  "mac_normal_binary_sha256": "d8a9e827a8c0dc0403df24783ea15849bbad88ca88c52985d1cdca0e4d75bd20",
+  "ok": true,
+  "owned_file_plaintext_scan_checks": 47,
+  "owned_linux_servers_reaped": [
+    {
+      "forced_kill": false,
+      "name": "restored",
+      "owned_popen": true,
+      "pid": 3038553,
+      "port": 49253,
+      "returncode": -15,
+      "stopped": true
+    },
+    {
+      "forced_kill": false,
+      "name": "restored",
+      "owned_popen": true,
+      "pid": 3038578,
+      "port": 45131,
+      "returncode": -15,
+      "stopped": true
+    }
+  ],
+  "owned_ssh_returncode": 0,
+  "private_same_connection_identity_verified_before_transfer": true,
+  "public_report_pins": {
+    "controller-result.public.json": "56b93b8f8a7021bc414152a526aff07958148678dd423d56c9d31aaa9084599e",
+    "direct-linux-result.public.json": "1534b4075dba60731f4b651ee4ca350a2e24625bd7a4feeea5ffd1d011d2e1ce",
+    "identity-verified.public.json": "4f2ba4bebef9f34c27035ca1cfd8e70ea640e3a6c53bfb222ea3fb8dbff9d149",
+    "linux-intent.public.json": "2637d8bf39c7b4098f7192f6be37732ebf96827b32df0fabfd1209ff4b67d430",
+    "linux-result.public.json": "1534b4075dba60731f4b651ee4ca350a2e24625bd7a4feeea5ffd1d011d2e1ce",
+    "mac-intent.public.json": "3051546d860af802132da086a047ea30fe22b81ec26c928f4833a8c5d3b04b9c"
+  },
+  "r1_source_stage_transport_unknown_preserved": true,
+  "replayed_requests": 0,
+  "reviewer_sha256": "e541dae6b0e1d45832f3a49bffdfbba1f324b8a928643f94f064859d885a9566",
+  "same_report_received_via_verified_ssh_and_direct_runtime_read": true,
+  "schema": "heptabao.root-review.mac-to-rog-seed-recovery.v1",
+  "scope": {
+    "full_34_mib_dataset": false,
+    "full_openbao_271_replacement": false,
+    "native_v6": false,
+    "new_unified_candidate": false,
+    "production_client_change": false,
+    "production_start": false,
+    "split_custody": false,
+    "storage_format": "V5 seed"
+  },
+  "shares_persisted_on_linux": false,
+  "shares_received_in_linux_memory": 2,
+  "source": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "source_archive_sha256": "c50dbae852e748763038d0e0dcdfe2eae7dbc2a254f2b29642dec47c3117e64b",
+  "source_mac_seed_and_receipts_unchanged": true,
+  "source_pins": {
+    "prepare_recoverable_seed.py": "b7b14b6fcbf767d76873b215ce10119fe58beb50ec3fbd164b4925ceb188cfea",
+    "recover_seed_linux.py": "908e477fbd2470b2f7824caee35841a508b4c4a5d3afc66c495cacc9a7264a65",
+    "stage_cross_os_helpers.py": "eaf63f498cd7e26e3e11b766e648939fb990082667f9e64db968ea61c93b2578",
+    "verify_seed_cross_os.py": "3357566596695c88e06fde82aab7b9ce09eb635b49c571cb17590c986bf104e8"
+  },
+  "stage_jobs": {
+    "mac": "1a1a742f9db-fc05-2abe",
+    "rog": "1a1a743436b-fc05-2ac1"
+  },
+  "substantive_dynamic_checks": 20,
+  "terminal_exit": 0,
+  "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "unknown_outcomes": 0
+}
