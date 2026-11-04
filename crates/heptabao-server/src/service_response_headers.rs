@@ -106,7 +106,11 @@ impl Headers {
         self.1.is_some()
     }
     pub(super) fn local_redirect_matches_current(&self, status: u16) -> bool {
-        status == 307 && self.1.as_deref().is_some_and(LocalRedirect::matches_current)
+        status == 307
+            && self
+                .1
+                .as_deref()
+                .is_some_and(LocalRedirect::matches_current)
     }
     pub(crate) fn take_local_redirect(&mut self) -> Option<LocalRedirect> {
         self.1.take().map(|redirect| *redirect)
