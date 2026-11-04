@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-11-04T20:44:00Z",
+  "observed_utc_is_approximate": true,
+  "execution_request_sent": false,
+  "source_candidate": "21a521e3e59af291dd2abc6721e8559e06338657",
+  "source_candidate_tree": "625b0a5d4e2bce62fe0b014edff9c18f96840a3c",
+  "last_actual_source_before_tests": "f06478d8f5451d3a4e5ab86f73bccd37612d378f",
+  "last_actual_tree_before_tests": "5389e69cc0c9b36dcb48d7480ac109a811745bec",
+  "actual_source_after_tests_rechecked": false,
+  "root_coordinator_state": "errored",
+  "reported_reason": "This content was flagged for possible cybersecurity risk.",
+  "specific_code_reason_provided": false,
+  "decision": "Preserve existing evidence; do not replace blocked coordinator review or execute the unreviewed resume.",
+  "original_deadline_utc": "2026-11-04T20:53:48Z",
+  "deadline_extended": false,
+  "live_jobs_owned_by_this_agent": [],
+  "last_completed_jobs": [
+    {
+      "job": "1a1a8324009-fc05-2dfa",
+      "purpose": "normal snapshot integration",
+      "status": "failed",
+      "exit_code": 1
+    },
+    {
+      "job": "1a1a846ed4e-fc05-2e28",
+      "purpose": "Darwin loopback accepted-socket flags",
+      "status": "succeeded",
+      "exit_code": 0
+    },
+    {
+      "job": "1a1a84af145-fc05-2e33",
+      "purpose": "compile control Python only; execute=false",
+      "status": "succeeded",
+      "exit_code": 0
+    }
+  ],
+  "production_changed": false,
+  "full_replacement_qualified": false
+}

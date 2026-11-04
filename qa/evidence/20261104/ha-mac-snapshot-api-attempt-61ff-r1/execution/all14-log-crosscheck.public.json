@@ -1,0 +1,13 @@
+{
+  "actual_tests": 14,
+  "passed": 5,
+  "failed": 9,
+  "stdout_files": 14,
+  "stderr_files": 14,
+  "all28_raw_files_match_final_command_record_sha_and_bytes": true,
+  "source": "f06478d8f5451d3a4e5ab86f73bccd37612d378f",
+  "tree": "5389e69cc0c9b36dcb48d7480ac109a811745bec",
+  "test_artifact_sha256": "b40bf2ca240252dc78035a288b5e99cce7cf1538051d9cf31a426b48c3341d30",
+  "normal_production_link_executed": false,
+  "qualified_full_replacement": false
+}

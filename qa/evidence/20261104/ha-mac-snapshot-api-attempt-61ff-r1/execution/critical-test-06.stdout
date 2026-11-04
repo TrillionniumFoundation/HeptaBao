@@ -1,0 +1,11 @@
+
+running 1 test
+test service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_read_restore_validation_and_no_forward_use_real_owners ... FAILED
+
+failures:
+
+failures:
+    service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_read_restore_validation_and_no_forward_use_real_owners
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3553 filtered out; finished in 17.02s
+
