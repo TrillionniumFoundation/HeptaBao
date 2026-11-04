@@ -601,61 +601,77 @@ fn cold_dr_complete_archive_old_shamir_new_quorum_and_second_cold_restart() -> T
 fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss() -> TestResult {
     let source = Pipeline::start()?;
     let leader = source.ready_leader()?;
-    // Local Transit and TOTP have formal native owners. This still-refused
-    // SSH CA carries actual private key state through the authenticated archive;
-    // keep complete-graph rejection and every source-retention assertion.
+    // SSH now has a formal native owner. Enabled PKI ACME still lacks one.
+    // Keep a real private CA in this unsupported profile, complete-graph
+    // rejection and every source-retention assertion. Configuration is local;
+    // no ACME account, challenge, provider request or external key is created.
     expect(
         source.call(
             leader,
             "POST",
-            "sys/mounts/cold-ssh",
+            "sys/mounts/cold-acme",
             source.admin(),
-            json!({"type":"ssh"}),
+            json!({"type":"pki"}),
         )?,
         204,
-        "unsupported-cold-ssh-mount",
+        "unsupported-cold-acme-mount",
     )?;
     expect(
         source.call(
             leader,
             "POST",
-            "cold-ssh/config/ca",
+            "cold-acme/root/generate/internal",
             source.admin(),
-            json!({"generate_signing_key":true,"key_type":"ssh-ed25519"}),
+            json!({"common_name":"unsupported-cold.example.test",
+                "key_type":"ec","key_bits":256,"ttl":"1h"}),
         )?,
         200,
-        "unsupported-cold-ssh-key",
+        "unsupported-cold-acme-key",
     )?;
+    for (path, body) in [
+        (
+            "cold-acme/config/cluster",
+            json!({"path":"https://unsupported-cold.example.test/v1/cold-acme"}),
+        ),
+        ("cold-acme/config/acme", json!({"enabled":true})),
+    ] {
+        expect(
+            source.call(leader, "POST", path, source.admin(), body)?,
+            200,
+            "unsupported-cold-acme-configuration",
+        )?;
+    }
     let retained = expect(
         source.call(
             leader,
             "GET",
-            "cold-ssh/config/ca",
+            "cold-acme/config/acme",
             source.admin(),
             json!({}),
         )?,
         200,
-        "unsupported-cold-ssh-before",
+        "unsupported-cold-acme-before",
     )?
     .body["data"]
         .clone();
+    assert_eq!(retained["enabled"], true);
     activate(&source, leader)?;
     let archive = export(&source, leader, source.admin())?;
     let seal_bytes = fs::read(source.directory(leader).join("data/seal.json"))?;
-    // Native activation deliberately closes the protected SSH config/ca route.
-    // This is not the separate public_key fast path. Observe the same activated
-    // path before and after recovery refusal, and inspect the stored EngineState
-    // clone below. The authenticated full-state encoding retains its private CA.
+    // Native activation deliberately closes this nondefault ACME owner.
+    // Observe the same protected configuration route before and after recovery
+    // refusal, and inspect the stored EngineState clone below. The authenticated
+    // full-state encoding retains both the ACME policy and the private CA.
     let boundary_before = expect(
         source.call(
             leader,
             "GET",
-            "cold-ssh/config/ca",
+            "cold-acme/config/acme",
             source.admin(),
             json!({}),
         )?,
         501,
-        "unsupported-cold-ssh-activated-before",
+        "unsupported-cold-acme-activated-before",
     )?;
     let observed_at = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)?
@@ -777,8 +793,8 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
         let owner_bytes = project(engines)?;
         let mut inspected = engines.clone();
         let response = inspected
-            .handle("", "GET", "cold-ssh/config/ca", &json!({}), observed_at)?
-            .ok_or("unsupported cold retained SSH CA route absent")?;
+            .handle("", "GET", "cold-acme/config/acme", &json!({}), observed_at)?
+            .ok_or("unsupported cold retained ACME config route absent")?;
         assert_eq!(response.status, 200);
         assert!(!response.mutated);
         assert!(response.body["data"] == retained);
@@ -845,12 +861,12 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
         source.call(
             leader,
             "GET",
-            "cold-ssh/config/ca",
+            "cold-acme/config/acme",
             source.admin(),
             json!({}),
         )?,
         501,
-        "unsupported-cold-ssh-activated-after",
+        "unsupported-cold-acme-activated-after",
     )?;
     assert!(boundary_after.body == boundary_before.body);
     Ok(())

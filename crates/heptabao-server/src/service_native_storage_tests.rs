@@ -277,38 +277,76 @@ fn configured_native_activation_rejects_unsupported_live_engine_without_retiring
     let mut service = root.service()?;
     service.configure_native_v6_storage(NativeStorageProfile::File)?;
     let (_, token) = initialize(&mut service)?;
+    // A local SSH CA now has a formal owner. Keep a real private CA, but
+    // select the still-unsupported enabled ACME profile through its local APIs.
     assert_eq!(
         request(
             &mut service,
             "POST",
-            "sys/mounts/ssh",
+            "sys/mounts/unsupported-pki",
             &token,
-            json!({"type":"ssh"})
+            json!({"type":"pki"})
         )
         .status,
         204
     );
-    assert_eq!(
-        request(
-            &mut service,
-            "POST",
-            "ssh/config/ca",
-            &token,
-            json!({"generate_signing_key":true,"key_type":"ssh-ed25519"})
-        )
-        .status,
-        200
+    for (path, body) in [
+        (
+            "unsupported-pki/root/generate/internal",
+            json!({"common_name":"unsupported-native.example.test",
+                "key_type":"ec","key_bits":256,"ttl":"1h"}),
+        ),
+        (
+            "unsupported-pki/config/cluster",
+            json!({"path":"https://unsupported-native.example.test/v1/unsupported-pki"}),
+        ),
+        ("unsupported-pki/config/acme", json!({"enabled":true})),
+    ] {
+        assert_eq!(
+            request(&mut service, "POST", path, &token, body).status,
+            200
+        );
+    }
+    let before = request(
+        &mut service,
+        "GET",
+        "unsupported-pki/config/acme",
+        &token,
+        json!({}),
     );
-    let before = request(&mut service, "GET", "ssh/config/ca", &token, json!({}));
     assert_eq!(before.status, 200);
+    assert_eq!(before.body["data"]["enabled"], true);
+    assert!(service.native_root.is_none());
+    let owner_before = {
+        let state = service
+            .state
+            .as_ref()
+            .ok_or("unsupported V5 source state")?;
+        assert!(!state.engines.supports_native_v6_root_storage());
+        Zeroizing::new(serde_json::to_vec(&state.engines)?)
+    };
     assert_eq!(
         request(&mut service, "POST", ACTIVATE_PATH, &token, json!({})).status,
         409
     );
     assert!(service.native_root.is_none());
-    let retained = request(&mut service, "GET", "ssh/config/ca", &token, json!({}));
+    let retained = request(
+        &mut service,
+        "GET",
+        "unsupported-pki/config/acme",
+        &token,
+        json!({}),
+    );
     assert_eq!(retained.status, 200);
     assert_eq!(retained.body["data"], before.body["data"]);
+    let owner_after = Zeroizing::new(serde_json::to_vec(
+        &service
+            .state
+            .as_ref()
+            .ok_or("retained V5 source state")?
+            .engines,
+    )?);
+    assert!(owner_after.as_slice() == owner_before.as_slice());
     Ok(())
 }
 

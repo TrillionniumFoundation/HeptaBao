@@ -1097,7 +1097,8 @@ fn native_pki_formal_selectors_retain_acme_external_and_foreign_owner_fences() -
     assert!(f.service.pending_native_remount.is_none());
     assert!(f.service.native_remount_jobs.is_empty());
     assert!(f.service.native_remount_statuses.is_empty());
-    let denied = f.admin("POST", "sys/mounts/foreign", json!({"type":"ssh"}))?;
+    // SSH has its own native owner; Kubernetes remains outside this profile.
+    let denied = f.admin("POST", "sys/mounts/foreign", json!({"type":"kubernetes"}))?;
     status(&denied, 501);
     f.graphs_unchanged(&before)?;
     let mut f = f.restart()?;
