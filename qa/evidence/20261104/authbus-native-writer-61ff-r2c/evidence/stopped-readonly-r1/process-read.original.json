@@ -1,0 +1,20 @@
+{
+  "audit_recorded": true,
+  "job_id": "1a1a7ebc537-fc05-2cf1",
+  "stderr": {
+    "bytes_hex": "54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0a202046696c6520223c737472696e673e222c206c696e652033332c20696e203c6d6f64756c653e0a202020206469726563746f726965732b3d313b617373657274206469726563746f726965733c3d32343b6469726e616d65735b3a5d3d5b6e20666f72206e20696e206469726e616d6573206966206e6f7428706174686c69622e50617468286469726563746f7279292f6e292e69735f73796d6c696e6b28295d0a20202020202020202020202020202020202020202020202020205e5e5e5e5e5e5e5e5e5e5e5e5e5e5e0a417373657274696f6e4572726f720a",
+    "eof": true,
+    "next_offset": 255,
+    "offset": 0,
+    "size": 255,
+    "text": "Traceback (most recent call last):\n  File \"<string>\", line 33, in <module>\n    directories+=1;assert directories<=24;dirnames[:]=[n for n in dirnames if not(pathlib.Path(directory)/n).is_symlink()]\n                          ^^^^^^^^^^^^^^^\nAssertionError\n"
+  },
+  "stdout": {
+    "bytes_hex": "",
+    "eof": true,
+    "next_offset": 0,
+    "offset": 0,
+    "size": 0,
+    "text": ""
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "source": "collaboration /root/bao_acceptance",
+  "reportedAt": "2026-11-04T18:48Z",
+  "ownWorkspaceJobSuffix": "2ca2",
+  "ownWorkspaceOutcome": "authoritative exit1 admission-only; Rust tests not started",
+  "foreignJob": "1a1a7c83142-fc05-2c88",
+  "foreignState": "running active in peer's authoritative status observation",
+  "peerTimedTestsWillNotStartUntilOurOwnedCleanup": true,
+  "workerSeconds": 440,
+  "controllerCleanupDeliveryCeilingSeconds": 480,
+  "hostExclusive": false,
+  "rootAuthorization": "existing isolated baseline authorization plus independent r2b/r2c source review"
+}

@@ -1,0 +1,135 @@
+{
+  "schema": "heptabao.native-baseline-r2c-retained-failure-review.v1",
+  "sourcePackageCommit": "6c02791667086e6bc06e4177a3ebee4b645d5d9d",
+  "sourcePackageTree": "553a5a5162689e50b5987d464123533296e96d83",
+  "liveJob": "1a1a7e670f5-fc05-2cd4",
+  "actualResult": "failed",
+  "actualExitCode": 1,
+  "outerTimeout": false,
+  "phase": "active-lease",
+  "coreDynamicChecks": 26,
+  "coreDynamicPassed": 25,
+  "consumerDynamicChecks": 46,
+  "consumerDynamicPassed": 46,
+  "originalInitializeCompleted": true,
+  "originalSharedStartupOutcome": "fulfilled",
+  "originalFactoryLeaseObtained": true,
+  "accountReadCompleted": false,
+  "accountReadTimeoutMs": 8000,
+  "accountReadErrorPrivateSha256": "e2761351d3454ae51cc2df391f3148c7aea5a719145f49a5352cd2b403e10bdf",
+  "accountReadErrorPublicClassification": {
+    "class": "Error",
+    "frames": [
+      {
+        "file": "shared-client-4ICy3U6d.js",
+        "line": 999
+      }
+    ],
+    "messageExactAccountReadTimeout": true,
+    "sha256": "e2761351d3454ae51cc2df391f3148c7aea5a719145f49a5352cd2b403e10bdf"
+  },
+  "managedImportReached": false,
+  "consumerHeptaBaoWireCount": 0,
+  "actualNativeSpawnCount": 1,
+  "secondProcessSpawned": false,
+  "twoReadyLeasesObserved": false,
+  "singleWriterGatePassed": null,
+  "rollbackOutcome": "no_complete_candidate_unknown",
+  "stoppedRawCredentialRowsExact": true,
+  "stoppedRowsAreNotACompletedSdkRollbackProtocol": true,
+  "cleanup": {
+    "acquirePromisesSettled": true,
+    "actualSpawnCount": 1,
+    "allOwnedLeasesReleased": true,
+    "allOwnedStopped": true,
+    "attempted": true,
+    "closed": true,
+    "everySpawnTracked": true,
+    "identities": [
+      {
+        "exitCode": null,
+        "nativeGone": true,
+        "nativeObserved": true,
+        "ordinal": 1,
+        "signalCode": "SIGKILL",
+        "wrapperGone": true,
+        "wrapperObserved": true
+      }
+    ],
+    "ownerRegistryCount": 1,
+    "sharedStartupCoverage": [
+      {
+        "covered": true,
+        "label": "old",
+        "originalStartupCaptured": true,
+        "originalStartupSettled": true,
+        "retainedBarrierOnly": false
+      }
+    ],
+    "sharedStartupPromises": [
+      {
+        "entryKeySha256": "ca8cb7a8a0db990173e267c176dab1db9ad34fcc0d5472d9a51e1ce0206a3dbd",
+        "observationFailed": false,
+        "ordinal": 1,
+        "outcome": "fulfilled",
+        "promiseCaptured": true,
+        "replaced": false,
+        "settled": true
+      }
+    ],
+    "startupPromisesSettled": true
+  },
+  "harnessCleanupUsedAsRetirementProof": false,
+  "actualWrapperExitWasForced": true,
+  "nativeGenerationsUnchanged": true,
+  "productionChanged": false,
+  "productionGatewaySelectionQualified": false,
+  "productionTrafficCutover": false,
+  "fullReplacementQualified": false,
+  "explicitRefreshRpcSent": false,
+  "externalNetworkKernelDenied": true,
+  "backgroundNativeNetworkAttemptsNotMeasured": true,
+  "primarySourceFinding": {
+    "sameVersionTag": "rust-v0.159.2",
+    "tagTargetCommit": "ff6aec96948b70d94983af2641a6b67c94faeff5",
+    "sources": [
+      {
+        "file": "upstream-same-version/workspace_routing.rs",
+        "path": "codex-rs/app-server/src/request_processors/account_processor/workspace_routing.rs",
+        "commit": "ff6aec96948b70d94983af2641a6b67c94faeff5",
+        "sha256": "2d2e1badd55ac8805ac344f8b921ac10d7f6bc0b8b9679108ddb3bb288f09c92",
+        "bytes": 21222
+      },
+      {
+        "file": "upstream-same-version/account_processor.rs",
+        "path": "codex-rs/app-server/src/request_processors/account_processor.rs",
+        "commit": "ff6aec96948b70d94983af2641a6b67c94faeff5",
+        "sha256": "a28e9125a67d6e972fefdab8d8b191d8ec38a3294019f0c77d5e2077c2991831",
+        "bytes": 58916
+      },
+      {
+        "file": "upstream-same-version/backend_client.rs",
+        "path": "codex-rs/backend-client/src/client.rs",
+        "commit": "ff6aec96948b70d94983af2641a6b67c94faeff5",
+        "sha256": "e1d166ceb5f6f9a433907d74dc91eaa9e3900d2a43e588c21c3e2b149bca0643",
+        "bytes": 47838
+      }
+    ],
+    "installedBinaryBuildProvenanceVerified": false,
+    "accountReadFalseStillReadsWorkspaceRouting": true,
+    "coldChatgptRoutingRequiresAccountsCheckGet": true,
+    "routingCacheProcessLocal": true,
+    "upstreamAccountReadDeadlineSeconds": 15,
+    "unauthorizedRoutingCanEnterRecovery": true,
+    "observedSpecificNativeWaitLocationProven": false,
+    "nativePrivateLogTableRowCount": 0,
+    "scope": "Same-version primary source explains why refreshToken:false is not a purely local account read; no native stack trace proves which internal await was pending in this run."
+  },
+  "limits": [
+    "No AuthBus import or second native spawn was reached.",
+    "The original 8-second account/read failure remains red.",
+    "No successful normal retirement, two-writer counterexample, product barrier fix, or whole-logical SDK rollback is established by this run.",
+    "The stopped-clone equality is a separate read-only observation; it does not relabel the failed runtime rollback gate.",
+    "No network, refresh, model, configuration, or deadline boundary was relaxed."
+  ]
+}

@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "<string>", line 33, in <module>
+    directories+=1;assert directories<=24;dirnames[:]=[n for n in dirnames if not(pathlib.Path(directory)/n).is_symlink()]
+                          ^^^^^^^^^^^^^^^
+AssertionError

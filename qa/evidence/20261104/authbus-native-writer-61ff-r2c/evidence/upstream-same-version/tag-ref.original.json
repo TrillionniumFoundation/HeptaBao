@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"ref\":\"refs/tags/rust-v0.159.2\",\"node_id\":\"REF_kwDOOYsS4bdyZWZzL3RhZ3MvcnVzdC12MC4xNTkuMg\",\"url\":\"https://api.github.com/repos/openai/codex/git/refs/tags/rust-v0.159.2\",\"object\":{\"sha\":\"8b9fa496bbf2c47aebd62e85a080b9a522a455b5\",\"type\":\"tag\",\"url\":\"https://api.github.com/repos/openai/codex/git/tags/8b9fa496bbf2c47aebd62e85a080b9a522a455b5\"}}",
+    "title": "rust-v0.159.2",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/openai/codex/git/ref/tags/rust-v0.159.2",
+    "display_url": "https://api.github.com/repos/openai/codex/git/ref/tags/rust-v0.159.2",
+    "display_title": "rust-v0.159.2",
+    "structuredContent": {
+      "title": "rust-v0.159.2",
+      "content": "{\"ref\":\"refs/tags/rust-v0.159.2\",\"node_id\":\"REF_kwDOOYsS4bdyZWZzL3RhZ3MvcnVzdC12MC4xNTkuMg\",\"url\":\"https://api.github.com/repos/openai/codex/git/refs/tags/rust-v0.159.2\",\"object\":{\"sha\":\"8b9fa496bbf2c47aebd62e85a080b9a522a455b5\",\"type\":\"tag\",\"url\":\"https://api.github.com/repos/openai/codex/git/tags/8b9fa496bbf2c47aebd62e85a080b9a522a455b5\"}}",
+      "display_url": "https://api.github.com/repos/openai/codex/git/ref/tags/rust-v0.159.2"
+    }
+  },
+  "isError": false
+}

@@ -1,0 +1,38 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-r2c/control/launcher.py"
+    ],
+    "created_unix_ms": 1793818259701,
+    "cwd": null,
+    "env_keys": [
+      "HOME",
+      "PATH"
+    ],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "rog",
+    "id": "1a1a7e670f5-fc05-2cd4",
+    "idempotency_key": "authbus61ff-native-baseline-live-20261104-r2c",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1a7e670f5-fc05-2cd4",
+    "request_digest": "42519ac33f4be1ffd16207d8b333afc1b63a4ee3d2099dfba1d199916141cdd0",
+    "request_fingerprint": 4778770842988044000,
+    "ssh_target": "rog-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1a7e670f5-fc05-2cd4"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1a7e670f5-fc05-2cd4"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

@@ -1,0 +1,39 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import os,json,pathlib,hashlib,sqlite3,stat,ast,tomllib,urllib.parse,re\nroot=pathlib.Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-r2c/run-r1/live');work=root/'consumer-active-lease';home=work/'state/home/.codex'\nsha=lambda b:hashlib.sha256(b).hexdigest()\ndef read(p,limit=2097152):\n fd=os.open(p,os.O_RDONLY|os.O_NOFOLLOW)\n try:\n  a=os.fstat(fd);assert stat.S_ISREG(a.st_mode)and a.st_uid==os.getuid()and a.st_nlink==1 and a.st_size<=limit\n  b=os.read(fd,a.st_size+1);z=os.fstat(fd);assert len(b)==a.st_size and(a.st_ino,a.st_size,a.st_mtime_ns,a.st_ctime_ns)==(z.st_ino,z.st_size,z.st_mtime_ns,z.st_ctime_ns)\n  return b\n finally:os.close(fd)\nr={'schema':'heptabao.native-r2c-stopped-readonly-diagnostic.v1','readOnly':True,'diagnosticNativeStarted':False,'diagnosticProviderCalled':False}\nraw=read(work/'native/consumer-initial-error.private.json');assert sha(raw)=='e2761351d3454ae51cc2df391f3148c7aea5a719145f49a5352cd2b403e10bdf';error=json.loads(raw)\nr['originalError']={'sha256':sha(raw),'class':error.get('name') if error.get('name')in('Error','TypeError','RangeError','SyntaxError')else'unknown','messageExactAccountReadTimeout':error.get('message')=='account/read timed out','frames':[{'file':m.group(1),'line':int(m.group(2))}for m in re.finditer(r'([A-Za-z0-9_.-]+\\.(?:mjs|js)):(\\d+):\\d+',error.get('stack',''))][:8]}\nnativeAuth=read(home/'auth.json');tokens=json.loads(nativeAuth).get('tokens',{});secret=[v for v in tokens.values() if isinstance(v,str)and len(v)>=8]\nconfigRaw=read(home/'config.toml');config=tomllib.loads(configRaw.decode())\nr['nativeClone']={'authSha256':sha(nativeAuth),'configSha256':sha(configRaw)}\ndef publicString(v,allowed):\n return v if isinstance(v,str)and v in allowed else None\nr['nativeConfiguration']={'topLevelKeys':sorted(config),'credentialStoreKeyPresent':'cli_auth_credentials_store'in config,\n 'credentialStore':publicString(config.get('cli_auth_credentials_store'),{'file','keyring','auto','ephemeral'}),\n 'credentialStoreValueSha256':sha(json.dumps(config.get('cli_auth_credentials_store'),sort_keys=True).encode()),\n 'modelKeyPresent':'model'in config,'modelProviderKeyPresent':'model_provider'in config,\n 'modelValueSha256':sha(json.dumps(config.get('model'),sort_keys=True).encode()),\n 'modelProviderValueSha256':sha(json.dumps(config.get('model_provider'),sort_keys=True).encode())}\ndef urlProjection(value):\n if not isinstance(value,str):return {'present':False}\n u=urllib.parse.urlsplit(value);return {'present':True,'scheme':u.scheme,'hostSha256':sha((u.hostname or '').encode()),'port':u.port,'hasUserinfo':bool(u.username or u.password),'hasQuery':bool(u.query)}\nr['nativeConfiguration']['chatgptBaseUrl']=urlProjection(config.get('chatgpt_base_url'))\nr['nativeConfiguration']['modelProviders']=[{'nameSha256':sha(str(k).encode()),'baseUrl':urlProjection(v.get('base_url')),'hasEnvKey':'env_key'in v}for k,v in config.get('model_providers',{}).items()if isinstance(v,dict)]\nfor key in r['nativeConfiguration']['topLevelKeys']:assert not any(s in key for s in secret)\nfiles=[];logs=[];directories=0\nfor directory,dirnames,filenames in os.walk(home,followlinks=False):\n directories+=1;assert directories<=24;dirnames[:]=[n for n in dirnames if not(pathlib.Path(directory)/n).is_symlink()]\n for name in filenames:\n  p=pathlib.Path(directory)/name;s=p.lstat()\n  if not stat.S_ISREG(s.st_mode):continue\n  assert len(files)<96;rel=str(p.relative_to(home))\n  safeRel=rel if not any(x in rel for x in secret)else'sha256:'+sha(rel.encode())\n  item={'relativePath':safeRel,'bytes':s.st_size};files.append(item)\n  if name.endswith('.log')and s.st_size<=65536:\n   b=read(p,65536);classes={k:bool(re.search(v,b,re.I))for k,v in {'permission':b'permission denied|read-only file system','network':b'network is unreachable|connection refused|dns|timed out','keyring':b'keyring|secret service|dbus','sqlite':b'sqlite|database is locked','auth':b'authentication|unauthorized|token expired','modelCache':b'model.*cache|cache.*model','initialize':b'initializ'}.items()}\n   logs.append({'relativePath':safeRel,'bytes':len(b),'sha256':sha(b),'classifiers':classes})\nr['nativeGeneratedFiles']=files;r['nativeLogClassifiers']=logs\nfor n in ('stdout.private','stderr.private','runtime-selection.private.json','state/authbus/status.json'):\n p=work/n;r.setdefault('consumerFiles',{})[n]={'exists':p.exists()}\n if p.exists():\n  b=read(p);r['consumerFiles'][n].update(bytes=len(b),sha256=sha(b))\nsource=json.loads(read(root/'source-auth-tables.private.json'));tree=ast.parse(pathlib.Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-native-writer-61ff8bef-baseline-r2c/control/driver.py').read_text())\nassignments=[n for n in tree.body if isinstance(n,ast.Assign)and any(isinstance(t,ast.Name)and t.id=='TABLES'for t in n.targets)];assert len(assignments)==1;tables=ast.literal_eval(assignments[0].value)\ndb=sqlite3.connect((work/'state/agents/main/agent/openclaw-agent.sqlite').as_uri()+'?mode=ro',uri=True);db.execute('PRAGMA query_only=ON');db.execute('BEGIN')\ntry:\n now={}\n for k,(table,key,column)in tables.items():\n  assert all(v.replace('_','').isalnum()for v in(table,key,column))\n  now[k]=[list(t)for t in db.execute('SELECT '+key+','+column+',updated_at FROM '+table+' ORDER BY '+key)]\n db.rollback();enc=lambda x:json.dumps(x,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()\n r['rawAuthRows']={k:{'exactOriginalRows':now[k]==source['rows'][k],'sourceSha256':sha(enc(source['rows'][k])),'currentSha256':sha(enc(now[k]))}for k in tables};r['wholeRawAuthRowsExact']=now==source['rows']\nfinally:db.close()\nout=json.dumps(r,sort_keys=True);assert not any(x in out for x in secret);print(out)\n"
+    ],
+    "created_unix_ms": 1793818608951,
+    "cwd": null,
+    "env_keys": [
+      "HOME",
+      "PATH"
+    ],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "rog",
+    "id": "1a1a7ebc537-fc05-2cf1",
+    "idempotency_key": "authbus61ff-native-baseline-r2c-stopped-readonly-diag-20261104-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1a7ebc537-fc05-2cf1",
+    "request_digest": "a658f3017b8680c2351bf666a0f66da81846cb00d1ac80ac666d139befe0cfc4",
+    "request_fingerprint": 11986597595939504000,
+    "ssh_target": "rog-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1a7ebc537-fc05-2cf1"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1a7ebc537-fc05-2cf1"
+  },
+  "local_record_pending": false,
+  "reused": false
+}
