@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.mac-snapshot-stage-root-static-review.v1",
+  "review_commit": "8ee08b0ae9c0f1a02ce689bd868c1a8c23995ffc",
+  "source_sha256": "bc4f347e5f4a4c776f6357d1d406d51a0584e2457344f9a8a05351cd09c99fad",
+  "request_sha256": "7e043d708ebe0f2217c2c2647272475d14d860ae38a63fa67a0cb70c94e50fce",
+  "packet_sha256": "e612e9b1836dc46356d5f0579ca482a39f2bd0c52fe60d6bd7144311764d320d",
+  "scope": "Full stage source and exact bootstrap/request. Build driver is outside this root review and assigned separately to bao_acceptance. No runtime or compatibility admission.",
+  "fixed_root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1",
+  "base_source_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "base_source_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "candidate_review_commit": "4609acf94695508ea49097039b8355897a1b20f2",
+  "candidate_tree": "6708710421a4407e0d098fcc9ecc9aea479441db",
+  "checks": {
+    "fresh_root_required": true,
+    "fixed_python_t5_and_owner": true,
+    "local_base_git_fetch_only": true,
+    "no_rog_access": true,
+    "base_before_after_clean": true,
+    "all_13_product_files_pinned": true,
+    "exact_18_path_delta": true,
+    "exact_full_candidate_tree_before_commit": true,
+    "original_stage_seconds": 240,
+    "controller_seconds": 270,
+    "owned_unreaped_child_wnowait_before_group_signals": true,
+    "no_group_signals_after_reap": true,
+    "cleanup_and_timeouts_fail_closed": true,
+    "build_source_only_compiled_not_executed": true,
+    "no_service_started": true
+  },
+  "finding": "No blocking issue found within stage scope; execute only exact published request; reconcile unknown launch by same key.",
+  "build_qualified": false,
+  "full_replacement_qualified": false
+}

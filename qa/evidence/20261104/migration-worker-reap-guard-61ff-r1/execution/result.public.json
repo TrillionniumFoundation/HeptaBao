@@ -1,0 +1,240 @@
+{
+  "baseline_sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+  "cases": [
+    {
+      "elapsed_seconds": 0.030365216080099344,
+      "failure": null,
+      "implementation": "baseline",
+      "migration_row": {
+        "diagnostic": "",
+        "lane": "native-large",
+        "operation": "export",
+        "original_budget_seconds": 2,
+        "original_popen": true,
+        "original_wait_completed": true,
+        "pgid": 2894190,
+        "pid": 2894190,
+        "receipt": {
+          "lane": "native-large",
+          "operation": "export"
+        },
+        "retried": false,
+        "returncode": 0,
+        "status": "completed"
+      },
+      "mode": "success",
+      "original_wait_completed": true,
+      "regression_expectation_met": true,
+      "remaining": [],
+      "returncode": 0,
+      "signal_attempts": [],
+      "test_only_migration_seconds": 2,
+      "worker_pid": 2894190
+    },
+    {
+      "elapsed_seconds": 0.016898164059966803,
+      "failure": "reaped_group_signal_blocked_by_regression",
+      "implementation": "baseline",
+      "migration_row": {
+        "diagnostic": "owned deliberate worker failure\n",
+        "lane": "native-large",
+        "operation": "export",
+        "original_budget_seconds": 2,
+        "original_popen": true,
+        "pgid": 2894191,
+        "pid": 2894191,
+        "retried": false,
+        "returncode": 7,
+        "status": "unknown"
+      },
+      "mode": "nonzero",
+      "original_wait_completed": true,
+      "regression_expectation_met": true,
+      "remaining": [],
+      "returncode": 7,
+      "signal_attempts": [
+        {
+          "pid": 2894191,
+          "reaped_attempt_blocked": true,
+          "returncode_at_attempt": 7,
+          "sent": false,
+          "signal": 9
+        }
+      ],
+      "test_only_migration_seconds": 2,
+      "worker_pid": 2894191
+    },
+    {
+      "elapsed_seconds": 0.2516774791292846,
+      "failure": "reaped_group_signal_blocked_by_regression",
+      "implementation": "baseline",
+      "migration_row": {
+        "lane": "native-large",
+        "operation": "export",
+        "original_budget_seconds": 0.25,
+        "original_popen": true,
+        "pgid": 2894192,
+        "pid": 2894192,
+        "retried": false,
+        "status": "unknown"
+      },
+      "mode": "timeout",
+      "original_wait_completed": true,
+      "regression_expectation_met": true,
+      "remaining": [],
+      "returncode": -9,
+      "signal_attempts": [
+        {
+          "pid": 2894192,
+          "reaped_attempt_blocked": false,
+          "returncode_at_attempt": null,
+          "sent": true,
+          "signal": 9
+        },
+        {
+          "pid": 2894192,
+          "reaped_attempt_blocked": true,
+          "returncode_at_attempt": -9,
+          "sent": false,
+          "signal": 9
+        }
+      ],
+      "test_only_migration_seconds": 0.25,
+      "worker_pid": 2894192
+    },
+    {
+      "elapsed_seconds": 0.033670310862362385,
+      "failure": null,
+      "implementation": "fixed",
+      "migration_row": {
+        "diagnostic": "",
+        "lane": "native-large",
+        "operation": "export",
+        "original_budget_seconds": 2,
+        "original_popen": true,
+        "original_wait_completed": true,
+        "pgid": 2894193,
+        "pid": 2894193,
+        "receipt": {
+          "lane": "native-large",
+          "operation": "export"
+        },
+        "retried": false,
+        "returncode": 0,
+        "status": "completed"
+      },
+      "mode": "success",
+      "original_wait_completed": true,
+      "regression_expectation_met": true,
+      "remaining": [],
+      "returncode": 0,
+      "signal_attempts": [],
+      "test_only_migration_seconds": 2,
+      "worker_pid": 2894193
+    },
+    {
+      "elapsed_seconds": 0.01892461394891143,
+      "failure": "export_worker_failed",
+      "implementation": "fixed",
+      "migration_row": {
+        "diagnostic": "owned deliberate worker failure\n",
+        "lane": "native-large",
+        "operation": "export",
+        "original_budget_seconds": 2,
+        "original_popen": true,
+        "original_wait_completed": true,
+        "pgid": 2894194,
+        "pid": 2894194,
+        "retried": false,
+        "returncode": 7,
+        "status": "unknown"
+      },
+      "mode": "nonzero",
+      "original_wait_completed": true,
+      "regression_expectation_met": true,
+      "remaining": [],
+      "returncode": 7,
+      "signal_attempts": [],
+      "test_only_migration_seconds": 2,
+      "worker_pid": 2894194
+    },
+    {
+      "elapsed_seconds": 0.2545280200429261,
+      "failure": "migration_original_deadline_unknown_outcome",
+      "implementation": "fixed",
+      "migration_row": {
+        "lane": "native-large",
+        "operation": "export",
+        "original_budget_seconds": 0.25,
+        "original_popen": true,
+        "original_wait_completed": true,
+        "pgid": 2894195,
+        "pid": 2894195,
+        "retried": false,
+        "returncode": -9,
+        "status": "unknown"
+      },
+      "mode": "timeout",
+      "original_wait_completed": true,
+      "regression_expectation_met": true,
+      "remaining": [],
+      "returncode": -9,
+      "signal_attempts": [
+        {
+          "pid": 2894195,
+          "reaped_attempt_blocked": false,
+          "returncode_at_attempt": null,
+          "sent": true,
+          "signal": 9
+        }
+      ],
+      "test_only_migration_seconds": 0.25,
+      "worker_pid": 2894195
+    }
+  ],
+  "cleanup": [
+    {
+      "forced_by_outer": false,
+      "pid": 2894190,
+      "remaining": [],
+      "returncode": 0
+    },
+    {
+      "forced_by_outer": false,
+      "pid": 2894191,
+      "remaining": [],
+      "returncode": 7
+    },
+    {
+      "forced_by_outer": false,
+      "pid": 2894192,
+      "remaining": [],
+      "returncode": -9
+    },
+    {
+      "forced_by_outer": false,
+      "pid": 2894193,
+      "remaining": [],
+      "returncode": 0
+    },
+    {
+      "forced_by_outer": false,
+      "pid": 2894194,
+      "remaining": [],
+      "returncode": 7
+    },
+    {
+      "forced_by_outer": false,
+      "pid": 2894195,
+      "remaining": [],
+      "returncode": -9
+    }
+  ],
+  "fixed_sha256": "33377bc52b520c53aa2195ee68556581ea78036fbb887ffc2e5bb6fd4d985e47",
+  "full34_executed": false,
+  "full_replacement_qualified": false,
+  "production_changed": false,
+  "schema": "heptabao.migration-unreaped-worker-real-regression.v1",
+  "scope": "Actual Popen success, nonzero, timeout; attempted stale signals are blocked before dispatch.",
+  "status": "passed"
+}

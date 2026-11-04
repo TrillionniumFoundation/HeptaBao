@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.migration-worker-reap-guard-root-runtime-review.v1",
+  "job_id": "1a1a7eff56d-fc05-2d00",
+  "host": "x230",
+  "status": "passed_with_explicit_scope",
+  "source_baseline_sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+  "source_fixed_sha256": "33377bc52b520c53aa2195ee68556581ea78036fbb887ffc2e5bb6fd4d985e47",
+  "controller_sha256": "13f0992359ed65ef14123b45ccd2a33de36c3a405ebcbe640b93c1211a3e2ae4",
+  "result_sha256": "0bc332bf9a2279c0627c74c693f0af449d96a1ed9c3e5fd0b0fc884a7ad594e4",
+  "result_bytes": 6530,
+  "actual_cases": 6,
+  "baseline_reaped_signal_attempts_blocked": 2,
+  "fixed_reaped_signal_attempts": 0,
+  "all_six_original_children_waited_and_groups_empty": true,
+  "outer_cleanup_needed": false,
+  "authoritative_exit_code": 0,
+  "full34_executed": false,
+  "scope": "Run.migration() real Popen success/nonzero/timeout branches against bounded local dummy workers. Native CLI supervise() receives the same independently reviewed guard pattern but was not exercised by these six cases. No HTTP, archive, credential, migration-data, or product-runtime qualification.",
+  "canonical_changes": [
+    "qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+    "tools/migration/openbao271_kv2_native_large_migrate.py"
+  ],
+  "canonical_base_bytes_verified_before_write": true,
+  "original_business_checks_31_unchanged": true,
+  "original_http_15_migration_360_native_http_5_budgets_unchanged": true,
+  "full_replacement_qualified": false
+}

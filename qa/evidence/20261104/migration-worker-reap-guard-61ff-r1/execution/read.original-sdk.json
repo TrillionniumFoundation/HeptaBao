@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1a7eff56d-fc05-2d00\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b226279746573223a20363533302c20226361736573223a20362c202266756c6c33345f6578656375746564223a2066616c73652c2022726573756c74223a20222f686f6d652f7169616e2f686570746162616f2d6b76322d776f726b65722d726561702d67756172642d363166662d32303236313130342d72312f726573756c742e7075626c69632e6a736f6e222c2022736861323536223a202230626333333262663961323237396330363237633734633639336630616634343964393661316564396333653566643062306663383834613761643539346534222c2022737461747573223a2022706173736564227d0a\",\n    \"eof\": true,\n    \"next_offset\": 243,\n    \"offset\": 0,\n    \"size\": 243,\n    \"text\": \"{\\\"bytes\\\": 6530, \\\"cases\\\": 6, \\\"full34_executed\\\": false, \\\"result\\\": \\\"/home/qian/heptabao-kv2-worker-reap-guard-61ff-20261104-r1/result.public.json\\\", \\\"sha256\\\": \\\"0bc332bf9a2279c0627c74c693f0af449d96a1ed9c3e5fd0b0fc884a7ad594e4\\\", \\\"status\\\": \\\"passed\\\"}\\n\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}
