@@ -1,0 +1,17 @@
+{
+  "host": "rog",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "-c",
+    "import gzip,hashlib,json,os,stat\nfrom pathlib import Path\nroot=Path(\"/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-workspace\")\nexpected={\"workspace.stdout\":\"5ef24325975a5a429f7a32a580e00978cb5a7446620675d5f191f105f6d738e6\",\"workspace.stderr\":\"60296106862fcad2b1c498790bd03eb3c88fbb83a57476c5c5763e4ff2719be5\"}\ndef identity(s): return (s.st_dev,s.st_ino,s.st_mode,s.st_uid,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns)\nfiles={}\nfor name,pin in expected.items():\n path=root/name\n fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)\n try:\n  before=os.fstat(fd)\n  assert stat.S_ISREG(before.st_mode) and before.st_uid==1000 and before.st_nlink==1 and before.st_size<=2*1024*1024\n  chunks=[]\n  while True:\n   part=os.read(fd,65536)\n   if not part: break\n   chunks.append(part)\n  raw=b\"\".join(chunks)\n  assert identity(before)==identity(os.fstat(fd))==identity(path.lstat())\n  assert len(raw)==before.st_size and hashlib.sha256(raw).hexdigest()==pin\n  files[name]={\"bytes\":len(raw),\"sha256\":pin,\"text\":raw.decode(\"utf-8\")}\n finally:\n  os.close(fd)\nraw=(json.dumps({\"schema\":\"heptabao.normal-workspace-original-logs.v1\",\"files\":files},sort_keys=True,ensure_ascii=False,separators=(\",\",\":\"))+\"\\n\").encode()\npacked=gzip.compress(raw,compresslevel=6,mtime=0)\npath=root/\"full-logs-r1.json.gz\"\nfd=os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)\nwith os.fdopen(fd,\"wb\") as stream:\n stream.write(packed);stream.flush();os.fsync(stream.fileno())\ndfd=os.open(root,os.O_RDONLY|os.O_DIRECTORY)\ntry: os.fsync(dfd)\nfinally: os.close(dfd)\nassert path.read_bytes()==packed\nprint(json.dumps({\"status\":\"verified_original_public_logs_packed\",\"path\":str(path),\"gzip_bytes\":len(packed),\"gzip_sha256\":hashlib.sha256(packed).hexdigest(),\"raw_bytes\":len(raw),\"raw_sha256\":hashlib.sha256(raw).hexdigest(),\"files\":{k:{a:b for a,b in v.items() if a!=\"text\"} for k,v in files.items()}},sort_keys=True))\n"
+  ],
+  "cwd": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-workspace",
+  "stdin": "",
+  "nice": 19,
+  "memory_max_bytes": 67108864,
+  "timeout_seconds": 30,
+  "idempotency_key": "bao-acceptance-r6-workspace2-public-logs-pack-r1-c3d9e9c6d73487df-abs"
+}

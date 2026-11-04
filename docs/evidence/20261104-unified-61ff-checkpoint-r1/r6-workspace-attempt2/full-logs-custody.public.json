@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.full-normal-workspace-original-log-custody.v1",
+  "source": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "test_job": "1a1a7e9ec36-fc05-2cea",
+  "qualification": "failed",
+  "full_replacement_qualified": false,
+  "pack_job": "1a1a80d3b22-fc05-2d7a",
+  "packing": "Fixed original public stdout/stderr opened read-only, single-link/UID/inode/time/size and whole-file SHA checked; one new owned gzip evidence file. No source, original log, service, compiler or test change.",
+  "gzip": {
+    "path": "full-logs-r1.json.gz",
+    "bytes": 212301,
+    "sha256": "a8b98d6abec1b7898a3a49bdfd7137636da513f16e53c424fe437c091ed6dc15",
+    "git_blob": "027f9e4570e966005c2d831cf73dfc53df926fa8"
+  },
+  "uncompressed_json": {
+    "bytes": 1655948,
+    "sha256": "30e3da9158ace001e4de7d9772d0eed7002925d60c1d378bfd87a9c5cbb1c4a1"
+  },
+  "files": {
+    "workspace.stderr": {
+      "bytes": 1043676,
+      "sha256": "60296106862fcad2b1c498790bd03eb3c88fbb83a57476c5c5763e4ff2719be5"
+    },
+    "workspace.stdout": {
+      "bytes": 567247,
+      "sha256": "5ef24325975a5a429f7a32a580e00978cb5a7446620675d5f191f105f6d738e6"
+    }
+  },
+  "retrieval": "Four continuous byte chunks bound to one immutable native file version, independently hashed and gzip-decoded in the reviewer runtime; both original UTF-8 files independently hashed to their terminal-result pins.",
+  "independent_counts": {
+    "groups": 67,
+    "totals": {
+      "passed": 4752,
+      "failed": 8,
+      "ignored": 9,
+      "measured": 0,
+      "filtered": 0
+    },
+    "nested": [
+      {
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 47,
+        "tail": " finished in 0.07s"
+      },
+      {
+        "passed": 1,
+        "failed": 0,
+        "ignored": 0,
+        "measured": 0,
+        "filtered": 47,
+        "tail": " finished in 0.00s"
+      }
+    ],
+    "server": {
+      "passed": 3699,
+      "failed": 8,
+      "ignored": 8,
+      "measured": 0,
+      "filtered": 0,
+      "tail": " finished in 1698.29s"
+    }
+  },
+  "failure_excerpt": {
+    "path": "server-failures.stdout",
+    "bytes": 10455,
+    "sha256": "fcc0c80f32f3f051385144e35294d76f734b2f4b9e19e84f82e4e2c956cbda70"
+  },
+  "interpretation": "The 8 failed tests and 9 explicit baseline ignores remain visible. 4752 passed tests and prior strict compile success are recorded separately; no whole-workspace or replacement qualification is claimed."
+}
