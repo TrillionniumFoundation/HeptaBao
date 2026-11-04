@@ -1,0 +1,113 @@
+{
+  "schema": "heptabao.mac-snapshot-candidate-stage-review.v1",
+  "status": "actual_stage_verified",
+  "job_id": "1a1a7f80668-fc05-2d22",
+  "terminal": {
+    "at_unix_ms": 1793819414456,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a7f80668-fc05-2d22",
+    "launch_nonce": "30b2a71583f86b0e4c4a4503f49f52d7",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 447,
+        "stored": 447
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "result_sha256": "6ef4d495f8a57369d0bfffdf04d5fb14c487a9968f73afc8758aafd2c53c1b0a",
+  "physical_source": "1f11b13ffad62b80695e036f393739cfcc8a8cab",
+  "tree": "6708710421a4407e0d098fcc9ecc9aea479441db",
+  "review_source": "4609acf94695508ea49097039b8355897a1b20f2",
+  "same_tree_not_same_commit": true,
+  "controls_readback": [
+    {
+      "name": "source-stage-result.public.json",
+      "bytes": 27007,
+      "sha256": "6ef4d495f8a57369d0bfffdf04d5fb14c487a9968f73afc8758aafd2c53c1b0a"
+    },
+    {
+      "name": "stage_source_r1.py",
+      "bytes": 24566,
+      "sha256": "870986b5515b940a690eb2aa828df487130ae95469d56530023b92a5f4555be7"
+    },
+    {
+      "name": "run_candidate_normal_r1.py",
+      "bytes": 40625,
+      "sha256": "7a6a3c484d8219bb5e2faa4f71a3341685b53ac5306c1760136b8923a6a2cf74"
+    }
+  ],
+  "source_pins_independently_matched": 13,
+  "source_commands": 17,
+  "all_command_exit_zero": true,
+  "all_owned_groups_empty": true,
+  "elapsed_seconds": 2.1065563750453293,
+  "base_source_unchanged": true,
+  "syntax_job": "1a1a7f7300b-fc05-2d1f",
+  "syntax_terminal": {
+    "at_unix_ms": 1793819357456,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a7f7300b-fc05-2d1f",
+    "launch_nonce": "352722d7e78d1dfe9112d706cbd65b6e",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 647,
+        "stored": 647
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "two_complete_sources_compiled_not_executed": true,
+  "prior_syntax_failure_retained": true,
+  "cargo_started": false,
+  "product_service_started": false,
+  "full_replacement_qualified": false
+}

@@ -1,0 +1,15 @@
+{
+  "host": "mac",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python",
+  "args": [
+    "-I",
+    "-S",
+    "-c",
+    "import hashlib,os,stat,sys\npath=\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/control/run_candidate_normal_r1.py\"\nif len(sys.argv)!=3:\n    raise SystemExit(\"build_input_pins\")\nfd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)\ntry:\n    before=os.fstat(fd)\n    if not stat.S_ISREG(before.st_mode) or before.st_uid!=501 or before.st_nlink!=1 or before.st_size>128*1024:\n        raise SystemExit(\"build_source_custody\")\n    raw=b\"\"\n    while len(raw)<=128*1024:\n        data=os.read(fd,65536)\n        if not data: break\n        raw+=data\n    after=os.fstat(fd)\nfinally:\n    os.close(fd)\nif len(raw)!=before.st_size or before!=after or hashlib.sha256(raw).hexdigest()!=sys.argv[1]:\n    raise SystemExit(\"build_source_pin\")\nsys.argv=[path,sys.argv[1],sys.argv[2]]\nexec(compile(raw,path,\"exec\"),{\"__name__\":\"__main__\",\"__file__\":path})\n",
+    "7a6a3c484d8219bb5e2faa4f71a3341685b53ac5306c1760136b8923a6a2cf74",
+    "6ef4d495f8a57369d0bfffdf04d5fb14c487a9968f73afc8758aafd2c53c1b0a"
+  ],
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1",
+  "idempotency_key": "ha-snapshot-acl-denial-61ff-normal-r2-7a6a3c484d82-6ef4d495f8a5",
+  "timeout_seconds": 2160
+}
