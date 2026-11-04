@@ -1,0 +1,326 @@
+{
+  "schema": "heptabao.external-pr-head-readonly-observation.v1",
+  "pr": 152,
+  "branch": "codex/heptabao-blocker-closure-ci-20261104",
+  "previous_observed_head": "f9139c3b37b6373df3e4b4c61ebdd4f847afac4d",
+  "observed_head": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "observed_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "changed_by_this_agent": false,
+  "comparison": {
+    "ahead_by": 2,
+    "behind_by": 0,
+    "commits": [
+      {
+        "sha": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+        "message": "Preserve reviewed native SSH ownership and repair bounded HTTP response routing\n\nIntegrate the frozen R8 native SSH owner implementation and its regressions, coalesce bounded ordinary response heads, preserve original NoForward request provenance and deadlines, and resolve the reviewed strict-Clippy findings. Preserve all current PR workflow and documentation changes.\n\nThe source tree is bound for normal Mac and Linux builds. Runtime qualification and full replacement remain pending; prior failed and unknown results are retained."
+      },
+      {
+        "sha": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+        "message": "test: witness authenticated native state in NoForward HA regressions"
+      }
+    ],
+    "files": [
+      {
+        "path": "crates/heptabao-server/src/auth.rs",
+        "status": "modified",
+        "additions": 2,
+        "deletions": 1
+      },
+      {
+        "path": "crates/heptabao-server/src/auth_native_ssh_reply.rs",
+        "status": "added",
+        "additions": 71,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/auth_wrapping.rs",
+        "status": "modified",
+        "additions": 6,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/engine_native_kv2_lossless_export.rs",
+        "status": "modified",
+        "additions": 2,
+        "deletions": 2
+      },
+      {
+        "path": "crates/heptabao-server/src/engine_native_pki.rs",
+        "status": "modified",
+        "additions": 23,
+        "deletions": 2
+      },
+      {
+        "path": "crates/heptabao-server/src/engine_native_ssh.rs",
+        "status": "added",
+        "additions": 500,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/engines.rs",
+        "status": "modified",
+        "additions": 6,
+        "deletions": 1
+      },
+      {
+        "path": "crates/heptabao-server/src/engines/native_empty_namespace.rs",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "path": "crates/heptabao-server/src/engines/ssh.rs",
+        "status": "modified",
+        "additions": 15,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/engines/ssh_ca.rs",
+        "status": "modified",
+        "additions": 5,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/ha.rs",
+        "status": "modified",
+        "additions": 56,
+        "deletions": 23
+      },
+      {
+        "path": "crates/heptabao-server/src/ha_forward.rs",
+        "status": "modified",
+        "additions": 172,
+        "deletions": 8
+      },
+      {
+        "path": "crates/heptabao-server/src/ha_forward_native_kv2_write.rs",
+        "status": "modified",
+        "additions": 2,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/ha_forward_native_ssh_tests.rs",
+        "status": "added",
+        "additions": 219,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/http.rs",
+        "status": "modified",
+        "additions": 132,
+        "deletions": 28
+      },
+      {
+        "path": "crates/heptabao-server/src/http_no_forward_tests.rs",
+        "status": "added",
+        "additions": 242,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/http_response_coalescing_tests.rs",
+        "status": "added",
+        "additions": 480,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/http_snapshot.rs",
+        "status": "modified",
+        "additions": 93,
+        "deletions": 11
+      },
+      {
+        "path": "crates/heptabao-server/src/http_snapshot_redirect_tests.rs",
+        "status": "modified",
+        "additions": 385,
+        "deletions": 3
+      },
+      {
+        "path": "crates/heptabao-server/src/http_test_client.rs",
+        "status": "added",
+        "additions": 50,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/request_metadata.rs",
+        "status": "modified",
+        "additions": 19,
+        "deletions": 4
+      },
+      {
+        "path": "crates/heptabao-server/src/request_metadata_local_redirect.rs",
+        "status": "added",
+        "additions": 98,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/service.rs",
+        "status": "modified",
+        "additions": 158,
+        "deletions": 5
+      },
+      {
+        "path": "crates/heptabao-server/src/service_legacy_immutable_kv_tests.rs",
+        "status": "modified",
+        "additions": 57,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/service_lifecycle.rs",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_auth.rs",
+        "status": "modified",
+        "additions": 115,
+        "deletions": 7
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_controlgroups_tests.rs",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_kv2_mount_tests.rs",
+        "status": "modified",
+        "additions": 3,
+        "deletions": 2
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_pki_ha_tests.rs",
+        "status": "modified",
+        "additions": 8,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_ssh.rs",
+        "status": "added",
+        "additions": 526,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_ssh_archive_tests.rs",
+        "status": "added",
+        "additions": 224,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_ssh_ha_tests.rs",
+        "status": "added",
+        "additions": 408,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_ssh_tests.rs",
+        "status": "added",
+        "additions": 1178,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/service_no_forwarding_ha_tests.rs",
+        "status": "added",
+        "additions": 450,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/service_request_redirect_tests.rs",
+        "status": "added",
+        "additions": 218,
+        "deletions": 0
+      },
+      {
+        "path": "crates/heptabao-server/src/service_response_headers.rs",
+        "status": "modified",
+        "additions": 89,
+        "deletions": 6
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_lossless_export.rs",
+        "status": "modified",
+        "additions": 0,
+        "deletions": 1
+      },
+      {
+        "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+        "status": "modified",
+        "additions": 5,
+        "deletions": 2
+      }
+    ]
+  },
+  "new_runs": [
+    {
+      "id": 41879510413,
+      "name": "Codex OpenBao replacement full qualification",
+      "head_sha": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "status": "in_progress",
+      "conclusion": null,
+      "created_at": "2026-11-04T17:41:08Z",
+      "updated_at": "2026-11-04T17:50:36Z"
+    },
+    {
+      "id": 41879510682,
+      "name": "HeptaBao workflow trust boundary",
+      "head_sha": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-04T17:41:08Z",
+      "updated_at": "2026-11-04T17:51:30Z"
+    },
+    {
+      "id": 41879496982,
+      "name": "PR #152",
+      "head_sha": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "status": "completed",
+      "conclusion": "success",
+      "created_at": "2026-11-04T17:41:03Z",
+      "updated_at": "2026-11-04T18:00:30Z"
+    }
+  ],
+  "full_jobs": [
+    {
+      "id": 126748711283,
+      "name": "OpenBao replacement / merge",
+      "status": "in_progress",
+      "conclusion": null,
+      "started_at": "2026-11-04T17:42:28Z",
+      "current_step": [
+        {
+          "name": "Test the complete locked Rust workspace",
+          "status": "in_progress",
+          "conclusion": null,
+          "number": 10,
+          "started_at": "2026-11-04T17:45:20Z",
+          "completed_at": null
+        }
+      ]
+    },
+    {
+      "id": 126748711370,
+      "name": "OpenBao replacement / head",
+      "status": "in_progress",
+      "conclusion": null,
+      "started_at": "2026-11-04T17:42:28Z",
+      "current_step": [
+        {
+          "name": "Test the complete locked Rust workspace",
+          "status": "in_progress",
+          "conclusion": null,
+          "number": 10,
+          "started_at": "2026-11-04T17:45:20Z",
+          "completed_at": null
+        }
+      ]
+    }
+  ],
+  "qualification_limits": {
+    "current_physical7071_qualified_by_this_ci": false,
+    "same_source_as_physical7071": false,
+    "closed_snapshot_clock_chain_included": false,
+    "ci_cancelled_or_restarted_by_this_agent": false,
+    "full_replacement_qualified": false
+  },
+  "recorded_utc": "2026-11-04T18:52:19Z"
+}
