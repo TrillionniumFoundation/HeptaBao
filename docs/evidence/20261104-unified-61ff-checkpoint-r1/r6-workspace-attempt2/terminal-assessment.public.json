@@ -1,0 +1,102 @@
+{
+  "schema": "heptabao.normal-workspace-terminal-assessment.v1",
+  "job_id": "1a1a7e9ec36-fc05-2cea",
+  "source": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "controller": {
+    "at_unix_ms": 1793820288079,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1a7e9ec36-fc05-2cea",
+    "launch_nonce": "9d51c9b4cb7901c11011980e0cdf80f1",
+    "log_bytes": {
+      "stderr": {
+        "seen": 376,
+        "stored": 376
+      },
+      "stdout": {
+        "seen": 246,
+        "stored": 246
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "cargo_exit_code": 101,
+  "elapsed_seconds": 1798.1001747790142,
+  "timed_out": false,
+  "owned_pgid": 3217160,
+  "owned_group_remaining": [],
+  "source_and_retained_binaries_unchanged": true,
+  "top_level_groups": 67,
+  "top_level_totals": {
+    "passed": 4752,
+    "failed": 8,
+    "ignored": 9,
+    "measured": 0,
+    "filtered": 0
+  },
+  "nested_filtered_summaries": [
+    {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 47
+    },
+    {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 47
+    }
+  ],
+  "critical_total": 56,
+  "critical_passed_exactly_once": 50,
+  "failed_tests": [
+    "http::snapshot_accept_tests::native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refusals",
+    "service::native_storage::tests::configured_native_activation_rejects_unsupported_live_engine_without_retiring_v5",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_finite_tokens_redirect_without_consumption",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_late_root_change_and_lost_quorum_refuse_delivery",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_snapshot_read_restore_validation_and_no_forward_use_real_owners",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::formal_native_standby_ttl_snapshot_commits_real_leader_floor_and_survives_cold_restart",
+    "service::snapshot_transfer::tests::native_archive_rejects_truncation_concatenated_gzip_and_corruption"
+  ],
+  "ignored_tests": [
+    "v6_replica_blobs::tests::stages_unique_139_mib_without_raft_json",
+    "service::recovery_keys::source825_real_recovery_fixture_tests::genuine_native_restore_rejects_changed_authority",
+    "service::recovery_keys::source825_real_recovery_fixture_tests::genuine_native_restore_same_schema_old_auth_protected_floor",
+    "service::recovery_keys::source825_real_recovery_fixture_tests::genuine_owner_commit_cut_then_same_store_restart",
+    "service::recovery_keys::source825_real_recovery_fixture_tests::genuine_wrapper_bootstrap_and_recovery_capability",
+    "service::recovery_keys::source825_real_recovery_fixture_tests::genuine_wrapper_completed_publication_rejects_after_write_corrupt_graph",
+    "service::recovery_keys::source825_real_recovery_fixture_tests::genuine_wrapper_existing_complete_readonly_catchup",
+    "service::recovery_keys::source825_real_recovery_fixture_tests::genuine_wrapper_existing_constructor_rejects_preexisting_bad_durable_graph",
+    "service::recovery_keys::source825_real_recovery_fixture_tests::genuine_wrapper_known_index_completion_and_noop_catchup"
+  ],
+  "result_sha256": "4f1a06c713f1126e040fa90d0c74c253f2787b1fdf8e6ff21827679cd7564309",
+  "stdout_sha256": "5ef24325975a5a429f7a32a580e00978cb5a7446620675d5f191f105f6d738e6",
+  "stderr_sha256": "60296106862fcad2b1c498790bd03eb3c88fbb83a57476c5c5763e4ff2719be5",
+  "full_logs_retrieved": false,
+  "full_replacement_qualified": false,
+  "scope": "Preserve full normal-profile real failures; the prior strict compile success is distinct. No cancellation, altered fixture budget, suppressed test, changed source or rerun is used to replace this result."
+}

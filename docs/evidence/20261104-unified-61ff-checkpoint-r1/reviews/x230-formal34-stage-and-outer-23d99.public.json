@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.independent-x230-formal34-control-review.v1",
+  "reviewer": "bao_acceptance",
+  "reviewed_commit": "23d99f57c13b9a150cd2256387abf32dde9f1a7b",
+  "status": "no_additional_static_blocker_after_exact_syntax_repair",
+  "source": {
+    "stage": {
+      "bytes": 21311,
+      "sha256": "6975ea39512bae2fc6c0c45e518678cc82cbc98ec8e7835debc43350899450d2",
+      "git_blob": "4940488086c126f0ee66501ca86612b2bcacfebc"
+    },
+    "outer": {
+      "bytes": 19437,
+      "sha256": "a7b97a452d4064c02dd64c52a1e3e99e8af120598506a215d8fabde9e06399d8",
+      "git_blob": "94a44595c485362832eaf7b675d5fc08e8576c50"
+    },
+    "packet_sha256": "745bc1f41b7977379dc44b2dfd77ca2382b503a641a87b4d3f74264279e50a23"
+  },
+  "checks": [
+    "Read the complete stage and outer controller sources and exact request bootstrap.",
+    "Independently hashed all six admitted packet files; all match the closed pinned set.",
+    "Stage bootstrap binds the original packet and exact stage bytes before compile/exec; no shell interpolation.",
+    "The corrected outer source differs from the retained syntax-red draft only by the 34-byte finally/os.close(fd) repair.",
+    "Fixed X230 interpreter, UID, host, fresh owned root, no symlink custody, immutable 7071 commit/tree and all 62 source file pins remain enforced.",
+    "Read-only Git fetch and SCP use the fixed rog alias, BatchMode and StrictHostKeyChecking; no binary or service executes during staging.",
+    "Single 240-second stage budget covers Git and transfer; original unreaped direct child remains the group cleanup authority.",
+    "Outer controller retains exact original Popen birth identities and rejects post-reap group signalling; every child must be waited, group-empty and require no outer forced cleanup before qualification.",
+    "Business inventory remains 31 checks, HTTP 15 seconds, migration 360 seconds and cleanup 5 seconds; the new outer 1800-second budget is separate and explicit.",
+    "Derived helper changes remain reap-guard plus exact source-root relocation; the clean 7071 checkout and its original helper stay unchanged."
+  ],
+  "runtime_scope": {
+    "stage_executed_by_reviewer": false,
+    "fixture_executed_by_reviewer": false,
+    "syntax_result_reported_by_parent": {
+      "job_suffix": "2d46",
+      "exit_code": 0,
+      "stdout_bytes": 593,
+      "stderr_bytes": 0,
+      "independently_fetched_by_reviewer": false
+    },
+    "full_replacement_qualified": false
+  },
+  "scheduling": "Wait for complete ROG 2cea terminal/owned cleanup, then the reviewed AuthBus 440/480-second window and its cleanup, before X230 read-only source/binary transfer."
+}
