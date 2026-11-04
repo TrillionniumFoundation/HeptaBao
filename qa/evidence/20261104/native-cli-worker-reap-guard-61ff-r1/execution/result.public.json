@@ -1,0 +1,251 @@
+{
+  "baseline_sha256": "4df0d5eaf069905e5a5bfd9e0e699391ba104ac27d54c5cbb18a79a9d8b1284d",
+  "cases": [
+    {
+      "actual_supervise_function_executed": true,
+      "captured_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "captured_stdout_sha256": "8b33377981b2fc29292ab9053251f00dc0d8fca96ac74e0468ce4b346fc7b6e2",
+      "elapsed_seconds": 0.01267235865816474,
+      "failure": null,
+      "full_migration_or_http_executed": false,
+      "implementation": "baseline",
+      "mode": "success",
+      "original_wait_completed": true,
+      "production_deadline_constant_unchanged": true,
+      "regression_expectation_met": true,
+      "remaining": [],
+      "returncode": 0,
+      "returned_code": 0,
+      "signal_attempts": [],
+      "supervisor_lifecycle": {
+        "original_popen": true,
+        "original_wait_completed": true,
+        "pgid": 2905430,
+        "pid": 2905430,
+        "planned_signal": null,
+        "retried": false,
+        "returncode": 0
+      },
+      "test_only_deadline_seconds": 2.0,
+      "worker_pid": 2905430
+    },
+    {
+      "actual_supervise_function_executed": true,
+      "captured_stderr_sha256": "e1440aa499e5c1d9877004bae5d5a480161a4266b950de5a3c47406fa5b823e5",
+      "captured_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsed_seconds": 0.012772963847965002,
+      "failure": "reaped_group_signal_blocked_by_regression",
+      "full_migration_or_http_executed": false,
+      "implementation": "baseline",
+      "mode": "nonzero",
+      "original_wait_completed": true,
+      "production_deadline_constant_unchanged": true,
+      "regression_expectation_met": true,
+      "remaining": [],
+      "returncode": 7,
+      "returned_code": null,
+      "signal_attempts": [
+        {
+          "pid": 2905431,
+          "reaped_attempt_blocked": true,
+          "returncode_at_attempt": 7,
+          "sent": false,
+          "signal": 9
+        }
+      ],
+      "supervisor_lifecycle": {
+        "original_popen": true,
+        "original_wait_completed": false,
+        "pgid": 2905431,
+        "pid": 2905431,
+        "planned_signal": 9,
+        "retried": false,
+        "returncode": null
+      },
+      "test_only_deadline_seconds": 2.0,
+      "worker_pid": 2905431
+    },
+    {
+      "actual_supervise_function_executed": true,
+      "captured_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "captured_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsed_seconds": 0.25208673905581236,
+      "failure": "reaped_group_signal_blocked_by_regression",
+      "full_migration_or_http_executed": false,
+      "implementation": "baseline",
+      "mode": "timeout",
+      "original_wait_completed": true,
+      "production_deadline_constant_unchanged": true,
+      "regression_expectation_met": true,
+      "remaining": [],
+      "returncode": -9,
+      "returned_code": null,
+      "signal_attempts": [
+        {
+          "pid": 2905432,
+          "reaped_attempt_blocked": false,
+          "returncode_at_attempt": null,
+          "sent": true,
+          "signal": 9
+        },
+        {
+          "pid": 2905432,
+          "reaped_attempt_blocked": true,
+          "returncode_at_attempt": -9,
+          "sent": false,
+          "signal": 9
+        }
+      ],
+      "supervisor_lifecycle": {
+        "original_popen": true,
+        "original_wait_completed": false,
+        "pgid": 2905432,
+        "pid": 2905432,
+        "planned_signal": 9,
+        "retried": false,
+        "returncode": null
+      },
+      "test_only_deadline_seconds": 0.25,
+      "worker_pid": 2905432
+    },
+    {
+      "actual_supervise_function_executed": true,
+      "captured_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "captured_stdout_sha256": "8b33377981b2fc29292ab9053251f00dc0d8fca96ac74e0468ce4b346fc7b6e2",
+      "elapsed_seconds": 0.01653332682326436,
+      "failure": null,
+      "full_migration_or_http_executed": false,
+      "implementation": "fixed",
+      "mode": "success",
+      "original_wait_completed": true,
+      "production_deadline_constant_unchanged": true,
+      "regression_expectation_met": true,
+      "remaining": [],
+      "returncode": 0,
+      "returned_code": 0,
+      "signal_attempts": [],
+      "supervisor_lifecycle": {
+        "original_popen": true,
+        "original_wait_completed": true,
+        "pgid": 2905447,
+        "pid": 2905447,
+        "planned_signal": null,
+        "retried": false,
+        "returncode": 0
+      },
+      "test_only_deadline_seconds": 2.0,
+      "worker_pid": 2905447
+    },
+    {
+      "actual_supervise_function_executed": true,
+      "captured_stderr_sha256": "e1440aa499e5c1d9877004bae5d5a480161a4266b950de5a3c47406fa5b823e5",
+      "captured_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsed_seconds": 0.01407973887398839,
+      "failure": null,
+      "full_migration_or_http_executed": false,
+      "implementation": "fixed",
+      "mode": "nonzero",
+      "original_wait_completed": true,
+      "production_deadline_constant_unchanged": true,
+      "regression_expectation_met": true,
+      "remaining": [],
+      "returncode": 7,
+      "returned_code": 7,
+      "signal_attempts": [],
+      "supervisor_lifecycle": {
+        "original_popen": true,
+        "original_wait_completed": true,
+        "pgid": 2905448,
+        "pid": 2905448,
+        "planned_signal": null,
+        "retried": false,
+        "returncode": 7
+      },
+      "test_only_deadline_seconds": 2.0,
+      "worker_pid": 2905448
+    },
+    {
+      "actual_supervise_function_executed": true,
+      "captured_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "captured_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "elapsed_seconds": 0.25219909800216556,
+      "failure": "native-large original absolute deadline exceeded",
+      "full_migration_or_http_executed": false,
+      "implementation": "fixed",
+      "mode": "timeout",
+      "original_wait_completed": true,
+      "production_deadline_constant_unchanged": true,
+      "regression_expectation_met": true,
+      "remaining": [],
+      "returncode": -9,
+      "returned_code": null,
+      "signal_attempts": [
+        {
+          "pid": 2905449,
+          "reaped_attempt_blocked": false,
+          "returncode_at_attempt": null,
+          "sent": true,
+          "signal": 9
+        }
+      ],
+      "supervisor_lifecycle": {
+        "original_popen": true,
+        "original_wait_completed": true,
+        "pgid": 2905449,
+        "pid": 2905449,
+        "planned_signal": 9,
+        "retried": false,
+        "returncode": -9
+      },
+      "test_only_deadline_seconds": 0.25,
+      "worker_pid": 2905449
+    }
+  ],
+  "cleanup": [
+    {
+      "forced_by_outer": false,
+      "pid": 2905430,
+      "remaining": [],
+      "returncode": 0
+    },
+    {
+      "forced_by_outer": false,
+      "pid": 2905431,
+      "remaining": [],
+      "returncode": 7
+    },
+    {
+      "forced_by_outer": false,
+      "pid": 2905432,
+      "remaining": [],
+      "returncode": -9
+    },
+    {
+      "forced_by_outer": false,
+      "pid": 2905447,
+      "remaining": [],
+      "returncode": 0
+    },
+    {
+      "forced_by_outer": false,
+      "pid": 2905448,
+      "remaining": [],
+      "returncode": 7
+    },
+    {
+      "forced_by_outer": false,
+      "pid": 2905449,
+      "remaining": [],
+      "returncode": -9
+    }
+  ],
+  "decoder_sha256": "633470fd47ca5d402fb2e175ecf57aaf43d9fa6c27b8ba4885d9fc43d4a989d2",
+  "fixed_sha256": "8043bce5e2443ca10f09d88dc854fc1a850ae4ac8b904763fbfc1ae3fa2de52a",
+  "full34_executed": false,
+  "full_replacement_qualified": false,
+  "legacy_sha256": "7d49451fc876040ad1887de5170b6255a0a569d79894141e34c201d6d369f607",
+  "production_changed": false,
+  "schema": "heptabao.native-cli-unreaped-worker-real-regression.v1",
+  "scope": "Exact native-large supervise(), actual Popen success/nonzero/timeout dummy workers; stale signals blocked before dispatch. No HTTP or full migration.",
+  "status": "passed"
+}
