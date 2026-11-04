@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.r10.x230-controls-root-source-review.v1",
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "all_11_payloads_whole_sha_and_git_blob_verified": true,
+  "full_two_candidate_sources_reviewed": true,
+  "exact_original_to_candidate_reconstruction": {
+    "full34_hunks": 2,
+    "comparison69_hunks": 3
+  },
+  "changes": "fresh R10 paths, exact source identity and actual Linux normal release receipt/binary hashes, report schema; transfer digest remains unbound",
+  "unchanged_31_case_full34_driver_sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+  "unchanged_comparison_driver_sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e",
+  "unchanged_13_module_69_scoped_case_contract": true,
+  "original_http_seconds": 15,
+  "original_migration_seconds": 360,
+  "original_outer_timeout_not_recovered": true,
+  "no_claim_of_old_outer_timeout_preservation": true,
+  "source_review_no_blocking_finding": true,
+  "host_stage_authorized": false,
+  "runtime_authorized": false,
+  "pending": [
+    "complete independent R10 X230 source and create-only artifact transfer with exact actual receipt",
+    "actual Linux normal44 terminal PASS",
+    "final bound source and host identity/old-fence verification"
+  ],
+  "full_replacement_qualified": false,
+  "new_overall_supervisor_caps_seconds": {
+    "full34": 1800,
+    "comparison69": 1800
+  },
+  "supervisor_caps_scope": "Explicit new R10 overall resource guards; original outer values not recovered. No claim of equal old outer limits or end-to-end timing comparison. Original inner operation and cleanup bounds stay unchanged."
+}

@@ -1,6 +1,6 @@
 {
   "schema": "heptabao.36076-and-33cafa-checkpoint.v4",
-  "as_of_utc": "2026-11-04T18:26:28Z",
+  "as_of_utc": "2026-11-04T18:47:00Z",
   "compiled_source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
   "compiled_source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95",
   "published_source_commit": "a5c05856f23c395e590fd4e6eeec02bb669a2aa9",
@@ -3379,5 +3379,79 @@
     "full_replacement": false,
     "production_cutover": false,
     "legacy_cleanup": false
+  }
+,
+  "r10_dual_normal_release_and_mac_start": {
+    "schema": "heptabao.r10.dual-normal-release-and-mac-start.v1",
+    "observed_at": "2026-11-04T18:47:00Z",
+    "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "mac_source": {
+      "status": "prepared",
+      "complete_commit_count": 3752,
+      "full_fsck": true,
+      "old_r9_source_unchanged": true,
+      "external_volume_uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+      "stage_job": "1a1a7cfbba3-fc05-2c9b",
+      "receipt_sha256": "3e054b497219332a6124d7faa2b4cdad5e6870436113a438cfa2d7662ee04f65",
+      "evidence_prefix": "qa/evidence/20261104/r10-mac-source-and-build-start-r1/"
+    },
+    "normal_releases": {
+      "mac": {
+        "status": "passed",
+        "elapsed_seconds": 259.6838330421597,
+        "native_abi": "aarch64-apple-darwin",
+        "receipt_sha256": "f5746eaf7fd79c8001ac927c9738922297d6e5e575cbd12bc092aafa2c13f544",
+        "native_receipt_sha256": "16fa488ed8d7a9a46541b5aea5007e27b538e5c37f9246c14de0e5fe24b05ad1",
+        "server_bytes": 93038816,
+        "server_sha256": "bc1fc6b8ded5a43a60ab4c562cd5e092e63ae9df77afd654c9af8c096c128c98",
+        "seed_sha256": "cbfbb57a63a971ce35701a5629d07f2e54e461c7774e4b27d56c8a34a0d26cf4",
+        "evidence_prefix": "qa/evidence/20261104/r10-mac-normal-release-r1/"
+      },
+      "rog": {
+        "status": "passed",
+        "elapsed_seconds": 651.5203325269977,
+        "native_abi": "x86_64-unknown-linux-gnu",
+        "receipt_sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+        "native_receipt_sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+        "server_bytes": 109091112,
+        "server_sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+        "seed_sha256": "6befec74076fb891e12a9dd3a1b2563c995ec7f7f1c7df18dc787d1163e0e018",
+        "evidence_prefix": "qa/evidence/20261104/r10-rog-normal-release-r1/"
+      }
+    },
+    "combined_jobs": {
+      "mac": {
+        "job": "1a1a7d89fad-fc05-2cb1",
+        "status": "running"
+      },
+      "rog": {
+        "job": "1a1a7c83142-fc05-2c88",
+        "status": "running"
+      }
+    },
+    "physical_ha": {
+      "source_review": "complete unbound candidates",
+      "actual_syntax": "passed",
+      "runtime_started": false,
+      "evidence_prefix": "qa/evidence/20261104/r10-physical-ha-source-draft-r1/"
+    },
+    "x230": {
+      "source_review": "complete unbound candidates",
+      "runtime_started": false,
+      "new_overall_supervisor_caps_seconds": {
+        "full34": 1800,
+        "comparison69": 1800
+      },
+      "old_overall_supervisor_caps_not_recovered": true,
+      "original_internal_deadlines_unchanged": true,
+      "evidence_prefix": "qa/evidence/20261104/r10-x230-source-draft-r1/"
+    },
+    "current_candidate_normal44_qualification": false,
+    "current_candidate_physical128_or98_qualification": false,
+    "current_candidate_x23031_or69_qualification": false,
+    "full_replacement_qualification": false,
+    "production_cutover": false,
+    "old_installations_removed": false
   }
 }

@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.x230-r10-source-controls-manifest.v1",
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "old_validation_commit": "80bc5a913d3444add725d5a24f94dd7a23ff053a",
+  "created_via": "unreferenced_Git_objects_only",
+  "runtime_go": false,
+  "runtime_started": false,
+  "host_files_written": false,
+  "cargo_started": false,
+  "original_controller_byte_reversal_verified": true,
+  "python_ast_executed": false,
+  "unresolved": [
+    "new_X230_source_transfer_receipt",
+    "actual_canonical_source_staging",
+    "Linux44_success",
+    "original_outer_timeout_or_explicit_new_choice"
+  ],
+  "files": [
+    {
+      "path": "candidate/full34_r10_controller_r1.py",
+      "bytes": 5313,
+      "sha256": "001079203a066e5d69b3aa756622593f108f93a56a0537188a672d06e273b0bc",
+      "git_blob": "837fb661a1c3a51a8fe253c2cb9907aec8a00566"
+    },
+    {
+      "path": "candidate/comparison69_r10_controller_r1.py",
+      "bytes": 6939,
+      "sha256": "f999d1848ae7c4987d9539b14abd682db84c8475bd453573235aaa3ff8e29611",
+      "git_blob": "4282163615e46f1ae791a20a42e65f6e940e6d31"
+    },
+    {
+      "path": "r8-to-r10.review.diff",
+      "bytes": 9926,
+      "sha256": "291af0c471d5b6b4e1c86cfbd04d9d50bbfaf3b8eff5e163935ebdbd911b7ebc",
+      "git_blob": "81d9a5a58f6729ef29690ea845d4d594bc7b8c1b"
+    },
+    {
+      "path": "REVIEW_SCOPE.md",
+      "bytes": 6739,
+      "sha256": "ca131b23742caf2327e179c2def3691121c3cb789694ff69651a951dc63503d4",
+      "git_blob": "55e1db73e83b02ee7e5f4655e03ed121ee80fbb0"
+    },
+    {
+      "path": "bindings.public.json",
+      "bytes": 6420,
+      "sha256": "82f15249b26d814161ee149db537704d1e5463af137ad5a68328d13f88c3bd6c",
+      "git_blob": "141b9a10086bba0632028cb12ba75b34989e4ec2"
+    },
+    {
+      "path": "original/full34_r8_controller_r1.py",
+      "git_blob": "37c3221ed9b9f7289f6f45d44ce387f9f5e5521c",
+      "bytes": 5309,
+      "sha256": "3903b5fdc914500b3e0b58a7a427a289561f37c036892fb0dd263bd4b71cfd88"
+    },
+    {
+      "path": "original/comparison69_r8_controller_r1.py",
+      "git_blob": "eafdcfcba4a838f9d723ace9b25c8b0047508388",
+      "bytes": 6941,
+      "sha256": "f0db9fee048641ec5641705c48702686626f93837ff1f7c15229658d3e8fd01f"
+    },
+    {
+      "path": "candidate/native271_comparison_final_r1.py",
+      "git_blob": "c822522ee80e4a713eee4cb42e91cfeb143e6468",
+      "bytes": 9261,
+      "sha256": "fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e"
+    },
+    {
+      "path": "evidence/normal-release-result.public.json",
+      "git_blob": "849d45f07a53007f6e927530900783e23197999b",
+      "bytes": 3227,
+      "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee"
+    },
+    {
+      "path": "evidence/native-build.public.json",
+      "git_blob": "8b70873f6ee251a7cc403d781e70a9e505b91f95",
+      "bytes": 801,
+      "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77"
+    },
+    {
+      "path": "evidence/r8-root-terminal-review.public.json",
+      "git_blob": "7e53c12a4a42fcfcc27c01bf79322a742fcf6434",
+      "bytes": 3660,
+      "sha256": "fa3cc15e6463c005064bf2ba293d87678a8c6024bcd8606edbe8edc9d9c534e9"
+    }
+  ]
+}

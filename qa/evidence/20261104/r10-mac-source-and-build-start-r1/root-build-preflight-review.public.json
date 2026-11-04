@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.r10.mac-build-preflight-root-review.v1",
+  "job": "1a1a7d89fad-fc05-2cb1",
+  "exact_start_args_match_reviewed_plan": true,
+  "source_preflight": "admitted",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "original_budgets": {
+    "outer": 8280,
+    "release": 1800,
+    "libtest": 1800,
+    "list": 30,
+    "group": 600
+  },
+  "exact_tests": 44,
+  "prior_r8_and_r9_fences_unchanged": true,
+  "retained_r9_canonical_resume_proofs_pinned": true,
+  "mac_r9_build_artifact_claim": false,
+  "normal_combined_terminal": "pending",
+  "production_changed": false
+}

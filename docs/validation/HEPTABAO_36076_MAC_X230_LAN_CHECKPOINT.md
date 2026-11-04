@@ -481,3 +481,23 @@ Mac 单一失败的原生 syscall 观察定位到 `setsockopt(SO_RCVTIMEO)`，�
 该 Clippy 修订只属 **下一候选的源码准备**，尚未在此 checkpoint 获得新编译或 Clippy PASS。R8 的两个原文件已按精确片段处理，避免用 CI 全文件覆盖 SSH 改动。新增 R9 HTTP/NoForward 和 Mac fixture 修订留待另一个同树正常构建/运行包，不混入本节既有 R8 结果。
 
 本节继续保持 `full_openbao_compatibility_qualified=false`、`combined_r8.runtime_qualified=false`、`production_cutover=false`、`all_clients_and_backups_migrated=false`、`old_assets_deleted=false`。原 86 文件 Mac 检查点仍是先前冻结的 605/15c 范围，未因本次追加自动包含这些新结果。新增原件集中在 `qa/evidence/20261104/r8-terminal-r1/`；本次 preparer 不更新 GitHub ref/PR，也不读写根 continuation state。
+
+
+## R10 dual normal releases and Mac source admission — 2026-11-04 18:47 UTC
+
+The current source is canonical commit `49503322c7f446e5eb41e7744f1fdbd7f1192ecc`, tree `1d4211f91e1b34a2ed087a3bbef2e2884bac88e9`. Mac imported the exact 1,522-byte one-commit bundle into an independent checkout after the separately evidenced R9 history recovery. Its 3,752-commit history, sole parent, strict full fsck, clean tree, T5 volume UUID, and all 42 reaped source commands passed. The prior R9 source and failure receipts remain intact.
+
+| Current R10 gate | Actual observation | Scope |
+|---|---|---|
+| Mac normal release | Passed in 259.684 seconds; arm64 server 93,038,816 bytes, SHA256 `bc1fc6b8ded5a43a60ab4c562cd5e092e63ae9df77afd654c9af8c096c128c98` | Original normal default features and release profile; no fixture feature |
+| ROG normal release | Passed in 651.520 seconds; x86_64 server 109,091,112 bytes, SHA256 `67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113` | Exact current-source build receipts; matching R9 binary bytes do not transfer R9 test outcomes |
+| Mac normal44 | Combined job `1a1a7d89fad-fc05-2cb1` running | Source/retained-artifact preflight admitted; original 1800/1800/30/600-second internal limits and two Cargo jobs |
+| ROG normal44 | Combined job `1a1a7c83142-fc05-2c88` running | No current 44-test terminal qualification yet |
+| Physical Mac/ROG/Pocket4 HA | Four full source candidates reviewed; syntax-only check passed | Original 128 and 98 workflows, actual election, unchanged budgets; actual artifact pins and new runs pending |
+| X230 full34 and comparison69 | Exact published R8 wrappers recovered and narrow R10 binding changes reviewed | Original 31 checks, 13 modules and 69 cases per side preserved; source/artifact staging and current runs pending |
+
+Raw source, preflight, start, release and running-state originals are archived under `qa/evidence/20261104/r10-mac-source-and-build-start-r1/` and the two `r10-*-normal-release-r1` prefixes. They retain original JSON bytes, including integer tokens. New controls and exact diffs are archived under `qa/evidence/20261104/r10-physical-ha-source-draft-r1/` and `qa/evidence/20261104/r10-x230-source-draft-r1/`. Root reviews distinguish source preparation, release compilation, and actual runtime qualification.
+
+The prior two X230 outer supervisor values were not recovered. R10 explicitly selects a new 1,800-second overall supervisor guard for each fresh wrapper run; the original inner HTTP, migration, acceptance and cleanup code remains unchanged. This does not attest equality of old overall job caps or an end-to-end timing comparison.
+
+The current source still requires normal44 terminal success, new X230 validation, current physical HA evidence, actual native-archive CLI save/restore and cold recovery, and all outstanding product-surface, credential, client, backup and rollback gates. Production cutover and old-installation removal remain unperformed. Full OpenBao 2.7.1 replacement is not qualified by these release builds.

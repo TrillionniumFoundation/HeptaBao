@@ -1,0 +1,116 @@
+{
+  "schema": "heptabao.r10.mac-source-evidence-manifest.v1",
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "carrier_job": "1a1a7cecb0a-fc05-2c97",
+  "source_stage_job": "1a1a7cfbba3-fc05-2c9b",
+  "source_stage_succeeded": true,
+  "normal_build_started": false,
+  "runtime_qualification": false,
+  "old_r9_failure_preserved": true,
+  "raw_json_bytes_preserved_without_reserialization": true,
+  "files": [
+    {
+      "path": "carrier/result.public.json",
+      "bytes": 2998,
+      "sha256": "28b4b0d9e131ed66f0089de3bd3da60b04c561a039798641f0ae4a8fc4b39311",
+      "git_blob": "cca13d5bfbc2cc7d4fc640a75945ef381c3dccf4"
+    },
+    {
+      "path": "carrier/process-status.public.json",
+      "bytes": 731,
+      "sha256": "2b68a78b4deb11b8afee11476446a944bbe464fed903a134c7ead90d68a0ab09",
+      "git_blob": "5b0259b65fc4ce534b48d3be5d5a0086cffd35ca"
+    },
+    {
+      "path": "carrier/stdout.txt",
+      "bytes": 2338,
+      "sha256": "63715fbde70d3cf350c9df5c5b216a450888872f8a5e5e346cf473332f369168",
+      "git_blob": "3022d78e534ebf5839579e2aa7e61e4632dd3f68"
+    },
+    {
+      "path": "carrier/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "carrier/start-ack.public.json",
+      "bytes": 10475,
+      "sha256": "32ad7ee02032b68780d6efb2251f3aa16387a49c00b52e336874fb2676c949a8",
+      "git_blob": "e16354d2d5260fbb9025f2c3ee8f45e98ceeadc6"
+    },
+    {
+      "path": "source/stage-result.public.json",
+      "bytes": 10690,
+      "sha256": "3e054b497219332a6124d7faa2b4cdad5e6870436113a438cfa2d7662ee04f65",
+      "git_blob": "de380dfd820203f5b984a075ea850541bfa6eb26"
+    },
+    {
+      "path": "source/process-status.public.json",
+      "bytes": 729,
+      "sha256": "8e64b5e275078efe791725a33893129db88b167d7a79311cc7f6224ae8b5c14a",
+      "git_blob": "1922a43c17c1a9d231a1d1ea16ed8ad5a9fd95e5"
+    },
+    {
+      "path": "source/stdout.txt",
+      "bytes": 443,
+      "sha256": "b27a5f6d11e920e6bf5936344a99e4f93635ad5e0157554540d55a95b9f45010",
+      "git_blob": "acfcd74a78fa840c65cfdeee18b979b36f79d69c"
+    },
+    {
+      "path": "source/stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "source/start-ack.public.json",
+      "bytes": 1963,
+      "sha256": "fb454aafa118d24ce3ee76730deeee40563dfc98b18378e9e257ab71fbc671b0",
+      "git_blob": "5a526087be0c51ebeb2c63228c318877a87b0554"
+    },
+    {
+      "path": "r9-evidence/terminal.public.json",
+      "bytes": 534,
+      "sha256": "8f03915cf7fce1dc2eb92cdce9933e663dbe40ccc5c104e7d2c97e8f364abd28",
+      "git_blob": "d02c3daaed37c2ce646b43ebc812d9df9c99c971"
+    },
+    {
+      "path": "r9-evidence/authority.public.json",
+      "bytes": 730,
+      "sha256": "24deb356103c8210bb76751122aaa0c19fc6ab5ec6a9e09a62f0cc68e326a57e",
+      "git_blob": "78628c09a8cc3234a9b3894e99a34c5ca178d459"
+    },
+    {
+      "path": "r9-evidence/terminal-write.public.json",
+      "bytes": 187,
+      "sha256": "35b1352a9c480533bc011473de091cc98ed2f218c3e39dad9afa429c4572bab9",
+      "git_blob": "1902e3630a8f551660d00b9d387c673caee2a2db"
+    },
+    {
+      "path": "r9-evidence/authority-write.public.json",
+      "bytes": 187,
+      "sha256": "60cbb61ad6b8bd9ccc8e5cb7902d3711df9f87192110be0510f6e4f2f52f7ac8",
+      "git_blob": "a8591b4862445031e91c084bebb70029a6b3b74f"
+    },
+    {
+      "path": "r9-evidence/terminal-info.public.json",
+      "bytes": 516,
+      "sha256": "58c518ef8213caae057a8e834987ee25f5893c41dfb051445955b27c62ec5fab",
+      "git_blob": "c65631242c73717b34db944a070f8ccc2e9b3cbe"
+    },
+    {
+      "path": "r9-evidence/authority-info.public.json",
+      "bytes": 517,
+      "sha256": "b9d76f4cc2baeeaecfa673bea87191012bd120cf597db4ec1a9763f4f1aba501",
+      "git_blob": "e559ddc34836e8a10d5fb5294dc59a5f52cfe6ef"
+    },
+    {
+      "path": "build-review-plan.public.json",
+      "bytes": 1729,
+      "sha256": "b5aaac7a02554751d59b60319c18c8c458aafd5ee3c65d038d5e3d9cf998c9c2",
+      "git_blob": "bac47837b106a5407ddea119a75b22e790f6e7fb"
+    }
+  ]
+}

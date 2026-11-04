@@ -1,0 +1,430 @@
+{
+  "base_commit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+  "base_tree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907",
+  "bundle_sha256": "6be899e6fcd09beadcf788e81b36fc4eaf211413dea07d0cee41300fe264af4c",
+  "canonical_bundle": {
+    "bytes": 1522,
+    "header": {
+      "header_sha256": "1c55ee5df2af8fd1915cc2b88d833c061fc019cf94d8761de9cc0bfb04c1016c",
+      "heads": [
+        [
+          "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "1d12abc45a83d4b32e7185d01a876eb93110b1e2"
+      ],
+      "version": 2
+    },
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/canonical-r10-from-r9.bundle",
+    "sha256": "543ad493d0b3e224f9620b5418e7eda260a000ccc1d8c3c0153bc49a963dad36"
+  },
+  "canonical_fetch_in_new_clone_only": true,
+  "canonical_proof": {
+    "added_commits": [
+      "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+    ],
+    "base_commit_count": 3751,
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "commit_count": 3752,
+    "full_fsck_passed": true,
+    "sole_parent": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+  },
+  "canonical_source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "changes": [
+    {
+      "after_bytes": 16529,
+      "after_git_blob": "89da5923651abd6d8ea87479bb66520375f7fe3d",
+      "after_mode": "100644",
+      "after_sha256": "3c5e9b2e8f306786e1c5ce1ef1a02b5442bb1dc12e9de08bfed78e0dfcec808f",
+      "before_git_blob": "5614d8249c36d66fa037238f36e40360d7b45593",
+      "before_mode": "100644",
+      "path": "crates/heptabao-server/src/service_no_forwarding_ha_tests.rs"
+    }
+  ],
+  "cleanup": [
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "041-git-status",
+      "pid": 37027,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "040-git-rev-parse",
+      "pid": 37025,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "039-git-rev-parse",
+      "pid": 37023,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "038-git-status",
+      "pid": 37021,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "037-git-rev-parse",
+      "pid": 37019,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "036-git-rev-parse",
+      "pid": 37017,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "035-git-status",
+      "pid": 37015,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "034-git-rev-parse",
+      "pid": 37013,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "033-git-rev-parse",
+      "pid": 37011,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "032-git-checkout",
+      "pid": 37001,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "031-git-fsck",
+      "pid": 36996,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "030-git-rev-list",
+      "pid": 36994,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "029-git-rev-list",
+      "pid": 36992,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "028-git-rev-list",
+      "pid": 36990,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "027-git-rev-list",
+      "pid": 36988,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "026-git-show",
+      "pid": 36986,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "025-git-rev-parse",
+      "pid": 36984,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "024-git-cat-file",
+      "pid": 36982,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "023-git-fetch",
+      "pid": 36977,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "022-git-bundle",
+      "pid": 36975,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "021-git-bundle",
+      "pid": 36972,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "020-git-status",
+      "pid": 36970,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "019-git-rev-parse",
+      "pid": 36968,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "018-git-rev-parse",
+      "pid": 36966,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "017-git--c",
+      "pid": 36964,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "016-git-write-tree",
+      "pid": 36962,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "015-git-diff",
+      "pid": 36960,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "014-git-add",
+      "pid": 36958,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "013-git-ls-files",
+      "pid": 36956,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "012-git-rev-parse",
+      "pid": 36954,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "011-git-rev-parse",
+      "pid": 36952,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "010-git-status",
+      "pid": 36942,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "009-git-rev-parse",
+      "pid": 36940,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "008-git-rev-parse",
+      "pid": 36938,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "007-git-checkout",
+      "pid": 36932,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "006-git-remote",
+      "pid": 36930,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "005-git-remote",
+      "pid": 36928,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "004-independent-local-clone",
+      "pid": 36911,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "003-git-status",
+      "pid": 36909,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "002-git-rev-parse",
+      "pid": 36907,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "001-git-rev-parse",
+      "pid": 36905,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "000-t5-volume-identity",
+      "pid": 36903,
+      "remaining": []
+    }
+  ],
+  "compiler_started": false,
+  "controls": {
+    "build_normal.py": {
+      "bytes": 5473,
+      "sha256": "026aa2ab4a1af663424ae2d0dcc678a48c4f3b9ba0429574f4bb60345a83dea2"
+    },
+    "linux_normal_release_and_tests_r10.py": {
+      "bytes": 16900,
+      "sha256": "7aa39562fde6d96eeca9b1d0e53f600c9629de09613d052fad8e68e9c734d176"
+    },
+    "mac_normal_exact_tests_r10.py": {
+      "bytes": 16894,
+      "sha256": "f925684275b42215300fa91f9b90478c75b822ce2d6f2e4be165b5e8e44e353d"
+    },
+    "normal-test-groups.public.json": {
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+    },
+    "r8-normal-test-groups.public.json": {
+      "bytes": 4648,
+      "sha256": "c725fd978f4d730b28cbf90335d8cc6e673003a5dc64b6fb965c7b1ae3485deb"
+    }
+  },
+  "exact_groups": [
+    [
+      "ssh25",
+      25
+    ],
+    [
+      "mount1",
+      1
+    ],
+    [
+      "redirect5",
+      5
+    ],
+    [
+      "actor2",
+      2
+    ],
+    [
+      "ordinary5",
+      5
+    ],
+    [
+      "no_forward6",
+      6
+    ]
+  ],
+  "exact_test_count": 44,
+  "expanded_sha256": "18e15b9eb97587015eb27c65d0ecfb73b5c96e6e7c2ecf1a88f664a6176a7913",
+  "expected_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "external_volume_uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+  "hardlinked_git_objects_present": false,
+  "host": "mac",
+  "independent_git_directory": true,
+  "local_materialization_commit": "c7cb59b6cdb47904927e0f2c421ebe1833bd8cae",
+  "local_source_path_not_retained_as_origin": true,
+  "object_alternates_present": false,
+  "old_source_after": {
+    "commit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+    "status": "",
+    "tree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907"
+  },
+  "old_source_before": {
+    "commit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+    "status": "",
+    "tree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907"
+  },
+  "old_source_unchanged": true,
+  "origin_url": "https://github.com/TrillionniumFoundation/HeptaBao.git",
+  "production_changed": false,
+  "public_network_fetch_used": false,
+  "root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10",
+  "schema": "heptabao.r10-independent-source-stage-result.v1",
+  "server_started": false,
+  "shared_common_git_directory_dependency": false,
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/source",
+  "source_clean": true,
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_qualification": false,
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "stager_sha256": "90bc84593ba4a2845cbce6141277e22e01dfc9be3fce126a31448a9428f8c990",
+  "started_ns": 1793816771711842000,
+  "status": "prepared",
+  "terminal_ns": 1793816775587395000
+}

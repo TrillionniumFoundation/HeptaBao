@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.r10-normal-build-probe-independent-source-review.v1",
+  "reviewer": "compatibility_audit",
+  "tree": "4fa2d3d91e47666604b27eb5dba412fdaff47eba",
+  "original": {
+    "git_blob": "c6895d925c619687141d5f830266b22535a2eb72",
+    "bytes": 5718,
+    "sha256": "a075109504728a6a95f16d2945b22b43b56d4b72d4ef85b34976426b50b76667"
+  },
+  "candidate": {
+    "git_blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a",
+    "bytes": 6445,
+    "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee"
+  },
+  "diff": {
+    "git_blob": "e7e567aba12896802d7ee96cea1505d3bc20bd7a",
+    "bytes": 4861,
+    "sha256": "2336cc3091de9c6c77c61b17b10cb93ed61b0821ff71ffb861618b3195fdad96",
+    "hunks": 4,
+    "strict_apply_all_context_offsets_counts": true,
+    "reconstructed_full_candidate_byte_equal": true
+  },
+  "whole_candidate_read": true,
+  "blocking_source_findings": [],
+  "checks": {
+    "original_identity_and_fresh_functions_byte_identical": true,
+    "single_fd_no_follow_full_size_sha_owner_mode_before_after_named_identity": true,
+    "artifact_permission_0700_to_actual_0500_only": true,
+    "canonical_source_before_after_git_45_seconds_unchanged": true,
+    "receipt_file_names_match_real_combined_normal_builder": true,
+    "native_and_release_cargo_event_digest_closure": true,
+    "actual_absolute_cargo_exact_argv_and_json_render_diagnostics": true,
+    "pinned_build_driver_sha_and_original_release_profile": true,
+    "artifact_default_features_native_ABI_source_identity_preserved": true,
+    "compiler_events_reject_private_experimental_features": true,
+    "no_target_binary_executed": true
+  },
+  "limits": {
+    "review_scope": "only this probe and complete diff against exact original",
+    "caller_launcher_future_pins_not_independently_reviewed_here": true,
+    "runtime_or_actual_artifact_qualification": false,
+    "python_AST_or_component_execution": false,
+    "host_access": false,
+    "ref_mutations": 0
+  },
+  "conclusion": "No blocking source finding in this exact schema adaptation. Real artifacts, concrete cfg pins, launcher admission and physical terminal evidence remain separate."
+}

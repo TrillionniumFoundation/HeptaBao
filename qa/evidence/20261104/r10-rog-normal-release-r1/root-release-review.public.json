@@ -1,0 +1,61 @@
+{
+  "schema": "heptabao.r10.normal-release-root-review.v1",
+  "raw_receipts": [
+    {
+      "bytes": 3227,
+      "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+      "blob": "849d45f07a53007f6e927530900783e23197999b"
+    },
+    {
+      "bytes": 801,
+      "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+      "blob": "8b70873f6ee251a7cc403d781e70a9e505b91f95"
+    }
+  ],
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "elapsed_seconds": 651.5203325269977,
+  "exit_code": 0,
+  "normal_default_features": true,
+  "original_profile_preserved": true,
+  "server": {
+    "bytes": 109091112,
+    "compiler_executable": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/heptabao-server",
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "fresh": false,
+    "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/artifacts/heptabao-server",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": false
+    },
+    "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113"
+  },
+  "seed": {
+    "bytes": 101159496,
+    "compiler_executable": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/heptabao-seed",
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "fresh": false,
+    "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/artifacts/heptabao-seed",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": false
+    },
+    "sha256": "6befec74076fb891e12a9dd3a1b2563c995ec7f7f1c7df18dc787d1163e0e018"
+  },
+  "combined_44_status": "pending",
+  "whole_surface_admitted": false
+}

@@ -1,0 +1,147 @@
+{
+  "schema": "heptabao.r10-physical-ha-source-draft-scope.v1",
+  "candidate": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+  },
+  "qualification": false,
+  "prepared": false,
+  "runtime_started": false,
+  "host_source_written": false,
+  "source_draft_only": true,
+  "syntax_not_yet_executed": true,
+  "actual_artifact_pins_bound": false,
+  "baselines": {
+    "full128": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-full128-control-r2/launch_normal_33cafa_full128_r2.py",
+      "bytes": 12409,
+      "sha256": "c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e",
+      "known_scope": "successful normal33 canonical R2, not failed R1"
+    },
+    "direction98": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-pocket3-mac1-direct98-control-r1/launch_normal_33cafa_pocket_direct98_r1.py",
+      "bytes": 13396,
+      "sha256": "da68bd962fb16305bc67bae50b97dc97069d4242de276778d5798344e0ac7ce0"
+    },
+    "direction_runner": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-pocket3-mac1-direct98-control-r1/native_v6_pocket_source_direct98_r1.py",
+      "bytes": 10838,
+      "sha256": "fa6ed593833e7aa37c86935469c83d2731a112bd2a441ae9dbcd32db9a9bb718"
+    },
+    "build_probe": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-full128-control-r2/probe_normal_build_r1.py",
+      "bytes": 5718,
+      "sha256": "a075109504728a6a95f16d2945b22b43b56d4b72d4ef85b34976426b50b76667"
+    }
+  },
+  "physical_hosts": 3,
+  "hosts": [
+    "Mac",
+    "ROG",
+    "Pocket4"
+  ],
+  "loopback_only": false,
+  "full128": {
+    "original_98": 98,
+    "official_history_30": 30,
+    "total": 128,
+    "natural_roles_preserved": true
+  },
+  "direction98": {
+    "total": 98,
+    "requested_cipher_source_node": 3,
+    "required_actual_empty_leader_node": 1,
+    "leader_selection_forced": false,
+    "wrong_direction_stops_before_target_unseal": true,
+    "all_three_original_cold_unseals_preserved": true,
+    "canonical_r10_full128_summary_pending": true
+  },
+  "original_contracts": {
+    "import_caller_seconds": 5,
+    "ordinary_http_seconds": 15,
+    "cold_server_readindex_seconds": 14,
+    "native_admission_seconds": 8,
+    "launcher_child_seconds": 2400,
+    "api_port": 46230,
+    "raft_port": 46231,
+    "qa_five_files_unchanged": true,
+    "global_exact_source_commit_contract_unchanged": true,
+    "readindex_fsync_and_original_kill_election_cleanup_unchanged": true
+  },
+  "qa": [
+    {
+      "path": "qa/openbao-acceptance/ha_multihost_live.py",
+      "bytes": 77805,
+      "sha256": "0e7362d3e579f8a13d63ad1573745fb8cda71aeba75f40288db3927204e408de",
+      "git_blob": "812c2b18ee1f25965dcefa5faf632e5c9a15e8e0",
+      "byte_identical_to_r9": true
+    },
+    {
+      "path": "qa/openbao-acceptance/native_v6_ha_multihost_live.py",
+      "bytes": 75357,
+      "sha256": "330cc6fe8eccb02711e897753ef70d9f3f46717f581f6e80a7b814f7603c638c",
+      "git_blob": "423cfe07588310fccf3846f4b291ad484639c58b",
+      "byte_identical_to_r9": true
+    },
+    {
+      "path": "qa/openbao-acceptance/native_v6_ha_direct_lan_live.py",
+      "bytes": 13391,
+      "sha256": "8b82b66555f0190eeb0eaf40ad2a19006de932297fa01b512b22b73675995197",
+      "git_blob": "ee3cc4cafb5d37ea9f21856aaa95a0a14e12d2d1",
+      "byte_identical_to_r9": true
+    },
+    {
+      "path": "qa/openbao-acceptance/native_v6_ha_official_history_live.py",
+      "bytes": 35247,
+      "sha256": "758e5d6cc93900fd6c5de328446fce069f167fe1eb7c63fc1f2a8310231e04d5",
+      "git_blob": "639df2f7f742b4570a3bacc63c3cccd1707aa96f",
+      "byte_identical_to_r9": true
+    },
+    {
+      "path": "qa/openbao-acceptance/native_fixture_recovery.py",
+      "bytes": 9920,
+      "sha256": "4c71ef73947ba30a1f4f24344a9840f38f78350c223a4cc80c2b3cb53d777af3",
+      "git_blob": "3cca3e9f6c99bcc3aadb028f8ebdb73b18a55928",
+      "byte_identical_to_r9": true
+    }
+  ],
+  "direction_method": {
+    "bytes": 4196,
+    "sha256": "4f694bb50818929c9bb726aaa0ddb8236c4aca695db8d43910c778f20bde86b7",
+    "same_source_bytes_after_dedent": true,
+    "ast_executed": false,
+    "baseline_sha256": "fa6ed593833e7aa37c86935469c83d2731a112bd2a441ae9dbcd32db9a9bb718"
+  },
+  "source_only_changes": [
+    "fresh R10 paths and canonical commit/tree",
+    "normal combined-build filenames and read-only mode 0500",
+    "exact absolute Cargo path and json-render-diagnostics command",
+    "requested release profile and build-driver digest validation",
+    "retain original six comparison fences and prior normal33 canonical result/assessment",
+    "reject unbound actual artifact or Cargo pins before host probes",
+    "direction preparation binds its metadata to the future actual R10 canonical128 summary"
+  ],
+  "pending_before_any_prepare_or_run": [
+    "actual R10 Mac/Linux server, seed, cargo events, native receipt, normal-release-result whole SHA",
+    "actual two absolute Cargo paths",
+    "desktop independent source checkout at exact R10 commit/tree",
+    "root review of final bound candidate and syntax/argument-parser preparation",
+    "direction only: actual new R10 full128 summary SHA with independently reviewed full terminal"
+  ],
+  "build_drivers": {
+    "linux": {
+      "blob": "686b824755f193e4ae777de22fb682d9510528a2",
+      "sha256": "7aa39562fde6d96eeca9b1d0e53f600c9629de09613d052fad8e68e9c734d176"
+    },
+    "mac": {
+      "blob": "031ab151262f50ed7db4ecad16cb9c04750c5930",
+      "sha256": "f925684275b42215300fa91f9b90478c75b822ce2d6f2e4be165b5e8e44e353d"
+    }
+  },
+  "scope_exclusions": [
+    "No source-stage, compiler, service, API request, signal, or production mutation is performed by this draft publication",
+    "Historical normal33 success is not transferred to R10",
+    "Separate desktop strict-wire/CLI qualification is not physical LAN evidence",
+    "Default standby snapshot CLI compatibility remains a separate unresolved scope"
+  ]
+}

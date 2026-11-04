@@ -1,0 +1,55 @@
+{
+  "schema": "heptabao.r10.physical-ha-root-source-review.v1",
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "originals_and_candidates_whole_sha_and_git_blob_verified": 8,
+  "full_candidate_sources_reviewed": 4,
+  "diffs": [
+    {
+      "name": "full",
+      "exact_reconstruction": true,
+      "hunks": 9
+    },
+    {
+      "name": "direction",
+      "exact_reconstruction": true,
+      "hunks": 10
+    },
+    {
+      "name": "runner",
+      "exact_reconstruction": true,
+      "hunks": 5
+    },
+    {
+      "name": "probe",
+      "exact_reconstruction": true,
+      "hunks": 4
+    }
+  ],
+  "qa_five_unchanged": true,
+  "original_full128_preserved": true,
+  "original_direction98_preserved": true,
+  "original_direction_override_unchanged": true,
+  "actual_election_required": true,
+  "wrong_direction_refuses_before_unseal": true,
+  "original_budgets_preserved": {
+    "launcher_seconds": 2400,
+    "ordinary_http_seconds": 15,
+    "native_admission_seconds": 8,
+    "large_import_seconds": 5
+  },
+  "unresolved_inputs_refused_before_probe": true,
+  "new_control_and_live_roots": true,
+  "old_failure_and_success_fences_retained": true,
+  "source_only_review_no_blocking_finding": true,
+  "prepare_authorized": false,
+  "runtime_authorized": false,
+  "pending": [
+    "Mac and ROG normal44 terminal PASS with exact retained artifacts",
+    "all ten actual build file digests and two Cargo paths bound",
+    "desktop independent full canonical source stage verified",
+    "final bound source and actual read-only prepare receipt reviewed",
+    "direction only: current full128 terminal PASS and exact summary SHA"
+  ],
+  "whole_surface_admitted": false
+}

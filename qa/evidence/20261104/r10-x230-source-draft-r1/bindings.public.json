@@ -1,0 +1,174 @@
+{
+  "schema": "heptabao.x230-r10.source-preparation.v1",
+  "candidate_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "candidate_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "owned_root": "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1",
+  "source": "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1/source",
+  "outputs": {
+    "full34": "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1/evidence/full34-r1",
+    "comparison69": "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1/evidence/comparison69-r1"
+  },
+  "normal_artifacts": {
+    "server": {
+      "bytes": 109091112,
+      "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113"
+    },
+    "native_receipt": {
+      "bytes": 801,
+      "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77"
+    },
+    "release_receipt": {
+      "bytes": 3227,
+      "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee"
+    }
+  },
+  "original_code_byte_reversal": {
+    "full34": {
+      "before_sha256": "3903b5fdc914500b3e0b58a7a427a289561f37c036892fb0dd263bd4b71cfd88",
+      "after_sha256": "001079203a066e5d69b3aa756622593f108f93a56a0537188a672d06e273b0bc",
+      "before_bytes": 5309,
+      "after_bytes": 5313,
+      "string_substitutions": [
+        {
+          "from": "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1",
+          "to": "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1",
+          "count": 1
+        },
+        {
+          "from": "384c957612186d64c5a530044af0ae62c568cc3d",
+          "to": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+          "count": 1
+        },
+        {
+          "from": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04",
+          "to": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+          "count": 1
+        },
+        {
+          "from": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+          "to": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+          "count": 1
+        },
+        {
+          "from": "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9",
+          "to": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+          "count": 1
+        },
+        {
+          "from": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5",
+          "to": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+          "count": 1
+        },
+        {
+          "from": "heptabao.r8-x230-",
+          "to": "heptabao.r10-x230-",
+          "count": 2
+        },
+        {
+          "from": "sealed normal R8 build",
+          "to": "sealed normal R10 build",
+          "count": 1
+        }
+      ],
+      "exact_byte_reversal": true
+    },
+    "comparison69": {
+      "before_sha256": "f0db9fee048641ec5641705c48702686626f93837ff1f7c15229658d3e8fd01f",
+      "after_sha256": "f999d1848ae7c4987d9539b14abd682db84c8475bd453573235aaa3ff8e29611",
+      "before_bytes": 6941,
+      "after_bytes": 6939,
+      "string_substitutions": [
+        {
+          "from": "/home/qian/heptabao-blocker-closure-r8-384c9576-20261104-r1",
+          "to": "/home/qian/heptabao-blocker-closure-r10-49503322-20261104-r1",
+          "count": 1
+        },
+        {
+          "from": "384c957612186d64c5a530044af0ae62c568cc3d",
+          "to": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+          "count": 1
+        },
+        {
+          "from": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04",
+          "to": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+          "count": 1
+        },
+        {
+          "from": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+          "to": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+          "count": 1
+        },
+        {
+          "from": "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9",
+          "to": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+          "count": 1
+        },
+        {
+          "from": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5",
+          "to": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+          "count": 1
+        },
+        {
+          "from": "heptabao.r8-x230-",
+          "to": "heptabao.r10-x230-",
+          "count": 2
+        },
+        {
+          "from": "3ebfd7d224efd1b08f69e0b99aeba7bc493ea4f9af32c6320ba6dabf2e6b767d",
+          "to": "PENDING_ACTUAL_CREATE_ONLY_X230_R10_TRANSFER_RECEIPT_SHA256",
+          "count": 1
+        }
+      ],
+      "exact_byte_reversal": true
+    }
+  },
+  "helpers_at_exact_r10": [
+    {
+      "path": "qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+      "bytes": 49393,
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+      "git_blob": "87db25eab1258c8a2d7f9047e2009b62404b6259"
+    },
+    {
+      "path": "qa/openbao-acceptance/acceptance.py",
+      "bytes": 36827,
+      "sha256": "8312c400ec5f0946f8a87fb3241bf8db832ddd04763010af7245d6557f55f94d",
+      "git_blob": "928d7ceca52f3e8ee418d9d2028b376f5c1dd7c5"
+    },
+    {
+      "path": "qa/openbao-acceptance/official_openbao_launcher.py",
+      "bytes": 20008,
+      "sha256": "5c11b432e1180fb40394fab382da774cf4171bf51431aab7e5823068cfba01d6",
+      "git_blob": "d7ac02bceeb6ec0751c3ff0d2ec6126e36ac8405"
+    },
+    {
+      "path": "qa/openbao-acceptance/bao_http.py",
+      "bytes": 2349,
+      "sha256": "6c617b587640ceacfcae0f91ee928ee068193ae012ecb305541e3007315c328f",
+      "git_blob": "a3afa32fb83a1f214e4d05dc928c39f29090d647"
+    },
+    {
+      "path": "qa/single-node/smoke.py",
+      "bytes": 16470,
+      "sha256": "ced4e40a825d3d98a285598d40b58c61083cfc397d0859a783958d855a161971",
+      "git_blob": "1c57d398c4c090f2a412d0d3c9956ffadc974ea8"
+    }
+  ],
+  "original_requirements": {
+    "full34": 31,
+    "comparison69_per_side": 69,
+    "modules": 13,
+    "http_seconds": 15,
+    "migration_seconds": 360
+  },
+  "outer_timeout": "must_recover_original_authorized_intents_before_launch",
+  "transfer_receipt": "PENDING_ACTUAL_CREATE_ONLY_X230_R10_TRANSFER_RECEIPT_SHA256",
+  "linux44_required_before_runtime": true,
+  "linux44_pass_proven": false,
+  "transport_complete": false,
+  "source_stage_complete": false,
+  "runtime_go": false,
+  "runtime_started": false,
+  "production_changed": false,
+  "full_replacement_qualified": false
+}

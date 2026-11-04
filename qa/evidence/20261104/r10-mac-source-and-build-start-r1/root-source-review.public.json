@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.r10.mac-source-root-review.v1",
+  "reviewed_at": "2026-11-04T18:36:00Z",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "job_id": "1a1a7cfbba3-fc05-2c9b",
+  "receipt_sha256": "3e054b497219332a6124d7faa2b4cdad5e6870436113a438cfa2d7662ee04f65",
+  "raw_originals_preserved": true,
+  "unsafe_integer_tokens_compared_losslessly": true,
+  "complete_history": true,
+  "strict_fsck": true,
+  "commands": 42,
+  "all_owned_reaped": true,
+  "old_source_unchanged": true,
+  "independent_source": true,
+  "file_only_canonical_bundle": true,
+  "T5_volume_uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+  "source_status": "prepared",
+  "build_authorization": {
+    "exact_plan_sha256": "b5aaac7a02554751d59b60319c18c8c458aafd5ee3c65d038d5e3d9cf998c9c2",
+    "budgets": {
+      "outer": 8280,
+      "release": 1800,
+      "libtest": 1800,
+      "list": 30,
+      "each_group": 600
+    },
+    "jobs": 2,
+    "exact_tests": 44,
+    "scope": "one normal release, one normal libtest build, six exact test groups; actual build success remains pending"
+  },
+  "production_changed": false,
+  "whole_surface_admitted": false
+}
