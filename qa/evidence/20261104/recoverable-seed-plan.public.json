@@ -12,7 +12,9 @@
     "Record actual seed cluster_id, then preserve and rebind all three peer configs and startup bindings.",
     "Admit one combined final product candidate and corresponding native binary/physical-LAN/X230 receipts before production activation."
   ],
-  "remote_staged": false,
+  "remote_stage_job": "1a1a6d8627e-fc05-2908",
+  "remote_stage_receipt_sha256": "292bedecbf35745801aa813f07a230d2477cd306b7c96c50b107aa30c7f07897",
+  "remote_staged": true,
   "runtime_executed": false,
   "schema": "heptabao.recoverable-seed-implementation-plan.v1",
   "scope": [

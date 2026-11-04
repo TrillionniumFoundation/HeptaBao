@@ -1,0 +1,236 @@
+{
+  "cleanup": {
+    "cleanupErrors": [],
+    "ownedCleanupComplete": true,
+    "ownedProcesses": [],
+    "productionProtectedFilesUnchanged": true,
+    "productionSourceBinarySdkAndPluginBoundaryUnchanged": true,
+    "rootInstallAndRemoveSameIdentity": true,
+    "rootUnitFileReceipts": [
+      {
+        "action": "install",
+        "identity": {
+          "device": 28,
+          "gid": 0,
+          "inode": 252724,
+          "mode": 420,
+          "uid": 0
+        },
+        "ok": true,
+        "path": "/run/systemd/system/heptabao-authbus-installed-qa-583743d22a29-1.service",
+        "schema": "heptabao.installed-supervisor-root-unit-file.v1",
+        "sha256": "78d508f26948aa464a66299ed6afe9627d73e4ceaec38dd4f59b92788946cdf2"
+      },
+      {
+        "action": "remove",
+        "ok": true,
+        "path": "/run/systemd/system/heptabao-authbus-installed-qa-583743d22a29-1.service",
+        "removed": true,
+        "removedIdentity": {
+          "device": 28,
+          "gid": 0,
+          "inode": 252724,
+          "mode": 420,
+          "uid": 0
+        },
+        "schema": "heptabao.installed-supervisor-root-unit-file.v1",
+        "sha256": "78d508f26948aa464a66299ed6afe9627d73e4ceaec38dd4f59b92788946cdf2"
+      }
+    ],
+    "selectedPluginUnchanged": true,
+    "unit": {
+      "exit_code": 0,
+      "fields": {
+        "ActiveState": "inactive",
+        "LoadState": "not-found",
+        "MainPID": "0"
+      },
+      "name": "heptabao-authbus-installed-qa-583743d22a29-1.service",
+      "runtime_file_absent": true
+    }
+  },
+  "files": {
+    "complete-public-evidence-r5.tar.gz": {
+      "bytes": 37304,
+      "sha256": "0d9229859b2c58036d35072f50bc76aa962262db7626b715f7da4c09051b3c37"
+    },
+    "export-manifest.public.json": {
+      "bytes": 1663,
+      "sha256": "17e3d227f036ee3d1a800cddcf95bdcc49b8f4df17258a70088d9cd548c06034"
+    },
+    "live-intent.public.json": {
+      "bytes": 4184,
+      "sha256": "fc605326451d97a93e217c8a5be16d809d4a0b2ca77b627df78b4ca636ef37de"
+    },
+    "manager-system-plan.public.json": {
+      "bytes": 3031,
+      "sha256": "6fe6c685d4428313367ea297ed4fd4002fc036e4120360366240dcd7b3284189"
+    },
+    "outer-result.public.json": {
+      "bytes": 6079,
+      "sha256": "f01a8ff4bf3720c8fddf9bc4ca31c4f8929ef7e2d6fa18d4459e155d4927543d"
+    },
+    "public-receipt.json": {
+      "bytes": 505034,
+      "sha256": "527e025bd7376e46e469ff738fdbd1e5d440ca8ad5b43dce529a0b6851ad3d2e"
+    },
+    "stage.public.json": {
+      "bytes": 5654,
+      "sha256": "31dec2588e9123a656196ba79971d666860819fce0b2f6931352f14ed4c359fe"
+    }
+  },
+  "generation": "61ff-r5",
+  "limits": {
+    "enforcedSchedulerQualified": false,
+    "j3160Contacted": false,
+    "oauthRefreshOwnershipQualified": false,
+    "productionCoordinatorReplacement": false,
+    "productionTrafficCutover": false,
+    "providerCalled": false,
+    "realProviderCredentialValidityQualified": false,
+    "syntheticProviderCredentials": true
+  },
+  "ok": true,
+  "preservedFailureEvidence": {
+    "diagnosticR1CleanupReferenceErrorAndR2Source": "/workspace/scratch/61ff8bef4cc9/authbus-manager-sdk-61ff-r4/evidence/diagnostic-control-reconciliation.public.json",
+    "guardR4": "/workspace/scratch/61ff8bef4cc9/authbus-manager-sdk-61ff-r4/evidence/public-receipt.json",
+    "guardR4Sha256": "f45a728e8b5b1a82558edb4441a9520fc51d3829f5c3be7d29e19a5d3ca6030b",
+    "originalPluginLossR2": "/workspace/scratch/f86faac821c4/rog-installed-manager-sdk-review-r2/evidence/public-receipt.json"
+  },
+  "result": {
+    "checks": 1612,
+    "counterOnlyCaseNameChanges": {
+      "manifest.exact_single_profile.123": "manifest.exact_single_profile.124",
+      "manifest.exact_single_profile.132": "manifest.exact_single_profile.133",
+      "manifest.exact_single_profile.202": "manifest.exact_single_profile.203",
+      "manifest.exact_single_profile.72": "manifest.exact_single_profile.73"
+    },
+    "durationSeconds": 115.40865589800524,
+    "expectedNegativeSdkProcesses": 3,
+    "failedChecks": [],
+    "managerChecks": 1155,
+    "original330AssertionsRetained": true,
+    "originalLiteralCaseNamesRetained": 326,
+    "positiveFreshVerifiedTlsResponses": 89,
+    "positiveSdkProcesses": 14,
+    "sdkProcesses": 17
+  },
+  "reviewer": "authbus-child-agent",
+  "rootIndependentReviewPending": true,
+  "schema": "heptabao.authbus-manager-sdk-agent-review.v2",
+  "sessionRevocation": {
+    "all8ExactInventoryDifferencesAndWriterMetadataVerifiedBeforeFirstRevoke": true,
+    "all8PostAndColdLookupStatus": 400,
+    "all8RevokeStatus": 204,
+    "bearersRead": false,
+    "daemonSessions": 4,
+    "destroyedSecretIds": 3,
+    "finalAccessorInventoryCount": 1,
+    "knownDenialDecoderAcceptsHttpStatus": [
+      401,
+      403
+    ],
+    "liveDaemonError": "bao_authentication_or_acl_denied",
+    "liveDaemonNoAutomaticRetrySeconds": 6,
+    "liveDaemonSameInvocationKnownAuthAclDenialExit": 2,
+    "liveDaemonUnknownOutcome": false,
+    "liveDaemonWireStatusNotSeparatelyRecorded": true,
+    "namespaceProjection": "absent",
+    "namespaceProjectionEvidenceSha256": "8bdcde8af3c1c469a35344d5f278f7c0e0ed0dcd7bbf25a2ffadb968cd8d0b9a",
+    "operatorSessions": 4,
+    "processMemoryOrEnvironmentRead": false,
+    "remainingTokenExactPolicies": [
+      "root"
+    ],
+    "revokedSidColdManagerExit": 3,
+    "revokedSidColdManagerUnknownOutcome": true,
+    "revokedSidColdSdkObservedHttpStatus": 400,
+    "revokedSidNoAutomaticRetrySeconds": 6,
+    "separateCapturedTokenRevocationsWithDirect403Readback": 28
+  },
+  "source": {
+    "frozenInputs": {
+      "controller.py": "e02f337f3789d617f4521b46a3ac3ccd6d33e0755028aaa9891f1dc3cbcc28cd",
+      "manager-system-plan.public.json": "6fe6c685d4428313367ea297ed4fd4002fc036e4120360366240dcd7b3284189",
+      "plugin-overlay/runtime-refresh-policy.js": "0881ce9500eff4686508cd5c6f5989d54faa6f832c4eefeb9ad38380692df72e",
+      "qa/openbao-acceptance/authbus_coordinator_installed_supervisor_live.py": "15ea12db58325c4edf8878f31b8a0a1e7efc00595fb9feaac7147fb65b2a9302",
+      "qa/openbao-acceptance/authbus_manager_accessor_sessions.py": "5d7a6ba325773f3f5345debb5e46b0fb24f79fe9db4f559b09d44d61e3001825",
+      "qa/openbao-acceptance/authbus_manager_sdk_adapter.py": "8ca82e6c260b6734500e1799579676b13532aeee332b36cb92ac6a1dd197ca11",
+      "qa/openbao-acceptance/authbus_owned_proc_runtime_observer.py": "35aef07cd212a759efb4ac38eed55ab45d0db37f52ec487397b05bef208a35ff",
+      "qa/openbao-acceptance/native_v6_authbus_coordinator_consumer.mjs": "069ac45973b28918dfe970e628ab3a56d8253ee697b09bb16e92452fbb7966e4",
+      "qa/openbao-acceptance/native_v6_authbus_coordinator_live.py": "ef4dc7f90dea2acf6d41255d3f416755a2d45c6e0a69c1b5851d6ae2977e5a1d",
+      "tools/authbus/authbus_coordinator.py": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+      "tools/authbus/authbus_coordinator_installed.py": "16204429b78d370e58aa1332aa17ae1a295eae94e59bceb08c9144d7e991891b",
+      "tools/authbus/authbus_system_unit_runtime.py": "b2fcca5d9e7432ab20063e4b25608e2717fef6cbeff786dbb0dc4e1d7c514958"
+    },
+    "normalBinary": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+    "normalSourceCommit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "normalSourceTree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+    "onlySelectedRuntimeSelectorPatched": true,
+    "originalProductionPlugin": {
+      "bad-refresh-quarantine.js": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+      "codex-client-recycler.js": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+      "index.js": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b",
+      "lease-assignments.js": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+      "order-policy.js": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301",
+      "provider-error-classifier.js": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+      "runtime-refresh-policy.js": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547"
+    },
+    "productionPluginModified": false,
+    "selectedPlugin": {
+      "bad-refresh-quarantine.js": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286",
+      "codex-client-recycler.js": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d",
+      "index.js": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b",
+      "lease-assignments.js": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7",
+      "order-policy.js": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301",
+      "provider-error-classifier.js": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77",
+      "runtime-refresh-policy.js": "0881ce9500eff4686508cd5c6f5989d54faa6f832c4eefeb9ad38380692df72e"
+    }
+  },
+  "unacknowledgedRotation": {
+    "canonicalExactCWithoutDGrant": true,
+    "canonicalFinalGeneration": 4,
+    "exactDGrantRequired": true,
+    "exactImmutableDProposal": {
+      "credentialDigest": "42bb02cdb39e56b50368e0a9247561d65cef38d824945df6f14392fcae2690d3",
+      "eventIdSha256": "117f3805568d5bbe3ee568fc1586667a36e9531bb33143b7ab7e965150d38895",
+      "identityDigest": "2130c128c1430bfc0273182701d49412c74585746250557ff3f930f5f63968f4",
+      "immutableVersion": 1,
+      "locatedBeforeAnyDGrant": true,
+      "profileId": "openai:authbus-central-a",
+      "recordSha256": "f366036e391009bdf51fc19c7b08b25af2754f590841bdcc2e3377273fc93980",
+      "retainedAfterSdkAndManagerRestart": true,
+      "sourceHost": "authbus-central-producer"
+    },
+    "newerDPresentBeforeAndAfterTwoSdkTicks": true,
+    "newerDPreservedAcrossColdSdkProcess": true,
+    "noAdditionalConflictQueueIntroduced": true,
+    "noDGrantBeforeProposal": true,
+    "oldCGrantDidNotAuthorizeD": true,
+    "originalFailingR2ReceiptSha256": "c7ad8209728f442533aab453867e94fdd45204c89d56ecc70b06bf767ab9db1d",
+    "producerAndFollowerSdkReadExactD": true,
+    "producerAppliedBWhileCanonicalC": true,
+    "sameOriginalCasAndPendingRecovery": true,
+    "twoActualManagerRestarts": [
+      {
+        "case": "same_fixture_systemctl_restart",
+        "exactOriginalUnitAndBinding": true,
+        "newInvocationId": "1a85d7481e2d4dbba5cadeccb6be8b7e",
+        "newPid": 2905287,
+        "oldIdentityAbsent": true,
+        "oldInvocationId": "40de9a54fb2f4e6d89422527936350ba",
+        "oldPid": 2905228
+      },
+      {
+        "case": "ungranted_pending_systemctl_restart",
+        "exactOriginalUnitAndBinding": true,
+        "newInvocationId": "0a56901f258448ed9252fc89d756da73",
+        "newPid": 2905968,
+        "oldIdentityAbsent": true,
+        "oldInvocationId": "1a85d7481e2d4dbba5cadeccb6be8b7e",
+        "oldPid": 2905287
+      }
+    ],
+    "ungrantedDuplicateProposalRemainsDeferred": true
+  }
+}

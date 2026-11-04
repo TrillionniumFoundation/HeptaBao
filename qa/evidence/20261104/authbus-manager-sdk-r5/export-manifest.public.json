@@ -1,0 +1,34 @@
+{
+  "completeRawReceiptsIncluded": true,
+  "entries": {
+    "live-intent.public.json": {
+      "bytes": 4184,
+      "sha256": "fc605326451d97a93e217c8a5be16d809d4a0b2ca77b627df78b4ca636ef37de",
+      "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-manager-sdk-61ff8bef-control-r5/live-intent.public.json"
+    },
+    "manager-system-plan.public.json": {
+      "bytes": 3031,
+      "sha256": "6fe6c685d4428313367ea297ed4fd4002fc036e4120360366240dcd7b3284189",
+      "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-manager-sdk-61ff8bef-control-r5/manager-system-plan.public.json"
+    },
+    "outer-result.public.json": {
+      "bytes": 6079,
+      "sha256": "f01a8ff4bf3720c8fddf9bc4ca31c4f8929ef7e2d6fa18d4459e155d4927543d",
+      "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-manager-sdk-61ff8bef-control-r5/outer-result.public.json"
+    },
+    "public-receipt.json": {
+      "bytes": 505034,
+      "sha256": "527e025bd7376e46e469ff738fdbd1e5d440ca8ad5b43dce529a0b6851ad3d2e",
+      "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-manager-sdk-61ff8bef-live-r5/public-receipt.json"
+    },
+    "stage.public.json": {
+      "bytes": 5654,
+      "sha256": "31dec2588e9123a656196ba79971d666860819fce0b2f6931352f14ed4c359fe",
+      "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/authbus-coordinator-manager-sdk-61ff8bef-control-r5/stage.public.json"
+    }
+  },
+  "liveJobId": "1a1a6ca1093-fc05-28b5",
+  "privateFilesExcluded": true,
+  "schema": "heptabao.authbus-complete-public-evidence-export.v1",
+  "stageJobId": "1a1a6c43dd6-fc05-28ae"
+}

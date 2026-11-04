@@ -1,0 +1,30 @@
+{
+  "changesFromR4": [
+    "controller.py",
+    "manager-system-plan.public.json",
+    "qa/openbao-acceptance/authbus_manager_accessor_sessions.py",
+    "qa/openbao-acceptance/native_v6_authbus_coordinator_live.py"
+  ],
+  "exactDProposalProofAdded": true,
+  "inputs": {
+    "controller.py": "e02f337f3789d617f4521b46a3ac3ccd6d33e0755028aaa9891f1dc3cbcc28cd",
+    "manager-system-plan.public.json": "6fe6c685d4428313367ea297ed4fd4002fc036e4120360366240dcd7b3284189",
+    "plugin-overlay/runtime-refresh-policy.js": "0881ce9500eff4686508cd5c6f5989d54faa6f832c4eefeb9ad38380692df72e",
+    "qa/openbao-acceptance/authbus_coordinator_installed_supervisor_live.py": "15ea12db58325c4edf8878f31b8a0a1e7efc00595fb9feaac7147fb65b2a9302",
+    "qa/openbao-acceptance/authbus_manager_accessor_sessions.py": "5d7a6ba325773f3f5345debb5e46b0fb24f79fe9db4f559b09d44d61e3001825",
+    "qa/openbao-acceptance/authbus_manager_sdk_adapter.py": "8ca82e6c260b6734500e1799579676b13532aeee332b36cb92ac6a1dd197ca11",
+    "qa/openbao-acceptance/authbus_owned_proc_runtime_observer.py": "35aef07cd212a759efb4ac38eed55ab45d0db37f52ec487397b05bef208a35ff",
+    "qa/openbao-acceptance/native_v6_authbus_coordinator_consumer.mjs": "069ac45973b28918dfe970e628ab3a56d8253ee697b09bb16e92452fbb7966e4",
+    "qa/openbao-acceptance/native_v6_authbus_coordinator_live.py": "ef4dc7f90dea2acf6d41255d3f416755a2d45c6e0a69c1b5851d6ae2977e5a1d",
+    "tools/authbus/authbus_coordinator.py": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+    "tools/authbus/authbus_coordinator_installed.py": "16204429b78d370e58aa1332aa17ae1a295eae94e59bceb08c9144d7e991891b",
+    "tools/authbus/authbus_system_unit_runtime.py": "b2fcca5d9e7432ab20063e4b25608e2717fef6cbeff786dbb0dc4e1d7c514958"
+  },
+  "namespaceDiagnosticSha256": "8bdcde8af3c1c469a35344d5f278f7c0e0ed0dcd7bbf25a2ffadb968cd8d0b9a",
+  "nativeNamespaceMustBeAbsent": true,
+  "originalRoleGuardPreserved": true,
+  "payloadBytes": 372100,
+  "payloadSha256": "7b1494fdfb313450320f9df2e3d8a334be797d3c59ccf77fbec49aa795feed09",
+  "productionPluginChanged": false,
+  "schema": "heptabao.authbus-r5-source-freeze.v1"
+}

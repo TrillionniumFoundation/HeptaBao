@@ -1,0 +1,43 @@
+--- r4/candidate/qa/openbao-acceptance/authbus_manager_accessor_sessions.py
++++ r5/candidate/qa/openbao-acceptance/authbus_manager_accessor_sessions.py
+@@ -30,7 +30,9 @@
+             'captures': [], 'revocations': [], 'inventories': [],
+             'daemonAccessorsRevoked': False, 'operatorAccessorsRevoked': False,
+             'activeDaemonDeniedWithOldBearer': False, 'coldRevocationsPersisted': False,
+-            'onlyFixtureRootRemains': False}
++            'onlyFixtureRootRemains': False,
++            'namespaceScope': 'owned_root_endpoint_without_namespace_header',
++            'namespaceProjectionEvidenceSha256': '8bdcde8af3c1c469a35344d5f278f7c0e0ed0dcd7bbf25a2ffadb968cd8d0b9a'}
+         fixture.report['accessorSessionQualification'] = self.report
+ 
+     def check(self, name, condition, **metadata):
+@@ -64,13 +66,22 @@
+ 
+     def writer_metadata(self, info, label):
+         policies = info.get('policies')
+-        self.check(label + '.exact_writer_app_role', isinstance(policies, list)
+-            and WRITER in policies and set(policies) <= {WRITER, 'default'}
+-            and len(policies) == len(set(policies))
+-            and info.get('meta', {}).get('role_name') == WRITER
+-            and info.get('type') == 'service' and info.get('renewable') is True
+-            and isinstance(info.get('ttl'), int) and info['ttl'] > 30
+-            and info.get('namespace') in ('', 'root'))
++        metadata = info.get('meta')
++        # The exact normal binary projects the public OpenBao lookup contract:
++        # namespace is omitted. Scope comes from this owned root-only endpoint,
++        # which never sends a namespace header; do not accept an arbitrary value.
++        predicates = {
++            'exact_writer_policies': isinstance(policies, list) and WRITER in policies
++                and set(policies) <= {WRITER, 'default'} and len(policies) == len(set(policies)),
++            'exact_writer_role': isinstance(metadata, dict) and metadata.get('role_name') == WRITER,
++            'service_token': info.get('type') == 'service',
++            'renewable': info.get('renewable') is True,
++            'live_ttl': isinstance(info.get('ttl'), int) and info['ttl'] > 30,
++            'exact_native_namespace_projection': 'namespace' not in info,
++        }
++        self.check(label + '.exact_writer_app_role', all(predicates.values()),
++                   predicates=predicates,
++                   ttl=info.get('ttl') if isinstance(info.get('ttl'), int) else None)
+ 
+     def capture(self, before, label, kind, expected):
+         self.module.need(kind in ('daemon', 'operator') and expected == (1 if kind == 'daemon' else 2),

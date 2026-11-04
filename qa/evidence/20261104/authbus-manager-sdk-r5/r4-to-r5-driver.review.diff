@@ -1,0 +1,73 @@
+--- r4/candidate/qa/openbao-acceptance/native_v6_authbus_coordinator_live.py
++++ r5/candidate/qa/openbao-acceptance/native_v6_authbus_coordinator_live.py
+@@ -1,8 +1,9 @@
+ #!/usr/bin/env python3
+ """Actual SDK producer/follower through the bound installed-entry APIs.
+ 
+-Uses an owned new V6 server, unchanged production OpenClaw plugin copies and
+-actual SDK SQLite stores. Source provider credentials are synthetic; no provider
++Uses an owned new V6 server, an isolated runtime-refresh selector candidate and
++the unchanged installed plugin main entry and actual SDK SQLite stores. Source
++provider credentials are synthetic; no provider
+ API, production gateway, old Bao or J3160 is contacted. The independent service
+ performs all successful profile/manifest credential publication. The installed
+ entry is the exact X230-qualified source. After the original API qualification,
+@@ -350,6 +351,38 @@
+                 'provider': credential['provider'], 'identityDigest': value_sha({key: credential.get(key)
+                     for key in ('provider', 'type', 'email', 'accountId', 'projectId')}),
+                 'expectedCurrentDigest': previous, 'nextDigest': value_sha(credential)}
++
++    def locate_exact_source_proposal(credential, label):
++        expected_digest = value_sha(credential)
++        expected_identity = value_sha({key: credential.get(key)
++            for key in ('provider', 'type', 'email', 'accountId', 'projectId')})
++        keys = call(label + '.inventory', 'LIST', MOUNT + '/metadata/inbox/' + PRODUCER)['data']['keys']
++        check(label + '.bounded_source_keys', isinstance(keys, list) and 1 <= len(keys) <= 128
++              and len(keys) == len(set(keys))
++              and all(isinstance(key, str) and str(uuid.UUID(key)) == key for key in keys))
++        matches = []
++        for index, key in enumerate(keys):
++            route = MOUNT + '/data/inbox/' + PRODUCER + '/' + key
++            record = call(label + '.read_' + str(index), 'GET', route)['data']
++            event = record['data']
++            if event.get('digest') == expected_digest:
++                check(label + '.exact_immutable_proposal_' + str(index),
++                      event.get('eventId') == key and event.get('sourceHost') == PRODUCER
++                      and event.get('profileId') == PROFILE and event.get('reason') == 'manual-login'
++                      and event.get('identity') == expected_identity
++                      and event.get('credential') == credential
++                      and value_sha(event['credential']) == expected_digest
++                      and record['metadata']['version'] == 1)
++                matches.append((route, record))
++        check(label + '.exact_single_new_d_proposal', len(matches) == 1)
++        route, record = matches[0]
++        report['unacknowledged_rotation_proposal'] = {
++            'sourceHost': PRODUCER, 'profileId': PROFILE,
++            'credentialDigest': expected_digest, 'identityDigest': expected_identity,
++            'eventIdSha256': __import__('hashlib').sha256(record['data']['eventId'].encode()).hexdigest(),
++            'recordSha256': value_sha(record), 'immutableVersion': record['metadata']['version'],
++            'locatedBeforeAnyDGrant': True, 'retainedAfterSdkAndManagerRestart': False}
++        return route, record
+ 
+     def restart(name):
+         old = instance.process; instance.stop()
+@@ -590,6 +623,8 @@
+                       and cycle['after']['profiles'].get(PROFILE) == digest_d
+                       and cycle['plugin']['pendingRuntimeRefreshes'] == 1 for cycle in manager_d['cycles'])
+               and manager_d['cycles'][1]['plugin']['publishedEvents'] == 0)
++        d_proposal_path, d_proposal_record = locate_exact_source_proposal(
++            credential_d, 'unacknowledged_rotation.exact_d_inbox')
+         session_probe.wait_new_cycle('ungranted_d_actual_manager_defers',
+                                       lambda row: row.get('committed') == 0 and row.get('deferred', 0) >= 1)
+         check('unacknowledged_rotation.c_unchanged_without_d_grant', manager_fixture.run.head() == head_c)
+@@ -608,6 +643,10 @@
+               and cold_pending_d['cycles'][0]['plugin']['pendingRuntimeRefreshes'] == 1)
+         session_probe.wait_new_cycle('cold_ungranted_d_still_deferred',
+                                       lambda row: row.get('committed') == 0 and row.get('deferred', 0) >= 1)
++        check('unacknowledged_rotation.exact_d_inbox_retained_without_authority',
++              call('unacknowledged_rotation.exact_d_inbox_after_restarts', 'GET', d_proposal_path)['data']
++              == d_proposal_record)
++        report['unacknowledged_rotation_proposal']['retainedAfterSdkAndManagerRestart'] = True
+         check('unacknowledged_rotation.old_c_grant_did_not_authorize_d', manager_fixture.run.head() == head_c)
+         manager_fixture.assert_active('same_fixture_owner_continuous_through_ungranted_d')
+         manager_fixture.stop('same_fixture_stop_before_fault')

@@ -1,0 +1,22 @@
+--- r4/controller.py
++++ r5/controller.py
+@@ -4,8 +4,8 @@
+ import argparse, ast, base64, hashlib, importlib.util, json, os, stat, subprocess, sys, time
+ 
+ BASE=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-CONTROL=BASE/'authbus-coordinator-manager-sdk-61ff8bef-control-r4'
+-WORK=BASE/'authbus-coordinator-manager-sdk-61ff8bef-live-r4'
++CONTROL=BASE/'authbus-coordinator-manager-sdk-61ff8bef-control-r5'
++WORK=BASE/'authbus-coordinator-manager-sdk-61ff8bef-live-r5'
+ SOURCE=BASE/'ha-root-pull-response-final-source-r1'
+ BUILD=BASE/'ha-root-pull-response-normal-build-rog-r1'
+ BINARY=BUILD/'artifacts/heptabao-server'
+@@ -30,7 +30,7 @@
+ PROTECTED=[Path('/home/qian-qi/.openclaw/openclaw.json'),Path('/home/qian-qi/.codex/auth.json'),
+ Path('/home/qian-qi/.codex/config.toml')]
+ DRIVER='qa/openbao-acceptance/native_v6_authbus_coordinator_live.py'
+-PLAN_SHA='9ae902e96f5c579bde24327710a5eb8083c89cf252b1e30519a1c5c78e7e5927'
++PLAN_SHA='6fe6c685d4428313367ea297ed4fd4002fc036e4120360366240dcd7b3284189'
+ os.umask(0o077)
+ 
+ def h(b): return hashlib.sha256(b).hexdigest()

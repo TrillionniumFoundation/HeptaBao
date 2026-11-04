@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.authbus-unacknowledged-rotation-regression.v1",
+  "moduleSha256": "0881ce9500eff4686508cd5c6f5989d54faa6f832c4eefeb9ad38380692df72e",
+  "checks": [
+    {
+      "case": "unacknowledged_c_must_not_overwrite_newer_managed_local_d",
+      "passed": true
+    },
+    {
+      "case": "previously_acknowledged_refresh_contract_unchanged",
+      "passed": true
+    },
+    {
+      "case": "already_canonical_profile_has_no_pending_refresh",
+      "passed": true
+    },
+    {
+      "case": "unmanaged_profile_has_no_implicit_refresh_authority",
+      "passed": true
+    },
+    {
+      "case": "never_applied_profile_has_no_implicit_refresh_authority",
+      "passed": true
+    },
+    {
+      "case": "malformed_applied_marker_is_not_management_proof",
+      "passed": true
+    },
+    {
+      "case": "different_provider_identity_cannot_be_pending",
+      "passed": true
+    },
+    {
+      "case": "local_api_key_is_not_promoted_to_oauth_rotation",
+      "passed": true
+    },
+    {
+      "case": "canonical_api_key_is_not_promoted_to_oauth_rotation",
+      "passed": true
+    },
+    {
+      "case": "equal_or_older_local_expiry_is_not_pending",
+      "passed": true
+    },
+    {
+      "case": "canonical_and_management_inputs_remain_unchanged",
+      "passed": true
+    },
+    {
+      "case": "unmanaged_effective_digest_stays_canonical",
+      "passed": true
+    }
+  ],
+  "ok": true,
+  "providerCalled": false,
+  "productionModified": false,
+  "canonicalPublicationAuthorizedBySelector": false
+}
