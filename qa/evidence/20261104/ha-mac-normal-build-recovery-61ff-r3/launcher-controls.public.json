@@ -23,9 +23,9 @@
   "files": [
     {
       "path": "control/launch_mac_normal_build_r3.py",
-      "bytes": 22034,
-      "sha256": "d52c828ac3173f7bde169b42f5f1c91df92809595bbff1ac04c5bb4b324befe7",
-      "git_blob": "f735d3e1eb29ae04e301aab1309aad8dfa3fc107"
+      "bytes": 22417,
+      "sha256": "aa09d9bb4c72c374430dc83fdd592b08b36a6d8fa1865c9580c168ac774c3043",
+      "git_blob": "52a489bf75745f53be99277bfcd8dd1f09f343dc"
     },
     {
       "path": "control/build_normal.py",
@@ -44,6 +44,18 @@
       "bytes": 1703,
       "sha256": "510de9e176b77e771a3233d56620c32975c161970213d7f83d1b7eceb37624db",
       "git_blob": "ca4ddaf1b177f7f5dc6078a08a82592722acf32e"
+    }
+  ],
+  "revisions": [
+    {
+      "commit": "78982e93c6552b4b3238e8c46f0eb42e40e4eea4",
+      "launcher_sha256": "d52c828ac3173f7bde169b42f5f1c91df92809595bbff1ac04c5bb4b324befe7",
+      "executed": false
+    },
+    {
+      "launcher_sha256": "aa09d9bb4c72c374430dc83fdd592b08b36a6d8fa1865c9580c168ac774c3043",
+      "reason": "actual Mac WNOWAIT observation confirms getpgid can return ESRCH for an exited unreaped child; preserve the original creation/session custody without requiring that lookup",
+      "executed": false
     }
   ]
 }

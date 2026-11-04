@@ -182,6 +182,22 @@ def child_exited_unreaped(proc):
     return result is not None and result.si_pid == proc.pid
 
 
+def signal_owned_group(proc, signum):
+    # waitid(WNOWAIT) proves this is still our unreaped direct child. On
+    # Darwin getpgid can return ESRCH for an exited but unreaped child.
+    # Its start_new_session creation contract is retained in our registry.
+    exited = child_exited_unreaped(proc)
+    if not exited:
+        try:
+            need(os.getpgid(proc.pid) == proc.pid, 'owned_group_anchor_changed')
+        except ProcessLookupError:
+            need(child_exited_unreaped(proc), 'live_owned_group_anchor_missing')
+    try:
+        os.killpg(proc.pid, signum)
+    except ProcessLookupError:
+        pass
+
+
 def cleanup_children():
     records = []
     for proc, own_group in reversed(owned_children):
@@ -197,8 +213,7 @@ def cleanup_children():
         child_exited_unreaped(proc)
         forced = False
         if own_group:
-            need(os.getpgid(proc.pid) == proc.pid, 'owned_group_anchor_changed')
-            os.killpg(proc.pid, signal.SIGTERM)
+            signal_owned_group(proc, signal.SIGTERM)
             stop = time.monotonic() + 5
             while time.monotonic() < stop:
                 others = [pid for pid in group_members(proc.pid) if pid != proc.pid]
@@ -206,8 +221,7 @@ def cleanup_children():
                     break
                 time.sleep(min(0.05, max(0, stop - time.monotonic())))
             else:
-                need(os.getpgid(proc.pid) == proc.pid, 'owned_group_anchor_changed')
-                os.killpg(proc.pid, signal.SIGKILL)
+                signal_owned_group(proc, signal.SIGKILL)
                 forced = True
             stop = time.monotonic() + 5
             while time.monotonic() < stop:
@@ -224,8 +238,7 @@ def cleanup_children():
             code = proc.wait(timeout=5)
         except subprocess.TimeoutExpired:
             if own_group:
-                need(os.getpgid(proc.pid) == proc.pid, 'owned_group_anchor_changed')
-                os.killpg(proc.pid, signal.SIGKILL)
+                signal_owned_group(proc, signal.SIGKILL)
             else:
                 proc.kill()
             forced = True
