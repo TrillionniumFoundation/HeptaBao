@@ -1,0 +1,82 @@
+{
+  "files": [
+    {
+      "path": "r6/frozen-source-r6.public.json",
+      "encoding": "utf-8",
+      "bytes": 26585,
+      "sha256": "ad59fb02e3affc08720c13f7349d93a99df646ca7616f9a10e41e1cc6ddbeff1"
+    },
+    {
+      "path": "r6/clippy-qualified-source.public.json",
+      "encoding": "utf-8",
+      "bytes": 1703,
+      "sha256": "510de9e176b77e771a3233d56620c32975c161970213d7f83d1b7eceb37624db"
+    },
+    {
+      "path": "r6/strict_clippy.public.json",
+      "encoding": "utf-8",
+      "bytes": 653,
+      "sha256": "788eb71865495d8cf2e47ed1619686073dd5f32bdf7ce3fe1d33efa1793f734d"
+    },
+    {
+      "path": "r6/strict_clippy.stderr",
+      "encoding": "utf-8",
+      "bytes": 4312,
+      "sha256": "3c409cb367c2118f5be31667c1c7266e356aeee1cf2d831a284d0998f022c2c9"
+    },
+    {
+      "path": "r6/source-transfer.public.json",
+      "encoding": "utf-8",
+      "bytes": 709,
+      "sha256": "7d1eaa643f94fb724963c29ffb91fc1a89a846a60d10eaf6d940956b06b4dc83"
+    },
+    {
+      "path": "r5/strict_clippy.stderr",
+      "encoding": "utf-8",
+      "bytes": 3817,
+      "sha256": "d8d31d40206072e25784a70fd057495ca9a49985f735b3b152dc3d3a4c1543f1"
+    },
+    {
+      "path": "r5/strict_clippy.public.json",
+      "encoding": "utf-8",
+      "bytes": 657,
+      "sha256": "a4049591ebda3b77e7587c78780375e3b56339f6eb0fc3dea9d125a0888e2d23"
+    },
+    {
+      "path": "r5/result.public.json",
+      "encoding": "utf-8",
+      "bytes": 1474,
+      "sha256": "54e5f08d5d190855e0ac1bd719ab2eb9d91b6678265359ccd1a8cabaec4d09cd"
+    },
+    {
+      "path": "r5/source-transfer.public.json",
+      "encoding": "utf-8",
+      "bytes": 949,
+      "sha256": "fe97ef9d8c3f36e74be37c982c244adf7fc94ab59de98d6ba99085fa0931ebde"
+    },
+    {
+      "path": "r5/frozen-source-r5.public.json",
+      "encoding": "utf-8",
+      "bytes": 26315,
+      "sha256": "96726862df94c75e2ceae0870e212800c0653538ca86ea7731d3a0ee529f4dd7"
+    },
+    {
+      "path": "controls/r5-exact-process-start-request.public.json",
+      "encoding": "utf-8",
+      "bytes": 196700,
+      "sha256": "958c296ce4ac46b5810df117b876e84472b5e907b8b56bc0ba38c6c3b4a77bce"
+    },
+    {
+      "path": "controls/r6-exact-process-start-request.public.json",
+      "encoding": "utf-8",
+      "bytes": 68461,
+      "sha256": "e70cdcfb8dd40f81cd77ad7a9ba1846b8d92bd674540a4b3648e7de0965113b1"
+    },
+    {
+      "path": "r6/same-tree-review-map.public.json",
+      "encoding": "utf-8",
+      "bytes": 1442,
+      "sha256": "09e4bc11e8a39e9fcdf61ea8e937281668b579fba818ce65958d86bab669d988"
+    }
+  ]
+}

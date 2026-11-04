@@ -1,0 +1,31 @@
+{
+  "status": "failed",
+  "qualified_full_replacement": false,
+  "workspace_tests_started": false,
+  "profile": {
+    "PATH": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin:/usr/bin:/bin",
+    "CARGO_HOME": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+    "CARGO_TARGET_DIR": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/cargo-target-normal",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_PANIC": "unwind"
+  },
+  "fixture_features": [],
+  "fixture_budgets_changed": false,
+  "prior_terminal_job": "1a1a796b588-fc05-2bd6",
+  "prior_source": "d9c16a172cbc329fc90d857b0a2d32ff4eb81e9a",
+  "prior_gate": "21_libtest_panic_unwrap_expect_and_type_complexity_lints",
+  "overall_deadline_unchanged": true,
+  "reuses_independent_owned_source_cache": true,
+  "prior_admission_only_failure_job": "1a1a75eaff9-fc05-2b29",
+  "prior_metadata_only_refusal_job": "1a1a76bcaaa-fc05-2b63",
+  "compile_admission_guard_sha256": "108ea3a050eb5f1596b8c6cab3aeffbce8a220e91ae1b15ac70b3b6176c097cb",
+  "source": "439c166289380de18773196306744bafb99647ef",
+  "tree": "13457bc6c6e077a0b6a723f7ae88e3e74e05b31d",
+  "failure_class": "AssertionError"
+}

@@ -1,0 +1,51 @@
+    Checking heptabao-server v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-server)
+    Checking heptabao-ha-service v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-ha-service)
+    Checking heptabao-key-lifecycle v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-key-lifecycle)
+    Checking heptabao-rollback-anchor v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-rollback-anchor)
+    Checking heptabao-durable-core v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-durable-core)
+    Checking heptabao-single-node-journal v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-single-node-journal)
+    Checking heptabao-operation-ledger v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-operation-ledger)
+    Checking heptabao-raft-runtime v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-raft-runtime)
+    Checking heptabao-single-node-store v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-single-node-store)
+    Checking heptabao-barrier-api v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-barrier-api)
+    Checking heptabao-plugin-host v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-plugin-host)
+    Checking heptabao-runtime-service v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-runtime-service)
+    Checking heptabao-durable-service v0.1.0 (/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source/crates/heptabao-durable-service)
+error: redundant pattern matching
+   --> crates/heptabao-durable-service/src/immutable_source_parallel_tests.rs:158:17
+    |
+158 |           assert!(matches!(
+    |  _________________^
+159 | |             view.pin_immutable_object_before_read(&session, locator()?, length + 1, &mut || Ok(())),
+160 | |             Err(_)
+161 | |         ));
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#redundant_pattern_matching
+    = note: `-D clippy::redundant-pattern-matching` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::redundant_pattern_matching)]`
+help: consider using `is_err()`
+    |
+158 -         assert!(matches!(
+159 -             view.pin_immutable_object_before_read(&session, locator()?, length + 1, &mut || Ok(())),
+160 -             Err(_)
+161 -         ));
+158 +         assert!(view.pin_immutable_object_before_read(&session, locator()?, length + 1, &mut || Ok(())).is_err());
+    |
+
+error: call to `std::mem::forget` with a value that does not implement `Drop`. Forgetting such a type is the same as dropping it
+   --> crates/heptabao-durable-service/src/immutable_source_parallel_tests.rs:302:5
+    |
+302 |     std::mem::forget(view);
+    |     ^^^^^^^^^^^^^^^^^^^^^^
+    |
+note: argument has type `immutable_source_session::parallel::FileImmutableSourceReader<'_, tests::TestBarrier>`
+   --> crates/heptabao-durable-service/src/immutable_source_parallel_tests.rs:302:22
+    |
+302 |     std::mem::forget(view);
+    |                      ^^^^
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#forget_non_drop
+    = note: `-D clippy::forget-non-drop` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::forget_non_drop)]`
+
+error: could not compile `heptabao-durable-service` (lib test) due to 2 previous errors

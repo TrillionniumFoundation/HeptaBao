@@ -1,0 +1,22 @@
+{
+  "source": "439c166289380de18773196306744bafb99647ef",
+  "tree": "13457bc6c6e077a0b6a723f7ae88e3e74e05b31d",
+  "files": 5,
+  "original_bytes": 132629,
+  "original_sha256": "6f71577c330e2f2b8765e18bb68dd71b833cc9d475ddb4e31b7260e9f63fc552",
+  "compressed_bytes": 25123,
+  "compressed_sha256": "953ced82aaad2ab8699d6cdaac14782c33dea9f2d36f97ec5cf3294d614a2759",
+  "chunks": [
+    {
+      "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r5/frozen-source.b64.0",
+      "bytes": 24000,
+      "sha256": "b5454ae74adae9b33a243b0cab82a0f3103e0963f8af922c59dc9af8b762192d"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/normal-build-r5/frozen-source.b64.24000",
+      "bytes": 9500,
+      "sha256": "81c0c078c952779585744ef7002bb5d3bf8a9a0e1deefab661c5ab499f0a116f"
+    }
+  ],
+  "frozen_manifest_sha256": "96726862df94c75e2ceae0870e212800c0653538ca86ea7731d3a0ee529f4dd7"
+}

@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao-same-tree-review-map-v1",
+  "physical_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "physical_source_path": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source",
+  "github_review_commit": "c71b405970544682e7b9b25c91214f66351a767b",
+  "github_review_branch": "codex/heptabao-unified-61ff-source-20261104-r6",
+  "whole_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "commit_metadata_identical": false,
+  "whole_tree_identical": true,
+  "manifest_files_independently_sha256_and_git_blob_verified": 62,
+  "frozen_manifest_sha256": "ad59fb02e3affc08720c13f7349d93a99df646ca7616f9a10e41e1cc6ddbeff1",
+  "clippy_qualified_receipt_sha256": "510de9e176b77e771a3233d56620c32975c161970213d7f83d1b7eceb37624db",
+  "actual_build_job": "1a1a7a26c1b-fc05-2c06",
+  "strict_clippy_passed": true,
+  "production_linked": false,
+  "runtime_tests_passed": false,
+  "full_openbao_replacement_qualified": false,
+  "pr152_changed": false,
+  "known_product_gaps": [
+    "ordinary KV NoForward + global TTL/precision still redirects307",
+    "non-clock resource-maintenance states still redirect307",
+    "post-admission early refusal before snapshot plan on TTL standby has no delegated floor capsule; must remain fail-closed and needs distinct coverage",
+    "snapshot admission is still root-only; fixed OpenBao2.7.1 oracle demonstrates nonroot read-only snapshot ACL200 on leader and normal standby"
+  ]
+}
