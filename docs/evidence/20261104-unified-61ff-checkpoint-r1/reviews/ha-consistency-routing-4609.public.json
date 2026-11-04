@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.http-consistency-route-restriction-independent-review.v1",
+  "reviewer": "bao_acceptance",
+  "commit": "4609acf94695508ea49097039b8355897a1b20f2",
+  "parent_candidate": "7f69e4a0311747d7ea2a904f22bdac4fe0829768",
+  "patch_bytes": 9952,
+  "patch_sha256": "9bc2687355e319a6e0ffdd35895d5c353c2616067eb8c7521e92ecb6efdd3c65",
+  "scope": [
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "bytes": 231754,
+      "sha256": "6f855ab990ed6eba637a239cbdceda0b1172eae4173c68e34c950f88c22288cc"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_consistency.rs",
+      "bytes": 16843,
+      "sha256": "d8d20d8c69e6cf02a29801a3f05645d8ba58138d0d97c72cdd20994c2caa56cf"
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "bytes": 520380,
+      "sha256": "ecc34e93aeec0832943910aeab443009bfcad4f4cbc6d721b7a2fb213c599313"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "bytes": 64166,
+      "sha256": "a29b89e4efca56a28dbbaefccab89aac329e6cf75de1d75f62bc80545ddee4d1"
+    }
+  ],
+  "checks": {
+    "full_patch_and_production_context_read": true,
+    "constructor_only_actual_http_parent": true,
+    "source_actual_admit_ok_true": true,
+    "restriction_matches_original_ingress_and_normalized_method_path_namespace": true,
+    "scope_non_send_and_drop_restores_previous": true,
+    "scope_wraps_actual_synchronous_service_call": true,
+    "restricts_local_read_only_no_authority_created": true,
+    "no_actor_or_readproof_or_clock_receipt_constructed": true,
+    "no_sdk_http_bound_introduced": true,
+    "existing_typed_redirect_real_leader_origin_and_audit_preserved": true,
+    "existing_forward_path_preserved": true,
+    "original_deadline_unchanged": true
+  },
+  "test_scope": {
+    "added_rust_tests": 1,
+    "body_status_cases": 9,
+    "real_raft_formal_service_with_http_parser": true,
+    "public_tls_socket": false,
+    "physical_multihost": false,
+    "executed_here": false
+  },
+  "limits": {
+    "formatted_or_compiled_here": false,
+    "full_replacement_qualified": false,
+    "unified_physical7071_unmodified": true,
+    "ordinary_kv_ttl_clock_gap_not_solved_by_this_delta": true
+  },
+  "conclusion": "No additional blocker identified within this routing-only difference; runtime qualification remains pending."
+}
