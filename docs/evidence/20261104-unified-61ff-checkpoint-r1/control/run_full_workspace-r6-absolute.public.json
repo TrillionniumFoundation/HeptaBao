@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.workspace-launcher.absolute-budget-fix.v1",
+  "status": "prepared_not_run",
+  "source": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "old_runner_sha256": "88fdcdc87c5966ee0a8c2b8bc99648a612fd75cf6d4b45d2be32d738a127dcec",
+  "candidate_runner_sha256": "37195138166ec6d78c99267a9169d30a8226367b27d6431f849ce0e3e5d4c748",
+  "old_bytes": 18053,
+  "candidate_bytes": 18218,
+  "changes": [
+    "Reject expiry again immediately before starting the one Cargo test process.",
+    "Compute wait duration from the same original absolute monotonic expiry after Popen; never add preflight time."
+  ],
+  "original_bound_sha256": "3f3ee4db5969c6fd4c5e26214a8bb756661cce7a81aba869c8e49a393816367c",
+  "original_monotonic_expires": 159287.304154345,
+  "original_boot_id": "fcdd2477-a952-4ef2-9bdc-2237255080f1",
+  "rust_source_changed": false,
+  "profile_changed": false,
+  "per_fixture_budget_changed": false,
+  "new_overall_budget": false,
+  "unknown_retry": false,
+  "precondition": "Actual normal r6 compile success and AuthBus original owned process cleanup; strict no external compiler/unit test admission still required.",
+  "runtime_validation_pending": true
+}
