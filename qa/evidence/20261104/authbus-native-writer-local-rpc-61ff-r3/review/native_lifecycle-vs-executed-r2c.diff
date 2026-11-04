@@ -1,0 +1,110 @@
+--- a/native_lifecycle.mjs
++++ b/native_lifecycle.mjs
+@@ -62,8 +62,16 @@
+   const n = plan.native;
+   need(n && ['active-lease','pending-initialize','pending-before-client','abnormal-wrapper'].includes(n.scenario),
+     'native_scenario_scope');
+-  const report = { schema:'heptabao.actual-native-shared-factory-retirement.v1',
++  const report = { schema:'heptabao.actual-native-shared-factory-retirement-local-rpc.v2',
+     scenario:n.scenario, patchedExpected:n.patched, actualFactory:true,
++    readinessProbe:{method:'thread/loaded/list',params:{limit:1},timeoutMs:8000,
++      meaning:'initialized_native_rpc_channel_in_same_writable_credentials_directory',
++      provesAccountIdentity:false,provesProviderAvailability:false},
++    nativeAccountReadQualified:false,accountReadAttempted:false,
++    preservedAccountReadFailure:{job:'1a1a7e670f5-fc05-2cd4',timeoutMs:8000,
++      coreSha256:'7d81725c63acda7c8da77107f8fe4dfc0766f4a97980fc8860a4e16be5fb65fb'},
++    credentialOverwriteObserved:false,credentialMutationExercised:false,
++    twoInitializedNativeRpcChannelsObserved:false,
+     providerCalled:false, modelCalled:false, explicitRefreshRpcSent:false, externalTokenLoginSent:false,
+     productionGatewaySelectionQualified:false, backgroundNetworkAttemptsNotMeasured:true,
+     externalNetworkKernelDenied:true, commandChanged:false, modelConfigurationChanged:false,
+@@ -274,8 +282,8 @@
+     client.request = (method, params, options) => {
+       if (method === 'initialize') need(!rec.initializeDispatched && params?.clientInfo?.name === 'openclaw',
+         'original_initialize_once');
+-      else need(method === 'account/read' && digest(params) === digest({refreshToken:false}),
+-        'only_non_refresh_account_read_after_initialize');
++      else need(method === 'thread/loaded/list' && digest(params) === digest({limit:1}),
++        'only_local_loaded_thread_list_after_initialize');
+       const item = {ordinal,method,completed:false}; report.rpc.push(item);
+       const dispatch = () => {
+         if (method === 'initialize') { rec.initializeDispatched = true; event('initialize_dispatched',{ordinal}); }
+@@ -307,16 +315,17 @@
+     report.transports.push({ordinal:rec.ordinal,wrapper:rec.wrapper,native:rec.native});
+     event('native_writer_identity',{ordinal:rec.ordinal,native:rec.native});
+   }
+-  async function account(rec, label) {
++  async function localRpc(rec, label) {
+     need(rec.client.initialized && rec.client.getServerVersion() === '0.159.2'
+       && rec.client.getRuntimeIdentity()?.codexHome === n.nativeHome, 'actual_native_version_and_home');
+-    const response = await rec.client.request('account/read',{refreshToken:false},{timeoutMs:8000});
+-    const bytesHash = savePrivate(path.join(n.outputDir,label+'.account.private.json'),response);
+-    need(response?.account?.type === 'chatgpt' && response.account.email === expectedEmail,
+-      'actual_native_original4_account_identity');
+-    checkpoint('after_account_' + label);
+-    event('actual_account_read',{ordinal:rec.ordinal,responseSha256:bytesHash,
+-      accountEmailSha256:hash(expectedEmail),refreshToken:false});
++    const response = await rec.client.request('thread/loaded/list',{limit:1},{timeoutMs:8000});
++    const bytesHash = savePrivate(path.join(n.outputDir,label+'.loaded-threads.private.json'),response);
++    need(response && Array.isArray(response.data) && response.data.length === 0
++      && response.nextCursor === null, 'actual_native_fresh_home_loaded_threads_empty');
++    rec.localRpcCompleted = true;
++    checkpoint('after_local_rpc_' + label);
++    event('actual_local_loaded_threads_read',{ordinal:rec.ordinal,responseSha256:bytesHash,
++      loadedThreadCount:0,nextCursorNull:true,provesAccountIdentity:false});
+   }
+   function release(rec, label) {
+     need(rec.lease && factory.o(rec.client) === true, 'original_factory_lease_release');
+@@ -347,7 +356,7 @@
+     report.sharedKeySha256=hash(oldKey);
+     if (!n.scenario.startsWith('pending-')) {
+       need(await untilDeadline(oldPromise,deadline,'old_factory_initialize_timeout')===first.client,'old_actual_factory_lease');
+-      first.lease=true;await account(first,'old-before-import');
++      first.lease=true;await localRpc(first,'old-before-import');
+       need(oldEntry.activeLeases===1&&oldEntry.pendingAcquires===0,'old_real_active_lease_counts');
+     } else need(oldEntry.activeLeases===0&&oldEntry.pendingAcquires===1&&!first.client.initialized,
+       'old_real_pending_initialize_counts');
+@@ -375,7 +384,7 @@
+     newerPromise.catch(()=>{});
+     if(!n.patched) {
+       need(await newerPromise===second.client,'baseline_second_actual_factory_ready');
+-      await attachNative(second);await account(second,'new-while-old-held');
++      await attachNative(second);await localRpc(second,'new-while-old-held');
+       report.secondFactoryInitialized=true;
+       need(living(first.native),'baseline_old_native_still_live_with_second_ready');
+       if(n.scenario.startsWith('pending-')) {
+@@ -385,12 +394,14 @@
+         need(await oldPromise===first.client,'baseline_pending_old_actual_factory_ready');
+         first.lease=true;
+       }
+-      await account(first,'old-with-new-ready');
++      await localRpc(first,'old-with-new-ready');
+       report.twoReadyLeasesObserved=first.lease&&second.lease&&first.client.initialized&&second.client.initialized
++        &&first.localRpcCompleted===true&&second.localRpcCompleted===true
+         &&living(first.native)&&living(second.native);
+       need(report.twoReadyLeasesObserved,'baseline_two_actual_ready_leases');
++      report.twoInitializedNativeRpcChannelsObserved=true;
+       report.singleWriterInvariantPassed=false;
+-      event('regression_actual_two_ready_leases',{oldNative:first.native.pid,newNative:second.native.pid,
++      event('regression_two_initialized_native_rpc_channels',{oldNative:first.native.pid,newNative:second.native.pid,
+         oldActiveLeases:oldEntry.activeLeases});
+       release(first,'old_original_lease_released');
+       await waitFor(()=>!living(first.native)&&!living(first.wrapper),5000,'baseline_old_recycler_exit_timeout');
+@@ -403,7 +414,7 @@
+       if(n.scenario.startsWith('pending-')) {
+         gateReleased=true;gateResolve();
+         need(await oldPromise===first.client,'patched_pending_old_actual_factory_ready');
+-        first.lease=true;await account(first,'old-after-pending-initialize');
++        first.lease=true;await localRpc(first,'old-after-pending-initialize');
+         need(children.length===1&&newerOutcome===undefined,'patched_no_spawn_after_startup_before_release');
+       }
+       if(n.scenario==='abnormal-wrapper') {
+@@ -429,7 +440,7 @@
+         need(first.client.child.exitCode===0&&first.client.child.signalCode===null,
+           'patched_normal_wrapper_zero_exit_proven');
+         need(!globalThis[STATE].retiring.has(oldKey),'patched_confirmed_barrier_removed');
+-        await account(second,'new-after-old-exit');
++        await localRpc(second,'new-after-old-exit');
+         report.secondFactoryInitialized=true;
+         report.singleWriterInvariantPassed=true;
+         report.normalRetirement={wrapperExitCode:0,wrapperSignal:null,nativeGone:true,

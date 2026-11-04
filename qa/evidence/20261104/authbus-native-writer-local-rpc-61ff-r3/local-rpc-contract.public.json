@@ -1,0 +1,157 @@
+{
+  "schema": "heptabao.native-local-rpc-readiness-scope.v1",
+  "unexecuted": true,
+  "productionChanged": false,
+  "previousFailure": {
+    "commit": "51edcad5b3c74c4b2d3c26e6de74b8655a6eb32d",
+    "job": "1a1a7e670f5-fc05-2cd4",
+    "accountReadTimeoutMs": 8000,
+    "accountReadQualified": false,
+    "preserved": true
+  },
+  "probe": {
+    "method": "thread/loaded/list",
+    "params": {
+      "limit": 1
+    },
+    "timeoutMs": 8000,
+    "expectedFreshHomeResponse": {
+      "data": [],
+      "nextCursor": null
+    },
+    "callsOriginalInstalledClientRequest": true,
+    "actualNativeResponseRequired": true,
+    "responseNotMocked": true,
+    "scope": "Two initialized native RPC channels sharing the same writable private credential directory; no credential overwrite or provider mutation is exercised."
+  },
+  "originalNativeGenerationAndCommandPreserved": true,
+  "managed2ImportAndWholeLogicalCasRollbackRequirementsUnchanged": true,
+  "authenticationQualification": {
+    "nativeAccountIdentityRpcQualified": false,
+    "productionDefaultGatewayQualified": false,
+    "providerAvailabilityQualified": false,
+    "modelCallQualified": false,
+    "native4RemainsUnmanaged": true
+  },
+  "authorityBoundary": {
+    "networkKernelDenied": true,
+    "noExternalTokenLogin": true,
+    "noExplicitRefreshRpc": true,
+    "noModelCall": true,
+    "serverOriginatedRequestsRefusedBeforeSdkHandler": true,
+    "backgroundNativeNetworkAttemptsNotMeasured": true
+  },
+  "observedCounterexampleExpectations": {
+    "activeLease": true,
+    "pendingInitialize": true,
+    "pendingBeforeClientCallback": true,
+    "initializedRpcChannels": 2,
+    "secondSpawnWhileOldNativeAlive": true,
+    "actualCredentialOverwriteExpected": false,
+    "singleWriterGateExpected": false
+  },
+  "originalBudgets": {
+    "workerSeconds": 440,
+    "consumerSeconds": 70,
+    "rollbackSeconds": 35,
+    "httpSeconds": 10,
+    "acquireSeconds": 15,
+    "localRpcSeconds": 8,
+    "ownedCleanupSeconds": 5
+  },
+  "source": {
+    "sameVersionTag": "rust-v0.159.2",
+    "tagCommit": "ff6aec96948b70d94983af2641a6b67c94faeff5",
+    "installedNativeBinarySha256": "1748767b230ebfc3d4ab7e4e254920d0c0ad9691fd8c11f190e7d44511a4a92e",
+    "installedNativeVersionMustEqual": "0.159.2",
+    "sourceToInstalledBinaryBuildProvenanceProven": false,
+    "chain": [
+      {
+        "path": "codex-rs/app-server-protocol/src/protocol/common.rs",
+        "sourceCommit": "ff6aec96948b70d94983af2641a6b67c94faeff5",
+        "fullSourceBytes": 173534,
+        "fullSourceSha256": "d0cca691d21ffe282d3ca3d8ca9eaee8afe9aab058b04a3d4ef579f72a6918c7",
+        "copy": "upstream-same-version/common_protocol.rs",
+        "excerpts": [
+          {
+            "firstLine": 834,
+            "lastLine": 848,
+            "text": "    #[experimental(\"thread/searchOccurrences\")]\n    ThreadSearchOccurrences => \"thread/searchOccurrences\" {\n        params: v2::ThreadSearchOccurrencesParams,\n        // Explicitly concurrent: this reads persisted paginated history.\n        serialization: None,\n        response: v2::ThreadSearchOccurrencesResponse,\n    },\n    ThreadLoadedList => \"thread/loaded/list\" {\n        params: v2::ThreadLoadedListParams,\n        serialization: None,\n        response: v2::ThreadLoadedListResponse,\n    },\n    ThreadRead => \"thread/read\" {\n        params: v2::ThreadReadParams,\n        serialization: thread_id(params.thread_id),\n"
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/app-server-protocol/src/protocol/v2/thread.rs",
+        "sourceCommit": "ff6aec96948b70d94983af2641a6b67c94faeff5",
+        "fullSourceBytes": 78367,
+        "fullSourceSha256": "d5e626a8f3bade6865a6274642a607124bea49cf3ebdbc202f70e8d2a976dafb",
+        "copy": "upstream-same-version/v2_thread.rs",
+        "excerpts": [
+          {
+            "firstLine": 1621,
+            "lastLine": 1644,
+            "text": "\n#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Default, JsonSchema, TS)]\n#[serde(rename_all = \"camelCase\")]\n#[ts(export_to = \"v2/\")]\npub struct ThreadLoadedListParams {\n    /// Opaque pagination cursor returned by a previous call.\n    #[ts(optional = nullable)]\n    pub cursor: Option<String>,\n    /// Optional page size; defaults to no limit.\n    #[ts(optional = nullable)]\n    pub limit: Option<u32>,\n}\n\n#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]\n#[serde(rename_all = \"camelCase\")]\n#[ts(export_to = \"v2/\")]\npub struct ThreadLoadedListResponse {\n    /// Thread ids for sessions currently loaded in memory.\n    pub data: Vec<String>,\n    /// Opaque cursor to pass to the next call to continue after the last item.\n    /// if None, there are no more items to return.\n    pub next_cursor: Option<String>,\n}\n\n"
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/app-server/src/message_processor.rs",
+        "sourceCommit": "ff6aec96948b70d94983af2641a6b67c94faeff5",
+        "fullSourceBytes": 79949,
+        "fullSourceSha256": "f1a1bb0029e7c2f46de3048cbbc52b55ccca413dacb8ce67c63796372468318f",
+        "copy": "upstream-same-version/message_processor.rs",
+        "excerpts": [
+          {
+            "firstLine": 1499,
+            "lastLine": 1502,
+            "text": "            ClientRequest::ThreadLoadedList { params, .. } => {\n                self.thread_processor.thread_loaded_list(params).await\n            }\n            ClientRequest::ThreadRead { params, .. } => {\n"
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+        "sourceCommit": "ff6aec96948b70d94983af2641a6b67c94faeff5",
+        "fullSourceBytes": 251617,
+        "fullSourceSha256": "786c0549e5c1b57421e03472f3b8c3519090849fb8401163f3da5cc2c55b66be",
+        "copy": "upstream-same-version/thread_processor.rs",
+        "excerpts": [
+          {
+            "firstLine": 845,
+            "lastLine": 860,
+            "text": "        &self,\n        params: ThreadSearchOccurrencesParams,\n    ) -> Result<Option<ClientResponsePayload>, JSONRPCErrorError> {\n        self.thread_search_occurrences_response_inner(params)\n            .await\n            .map(|response| Some(response.into()))\n    }\n\n    pub(crate) async fn thread_loaded_list(\n        &self,\n        params: ThreadLoadedListParams,\n    ) -> Result<Option<ClientResponsePayload>, JSONRPCErrorError> {\n        self.thread_loaded_list_response_inner(params)\n            .await\n            .map(|response| Some(response.into()))\n    }\n"
+          },
+          {
+            "firstLine": 2777,
+            "lastLine": 2825,
+            "text": "    async fn thread_loaded_list_response_inner(\n        &self,\n        params: ThreadLoadedListParams,\n    ) -> Result<ThreadLoadedListResponse, JSONRPCErrorError> {\n        let ThreadLoadedListParams { cursor, limit } = params;\n        let mut data: Vec<String> = self\n            .thread_manager\n            .list_thread_ids()\n            .await\n            .into_iter()\n            .map(|thread_id| thread_id.to_string())\n            .collect();\n\n        if data.is_empty() {\n            return Ok(ThreadLoadedListResponse {\n                data,\n                next_cursor: None,\n            });\n        }\n\n        data.sort();\n        let total = data.len();\n        let start = match cursor {\n            Some(cursor) => {\n                let cursor = match ThreadId::from_string(&cursor) {\n                    Ok(id) => id.to_string(),\n                    Err(_) => return Err(invalid_request(format!(\"invalid cursor: {cursor}\"))),\n                };\n                match data.binary_search(&cursor) {\n                    Ok(idx) => idx + 1,\n                    Err(idx) => idx,\n                }\n            }\n            None => 0,\n        };\n\n        let effective_limit = limit.unwrap_or(total as u32).max(1) as usize;\n        let end = start.saturating_add(effective_limit).min(total);\n        let page = data[start..end].to_vec();\n        let next_cursor = page.last().filter(|_| end < total).cloned();\n\n        Ok(ThreadLoadedListResponse {\n            data: page,\n            next_cursor,\n        })\n    }\n\n    async fn thread_read_response_inner(\n        &self,\n"
+          }
+        ]
+      },
+      {
+        "path": "codex-rs/core/src/thread_manager.rs",
+        "sourceCommit": "ff6aec96948b70d94983af2641a6b67c94faeff5",
+        "fullSourceBytes": 106437,
+        "fullSourceSha256": "4199282a0a7a566b4f6cce8a65be0563539f6ac15ae1ead515a371c7a7f21685",
+        "copy": "upstream-same-version/thread_manager.rs",
+        "excerpts": [
+          {
+            "firstLine": 904,
+            "lastLine": 906,
+            "text": "    pub async fn list_thread_ids(&self) -> Vec<ThreadId> {\n        self.state.list_thread_ids().await\n    }\n"
+          },
+          {
+            "firstLine": 1620,
+            "lastLine": 1629,
+            "text": "    pub(crate) async fn list_thread_ids(&self) -> Vec<ThreadId> {\n        self.threads\n            .read()\n            .await\n            .iter()\n            .filter_map(|(thread_id, thread)| {\n                (!thread.session_source.is_internal()).then_some(*thread_id)\n            })\n            .collect()\n    }\n"
+          }
+        ]
+      }
+    ]
+  },
+  "requiredBeforeLive": [
+    "Independent narrow source review",
+    "Explicit ROG timed-window handoff",
+    "Exact frozen source pins and fresh control/run roots",
+    "Single unique stage/live intents; no replay of prior cases"
+  ]
+}

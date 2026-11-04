@@ -1,0 +1,13 @@
+--- a/consumer.mjs
++++ b/consumer.mjs
+@@ -238,7 +238,9 @@
+     report.singleWriterInvariantPassed = report.native.singleWriterInvariantPassed;
+     check('native_experiment_matches_declared_baseline_or_fixed_expectation',
+       report.native.evidenceCompleted === true && report.singleWriterInvariantPassed === plan.native.patched);
+-    report.regressionAssertions = [{ name: 'one_ready_writer_per_native_home', passed: report.singleWriterInvariantPassed }];
++    report.regressionAssertions = [{ name: 'one_initialized_native_rpc_channel_per_writable_credentials_directory', passed: report.singleWriterInvariantPassed }];
++    report.nativeAccountReadQualified = false;
++    report.nativeCredentialOverwriteObserved = false;
+     report.defaultGatewaySelectionQualified = false;
+     report.productionOrderOverrideQualified = false;
+     report.profileCount = Object.keys(after.profiles).length;
