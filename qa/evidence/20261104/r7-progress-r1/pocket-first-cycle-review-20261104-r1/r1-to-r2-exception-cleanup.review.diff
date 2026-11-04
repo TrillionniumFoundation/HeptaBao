@@ -1,0 +1,248 @@
+--- candidate/pocket_shared_first_cycle_live_r1.py
++++ candidate-r2/pocket_shared_first_cycle_live_r2.py
+@@ -40,6 +40,13 @@
+ 
+ class Refused(Exception):
+     pass
++
++class OwnedNodeFailure(Refused):
++    def __init__(self, code, *, pid, reaped, original_error_class, cleanup_error_class=None):
++        super().__init__(code)
++        self.public={'code':code,'ownedPid':pid,'reaped':reaped,
++          'originalErrorClass':original_error_class,'cleanupErrorClass':cleanup_error_class,
++          'outcomeUnknown':True,'automaticRetry':False}
+ 
+ def need(value, code):
+     if not value:
+@@ -157,16 +164,47 @@
+     (target/'openclaw.sqlite').chmod(0o600)
+ 
+ def bounded_node(node,consumer,plan,env,seconds):
+-    process=subprocess.Popen([node,str(consumer),str(plan)],env=env,stdin=subprocess.DEVNULL,
+-                             stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
++    process=None;out=b'';err=b'';timed=False;failure=None;cleanup_failure=None
+     try:
+-        out,err=process.communicate(timeout=seconds)
+-        return process.returncode,out,err,False
+-    except subprocess.TimeoutExpired:
+-        try:os.killpg(process.pid,signal.SIGKILL)
+-        except ProcessLookupError:pass
+-        out,err=process.communicate(timeout=5)
+-        return process.returncode,out,err,True
++        process=subprocess.Popen([node,str(consumer),str(plan)],env=env,stdin=subprocess.DEVNULL,
++                                 stdout=subprocess.PIPE,stderr=subprocess.PIPE,start_new_session=True)
++        try:
++            out,err=process.communicate(timeout=seconds)
++        except subprocess.TimeoutExpired as error:
++            timed=True
++            out=error.output if isinstance(error.output,bytes)else b''
++            err=error.stderr if isinstance(error.stderr,bytes)else b''
++    except BaseException as error:
++        failure=error
++    finally:
++        # The same original five-second exceptional cleanup envelope applies
++        # to every communication error, not just TimeoutExpired. Wait before
++        # any subsequent rollback can start; a failed reap is never assumed.
++        if process is not None:
++            until=time.monotonic()+5
++            try:
++                if process.poll()is None:
++                    try:os.killpg(process.pid,signal.SIGKILL)
++                    except ProcessLookupError:pass
++                    process.wait(timeout=max(0,until-time.monotonic()))
++                if timed and failure is None:
++                    out,err=process.communicate(timeout=max(0,until-time.monotonic()))
++            except BaseException as error:
++                cleanup_failure=error
++            finally:
++                for stream in (process.stdout,process.stderr):
++                    if stream is not None:
++                        try:stream.close()
++                        except Exception:pass
++    # If launch raised before retaining a handle, do not infer that no child
++    # existed. The outer owned PID namespace remains the final cleanup fence.
++    reaped=process is not None and process.returncode is not None
++    if failure is not None or cleanup_failure is not None or not reaped:
++        raise OwnedNodeFailure('owned_node_launch_communication_or_cleanup_unknown',
++          pid=process.pid if process is not None else None,reaped=reaped,
++          original_error_class=type(failure).__name__ if failure is not None else None,
++          cleanup_error_class=type(cleanup_failure).__name__ if cleanup_failure is not None else None)
++    return process.returncode,out,err,timed
+ 
+ def main():
+     parser=argparse.ArgumentParser(description=__doc__)
+@@ -192,13 +230,28 @@
+       'scope':'Actual original Pocket flags/cache with shared managed profiles1/2, preserved local5/native4, current main/tg native factories, cold restart and full auth/cache CAS. Owned fixture only.'}
+     server=None;captured=None;prepare=None;plans={};source_pins={};diagnostics=[];secrets_seen=[]
+     source_caches=None;native_user_before=None;registry=None;registry_before=None;coordinator=None;coordinator_client=None
+-    central=None;coordinator_action=None
++    central=None;coordinator_action=None;http_inflight=None;node_unreaped=False;owned_node_failed=False
+     def check(code,value,**detail):
+         report['checks'].append({'case':code,'passed':bool(value),**detail});need(value,code)
++    def invoke_node(plan,env,seconds):
++        nonlocal node_unreaped,owned_node_failed
++        try:
++            return bounded_node(args.node,args.consumer,plan,env,seconds)
++        except OwnedNodeFailure as error:
++            owned_node_failed=True
++            if not error.public['reaped']:node_unreaped=True
++            report.setdefault('ownedNodeErrors',[]).append(error.public)
++            raise
+     def rollback_phase(name,entry):
+         if entry['rollbackAttempted']:
+             return
+         entry['rollbackAttempted']=True
++        if node_unreaped or not entry['consumerTerminated']or not entry['nativeConfirmedStopped']:
++            entry['rollbackOutcome']='owned_consumer_not_confirmed_stopped_unknown'
++            report['phases'].append({'phase':name+'.rollback','ok':False,'attempted':False,
++              'guardConsumed':True,'unknown':True,'retried':False,
++              'reason':'No new rollback child may run while a prior owned Node/native child lacks a confirmed stop'})
++            return
+         work,plan,env=entry['work'],entry['plan'],entry['env']
+         checkpoint=Path(plan['candidateOutput'])
+         baseline=Path(plan['baselineOutput'])
+@@ -211,7 +264,7 @@
+         path=work/'rollback-plan.private.json'
+         try:
+             put(path,rollback)
+-            rc,out,err,timed=bounded_node(args.node,args.consumer,path,env,35)
++            rc,out,err,timed=invoke_node(path,env,35)
+             put(work/'rollback.stdout.private',out);put(work/'rollback.stderr.private',err);diagnostics.extend((out,err))
+             value=json.loads(out)if out else {'ok':False,'error':'rollback_no_public_result'}
+             value.update(phase=name+'.rollback',attempted=True,guardConsumed=True,timeout=timed,returncode=rc,retried=False)
+@@ -323,7 +376,17 @@
+         server_cfg['storage']={'native_v6_file':{'path':server_cfg['data_dir']}}
+         (server.root/'server.json').write_bytes(encoded(server_cfg));server.start()
+         def call(name,method,route,body=None,token=None,expected=200):
+-            status,value=server.call(method,route,body,token=token);check(name,status==expected,status=status);return value
++            nonlocal http_inflight
++            # Only safe operation labels/method/routes enter the public record;
++            # request bodies, token headers and returned credentials never do.
++            http_inflight={'name':name,'method':method,'route':route,
++              'dispatchEntered':True,'mutationRequest':method not in ('GET','HEAD','OPTIONS','LIST'),
++              'responseReturned':False}
++            report.setdefault('httpObservations',[]).append(http_inflight)
++            status,value=server.call(method,route,body,token=token)
++            http_inflight.update(responseReturned=True,status=status)
++            http_inflight=None
++            check(name,status==expected,status=status);return value
+         init=call('initialize','POST','sys/init',{'secret_shares':1,'secret_threshold':1},token='')
+         server.token,unseal=init['root_token'],init['keys_base64'][0]
+         secrets_seen.extend((server.token,unseal));put(root/'recovery.private.json',{'rootToken':server.token,'unsealKey':unseal})
+@@ -454,10 +517,13 @@
+             env={'PATH':'/usr/bin:/bin:/usr/sbin:/sbin','TMPDIR':str(root/'tmp'),'HOME':'/home/alex',
+               'OPENCLAW_STATE_DIR':str(state),'OPENCLAW_CONFIG_PATH':str(state/'openclaw.json'),
+               'OPENCLAW_OAUTH_DIR':str(state/'oauth'),'OPENCLAW_HOME':str(state/'home')}
+-            plans[name]={'work':work,'plan':plan,'env':env,'rollbackAttempted':False,'rollbackOutcome':None}
+-            rc,out,err,timed=bounded_node(args.node,args.consumer,path,env,70)
++            plans[name]={'work':work,'plan':plan,'env':env,'rollbackAttempted':False,'rollbackOutcome':None,
++              'consumerTerminated':False,'nativeConfirmedStopped':False}
++            rc,out,err,timed=invoke_node(path,env,70)
++            plans[name]['consumerTerminated']=True
+             put(work/'stdout.private',out);put(work/'stderr.private',err);diagnostics.extend((out,err))
+             value=json.loads(out)if out else {'ok':False,'error':'consumer_no_public_result'}
++            plans[name]['nativeConfirmedStopped']=value.get('ownedNativeProcessesStopped')is True
+             value.update(phase=name,returncode=rc,timeout=timed);put(work/'result.public.json',value)
+             report['phases'].append(value)
+             check('consumer.'+name,rc==0 and value.get('ok')is True and not timed
+@@ -505,10 +571,11 @@
+         # There is no retry/recovery dispatch in this new fixture on a failed
+         # core operation. A nonterminal operation is conservatively retained
+         # as unknown; it is not confused with the installed-entry qualification.
+-        report['outcomeUnknown']=(coordinator_action is not None
++        report['outcomeUnknown']=(http_inflight is not None or owned_node_failed or coordinator_action is not None
+           or (central is not None and isinstance(error,central.UnknownOutcome))
+           or any(p.get('timeout')is True for p in report['phases']))
+         if coordinator_action is not None:report['unconfirmedCoordinatorAction']=coordinator_action
++        if http_inflight is not None:report['unconfirmedHttpAction']=dict(http_inflight)
+         report['errorFrames']=[{'file':Path(f.filename).name,'line':f.lineno}for f in traceback.extract_tb(error.__traceback__)[-5:]]
+     finally:
+         # Consume each rollback guard at most once; a failed/unknown CAS is never retried.
+@@ -549,6 +616,8 @@
+             except Exception as error:report['ownedServerStopped']=False;report['cleanupErrorClass']=type(error).__name__;report['ok']=False
+         native_phases=[p for p in report['phases']if p.get('phase')in ('initial','cold-new-process')]
+         report['ownedNativeProcessesStopped']=(not plans)or (len(native_phases)==len(plans)and all(p.get('ownedNativeProcessesStopped')is True for p in native_phases))
++        report['ownedNodeChildrenStopped']=not node_unreaped
++        if node_unreaped:report['ok']=False;report['outcomeUnknown']=True
+         if (not args.preflight_only and not report.get('ownedServerStopped'))or not report['ownedNativeProcessesStopped']:report['ok']=False
+         report['finishedUnixMs']=int(time.time()*1000)
+         if any(s in encoded(report).decode()for s in secrets_seen):
+--- candidate/pocket_first_cycle_launch_r1.py
++++ candidate-r2/pocket_first_cycle_launch_r2.py
+@@ -4,7 +4,7 @@
+ import argparse, hashlib, json, os, re, signal, stat, subprocess, time
+ 
+ P = Path('/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1')
+-Q = P / 'shared-first-cycle-qa-r1'; I = P / 'shared-first-cycle-inputs-r1'
++Q = P / 'shared-first-cycle-qa-r2'; I = P / 'shared-first-cycle-inputs-r1'
+ A = P / 'current-native-inputs-r1/artifacts'
+ SCENARIO = 'shared-managed12-original-local-source'
+ UNIT_IDS = ['openclaw-authbus-restart-when-idle.service', 'openclaw-gateway.service']
+@@ -67,7 +67,7 @@
+     parser.add_argument('--qa-pins-sha256', required=True)
+     args = parser.parse_args()
+     need(re.fullmatch('[a-f0-9]{64}', args.qa_pins_sha256), 'qa_manifest_digest_shape')
+-    run = P / ('shared-first-cycle-' + args.phase + '-r1')
++    run = P / ('shared-first-cycle-' + args.phase + '-r2')
+     need(P.resolve(strict=True) == P, 'project_root_no_symlink')
+     run.mkdir(mode=0o700)  # An existing generation is refused, never reopened.
+     process = None; timed = False; code = None; core = None; started = time.monotonic()
+@@ -96,13 +96,13 @@
+         for name, pin in pins.items():
+             need(re.fullmatch('[a-z0-9_.-]+', name) and sha(Q / name) == pin['sha256']
+                  and (Q / name).stat().st_size == pin['bytes'], 'qa_source_pin')
+-        prepare = I / 'prepare.public.json'; prep = json.loads(prepare.read_bytes())
++        prepare = I / 'prepare-r2.public.json'; prep = json.loads(prepare.read_bytes())
+         need(prep['ok'] is True and prep['qaPinsSha256'] == args.qa_pins_sha256
+              and prep['consumerSha256'] == pins['pocket_first_cycle_consumer_r1.mjs']['sha256']
+-             and prep['controllerSha256'] == pins['pocket_shared_first_cycle_live_r1.py']['sha256'],
++             and prep['controllerSha256'] == pins['pocket_shared_first_cycle_live_r2.py']['sha256'],
+              'prepared_qa_binding')
+         if args.phase == 'live':
+-            prior = P / 'shared-first-cycle-preflight-r1'
++            prior = P / 'shared-first-cycle-preflight-r2'
+             prior_result = json.loads((prior / 'execution.result.public.json').read_bytes())
+             prior_intent = json.loads((prior / 'intent.public.json').read_bytes())
+             prior_core = json.loads((prior / 'live/result.public.json').read_bytes())
+@@ -114,7 +114,7 @@
+                  and prior_intent['qaPinsSha256'] == args.qa_pins_sha256
+                  and prior_intent['prepareSha256'] == sha(prepare), 'exact_readonly_preflight_required')
+         parent_net = os.stat('/proc/self/ns/net').st_ino
+-        cmd = ['/usr/bin/python3', '-I', '-S', '-B', str(Q / 'pocket_shared_first_cycle_live_r1.py'),
++        cmd = ['/usr/bin/python3', '-I', '-S', '-B', str(Q / 'pocket_shared_first_cycle_live_r2.py'),
+             '--project-root', str(P), '--work-dir', str(run / 'live'), '--binary', str(A / 'heptabao-server'),
+             '--build-result', str(A / 'normal-build.result.public.json'), '--native-receipt', str(A / 'native-build.public.json'),
+             '--prepare', str(prepare), '--consumer', str(Q / 'pocket_first_cycle_consumer_r1.mjs'),
+@@ -185,7 +185,8 @@
+         report.update(returncode=code, outerTimeout=timed,
+             outcomeUnknown=timed or (process is not None and core is None)
+               or (core is not None and (core.get('outcomeUnknown') is True
+-                  or any(v.get('outcome') == 'failed_or_unknown' or v.get('outcome') == 'no_candidate_checkpoint_unknown'
++                  or any(v.get('outcome') in ('failed_or_unknown','no_candidate_checkpoint_unknown',
++                                            'owned_consumer_not_confirmed_stopped_unknown')
+                          for v in core.get('rollbackGuards', {}).values()))),
+             ownedNamespaceProcessExited=process is None or process.returncode is not None,
+             pidNamespaceTeardownEnforced=True, elapsedSeconds=round(time.monotonic() - started, 3))
+--- candidate/pocket_first_cycle_prepare_r1.py
++++ candidate-r2/pocket_first_cycle_prepare_r2.py
+@@ -4,7 +4,7 @@
+ import argparse, hashlib, json, os, re, stat
+ 
+ P = Path('/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1')
+-Q = P / 'shared-first-cycle-qa-r1'
++Q = P / 'shared-first-cycle-qa-r2'
+ I = P / 'shared-first-cycle-inputs-r1'
+ OLD = P / 'current-native-inputs-r1/prepare-r2.public.json'
+ OLD_SHA = '3ae1e850de5bd7feed62598705529dcad06493467ccbd671d72865f7fc127ccb'
+@@ -99,9 +99,9 @@
+                         'projectionPath': str(I / 'source-projection.public.json'), 'projectionSha256': PROJECTION_SHA,
+                         'scope': 'Frozen previously verified generation only'},
+         consumerSha256=source_pins[str(Q / 'pocket_first_cycle_consumer_r1.mjs')],
+-        controllerSha256=source_pins[str(Q / 'pocket_shared_first_cycle_live_r1.py')],
++        controllerSha256=source_pins[str(Q / 'pocket_shared_first_cycle_live_r2.py')],
+         sourcePins={**old['sourcePins'], **source_pins, str(Q / 'qa-pins.public.json'): args.qa_pins_sha256})
+-    target = I / 'prepare.public.json'
++    target = I / 'prepare-r2.public.json'
+     raw = json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()
+     fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+     with os.fdopen(fd, 'wb') as f:

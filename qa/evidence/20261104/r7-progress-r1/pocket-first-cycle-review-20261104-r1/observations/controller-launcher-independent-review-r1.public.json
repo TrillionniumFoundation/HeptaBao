@@ -1,0 +1,42 @@
+{
+  "blockingFindings": [
+    {
+      "fact": "server.call exception can follow a mutation dispatch while coordinator_action is None and phase timeout is not recorded, resulting in false unknown classification",
+      "id": "direct-http-mutation-unknown-classification",
+      "location": "controller call and exception outcomeUnknown",
+      "required": "Record safe in-flight direct HTTP operation before call; clear only after explicit terminal response; failure remains unknown without automatic retry and unchanged request budget"
+    },
+    {
+      "fact": "Only TimeoutExpired kills/waits the started child group; another communicate exception can enter parent rollback before that child is reaped",
+      "id": "bounded-node-exception-reap",
+      "location": "controller bounded_node",
+      "required": "All exceptional exits must clean and wait the exact owned group before returning or raising; retain failure/unknown and do not retry or extend consumer/rollback budget"
+    }
+  ],
+  "executionGo": false,
+  "otherReviewedBoundaries": [
+    "new create-only run generations",
+    "same pins and preparation required after read-only preflight",
+    "normal33 artifact/receipts and actual source SHA bindings",
+    "original held units and markers preserved",
+    "kernel read-only production and distinct network/PID namespaces",
+    "original publishNew/order exclusions and exact shared managed identities",
+    "per-phase rollback guard consumed once; failed CAS never retried",
+    "native/Hepta owned cleanup and final production table/cache/native/registry/config fences"
+  ],
+  "productionChanged": false,
+  "providerRequestPerformed": false,
+  "reviewed": {
+    "pocket_first_cycle_launch_r1.py": {
+      "bytes": 12971,
+      "sha256": "f3a6e9feb2a5e1c87e4bb3e2f1a2ab884be8f8329f5d7cbe907b5842868ef5d5"
+    },
+    "pocket_shared_first_cycle_live_r1.py": {
+      "bytes": 40854,
+      "sha256": "491a21860dcf88c690bb38aebe3021660c73a85709d24b31037ca99653801b61"
+    }
+  },
+  "reviewer": "authbus_migration",
+  "schema": "heptabao.pocket-first-cycle-controller-launcher-static-review.v1",
+  "scope": "Complete pinned controller and launcher; cache/consumer covered separately; no host runtime performed"
+}

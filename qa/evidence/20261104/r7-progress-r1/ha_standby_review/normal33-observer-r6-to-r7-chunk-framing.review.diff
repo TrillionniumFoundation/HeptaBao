@@ -1,0 +1,134 @@
+--- normal33_standby_oracle_r6.py
++++ normal33_standby_oracle_r7.py
+@@ -204,6 +204,14 @@
+         self.eof_during_headers = False
+         self.line_reads = 0
+         self.bound_exceeded = False
++        self.chunk_line_mode = None
++        self.chunk_size_lines = 0
++        self.chunk_size_lines_valid = True
++        self.trailer_lines = 0
++        self.trailer_bytes = 0
++        self.trailer_eof = False
++        self.trailer_complete = False
++        self.trailer_lines_valid = True
+ 
+     def readline(self, size=-1):
+         line = self.source.readline(size)
+@@ -216,6 +224,21 @@
+             if len(line) > room:
+                 self.bound_exceeded = True
+                 raise Refused('response_header_capture_exceeds_fixed_bound')
++        elif self.chunk_line_mode == 'size':
++            self.chunk_size_lines += 1
++            size = line[:-2].split(b';', 1)[0] if line.endswith(b'\r\n') else b''
++            valid = bool(size) and all(byte in b'0123456789abcdefABCDEF' for byte in size)
++            self.chunk_size_lines_valid = self.chunk_size_lines_valid and valid
++            if not valid:
++                raise Refused('response_chunk_size_line_not_hex_crlf')
++        elif self.chunk_line_mode == 'trailer':
++            self.trailer_lines += 1
++            self.trailer_bytes += len(line)
++            self.trailer_eof = self.trailer_eof or not line
++            self.trailer_complete = self.trailer_complete or line == b'\r\n'
++            self.trailer_lines_valid = self.trailer_lines_valid and line.endswith(b'\r\n')
++            if self.trailer_bytes > MAX_RESPONSE_HEADERS:
++                raise Refused('response_chunk_trailer_exceeds_fixed_header_bound')
+         return line
+ 
+     def __getattr__(self, name):
+@@ -227,6 +250,10 @@
+         super().__init__(*args, **kwargs)
+         self.header_capture = HeaderLineCapture(self.fp)
+         self.fp = self.header_capture
++        self.chunk_delimiter_pending = False
++        self.chunk_delimiters = 0
++        self.chunk_delimiters_valid = True
++        self.zero_chunks = 0
+ 
+     def begin(self):
+         try:
+@@ -234,6 +261,62 @@
+         finally:
+             self.header_capture.enabled = False
+ 
++    # Observe the stdlib's existing reads. These methods never ask the socket
++    # for extra bytes, replace its parser, or change the original timeout.
++    def _get_chunk_left(self):
++        self.chunk_delimiter_pending = self.chunk_left == 0
++        try:
++            return super()._get_chunk_left()
++        finally:
++            self.chunk_delimiter_pending = False
++
++    def _safe_read(self, amount):
++        raw = super()._safe_read(amount)
++        if self.chunk_delimiter_pending:
++            self.chunk_delimiter_pending = False
++            self.chunk_delimiters += 1
++            valid = amount == 2 and raw == b'\r\n'
++            self.chunk_delimiters_valid = self.chunk_delimiters_valid and valid
++            if not valid:
++                raise Refused('response_chunk_data_delimiter_not_crlf')
++        return raw
++
++    def _read_next_chunk_size(self):
++        self.header_capture.chunk_line_mode = 'size'
++        try:
++            size = super()._read_next_chunk_size()
++            if size == 0:
++                self.zero_chunks += 1
++            return size
++        finally:
++            self.header_capture.chunk_line_mode = None
++
++    def _read_and_discard_trailer(self):
++        self.header_capture.chunk_line_mode = 'trailer'
++        try:
++            return super()._read_and_discard_trailer()
++        finally:
++            self.header_capture.chunk_line_mode = None
++
++    def chunk_framing_projection(self):
++        capture = self.header_capture
++        complete = (self.zero_chunks == 1 and capture.chunk_size_lines >= 1
++                    and self.chunk_delimiters == capture.chunk_size_lines - 1
++                    and self.chunk_delimiters_valid and capture.chunk_size_lines_valid
++                    and capture.trailer_complete and not capture.trailer_eof
++                    and capture.trailer_lines_valid and capture.trailer_bytes <= MAX_RESPONSE_HEADERS)
++        return {'chunk_size_lines': capture.chunk_size_lines,
++                'chunk_size_lines_valid': capture.chunk_size_lines_valid,
++                'chunk_data_delimiters': self.chunk_delimiters,
++                'chunk_data_delimiters_valid': self.chunk_delimiters_valid,
++                'zero_chunk_count': self.zero_chunks,
++                'trailer_lines': capture.trailer_lines,
++                'trailer_bytes': capture.trailer_bytes,
++                'trailer_eof': capture.trailer_eof,
++                'trailer_terminated_crlf': capture.trailer_complete,
++                'trailer_lines_valid': capture.trailer_lines_valid,
++                'chunked_framing_complete': complete}
++
+ 
+ def safe_response_head_projection(response, target: str) -> dict:
+     capture = response.header_capture
+@@ -389,6 +472,11 @@
+                        response_content_length_remaining=response.length)
+         if not length_matches:
+             raise Refused('response_body_truncated_before_declared_length')
++        if framing['body_framing_mode'] == 'chunked':
++            chunked = response.chunk_framing_projection()
++            summary.update(response_chunked_framing=chunked)
++            if not chunked['chunked_framing_complete']:
++                raise Refused('response_chunked_terminator_incomplete')
+         remaining()
+         write_new(Path(spec['response_body_file']), bytes(raw))
+         location = response.getheader('Location')
+@@ -414,6 +502,8 @@
+             if captured_responses:
+                 captured = captured_responses[-1]
+                 summary.update(safe_response_head_projection(captured, spec['path']))
++                if captured.chunked is True:
++                    summary.update(response_chunked_framing=captured.chunk_framing_projection())
+                 write_new(Path(spec['response_head_file']), bytes(captured.header_capture.raw))
+         except Exception as exc:
+             # Diagnostic persistence cannot turn an unrecorded head into a

@@ -1,0 +1,67 @@
+--- normal33_standby_oracle_r5.py
++++ normal33_standby_oracle_r6.py
+@@ -284,6 +284,39 @@
+             'raw_response_head_private_only': True}
+ 
+ 
++def response_body_framing(response, method: str) -> dict:
++    """Project only closed framing facts, never arbitrary field values."""
++    lengths = response.headers.get_all('Content-Length', [])
++    encodings = response.headers.get_all('Transfer-Encoding', [])
++    length = lengths[0].strip(' \t') if len(lengths) == 1 else None
++    numeric = (length is not None and bool(length) and length.isascii()
++               and all('0' <= char <= '9' for char in length))
++    # The capture already caps the header. Avoid converting an attacker-sized
++    # integer; even the longest admissible response has at most eight digits.
++    digits = (length.lstrip('0') or '0') if numeric else None
++    bounded_integer = digits is not None and len(digits) <= len(str(MAX_RESPONSE))
++    declared = int(digits) if bounded_integer else None
++    chunked = (len(encodings) == 1 and encodings[0].strip(' \t').lower() == 'chunked')
++    body_forbidden = method == 'HEAD' or response.status in (204, 304) or 100 <= response.status < 200
++    ambiguous = (len(lengths) > 1 or len(encodings) > 1 or bool(lengths and encodings)
++                 or bool(lengths) and not numeric or bool(encodings) and not chunked)
++    # A 204 has no message body or framing field. HEAD/304 may describe the
++    # selected representation's length without transferring those bytes.
++    invalid_204 = response.status == 204 and bool(lengths or encodings)
++    exceeds_bound = bool(lengths) and not body_forbidden and (declared is None or declared > MAX_RESPONSE)
++    mode = ('no_body' if body_forbidden else 'fixed_length' if lengths else
++            'chunked' if encodings else 'close_delimited')
++    return {'content_length_header_count': len(lengths),
++            'transfer_encoding_header_count': len(encodings),
++            'content_length_is_single_decimal': len(lengths) == 1 and numeric,
++            'content_length_is_within_response_bound': declared is not None and declared <= MAX_RESPONSE,
++            'declared_content_length': declared,
++            'body_framing_mode': mode,
++            'body_expected_bytes': 0 if body_forbidden else declared,
++            'body_framing_ambiguous': ambiguous,
++            'body_framing_valid': not ambiguous and not invalid_204 and not exceeds_bound}
++
++
+ def child_request(spec_path: Path) -> int:
+     """One exchange.  The parent also enforces the same absolute deadline."""
+     spec = json.loads(spec_path.read_text())
+@@ -334,6 +367,10 @@
+         summary.update(status=response.status, http_client_accepted_headers=True, **head_projection)
+         if not head_projection['response_header_strict_termination']:
+             raise Refused('response_header_missing_strict_terminator')
++        framing = response_body_framing(response, spec['method'])
++        summary.update(response_body_framing=framing)
++        if not framing['body_framing_valid']:
++            raise Refused('response_body_framing_invalid_or_ambiguous')
+         raw = bytearray()
+         phase = 'response_body'
+         while True:
+@@ -345,6 +382,13 @@
+             raw.extend(chunk)
+             if len(raw) > MAX_RESPONSE:
+                 raise Refused('response_exceeds_fixed_bound')
++        expected = framing['body_expected_bytes']
++        length_matches = expected is None or len(raw) == expected
++        summary.update(response_bytes=len(raw),
++                       response_body_length_matches=length_matches,
++                       response_content_length_remaining=response.length)
++        if not length_matches:
++            raise Refused('response_body_truncated_before_declared_length')
+         remaining()
+         write_new(Path(spec['response_body_file']), bytes(raw))
+         location = response.getheader('Location')

@@ -1,0 +1,53 @@
+{
+  "candidate_r7_modified": false,
+  "checks": {
+    "actual_aead_pause_7_seconds_retained": true,
+    "exact_403_no_status_allowlist": true,
+    "exact_permission_denied_body": true,
+    "new_7_line_assertion_block_reversed_reproduces_exact_original_bytes": true,
+    "no_data_auth_unwrapped_or_consistency_index_assertions": true,
+    "original_fresh_administrative_export_calls_retained": true,
+    "original_no_file_and_retired_custody_assertions_retained": true,
+    "original_token_ttl_6_seconds_retained": true,
+    "pause_fired_assertion_precedes_status": true,
+    "separate_shorter_original_scope_test_byte_identical": true,
+    "shorter_scope_2_seconds_and_pause_3_seconds_and_exact_503_unchanged": true,
+    "transfer_call_count_unchanged": true
+  },
+  "checks_passed": 12,
+  "checks_total": 12,
+  "compilation_started_by_this_review": false,
+  "conclusion": "No source-contract blocker found in observed test-only change: exact 403 is original Actor denial and new response-shape assertions tighten the test. Separate original-deadline 503 test and all original proof and cleanup assertions remain. Actual runtime result and ownership remain unverified.",
+  "contract_review": {
+    "path": "/workspace/scratch/f86faac821c4/ha_standby_review/ci-lossless-actor-contract-r1/review.public.json",
+    "sha256": "f8129a54a282ac80a8a0301e02932dbf39d65bcd73e8fff45ad4ac1814044bf2"
+  },
+  "modified_remote_files": false,
+  "normal_tests_executed_by_this_review": 0,
+  "observed_candidate": {
+    "bytes": 3354,
+    "path": "/workspace/scratch/f86faac821c4/ha_standby_review/ci-lossless-actor-contract-r1/unknown-9c54-candidate.rs",
+    "sha256": "400c57c02d2e395ca73fb6effa28b370645f749dfa81adffc947b30f3526381f"
+  },
+  "original": {
+    "bytes": 2825,
+    "git_blob": "b3d42ac0f41428c7bebd45e063e2e4637ed96bd6",
+    "path": "/workspace/scratch/f86faac821c4/ha_standby_review/ci-lossless-actor-contract-r1/service_snapshot_lossless_parallel_tests.rs",
+    "sha256": "707c98e2585f438f26722ae86d4b7222a0866747fd20d955724155c3bbd8a268"
+  },
+  "patch": {
+    "bytes": 1471,
+    "path": "/workspace/scratch/f86faac821c4/ha_standby_review/ci-lossless-actor-contract-r1/unknown-9c54-source.patch",
+    "sha256": "fd2d6e6ac38df7834cac82cc15281e51c6473d5a63e383ae263f0822f8d025bf"
+  },
+  "reported_existing_job": {
+    "host": "rog",
+    "identity_source": "Auth read-only report; this comparison does not independently bind live checkout or intent",
+    "job_id": "1a1a6a2557b-fc05-27b4",
+    "owner": "unknown",
+    "reported_head": "9c54d92a18ef59022a803cb89566ca8007b8b97c",
+    "reported_tree": "30731312c123edcc2de2ecce02347337ba49d587"
+  },
+  "schema": "heptabao.ci-lossless-existing-candidate-independent-comparison.v1",
+  "scope": "Read-only two-file comparison against independently Git-blob-verified exact 0dc source. No runtime, build, mutation or owner attribution."
+}

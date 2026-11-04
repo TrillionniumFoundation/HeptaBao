@@ -1,0 +1,128 @@
+{
+  "causal_chain": [
+    {
+      "fact": "Create exactly one root-policy service token with6sTTL; arm one7s actual payload-AEAD pause; call one original15s transfer; pause.fired assertion precedes the failing exact status assertion.",
+      "source": "service_snapshot_lossless_parallel_tests.rs:14-43"
+    },
+    {
+      "fact": "Actual immutable payload reader invokes the pause only at PlaintextOpened and retains original before/delivery gates; no new Actor or deadline is constructed by workers.",
+      "source": "service_native_blob_source_parallel.rs:129-188"
+    },
+    {
+      "fact": "Recheck actual held Actor through AuthState.authorize_request using admission wall anchor plus elapsed time; this returns original auth status.",
+      "source": "service_snapshot_lossless_parallel_owner.rs:123-159"
+    },
+    {
+      "fact": "Original service-token lifetime is checked before root-policy short circuit. Expired service lifetime returns denied()403, not a storage-unavailable status.",
+      "source": "auth.rs:2823-2866,3044-3140"
+    },
+    {
+      "fact": "After worker error and durable owner restoration, the code explicitly repeats check_v6_snapshot_owner and prefers its live failure. The adjacent v6_storage_failure comment documents preserving live denial/expiry over a storage classification.",
+      "source": "service_snapshot_lossless_export.rs:288-297; service_snapshot_v6.rs:131-190"
+    }
+  ],
+  "ci_run_id": 41814525698,
+  "conclusion": "Current exact source deliberately returns403 when the original Actor expires after actualAEAD. The CI test's sole503 expectation conflicts with this contract; this is not evidence that the token was accepted or a plaintext file delivered.",
+  "exact_head": "0dc39624d1266a6fca98760757b9482bf6f98a7a",
+  "exact_head_tree": "959c65d6782b288c41730da869c86007c268547c",
+  "logs": [
+    {
+      "bytes": 10961,
+      "failure": "actual403_expected503_after_pause_fired",
+      "job_id": 126521818538,
+      "no_test_success_claim": true,
+      "path": "/workspace/scratch/f86faac821c4/ci_runner_review/terminal-126521818538-scoped-excerpt.log",
+      "sha256": "a4d76b6bc9707abb8dd3bf09a2a51b0594859f952398866e567b3e1c58ff3a4a"
+    },
+    {
+      "bytes": 10952,
+      "failure": "actual403_expected503_after_pause_fired",
+      "job_id": 126521818811,
+      "no_test_success_claim": true,
+      "path": "/workspace/scratch/f86faac821c4/ci_runner_review/terminal-126521818811-scoped-excerpt.log",
+      "sha256": "7ef8a687f4bf883469a1b46f486721d2563015a41e4f4511fdff67c83a49e716"
+    }
+  ],
+  "merge": "186570233517b2295de7384ef96a5815ba7db06f",
+  "merge_test_blob_identical": true,
+  "proposal": {
+    "applied_to_frozen_r7": false,
+    "candidate_test_sha256": "b74abd81273e41155c37251ca1cd8080a69018c4861d278ff1c065fb1f78c49f",
+    "deadline_change": false,
+    "executed": false,
+    "patch_bytes": 1044,
+    "patch_path": "/workspace/scratch/f86faac821c4/ha_standby_review/ci-lossless-actor-contract-r1/lossless-expired-original-actor-exact-denial.review.diff",
+    "patch_sha256": "bc8525be9cc35737b6612262b9c941b67e410007e8b84e72d8664540b8dd186e",
+    "pause_change": false,
+    "production_changes": 0,
+    "request_count_change": 0,
+    "status_allowlist_widening": false,
+    "test_changes": "Require exact403 and add elapsed>=original7s pause; retain pause.fired, no file, retired pending snapshot/native binding, and independent fresh administrative export. The separate original2s scope/3s pause test still requires503.",
+    "ttl_change": false
+  },
+  "remaining_validation": "Run original exact failing test once from a qualified normal artifact if desired, then freeze the isolated test-only correction and run both original parallel boundaries plus the exact fresh export assertion under unchanged budgets. Do not alter the ongoing31-test candidate/controller.",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "schema": "heptabao.ci-lossless-expired-actor-contract-review.v1",
+  "sources": [
+    {
+      "bytes": 2825,
+      "git_blob": "b3d42ac0f41428c7bebd45e063e2e4637ed96bd6",
+      "git_blob_verified": true,
+      "local_full_source": "/workspace/scratch/f86faac821c4/ha_standby_review/ci-lossless-actor-contract-r1/service_snapshot_lossless_parallel_tests.rs",
+      "name": "service_snapshot_lossless_parallel_tests.rs",
+      "partial": false,
+      "sha256": "707c98e2585f438f26722ae86d4b7222a0866747fd20d955724155c3bbd8a268",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/0dc39624d1266a6fca98760757b9482bf6f98a7a/crates/heptabao-server/src/service_snapshot_lossless_parallel_tests.rs"
+    },
+    {
+      "bytes": 6492,
+      "git_blob": "007136bf2a3a323e400bae997d3d40d4a6089203",
+      "git_blob_verified": true,
+      "local_full_source": "/workspace/scratch/f86faac821c4/ha_standby_review/ci-lossless-actor-contract-r1/service_snapshot_lossless_parallel_owner.rs",
+      "name": "service_snapshot_lossless_parallel_owner.rs",
+      "partial": false,
+      "sha256": "e537432ebbd7215dae53b5f1fd69d94ef50b888c51899345d7c58edd663c67d4",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/0dc39624d1266a6fca98760757b9482bf6f98a7a/crates/heptabao-server/src/service_snapshot_lossless_parallel_owner.rs"
+    },
+    {
+      "bytes": 12284,
+      "git_blob": "2df9ee32863fdda5c20cd43709ad5b2a32742363",
+      "git_blob_verified": true,
+      "local_full_source": "/workspace/scratch/f86faac821c4/ha_standby_review/ci-lossless-actor-contract-r1/service_snapshot_lossless_export.rs",
+      "name": "service_snapshot_lossless_export.rs",
+      "partial": false,
+      "sha256": "8338a8516d42bba61ccc6c766a1992ac3cd6744c579322db082be1c07f8edf7a",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/0dc39624d1266a6fca98760757b9482bf6f98a7a/crates/heptabao-server/src/service_snapshot_lossless_export.rs"
+    },
+    {
+      "bytes": 27769,
+      "git_blob": "f27834a54ebed4aacc47b16d40899ce81ae9720d",
+      "git_blob_verified": true,
+      "local_full_source": "/workspace/scratch/f86faac821c4/ha_standby_review/ci-lossless-actor-contract-r1/service_snapshot_v6.rs",
+      "name": "service_snapshot_v6.rs",
+      "partial": false,
+      "sha256": "1ae6caa804ef31a8a587a7471fd1e1584ff756ce6280bba776ae5e9f459a0f87",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/0dc39624d1266a6fca98760757b9482bf6f98a7a/crates/heptabao-server/src/service_snapshot_v6.rs"
+    },
+    {
+      "bytes": 6900,
+      "git_blob": "0cc0abecbc152b687d6a5a49660fd6bcc43e399e",
+      "git_blob_verified": true,
+      "local_full_source": "/workspace/scratch/f86faac821c4/ha_standby_review/ci-lossless-actor-contract-r1/service_native_blob_source_parallel.rs",
+      "name": "service_native_blob_source_parallel.rs",
+      "partial": false,
+      "sha256": "62f9145c3605ccf681475fee915f396187f005f7fe0258d550ee1bd222a36a23",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/0dc39624d1266a6fca98760757b9482bf6f98a7a/crates/heptabao-server/src/service_native_blob_source_parallel.rs"
+    },
+    {
+      "bytes": 395340,
+      "git_blob": "1d295eac52d08f237e232a09e7470f2e63b575fc",
+      "git_blob_verified": true,
+      "local_full_source": "/workspace/scratch/f86faac821c4/ci_format_review/crates/heptabao-server/src/auth.rs",
+      "name": "auth.rs",
+      "partial": true,
+      "sha256": "dd8bdc8ea5240c71882c35f181cccc749ca79a38f15b1d338091846c5294ebb4",
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/blob/0dc39624d1266a6fca98760757b9482bf6f98a7a/crates/heptabao-server/src/auth.rs"
+    }
+  ]
+}

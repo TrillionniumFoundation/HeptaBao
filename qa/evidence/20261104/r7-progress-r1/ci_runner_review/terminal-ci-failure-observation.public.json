@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.ci-complete-workspace-failure-observation.v1",
+  "run_id": 41814525698,
+  "read_at_utc": "2026-11-04T13:06:00Z",
+  "jobs": [
+    {
+      "job_id": 126521818538,
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-11-04T12:39:28Z",
+      "full_log_chars": 2738330,
+      "scoped_excerpt_path": "terminal-126521818538-scoped-excerpt.log",
+      "server_tests": {
+        "passed": 3672,
+        "failed": 1,
+        "ignored": 8
+      },
+      "sole_failed_test": "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead",
+      "assertion": {
+        "actual": 403,
+        "expected": 503
+      },
+      "later_qualification_steps": "skipped"
+    },
+    {
+      "job_id": 126521818811,
+      "status": "completed",
+      "conclusion": "failure",
+      "completed_at": "2026-11-04T12:36:02Z",
+      "full_log_chars": 2720323,
+      "scoped_excerpt_path": "terminal-126521818811-scoped-excerpt.log",
+      "server_tests": {
+        "passed": 3672,
+        "failed": 1,
+        "ignored": 8
+      },
+      "sole_failed_test": "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead",
+      "assertion": {
+        "actual": 403,
+        "expected": 503
+      },
+      "later_qualification_steps": "skipped"
+    }
+  ]
+}
+

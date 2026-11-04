@@ -1,0 +1,166 @@
+{
+  "networkConnections": 0,
+  "observations": [
+    {
+      "code": 0,
+      "name": "chunk_data_delimiter_not_crlf",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 2.823282,
+        "header_names": [
+          "connection",
+          "transfer-encoding"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_complete": true,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "response_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "status": 200
+      }
+    },
+    {
+      "code": 0,
+      "name": "chunk_size_line_lf_only",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 1.784043,
+        "header_names": [
+          "connection",
+          "transfer-encoding"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_complete": true,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "response_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "status": 200
+      }
+    },
+    {
+      "code": 0,
+      "name": "chunk_size_not_one_or_more_hexdig",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 4.797336,
+        "header_names": [
+          "connection",
+          "transfer-encoding"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_complete": true,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "response_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "status": 200
+      }
+    }
+  ],
+  "productChanged": false,
+  "pythonVersion": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "schema": "heptabao.independent-r6-chunk-delimiter-boundary.v1",
+  "scope": "Actual r6 child_request with original synthetic socket adapter; no network/process/TLS qualification",
+  "sourceSha256": "7dac6c0b94be13d1a8c0cfbd6c1eb7f04c83345f11d603e70e9d4179f31b8e5f",
+  "stdlibMethodSha256": {
+    "_get_chunk_left": "71bf4e4faa4592fb79fcc713e6f1779c71f57963f0dcc0cc21ad2583c45b5678",
+    "_read_and_discard_trailer": "4123aeeb80767c1576d0a2c8afd35d8d19d3900cbdf32788e33404ea2af544b3",
+    "_read_next_chunk_size": "dfc2c72c55a189dc0d153960c91c962dfb30de2c516d57d83c46a7198c47405d"
+  },
+  "stdlibMethods": {
+    "_get_chunk_left": "    def _get_chunk_left(self):\n        # return self.chunk_left, reading a new chunk if necessary.\n        # chunk_left == 0: at the end of the current chunk, need to close it\n        # chunk_left == None: No current chunk, should read next.\n        # This function returns non-zero or None if the last chunk has\n        # been read.\n        chunk_left = self.chunk_left\n        if not chunk_left: # Can be 0 or None\n            if chunk_left is not None:\n                # We are at the end of chunk, discard chunk end\n                self._safe_read(2)  # toss the CRLF at the end of the chunk\n            try:\n                chunk_left = self._read_next_chunk_size()\n            except ValueError:\n                raise IncompleteRead(b'')\n            if chunk_left == 0:\n                # last chunk: 1*(\"0\") [ chunk-extension ] CRLF\n                self._read_and_discard_trailer()\n                # we read everything; close the \"file\"\n                self._close_conn()\n                chunk_left = None\n            self.chunk_left = chunk_left\n        return chunk_left\n",
+    "_read_and_discard_trailer": "    def _read_and_discard_trailer(self):\n        # read and discard trailer up to the CRLF terminator\n        ### note: we shouldn't have any trailers!\n        trailers_read = 0\n        while True:\n            line = self.fp.readline(_MAXLINE + 1)\n            if len(line) > _MAXLINE:\n                raise LineTooLong(\"trailer line\")\n            if not line:\n                # a vanishingly small number of sites EOF without\n                # sending the trailer\n                break\n            if line in (b'\\r\\n', b'\\n', b''):\n                break\n            # Bound the trailer count just as response headers are bounded.\n            # A server streaming trailer lines forever would otherwise hang\n            # the client; a socket timeout cannot detect that as data keeps\n            # arriving within every timeout window.\n            trailers_read += 1\n            if trailers_read > _MAXHEADERS:\n                raise HTTPException(\n                    f\"got more than {_MAXHEADERS} trailers\")\n",
+    "_read_next_chunk_size": "    def _read_next_chunk_size(self):\n        # Read the next chunk size from the file\n        line = self.fp.readline(_MAXLINE + 1)\n        if len(line) > _MAXLINE:\n            raise LineTooLong(\"chunk size\")\n        i = line.find(b\";\")\n        if i >= 0:\n            line = line[:i] # strip chunk-extensions\n        try:\n            return int(line, 16)\n        except ValueError:\n            # close the connection as protocol synchronisation is\n            # probably lost\n            self._close_conn()\n            raise\n"
+  },
+  "stdlibSourceFile": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/http/client.py",
+  "subprocessesSpawned": 0
+}

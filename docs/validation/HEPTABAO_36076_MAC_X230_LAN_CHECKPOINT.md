@@ -42,9 +42,9 @@ ROG 现已另有同一 fixture 内的 **installed-entry API／真实 SDK 330 项
 
 ### 完整 CI 与替代能力分母
 
-CI 候选现为 `0dc39624d1266a6fca98760757b9482bf6f98a7a`，tree=`959c65d6782b288c41730da869c86007c268547c`，prospective merge=`186570233517b2295de7384ef96a5815ba7db06f`。旧完整 run `41797943393` 在原 90 分钟总上限附近 cancelled，部分测试中原 KV2 挂载用例 FAILED；ROG 用未改原源码独立重现了 204 与旧预期 501 不同。源码证据表明 KV1 已被正式支持，所以修订仅把“应拒绝”的 KV version1 改为确实不支持的 version3，保留该用例全部 ACL/CAS/图不变断言。SSH 仍为独立拒绝项，未借此次修正开启支持。
+此前 CI 候选为 `0dc39624d1266a6fca98760757b9482bf6f98a7a`，tree=`959c65d6782b288c41730da869c86007c268547c`，prospective merge=`186570233517b2295de7384ef96a5815ba7db06f`。旧完整 run `41797943393` 在原 90 分钟总上限附近 cancelled，部分测试中原 KV2 挂载用例 FAILED；ROG 用未改原源码独立重现了 204 与旧预期 501 不同。源码证据表明 KV1 已被正式支持，所以修订仅把“应拒绝”的 KV version1 改为确实不支持的 version3，保留该用例全部 ACL/CAS/图不变断言。SSH 仍为独立拒绝项，未借此次修正开启支持。
 
-工作流总 job 包络改为仓库已有完整矩阵采用的 360 分钟，全部 fixture/request 原期限、features、profile、断言及 gate 列表保持不变。新完整 run `41814525698` 的 head 与 prospective-merge 两个 job 正在工作区测试步骤；步骤标签不证明编译已结束。trust boundary run `41814525725` 已通过。CodeQL run `41814520252` 是单独扫描，不能代替完整资格。ROG 对修改后用例的独立正常构建已经通过：编译 18 分 49 秒，原精确用例 1/1、0.21 秒，3680 项过滤；source=`45d45a79349d8feaed35cb60335edc76ae81bd29`、tree=`7c66c145435dfa32afafc20dfb9e5c3a5f96cdaf`。它验证这一次 fixture 修正，完整 CI 仍须等待真实终态。
+工作流总 job 包络改为仓库已有完整矩阵采用的 360 分钟，全部 fixture/request 原期限、features、profile、断言及 gate 列表保持不变。完整 run `41814525698` 已在两个分支终态失败：各自的 server libtest 为 3672 passed、1 failed、8 ignored，后续资格门槛均未运行；失败是实际 AEAD 之后原调用者已到期的 403 与旧测试预期 503 不同。trust boundary run `41814525725` 已通过。CodeQL run `41814520252` 是单独扫描，不能代替完整资格。ROG 对修改后用例的独立正常构建已经通过：编译 18 分 49 秒，原精确用例 1/1、0.21 秒，3680 项过滤；source=`45d45a79349d8feaed35cb60335edc76ae81bd29`、tree=`7c66c145435dfa32afafc20dfb9e5c3a5f96cdaf`。它验证这一次挂载 fixture 修正，不能覆盖后续实际出现的另一项 CI 失败。
 
 精确源码审计已发现正式 V6 的完整替代分母大于当前部署五项：某些 auth/engine/provider 的业务代码虽已存在，尚无正式 V6 存储 owner；SSH 挂载就是明确的运行路径拒绝。外部 KMS/plugin/postgres 等受 native profile 限制，未覆盖的根/子命名空间 system 操作亦需分别闭合。发布清单中的 OPEN/null 只是未授予完整资格，不能反过来当作所有功能都未实现，既有 full34/HA 等新证明继续有效。快照尤其要区分已存在的 HTTP frontend Redirect 与 service 内层拒绝直接 standby stream；其真实入口和官方行为正在核实，不能只凭一个内层 503 宣称整个快照路径缺失。
 
@@ -312,3 +312,25 @@ AuthBus 可复核辅助源码先发布 a78bdadc（tree=76ad1d16），再追加�
 | 实际异步 root-pull 两记录基线 | `b90c9660e69ed85ae84017cc856b94abb0dc648920162dc0a950f41a73be8325` |
 | Pocket 缺失当前 ordinal5 的实际恢复 | `133e1060d327bd14cae5b0673d3c5649c92d99c5d306f946114bcd480c691b41` |
 | Pocket 双场景独立 assessment | `9f7a9ee41ea0bcfd1246380c438161989163086810ce190a8ce7f1b99461315b` |
+
+### 后续精确修订、共同候选和当前预检（本次更新）
+
+完整 CI 的 AEAD 失败已经按 exact 0dc 与 prospective merge 源码逐字核对。原 root-policy token 的 TTL 为 6 秒，实际 payload AEAD 后暂停为 7 秒，原传输期限为 15 秒。Auth 在 root-policy shortcut 之前检查原 token 的存活；导出失败路径又明确优先保留当前 original-owner 的授权拒绝，因此这一情形的既定响应是 **403 permission denied**。独立的原 2 秒请求 scope／3 秒 AEAD pause 用例继续精确要求 503。没有通过扩大期限、接受多个状态码或修改产品代码解决失败。
+
+一个已经存在的独立 ROG 修订 source=`9c54d92a18ef59022a803cb89566ca8007b8b97c`、tree=`30731312c123edcc2de2ecce02347337ba49d587` 只改变这项测试的预期，并增加 errors 精确内容、无 data/auth/unwrapped/consistency 的断言，保留真实 pause、无文件、pending/binding 清理和 fresh-root 导出。其正常默认配置 build 为 1328.343 秒，两个原精确用例为 10.114 秒、2/2，通过并清理；完整 result/intent/prepare/权威终态及独立源码对比保留。该任务的启动者未由现有证据确定，不归因为本次根代理发起；没有重跑它，也不计入新的 31 项。
+
+PR #152 已有并发提交 `f9139c3b37b6373df3e4b4c61ebdd4f847afac4d`（parent 0dc，tree=`ebd395e4515e903e11db34347bd042c013bc780c`），根复核确认它恰为同一测试修订，未改其它文件。新的完整 run=`41837754898`、prospective merge=`4917ae1dc021b948c92a9e9cc4b2e2af171a713b` 正在运行；head job=`126600985114`、merge job=`126600986208` 仍为 complete locked workspace 步骤，未声称编译或整套门槛已通过。trust-boundary run=`41837754906` 已通过。这一 CI 分支仍对应正常 33 产品代码，不是下述共同 r7 的全量 CI。
+
+共同 r7 同时固定原 SSH root owner、明确的 root-SSH 原始回复转发类型、普通 KV 大 JSON 保持 Q9/S7、挂载拒绝 fixture 和单次完整 HTTP 307 响应头。24 个文件的 SHA/Git blob 与完整树已经核定：ROG source=`dc1c02dbd4803f4301097a8268d121e5d7f27464`，Mac source=`9c08c538a0a9dad6a20f1672c108008592c03aa8`，GitHub commit=`d76783b5fe9eb58f54c18a43075d1f4e374fd3d6`，三者 tree 均为 `97d4e782ffa1f2e5d4e116747c34d8c9fb5390d8`。GitHub 分支为 `codex/heptabao-native-ssh-http-20261104-r7`，没有合并或生产切换。
+
+Mac 正常 server/seed 构建已经 exit0、output complete/durable，304.484 秒，server=`e4d06288fdc516d4b5750cf00883a2de9cef40a2ab1c8c442e0ce555366d9350`（91774416 字节）；原默认 native-v6-storage/native-v6-ha、release 配置、源码身份和 owned-group 清理均通过。ROG 也报告正常构建已完成，随后进入正常 libtest。两机各自的 **25 SSH + 1 挂载 + 5 HTTP = 31 个固定用例仍须取得实际终态**，不得以正常构建或旧 18/20 替代。Mac 的大 stdin 投递超时和后来分块传输、全 SHA 提交、create-only staging 分别保留；控制连接超时不被算成产品运行失败或通过。后续严格 wire fixture 将绑定新二进制另起现场，旧 43 字节截断证据保持原样。
+
+严格 HTTP observer 的后续修订补上 Content-Length 实际字节数核对，以及原 stdlib 读取中的 chunk size、chunk data CRLF 和最终 trailer CRLF 被动观察。固定长度短体和四个实际 stdlib 误接受的分块反例均保留；新的独立 chunk 组件为 20/20，自测为 81/81，未增加网络读取或请求预算。它们证明观察器组件，尚不证明新 r7 产品 wire 已通过。
+
+Pocket 的新首轮方案只管理此前已验证的 1/2 号凭证代际，保留原 5 号默认选择、独立 native 4 号、全部六类缓存原内容/缺失状态、两个排除项及 order/usage。r1 没有启动运行；完整源码审查发现 HTTP 变更异常的 unknown 分类和 Node 非超时异常清理缺口后，r2 用新 QA/准备/运行目录修正，真实短子进程组件 25/25。
+
+**Pocket r2 只读预检失败，未启动 HeptaBao、SDK/native 消费者或生产服务。** 18 个已经执行的检查全部通过，实际失败为 `registry_read_failure_not_known_missing_shm_case`：原 registry read-only 查询返回 SQLITE_CANTOPEN(14)，当前 main 为 111644672 字节且 WAL/SHM 都不存在，不符合先前只准许的“非空 WAL、缺 SHM”分支。原输入规则正确拒绝，既有失败没有重跑。两份 auth 表、配置、六类缓存、native4、原 hold 与两个 inactive/dead/MainPID0 单元前后未变。后续只能对这一实际观察到的主文件形状另写有限且稳定的复制/查询规则；它不能被描述为首轮消费、回滚或生产切换通过。
+
+已开始对固定官方 OpenBao 2.7.1 CLI 的快照跳转行为做精确源码分析，并准备独立双 TLS 端点与后续真实集群矩阵。源码预测仍需真实 CLI 证明；HTTP 200/307 与无效恢复 500/400 的差别继续单列，未用客户端通常会跟随跳转作为兼容性结论。所有恢复观察仅允许固定无效输入，不能重放未知的有效恢复。
+
+本次仍未初始化或加载生产服务，未释放 Pocket holds，未切流，未删除旧服务、二进制、数据库、备份或 common-Git 依赖。`full_openbao_compatibility_qualified=false`，`all_clients_and_backups_migrated=false`。

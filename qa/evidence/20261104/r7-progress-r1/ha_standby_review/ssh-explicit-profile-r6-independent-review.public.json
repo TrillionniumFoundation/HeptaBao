@@ -1,0 +1,187 @@
+{
+  "basis": {
+    "author_reported_commit_prefix": "25b5a82c",
+    "author_reported_tree_prefix": "cc76607c",
+    "bytes": 40866,
+    "path": "/workspace/scratch/f86faac821c4/native-ssh-owner-review-20261104-r1/r6-readback/r4-to-r6-formatted.diff",
+    "sha256": "04182d77c854a03ff4d3634b621e19e42bfb154ad50eceebd3f092a97be5df1a"
+  },
+  "blocking_findings": [],
+  "checks": [
+    {
+      "detail": "Only non-resumed root native state, unwrapped original ingress, and actual synchronized EngineState longest SSH mount select the explicit profile. Ordinary same-suffix KV retains None; no suffix-alone transport selection remains.",
+      "evidence": "service.rs 4058-4143",
+      "finding": "PASS_SOURCE",
+      "name": "selection_after_actual_standby_catchup"
+    },
+    {
+      "detail": "Closed enum requires root GET, canonical public-key path, original ingress and completion nonce; rejects lexical/wrapping use. Explicit profile chooses Q8/S6 at caller and receiver. Legacy/noncompleted/non-native forwarding refuses it; ordinary None is omitted and keeps N1/Q9/S7 capacity.",
+      "evidence": "ha_forward.rs 646-914; ha.rs 1445-1664",
+      "finding": "PASS_SOURCE",
+      "name": "encoder_decoder_caller_agree"
+    },
+    {
+      "detail": "Authenticated enrolled source/target and cluster/frame/deadline/native-candidate gates precede profile scope. Receiving synchronous Service re-synchronizes and rejects wrong/replaced non-SSH mounts before immutable ordinary KV. Scope only restricts requests; it never produces a raw reply.",
+      "evidence": "ha.rs 1027-1110; service.rs 4228-4256",
+      "finding": "PASS_SOURCE",
+      "name": "receiver_identity_and_current_mount"
+    },
+    {
+      "detail": "Raw response still comes only from actual capture_public_ssh_key typed transport and original ingress. Affine SSH owner binds logical/stored response and original deadline; successful completed-forward receipt checks source/target, exact request, nonce, response digest, deadline and applied frontier before constructing local raw provenance. Caller/provider JSON fields alone do not create it.",
+      "evidence": "service.rs 6625-6664; auth_wrapping.rs 187-275; auth_native_ssh_reply.rs; ha.rs 1602-1651",
+      "finding": "PASS_SOURCE",
+      "name": "raw_capability_and_completion_still_typed"
+    },
+    {
+      "detail": "No change to ordinary 32MiB native frame or 1MiB original-reply bound; oversized ordinary same-suffix response remains S7. Native profile is rejected by N1. No fallback frame, second exchange or refreshed deadline was added.",
+      "evidence": "ha_forward_native_kv2_write.rs; ha_forward.rs 737-785,1090-1261; ha.rs 1464-1664",
+      "finding": "PASS_SOURCE",
+      "name": "bounds_and_no_retry"
+    },
+    {
+      "detail": "Four codec tests cover ingress/nonce/custom path, wrong method/root/metadata, frame downgrade and same-suffix 2MiB JSON. Actual pinned-HA addition covers custom nested SSH/issuer raw reply, 2MiB ordinary KV, and authenticated wrong-profile refusal with unchanged source identity. Runtime remains unverified until exact combined normal build tests terminate.",
+      "evidence": "ha_forward_native_ssh_tests.rs; service_native_ssh_ha_tests.rs",
+      "finding": "PASS_SOURCE_NOT_RUNTIME",
+      "name": "test_contract_matches_risk"
+    }
+  ],
+  "files": [
+    {
+      "bytes": 169489,
+      "path": "crates/heptabao-server/src/ha.rs",
+      "reviewed_line_ranges": [
+        [
+          1027,
+          1110
+        ],
+        [
+          1377,
+          1415
+        ],
+        [
+          1445,
+          1664
+        ]
+      ],
+      "sha256": "a56ab6524b658b204cd998fc054ae5124ed615420ded443517bbf49988d6fd1c"
+    },
+    {
+      "bytes": 78870,
+      "path": "crates/heptabao-server/src/ha_forward.rs",
+      "reviewed_line_ranges": [
+        [
+          62,
+          145
+        ],
+        [
+          646,
+          914
+        ],
+        [
+          1090,
+          1261
+        ],
+        [
+          1351,
+          1401
+        ]
+      ],
+      "sha256": "d4e0c57e9202024feed35c496036c5c03f2cef06e584b3466a9eda6ee98eaf9f"
+    },
+    {
+      "bytes": 5552,
+      "path": "crates/heptabao-server/src/ha_forward_native_kv2_write.rs",
+      "reviewed_line_ranges": [
+        [
+          22,
+          60
+        ],
+        [
+          101,
+          140
+        ]
+      ],
+      "sha256": "807a7c064f95661c11b28057aa862557ece6ec4b3afe7e09d30871cdebd79a12"
+    },
+    {
+      "bytes": 514946,
+      "path": "crates/heptabao-server/src/service.rs",
+      "reviewed_line_ranges": [
+        [
+          4058,
+          4256
+        ],
+        [
+          6625,
+          6664
+        ]
+      ],
+      "sha256": "4f5b04c61254fe6de9e52fb90595cb3f0ee417cbf2aa0ee6e5f888feb8bdf392"
+    },
+    {
+      "bytes": 38982,
+      "path": "crates/heptabao-server/src/auth_wrapping.rs",
+      "reviewed_line_ranges": [
+        [
+          187,
+          275
+        ]
+      ],
+      "sha256": "ec0bbf789cd7feb385f608d28c09f730c609887374ddaaaa7da49ab21ccb38ec"
+    },
+    {
+      "bytes": 2463,
+      "path": "crates/heptabao-server/src/auth_native_ssh_reply.rs",
+      "reviewed_line_ranges": [
+        [
+          1,
+          75
+        ]
+      ],
+      "sha256": "3d7231e58c702c078820100cf7ebdbd8da33a904ed5810f8864791e574a5d46e"
+    },
+    {
+      "bytes": 7958,
+      "path": "crates/heptabao-server/src/ha_forward_native_ssh_tests.rs",
+      "reviewed_line_ranges": [
+        [
+          1,
+          230
+        ]
+      ],
+      "sha256": "e76814415d668275ed47cb51f3fdc417d7a71d86c9ca17732d6d74d3e3d8a502"
+    },
+    {
+      "bytes": 13675,
+      "path": "crates/heptabao-server/src/service_native_ssh_ha_tests.rs",
+      "reviewed_line_ranges": [
+        [
+          80,
+          250
+        ]
+      ],
+      "sha256": "cbbaac9fdd6e9e5efbce57cdf0dee8b12f7b31a16ec900334871cd357957d2fe"
+    },
+    {
+      "bytes": 30045,
+      "path": "crates/heptabao-server/src/engines/ssh_ca.rs",
+      "reviewed_line_ranges": [
+        [
+          708,
+          769
+        ]
+      ],
+      "sha256": "e3eb912ca9d23ca279a90c31a5e2e7ca8ab8a3288bd438a6ec949889a546d150"
+    }
+  ],
+  "limits": [
+    "This is an independent source review, not proof that the new source compiles or that 25 SSH tests pass.",
+    "The new scope is request-thread-local in the observed synchronous authenticated handler; no cross-await/thread ownership claim is made.",
+    "Does not grant release or traffic-switch qualification; final same-source Mac/Linux and actual HTTP/HA evidence still required."
+  ],
+  "old_suffix_only_design_status": "rejected, not integrated",
+  "reviewer_task": "/root/ha_validation",
+  "runtime_executed_by_review": false,
+  "schema": "heptabao.ssh-explicit-original-reply.independent-source-review.v1",
+  "source_review_conclusion": "No blocking finding in the reviewed current synchronous path; proceed to exact combined normal build and existing required runtime gates."
+}

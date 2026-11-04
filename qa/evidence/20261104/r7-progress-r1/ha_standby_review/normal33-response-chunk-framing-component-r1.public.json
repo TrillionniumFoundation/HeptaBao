@@ -1,0 +1,1919 @@
+{
+  "checks": [
+    {
+      "name": "r6_complete_one_chunk_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r6_complete_one_chunk_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r6_complete_one_chunk_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "r7_complete_one_chunk_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r7_complete_one_chunk_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r7_complete_one_chunk_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "complete_one_chunk_old_stdlib_accepts",
+      "passed": true
+    },
+    {
+      "name": "complete_one_chunk_passive_same_read_calls",
+      "passed": true
+    },
+    {
+      "name": "complete_one_chunk_strict_complete",
+      "passed": true
+    },
+    {
+      "name": "r6_complete_multiple_with_trailer_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r6_complete_multiple_with_trailer_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r6_complete_multiple_with_trailer_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "r7_complete_multiple_with_trailer_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r7_complete_multiple_with_trailer_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r7_complete_multiple_with_trailer_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "complete_multiple_with_trailer_old_stdlib_accepts",
+      "passed": true
+    },
+    {
+      "name": "complete_multiple_with_trailer_passive_same_read_calls",
+      "passed": true
+    },
+    {
+      "name": "complete_multiple_with_trailer_strict_complete",
+      "passed": true
+    },
+    {
+      "name": "r6_complete_empty_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r6_complete_empty_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r6_complete_empty_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "r7_complete_empty_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r7_complete_empty_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r7_complete_empty_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "complete_empty_old_stdlib_accepts",
+      "passed": true
+    },
+    {
+      "name": "complete_empty_passive_same_read_calls",
+      "passed": true
+    },
+    {
+      "name": "complete_empty_strict_complete",
+      "passed": true
+    },
+    {
+      "name": "r6_complete_extension_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r6_complete_extension_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r6_complete_extension_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "r7_complete_extension_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r7_complete_extension_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r7_complete_extension_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "complete_extension_old_stdlib_accepts",
+      "passed": true
+    },
+    {
+      "name": "complete_extension_passive_same_read_calls",
+      "passed": true
+    },
+    {
+      "name": "complete_extension_strict_complete",
+      "passed": true
+    },
+    {
+      "name": "r6_trailer_eof_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r6_trailer_eof_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r6_trailer_eof_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "r7_trailer_eof_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r7_trailer_eof_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r7_trailer_eof_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "trailer_eof_old_stdlib_accepts",
+      "passed": true
+    },
+    {
+      "name": "trailer_eof_no_added_reads_before_refusal",
+      "passed": true
+    },
+    {
+      "name": "trailer_eof_strict_unknown",
+      "passed": true
+    },
+    {
+      "name": "r6_wrong_data_delimiter_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r6_wrong_data_delimiter_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r6_wrong_data_delimiter_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "r7_wrong_data_delimiter_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r7_wrong_data_delimiter_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r7_wrong_data_delimiter_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "wrong_data_delimiter_old_stdlib_accepts",
+      "passed": true
+    },
+    {
+      "name": "wrong_data_delimiter_no_added_reads_before_refusal",
+      "passed": true
+    },
+    {
+      "name": "wrong_data_delimiter_strict_unknown",
+      "passed": true
+    },
+    {
+      "name": "r6_lf_only_size_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r6_lf_only_size_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r6_lf_only_size_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "r7_lf_only_size_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r7_lf_only_size_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r7_lf_only_size_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "lf_only_size_old_stdlib_accepts",
+      "passed": true
+    },
+    {
+      "name": "lf_only_size_no_added_reads_before_refusal",
+      "passed": true
+    },
+    {
+      "name": "lf_only_size_strict_unknown",
+      "passed": true
+    },
+    {
+      "name": "r6_signed_size_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r6_signed_size_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r6_signed_size_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "r7_signed_size_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r7_signed_size_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r7_signed_size_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "signed_size_old_stdlib_accepts",
+      "passed": true
+    },
+    {
+      "name": "signed_size_no_added_reads_before_refusal",
+      "passed": true
+    },
+    {
+      "name": "signed_size_strict_unknown",
+      "passed": true
+    },
+    {
+      "name": "r6_lf_only_trailer_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r6_lf_only_trailer_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r6_lf_only_trailer_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "r7_lf_only_trailer_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "r7_lf_only_trailer_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "r7_lf_only_trailer_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "lf_only_trailer_old_stdlib_accepts",
+      "passed": true
+    },
+    {
+      "name": "lf_only_trailer_no_added_reads_before_refusal",
+      "passed": true
+    },
+    {
+      "name": "lf_only_trailer_strict_unknown",
+      "passed": true
+    }
+  ],
+  "checks_passed": 81,
+  "checks_total": 81,
+  "network_connections": 0,
+  "new_source_sha256": "9a044ba861d651dbbd8543e78fa487b850627524f7aa6d5593425c20325300f1",
+  "observations": [
+    {
+      "code": 0,
+      "name": "r6_complete_one_chunk",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 2.991723,
+        "header_names": [
+          "connection",
+          "transfer-encoding"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_complete": true,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "response_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "read",
+          3
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    },
+    {
+      "code": 0,
+      "name": "r7_complete_one_chunk",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 3.773752,
+        "header_names": [
+          "connection",
+          "transfer-encoding"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_chunked_framing": {
+          "chunk_data_delimiters": 1,
+          "chunk_data_delimiters_valid": true,
+          "chunk_size_lines": 2,
+          "chunk_size_lines_valid": true,
+          "chunked_framing_complete": true,
+          "trailer_bytes": 2,
+          "trailer_eof": false,
+          "trailer_lines": 1,
+          "trailer_lines_valid": true,
+          "trailer_terminated_crlf": true,
+          "zero_chunk_count": 1
+        },
+        "response_complete": true,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "response_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "read",
+          3
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    },
+    {
+      "code": 0,
+      "name": "r6_complete_multiple_with_trailer",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 2.434337,
+        "header_names": [
+          "connection",
+          "transfer-encoding"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_complete": true,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "response_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "read",
+          1
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    },
+    {
+      "code": 0,
+      "name": "r7_complete_multiple_with_trailer",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 4.250288,
+        "header_names": [
+          "connection",
+          "transfer-encoding"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_chunked_framing": {
+          "chunk_data_delimiters": 2,
+          "chunk_data_delimiters_valid": true,
+          "chunk_size_lines": 3,
+          "chunk_size_lines_valid": true,
+          "chunked_framing_complete": true,
+          "trailer_bytes": 25,
+          "trailer_eof": false,
+          "trailer_lines": 2,
+          "trailer_lines_valid": true,
+          "trailer_terminated_crlf": true,
+          "zero_chunk_count": 1
+        },
+        "response_complete": true,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "response_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "read",
+          1
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    },
+    {
+      "code": 0,
+      "name": "r6_complete_empty",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 2.829242,
+        "header_names": [
+          "connection",
+          "transfer-encoding"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 0,
+        "response_complete": true,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    },
+    {
+      "code": 0,
+      "name": "r7_complete_empty",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 2.381549,
+        "header_names": [
+          "connection",
+          "transfer-encoding"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 0,
+        "response_chunked_framing": {
+          "chunk_data_delimiters": 0,
+          "chunk_data_delimiters_valid": true,
+          "chunk_size_lines": 1,
+          "chunk_size_lines_valid": true,
+          "chunked_framing_complete": true,
+          "trailer_bytes": 2,
+          "trailer_eof": false,
+          "trailer_lines": 1,
+          "trailer_lines_valid": true,
+          "trailer_terminated_crlf": true,
+          "zero_chunk_count": 1
+        },
+        "response_complete": true,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    },
+    {
+      "code": 0,
+      "name": "r6_complete_extension",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 1.555315,
+        "header_names": [
+          "connection",
+          "transfer-encoding"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_complete": true,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "response_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "read",
+          3
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    },
+    {
+      "code": 0,
+      "name": "r7_complete_extension",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 2.174842,
+        "header_names": [
+          "connection",
+          "transfer-encoding"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_chunked_framing": {
+          "chunk_data_delimiters": 1,
+          "chunk_data_delimiters_valid": true,
+          "chunk_size_lines": 2,
+          "chunk_size_lines_valid": true,
+          "chunked_framing_complete": true,
+          "trailer_bytes": 2,
+          "trailer_eof": false,
+          "trailer_lines": 1,
+          "trailer_lines_valid": true,
+          "trailer_terminated_crlf": true,
+          "zero_chunk_count": 1
+        },
+        "response_complete": true,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "response_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "read",
+          3
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    },
+    {
+      "code": 0,
+      "name": "r6_trailer_eof",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 3.231738,
+        "header_names": [
+          "connection",
+          "transfer-encoding"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_complete": true,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "response_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "read",
+          3
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    },
+    {
+      "code": 2,
+      "name": "r7_trailer_eof",
+      "outcome": {
+        "elapsed_ms": 1.231105,
+        "error_type": "Refused",
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_projections": [],
+        "outcome_unknown": true,
+        "phase": "response_body",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_chunked_framing": {
+          "chunk_data_delimiters": 1,
+          "chunk_data_delimiters_valid": true,
+          "chunk_size_lines": 2,
+          "chunk_size_lines_valid": true,
+          "chunked_framing_complete": false,
+          "trailer_bytes": 0,
+          "trailer_eof": true,
+          "trailer_lines": 1,
+          "trailer_lines_valid": false,
+          "trailer_terminated_crlf": false,
+          "zero_chunk_count": 1
+        },
+        "response_complete": false,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "read",
+          3
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    },
+    {
+      "code": 0,
+      "name": "r6_wrong_data_delimiter",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 2.405555,
+        "header_names": [
+          "connection",
+          "transfer-encoding"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_complete": true,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "response_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "read",
+          3
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    },
+    {
+      "code": 2,
+      "name": "r7_wrong_data_delimiter",
+      "outcome": {
+        "elapsed_ms": 1.578268,
+        "error_type": "Refused",
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_projections": [],
+        "outcome_unknown": true,
+        "phase": "response_body",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_chunked_framing": {
+          "chunk_data_delimiters": 1,
+          "chunk_data_delimiters_valid": false,
+          "chunk_size_lines": 1,
+          "chunk_size_lines_valid": true,
+          "chunked_framing_complete": false,
+          "trailer_bytes": 0,
+          "trailer_eof": false,
+          "trailer_lines": 0,
+          "trailer_lines_valid": true,
+          "trailer_terminated_crlf": false,
+          "zero_chunk_count": 0
+        },
+        "response_complete": false,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "read",
+          3
+        ],
+        [
+          "read",
+          2
+        ]
+      ]
+    },
+    {
+      "code": 0,
+      "name": "r6_lf_only_size",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 4.204134,
+        "header_names": [
+          "connection",
+          "transfer-encoding"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_complete": true,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "response_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "read",
+          3
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    },
+    {
+      "code": 2,
+      "name": "r7_lf_only_size",
+      "outcome": {
+        "elapsed_ms": 1.327772,
+        "error_type": "Refused",
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_projections": [],
+        "outcome_unknown": true,
+        "phase": "response_body",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_chunked_framing": {
+          "chunk_data_delimiters": 0,
+          "chunk_data_delimiters_valid": true,
+          "chunk_size_lines": 1,
+          "chunk_size_lines_valid": false,
+          "chunked_framing_complete": false,
+          "trailer_bytes": 0,
+          "trailer_eof": false,
+          "trailer_lines": 0,
+          "trailer_lines_valid": true,
+          "trailer_terminated_crlf": false,
+          "zero_chunk_count": 0
+        },
+        "response_complete": false,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    },
+    {
+      "code": 0,
+      "name": "r6_signed_size",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 1.49192,
+        "header_names": [
+          "connection",
+          "transfer-encoding"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_complete": true,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "response_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "read",
+          3
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    },
+    {
+      "code": 2,
+      "name": "r7_signed_size",
+      "outcome": {
+        "elapsed_ms": 1.597367,
+        "error_type": "Refused",
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_projections": [],
+        "outcome_unknown": true,
+        "phase": "response_body",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_chunked_framing": {
+          "chunk_data_delimiters": 0,
+          "chunk_data_delimiters_valid": true,
+          "chunk_size_lines": 1,
+          "chunk_size_lines_valid": false,
+          "chunked_framing_complete": false,
+          "trailer_bytes": 0,
+          "trailer_eof": false,
+          "trailer_lines": 0,
+          "trailer_lines_valid": true,
+          "trailer_terminated_crlf": false,
+          "zero_chunk_count": 0
+        },
+        "response_complete": false,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    },
+    {
+      "code": 0,
+      "name": "r6_lf_only_trailer",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 1.872044,
+        "header_names": [
+          "connection",
+          "transfer-encoding"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_complete": true,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "response_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "read",
+          3
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    },
+    {
+      "code": 2,
+      "name": "r7_lf_only_trailer",
+      "outcome": {
+        "elapsed_ms": 1.040727,
+        "error_type": "Refused",
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_projections": [],
+        "outcome_unknown": true,
+        "phase": "response_body",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "chunked",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 1
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_chunked_framing": {
+          "chunk_data_delimiters": 1,
+          "chunk_data_delimiters_valid": true,
+          "chunk_size_lines": 2,
+          "chunk_size_lines_valid": true,
+          "chunked_framing_complete": false,
+          "trailer_bytes": 1,
+          "trailer_eof": false,
+          "trailer_lines": 1,
+          "trailer_lines_valid": false,
+          "trailer_terminated_crlf": false,
+          "zero_chunk_count": 1
+        },
+        "response_complete": false,
+        "response_content_length_remaining": null,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "9c128eca3b2ae78582fdbb8ac7b518e10a609675110015b0952cc809b3706686",
+        "response_header_strict_termination": true,
+        "status": 200
+      },
+      "read_calls": [
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "read",
+          3
+        ],
+        [
+          "read",
+          2
+        ],
+        [
+          "readline",
+          65537
+        ],
+        [
+          "readline",
+          65537
+        ]
+      ]
+    }
+  ],
+  "old_source_sha256": "7dac6c0b94be13d1a8c0cfbd6c1eb7f04c83345f11d603e70e9d4179f31b8e5f",
+  "product_changed": false,
+  "schema": "normal33-response-chunk-framing-component-r1",
+  "scope": "actual child_request and stdlib HTTPResponse chunk parser with synthetic socket input; no extra reads, deadlines, requests, or production changes; prior 24 fixed-length and 61 parent-child checks are not relabelled or repeated",
+  "subprocesses_spawned": 0,
+  "test_sha256": "acdfcb16e23c6e5e423bd7d071eb29cf8438e5226c872793d87861e9e258d7d5"
+}

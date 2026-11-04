@@ -1,0 +1,154 @@
+{
+  "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+  "derived_expectations": [
+    {
+      "id": "save_307",
+      "inference": "A complete307 with Content-Length0 followed by a real200 archive is expected to make this exact CLI consume the original empty307 body and exit2/ErrIncompleteSnapshot, despite having sent the second GET.",
+      "runtime_verified": false
+    },
+    {
+      "id": "restore_307",
+      "inference": "If the first peer consumes the invalid file before307 and the follow transport completes, the second POST may contain an exhausted body and its400/500 response may be discarded; the CLI may return0. Actual body length and exit must be observed.",
+      "runtime_verified": false
+    },
+    {
+      "id": "direct_invalid_400_vs_500",
+      "inference": "Direct400 and500 invalid restores are expected to yield the same CLI exit2, with distinct reported HTTP codes. This is CLI failure-class equivalence only, not REST status compatibility.",
+      "runtime_verified": false
+    }
+  ],
+  "documentation_discovery_only": "Official command docs say one redirect is followed; exact version code above controls this review. Official issue4335 is corroborating discovery only and is not used as proof.",
+  "next_scope": "Fresh actual fixed-CLI synthetic strictTLS peer matrix first, then separately authorized fresh normal-r7 real-cluster matrix after artifact qualification. Do not change native leader/owner gates to obtain200.",
+  "official_tag": "v2.7.1",
+  "product_changed": false,
+  "repository": "openbao/openbao",
+  "runtime_executed": false,
+  "schema": "openbao271.snapshot-cli-source-contract-review.v1",
+  "source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "source_facts": [
+    {
+      "fact": "Official CLI save invokes Sys.RaftSnapshot using context.Background; error returns CLI exit2. Writer opens the named output lazily with0600 and validates a nonempty SHA256SUMS.sealed member through gzip/tar. This is archive-shape validation, not authenticated restore proof.",
+      "id": "save_entry",
+      "source": "internal/command/operator_raft_snapshot_save.go:54-108;api/sys_raft.go:169-240"
+    },
+    {
+      "fact": "Official CLI restore opens the supplied file once, wraps it with io.NopCloser, and uses the same non-retryable HTTP helper. A returned API error maps to exit2; nil maps to exit0. Only fixed invalid bytes are proposed for the fixture.",
+      "id": "restore_entry",
+      "source": "internal/command/operator_raft_snapshot_restore.go:65-123;api/sys_raft.go:243-265"
+    },
+    {
+      "fact": "httpRequestWithContext uses one existing http.Client and req; follows one301/302/307 unless disabled, rejects HTTPS-to-non-HTTPS downgrade, retains original request token headers, and changes req.URL. The original req.Host is not updated. It does not check an enrolled-origin allowlist.",
+      "id": "explicit_single_redirect",
+      "source": "api/client.go:1637-1760"
+    },
+    {
+      "fact": "result wraps the first response. The redirect request result is discarded via _, err=httpClient.Do(req). result.Error and the returned Response still refer to the original307.",
+      "id": "discarded_followup",
+      "source": "api/client.go:1713-1759"
+    },
+    {
+      "fact": "ResetJSONBody is a no-op when BodyBytes is nil. The snapshot file is passed through Body, so this code does not seek/reopen/rebuild the file stream on a redirect. The exact second-hop body must be measured, not inferred as a valid replay.",
+      "id": "stream_body_not_rewound",
+      "source": "api/request.go:53-59;api/sys_raft.go:256-259;api/client.go:1741-1750"
+    },
+    {
+      "fact": "Response.Error treats200..399 as successful. Direct400 and500 both produce ResponseError. A discarded second-hop400/500 does not get evaluated by this helper if its transport call returns nil error.",
+      "id": "status_error_contract",
+      "source": "api/response.go:30-76"
+    },
+    {
+      "fact": "CLI disables retryablehttp retries unless the retry environment variable explicitly overrides it. Snapshot operations use httpRequestWithContext, bypassing retryablehttp entirely. A single307 follow is a separate explicit transport call and must be counted separately from a retry.",
+      "id": "retry_contract",
+      "source": "internal/command/base.go:124-132;api/client.go:1487-1618,1637-1640"
+    },
+    {
+      "fact": "The snapshot wrappers use Background and the snapshot-specific helper does not call withConfiguredTimeout. Config.Timeout/BAO_CLIENT_TIMEOUT alone is not a demonstrated whole-operation bound here; the proposed owning controller retains one absolute15s deadline across the CLI and both hops.",
+      "id": "deadline_contract",
+      "source": "api/sys_raft.go:169-180,243-259;api/client.go:354-369,1637-1642,1860-1870"
+    },
+    {
+      "fact": "CLI configures the actual API client from explicit environment/flags, uses the original ClientToken, and preserves the same TLS-configured http.Client across the follow. The fixture supplies only a fresh synthetic or isolated-cluster token and strict owned CA; no production helper/token store is needed.",
+      "id": "tls_token_contract",
+      "source": "internal/command/base.go:85-120,184-202;api/client.go:1681-1688,1736-1742"
+    },
+    {
+      "fact": "The exact server/CLI source tree selects its local API module. The fixed executable remains separately bound by its independently verified whole SHA; source reasoning is not substituted for executable observation.",
+      "id": "local_api_module_binding",
+      "source": "go.mod:replace github.com/openbao/openbao/api/v2 => ./api"
+    }
+  ],
+  "sources": [
+    {
+      "bytes": 13131,
+      "git_blob": "bf629633f16f7915f3587102be993463a3810122",
+      "local_path": "/workspace/scratch/f86faac821c4/ha_standby_review/official271-cli-contract-r1/source/api/sys_raft.go",
+      "path": "api/sys_raft.go",
+      "sha256": "031e623e64ff54b82a2b19ae8ee3ba309a36b97db8ac8cd0d40f8fef764bdd9b",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/api/sys_raft.go"
+    },
+    {
+      "bytes": 57092,
+      "git_blob": "0e543712e700bb96a5cfa087a5cec6a93497e951",
+      "local_path": "/workspace/scratch/f86faac821c4/ha_standby_review/official271-cli-contract-r1/source/api/client.go",
+      "path": "api/client.go",
+      "sha256": "872130bed2153539415f333ef24abc434bdc3d0f0487a2676da9f83e9ec416fa",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/api/client.go"
+    },
+    {
+      "bytes": 2643,
+      "git_blob": "956e94060976ce724d46e03292af9816a9092655",
+      "local_path": "/workspace/scratch/f86faac821c4/ha_standby_review/official271-cli-contract-r1/source/internal/command/operator_raft_snapshot_save.go",
+      "path": "internal/command/operator_raft_snapshot_save.go",
+      "sha256": "73fc84c655bc42a5185774fe860aea65d91541eb85b0459dc3709bd69798a118",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/command/operator_raft_snapshot_save.go"
+    },
+    {
+      "bytes": 2531,
+      "git_blob": "21b03a75c1cc0a705f6caab14cbd0dde404f35ef",
+      "local_path": "/workspace/scratch/f86faac821c4/ha_standby_review/official271-cli-contract-r1/source/internal/command/operator_raft_snapshot_restore.go",
+      "path": "internal/command/operator_raft_snapshot_restore.go",
+      "sha256": "d000a315027a2d2331ecf0203bf5def2fb787dd58070050c4a27217e0b4671f2",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/command/operator_raft_snapshot_restore.go"
+    },
+    {
+      "bytes": 21369,
+      "git_blob": "265291c95db2593a1e2655ac2e61281835127148",
+      "local_path": "/workspace/scratch/f86faac821c4/ha_standby_review/official271-cli-contract-r1/source/internal/command/base.go",
+      "path": "internal/command/base.go",
+      "sha256": "0fc991b3187ca83bab231a771bdce62be2a2dd9888cd77eb2a5b3c824b5728cb",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/internal/command/base.go"
+    },
+    {
+      "bytes": 1561,
+      "git_blob": "0f405d63216d88a4f26eeef1f26f5f67d25fcfbf",
+      "local_path": "/workspace/scratch/f86faac821c4/ha_standby_review/official271-cli-contract-r1/source/api/go.mod",
+      "path": "api/go.mod",
+      "sha256": "048ddbc504d6ee66fe9691a306a3f2181e193122de3e271fff816330e0e7b65b",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/api/go.mod"
+    },
+    {
+      "bytes": 3068,
+      "git_blob": "65599503d1591f632d4a77a71725bc472d55c762",
+      "local_path": "/workspace/scratch/f86faac821c4/ha_standby_review/official271-cli-contract-r1/source/api/request.go",
+      "path": "api/request.go",
+      "sha256": "85a54c98b6239f71c9889784457138768558098c386ef21ecbaec2b9bbda7a6e",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/api/request.go"
+    },
+    {
+      "bytes": 3875,
+      "git_blob": "5c59259147cd3c29193ac2c7e7ef6410fc41c89d",
+      "local_path": "/workspace/scratch/f86faac821c4/ha_standby_review/official271-cli-contract-r1/source/api/response.go",
+      "path": "api/response.go",
+      "sha256": "3fbdc07eb3bef2dfe15d7c7f609608b0c0e9d32513bdbbde1ae243ecf5deea26",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/api/response.go"
+    },
+    {
+      "bytes": 16740,
+      "git_blob": "19492f165d0a622d88e23c0a0654f116703c0fe3",
+      "local_path": "/workspace/scratch/f86faac821c4/ha_standby_review/official271-cli-contract-r1/source/go.mod",
+      "path": "go.mod",
+      "sha256": "a9af58f3facf377222e9eb3368f3821deb1d1edd33e82984769ccc0cb4eadd56",
+      "url": "https://github.com/openbao/openbao/blob/a5db72cef75c24b920ade02065b18dd8eb666bac/go.mod"
+    }
+  ]
+}

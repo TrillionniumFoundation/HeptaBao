@@ -1,0 +1,34 @@
+{
+  "blockingFindings": [],
+  "componentReceiptSha256": "06092e83799a7d44ff1320d91bad043572b1874f357f1d53d3590d2aa6cc9a34",
+  "componentScope": {
+    "allReaped": true,
+    "checks": 25,
+    "hostRuntimeQualified": false,
+    "httpFaultBoundarySynthetic": true,
+    "passed": 25,
+    "realOwnedChildren": 3
+  },
+  "controllerSha256": "ed0149d7bcc1f33ad66fd00095147f93cf58e762b251f39368ae973d70bd905a",
+  "executionPerformed": false,
+  "launcherSha256": "a6a43c6e0653da2005092bf0b782d65a25fc4d0e1ca23d580a4227bfed1afefd",
+  "priorReviewSha256": "e79eefbcc2777cebd210d74e7220a0625d451def8d4cbcabb8c6923337fcce1b",
+  "productionChanged": false,
+  "qaManifestSha256": "2d7f018de9408f02811c6f5eb24d1ad0973721c194f31bf685073bb5565deae0",
+  "resolvedFindings": [
+    "HTTP dispatch safe metadata retained on any nonterminal return; explicit terminal response clears it; no body/header/credential projection and no replay",
+    "All bounded_node exceptional paths kill/wait the original owned PGID within original5s cleanup; unknown stop consumes rollback guard and starts no new rollback child",
+    "Launcher propagates blocked-rollback unknown and fresh r2 paths; original r1 evidence remains"
+  ],
+  "reviewDiffSha256": "8a468d729e574ada9fc43223cd0a612bf628efcff2a06884f3bcc6f204343dfb",
+  "reviewer": "authbus_migration",
+  "runtimeOutcome": "not run by reviewer; root coordinates host preflight/live",
+  "schema": "heptabao.pocket-first-cycle-controller-launcher-static-review-r2.v1",
+  "staticReviewPassed": true,
+  "unchanged": [
+    "all7 unrelated QA source files byte-identical",
+    "consumer/cache/native/coordinator semantics",
+    "original HTTP10/consumer70/rollback35/outer440 and native10000ms cap",
+    "original production held units and markers, kernel RO/no-egress, exactsource33 and artifact pins"
+  ]
+}

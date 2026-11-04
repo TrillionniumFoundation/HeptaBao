@@ -1,0 +1,95 @@
+2026-11-04T10:29:38.0828484Z [36;1m  test "$(git rev-parse HEAD^2)" = "$PR_HEAD"[0m
+2026-11-04T10:29:38.0828838Z [36;1mfi[0m
+2026-11-04T10:29:38.0829317Z [36;1mprintf 'source_commit=%s\nsource_tree=%s\n' "$(git rev-parse HEAD)" "$(git rev-parse HEAD^{tree})"[0m
+2026-11-04T10:29:38.0850243Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T10:29:38.0850803Z env:
+2026-11-04T10:29:38.0851160Z   EXPECTED_SOURCE: 0dc39624d1266a6fca98760757b9482bf6f98a7a
+2026-11-04T10:29:38.0851590Z   PR_HEAD: 0dc39624d1266a6fca98760757b9482bf6f98a7a
+2026-11-04T10:29:38.0851993Z   PR_BASE: 7b4a59bdd72218c1e779eb32754a682cf465af7a
+2026-11-04T10:29:38.0852376Z   CARGO_BUILD_JOBS: 1
+2026-11-04T10:29:38.0852725Z   CANDIDATE: head
+2026-11-04T10:29:38.0853011Z ##[endgroup]
+2026-11-04T10:29:38.2930673Z source_commit=0dc39624d1266a6fca98760757b9482bf6f98a7a
+2026-11-04T10:29:38.2931521Z source_tree=959c65d6782b288c41730da869c86007c268547c
+2026-11-04T10:29:38.2977465Z ##[group]Run set -euo pipefail
+2026-11-04T10:29:38.2977884Z [36;1mset -euo pipefail[0m
+2026-11-04T10:29:38.2978293Z [36;1mmkdir -m 700 "$RUNNER_TEMP/heptabao-safe-reports"[0m
+2026-11-04T10:29:38.2978781Z [36;1mpython - <<'PY'[0m
+2026-11-04T10:29:38.2979138Z [36;1mimport json, os, pathlib, subprocess[0m
+2026-11-04T10:29:38.2979856Z [36;1mreport = {"source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),[0m
+2026-11-04T10:29:38.2980575Z [36;1m          "source_tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),[0m
+2026-11-04T10:29:38.2981279Z [36;1m          "expected_source": os.environ["EXPECTED_SOURCE"], "pr_base": os.environ["PR_BASE"],[0m
+2026-11-04T10:29:38.2981873Z [36;1m          "pr_head": os.environ["PR_HEAD"], "run_id": os.environ["GITHUB_RUN_ID"],[0m
+2026-11-04T10:29:38.2982488Z [36;1m          "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"], "independent_admission": False}[0m
+2026-11-04T10:29:38.2983540Z [36;1mpathlib.Path(os.environ["RUNNER_TEMP"], "heptabao-safe-reports", "source.json").write_text(json.dumps(report, sort_keys=True))[0m
+2026-11-04T10:29:38.2984198Z [36;1mPY[0m
+2026-11-04T10:29:38.2997613Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}
+2026-11-04T10:29:38.2998078Z env:
+2026-11-04T10:29:38.2998423Z   EXPECTED_SOURCE: 0dc39624d1266a6fca98760757b9482bf6f98a7a
+2026-11-04T10:31:18.3423229Z test_build_receipt_digest_binds_the_actual_parsed_bytes (test_kubernetes_renewal_271_cluster_live.GenuineRenewalCustody.test_build_receipt_digest_binds_the_actual_parsed_bytes) ... ok
+2026-11-04T10:31:18.3427846Z test_build_receipt_requires_actual_success_and_frozen_source (test_kubernetes_renewal_271_cluster_live.GenuineRenewalCustody.test_build_receipt_requires_actual_success_and_frozen_source) ... ok
+2026-11-04T10:31:18.3429914Z test_build_receipt_requires_exact_source_tree_and_binary (test_kubernetes_renewal_271_cluster_live.GenuineRenewalCustody.test_build_receipt_requires_exact_source_tree_and_binary) ... ok
+2026-11-04T10:31:18.3437118Z test_build_receipt_symlink_and_oversized_files_are_rejected (test_kubernetes_renewal_271_cluster_live.GenuineRenewalCustody.test_build_receipt_symlink_and_oversized_files_are_rejected) ... ok
+2026-11-04T10:31:18.3442519Z test_final_capture_credentials_fail_closed (test_kubernetes_renewal_271_cluster_live.GenuineRenewalCustody.test_final_capture_credentials_fail_closed) ... ok
+2026-11-04T10:31:18.3447672Z test_final_capture_failure_cannot_be_lifecycle_success (test_kubernetes_renewal_271_cluster_live.GenuineRenewalCustody.test_final_capture_failure_cannot_be_lifecycle_success) ... ok
+2026-11-04T10:31:18.3456615Z test_final_capture_requires_every_previously_observed_audit_id (test_kubernetes_renewal_271_cluster_live.GenuineRenewalCustody.test_final_capture_requires_every_previously_observed_audit_id) ... ok
+2026-11-04T10:31:18.3458678Z test_first_positive_requires_an_actual_expiry_extension (test_kubernetes_renewal_271_cluster_live.GenuineRenewalCustody.test_first_positive_requires_an_actual_expiry_extension) ... ok
+2026-11-04T10:31:18.3460673Z test_foreign_or_admin_review_cannot_satisfy_a_fresh_operation (test_kubernetes_renewal_271_cluster_live.GenuineRenewalCustody.test_foreign_or_admin_review_cannot_satisfy_a_fresh_operation) ... ok
+2026-11-04T10:31:18.3463019Z test_full_denominator_cannot_override_missing_final_evidence (test_kubernetes_renewal_271_cluster_live.GenuineRenewalCustody.test_full_denominator_cannot_override_missing_final_evidence) ... ok
+2026-11-04T10:31:18.3465289Z test_incomplete_or_duplicate_denominator_never_passes (test_kubernetes_renewal_271_cluster_live.GenuineRenewalCustody.test_incomplete_or_duplicate_denominator_never_passes) ... ok
+2026-11-04T11:53:11.5557984Z    Compiling heptabao-oracle-observer v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-oracle-observer)
+2026-11-04T11:53:11.7362170Z    Compiling heptabao-platform-bakeoff v0.1.0 (/home/runner/work/HeptaBao/HeptaBao/crates/heptabao-platform-bakeoff)
+2026-11-04T11:53:11.9406537Z     Finished `test` profile [optimized + debuginfo] target(s) in 81m 03s
+2026-11-04T11:53:12.1356676Z   Executable unittests src/lib.rs (target/debug/deps/heptabao_agent-ce7add7edb0de0e1)
+2026-11-04T11:53:12.1357633Z   Executable unittests src/lib.rs (target/debug/deps/heptabao_authbus_contracts-3a7cef52655eb74b)
+2026-11-04T11:53:12.1358527Z   Executable unittests src/lib.rs (target/debug/deps/heptabao_barrier_api-8f40ab9c3fa8d0bd)
+2026-11-04T11:53:12.1359384Z   Executable unittests src/lib.rs (target/debug/deps/heptabao_cli_contracts-2f0cc57c578e0237)
+2026-11-04T11:53:12.1360259Z   Executable unittests src/lib.rs (target/debug/deps/heptabao_client_contracts-007964e682e7ec5d)
+2026-11-04T11:53:12.1361133Z   Executable unittests src/lib.rs (target/debug/deps/heptabao_compatibility-df00dcc6617a77ea)
+2026-11-04T11:53:12.1362014Z   Executable unittests src/lib.rs (target/debug/deps/heptabao_darwin_vnode_events-01888386f83f0c1d)
+2026-11-04T11:53:12.1362867Z   Executable unittests src/lib.rs (target/debug/deps/heptabao_domain-58ef87d44c6f02d4)
+2026-11-04T11:53:12.1408416Z   Executable unittests src/lib.rs (target/debug/deps/qrcode-ba8626587cd5dd37)
+2026-11-04T11:53:12.1409205Z   Executable unittests src/bin/qrencode.rs (target/debug/deps/qrencode-b3262fbf5d61fc6c)
+2026-11-04T11:53:13.2184593Z     Finished `test` profile [optimized + debuginfo] target(s) in 1.05s
+2026-11-04T11:53:13.2430217Z      Running unittests src/lib.rs (target/debug/deps/heptabao_agent-ce7add7edb0de0e1)
+2026-11-04T11:53:13.2442517Z 
+2026-11-04T11:53:13.2442902Z running 4 tests
+2026-11-04T11:53:13.2451085Z test tests::authentication_renewal_and_revocation_are_monotonic ... ok
+2026-11-04T11:53:13.2452035Z      Running unittests src/lib.rs (target/debug/deps/heptabao_authbus_contracts-3a7cef52655eb74b)
+2026-11-04T11:53:13.2452632Z test tests::debug_output_redacts_sink_and_reconciliation_references ... ok
+2026-11-04T11:53:13.2453110Z test tests::retry_backoff_is_bounded_and_deadline_checked ... ok
+2026-11-04T11:53:13.2453753Z test tests::unknown_after_entry_blocks_blind_retry_until_reconciled ... ok
+2026-11-04T12:38:40.9193071Z test service::snapshot_transfer::lossless_export::tests::lossless_export_source_change_between_staging_and_completion_withholds_file ... ok
+2026-11-04T12:38:43.9763933Z test service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead ... ok
+2026-11-04T12:38:51.1041388Z test service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead ... FAILED
+2026-11-04T12:38:51.1645819Z test service::snapshot_transfer::lossless_export::tests::typed_root_identity::typed_root_contents_changed_checkpoint_uses_original_identity_without_reviving_old_request ... ok
+2026-11-04T12:38:51.2177122Z test service::snapshot_transfer::lossless_export::tests::typed_root_identity::typed_root_contents_reject_every_root_and_nested_reference_field_change ... ok
+2026-11-04T12:38:51.2653927Z test service::snapshot_transfer::lossless_export::tests::typed_root_identity::typed_root_contents_require_current_digest_native_selection_and_target_identity ... ok
+2026-11-04T12:38:51.3357606Z test service::snapshot_transfer::lossless_export::tests::typed_root_identity::typed_root_equal_data_does_not_replace_physical_seal_check_or_revive_consumed_scope ... ok
+2026-11-04T12:38:51.5332496Z test service::snapshot_transfer::lossless_export::tests::typed_root_identity::typed_root_export_after_audit_root_key_epoch_and_digest_changes_withhold_file ... ok
+2026-11-04T12:38:51.6076583Z test service::snapshot_transfer::lossless_export::tests::typed_root_identity::typed_root_export_consumed_rejected_scope_does_not_authorize_fresh_cold_scope ... ok
+2026-11-04T12:38:51.6365679Z test service::snapshot_transfer::redirect_tests::native_redirect_unknown_leader_and_expired_original_scope_fail_without_effect ... ok
+2026-11-04T12:38:51.7257882Z test service::snapshot_transfer::redirect_tests::native_redirect_uses_configured_current_leader_without_consuming_uses_or_staging ... ok
+2026-11-04T12:39:24.6257180Z HBHA-DIAG-UNSEAL route_status=200 state_loaded=true recovery_required=false barrier_loaded=true record_root=false activation=false original_deadline_present=true
+2026-11-04T12:39:24.6257769Z 
+2026-11-04T12:39:24.6258549Z thread 'service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead' (192666) panicked at crates/heptabao-server/src/service_snapshot_lossless_parallel_tests.rs:35:5:
+2026-11-04T12:39:24.6259566Z assertion `left == right` failed
+2026-11-04T12:39:24.6259818Z   left: 403
+2026-11-04T12:39:24.6260017Z  right: 503
+2026-11-04T12:39:24.6260130Z 
+2026-11-04T12:39:24.6260193Z 
+2026-11-04T12:39:24.6260274Z failures:
+2026-11-04T12:39:24.6260823Z     service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead
+2026-11-04T12:39:24.6261340Z 
+2026-11-04T12:39:24.6261618Z test result: FAILED. 3672 passed; 1 failed; 8 ignored; 0 measured; 0 filtered out; finished in 2612.12s
+2026-11-04T12:39:24.6261967Z 
+2026-11-04T12:39:24.6599299Z error: test failed, to rerun pass `-p heptabao-server --lib`
+2026-11-04T12:39:24.6600056Z      Running unittests src/bin/heptabao-seed.rs (target/debug/deps/heptabao_seed-69ba244a9271f656)
+2026-11-04T12:39:24.6658919Z 
+2026-11-04T12:39:24.6659233Z running 0 tests
+2026-11-04T12:39:24.6659425Z 
+2026-11-04T12:39:24.6659678Z test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+2026-11-04T12:39:24.6660143Z 
+2026-11-04T12:39:24.6660943Z      Running unittests src/main.rs (target/debug/deps/heptabao_server-2f14bc48299f333c)
+2026-11-04T12:39:24.6719158Z 
+

@@ -1,6 +1,6 @@
 {
   "schema": "heptabao.36076-and-33cafa-checkpoint.v4",
-  "as_of_utc": "2026-11-04T12:52:08.356705+00:00",
+  "as_of_utc": "2026-11-04T13:51:28.836756+00:00",
   "compiled_source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
   "compiled_source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95",
   "published_source_commit": "a5c05856f23c395e590fd4e6eeec02bb669a2aa9",
@@ -309,14 +309,14 @@
     "formatted_run_id": 41791159057,
     "formatted_conclusion": "failure",
     "formatted_failure": "Repository documentation validator required technical prose in the intentionally empty main README; fmt passed and Rust runtime tests not executed.",
-    "current_head": "0dc39624d1266a6fca98760757b9482bf6f98a7a",
-    "current_tree": "959c65d6782b288c41730da869c86007c268547c",
+    "current_head": "f9139c3b37b6373df3e4b4c61ebdd4f847afac4d",
+    "current_tree": "ebd395e4515e903e11db34347bd042c013bc780c",
     "current_head_rust_matches_physical_33cafa_tree": false,
     "additional_integration_scope": "Intentional empty README; same technical documentation requirements moved to CURRENT_DOCUMENTATION with negative regressions; no runtime gate removed.",
     "current_full_qualification_terminal_observed": false,
-    "current_run_id": 41814525698,
+    "current_run_id": 41837754898,
     "current_status": "in_progress",
-    "current_trust_boundary_run_id": 41814525725,
+    "current_trust_boundary_run_id": 41837754906,
     "current_trust_boundary_conclusion": "success",
     "current_attempt": 1,
     "attempt1_conclusion": "failure",
@@ -398,11 +398,11 @@
     },
     "current_conclusion": null,
     "previous_completed_head": "1780833661058efff2e31cd2ce2733d485075ac3",
-    "prospective_merge": "186570233517b2295de7384ef96a5815ba7db06f",
+    "prospective_merge": "4917ae1dc021b948c92a9e9cc4b2e2af171a713b",
     "production_rust_matches_physical33_except_test_only_fixture": true,
     "current_jobs": [
-      126521818538,
-      126521818811
+      126600985114,
+      126600986208
     ],
     "codeql_separate_run_id": 41814520252,
     "overall_job_timeout_minutes": 360,
@@ -428,7 +428,177 @@
       "result_sha256": "6b3fd0767e48e624fabade1a59671f402f8f4e34d92c43354594c069849fd999",
       "log_sha256": "bb01fe409506736cff4a9c9c25a4d31be2406b7fc450507cdffa10415c220960",
       "whole_workspace_pass": false
-    }
+    },
+    "run_41814525698_terminal": {
+      "schema": "heptabao.ci-complete-workspace-failure-observation.v1",
+      "run_id": 41814525698,
+      "read_at_utc": "2026-11-04T13:06:00Z",
+      "jobs": [
+        {
+          "job_id": 126521818538,
+          "status": "completed",
+          "conclusion": "failure",
+          "completed_at": "2026-11-04T12:39:28Z",
+          "full_log_chars": 2738330,
+          "scoped_excerpt_path": "terminal-126521818538-scoped-excerpt.log",
+          "server_tests": {
+            "passed": 3672,
+            "failed": 1,
+            "ignored": 8
+          },
+          "sole_failed_test": "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead",
+          "assertion": {
+            "actual": 403,
+            "expected": 503
+          },
+          "later_qualification_steps": "skipped"
+        },
+        {
+          "job_id": 126521818811,
+          "status": "completed",
+          "conclusion": "failure",
+          "completed_at": "2026-11-04T12:36:02Z",
+          "full_log_chars": 2720323,
+          "scoped_excerpt_path": "terminal-126521818811-scoped-excerpt.log",
+          "server_tests": {
+            "passed": 3672,
+            "failed": 1,
+            "ignored": 8
+          },
+          "sole_failed_test": "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead",
+          "assertion": {
+            "actual": 403,
+            "expected": 503
+          },
+          "later_qualification_steps": "skipped"
+        }
+      ]
+    },
+    "exact_403_fixture_sha256": "400c57c02d2e395ca73fb6effa28b370645f749dfa81adffc947b30f3526381f",
+    "existing_normal_two_test_result": {
+      "schema": "ci-lossless-actor-and-original-deadline-normal-r1",
+      "source": "9c54d92a18ef59022a803cb89566ca8007b8b97c",
+      "tree": "30731312c123edcc2de2ecce02347337ba49d587",
+      "profile": {
+        "PATH": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin:/usr/bin:/bin",
+        "CARGO_HOME": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+        "CARGO_TARGET_DIR": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target",
+        "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+        "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+        "CARGO_PROFILE_RELEASE_LTO": "false",
+        "CARGO_PROFILE_RELEASE_DEBUG": "0",
+        "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+        "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+        "CARGO_PROFILE_RELEASE_PANIC": "unwind",
+        "CARGO_BUILD_JOBS": "1"
+      },
+      "default_features": [
+        "native-v6-storage",
+        "native-v6-ha"
+      ],
+      "fixture_features": [],
+      "tests": [
+        "lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead",
+        "lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead"
+      ],
+      "test_count": 2,
+      "production_services_changed": false,
+      "started_ns": 1793797021145707270,
+      "preparation": {
+        "schema": "ci-lossless-actor-403-prepare-v1",
+        "source": "9c54d92a18ef59022a803cb89566ca8007b8b97c",
+        "tree": "30731312c123edcc2de2ecce02347337ba49d587",
+        "source_path": "/home/qian-qi/heptabao-bao-acceptance-ci-lossless-actor-20261104-r1/source",
+        "prior_source": "45d45a79349d8feaed35cb60335edc76ae81bd29",
+        "prior_tree": "7c66c145435dfa32afafc20dfb9e5c3a5f96cdaf",
+        "associated_ci_head": "0dc39624d1266a6fca98760757b9482bf6f98a7a",
+        "production_rust_unchanged_from_frozen33": true,
+        "prior_fixture_difference_from_frozen33": [
+          "crates/heptabao-server/src/service_native_kv2_mount_tests.rs"
+        ],
+        "changed_files": [
+          "crates/heptabao-server/src/service_snapshot_lossless_parallel_tests.rs"
+        ],
+        "fixture_sha256": "400c57c02d2e395ca73fb6effa28b370645f749dfa81adffc947b30f3526381f",
+        "original_fixture_sha256": "707c98e2585f438f26722ae86d4b7222a0866747fd20d955724155c3bbd8a268",
+        "prior_source_unchanged": true,
+        "request_pause_ttl_deadline_budgets_changed": false,
+        "production_services_changed": false
+      },
+      "status": "passed",
+      "runtime_tests_started": true,
+      "build": {
+        "label": "build",
+        "args": [
+          "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+          "test",
+          "--release",
+          "--locked",
+          "--offline",
+          "-p",
+          "heptabao-server",
+          "--lib",
+          "--no-run",
+          "--message-format=json-render-diagnostics"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_seconds": 1328.3429145300033,
+        "owned_pgid": 2870497,
+        "remaining": [],
+        "outer_cap_seconds": 3600,
+        "stdout_sha256": "fda21c3d0af3468505e3ec9e102b8c2f2e3324b6206403fbf82aef8c91d77ae0",
+        "stderr_sha256": "6641d515955c0b209965f5724ae0367f3e0d0834392cbcefe04738dc1379195f"
+      },
+      "build_artifact": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/deps/heptabao_server-46a8765afad8ea76",
+      "binary": {
+        "path": "/home/qian-qi/heptabao-bao-acceptance-ci-lossless-actor-20261104-r1/normal-tests/retained-heptabao-server-libtest",
+        "sha256": "f27c8565862dd50c4aec98cd8b0c7c81d154aba34451da36850720347fb81201",
+        "bytes": 183247600
+      },
+      "list": {
+        "label": "list",
+        "args": [
+          "/home/qian-qi/heptabao-bao-acceptance-ci-lossless-actor-20261104-r1/normal-tests/retained-heptabao-server-libtest",
+          "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::",
+          "--list"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_seconds": 0.01206089201150462,
+        "owned_pgid": 2888656,
+        "remaining": [],
+        "outer_cap_seconds": 30,
+        "stdout_sha256": "2a564a6c351891dde3ec8bfef7fca4e3933ef9579b6aff43d31260d702c5f412",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "actual_test_names": [
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead",
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead"
+      ],
+      "tests_result": {
+        "label": "tests",
+        "args": [
+          "/home/qian-qi/heptabao-bao-acceptance-ci-lossless-actor-20261104-r1/normal-tests/retained-heptabao-server-libtest",
+          "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::",
+          "--nocapture",
+          "--test-threads=1"
+        ],
+        "exit_code": 0,
+        "timed_out": false,
+        "elapsed_seconds": 10.114456551003968,
+        "owned_pgid": 2888657,
+        "remaining": [],
+        "outer_cap_seconds": 90,
+        "stdout_sha256": "933371513f0f6b30ce8373e125bcfe7ef648b20dd9c3a5743e11e7f5531f328f",
+        "stderr_sha256": "f0fc5cee225a412f5b9abc239baf8c412437476b6fd7960d30ee6c0b271c8727"
+      },
+      "binary_unchanged": true,
+      "source_unchanged": true,
+      "terminal_ns": 1793798360231454149
+    },
+    "current_ci_contains_combined_r7": false,
+    "concurrent_head_update_observed_not_launched_by_root": true
   },
   "qa_publication": {
     "physical_followup_commit": "ccee5c8d1cd482fcb8fcadc578f8d045f823576a",
@@ -1647,5 +1817,551 @@
     "unknown_request_replayed": false,
     "valid_restore_bodies": 0,
     "zero_existing_write_failure_markers_proves_all_writes_succeeded": false
+  },
+  "combined_r7": {
+    "rog_commit": "dc1c02dbd4803f4301097a8268d121e5d7f27464",
+    "tree": "97d4e782ffa1f2e5d4e116747c34d8c9fb5390d8",
+    "github_commit": "d76783b5fe9eb58f54c18a43075d1f4e374fd3d6",
+    "github_branch": "codex/heptabao-native-ssh-http-20261104-r7",
+    "github_tree_root_verified": true,
+    "mac_commit": "9c08c538a0a9dad6a20f1672c108008592c03aa8",
+    "mac_root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-http-r7",
+    "mac_stage_job": "1a1a6c0c281-fc05-2898",
+    "mac_stage_receipt_sha256": "a33de945383a1d64da227378627ef7a053e8b7a112154e32e50d9405b61e0e28",
+    "mac_build_job": "1a1a6c207e7-fc05-289d",
+    "mac_build_status": "succeeded, authoritative exit0 complete/durable",
+    "rog_build_and_tests_job": "1a1a6baeb4f-fc05-287f",
+    "exact_groups": {
+      "ssh": 25,
+      "mount": 1,
+      "http_redirect": 5
+    },
+    "exact_group_sha256": "3c6415b0584ef2add08694133e99937bf20f74fcc1c1825f9667d0a07f8aa83b",
+    "runtime_qualified": false,
+    "production_changed": false,
+    "large_stdin_stage_attempts": "2 MCP timeouts; no receipt existed in exact root at read-only probe; input switched to create-only chunked verified file; only later small-code stage has confirmed success",
+    "mac_server_sha256": "e4d06288fdc516d4b5750cf00883a2de9cef40a2ab1c8c442e0ce555366d9350",
+    "mac_build_seconds": 304.48392258258536,
+    "mac_build_result_sha256": "78add96f2afd949e780c54f2490b75c02e09df07cbd8fccfbb7680617b66fd16",
+    "mac_native_receipt_sha256": "54580a79c465459992918f4df88c32628d53709c9820946bb57c6f779b182b51",
+    "mac_tests31_launch": "confirmed launched after exact stable-key reconciliation",
+    "mac_tests31_key": "heptabao-combined-r7-mac-normal-exact31-tests-20261104-r1",
+    "mac_tests31_job": "1a1a6ceb1c0-fc05-28d3",
+    "mac_test_compile_status": "pending normal libtest then exact31 runtime",
+    "mac_normal_build": {
+      "artifacts": {
+        "heptabao-seed": {
+          "bytes": 86187696,
+          "compiler_executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/heptabao-seed",
+          "features": [
+            "default",
+            "native-v6-ha",
+            "native-v6-storage"
+          ],
+          "fresh": false,
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-http-r7/build-normal-r1/artifacts/heptabao-seed",
+          "profile": {
+            "debug_assertions": true,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": true,
+            "test": false
+          },
+          "sha256": "7b405f649aae9cef1125ba44e456ef6698edbbca250b8d09a54cc3b9a52ef10e"
+        },
+        "heptabao-server": {
+          "bytes": 91774416,
+          "compiler_executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/heptabao-server",
+          "features": [
+            "default",
+            "native-v6-ha",
+            "native-v6-storage"
+          ],
+          "fresh": false,
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-http-r7/build-normal-r1/artifacts/heptabao-server",
+          "profile": {
+            "debug_assertions": true,
+            "debuginfo": 0,
+            "opt_level": "3",
+            "overflow_checks": true,
+            "test": false
+          },
+          "sha256": "e4d06288fdc516d4b5750cf00883a2de9cef40a2ab1c8c442e0ce555366d9350"
+        }
+      },
+      "build_driver_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-http-r7/control/build_normal.py",
+      "build_driver_sha256": "026aa2ab4a1af663424ae2d0dcc678a48c4f3b9ba0429574f4bb60345a83dea2",
+      "build_exit_code": 0,
+      "build_finished_success": true,
+      "cargo_events_sha256": "979aac3d3571d87bf0408a5100fb6cc92f3eb8f02dc5823a64bc9b5c43cebd95",
+      "cargo_stderr_sha256": "c42e1d3cd2c8a13e8de9e63e407992ccbdc5d74816a28cd875a36c8701c77715",
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--bin",
+        "heptabao-server",
+        "--bin",
+        "heptabao-seed",
+        "--message-format=json"
+      ],
+      "elapsed_seconds": 304.48392258258536,
+      "formal_qualification": false,
+      "native_abi": "aarch64-apple-darwin",
+      "normal_default_candidate": true,
+      "owned_group_survivors_after_wait": false,
+      "requested_release_profile": {
+        "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+        "CARGO_PROFILE_RELEASE_DEBUG": "0",
+        "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+        "CARGO_PROFILE_RELEASE_LTO": "false",
+        "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+        "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+        "CARGO_PROFILE_RELEASE_PANIC": "unwind"
+      },
+      "rustc_vv": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: aarch64-apple-darwin\nrelease: 1.98.0\nLLVM version: 22.1.8\n",
+      "schema": "heptabao.native-default-build-result.v1",
+      "source_commit": "9c08c538a0a9dad6a20f1672c108008592c03aa8",
+      "source_freeze_verified": true,
+      "source_tree": "97d4e782ffa1f2e5d4e116747c34d8c9fb5390d8",
+      "timed_out": false
+    },
+    "mac_normal_native_receipt": {
+      "binary_sha256": "e4d06288fdc516d4b5750cf00883a2de9cef40a2ab1c8c442e0ce555366d9350",
+      "build_exit_code": 0,
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "native_abi": "aarch64-apple-darwin",
+      "provenance": {
+        "cargo_events_sha256": "979aac3d3571d87bf0408a5100fb6cc92f3eb8f02dc5823a64bc9b5c43cebd95",
+        "result_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-http-r7/build-normal-r1/result.public.json",
+        "result_sha256": "78add96f2afd949e780c54f2490b75c02e09df07cbd8fccfbb7680617b66fd16"
+      },
+      "schema": "heptabao.native-build.v1",
+      "source_commit": "9c08c538a0a9dad6a20f1672c108008592c03aa8",
+      "source_freeze_verified": true,
+      "source_tree": "97d4e782ffa1f2e5d4e116747c34d8c9fb5390d8"
+    },
+    "mac_normal_build_status": {
+      "at_unix_ms": 1793799402523,
+      "audit_recorded": true,
+      "automatic_retry": false,
+      "cancelled": false,
+      "exit_code": 0,
+      "job_id": "1a1a6c207e7-fc05-289d",
+      "launch_nonce": "f87546ecaeddb894f87ce99591f951df",
+      "log_bytes": {
+        "stderr": {
+          "seen": 0,
+          "stored": 0
+        },
+        "stdout": {
+          "seen": 730,
+          "stored": 730
+        }
+      },
+      "log_errors": {
+        "stderr": null,
+        "stdout": null
+      },
+      "log_synced": {
+        "stderr": true,
+        "stdout": true
+      },
+      "log_truncated": {
+        "stderr": false,
+        "stdout": false
+      },
+      "output_complete": true,
+      "output_durable": true,
+      "state": "succeeded",
+      "terminal_publication_confirmed": true,
+      "terminal_publication_protocol": 1,
+      "timed_out": false
+    },
+    "mac_tests31_terminal_observed": false,
+    "rog_tests31_terminal_observed": false
+  },
+  "pocket_first_cycle_preflight_r2": {
+    "qa_sha256": "2d7f018de9408f02811c6f5eb24d1ad0973721c194f31bf685073bb5565deae0",
+    "job": "1a1a6ceb1be-fc05-28d2",
+    "core": {
+      "actualRuntimeExecuted": false,
+      "allAccountsQualified": false,
+      "binarySha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+      "buildReceiptSha256": "7fa76585e94fe2e60bbc3ce754f37e4d9d433e4cf576fcc2e39a1e95771f3f42",
+      "checks": [
+        {
+          "case": "kernel_private_network",
+          "passed": true
+        },
+        {
+          "case": "kernel_production_and_inputs_readonly",
+          "passed": true
+        },
+        {
+          "case": "normal_receipts_exact",
+          "passed": true
+        },
+        {
+          "case": "normal_source_and_binary_identity",
+          "passed": true
+        },
+        {
+          "case": "reviewed_current_native_prepare",
+          "passed": true
+        },
+        {
+          "case": "all_prepared_source_pins_exact",
+          "passed": true
+        },
+        {
+          "case": "consumer_review_pin",
+          "passed": true
+        },
+        {
+          "case": "controller_review_pin",
+          "passed": true
+        },
+        {
+          "case": "coordinator_review_pin",
+          "passed": true
+        },
+        {
+          "case": "native_binary_pin",
+          "passed": true
+        },
+        {
+          "case": "original_qa_helper_pins_exact",
+          "passed": true
+        },
+        {
+          "case": "exact_current_five_identities",
+          "passed": true
+        },
+        {
+          "case": "exact_current_ordinal5_generation",
+          "passed": true
+        },
+        {
+          "case": "current_identity_jwt_bound_without_provider_claim",
+          "passed": true
+        },
+        {
+          "case": "current_tg_profile_free_raw_source_exact",
+          "passed": true
+        },
+        {
+          "case": "current_usage_not_cleared",
+          "passed": true
+        },
+        {
+          "case": "original_pocket_plugin_flags",
+          "passed": true
+        },
+        {
+          "case": "registry_capture_exact",
+          "passed": true
+        }
+      ],
+      "consumerBudgetSeconds": 70,
+      "credentialValuesPublished": false,
+      "currentSource": {
+        "accessSha256": "25599c616259f271ba3150af06dfdbf8967467455f45278d114c70248eaf76d4",
+        "accountSha256": "8fc636f1db234f6f224599719619793d5f0b885213d84d126202b5de472f7875",
+        "credentialSha256": "a440653bdbed7e00251c1e2e1cb969bb4d04d94bf502304ee6a5b04eacf09cb1",
+        "freshProviderProofObtained": false,
+        "localProfileOrdinal": 5,
+        "mainSourceProfileCount": 5,
+        "priorProviderProofReused": false,
+        "profileIdSha256": "36b8ea03a6884be553e4124e76df9fb87a40cf13acb795ee8582e3ad0ab2c319",
+        "sourceAuthTableSha256": {
+          "main": "b3df91ca3377f42db48abcf25776a9ebe6fcb9bb27310a513cf4a88cc0a407d5",
+          "tg8687951891": "76f1ceb53832209d67692c17ba4967df8fa0114f2365989fa5a8c963b095c4e6"
+        },
+        "tgEffectiveInheritanceProvedBySelectorReceipt": "79e232c4282796ffb07c174fbc32c5e4a4cb5f87167ec42851fd042cc8a8f3ea",
+        "tgSourceProfileCount": 0
+      },
+      "error": "registry_read_failure_not_known_missing_shm_case",
+      "errorClass": "Refused",
+      "errorFrames": [
+        {
+          "file": "pocket_shared_first_cycle_live_r2.py",
+          "line": 358
+        },
+        {
+          "file": "pocket_first_cycle_inputs_r1.py",
+          "line": 265
+        },
+        {
+          "file": "pocket_first_cycle_inputs_r1.py",
+          "line": 27
+        }
+      ],
+      "finishedUnixMs": 1793799928756,
+      "fixtureScenario": "shared-managed12-original-local-source",
+      "frozenManagedSources": [
+        {
+          "accountIdSha256": "332c2cdd98cd0650de22a4506f7f67c3cbc69a9154e0cbafa4344f7a691640b9",
+          "credentialGenerationChanges": true,
+          "credentialSha256": "bca88c7adde84057871fd63f202e6aba80d453a04f75151df1d29f269dfaa5f1",
+          "exactOriginalProfileIdAndIdentity": true,
+          "ordinal": 1,
+          "profileIdSha256": "7b0b24e17c166c04c73864d9d276562e30c15bd5bf9f719ea3abd1a9687b0c0d"
+        },
+        {
+          "accountIdSha256": "899445c0e083199d67988e1db5bc7ac6d4d158bf913bb54669e5afc7714f2fb2",
+          "credentialGenerationChanges": true,
+          "credentialSha256": "48e095587f180413f65274d6d25d88d4ee6f9f99d981575f54bc4fb3399c286e",
+          "exactOriginalProfileIdAndIdentity": true,
+          "ordinal": 2,
+          "profileIdSha256": "eef0b72e4a8ba90bee622442f4d489172568664397a6da152e3faf0bf9eac6a1"
+        }
+      ],
+      "host": "pocket4",
+      "httpBudgetSeconds": 10,
+      "independentNativeAfterFence": true,
+      "independentNativeUserSource": {
+        "accountIdSha256": "fbb299d68ad33bc50691d77c12828ec9b0d709b192687e109e8269be2646cac3",
+        "copiedOrChanged": false,
+        "identity": [
+          "66306",
+          "31459376",
+          "1000",
+          "1000",
+          "33152",
+          "1",
+          "4183",
+          "1793422411648296557",
+          "1793422411648296557"
+        ],
+        "matchesLocalOrdinal4": true,
+        "nativeUserScopeProcessStarted": false,
+        "sha256": "d77382ec5c49f90efe35f25c5ae8a86cd82e08294d408164c3a6778f958df173"
+      },
+      "installedCoordinatorEntryExercised": false,
+      "j3160Contacted": false,
+      "latestActiveManagedGenerationClaimed": false,
+      "modelRequestDispatched": false,
+      "nativeBackendAttemptCount": null,
+      "nativeBuildReceiptSha256": "2fa263744917e1d71658daa4f34e09ea448fe77ec0b2c0f8ec22c01e2cd84e8e",
+      "nativeRpcMaximumMs": 10000,
+      "networkIsolation": {
+        "distinctNamespace": true,
+        "onlyLoopback": true
+      },
+      "ok": false,
+      "originalGenericConsumerAndReceiptsUnchanged": true,
+      "originalInstalledPluginRequestTimeoutMs": 15000,
+      "outcomeUnknown": false,
+      "ownedNativeProcessesStopped": true,
+      "ownedNodeChildrenStopped": true,
+      "phases": [],
+      "preflightOnly": true,
+      "productionChanged": false,
+      "productionTrafficCutover": false,
+      "providerAvailabilityQualified": false,
+      "providerNetworkEgress": false,
+      "realServiceManagerExercised": false,
+      "rollbackBudgetSeconds": 35,
+      "rollbackGuards": {},
+      "schema": "heptabao.pocket-shared-first-cycle-core.v1",
+      "scope": "Actual original Pocket flags/cache with shared managed profiles1/2, preserved local5/native4, current main/tg native factories, cold restart and full auth/cache CAS. Owned fixture only.",
+      "sourceAfterFence": {
+        "bothAuthTablesExact": true,
+        "configExact": true,
+        "kernelSourcesReadOnly": true,
+        "metadataObservedUnchanged": true
+      },
+      "sourceCacheProjection": {
+        "contentSha256": "12d69acce6011cf4e53a2d1e7575cee0fbe1c2609b2ac9f18857445ebaee5296",
+        "directoryAbsent": false,
+        "files": {
+          "applied-profiles.json": {
+            "bytes": 372,
+            "identity": [
+              "66306",
+              "32112770",
+              "1000",
+              "1000",
+              "33152",
+              "1",
+              "372",
+              "1791476432307721005",
+              "1791476432307721005"
+            ],
+            "mode": 384,
+            "present": true,
+            "sha256": "bfebf2cc4258c85fcd1b8b3eb276d0038e0bcbd7ba9471e544ba3c6134f59f02"
+          },
+          "bad-refresh-quarantine.json": {
+            "bytes": 73,
+            "identity": [
+              "66306",
+              "32112812",
+              "1000",
+              "1000",
+              "33152",
+              "1",
+              "73",
+              "1788501095937343064",
+              "1788501095937343064"
+            ],
+            "mode": 384,
+            "present": true,
+            "sha256": "5a43f12d5e72a75b5c1354d38e5792726427e34e534485058a890bbc6e934ede"
+          },
+          "lease-epochs.json": {
+            "present": false
+          },
+          "publish-baseline.json": {
+            "bytes": 174,
+            "identity": [
+              "66306",
+              "32112660",
+              "1000",
+              "1000",
+              "33152",
+              "1",
+              "174",
+              "1785914237958964753",
+              "1785914237958964753"
+            ],
+            "mode": 384,
+            "present": true,
+            "sha256": "9c6ae0b275c40b632d49243e70d4bd8e689891ffa8673056f1dde4e23cbdb529"
+          },
+          "refresh-backoff.json": {
+            "present": false
+          },
+          "status.json": {
+            "bytes": 154,
+            "identity": [
+              "66306",
+              "32162411",
+              "1000",
+              "1000",
+              "33152",
+              "1",
+              "154",
+              "1792852769415054092",
+              "1792852769415054092"
+            ],
+            "mode": 384,
+            "present": true,
+            "sha256": "440c50627e3c9bdcb0d454840363ac06803a604e8c3a3f03d97cc9e3f1de075d"
+          }
+        }
+      },
+      "sourceCachesAfterFence": true,
+      "sourceCommit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+      "sourceTree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+      "startedUnixMs": 1793799928301,
+      "tgSourceRawShape": {
+        "completeRowsSha256": "76f1ceb53832209d67692c17ba4967df8fa0114f2365989fa5a8c963b095c4e6",
+        "localProfiles": 0,
+        "originalRowsAndTimestampsPreserved": true,
+        "stateRows": 0,
+        "storeRows": 1
+      }
+    },
+    "outer": {
+      "automaticRetry": false,
+      "coreChecks": 18,
+      "corePassed": 18,
+      "coreResultPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-preflight-r2/live/result.public.json",
+      "coreResultSha256": "cc1ebf23d959e013e433f0cf6cb133ad6de93c68b305b1d604d84f448ab860ae",
+      "elapsedSeconds": 0.579,
+      "fixtureScenario": "shared-managed12-original-local-source",
+      "holdReleasePerformed": false,
+      "intentSha256": "53ec0842bd6eed4f3315bb52c3673d3ba3f7f31640de28076fa1efa1262662c4",
+      "ok": false,
+      "outcomeUnknown": false,
+      "outerTimeout": false,
+      "ownedNamespaceProcessExited": true,
+      "ownedNativeCleanupQualified": true,
+      "phase": "preflight",
+      "pidNamespaceTeardownEnforced": true,
+      "productionChanged": false,
+      "productionTrafficCutover": false,
+      "productionUnitsAfter": [
+        {
+          "ActiveState": "inactive",
+          "Id": "openclaw-authbus-restart-when-idle.service",
+          "LoadState": "loaded",
+          "MainPID": "0",
+          "SubState": "dead",
+          "UnitFileState": "static"
+        },
+        {
+          "ActiveState": "inactive",
+          "Id": "openclaw-gateway.service",
+          "LoadState": "loaded",
+          "MainPID": "0",
+          "SubState": "dead",
+          "UnitFileState": "enabled"
+        }
+      ],
+      "productionUnitsBefore": [
+        {
+          "ActiveState": "inactive",
+          "Id": "openclaw-authbus-restart-when-idle.service",
+          "LoadState": "loaded",
+          "MainPID": "0",
+          "SubState": "dead",
+          "UnitFileState": "static"
+        },
+        {
+          "ActiveState": "inactive",
+          "Id": "openclaw-gateway.service",
+          "LoadState": "loaded",
+          "MainPID": "0",
+          "SubState": "dead",
+          "UnitFileState": "enabled"
+        }
+      ],
+      "productionUnitsUnchanged": true,
+      "protectedInputsUnchanged": true,
+      "providerAvailabilityQualified": false,
+      "providerNetworkEgress": false,
+      "returncode": 1,
+      "schema": "heptabao.pocket-shared-first-cycle-launch-result.v1",
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdoutSha256": "07d07db922e14c2ace5ce345399221c8bc7e56cdc8dad14ebe21310e7669a9e3"
+    },
+    "registry_failure": {
+      "databaseIdentity": [
+        "66306",
+        "31625381",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "111644672",
+        "1793745120385191031",
+        "1793745120385191031"
+      ],
+      "errorClass": "OperationalError",
+      "messageSha256": "fb017b1ae9cf0bb2aa77d824874a11be175f3816d6eb117d8de707c0a66014f1",
+      "mode": "ro + query_only + BEGIN",
+      "ok": false,
+      "schema": "heptabao.pocket-registry-readonly-attempt.v1",
+      "sidecarIdentities": {
+        "-shm": null,
+        "-wal": null
+      },
+      "sourceWritten": false,
+      "sqliteErrorCode": 14,
+      "sqliteErrorName": "SQLITE_CANTOPEN"
+    },
+    "first_cycle_runtime_qualified": false,
+    "production_cutover": false
   }
 }

@@ -1,0 +1,158 @@
+{
+  "schema": 1,
+  "commit": "dc1c02dbd4803f4301097a8268d121e5d7f27464",
+  "tree": "97d4e782ffa1f2e5d4e116747c34d8c9fb5390d8",
+  "base_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "base_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "prior_commit": "25b5a82c04421ca8613e1f0f81dfddfdaa2684b7",
+  "prior_tree": "cc76607c691eefd8858a0473b4b5f78b77406099",
+  "published_base_commit": "054d17cd50951efa46d78db3911ad1d277a0c584",
+  "patch_sha256": "b705ddeb93bc5766b432baea12f34c8062d646d930c4bc4cc53cc4f64681ff6b",
+  "delta_sha256": "f57c455c343bc12e576ae825aa9ec902292d201a363afc13d439b54b73720544",
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/auth.rs",
+      "sha256": "f28541658b6663ebdfed8d5fc4f019c976f2daf24bc372961e17755ebc2ad601",
+      "bytes": 395371,
+      "git_blob": "d63f6aed31dde907321a43392f4fb0f95547a1c2"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_native_ssh_reply.rs",
+      "sha256": "3d7231e58c702c078820100cf7ebdbd8da33a904ed5810f8864791e574a5d46e",
+      "bytes": 2463,
+      "git_blob": "a02ee6e77c67620a0e2fe4fd4447610f9f4b3eeb"
+    },
+    {
+      "path": "crates/heptabao-server/src/auth_wrapping.rs",
+      "sha256": "ec0bbf789cd7feb385f608d28c09f730c609887374ddaaaa7da49ab21ccb38ec",
+      "bytes": 38982,
+      "git_blob": "3141fe0657e57ef9f6c1095a414ed7918e8f7666"
+    },
+    {
+      "path": "crates/heptabao-server/src/engine_native_pki.rs",
+      "sha256": "d45c1fdb593c0947dc21164957ded292b9613e5561a5daf5f39d1926582e95f9",
+      "bytes": 22801,
+      "git_blob": "038a43099f7cffc373c10b9548a705d93b43165b"
+    },
+    {
+      "path": "crates/heptabao-server/src/engine_native_ssh.rs",
+      "sha256": "3866c284c234f2598fb0d0a7c983f41e324db25dbda6927a342f8804e8da05c1",
+      "bytes": 19047,
+      "git_blob": "d2c2c5c686f106a7fac29e4531ab82ad1a77569b"
+    },
+    {
+      "path": "crates/heptabao-server/src/engines.rs",
+      "sha256": "75e46bb5a44d4934f064003f78450208cf65a0c58a08c69d83138391629c5cf3",
+      "bytes": 153342,
+      "git_blob": "d4eb181702573cab33fb48de07765a47d870c713"
+    },
+    {
+      "path": "crates/heptabao-server/src/engines/native_empty_namespace.rs",
+      "sha256": "7fea4ae78b90c7e1b29c99cbd42d357d560c97230040726db5b4f81fce0db769",
+      "bytes": 6198,
+      "git_blob": "a48529a3bacb82e01b68b7ac929075e5a32b0e73"
+    },
+    {
+      "path": "crates/heptabao-server/src/engines/ssh.rs",
+      "sha256": "0ad3fc59dd519175c3b8ecf7e998dfec263b91f4959215cd40e6940ad855176a",
+      "bytes": 22069,
+      "git_blob": "4ebb12aeb0a2019ed6765607f163386bab735535"
+    },
+    {
+      "path": "crates/heptabao-server/src/engines/ssh_ca.rs",
+      "sha256": "e3eb912ca9d23ca279a90c31a5e2e7ca8ab8a3288bd438a6ec949889a546d150",
+      "bytes": 30045,
+      "git_blob": "1e04abc0cab0cccf95b19d059cc0b355b6d942e3"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha.rs",
+      "sha256": "a56ab6524b658b204cd998fc054ae5124ed615420ded443517bbf49988d6fd1c",
+      "bytes": 169489,
+      "git_blob": "95533302d0a7afa31078b712624c1701f5edb9c8"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_forward.rs",
+      "sha256": "d4e0c57e9202024feed35c496036c5c03f2cef06e584b3466a9eda6ee98eaf9f",
+      "bytes": 78870,
+      "git_blob": "91eb2c17225cb2aa30b47c3f84e69710c6346776"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_forward_native_kv2_write.rs",
+      "sha256": "807a7c064f95661c11b28057aa862557ece6ec4b3afe7e09d30871cdebd79a12",
+      "bytes": 5552,
+      "git_blob": "685e829af9c3cf24e981b382b9d84d0b976f2554"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_forward_native_ssh_tests.rs",
+      "sha256": "e76814415d668275ed47cb51f3fdc417d7a71d86c9ca17732d6d74d3e3d8a502",
+      "bytes": 7958,
+      "git_blob": "bcc812909579bf9804b9793d130acfe7fe18be7a"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "sha256": "6e390101098f424ccedb08ba9d625d2a14c6a2afe493fdd994ae58c2ce81bdc3",
+      "bytes": 32998,
+      "git_blob": "2c07d2f0a62160f91d50306f2f2cfa81750f3d9b"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot_redirect_tests.rs",
+      "sha256": "38e0891a2c6181128386318977f032050b1a5da4423699f152fae4398fd9627c",
+      "bytes": 20861,
+      "git_blob": "c99b84cf4d538308f6900e5171e6e5b84a2120f2"
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "sha256": "4f5b04c61254fe6de9e52fb90595cb3f0ee417cbf2aa0ee6e5f888feb8bdf392",
+      "bytes": 514946,
+      "git_blob": "61cadbc9fb87ceb2d2e8c931dd5ea8bab562f3a1"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_lifecycle.rs",
+      "sha256": "84aebdf17f859e1d4cfdfeb845fd70e76c674bf6a101d7709b8fed2b6596118f",
+      "bytes": 21834,
+      "git_blob": "90d73de0b65d311938322da28e4fbe7b03c335d7"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_auth.rs",
+      "sha256": "492a575a053d2aabc27e59bbb199f98bcb9d311d788ade2046d50d6828dcbdd2",
+      "bytes": 137400,
+      "git_blob": "855e353d564179f0f61e29604074627a2bfd83f0"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_kv2_mount_tests.rs",
+      "sha256": "3202825cef69680ac3c16fbb384fac301328612c9cd2a142e1f60f2ecd417888",
+      "bytes": 26847,
+      "git_blob": "7af690e48a46293adb63a65cea4cb10ccbcd1812"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_pki_ha_tests.rs",
+      "sha256": "b66ef1561eeecfacf642aa064903e28cd96f42afcf3685c3f214efcd4304cd2f",
+      "bytes": 21531,
+      "git_blob": "fa7a0c500c2ca3a7378b7eb9a5c87b87773310b0"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_ssh.rs",
+      "sha256": "485fa77ae90f484a4ac039aeb249447c4b15f5fae48d18f22103aaef41132d16",
+      "bytes": 19996,
+      "git_blob": "3b03ce4da8d5b5f7779096397ee9f7e6915ce075"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_ssh_archive_tests.rs",
+      "sha256": "beea55ceb21643f144f7a664c3366d9957c95338fe4a7c3c33c3aac2dc361371",
+      "bytes": 8140,
+      "git_blob": "fca8c213da5d752a77ac2bdca28bd88548d2ff5c"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_ssh_ha_tests.rs",
+      "sha256": "cbbaac9fdd6e9e5efbce57cdf0dee8b12f7b31a16ec900334871cd357957d2fe",
+      "bytes": 13675,
+      "git_blob": "019dff8e543618834e4c405e7dc5d3523de7a979"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_ssh_tests.rs",
+      "sha256": "55574d4f306d8a99011523cd2382d6edf8c93d716700c008a80b6a0c799595f8",
+      "bytes": 36307,
+      "git_blob": "cdde58d6f5f03be7932dbe394d88d3a86e6cba61"
+    }
+  ]
+}

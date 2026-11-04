@@ -1,0 +1,352 @@
+{
+  "checks": [
+    {
+      "name": "old_r5_truncated_body_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "old_r5_truncated_body_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "old_r5_truncated_body_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "old_read_amt_silently_misclassifies_truncated_body",
+      "passed": true
+    },
+    {
+      "name": "new_r6_truncated_body_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "new_r6_truncated_body_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "new_r6_truncated_body_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "new_truncated_body_unknown_without_retry",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_length_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_length_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_length_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "complete_fixed_length_remains_complete",
+      "passed": true
+    },
+    {
+      "name": "complete_204_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "complete_204_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "complete_204_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "complete_204_remains_complete",
+      "passed": true
+    },
+    {
+      "name": "duplicate_length_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "duplicate_length_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "duplicate_length_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "duplicate_length_unknown_before_body",
+      "passed": true
+    },
+    {
+      "name": "transfer_encoding_length_conflict_one_dispatch_original_budget",
+      "passed": true
+    },
+    {
+      "name": "transfer_encoding_length_conflict_connection_closed_and_meta_durable",
+      "passed": true
+    },
+    {
+      "name": "transfer_encoding_length_conflict_strict_complete_head",
+      "passed": true
+    },
+    {
+      "name": "transfer_encoding_length_conflict_unknown_before_body",
+      "passed": true
+    }
+  ],
+  "checks_passed": 24,
+  "checks_total": 24,
+  "network_connections": 0,
+  "new_source_sha256": "7dac6c0b94be13d1a8c0cfbd6c1eb7f04c83345f11d603e70e9d4179f31b8e5f",
+  "observations": [
+    {
+      "code": 0,
+      "name": "old_r5_truncated_body",
+      "outcome": {
+        "content_length": "5",
+        "content_type": null,
+        "elapsed_ms": 2.775979,
+        "header_names": [
+          "connection",
+          "content-length"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_bytes": 3,
+        "response_complete": true,
+        "response_header_bytes": 57,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "e85f204d37817365413d3f571a983f9d271ca73051101fde22a720cccf05ea0b",
+        "response_header_strict_termination": true,
+        "response_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "status": 200
+      }
+    },
+    {
+      "code": 2,
+      "name": "new_r6_truncated_body",
+      "outcome": {
+        "elapsed_ms": 2.215091,
+        "error_type": "Refused",
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_projections": [],
+        "outcome_unknown": true,
+        "phase": "response_body",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": 5,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "fixed_length",
+          "body_framing_valid": true,
+          "content_length_header_count": 1,
+          "content_length_is_single_decimal": true,
+          "content_length_is_within_response_bound": true,
+          "declared_content_length": 5,
+          "transfer_encoding_header_count": 0
+        },
+        "response_body_length_matches": false,
+        "response_bytes": 3,
+        "response_complete": false,
+        "response_content_length_remaining": 2,
+        "response_header_bytes": 57,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "e85f204d37817365413d3f571a983f9d271ca73051101fde22a720cccf05ea0b",
+        "response_header_strict_termination": true,
+        "status": 200
+      }
+    },
+    {
+      "code": 0,
+      "name": "complete_fixed_length",
+      "outcome": {
+        "content_length": "3",
+        "content_type": null,
+        "elapsed_ms": 1.566914,
+        "header_names": [
+          "content-length"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": 3,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "fixed_length",
+          "body_framing_valid": true,
+          "content_length_header_count": 1,
+          "content_length_is_single_decimal": true,
+          "content_length_is_within_response_bound": true,
+          "declared_content_length": 3,
+          "transfer_encoding_header_count": 0
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 3,
+        "response_complete": true,
+        "response_content_length_remaining": 0,
+        "response_header_bytes": 38,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 3,
+        "response_header_sha256": "5741fb6af4429d13c11248de4da929e7de68dc18c9ab2d87539b78cff696d597",
+        "response_header_strict_termination": true,
+        "response_sha256": "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+        "status": 200
+      }
+    },
+    {
+      "code": 0,
+      "name": "complete_204",
+      "outcome": {
+        "content_length": null,
+        "content_type": null,
+        "elapsed_ms": 1.568637,
+        "header_names": [
+          "connection"
+        ],
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_matches_enrolled_origin_and_exact_target": false,
+        "location_node": null,
+        "location_present": false,
+        "location_projections": [],
+        "outcome_unknown": false,
+        "phase": "complete",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": 0,
+          "body_framing_ambiguous": false,
+          "body_framing_mode": "no_body",
+          "body_framing_valid": true,
+          "content_length_header_count": 0,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 0
+        },
+        "response_body_length_matches": true,
+        "response_bytes": 0,
+        "response_complete": true,
+        "response_content_length_remaining": 0,
+        "response_header_bytes": 46,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 3,
+        "response_header_sha256": "8a1d91c7a0b894d8ab0a42740dd429f9e6da6300d1e3ef07e50aa4a35a9da835",
+        "response_header_strict_termination": true,
+        "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "status": 204
+      }
+    },
+    {
+      "code": 2,
+      "name": "duplicate_length",
+      "outcome": {
+        "elapsed_ms": 1.04953,
+        "error_type": "Refused",
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_projections": [],
+        "outcome_unknown": true,
+        "phase": "response_headers",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": null,
+          "body_framing_ambiguous": true,
+          "body_framing_mode": "fixed_length",
+          "body_framing_valid": false,
+          "content_length_header_count": 2,
+          "content_length_is_single_decimal": false,
+          "content_length_is_within_response_bound": false,
+          "declared_content_length": null,
+          "transfer_encoding_header_count": 0
+        },
+        "response_complete": false,
+        "response_header_bytes": 57,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "f31f663ddf97a39365ec5bf67595bb18cec3778d0811354b05c3fb0820927332",
+        "response_header_strict_termination": true,
+        "status": 200
+      }
+    },
+    {
+      "code": 2,
+      "name": "transfer_encoding_length_conflict",
+      "outcome": {
+        "elapsed_ms": 0.875844,
+        "error_type": "Refused",
+        "http_client_accepted_headers": true,
+        "location_distinct_value_count": 0,
+        "location_header_count": 0,
+        "location_projections": [],
+        "outcome_unknown": true,
+        "phase": "response_headers",
+        "raw_response_head_private_only": true,
+        "request_sent": true,
+        "response_body_framing": {
+          "body_expected_bytes": 3,
+          "body_framing_ambiguous": true,
+          "body_framing_mode": "fixed_length",
+          "body_framing_valid": false,
+          "content_length_header_count": 1,
+          "content_length_is_single_decimal": true,
+          "content_length_is_within_response_bound": true,
+          "declared_content_length": 3,
+          "transfer_encoding_header_count": 1
+        },
+        "response_complete": false,
+        "response_header_bytes": 66,
+        "response_header_capture_bound_exceeded": false,
+        "response_header_ends_crlf_crlf": true,
+        "response_header_eof_during_headers": false,
+        "response_header_line_reads": 4,
+        "response_header_sha256": "3c2171d26554a2c3f1cdcdd348131fc49f3ceddd580e653ca4f298ab187155a1",
+        "response_header_strict_termination": true,
+        "status": 200
+      }
+    }
+  ],
+  "old_source_sha256": "f6770eea97846adaf67aa0672d9f50596a1800b13d00c074aa16bef6f886765d",
+  "product_changed": false,
+  "schema": "normal33-response-body-framing-component-r1",
+  "scope": "actual child_request and stdlib HTTPResponse path with synthetic socket input; previous parent-child 61-component scope is not relabelled or repeated",
+  "subprocesses_spawned": 0,
+  "test_sha256": "dc31bec7b4aaf6fe47f35960463aee7ae77f60324545e832caf4e3988704054c"
+}

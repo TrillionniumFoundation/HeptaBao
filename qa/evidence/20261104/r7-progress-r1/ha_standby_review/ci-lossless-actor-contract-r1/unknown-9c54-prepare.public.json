@@ -1,0 +1,21 @@
+{
+  "schema": "ci-lossless-actor-403-prepare-v1",
+  "source": "9c54d92a18ef59022a803cb89566ca8007b8b97c",
+  "tree": "30731312c123edcc2de2ecce02347337ba49d587",
+  "source_path": "/home/qian-qi/heptabao-bao-acceptance-ci-lossless-actor-20261104-r1/source",
+  "prior_source": "45d45a79349d8feaed35cb60335edc76ae81bd29",
+  "prior_tree": "7c66c145435dfa32afafc20dfb9e5c3a5f96cdaf",
+  "associated_ci_head": "0dc39624d1266a6fca98760757b9482bf6f98a7a",
+  "production_rust_unchanged_from_frozen33": true,
+  "prior_fixture_difference_from_frozen33": [
+    "crates/heptabao-server/src/service_native_kv2_mount_tests.rs"
+  ],
+  "changed_files": [
+    "crates/heptabao-server/src/service_snapshot_lossless_parallel_tests.rs"
+  ],
+  "fixture_sha256": "400c57c02d2e395ca73fb6effa28b370645f749dfa81adffc947b30f3526381f",
+  "original_fixture_sha256": "707c98e2585f438f26722ae86d4b7222a0866747fd20d955724155c3bbd8a268",
+  "prior_source_unchanged": true,
+  "request_pause_ttl_deadline_budgets_changed": false,
+  "production_services_changed": false
+}

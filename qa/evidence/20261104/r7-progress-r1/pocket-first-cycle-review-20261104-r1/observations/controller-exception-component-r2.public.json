@@ -1,0 +1,199 @@
+{
+  "allOwnedChildrenReaped": true,
+  "checks": [
+    {
+      "case": "non_timeout_actual_child_failure_is_unknown",
+      "passed": true
+    },
+    {
+      "case": "non_timeout_actual_child_killed_and_reaped",
+      "passed": true
+    },
+    {
+      "case": "exceptional_cleanup_stays_in_original_five_seconds",
+      "passed": true
+    },
+    {
+      "case": "actual_timeout_retains_timeout_result",
+      "passed": true
+    },
+    {
+      "case": "actual_timeout_child_reaped_before_return",
+      "passed": true
+    },
+    {
+      "case": "normal_communication_remains_exact",
+      "passed": true
+    },
+    {
+      "case": "normal_child_reaped",
+      "passed": true
+    },
+    {
+      "case": "post_timeout_after_entering_dispatch_exact_unknown_classification",
+      "passed": true
+    },
+    {
+      "case": "post_timeout_after_entering_dispatch_one_dispatch_no_replay",
+      "passed": true
+    },
+    {
+      "case": "post_timeout_after_entering_dispatch_record_contains_no_body_or_token",
+      "passed": true
+    },
+    {
+      "case": "post_malformed_reply_exact_unknown_classification",
+      "passed": true
+    },
+    {
+      "case": "post_malformed_reply_one_dispatch_no_replay",
+      "passed": true
+    },
+    {
+      "case": "post_malformed_reply_record_contains_no_body_or_token",
+      "passed": true
+    },
+    {
+      "case": "known_http_rejection_exact_unknown_classification",
+      "passed": true
+    },
+    {
+      "case": "known_http_rejection_one_dispatch_no_replay",
+      "passed": true
+    },
+    {
+      "case": "known_http_rejection_record_contains_no_body_or_token",
+      "passed": true
+    },
+    {
+      "case": "known_http_success_exact_unknown_classification",
+      "passed": true
+    },
+    {
+      "case": "known_http_success_one_dispatch_no_replay",
+      "passed": true
+    },
+    {
+      "case": "known_http_success_record_contains_no_body_or_token",
+      "passed": true
+    },
+    {
+      "case": "node_reap_unknown_no_rollback_child_or_state_access",
+      "passed": true
+    },
+    {
+      "case": "node_reap_unknown_guard_consumed_once_unknown",
+      "passed": true
+    },
+    {
+      "case": "communication_aborted_before_stop_proof_no_rollback_child_or_state_access",
+      "passed": true
+    },
+    {
+      "case": "communication_aborted_before_stop_proof_guard_consumed_once_unknown",
+      "passed": true
+    },
+    {
+      "case": "native_stop_unknown_no_rollback_child_or_state_access",
+      "passed": true
+    },
+    {
+      "case": "native_stop_unknown_guard_consumed_once_unknown",
+      "passed": true
+    }
+  ],
+  "controllerSha256": "ed0149d7bcc1f33ad66fd00095147f93cf58e762b251f39368ae973d70bd905a",
+  "hostRuntimeQualified": false,
+  "httpFaultBoundarySynthetic": true,
+  "networkConnections": 0,
+  "observations": [
+    {
+      "case": "real_child_communicate_oserror",
+      "error": {
+        "automaticRetry": false,
+        "cleanupErrorClass": null,
+        "code": "owned_node_launch_communication_or_cleanup_unknown",
+        "originalErrorClass": "OSError",
+        "outcomeUnknown": true,
+        "ownedPid": 5,
+        "reaped": true
+      },
+      "returncode": -9
+    },
+    {
+      "case": "post_timeout_after_entering_dispatch",
+      "safeObservation": {
+        "httpObservations": [
+          {
+            "dispatchEntered": true,
+            "method": "POST",
+            "mutationRequest": true,
+            "name": "post_timeout_after_entering_dispatch",
+            "responseReturned": false,
+            "route": "sys/init"
+          }
+        ],
+        "phases": []
+      },
+      "unknown": true
+    },
+    {
+      "case": "post_malformed_reply",
+      "safeObservation": {
+        "httpObservations": [
+          {
+            "dispatchEntered": true,
+            "method": "POST",
+            "mutationRequest": true,
+            "name": "post_malformed_reply",
+            "responseReturned": false,
+            "route": "sys/init"
+          }
+        ],
+        "phases": []
+      },
+      "unknown": true
+    },
+    {
+      "case": "known_http_rejection",
+      "safeObservation": {
+        "httpObservations": [
+          {
+            "dispatchEntered": true,
+            "method": "POST",
+            "mutationRequest": true,
+            "name": "known_http_rejection",
+            "responseReturned": true,
+            "route": "sys/init",
+            "status": 403
+          }
+        ],
+        "phases": []
+      },
+      "unknown": false
+    },
+    {
+      "case": "known_http_success",
+      "safeObservation": {
+        "httpObservations": [
+          {
+            "dispatchEntered": true,
+            "method": "POST",
+            "mutationRequest": true,
+            "name": "known_http_success",
+            "responseReturned": true,
+            "route": "sys/init",
+            "status": 200
+          }
+        ],
+        "phases": []
+      },
+      "unknown": false
+    }
+  ],
+  "ok": true,
+  "productionChanged": false,
+  "realOwnedChildren": 3,
+  "schema": "heptabao.pocket-first-cycle-controller-exception-component.v1",
+  "testSha256": "fcb3b81744bd3a0516a00e3ef477b8c2a8b6243efa811fdcd278f4900e47a79d"
+}

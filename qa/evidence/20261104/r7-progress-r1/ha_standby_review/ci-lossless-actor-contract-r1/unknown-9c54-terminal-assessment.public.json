@@ -1,0 +1,80 @@
+{
+  "actual_tests": [
+    "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead",
+    "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead"
+  ],
+  "artifacts": [
+    {
+      "bytes": 5123,
+      "path": "/workspace/scratch/f86faac821c4/ha_standby_review/ci-lossless-actor-contract-r1/unknown-9c54-result.public.json",
+      "sha256": "9ad109d723beca54ac76ae997a16f1311a659968bd26e988e60c3b88f5a18ddb"
+    },
+    {
+      "bytes": 2288,
+      "path": "/workspace/scratch/f86faac821c4/ha_standby_review/ci-lossless-actor-contract-r1/unknown-9c54-intent.public.json",
+      "sha256": "7ceb3b57fe7fc003b04b1cdb6018bfa933228ddde3268513406a6d6ac176859a"
+    },
+    {
+      "bytes": 1032,
+      "path": "/workspace/scratch/f86faac821c4/ha_standby_review/ci-lossless-actor-contract-r1/unknown-9c54-prepare.public.json",
+      "sha256": "22da4d377e0f63d12b5a93a14fc0b700933376137991f10d705a9015d3cfbd9f"
+    },
+    {
+      "bytes": 732,
+      "path": "/workspace/scratch/f86faac821c4/ha_standby_review/ci-lossless-actor-contract-r1/unknown-9c54-authoritative-status.public.json",
+      "sha256": "03f69d804866c863a7d624ec1a2f40b8cd388914fae6607465be2aeadaec11de"
+    },
+    {
+      "bytes": 2879,
+      "path": "/workspace/scratch/f86faac821c4/ha_standby_review/ci-lossless-actor-contract-r1/unknown-9c54-independent-comparison.public.json",
+      "sha256": "47e5d54525c3a03f3032fcfb651d87ea93b2fa07c748f1dddb002b807911bd43"
+    },
+    {
+      "bytes": 7583,
+      "path": "/workspace/scratch/f86faac821c4/ha_standby_review/ci-lossless-actor-contract-r1/review.public.json",
+      "sha256": "f8129a54a282ac80a8a0301e02932dbf39d65bcd73e8fff45ad4ac1814044bf2"
+    }
+  ],
+  "checks": {
+    "authoritative_logs_complete_durable_synced": true,
+    "authoritative_terminal_succeeded": true,
+    "candidate_hash_matches_independently_read_source": true,
+    "each_build_list_tests_terminated_successfully": true,
+    "every_reported_owned_group_empty": true,
+    "exact_2_original_test_names": true,
+    "intent_subset_exactly_retained_in_result": true,
+    "original_budgets_unchanged_and_prod_services_unchanged": true,
+    "original_hash_matches_exact_0dc_source": true,
+    "prepare_exactly_embedded": true,
+    "release_locked_offline_libtest_build": true,
+    "reported_source_and_binary_unchanged": true,
+    "retained_binary_is_executed_and_listed": true,
+    "same_normal_defaults_no_fixture_features": true,
+    "separate_candidate_from_product_r7": true
+  },
+  "checks_passed": 15,
+  "checks_total": 15,
+  "elapsed": {
+    "build_seconds": 1328.3429145300033,
+    "tests_seconds": 10.114456551003968
+  },
+  "job_id": "1a1a6a2557b-fc05-27b4",
+  "limitations": [
+    "Job ownership remains unknown; matching source does not establish who initiated it.",
+    "Result/test selection/cleanup and before-after hashes were checked for exact internal consistency against authoritative terminal and independently read fixture bytes. This review did not independently rehash the183MB executable or reconstruct the full source commit.",
+    "No claims about r7 SSH/HTTP31, actual standby wire fixes, full CI matrix, or production cutover follow from this separate2-test pass.",
+    "The previous exact0dc CI failures remain immutable."
+  ],
+  "next": "Root may reuse these precisely scoped two-test results after its source/provenance review; no repeat build was started.",
+  "owner": "unattributed",
+  "retained_binary": {
+    "bytes": 183247600,
+    "path": "/home/qian-qi/heptabao-bao-acceptance-ci-lossless-actor-20261104-r1/normal-tests/retained-heptabao-server-libtest",
+    "sha256": "f27c8565862dd50c4aec98cd8b0c7c81d154aba34451da36850720347fb81201"
+  },
+  "runtime_result_reported": "passed",
+  "schema": "heptabao.ci-lossless-existing-run-independent-terminal-assessment.v1",
+  "scope": "Existing independently discovered normal-feature two-test execution, separate from product r7. This reviewer made only read-only calls after the run was discovered and did not create, retry, cancel or change this run.",
+  "source": "9c54d92a18ef59022a803cb89566ca8007b8b97c",
+  "tree": "30731312c123edcc2de2ecce02347337ba49d587"
+}
