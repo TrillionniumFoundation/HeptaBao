@@ -120,7 +120,7 @@ Mac 原生消费者的三次新隔离尝试均保留失败：r1 的观察器误�
 
 Mac 后续 r4 已真实完成初始和冷启原生消费，但 QA 中两个循环重用了阶段变量，覆盖初始回滚计划。原回执的 56/56 不构成双阶段回滚通过；r4 保留为不完整，随后对从未尝试的初始回滚只执行了一次严格 CAS 清理，62/62，原回执未改。修复局部变量并增加阶段名称、计划数量、尝试集合和实际四阶段断言后，全新 r5 父检查 60/60、初始及冷启消费各 95/95、两次完整逻辑存储 CAS 回滚各 62/62，四个阶段已独立核对，unknown=0，所有 owned 进程组及服务停止。实际安装的 loader 和默认 selector 选择 Codex 0.144.3；真实 initialize、精确 chatgptAuthTokens 登录和 account/read(false) 响应完整。两阶段均保留源额度状态及控制文件字节，生产五个 stores、native 输入及 relay PID 不变。外网被内核拒绝，后台网络尝试未计数；该证据绑定 `36076`，隔离候选顺序为 1、2，不能外推为生产当前 1、2、3 的完整顺序迁移，也不证明模型可用或生产网关切流。
 
-Pocket4 双 agent 的独立真实 selector 回归为 30/30：实际 installed registry、model runtime、harness auth provider 和默认 native builder 均保留，未注入 profile、store 或顺序覆盖，两个候选都为当前 ordinal5。该 selector 轮次未启动原生 factory。后续 full-current-baseline r1 在运行前因“零 profiles 等于零 raw rows”的错误前提失败，未启动 Bao 或原生进程；该失败保留。修正为精确原始两表形状和哈希后，全新 full-r2 绑定正常 `33cafa`，父检查 49/49，初始和冷启的双 agent 消费各 111/111，两次 SDK-local/effective/raw CAS 回滚各 80/80。四个真实原生 factory 使用本机当前 ordinal5，八个显式 RPC 均收到真实响应，四次 account/login/start 的响应类型为 chatgptAuthTokens；没有强制账户或 store、没有 provider 请求，owned 进程均停止。全量当前状态导入是幂等的，两 agent 的 logicalProfilesChanged 与 rawAuthRowsChanged 均为 false；另一个隔离缺失 ordinal5 场景正在独立验证，不将幂等导入称为实际补回。
+Pocket4 双 agent 的独立真实 selector 回归为 30/30：实际 installed registry、model runtime、harness auth provider 和默认 native builder 均保留，未注入 profile、store 或顺序覆盖，两个候选都为当前 ordinal5。该 selector 轮次未启动原生 factory。后续 full-current-baseline r1 在运行前因“零 profiles 等于零 raw rows”的错误前提失败，未启动 Bao 或原生进程；该失败保留。修正为精确原始两表形状和哈希后，全新 full-r2 绑定正常 `33cafa`，父检查 49/49，初始和冷启的双 agent 消费各 111/111，两次 SDK-local/effective/raw CAS 回滚各 80/80。四个真实原生 factory 使用本机当前 ordinal5，八个显式 RPC 均收到真实响应，四次 account/login/start 的响应类型为 chatgptAuthTokens；没有强制账户或 store、没有 provider 请求，owned 进程均停止。全量当前状态导入是幂等的，两 agent 的 logicalProfilesChanged 与 rawAuthRowsChanged 均为 false；另一个全新 missing-r2 隔离场景已通过父检查 49/49、两阶段消费各 110/110、两次严格回滚各 80/80：只在 owned 副本中预先移除了当前 ordinal5，真实插件从 HeptaBao 补回相同凭证字节，main 的逻辑与 raw 行均发生实际插入；tg 的有效继承结果改变，原 primary raw 行保持不动。其他四个身份、order 与 usage 均保留。每轮回滚精确恢复各自的起始基线，missing 场景回到其缺失条目的隔离基线，不能描述为生产还原。两 scope 的全部四阶段和源哈希均已独立核对，unknown=0，生产 units、hold markers 和真实输入均未改变；尚不授予生产 gateway 重启或切流资格。
 
 ROG 的 r3 已独立核对完整回执：两个实际 factory 只显式调用 initialize，六次 CLI 状态检查均只读打开精确 auth/config 各一次，其他 auth 文件打开数为零。真实插件初始和冷启动各 94/94，两次严格逻辑回滚各 64/64，父检查 60/60；源 usage 状态、生产 auth/config、PID 与启动身份均未变，全部 owned 进程组已退出。此前 r1 的 WAL 预检查失败、r2 的 syscall 观察器漏记经典 open、原 generic SDK 41/42 失败均保留。r3 没有显式 account/read、account/login/start 或模型请求；原生后台尝试未计数，内核无外网。该结果不授予 provider 可用、生产网关重启或正式切流资格。
 
@@ -200,9 +200,13 @@ AuthBus 可复核辅助源码先发布 a78bdadc（tree=76ad1d16），再追加�
 原始失败回执均保留，包括构建环境选择错误、选错旧版 oracle observer、SDK 回滚检查点与持久化状态不一致，以及网关首次业务派发前的隔离环境限制。修复后的通过结果没有覆盖原始失败记录。
 
 
+| 新增回执 | SHA256 |
+| --- | --- |
 | Mac native r4 不完整原回执 | `2c79b976d1cb3bdc18735a2e5c6d313515fb9b41be804154bfbbd21df2884086` |
 | Mac r4 未尝试初始回滚的独立清理 | `8ebbdc7b15818d2dc4e213eccddf0486b112bb123b5a3c1e080c040e72c10024` |
 | Mac native r5 完整四阶段 | `6caa9ebfc2a3bf3ae637676a8055022817ec0efa85b09c6ffc304ac854ca6236` |
 | Pocket tg 原始表形状纠正 | `158fb3da106d0b81abb110a002938aa2df86a1a76cc85d927e8dd6306b249adb` |
 | Pocket 当前凭证双 agent full-r2 | `9006c6d0eae73de89dd62ed381877c873cabd1fff94f790ded7c3e2e2241c7dd` |
 | 实际异步 root-pull 两记录基线 | `b90c9660e69ed85ae84017cc856b94abb0dc648920162dc0a950f41a73be8325` |
+| Pocket 缺失当前 ordinal5 的实际恢复 | `133e1060d327bd14cae5b0673d3c5649c92d99c5d306f946114bcd480c691b41` |
+| Pocket 双场景独立 assessment | `9f7a9ee41ea0bcfd1246380c438161989163086810ce190a8ce7f1b99461315b` |

@@ -639,5 +639,59 @@
     "original_deadline_ms": 2000,
     "physical_cold_timeout_cause_proven": false,
     "receipt_sha256": "b90c9660e69ed85ae84017cc856b94abb0dc648920162dc0a950f41a73be8325"
+  },
+  "pocket_native_two_scope": {
+    "assessment_sha256": "9f7a9ee41ea0bcfd1246380c438161989163086810ce190a8ce7f1b99461315b",
+    "source_commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+    "binary_sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+    "native_version": "0.144.3",
+    "native_binary_sha256": "37e6f5953f191b04f7b62cb07dae90f51d0947ad89f0355665b421fbde28700b",
+    "qa_manifest_sha256": "6d211ec446805fb2a13d422f521447ccb5803ba025746c44c9b3e45d067a163c",
+    "prepare_sha256": "3ae1e850de5bd7feed62598705529dcad06493467ccbd671d72865f7fc127ccb",
+    "root_independent_core_hashes_and_four_phases_checked": true,
+    "full_current_parent_checks": [
+      49,
+      49
+    ],
+    "full_current_each_consumer": [
+      111,
+      111
+    ],
+    "full_current_each_rollback": [
+      80,
+      80
+    ],
+    "missing_parent_checks": [
+      49,
+      49
+    ],
+    "missing_each_consumer": [
+      110,
+      110
+    ],
+    "missing_each_rollback": [
+      80,
+      80
+    ],
+    "full_current_import_idempotent": true,
+    "missing_main_logical_and_raw_inserted": true,
+    "missing_tg_inheritance_changes_without_raw_row_change": true,
+    "per_scenario_native_factories": 4,
+    "per_scenario_real_rpc_responses": 8,
+    "each_scenario_exact_phase_names": [
+      "initial",
+      "cold-new-process",
+      "initial.rollback",
+      "cold-new-process.rollback"
+    ],
+    "all_owned_stopped": true,
+    "all_production_inputs_and_holds_unchanged": true,
+    "provider_network_egress": false,
+    "provider_availability_qualified": false,
+    "production_gateway_restart_qualified": false,
+    "cutover_qualified": false,
+    "missing_core_sha256": "133e1060d327bd14cae5b0673d3c5649c92d99c5d306f946114bcd480c691b41",
+    "missing_execution_sha256": "dbb95fa33ec3fad08a24a951d47c2991e3dfbda26decf8246f74d048924c61bc"
   }
 }
