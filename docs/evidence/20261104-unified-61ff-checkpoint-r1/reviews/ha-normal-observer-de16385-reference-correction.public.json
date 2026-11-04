@@ -19,9 +19,10 @@
     "finite2_default_snapshot"
   ],
   "parent_source_review": {
-    "known_http_operations": 87,
     "checks_passed": 83,
-    "reviewer_of_this_record_did_not_refetch_raw_oracle": true
+    "reviewer_of_this_record_did_not_refetch_raw_oracle": true,
+    "reported_known_outcomes": 87,
+    "known_outcome_counter_not_reinterpreted_as_complete_http_count": true
   },
   "required_resolution": "Pin an actual fixed OpenBao 2.7.1 observation with the same TTL actor and invalid restore operation; bind the new observer revision's complete reference gate before any scoped compatibility claim.",
   "observer_de16385_executed": false,
