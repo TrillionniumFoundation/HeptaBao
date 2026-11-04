@@ -1,0 +1,153 @@
+{
+  "schema": "heptabao.normal-observer-reference-closure-independent-review.v1",
+  "observer_commit": "b4b3f8c22b225ab28af1d7625281d19b965acea6",
+  "observer_source_sha256": "d1bf471e9cdae039750c20249313c372c7d95bdbb27c9e5c62a1425fe0f16096",
+  "old_code_review_sha256": "b972504a99fed996752c6d0ca46ff4c9a3e8d8a9edc2e0407724152b748366af",
+  "historical_reference_correction_sha256": "38e9dc82b3ea6e41fbd0faf12c3ed3a8ad85240464818a52b2dd4bbe1635854f",
+  "delta_hunks": [
+    {
+      "old_line": 59,
+      "new_line": 59,
+      "removed": [],
+      "added": [
+        "# All 34 status references are now grounded in exact fixed OpenBao 2.7.1 wire.",
+        "# The missing TTL restore case was separately observed in cd035b00, sequence 68;",
+        "# it is never attributed to the older 070f token oracle or an unrelated actor.",
+        "OFFICIAL_REFERENCE_COMPLETE = True",
+        "UNVERIFIED_REFERENCE_LABELS = []",
+        ""
+      ]
+    },
+    {
+      "old_line": 121,
+      "new_line": 127,
+      "removed": [
+        "            'scoped_status_compatibility_passed': complete and not differences}"
+      ],
+      "added": [
+        "            'official_reference_complete': OFFICIAL_REFERENCE_COMPLETE,",
+        "            'unverified_reference_labels': UNVERIFIED_REFERENCE_LABELS,",
+        "            'scoped_status_compatibility_passed': (complete and not differences",
+        "                and OFFICIAL_REFERENCE_COMPLETE and not UNVERIFIED_REFERENCE_LABELS)}"
+      ]
+    },
+    {
+      "old_line": 1003,
+      "new_line": 1012,
+      "removed": [
+        "               'official_observed_status': OFFICIAL_STATUS[label],"
+      ],
+      "added": [
+        "               'expected_status': OFFICIAL_STATUS[label],",
+        "               'official_reference_verified': label not in UNVERIFIED_REFERENCE_LABELS,"
+      ]
+    },
+    {
+      "old_line": 1102,
+      "new_line": 1112,
+      "removed": [
+        "        wire = {'schema': 'heptabao-normal-standby-scoped-wire-r3',"
+      ],
+      "added": [
+        "        wire = {'schema': 'heptabao-normal-standby-scoped-wire-r4',"
+      ]
+    },
+    {
+      "old_line": 1111,
+      "new_line": 1121,
+      "removed": [],
+      "added": [
+        "                'official_token_wire_covers_only': ['ttl_root_default_standby_snapshot',",
+        "                    'finite1_default_snapshot', 'finite2_default_snapshot'],",
+        "                'official_ttl_restore_wire_sha256': 'cd035b00b7d382d9966652774281b18840b99ce77ad9adc7d10a8f3e2b3ef83b',",
+        "                'official_ttl_restore_wire_covers_only': ['ttl_root_default_standby_invalid_restore'],",
+        "                'official_reference_complete': OFFICIAL_REFERENCE_COMPLETE,",
+        "                'unverified_reference_labels': UNVERIFIED_REFERENCE_LABELS,"
+      ]
+    }
+  ],
+  "source_business_flow_or_expected_status_changed": false,
+  "new_official_reference": {
+    "commit": "df47f00f3289fe690f38a8fd433f11b6f530ecc9",
+    "wire_sha256": "cd035b00b7d382d9966652774281b18840b99ce77ad9adc7d10a8f3e2b3ef83b",
+    "result_sha256": "dff1ab3b2be4e847405b5b426fba1ec954c3543449dcbf440ba013aee4028523",
+    "journals_checked": [
+      {
+        "filename": "0066.intent.public.json",
+        "sha256": "3d4c8470046e68be7cef4d872038d34235c9665ef2f0d65fedbe353deb900c39"
+      },
+      {
+        "filename": "0066.outcome.public.json",
+        "sha256": "12eab3352554e1573cab20a9159e65cb6e1ff31f807cc3ee9d2209ecd8f5c03b"
+      },
+      {
+        "filename": "0067.intent.public.json",
+        "sha256": "ad50d5ad3e2dcc4d6cc430530b69a190f20fa1f72de70df8c3cbec705bda2cb9"
+      },
+      {
+        "filename": "0067.outcome.public.json",
+        "sha256": "52eeb7892b03c79f13bd86e446bf49374a5559167d98de5fd6779b1243d03c63"
+      },
+      {
+        "filename": "0068.intent.public.json",
+        "sha256": "1fb49e9be37187573f15b44fa23c5c3119e67165540a122245ea5a7cd0006b14"
+      },
+      {
+        "filename": "0068.outcome.public.json",
+        "sha256": "4054967225a9d9ff86e56b24a158f7544cb8b17d3546ee726774ff05a3c7dd46"
+      },
+      {
+        "filename": "0069.intent.public.json",
+        "sha256": "977ebc87834cb95df9632de64ad858e42e532b3972d13ede712d88113f6e10b4"
+      },
+      {
+        "filename": "0069.outcome.public.json",
+        "sha256": "68f2e60c2d36befe94bd36e79b3e50912b135207918bda7f0f79dd1d45d61576"
+      },
+      {
+        "filename": "0070.intent.public.json",
+        "sha256": "77a3d9c4c257d61eae9511e435af0ac0a744a58b8cc83a899142d362db2e5a78"
+      },
+      {
+        "filename": "0070.outcome.public.json",
+        "sha256": "4bf939c4e949e810cf8f64a40805f807873f14105e094d51c44290979b731448"
+      }
+    ],
+    "ttl_identity": {
+      "sequence": 66,
+      "policies": [
+        "root"
+      ],
+      "num_uses": 0,
+      "ttl": 580
+    },
+    "snapshot_get": {
+      "sequence": 67,
+      "status": 200
+    },
+    "invalid_restore": {
+      "sequence": 68,
+      "status": 500,
+      "method": "POST",
+      "route": "/v1/sys/storage/raft/snapshot",
+      "headers": {},
+      "body_bytes": 22,
+      "body_sha256": "e57744e6940b15f3055f206c34ada9f50f0e2af9eacd46bf6f79c9ae150521cf"
+    },
+    "after_state": {
+      "sequence": 69,
+      "ttl": 577,
+      "num_uses": 0
+    },
+    "intents_and_known_outcomes": 75,
+    "unknown": 0,
+    "checks": 68,
+    "owned_clients_stopped": 75,
+    "owned_servers_stopped": 3
+  },
+  "limits": {
+    "normal_observer_runtime_not_reviewed_here": true,
+    "other_33_reference_rows_previously_reviewed_by_parent": true,
+    "full_replacement_qualified": false
+  }
+}

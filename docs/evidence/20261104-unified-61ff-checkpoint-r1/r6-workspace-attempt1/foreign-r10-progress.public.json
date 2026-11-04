@@ -1,0 +1,232 @@
+{
+  "argv_or_environment_read": false,
+  "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/hepta-runtime-job-1a1a7c83142-fc05-2c88.service",
+  "clock_ticks_per_second": 100,
+  "files_written": false,
+  "job_id": "unresolved_exact_foreign_cargo_scope",
+  "root_pid": 3194073,
+  "root_start_ticks": 14714107,
+  "samples": [
+    {
+      "metadata_errors": [],
+      "monotonic": 147538.866477002,
+      "root_exited": false,
+      "rows": [
+        {
+          "cwd": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1a7c83142-fc05-2c88",
+          "executable": "/usr/bin/python3.14",
+          "memory_and_context": {
+            "Threads": "3",
+            "VmHWM": "21396 kB",
+            "VmRSS": "21396 kB",
+            "VmSwap": "0 kB",
+            "nonvoluntary_ctxt_switches": "73",
+            "voluntary_ctxt_switches": "20984"
+          },
+          "name": "python3",
+          "pgid": 3183392,
+          "pid": 3183392,
+          "ppid": 2217,
+          "rss_bytes": 21463040,
+          "session": 3183392,
+          "start_ticks": 14648776,
+          "state": "S",
+          "stime_ticks": 18,
+          "threads": 3,
+          "utime_ticks": 68,
+          "vsize_bytes": 186630144,
+          "wait_channel": "hrtimer_nanosleep"
+        },
+        {
+          "cwd": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1",
+          "executable": "/usr/bin/python3.14",
+          "memory_and_context": {
+            "Threads": "1",
+            "VmHWM": "25432 kB",
+            "VmRSS": "24400 kB",
+            "VmSwap": "0 kB",
+            "nonvoluntary_ctxt_switches": "111",
+            "voluntary_ctxt_switches": "24838"
+          },
+          "name": "python3",
+          "pgid": 3183394,
+          "pid": 3183394,
+          "ppid": 3183392,
+          "rss_bytes": 23953408,
+          "session": 3183394,
+          "start_ticks": 14648779,
+          "state": "S",
+          "stime_ticks": 31,
+          "threads": 1,
+          "utime_ticks": 137,
+          "vsize_bytes": 38645760,
+          "wait_channel": "hrtimer_nanosleep"
+        },
+        {
+          "cwd": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+          "executable": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+          "memory_and_context": {
+            "Threads": "4",
+            "VmHWM": "91040 kB",
+            "VmRSS": "91040 kB",
+            "VmSwap": "0 kB",
+            "nonvoluntary_ctxt_switches": "9",
+            "voluntary_ctxt_switches": "821"
+          },
+          "name": "cargo",
+          "pgid": 3194073,
+          "pid": 3194073,
+          "ppid": 3183394,
+          "rss_bytes": 91906048,
+          "session": 3194073,
+          "start_ticks": 14714107,
+          "state": "S",
+          "stime_ticks": 3,
+          "threads": 4,
+          "utime_ticks": 9,
+          "vsize_bytes": 314822656,
+          "wait_channel": "futex_do_wait"
+        },
+        {
+          "cwd": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+          "executable": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+          "memory_and_context": {
+            "Threads": "7",
+            "VmHWM": "11001780 kB",
+            "VmRSS": "9399164 kB",
+            "VmSwap": "0 kB",
+            "nonvoluntary_ctxt_switches": "0",
+            "voluntary_ctxt_switches": "1"
+          },
+          "name": "rustc",
+          "pgid": 3194073,
+          "pid": 3194079,
+          "ppid": 3194073,
+          "rss_bytes": 9622441984,
+          "session": 3194073,
+          "start_ticks": 14714119,
+          "state": "S",
+          "stime_ticks": 624,
+          "threads": 7,
+          "utime_ticks": 39170,
+          "vsize_bytes": 15047733248,
+          "wait_channel": "futex_do_wait"
+        }
+      ]
+    },
+    {
+      "metadata_errors": [],
+      "monotonic": 147539.87222117,
+      "root_exited": false,
+      "rows": [
+        {
+          "cpu_ticks_delta": 0,
+          "cwd": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1a7c83142-fc05-2c88",
+          "executable": "/usr/bin/python3.14",
+          "memory_and_context": {
+            "Threads": "3",
+            "VmHWM": "21396 kB",
+            "VmRSS": "21396 kB",
+            "VmSwap": "0 kB",
+            "nonvoluntary_ctxt_switches": "73",
+            "voluntary_ctxt_switches": "21004"
+          },
+          "name": "python3",
+          "pgid": 3183392,
+          "pid": 3183392,
+          "ppid": 2217,
+          "rss_bytes": 21463040,
+          "session": 3183392,
+          "start_ticks": 14648776,
+          "state": "S",
+          "stime_ticks": 18,
+          "threads": 3,
+          "utime_ticks": 68,
+          "vsize_bytes": 186630144,
+          "wait_channel": "hrtimer_nanosleep"
+        },
+        {
+          "cpu_ticks_delta": 0,
+          "cwd": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1",
+          "executable": "/usr/bin/python3.14",
+          "memory_and_context": {
+            "Threads": "1",
+            "VmHWM": "25432 kB",
+            "VmRSS": "24400 kB",
+            "VmSwap": "0 kB",
+            "nonvoluntary_ctxt_switches": "111",
+            "voluntary_ctxt_switches": "24858"
+          },
+          "name": "python3",
+          "pgid": 3183394,
+          "pid": 3183394,
+          "ppid": 3183392,
+          "rss_bytes": 23953408,
+          "session": 3183394,
+          "start_ticks": 14648779,
+          "state": "S",
+          "stime_ticks": 31,
+          "threads": 1,
+          "utime_ticks": 137,
+          "vsize_bytes": 38645760,
+          "wait_channel": "hrtimer_nanosleep"
+        },
+        {
+          "cpu_ticks_delta": 0,
+          "cwd": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+          "executable": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+          "memory_and_context": {
+            "Threads": "4",
+            "VmHWM": "91040 kB",
+            "VmRSS": "91040 kB",
+            "VmSwap": "0 kB",
+            "nonvoluntary_ctxt_switches": "9",
+            "voluntary_ctxt_switches": "823"
+          },
+          "name": "cargo",
+          "pgid": 3194073,
+          "pid": 3194073,
+          "ppid": 3183394,
+          "rss_bytes": 91906048,
+          "session": 3194073,
+          "start_ticks": 14714107,
+          "state": "S",
+          "stime_ticks": 3,
+          "threads": 4,
+          "utime_ticks": 9,
+          "vsize_bytes": 314822656,
+          "wait_channel": "futex_do_wait"
+        },
+        {
+          "cpu_ticks_delta": 100,
+          "cwd": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+          "executable": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+          "memory_and_context": {
+            "Threads": "7",
+            "VmHWM": "11001780 kB",
+            "VmRSS": "9384024 kB",
+            "VmSwap": "0 kB",
+            "nonvoluntary_ctxt_switches": "0",
+            "voluntary_ctxt_switches": "1"
+          },
+          "name": "rustc",
+          "pgid": 3194073,
+          "pid": 3194079,
+          "ppid": 3194073,
+          "rss_bytes": 9607188480,
+          "session": 3194073,
+          "start_ticks": 14714119,
+          "state": "S",
+          "stime_ticks": 624,
+          "threads": 7,
+          "utime_ticks": 39270,
+          "vsize_bytes": 15047733248,
+          "wait_channel": "futex_do_wait"
+        }
+      ]
+    }
+  ],
+  "schema": "heptabao.foreign-compile-progress.v1",
+  "scope": "exact_observed_cargo_pid_start_cwd_exe_then_its_same_cgroup_and_operator_uid",
+  "signals_sent": false
+}

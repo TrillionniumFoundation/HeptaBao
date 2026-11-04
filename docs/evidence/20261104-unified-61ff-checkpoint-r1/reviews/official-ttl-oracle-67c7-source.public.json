@@ -1,0 +1,18 @@
+{
+  "source_oracle_commit": "67c737b0bfc3966ea598c27f814ebde7d54cb482",
+  "source_sha256": "448cce0cedef1b2010beb789634d3b195750c25c8f96f7deb7b6919e9b2419fd",
+  "base_sha256": "8fa4d740f3e0a7cddc3b27391ce2d46308c19e519f078fc9f3afb0e47039ccec",
+  "stage_wrapper_sha256": "7f50f7effe364c1ce8306e9f4f205d7c17a8680f98afd8005a0d12b08221c858",
+  "review_scope": "Complete 4-hunk source delta and full stage wrapper/exact request",
+  "delta_hunks": 4,
+  "body_bytes": 22,
+  "normal_observer_body_identical": true,
+  "same_token_class": true,
+  "same_method_route_header_content_type": true,
+  "actual_pre_and_post_token_state_reads": true,
+  "expected_status_not_forced": true,
+  "normal_deadlines_unchanged": true,
+  "wrapper_exact_args_and_stdin": true,
+  "execution_review_pending": true,
+  "full_replacement_qualified": false
+}

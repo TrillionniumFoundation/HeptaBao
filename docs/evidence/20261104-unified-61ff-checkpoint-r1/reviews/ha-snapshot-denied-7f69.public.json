@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.snapshot-clock-denied-independent-review.v1",
+  "reviewer": "bao_acceptance",
+  "reviewed_original_commit": "34cf2c69b71db2ebf0674ea8745f000fc95d38dd",
+  "reviewed_correction_commit": "7f69e4a0311747d7ea2a904f22bdac4fe0829768",
+  "scope": [
+    "crates/heptabao-server/src/ha_snapshot_clock.rs",
+    "crates/heptabao-server/src/service_snapshot_clock.rs",
+    "crates/heptabao-server/src/service_snapshot_transfer.rs",
+    "crates/heptabao-server/src/service_snapshot_v6_ha.rs",
+    "crates/heptabao-server/src/snapshot_file.rs"
+  ],
+  "findings": [
+    {
+      "id": "post-readindex-physical-seal",
+      "original_status": "open_in_34cf",
+      "description": "The new pending snapshot Denied path could observe Actor403 before the ordinary owner helper reached its physical seal check after B ReadIndex.",
+      "correction": "Explicit retained physical seal equality check after actual B ReadIndex/local checkpoint and before final Actor authorization or disposition consumption.",
+      "corrected_file_sha256": "fd7d4801ed2f3e28823c311c360f26a828a83e27bcab69f946bf0acb6a640f3e",
+      "status": "statically_closed_in_7f69"
+    }
+  ],
+  "checked": {
+    "imported_closed_denied_protocol_061f_exact_sha256": "188b1e44be59e8bcae0e8184e2925be5f8ca9c04bbaf02bec00c5665913c5f5f",
+    "leader_uses_own_clock_no_peer_floor": true,
+    "leader_real_original_bearer_and_parameters_acl": true,
+    "mandatory_response_audit_before_real_writer": true,
+    "leader_real_receipt_consumed_before_completion": true,
+    "nochange_checks_complete_shared_state_and_local_tuple": true,
+    "follower_real_sync_and_readindex_before_final_actor": true,
+    "denied_never_selects_allowed_finish": true,
+    "new_late_expiry_after_earlier_allowed_floor_remains503_no_replay": true,
+    "physical_spool_reader_body_preserved_except_self_spool_references": true,
+    "held_parent_nofollow_mode_uid_length_deadline_zeroizing_checks_preserved": true,
+    "no_transfer_lease_created_by_spool_read": true
+  },
+  "limits": {
+    "compiled": false,
+    "rust_runtime_tests_executed": false,
+    "current_physical7071_source_modified": false,
+    "new_four_test_module_not_reviewed_in_this_record": true,
+    "service_denial_capsule_and_historical_restore_acl_review_owned_by_parent": true,
+    "full_replacement_qualified": false,
+    "known_remaining_product_gaps_preserved": true
+  }
+}

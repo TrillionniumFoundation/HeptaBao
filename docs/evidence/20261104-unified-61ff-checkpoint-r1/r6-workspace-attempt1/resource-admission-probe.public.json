@@ -1,0 +1,77 @@
+{
+  "active_builders_or_tests": [
+    {
+      "cwd": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+      "executable_basename": "cargo",
+      "executable_path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "name": "cargo",
+      "parent_pid": 3183394,
+      "pid": 3194073,
+      "start_clock_ticks": 14714107
+    },
+    {
+      "cwd": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+      "executable_basename": "rustc",
+      "executable_path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "name": "rustc",
+      "parent_pid": 3194073,
+      "pid": 3194079,
+      "start_clock_ticks": 14714119
+    }
+  ],
+  "argv_or_environment_read": false,
+  "exact_public_session_daemon_classifications": [
+    {
+      "category": "exact_observed_persistent_session_daemon",
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/init.scope",
+      "descendants_excluded": false,
+      "name": "systemd",
+      "parent_pid": 1,
+      "pid": 2217,
+      "protected_exe_or_fd_read": false,
+      "start_clock_ticks": 971,
+      "uid": 1000
+    },
+    {
+      "category": "exact_observed_persistent_session_daemon",
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/init.scope",
+      "descendants_excluded": false,
+      "name": "(sd-pam)",
+      "parent_pid": 2217,
+      "pid": 2282,
+      "protected_exe_or_fd_read": false,
+      "start_clock_ticks": 977,
+      "uid": 1000
+    },
+    {
+      "category": "exact_observed_persistent_session_daemon",
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/ssh-agent.service",
+      "descendants_excluded": false,
+      "name": "ssh-agent",
+      "parent_pid": 2217,
+      "pid": 9026,
+      "protected_exe_or_fd_read": false,
+      "start_clock_ticks": 2526,
+      "uid": 1000
+    },
+    {
+      "category": "exact_observed_persistent_session_daemon",
+      "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/gcr-ssh-agent.service",
+      "descendants_excluded": false,
+      "name": "ssh-agent",
+      "parent_pid": 9023,
+      "pid": 17987,
+      "protected_exe_or_fd_read": false,
+      "start_clock_ticks": 12193,
+      "uid": 1000
+    }
+  ],
+  "observed_unix_ns": 1793817191877487600,
+  "operator_uid": 1000,
+  "original_refused_job": "1a1a7d360c8-fc05-2ca2",
+  "run_directory_exists": false,
+  "schema": "heptabao.timed-admission-readonly-diagnostic.v1",
+  "shared_source_or_cache_modified": false,
+  "signals_sent": false,
+  "whole_host_exclusivity_claimed": false
+}

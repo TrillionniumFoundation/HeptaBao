@@ -1,0 +1,57 @@
+{
+  "schema": "heptabao.checkpoint-file-batch.v1",
+  "parent": "8f29530fb9cd251ebe94c970d605aaf37bb82c0b",
+  "files": [
+    {
+      "path": "docs/evidence/20261104-unified-61ff-checkpoint-r1/r6-workspace-attempt1/controller-terminal.public.json",
+      "size": 727,
+      "sha256": "177c459ae558017b8c57c304e7657d9289e758f2cf51cb585901ea04c9e87f70"
+    },
+    {
+      "path": "docs/evidence/20261104-unified-61ff-checkpoint-r1/r6-workspace-attempt1/controller-read.original-native.json",
+      "size": 1700,
+      "sha256": "1872b1db161f1f63ef9ec002ea5737bafabdccd75ce54f167f77fdc783b17f95"
+    },
+    {
+      "path": "docs/evidence/20261104-unified-61ff-checkpoint-r1/r6-workspace-attempt1/stderr.txt",
+      "size": 454,
+      "sha256": "c79275bf5305726243c1c5d760729f4fd2c5933e50a3084c7f0ae65ffe1d1d34"
+    },
+    {
+      "path": "docs/evidence/20261104-unified-61ff-checkpoint-r1/r6-workspace-attempt1/resource-admission-probe.public.json",
+      "size": 2641,
+      "sha256": "7d59dc9bb13aec460b9b1ce8d496ff55b5748aedc9293b3cfb048845732e3cf1"
+    },
+    {
+      "path": "docs/evidence/20261104-unified-61ff-checkpoint-r1/r6-workspace-attempt1/foreign-r10-progress.public.json",
+      "size": 7700,
+      "sha256": "808a145f2f6d1421e18f4441ebf37b70799ff357e1ac34586b66af91d85be422"
+    },
+    {
+      "path": "docs/evidence/20261104-unified-61ff-checkpoint-r1/r6-workspace-attempt1/foreign-r10-status-1847.public.json",
+      "size": 472,
+      "sha256": "76da12b08083c3021c2fe8b0e4ada97ecd2de283999fd5d036b411fa49ec746a"
+    },
+    {
+      "path": "docs/evidence/20261104-unified-61ff-checkpoint-r1/reviews/ha-snapshot-denied-7f69.public.json",
+      "size": 2387,
+      "sha256": "2b56cf0f7461751419970d29130c6afbb9414b825b833f4d6124109301aae936"
+    },
+    {
+      "path": "docs/evidence/20261104-unified-61ff-checkpoint-r1/reviews/official-ttl-oracle-67c7-source.public.json",
+      "size": 825,
+      "sha256": "e2ffef9aa0035fffe48cae96c68533f8556d41c4c11297701f83205c004e3dd5"
+    },
+    {
+      "path": "docs/evidence/20261104-unified-61ff-checkpoint-r1/reviews/normal-observer-b4b3-reference-closure.public.json",
+      "size": 5594,
+      "sha256": "96c594c80b681cea0e6a4ff3e981e9e20ce1efb5b6f70e69feba7b44463377da"
+    },
+    {
+      "path": "docs/evidence/20261104-unified-61ff-checkpoint-r1/r6-workspace-attempt1/assessment.public.json",
+      "size": 1211,
+      "sha256": "85be46fe5c1ae912fe63ddff6b488cbce290e19c28af35b2209d20f6d812b870"
+    }
+  ],
+  "limits": "Admission failure is not a Rust runtime test failure. Independent source reviews are not runtime qualification."
+}

@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "<string>", line 353, in <module>
+    main()
+    ~~~~^^
+  File "<string>", line 278, in main
+    timed_admission = exclusive_timed_test_admission()
+  File "<string>", line 260, in exclusive_timed_test_admission
+    assert not active, 'external compiler or unit test still active; no timed test admission'
+           ^^^^^^^^^^
+AssertionError: external compiler or unit test still active; no timed test admission
