@@ -1,0 +1,122 @@
+{
+  "schema": "heptabao.r10-pocket-authbus.root-source-review.v1",
+  "status": "PASS_SOURCE_ONLY",
+  "candidate_tree": "009510370a5fb19fb03a4764f4fc9da2cfbb960f",
+  "exact_diff": {
+    "bytes": 7103,
+    "sha256": "fe5037bb3e22e2cbf5557feee234fcbf2bdbd405620b3f44b0d611e3552de123",
+    "blob": "12b35bf68d1f2ca51c2934c411571f187e9e2053"
+  },
+  "whole_three_source_diffs_reconstructed": [
+    {
+      "before": {
+        "bytes": 45061,
+        "sha256": "12ea0b3a459f231b2cd428b53ee12eda1e928adb0b86d282a513b552ff28d79b",
+        "blob": "06e586cc318c0a0022f9ec3ab37bb747614baece"
+      },
+      "after": {
+        "bytes": 45061,
+        "sha256": "97f982832d79916deb6dbfe0ddfae56c8b4070246d52e65c6ab498483d0f9992",
+        "blob": "e9c12ebe2483333c1e3542ed86d152b5503caeae"
+      },
+      "from": "pocket_shared_first_cycle_live_r2.py",
+      "to": "pocket_shared_first_cycle_live_r2.py",
+      "hunks": 1
+    },
+    {
+      "before": {
+        "bytes": 13045,
+        "sha256": "ea494ae0565be96b59d3fbcc6e473d8740c5eca93d3c1ab1ab94900635de8f36",
+        "blob": "a8d878959a57028d2a69dda40b3d58dbe7ad1345"
+      },
+      "after": {
+        "bytes": 13062,
+        "sha256": "1cbec91c3b19c3c488ae8976c01fee2b6eb40c03c56b1c55064ccbd5268f93ee",
+        "blob": "4edd7b02e750b82f473169c400c9060ea455c030"
+      },
+      "from": "pocket_first_cycle_launch_r6.py",
+      "to": "pocket_first_cycle_launch_r10.py",
+      "hunks": 4
+    },
+    {
+      "before": {
+        "bytes": 7083,
+        "sha256": "61af564d90b5e7b649b7da84ac846efc2425570b75bfbb17f1aa8f2a7c8088bf",
+        "blob": "6365316753e46e109e3cd501ac29bf1be9a1ebd6"
+      },
+      "after": {
+        "bytes": 7091,
+        "sha256": "900be9fdafb575a47a29c74779b5aad298054f593884d81e15c60d20a0b2ae1d",
+        "blob": "8059186a2c6d4fd23c7c244760ad885fdb1f01ce"
+      },
+      "from": "pocket_first_cycle_prepare_r6.py",
+      "to": "pocket_first_cycle_prepare_r10.py",
+      "hunks": 3
+    }
+  ],
+  "seven_helpers_identical": [
+    {
+      "path": "candidate/authbus_coordinator.py",
+      "bytes": 44118,
+      "sha256": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+      "blob": "d3e304f3379c69c527c9351f51cee0ff337491af"
+    },
+    {
+      "path": "candidate/pocket_authbus_cache_cas_r1.mjs",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+      "blob": "a318e427095b6c9273f03208620296b57ab59bc0"
+    },
+    {
+      "path": "candidate/pocket_first_cycle_consumer_r1.mjs",
+      "bytes": 24016,
+      "sha256": "6455180970f37831bb1a4084aab8583822c900586f9fabcbd7536332bc45429e",
+      "blob": "b3c346ae81db2e462c10860a120dced611aff5bd"
+    },
+    {
+      "path": "candidate/pocket_first_cycle_inputs_r1.py",
+      "bytes": 20076,
+      "sha256": "1ffcca778b9f78f0f63679b0cf0050afc8d520ca3c823ee65fc0aed9bd84f5ac",
+      "blob": "f1a20499c4b19270e01f5ea76b5fd0852a59d193"
+    },
+    {
+      "path": "candidate/pocket_native_auth_rows_cas_r1.mjs",
+      "bytes": 2703,
+      "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+      "blob": "dbb561238f006c71a7da28d382b5e495900eae02"
+    },
+    {
+      "path": "candidate/pocket_native_observer_r3.mjs",
+      "bytes": 11901,
+      "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027",
+      "blob": "0267ce556296180d4867f2d02dfc4b40d243973e"
+    },
+    {
+      "path": "candidate/project_trusted_profile12.py",
+      "bytes": 9233,
+      "sha256": "a7b05f1729cb658fe036d75caaeb6376149ae08a717cbdd91b69042a9b7b8e43",
+      "blob": "98354f6550feeb5dbd6c07e1b873964f0ad5e41b"
+    }
+  ],
+  "current_r10_product_pins_bound": true,
+  "source_only": true,
+  "actual_target_transfer_pending": true,
+  "actual_prepare_pending": true,
+  "actual_preflight_pending": true,
+  "actual_live_pending": true,
+  "original_http_seconds": 10,
+  "original_consumer_seconds": 70,
+  "original_rollback_seconds": 35,
+  "original_launcher_child_seconds": 440,
+  "new_remote_supervisor_seconds": 600,
+  "old_remote_supervisor_not_claimed_recovered": true,
+  "private_input_bytes_not_retrieved_or_published": true,
+  "previously_verified_frozen_generations_only": true,
+  "latest_active_credential_generation_claimed": false,
+  "pocket_only": true,
+  "mac_rog_x230_not_qualified_by_this": true,
+  "production_cutover": false,
+  "provider_or_j3160_requests": 0,
+  "full_replacement_qualification": false,
+  "old_r8_descriptive_manifest_mismatch_preserved_as_history": true
+}

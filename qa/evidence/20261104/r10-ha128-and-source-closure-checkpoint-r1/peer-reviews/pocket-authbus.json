@@ -1,0 +1,117 @@
+{
+  "schema": "heptabao.pocket-r10-binding-independent-source-review.v1",
+  "reviewer": "compatibility_audit",
+  "candidateTree": "009510370a5fb19fb03a4764f4fc9da2cfbb960f",
+  "sourceOnly": true,
+  "hostReadOrWrite": false,
+  "productOrFixtureExecuted": false,
+  "reviewedSource": {
+    "diff": {
+      "blob": "12b35bf68d1f2ca51c2934c411571f187e9e2053",
+      "bytes": 7103,
+      "sha256": "fe5037bb3e22e2cbf5557feee234fcbf2bdbd405620b3f44b0d611e3552de123"
+    },
+    "plan": {
+      "blob": "61499c1d778a760b2773c0d0b17f29b4b616b21f",
+      "bytes": 9280,
+      "sha256": "b82f159fa05a556cb37140f018def294432153f33987c3bfc3676cd0382ead85"
+    },
+    "readme": {
+      "blob": "e41d18c370ae233cd693d6df2647ab826f14ef17",
+      "bytes": 8267,
+      "sha256": "89fe99f42f7ef79c2706a1d5caa402e930ce5665d6f81d59d0b0490a0dddc0f8"
+    },
+    "qaManifestSha256": "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3"
+  },
+  "inverseSubstitutionActualResults": [
+    {
+      "file": "controller",
+      "literalSubstitutions": 5,
+      "byteIdenticalOriginal": true,
+      "afterBytes": 45061,
+      "afterSha256": "97f982832d79916deb6dbfe0ddfae56c8b4070246d52e65c6ab498483d0f9992",
+      "reconstructedOriginalSha256": "12ea0b3a459f231b2cd428b53ee12eda1e928adb0b86d282a513b552ff28d79b"
+    },
+    {
+      "file": "launcher",
+      "literalSubstitutions": 8,
+      "byteIdenticalOriginal": true,
+      "afterBytes": 13062,
+      "afterSha256": "1cbec91c3b19c3c488ae8976c01fee2b6eb40c03c56b1c55064ccbd5268f93ee",
+      "reconstructedOriginalSha256": "ea494ae0565be96b59d3fbcc6e473d8740c5eca93d3c1ab1ab94900635de8f36"
+    },
+    {
+      "file": "prepare",
+      "literalSubstitutions": 4,
+      "byteIdenticalOriginal": true,
+      "afterBytes": 7091,
+      "afterSha256": "900be9fdafb575a47a29c74779b5aad298054f593884d81e15c60d20a0b2ae1d",
+      "reconstructedOriginalSha256": "61af564d90b5e7b649b7da84ac846efc2425570b75bfbb17f1aa8f2a7c8088bf"
+    }
+  ],
+  "sevenHelperActualWholeHashResults": [
+    {
+      "path": "authbus_coordinator.py",
+      "blob": "d3e304f3379c69c527c9351f51cee0ff337491af",
+      "bytes": 44118,
+      "sha256": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+      "sameOriginalBlob": true
+    },
+    {
+      "path": "pocket_authbus_cache_cas_r1.mjs",
+      "blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+      "sameOriginalBlob": true
+    },
+    {
+      "path": "pocket_first_cycle_consumer_r1.mjs",
+      "blob": "b3c346ae81db2e462c10860a120dced611aff5bd",
+      "bytes": 24016,
+      "sha256": "6455180970f37831bb1a4084aab8583822c900586f9fabcbd7536332bc45429e",
+      "sameOriginalBlob": true
+    },
+    {
+      "path": "pocket_first_cycle_inputs_r1.py",
+      "blob": "f1a20499c4b19270e01f5ea76b5fd0852a59d193",
+      "bytes": 20076,
+      "sha256": "1ffcca778b9f78f0f63679b0cf0050afc8d520ca3c823ee65fc0aed9bd84f5ac",
+      "sameOriginalBlob": true
+    },
+    {
+      "path": "pocket_native_auth_rows_cas_r1.mjs",
+      "blob": "dbb561238f006c71a7da28d382b5e495900eae02",
+      "bytes": 2703,
+      "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+      "sameOriginalBlob": true
+    },
+    {
+      "path": "pocket_native_observer_r3.mjs",
+      "blob": "0267ce556296180d4867f2d02dfc4b40d243973e",
+      "bytes": 11901,
+      "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027",
+      "sameOriginalBlob": true
+    },
+    {
+      "path": "project_trusted_profile12.py",
+      "blob": "98354f6550feeb5dbd6c07e1b873964f0ad5e41b",
+      "bytes": 9233,
+      "sha256": "a7b05f1729cb658fe036d75caaeb6376149ae08a717cbdd91b69042a9b7b8e43",
+      "sameOriginalBlob": true
+    }
+  ],
+  "findings": [
+    "Five controller constants, eight launcher literals and four preparation literals reverse exactly to the independently fetched published R8 originals. No other source bytes change.",
+    "The exact R10 raw normal and native receipts match the candidate SHA pins and contain the source, binary and normal-default fields required by the unchanged actual controller checks.",
+    "Original 10-second HTTP, 70-second consumer, 35-second rollback and 440-second launcher limits remain byte-identical. NEW 600-second remote supervision is explicitly a proposal, not a recovered historical cap or increased business deadline.",
+    "Fresh QA, artifact, prepare, preflight and live paths do not reopen R8 generations. Existing frozen private inputs and source helpers remain read-only; source drift must refuse rather than recapture.",
+    "Original provider/model/refresh/J3160 exclusion, kernel isolation, default local5/native4 preservation, managed1/2 scope, cache/full-store CAS order and one-attempt unknown handling are unchanged.",
+    "Old descriptive QA metadata is retained in the original and corrected only in the NEW manifest; R10 runtime qualification is not inherited."
+  ],
+  "blockingFindings": [],
+  "limits": [
+    "This is narrow source/delta review, not new AST execution, artifact transport, preflight or consumer qualification.",
+    "Actual target custody and whole pins, current source fences, authoritative terminal cleanup and separately authorized runtime remain required.",
+    "No production hold release, traffic switch, installed coordinator manager or full-replacement qualification is granted."
+  ]
+}

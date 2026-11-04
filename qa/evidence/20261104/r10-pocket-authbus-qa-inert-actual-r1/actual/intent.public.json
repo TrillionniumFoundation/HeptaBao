@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.pocket-r10-qa-inert-actual-intent.v1",
+  "host": "pocket4",
+  "cwd": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1",
+  "executable": "/usr/bin/python3",
+  "argsPrefix": [
+    "-I",
+    "-S",
+    "-B",
+    "-c"
+  ],
+  "controller": {
+    "bytes": 6466,
+    "sha256": "40d90119167a547d652a222429912e5bbfec619114f05dbcdc640163d6b1a87d",
+    "blob": "ea3cf6c69dbebb5ffc3b0dfa6f1f23839e835ab3"
+  },
+  "input": {
+    "bytes": 248549,
+    "sha256": "83ab9b332ff01f3ba3fca45bf142a888234ad7140827ff5eb294f01386138d9b",
+    "blob": "59d649756784fa2061e8933ea46ac46349955757"
+  },
+  "timeout_seconds": 60,
+  "outerCapClassification": "NEW supervisor cap for inert file distribution; no product deadlines",
+  "idempotency_key": "heptabao-r10-pocket-qa-inert-62cefe18-20261104-r1",
+  "rootApproved": true,
+  "sourceExecuted": false,
+  "privateInputsRead": false,
+  "artifactTransferStarted": false,
+  "consumerStarted": false,
+  "priorPlanHostLabelCorrection": {
+    "oldDescriptiveValue": "pocket",
+    "actualConfiguredRuntimeHost": "pocket4",
+    "evidenceBlob": "b5312d4343d3d31d7c17033e0973cb70a0215887"
+  },
+  "referenceFunctionClarification": "publish changes only the fixed temporary basename; its remaining bytes are unchanged. sha, ident, sync_dir and exact are wholly unchanged."
+}

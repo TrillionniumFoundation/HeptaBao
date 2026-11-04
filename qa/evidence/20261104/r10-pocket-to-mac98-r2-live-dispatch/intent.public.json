@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.r10-direct98-single-dispatch-intent.v1",
+  "requested_runtime": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-direct98-control-r2/launch_normal_r10_pocket_direct98_r2.py",
+      "--run-once",
+      "--prepared-sha256",
+      "a583880730e5c3dfa24b8d31c714af44b11434f05bdd660a1f0e434a46c0387c"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 3000,
+    "idempotency_key": "heptabao-r10-pocket-direct98-live-r2-7a40c9ce-prepared-a5838807"
+  },
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "launcher_sha256": "7a40c9ce4c646f850c611fc29317cc2c0662d5823a10c7d52d7d43dcaa97ade9",
+  "runner_sha256": "b7623c0bb2a9bfd754401c00867ae6535fe8e19364c9fb6367219cffa2656e89",
+  "probe_sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+  "prepared_sha256": "a583880730e5c3dfa24b8d31c714af44b11434f05bdd660a1f0e434a46c0387c",
+  "prepared_tree": "c96ae94d511af8a47461ecb22c9e09adcb0a3ae2",
+  "successful128_summary_sha256": "9a23e1b4cce8638f7b5c8ea37d41929864c8b4ef35e0bef47292695d4703405e",
+  "expected_checks": 98,
+  "original_budgets": {
+    "qa_seconds": 2400,
+    "http_seconds": 15,
+    "native_admission_seconds": 8
+  },
+  "new_supervisor_outer_seconds": 3000,
+  "requested_cipher_source_node": 3,
+  "required_actual_empty_leader_node": 1,
+  "leader_selection_forced": false,
+  "wrong_actual_direction_stops_before_target_unseal": true,
+  "dispatch_attempts_allowed": 1,
+  "unknown_business_outcome_will_not_be_replayed": true,
+  "production_authority": false
+}

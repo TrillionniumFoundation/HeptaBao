@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.r11-ci-fixtures-source-publication-root-review.v1",
+  "commit": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+  "tree": "2ec2be733f5499cb632e529159a296f3c6f62cd1",
+  "sole_parent": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_branch": "codex/heptabao-blocker-closure-ci-20261104",
+  "cas_and_fresh_ref_verified": true,
+  "tree_merkle": {
+    "root_sha": "2ec2be733f5499cb632e529159a296f3c6f62cd1",
+    "trees_verified": 358,
+    "leaf_count": 3911,
+    "changed_paths": [
+      "crates/heptabao-server/src/service_native_pki_tests.rs",
+      "crates/heptabao-server/src/service_native_storage_tests.rs",
+      "crates/heptabao-server/src/service_native_transit_tests.rs",
+      "crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs"
+    ],
+    "all_other_leaves_unchanged": true,
+    "source_ref_before": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+  },
+  "formatted_source_review": {
+    "schema": "heptabao.r11-ci-four-fixture-root-format-review.v1",
+    "status": "PASS_SOURCE_AND_ACTUAL_FORMAT",
+    "base_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "base_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "packet_tree": "dd23ca349c025fe9bd2213f2d33b43fbd717261b",
+    "actual_format_job": "1a1a834f198-fc05-2e01",
+    "result": {
+      "bytes": 9279,
+      "sha256": "78c536bba142270c38d7102d74b57f91877f3194765d23b7975db3a309d67166",
+      "blob": "26743a3cef878a7ba17d479fb0c0cbaf5e46af1a"
+    },
+    "authority": {
+      "bytes": 731,
+      "sha256": "ea51714e11b53988d677b95436e94d7c50f65b70190b515ca342cf15a4af5daf",
+      "blob": "123465cf94c2a294f7699c6cc3e9c24858ff8ddf"
+    },
+    "original_source_chain_review": "r11_ci_fix_root_source_chain_review",
+    "format_diff_hunks": 4,
+    "canonical_final_diff_hunks": 6,
+    "whole_file_strict_apply_exact": true,
+    "format_changes": "Whitespace layout plus optional trailing argument comma; all four hunks reviewed, string values and assertion semantics unchanged.",
+    "all_four_formatted_sources_whole_readback": true,
+    "files": [
+      {
+        "path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+        "bytes": 40170,
+        "sha256": "b5dbe7c3b75182f44213495e764c4ebfa6760b9c915219720cee0b711cc8931b",
+        "blob": "47fc159b1d32b259c784b40f16a463b0739227be"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_storage_tests.rs",
+        "bytes": 25047,
+        "sha256": "51e436b705f720fac56fab6cc9a047a99567b3f2f172bc842c030de355d842a0",
+        "blob": "a93030cf3b5f4a881ad32f148e1b9afc02a07e0b"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_transit_tests.rs",
+        "bytes": 27371,
+        "sha256": "f1f6beca7cbf01ba2f1411646ec9a744d58e85e42937311d5d264780e0573299",
+        "blob": "7c1d2120a51d62505b7a3e0ff0aaaae2d101d204"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+        "bytes": 33157,
+        "sha256": "8ed048c97e624d81ce3ff2478e776b461c81013173821d20ea3faf795e5345bd",
+        "blob": "e6fc168b8813dfe046fadb446bdc880ffa2d8984"
+      }
+    ],
+    "canonical_and_rustfmt_before_after_lossless_identical": true,
+    "all_four_children_exit0_reaped": true,
+    "actual_format_seconds": 0.07238459700602107,
+    "new_outer_seconds": 60,
+    "internal_seconds": 50,
+    "compile_executed": false,
+    "product_files_changed": false,
+    "original_status_fences_preserved": true,
+    "production_changed": false
+  },
+  "old_ci_all_three_terminal_failure_preserved": true,
+  "production_files_changed": false,
+  "production_binaries_rebuilt": false,
+  "r10_runtime_evidence_not_relabelled_as_new_commit": true,
+  "full_ci_pass": false,
+  "merged": false,
+  "production_cutover": false
+}

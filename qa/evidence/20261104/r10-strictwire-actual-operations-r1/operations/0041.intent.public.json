@@ -1,0 +1,17 @@
+{
+  "body_bytes": 2,
+  "body_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "credential_class": "root",
+  "deadline_monotonic_ns": 898995846528313,
+  "headers": {},
+  "http_seconds": 15.0,
+  "intent_unix_ns": 1793821314854233960,
+  "label": "native_v6_activate_once",
+  "method": "POST",
+  "node": 1,
+  "parent_deadline_monotonic_ns": null,
+  "path": "/v1/sys/storage/native-v6/activate",
+  "redirect_following": false,
+  "sequence": 41,
+  "valid_restore_body": false
+}

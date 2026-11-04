@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.r10-four-host-inventory-root-plan-review.v1",
+  "status": "PASS_FIXED_PUBLIC_PHASE0_ONLY_COLLECTOR_PENDING",
+  "source_plan_tree": "9e4971a0b47268c2eb331c4caa67b11e17ae3ad2",
+  "source_addendum_tree": "f866640ad5856a759104848212953857931c80f5",
+  "root_prior_hash_reference_blob": "9edacae976af3fb0ca2ac89ecab6fa55f7bbc593",
+  "first_exact_primary": {
+    "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/finite-cutover-registration-scope-r2.public.json",
+    "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64"
+  },
+  "second_assessment_sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0",
+  "second_path_must_be_grounded_by_first_primary": true,
+  "production_sqlite_not_opened": true,
+  "provider_or_j3160_requests": false,
+  "no_unbounded_scan": true,
+  "no_service_transition": true,
+  "no_docker_execution_or_deletion": true,
+  "readonly_collector_not_executed": true,
+  "limitations": [
+    "ROG initial declared 22 exact files plus 12 WAL/SHM paths already exceed a 32 physical-path pass; count every observation and split complete fixed passes under one original host budget.",
+    "Nine existing public registration/hold evidence references must not be labelled nine backup payloads or mandatory restore scopes without actual evidence.",
+    "Historical scope observations and digests are not refreshed production rollback captures.",
+    "Absent, disabled or empty Docker metadata is not absence of all consumers or deletion permission."
+  ],
+  "new_limits": {
+    "host_total_seconds": 45,
+    "outer_seconds": 60,
+    "child_max_seconds": 10,
+    "max_physical_observations_per_pass": 32,
+    "total_read_bytes": 8388608,
+    "public_bytes": 65536
+  },
+  "no_reset_of_host_deadline_or_truncation_of_full_denominator": true,
+  "production_cutover": false,
+  "cleanup_qualification": false
+}

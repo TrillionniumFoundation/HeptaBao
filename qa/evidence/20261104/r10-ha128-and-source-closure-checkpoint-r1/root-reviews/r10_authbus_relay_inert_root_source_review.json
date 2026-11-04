@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.r10-pocket-relay-inert-root-source-review.v1",
+  "status": "PASS_SOURCE_ONLY",
+  "tree": "b658fac720e7adf2110dd833eec51f580a5c2731",
+  "strict_apply_hunks": 4,
+  "whole_apply_exact": true,
+  "changes": "fixed path, basename, two source pins, schema and title only",
+  "carrier": {
+    "bytes": 4980,
+    "sha256": "526a147f53b7b0d817308610b032f7a25b4e5cd97ebe56924d8db408e0458356",
+    "blob": "6f2c6d395949631cefc1cbb6f82ca1e83238bed3"
+  },
+  "payload": {
+    "bytes": 31549,
+    "sha256": "a8cc3d12bc349b606fb86afafda40eb0bc16c0db7b2a2a06aab889fe46da21c6",
+    "blob": "de50945a01348958ac14b07b2f810fc67d47e177"
+  },
+  "two_sources_entire_base64_and_pins_match_approved_relay": true,
+  "no_product_or_source_execution": true,
+  "python_syntax_compile_only": true,
+  "atomic_create_only_with_fsync_and_whole_fd_identity_readback": true,
+  "existing_root_is_error": true,
+  "source_stdin_limit_bytes": 262144,
+  "proposed_new_outer_seconds": 60,
+  "actual_stage_started": false,
+  "waits_for_98_terminal_quiet_release": true
+}

@@ -1,0 +1,99 @@
+{
+  "schema": "heptabao.phaseb-r3-b01-original-stderr-diagnosis.v1",
+  "originalJob": "1a1a8177aec-fc05-2da5",
+  "originalCoreSha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184",
+  "originalOutcomeUnknownPreserved": true,
+  "originalFailureCode": "unknown_cli_or_server_boundary_no_replay",
+  "reads": {
+    "host": "desktop",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1/private/0008-B01-official-cli.stderr",
+    "mode": 384,
+    "uid": 1000,
+    "nlink": 1,
+    "size": 178,
+    "sha256": "bce4e0993df8aa57859efc05b509ad6ea36d8f2d0df9dd23d63ae3640e537df8",
+    "versionBefore": "2050:58646093:178:1793821507855774457:1793821507855774457",
+    "readVersion": "2050:58646093:178:1793821507855774457:1793821507855774457",
+    "offset": 0,
+    "nextOffset": 178,
+    "eof": true,
+    "chunkSha256": "bce4e0993df8aa57859efc05b509ad6ea36d8f2d0df9dd23d63ae3640e537df8",
+    "privateBytesPrintedOrPublished": false
+  },
+  "safeProjection": {
+    "schema": "heptabao.phaseb-r3-b01-original-stderr-safe-projection.v1",
+    "sourceSha256": "bce4e0993df8aa57859efc05b509ad6ea36d8f2d0df9dd23d63ae3640e537df8",
+    "sourceBytes": 178,
+    "exactWholeHashAndEofVerified": true,
+    "rawPrivateContentPublished": false,
+    "matchedStaticProductLiterals": [
+      {
+        "message": "native HA committed root is unavailable",
+        "source": "service",
+        "line": 10673
+      }
+    ],
+    "methodGetObserved": true,
+    "knownOwnedOriginAndPathObserved": true,
+    "http503Observed": true,
+    "cliIncompleteSnapshotMarker": false,
+    "providerOrRemoteNonFixtureUrlPublished": false,
+    "replayed": false
+  },
+  "sourceMatches": [
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+      "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2",
+      "function": "sync_from_ha_with_anchor_inner",
+      "lines": [
+        10644,
+        10674
+      ],
+      "meaning": "The observed static error is emitted only when one of the actual native-v6 committed-read variants returns Err. The error is mapped to 503 and record_native_pre_admission_read_refusal is invoked. The inner error is discarded here, so the observed literal alone cannot identify which lower-level refusal occurred."
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3",
+      "sha256": "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9",
+      "function": "revalidate_native_snapshot_ha_leader",
+      "lines": [
+        723,
+        746
+      ],
+      "meaning": "Leader revalidation calls sync_from_ha_with_anchor(false), so this literal can arise after a staged transfer as well as from request admission. No source-only conclusion selects the actual phase."
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "function": "finalize_snapshot_transfer",
+      "lines": [
+        881,
+        882
+      ],
+      "meaning": "Returns the leader-revalidation error without replacing it; complete_snapshot_transfer performs the real response-audit path."
+    }
+  ],
+  "observedBoundary": {
+    "cliExit": 2,
+    "cliTimedOut": false,
+    "httpCodeFromOriginalCliStderr": 503,
+    "serverAuditRequestSequence": 61,
+    "serverAuditResponseSequence": 62,
+    "serverAuditResponseStatus": 503,
+    "archiveCreated": false,
+    "allOwnedStopped": true
+  },
+  "unresolved": [
+    "Exact inner committed-read error and admission-versus-finalization phase.",
+    "Actual CLI ALPN and client framing completeness; neither this stderr nor the server audit authenticates full HTTP framing."
+  ],
+  "nonConclusions": [
+    "No product fix, business retry or new request was attempted.",
+    "The original unknown result, original final input-fence error and all prior receipts remain unchanged.",
+    "This diagnosis does not convert CLI exit 2 or an audit pair into successful archive or restore qualification."
+  ],
+  "productRuntimeExecutedByThisDiagnostic": false,
+  "fixtureRestarted": false,
+  "providerRequests": 0,
+  "productionChanged": false
+}

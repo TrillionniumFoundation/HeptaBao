@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-"
+    ],
+    "created_unix_ms": 1793823161779,
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1a8313db3-fc05-2df6",
+    "idempotency_key": "heptabao-r10-pocket-artifact-route-readonly-20261104-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1a8313db3-fc05-2df6",
+    "request_digest": "5bbd87aca061612f646c66a75719141db41fb3a06fb8038e4973bcbc367f494c",
+    "request_fingerprint": 6610589003544617263,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1a8313db3-fc05-2df6"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1a8313db3-fc05-2df6"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

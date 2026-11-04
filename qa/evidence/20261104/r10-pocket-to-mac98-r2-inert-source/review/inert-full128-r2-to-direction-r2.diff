@@ -1,0 +1,16 @@
+--- a/full128-r2-inert_carrier.py
++++ b/direction-r2-inert_carrier.py
+@@ -5,10 +5,11 @@
+ 
+ os.umask(0o077)
+ PARENT = Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-BASE = PARENT / 'normal-r10-full128-control-r2'
++BASE = PARENT / 'normal-r10-pocket3-mac1-direct98-control-r2'
+ RECEIPT = BASE / 'inert-stage.result.public.json'
+ PINS = {
+-    "launch_normal_r10_full128_r2.py": (14687, "1c7f6b254a5a4acde704fff145b315b9fbe7ade186513dc0411c7e1a64506817"),
++    "launch_normal_r10_pocket_direct98_r2.py": (16111, "7a40c9ce4c646f850c611fc29317cc2c0662d5823a10c7d52d7d43dcaa97ade9"),
++    "native_v6_pocket_source_direct98_r10_r2.py": (10844, "b7623c0bb2a9bfd754401c00867ae6535fe8e19364c9fb6367219cffa2656e89"),
+     "probe_normal_build_r10_r1.py": (6445, "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee"),
+ }
+ 

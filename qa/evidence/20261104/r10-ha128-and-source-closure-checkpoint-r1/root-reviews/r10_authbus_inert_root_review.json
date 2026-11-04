@@ -1,0 +1,105 @@
+{
+  "schema": "heptabao.pocket-r10-qa-inert-root-source-review.v1",
+  "status": "PASS_SOURCE_ONLY",
+  "tree": "3852521da756b790724be84ea9bea240f1db62bf",
+  "carrier": {
+    "bytes": 6466,
+    "sha256": "40d90119167a547d652a222429912e5bbfec619114f05dbcdc640163d6b1a87d",
+    "blob": "ea3cf6c69dbebb5ffc3b0dfa6f1f23839e835ab3"
+  },
+  "reference": {
+    "bytes": 5028,
+    "sha256": "487dfe96ed875f30bdb81c54eed5c2534e721b9b1855554307e7f1aff69aefca",
+    "blob": "2353455775b0ac850cb560dde84980fc2b14dcdd"
+  },
+  "strict_diff_hunks": 3,
+  "whole_apply_exact": true,
+  "approved_source_tree": "009510370a5fb19fb03a4764f4fc9da2cfbb960f",
+  "all_11_pins_and_encoded_payload_bytes_exact": true,
+  "files": [
+    {
+      "name": "authbus_coordinator.py",
+      "bytes": 44118,
+      "sha256": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+      "blob": "d3e304f3379c69c527c9351f51cee0ff337491af"
+    },
+    {
+      "name": "pocket_authbus_cache_cas_r1.mjs",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+      "blob": "a318e427095b6c9273f03208620296b57ab59bc0"
+    },
+    {
+      "name": "pocket_first_cycle_consumer_r1.mjs",
+      "bytes": 24016,
+      "sha256": "6455180970f37831bb1a4084aab8583822c900586f9fabcbd7536332bc45429e",
+      "blob": "b3c346ae81db2e462c10860a120dced611aff5bd"
+    },
+    {
+      "name": "pocket_first_cycle_inputs_r1.py",
+      "bytes": 20076,
+      "sha256": "1ffcca778b9f78f0f63679b0cf0050afc8d520ca3c823ee65fc0aed9bd84f5ac",
+      "blob": "f1a20499c4b19270e01f5ea76b5fd0852a59d193"
+    },
+    {
+      "name": "pocket_first_cycle_launch_r10.py",
+      "bytes": 13062,
+      "sha256": "1cbec91c3b19c3c488ae8976c01fee2b6eb40c03c56b1c55064ccbd5268f93ee",
+      "blob": "4edd7b02e750b82f473169c400c9060ea455c030"
+    },
+    {
+      "name": "pocket_first_cycle_prepare_r10.py",
+      "bytes": 7091,
+      "sha256": "900be9fdafb575a47a29c74779b5aad298054f593884d81e15c60d20a0b2ae1d",
+      "blob": "8059186a2c6d4fd23c7c244760ad885fdb1f01ce"
+    },
+    {
+      "name": "pocket_native_auth_rows_cas_r1.mjs",
+      "bytes": 2703,
+      "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+      "blob": "dbb561238f006c71a7da28d382b5e495900eae02"
+    },
+    {
+      "name": "pocket_native_observer_r3.mjs",
+      "bytes": 11901,
+      "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027",
+      "blob": "0267ce556296180d4867f2d02dfc4b40d243973e"
+    },
+    {
+      "name": "pocket_shared_first_cycle_live_r2.py",
+      "bytes": 45061,
+      "sha256": "97f982832d79916deb6dbfe0ddfae56c8b4070246d52e65c6ab498483d0f9992",
+      "blob": "e9c12ebe2483333c1e3542ed86d152b5503caeae"
+    },
+    {
+      "name": "project_trusted_profile12.py",
+      "bytes": 9233,
+      "sha256": "a7b05f1729cb658fe036d75caaeb6376149ae08a717cbdd91b69042a9b7b8e43",
+      "blob": "98354f6550feeb5dbd6c07e1b873964f0ad5e41b"
+    },
+    {
+      "name": "qa-pins.public.json",
+      "bytes": 1955,
+      "sha256": "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3",
+      "blob": "3a48d393668a0e656cabfadfabd85ed912062ce4"
+    }
+  ],
+  "input": {
+    "bytes": 248549,
+    "sha256": "83ab9b332ff01f3ba3fca45bf142a888234ad7140827ff5eb294f01386138d9b",
+    "blob": "59d649756784fa2061e8933ea46ac46349955757"
+  },
+  "source_execution": false,
+  "compile_only_names": [
+    "pocket_first_cycle_launch_r10.py",
+    "pocket_first_cycle_prepare_r10.py",
+    "pocket_shared_first_cycle_live_r2.py"
+  ],
+  "fresh_root_required": true,
+  "atomic_publication": true,
+  "whole_fd_identity_mode_owner_readback": true,
+  "original_stdin_cap_bytes": 262144,
+  "new_outer_seconds": 60,
+  "actual_stage_performed": false,
+  "scope": "Create-only QA distribution; no product, private credential, consumer or production changes."
+}

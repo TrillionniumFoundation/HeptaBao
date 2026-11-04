@@ -1,0 +1,76 @@
+{
+  "createOnly": true,
+  "createdRoot": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r8-artifacts-r1",
+  "errorClass": null,
+  "files": [
+    {
+      "bytes": 110064840,
+      "createOnly": true,
+      "identity": [
+        "66306",
+        "44082411",
+        "1000",
+        "1000",
+        "33216",
+        "1",
+        "110064840",
+        "1793806908996168489",
+        "1793806908996168489"
+      ],
+      "mode": 448,
+      "name": "heptabao-server",
+      "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r8-artifacts-r1/heptabao-server",
+      "sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed"
+    },
+    {
+      "bytes": 777,
+      "createOnly": true,
+      "identity": [
+        "66306",
+        "44082412",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "777",
+        "1793806909082383942",
+        "1793806909082383942"
+      ],
+      "mode": 384,
+      "name": "native-build.public.json",
+      "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r8-artifacts-r1/native-build.public.json",
+      "sha256": "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9"
+    },
+    {
+      "bytes": 3164,
+      "createOnly": true,
+      "identity": [
+        "66306",
+        "44082413",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "3164",
+        "1793806909083982947",
+        "1793806909083982947"
+      ],
+      "mode": 384,
+      "name": "normal-build.result.public.json",
+      "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r8-artifacts-r1/normal-build.result.public.json",
+      "sha256": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5"
+    }
+  ],
+  "finishedUnixNs": 1793806909085042729,
+  "machineIdSha256": "83cf23c61610cc1595d7323f6ae2f1af29b364a4676cbee1385ba6d478ad853c",
+  "nativeBuildHost": "rog",
+  "ok": true,
+  "partialRootPreservedOnFailure": false,
+  "privateInputsTransferred": false,
+  "productionChanged": false,
+  "schema": "heptabao.pocket-r8-public-artifact-receive-result.v1",
+  "serverOrConsumerStarted": false,
+  "sourceCommit": "384c957612186d64c5a530044af0ae62c568cc3d",
+  "sourceTree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04",
+  "startedUnixNs": 1793806908057911197
+}

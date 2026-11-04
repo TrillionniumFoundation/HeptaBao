@@ -1,0 +1,17 @@
+{
+  "body_bytes": 0,
+  "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "credential_class": "root",
+  "deadline_monotonic_ns": 899011627137915,
+  "headers": {},
+  "http_seconds": 15.0,
+  "intent_unix_ns": 1793821330634846557,
+  "label": "node3_ordinary_256k_write_once_leader_read",
+  "method": "GET",
+  "node": 1,
+  "parent_deadline_monotonic_ns": null,
+  "path": "/v1/wire/data/from_node3",
+  "redirect_following": false,
+  "sequence": 74,
+  "valid_restore_body": false
+}

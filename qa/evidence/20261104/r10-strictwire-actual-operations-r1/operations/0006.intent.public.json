@@ -1,0 +1,17 @@
+{
+  "body_bytes": 62,
+  "body_sha256": "f5c5c53b05db253e2e4cea495990d0e6e3382bf09025c8e45ef8d29de9e8084d",
+  "credential_class": "root",
+  "deadline_monotonic_ns": 898986240090333,
+  "headers": {},
+  "http_seconds": 15.0,
+  "intent_unix_ns": 1793821305247802526,
+  "label": "seed_version_1_once",
+  "method": "POST",
+  "node": 1,
+  "parent_deadline_monotonic_ns": null,
+  "path": "/v1/wire/data/seed",
+  "redirect_following": false,
+  "sequence": 6,
+  "valid_restore_body": false
+}

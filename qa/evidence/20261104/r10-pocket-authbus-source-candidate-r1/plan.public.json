@@ -1,0 +1,203 @@
+{
+  "schema": "heptabao.pocket-r10-first-cycle-source-plan.v1",
+  "sourceOnly": true,
+  "hostStageExecuted": false,
+  "actualRuntimeExecuted": false,
+  "productionChanged": false,
+  "source": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "normalBinarySha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+    "nativeReceiptSha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+    "normalBuildResultSha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+    "normalLinux44AlreadyRootReviewed": true
+  },
+  "originalReviewedReference": {
+    "validationCommit": "1197a56a396e8b6aee2928c2503983cba9e2ce19",
+    "candidateSubtree": "d9e04aac084757bf649bf0d2a5daeb86e320f481",
+    "qaPinsSha256": "2a234b7b213ce92eb0bf163e1964acd79f7213d8581ae6ec20817c8eaf043c40",
+    "actualRecapSha256": "97a36b5d55a56457c4a1b275caaa5c71b9179a9d6dc3be38f4b4b9bcee9d6768",
+    "rootTerminalReviewSha256": "6272a598f4d159e92f9264acd88369654bbfacf2deef0d0bb4fd65a1c16a5af6",
+    "qualificationInherited": false
+  },
+  "paths": {
+    "project": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1",
+    "qa": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1",
+    "artifacts": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-artifacts-r1",
+    "reusedReadonlyInputs": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-inputs-r1",
+    "newPrepare": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-inputs-r1/prepare-r10-r1.public.json",
+    "newPreflight": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-preflight-r1",
+    "newLive": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-live-r1"
+  },
+  "artifactTransport": {
+    "status": "source_plan_only_receiver_and_route_review_still_required",
+    "sourceDirectory": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1/incoming",
+    "sourceQualification": "Actual shared input already accepted by root",
+    "sourcePacketTree": "f52d54addfe6af11fc0bbd6af9dbd46554241f71",
+    "sourceOwnerUid": 1000,
+    "targetOwnerUid": 1000,
+    "sourceDirectoryMode": "0500",
+    "targetDirectoryMode": "0700",
+    "files": [
+      {
+        "source": "heptabao-server",
+        "target": "heptabao-server",
+        "bytes": 109091112,
+        "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+        "sourceMode": "0500",
+        "targetMode": "0500",
+        "sourceVersion": "2050:58120239:109091112:1793819286714153802:1793819286714153802"
+      },
+      {
+        "source": "native-build.public.json",
+        "target": "native-build.public.json",
+        "bytes": 801,
+        "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+        "sourceMode": "0400",
+        "targetMode": "0600",
+        "sourceVersion": "2050:58120241:801:1793819287399134926:1793819287399134926"
+      },
+      {
+        "source": "normal-release-result.public.json",
+        "target": "normal-build.result.public.json",
+        "bytes": 3227,
+        "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+        "sourceMode": "0400",
+        "targetMode": "0600",
+        "sourceVersion": "2050:58120242:3227:1793819287404134788:1793819287404134788"
+      }
+    ],
+    "createOnly": true,
+    "rawReceiptBytesPreserved": true,
+    "sourceBeforeAfterVersionRequired": true,
+    "exactEofRequired": true,
+    "authoritativeTerminalAndOwnedCleanupRequired": true,
+    "targetWholeReadbackRequired": true,
+    "noImplicitSshTrustChanges": true,
+    "executeDuringHaQuiet": false
+  },
+  "privateInputs": {
+    "packetPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-inputs-r1/managed-profile12.private.json",
+    "packetSha256": "40fc5cd1f2558994c3097b60e3359bf3044f5fdd1a40ba91ff0fe5bd406bb8fe",
+    "projectionPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-inputs-r1/source-projection.public.json",
+    "projectionSha256": "df47c9d560868fea6a88eb60f035c53efcdd101046bfb7ea55778a1ba073f21a",
+    "originalPreparePath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-inputs-r1/prepare-r2.public.json",
+    "originalPrepareSha256": "3ae1e850de5bd7feed62598705529dcad06493467ccbd671d72865f7fc127ccb",
+    "contentRecoveredOrRepublishedInThisPacket": false,
+    "frozenPreviouslyVerifiedGenerationsOnly": true,
+    "latestActiveGenerationClaimed": false,
+    "recaptureOnMismatch": false
+  },
+  "qa": {
+    "manifestSha256": "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3",
+    "changedSourceCount": 3,
+    "unchangedSourceCount": 7,
+    "exactReverseSubstitutionVerified": true,
+    "providerOrNativeWorkflowChanged": false
+  },
+  "budgets": {
+    "httpSeconds": 10,
+    "consumerSeconds": 70,
+    "rollbackSeconds": 35,
+    "launcherChildSeconds": 440,
+    "allFourOriginalValuesUnchanged": true,
+    "originalRemoteSupervisorCapRecovered": false,
+    "proposedNewRemoteSupervisorSeconds": 600,
+    "newRemoteSupervisorCapReason": "Explicit new job envelope around the unchanged 440-second launcher contract; not an assertion of equality to the unrecovered historical supervisor cap.",
+    "executionAuthorization": "source review only; runtime remains separately authorized after actual transport/prepare/preflight and HA quiet release"
+  },
+  "steps": [
+    {
+      "name": "inert_source_and_artifacts",
+      "status": "not_executed",
+      "scope": "Create-only exact ten QA files plus manifest and three artifact files; compile source without executing it; whole-file readback; preserve all historical paths."
+    },
+    {
+      "name": "prepare",
+      "status": "not_executed",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/pocket_first_cycle_prepare_r10.py",
+        "--qa-pins-sha256",
+        "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3"
+      ],
+      "idempotencyKey": "heptabao-r10-pocket-first-cycle-prepare-495033-20261104-r1",
+      "productStarted": false
+    },
+    {
+      "name": "preflight",
+      "status": "not_executed",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/pocket_first_cycle_launch_r10.py",
+        "--phase",
+        "preflight",
+        "--qa-pins-sha256",
+        "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3"
+      ],
+      "idempotencyKey": "heptabao-r10-pocket-first-cycle-preflight-495033-20261104-r1",
+      "productStarted": false
+    },
+    {
+      "name": "live",
+      "status": "not_executed",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1/pocket_first_cycle_launch_r10.py",
+        "--phase",
+        "live",
+        "--qa-pins-sha256",
+        "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3"
+      ],
+      "idempotencyKey": "heptabao-r10-pocket-first-cycle-live-495033-20261104-r1",
+      "requires": "Actual reviewed transport, prepare and exact R10 preflight; separate runtime GO and quiet release."
+    }
+  ],
+  "preservedContracts": {
+    "agents": [
+      "main",
+      "tg8687951891"
+    ],
+    "actualInstalledSdkAndNative": true,
+    "nativeVersion": "0.144.3",
+    "defaultLocalOrdinal": 5,
+    "independentUserNativeOrdinal": 4,
+    "managedManifestOrdinals": [
+      1,
+      2
+    ],
+    "originalPublishNew": true,
+    "originalOrderExclusionsAndShadowMode": true,
+    "allCurrentIdentityOrderUsagePreserved": true,
+    "sixCacheBytesModesAbsencesRestored": true,
+    "strictFullStoreEffectiveStoreRawRowsThenCacheRollback": true,
+    "rollbackAttemptGuardOnce": true,
+    "unknownNoBusinessRetry": true,
+    "ungrantedInboxDeferredByExactCore": true,
+    "originalInitialColdAndBothRollbackPhases": true,
+    "wholeFilesystemReadonlyExceptFreshRun": true,
+    "kernelNetworkAndPidIsolation": true,
+    "productionUnitsHeldInactive": true
+  },
+  "scopeLimits": {
+    "pocketOnly": true,
+    "macOrRogConsumerQualified": false,
+    "productionCutoverQualified": false,
+    "holdReleasePerformed": false,
+    "installedCoordinatorManagerExercised": false,
+    "providerAvailabilityQualified": false,
+    "latestCredentialGenerationQualified": false,
+    "fullReplacementQualified": false,
+    "strictRollbackIsCrossFileAtomicTransaction": false
+  },
+  "rejectionPolicy": "Any source/config/registry/native identity/cache/input drift, unknown dispatch, incomplete native reap or CAS mismatch fails and preserves the new generation; no current-source recapture, order rewrite, grant issuance, provider recovery or second business attempt is implied."
+}

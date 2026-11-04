@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.four-host-inventory-read-plan-manifest.r1",
+  "hostCollectorsExecuted": false,
+  "productionChanged": false,
+  "sourceReviewOnly": true,
+  "files": [
+    {
+      "path": "evidence/mac-rog-cutover-plan.md",
+      "mode": "100644",
+      "bytes": 19937,
+      "sha256": "a1be08b3c11aaa428c16909dd96fb4cb495b79b97d0ec9479d70279eb90178cd",
+      "blob": "d14e537c5f79a0f2d5a6ff3d6334e9991ca45328",
+      "classification": "historical primary evidence; not current inventory"
+    },
+    {
+      "path": "evidence/mac-rog-source-observations.public.json",
+      "mode": "100644",
+      "bytes": 39830,
+      "sha256": "7685a8dd41a555804f106fb880c1c75652d75af447aa2b5494c66ba2a7670bd2",
+      "blob": "8eb73d436bc8e6a709966b06da6486fa89b822df",
+      "classification": "historical primary evidence; not current inventory"
+    },
+    {
+      "path": "evidence/mac-rog-cutover-plan-r2.public.json",
+      "mode": "100644",
+      "bytes": 9095,
+      "sha256": "d211187aec0f5555fc6cbfb852c7eede6692f2a7040c9a1cf1dee750a0186a36",
+      "blob": "f8845497197f7c46af23bff0c66cd3e1d21e13c9",
+      "classification": "historical primary evidence; not current inventory"
+    },
+    {
+      "path": "evidence/current-authbus-evidence.md",
+      "mode": "100644",
+      "bytes": 50964,
+      "sha256": "1100fd18b626ce2f9286ec6a23a360f8a20da4a961313690c48e6f9fa66782c0",
+      "blob": "51e67c5137096a156fff0b752dbf4341189e5dec",
+      "classification": "historical primary evidence; not current inventory"
+    },
+    {
+      "path": "evidence/rog-sdk314-root-review.public.json",
+      "mode": "100644",
+      "bytes": 3020,
+      "sha256": "b4022613e49b0d7d8a9e434d295395333e1e1935135f2568444f976179477072",
+      "blob": "affcbcb62531d2c6e4cdeee1c8ad62c45875fbb9",
+      "classification": "historical primary evidence; not current inventory"
+    },
+    {
+      "path": "evidence/rog-entry-sdk330-root-review.public.json",
+      "mode": "100644",
+      "bytes": 3574,
+      "sha256": "1fb171bba984f4656e8e81b531a6ff205e03820da7abb8800b10895af91aa23b",
+      "blob": "35a82ad9a6bfc673a609977c7f2ac8ed3f74b044",
+      "classification": "historical primary evidence; not current inventory"
+    },
+    {
+      "path": "evidence/x230-manager547-root-review.public.json",
+      "mode": "100644",
+      "bytes": 4869,
+      "sha256": "d38d1b096873353788bcd408d576214f56fcbc73c8cd9c921c9bbf97743408f6",
+      "blob": "a2fd43b8061b402e65fc68903b4cab71645c06bd",
+      "classification": "historical primary evidence; not current inventory"
+    },
+    {
+      "path": "READ_PLAN.md",
+      "mode": "100644",
+      "bytes": 11600,
+      "sha256": "2a9ad7801b748e02ee42e0c164d8c4fe5d8c0a2dfdcee976ca33f5192dc8c778",
+      "blob": "f35ac842ea6ed372e76b6639e1a9c12227a24a6f",
+      "classification": "new source-only plan, not executed"
+    },
+    {
+      "path": "read-plan.public.json",
+      "mode": "100644",
+      "bytes": 18603,
+      "sha256": "ec0b6798ab47caae680818b1e5cfd684700f930ac656f649fe0be65b57df8a0c",
+      "blob": "b4f3849a5142e04b19753864f6451138a4265d0b",
+      "classification": "new source-only plan, not executed"
+    }
+  ]
+}

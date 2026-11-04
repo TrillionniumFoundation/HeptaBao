@@ -1,0 +1,17 @@
+{
+  "body_bytes": 2,
+  "body_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "credential_class": "root",
+  "deadline_monotonic_ns": 899014268113064,
+  "headers": {},
+  "http_seconds": 15.0,
+  "intent_unix_ns": 1793821333275817378,
+  "label": "node2_native_large_invalid_schema",
+  "method": "POST",
+  "node": 2,
+  "parent_deadline_monotonic_ns": null,
+  "path": "/v1/sys/migration/openbao/kv2/native-large?mount=wire",
+  "redirect_following": false,
+  "sequence": 78,
+  "valid_restore_body": false
+}

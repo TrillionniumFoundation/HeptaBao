@@ -1,0 +1,203 @@
+{
+  "schema": "heptabao.r10-ci-four-refusal-fixtures.independent-source-review.v1",
+  "reviewer": "authbus_migration",
+  "authorCandidateTree": "b3b1d905a669aa04e15459305ac857cc1f21793f",
+  "baseCommit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "baseTree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "sourceOnly": true,
+  "verdict": "no_blocking_finding_in_reviewed_source_scope",
+  "diff": {
+    "bytes": 8897,
+    "sha256": "cca82f4e654d13fda8405729f8db48a3daf58b5f485dfb33e3ffd45ccbd47b90",
+    "blob": "23283e3674bd25b141154e40bc3b68ff0ee23946"
+  },
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+      "before": {
+        "path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+        "blob": "b4e19637201c04da328fbe4e825edcfa382d1381",
+        "bytes": 40085,
+        "sha256": "cd2a36696281904076b5943e4b9cce0a9feb37d4755d0cbf4e0b70553d11ff79"
+      },
+      "after": {
+        "bytes": 40201,
+        "sha256": "c6040b9b2850b3fcf6cc1b17b9f4e8e53217f64cc6f1d26e3c33b37248e16d84",
+        "blob": "8838b455eff6f3582c28d05d6194cf79ee3b0052"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_transit_tests.rs",
+      "before": {
+        "path": "crates/heptabao-server/src/service_native_transit_tests.rs",
+        "blob": "3c00febef18a26d67376b296d01ee1f483a96f21",
+        "bytes": 27364,
+        "sha256": "9a620357a6b0ef168d3291e0e36a40e8b129cb4ee10cd2b710d3ddd42d02833e"
+      },
+      "after": {
+        "bytes": 27371,
+        "sha256": "f1f6beca7cbf01ba2f1411646ec9a744d58e85e42937311d5d264780e0573299",
+        "blob": "7c1d2120a51d62505b7a3e0ff0aaaae2d101d204"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_storage_tests.rs",
+      "before": {
+        "path": "crates/heptabao-server/src/service_native_storage_tests.rs",
+        "blob": "0e4cf998b8f6ab5307e9f65d8e637c8026a7e4ca",
+        "bytes": 23786,
+        "sha256": "4b219daf9b8ff0464dd11ce464888dace7576e70d3fce91da695928574ebe09f"
+      },
+      "after": {
+        "bytes": 24922,
+        "sha256": "bb15990f5851af63afa548c3e5cbe56911ea0332a6db3a458cb9a26ca571c7bd",
+        "blob": "95f78700afb2b0438d8dbc29603188a9e9afba7f"
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+      "before": {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+        "blob": "048b5068df94d0afd2b590c195d89f635199ed19",
+        "bytes": 32554,
+        "sha256": "1ae927b441b0fccddb85f50aa0c7a4ca070e59b26de47bfffa249b015c71ae9c"
+      },
+      "after": {
+        "bytes": 33157,
+        "sha256": "8ed048c97e624d81ce3ff2478e776b461c81013173821d20ea3faf795e5345bd",
+        "blob": "e6fc168b8813dfe046fadb446bdc880ffa2d8984"
+      }
+    }
+  ],
+  "strictApply": [
+    {
+      "path": "crates/heptabao-server/src/service_native_pki_tests.rs",
+      "hunks": 1,
+      "strictWholeApply": true,
+      "budgetLinesIdentical": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_transit_tests.rs",
+      "hunks": 1,
+      "strictWholeApply": true,
+      "budgetLinesIdentical": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_storage_tests.rs",
+      "hunks": 1,
+      "strictWholeApply": true,
+      "budgetLinesIdentical": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+      "hunks": 3,
+      "strictWholeApply": true,
+      "budgetLinesIdentical": true
+    }
+  ],
+  "checkedProductionSources": [
+    {
+      "path": "crates/heptabao-server/src/engines.rs",
+      "blob": "d4eb181702573cab33fb48de07765a47d870c713",
+      "bytes": 153342,
+      "sha256": "75e46bb5a44d4934f064003f78450208cf65a0c58a08c69d83138391629c5cf3"
+    },
+    {
+      "path": "crates/heptabao-server/src/engines/native_empty_namespace.rs",
+      "blob": "a48529a3bacb82e01b68b7ac929075e5a32b0e73",
+      "bytes": 6198,
+      "sha256": "7fea4ae78b90c7e1b29c99cbd42d357d560c97230040726db5b4f81fce0db769"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_storage.rs",
+      "blob": "eee13dd9fa02278b1718697170269670fe0a8f7b",
+      "bytes": 8921,
+      "sha256": "fd128286715bc0d1350657057882ae7070bf9de17b30b8aa1067e30d430af062"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_plain_namespace.rs",
+      "blob": "91ed324a0bb20151c50bb2e1f141e70b08ad835b",
+      "bytes": 12426,
+      "sha256": "e88de0bcf6e9788046ba91aa2d7cfd26b9962626e8cc0b6a823aadbb69ec6c30"
+    },
+    {
+      "path": "crates/heptabao-server/src/engine_native_kv2_mount.rs",
+      "blob": "b8957da2b66b1dc67858d237c8245f6863a86f9c",
+      "bytes": 19138,
+      "sha256": "90f71e012ce11f6eb633e1de9f274852436bac6f9a55910e3896021113f162f2"
+    },
+    {
+      "path": "crates/heptabao-server/src/engines/pki_native.rs",
+      "blob": "39d2a76d45894fb377a391e400cee7fe894ad9c1",
+      "bytes": 1182,
+      "sha256": "5004d8e87d3a121ecb956880e8fde71245045580a54626b1163c7237ca9951ed"
+    },
+    {
+      "path": "crates/heptabao-server/src/engines/pki.rs",
+      "blob": "d50159bcbb9280cfedad9e0df7bb5cf170615add",
+      "bytes": 136453,
+      "sha256": "c7f86b2eccaa4756dbffc1ed30c6f6e00f2f3874c35b76d46705e64cb87302e9"
+    }
+  ],
+  "additionalCanonicalSources": [
+    {
+      "path": "crates/heptabao-server/src/service_native_seed.rs",
+      "bytes": 27386,
+      "sha256": "4025c1a69c7b7c9d5a11662cc3395f3d1ca4ef3ddd6440283247fbeb85adf283",
+      "blob": "3b3982daa1cae82ec0fe2115ba7f6973d2cb2080"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_cold_seed.rs",
+      "bytes": 34394,
+      "sha256": "4d49ff9490be2900588d2b9517d51104308a1f82f8498da615e00ea39406998d",
+      "blob": "4932adf8620a3d32ebf8dee4da359213010bfb68"
+    }
+  ],
+  "findings": [
+    {
+      "area": "Actual unsupported mount",
+      "status": "source_checked",
+      "detail": "Both root and plain namespace engine profiles admit root SSH but reject Backend::Kubernetes. The existing native KV2 mount creation fallback rejects any non-KV2 type with 501; the two negative mount assertions retain their original ACL/CAS/graph context."
+    },
+    {
+      "area": "Actual unsupported private owner",
+      "status": "source_checked",
+      "detail": "The fixture uses real internal EC-256 PKI key generation. LocalPrivateMaterial::generate is published into RootCa.local_material; RootCa and Pki serialize this private material. Configuring the local cluster URL satisfies the enabled-ACME write precondition. enabled=true is nondefault AcmeConfig, making Pki::native_local_profile false. No ACME account/order/challenge/provider operation is added."
+    },
+    {
+      "area": "Configured File refusal",
+      "status": "source_checked",
+      "detail": "409 and native_root absence remain. The added before/after engine-byte comparison uses Zeroizing buffers with native_root absent, after successful V5 key/config writes; it does not flatten a live native KV view. The original public configuration equality is preserved."
+    },
+    {
+      "area": "Cold archive refusal and source retention",
+      "status": "byte_checked",
+      "detail": "Both protected route 501 checks, exact ColdSeedError::GraphRejected, destination absence, generation and StateIdentity equality, complete ALL-State/opaque-engine/authenticated-KV projection, archive bytes, seal bytes and Shamir digest assertions remain. The complete projection and recovery/source-retention blocks are byte-identical. The actual cold-seed root_scope calls native_plain::profile and returns GraphRejected before seed publication."
+    },
+    {
+      "area": "Rust and deadlines",
+      "status": "static_checked",
+      "detail": "No concrete new import, Value ownership or mutable/immutable borrow conflict was found. Array tuples move their JSON Values into existing request APIs; V5 engine borrows end before the next mutable request. All original deadline/timeout expression lines in the four files match exactly. This is not a compiler or runtime result."
+    }
+  ],
+  "checks": {
+    "fourOriginalNamedTestsRetained": true,
+    "originalTestAttributeCountsRetained": true,
+    "sixHunksStrictApplyToExactWholeAfter": true,
+    "originalNegativeStatusAssertionsRetained": true,
+    "coldCompleteProjectionBlockByteIdentical": true,
+    "coldRecoveryAndAllSourceFencesBlockByteIdentical": true,
+    "deadlineExpressionsUnchanged": true,
+    "additionalProviderCalls": 0,
+    "productSourceChanges": 0
+  },
+  "limitations": {
+    "rustfmtExecuted": false,
+    "rustCompilationExecuted": false,
+    "testsExecuted": false,
+    "hostAccessed": false,
+    "originalCiFailuresSuperseded": false,
+    "fullReplacementQualified": false,
+    "requiredNextGate": "Review-controlled formatting and the four original named tests under unchanged normal features/profile/request budgets; preserve original CI failures and diagnose any new failure without relaxing the negative contract."
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.pocket-r10-qa-inert-readback.r1",
+  "job": "1a1a83e3faa-fc05-2e12",
+  "host": "pocket4",
+  "status": "passed",
+  "sourceOnly": true,
+  "actualFileDistribution": true,
+  "sourceExecuted": false,
+  "consumerStarted": false,
+  "artifactTransferStarted": false,
+  "prepareOrPreflightStarted": false,
+  "providerCalled": false,
+  "productionChanged": false,
+  "compiledPythonNames": [
+    "pocket_first_cycle_launch_r10.py",
+    "pocket_first_cycle_prepare_r10.py",
+    "pocket_shared_first_cycle_live_r2.py"
+  ],
+  "exactFiles": 11,
+  "allWholeReadbacksMatchApprovedPins": true,
+  "allUid": 1000,
+  "allNlink": 1,
+  "allModes": "0600",
+  "allPublications": "created",
+  "freshDirectoryMode": "0700",
+  "rawReceipt": {
+    "bytes": 6132,
+    "sha256": "d032d3160ff16c2f102415ab940e4f2faea4649f797bbea5d495153b1cc56806",
+    "blob": "848f55f9c0ff7c53b455b43503f8b7974de7c0c3"
+  },
+  "receiptVersion": "66306:44088453:6132:1793824015467155633:1793824015467611681",
+  "stdout": {
+    "bytes": 4696,
+    "sha256": "c010fdb9a7150af72e95375d4877969d69207daf43dd3bb56c35f6fac0d18d5b",
+    "blob": "59f41e4812141deb5d4da92a3cb5e19fa67aba2e"
+  },
+  "authority": {
+    "bytes": 731,
+    "sha256": "1dec82bf51bc0241abdbfefd7339938b6c667809387ed83071b0ddf5ab69361b",
+    "blob": "444161c5f4488f92d958b5a44e9c622b6e83d0e6"
+  },
+  "losslessReceiptEqualsStdout": true,
+  "authoritativeExit": 0,
+  "completeDurableTerminal": true,
+  "stderrBytes": 0,
+  "outerSupervisorSeconds": 60,
+  "outerCapClassification": "NEW inert distribution supervisor cap",
+  "ackObservation": "Initial MCP -32603 timeout is retained; an identical typed request with the same key returned the sole durable job. reused=false is not interpreted as duplicated business execution.",
+  "clarifications": {
+    "runtimeHost": "pocket4; old descriptive plan host=pocket was corrected in the actual intent",
+    "referencePublishFunction": "The fixed temporary basename changes; all remaining publish bytes and the other four helper functions are unchanged."
+  }
+}

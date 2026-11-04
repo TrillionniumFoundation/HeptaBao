@@ -1,0 +1,17 @@
+{
+  "body_bytes": 40,
+  "body_sha256": "183bda49c99399f33998884843250452ba3e020735223e4146a94312d9732a69",
+  "credential_class": "none",
+  "deadline_monotonic_ns": 898985085965145,
+  "headers": {},
+  "http_seconds": 15.0,
+  "intent_unix_ns": 1793821304093683090,
+  "label": "seed_initialize_once",
+  "method": "POST",
+  "node": 1,
+  "parent_deadline_monotonic_ns": null,
+  "path": "/v1/sys/init",
+  "redirect_following": false,
+  "sequence": 2,
+  "valid_restore_body": false
+}

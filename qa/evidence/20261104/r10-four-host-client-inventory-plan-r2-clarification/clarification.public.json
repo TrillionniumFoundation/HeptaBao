@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.four-host-inventory-read-plan-clarification.r2",
+  "originalPlanTree": "9e4971a0b47268c2eb331c4caa67b11e17ae3ad2",
+  "hostCollectorsExecuted": false,
+  "firstOriginal": {
+    "host": "x230",
+    "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/finite-cutover-registration-scope-r2.public.json",
+    "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64"
+  },
+  "secondOriginal": {
+    "sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0",
+    "pathVerified": false,
+    "priorSuggestedPathMustNotBeAssumed": true,
+    "resolveOnlyThrough": "recovered first original or its finite existing primary source references"
+  },
+  "filesystemBudget": {
+    "perPassMetadataObservations": 32,
+    "eachExplicitLstat": 1,
+    "eachExplicitFstat": 1,
+    "absenceCounts": true,
+    "beforeAfterCountSeparately": true,
+    "parentGuardsCount": true,
+    "unlistedProbeAllowed": false,
+    "registeredObjectGroupingCannotHideSidecars": true
+  },
+  "databasePasses": {
+    "rog": [
+      [
+        "main",
+        "azi2"
+      ],
+      [
+        "azi3",
+        "azi4"
+      ],
+      [
+        "azi5",
+        "zbj-llm-runtime"
+      ]
+    ],
+    "mac": [
+      [
+        "main",
+        "trnm"
+      ],
+      [
+        "hepta-ui",
+        "hepta"
+      ],
+      [
+        "hepta-backend"
+      ]
+    ],
+    "pocket4": [
+      [
+        "main",
+        "tg8687951891"
+      ]
+    ]
+  },
+  "sameWholeHostLimits": {
+    "controllerSeconds": 45,
+    "supervisorSeconds": 60,
+    "maxTotalReadBytes": 8388608,
+    "maxPublicOutputBytes": 65536,
+    "childSecondsAtMost": 10,
+    "eachPassGetsFreshDeadline": false
+  },
+  "incompletePolicy": "retain every unobserved denominator entry, no automatic retry or green truncation",
+  "sourceCodeNotYetImplemented": true,
+  "primaryHistoricalBackupScope": {
+    "confirmedScheduledBaoAuthbusBackupOrRestoreRegistrationFound": false,
+    "historicalFiniteScopeOnly": true,
+    "noInferenceOfAllRecoveryAssetAbsence": true,
+    "noHypotheticalManualSearchGate": true,
+    "sourceBlob": "9edacae976af3fb0ca2ac89ecab6fa55f7bbc593"
+  }
+}

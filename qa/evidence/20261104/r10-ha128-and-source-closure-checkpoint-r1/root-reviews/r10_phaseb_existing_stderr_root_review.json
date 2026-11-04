@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.phaseb-r3-existing-stderr-root-review.v1",
+  "status": "PASS_SCOPED_DIAGNOSTIC_EVIDENCE",
+  "source_packet_tree": "01ac8f80da09ba22970401bc1546546b8217cdd7",
+  "original_job": "1a1a8177aec-fc05-2da5",
+  "original_unknown_preserved": true,
+  "diagnostic": {
+    "bytes": 4220,
+    "sha256": "ba8c4d3a9e18153470d8f6dfc1575cf1f96e396c0edfffd8a89ee0abe1f72b18",
+    "blob": "364a5c7130a69bb0b1d478989d320b1fac0dd6b2"
+  },
+  "private_stderr_body_read_by_root": false,
+  "private_stderr_size": 178,
+  "private_stderr_sha256": "bce4e0993df8aa57859efc05b509ad6ea36d8f2d0df9dd23d63ae3640e537df8",
+  "whole_safe_projection_verified": true,
+  "static_source_mapping_independently_verified": true,
+  "actual_observed_error": "native HA committed root is unavailable",
+  "http_status": 503,
+  "inner_error_is_discarded_in_product_source": true,
+  "actual_phase_not_proved": true,
+  "alpn_and_client_framing_not_proved": true,
+  "known_observer_input_key_type_bug_separate": true,
+  "product_replay": false,
+  "production_changed": false
+}

@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.r10-direct98-wrong-direction-terminal-assessment.v1",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "fixture_run_id": "2f514650d5a5cbd46daa2a899858b833",
+  "job_id": "1a1a83fdca1-fc05-2e17",
+  "status": "FAIL_DIRECTION_UNCOVERED",
+  "actual_exit_code": 1,
+  "original_required_checks": 98,
+  "executed_unique_checks": 87,
+  "executed_passed_checks": 87,
+  "missing_checks": [
+    "missing_cipher_actual_leaves_rebuilt",
+    "missing_cipher_all_hosts_readindex",
+    "missing_cipher_leader_empty_before_unseal",
+    "missing_cipher_leader_exact_history",
+    "missing_cipher_leader_unsealed",
+    "missing_cipher_remaining_nodes_unsealed",
+    "native.complete",
+    "report_excludes_runtime_secrets",
+    "source_and_binaries_unchanged",
+    "synthetic_metadata_absent",
+    "synthetic_metadata_cleanup_once"
+  ],
+  "known_http_outcomes": 45,
+  "mutation_intents": 45,
+  "unknown_outcomes": 0,
+  "full_90_metadata_audit": "pending separate collection",
+  "failure_code": "directional_pocket_to_mac_pair_not_observed",
+  "failure_stage": "owned_missing_cipher_leader_recovery",
+  "directional_source_selection": {
+    "actual_pre_quarantine_leader_node": 2,
+    "all_three_original_cold_unseals_completed": true,
+    "data_source_selection_does_not_claim_leader_authority": true,
+    "requested_source_node": 3,
+    "selected_source_node": 3
+  },
+  "actual_pair": {
+    "actual_empty_leader_node": 2,
+    "leader_selection_forced": false,
+    "requested_pair_observed": false,
+    "source_node": 3
+  },
+  "target_missing_cipher_unseal_not_attempted": true,
+  "pocket_to_mac_recovery_not_tested": true,
+  "not_a_pocket_to_mac_performance_failure": true,
+  "no_leader_result_faked": true,
+  "no_failed_or_unknown_operation_replayed": true,
+  "original_budgets": {
+    "http": 15,
+    "native_admission": 8,
+    "qa": 2400
+  },
+  "new_supervisor_outer_seconds": 3000,
+  "cleanup": {
+    "owned_processes_stopped": true,
+    "owned_mesh_stopped": true,
+    "tunnel_children": 0,
+    "mac_foreground_generations": 6,
+    "all_remote_and_local_leaders_reaped_and_groups_empty": true,
+    "original_stop_deadlines_satisfied": true
+  },
+  "outer_build_source_and_original_artifact_fences_unchanged": true,
+  "comparison16_fences_unchanged": true,
+  "original_end_of_workflow_source_and_node_binary_check_not_executed": true,
+  "synthetic_application_cleanup_check_not_executed": true,
+  "failed_fixture_data_retained": true,
+  "normal_features": true,
+  "production_changed": false,
+  "qualification": false
+}

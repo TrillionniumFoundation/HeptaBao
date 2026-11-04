@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.r10-direct98-r2-independent-source-review.v1",
+  "candidateTree": "c3b9113573905715a9107a9599f82758f284a375",
+  "sourceOnly": true,
+  "hostAccess": false,
+  "codeExecuted": false,
+  "inputs": [
+    {
+      "name": "launcherBefore",
+      "blob": "d74f42ad8de5b9828eefe26f4f6240be40ab6055",
+      "bytes": 14854,
+      "sha256": "c60e7c278c14d08219d28ea7278d28a0cf93552ceca5c0cc8573619b96f9479e"
+    },
+    {
+      "name": "launcherAfter",
+      "blob": "da78aa1036d1cb38ec41694b48d70b194968d768",
+      "bytes": 16111,
+      "sha256": "7a40c9ce4c646f850c611fc29317cc2c0662d5823a10c7d52d7d43dcaa97ade9"
+    },
+    {
+      "name": "launcherDiff",
+      "blob": "00998afb8dac7d11c87402e0f99f9e6ccaf9c947",
+      "bytes": 7244,
+      "sha256": "1dc4670011d929aecce33843c4995c71a220180a03dcad88f62ac25053040067"
+    },
+    {
+      "name": "runnerBefore",
+      "blob": "e57ddcd57bb0ae8910431bfaf213a08bd2571406",
+      "bytes": 10798,
+      "sha256": "2600d2b346b4b9dfdf54b7f01aff013fe474291b67866011fd518dbfe4e45030"
+    },
+    {
+      "name": "runnerAfter",
+      "blob": "b746e8eaae9f7608bfb8265422b27e7f18a520f1",
+      "bytes": 10844,
+      "sha256": "b7623c0bb2a9bfd754401c00867ae6535fe8e19364c9fb6367219cffa2656e89"
+    },
+    {
+      "name": "runnerDiff",
+      "blob": "53d1219b07065fce51a59f2d7ad47e6bd315d5b0",
+      "bytes": 1298,
+      "sha256": "dbc7fab3634bcd1b399550a5517d1d2fffcfbb89dce69e01d564d0be7dfcc151"
+    }
+  ],
+  "strictContextApply": [
+    {
+      "file": "direct98",
+      "hunks": 6,
+      "strictAppliedWholeMatches": true
+    },
+    {
+      "file": "direct98runner",
+      "hunks": 2,
+      "strictAppliedWholeMatches": true
+    }
+  ],
+  "directionMethod": {
+    "byteIdentical": true,
+    "bytes": 4494,
+    "sha256": "0957380ab49086722dae93024d705e6c1c5efb189ffa75fead1e45350696fb43",
+    "actualLeaderFailureBranchRetained": true
+  },
+  "conclusions": [
+    "Only fresh R2 control/work/node paths, actual current Mac interpreter SHA, runner binding and exact prior/new evidence fences change.",
+    "The two runner changes replace the pending canonical128 summary placeholder in metadata with root-reported actual 9a23e1b4; direction/runtime code is unchanged.",
+    "98 required checks, original five QA pins, actual elected-leader refusal, 15-second ordinary and 8-second admission limits, and 2400-second launcher budget remain unchanged.",
+    "Sixteen comparison fences preserve previous failures and now bind actual R10 full128 r2; this review does not independently re-execute or certify those prior results."
+  ],
+  "blockingFindings": [],
+  "runtimeQualified": false
+}

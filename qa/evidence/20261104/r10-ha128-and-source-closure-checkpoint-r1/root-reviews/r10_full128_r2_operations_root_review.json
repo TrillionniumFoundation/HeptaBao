@@ -1,0 +1,565 @@
+{
+  "schema": "heptabao.r10-original128-r2-full-mutation-metadata-root-review.v1",
+  "status": "PASS_SCOPED_134_PUBLIC_RECORDS",
+  "tree": "4b3ea5dd6314f5af1b1729cc7a470cbd3513e821",
+  "core_tree": "4eb44e29994202116c6207bb4dd2f0a37e3cae86",
+  "job_id": "1a1a81dde69-fc05-2dbc",
+  "all_136_tree_blobs_whole_size_sha256_git_verified": true,
+  "raw_original_bytes_preserved": true,
+  "public_operation_files": 134,
+  "exact_sequences": 67,
+  "known_http_responses": 67,
+  "automatic_retries": 0,
+  "unknown": 0,
+  "original_budget_distribution": {
+    "5": 1,
+    "12": 1,
+    "15": 65
+  },
+  "all_observed_elapsed_within_original_budget": true,
+  "maximum_ms": 10261.2,
+  "recorded_import_ms": 4519.807,
+  "import_deadline_margin_ms": 480.1930000000002,
+  "metadata_does_not_infer_storage_commit": true,
+  "underlying_effect_checks_in_root_core_review": "r10_full128_r2_root_terminal_review",
+  "private_requests_bodies_or_secrets_fetched": false,
+  "full_openbao_compatibility": false,
+  "rows": [
+    {
+      "sequence": 1,
+      "intent_blob": "a3bb8ed4eed7e52f892ddaa8ff3b3c603d63cf9d",
+      "outcome_blob": "3f8222fabd6c654d50939f5c13218ba213d889f8",
+      "original_seconds": 15,
+      "elapsed_ms": 87.212,
+      "status": 200
+    },
+    {
+      "sequence": 2,
+      "intent_blob": "7cc45f1e95eb475b9ead689e9664e53626f76b93",
+      "outcome_blob": "9de4b8938fb067a9d2f534f9b30a9f637d4545a4",
+      "original_seconds": 15,
+      "elapsed_ms": 151.574,
+      "status": 200
+    },
+    {
+      "sequence": 3,
+      "intent_blob": "09f05262a837c16b660e5f9b61f92268d7ea8c0d",
+      "outcome_blob": "a1e573dd151b495be2001be8d2378663c503cc3c",
+      "original_seconds": 12,
+      "elapsed_ms": 57.943,
+      "status": 204
+    },
+    {
+      "sequence": 4,
+      "intent_blob": "f301eb2bf6939493416783aaeaa1e4c90f988d2e",
+      "outcome_blob": "0ad160361f7b80d00dff527ec54702592cde5c7a",
+      "original_seconds": 15,
+      "elapsed_ms": 40.299,
+      "status": 204
+    },
+    {
+      "sequence": 5,
+      "intent_blob": "ef63261a5f1340646b6fd991490aef13eed88407",
+      "outcome_blob": "35635aa63ebf264e7605505102e68088fe1fa246",
+      "original_seconds": 15,
+      "elapsed_ms": 32.285,
+      "status": 204
+    },
+    {
+      "sequence": 6,
+      "intent_blob": "3533d67d5c37dc0081222c9fcd354c32f4516cbe",
+      "outcome_blob": "80c0679480aa7445bb7f812764d4c9d713a005e5",
+      "original_seconds": 15,
+      "elapsed_ms": 26.203,
+      "status": 200
+    },
+    {
+      "sequence": 7,
+      "intent_blob": "88c1fe3c3d1d531a0a59cacba3d82f26ca40f5f4",
+      "outcome_blob": "9cfd5d5f5f0caf8952f4db4abb89bf6cfe15ddc3",
+      "original_seconds": 15,
+      "elapsed_ms": 27.969,
+      "status": 200
+    },
+    {
+      "sequence": 8,
+      "intent_blob": "ee4b7544391bcabd603164280fdac9ad182f4550",
+      "outcome_blob": "4270de1b463cd07b94bccd4e5ed74875c0b053c5",
+      "original_seconds": 15,
+      "elapsed_ms": 329.952,
+      "status": 200
+    },
+    {
+      "sequence": 9,
+      "intent_blob": "a23a1f12e74b06443ccd8e50f2806845614c0587",
+      "outcome_blob": "b08f492b6155b74d01fc49edb91dc901c597fec4",
+      "original_seconds": 15,
+      "elapsed_ms": 45.712,
+      "status": 200
+    },
+    {
+      "sequence": 10,
+      "intent_blob": "0bc300e8f8b6bf17b40e34a92b3f663910e43694",
+      "outcome_blob": "dbb751ac52b43b4d45da6e1b4fc95b445c65044e",
+      "original_seconds": 15,
+      "elapsed_ms": 44.674,
+      "status": 200
+    },
+    {
+      "sequence": 11,
+      "intent_blob": "af8ef05d0ae69b28e86ff3f401a7c185594ebaa4",
+      "outcome_blob": "23b0e0f5535379c2583fbf22d44c05a4bab14bd4",
+      "original_seconds": 15,
+      "elapsed_ms": 752.649,
+      "status": 204
+    },
+    {
+      "sequence": 12,
+      "intent_blob": "73b3213e90c896d860728b5fdb9a46816a6d3207",
+      "outcome_blob": "9b5d5e607d89c5192886fbbd214c41a58d18deaa",
+      "original_seconds": 15,
+      "elapsed_ms": 185.469,
+      "status": 204
+    },
+    {
+      "sequence": 13,
+      "intent_blob": "e6bf3e51a6db209c55feabdb75947c2544982ca7",
+      "outcome_blob": "1df81bc16de04cc135f71e16cf52ad8b976107ef",
+      "original_seconds": 15,
+      "elapsed_ms": 169.455,
+      "status": 204
+    },
+    {
+      "sequence": 14,
+      "intent_blob": "e3333404cb977367d293967791466033331d95a8",
+      "outcome_blob": "42e2ea1a6c7139c395a8622ba7704a82be4363da",
+      "original_seconds": 15,
+      "elapsed_ms": 1279.618,
+      "status": 200
+    },
+    {
+      "sequence": 15,
+      "intent_blob": "8238264b99a444b1476844f8d9c1e89a9d80fc36",
+      "outcome_blob": "1614581d742baa09a3075a01057a2f5b8a002cb9",
+      "original_seconds": 15,
+      "elapsed_ms": 1309.239,
+      "status": 200
+    },
+    {
+      "sequence": 16,
+      "intent_blob": "c95ea084865630102c4281f718d097db4dd69ac3",
+      "outcome_blob": "14a7f96fe3d4da4a7a4e0d9ef68a5a8bad2556bf",
+      "original_seconds": 15,
+      "elapsed_ms": 1525.543,
+      "status": 200
+    },
+    {
+      "sequence": 17,
+      "intent_blob": "9f2ceeb659c0144d0af3bb8a57be57732d8f6e8f",
+      "outcome_blob": "6e3c0c1cbebb0a869512dac3cddb563b5faeecf2",
+      "original_seconds": 15,
+      "elapsed_ms": 1603.34,
+      "status": 200
+    },
+    {
+      "sequence": 18,
+      "intent_blob": "c21e3d516491cdae231d49d29d28078d29be5632",
+      "outcome_blob": "226fbdac4b7746bb8796db1eee174ea3736f9b2d",
+      "original_seconds": 15,
+      "elapsed_ms": 2276.427,
+      "status": 200
+    },
+    {
+      "sequence": 19,
+      "intent_blob": "70e08a738f8c938e73a696213eda0965d4720d7f",
+      "outcome_blob": "10d26884892c024b02cce01f6e21a14de0e71e29",
+      "original_seconds": 15,
+      "elapsed_ms": 1760.392,
+      "status": 200
+    },
+    {
+      "sequence": 20,
+      "intent_blob": "750566e3adf57f2a4eaf6ffd192b5bd7256e451a",
+      "outcome_blob": "a17e496345134b4cd9c2eccfdbb293ef2cc69c7c",
+      "original_seconds": 15,
+      "elapsed_ms": 1845.859,
+      "status": 200
+    },
+    {
+      "sequence": 21,
+      "intent_blob": "3b295ea54b99c3c11b89acd27a8775b9a571632c",
+      "outcome_blob": "ee70056b13f7170a80d6cb6898b4d7d30e72e097",
+      "original_seconds": 15,
+      "elapsed_ms": 2009.639,
+      "status": 200
+    },
+    {
+      "sequence": 22,
+      "intent_blob": "f376981402ff4e3d12a320b123315b87abd3048b",
+      "outcome_blob": "5c49d054c2782dd72bdac21d5a2f51052e86c586",
+      "original_seconds": 15,
+      "elapsed_ms": 2077.494,
+      "status": 200
+    },
+    {
+      "sequence": 23,
+      "intent_blob": "1857358d9abca16baac3ae2a759702e9cfd2f4b7",
+      "outcome_blob": "10bbcf5f1de7c89908bd876f2fa9fd314bc4ea7f",
+      "original_seconds": 15,
+      "elapsed_ms": 2481.793,
+      "status": 200
+    },
+    {
+      "sequence": 24,
+      "intent_blob": "ba4085db70a694ea5f43aae27e866157e0bab5dc",
+      "outcome_blob": "637cca7bc49d60155f75044066ecc8b2d80d8b0f",
+      "original_seconds": 15,
+      "elapsed_ms": 2446.142,
+      "status": 200
+    },
+    {
+      "sequence": 25,
+      "intent_blob": "275028a30530adf0d24872fcaf2e1bd2b2fe7703",
+      "outcome_blob": "2bcfd63b941917407ea558cd86bbbd7db529dd4f",
+      "original_seconds": 15,
+      "elapsed_ms": 2944.14,
+      "status": 200
+    },
+    {
+      "sequence": 26,
+      "intent_blob": "34850d67c9c0c435f767946c3c970dad7f51873b",
+      "outcome_blob": "a687bef4bf8efa88fca490dc9f2a993db26e4f9c",
+      "original_seconds": 15,
+      "elapsed_ms": 3097.085,
+      "status": 200
+    },
+    {
+      "sequence": 27,
+      "intent_blob": "507d997ef3c36f23b7b897ea2ba90927ea872ae0",
+      "outcome_blob": "5ae53740f9a41a13c4a14ca9705025694f8e7c1c",
+      "original_seconds": 15,
+      "elapsed_ms": 2888.716,
+      "status": 200
+    },
+    {
+      "sequence": 28,
+      "intent_blob": "8a837abb0a47fbb7d60624215633098ff9deb9a9",
+      "outcome_blob": "cbf108831f503c69451ca303547fc1e7cc4e6e96",
+      "original_seconds": 15,
+      "elapsed_ms": 3173.068,
+      "status": 200
+    },
+    {
+      "sequence": 29,
+      "intent_blob": "e1bda9f12a92a3f0ad8d067c8d21cce648798fc6",
+      "outcome_blob": "90e861e5f42097bf3698901787053ee4b5817f1c",
+      "original_seconds": 15,
+      "elapsed_ms": 3132.36,
+      "status": 200
+    },
+    {
+      "sequence": 30,
+      "intent_blob": "d813b07c6a89285f62dde44d92c33b360fb3926b",
+      "outcome_blob": "c39eb785492b7e8397433d962954b31dc10c6618",
+      "original_seconds": 15,
+      "elapsed_ms": 3244.044,
+      "status": 200
+    },
+    {
+      "sequence": 31,
+      "intent_blob": "2f2f65debd08d2c76a878c347f264f0187d31686",
+      "outcome_blob": "421194314926b5be557343cbc7fb1cf4f2bbb2cd",
+      "original_seconds": 15,
+      "elapsed_ms": 2821.45,
+      "status": 204
+    },
+    {
+      "sequence": 32,
+      "intent_blob": "8de44c75ff897741a31d4558d65fea619c69e1ad",
+      "outcome_blob": "822e9f262305f54029d882d8de2ceb9c7ef69a18",
+      "original_seconds": 15,
+      "elapsed_ms": 2830.836,
+      "status": 204
+    },
+    {
+      "sequence": 33,
+      "intent_blob": "41689e965e8e83ac4769ee5b7f26a33aa432c55f",
+      "outcome_blob": "8f404a0e8186734a7528f1d9e330d5e2f6bb261b",
+      "original_seconds": 15,
+      "elapsed_ms": 5546.651,
+      "status": 200
+    },
+    {
+      "sequence": 34,
+      "intent_blob": "8e09a5b4064c79934a5ea4467c26812037d1155e",
+      "outcome_blob": "0f3a079208a99420a74f473dc538899baccab2bb",
+      "original_seconds": 15,
+      "elapsed_ms": 1500.508,
+      "status": 200
+    },
+    {
+      "sequence": 35,
+      "intent_blob": "b6e6b75c258ef704ee7b534c4402489b71296408",
+      "outcome_blob": "4475c117276a56820b6bcdd71623be3c00a3b5eb",
+      "original_seconds": 15,
+      "elapsed_ms": 2764.011,
+      "status": 200
+    },
+    {
+      "sequence": 36,
+      "intent_blob": "41dc9bb8f82b992e1797eddf50a2e765e58c5537",
+      "outcome_blob": "392e662524990274bd7e02d27f721a62f2356f04",
+      "original_seconds": 15,
+      "elapsed_ms": 8013.537,
+      "status": 503
+    },
+    {
+      "sequence": 37,
+      "intent_blob": "a94a03547aaf2240652bbc950242f0b8bb15448b",
+      "outcome_blob": "2f4bf235fb6dfb75ce471dc23adab12c9b0d8834",
+      "original_seconds": 15,
+      "elapsed_ms": 596.956,
+      "status": 200
+    },
+    {
+      "sequence": 38,
+      "intent_blob": "41e68115e9de8c5955ca623646851e87a7bc9cdf",
+      "outcome_blob": "37a9fc9c8bf70855d72c05dc8b1cc236a5e8b689",
+      "original_seconds": 15,
+      "elapsed_ms": 306.95,
+      "status": 200
+    },
+    {
+      "sequence": 39,
+      "intent_blob": "c3747b61d856c87854426ae8575fcb5a2ef196c3",
+      "outcome_blob": "1bf7ff5390c96b6c11568efc25de89c32d57ba2c",
+      "original_seconds": 15,
+      "elapsed_ms": 1290.068,
+      "status": 200
+    },
+    {
+      "sequence": 40,
+      "intent_blob": "c3bc5a003cd65ed3bd495e39909d54f232400aa5",
+      "outcome_blob": "fbe44a8315f589a0d00bbed382f3053fa414b319",
+      "original_seconds": 15,
+      "elapsed_ms": 612.719,
+      "status": 200
+    },
+    {
+      "sequence": 41,
+      "intent_blob": "87a43e94f5d8bf009e43f7d099e664892a792a81",
+      "outcome_blob": "983d6ddff482ac703f76d2881f5b2a4f4e4bc6bb",
+      "original_seconds": 15,
+      "elapsed_ms": 317.668,
+      "status": 200
+    },
+    {
+      "sequence": 42,
+      "intent_blob": "ea1e5a64112541e3f014cc240095d7cade96c872",
+      "outcome_blob": "c3db16c35d7e7fcebc512565bbafbebfdc75ea2c",
+      "original_seconds": 15,
+      "elapsed_ms": 285.252,
+      "status": 200
+    },
+    {
+      "sequence": 43,
+      "intent_blob": "51eb378f96a7737d9ffa7fb9a37069442e96cf0b",
+      "outcome_blob": "cf3ed5c7f06665145b6cef7910f08bd9560f110b",
+      "original_seconds": 15,
+      "elapsed_ms": 1346.435,
+      "status": 200
+    },
+    {
+      "sequence": 44,
+      "intent_blob": "fc2a235b0b006745dc2dfd256a2234d1477e37ac",
+      "outcome_blob": "6fdf9f1c2c9bc2f8c04f0e47325a90798d7a2f9b",
+      "original_seconds": 15,
+      "elapsed_ms": 604.023,
+      "status": 200
+    },
+    {
+      "sequence": 45,
+      "intent_blob": "3b7a0c54ada61f7bd75efda95737a8815e2cbe0a",
+      "outcome_blob": "3aec18a1b5b9cc0e4d33c7d58a091006b325b540",
+      "original_seconds": 15,
+      "elapsed_ms": 366.588,
+      "status": 200
+    },
+    {
+      "sequence": 46,
+      "intent_blob": "c024727f4c8ca94dd98754fb3c276b941df261e9",
+      "outcome_blob": "92ff2bb574de92192104ea07d05e9783aff9a751",
+      "original_seconds": 15,
+      "elapsed_ms": 307.182,
+      "status": 200
+    },
+    {
+      "sequence": 47,
+      "intent_blob": "7be9f6b6a2fcf8c0643ee4177e26d11698cff2e8",
+      "outcome_blob": "bf8c7323c03641362534e9142f222c0efd2beca8",
+      "original_seconds": 15,
+      "elapsed_ms": 10261.2,
+      "status": 200
+    },
+    {
+      "sequence": 48,
+      "intent_blob": "aacf356c8f43c8dd0ea35fd66191892e3223940b",
+      "outcome_blob": "ba7d160ba9bf4f7b44db99bb04cae03711ba474e",
+      "original_seconds": 15,
+      "elapsed_ms": 303.319,
+      "status": 200
+    },
+    {
+      "sequence": 49,
+      "intent_blob": "ba167aae93a3504a154661ca5a3c62e20e3ff3c4",
+      "outcome_blob": "3c2c0b8239d0eb86a23e37bdbfc9e53c73371fc4",
+      "original_seconds": 15,
+      "elapsed_ms": 5151.802,
+      "status": 200
+    },
+    {
+      "sequence": 50,
+      "intent_blob": "f65ed1777aec8e1460f1e614e880109e338bc9bf",
+      "outcome_blob": "6efb9cba75ef5a6d89b18b8964256b8863595a5e",
+      "original_seconds": 15,
+      "elapsed_ms": 1787.059,
+      "status": 204
+    },
+    {
+      "sequence": 51,
+      "intent_blob": "992fe7dde04175a6a42c6f799cd83ea899b474dc",
+      "outcome_blob": "f16eaee35b16dbd0ae8320d3c62de772053f52ef",
+      "original_seconds": 15,
+      "elapsed_ms": 723.643,
+      "status": 204
+    },
+    {
+      "sequence": 52,
+      "intent_blob": "085450e1bf85f7a4fc08cc149d92021eee955760",
+      "outcome_blob": "41f09cf9b28750994af1e106254f74f80fd495d6",
+      "original_seconds": 15,
+      "elapsed_ms": 892.648,
+      "status": 204
+    },
+    {
+      "sequence": 53,
+      "intent_blob": "11889a4e8175d175a2bc30b41a95a6b4b2ab074c",
+      "outcome_blob": "8f6f0737ec3e51c1c92c6b6e4d9682d760e0bd73",
+      "original_seconds": 15,
+      "elapsed_ms": 710.758,
+      "status": 204
+    },
+    {
+      "sequence": 54,
+      "intent_blob": "ee71ba2503bb6f07dc0f33e6f2bdf8b09185d74d",
+      "outcome_blob": "c148936255139c4e601d7072523ba0c08321053c",
+      "original_seconds": 15,
+      "elapsed_ms": 752.26,
+      "status": 204
+    },
+    {
+      "sequence": 55,
+      "intent_blob": "ae973048781cfd137d5b518e816b37ddb1790635",
+      "outcome_blob": "d755ac405eab7f6c45bff041f2386343240af2e3",
+      "original_seconds": 5,
+      "elapsed_ms": 4519.807,
+      "status": 204
+    },
+    {
+      "sequence": 56,
+      "intent_blob": "8beb16e4b863c88e10dd6c1434c3bb66f3391afa",
+      "outcome_blob": "18b7a6b951144798c819bb9ea44edd49a31149c5",
+      "original_seconds": 15,
+      "elapsed_ms": 1813.723,
+      "status": 200
+    },
+    {
+      "sequence": 57,
+      "intent_blob": "f33b7c71d314d97474be4ef1f39133a3faf64d6d",
+      "outcome_blob": "b9e64c7227c5c42431f31955e355c0e353576d26",
+      "original_seconds": 15,
+      "elapsed_ms": 6623.144,
+      "status": 200
+    },
+    {
+      "sequence": 58,
+      "intent_blob": "a49d9da8501574367ed8491567f0781c41d70235",
+      "outcome_blob": "4854ef393158aef7be744699fb2c1013639fa1e0",
+      "original_seconds": 15,
+      "elapsed_ms": 851.974,
+      "status": 200
+    },
+    {
+      "sequence": 59,
+      "intent_blob": "76edc2f9298696d4b10702231b66db5cac1ebedd",
+      "outcome_blob": "d2d4c21cd8f6929eae3ddbf206a801f0da8195a9",
+      "original_seconds": 15,
+      "elapsed_ms": 516.553,
+      "status": 200
+    },
+    {
+      "sequence": 60,
+      "intent_blob": "6e76da2efa259cac031dfcb394aa85ed21f6df04",
+      "outcome_blob": "63b3139164bf0050aca97e3701f5e83093fb2bed",
+      "original_seconds": 15,
+      "elapsed_ms": 360.73,
+      "status": 200
+    },
+    {
+      "sequence": 61,
+      "intent_blob": "136d79cc67c8f822ad5a28678b16ac868a949585",
+      "outcome_blob": "ac0ef5f3aa989d53a515ae9c87a4cbcb4bc69e67",
+      "original_seconds": 15,
+      "elapsed_ms": 1649.447,
+      "status": 200
+    },
+    {
+      "sequence": 62,
+      "intent_blob": "855a3768c9877fcaa2aec89034a01a60eb806056",
+      "outcome_blob": "6dd3d3a866387351789c2d4e4f329f9862d8dac8",
+      "original_seconds": 15,
+      "elapsed_ms": 1156.313,
+      "status": 204
+    },
+    {
+      "sequence": 63,
+      "intent_blob": "fa60abe3e3b9785fed0882c320aae6c828657471",
+      "outcome_blob": "919a2b2fba858376421f08ef15d4e81f8466b872",
+      "original_seconds": 15,
+      "elapsed_ms": 231.872,
+      "status": 204
+    },
+    {
+      "sequence": 64,
+      "intent_blob": "dd7367001c3ddadf3a7a8ddbf89f49303ca3785b",
+      "outcome_blob": "4d46b3d947cc980641ae6c570148c51e8907c21e",
+      "original_seconds": 15,
+      "elapsed_ms": 225.623,
+      "status": 400
+    },
+    {
+      "sequence": 65,
+      "intent_blob": "3256500100d290f5c35f4319ebf30e22c1901171",
+      "outcome_blob": "8f17dc9112188750322e23505b255aac44e38487",
+      "original_seconds": 15,
+      "elapsed_ms": 207.105,
+      "status": 400
+    },
+    {
+      "sequence": 66,
+      "intent_blob": "9923624b5af5547628b65adda38dc76f5f578570",
+      "outcome_blob": "98c7b7e4e24ebbc0b88e0ff367308696680fe970",
+      "original_seconds": 15,
+      "elapsed_ms": 1032.692,
+      "status": 204
+    },
+    {
+      "sequence": 67,
+      "intent_blob": "da1eb308aebe098d75ef088380b4ae1fd3b95af6",
+      "outcome_blob": "6f95534de80f1af19a2ac52de0b138c7c12bdd24",
+      "original_seconds": 15,
+      "elapsed_ms": 541.093,
+      "status": 204
+    }
+  ]
+}

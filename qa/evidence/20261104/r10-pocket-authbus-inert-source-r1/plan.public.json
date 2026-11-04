@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.pocket-r10-qa-inert-stage-plan.v1",
+  "sourceOnly": true,
+  "rootApprovedQaTree": "009510370a5fb19fb03a4764f4fc9da2cfbb960f",
+  "host": "pocket",
+  "base": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-qa-r1",
+  "receipt": "inert-stage.result.public.json",
+  "fileCount": 11,
+  "fileModes": "0600",
+  "newDirectoryMode": "0700",
+  "uid": 1000,
+  "referenceCarrierBlob": "2353455775b0ac850cb560dde84980fc2b14dcdd",
+  "referenceCarrierBytes": 5028,
+  "unchangedFunctions": [
+    "sha",
+    "ident",
+    "sync_dir",
+    "exact",
+    "publish"
+  ],
+  "onlyNonBindingChange": "Fixed-name conditional compile of the three changed Python sources and recording those names; all 11 payloads still whole-hash validated before mkdir. The 7 unchanged helpers and JSON are distributed as bytes, not imported or executed.",
+  "compiledNames": [
+    "pocket_first_cycle_launch_r10.py",
+    "pocket_first_cycle_prepare_r10.py",
+    "pocket_shared_first_cycle_live_r2.py"
+  ],
+  "carrier": {
+    "bytes": 6466,
+    "sha256": "40d90119167a547d652a222429912e5bbfec619114f05dbcdc640163d6b1a87d",
+    "blob": "ea3cf6c69dbebb5ffc3b0dfa6f1f23839e835ab3"
+  },
+  "input": {
+    "bytes": 248549,
+    "sha256": "83ab9b332ff01f3ba3fca45bf142a888234ad7140827ff5eb294f01386138d9b",
+    "blob": "59d649756784fa2061e8933ea46ac46349955757"
+  },
+  "originalInputCapBytes": 262144,
+  "proposedStart": {
+    "executable": "/usr/bin/python3",
+    "argsPrefix": [
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-r10-pocket-qa-inert-62cefe18-20261104-r1"
+  },
+  "sourceExecuted": false,
+  "nativeOrNodeStarted": false,
+  "privateInputsRead": false,
+  "artifactTransferStarted": false,
+  "prepareOrPreflightStarted": false,
+  "productionChanged": false,
+  "existingDestinationPolicy": "fresh directory required; atomic inode link publication; existing exact file only inside newly owned directory; never overwrite; retain partial evidence on failure"
+}

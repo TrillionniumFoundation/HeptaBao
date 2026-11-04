@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.r10-full128-r2.root-terminal-review.v1",
+  "status": "PASS_SCOPED_128",
+  "job_id": "1a1a81dde69-fc05-2dbc",
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "core_files": [
+    {
+      "bytes": 109003,
+      "sha256": "9a23e1b4cce8638f7b5c8ea37d41929864c8b4ef35e0bef47292695d4703405e",
+      "blob": "de73d6bf40cc5fb51622edabaddcd30a61184aa8"
+    },
+    {
+      "bytes": 444,
+      "sha256": "ec20a5bd20c3808ee55890ea00044e6ab92b24d290e55b7b50fe268b0ea774ef",
+      "blob": "91862bd81d249f19bff16b12adedf4bca3d66c34"
+    },
+    {
+      "bytes": 729,
+      "sha256": "7737c93d8afe5d842b82e5ad15542cb2d18ab6810ff69e1975f118f643b5368e",
+      "blob": "eb45b8c9dfa9cba882d5ca5a3d7c67b58f94505a"
+    },
+    {
+      "bytes": 412,
+      "sha256": "e996cab2b5f647db70760e2f84f09c5f8a9ad8791d66148b28b780d97876abfd",
+      "blob": "429b1ecf1aa53750e12a93beb041f3fb5194936f"
+    },
+    {
+      "bytes": 2755,
+      "sha256": "3e67b3c649391276f3e372d7d901d08eed937af58fe81a291d20f79687675cae",
+      "blob": "f85c4724cfc260576f2d8f3efc5f002c90086043"
+    }
+  ],
+  "exact_check_set_reconstructed_from_preserved_original_r1_checks_and_missing": true,
+  "required": 128,
+  "passed": 128,
+  "direct_lan": 98,
+  "official_history": 30,
+  "physical_hosts": 3,
+  "mutations": 67,
+  "known_responses": 67,
+  "unknown": 0,
+  "replays": 0,
+  "six_direct_peer_mtls_connections": true,
+  "mac_foreground_starts": 8,
+  "mac_foreground_all_remote_and_local_groups_stopped_and_reaped": true,
+  "mac_foreground_original_stop_deadlines_satisfied": true,
+  "original_http_seconds": 15,
+  "original_native_large_http_seconds": 5,
+  "original_admission_seconds": 8,
+  "original_internal_seconds": 2400,
+  "new_outer_seconds": 3000,
+  "source_binary_controller_and_old12_receipt_fences_unchanged": true,
+  "ha_raw_storage_history_identical_import_restore_cold": true,
+  "ha_raw_history_versions": 19,
+  "ha_raw_history_body_sha256": "df3d8087d29f91ce201f9df252bd0dcda2fdccfd0e95537d0ab028f4fcff2086",
+  "natural_rebuild_direction": "ROG node2 to empty Mac leader node1",
+  "pocket3_to_mac1_qualification": false,
+  "full_boundary_134_files_archival_pending": false,
+  "full_openbao_compatibility": false,
+  "production_changed": false,
+  "uncovered": [
+    "large_http_forwarding",
+    "physical_power_loss",
+    "disk_full",
+    "long_horizon_linearizability",
+    "production_traffic_switch",
+    "old_production_asset_cleanup"
+  ],
+  "phaseb_cli_unknown_separate_and_preserved": true,
+  "strictwire_old_unknown_separate_and_preserved": true,
+  "actual_cold_unseal_sequence": 47,
+  "actual_cold_unseal_ms": 10261.2,
+  "actual_native_large_import_sequence": 55,
+  "actual_native_large_import_ms": 4519.807,
+  "original_import_deadline_margin_ms": 480.193,
+  "critical_four_metadata_whole_bytes_verified": true,
+  "full_boundary_archive_tree": "4b3ea5dd6314f5af1b1729cc7a470cbd3513e821",
+  "full_boundary_root_review": "heptabao.r10-original128-r2-full-mutation-metadata-root-review.v1"
+}

@@ -1,0 +1,195 @@
+diff --git a/pocket_artifact_relay.py b/pocket_artifact_relay.py
+--- a/pocket_artifact_relay.py
++++ b/pocket_artifact_relay.py
+@@ -1,37 +1,55 @@
+ #!/usr/bin/env python3
+-"""One fixed public R8 artifact relay; never starts HeptaBao or a consumer."""
++"""One fixed public R10 artifact relay; never starts HeptaBao or a consumer."""
+ from pathlib import Path
+ import argparse, hashlib, json, os, re, shlex, signal, stat, subprocess, time
+ 
+ BASE = Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-CONTROL = BASE / 'pocket-r8-artifact-relay-control-r2'
+-ROOT = BASE / 'pocket-r8-artifact-relay-r1'
+-SOURCE = BASE / 'normal-r8-standby-oracle-source-r1'
+-UPSTREAM = BASE / 'normal-r8-standby-oracle-control-r1'
+-HEAD = '384c957612186d64c5a530044af0ae62c568cc3d'
+-TREE = 'd5a0f91a4d47f7c8d5f34170ea167d10dc036e04'
++CONTROL = BASE / 'pocket-r10-artifact-relay-control-r1'
++ROOT = BASE / 'pocket-r10-artifact-relay-r1'
++SOURCE = BASE / 'normal-r10-validation-source-r1'
++UPSTREAM = BASE / 'normal-r10-shared-artifacts-r1'
++HEAD = '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
++TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
+ DESKTOP_MACHINE = 'd90fa41f7e59edf2f2a732ea082cac83085a2a3695a503cd82b6b4eef9cab9f3'
+-UPSTREAM_RECEIPT_SHA = '28b3c22c34bc7719e1fd9a3e666dc43945962d096bc24246f78769b78bc8e1cf'
++UPSTREAM_RECEIPT_SHA = 'f8fd7d32498cb8d291407f5cc352f79584c57e55d48f028f26048097bb0bd7bf'
+ FILES = [
+-    ('heptabao-server', 'heptabao-server', 110064840,
+-     '666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed', 0o700),
+-    ('native-build.public.json', 'native-build.public.json', 777,
+-     'f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9', 0o600),
+-    ('normal-release-result.public.json', 'normal-build.result.public.json', 3164,
+-     '2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5', 0o600),
++    ('heptabao-server', 'heptabao-server', 109091112,
++     '67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113', 0o500),
++    ('native-build.public.json', 'native-build.public.json', 801,
++     '0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77', 0o600),
++    ('normal-release-result.public.json', 'normal-build.result.public.json', 3227,
++     '75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee', 0o600),
+ ]
+ 
++SOURCE_MODES = {'heptabao-server': 0o500, 'native-build.public.json': 0o400,
++                'normal-release-result.public.json': 0o400}
++SOURCE_VERSIONS = {
++ 'heptabao-server': '2050:58120239:109091112:1793819286714153802:1793819286714153802',
++ 'native-build.public.json': '2050:58120241:801:1793819287399134926:1793819287399134926',
++ 'normal-release-result.public.json': '2050:58120242:3227:1793819287404134788:1793819287404134788'}
++TRUST_FILES = [
++ ('/home/qian-qi/.ssh/config', 1455, 'e7b887aad30f6642876c09744c317387b143e4a4b21ddc4879df2b558379ccf4'),
++ ('/home/qian-qi/.ssh/hepta-transport/known_hosts', 5391, '1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034')]
++# This is the actual prior read-only probe, using this relay's unchanged ssh
++# prefix. Runtime trust bytes are rechecked; no claim is made of a second
++# effective-config observation inside this transfer.
++ROUTE_WITNESS = {'job': '1a1a8313db3-fc05-2df6', 'receiptSha256': 'a2fca034263c1dc97e516e078572eff78e0af2f60bea22ce1948d3a1232a4fb2',
++ 'alias': 'pocket4-ts', 'hostname': '192.168.0.9', 'user': 'alex', 'port': '22',
++ 'hostKeyAlias': 'hepta-node-pocket4',
++ 'effectiveConfigSha256': '957b627df60bc0a47a7312c1ff13c773966e3050212dcd7f495cd47607a2ee39',
++ 'proxyCommandSha256': 'd13580ec3a9719e7b54969df0524f254e1d8040db86b0914b4085d6803847d85'}
++
+ RECEIVER = r'''
+ from pathlib import Path
+ import hashlib,json,os,signal,stat,sys,time
+ P=Path('/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1')
+-ROOT=P/'shared-first-cycle-r8-artifacts-r1'
++ROOT=P/'shared-first-cycle-r10-artifacts-r1'
+ MACHINE='83cf23c61610cc1595d7323f6ae2f1af29b364a4676cbee1385ba6d478ad853c'
+-HEAD='384c957612186d64c5a530044af0ae62c568cc3d'
+-TREE='d5a0f91a4d47f7c8d5f34170ea167d10dc036e04'
+-EXPECTED=[('heptabao-server',110064840,'666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed',0o700),
+- ('native-build.public.json',777,'f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9',0o600),
+- ('normal-build.result.public.json',3164,'2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5',0o600)]
++HEAD='49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
++TREE='1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
++EXPECTED=[('heptabao-server',109091112,'67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113',0o500),
++ ('native-build.public.json',801,'0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77',0o600),
++ ('normal-build.result.public.json',3227,'75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee',0o600)]
+ def ident(s):return [str(getattr(s,k))for k in('st_dev','st_ino','st_uid','st_gid','st_mode','st_nlink','st_size','st_mtime_ns','st_ctime_ns')]
+ def sync_dir(p):
+  fd=os.open(p,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+@@ -52,7 +70,7 @@
+  ROOT.mkdir(mode=0o700);created=True;sync_dir(P)
+  line=sys.stdin.buffer.readline(16385);assert len(line)<=16384 and line.endswith(b'\n')
+  manifest=json.loads(line)
+- assert manifest['schema']=='heptabao.pocket-r8-public-artifact-transfer.v1'
++ assert manifest['schema']=='heptabao.pocket-r10-public-artifact-transfer.v1'
+  assert manifest['sourceCommit']==HEAD and manifest['sourceTree']==TREE and manifest['nativeBuildHost']=='rog'
+  assert [(x['name'],x['bytes'],x['sha256'],x['mode'])for x in manifest['files']]==EXPECTED
+  put(ROOT/'receive-intent.public.json',manifest)
+@@ -78,7 +96,7 @@
+ finally:
+  signal.alarm(0)
+  if created:
+-  result={'schema':'heptabao.pocket-r8-public-artifact-receive-result.v1','ok':failure is None and len(rows)==3,'errorClass':failure,'files':rows,'sourceCommit':HEAD,'sourceTree':TREE,'nativeBuildHost':'rog','machineIdSha256':MACHINE,'createdRoot':str(ROOT),'createOnly':True,'partialRootPreservedOnFailure':failure is not None,'serverOrConsumerStarted':False,'privateInputsTransferred':False,'productionChanged':False,'startedUnixNs':started,'finishedUnixNs':time.time_ns()}
++  result={'schema':'heptabao.pocket-r10-public-artifact-receive-result.v1','ok':failure is None and len(rows)==3,'errorClass':failure,'files':rows,'sourceCommit':HEAD,'sourceTree':TREE,'nativeBuildHost':'rog','machineIdSha256':MACHINE,'createdRoot':str(ROOT),'createOnly':True,'partialRootPreservedOnFailure':failure is not None,'serverOrConsumerStarted':False,'privateInputsTransferred':False,'productionChanged':False,'startedUnixNs':started,'finishedUnixNs':time.time_ns()}
+   record=put(ROOT/'receive-result.public.json',result);sync_dir(P)
+   print(json.dumps({'ok':result['ok'],'receipt':record,'filesReceived':len(rows),'errorClass':failure},sort_keys=True))
+  else:print(json.dumps({'ok':False,'createdRoot':False,'errorClass':failure},sort_keys=True))
+@@ -132,7 +150,7 @@
+ 
+ 
+ def validate_receiver_response(value):
+-    expected_path = '/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r8-artifacts-r1/receive-result.public.json'
++    expected_path = '/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-artifacts-r1/receive-result.public.json'
+     if not isinstance(value, dict) or set(value) != {'ok', 'receipt', 'filesReceived', 'errorClass'}:
+         raise ValueError('receiver_response_shape')
+     receipt = value['receipt']
+@@ -210,7 +228,7 @@
+     parser.add_argument('--expected-controller-sha256', required=True)
+     args = parser.parse_args(); os.umask(0o077)
+     script = Path(__file__)
+-    assert script.resolve(strict=True) == CONTROL / 'pocket_r8_artifact_relay_r2.py'
++    assert script.resolve(strict=True) == CONTROL / 'pocket_r10_artifact_relay_r1.py'
+     raw, _ = read_file(script, script.lstat().st_size, args.expected_controller_sha256, 0o600)
+     assert hashlib.sha256(Path('/etc/machine-id').read_bytes()).hexdigest() == DESKTOP_MACHINE
+     assert os.getuid() == 1000 and BASE.resolve(strict=True) == BASE
+@@ -218,6 +236,7 @@
+     started = time.time_ns(); child = None; created = False; pending = None
+     error = None; remote = None; response_valid = False
+     before = None; after = None; records = []; out = b''; err = b''
++    trust_before = None; trust_after = None
+     creating_child = False
+     def interrupted(signum, _frame):
+         nonlocal pending
+@@ -227,26 +246,35 @@
+         raise RuntimeError('artifact_relay_interrupted')
+     signal.signal(signal.SIGTERM, interrupted); signal.signal(signal.SIGINT, interrupted)
+     try:
++        trust_before = {path: read_file(Path(path), size, expected, 0o600)[1]
++                        for path, size, expected in TRUST_FILES}
+         before = source()
+-        receipt = UPSTREAM / 'receive-result.public.json'
+-        receipt_raw, receipt_identity = read_file(receipt, 2549, UPSTREAM_RECEIPT_SHA, 0o600)
++        receipt = UPSTREAM / 'control/result.public.json'
++        receipt_raw, receipt_identity = read_file(receipt, 14209, UPSTREAM_RECEIPT_SHA, 0o600)
+         upstream = json.loads(receipt_raw)
+-        assert upstream['success'] is True and upstream['source_head'] == HEAD and upstream['source_tree'] == TREE
++        assert (upstream['schema'] == 'heptabao.r10.shared-public-artifacts-relay.v1'
++            and upstream['status'] == 'transferred' and upstream['source_commit'] == HEAD
++            and upstream['source_tree'] == TREE and upstream['all_owned_stopped'] is True
++            and upstream['remote_endpoint_completion_verified'] is True
++            and upstream['remote_cleanup_unknown'] is False)
+         parts = []
+         for origin, name, size, expected, mode in FILES:
+             path = UPSTREAM / 'incoming' / origin
+-            data, ident = read_file(path, size, expected, mode)
++            data, ident = read_file(path, size, expected, SOURCE_MODES[origin])
++            assert ':'.join(ident[index] for index in (0, 1, 6, 7, 8)) == SOURCE_VERSIONS[origin]
+             parts.append(data)
+             records.append({'name': name, 'source': str(path), 'bytes': size,
+-                'sha256': expected, 'mode': mode, 'sourceIdentityBefore': ident})
+-        manifest = {'schema': 'heptabao.pocket-r8-public-artifact-transfer.v1',
++                'sha256': expected, 'mode': mode, 'sourceMode': SOURCE_MODES[origin],
++                'sourceVersion': SOURCE_VERSIONS[origin], 'sourceIdentityBefore': ident})
++        manifest = {'schema': 'heptabao.pocket-r10-public-artifact-transfer.v1',
+             'sourceCommit': HEAD, 'sourceTree': TREE, 'nativeBuildHost': 'rog',
+             'upstreamReceiptSha256': UPSTREAM_RECEIPT_SHA,
+             'files': [{k: r[k] for k in ('name', 'bytes', 'sha256', 'mode')} for r in records]}
+         put(ROOT / 'intent.public.json', {'manifest': manifest, 'controllerSha256': args.expected_controller_sha256,
+             'receiverSha256': hashlib.sha256(RECEIVER.encode()).hexdigest(), 'sourceBefore': before,
++            'priorReadonlyRouteWitness': ROUTE_WITNESS, 'trustBefore': trust_before,
+             'sshAlias': 'pocket4-ts', 'strictHostKeyChecking': True, 'updateHostKeys': False,
+-            'transferSeconds': 180, 'destination': '/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r8-artifacts-r1',
++            'transferSeconds': 180, 'destination': '/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r10-artifacts-r1',
+             'productionChanged': False, 'privateInputsTransferred': False})
+         payload = (json.dumps(manifest, sort_keys=True) + '\n').encode() + b''.join(parts)
+         command = '/usr/bin/python3 -I -S -B -c ' + shlex.quote(RECEIVER)
+@@ -270,12 +298,15 @@
+         remote = json.loads(out)
+         response_valid = validate_receiver_response(remote)
+         for record, (origin, _, size, expected, mode) in zip(records, FILES):
+-            _, ident = read_file(UPSTREAM / 'incoming' / origin, size, expected, mode)
++            _, ident = read_file(UPSTREAM / 'incoming' / origin, size, expected, SOURCE_MODES[origin])
+             assert ident == record['sourceIdentityBefore']
+             record['sourceIdentityAfter'] = ident; record['sourceUnchanged'] = True
+-        _, ident = read_file(receipt, 2549, UPSTREAM_RECEIPT_SHA, 0o600)
++        _, ident = read_file(receipt, 14209, UPSTREAM_RECEIPT_SHA, 0o600)
+         assert ident == receipt_identity
+         after = source()
++        trust_after = {path: read_file(Path(path), size, expected, 0o600)[1]
++                       for path, size, expected in TRUST_FILES}
++        assert trust_after == trust_before
+     except BaseException as exc:
+         error = type(exc).__name__
+     finally:
+@@ -284,8 +315,9 @@
+             and cleanup['ownedProcessGroupObservedEmpty'])
+         ok = error is None and response_valid and cleanup_qualified
+         public_receiver = remote if response_valid else None
+-        result = {'schema': 'heptabao.pocket-r8-artifact-relay-result.v1', 'ok': ok,
++        result = {'schema': 'heptabao.pocket-r10-artifact-relay-result.v1', 'ok': ok,
+             'errorClass': error, 'sourceBefore': before, 'sourceAfter': after, 'files': records,
++            'priorReadonlyRouteWitness': ROUTE_WITNESS, 'trustBefore': trust_before, 'trustAfter': trust_after,
+             'receiver': public_receiver, 'receiverResponseParsed': remote is not None,
+             'receiverResponseValidated': response_valid,
+             'remoteOutcomeUnknown': child is not None and not response_valid,

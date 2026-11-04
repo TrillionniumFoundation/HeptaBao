@@ -1,0 +1,150 @@
+{
+  "all_owned_cleanup_complete": true,
+  "budgets": {
+    "coordinatorRequestSeconds": 10,
+    "managerCommandSeconds": 15,
+    "noRestartObservationSeconds": 6,
+    "ownedWorkerSeconds": 75,
+    "serverReadinessSeconds": 12,
+    "snapshotHttpSeconds": 15
+  },
+  "dynamic_checks": {
+    "fixed_original_qualification_denominator": false,
+    "observed": 547,
+    "passed": 547
+  },
+  "normal_server": {
+    "binarySha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+    "buildResultSha256": "7fa76585e94fe2e60bbc3ce754f37e4d9d433e4cf576fcc2e39a1e95771f3f42",
+    "commit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+    "fixtureOptions": false,
+    "nativeReceiptSha256": "2fa263744917e1d71658daa4f34e09ea448fe77ec0b2c0f8ec22c01e2cd84e8e",
+    "storage": "native_v6_file",
+    "tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+  },
+  "paired_snapshot": {
+    "both_original_locks_held": true,
+    "bytes": 238621,
+    "manifest_replayed": false,
+    "owner_files": 9,
+    "pending_phase": "manifest_dispatched",
+    "real_restore_and_sigkill_cold_unseal": true,
+    "sha256": "4c844fca98d72804f50128a7019c4df478cc9b81b98fe765a1ea39d3fe0f5164",
+    "source_quiescent": true
+  },
+  "preserved_prior_failed_generations": [
+    "user-r1",
+    "user-r2",
+    "user-r3",
+    "system-r4"
+  ],
+  "reviewed_by": "root",
+  "reviewed_critical_checks": [
+    "ungranted_manifest_empty",
+    "event_manifest_committed_before_ack",
+    "paired_snapshot_download",
+    "paired_owner_sources_unchanged_under_both_locks",
+    "paired_backup_exact_owner_bytes",
+    "actual_manager_no_manifest_replay",
+    "real_snapshot_restore_once",
+    "actual_normal_sigkill_wait",
+    "restored_cold_starts_sealed",
+    "restored_cold_unseal",
+    "restored_exact_remote_manifest",
+    "restored_original_owner_anchor",
+    "paired_pending_recovered",
+    "paired_original_manifest_not_replayed",
+    "known_binding_failure.expected_exit",
+    "known_binding_failure.no_automatic_retry",
+    "unknown_pending_failure.expected_exit",
+    "unknown_pending_failure.no_automatic_retry"
+  ],
+  "root_units_original_identity_removed": {
+    "/run/systemd/system/heptabao-authbus-installed-qa-efed46d1e85c-1.service": {
+      "device": 25,
+      "gid": 0,
+      "inode": 2670227,
+      "mode": 420,
+      "uid": 0
+    },
+    "/run/systemd/system/heptabao-authbus-installed-qa-efed46d1e85c-2.service": {
+      "device": 25,
+      "gid": 0,
+      "inode": 2670278,
+      "mode": 420,
+      "uid": 0
+    }
+  },
+  "runtime_observations": [
+    {
+      "code_ro": true,
+      "config_ro": true,
+      "owned_identity_stable": true,
+      "pid": 2764136,
+      "state_rw": true,
+      "uid_gid": 1000,
+      "unit": "heptabao-authbus-installed-qa-efed46d1e85c-1.service"
+    },
+    {
+      "code_ro": true,
+      "config_ro": true,
+      "owned_identity_stable": true,
+      "pid": 2764240,
+      "state_rw": true,
+      "uid_gid": 1000,
+      "unit": "heptabao-authbus-installed-qa-efed46d1e85c-1.service"
+    },
+    {
+      "code_ro": true,
+      "config_ro": true,
+      "owned_identity_stable": true,
+      "pid": 2764313,
+      "state_rw": true,
+      "uid_gid": 1000,
+      "unit": "heptabao-authbus-installed-qa-efed46d1e85c-1.service"
+    },
+    {
+      "code_ro": true,
+      "config_ro": true,
+      "owned_identity_stable": true,
+      "pid": 2764512,
+      "state_rw": true,
+      "uid_gid": 1000,
+      "unit": "heptabao-authbus-installed-qa-efed46d1e85c-2.service"
+    },
+    {
+      "code_ro": true,
+      "config_ro": true,
+      "owned_identity_stable": true,
+      "pid": 2764692,
+      "state_rw": true,
+      "uid_gid": 1000,
+      "unit": "heptabao-authbus-installed-qa-efed46d1e85c-2.service"
+    }
+  ],
+  "schema": "heptabao.root-review.installed-coordinator-system-r5.v1",
+  "scope": {
+    "actual_sdk_producer_follower": false,
+    "full_openbao_replacement": false,
+    "production_services_changed": false,
+    "provider_called": false,
+    "real_process_uid_gid": 1000,
+    "synthetic_provider_credentials": true,
+    "system_manager": true
+  },
+  "source_pins": {
+    "core": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+    "driver": "15ea12db58325c4edf8878f31b8a0a1e7efc00595fb9feaac7147fb65b2a9302",
+    "entry": "16204429b78d370e58aa1332aa17ae1a295eae94e59bceb08c9144d7e991891b",
+    "helpers": {
+      "qa/openbao-acceptance/kv2_271_lossless_native_live.py": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+      "qa/openbao-acceptance/owned_process.py": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0",
+      "qa/single-node/smoke.py": "ced4e40a825d3d98a285598d40b58c61083cfc397d0859a783958d855a161971"
+    }
+  },
+  "source_result": {
+    "bytes": 125985,
+    "sha256": "fef3c0905dc90c2a30975cb5f0b3714e60624b69d532ad2fffc4c87de8720f0b"
+  },
+  "status": "passed_with_explicit_scope"
+}

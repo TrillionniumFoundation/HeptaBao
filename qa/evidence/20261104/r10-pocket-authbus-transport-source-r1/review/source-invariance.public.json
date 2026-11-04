@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.pocket-r10-artifact-relay-source-invariance.v1",
+  "sourceOnly": true,
+  "executed": false,
+  "original": {
+    "bytes": 16935,
+    "sha256": "a3dfbde3750b2651d1e687d28c9c19fdebcb37b7d113e25708b62fa8b7b5dbfd",
+    "gitBlob": "41ebd5ddf970a91758866525207a8aef5f6c22fa"
+  },
+  "candidate": {
+    "bytes": 19343,
+    "sha256": "651df23534c8410f1a34691968a1d1a1c76c4931675622aef41aae34ff02f96f",
+    "gitBlob": "010a3af9c67c04a6a29c2e057533eeadebb496f0"
+  },
+  "embeddedReceiver": {
+    "bytes": 4204,
+    "sha256": "ba6529b8d27ebaced29eaac5468c859810e7ef74484c96bea0a7b699f37d2323",
+    "gitBlob": "637d8b26dbd25cbd83aba5f34ea485341d32e13f"
+  },
+  "literalChanges": 35,
+  "reverseRebuildWholeOriginal": true,
+  "unchangedWholeFunctions": [
+    {
+      "name": "identity",
+      "bytes": 173,
+      "sha256": "13eb2d70ae1bc953961458eb854ec0cfadca7c21ad3cd56dd294477fdcea7b35",
+      "unchanged": true
+    },
+    {
+      "name": "sync_dir",
+      "bytes": 113,
+      "sha256": "01b21a331c1d359902bb680eb60fe95c3f14614b4f0350bc80d6b0e0efebb184",
+      "unchanged": true
+    },
+    {
+      "name": "put",
+      "bytes": 316,
+      "sha256": "e33a0ce88476278ef8b8b7c051ff4b98c85145843e7a2b2f18fc3d8eb82c8ccc",
+      "unchanged": true
+    },
+    {
+      "name": "read_file",
+      "bytes": 628,
+      "sha256": "ac89f7e7c3d85bd28fe0be3df027b86028a51d17a942c51e869a083064372b8d",
+      "unchanged": true
+    },
+    {
+      "name": "source",
+      "bytes": 444,
+      "sha256": "5d996d02b263ec6d2b607a8458ad1a22a3d73dafbb9f8acaa4678f8a0570ef58",
+      "unchanged": true
+    },
+    {
+      "name": "observed_group_members",
+      "bytes": 811,
+      "sha256": "5f7fe627cbb2baa74a14f1c22f8bcc454d8d2aa6fb2e1e1f8c96e562bd35bcba",
+      "unchanged": true
+    },
+    {
+      "name": "cleanup_ssh",
+      "bytes": 1940,
+      "sha256": "2fd078ab9691ad0412145437a4a1a3767f0c001731358756a35cccf7a684a087",
+      "unchanged": true
+    }
+  ],
+  "originalTransferSeconds": 180,
+  "originalReceiverAlarmSeconds": 180,
+  "originalCleanupSeconds": 10,
+  "originalSourceGitSecondsEach": 15,
+  "newProposedOuterSeconds": 360,
+  "receiverAlarmDoesNotCoverFinalReceiptPublication": true,
+  "remoteExecutionAuthorized": false,
+  "routeProbe": {
+    "bytes": 2315,
+    "sha256": "a2fca034263c1dc97e516e078572eff78e0af2f60bea22ce1948d3a1232a4fb2",
+    "gitBlob": "788c0ca513a1e0fcff783cae9d19d9d9267f6221"
+  }
+}

@@ -1,0 +1,83 @@
+--- a/launch_normal_r10_pocket_direct98_r1.py
++++ b/launch_normal_r10_pocket_direct98_r2.py
+@@ -15,16 +15,16 @@
+ os.umask(0o077)
+ sys.dont_write_bytecode = True
+ ROOT = Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-CONTROL = ROOT / 'normal-r10-pocket3-mac1-direct98-control-r1'
+-WORK = ROOT / 'formal-r10-pocket3-mac1-direct98-r1'
++CONTROL = ROOT / 'normal-r10-pocket3-mac1-direct98-control-r2'
++WORK = ROOT / 'formal-r10-pocket3-mac1-direct98-r2'
+ SOURCE = ROOT / 'normal-r10-validation-source-r1'
+ COMMIT = '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
+ TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
+ MAC = '/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/normal-release-tests-r1'
+ LINUX = '/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1'
+ PROBE = CONTROL / 'probe_normal_build_r10_r1.py'
+-RUNNER = CONTROL / 'native_v6_pocket_source_direct98_r10_r1.py'
+-RUNNER_SHA256 = '2600d2b346b4b9dfdf54b7f01aff013fe474291b67866011fd518dbfe4e45030'
++RUNNER = CONTROL / 'native_v6_pocket_source_direct98_r10_r2.py'
++RUNNER_SHA256 = 'b7623c0bb2a9bfd754401c00867ae6535fe8e19364c9fb6367219cffa2656e89'
+ QA_PINS = {
+     'ha_multihost_live.py': '0e7362d3e579f8a13d63ad1573745fb8cda71aeba75f40288db3927204e408de',
+     'native_v6_ha_multihost_live.py': '330cc6fe8eccb02711e897753ef70d9f3f46717f581f6e80a7b814f7603c638c',
+@@ -69,6 +69,14 @@
+     }
+ }
+ COMPARISON_PINS = {
++  "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-normal-full128-r2/summary.json": "9a23e1b4cce8638f7b5c8ea37d41929864c8b4ef35e0bef47292695d4703405e",
++  "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-full128-control-r2/exit.public.json": "ec20a5bd20c3808ee55890ea00044e6ab92b24d290e55b7b50fe268b0ea774ef",
++  "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-full128-control-r2/launch_normal_r10_full128_r2.py": "1c7f6b254a5a4acde704fff145b315b9fbe7ade186513dc0411c7e1a64506817",
++  "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-full128-control-r2/prepared.public.json": "ef5b7e46b8632b354652ecc709e81ed6e2ce41cfdc8870d54c1891a13214c524",
++  "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-normal-full128-r1/summary.json": "99b78fe5021248cd9f00af681df8a176442a59c54d446fa3d9f5f0adab414d76",
++  "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-full128-control-r1/exit.public.json": "d9c9b628ceb135ace41d6c7990668dce2cd73c0784d028b1361b42346e7c504c",
++  "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-full128-control-r1/launch_normal_r10_full128_r1.py": "0c249a8d0cdec7912346394084ba0da638e3b83f41a1bbd70fdfe924eab21a3a",
++  "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-full128-control-r1/prepared.public.json": "64855330cb0beb840869fe601c707a4f2897e7bf3688af85dfdddc5e4ab9e01c",
+   "/home/qian-qi/heptabao-ha-closure-20261103-r1/combined-blocker-closure-build-control-r1/import-failure-boundary.public.json": "352d797c58371547ccfd125d4ceed7ca54baf5f756ebf81a2dd81224951e5a90",
+   "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-36076-normal-full128-r1/summary.json": "6c0c51c2e155db952dfb154b5d5418e2a66beb21b3548f63d1b25f4787deab8b",
+   "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-normal-full128-r1/summary.json": "41af5de59863ec2d430674d0b6272b040276d2777dda383a25a2e195cdab9f44",
+@@ -76,8 +84,7 @@
+   "/home/qian-qi/heptabao-ha-closure-20261103-r1/e171-private-cold-phase-full128-live-r1/summary.json": "53a17ce7169e412e30099b7232dd3e2ba3b064a6bd39d47fc58753883476c91e",
+   "/home/qian-qi/heptabao-ha-closure-20261103-r1/e171-private-cold-phase-full128-live-r2/summary.json": "f928c1d74bd1f8b4bad8530b6f2ad9d96ea8ff8020ac5f4384a136c833241d1d",
+   "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-33cafa-normal-full128-r2/summary.json": "8f7285ffad498ec0b6eeaca48e255790776a15ec62c218e195cf5e7ce0f2e8f1",
+-  "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-full128-control-r2/normal-original128-assessment.public.json": "66df7dbd422004f7f4569fb9e44a5835f929a5c7f5d19a08b484cc3ecf0cb318",
+-  "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-normal-full128-r1/summary.json": None
++  "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-33cafa-full128-control-r2/normal-original128-assessment.public.json": "66df7dbd422004f7f4569fb9e44a5835f929a5c7f5d19a08b484cc3ecf0cb318"
+ }
+ 
+ def require_bound_artifact_pins():
+@@ -138,12 +145,12 @@
+         '--source-commit', COMMIT, '--source-tree', TREE]
+     for alias, platform in [('mac-ts', 'mac'), ('rog-ts', 'linux'), ('pocket4-ts', 'linux')]:
+         v += ['--native-build-receipt', alias + ',local:' + str(CONTROL / (platform + '-native-build.public.json')) + ',' + BUILDS[platform]['files']['native-build.public.json']]
+-    v += ['--node', 'mac-ts,192.168.0.8,/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-direct98-node1-r1',
+-          '--node', 'rog-ts,192.168.0.10,/home/qian-qi/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-direct98-node2-r1',
+-          '--node', 'pocket4-ts,192.168.0.9,/home/alex/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-direct98-node3-r1',
++    v += ['--node', 'mac-ts,192.168.0.8,/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-direct98-node1-r2',
++          '--node', 'rog-ts,192.168.0.10,/home/qian-qi/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-direct98-node2-r2',
++          '--node', 'pocket4-ts,192.168.0.9,/home/alex/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-direct98-node3-r2',
+           '--api-port', '46230', '--raft-port', '46231', '--allow-private-lan', '--work-root', str(WORK),
+           '--darwin-watchdog-python', '/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14',
+-          '--darwin-watchdog-python-sha256', 'cbf84109626aa1013bbe408fbb9590bd0f1c1548f038b2221c6b8b87de26ca43']
++          '--darwin-watchdog-python-sha256', 'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13']
+     return v
+ 
+ 
+@@ -154,7 +161,7 @@
+ parser.add_argument('--prepared-sha256')
+ option = parser.parse_args()
+ require_bound_artifact_pins()
+-assert Path(__file__).resolve(strict=True) == CONTROL / 'launch_normal_r10_pocket_direct98_r1.py'
++assert Path(__file__).resolve(strict=True) == CONTROL / 'launch_normal_r10_pocket_direct98_r2.py'
+ assert CONTROL.resolve(strict=True) == CONTROL
+ assert CONTROL.stat().st_uid == os.getuid() and stat.S_IMODE(CONTROL.stat().st_mode) == 0o700
+ assert not WORK.exists() and not WORK.is_symlink()
+@@ -182,7 +189,7 @@
+     assert contract['required_check_count'] == 98 and contract['fixture_started'] is False
+     assert contract['requested_cipher_source_node'] == 3 and contract['requested_actual_empty_leader_node'] == 1
+     assert contract['canonical128_summary_sha256'] == COMPARISON_PINS[
+-        str(ROOT / 'formal-r10-normal-full128-r1/summary.json')]
++        str(ROOT / 'formal-r10-normal-full128-r2/summary.json')]
+     assert len(module.direct.DIRECT_CHECKS) == 98 and len(module.EXTRA_CHECKS) == 30
+     assert len(module.direct.DirectLanRun.required_checks) == 98
+     prepared = {'schema': 'heptabao.normal-r10-direct98-direction-prepared.v1',

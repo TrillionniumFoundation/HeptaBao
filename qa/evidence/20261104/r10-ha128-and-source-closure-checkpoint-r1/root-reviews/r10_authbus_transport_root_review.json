@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.pocket-r10-artifact-relay-root-source-review.v1",
+  "status": "PASS_SOURCE_ONLY",
+  "tree": "78ce26df5cc8aee2751b485c89f97c8db06cda98",
+  "original": {
+    "bytes": 16935,
+    "sha256": "a3dfbde3750b2651d1e687d28c9c19fdebcb37b7d113e25708b62fa8b7b5dbfd",
+    "blob": "41ebd5ddf970a91758866525207a8aef5f6c22fa"
+  },
+  "candidate": {
+    "bytes": 19343,
+    "sha256": "651df23534c8410f1a34691968a1d1a1c76c4931675622aef41aae34ff02f96f",
+    "blob": "010a3af9c67c04a6a29c2e057533eeadebb496f0"
+  },
+  "diff": {
+    "bytes": 13666,
+    "sha256": "7601e63a46aeb5c0840e8e11a7c8c754e77d8d4b4aba6e1b239b614d5e06a7d8",
+    "blob": "263f5871c5f634af1d9a63df0702747fe9767c29"
+  },
+  "strict_diff_hunks": 9,
+  "whole_apply_exact": true,
+  "unchanged_functions": [
+    {
+      "name": "identity",
+      "whole_equal": true,
+      "bytes": 171,
+      "sha256": "ed78ce29c0eceebc231f10e1f6f1686ef1b596bba67ca5ed4f8a55a47c99b9cc"
+    },
+    {
+      "name": "sync_dir",
+      "whole_equal": true,
+      "bytes": 113,
+      "sha256": "01b21a331c1d359902bb680eb60fe95c3f14614b4f0350bc80d6b0e0efebb184"
+    },
+    {
+      "name": "put",
+      "whole_equal": true,
+      "bytes": 316,
+      "sha256": "e33a0ce88476278ef8b8b7c051ff4b98c85145843e7a2b2f18fc3d8eb82c8ccc"
+    },
+    {
+      "name": "read_file",
+      "whole_equal": true,
+      "bytes": 626,
+      "sha256": "d024a68e13a81abec33925ab0b65be9fc58f60d65d4d07dc4282d1b88c956c7f"
+    },
+    {
+      "name": "source",
+      "whole_equal": true,
+      "bytes": 442,
+      "sha256": "cbd303754b9188f866adfb580626feca42e4b94bd63d8bd44717d7a66f3f4ad1"
+    },
+    {
+      "name": "observed_group_members",
+      "whole_equal": true,
+      "bytes": 809,
+      "sha256": "b5e0be428bb932da476a18e0c52cb0463270fda747cb5262fa81c9ec988a84fc"
+    },
+    {
+      "name": "cleanup_ssh",
+      "whole_equal": true,
+      "bytes": 1938,
+      "sha256": "c4c896e448b15abbdc09d80a6e3eb36fe7fa4f97bd333440d7cab49eb91c6649"
+    }
+  ],
+  "embedded_receiver_exact": true,
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "route_authority_pass": true,
+  "route_job": "1a1a8313db3-fc05-2df6",
+  "route_is_prior_ssh_g_observation_only": true,
+  "route_config_hash": "957b627df60bc0a47a7312c1ff13c773966e3050212dcd7f495cd47607a2ee39",
+  "proxy_exists_and_sha256": [
+    "d13580ec3a9719e7b54969df0524f254e1d8040db86b0914b4085d6803847d85"
+  ],
+  "trust_identity_before_after_equal": true,
+  "source_actual_versions_and_receipt_pinned": true,
+  "private_inputs_transferred": false,
+  "three_public_build_files_only": true,
+  "create_only_destination": true,
+  "no_follow_links": true,
+  "whole_fd_identity_and_sha_before_after": true,
+  "budgets": {
+    "original_ssh_seconds": 180,
+    "original_receiver_alarm_seconds": 180,
+    "original_cleanup_seconds": 10,
+    "original_git_seconds_each": 15,
+    "new_outer_seconds": 360
+  },
+  "limitations": [
+    "Receiver original alarm ends before receipt publication; no full-endpoint 180-second claim.",
+    "Prior ssh -G does not prove new runtime effective configuration; full pinned config/known_hosts bytes checked before/after.",
+    "No transfer has executed and actual receipt/authority/direct Pocket file_info remain required."
+  ],
+  "actual_transport_allowed_now": false
+}

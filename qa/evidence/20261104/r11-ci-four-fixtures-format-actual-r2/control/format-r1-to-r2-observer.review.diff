@@ -1,0 +1,50 @@
+--- a/format_candidate.py
++++ b/format_candidate.py
+@@ -1,7 +1,7 @@
+ import hashlib,json,os,signal,stat,subprocess,sys,time
+ from pathlib import Path
+ START=time.monotonic(); LIMIT=50.0
+-ROOT=Path('/home/qian-qi/heptabao-ci-four-unsupported-fixtures-format-20261104-r1')
++ROOT=Path('/home/qian-qi/heptabao-ci-four-unsupported-fixtures-format-20261104-r2')
+ SOURCE=Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source')
+ SRC=SOURCE/'crates/heptabao-server/src'
+ FMT=Path('/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt')
+@@ -67,6 +67,7 @@
+   _,v=read_pin(SRC/name)
+   if v['sha256']!=original_pin: raise RuntimeError('canonical_original_pin')
+   before[name]=v
++ report['canonicalBefore']=before
+  ROOT.mkdir(mode=0o700);created=True
+  (ROOT/'candidate').mkdir(mode=0o700);(ROOT/'formatted').mkdir(mode=0o700)
+  for name in EXPECTED:
+@@ -92,20 +93,24 @@
+   child['stopped']=True
+   write_new(ROOT/(name+'.rustfmt.stderr'),err)
+   if p.returncode!=0 or not child['stopped']: raise RuntimeError('rustfmt_failed_or_group_remaining')
+-  if len(out)>262144 or not out.startswith(b'use super::*;'): raise RuntimeError('formatted_output_shape')
++  write_new(ROOT/(name+'.rustfmt.stdout'),out)
++  if len(out)>262144 or not out.startswith(text.splitlines()[0].encode()+b'\n'): raise RuntimeError('formatted_output_shape')
+   write_new(ROOT/'formatted'/name,out)
+   report['files'].append({'name':name,'beforeSha256':sha(text.encode()),'beforeBytes':len(text.encode()),
+       'afterSha256':sha(out),'afterBytes':len(out),'stderrBytes':len(err),'stderrSha256':sha(err)})
+- report['canonicalBefore']=before
+- report['canonicalAfter']={name:read_pin(SRC/name)[1] for name in EXPECTED}
+- if report['canonicalAfter']!=before: raise RuntimeError('canonical_changed')
+- report['rustfmtAfter']=read_pin(FMT)[1]
+- if report['rustfmtAfter']!=tool_before: raise RuntimeError('rustfmt_changed')
+  sync_dir(ROOT/'candidate');sync_dir(ROOT/'formatted');sync_dir(ROOT)
+  remain();report['status']='passed'
+ except BaseException as e:
+  report['errorType']=type(e).__name__;report['error']=str(e)
+ finally:
++ if before:
++  try:
++   report['canonicalAfter']={name:read_pin(SRC/name)[1] for name in before}
++   if report['canonicalAfter']!=before: raise RuntimeError('canonical_changed')
++   report['rustfmtAfter']=read_pin(FMT)[1]
++   if report['rustfmtAfter']!=tool_before: raise RuntimeError('rustfmt_changed')
++  except BaseException as e:
++   report['fenceError']=type(e).__name__+':'+str(e);report['status']='failed'
+  report['elapsedSeconds']=time.monotonic()-START
+  report['withinDeadline']=report['elapsedSeconds']<LIMIT
+  report['allOwnedStopped']=all(x.get('stopped') is True for x in report['children'])

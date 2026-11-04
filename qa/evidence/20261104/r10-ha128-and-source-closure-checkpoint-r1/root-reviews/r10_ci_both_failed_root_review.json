@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.r10-ci-both-failed.root-review.v1",
+  "run_id": 41879510413,
+  "merge_log": {
+    "bytes": 2753048,
+    "sha256": "3a7a9d749060b8151ee0f39a3a40410c210f60c62ebb8e80f18b42737d09d72f",
+    "job_id": 126748711283,
+    "run_id": 41879510413,
+    "complete_tool_log": true
+  },
+  "head_log": {
+    "bytes": 2761352,
+    "sha256": "66d23999c455a59eb6663db9ef7118d171d047350fea0243465689daabb123ad",
+    "git_blob": "f0e8069c9216e5e7ddc016e7054a1992ec1371fd",
+    "job_id": 126748711370,
+    "run_id": 41879510413
+  },
+  "gate_log": {
+    "bytes": 2898,
+    "sha256": "3819e95912afd4d9f598a7b6cbc62f11788690a2fc8a366632741a1e96192c6f",
+    "git_blob": "e15e54dab951c431ffb80d35ac49439419be049a",
+    "job_id": 126827193100,
+    "run_id": 41879510413
+  },
+  "same_four_server_test_failures": true,
+  "failures": [
+    "service::native_auth::pki_tests::native_pki_formal_selectors_retain_acme_external_and_foreign_owner_fences",
+    "service::native_auth::transit_tests::native_transit_acl_source_create_capability_cas_and_refusal_scope",
+    "service::native_storage::tests::configured_native_activation_rejects_unsupported_live_engine_without_retiring_v5",
+    "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss"
+  ],
+  "each_passed": 3708,
+  "each_failed": 4,
+  "each_ignored": 8,
+  "merge_test_seconds": 2800,
+  "head_test_seconds": 2946.52,
+  "gate_result": "failure",
+  "retries": 0,
+  "qualification": false
+}

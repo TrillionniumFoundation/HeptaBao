@@ -1,0 +1,20 @@
+{
+  "audit_recorded": true,
+  "job_id": "1a1a82f869a-fc05-2def",
+  "stderr": {
+    "bytes_hex": "",
+    "eof": true,
+    "next_offset": 0,
+    "offset": 0,
+    "size": 0,
+    "text": ""
+  },
+  "stdout": {
+    "bytes_hex": "72757374666d7420312e392e302d737461626c6520283838643965313261653120323032362d30382d3138290a",
+    "eof": true,
+    "next_offset": 45,
+    "offset": 0,
+    "size": 45,
+    "text": "rustfmt 1.9.0-stable (88d9e12ae1 2026-08-18)\n"
+  }
+}

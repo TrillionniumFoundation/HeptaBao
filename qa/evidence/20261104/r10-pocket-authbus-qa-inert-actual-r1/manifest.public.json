@@ -1,0 +1,105 @@
+{
+  "schema": "heptabao.pocket-r10-qa-inert-actual-packet.r1",
+  "job": "1a1a83e3faa-fc05-2e12",
+  "qualificationScope": "source distribution and three compile-only checks, not consumer runtime",
+  "files": [
+    {
+      "path": "actual/receipt.public.json",
+      "mode": "100644",
+      "bytes": 6132,
+      "sha256": "d032d3160ff16c2f102415ab940e4f2faea4649f797bbea5d495153b1cc56806",
+      "blob": "848f55f9c0ff7c53b455b43503f8b7974de7c0c3"
+    },
+    {
+      "path": "actual/authority.public.json",
+      "mode": "100644",
+      "bytes": 731,
+      "sha256": "1dec82bf51bc0241abdbfefd7339938b6c667809387ed83071b0ddf5ab69361b",
+      "blob": "444161c5f4488f92d958b5a44e9c622b6e83d0e6"
+    },
+    {
+      "path": "actual/stdout.public.json",
+      "mode": "100644",
+      "bytes": 4696,
+      "sha256": "c010fdb9a7150af72e95375d4877969d69207daf43dd3bb56c35f6fac0d18d5b",
+      "blob": "59f41e4812141deb5d4da92a3cb5e19fa67aba2e"
+    },
+    {
+      "path": "actual/stderr.txt",
+      "mode": "100644",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "actual/first-ack-mcp-timeout.txt",
+      "mode": "100644",
+      "bytes": 149,
+      "sha256": "8845000a53997e48da4b59132ab907c8766d451096e077ed4e72c69bd64922b4",
+      "blob": "9d594a259ffea4057c2b2f3bed3c7037fbc05945"
+    },
+    {
+      "path": "actual/same-key-ack.public.json",
+      "mode": "100644",
+      "bytes": 7748,
+      "sha256": "f4f13c82c43bf6279fcfd739b2eba0d44564494765530fc32f977f0fb24e1874",
+      "blob": "267679045eefec8dcbd96d1696cba761404037c5"
+    },
+    {
+      "path": "actual/read.public.json",
+      "mode": "100644",
+      "bytes": 14672,
+      "sha256": "3c2cac9508356097c02f57e62729aca7aa2a3dafb3164d69eec8a50190e0f6e9",
+      "blob": "c22402bcef50ee42b5d6f0c3ba3eb9ea8053d88f"
+    },
+    {
+      "path": "actual/receipt-binary-read.public.json",
+      "mode": "100644",
+      "bytes": 8535,
+      "sha256": "fdc00e3fca8f60545b6301ed7e1bc93614a275a54ca6737fe02b58722337470f",
+      "blob": "750fe5095da6ca4060c1b1b88940e7c6556d2a9a"
+    },
+    {
+      "path": "actual/intent.public.json",
+      "mode": "100644",
+      "bytes": 1324,
+      "sha256": "73cf9b12efd694e27dc4ed44a2929a0d8aba485a46caeb4e2bd105b26cfbfdba",
+      "blob": "1bd8a0122db15a26952cc75afce482857cbe4aec"
+    },
+    {
+      "path": "actual/readback-assessment.public.json",
+      "mode": "100644",
+      "bytes": 2038,
+      "sha256": "3a62c001d7669d99ad11cfd804c952f2f099fb78636127b06f07f443295837ad",
+      "blob": "9872974b84cb40d269c219b617cf12e4aee0341d"
+    },
+    {
+      "path": "source/pocket_r10_qa_inert_carrier.py",
+      "mode": "100644",
+      "bytes": 6466,
+      "sha256": "40d90119167a547d652a222429912e5bbfec619114f05dbcdc640163d6b1a87d",
+      "blob": "ea3cf6c69dbebb5ffc3b0dfa6f1f23839e835ab3"
+    },
+    {
+      "path": "source/carrier-reference-to-pocket.diff",
+      "mode": "100644",
+      "bytes": 4921,
+      "sha256": "8934565c5fa1f5c00faf4a079be20eb1139c48ebac0b1b924a722ca92eb6a334",
+      "blob": "1f1bf1289db4412d98cae273571719151b837ca7"
+    },
+    {
+      "path": "source/inputs.public.json",
+      "mode": "100644",
+      "bytes": 248549,
+      "sha256": "83ab9b332ff01f3ba3fca45bf142a888234ad7140827ff5eb294f01386138d9b",
+      "blob": "59d649756784fa2061e8933ea46ac46349955757"
+    },
+    {
+      "path": "source/plan.public.json",
+      "mode": "100644",
+      "bytes": 2046,
+      "sha256": "1e08f30863bf8c548cc11544e05d90d8c1ff0976d40bf498f1bdcf32184f6f60",
+      "blob": "218f673557ba747ae43af748afbcf223003b8690"
+    }
+  ]
+}

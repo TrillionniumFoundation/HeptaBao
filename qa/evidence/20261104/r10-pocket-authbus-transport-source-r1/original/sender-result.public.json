@@ -1,0 +1,142 @@
+{
+  "automaticRetry": false,
+  "cleanup": {
+    "directChildReaped": true,
+    "errorClass": null,
+    "observedRemainingPids": [],
+    "ownedProcessGroupObservedEmpty": true,
+    "pid": 2813947,
+    "returncode": 0,
+    "sshStarted": true
+  },
+  "controllerSha256": "a3dfbde3750b2651d1e687d28c9c19fdebcb37b7d113e25708b62fa8b7b5dbfd",
+  "errorClass": null,
+  "files": [
+    {
+      "bytes": 110064840,
+      "mode": 448,
+      "name": "heptabao-server",
+      "sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed",
+      "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r8-standby-oracle-control-r1/incoming/heptabao-server",
+      "sourceIdentityAfter": [
+        "2050",
+        "56653862",
+        "1000",
+        "1000",
+        "33216",
+        "1",
+        "110064840",
+        "1793805281549810436",
+        "1793805281549810436"
+      ],
+      "sourceIdentityBefore": [
+        "2050",
+        "56653862",
+        "1000",
+        "1000",
+        "33216",
+        "1",
+        "110064840",
+        "1793805281549810436",
+        "1793805281549810436"
+      ],
+      "sourceUnchanged": true
+    },
+    {
+      "bytes": 777,
+      "mode": 384,
+      "name": "native-build.public.json",
+      "sha256": "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9",
+      "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r8-standby-oracle-control-r1/incoming/native-build.public.json",
+      "sourceIdentityAfter": [
+        "2050",
+        "56653863",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "777",
+        "1793805282036796632",
+        "1793805282036796632"
+      ],
+      "sourceIdentityBefore": [
+        "2050",
+        "56653863",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "777",
+        "1793805282036796632",
+        "1793805282036796632"
+      ],
+      "sourceUnchanged": true
+    },
+    {
+      "bytes": 3164,
+      "mode": 384,
+      "name": "normal-build.result.public.json",
+      "sha256": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5",
+      "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r8-standby-oracle-control-r1/incoming/normal-release-result.public.json",
+      "sourceIdentityAfter": [
+        "2050",
+        "56653864",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "3164",
+        "1793805282043052650",
+        "1793805282043052650"
+      ],
+      "sourceIdentityBefore": [
+        "2050",
+        "56653864",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "3164",
+        "1793805282043052650",
+        "1793805282043052650"
+      ],
+      "sourceUnchanged": true
+    }
+  ],
+  "finishedUnixNs": 1793806909541759833,
+  "ok": true,
+  "outcomeUnknown": false,
+  "ownedProcessOutcomeUnknown": false,
+  "privateInputsTransferred": false,
+  "productionChanged": false,
+  "receiver": {
+    "errorClass": null,
+    "filesReceived": 3,
+    "ok": true,
+    "receipt": {
+      "bytes": 2388,
+      "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/shared-first-cycle-r8-artifacts-r1/receive-result.public.json",
+      "sha256": "451de04614fb7c223117f7066ccf4f736dbc94f2ccaff1a0fa8745ab85bbfcd6"
+    }
+  },
+  "receiverResponseParsed": true,
+  "receiverResponseValidated": true,
+  "remoteOutcomeUnknown": false,
+  "schema": "heptabao.pocket-r8-artifact-relay-result.v1",
+  "serverOrConsumerStarted": false,
+  "sourceAfter": {
+    "commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+    "status": "",
+    "tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04"
+  },
+  "sourceBefore": {
+    "commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+    "status": "",
+    "tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04"
+  },
+  "startedUnixNs": 1793806905915759162,
+  "stderrBytes": 0,
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdoutBytes": 297,
+  "stdoutSha256": "201f907b4ce3090e941630454b090ea7cf72a5da76d0933bf58e3d5dfad8e9d8"
+}

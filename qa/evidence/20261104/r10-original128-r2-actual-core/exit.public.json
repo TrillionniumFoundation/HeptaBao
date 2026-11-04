@@ -1,0 +1,14 @@
+{
+  "controller_unchanged": true,
+  "exit_code": 0,
+  "finished_unix": 1793822777.9551861,
+  "fresh_build_source_files_unchanged": {
+    "linux": true,
+    "mac": true
+  },
+  "prior_receipts_unchanged": true,
+  "private_diagnostic_feature_enabled": false,
+  "runner_unchanged": true,
+  "schema": "heptabao.normal-r10-original128-exit.v1",
+  "summary": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-normal-full128-r2/summary.json"
+}

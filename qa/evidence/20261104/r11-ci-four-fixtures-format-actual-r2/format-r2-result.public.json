@@ -1,0 +1,292 @@
+{
+  "allOwnedStopped": true,
+  "canonicalAfter": {
+    "service_native_pki_tests.rs": {
+      "bytes": 40085,
+      "identity": [
+        66306,
+        30560759,
+        40085,
+        1793816161020980096,
+        1793816161020980096,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source/crates/heptabao-server/src/service_native_pki_tests.rs",
+      "sha256": "cd2a36696281904076b5943e4b9cce0a9feb37d4755d0cbf4e0b70553d11ff79"
+    },
+    "service_native_storage_tests.rs": {
+      "bytes": 23786,
+      "identity": [
+        66306,
+        30561209,
+        23786,
+        1793816161022980082,
+        1793816161022980082,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source/crates/heptabao-server/src/service_native_storage_tests.rs",
+      "sha256": "4b219daf9b8ff0464dd11ce464888dace7576e70d3fce91da695928574ebe09f"
+    },
+    "service_native_transit_tests.rs": {
+      "bytes": 27364,
+      "identity": [
+        66306,
+        30561214,
+        27364,
+        1793816161022980082,
+        1793816161022980082,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source/crates/heptabao-server/src/service_native_transit_tests.rs",
+      "sha256": "9a620357a6b0ef168d3291e0e36a40e8b129cb4ee10cd2b710d3ddd42d02833e"
+    },
+    "service_native_v6_ha_cold_restore_tests.rs": {
+      "bytes": 32554,
+      "identity": [
+        66306,
+        30561224,
+        32554,
+        1793816161022980082,
+        1793816161022980082,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source/crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+      "sha256": "1ae927b441b0fccddb85f50aa0c7a4ca070e59b26de47bfffa249b015c71ae9c"
+    }
+  },
+  "canonicalBefore": {
+    "service_native_pki_tests.rs": {
+      "bytes": 40085,
+      "identity": [
+        66306,
+        30560759,
+        40085,
+        1793816161020980096,
+        1793816161020980096,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source/crates/heptabao-server/src/service_native_pki_tests.rs",
+      "sha256": "cd2a36696281904076b5943e4b9cce0a9feb37d4755d0cbf4e0b70553d11ff79"
+    },
+    "service_native_storage_tests.rs": {
+      "bytes": 23786,
+      "identity": [
+        66306,
+        30561209,
+        23786,
+        1793816161022980082,
+        1793816161022980082,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source/crates/heptabao-server/src/service_native_storage_tests.rs",
+      "sha256": "4b219daf9b8ff0464dd11ce464888dace7576e70d3fce91da695928574ebe09f"
+    },
+    "service_native_transit_tests.rs": {
+      "bytes": 27364,
+      "identity": [
+        66306,
+        30561214,
+        27364,
+        1793816161022980082,
+        1793816161022980082,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source/crates/heptabao-server/src/service_native_transit_tests.rs",
+      "sha256": "9a620357a6b0ef168d3291e0e36a40e8b129cb4ee10cd2b710d3ddd42d02833e"
+    },
+    "service_native_v6_ha_cold_restore_tests.rs": {
+      "bytes": 32554,
+      "identity": [
+        66306,
+        30561224,
+        32554,
+        1793816161022980082,
+        1793816161022980082,
+        33152,
+        1000,
+        1000,
+        1
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source/crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+      "sha256": "1ae927b441b0fccddb85f50aa0c7a4ca070e59b26de47bfffa249b015c71ae9c"
+    }
+  },
+  "children": [
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source/crates/heptabao-server/src",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 3456355,
+      "pid": 3456358,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 3456355,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source/crates/heptabao-server/src",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 3456355,
+      "pid": 3456359,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 3456355,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source/crates/heptabao-server/src",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 3456355,
+      "pid": 3456360,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 3456355,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source/crates/heptabao-server/src",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 3456355,
+      "pid": 3456361,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 3456355,
+      "timeoutSeconds": 10
+    }
+  ],
+  "compileExecuted": false,
+  "edition": "2024",
+  "elapsedSeconds": 0.07238459700602107,
+  "files": [
+    {
+      "afterBytes": 40170,
+      "afterSha256": "b5dbe7c3b75182f44213495e764c4ebfa6760b9c915219720cee0b711cc8931b",
+      "beforeBytes": 40201,
+      "beforeSha256": "c6040b9b2850b3fcf6cc1b17b9f4e8e53217f64cc6f1d26e3c33b37248e16d84",
+      "name": "service_native_pki_tests.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 27371,
+      "afterSha256": "f1f6beca7cbf01ba2f1411646ec9a744d58e85e42937311d5d264780e0573299",
+      "beforeBytes": 27371,
+      "beforeSha256": "f1f6beca7cbf01ba2f1411646ec9a744d58e85e42937311d5d264780e0573299",
+      "name": "service_native_transit_tests.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 25047,
+      "afterSha256": "51e436b705f720fac56fab6cc9a047a99567b3f2f172bc842c030de355d842a0",
+      "beforeBytes": 24922,
+      "beforeSha256": "bb15990f5851af63afa548c3e5cbe56911ea0332a6db3a458cb9a26ca571c7bd",
+      "name": "service_native_storage_tests.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 33157,
+      "afterSha256": "8ed048c97e624d81ce3ff2478e776b461c81013173821d20ea3faf795e5345bd",
+      "beforeBytes": 33157,
+      "beforeSha256": "8ed048c97e624d81ce3ff2478e776b461c81013173821d20ea3faf795e5345bd",
+      "name": "service_native_v6_ha_cold_restore_tests.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "inputCarrierSha256": "425f8baec953def836bab7e010cfca8dd90312967a9f0c76b32eb282bc94e86d",
+  "internalSeconds": 50,
+  "newRemoteSupervisorSeconds": 60,
+  "productExecuted": false,
+  "productionChanged": false,
+  "rustfmtAfter": {
+    "bytes": 5255144,
+    "identity": [
+      66306,
+      28970682,
+      5255144,
+      1791677524979153708,
+      1791677525080580886,
+      33261,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  },
+  "rustfmtBefore": {
+    "bytes": 5255144,
+    "identity": [
+      66306,
+      28970682,
+      5255144,
+      1791677524979153708,
+      1791677525080580886,
+      33261,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  },
+  "schema": "heptabao.ci-four-native-owner-fixture-rustfmt.v1",
+  "sourceCommit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "sourceTree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "status": "passed",
+  "withinDeadline": true
+}

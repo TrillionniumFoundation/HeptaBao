@@ -1,0 +1,19 @@
+{
+  "body_bytes": 56,
+  "body_sha256": "f36fe359861530ab22aeb54a2664a7431c8e5288b362b82c1b07e287eb912c13",
+  "credential_class": "root",
+  "deadline_monotonic_ns": 899012228690671,
+  "headers": {
+    "X-Vault-No-Request-Forwarding": "1"
+  },
+  "http_seconds": 15.0,
+  "intent_unix_ns": 1793821331236396670,
+  "label": "ordinary_write_explicit_no_forward",
+  "method": "POST",
+  "node": 2,
+  "parent_deadline_monotonic_ns": null,
+  "path": "/v1/wire/data/no_forward",
+  "redirect_following": false,
+  "sequence": 75,
+  "valid_restore_body": false
+}

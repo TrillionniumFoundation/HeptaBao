@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.ci-four-native-owner-fixture-format-independent-review.v1",
+  "sourceOnlyProductChange": true,
+  "rustFormattingActual": true,
+  "compileOrTestExecuted": false,
+  "rootSourceRefModified": false,
+  "canonicalBase": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "candidateTreeBeforeFormatting": "b3b1d905a669aa04e15459305ac857cc1f21793f",
+  "formattedCoreTree": "dd23ca349c025fe9bd2213f2d33b43fbd717261b",
+  "authoritySha256": "ea51714e11b53988d677b95436e94d7c50f65b70190b515ca342cf15a4af5daf",
+  "actualResultSha256": "78c536bba142270c38d7102d74b57f91877f3194765d23b7975db3a309d67166",
+  "actualElapsedSeconds": 0.07238459700602107,
+  "checks": [
+    {
+      "name": "exact_authority_terminal",
+      "pass": true
+    },
+    {
+      "name": "four_known_successful_format_children",
+      "pass": true
+    },
+    {
+      "name": "exact_formatter_argv_only",
+      "pass": true
+    },
+    {
+      "name": "same_original_canonical_full_identity_and_hash",
+      "pass": true
+    },
+    {
+      "name": "same_formatter_full_identity_and_hash",
+      "pass": true
+    },
+    {
+      "name": "all_four_original_source_hashes_match",
+      "pass": true
+    },
+    {
+      "name": "all_four_exact_candidate_input_and_actual_output_hashes_match",
+      "pass": true
+    },
+    {
+      "name": "source_input_carrier_exact",
+      "pass": true
+    },
+    {
+      "name": "all_no_formatter_stderr",
+      "pass": true
+    },
+    {
+      "name": "new_format_deadlines_not_exceeded",
+      "pass": true
+    },
+    {
+      "name": "not_compile_or_product_qualification",
+      "pass": true
+    },
+    {
+      "name": "result_pass_and_all_children_reaped",
+      "pass": true
+    }
+  ],
+  "formatOnlyDifferenceSha256": "9ef0ab60040f4bf2923dee16b4e6b118afa42069aebfb8f8d962bca3cb9b24be",
+  "originalFailurePreserved": true,
+  "readRpcTimeoutsPreserved": 3,
+  "privateInputsOrProductStarted": false,
+  "nanosecondIntegerComparison": "Original raw JSON was parsed by a lossless-number parser for identity equality. No raw receipt was reserialized through JavaScript numeric values.",
+  "missingSeparateArtifact": "R2 stdout exact 1678-byte content has not separately been fetched during the HA quiet window; its complete durable capture is attested by the original job authority."
+}

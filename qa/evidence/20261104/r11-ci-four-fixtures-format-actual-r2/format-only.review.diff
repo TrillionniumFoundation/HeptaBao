@@ -1,0 +1,54 @@
+--- a/crates/heptabao-server/src/service_native_pki_tests.rs
++++ b/crates/heptabao-server/src/service_native_pki_tests.rs
+@@ -1098,11 +1098,7 @@
+     assert!(f.service.native_remount_jobs.is_empty());
+     assert!(f.service.native_remount_statuses.is_empty());
+     // SSH has its own native owner; Kubernetes remains outside this profile.
+-    let denied = f.admin(
+-        "POST",
+-        "sys/mounts/foreign",
+-        json!({"type":"kubernetes"}),
+-    )?;
++    let denied = f.admin("POST", "sys/mounts/foreign", json!({"type":"kubernetes"}))?;
+     status(&denied, 501);
+     f.graphs_unchanged(&before)?;
+     let mut f = f.restart()?;
+--- a/crates/heptabao-server/src/service_native_storage_tests.rs
++++ b/crates/heptabao-server/src/service_native_storage_tests.rs
+@@ -302,7 +302,10 @@
+         ),
+         ("unsupported-pki/config/acme", json!({"enabled":true})),
+     ] {
+-        assert_eq!(request(&mut service, "POST", path, &token, body).status, 200);
++        assert_eq!(
++            request(&mut service, "POST", path, &token, body).status,
++            200
++        );
+     }
+     let before = request(
+         &mut service,
+@@ -315,7 +318,10 @@
+     assert_eq!(before.body["data"]["enabled"], true);
+     assert!(service.native_root.is_none());
+     let owner_before = {
+-        let state = service.state.as_ref().ok_or("unsupported V5 source state")?;
++        let state = service
++            .state
++            .as_ref()
++            .ok_or("unsupported V5 source state")?;
+         assert!(!state.engines.supports_native_v6_root_storage());
+         Zeroizing::new(serde_json::to_vec(&state.engines)?)
+     };
+@@ -334,7 +340,11 @@
+     assert_eq!(retained.status, 200);
+     assert_eq!(retained.body["data"], before.body["data"]);
+     let owner_after = Zeroizing::new(serde_json::to_vec(
+-        &service.state.as_ref().ok_or("retained V5 source state")?.engines,
++        &service
++            .state
++            .as_ref()
++            .ok_or("retained V5 source state")?
++            .engines,
+     )?);
+     assert!(owner_after.as_slice() == owner_before.as_slice());
+     Ok(())

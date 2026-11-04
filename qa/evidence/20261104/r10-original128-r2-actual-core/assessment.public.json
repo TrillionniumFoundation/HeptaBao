@@ -1,0 +1,82 @@
+{
+  "schema": "heptabao.r10-normal-original128-terminal-assessment.v1",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "fixture_run_id": "f50139b0f83d8105c478f0c51ba61643",
+  "job_id": "1a1a81dde69-fc05-2dbc",
+  "authority": {
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "timed_out": false
+  },
+  "physical_hosts": 3,
+  "transport": "direct-private-lan-api-and-raft-mtls",
+  "normal_default_features": true,
+  "private_diagnostic_feature_enabled": false,
+  "expected_check_set_source": "Original unchanged NativeRun89 plus DirectLan delta to98 and official30; independently reconstructed exact labels/templates, no runtime source execution",
+  "original98_passed": 98,
+  "official30_passed": 30,
+  "expected128_exact_set_match": true,
+  "observed128_unique": true,
+  "passed128": true,
+  "mutation_intents": 67,
+  "mutation_responses": 67,
+  "unknown_transport_outcomes": 0,
+  "full_boundary_files_audit": "pending separate complete 134-file collection; four critical metadata files included here",
+  "original_budgets": {
+    "import_seconds": 5,
+    "http_seconds": 15,
+    "native_admission_seconds": 8,
+    "qa_outer_seconds": 2400
+  },
+  "new_supervisor_outer_seconds": 3000,
+  "natural_missing_cipher_direction": {
+    "healthy_source": 2,
+    "healthy_source_host": "ROG",
+    "empty_leader": 1,
+    "empty_leader_host": "Mac",
+    "pocket3_to_mac1_covered": false,
+    "actual_cold_unseal_sequence": 47,
+    "status": 200,
+    "elapsed_ms": 10261.2,
+    "restored_unique_objects": 339,
+    "restored_bytes": 35743073,
+    "quarantined_objects": 443,
+    "all_restored_digests_and_sizes_match": true
+  },
+  "actual_large_import": {
+    "sequence": 55,
+    "status": 204,
+    "elapsed_ms": 4519.807,
+    "original_seconds": 5,
+    "body_bytes": 35658766,
+    "remaining_ms": 480.193,
+    "retried": false
+  },
+  "cleanup": {
+    "owned_processes_stopped": true,
+    "owned_mesh_stopped": true,
+    "tunnel_children": 0,
+    "mac_foreground_sessions": 8,
+    "all_mac_local_and_remote_groups_empty_and_reaped": true,
+    "original_stop_deadline_satisfied": true
+  },
+  "old12_receipt_fences_unchanged": true,
+  "source_artifacts_and_controllers_unchanged": true,
+  "production_changed": false,
+  "full_openbao_compatibility": false,
+  "uncovered": [
+    "large_http_forwarding",
+    "physical_power_loss",
+    "disk_full",
+    "long_horizon_linearizability",
+    "production_traffic_switch",
+    "old_production_asset_cleanup"
+  ],
+  "old_failures_preserved": true,
+  "full128_r1_known_early_failure_not_rewritten": true,
+  "strictwire_r8_unknown_not_replayed": true,
+  "phaseb_unknown_not_replayed": true
+}

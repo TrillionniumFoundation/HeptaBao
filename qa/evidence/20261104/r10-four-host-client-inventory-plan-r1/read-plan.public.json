@@ -1,0 +1,392 @@
+{
+  "schema": "heptabao.four-host-current-consumer-inventory-read-plan.r1",
+  "status": "source-only-not-executed",
+  "purpose": "Per-host client and backup migration denominator; no cross-host inference from Pocket or HA/API qualifications",
+  "productionChanged": false,
+  "providerRequests": 0,
+  "j3160Requests": 0,
+  "concurrentHosts": 1,
+  "phaseOrder": [
+    "Recover two exact public inventory originals on X230",
+    "Review finite exact names/paths; no guessed backup or dormant unit identifiers",
+    "One host at a time configuration/registration/metadata projection",
+    "Review newly observed concrete bindings before any additional exact-path read",
+    "Separate later stopped private capture and real credential fixture; not authorized by this plan"
+  ],
+  "publicInventoryInputs": [
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/finite-cutover-registration-scope-r2.public.json",
+      "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64"
+    },
+    {
+      "host": "x230",
+      "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/four-host-cutover-cleanup-assessment.public.json",
+      "sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0"
+    }
+  ],
+  "inventoryOriginalsCurrentlyRecovered": false,
+  "limits": {
+    "classification": "NEW read-only inventory limits, not changes to any product test budget",
+    "perHostControllerSeconds": 45,
+    "remoteSupervisorSeconds": 60,
+    "childCommandSecondsMax": 10,
+    "maxSingleMetadataDocumentBytes": 2097152,
+    "maxTotalReadBytesPerHost": 8388608,
+    "maxPublicOutputBytesPerHost": 65536,
+    "maxRegisteredObjectsPerPass": 32,
+    "maxBackupMetadataItemsPerHost": 16,
+    "wholeLargeArchiveHashOrRestore": false,
+    "expiration": "return incomplete and stop; no phase retry or new budget in same intent"
+  },
+  "initialReadContract": {
+    "regularFiles": "O_NOFOLLOW; owner/mode/nlink/size/dev/inode/mtime/ctime and whole digest for bounded regular files; identity before/after; symlink recorded not followed",
+    "databases": "metadata only, including exact -wal/-shm existence; do not open SQLite in this inventory pass",
+    "nativeAndCredentialFiles": "public outputs only presence/mode/owner/size/identity/digest, never credential values",
+    "configuration": "safe projection of 4 connection keys/flags/agent IDs/model/runtime paths plus whole original SHA; raw values remain owner-private",
+    "supervisors": "exact observed labels/units only; no daemon-reload, start, stop, restart, enable, disable or reset-failed",
+    "containers": "only exact IDs/names recovered from finite inventory; readonly inspect safe field projection, no env values; no exec/start/remove/prune",
+    "processes": "only exact service/container PIDs and their current identity if needed; no broad command-line capture",
+    "filesystem": "no recursive HOME/root scan, no glob-discovered identity enrollment, no large binary/archive transfer",
+    "failure": "retain absence/errors and incomplete status; do not infer no consumer from denied/timeout/empty registry"
+  },
+  "hosts": [
+    {
+      "host": "mac",
+      "home": "/Users/qianqi",
+      "configuredAgents": [
+        "main",
+        "trnm",
+        "hepta-ui",
+        "hepta",
+        "hepta-backend"
+      ],
+      "configuration": "/Users/qianqi/.openclaw/openclaw.json",
+      "observedConfigurationSha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+      "registeredFiles": [
+        "/Users/qianqi/Library/LaunchAgents/ai.openclaw.gateway.plist"
+      ],
+      "serviceQueries": [
+        {
+          "argv": [
+            "/bin/launchctl",
+            "print",
+            "gui/501/ai.openclaw.gateway"
+          ],
+          "publicFields": [
+            "label",
+            "state",
+            "pid",
+            "program-path",
+            "working-directory",
+            "stdout-path",
+            "stderr-path"
+          ],
+          "argvAndEnvironmentValues": "owner-private only; public hashes and key names"
+        }
+      ],
+      "agentDatabases": [
+        "/Users/qianqi/.openclaw/agents/main/agent/openclaw-agent.sqlite",
+        "/Users/qianqi/.openclaw/agents/trnm/agent/openclaw-agent.sqlite",
+        "/Users/qianqi/.openclaw/agents/hepta-ui/agent/openclaw-agent.sqlite",
+        "/Users/qianqi/.openclaw/agents/hepta/agent/openclaw-agent.sqlite",
+        "/Users/qianqi/.openclaw/agents/hepta-backend/agent/openclaw-agent.sqlite"
+      ],
+      "nativeFiles": [
+        "/Users/qianqi/.codex/auth.json",
+        "/Users/qianqi/.codex/config.toml"
+      ],
+      "nativeFileReadScope": "initial inventory only lstat/path/owner/mode/wholeSHA within fixed cap; actual agent-native paths must come from captured registered runtime configuration, not a guessed home",
+      "cacheFiles": [
+        "/Users/qianqi/.openclaw/authbus/applied-profiles.json",
+        "/Users/qianqi/.openclaw/authbus/publish-baseline.json",
+        "/Users/qianqi/.openclaw/authbus/bad-refresh-quarantine.json",
+        "/Users/qianqi/.openclaw/authbus/refresh-backoff.json",
+        "/Users/qianqi/.openclaw/authbus/lease-epochs.json",
+        "/Users/qianqi/.openclaw/authbus/status.json"
+      ],
+      "credentialFiles": [
+        "/Users/qianqi/.openclaw/credentials/authbus/ca.crt",
+        "/Users/qianqi/.openclaw/credentials/authbus/role_id",
+        "/Users/qianqi/.openclaw/credentials/authbus/secret_id"
+      ],
+      "historicalConsumer": {
+        "normalCommit": "36076db5f5afe00db75eba9b607dee7802dae554",
+        "resultSha256": "6caa9ebfc2a3bf3ae637676a8055022817ec0efa85b09c6ffc304ac854ca6236",
+        "checks": {
+          "parent": 60,
+          "eachNative": 95,
+          "eachRollback": 62
+        },
+        "mainAgentOnly": true,
+        "kernelNoExternalEgress": true,
+        "productionGatewayRestarted": false
+      },
+      "preserve": [
+        "main and all current local profiles/usage",
+        "actual registered default and agent home scope",
+        "fallback 1,2,3 including rejected generation 3 as recovery material",
+        "trnm profile-free local primary row and inherited effective state",
+        "four exact legacy relay registrations until their use/disposition is proven"
+      ],
+      "gaps": [
+        "R10 same-identity installed AuthBus/native initial/cold/full rollback",
+        "finite consumers of the four legacy relay registrations",
+        "actual supervised production cold start and inverse",
+        "exact current backup/recovery bindings and verified independent recovery copy"
+      ]
+    },
+    {
+      "host": "rog",
+      "home": "/home/qian-qi",
+      "configuredAgents": [
+        "main",
+        "azi2",
+        "azi3",
+        "azi4",
+        "azi5",
+        "zbj-llm-runtime"
+      ],
+      "configuration": "/home/qian-qi/.openclaw/openclaw.json",
+      "observedConfigurationSha256": "a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15",
+      "registeredFiles": [
+        "/home/qian-qi/.config/systemd/user/openclaw-gateway.service",
+        "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/10-telegram-dns-verbatim.conf",
+        "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/20-drain-timeout.conf",
+        "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/30-telegram-spooled-handler-timeout.conf"
+      ],
+      "serviceQueries": [
+        {
+          "argv": [
+            "/usr/bin/systemctl",
+            "--user",
+            "show",
+            "openclaw-gateway.service",
+            "--property=Id,FragmentPath,DropInPaths,ActiveState,SubState,UnitFileState,MainPID,KillMode,KillSignal,TimeoutStopUSec"
+          ],
+          "publicFields": "only listed properties; no Environment values"
+        }
+      ],
+      "agentDatabases": [
+        "/home/qian-qi/.openclaw/agents/main/agent/openclaw-agent.sqlite",
+        "/home/qian-qi/.openclaw/agents/azi2/agent/openclaw-agent.sqlite",
+        "/home/qian-qi/.openclaw/agents/azi3/agent/openclaw-agent.sqlite",
+        "/home/qian-qi/.openclaw/agents/azi4/agent/openclaw-agent.sqlite",
+        "/home/qian-qi/.openclaw/agents/azi5/agent/openclaw-agent.sqlite",
+        "/home/qian-qi/.openclaw/agents/zbj-llm-runtime/agent/openclaw-agent.sqlite"
+      ],
+      "nativeFiles": [
+        "/home/qian-qi/.codex/auth.json",
+        "/home/qian-qi/.codex/config.toml"
+      ],
+      "cacheFiles": [
+        "/home/qian-qi/.openclaw/authbus/applied-profiles.json",
+        "/home/qian-qi/.openclaw/authbus/publish-baseline.json",
+        "/home/qian-qi/.openclaw/authbus/bad-refresh-quarantine.json",
+        "/home/qian-qi/.openclaw/authbus/refresh-backoff.json",
+        "/home/qian-qi/.openclaw/authbus/lease-epochs.json",
+        "/home/qian-qi/.openclaw/authbus/status.json"
+      ],
+      "credentialFiles": [
+        "/home/qian-qi/.openclaw/credentials/authbus/ca.crt",
+        "/home/qian-qi/.openclaw/credentials/authbus/role_id",
+        "/home/qian-qi/.openclaw/credentials/authbus/secret_id"
+      ],
+      "historicalConsumer": {
+        "normalCommit": "36076db5f5afe00db75eba9b607dee7802dae554",
+        "resultSha256": "4c905377b40663d972839117579fa3e0a317528ac6e6b9fddfd0765cd18c7472",
+        "checks": {
+          "parent": 60,
+          "eachConsumer": 94,
+          "eachRollback": 64
+        },
+        "nativeHomeScope": "user",
+        "nativeVersion": "0.159.2",
+        "nativeCredential": "independent local identity4, also present in main SDK",
+        "productionGatewayRestarted": false
+      },
+      "additionalHistoricalScopes": {
+        "directSdk314": "synthetic-provider normal33; direct core API, not installed entry",
+        "installedEntrySdk330": "synthetic-provider normal33; actual entry API, not ROG manager",
+        "rootReviewBlobs": [
+          "affcbcb62531d2c6e4cdeee1c8ad62c45875fbb9",
+          "35a82ad9a6bfc673a609977c7f2ac8ed3f74b044"
+        ]
+      },
+      "preserve": [
+        "user-native identity4/config and homeScope=user",
+        "main order4,2,1 and original main exclusion",
+        "azi2-azi5 order2,1; zbj inherited4,2,1",
+        "original 6-minute service stop policy; inventory never stops service",
+        "two held dormant helpers and their markers until exact release/disposition"
+      ],
+      "gaps": [
+        "R10 actual installed native preservation and complete inherited-store rollback",
+        "actual ROG supervisor binding rather than X230 manager extrapolation",
+        "explicit two dormant helper release/retirement scope",
+        "production cold restart/inverse and backup paths"
+      ]
+    },
+    {
+      "host": "pocket4",
+      "home": "/home/alex",
+      "configuredAgents": [
+        "main",
+        "tg8687951891"
+      ],
+      "configuration": "/home/alex/.openclaw/openclaw.json",
+      "observedConfigurationSha256Prefix": "3611380b",
+      "registeredFiles": [
+        "/home/alex/.config/systemd/user/openclaw-gateway.service",
+        "/home/alex/.config/systemd/user/openclaw-gateway.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+        "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service",
+        "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf"
+      ],
+      "holdFiles": [
+        "/home/alex/heptabao-authbus-persistent-guard-hb3-r1/hold-0dcbd843db6bbaf3fb0fdab97ae4775029d63660a7365b8da5b498385917c5e5.json",
+        "/home/alex/heptabao-authbus-persistent-guard-hb3-r1/hold-89902581f0d98cb21706f6dfdb9e879d2d6dffc7b8f4f3f4a9c654645f9624a1.json"
+      ],
+      "holdProvenancePublic": "/home/alex/heptabao-hb3-linux-inhibition-stage-20261023-r1/fixed-source-map.public.json",
+      "serviceQueries": [
+        {
+          "argv": [
+            "/usr/bin/systemctl",
+            "--user",
+            "show",
+            "openclaw-authbus-restart-when-idle.service",
+            "openclaw-gateway.service",
+            "--property=Id,FragmentPath,DropInPaths,ActiveState,SubState,UnitFileState,MainPID,ConditionResult"
+          ],
+          "publicFields": "only listed properties; no Environment values"
+        }
+      ],
+      "agentDatabases": [
+        "/home/alex/.openclaw/agents/main/agent/openclaw-agent.sqlite",
+        "/home/alex/.openclaw/agents/tg8687951891/agent/openclaw-agent.sqlite"
+      ],
+      "nativeFiles": [
+        "/home/alex/.codex/auth.json",
+        "/home/alex/.codex/config.toml"
+      ],
+      "cacheFiles": [
+        "/home/alex/.openclaw/authbus/applied-profiles.json",
+        "/home/alex/.openclaw/authbus/publish-baseline.json",
+        "/home/alex/.openclaw/authbus/bad-refresh-quarantine.json",
+        "/home/alex/.openclaw/authbus/refresh-backoff.json",
+        "/home/alex/.openclaw/authbus/lease-epochs.json",
+        "/home/alex/.openclaw/authbus/status.json"
+      ],
+      "credentialFiles": [
+        "/home/alex/.openclaw/credentials/authbus/ca.crt",
+        "/home/alex/.openclaw/credentials/authbus/role_id",
+        "/home/alex/.openclaw/credentials/authbus/secret_id"
+      ],
+      "historicalConsumer": {
+        "normalCommit": "384c957612186d64c5a530044af0ae62c568cc3d",
+        "coreSha256": "1f42b95791dba63e1dd6cb12bbd643b8d073403948df72f8fe2f282e75806423",
+        "checks": {
+          "core": 66,
+          "eachConsumer": 128,
+          "eachRollback": 95
+        },
+        "actualNativeFactories": 4,
+        "realNativeRpc": 8,
+        "defaultLocal5": true,
+        "productionChanged": false,
+        "rootReviewBlob": "fef0a81416e27f3d0d405c830aca4e04916463dc"
+      },
+      "r10": {
+        "sourceReviewTree": "009510370a5fb19fb03a4764f4fc9da2cfbb960f",
+        "artifactRelayReviewTree": "78ce26df5cc8aee2751b485c89f97c8db06cda98",
+        "consumerRuntimePassed": false
+      },
+      "preserve": [
+        "both order exclusions and default local5",
+        "independent user-native4",
+        "publishNew=true, shadow scheduler and ungranted inbox defer",
+        "tg profile-free primary row, inherited effective state, exact raw rows",
+        "all six cache bytes/absences and usage",
+        "both exact held markers; no blind rm or release-generation inference"
+      ],
+      "gaps": [
+        "R10 three-artifact intake then same harness prepare/preflight/live",
+        "actual managed first cycle, native cold processes and raw/effective/cache rollback",
+        "explicit hold transition and supervisor cold start/inverse",
+        "local5/native4 recovery and encrypted offhost backup provenance"
+      ]
+    },
+    {
+      "host": "x230",
+      "home": "/home/qian",
+      "configuredAgents": null,
+      "consumerAbsenceProven": false,
+      "firstReadInputs": "exact two previously recorded public inventory files below",
+      "historicalConsumer": {
+        "normalCommit": "36076db5f5afe00db75eba9b607dee7802dae554",
+        "path": "/home/qian/heptabao-authbus-real88-36076-20261104-r1/live-r1/result.public.json",
+        "sha256": "87e8182fd7a04e4194800811737f5b2f48d7d20b6455641421c3bfdd19132d61",
+        "checks": {
+          "parent": 44,
+          "node": 44
+        },
+        "capturedCredentialOwner": "ROG",
+        "installedProductionGatewayQualified": false,
+        "standardHomePathsNotFoundOnly": true
+      },
+      "otherActualEvidence": {
+        "normal33InstalledManager547": "owned system manager with synthetic provider inputs and paired owner/KV recovery, not actual SDK or production installation",
+        "r10Full34_31": "finite API/storage scope only",
+        "r10Comparison69": "13 modules,67 numeric+2 normalized rejection fields; not host credential inventory"
+      },
+      "preserve": [
+        "disabled proxy/dev oracle records, containers and any declared restore/startup dependencies",
+        "all current backup assets and declared local client scripts until classified"
+      ],
+      "gaps": [
+        "exact active/dormant/recovery consumer bindings from finite registration inventory",
+        "whether any registered current service or backup restore procedure invokes Bao credentials",
+        "R10 host-specific real consumer/recovery evidence if an actual consumer exists",
+        "explicit evidence-supported disposition if no current consumer exists; Docker appearance is insufficient"
+      ]
+    }
+  ],
+  "backupContract": {
+    "startingScope": "finite backup/startup rows from the recovered original matrix, including the nine recovery scopes previously reviewed by root; exact names are not invented here",
+    "initialRead": "read only declared backup command/config/manifest paths and destination metadata; credentials/destination secret values remain private; no contact with J3160 or provider",
+    "projection": [
+      "declaring source and exact referenced path",
+      "active schedule/disabled/dormant status and registration",
+      "source endpoint/profile/role IDs as digests",
+      "encrypted archive owner/mode/size/version and already declared digest",
+      "encryption/recovery-key custody reference without key content",
+      "paired coordinator owner-state and KV checkpoint generation",
+      "retained native-user and SDK raw/effective/cache scope",
+      "last proved restore target and corresponding receipt"
+    ],
+    "noFalseProofs": [
+      "a byte-identical ciphertext alone does not prove recoverability",
+      "an isolated snapshot does not replace native-user/SDK/owner state backups",
+      "a local rollback does not prove offhost encrypted recovery",
+      "missing container ports or mounts do not justify retirement"
+    ],
+    "laterQualification": "independent fresh owned restore with exact original key custody, same-identity checks, native/effective/raw/cache coverage and complete cleanup; only after separate review and runtime permission"
+  },
+  "completion": {
+    "perHostRequired": [
+      "fresh finite consumer and recovery inventory",
+      "actual current native/SDK contract and source identity",
+      "R10 isolated initial and cold read/write with one strict full inverse",
+      "actual client TLS endpoint/CA/AppRole and supervisor binding",
+      "per-host production stopped capture, cold restart and inverse under separate cutover intent",
+      "backup source/destination and actual independent recovery or explicit reviewed retirement"
+    ],
+    "neverImplied": [
+      "production_cutover",
+      "credential_refresh_success",
+      "provider_quota_recovery",
+      "legacy_deletion_authorized",
+      "full_release_qualified"
+    ],
+    "rootDecisionBeforeAnyHostRun": true
+  }
+}

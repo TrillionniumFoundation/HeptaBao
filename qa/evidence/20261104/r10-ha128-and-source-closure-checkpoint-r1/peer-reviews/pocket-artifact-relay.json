@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.pocket-r10-public-artifact-relay-independent-source-review.v1",
+  "candidateTree": "78ce26df5cc8aee2751b485c89f97c8db06cda98",
+  "sourceOnly": true,
+  "hostAccess": false,
+  "executed": false,
+  "files": [
+    {
+      "path": "relay-before",
+      "blob": "41ebd5ddf970a91758866525207a8aef5f6c22fa",
+      "bytes": 16935,
+      "sha256": "a3dfbde3750b2651d1e687d28c9c19fdebcb37b7d113e25708b62fa8b7b5dbfd"
+    },
+    {
+      "path": "relay-after",
+      "blob": "010a3af9c67c04a6a29c2e057533eeadebb496f0",
+      "bytes": 19343,
+      "sha256": "651df23534c8410f1a34691968a1d1a1c76c4931675622aef41aae34ff02f96f"
+    },
+    {
+      "path": "review-diff",
+      "blob": "263f5871c5f634af1d9a63df0702747fe9767c29",
+      "bytes": 13666,
+      "sha256": "7601e63a46aeb5c0840e8e11a7c8c754e77d8d4b4aba6e1b239b614d5e06a7d8"
+    }
+  ],
+  "actualStrictApply": {
+    "hunks": 9,
+    "wholeEqual": true
+  },
+  "originalWholeFunctionMatches": [
+    "identity",
+    "sync_dir",
+    "put",
+    "read_file",
+    "source",
+    "observed_group_members",
+    "cleanup_ssh"
+  ],
+  "findings": [
+    "The complete nine-hunk delta strictly applies to the recovered R8 original and exactly reconstructs the frozen R10 source.",
+    "New destinations are fixed fresh owned directories; only the exact server and two raw public build receipts are accepted. No product, consumer or private credential transfer is added.",
+    "Actual source file mode 0500/0400 is distinguished from target mode 0500/0600, without requiring source chmod. The source version projection uses exact dev,inode,size,mtime,ctime slots from the original identity vector and compares the full source identity after transfer.",
+    "The actual upstream receipt path/schema/length/SHA is updated to the root-accepted R10 shared transfer; the exact original raw build receipt bytes remain pinned.",
+    "SSH prefix, strict host key behavior and Pocket machine binding are unchanged. Newly pinned config/known_hosts before-after reads add fences; route witness is explicitly historical and does not pretend to be a second effective-config query.",
+    "Original parent transfer180, receiver alarm180, cleanup10 and Git15 limits are unchanged; NEW external360 is a proposed separate supervision cap, not a recovered original end-to-end guarantee.",
+    "Receiver success validation, exact path/shape check, parsed-versus-valid unknown distinction and actual owned group cleanup requirements remain intact."
+  ],
+  "preservedLimitation": "The original receiver cancels signal.alarm before publishing/fsyncing its final receipt. This review explicitly preserves that existing fact and does not claim the receipt publication is covered by the receiver's 180-second alarm. Parent timeout/unknown handling remains required.",
+  "blockingFindings": [],
+  "qualificationGranted": "source-delta review only",
+  "actualTransferOrTargetReadbackQualified": false
+}

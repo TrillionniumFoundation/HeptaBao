@@ -1,0 +1,299 @@
+{
+  "schema": "heptabao.r10-ha128-and-source-closure-checkpoint.v1",
+  "as_of_utc": "2026-11-04T20:41:46Z",
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "normal_default_features": true,
+  "normal_binaries": {
+    "linux": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+    "mac": "bc1fc6b8ded5a43a60ab4c562cd5e092e63ae9df77afd654c9af8c096c128c98"
+  },
+  "normal44": {
+    "mac": "PASS_44_44_NO_IGNORES",
+    "rog": "PASS_44_44_NO_IGNORES",
+    "published_before_this_checkpoint": true
+  },
+  "x230": {
+    "source_transport": "PASS_INDEPENDENT_FULL_HISTORY",
+    "full34": {
+      "status": "PASS_SCOPED_31_31",
+      "job": "1a1a8170415-fc05-2da3",
+      "summary": {
+        "bytes": 90929,
+        "sha256": "0990e3ab77f3b428fe77e4e4a36a6a60678f2f50edf43f476f7c595e79c48319",
+        "blob": "7195696088fadd61dd735b5eb064ed094b2a27e9"
+      },
+      "original_http_seconds": 15,
+      "original_migration_seconds": 360,
+      "new_outer_seconds": 1800,
+      "live_payload_bytes": 35651584,
+      "retained_live_versions": 17,
+      "raw_bound_storage_witnesses": 3,
+      "versions_per_witness": 19,
+      "known_mutations": 95,
+      "unknown": 0,
+      "replays": 0
+    },
+    "comparison": {
+      "status": "PASS_SCOPED_69_69_EACH_SIDE",
+      "job": "1a1a81beb21-fc05-2db3",
+      "summary": {
+        "bytes": 104035,
+        "sha256": "2b696bfbc041b72fe0f725cd32efaa0e66cf3a692f3a08857020ae1a3d8d332e",
+        "blob": "b5504a0a48e068f7366e9c354deb93974a1af5e6"
+      },
+      "numeric_cases": 67,
+      "normalized_rejection_cases": 2,
+      "modules": 13,
+      "original_driver_unmodified": true,
+      "new_outer_seconds": 1800
+    }
+  },
+  "physical_ha": {
+    "r1": {
+      "status": "FAIL_16_OF_128",
+      "job": "1a1a805fd5c-fc05-2d57",
+      "stage": "new_physical_roots_and_tls",
+      "mutations": 0,
+      "services_started": 0,
+      "summary": {
+        "bytes": 14735,
+        "sha256": "99b78fe5021248cd9f00af681df8a176442a59c54d446fa3d9f5f0adab414d76",
+        "blob": "5151f549fff98d48e366150fc12a75f1c79b8c70"
+      }
+    },
+    "watchdog_diagnostic": "PASS_ACTUAL_INTERPRETER_ONLY",
+    "r2_source": "PASS_EXACT_FOUR_HUNKS",
+    "r2_prepare": "PASS",
+    "r2_actual": {
+      "status": "PASS_SCOPED_128_128",
+      "job": "1a1a81dde69-fc05-2dbc",
+      "summary": {
+        "bytes": 109003,
+        "sha256": "9a23e1b4cce8638f7b5c8ea37d41929864c8b4ef35e0bef47292695d4703405e",
+        "blob": "de73d6bf40cc5fb51622edabaddcd30a61184aa8"
+      },
+      "direct_lan_checks": 98,
+      "official_history_checks": 30,
+      "physical_hosts": [
+        "Mac",
+        "ROG",
+        "Pocket4"
+      ],
+      "known_mutations": 67,
+      "unknown": 0,
+      "replays": 0,
+      "archived_public_mutation_files": 134,
+      "all_owned_stopped": true,
+      "internal_seconds": 2400,
+      "new_outer_seconds": 3000,
+      "original_import_http_seconds": 5,
+      "original_http_seconds": 15,
+      "original_admission_seconds": 8,
+      "import_elapsed_ms": 4519.807,
+      "import_original_deadline_margin_ms": 480.193,
+      "cold_unseal_elapsed_ms": 10261.2,
+      "rebuild": {
+        "source_node": 2,
+        "empty_actual_leader_node": 1,
+        "objects": 339,
+        "bytes": 35743073,
+        "quarantined_objects": 443,
+        "unreferenced_quarantined": 104
+      },
+      "direct_ha_exports_equal": {
+        "witnesses": 3,
+        "versions_each": 19,
+        "body_bytes": 35658767,
+        "body_sha256": "df3d8087d29f91ce201f9df252bd0dcda2fdccfd0e95537d0ab028f4fcff2086"
+      },
+      "scope_limits": [
+        "Pocket3 to empty Mac1 still requires direction98",
+        "process SIGKILL does not prove physical power-loss crash consistency",
+        "large HTTP forwarding and long-horizon linearizability not covered"
+      ]
+    },
+    "pocket_to_mac_direction98": {
+      "source_review": "PASS_SOURCE_ONLY",
+      "launcher_sha256": "7a40c9ce4c646f850c611fc29317cc2c0662d5823a10c7d52d7d43dcaa97ade9",
+      "runner_sha256": "b7623c0bb2a9bfd754401c00867ae6535fe8e19364c9fb6367219cffa2656e89",
+      "prepare_job": "1a1a8351799-fc05-2e02",
+      "prepare_status": "PASS_ROOT_WHOLE_RECEIPT_AND_AUTHORITY",
+      "actual_started": true,
+      "prepared": {
+        "bytes": 35528,
+        "sha256": "a583880730e5c3dfa24b8d31c714af44b11434f05bdd660a1f0e434a46c0387c",
+        "blob": "2f293cc08c4eaf48fe7e765f3368f98a5e831536"
+      },
+      "actual_authorized": true,
+      "actual_status": "FAIL_DIRECTION_UNCOVERED",
+      "actual_job": "1a1a83fdca1-fc05-2e17",
+      "actual_exit_code": 1,
+      "actual_source_node": 3,
+      "actual_empty_leader_node": 2,
+      "required": 98,
+      "executed_passed": 87,
+      "missing_checks": [
+        "missing_cipher_actual_leaves_rebuilt",
+        "missing_cipher_all_hosts_readindex",
+        "missing_cipher_leader_empty_before_unseal",
+        "missing_cipher_leader_exact_history",
+        "missing_cipher_leader_unsealed",
+        "missing_cipher_remaining_nodes_unsealed",
+        "native.complete",
+        "report_excludes_runtime_secrets",
+        "source_and_binaries_unchanged",
+        "synthetic_metadata_absent",
+        "synthetic_metadata_cleanup_once"
+      ],
+      "mutations": 45,
+      "unknown": 0,
+      "replays": 0,
+      "all_owned_stopped": true,
+      "summary": {
+        "bytes": 43297,
+        "sha256": "bd7cc8949faca6bebcad6c847f2f1506526a6329ed6392f865892f253cf0c912",
+        "blob": "4ff95294ffeab93b425b9d2ef5c8ba7b98f36c25"
+      },
+      "full90_metadata_archive_pending": true
+    }
+  },
+  "strictwire": {
+    "status": "PASS_SCOPED_OBSERVATION_WITH_8_COMPATIBILITY_DIFFERENCES",
+    "job": "1a1a814d2b8-fc05-2d99",
+    "http_intents": 86,
+    "known_outcomes": 86,
+    "strict_complete": 85,
+    "known_preconnect": 1,
+    "unknown": 0,
+    "dynamic_checks": 68,
+    "dynamic_checks_not_replacement_denominator": true,
+    "physical_hosts": 1,
+    "process_nodes": 3,
+    "valid_restore_bodies": 0,
+    "individual_operation_files_172_archival_pending": false,
+    "old_r8_unknown_preserved": true,
+    "operation_archive_tree": "93a16fb784240a3a056d60e25a13302bcc1c88ba",
+    "independent_operation_boundary_review": "PASS_SCOPED_172_PUBLIC_RECORDS",
+    "actual_private_http_wire_bodies_not_fetched_by_root": true
+  },
+  "phaseb": {
+    "status": "FAIL_UNKNOWN",
+    "job": "1a1a8177aec-fc05-2da5",
+    "result": {
+      "bytes": 270785,
+      "sha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184",
+      "blob": "7a2238125a983bbe657d99d460aae9a9b5b1ae71"
+    },
+    "executed_cases": [
+      "B01"
+    ],
+    "cli_exit": 2,
+    "archive_exists": false,
+    "audit_status": 503,
+    "audit_does_not_prove_client_response_framing": true,
+    "replays": 0,
+    "all_owned_81_stopped": true,
+    "original_final_error_preserved": "input_fence_changed_after_run",
+    "serialized_input_fences_equal": true,
+    "input_comparison_key_type_bug": "source_inference_separate_from_unknown_cli_failure",
+    "b02_b05_not_executed": true,
+    "existing_stderr_diagnosis": {
+      "safe_projection_verified": true,
+      "private_stderr_bytes": 178,
+      "private_stderr_sha256": "bce4e0993df8aa57859efc05b509ad6ea36d8f2d0df9dd23d63ae3640e537df8",
+      "static_error": "native HA committed root is unavailable",
+      "exact_inner_error_and_phase_unresolved": true,
+      "does_not_change_unknown": true
+    }
+  },
+  "ci": {
+    "run": 41879510413,
+    "merge_job": 126748711283,
+    "merge_status": "FAILURE",
+    "head_job": 126748711370,
+    "head_status": "FAILURE",
+    "aggregate_job": 126827193100,
+    "aggregate_status": "FAILURE",
+    "each_server_library": {
+      "passed": 3708,
+      "failed": 4,
+      "ignored": 8
+    },
+    "same_four_failures": true,
+    "full_ci_pass": false,
+    "automatic_retries": 0,
+    "source_only_fix": {
+      "base_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "four_test_files": true,
+      "product_files_changed": false,
+      "status_expectations_weakened": false,
+      "unsupported_private_state_preserved": true,
+      "root_and_peer_source_reviews": "PASS_SOURCE_ONLY",
+      "exact_rustfmt_result_pending": false,
+      "pushed": true,
+      "exact_rustfmt_four_files_root_verified": true,
+      "new_commit": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+      "new_tree": "2ec2be733f5499cb632e529159a296f3c6f62cd1",
+      "only_four_test_files_changed": true,
+      "new_ci_status": "IN_PROGRESS",
+      "new_ci_run": 41907498576,
+      "trust_boundary_run": 41907498806,
+      "trust_boundary_status": "SUCCESS"
+    }
+  },
+  "relay": {
+    "status": "SOURCE_ONLY_NOT_IMPLEMENTATION_READY",
+    "open": [
+      "normal_native_typed_writer_and_HA_admission_for_negative_custody",
+      "exact_source_handoff_after_shared_root_negative_custody_without_readmission_or_redebit"
+    ],
+    "runtime": false
+  },
+  "remaining_required": {
+    "current_r10_real_authbus_consumer": "PENDING",
+    "per_machine_real_credentials_restart_rollback": "PENDING_CURRENT_FULL_CANDIDATE",
+    "production_custodian_assignment": "UNRESOLVED",
+    "all_client_and_backup_inventory_migrated": false,
+    "full_openbao_271_surface": false
+  },
+  "full_replacement_qualification": false,
+  "production_initialized": false,
+  "production_unsealed": false,
+  "production_loaded": false,
+  "production_cutover": false,
+  "old_service_or_binary_deletion": false,
+  "provider_requests": 0,
+  "j3160_requests": 0,
+  "evidence": {
+    "new_raw_packets": 19,
+    "new_raw_files": 483,
+    "new_raw_utf8_bytes": 2919245,
+    "new_root_reviews": 20,
+    "old_evidence_untouched": true,
+    "original_unsafe_integer_tokens_preserved": true,
+    "old_failures_and_unknowns_not_rewritten": true
+  },
+  "pocket_authbus": {
+    "source_review": "PASS_SOURCE_ONLY_ROOT_AND_PEER",
+    "qa_manifest_sha256": "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3",
+    "trusted_profile12_source_sha256": "40fc5cd1f2558994c3097b60e3359bf3044f5fdd1a40ba91ff0fe5bd406bb8fe",
+    "frozen_verified_sources_not_provider_freshness": true,
+    "three_source_files_binding_changes_only": 17,
+    "seven_helpers_byte_identical": true,
+    "inert_source_review": "PASS_SOURCE_ONLY",
+    "inert_actual_ack_pending": false,
+    "route_ssh_g": "PASS_READ_ONLY",
+    "artifact_relay_source_review": "PASS_SOURCE_ONLY_ROOT_AND_PEER",
+    "artifact_transfer_started": false,
+    "prepare_started": false,
+    "preflight_started": false,
+    "live_started": false,
+    "inert_actual_status": "PASS_ROOT_INERT_STAGE_ONLY",
+    "inert_actual_job": "1a1a83e3faa-fc05-2e12"
+  },
+  "canonical_runtime_source_unchanged_despite_new_test_source_commit": true,
+  "active_source_branch_head": "6d3040a2dbd06661a67f5c62df259ff446eb8515",
+  "active_source_branch_tree": "2ec2be733f5499cb632e529159a296f3c6f62cd1",
+  "canonical_commit_designates_runtime_candidate_not_new_test_only_head": true
+}

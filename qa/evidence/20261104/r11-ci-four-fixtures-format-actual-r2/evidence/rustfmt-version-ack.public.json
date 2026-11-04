@@ -1,0 +1,32 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "--version"
+    ],
+    "created_unix_ms": 1793823049370,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "execution_mode": "operator",
+    "host": "rog",
+    "id": "1a1a82f869a-fc05-2def",
+    "idempotency_key": "heptabao-ci-four-fixtures-rustfmt-version-495033-20261104-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1a82f869a-fc05-2def",
+    "request_digest": "a6e9167db574a858325fd5e8dfdfeb07541aeca62bb1b587f270b4beceef6be0",
+    "request_fingerprint": 12027169009040664664,
+    "ssh_target": "rog-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1a82f869a-fc05-2def"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1a82f869a-fc05-2def"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

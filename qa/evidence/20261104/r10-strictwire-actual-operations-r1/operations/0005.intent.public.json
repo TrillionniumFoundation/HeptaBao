@@ -1,0 +1,17 @@
+{
+  "body_bytes": 39,
+  "body_sha256": "c3d74e38f3a73ed4f46b635eb4f27fa6b53f5c92b0357ec35a4fd8a82cd91de7",
+  "credential_class": "root",
+  "deadline_monotonic_ns": 898985952325297,
+  "headers": {},
+  "http_seconds": 15.0,
+  "intent_unix_ns": 1793821304960034017,
+  "label": "seed_mount_kv2_once",
+  "method": "POST",
+  "node": 1,
+  "parent_deadline_monotonic_ns": null,
+  "path": "/v1/sys/mounts/wire",
+  "redirect_following": false,
+  "sequence": 5,
+  "valid_restore_body": false
+}

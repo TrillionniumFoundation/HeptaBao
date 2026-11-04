@@ -1,5 +1,61 @@
 # HeptaBao：正常 V6 存储、三机 HA 与完整替代检查点
 
+## 最新检查点：三机 128/128 通过；方向性 98 项未覆盖目标，完整替代仍未获资格
+
+更新于 2026-11-04T20:41:46Z。**R10 三机 HA 的 128/128 已完成独立根审；X230 正式 KV2 31/31 与 OpenBao 2.7.1 两侧 69/69 对照结果继续有效。全量替代资格仍为 false，生产初始化、解封、加载、切流及旧版删除均未发生。** 本轮实际运行产物固定为 `49503322c7f446e5eb41e7744f1fdbd7f1192ecc` / tree `1d4211f91e1b34a2ed087a3bbef2e2884bac88e9`，正常默认 features，无 private diagnostic feature。
+
+| 必须攻克的门槛 | 当前可核验进展 | 尚未闭合 |
+|---|---|---|
+| KV2 正式迁移、恢复 | X230 31/31；三机 HA 额外 30 项官方历史导入、快照、恢复和冷启均通过；3 组各 19 个直接存储见证一致 | 全部生产数据、全部备份路径和持续负载 |
+| 三机 HA | Mac、ROG、Pocket4 **128/128**；真实 SIGKILL、选主、ReadIndex、失去多数派拒绝读写、三机冷启和 ROG→空 Mac 密文重建 | Pocket4→空 Mac 的本轮为87/98，实际选出ROG后在目标解封前拒绝；物理断电、磁盘耗尽与长期线性一致性仍未覆盖 |
+| AuthBus 无 J3160 | Pocket4 R10 三个绑定源码、七个未改 helper、可信 profile1/2 来源、实际 SSH 路由与传输方案均已审 | 实际 R10 产物传输、prepare/preflight、真实 SDK live、冷启和回滚尚未全部通过 |
+| 逐台切换 | 正在按 Mac、ROG、Pocket4、X230 单独整理实际客户端和备份清单，旧路由与 hold 保留 | 每台真实凭证读写、重启、回滚和正式接管；Pocket 不能代替其他机器 |
+| 旧版清理 | 未删除旧 OpenBao、历史 HeptaBao 或原始失败证据 | 全部客户端、备份路径、回滚及接管门槛闭合后才可清理 |
+
+### 三机 128 项：实际终态、恢复效果及原预算
+
+job `1a1a81dde69-fc05-2dbc` 的权威终态为 succeeded / exit 0 / output complete / durable。原 98 项 direct LAN 加额外 30 项官方历史检查共 **128/128**；67 次变更都有明确响应，unknown=0、重放=0。根审独立恢复原检查集合，并核对八次 Mac foreground 生命周期、六条直接 mTLS 对等连接、三组原始存储见证和官方变更链。全部自有本地与远端进程已回收，没有保留隧道。[完整 summary](../../qa/evidence/20261104/r10-original128-r2-actual-core/summary.json)；[134 份逐操作原件清单](../../qa/evidence/20261104/r10-original128-r2-actual-operations/manifest.public.json)。
+
+Mac 实际 leader 被 SIGKILL 后成功选出新 leader。单存活节点失去多数派时，读取不返回载荷、写入不返回成功确认；恢复多数派后，被拒绝的写入没有生效。三机全部停机再冷启后，已应用索引均为 59。实际密文恢复方向为 **ROG node2→空 Mac node1**：339 个对象、35,743,073 字节全部重新校验；隔离 443 个对象，其中 104 个为不再引用的对象。这些结果不冒称已证明 Pocket4 node3→Mac node1。
+
+原普通 HTTP15 秒、admission8 秒、内部2400 秒保持不变；outer3000 秒明确为本次新增监督预算。134 份 intent/outcome 的原预算分布为 5秒×1、12秒×1、15秒×65，全部满足原预算。**34MiB 大导入实际 4519.807ms，距原 5000ms 只余 480.193ms；冷启解封为 10261.200ms，在原15秒内。** 导入余量偏小，这次通过不能当作持续负载余裕的证明。
+
+导入后、恢复后、冷启后的三次 HA 原始历史导出各19个版本，body均为35,658,767字节，SHA256 `df3d8087d29f91ce201f9df252bd0dcda2fdccfd0e95537d0ab028f4fcff2086`。native HA 快照53,961,523字节，SHA256 `0203c8f312df97cca937a4c2c6315880a6c6c13d5c533593f2ce6f646362b90f`。持久化效果来自原测试的直接存储、ReadIndex及冷启检查，单凭HTTP已返回不推断 durable commit。
+
+### Pocket4→Mac：原98项与自然选主
+
+R2 prepare完整35,528字节，SHA256 `a583880730e5c3dfa24b8d31c714af44b11434f05bdd660a1f0e434a46c0387c`，已通过根审。10个构建文件、两份Cargo事件、五个QA文件逐对象等于已通过128项的准备原件；原12份比较围栏全部保留，增加实际R2成功的四份，合计16份。原98项集合完整保留。必须由Pocket4 node3提供密文、Mac node1实际自然当选空leader；方向不符时在目标解封前停下，不强制选主。
+
+实际job `1a1a83fdca1-fc05-2e17` 当前为 **FAIL_DIRECTION_UNCOVERED**。唯一key `heptabao-r10-pocket-direct98-live-r2-7a40c9ce-prepared-a5838807`；原2400/15/8秒及新增outer3000秒均已绑定，本次权威终态为exit1 / complete / durable：87项已执行且全通过、11项缺失；实际source3→empty leader2，原守卫在目标解封前拒绝。45次变更都有明确响应、unknown=0；六次Mac foreground双端reaped/group empty、三台最终服务均已停止。原QA末尾应用数据清理及source/binary检查未执行；外层原构建/source/controller/16围栏均保持。原失败现场保留，不称为Pocket4→Mac恢复或性能失败。[准备原件](../../qa/evidence/20261104/r10-pocket-to-mac98-r2-prepare-core/prepared.public.json)；[启动意图和ACK](../../qa/evidence/20261104/r10-pocket-to-mac98-r2-live-dispatch/intent.public.json)。
+
+### 四个CI失败：修正旧夹具，保留安全拒绝
+
+run `41879510413` 的head、merge、aggregate均已失败。head与merge的server lib各为 **3708 passed / 4 failed / 8 ignored**，四条失败完全相同。产品已支持native SSH owner，而旧夹具继续把SSH当作“不支持的owner”，因而获得204/200，违反旧夹具的501/409预期。两份完整失败日志和aggregate日志均保留，失败未被改写。
+
+新commit `6d3040a2dbd06661a67f5c62df259ff446eb8515`、tree `2ec2be733f5499cb632e529159a296f3c6f62cd1` 已经CAS推送到原CI源码分支，sole parent为R10。完整3911个leaf和358个目录Merkle核验确认 **只改四个测试文件，所有产品文件不变**。PKI/Transit foreign-owner夹具改为仍不支持的Kubernetes；正式存储activation和cold restore改为真实本地EC256私有CA加启用ACME的不支持profile。原501/409、完整私有状态、图、源身份、无目标发布及cold-seed GraphRejected断言全部保留，没有将拒绝预期改为成功。
+
+根审和独立审阅均无阻塞。安装的Rust1.98工具链实际执行四次rustfmt，总计0.0724秒、全exit0且child已回收；四份最终源码已全量回读。格式差异仅四个排版hunk（包含可选尾逗号），canonical到最终稿共六个hunk。**格式化和源码复核不代表编译或测试通过，新完整CI `41907498576` 的head和merge已开始且格式检查均通过；workflow trust boundary `41907498806` 为SUCCESS。新完整CI终态仍待确认。** LAN上的R10源码与二进制保持原身份，旧运行证据不会改标成新commit。
+
+### 官方CLI快照503：原失败与观察器问题分别保留
+
+Phase B job `1a1a8177aec-fc05-2da5` 仍为 **FAIL / UNKNOWN**。只执行B01 leader save，CLI exit2、无归档；B02–B05、restore和冷启未执行。只读既有178字节stderr后，核对版本、EOF及SHA256 `bce4e0993df8aa57859efc05b509ad6ea36d8f2d0df9dd23d63ae3640e537df8`，安全投影命中固定产品错误 `native HA committed root is unavailable`。产品将committed-read内层错误映射为503但丢弃具体原因；当前不能断言发生于最初admission或快照最终验证。继续查看原服务器日志，不重放原未知操作。[安全诊断](../../qa/evidence/20261104/phaseb-r3-existing-failure-stderr-diagnostic-r1/original-stderr-safe-diagnosis.public.json)。
+
+另有独立观察器问题：整数map key与JSON字符串key直接比较造成false input-fence alarm；lossless before/after输入已逐项核对相等。该问题不抹去CLI503及未知边界，也未将原失败改成成功。
+
+### HTTP边界、AuthBus与剩余范围
+
+严格HTTP的172份public操作原件已补齐并逐份根审：86个intent/outcome对，85个完整响应、一个明确连接前失败。完整响应包括81个定长、两个合法204无body、两个chunked；11个307均保留单一精确Location。仍有八项与官方状态不同，而且没有有效restore body。根审核验public边界元数据及固定观察器，未获取private原始HTTP报文；68个动态观察检查不是兼容性总分。
+
+Pocket4 R10 AuthBus保留原实际SDK/native0.144.3工厂、main/tg两agent、local5/native4与已冻结核验的profile1/2来源。三源码仅17处绑定变化、七helper逐字不变；原HTTP10/consumer70/rollback35/launcher440秒不变，outer600明确为新增监督预算。真实provider新鲜度不由冻结来源推断。
+
+产物传输仅固定R10 server（109,091,112字节、SHA256 `67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113`）及两份原始构建回执。既有SSH180/receiver180/cleanup10/Git15秒保持，outer360为新值；receiver原alarm在最终receipt发布前结束的限制仍如实保留。QA inert小作业已通过完整根审：11个文件原bytes/owner/mode/identity一致，仅三个Python语法编译，实际传输、prepare/preflight和live须分别凭权威回执闭合；本轮结果不能替代Mac、ROG或X230的客户端验收。
+
+原始JSON、旧失败、未知和不安全范围的纳秒整数token均按原字节保留。远程只读MCP超时单独记载，不据此重启或重放业务。生产保管人、全部客户端及备份迁移、59个surface的完整资格仍未解决。**没有provider请求、J3160请求、生产切换或旧资产删除。**
+
+---
+
+以下为此前检查点原文，状态以各自时间戳为准。
+
 ## 当前 R10：X230 31/31 与双侧 69/69 通过；三机 HA 进行中，CLI 快照与 CI 仍阻塞
 
 更新于 2026-11-04T20:01:46Z。**当前仍不具备全量替代 OpenBao 2.7.1 的资格，也未进行生产初始化、解封、加载、切流或旧版删除。** 本轮候选固定为 `49503322c7f446e5eb41e7744f1fdbd7f1192ecc`，tree `1d4211f91e1b34a2ed087a3bbef2e2884bac88e9`；使用正常默认功能的 Mac arm64 和 Linux x86_64 构建，前述两端 44/44 结果保持有效。

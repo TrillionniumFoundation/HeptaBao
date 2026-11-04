@@ -1,0 +1,235 @@
+{
+  "schema": "heptabao.pocket-r10-first-cycle-source-packet.v1",
+  "candidateCommit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "candidateTree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "sourceOnly": true,
+  "hostAccessed": false,
+  "hostSourceStageExecuted": false,
+  "productRuntimeExecuted": false,
+  "runtimeQualified": false,
+  "productionChanged": false,
+  "gitCommitCreated": false,
+  "gitRefChanged": false,
+  "payloadFileCount": 31,
+  "payloadBytes": 425009,
+  "scope": "Pocket main/tg real AuthBus first-cycle artifact-only binding candidate; other hosts remain separate.",
+  "files": [
+    {
+      "path": "candidate/authbus_coordinator.py",
+      "mode": "100644",
+      "bytes": 44118,
+      "sha256": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+      "blob": "d3e304f3379c69c527c9351f51cee0ff337491af"
+    },
+    {
+      "path": "candidate/pocket_authbus_cache_cas_r1.mjs",
+      "mode": "100644",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+      "blob": "a318e427095b6c9273f03208620296b57ab59bc0"
+    },
+    {
+      "path": "candidate/pocket_first_cycle_consumer_r1.mjs",
+      "mode": "100644",
+      "bytes": 24016,
+      "sha256": "6455180970f37831bb1a4084aab8583822c900586f9fabcbd7536332bc45429e",
+      "blob": "b3c346ae81db2e462c10860a120dced611aff5bd"
+    },
+    {
+      "path": "candidate/pocket_first_cycle_inputs_r1.py",
+      "mode": "100644",
+      "bytes": 20076,
+      "sha256": "1ffcca778b9f78f0f63679b0cf0050afc8d520ca3c823ee65fc0aed9bd84f5ac",
+      "blob": "f1a20499c4b19270e01f5ea76b5fd0852a59d193"
+    },
+    {
+      "path": "candidate/pocket_first_cycle_launch_r10.py",
+      "mode": "100644",
+      "bytes": 13062,
+      "sha256": "1cbec91c3b19c3c488ae8976c01fee2b6eb40c03c56b1c55064ccbd5268f93ee",
+      "blob": "4edd7b02e750b82f473169c400c9060ea455c030"
+    },
+    {
+      "path": "candidate/pocket_first_cycle_prepare_r10.py",
+      "mode": "100644",
+      "bytes": 7091,
+      "sha256": "900be9fdafb575a47a29c74779b5aad298054f593884d81e15c60d20a0b2ae1d",
+      "blob": "8059186a2c6d4fd23c7c244760ad885fdb1f01ce"
+    },
+    {
+      "path": "candidate/pocket_native_auth_rows_cas_r1.mjs",
+      "mode": "100644",
+      "bytes": 2703,
+      "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+      "blob": "dbb561238f006c71a7da28d382b5e495900eae02"
+    },
+    {
+      "path": "candidate/pocket_native_observer_r3.mjs",
+      "mode": "100644",
+      "bytes": 11901,
+      "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027",
+      "blob": "0267ce556296180d4867f2d02dfc4b40d243973e"
+    },
+    {
+      "path": "candidate/pocket_shared_first_cycle_live_r2.py",
+      "mode": "100644",
+      "bytes": 45061,
+      "sha256": "97f982832d79916deb6dbfe0ddfae56c8b4070246d52e65c6ab498483d0f9992",
+      "blob": "e9c12ebe2483333c1e3542ed86d152b5503caeae"
+    },
+    {
+      "path": "candidate/project_trusted_profile12.py",
+      "mode": "100644",
+      "bytes": 9233,
+      "sha256": "a7b05f1729cb658fe036d75caaeb6376149ae08a717cbdd91b69042a9b7b8e43",
+      "blob": "98354f6550feeb5dbd6c07e1b873964f0ad5e41b"
+    },
+    {
+      "path": "candidate/qa-pins.public.json",
+      "mode": "100644",
+      "bytes": 1955,
+      "sha256": "62cefe180d5c946d8586924b93345c71c2b510cb878f52614f627026752e56f3",
+      "blob": "3a48d393668a0e656cabfadfabd85ed912062ce4"
+    },
+    {
+      "path": "plan.public.json",
+      "mode": "100644",
+      "bytes": 9280,
+      "sha256": "b82f159fa05a556cb37140f018def294432153f33987c3bfc3676cd0382ead85",
+      "blob": "61499c1d778a760b2773c0d0b17f29b4b616b21f"
+    },
+    {
+      "path": "r10-input-provenance/native-build.public.json",
+      "mode": "100644",
+      "bytes": 801,
+      "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+      "blob": "8b70873f6ee251a7cc403d781e70a9e505b91f95"
+    },
+    {
+      "path": "r10-input-provenance/normal-release-result.public.json",
+      "mode": "100644",
+      "bytes": 3227,
+      "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+      "blob": "849d45f07a53007f6e927530900783e23197999b"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "bytes": 8267,
+      "sha256": "89fe99f42f7ef79c2706a1d5caa402e930ce5665d6f81d59d0b0490a0dddc0f8",
+      "blob": "e41d18c370ae233cd693d6df2647ab826f14ef17"
+    },
+    {
+      "path": "reference-r8/actual-recap-r6.public.json",
+      "mode": "100644",
+      "bytes": 9364,
+      "sha256": "97a36b5d55a56457c4a1b275caaa5c71b9179a9d6dc3be38f4b4b9bcee9d6768",
+      "blob": "8129ba826626272291849e50c61091f962ac697e"
+    },
+    {
+      "path": "reference-r8/authbus_coordinator.py",
+      "mode": "100644",
+      "bytes": 44118,
+      "sha256": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+      "blob": "d3e304f3379c69c527c9351f51cee0ff337491af"
+    },
+    {
+      "path": "reference-r8/pocket_authbus_cache_cas_r1.mjs",
+      "mode": "100644",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+      "blob": "a318e427095b6c9273f03208620296b57ab59bc0"
+    },
+    {
+      "path": "reference-r8/pocket_first_cycle_consumer_r1.mjs",
+      "mode": "100644",
+      "bytes": 24016,
+      "sha256": "6455180970f37831bb1a4084aab8583822c900586f9fabcbd7536332bc45429e",
+      "blob": "b3c346ae81db2e462c10860a120dced611aff5bd"
+    },
+    {
+      "path": "reference-r8/pocket_first_cycle_inputs_r1.py",
+      "mode": "100644",
+      "bytes": 20076,
+      "sha256": "1ffcca778b9f78f0f63679b0cf0050afc8d520ca3c823ee65fc0aed9bd84f5ac",
+      "blob": "f1a20499c4b19270e01f5ea76b5fd0852a59d193"
+    },
+    {
+      "path": "reference-r8/pocket_first_cycle_launch_r6.py",
+      "mode": "100644",
+      "bytes": 13045,
+      "sha256": "ea494ae0565be96b59d3fbcc6e473d8740c5eca93d3c1ab1ab94900635de8f36",
+      "blob": "a8d878959a57028d2a69dda40b3d58dbe7ad1345"
+    },
+    {
+      "path": "reference-r8/pocket_first_cycle_prepare_r6.py",
+      "mode": "100644",
+      "bytes": 7083,
+      "sha256": "61af564d90b5e7b649b7da84ac846efc2425570b75bfbb17f1aa8f2a7c8088bf",
+      "blob": "6365316753e46e109e3cd501ac29bf1be9a1ebd6"
+    },
+    {
+      "path": "reference-r8/pocket_native_auth_rows_cas_r1.mjs",
+      "mode": "100644",
+      "bytes": 2703,
+      "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83",
+      "blob": "dbb561238f006c71a7da28d382b5e495900eae02"
+    },
+    {
+      "path": "reference-r8/pocket_native_observer_r3.mjs",
+      "mode": "100644",
+      "bytes": 11901,
+      "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027",
+      "blob": "0267ce556296180d4867f2d02dfc4b40d243973e"
+    },
+    {
+      "path": "reference-r8/pocket_shared_first_cycle_live_r2.py",
+      "mode": "100644",
+      "bytes": 45061,
+      "sha256": "12ea0b3a459f231b2cd428b53ee12eda1e928adb0b86d282a513b552ff28d79b",
+      "blob": "06e586cc318c0a0022f9ec3ab37bb747614baece"
+    },
+    {
+      "path": "reference-r8/project_trusted_profile12.py",
+      "mode": "100644",
+      "bytes": 9233,
+      "sha256": "a7b05f1729cb658fe036d75caaeb6376149ae08a717cbdd91b69042a9b7b8e43",
+      "blob": "98354f6550feeb5dbd6c07e1b873964f0ad5e41b"
+    },
+    {
+      "path": "reference-r8/qa-pins-r6.public.json",
+      "mode": "100644",
+      "bytes": 1953,
+      "sha256": "2a234b7b213ce92eb0bf163e1964acd79f7213d8581ae6ec20817c8eaf043c40",
+      "blob": "6b75c91a5ee51313165f9e9bf7036d3b3a9aa908"
+    },
+    {
+      "path": "reference-r8/root-terminal-review-r6.public.json",
+      "mode": "100644",
+      "bytes": 3878,
+      "sha256": "6272a598f4d159e92f9264acd88369654bbfacf2deef0d0bb4fd65a1c16a5af6",
+      "blob": "fef0a81416e27f3d0d405c830aca4e04916463dc"
+    },
+    {
+      "path": "review/r8-to-r10-manifest.diff",
+      "mode": "100644",
+      "bytes": 2010,
+      "sha256": "2b6b37bea9b2498290507762c8b7ff08da6cb1140f1d94763fa8e1ef3f7c8767",
+      "blob": "8d9316f5d7bb6b46d28c947f791b0870f1c5f22c"
+    },
+    {
+      "path": "review/r8-to-r10-source-bindings.diff",
+      "mode": "100644",
+      "bytes": 7103,
+      "sha256": "fe5037bb3e22e2cbf5557feee234fcbf2bdbd405620b3f44b0d611e3552de123",
+      "blob": "12b35bf68d1f2ca51c2934c411571f187e9e2053"
+    },
+    {
+      "path": "review/source-byte-verification.public.json",
+      "mode": "100644",
+      "bytes": 8982,
+      "sha256": "05a3d974ac48b0c5ac707a65f7d6c9d69d659e37fdab52f826685242e3e29549",
+      "blob": "3d57e832aa2a254beaae3e080644992a55c6b7ab"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "all_original_worker_and_run_assertions_preserved": true,
+  "all_owned_processes_stopped": true,
+  "checks": {
+    "dynamic_credentials_and_metadata_count": true,
+    "observed": 314,
+    "passed": 314
+  },
+  "coordinator": {
+    "actual_commit_before_process_exit_73": true,
+    "actual_competing_cas": true,
+    "direct_core_api": true,
+    "independent_core_sha256": "eaf83832144e7ecf1f369ec91007b0d8b4dc55f59342f3ce27ca64a4aea6f76d",
+    "installed_entry_executed": false,
+    "pending_history_recovery_without_manifest_replay": true,
+    "seven_field_operator_grants_required": true
+  },
+  "critical_checks": [
+    "central.real_cas_rejection",
+    "central.current_or_historical_manifest_recovery",
+    "central.recovery_did_not_replay_manifest",
+    "central.pending_cleared_after_receipt",
+    "backup.actual_sdk_old_snapshot_and_current_manifest",
+    "rollback.binding_bytes_restored",
+    "central.renew_self_same_bearer",
+    "acl.producer_canonical_write_denied",
+    "acl.producer_other_inbox_denied",
+    "acl.writer_immutable_update_denied",
+    "acl.writer_receipt_update_denied",
+    "acl.writer_inbox_injection_denied",
+    "central.operator_grant_revoked",
+    "central.no_duplicate_credential_publication",
+    "evidence.no_credential_values",
+    "source.original_plugin_unchanged",
+    "source.independent_service_unchanged"
+  ],
+  "elapsed_seconds": 19.109378887995263,
+  "finite_production_hash_paths_unchanged": [
+    "/home/qian-qi/.codex/auth.json",
+    "/home/qian-qi/.codex/config.toml",
+    "/home/qian-qi/.openclaw/openclaw.json"
+  ],
+  "formal_activation_route": "sys/storage/native-v6/activate",
+  "job": "1a1a6603cd4-fc05-2472",
+  "normal_binary_sha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+  "original_budget_seconds": {
+    "http": 10,
+    "readiness": 12,
+    "worker": 75
+  },
+  "outer_sha256": "f636852ca79a803c2756b6b7dcda61ab753b34fe8d7a78170d9fa5f0d71fc525",
+  "renewal": {
+    "actualRenewSelfSameBearer": true,
+    "forcedLocalDueClock": true,
+    "realLeaseExpiryWaited": false
+  },
+  "result_sha256": "c4105c0e933237058dd24aee70eabce2f2e244510c0a4deffa76e1c9e7eae185",
+  "revocation": {
+    "denied_after_cold_restart": 21,
+    "real_issued_tokens": 21,
+    "secret_ids_destroyed": 3
+  },
+  "schema": "heptabao.root-review.normal-sdk-coordinator-r1.v1",
+  "scope": {
+    "enforced_scheduler_qualified": false,
+    "full_replacement_qualified": false,
+    "j3160_contacted": false,
+    "oauth_refresh_ownership_qualified": false,
+    "production_changed": false,
+    "provider_called": false,
+    "synthetic_oauth_only": true
+  },
+  "sdk": {
+    "clients": 10,
+    "exact_sqlite_and_default_agent_paths": true,
+    "expected_negative_clients": 2,
+    "new_full_tls_handshake_each_request": true,
+    "positive_clients": 8,
+    "positive_tls_observations": 50,
+    "version": "2026.7.1-2"
+  },
+  "server_sigkill_cold_restart_count": 2,
+  "source_profile": "native_v6_file",
+  "status": "passed_with_explicit_scope",
+  "terminal_exit": 0
+}

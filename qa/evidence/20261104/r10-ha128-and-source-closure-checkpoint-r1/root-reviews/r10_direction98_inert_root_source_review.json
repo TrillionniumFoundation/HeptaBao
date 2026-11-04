@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.r10-direction98-inert-root-source-review.v1",
+  "status": "PASS_SOURCE_ONLY",
+  "base_blob": "71de04579c9baa9efcc875e31ea5f1fcc2fec030",
+  "candidate": {
+    "bytes": 5452,
+    "sha256": "eec794e003fffabd92ef1ec0e22dccdec75b6693cc88c788a4ea0b358b6188d6",
+    "blob": "f726e473a1ef23e65c2bc0a87bdee88fa68e3b54"
+  },
+  "diff": {
+    "bytes": 832,
+    "sha256": "b35d343a8cb1680e60b45ed5e988ea18659875234370453c1adbd3abd78c785e",
+    "blob": "2a7ae2f6b277bb0afc95e54c13528fe8c27e8bf9"
+  },
+  "hunks": 1,
+  "only_new_control_root_and_three_file_pins": true,
+  "payload": {
+    "bytes": 44737,
+    "sha256": "3ee37e340a8032cdae5cbf5deae5e57bcf6625020eb3c3ae2eb0ec315a343c4d",
+    "blob": "f77182c91ebedddf906085dd6b5c16c184bb5cc3"
+  },
+  "product_executed": false,
+  "all_three_payload_base64_exactly_reconstruct_reviewed_sources": true
+}

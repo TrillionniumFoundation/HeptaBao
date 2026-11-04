@@ -1,0 +1,20 @@
+--- a/native_v6_pocket_source_direct98_r10_r1.py
++++ b/native_v6_pocket_source_direct98_r10_r2.py
+@@ -84,7 +84,7 @@
+             'original98_assertions_and_denominator_preserved': True,
+             'required_original_checks': 98,
+             'official30_repeated_in_this_scope': False,
+-            'canonical128_summary_sha256': 'PENDING_ACTUAL_R10_FULL128_SUMMARY_SHA256',
++            'canonical128_summary_sha256': '9a23e1b4cce8638f7b5c8ea37d41929864c8b4ef35e0bef47292695d4703405e',
+             'ordinary_http_budget_seconds': 15,
+             'native_admission_budget_seconds': 8,
+             'private_diagnostic_feature_enabled': False,
+@@ -191,7 +191,7 @@
+         'original_method_normalized_sha256': hashlib.sha256(original_method.encode()).hexdigest(),
+         'direction_method_normalized_sha256': hashlib.sha256(textwrap.dedent(inspect.getsource(PocketSourceDirect98Run.missing_cipher_leader)).strip().encode()).hexdigest(),
+         'inherited_execute_request_check_cleanup_identities_verified': True,
+-        'canonical128_summary_sha256': 'PENDING_ACTUAL_R10_FULL128_SUMMARY_SHA256',
++        'canonical128_summary_sha256': '9a23e1b4cce8638f7b5c8ea37d41929864c8b4ef35e0bef47292695d4703405e',
+         'fixture_started': False,
+     }, sort_keys=True))
+     raise SystemExit(0)

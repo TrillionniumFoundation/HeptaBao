@@ -1,0 +1,43 @@
+{
+  "schema": "heptabao.r10-direction98-r2-prepare-root-review.v1",
+  "status": "PASS_PREPARE_ONLY",
+  "job_id": "1a1a8351799-fc05-2e02",
+  "prepared": {
+    "bytes": 35528,
+    "sha256": "a583880730e5c3dfa24b8d31c714af44b11434f05bdd660a1f0e434a46c0387c",
+    "blob": "2f293cc08c4eaf48fe7e765f3368f98a5e831536"
+  },
+  "authority": {
+    "bytes": 729,
+    "sha256": "b45f687e6ea1c87967a20046bd332901e5eb29437e6da47142946e274d8a341f",
+    "blob": "e55e2c4afd8883a00e0b5deb649e726fdef5a9f5"
+  },
+  "all_original_raw_unsafe_integer_tokens_preserved": true,
+  "exact_build_pins_probes_and_qa_equal_to_accepted_full128_prepare": true,
+  "build_artifacts": 10,
+  "original_normal_cargo_events": 2,
+  "qa_files": 5,
+  "exact_98_set_equal_to_original_direct_required_set": true,
+  "all_prior12_fences_preserved_plus_actual_full128r2_success4": true,
+  "total_fences": 16,
+  "original_http_seconds": 15,
+  "original_admission_seconds": 8,
+  "original_internal_seconds": 2400,
+  "new_outer_seconds": 3000,
+  "actual_requested_source_node": 3,
+  "actual_requested_empty_leader_node": 1,
+  "natural_election_required": true,
+  "wrong_direction_stops_before_target_unseal": true,
+  "production_changed": false,
+  "private_diagnostic_feature": false,
+  "fixture_started": false,
+  "stdout_additional_270_bytes_archival_pending": false,
+  "stdout_has_no_independent_qualification_fields": true,
+  "actual_runtime_qualification": false,
+  "complete_archive_tree": "a0cf930b718dd523014f86f389804d3ad5c7bfa5",
+  "stdout": {
+    "bytes": 270,
+    "sha256": "0a43f33951e5f3f5aa762d34f4a343eb83b5a289e01fa2c93986cdbe17406548",
+    "blob": "eef8158de8715169a1032c39c5d7134db7014df8"
+  }
+}

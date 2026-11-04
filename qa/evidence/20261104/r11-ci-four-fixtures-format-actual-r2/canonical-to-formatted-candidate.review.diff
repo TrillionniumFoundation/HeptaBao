@@ -1,0 +1,239 @@
+--- a/crates/heptabao-server/src/service_native_pki_tests.rs
++++ b/crates/heptabao-server/src/service_native_pki_tests.rs
+@@ -1097,7 +1097,8 @@
+     assert!(f.service.pending_native_remount.is_none());
+     assert!(f.service.native_remount_jobs.is_empty());
+     assert!(f.service.native_remount_statuses.is_empty());
+-    let denied = f.admin("POST", "sys/mounts/foreign", json!({"type":"ssh"}))?;
++    // SSH has its own native owner; Kubernetes remains outside this profile.
++    let denied = f.admin("POST", "sys/mounts/foreign", json!({"type":"kubernetes"}))?;
+     status(&denied, 501);
+     f.graphs_unchanged(&before)?;
+     let mut f = f.restart()?;
+--- a/crates/heptabao-server/src/service_native_transit_tests.rs
++++ b/crates/heptabao-server/src/service_native_transit_tests.rs
+@@ -519,7 +519,7 @@
+             "POST",
+             "sys/mounts/unsupported",
+             &root,
+-            json!({"type":"ssh"}),
++            json!({"type":"kubernetes"}),
+         ),
+         501,
+         "unmigrated-owner-refused",
+--- a/crates/heptabao-server/src/service_native_storage_tests.rs
++++ b/crates/heptabao-server/src/service_native_storage_tests.rs
+@@ -277,38 +277,76 @@
+     let mut service = root.service()?;
+     service.configure_native_v6_storage(NativeStorageProfile::File)?;
+     let (_, token) = initialize(&mut service)?;
++    // A local SSH CA now has a formal owner. Keep a real private CA, but
++    // select the still-unsupported enabled ACME profile through its local APIs.
+     assert_eq!(
+         request(
+             &mut service,
+             "POST",
+-            "sys/mounts/ssh",
++            "sys/mounts/unsupported-pki",
+             &token,
+-            json!({"type":"ssh"})
++            json!({"type":"pki"})
+         )
+         .status,
+         204
+     );
+-    assert_eq!(
+-        request(
+-            &mut service,
+-            "POST",
+-            "ssh/config/ca",
+-            &token,
+-            json!({"generate_signing_key":true,"key_type":"ssh-ed25519"})
+-        )
+-        .status,
+-        200
++    for (path, body) in [
++        (
++            "unsupported-pki/root/generate/internal",
++            json!({"common_name":"unsupported-native.example.test",
++                "key_type":"ec","key_bits":256,"ttl":"1h"}),
++        ),
++        (
++            "unsupported-pki/config/cluster",
++            json!({"path":"https://unsupported-native.example.test/v1/unsupported-pki"}),
++        ),
++        ("unsupported-pki/config/acme", json!({"enabled":true})),
++    ] {
++        assert_eq!(
++            request(&mut service, "POST", path, &token, body).status,
++            200
++        );
++    }
++    let before = request(
++        &mut service,
++        "GET",
++        "unsupported-pki/config/acme",
++        &token,
++        json!({}),
+     );
+-    let before = request(&mut service, "GET", "ssh/config/ca", &token, json!({}));
+     assert_eq!(before.status, 200);
++    assert_eq!(before.body["data"]["enabled"], true);
++    assert!(service.native_root.is_none());
++    let owner_before = {
++        let state = service
++            .state
++            .as_ref()
++            .ok_or("unsupported V5 source state")?;
++        assert!(!state.engines.supports_native_v6_root_storage());
++        Zeroizing::new(serde_json::to_vec(&state.engines)?)
++    };
+     assert_eq!(
+         request(&mut service, "POST", ACTIVATE_PATH, &token, json!({})).status,
+         409
+     );
+     assert!(service.native_root.is_none());
+-    let retained = request(&mut service, "GET", "ssh/config/ca", &token, json!({}));
++    let retained = request(
++        &mut service,
++        "GET",
++        "unsupported-pki/config/acme",
++        &token,
++        json!({}),
++    );
+     assert_eq!(retained.status, 200);
+     assert_eq!(retained.body["data"], before.body["data"]);
++    let owner_after = Zeroizing::new(serde_json::to_vec(
++        &service
++            .state
++            .as_ref()
++            .ok_or("retained V5 source state")?
++            .engines,
++    )?);
++    assert!(owner_after.as_slice() == owner_before.as_slice());
+     Ok(())
+ }
+ 
+--- a/crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs
+@@ -601,61 +601,77 @@
+ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss() -> TestResult {
+     let source = Pipeline::start()?;
+     let leader = source.ready_leader()?;
+-    // Local Transit and TOTP have formal native owners. This still-refused
+-    // SSH CA carries actual private key state through the authenticated archive;
+-    // keep complete-graph rejection and every source-retention assertion.
++    // SSH now has a formal native owner. Enabled PKI ACME still lacks one.
++    // Keep a real private CA in this unsupported profile, complete-graph
++    // rejection and every source-retention assertion. Configuration is local;
++    // no ACME account, challenge, provider request or external key is created.
+     expect(
+         source.call(
+             leader,
+             "POST",
+-            "sys/mounts/cold-ssh",
++            "sys/mounts/cold-acme",
+             source.admin(),
+-            json!({"type":"ssh"}),
++            json!({"type":"pki"}),
+         )?,
+         204,
+-        "unsupported-cold-ssh-mount",
++        "unsupported-cold-acme-mount",
+     )?;
+     expect(
+         source.call(
+             leader,
+             "POST",
+-            "cold-ssh/config/ca",
++            "cold-acme/root/generate/internal",
+             source.admin(),
+-            json!({"generate_signing_key":true,"key_type":"ssh-ed25519"}),
++            json!({"common_name":"unsupported-cold.example.test",
++                "key_type":"ec","key_bits":256,"ttl":"1h"}),
+         )?,
+         200,
+-        "unsupported-cold-ssh-key",
++        "unsupported-cold-acme-key",
+     )?;
++    for (path, body) in [
++        (
++            "cold-acme/config/cluster",
++            json!({"path":"https://unsupported-cold.example.test/v1/cold-acme"}),
++        ),
++        ("cold-acme/config/acme", json!({"enabled":true})),
++    ] {
++        expect(
++            source.call(leader, "POST", path, source.admin(), body)?,
++            200,
++            "unsupported-cold-acme-configuration",
++        )?;
++    }
+     let retained = expect(
+         source.call(
+             leader,
+             "GET",
+-            "cold-ssh/config/ca",
++            "cold-acme/config/acme",
+             source.admin(),
+             json!({}),
+         )?,
+         200,
+-        "unsupported-cold-ssh-before",
++        "unsupported-cold-acme-before",
+     )?
+     .body["data"]
+         .clone();
++    assert_eq!(retained["enabled"], true);
+     activate(&source, leader)?;
+     let archive = export(&source, leader, source.admin())?;
+     let seal_bytes = fs::read(source.directory(leader).join("data/seal.json"))?;
+-    // Native activation deliberately closes the protected SSH config/ca route.
+-    // This is not the separate public_key fast path. Observe the same activated
+-    // path before and after recovery refusal, and inspect the stored EngineState
+-    // clone below. The authenticated full-state encoding retains its private CA.
++    // Native activation deliberately closes this nondefault ACME owner.
++    // Observe the same protected configuration route before and after recovery
++    // refusal, and inspect the stored EngineState clone below. The authenticated
++    // full-state encoding retains both the ACME policy and the private CA.
+     let boundary_before = expect(
+         source.call(
+             leader,
+             "GET",
+-            "cold-ssh/config/ca",
++            "cold-acme/config/acme",
+             source.admin(),
+             json!({}),
+         )?,
+         501,
+-        "unsupported-cold-ssh-activated-before",
++        "unsupported-cold-acme-activated-before",
+     )?;
+     let observed_at = std::time::SystemTime::now()
+         .duration_since(std::time::UNIX_EPOCH)?
+@@ -777,8 +793,8 @@
+         let owner_bytes = project(engines)?;
+         let mut inspected = engines.clone();
+         let response = inspected
+-            .handle("", "GET", "cold-ssh/config/ca", &json!({}), observed_at)?
+-            .ok_or("unsupported cold retained SSH CA route absent")?;
++            .handle("", "GET", "cold-acme/config/acme", &json!({}), observed_at)?
++            .ok_or("unsupported cold retained ACME config route absent")?;
+         assert_eq!(response.status, 200);
+         assert!(!response.mutated);
+         assert!(response.body["data"] == retained);
+@@ -845,12 +861,12 @@
+         source.call(
+             leader,
+             "GET",
+-            "cold-ssh/config/ca",
++            "cold-acme/config/acme",
+             source.admin(),
+             json!({}),
+         )?,
+         501,
+-        "unsupported-cold-ssh-activated-after",
++        "unsupported-cold-acme-activated-after",
+     )?;
+     assert!(boundary_after.body == boundary_before.body);
+     Ok(())

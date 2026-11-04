@@ -1,0 +1,63 @@
+{
+  "schema": "heptabao.r10-direction98-r2-root-terminal-review.v1",
+  "evidence_status": "PASS_WHOLE_CORE_AND_CLEANUP",
+  "qualification": "FAIL_DIRECTION_UNCOVERED",
+  "job_id": "1a1a83fdca1-fc05-2e17",
+  "packet_tree": "a6f41fcc1ae5a251c8198e4539568da937fb1668",
+  "summary": {
+    "bytes": 43297,
+    "sha256": "bd7cc8949faca6bebcad6c847f2f1506526a6329ed6392f865892f253cf0c912",
+    "blob": "4ff95294ffeab93b425b9d2ef5c8ba7b98f36c25"
+  },
+  "exit": {
+    "bytes": 458,
+    "sha256": "2836b3e3e79fe0b2f531eca2b1e25394e79c156de2efafc78cfaad7e0e1e03da",
+    "blob": "8b097faf9e91d14e2f8b52d76fab7be57eec9f4f"
+  },
+  "authority": {
+    "bytes": 726,
+    "sha256": "3fef4e4c1ca9ec6a9b0309bff6fd77c3b48333155111cd263b9ed54564668b05",
+    "blob": "a3b11e6999f71a03b2f05c3a1175d9709ad0068b"
+  },
+  "canonical_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "canonical_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "required": 98,
+  "executed": 87,
+  "passed": 87,
+  "missing": 11,
+  "exact_union_of_passed_and_missing_equals_original98": true,
+  "missing_checks": [
+    "missing_cipher_actual_leaves_rebuilt",
+    "missing_cipher_all_hosts_readindex",
+    "missing_cipher_leader_empty_before_unseal",
+    "missing_cipher_leader_exact_history",
+    "missing_cipher_leader_unsealed",
+    "missing_cipher_remaining_nodes_unsealed",
+    "native.complete",
+    "report_excludes_runtime_secrets",
+    "source_and_binaries_unchanged",
+    "synthetic_metadata_absent",
+    "synthetic_metadata_cleanup_once"
+  ],
+  "actual_source": 3,
+  "actual_empty_leader": 2,
+  "target_mac1_observed": false,
+  "no_forced_election": true,
+  "guard_refused_before_target_unseal": true,
+  "not_a_pocket_to_mac_recovery_or_performance_test": true,
+  "known_mutations": 45,
+  "unknown": 0,
+  "replays": 0,
+  "actual_all_three_services_stopped": true,
+  "all_six_mac_foreground_generations_both_sides_reaped_and_group_empty": true,
+  "all_original_stop_deadlines_satisfied": true,
+  "no_tunnels": true,
+  "outer_source_artifact_controller_and_comparison16_fences_unchanged": true,
+  "end_of_original_workflow_source_binary_check_executed": false,
+  "synthetic_application_cleanup_executed": false,
+  "failed_fixture_data_retained": true,
+  "full90_metadata_archive_pending": true,
+  "product_budgets_changed": false,
+  "full_openbao_compatibility": false,
+  "production_changed": false
+}

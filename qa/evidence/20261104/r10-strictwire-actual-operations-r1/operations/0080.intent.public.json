@@ -1,0 +1,17 @@
+{
+  "body_bytes": 0,
+  "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "credential_class": "none",
+  "deadline_monotonic_ns": 899015194226174,
+  "headers": {},
+  "http_seconds": 15.0,
+  "intent_unix_ns": 1793821334201930134,
+  "label": "roles_after",
+  "method": "GET",
+  "node": 1,
+  "parent_deadline_monotonic_ns": null,
+  "path": "/v1/sys/leader",
+  "redirect_following": false,
+  "sequence": 80,
+  "valid_restore_body": false
+}

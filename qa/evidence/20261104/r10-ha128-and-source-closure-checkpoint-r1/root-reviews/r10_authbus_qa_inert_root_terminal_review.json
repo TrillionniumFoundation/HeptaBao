@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.r10-pocket-qa-inert-root-terminal-review.v1",
+  "status": "PASS_INERT_STAGE_ONLY",
+  "job_id": "1a1a83e3faa-fc05-2e12",
+  "packet_tree": "6d0b8c96db594fa048b27e474667411826935611",
+  "receipt": {
+    "bytes": 6132,
+    "sha256": "d032d3160ff16c2f102415ab940e4f2faea4649f797bbea5d495153b1cc56806",
+    "blob": "848f55f9c0ff7c53b455b43503f8b7974de7c0c3"
+  },
+  "authority": {
+    "bytes": 731,
+    "sha256": "1dec82bf51bc0241abdbfefd7339938b6c667809387ed83071b0ddf5ab69361b",
+    "blob": "444161c5f4488f92d958b5a44e9c622b6e83d0e6"
+  },
+  "stdout": {
+    "bytes": 4696,
+    "sha256": "c010fdb9a7150af72e95375d4877969d69207daf43dd3bb56c35f6fac0d18d5b",
+    "blob": "59f41e4812141deb5d4da92a3cb5e19fa67aba2e"
+  },
+  "lossless_receipt_stdout_all_fields_equal": true,
+  "all_11_pinned_files_created_exact": true,
+  "uid": 1000,
+  "mode": "0600",
+  "nlink": 1,
+  "compile_only_three_names": [
+    "pocket_first_cycle_launch_r10.py",
+    "pocket_first_cycle_prepare_r10.py",
+    "pocket_shared_first_cycle_live_r2.py"
+  ],
+  "source_not_executed": true,
+  "no_product_or_git_or_artifact_transfer": true,
+  "original_ack_timeout_retained": true,
+  "same_key_ack_reconciliation_not_new_business_run": true,
+  "production_changed": false,
+  "authbus_live_qualification": false
+}

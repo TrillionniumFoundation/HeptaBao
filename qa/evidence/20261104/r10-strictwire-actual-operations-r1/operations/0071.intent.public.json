@@ -1,0 +1,17 @@
+{
+  "body_bytes": 262186,
+  "body_sha256": "7b6ff8db062e9c9201f828027aa69a0615c204856349d0a91e51b1559f83aed1",
+  "credential_class": "root",
+  "deadline_monotonic_ns": 899005637523293,
+  "headers": {},
+  "http_seconds": 15.0,
+  "intent_unix_ns": 1793821324646084216,
+  "label": "node2_ordinary_256k_write_once",
+  "method": "POST",
+  "node": 2,
+  "parent_deadline_monotonic_ns": null,
+  "path": "/v1/wire/data/from_node2",
+  "redirect_following": false,
+  "sequence": 71,
+  "valid_restore_body": false
+}

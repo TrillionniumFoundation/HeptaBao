@@ -1,0 +1,20 @@
+{
+  "audit_recorded": true,
+  "job_id": "1a1a8327e49-fc05-2dfb",
+  "stderr": {
+    "bytes_hex": "",
+    "eof": true,
+    "next_offset": 0,
+    "offset": 0,
+    "size": 0,
+    "text": ""
+  },
+  "stdout": {
+    "bytes_hex": "7b22616c6c4f776e656453746f70706564223a20747275652c2022656c61707365645365636f6e6473223a20302e3032333736353033323030353033303636322c20226572726f72223a2022666f726d61747465645f6f75747075745f7368617065222c202266696c6573223a205b5d2c20227075626c69636174696f6e4572726f72223a206e756c6c2c2022726f6f74223a20222f686f6d652f7169616e2d71692f686570746162616f2d63692d666f75722d756e737570706f727465642d66697874757265732d666f726d61742d32303236313130342d7231222c2022737461747573223a20226661696c6564222c202277697468696e446561646c696e65223a20747275657d0a",
+    "eof": true,
+    "next_offset": 266,
+    "offset": 0,
+    "size": 266,
+    "text": "{\"allOwnedStopped\": true, \"elapsedSeconds\": 0.023765032005030662, \"error\": \"formatted_output_shape\", \"files\": [], \"publicationError\": null, \"root\": \"/home/qian-qi/heptabao-ci-four-unsupported-fixtures-format-20261104-r1\", \"status\": \"failed\", \"withinDeadline\": true}\n"
+  }
+}

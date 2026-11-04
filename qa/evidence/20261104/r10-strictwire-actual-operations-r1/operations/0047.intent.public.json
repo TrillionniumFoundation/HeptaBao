@@ -1,0 +1,17 @@
+{
+  "body_bytes": 0,
+  "body_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "credential_class": "root",
+  "deadline_monotonic_ns": 898997723357185,
+  "headers": {},
+  "http_seconds": 15.0,
+  "intent_unix_ns": 1793821316731059770,
+  "label": "node3_native_seed_version_1",
+  "method": "GET",
+  "node": 3,
+  "parent_deadline_monotonic_ns": null,
+  "path": "/v1/wire/data/seed?version=1",
+  "redirect_following": false,
+  "sequence": 47,
+  "valid_restore_body": false
+}

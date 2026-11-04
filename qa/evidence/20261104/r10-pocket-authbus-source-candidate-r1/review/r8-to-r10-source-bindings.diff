@@ -1,0 +1,110 @@
+diff --git a/pocket_shared_first_cycle_live_r2.py b/pocket_shared_first_cycle_live_r2.py
+--- a/pocket_shared_first_cycle_live_r2.py
++++ b/pocket_shared_first_cycle_live_r2.py
+@@ -21,11 +21,11 @@
+ current_registry_matches=input_helper.current_registry_matches
+ user_native_identity_matches=input_helper.user_native_identity_matches
+ InputRefused=input_helper.Refused
+-COMMIT='384c957612186d64c5a530044af0ae62c568cc3d'
+-TREE='d5a0f91a4d47f7c8d5f34170ea167d10dc036e04'
+-BINARY_SHA='666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed'
+-BUILD_SHA='2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5'
+-NATIVE_SHA='f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9'
++COMMIT='49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
++TREE='1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
++BINARY_SHA='67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113'
++BUILD_SHA='75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee'
++NATIVE_SHA='0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77'
+ CONFIG_SHA='3611380b8c77282e785e00e20d9eba8bc8cf0164b3b3f00e2ea5d1f52a441c98'
+ ACCOUNT_SHA='8fc636f1db234f6f224599719619793d5f0b885213d84d126202b5de472f7875'
+ CREDENTIAL_SHA='a440653bdbed7e00251c1e2e1cb969bb4d04d94bf502304ee6a5b04eacf09cb1'
+
+diff --git a/pocket_first_cycle_launch_r6.py b/pocket_first_cycle_launch_r10.py
+rename from pocket_first_cycle_launch_r6.py
+rename to pocket_first_cycle_launch_r10.py
+--- a/pocket_first_cycle_launch_r6.py
++++ b/pocket_first_cycle_launch_r10.py
+@@ -4,8 +4,8 @@
+ import argparse, hashlib, json, os, re, signal, stat, subprocess, time
+ 
+ P = Path('/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1')
+-Q = P / 'shared-first-cycle-qa-r6'; I = P / 'shared-first-cycle-inputs-r1'
+-A = P / 'shared-first-cycle-r8-artifacts-r1'
++Q = P / 'shared-first-cycle-r10-qa-r1'; I = P / 'shared-first-cycle-inputs-r1'
++A = P / 'shared-first-cycle-r10-artifacts-r1'
+ SCENARIO = 'shared-managed12-original-local-source'
+ UNIT_IDS = ['openclaw-authbus-restart-when-idle.service', 'openclaw-gateway.service']
+ os.umask(0o077)
+@@ -67,7 +67,7 @@
+     parser.add_argument('--qa-pins-sha256', required=True)
+     args = parser.parse_args()
+     need(re.fullmatch('[a-f0-9]{64}', args.qa_pins_sha256), 'qa_manifest_digest_shape')
+-    run = P / ('shared-first-cycle-' + args.phase + '-r6')
++    run = P / ('shared-first-cycle-r10-' + args.phase + '-r1')
+     need(P.resolve(strict=True) == P, 'project_root_no_symlink')
+     run.mkdir(mode=0o700)  # An existing generation is refused, never reopened.
+     process = None; timed = False; code = None; core = None; started = time.monotonic()
+@@ -96,13 +96,13 @@
+         for name, pin in pins.items():
+             need(re.fullmatch('[a-z0-9_.-]+', name) and sha(Q / name) == pin['sha256']
+                  and (Q / name).stat().st_size == pin['bytes'], 'qa_source_pin')
+-        prepare = I / 'prepare-r6.public.json'; prep = json.loads(prepare.read_bytes())
++        prepare = I / 'prepare-r10-r1.public.json'; prep = json.loads(prepare.read_bytes())
+         need(prep['ok'] is True and prep['qaPinsSha256'] == args.qa_pins_sha256
+              and prep['consumerSha256'] == pins['pocket_first_cycle_consumer_r1.mjs']['sha256']
+              and prep['controllerSha256'] == pins['pocket_shared_first_cycle_live_r2.py']['sha256'],
+              'prepared_qa_binding')
+         if args.phase == 'live':
+-            prior = P / 'shared-first-cycle-preflight-r6'
++            prior = P / 'shared-first-cycle-r10-preflight-r1'
+             prior_result = json.loads((prior / 'execution.result.public.json').read_bytes())
+             prior_intent = json.loads((prior / 'intent.public.json').read_bytes())
+             prior_core = json.loads((prior / 'live/result.public.json').read_bytes())
+@@ -132,9 +132,9 @@
+             '--proc', '/proc', '--dev', '/dev', '--unshare-net', '--unshare-pid', '--die-with-parent',
+             '--chdir', str(run), '--', *cmd]
+         intent = {'schema': 'heptabao.pocket-shared-first-cycle-launch-intent.v1', 'phase': args.phase,
+-            'scenario': SCENARIO, 'argv': wrap, 'sourceCommit': '384c957612186d64c5a530044af0ae62c568cc3d',
+-            'sourceTree': 'd5a0f91a4d47f7c8d5f34170ea167d10dc036e04',
+-            'binarySha256': '666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed',
++            'scenario': SCENARIO, 'argv': wrap, 'sourceCommit': '49503322c7f446e5eb41e7744f1fdbd7f1192ecc',
++            'sourceTree': '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9',
++            'binarySha256': '67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113',
+             'prepareSha256': sha(prepare), 'qaPinsSha256': args.qa_pins_sha256, 'launcherSha256': sha(__file__),
+             'unitsBefore': unit_before, 'protectedInputPinsBefore': before,
+             'budgets': {'httpSeconds': 10, 'consumerSeconds': 70, 'rollbackSeconds': 35, 'outerSeconds': 440},
+
+diff --git a/pocket_first_cycle_prepare_r6.py b/pocket_first_cycle_prepare_r10.py
+rename from pocket_first_cycle_prepare_r6.py
+rename to pocket_first_cycle_prepare_r10.py
+--- a/pocket_first_cycle_prepare_r6.py
++++ b/pocket_first_cycle_prepare_r10.py
+@@ -4,7 +4,7 @@
+ import argparse, hashlib, json, os, re, stat
+ 
+ P = Path('/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1')
+-Q = P / 'shared-first-cycle-qa-r6'
++Q = P / 'shared-first-cycle-r10-qa-r1'
+ I = P / 'shared-first-cycle-inputs-r1'
+ OLD = P / 'current-native-inputs-r1/prepare-r2.public.json'
+ OLD_SHA = '3ae1e850de5bd7feed62598705529dcad06493467ccbd671d72865f7fc127ccb'
+@@ -91,8 +91,8 @@
+         'registryCapturePath', 'registryCaptureSha256', 'registrySchema',
+         'normalBuildResultSha256', 'nativeBuildReceiptSha256', 'normalBuildSourceHost')}
+     value.update(schema='heptabao.pocket-shared-first-cycle-preparation.v1', ok=True,
+-        normalBuildResultSha256='2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5',
+-        nativeBuildReceiptSha256='f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9',
++        normalBuildResultSha256='75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee',
++        nativeBuildReceiptSha256='0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77',
+         normalBuildSourceHost='rog',
+         scenario=SCENARIO, originalPreparationPath=str(OLD), originalPreparationSha256=OLD_SHA,
+         qaPinsSha256=args.qa_pins_sha256, runtimeExecuted=False, productionChanged=False,
+@@ -104,7 +104,7 @@
+         consumerSha256=source_pins[str(Q / 'pocket_first_cycle_consumer_r1.mjs')],
+         controllerSha256=source_pins[str(Q / 'pocket_shared_first_cycle_live_r2.py')],
+         sourcePins={**old['sourcePins'], **source_pins, str(Q / 'qa-pins.public.json'): args.qa_pins_sha256})
+-    target = I / 'prepare-r6.public.json'
++    target = I / 'prepare-r10-r1.public.json'
+     raw = json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()
+     fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW, 0o600)
+     with os.fdopen(fd, 'wb') as f:
