@@ -1,0 +1,15 @@
+{
+  "host": "rog",
+  "executable": "/usr/bin/node",
+  "args": [
+    "--input-type=module",
+    "-e",
+    "import fs from 'node:fs';\nimport path from 'node:path';\nimport {createRequire} from 'node:module';\nimport {createHash} from 'node:crypto';\nconst sha=b=>createHash('sha256').update(b).digest('hex');\nconst factory='/home/qian-qi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/shared-client-4ICy3U6d.js';\nif(sha(fs.readFileSync(factory))!=='bff60f1bb2cb73ad44c7f9c9d779576a2ffd9836b22ecba0bd5b6046e7ce9103')throw Error('factory pin');\nconst req=createRequire(factory),names=['openclaw/plugin-sdk/windows-spawn','openclaw/plugin-sdk/security-runtime','openclaw/plugin-sdk/agent-runtime','openclaw/plugin-sdk/agent-harness-runtime','openclaw/plugin-sdk/provider-auth','ws'];\nconst modules=names.map(name=>{const resolved=req.resolve(name),real=fs.realpathSync(resolved),b=fs.readFileSync(real);return{name,resolved,real,bytes:b.length,sha256:sha(b)}});\nconst queue=[modules[0].real],seen=new Set(),sources=[];\nwhile(queue.length){\n const file=queue.shift();if(seen.has(file))continue;if(seen.size>=4)throw Error('source count');seen.add(file);\n const b=fs.readFileSync(file);if(b.length>65536)throw Error('source bound');\n const text=b.toString('utf8');if(!text.includes('\\ufffd'))sources.push({path:file,bytes:b.length,sha256:sha(b),text});else throw Error('utf8');\n for(const m of text.matchAll(/from\\s+[\"'](\\.[^\"']*windows-spawn[^\"']*\\.js)[\"']/g))queue.push(fs.realpathSync(path.resolve(path.dirname(file),m[1])));\n}\nconst sdk=modules[0].real.split('/dist/')[0],pkgRaw=fs.readFileSync(path.join(sdk,'package.json')),pkg=JSON.parse(pkgRaw);\nconsole.log(JSON.stringify({schema:'heptabao.native-factory-resolution-readonly.v1',nativeStarted:false,providerCalled:false,resolutionMethod:'createRequire from exact factory; exports projected for condition verification',package:{path:path.join(sdk,'package.json'),sha256:sha(pkgRaw),version:pkg.version,exports:pkg.exports?.['./plugin-sdk/windows-spawn']??pkg.exports?.['./plugin-sdk/*']??null},modules,sources}));\n"
+  ],
+  "idempotency_key": "authbus61ff-native-factory-resolution-readonly-20261104-r1",
+  "timeout_seconds": 15,
+  "env": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/home/qian-qi"
+  }
+}

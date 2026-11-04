@@ -1,0 +1,137 @@
+{
+  "schema": "heptabao.native-baseline-r2-source-review.v1",
+  "status": "syntax-passed-awaiting-review-and-window",
+  "originalFailureCommit": "f77c63063c0f4c977c9eb77bbf2267ac8eaf4b8a",
+  "sourcePinCount": 41,
+  "stagedPinCount": 46,
+  "syntaxJob": "1a1a7d6c748-fc05-2ca9",
+  "productFactoryChanged": false,
+  "productionChanged": false,
+  "files": [
+    {
+      "path": "control/consumer.mjs",
+      "bytes": 19751,
+      "sha256": "ef3dfe081fa1e7b214cc8c373a236573041239c2c6f149dbf541a33c7f33069b"
+    },
+    {
+      "path": "control/native_lifecycle.mjs",
+      "bytes": 29514,
+      "sha256": "200108e3dcee2721c4bca3f95aec93c2f02927f7447d2b34e6bb7b94bbeaaff4"
+    },
+    {
+      "path": "control/driver.py",
+      "bytes": 25542,
+      "sha256": "9b79996b1beaf4ea7f469819dacc6aa7634d0ab41986a02902c5864a93ccd42a"
+    },
+    {
+      "path": "control/launcher.py",
+      "bytes": 6165,
+      "sha256": "4eb20bb464d44ce7bf2c42841381c6086936419e267a7ce5c549c2012804e0aa"
+    },
+    {
+      "path": "control/provider-proof.public.json",
+      "bytes": 2679,
+      "sha256": "5715a487fd8bee4d004539ca9e6830199bea72de33b1d78b06eabe3dd471a75c"
+    },
+    {
+      "path": "stage_prepare.py",
+      "bytes": 2300,
+      "sha256": "2f15f16239a433fa76779f68a5ee2dcb5e4e41a6de0a7bcf3a246d62692ffa19"
+    },
+    {
+      "path": "stage-input.json",
+      "bytes": 93322,
+      "sha256": "8e2dc4df63d370c1560353a39072d4dde8c91eaf1145f7bef6de0a5341e94db2"
+    },
+    {
+      "path": "review/native_lifecycle.diff",
+      "bytes": 16041,
+      "sha256": "2010229e5cf781a2f6e71e3de6a12a38563b2e454a8450b616a9d55742a5ec14"
+    },
+    {
+      "path": "review/consumer.diff",
+      "bytes": 6663,
+      "sha256": "b4a568d799b3443f482bbff383863d4a6be0e62d57761754796f5bd54311649a"
+    },
+    {
+      "path": "review/launcher.diff",
+      "bytes": 900,
+      "sha256": "47f43e17f8c692770a6a3040d00a17c4fc82e5d1dfe886f3c3c441e207443cf2"
+    },
+    {
+      "path": "dependency-readonly/source.mjs",
+      "bytes": 2033,
+      "sha256": "31213444d3516e288e3eecea850f156c42181b9ba593faf7595c37bdfd0eb56e"
+    },
+    {
+      "path": "dependency-readonly/request.json",
+      "bytes": 2354,
+      "sha256": "1a4ed696e5759d859a8c4a9faf88bd307c8f231d2fd4a3033801d5b03c631835"
+    },
+    {
+      "path": "dependency-readonly/start.json",
+      "bytes": 3094,
+      "sha256": "82fd0ed8a63a79a2e854cb61092f5e21d0ad6ee9551343dd06c0a3d87ffa188f"
+    },
+    {
+      "path": "dependency-readonly/terminal.public.json",
+      "bytes": 734,
+      "sha256": "8794afe15df03fe10b9c9ddf9d3d3f1a030bcf197db43dace7298e08ddd29cfe"
+    },
+    {
+      "path": "dependency-readonly/process-read.original.json",
+      "bytes": 41245,
+      "sha256": "16a485bcc1f5fe834b8371e36e8a824ac4aa50ceb244527f8a713222ca788290"
+    },
+    {
+      "path": "dependency-readonly/report.public.json",
+      "bytes": 13270,
+      "sha256": "9c3d712f34a3eff2e7cadb428afc48b64bf7732737c6aa6e76caef75ee63ce18"
+    },
+    {
+      "path": "dependency-readonly/source/windows-spawn.js",
+      "bytes": 480,
+      "sha256": "d97a1228e01c249bc2d7feabff40987beb8f8419f39c35002643fd05a2c590e4"
+    },
+    {
+      "path": "dependency-readonly/source/windows-spawn-C5RDaB22.js",
+      "bytes": 9035,
+      "sha256": "24f856187f26ed4d6ffbddb8ec44f13e01527841a6cac0839064bb4a6dd64549"
+    },
+    {
+      "path": "syntax-only/source.py",
+      "bytes": 776,
+      "sha256": "4dec26ef300032d4867b02b44ed412756de42e79e5cc35efa8c173fa86506849"
+    },
+    {
+      "path": "syntax-only/request.json",
+      "bytes": 184581,
+      "sha256": "e72745cd5a12cadc48a374d80a822408dc4a652adfd9aa24a1395b09ed9865f4"
+    },
+    {
+      "path": "syntax-only/start.json",
+      "bytes": 2042,
+      "sha256": "b408710922f3ac9337a33dfa0979929575793621e8fe38cd3371558a1cf51a42"
+    },
+    {
+      "path": "syntax-only/terminal.public.json",
+      "bytes": 732,
+      "sha256": "683cd0008f4c39b3f1cdabc017bc80739f61bd8f9d3f41d1ab1a9b8ddd52a358"
+    },
+    {
+      "path": "syntax-only/process-read.original.json",
+      "bytes": 3814,
+      "sha256": "28e4c9d2e9b26ccad724f4118adca767951a281a22e87e013239f7e46725856f"
+    },
+    {
+      "path": "syntax-only/report.public.json",
+      "bytes": 1131,
+      "sha256": "8e79e6b203d1b5f7b09a3b4cb390f7d4690698f9a58d34f404001eb17497030d"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3352,
+      "sha256": "31c10d96927d129cf0beb0799fbc7dd782ba3163b7939984eb2455dd4445e32a"
+    }
+  ]
+}

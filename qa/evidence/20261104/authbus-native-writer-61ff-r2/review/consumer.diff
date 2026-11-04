@@ -1,0 +1,105 @@
+--- baseline-r1/consumer.mjs
++++ baseline-r2/consumer.mjs
+@@ -23,7 +23,8 @@
+   refreshDispatched: false, modelCalled: false, j3160Contacted: false,
+   credentialValuesPublished: false, accountIdentitiesPublished: false,
+   allAccountsQualified: false, checks: [], wire: [] };
+-let service, baoAgent, plan, lifecycle;
++let service, baoAgent, plan, lifecycle, progressFd;
++let progressSequence=0;
+ let blockedOperations = 0;
+ const tokens = [];
+ const sensitive = [];
+@@ -50,6 +51,13 @@
+   const rel = path.relative(root, file);
+   return rel !== '' && rel !== '..' && !rel.startsWith('../') && !path.isAbsolute(rel);
+ }
++function journal(stage, detail={}) {
++  if(progressFd===undefined)return;
++  const value={...detail,stage,sequence:++progressSequence,monotonicMs:Number(process.hrtime.bigint()/1000000n)};
++  const text=JSON.stringify(value);
++  need(sensitive.every(v=>v.length<8||!text.includes(v)),'progress_secret_guard');
++  fs.writeSync(progressFd,text+'\n');fs.fsyncSync(progressFd);
++}
+ function deny() { blockedOperations++; throw Object.assign(new Error('unexpected_operation_refused'), { safeCode: 'unexpected_operation_refused' }); }
+ function secrets(credential) {
+   return Object.entries(credential ?? {}).filter(([key, value]) => typeof value === 'string' && value.length >= 8
+@@ -64,6 +72,10 @@
+     && process.env.OPENCLAW_OAUTH_DIR === path.join(plan.stateRoot, 'oauth'));
+   check('private_work_scope', within(plan.workRoot, plan.stateRoot) && within(plan.workRoot, plan.pluginEntry)
+     && within(plan.workRoot, plan.selectionOutput) && within(plan.workRoot, plan.custodyOutput));
++  check('private_progress_scope',within(plan.workRoot,plan.native.outputDir)&&['initial','rollback'].includes(plan.mode));
++  progressFd=fs.openSync(path.join(plan.native.outputDir,'progress.'+plan.mode+'.public.ndjson'),
++    fs.constants.O_WRONLY|fs.constants.O_CREAT|fs.constants.O_EXCL|fs.constants.O_NOFOLLOW,0o600);
++  journal('consumer_scope_validated');
+   const cfg = JSON.parse(privateRead(path.join(plan.stateRoot, 'openclaw.json')));
+   check('native_clone_initial_exact', hash(privateRead(path.join(plan.native.nativeHome, 'auth.json'))) === plan.native.nativeAuthSha256
+     && hash(privateRead(path.join(plan.native.nativeHome, 'config.toml'))) === plan.native.nativeConfigSha256);
+@@ -114,6 +126,7 @@
+     });
+   };
+   syncBuiltinESMExports();
++  journal('before_original_sdk_import');
+   const sdk = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/plugin-sdk/agent-runtime.js')));
+   const storeApi = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/store-DH33UrUj.js')));
+   const profileAuth = await import(pathToFileURL(path.join(plan.sdkRoot, 'dist/oauth-B4aOCsid.js')));
+@@ -148,9 +161,12 @@
+       && digest(cfg.agents.defaults.model) === plan.sourceDefaultModelSha256
+       && digest(plan.pluginConfig.orderExcludeAgentIds ?? []) === plan.sourceOrderExclusionsSha256);
+     const effectiveOrderBefore = orderApi.i({ cfg, store: structuredClone(before), provider: before.profiles[plan.expectedProfileId].provider });
+-    lifecycle = await createNativeLifecycle({ plan, cfg, agentDir, before, childProcess, originalSpawn, check, sensitive });
++    journal('before_native_lifecycle_create');
++    lifecycle = await createNativeLifecycle({ plan, cfg, agentDir, before, childProcess, originalSpawn, check, sensitive, journal });
+     report.native = lifecycle.report;
++    journal('before_native_lifecycle_begin');
+     await lifecycle.begin();
++    journal('after_native_lifecycle_begin');
+     let removed = false;
+     const missing = await storeApi.m({ agentDir, saveOptions: { preserveStateProfileIds: [plan.expectedProfileId], filterExternalAuthProfiles: false, syncExternalCli: false }, updater: store => {
+       if (digest(store) !== digest(before) || !Object.hasOwn(store.profiles, plan.expectedProfileId)) return false;
+@@ -163,6 +179,7 @@
+       && digest(recoveryStart.order ?? null) === digest(before.order ?? null)
+       && digest(recoveryStart.usageStats ?? null) === digest(before.usageStats ?? null));
+ 
++    journal('before_actual_plugin_import');
+     const plugin = (await import(pathToFileURL(plan.pluginEntry))).default;
+     check('installed_plugin_export', plugin?.id === 'openclaw-authbus' && typeof plugin.register === 'function');
+     let subscriptions = 0;
+@@ -215,7 +232,9 @@
+       storeSha256: digest(committed), credentialSha256: digest(cred), model: plan.model,
+       source: 'actual_installed_sdk_explicit_profile_resolver_after_actual_authbus_recovery' });
+     report.actualExplicitProfileSelectionQualified = true;
++    journal('before_native_lifecycle_finish');
+     report.native = await lifecycle.finish(status);
++    journal('after_native_lifecycle_finish');
+     report.singleWriterInvariantPassed = report.native.singleWriterInvariantPassed;
+     check('native_experiment_matches_declared_baseline_or_fixed_expectation',
+       report.native.evidenceCompleted === true && report.singleWriterInvariantPassed === plan.native.patched);
+@@ -233,6 +252,13 @@
+   check('report_contains_no_credential_values', sensitive.every(v => !JSON.stringify(report).includes(v)));
+   report.ok = true;
+ } catch (error) {
++  if(progressFd!==undefined) {
++    const file=path.join(plan.native.outputDir,'consumer-'+plan.mode+'-error.private.json');
++    try { save(file,{name:String(error?.name??''),message:String(error?.message??error),
++      stack:String(error?.stack??''),code:String(error?.code??''),safeCode:String(error?.safeCode??'')});
++      report.privateErrorSha256=hash(privateRead(file)); } catch {}
++    journal('consumer_error',{errorClass:['Error','TypeError','RangeError','SyntaxError','AbortError'].includes(error?.name)?error.name:'unknown'});
++  }
+   report.error = error?.safeCode ?? 'actual_plugin_consumer_failed';
+   report.errorClass = error?.constructor?.name ?? 'unknown';
+   report.errorCodeSha256 = hash(String(error?.message ?? error));
+@@ -243,11 +269,13 @@
+     try { report.native = await lifecycle.cleanup(); }
+     catch (error) { report.ok = false; report.nativeCleanupError = error?.safeCode ?? 'owned_native_cleanup_failed'; }
+   }
++  journal('consumer_cleanup_finished',{nativeOwnedStopped:report.native?.cleanup?.allOwnedStopped??null});
+   baoAgent?.destroy();
+   if (plan) {
+     try { save(plan.custodyOutput, { tokens }); } catch {}
+   }
+ }
++if(progressFd!==undefined){fs.fsyncSync(progressFd);fs.closeSync(progressFd);progressFd=undefined;}
+ if (sensitive.some(v => v.length >= 8 && JSON.stringify(report).includes(v))) {
+   report.ok = false;
+   process.stdout.write(JSON.stringify({ ok: false, error: 'public_secret_guard_failed' }) + '\n');
