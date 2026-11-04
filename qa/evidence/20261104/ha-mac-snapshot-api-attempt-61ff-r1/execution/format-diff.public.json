@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "/usr/bin/git",
+    "-c",
+    "core.hooksPath=/dev/null",
+    "-C",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+    "diff",
+    "--no-ext-diff"
+  ],
+  "cleanup": {
+    "already_reaped": false,
+    "forced": false,
+    "group_cleanup_before_reap": true,
+    "group_signalled_after_reap": false,
+    "pid": 65179,
+    "remaining": [],
+    "returncode": 0
+  },
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-acl-denial-61ff-r1/source",
+  "elapsed_seconds": 0.053975791204720736,
+  "exit_code": 0,
+  "label": "format-diff",
+  "owned_pgid": 65179,
+  "remaining": [],
+  "remaining_at_end_seconds": 2391.302723917179,
+  "remaining_at_start_seconds": 2391.3566996669397,
+  "stderr_bytes": 0,
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_bytes": 27698,
+  "stdout_sha256": "7ccbb1260842f2608b4635917eca53b91d8829390c33ca0b5a2cba20540ffb73",
+  "timed_out": false
+}

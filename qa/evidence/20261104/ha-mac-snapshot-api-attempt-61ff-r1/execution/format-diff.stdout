@@ -1,0 +1,613 @@
+diff --git a/crates/heptabao-server/src/http.rs b/crates/heptabao-server/src/http.rs
+index 9301c19..3801150 100644
+--- a/crates/heptabao-server/src/http.rs
++++ b/crates/heptabao-server/src/http.rs
+@@ -27,6 +27,9 @@ use std::{
+ #[cfg(test)]
+ #[path = "http_api_alpn_tests.rs"]
+ mod api_alpn_tests;
++#[cfg(all(test, feature = "native-v6-ha"))]
++#[path = "http_formal_api_fixture.rs"]
++pub(crate) mod formal_api_fixture;
+ #[path = "http_h2.rs"]
+ mod h2_transport;
+ #[path = "http_logical.rs"]
+@@ -35,9 +38,6 @@ mod logical;
+ mod mutation_profile;
+ #[path = "http_sanitized_config.rs"]
+ mod sanitized_config;
+-#[cfg(all(test, feature = "native-v6-ha"))]
+-#[path = "http_formal_api_fixture.rs"]
+-pub(crate) mod formal_api_fixture;
+ #[cfg(all(test, feature = "native-v6-storage"))]
+ #[path = "http_snapshot_accept_tests.rs"]
+ mod snapshot_accept_tests;
+diff --git a/crates/heptabao-server/src/http_formal_api_fixture.rs b/crates/heptabao-server/src/http_formal_api_fixture.rs
+index fa3a41a..5fb54fd 100644
+--- a/crates/heptabao-server/src/http_formal_api_fixture.rs
++++ b/crates/heptabao-server/src/http_formal_api_fixture.rs
+@@ -23,7 +23,10 @@ struct RequestWorker {
+ 
+ impl RequestWorker {
+     fn join(mut self) -> FixtureResult<()> {
+-        let thread = self.thread.take().ok_or("formal TLS worker already joined")?;
++        let thread = self
++            .thread
++            .take()
++            .ok_or("formal TLS worker already joined")?;
+         thread.join().map_err(|_| "formal TLS worker panicked")??;
+         Ok(())
+     }
+@@ -54,7 +57,11 @@ impl FormalApiListener {
+         let key_bytes = bounded_file(&key_path, true)?;
+         let certificates = rustls_pemfile::certs(&mut BufReader::new(cert_bytes.as_slice()))
+             .collect::<Result<Vec<_>, _>>()?;
+-        let expected_leaf = certificates.first().ok_or("formal API leaf absent")?.as_ref().to_vec();
++        let expected_leaf = certificates
++            .first()
++            .ok_or("formal API leaf absent")?
++            .as_ref()
++            .to_vec();
+         let key = rustls_pemfile::private_key(&mut BufReader::new(key_bytes.as_slice()))?
+             .ok_or("formal API private key absent")?;
+         let provider = Arc::new(rustls::crypto::ring::default_provider());
+@@ -100,9 +107,12 @@ impl FormalApiListener {
+         deadline: Instant,
+         missing_forward: bool,
+     ) -> FixtureResult<Zeroizing<Vec<u8>>> {
+-        let remaining = || deadline.checked_duration_since(Instant::now())
+-            .filter(|duration| !duration.is_zero())
+-            .ok_or("formal TLS original deadline");
++        let remaining = || {
++            deadline
++                .checked_duration_since(Instant::now())
++                .filter(|duration| !duration.is_zero())
++                .ok_or("formal TLS original deadline")
++        };
+         let client_socket = TcpStream::connect_timeout(&self.address()?, remaining()?)?;
+         let client_address = client_socket.local_addr()?;
+         let (server_socket, peer) = loop {
+@@ -123,48 +133,79 @@ impl FormalApiListener {
+         let server_tls = Arc::clone(&self.server_tls);
+         let service = Arc::clone(service);
+         let settings = consistency::Settings::checked(None, None, missing_forward)?;
+-        let thread = std::thread::Builder::new().name("formal-api-tls".into()).spawn(move || {
+-            let _scope = RequestDeadlineScope::enter(deadline);
+-            let connection = rustls::ServerConnection::new(server_tls)
+-                .map_err(io::Error::other)?;
+-            let mut stream = StreamOwned::new(connection, DeadlineStream {
+-                stream: server_socket, deadline,
+-            });
+-            stream.sock.deadline = execution_deadline_with_response_reserve(Instant::now(), deadline);
+-            let budget = stream.sock.deadline.saturating_duration_since(Instant::now());
+-            let parsed = read_request_with_ui(&mut stream, budget, true, false);
+-            stream.sock.deadline = deadline;
+-            if stream.conn.alpn_protocol() != Some(b"http/1.1".as_slice()) {
+-                return Err(io::Error::other("formal API ALPN changed"));
+-            }
+-            let attempt = crypto::random::<16>()
+-                .map_err(|_| io::Error::other("formal API ingress randomness unavailable"))?;
+-            let client_certificates = stream.conn.peer_certificates().map(|certificates| {
+-                certificates.iter().map(|certificate| certificate.as_ref().to_vec()).collect()
+-            });
+-            let (reply, head, namespace) = process_parsed_request(
+-                &service, None, parsed, &mut stream, client_certificates,
+-                peer.ip(), &attempt, settings, deadline,
+-            );
+-            let redirect = matches!(&reply, snapshot::NativeReply::Redirect { .. });
+-            write_http1_reply(&mut stream, reply, head, &namespace, deadline);
+-            if redirect {
+-                snapshot::finish_redirect_connection(&mut stream);
+-            }
+-            Ok(())
+-        })?;
+-        let worker = RequestWorker { thread: Some(thread), client: close_client, server: close_server };
++        let thread = std::thread::Builder::new()
++            .name("formal-api-tls".into())
++            .spawn(move || {
++                let _scope = RequestDeadlineScope::enter(deadline);
++                let connection =
++                    rustls::ServerConnection::new(server_tls).map_err(io::Error::other)?;
++                let mut stream = StreamOwned::new(
++                    connection,
++                    DeadlineStream {
++                        stream: server_socket,
++                        deadline,
++                    },
++                );
++                stream.sock.deadline =
++                    execution_deadline_with_response_reserve(Instant::now(), deadline);
++                let budget = stream
++                    .sock
++                    .deadline
++                    .saturating_duration_since(Instant::now());
++                let parsed = read_request_with_ui(&mut stream, budget, true, false);
++                stream.sock.deadline = deadline;
++                if stream.conn.alpn_protocol() != Some(b"http/1.1".as_slice()) {
++                    return Err(io::Error::other("formal API ALPN changed"));
++                }
++                let attempt = crypto::random::<16>()
++                    .map_err(|_| io::Error::other("formal API ingress randomness unavailable"))?;
++                let client_certificates = stream.conn.peer_certificates().map(|certificates| {
++                    certificates
++                        .iter()
++                        .map(|certificate| certificate.as_ref().to_vec())
++                        .collect()
++                });
++                let (reply, head, namespace) = process_parsed_request(
++                    &service,
++                    None,
++                    parsed,
++                    &mut stream,
++                    client_certificates,
++                    peer.ip(),
++                    &attempt,
++                    settings,
++                    deadline,
++                );
++                let redirect = matches!(&reply, snapshot::NativeReply::Redirect { .. });
++                write_http1_reply(&mut stream, reply, head, &namespace, deadline);
++                if redirect {
++                    snapshot::finish_redirect_connection(&mut stream);
++                }
++                Ok(())
++            })?;
++        let worker = RequestWorker {
++            thread: Some(thread),
++            client: close_client,
++            server: close_server,
++        };
+         let connection = rustls::ClientConnection::new(
+             Arc::clone(&self.client_tls),
+             rustls::pki_types::ServerName::try_from("localhost".to_owned())?,
+         )?;
+-        let mut client = StreamOwned::new(connection, DeadlineStream {
+-            stream: client_socket, deadline,
+-        });
++        let mut client = StreamOwned::new(
++            connection,
++            DeadlineStream {
++                stream: client_socket,
++                deadline,
++            },
++        );
+         client.write_all(request)?;
+         client.flush()?;
+         if client.conn.alpn_protocol() != Some(b"http/1.1".as_slice())
+-            || client.conn.peer_certificates().and_then(|chain| chain.first())
++            || client
++                .conn
++                .peer_certificates()
++                .and_then(|chain| chain.first())
+                 .is_none_or(|leaf| leaf.as_ref() != self.expected_leaf.as_slice())
+         {
+             return Err("formal API authenticated peer or ALPN changed".into());
+@@ -185,8 +226,11 @@ impl FormalApiListener {
+         if !status.starts_with("HTTP/1.1 ") {
+             return Err("formal API response status malformed".into());
+         }
+-        let status_code: u16 = status.split(' ').nth(1)
+-            .ok_or("formal API response status malformed")?.parse()?;
++        let status_code: u16 = status
++            .split(' ')
++            .nth(1)
++            .ok_or("formal API response status malformed")?
++            .parse()?;
+         let mut content_length = None;
+         for line in lines {
+             let (name, value) = line.split_once(':').ok_or("formal API header framing")?;
+@@ -196,7 +240,9 @@ impl FormalApiListener {
+                 }
+                 content_length = Some(value.trim().parse::<usize>()?);
+             } else if name.eq_ignore_ascii_case("transfer-encoding") {
+-                return Err("formal API component requires explicit complete response length".into());
++                return Err(
++                    "formal API component requires explicit complete response length".into(),
++                );
+             }
+         }
+         let body_length = match content_length {
+@@ -210,7 +256,12 @@ impl FormalApiListener {
+             return Err("formal API response archive bound".into());
+         }
+         let header_length = output.len();
+-        output.resize(header_length.checked_add(body_length).ok_or("formal API length overflow")?, 0);
++        output.resize(
++            header_length
++                .checked_add(body_length)
++                .ok_or("formal API length overflow")?,
++            0,
++        );
+         client.read_exact(&mut output[header_length..])?;
+         remaining()?;
+         // The complete Content-Length response is already owned. Close the
+diff --git a/crates/heptabao-server/src/service_native_storage_tests.rs b/crates/heptabao-server/src/service_native_storage_tests.rs
+index 61a6d97..4953a42 100644
+--- a/crates/heptabao-server/src/service_native_storage_tests.rs
++++ b/crates/heptabao-server/src/service_native_storage_tests.rs
+@@ -320,11 +320,18 @@ fn configured_native_activation_rejects_unsupported_live_engine_without_retiring
+     let before = request(&mut service, "GET", "kubernetes/config", &token, json!({}));
+     assert_eq!(before.status, 200);
+     assert_eq!(before.body["data"]["service_account_token_set"], true);
+-    let source = service.state.as_ref().ok_or("unsupported Kubernetes state")?;
++    let source = service
++        .state
++        .as_ref()
++        .ok_or("unsupported Kubernetes state")?;
+     assert!(!source.engines.supports_native_v6_root_storage());
+     let owner_before = crate::service::owner_store::serialize_owner(source)
+         .map_err(|_| "unsupported Kubernetes complete owner before")?;
+-    assert!(owner_before.windows(provider_bearer.len()).any(|part| part == provider_bearer.as_bytes()));
++    assert!(
++        owner_before
++            .windows(provider_bearer.len())
++            .any(|part| part == provider_bearer.as_bytes())
++    );
+     let identity_before = service
+         .current_state_identity()
+         .map_err(|_| "unsupported Kubernetes v5 identity before")?;
+@@ -337,7 +344,10 @@ fn configured_native_activation_rejects_unsupported_live_engine_without_retiring
+     assert_eq!(retained.status, 200);
+     assert_eq!(retained.body["data"], before.body["data"]);
+     let owner_after = crate::service::owner_store::serialize_owner(
+-        service.state.as_ref().ok_or("unsupported Kubernetes retained state")?,
++        service
++            .state
++            .as_ref()
++            .ok_or("unsupported Kubernetes retained state")?,
+     )
+     .map_err(|_| "unsupported Kubernetes complete retained owner")?;
+     // Compare every secret-bearing owner byte without formatting it.
+@@ -348,7 +358,9 @@ fn configured_native_activation_rejects_unsupported_live_engine_without_retiring
+             .map_err(|_| "unsupported Kubernetes retained v5 identity")?,
+         identity_before
+     );
+-    assert!(matches!(provider_listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock));
++    assert!(
++        matches!(provider_listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)
++    );
+     Ok(())
+ }
+ 
+diff --git a/crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs b/crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs
+index c335d98..6a2c294 100644
+--- a/crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs
+@@ -604,21 +604,27 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
+     let provider_address = provider_listener.local_addr()?;
+     let provider_origin = format!("https://localhost:{}", provider_address.port());
+     let provider_bearer = Zeroizing::new(hex(&crypto::random::<32>()?));
+-    let source = Pipeline::start_with_initial_outbound_endpoints(vec![crate::outbound::EndpointConfig {
+-        origin: provider_origin.clone(),
+-        address: provider_address,
+-        server_name: "localhost".to_owned(),
+-        ca_pem: include_str!("testdata/kubernetes-api-ca.pem").to_owned(),
+-        path_prefix: "/api/".to_owned(),
+-        shared_secret: String::new(),
+-    }])?;
++    let source =
++        Pipeline::start_with_initial_outbound_endpoints(vec![crate::outbound::EndpointConfig {
++            origin: provider_origin.clone(),
++            address: provider_address,
++            server_name: "localhost".to_owned(),
++            ca_pem: include_str!("testdata/kubernetes-api-ca.pem").to_owned(),
++            path_prefix: "/api/".to_owned(),
++            shared_secret: String::new(),
++        }])?;
+     let leader = source.ready_leader()?;
+     // A real root Kubernetes config carries a private bearer but performs no
+     // provider I/O. Root SSH is now supported; unsupported child SSH cannot
+     // pass the namespace admission needed to create this historical archive.
+     expect(
+-        source.call(leader, "POST", "sys/mounts/cold-kubernetes", source.admin(),
+-                    json!({"type":"kubernetes"}))?,
++        source.call(
++            leader,
++            "POST",
++            "sys/mounts/cold-kubernetes",
++            source.admin(),
++            json!({"type":"kubernetes"}),
++        )?,
+         204,
+         "unsupported-cold-kubernetes-mount",
+     )?;
+@@ -629,10 +635,18 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
+         "unsupported-cold-kubernetes-config",
+     )?;
+     let retained = expect(
+-        source.call(leader, "GET", "cold-kubernetes/config", source.admin(), json!({}))?,
++        source.call(
++            leader,
++            "GET",
++            "cold-kubernetes/config",
++            source.admin(),
++            json!({}),
++        )?,
+         200,
+         "unsupported-cold-kubernetes-before",
+-    )?.body["data"].clone();
++    )?
++    .body["data"]
++        .clone();
+     assert_eq!(retained["service_account_token_set"], true);
+     activate(&source, leader)?;
+     let archive = export(&source, leader, source.admin())?;
+@@ -642,7 +656,13 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
+     // same boundary before and after recovery refusal; inspect the complete
+     // authenticated native graph and private owner encoding below.
+     let boundary_before = expect(
+-        source.call(leader, "GET", "cold-kubernetes/config", source.admin(), json!({}))?,
++        source.call(
++            leader,
++            "GET",
++            "cold-kubernetes/config",
++            source.admin(),
++            json!({}),
++        )?,
+         501,
+         "unsupported-cold-kubernetes-activated-before",
+     )?;
+@@ -804,7 +824,11 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
+         Ok((before, generation, owner_bytes))
+     };
+     let (before, generation_before, engine_owner_before) = inspect_retained()?;
+-    assert!(engine_owner_before.windows(provider_bearer.len()).any(|part| part == provider_bearer.as_bytes()));
++    assert!(
++        engine_owner_before
++            .windows(provider_bearer.len())
++            .any(|part| part == provider_bearer.as_bytes())
++    );
+     let mut bundle = Root::new();
+     private_directory(&bundle.path)?;
+     bundle.path = fs::canonicalize(&bundle.path)?;
+@@ -842,12 +866,20 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
+         share_hash
+     );
+     let boundary_after = expect(
+-        source.call(leader, "GET", "cold-kubernetes/config", source.admin(), json!({}))?,
++        source.call(
++            leader,
++            "GET",
++            "cold-kubernetes/config",
++            source.admin(),
++            json!({}),
++        )?,
+         501,
+         "unsupported-cold-kubernetes-activated-after",
+     )?;
+     assert!(boundary_after.body == boundary_before.body);
+-    assert!(matches!(provider_listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock));
++    assert!(
++        matches!(provider_listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock)
++    );
+     Ok(())
+ }
+ 
+diff --git a/crates/heptabao-server/src/service_native_v6_ha_formal_api_pipeline_tests.rs b/crates/heptabao-server/src/service_native_v6_ha_formal_api_pipeline_tests.rs
+index 91e940e..e5b89de 100644
+--- a/crates/heptabao-server/src/service_native_v6_ha_formal_api_pipeline_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_formal_api_pipeline_tests.rs
+@@ -14,38 +14,67 @@ pub(super) struct FormalApiPipeline {
+ }
+ impl Deref for FormalApiPipeline {
+     type Target = Pipeline;
+-    fn deref(&self) -> &Self::Target { &self.inner }
++    fn deref(&self) -> &Self::Target {
++        &self.inner
++    }
+ }
+ impl DerefMut for FormalApiPipeline {
+-    fn deref_mut(&mut self) -> &mut Self::Target { &mut self.inner }
++    fn deref_mut(&mut self) -> &mut Self::Target {
++        &mut self.inner
++    }
+ }
+ impl Drop for FormalApiPipeline {
+     fn drop(&mut self) {
+         // No per-request worker survives exchange(). Close public listeners
+         // before Pipeline drops Services and then the actual Raft owners.
+-        for api in &mut self.apis { drop(api.take()); }
++        for api in &mut self.apis {
++            drop(api.take());
++        }
+     }
+ }
+ impl FormalApiPipeline {
+     pub(super) fn exchange(
+-        &self, index: usize, bytes: &[u8], deadline: Instant, missing_forward: bool,
++        &self,
++        index: usize,
++        bytes: &[u8],
++        deadline: Instant,
++        missing_forward: bool,
+     ) -> TestResult<Zeroizing<Vec<u8>>> {
+-        let api = self.apis.get(index).and_then(Option::as_ref)
++        let api = self
++            .apis
++            .get(index)
++            .and_then(Option::as_ref)
+             .ok_or("formal API listener is not running")?;
+-        let service = self.inner.services.get(index).and_then(Option::as_ref)
++        let service = self
++            .inner
++            .services
++            .get(index)
++            .and_then(Option::as_ref)
+             .ok_or("formal API Service is not running")?;
+         api.exchange(service, bytes, deadline, missing_forward)
+     }
+     pub(super) fn stop_process(&mut self, index: usize) -> TestResult {
+-        drop(self.apis.get_mut(index).ok_or("formal API node index")?.take());
++        drop(
++            self.apis
++                .get_mut(index)
++                .ok_or("formal API node index")?
++                .take(),
++        );
+         self.inner.stop_process(index)
+     }
+     pub(super) fn start_formal_process(&mut self, index: usize) -> TestResult {
+-        if self.apis.get(index).ok_or("formal API node index")?.is_some() {
++        if self
++            .apis
++            .get(index)
++            .ok_or("formal API node index")?
++            .is_some()
++        {
+             return Err("formal API listener already running".into());
+         }
+         let api = FormalApiListener::bind(
+-            &self.inner.files.path, u64::try_from(index + 1)?, Some(self.addresses[index]),
++            &self.inner.files.path,
++            u64::try_from(index + 1)?,
++            Some(self.addresses[index]),
+         )?;
+         verify_actual_origin(&self.inner.configs, index, &api)?;
+         // Rebind before this node's actual HA owner starts, using its unchanged
+@@ -57,7 +86,9 @@ impl FormalApiPipeline {
+ }
+ 
+ fn verify_actual_origin(
+-    configs: &[HaProcessConfig], index: usize, api: &FormalApiListener,
++    configs: &[HaProcessConfig],
++    index: usize,
++    api: &FormalApiListener,
+ ) -> TestResult {
+     let id = u64::try_from(index + 1)?;
+     let origin = api.origin()?;
+@@ -66,7 +97,11 @@ fn verify_actual_origin(
+         let peer = config.peers.get(&id).ok_or("formal API peer is absent")?;
+         assert_eq!(peer.api_address.as_deref(), Some(origin.as_str()));
+         assert_eq!(peer.certificate_sha256, pin);
+-        assert_ne!(peer.address, api.address()?, "API and Raft own separate listeners");
++        assert_ne!(
++            peer.address,
++            api.address()?,
++            "API and Raft own separate listeners"
++        );
+     }
+     Ok(())
+ }
+@@ -151,7 +186,10 @@ fn recovered_api_pipeline(
+         let origin = api.origin()?;
+         addresses.push(api.address()?);
+         for config in &mut configs {
+-            config.peers.get_mut(&id).ok_or("new formal API peer absent")?
++            config
++                .peers
++                .get_mut(&id)
++                .ok_or("new formal API peer absent")?
+                 .api_address = Some(origin.clone());
+         }
+         verify_actual_origin(&configs, index, api)?;
+@@ -183,7 +221,9 @@ fn recovered_api_pipeline(
+         pipeline.with_service(index, |service| {
+             assert!(service.native_candidate_profile.is_none());
+             assert_eq!(
+-                service.current_state_identity().map_err(|_| "new cold API seed identity")?,
++                service
++                    .current_state_identity()
++                    .map_err(|_| "new cold API seed identity")?,
+                 seed_identity
+             );
+             assert!(service.native_root.is_none());
+diff --git a/crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs b/crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs
+index b8db656..ea282af 100644
+--- a/crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs
+@@ -381,8 +381,8 @@ impl Pipeline {
+                 let until = Instant::now() + REQUEST_BUDGET;
+                 let _scope = RequestDeadlineScope::enter(until);
+                 let service = service.as_ref().ok_or("initial outbound Service absent")?;
+-                let mut writer = lock_until(service, until)
+-                    .map_err(|_| "initial outbound Service deadline")?;
++                let mut writer =
++                    lock_until(service, until).map_err(|_| "initial outbound Service deadline")?;
+                 assert!(writer.state.is_none());
+                 writer.install_outbound_endpoints(endpoints.to_vec())?;
+                 assert!(writer.state.is_none());
+diff --git a/crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs b/crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs
+index 300bb86..3f3d70c 100644
+--- a/crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs
+@@ -4,10 +4,10 @@
+ use super::*;
+ #[path = "service_native_v6_ha_formal_api_pipeline_tests.rs"]
+ mod formal_api_pipeline;
+-use formal_api_pipeline::{FormalApiPipeline, formal_api_source};
+ use crate::crypto::AeadBarrier;
+ use crate::ha::native_v6_backup::{NativeV6ArchiveSelection, validate_native_v6_archive};
+ use crate::snapshot_file::SnapshotSpool;
++use formal_api_pipeline::{FormalApiPipeline, formal_api_source};
+ use heptabao_durable_service::Barrier;
+ 
+ struct WireReply {
+@@ -110,7 +110,14 @@ fn wire_with_routing(
+     }
+     let body = Zeroizing::new(output[split + 4..].to_vec());
+     if let Some(length) = headers.get("content-length") {
+-        assert_eq!(if method == "HEAD" { 0 } else { length.parse::<usize>()? }, body.len());
++        assert_eq!(
++            if method == "HEAD" {
++                0
++            } else {
++                length.parse::<usize>()?
++            },
++            body.len()
++        );
+     } else {
+         assert_eq!(
+             status, 204,
+@@ -499,14 +506,17 @@ fn formal_native_standby_ttl_snapshot_commits_real_leader_floor_and_survives_col
+     Ok(())
+ }
+ 
+-
+ #[test]
+ fn formal_native_standby_snapshot_missing_api_origin_remains_503() -> TestResult {
+     // Retain the exact old configuration as an independent refusal. No origin
+     // is synthesized and no permission, archive or transfer lease is created.
+     let pipeline = formal_cold_source()?;
+-    assert!(pipeline.configs.iter().all(|config| config.peers.values()
+-        .all(|peer| peer.api_address.is_none())));
++    assert!(
++        pipeline
++            .configs
++            .iter()
++            .all(|config| config.peers.values().all(|peer| peer.api_address.is_none()))
++    );
+     let leader = pipeline.ready_leader()?;
+     activate_formal_cold(&pipeline, leader)?;
+     let standby = (leader + 1) % 3;
+@@ -514,17 +524,26 @@ fn formal_native_standby_snapshot_missing_api_origin_remains_503() -> TestResult
+     let until = Instant::now() + REQUEST_BUDGET;
+     let _scope = RequestDeadlineScope::enter(until);
+     let mut input = Zeroizing::new(Vec::new());
+-    write!(&mut *input,
++    write!(
++        &mut *input,
+         "GET /v1/sys/storage/raft/snapshot HTTP/1.1\r\nHost: local\r\nX-Vault-Token: {}\r\nConnection: close\r\n\r\n",
+-        pipeline.admin())?;
+-    let service = pipeline.services[standby].as_ref().ok_or("missing API Service")?;
++        pipeline.admin()
++    )?;
++    let service = pipeline.services[standby]
++        .as_ref()
++        .ok_or("missing API Service")?;
+     let output = crate::http::formal_standby_http_wire_fixture(service, &input, until)?;
+-    let split = output.windows(4).position(|part| part == b"\r\n\r\n")
++    let split = output
++        .windows(4)
++        .position(|part| part == b"\r\n\r\n")
+         .ok_or("missing API response framing")?;
+     let header = std::str::from_utf8(&output[..split])?;
+     assert!(header.starts_with("HTTP/1.1 503 "));
+     let body: Value = serde_json::from_slice(&output[split + 4..])?;
+-    assert_eq!(body["errors"], json!(["HA leader API address is unavailable"]));
++    assert_eq!(
++        body["errors"],
++        json!(["HA leader API address is unavailable"])
++    );
+     assert!(body.get("data").is_none());
+     pipeline.with_service(standby, |service| {
+         assert!(service.pending_snapshot_transfer.is_none());
