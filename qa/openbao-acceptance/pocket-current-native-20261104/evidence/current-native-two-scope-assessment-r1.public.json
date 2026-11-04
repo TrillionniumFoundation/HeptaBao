@@ -1,0 +1,495 @@
+{
+  "actualConsumer": {
+    "agentIds": [
+      "main",
+      "tg8687951891"
+    ],
+    "authbusVersion": "0.3.3",
+    "commandSource": "managed",
+    "configuredRuntime": "codex",
+    "credentialProviderRenamed": false,
+    "forcedProfile": false,
+    "forcedRuntime": false,
+    "homeScope": "agent",
+    "localProtocolOnly": [
+      "initialize",
+      "account/login/start"
+    ],
+    "model": "openai/gpt-5.6-sol",
+    "nativeBinarySha256": "37e6f5953f191b04f7b62cb07dae90f51d0947ad89f0355665b421fbde28700b",
+    "nativePluginVersion": "2026.7.1-1",
+    "nativeRuntimeVersion": "0.144.3",
+    "openclawVersion": "2026.7.1-2",
+    "realLoginResponseType": "chatgptAuthTokens"
+  },
+  "buildOriginHost": "rog",
+  "createdUnixMs": 1793781335778,
+  "currentSource": {
+    "mainDefaultCandidateOrdinal": 5,
+    "mainProfiles": 5,
+    "mainUsageStateEmpty": true,
+    "profile3": "Retained source entry, absent from both current default native candidate lists and captured explicit configuration references; no global inactivity claim.",
+    "sourceOrdinal5CredentialSha256": "a440653bdbed7e00251c1e2e1cb969bb4d04d94bf502304ee6a5b04eacf09cb1",
+    "sourceOrdinal5IdentitySha256": "8fc636f1db234f6f224599719619793d5f0b885213d84d126202b5de472f7875",
+    "tgEffectiveProfiles": 5,
+    "tgInheritsCurrentMainOrderAndUsage": true,
+    "tgLocalProfileCount": 0,
+    "tgRawStateRows": 0,
+    "tgRawStoreRows": 1,
+    "unrelatedUserNativeOrdinal4InputPreserved": true
+  },
+  "heptabaoBinarySha256": "7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba",
+  "host": "pocket4",
+  "independentPublicReceiptCrossChecks": [
+    {
+      "case": "current-native-full-r2.exact_receipt_pins",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.successful_frozen_candidate",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.four_distinct_phase_keys",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.all_predicates_pass",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.initial.actual_two_agent_native",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.initial.exact_real_login_responses",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.initial.no_forced_identity_or_refresh",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.initial.owned_native_groups_gone",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.initial.honest_idempotent_import",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.cold-new-process.actual_two_agent_native",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.cold-new-process.exact_real_login_responses",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.cold-new-process.no_forced_identity_or_refresh",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.cold-new-process.owned_native_groups_gone",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.cold-new-process.honest_idempotent_import",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.initial.rollback.strict_three_layer_rollback",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.cold-new-process.rollback.strict_three_layer_rollback",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.cold_and_policy_operations_real",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.all_rollback_guards_once",
+      "passed": true
+    },
+    {
+      "case": "current-native-full-r2.production_and_custody_unchanged",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.exact_receipt_pins",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.successful_frozen_candidate",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.four_distinct_phase_keys",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.all_predicates_pass",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.initial.actual_two_agent_native",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.initial.exact_real_login_responses",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.initial.no_forced_identity_or_refresh",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.initial.owned_native_groups_gone",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.initial.actual_current_profile_recovery",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.cold-new-process.actual_two_agent_native",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.cold-new-process.exact_real_login_responses",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.cold-new-process.no_forced_identity_or_refresh",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.cold-new-process.owned_native_groups_gone",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.cold-new-process.actual_current_profile_recovery",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.initial.rollback.strict_three_layer_rollback",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.cold-new-process.rollback.strict_three_layer_rollback",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.cold_and_policy_operations_real",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.all_rollback_guards_once",
+      "passed": true
+    },
+    {
+      "case": "current-native-missing-r2.production_and_custody_unchanged",
+      "passed": true
+    }
+  ],
+  "nativeBuildReceiptSha256": "2fa263744917e1d71658daa4f34e09ea448fe77ec0b2c0f8ec22c01e2cd84e8e",
+  "normalBuildResultSha256": "7fa76585e94fe2e60bbc3ce754f37e4d9d433e4cf576fcc2e39a1e95771f3f42",
+  "ok": true,
+  "preparePath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-inputs-r1/prepare-r2.public.json",
+  "prepareSha256": "3ae1e850de5bd7feed62598705529dcad06493467ccbd671d72865f7fc127ccb",
+  "qaManifestPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/qa-pins.public.json",
+  "qaManifestSha256": "6d211ec446805fb2a13d422f521447ccb5803ba025746c44c9b3e45d067a163c",
+  "qualification": {
+    "actualServerSigkillColdRecovery": true,
+    "allClientMigration": false,
+    "backupMigration": false,
+    "currentTwoAgentNativeCredentialTransport": true,
+    "formalHeptabaoTlsApproleKvPolicyRenewRevoke": true,
+    "fullReplacement": false,
+    "holdRelease": false,
+    "legacyCleanup": false,
+    "missingCurrentCredentialRecovery": true,
+    "modelQuotaAvailability": false,
+    "nativeBackgroundAttemptCountKnown": false,
+    "productionGatewayRestart": false,
+    "productionInputsPreserved": true,
+    "productionTrafficCutover": false,
+    "providerAvailability": false,
+    "providerNetworkEgress": false,
+    "twoAgentCompleteAuthRollback": true
+  },
+  "retainedEvidence": [
+    {
+      "checks": "12/13",
+      "kind": "preflight-contract-error",
+      "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-full-r1/live/result.public.json",
+      "reason": "Incorrect QA inference that zero local profiles implied zero raw rows; no predicate was changed after a native/product failure.",
+      "runtimeStarted": false,
+      "sha256": "9ea170dd126fdcd936c9d05ebf06c054596b1472f89610e4ecc23e10061097f2"
+    },
+    {
+      "kind": "raw-source-shape-correction",
+      "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/tg-local-auth-shape-correction-r1.public.json",
+      "sha256": "158fb3da106d0b81abb110a002938aa2df86a1a76cc85d927e8dd6306b249adb"
+    },
+    {
+      "checks": "30/30",
+      "kind": "actual-two-agent-selector",
+      "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/actual-native-selector-r6/result.public.json",
+      "sha256": "79e232c4282796ffb07c174fbc32c5e4a4cb5f87167ec42851fd042cc8a8f3ea"
+    },
+    {
+      "kind": "original-generic-sdk-scope",
+      "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/live-r1/result.public.json",
+      "scope": "Earlier generic SDK source1 test remains separate; not relabeled as current native ordinal5 evidence.",
+      "sha256": "b272fabcb925d09cca3df0688f56f83bdaafbcd38b1202d04cdfd17b07701632"
+    },
+    {
+      "kind": "source-package-preparation-error",
+      "path": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-inputs-r1/prepare-r1-failure.public.json",
+      "runtimeStarted": false,
+      "sha256": "4e9a319572f3e87659a14c1510c19fe6e210f0f2e2c1c0c33a8622edd650a0f1"
+    }
+  ],
+  "scenarios": [
+    {
+      "allOwnedStopped": true,
+      "coreBytes": 40018,
+      "coreChecks": 49,
+      "corePassed": 49,
+      "corePath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-full-r2/live/result.public.json",
+      "coreSha256": "9006c6d0eae73de89dd62ed381877c873cabd1fff94f790ded7c3e2e2241c7dd",
+      "elapsedSeconds": 18.21,
+      "executionPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-full-r2/execution.result.public.json",
+      "executionSha256": "0f7c864cdb6bdeee544dfa645e5d102fe9956454f44fdeec66ae5b40024b74a1",
+      "outcomeUnknown": false,
+      "phaseResults": [
+        {
+          "actualFactories": 2,
+          "agentStoreEffects": [
+            {
+              "agentId": "main",
+              "logicalProfilesChanged": false,
+              "orderPreserved": true,
+              "profileCount": 5,
+              "rawAuthRowsChanged": false,
+              "usagePreserved": true
+            },
+            {
+              "agentId": "tg8687951891",
+              "logicalProfilesChanged": false,
+              "orderPreserved": true,
+              "profileCount": 5,
+              "rawAuthRowsChanged": false,
+              "usagePreserved": true
+            }
+          ],
+          "checks": 111,
+          "ownedNativeGroups": 2,
+          "passed": 111,
+          "phase": "initial",
+          "rollbackAttemptedOnce": null,
+          "rollbackRetried": false,
+          "rpcCount": 4
+        },
+        {
+          "actualFactories": 2,
+          "agentStoreEffects": [
+            {
+              "agentId": "main",
+              "logicalProfilesChanged": false,
+              "orderPreserved": true,
+              "profileCount": 5,
+              "rawAuthRowsChanged": false,
+              "usagePreserved": true
+            },
+            {
+              "agentId": "tg8687951891",
+              "logicalProfilesChanged": false,
+              "orderPreserved": true,
+              "profileCount": 5,
+              "rawAuthRowsChanged": false,
+              "usagePreserved": true
+            }
+          ],
+          "checks": 111,
+          "ownedNativeGroups": 2,
+          "passed": 111,
+          "phase": "cold-new-process",
+          "rollbackAttemptedOnce": null,
+          "rollbackRetried": false,
+          "rpcCount": 4
+        },
+        {
+          "actualFactories": 0,
+          "agentStoreEffects": null,
+          "checks": 80,
+          "ownedNativeGroups": 0,
+          "passed": 80,
+          "phase": "initial.rollback",
+          "rollbackAttemptedOnce": true,
+          "rollbackRetried": false,
+          "rpcCount": 0
+        },
+        {
+          "actualFactories": 0,
+          "agentStoreEffects": null,
+          "checks": 80,
+          "ownedNativeGroups": 0,
+          "passed": 80,
+          "phase": "cold-new-process.rollback",
+          "rollbackAttemptedOnce": true,
+          "rollbackRetried": false,
+          "rpcCount": 0
+        }
+      ],
+      "productionUnitsUnchanged": true,
+      "protectedInputsUnchanged": true,
+      "rollbackGuards": {
+        "cold-new-process": {
+          "attemptedOnce": true,
+          "outcome": "success",
+          "retried": false
+        },
+        "initial": {
+          "attemptedOnce": true,
+          "outcome": "success",
+          "retried": false
+        }
+      },
+      "scenario": "full-current-baseline",
+      "sourceAfterFence": {
+        "bothAuthTablesExact": true,
+        "configExact": true,
+        "kernelSourcesReadOnly": true,
+        "metadataObservedUnchanged": true
+      }
+    },
+    {
+      "allOwnedStopped": true,
+      "coreBytes": 39967,
+      "coreChecks": 49,
+      "corePassed": 49,
+      "corePath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-missing-r2/live/result.public.json",
+      "coreSha256": "133e1060d327bd14cae5b0673d3c5649c92d99c5d306f946114bcd480c691b41",
+      "elapsedSeconds": 20.734,
+      "executionPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-missing-r2/execution.result.public.json",
+      "executionSha256": "dbb95fa33ec3fad08a24a951d47c2991e3dfbda26decf8246f74d048924c61bc",
+      "outcomeUnknown": false,
+      "phaseResults": [
+        {
+          "actualFactories": 2,
+          "agentStoreEffects": [
+            {
+              "agentId": "main",
+              "logicalProfilesChanged": true,
+              "orderPreserved": true,
+              "profileCount": 5,
+              "rawAuthRowsChanged": true,
+              "usagePreserved": true
+            },
+            {
+              "agentId": "tg8687951891",
+              "logicalProfilesChanged": true,
+              "orderPreserved": true,
+              "profileCount": 5,
+              "rawAuthRowsChanged": false,
+              "usagePreserved": true
+            }
+          ],
+          "checks": 110,
+          "ownedNativeGroups": 2,
+          "passed": 110,
+          "phase": "initial",
+          "rollbackAttemptedOnce": null,
+          "rollbackRetried": false,
+          "rpcCount": 4
+        },
+        {
+          "actualFactories": 2,
+          "agentStoreEffects": [
+            {
+              "agentId": "main",
+              "logicalProfilesChanged": true,
+              "orderPreserved": true,
+              "profileCount": 5,
+              "rawAuthRowsChanged": true,
+              "usagePreserved": true
+            },
+            {
+              "agentId": "tg8687951891",
+              "logicalProfilesChanged": true,
+              "orderPreserved": true,
+              "profileCount": 5,
+              "rawAuthRowsChanged": false,
+              "usagePreserved": true
+            }
+          ],
+          "checks": 110,
+          "ownedNativeGroups": 2,
+          "passed": 110,
+          "phase": "cold-new-process",
+          "rollbackAttemptedOnce": null,
+          "rollbackRetried": false,
+          "rpcCount": 4
+        },
+        {
+          "actualFactories": 0,
+          "agentStoreEffects": null,
+          "checks": 80,
+          "ownedNativeGroups": 0,
+          "passed": 80,
+          "phase": "initial.rollback",
+          "rollbackAttemptedOnce": true,
+          "rollbackRetried": false,
+          "rpcCount": 0
+        },
+        {
+          "actualFactories": 0,
+          "agentStoreEffects": null,
+          "checks": 80,
+          "ownedNativeGroups": 0,
+          "passed": 80,
+          "phase": "cold-new-process.rollback",
+          "rollbackAttemptedOnce": true,
+          "rollbackRetried": false,
+          "rpcCount": 0
+        }
+      ],
+      "productionUnitsUnchanged": true,
+      "protectedInputsUnchanged": true,
+      "rollbackGuards": {
+        "cold-new-process": {
+          "attemptedOnce": true,
+          "outcome": "success",
+          "retried": false
+        },
+        "initial": {
+          "attemptedOnce": true,
+          "outcome": "success",
+          "retried": false
+        }
+      },
+      "scenario": "missing-current-ordinal5-recovery",
+      "sourceAfterFence": {
+        "bothAuthTablesExact": true,
+        "configExact": true,
+        "kernelSourcesReadOnly": true,
+        "metadataObservedUnchanged": true
+      }
+    }
+  ],
+  "schema": "heptabao.pocket-current-native-two-scope-assessment.v1",
+  "scopeDecisions": [
+    "Full-current-baseline preserves all existing credential bytes, identities, order, usage and local table representations; actual import is idempotent.",
+    "Missing-current-ordinal5 is a separate owned recovery fixture. Only that one current credential is absent at its start; HeptaBao restores its exact real bytes, leaving other identities/order/usage unchanged.",
+    "Recovery rollback restores its own missing-profile starting baseline; it is not described as a production snapshot.",
+    "Both phases in both scopes use actual installed registry/default selector/factory, then return original native RPC responses without fabricating acceptance.",
+    "Rollback uses actual installed SDK local-store CAS, verifies effective-store inheritance, and restores complete original auth-table rows and timestamps with raw CAS.",
+    "The production gateway and restart helper remain inactive behind their original hold markers. Production services were not started or restarted."
+  ],
+  "sourceCommit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "sourceTree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+}

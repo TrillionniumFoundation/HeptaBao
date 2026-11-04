@@ -1,0 +1,10 @@
+{
+  "error": "Wrapper0.144.3 declares npm alias package0.144.3-linux-x64, not identical bare version",
+  "jobId": "1a1a59d7b5b-fc05-2007",
+  "nativeProcessStarted": false,
+  "normalBinaryCopyAlreadyVerified": true,
+  "ok": false,
+  "phase": "optional platform package version check",
+  "productionChanged": false,
+  "providerCalled": false
+}

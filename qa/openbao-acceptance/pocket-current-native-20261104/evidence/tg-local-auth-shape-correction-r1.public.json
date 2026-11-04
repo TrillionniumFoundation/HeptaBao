@@ -1,0 +1,46 @@
+{
+  "actualTwoAgentSelectorReceiptSha256": "79e232c4282796ffb07c174fbc32c5e4a4cb5f87167ec42851fd042cc8a8f3ea",
+  "completeCurrentRowsEqualPriorPrimaryRows": true,
+  "completeCurrentRowsSha256": "76f1ceb53832209d67692c17ba4967df8fa0114f2365989fa5a8c963b095c4e6",
+  "correction": "Zero local profiles does not mean zero raw SQLite auth rows. Original rows and updated_at must be preserved.",
+  "nativeProcessStarted": false,
+  "newProductionReadPerformed": false,
+  "previousPreflightFailurePreserved": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-full-r1/live/result.public.json",
+  "previousPreflightFailureSha256": "9ea170dd126fdcd936c9d05ebf06c054596b1472f89610e4ecc23e10061097f2",
+  "priorCapturePath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-profile3-reference-r1/tg8687951891-auth-rows.private.json",
+  "priorCaptureSha256": "ee280e14f48f3f6598f2c4cb60307a29fa63f17baef9d966d603365b47d0e67b",
+  "productionChanged": false,
+  "providerCalled": false,
+  "rawRowsMustRemainExactDuringRollback": true,
+  "schema": "heptabao.pocket-tg-auth-shape-correction.v1",
+  "scope": "Only already-captured exact current/prior tg auth rows",
+  "sourceCapturePath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-full-r1/live/tg8687951891-source-auth.private.json",
+  "sourceCaptureSha256": "3c75ef251f8f6a16b2d276db924542f0502b40682d8862228993d7d5897ccce3",
+  "tables": {
+    "state": {
+      "rowCount": 0,
+      "rows": []
+    },
+    "store": {
+      "rowCount": 1,
+      "rows": [
+        {
+          "allValuesKeptPrivate": true,
+          "isPrimary": true,
+          "jsonSha256": "69fd6c1dd89db57103baa4ad0c5f0ce5c6e597e25a283465f279471e42213517",
+          "keySha256": "986a1b7135f4986150aa5fa0028feeaa66cdaf3ed6a00a355dd86e042f7fb494",
+          "knownTopLevelKeys": [
+            "profiles",
+            "version"
+          ],
+          "localProfileCount": 0,
+          "orderPresent": false,
+          "otherTopLevelKeyCount": 0,
+          "updatedAt": 1788500646416,
+          "usageStatsPresent": false
+        }
+      ]
+    }
+  },
+  "twoAgentInheritedOrdinal5ConclusionUnchanged": true
+}

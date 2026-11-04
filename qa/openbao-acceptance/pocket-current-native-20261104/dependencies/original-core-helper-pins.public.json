@@ -1,0 +1,81 @@
+{
+  "executed": false,
+  "files": [
+    {
+      "origin_host": "x230",
+      "origin_path": "/home/qian/heptabao-blocker-closure-20261104-r2/source/qa/openbao-acceptance/authbus_current_credential_stage.py",
+      "relative": "source/qa/openbao-acceptance/authbus_current_credential_stage.py",
+      "sha256": "1851ae94089dfb32c2f088164578044230a255239d11f598d41560899366936e"
+    },
+    {
+      "origin_host": "x230",
+      "origin_path": "/home/qian/heptabao-blocker-closure-20261104-r2/source/qa/openbao-acceptance/native_v6_authbus_client_live.py",
+      "relative": "source/qa/openbao-acceptance/native_v6_authbus_client_live.py",
+      "sha256": "2357c3486d9312da65617705b13e42b70434231efe5b3812c6131f71d3735a0e"
+    },
+    {
+      "origin_host": "x230",
+      "origin_path": "/home/qian/heptabao-blocker-closure-20261104-r2/source/qa/openbao-acceptance/cert_auth_live.py",
+      "relative": "source/qa/openbao-acceptance/cert_auth_live.py",
+      "sha256": "17da3c53ccb5379b6b63790fb34dc0502666662ae5528dfad97eccfb3ac1acc9"
+    },
+    {
+      "origin_host": "x230",
+      "origin_path": "/home/qian/heptabao-blocker-closure-20261104-r2/source/qa/single-node/smoke.py",
+      "relative": "source/qa/single-node/smoke.py",
+      "sha256": "ced4e40a825d3d98a285598d40b58c61083cfc397d0859a783958d855a161971"
+    },
+    {
+      "origin_host": "x230",
+      "origin_path": "/home/qian/heptabao-blocker-closure-20261104-r2/source/qa/openbao-acceptance/owned_process.py",
+      "relative": "source/qa/openbao-acceptance/owned_process.py",
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    },
+    {
+      "origin_host": "x230",
+      "origin_path": "/home/qian/heptabao-blocker-closure-20261104-r2/source/qa/openbao-acceptance/fixture_mounts.py",
+      "relative": "source/qa/openbao-acceptance/fixture_mounts.py",
+      "sha256": "55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5"
+    },
+    {
+      "origin_host": "mac",
+      "origin_path": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/source/qa/openbao-acceptance/authbus_profile2_selector_live.py",
+      "relative": "controller/original/authbus_profile2_selector_live.py",
+      "sha256": "72f8b7031f2be9e1f4a4a224a8c04b77ac6985fed9360babe5b47d23004a0855"
+    },
+    {
+      "origin_host": "mac",
+      "origin_path": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/source/qa/openbao-acceptance/authbus_profile2_consumer.mjs",
+      "relative": "controller/original/authbus_profile2_consumer.mjs",
+      "sha256": "40f3deaa00ace62f1e69912f6e91da8747cc61a9dfe9da0d9f7df2cad0def6c4"
+    },
+    {
+      "origin_host": "mac",
+      "origin_path": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/source/qa/openbao-acceptance/authbus_selected_usage.mjs",
+      "relative": "controller/original/authbus_selected_usage.mjs",
+      "sha256": "426ad02701aa4cabcf43947d748bc6e203f513a3cf23fbe4e79bd4d74b333d22"
+    },
+    {
+      "origin_host": "mac",
+      "origin_path": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/source/qa/openbao-acceptance/authbus_gateway_store.mjs",
+      "relative": "controller/original/authbus_gateway_store.mjs",
+      "sha256": "1af9676818fda5433378790b79082130b43e5641cb9af03bf292bf4125cfdfd9"
+    },
+    {
+      "origin_host": "x230",
+      "origin_path": "/home/qian/heptabao-blocker-closure-20261104-r2/artifacts/native-build.main.public.json",
+      "relative": "artifacts/native-build.main.public.json",
+      "sha256": "68abdcdbf3742911f6ca5e839604fdb38d37cb8573d8fcd74f75429e0357a16a"
+    },
+    {
+      "origin_host": "x230",
+      "origin_path": "/home/qian/heptabao-blocker-closure-20261104-r2/artifacts/native-build-result.main.public.json",
+      "relative": "artifacts/native-build-result.main.public.json",
+      "sha256": "68c2adac6ad5718cf3a4c21b445140b00fef9e53e2cdc041cd83c0b8957424d1"
+    }
+  ],
+  "helper_scope": "Exact QA/helper file copies only, not a full git checkout. Mac consumer/controller are separately frozen helper bytes, not part of the compiled server commit.",
+  "schema": "heptabao.pocket4-core-original-helper-pins.v1",
+  "source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
+  "source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95"
+}

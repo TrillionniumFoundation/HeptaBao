@@ -1,0 +1,26 @@
+{
+  "files": {
+    "pocket_current_native_live_r2.py": {
+      "bytes": 31081,
+      "sha256": "c3393b6daf53df08cec685b63ce8f91a6d2746c8820fc2309fef7a122cafebb8"
+    },
+    "pocket_native_auth_rows_cas_r1.mjs": {
+      "bytes": 2703,
+      "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83"
+    },
+    "pocket_native_consumer_r3.mjs": {
+      "bytes": 21062,
+      "sha256": "89b99a4e8ccea378df69e9698b8acfcfc91278fc5841bbe26bef1caab0431243"
+    },
+    "pocket_native_launch_r2.py": {
+      "bytes": 7318,
+      "sha256": "396b9ee0ebe44c7862f6fdfce58d89fcc5b325187eb160f726c0077600684368"
+    },
+    "pocket_native_observer_r3.mjs": {
+      "bytes": 11901,
+      "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027"
+    }
+  },
+  "runtimeExecuted": false,
+  "schema": "heptabao.pocket-current-native-qa-pins.v1"
+}

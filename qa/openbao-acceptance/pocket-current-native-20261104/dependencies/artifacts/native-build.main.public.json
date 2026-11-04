@@ -1,0 +1,19 @@
+{
+  "binary_sha256": "3d9fdf79e26abf4c33fa57568ae7a4c88c79c5def569d92d571c639b855f3df8",
+  "build_exit_code": 0,
+  "features": [
+    "default",
+    "native-v6-ha",
+    "native-v6-storage"
+  ],
+  "native_abi": "x86_64-unknown-linux-gnu",
+  "provenance": {
+    "cargo_events_sha256": "5901cdaacf3e4393d4269e8e6f18013b3262ae4844b64c2de547fdd706741eed",
+    "result_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/combined-blocker-closure-normal-build-r1/result.public.json",
+    "result_sha256": "68c2adac6ad5718cf3a4c21b445140b00fef9e53e2cdc041cd83c0b8957424d1"
+  },
+  "schema": "heptabao.native-build.v1",
+  "source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
+  "source_freeze_verified": true,
+  "source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95"
+}

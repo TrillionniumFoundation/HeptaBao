@@ -1,0 +1,196 @@
+{
+  "binariesIncluded": false,
+  "files": [
+    {
+      "bytes": 31081,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/pocket_current_native_live_r2.py",
+      "path": "qa/pocket_current_native_live_r2.py",
+      "sha256": "c3393b6daf53df08cec685b63ce8f91a6d2746c8820fc2309fef7a122cafebb8"
+    },
+    {
+      "bytes": 2703,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/pocket_native_auth_rows_cas_r1.mjs",
+      "path": "qa/pocket_native_auth_rows_cas_r1.mjs",
+      "sha256": "4b4fc09d04b58896965856d436ef883ead90eb140b051efc15261ff72912ae83"
+    },
+    {
+      "bytes": 21062,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/pocket_native_consumer_r3.mjs",
+      "path": "qa/pocket_native_consumer_r3.mjs",
+      "sha256": "89b99a4e8ccea378df69e9698b8acfcfc91278fc5841bbe26bef1caab0431243"
+    },
+    {
+      "bytes": 7318,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/pocket_native_launch_r2.py",
+      "path": "qa/pocket_native_launch_r2.py",
+      "sha256": "396b9ee0ebe44c7862f6fdfce58d89fcc5b325187eb160f726c0077600684368"
+    },
+    {
+      "bytes": 11901,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/pocket_native_observer_r3.mjs",
+      "path": "qa/pocket_native_observer_r3.mjs",
+      "sha256": "663b93419e66d92d5518135ef01c6703a67e1ddfed2d0b313beabca0998c3027"
+    },
+    {
+      "bytes": 863,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-qa-r3/qa-pins.public.json",
+      "path": "qa/qa-pins.public.json",
+      "sha256": "6d211ec446805fb2a13d422f521447ccb5803ba025746c44c9b3e45d067a163c"
+    },
+    {
+      "bytes": 4366,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/original-core-helper-pins.public.json",
+      "path": "dependencies/original-core-helper-pins.public.json",
+      "sha256": "cb47a57507c38bc56c59a20ff77a82d977c6a15d6ac8c90d7f79c8fb8c274de2"
+    },
+    {
+      "bytes": 17741,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/source/qa/openbao-acceptance/authbus_current_credential_stage.py",
+      "path": "dependencies/source/qa/openbao-acceptance/authbus_current_credential_stage.py",
+      "sha256": "1851ae94089dfb32c2f088164578044230a255239d11f598d41560899366936e"
+    },
+    {
+      "bytes": 23329,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/source/qa/openbao-acceptance/native_v6_authbus_client_live.py",
+      "path": "dependencies/source/qa/openbao-acceptance/native_v6_authbus_client_live.py",
+      "sha256": "2357c3486d9312da65617705b13e42b70434231efe5b3812c6131f71d3735a0e"
+    },
+    {
+      "bytes": 19737,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/source/qa/openbao-acceptance/cert_auth_live.py",
+      "path": "dependencies/source/qa/openbao-acceptance/cert_auth_live.py",
+      "sha256": "17da3c53ccb5379b6b63790fb34dc0502666662ae5528dfad97eccfb3ac1acc9"
+    },
+    {
+      "bytes": 16470,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/source/qa/single-node/smoke.py",
+      "path": "dependencies/source/qa/single-node/smoke.py",
+      "sha256": "ced4e40a825d3d98a285598d40b58c61083cfc397d0859a783958d855a161971"
+    },
+    {
+      "bytes": 28442,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/source/qa/openbao-acceptance/owned_process.py",
+      "path": "dependencies/source/qa/openbao-acceptance/owned_process.py",
+      "sha256": "0ee96c9f43b50ebd57ee8f0ef95f2431c441ec02c1799992588dbf50768745d0"
+    },
+    {
+      "bytes": 1560,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/source/qa/openbao-acceptance/fixture_mounts.py",
+      "path": "dependencies/source/qa/openbao-acceptance/fixture_mounts.py",
+      "sha256": "55075ee436c22816a176dfb06cec387df37fdadd581c16acc07dabc837ba85b5"
+    },
+    {
+      "bytes": 32115,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/controller/original/authbus_profile2_selector_live.py",
+      "path": "dependencies/controller/original/authbus_profile2_selector_live.py",
+      "sha256": "72f8b7031f2be9e1f4a4a224a8c04b77ac6985fed9360babe5b47d23004a0855"
+    },
+    {
+      "bytes": 14394,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/controller/original/authbus_profile2_consumer.mjs",
+      "path": "dependencies/controller/original/authbus_profile2_consumer.mjs",
+      "sha256": "40f3deaa00ace62f1e69912f6e91da8747cc61a9dfe9da0d9f7df2cad0def6c4"
+    },
+    {
+      "bytes": 5174,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/controller/original/authbus_selected_usage.mjs",
+      "path": "dependencies/controller/original/authbus_selected_usage.mjs",
+      "sha256": "426ad02701aa4cabcf43947d748bc6e203f513a3cf23fbe4e79bd4d74b333d22"
+    },
+    {
+      "bytes": 2284,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/controller/original/authbus_gateway_store.mjs",
+      "path": "dependencies/controller/original/authbus_gateway_store.mjs",
+      "sha256": "1af9676818fda5433378790b79082130b43e5641cb9af03bf292bf4125cfdfd9"
+    },
+    {
+      "bytes": 770,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/artifacts/native-build.main.public.json",
+      "path": "dependencies/artifacts/native-build.main.public.json",
+      "sha256": "68abdcdbf3742911f6ca5e839604fdb38d37cb8573d8fcd74f75429e0357a16a"
+    },
+    {
+      "bytes": 3074,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/artifacts/native-build-result.main.public.json",
+      "path": "dependencies/artifacts/native-build-result.main.public.json",
+      "sha256": "68c2adac6ad5718cf3a4c21b445140b00fef9e53e2cdc041cd83c0b8957424d1"
+    },
+    {
+      "bytes": 17340,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-two-scope-assessment-r1.public.json",
+      "path": "evidence/current-native-two-scope-assessment-r1.public.json",
+      "sha256": "9f7a9ee41ea0bcfd1246380c438161989163086810ce190a8ce7f1b99461315b"
+    },
+    {
+      "bytes": 1992,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-full-r2/execution.result.public.json",
+      "path": "evidence/current-native-full-r2/execution.result.public.json",
+      "sha256": "0f7c864cdb6bdeee544dfa645e5d102fe9956454f44fdeec66ae5b40024b74a1"
+    },
+    {
+      "bytes": 40018,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-full-r2/live/result.public.json",
+      "path": "evidence/current-native-full-r2/live/result.public.json",
+      "sha256": "9006c6d0eae73de89dd62ed381877c873cabd1fff94f790ded7c3e2e2241c7dd"
+    },
+    {
+      "bytes": 2008,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-missing-r2/execution.result.public.json",
+      "path": "evidence/current-native-missing-r2/execution.result.public.json",
+      "sha256": "dbb95fa33ec3fad08a24a951d47c2991e3dfbda26decf8246f74d048924c61bc"
+    },
+    {
+      "bytes": 39967,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-missing-r2/live/result.public.json",
+      "path": "evidence/current-native-missing-r2/live/result.public.json",
+      "sha256": "133e1060d327bd14cae5b0673d3c5649c92d99c5d306f946114bcd480c691b41"
+    },
+    {
+      "bytes": 2378,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-full-r1/live/result.public.json",
+      "path": "evidence/current-native-full-r1/live/result.public.json",
+      "sha256": "9ea170dd126fdcd936c9d05ebf06c054596b1472f89610e4ecc23e10061097f2"
+    },
+    {
+      "bytes": 2197,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/tg-local-auth-shape-correction-r1.public.json",
+      "path": "evidence/tg-local-auth-shape-correction-r1.public.json",
+      "sha256": "158fb3da106d0b81abb110a002938aa2df86a1a76cc85d927e8dd6306b249adb"
+    },
+    {
+      "bytes": 342,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-inputs-r1/prepare-r1-failure.public.json",
+      "path": "evidence/current-native-inputs-r1/prepare-r1-failure.public.json",
+      "sha256": "4e9a319572f3e87659a14c1510c19fe6e210f0f2e2c1c0c33a8622edd650a0f1"
+    },
+    {
+      "bytes": 10055,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-inputs-r1/prepare-r2.public.json",
+      "path": "evidence/current-native-inputs-r1/prepare-r2.public.json",
+      "sha256": "3ae1e850de5bd7feed62598705529dcad06493467ccbd671d72865f7fc127ccb"
+    },
+    {
+      "bytes": 771,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-inputs-r1/artifacts/native-build.public.json",
+      "path": "evidence/current-native-inputs-r1/artifacts/native-build.public.json",
+      "sha256": "2fa263744917e1d71658daa4f34e09ea448fe77ec0b2c0f8ec22c01e2cd84e8e"
+    },
+    {
+      "bytes": 3084,
+      "originalPath": "/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/current-native-inputs-r1/artifacts/normal-build.result.public.json",
+      "path": "evidence/current-native-inputs-r1/artifacts/normal-build.result.public.json",
+      "sha256": "7fa76585e94fe2e60bbc3ce754f37e4d9d433e4cf576fcc2e39a1e95771f3f42"
+    },
+    {
+      "bytes": 4667,
+      "path": "README.md",
+      "sha256": "0e983be59d49260ae6b56212ed06f126045aec5c30b7e29aa8dbfc7824ac1d38"
+    }
+  ],
+  "privateFilesIncluded": false,
+  "productionChanged": false,
+  "runtimeExecuted": false,
+  "schema": "heptabao.pocket-current-native-publication.v1",
+  "sourceCommit": "33cafa4c6e29f0bde1553e041550d21b4c725d9c",
+  "sourceTree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336"
+}
