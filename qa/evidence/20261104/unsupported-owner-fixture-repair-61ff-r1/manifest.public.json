@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.unsupported-owner-regression-repair.v1",
+  "base_physical_source": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "base_same_tree_review_commit": "c71b405970544682e7b9b25c91214f66351a767b",
+  "base_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "scope": "tests only, preserve rejected operation and every full owner/graph/destination/source custody assertion",
+  "actual_original_red_job": "1a1a7e9ec36-fc05-2cea",
+  "actual_failure": "child SSH fails namespace profile at 503 before configured409 / experimental204 and cold GraphRejected",
+  "repair": "Use actual root Kubernetes configuration with private random bearer and genuine sealed startup outbound enrollment; local config read/write use real Service API; no provider credential request",
+  "pipeline_change": "Default startup passes empty options; negative fixture only enrolls all three actual sealed Services before initial unseal; no restart of that source is claimed",
+  "positive_expectations_unchanged": [
+    409,
+    204,
+    "GraphRejected",
+    "destination absent",
+    "complete secret-bearing owner bytes equal",
+    "native graph projection equal",
+    "source identity/generation equal",
+    "archive/seal/shares unchanged",
+    "unsupported config boundary501 before/after"
+  ],
+  "additional_observations": [
+    "private owner contains exact generated random bearer without formatting it",
+    "owned nonblocking loopback listener has no accepted provider connection"
+  ],
+  "source_diff_sha256": "8b590f1a1026f7a4452ac0056e99f98a65be4a9868279a3062a18242336200f4",
+  "sources": [
+    {
+      "path": "crates/heptabao-server/src/service_native_storage_tests.rs",
+      "before_sha256": "28f1b8c291f9e08f19d28981a961de96285d12f08300c0e3b262ae9b5cfd8271",
+      "after_sha256": "f68d0a5e23962d507dce39d6f34c0cf941f5c910c7261e7c7706e0a08a8782a6",
+      "bytes": 26173,
+      "patch_reconstruction_exact": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+      "before_sha256": "fbb0d48eb5271d1ef99f56df9fefa11b7ca90b641a5cfd683fd218b3026f76f8",
+      "after_sha256": "d45af70a5f58e9ff7d7f5e8863a4e82a107ab2eedb44c795099d99adeec2f561",
+      "bytes": 72053,
+      "patch_reconstruction_exact": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+      "before_sha256": "a6178746f00c79a7a5c4d938fcaa880b5c163e684a845629512bc787c6429581",
+      "after_sha256": "ef2da7061546012e32c06776b3d3aa64c594286b8fa2d4c35dde24f0a03403d5",
+      "bytes": 33680,
+      "patch_reconstruction_exact": true
+    }
+  ],
+  "compiled": false,
+  "tests_executed": false,
+  "full_replacement_qualified": false
+}

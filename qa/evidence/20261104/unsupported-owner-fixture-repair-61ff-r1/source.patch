@@ -1,0 +1,542 @@
+--- a/crates/heptabao-server/src/service_native_storage_tests.rs
++++ b/crates/heptabao-server/src/service_native_storage_tests.rs
+@@ -274,84 +274,81 @@
+ fn configured_native_activation_rejects_unsupported_live_engine_without_retiring_v5() -> TestResult
+ {
+     let root = super::super::tests::Root::new();
++    // An actual bound loopback endpoint is enrolled while sealed. Config GET
++    // and POST are local owner operations; no provider request is authorized.
++    let provider_listener = std::net::TcpListener::bind("127.0.0.1:0")?;
++    provider_listener.set_nonblocking(true)?;
++    let provider_address = provider_listener.local_addr()?;
++    let provider_origin = format!("https://localhost:{}", provider_address.port());
++    let provider_bearer = Zeroizing::new(hex(&crypto::random::<32>()?));
+     let mut service = root.service()?;
++    service.install_outbound_endpoints(vec![crate::outbound::EndpointConfig {
++        origin: provider_origin.clone(),
++        address: provider_address,
++        server_name: "localhost".to_owned(),
++        ca_pem: include_str!("testdata/kubernetes-api-ca.pem").to_owned(),
++        path_prefix: "/api/".to_owned(),
++        shared_secret: String::new(),
++    }])?;
+     service.configure_native_v6_storage(NativeStorageProfile::File)?;
+     let (_, token) = initialize(&mut service)?;
+-    // Root SSH has a formal native owner. Preserve the real CA/private
+-    // owner in a child namespace whose native owner is still unsupported.
+-    const CHILD_NAMESPACE: &str = "unsupported-ssh-child";
++    // Root Kubernetes still lacks a formal native owner. Keep its genuine
++    // secret-bearing config in root, so catalog validation reaches the
++    // configured-storage refusal instead of an earlier child-profile refusal.
+     assert_eq!(
+         request(
+             &mut service,
+             "POST",
+-            "sys/namespaces/unsupported-ssh-child",
++            "sys/mounts/kubernetes",
+             &token,
+-            json!({})
+-        )
+-        .status,
+-        200
+-    );
+-    let child_request = |service: &mut Service, method: &str, path: &str, body: Value| {
+-        let _deadline = crate::request_deadline::RequestDeadlineScope::enter(
+-            std::time::Instant::now() + Duration::from_secs(15),
+-        );
+-        service.handle(method, path, CHILD_NAMESPACE, &token, body)
+-    };
+-    assert_eq!(
+-        child_request(
+-            &mut service,
+-            "POST",
+-            "sys/mounts/ssh",
+-            json!({"type":"ssh"})
++            json!({"type":"kubernetes"})
+         )
+         .status,
+         204
+     );
+     assert_eq!(
+-        child_request(
++        request(
+             &mut service,
+             "POST",
+-            "ssh/config/ca",
+-            json!({"generate_signing_key":true,"key_type":"ssh-ed25519"})
++            "kubernetes/config",
++            &token,
++            json!({"kubernetes_host":provider_origin,"service_account_token":provider_bearer.as_str()})
+         )
+         .status,
+-        200
++        204
+     );
+-    let before = child_request(&mut service, "GET", "ssh/config/ca", json!({}));
++    let before = request(&mut service, "GET", "kubernetes/config", &token, json!({}));
+     assert_eq!(before.status, 200);
+-    let source = service
+-        .state
+-        .as_ref()
+-        .ok_or("unsupported child SSH state")?;
++    assert_eq!(before.body["data"]["service_account_token_set"], true);
++    let source = service.state.as_ref().ok_or("unsupported Kubernetes state")?;
+     assert!(!source.engines.supports_native_v6_root_storage());
+     let owner_before = crate::service::owner_store::serialize_owner(source)
+-        .map_err(|_| "unsupported child SSH complete owner before")?;
++        .map_err(|_| "unsupported Kubernetes complete owner before")?;
++    assert!(owner_before.windows(provider_bearer.len()).any(|part| part == provider_bearer.as_bytes()));
+     let identity_before = service
+         .current_state_identity()
+-        .map_err(|_| "unsupported child SSH v5 identity before")?;
++        .map_err(|_| "unsupported Kubernetes v5 identity before")?;
+     assert_eq!(
+         request(&mut service, "POST", ACTIVATE_PATH, &token, json!({})).status,
+         409
+     );
+     assert!(service.native_root.is_none());
+-    let retained = child_request(&mut service, "GET", "ssh/config/ca", json!({}));
++    let retained = request(&mut service, "GET", "kubernetes/config", &token, json!({}));
+     assert_eq!(retained.status, 200);
+     assert_eq!(retained.body["data"], before.body["data"]);
+     let owner_after = crate::service::owner_store::serialize_owner(
+-        service
+-            .state
+-            .as_ref()
+-            .ok_or("unsupported child SSH retained state")?,
++        service.state.as_ref().ok_or("unsupported Kubernetes retained state")?,
+     )
+-    .map_err(|_| "unsupported child SSH complete retained owner")?;
+-    // Compare the complete secret-bearing encoding without formatting it.
++    .map_err(|_| "unsupported Kubernetes complete retained owner")?;
++    // Compare every secret-bearing owner byte without formatting it.
+     assert!(owner_after.as_slice() == owner_before.as_slice());
+     assert_eq!(
+         service
+             .current_state_identity()
+-            .map_err(|_| "unsupported child SSH retained v5 identity")?,
++            .map_err(|_| "unsupported Kubernetes retained v5 identity")?,
+         identity_before
+     );
++    assert!(matches!(provider_listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock));
+     Ok(())
+ }
+ 
+--- a/crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs
+@@ -303,63 +303,93 @@
+     }
+ 
+     fn start_with_configured_storage(configured_native_storage: bool) -> TestResult<Self> {
++        Self::start_with_initial_configuration(configured_native_storage, &[])
++    }
++
++    // The negative archive fixture installs its real process enrollment only
++    // before the initial unseal. It never restarts this source cohort.
++    pub(super) fn start_with_initial_outbound_endpoints(
++        endpoints: Vec<crate::outbound::EndpointConfig>,
++    ) -> TestResult<Self> {
++        Self::start_with_initial_configuration(false, &endpoints)
++    }
++
++    fn start_with_initial_configuration(
++        configured_native_storage: bool,
++        endpoints: &[crate::outbound::EndpointConfig],
++    ) -> TestResult<Self> {
+         let mut files = Root::new();
+         private_directory(&files.path)?;
+         files.path = fs::canonicalize(&files.path)?;
+         let seed = files.path.join("seed");
+         private_directory(&seed)?;
+         let mut service = Service::new(seed.join("data"), &seed.join("audit.jsonl"))?;
+         let (key, admin) = {
+             let _scope = scope();
+             bootstrap(&mut service)?
+         };
+         let key = Zeroizing::new(key);
+         let admin = Zeroizing::new(admin);
+         {
+             let _scope = scope();
+             expect(
+                 service.handle(
+                     "POST",
+                     "secret/data/pipeline/history",
+                     "",
+                     &admin,
+                     json!({"options":{"cas":0},"data":{"value":"seed-v5"}}),
+                 ),
+                 200,
+                 "standalone-v5-seed",
+             )?;
+         }
+         let state = service.state.as_ref().ok_or("pipeline V5 state absent")?;
+         let cluster_id = state.cluster_id.clone();
+         let seed_identity = service
+             .current_state_identity()
+             .map_err(|_| "pipeline V5 identity absent")?;
+         assert!(matches!(
+             seed_identity,
+             crate::state_record_root::StateIdentity::RecordsV5(_)
+         ));
+         drop(service);
+         for id in 1..=3 {
+             let directory = files.path.join(format!("service-{id}"));
+             private_directory(&directory)?;
+             copy_cold_directory(&seed.join("data"), &directory.join("data"))?;
+         }
+         let pins = certificates(&files.path)?;
+         let configs = configurations(&files.path, &cluster_id, &pins)?;
+         let mut pipeline = Self {
+             files,
+             configs,
+             processes: vec![None, None, None],
+             services: vec![None, None, None],
+             key,
+             admin,
+             seed_identity,
+             configured_native_storage,
+         };
+         // Actual production bootstrap owner starts after the other two real
+         // TLS endpoints. No manually initialized router or test-owned log CAS.
+         for index in [1, 2, 0] {
+             pipeline.start_process(index)?;
+         }
++        if !endpoints.is_empty() {
++            for service in &pipeline.services {
++                let until = Instant::now() + REQUEST_BUDGET;
++                let _scope = RequestDeadlineScope::enter(until);
++                let service = service.as_ref().ok_or("initial outbound Service absent")?;
++                let mut writer = lock_until(service, until)
++                    .map_err(|_| "initial outbound Service deadline")?;
++                assert!(writer.state.is_none());
++                writer.install_outbound_endpoints(endpoints.to_vec())?;
++                assert!(writer.state.is_none());
++                if Instant::now() >= until {
++                    return Err("initial outbound original startup deadline".into());
++                }
++            }
++        }
+         let leader = pipeline.ready_leader()?;
+         // Bootstrap configuration owns group construction. It does not
+--- a/crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs
+@@ -599,273 +599,255 @@
+ // must refuse it before publishing a destination, without deleting its owner.
+ #[test]
+ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss() -> TestResult {
+-    let source = Pipeline::start()?;
++    let provider_listener = std::net::TcpListener::bind("127.0.0.1:0")?;
++    provider_listener.set_nonblocking(true)?;
++    let provider_address = provider_listener.local_addr()?;
++    let provider_origin = format!("https://localhost:{}", provider_address.port());
++    let provider_bearer = Zeroizing::new(hex(&crypto::random::<32>()?));
++    let source = Pipeline::start_with_initial_outbound_endpoints(vec![crate::outbound::EndpointConfig {
++        origin: provider_origin.clone(),
++        address: provider_address,
++        server_name: "localhost".to_owned(),
++        ca_pem: include_str!("testdata/kubernetes-api-ca.pem").to_owned(),
++        path_prefix: "/api/".to_owned(),
++        shared_secret: String::new(),
++    }])?;
+     let leader = source.ready_leader()?;
+-    const CHILD_NAMESPACE: &str = "unsupported-cold-ssh-child";
+-    expect(
+-        source.call(
+-            leader,
+-            "POST",
+-            "sys/namespaces/unsupported-cold-ssh-child",
+-            source.admin(),
+-            json!({}),
+-        )?,
+-        200,
+-        "unsupported-cold-ssh-child-namespace",
+-    )?;
+-    // Match Pipeline::call's original request budget, writer lock and phase
+-    // observation. Only the actual request namespace differs from root.
+-    let child_call = |method: &str, path: &str, body: Value| -> TestResult<Response> {
+-        let began = Instant::now();
+-        let until = began + REQUEST_BUDGET;
+-        let _scope = RequestDeadlineScope::enter(until);
+-        let service = source.services[leader]
+-            .as_ref()
+-            .ok_or("unsupported cold child Service absent")?;
+-        let mut writer = lock_until(service, until)
+-            .map_err(|_| "unsupported cold child Service lock deadline")?;
+-        let timing =
+-            crate::ha::NativeV6RequestObservation::start(until, "cold_child_ssh_test", false);
+-        let response = writer.handle(method, path, CHILD_NAMESPACE, source.admin(), body);
+-        timing.finish(Some(response.status));
+-        errors_only(path, &response);
+-        if began.elapsed() >= REQUEST_BUDGET {
+-            return Err("unsupported cold child original request deadline".into());
+-        }
+-        Ok(response)
+-    };
+-    // Root SSH, local Transit and TOTP have formal native owners. This
+-    // still-refused child SSH CA carries real private key state through the archive;
+-    // keep complete-graph rejection and every source-retention assertion.
++    // A real root Kubernetes config carries a private bearer but performs no
++    // provider I/O. Root SSH is now supported; unsupported child SSH cannot
++    // pass the namespace admission needed to create this historical archive.
+     expect(
+-        child_call("POST", "sys/mounts/cold-ssh", json!({"type":"ssh"}))?,
++        source.call(leader, "POST", "sys/mounts/cold-kubernetes", source.admin(),
++                    json!({"type":"kubernetes"}))?,
+         204,
+-        "unsupported-cold-ssh-mount",
++        "unsupported-cold-kubernetes-mount",
+     )?;
+     expect(
+-        child_call(
+-            "POST",
+-            "cold-ssh/config/ca",
+-            json!({"generate_signing_key":true,"key_type":"ssh-ed25519"}),
+-        )?,
+-        200,
+-        "unsupported-cold-ssh-key",
++        source.call(leader, "POST", "cold-kubernetes/config", source.admin(),
++                    json!({"kubernetes_host":provider_origin,"service_account_token":provider_bearer.as_str()}))?,
++        204,
++        "unsupported-cold-kubernetes-config",
+     )?;
+     let retained = expect(
+-        child_call("GET", "cold-ssh/config/ca", json!({}))?,
++        source.call(leader, "GET", "cold-kubernetes/config", source.admin(), json!({}))?,
+         200,
+-        "unsupported-cold-ssh-before",
+-    )?
+-    .body["data"]
+-        .clone();
++        "unsupported-cold-kubernetes-before",
++    )?.body["data"].clone();
++    assert_eq!(retained["service_account_token_set"], true);
+     activate(&source, leader)?;
+     let archive = export(&source, leader, source.admin())?;
+     let seal_bytes = fs::read(source.directory(leader).join("data/seal.json"))?;
+-    // Native activation deliberately closes the child SSH config/ca route.
+-    // This is not the separate public_key fast path. Observe the same activated
+-    // path before and after recovery refusal, and inspect the stored EngineState
+-    // clone below. The authenticated full-state encoding retains its private CA.
++    // Experimental migration retains this opaque owner, while the native
++    // dispatcher refuses its unsupported public config route. Observe the
++    // same boundary before and after recovery refusal; inspect the complete
++    // authenticated native graph and private owner encoding below.
+     let boundary_before = expect(
+-        child_call("GET", "cold-ssh/config/ca", json!({}))?,
++        source.call(leader, "GET", "cold-kubernetes/config", source.admin(), json!({}))?,
+         501,
+-        "unsupported-cold-ssh-activated-before",
++        "unsupported-cold-kubernetes-activated-before",
+     )?;
+     let observed_at = std::time::SystemTime::now()
+         .duration_since(std::time::UNIX_EPOCH)?
+         .as_secs();
+     let inspect_retained = || -> TestResult<(StateIdentity, u64, Zeroizing<Vec<u8>>)> {
+         // One original read-only inspection budget, as with Pipeline::with_service.
+         // The actual mutable journal is borrowed only to authenticate and export
+         // its full native object closure; no application mutation is performed.
+         let until = Instant::now() + REQUEST_BUDGET;
+         let _scope = RequestDeadlineScope::enter(until);
+         let deadline = OriginalDeadline::capture()?;
+         let service = source.services[leader]
+             .as_ref()
+             .ok_or("unsupported cold source Service")?;
+         let mut service = lock_until(service, until).map_err(|_| "unsupported cold source lock")?;
+         assert!(service.native_storage_profile.is_none());
+         assert!(service.native_candidate_profile.is_none());
+         let before = service
+             .current_state_identity()
+             .map_err(|_| "unsupported cold source identity")?;
+         let generation = service
+             .durable
+             .as_ref()
+             .ok_or("unsupported cold source durable")?
+             .generation();
+         let seal_identity = crate::service::snapshot_transfer::canonical_seal_identity(
+             service
+                 .seal
+                 .as_ref()
+                 .ok_or("unsupported cold source seal")?,
+         )?;
+         let proof = service
+             .capture_native_ha_unseal_proof()
+             .map_err(|_| "unsupported cold actual source proof")?
+             .ok_or("unsupported cold native proof absent")?;
+         assert_eq!(proof.identity(), before);
+         assert_eq!(proof.generation(), generation);
+         let spool = service
+             .snapshot_spool
+             .as_ref()
+             .ok_or("unsupported cold prior export spool")?
+             .clone();
+         let lease = spool.lease()?;
+         let local = lease.file(crate::snapshot_file::MAX_V6_SNAPSHOT_STATE, until)?;
+         let output = lease.file(crate::snapshot_file::MAX_V6_HA_SNAPSHOT_STATE, until)?;
+         let (_authenticated_archive, report) = proof
+             .export_snapshot_archive(&mut service, local, output, seal_identity, &mut |current| {
+                 deadline
+                     .check()
+                     .map_err(|_| Response::error(503, "cold inspection deadline"))?;
+                 if current.current_state_identity()? != before
+                     || current.native_storage_profile.is_some()
+                     || current.native_candidate_profile.is_some()
+                 {
+                     return Err(Response::error(503, "cold inspection source changed"));
+                 }
+                 Ok(())
+             })
+             .map_err(|_| "unsupported cold complete authenticated snapshot")?;
+         assert_eq!(report.local.generation, generation);
+         proof
+             .check_warm(&service)
+             .map_err(|_| "unsupported cold post-export proof")?;
+         let state = service
+             .state
+             .as_ref()
+             .ok_or("unsupported cold retained state")?;
+         let root = service
+             .native_root
+             .as_ref()
+             .ok_or("unsupported cold retained native root")?;
+         let root_bytes = root
+             .encode()
+             .map_err(|_| "unsupported cold root encoding")?;
+         let parent = root
+             .kv2_parent_key()
+             .map_err(|_| "unsupported cold native parent")?;
+         let engines = &state.engines;
+         assert!(!engines.supports_native_v6_root_storage());
+         // This is the same split representation used by check_native_installed:
+         // complete opaque engine metadata plus exact authenticated KV2 graph
+         // roots, with every payload already reopened by the real exporter above.
+         // Preserve ALL State owners; do not serialize a live NativeReadView or
+         // replace native data with an empty engine to make Serde succeed.
+         let project = |engines: &crate::engines::EngineState| -> TestResult<Zeroizing<Vec<u8>>> {
+             let check = || {
+                 deadline
+                     .check()
+                     .map_err(|_| crate::state_records::RecordError::Invalid)
+             };
+             let (opaque, graphs) = engines
+                 .project_checked_native_roots(
+                     &parent,
+                     &root.kv2,
+                     root.reader_floor.native_kv2_format,
+                     &check,
+                 )
+                 .map_err(|_| "unsupported cold native engine projection")?;
+             let graph_bytes =
+                 crate::secret_serde::to_vec(&graphs, crate::state_record_root::MAX_ROOT_BYTES)
+                     .map_err(|_| "unsupported cold native graph encoding")?;
+             let expected_graph_bytes =
+                 crate::secret_serde::to_vec(&root.kv2, crate::state_record_root::MAX_ROOT_BYTES)
+                     .map_err(|_| "unsupported cold expected graph encoding")?;
+             assert!(graph_bytes.as_slice() == expected_graph_bytes.as_slice());
+             let mut all_owners = state.clone();
+             all_owners.engines = opaque.into();
+             let owner_bytes = crate::service::owner_store::serialize_owner(&all_owners)
+                 .map_err(|_| "unsupported cold all-owner encoding")?;
+             let mut snapshot = Zeroizing::new(Vec::new());
+             snapshot.extend_from_slice(b"cold-dr-complete-native-state-v1\0");
+             snapshot.extend_from_slice(&(root_bytes.len() as u64).to_be_bytes());
+             snapshot.extend_from_slice(&root_bytes);
+             snapshot.extend_from_slice(&(owner_bytes.len() as u64).to_be_bytes());
+             snapshot.extend_from_slice(&owner_bytes);
+             deadline.check()?;
+             Ok(snapshot)
+         };
+         let owner_bytes = project(engines)?;
+         let mut inspected = engines.clone();
+-        let response = inspected
+-            .handle(
+-                CHILD_NAMESPACE,
++        let dispatch = inspected
++            .kubernetes_dispatch(
++                "",
++                "cold-kubernetes/config",
+                 "GET",
+-                "cold-ssh/config/ca",
+                 &json!({}),
+                 observed_at,
++                None,
+             )?
+-            .ok_or("unsupported cold retained SSH CA route absent")?;
++            .ok_or("unsupported cold retained Kubernetes route absent")?;
++        let crate::engines::kubernetes::Dispatch::Immediate(response) = dispatch else {
++            return Err("retained Kubernetes config unexpectedly requested provider I/O".into());
++        };
+         assert_eq!(response.status, 200);
+         assert!(!response.mutated);
+         assert!(response.body["data"] == retained);
+         let inspected_bytes = project(&inspected)?;
+         assert!(owner_bytes.as_slice() == inspected_bytes.as_slice());
+         proof
+             .check_warm(&service)
+             .map_err(|_| "unsupported cold completed source proof")?;
+         assert_eq!(
+             service
+                 .current_state_identity()
+                 .map_err(|_| "unsupported cold completed identity")?,
+             before
+         );
+         assert_eq!(
+             service
+                 .durable
+                 .as_ref()
+                 .ok_or("unsupported cold completed durable")?
+                 .generation(),
+             generation
+         );
+         assert!(Instant::now() < until);
+         Ok((before, generation, owner_bytes))
+     };
+     let (before, generation_before, engine_owner_before) = inspect_retained()?;
++    assert!(engine_owner_before.windows(provider_bearer.len()).any(|part| part == provider_bearer.as_bytes()));
+     let mut bundle = Root::new();
+     private_directory(&bundle.path)?;
+     bundle.path = fs::canonicalize(&bundle.path)?;
+     let archive_path = bundle.path.join("snapshot.bin");
+     let seal_path = bundle.path.join("seal.json");
+     let shares_path = bundle.path.join("shares.json");
+     private_file(&archive_path, &archive)?;
+     private_file(&seal_path, &seal_bytes)?;
+     let shares = Zeroizing::new(serde_json::to_vec(&[source.key.as_str()])?);
+     private_file(&shares_path, &shares)?;
+     let share_hash = crypto::digest(&shares);
+     drop(shares);
+     let destination = bundle.path.join("must-remain-unpublished");
+     use crate::service::native_seed::{ColdSeedError, recover_ha_seed};
+     assert!(matches!(
+         recover_ha_seed(
+             &archive_path,
+             &seal_path,
+             &shares_path,
+             &destination,
+             &hex(&crypto::digest(&archive)),
+             &hex(&crypto::digest(&seal_bytes))
+         ),
+         Err(ColdSeedError::GraphRejected)
+     ));
+     assert!(!destination.exists());
+     let (after_identity, generation_after, engine_owner_after) = inspect_retained()?;
+     assert_eq!(after_identity, before);
+     assert_eq!(generation_after, generation_before);
+     assert!(engine_owner_after.as_slice() == engine_owner_before.as_slice());
+     assert!(fs::read(&archive_path)? == archive);
+     assert!(fs::read(&seal_path)? == seal_bytes);
+     assert_eq!(
+         crypto::digest(&Zeroizing::new(fs::read(&shares_path)?)),
+         share_hash
+     );
+     let boundary_after = expect(
+-        child_call("GET", "cold-ssh/config/ca", json!({}))?,
++        source.call(leader, "GET", "cold-kubernetes/config", source.admin(), json!({}))?,
+         501,
+-        "unsupported-cold-ssh-activated-after",
++        "unsupported-cold-kubernetes-activated-after",
+     )?;
+     assert!(boundary_after.body == boundary_before.body);
++    assert!(matches!(provider_listener.accept(), Err(error) if error.kind() == std::io::ErrorKind::WouldBlock));
+     Ok(())
+ }
+ 
