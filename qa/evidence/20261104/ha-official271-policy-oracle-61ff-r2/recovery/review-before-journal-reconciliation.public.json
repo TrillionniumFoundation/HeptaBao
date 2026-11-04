@@ -1,0 +1,106 @@
+{
+  "schema": "ha-official271-policy-oracle-recovered-evidence-v1",
+  "evidence_role": "fixed-reference-observation-only",
+  "live_job": {
+    "host": "desktop",
+    "job_id": "1a1a75f341d-fc05-2b2d",
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true
+  },
+  "reference": {
+    "tag": "v2.7.1",
+    "source_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "binary_sha256": "535cf827b13753046757f5ec8b97ae0ef21f10a40ffe673f0d5e75616170f5ea",
+    "physical_hosts": 1,
+    "process_nodes": 3
+  },
+  "operation_counts": {
+    "intents": 70,
+    "outcomes": 70,
+    "unknown": 0,
+    "complete_http_responses": 67,
+    "definite_preconnect_failures": 3,
+    "complete_response_count_requires_exact_journal_followup": true
+  },
+  "actual_checks": {
+    "total": 64,
+    "passed": 64,
+    "classification": "dynamic fixture and cleanup invariants; not HeptaBao compatibility passes"
+  },
+  "all_owned_stopped": true,
+  "boundaries": {
+    "production_services_touched": false,
+    "heptabao_executed": false,
+    "full_replacement_qualified": false,
+    "physical_lan_ha_qualification": false,
+    "redirect_followed": false,
+    "unknown_mutation_replayed": false,
+    "body_restore_qualification": false
+  },
+  "preserved_setup_failure": {
+    "result_sha256": "3ef5b52796dc6c09baf001b466ad6cf988b8cb74423c73d879efc47d6ad9267f",
+    "intents": 73,
+    "outcomes": 73,
+    "unknown": 0,
+    "mutating_operations": 0,
+    "reason": "Node3 missing-header-forward listener returned complete sealed 503 to unqualified readiness; no business cases admitted"
+  },
+  "known_source_pins": [
+    {
+      "sha256": "8fa4d740f3e0a7cddc3b27391ce2d46308c19e519f078fc9f3afb0e47039ccec",
+      "bytes": 44347,
+      "git_blob": "58658ad63badc57ed99db03e902ce05579868322",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-policy-oracle-control-61ff-r2/official_271_scoped_policy_oracle_61ff_r2b.py",
+      "version": "2050:57074615:44347:1793809258168113461:1793809258168113461"
+    },
+    {
+      "sha256": "efc6b9f60aa0caa1c06afa5057277050473433f1361b670eb08f2cb6ebbc84ee",
+      "bytes": 18457,
+      "git_blob": "091134ffca9e391ba486f3df0b0350d052885368",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-policy-oracle-live-61ff-r2/result.public.json",
+      "version": "2050:57076019:18457:1793809455534810416:1793809455534810416"
+    },
+    {
+      "sha256": "d1f40a22db1a2e1b53e282191976e4eb44d96cd870ec046b91c31f891da58cf0",
+      "bytes": 55294,
+      "git_blob": "09e4134c78049fc597628416537390f229ad2723",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-policy-oracle-live-61ff-r2/wire-observations.public.json",
+      "version": "2050:57076018:55294:1793809447418139854:1793809447418139854"
+    },
+    {
+      "sha256": "3ef5b52796dc6c09baf001b466ad6cf988b8cb74423c73d879efc47d6ad9267f",
+      "bytes": 13069,
+      "git_blob": "177fe00fba1a9d6f8a185c4e4f714b10ae863ebf",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-standby-policy-oracle-live-61ff-r1/result.public.json",
+      "version": "2050:56939444:13069:1793808396105803216:1793808396105803216"
+    }
+  ],
+  "partial_recovery": {
+    "journal_collection_job": "1a1a78cf9e9-fc05-2bba",
+    "admission_known": true,
+    "terminal_status_unknown_at_this_commit": true,
+    "read_status_rpc_timed_out": true,
+    "service_actions": false,
+    "original_operation_replay": false,
+    "original_reconciliation_6252_bytes_not_yet_recovered": true
+  },
+  "not_durable_yet": {
+    "normal_observer_r2_sha256": "e2fec76abd661341e0682e3b0dc254a6b950acf0aa0913c2a6af11c9fb4d2c0a",
+    "normal_observer_r2_bytes": 68193,
+    "normal_observer_ever_staged_or_run": false,
+    "launcher_r2_sha256": "e73a7ee2a315dcdf0d4a8069ac53c61e8ae87afcd16f9683519a11be32391ed7",
+    "launcher_ever_staged_or_run": false,
+    "reason": "The local executor became unavailable; only prior hashes and reviewed semantics are retained, not substitute source bytes."
+  },
+  "next_product_changes": {
+    "implemented": false,
+    "design_only": [
+      "Non-root public snapshot read/update ACL",
+      "Sealed denied-after-clock completion with actual A-to-B proof",
+      "Ordinary KV NoForward read with real leader floor",
+      "Preserve listener consistency policy before NoForward refusal"
+    ]
+  }
+}

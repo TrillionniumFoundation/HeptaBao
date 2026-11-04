@@ -102,5 +102,20 @@
       "Ordinary KV NoForward read with real leader floor",
       "Preserve listener consistency policy before NoForward refusal"
     ]
+  },
+  "later_reconciliation": {
+    "commit": "7700d695fa15018e855fb70eda3175a3a4a7a534",
+    "journal_packet_sha256": "5d11bf46d1dd6a4492b7788ec3941f6126a05cda474039d212be5d2206e26d9f",
+    "journal_packet_bytes": 181993,
+    "individual_public_files": 140,
+    "intents": 70,
+    "outcomes": 70,
+    "complete_http": 67,
+    "definite_preconnect_failure": 3,
+    "unknown": 0,
+    "collector_job": "1a1a78cf9e9-fc05-2bba",
+    "collector_authoritative_state": "succeeded",
+    "collector_exit_code": 0,
+    "note": "Original SDK timeouts are retained. The original collection job was reconciled without replay; exact public files were decoded and individually hashed."
   }
 }

@@ -18,3 +18,7 @@ These are reference observations on one physical host and three TLS processes. T
 The recovered SDK envelopes are newly captured readbacks of the original durable job and original files. Original file content is byte-for-byte preserved and independently hashed. The new public-journal collector reads only 140 existing public intent/outcome files; its admission is known, but its terminal result was not yet delivered when this commit was made. No service or HTTP operation was replayed.
 
 The unexecuted normal-binary observer r2 and Mac launcher r2 were still only in the unavailable local executor. Their known hashes are recorded, but replacement bytes are not claimed to be those originals. New Denied/ACL/KV product changes are still design work at this checkpoint.
+
+## Later journal reconciliation
+
+Commit `7700d695fa15018e855fb70eda3175a3a4a7a534` preserves the original collector's authoritative succeeded/exit-0 status and the exact 181,993-byte public journal packet. All 140 original intent/outcome files were individually decoded and hashed. The denominator is 70 intents and 70 outcomes: 67 complete HTTP responses and 3 definite preconnect failures, with 0 unknown outcomes. The earlier SDK timeouts remain in this archive as historical evidence; no mutation or oracle run was replayed. The prior review is preserved separately.

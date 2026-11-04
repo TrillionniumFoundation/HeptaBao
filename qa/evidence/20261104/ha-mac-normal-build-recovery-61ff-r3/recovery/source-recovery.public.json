@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.ha.mac-source-recovery.v1",
+  "status": "recovered_exact_sources",
+  "remote_base": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-http-r1",
+  "atomic_snapshot": false,
+  "snapshot_scope": "independent_file",
+  "builder": {
+    "sha256": "f902727e82a3c7a8942006b056ecfca9258a856d456f4b1aa2131b2aa3a35d82",
+    "bytes": 5531,
+    "git_blob": "a4ad120ceb40cc42494f32525aab7fe148681157",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-http-r1/control/build_normal_staged_close_r2.py",
+    "version": "16777244:72430381:5531:1793798973269202673:1793798973269202673"
+  },
+  "observer": {
+    "sha256": "0ed1b559abc489fa7f8b91d1a8590fe6b76d3e16ff6bb92086d630b4a71e018c",
+    "bytes": 59402,
+    "git_blob": "8b5111b396af82c8cc0ff20fa36bb15aec05ecce",
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-ha-snapshot-http-r1/control/normal_staged_close_mac_wire_r2.py",
+    "version": "16777244:72430380:59402:1793798973268489040:1793798973268489040"
+  },
+  "known_unrecovered": {
+    "launcher_r2_sha256": "e73a7ee2a315dcdf0d4a8069ac53c61e8ae87afcd16f9683519a11be32391ed7",
+    "compatibility_observer_r2_sha256": "e2fec76abd661341e0682e3b0dc254a6b950acf0aa0913c2a6af11c9fb4d2c0a",
+    "limitation": "Unexecuted local revisions are not recovered; any reconstruction must receive a new revision and content pin."
+  },
+  "files": [
+    {
+      "path": "source/build_normal_staged_close_r2.py",
+      "bytes": 5531,
+      "sha256": "f902727e82a3c7a8942006b056ecfca9258a856d456f4b1aa2131b2aa3a35d82",
+      "git_blob": "a4ad120ceb40cc42494f32525aab7fe148681157"
+    },
+    {
+      "path": "source/normal_staged_close_mac_wire_r2.py",
+      "bytes": 59402,
+      "sha256": "0ed1b559abc489fa7f8b91d1a8590fe6b76d3e16ff6bb92086d630b4a71e018c",
+      "git_blob": "8b5111b396af82c8cc0ff20fa36bb15aec05ecce"
+    },
+    {
+      "path": "recovery/read-multiple-files.native-sdk.json",
+      "bytes": 68203,
+      "sha256": "5c298ea69ba6de4173edcd18bc4fc10aaef61128f6c8ee55f0d7051a6864c96d",
+      "git_blob": "ea0c7c9074265546f5be422a1c46dc85e8aa0832"
+    },
+    {
+      "path": "recovery/source-search-terminal.native-sdk.json",
+      "bytes": 1689,
+      "sha256": "ba369e22d6732d93cf76a512ee5f588a95609396e1777994f022cf1ecda55124",
+      "git_blob": "8407d555f7d3aa5d5a25d16038c8e621edff76f6"
+    }
+  ],
+  "product_runtime_started": false,
+  "qualification_full_replacement": false
+}
