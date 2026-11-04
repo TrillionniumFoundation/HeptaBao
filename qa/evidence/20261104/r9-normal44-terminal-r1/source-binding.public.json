@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.r9.terminal-publication-source-binding.v1",
+  "candidateCommit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+  "candidateTree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907",
+  "candidateParent": "f9139c3b37b6373df3e4b4c61ebdd4f847afac4d",
+  "sourceFreezeSha256": "aaaa909e210ef1ad75038b96e2f2249f20e93b6374eb86c296a786560d7a4f59",
+  "controllerSha256": "5811796d15ab79b7dd1f1c961eaf208fda1b0caa49f855dd03d22485c99afe7f",
+  "groupsSha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+  "priorEvidenceCommit": "80bc5a913d3444add725d5a24f94dd7a23ff053a",
+  "scope": "ROG normal-default release and exact server libtest groups; not physical LAN or full replacement",
+  "formalReplacementAdmission": false
+}

@@ -1,0 +1,131 @@
+{
+  "schema": "heptabao.r9.normal44-terminal-publication.v1",
+  "parent_validation_commit": "80bc5a913d3444add725d5a24f94dd7a23ff053a",
+  "candidate_commit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+  "candidate_tree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907",
+  "scope": "exact ROG normal-default terminal 42/44 failure, full originals; no runtime qualification",
+  "records": [
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/rog/result.public.json",
+      "bytes": 24242,
+      "sha256": "b4d3f25c0694dfa7cc24dd3d2a8bdf780ec9eb43716abb61a4581b26c8cc676f",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/rog/native-build.public.json",
+      "bytes": 793,
+      "sha256": "771f53ae44858d9bb73809b997103edfd69bc564e152d9ee40f3a45ca7f854d5",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/rog/normal-release-result.public.json",
+      "bytes": 3202,
+      "sha256": "103bbb68367a13ec3df53a8b437f6e33bd44c75a4ad23a6a792692ef858deb3d",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/rog/ssh25.stdout",
+      "bytes": 3163,
+      "sha256": "36a81fdf89c36dddb882a79d83d6ec9ec4d249a57cdb01dfeb201c5fc790f800",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/rog/mount1.stdout",
+      "bytes": 233,
+      "sha256": "a407528dd1b95ccc285ea87d8808ccb153f0bd1f56d346286bfec5b08a5d8fa3",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/rog/redirect5.stdout",
+      "bytes": 722,
+      "sha256": "ac1bccba45d73e07f9c0948e9947c900a4a8ce90b9f48f1e407002bc409a5e05",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/rog/actor2.stdout",
+      "bytes": 440,
+      "sha256": "3614801f2b5c4ba2b13983828a52feda7ce5586178d5004e2b59635d6301b661",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/rog/ordinary5.stdout",
+      "bytes": 699,
+      "sha256": "79864277a85c8aa2eb7efd9acbef5f0751507349e43e53a30fb5111b2dc3f76f",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/rog/no_forward6.stdout",
+      "bytes": 1226,
+      "sha256": "5608e95dca17e9c51db8edec41b3e494fda77be9728f14f266c1b7c648bd3271",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/rog/no_forward6.stderr",
+      "bytes": 2008,
+      "sha256": "2ce9515f4f2915869e38539e810f6b0bd7a12de330b0b2c082de2ddc47b8ba20",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/rog/process-status.public.json",
+      "bytes": 728,
+      "sha256": "24ba0f88941b696f0d0b7fc00f7b0cd7cced855a1fbb3742e790c5997d35253f",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/rog/process.stdout",
+      "bytes": 2019,
+      "sha256": "42a0cbd68982f96538e621c61a91573b3f7d7537c898e6b9f4b6a41580267aba",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/rog/process.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/rog/original-terminal-result.sdk.json",
+      "bytes": 28968,
+      "sha256": "4cab319505e712a6b9aa57e48ed324ca21d78859eb58ba26f6fcf60c304cab6a",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/root-review.public.json",
+      "bytes": 4488,
+      "sha256": "4506359fb6c559cdf039b50da0904e8b5c880fce79b2153650a3490e8e9abf33",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/readback-byte-verification.public.json",
+      "bytes": 1707,
+      "sha256": "96f16bb115f6e0fa179453dd2463e89000d47cccbd133f1833ac8bc02bbe4f1b",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/source-binding.public.json",
+      "bytes": 749,
+      "sha256": "d783695c5c7ddf2416c8efd3847ab6ffaad162024ca8cfdf2893831973dfe9db",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/r9-normal44-terminal-r1/README.md",
+      "bytes": 2336,
+      "sha256": "fff3ca83061df093af3af4684890ac889d839d90013314d01258dac8d56f442b",
+      "mode": "100644"
+    },
+    {
+      "path": "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+      "bytes": 85887,
+      "sha256": "1c6f0642d2c6e29e897da16b2e8ceee540a0ba696b0e3f0fa95beb1c8c99a3c0",
+      "mode": "100644"
+    },
+    {
+      "path": "qa/evidence/20261104/36076-checkpoint.public.json",
+      "bytes": 135011,
+      "sha256": "7641df9084729cc82cc43d5d87a3579a1bdb8c1947e32a749ca38988342506a2",
+      "mode": "100644"
+    }
+  ],
+  "secret_scan_scope": "specific literal private-key and credential field patterns on these reviewed public records; not a universal secret detector",
+  "production_authority": false
+}

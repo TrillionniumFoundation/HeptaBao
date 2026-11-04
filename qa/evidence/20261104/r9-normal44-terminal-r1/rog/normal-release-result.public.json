@@ -1,0 +1,82 @@
+{
+  "artifacts": {
+    "heptabao-seed": {
+      "bytes": 101159496,
+      "compiler_executable": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/heptabao-seed",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r9-http-routing-r1/normal-release-tests-r1/artifacts/heptabao-seed",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "6befec74076fb891e12a9dd3a1b2563c995ec7f7f1c7df18dc787d1163e0e018"
+    },
+    "heptabao-server": {
+      "bytes": 109091112,
+      "compiler_executable": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/heptabao-server",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r9-http-routing-r1/normal-release-tests-r1/artifacts/heptabao-server",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113"
+    }
+  },
+  "build_driver_path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r9-http-routing-r1/control/linux_normal_release_and_tests_r9.py",
+  "build_driver_sha256": "5811796d15ab79b7dd1f1c961eaf208fda1b0caa49f855dd03d22485c99afe7f",
+  "build_exit_code": 0,
+  "build_finished_success": true,
+  "cargo_events_sha256": "4cf09898d26d090e3bc9526251f81abdc3475b50427b6501a538385a80956b06",
+  "cargo_stderr_sha256": "9898936682e4e117cf0c2a9338fe55200d9c4f279da88efd2a2ec06bbbc0b5b4",
+  "command": [
+    "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "build",
+    "--release",
+    "--locked",
+    "--offline",
+    "-p",
+    "heptabao-server",
+    "--bin",
+    "heptabao-server",
+    "--bin",
+    "heptabao-seed",
+    "--message-format=json-render-diagnostics"
+  ],
+  "elapsed_seconds": 647.3329313459981,
+  "formal_qualification": false,
+  "native_abi": "x86_64-unknown-linux-gnu",
+  "normal_default_candidate": true,
+  "owned_group_survivors_after_wait": false,
+  "requested_release_profile": {
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_PANIC": "unwind"
+  },
+  "rustc_vv": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.0\nLLVM version: 22.1.8\n",
+  "schema": "heptabao.native-default-build-result.v1",
+  "source_commit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+  "source_freeze_verified": true,
+  "source_tree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907",
+  "timed_out": false
+}

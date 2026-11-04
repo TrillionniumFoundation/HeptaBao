@@ -1,6 +1,6 @@
 {
   "schema": "heptabao.36076-and-33cafa-checkpoint.v4",
-  "as_of_utc": "2026-11-04T16:08:01.590401+00:00",
+  "as_of_utc": "2026-11-04T17:32:00Z",
   "compiled_source_commit": "36076db5f5afe00db75eba9b607dee7802dae554",
   "compiled_source_tree": "ae71c4b243afd4099db66e7d9882b3f28c777a95",
   "published_source_commit": "a5c05856f23c395e590fd4e6eeec02bb669a2aa9",
@@ -503,7 +503,7 @@
       ],
       "test_count": 2,
       "production_services_changed": false,
-      "started_ns": 1793797021145707270,
+      "started_ns": 1793797021145707300,
       "preparation": {
         "schema": "ci-lossless-actor-403-prepare-v1",
         "source": "9c54d92a18ef59022a803cb89566ca8007b8b97c",
@@ -595,7 +595,7 @@
       },
       "binary_unchanged": true,
       "source_unchanged": true,
-      "terminal_ns": 1793798360231454149
+      "terminal_ns": 1793798360231454200
     },
     "current_ci_contains_combined_r7": false,
     "concurrent_head_update_observed_not_launched_by_root": true
@@ -1262,7 +1262,7 @@
     "source_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
     "stage_binding_sha256": "50347e3e23e2721381fed5f4627a80facea10a5e644a333bae8d88e88c1659dc",
     "strict_server_client_chain_and_san_verified": true,
-    "tls_not_after_unix": 1809341079.0,
+    "tls_not_after_unix": 1809341079,
     "traffic_cutover": false,
     "volume": {
       "device": 16777244,
@@ -3241,5 +3241,34 @@
     "github_mutations_performed_by_preparer": false,
     "root_continuation_state_read_or_written": false,
     "frozen_old_mac_86_file_checkpoint_content_not_changed": true
+  },
+  "r9_normal44_terminal_r1": {
+    "source_commit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+    "source_tree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907",
+    "evidence_prefix": "qa/evidence/20261104/r9-normal44-terminal-r1/",
+    "status": "FAILED",
+    "normal_release_build": "passed",
+    "normal_libtest_build": "passed",
+    "exact_tests": {
+      "expected": 44,
+      "passed": 42,
+      "failed": 2,
+      "ignored": 0
+    },
+    "job_id": "1a1a7738839-fc05-2b7f",
+    "job_exit_code": 1,
+    "all_14_owned_groups_stopped": true,
+    "source_and_retained_binaries_unchanged": true,
+    "result_sha256": "b4d3f25c0694dfa7cc24dd3d2a8bdf780ec9eb43716abb61a4581b26c8cc676f",
+    "root_review_sha256": "4506359fb6c559cdf039b50da0904e8b5c880fce79b2153650a3490e8e9abf33",
+    "failure": "two NoForward native HA tests reject invalid flat serialization in setup before their target requests",
+    "test_witness_fix_runtime": false,
+    "mac_r9_build_started": false,
+    "r9_physical_lan_runtime": false,
+    "official_cli_phase_b_runtime": false,
+    "native_snapshot_relay_runtime": false,
+    "full_openbao_271_replacement": false,
+    "production_cutover": false,
+    "legacy_cleanup": false
   }
 }

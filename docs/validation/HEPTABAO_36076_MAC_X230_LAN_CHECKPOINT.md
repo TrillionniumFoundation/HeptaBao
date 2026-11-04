@@ -1,6 +1,29 @@
 # HeptaBao：正常 V6 存储、三机 HA 与完整替代检查点
 
-## 当前结论
+## R9 最新终态：正式构建通过，精确回归 42/44，仍未准入
+
+更新于 2026-11-04 17:32 UTC。当前候选源码为 `1d12abc45a83d4b32e7185d01a876eb93110b1e2`，tree=`e1faeaa3ed49d26fb01a7617a8879cb693a12907`。下文较早的正常三机 128/128、方向 98/98 和 R8 结果继续保留其原候选绑定，不能转记为 R9 通过。
+
+ROG 的正常默认 release 构建成功（647.333 秒），正常 release libtest 构建成功（1,083.029 秒）。原六组 44 个精确测试均实际执行：**42 通过、2 失败、0 忽略**。任务 `1a1a7738839-fc05-2b7f` 的持久终态为 exit 1，未发生 supervisor 超时；14 个受控进程组均已回收且无残留，源树与保留的 server、seed、libtest 字节均未改变。
+
+| 原测试组 | 通过 | 失败 | 忽略 |
+|---|---:|---:|---:|
+| SSH ownership | 25 | 0 | 0 |
+| Native mount refusal | 1 | 0 | 0 |
+| Native redirect transport | 5 | 0 | 0 |
+| Parallel export actor / original scope | 2 | 0 | 0 |
+| Ordinary HTTP framing | 5 | 0 | 0 |
+| NoForward 2.7.1 | 4 | 2 | 0 |
+
+两项失败位于新 NoForward normal HA 测试的准备阶段。`finite_actor` 调用 `unchanged(service)`，其中 `serde_json::to_vec(state)` 企图扁平序列化正式 native KV2 owner，被原有保护拒绝：`native KV2 owner requires separate authenticated records`。这两项尚未到达待验证的 NoForward 请求，因此不能把它们计为产品行为通过，也不能把准备失败直接等同于路由产品缺陷。修复方向是使用现有 checked native graph projection、完整状态元数据及真实根见证，保留两节点、有限令牌使用次数、实际 POST、审计和原始期限断言；修复此时尚未执行验证。没有以重跑或放宽预算覆盖本轮失败。
+
+实际 Linux server：109,091,112 字节，SHA256=`67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113`；保留 libtest：188,176,568 字节，SHA256=`9b871dd8d12c063e6ea042d5bb4415d9a042da0e4d18d83fca3e184396879cf4`。[完整原件及范围](../../qa/evidence/20261104/r9-normal44-terminal-r1/README.md)、[独立根审阅](../../qa/evidence/20261104/r9-normal44-terminal-r1/root-review.public.json)和[原终态](../../qa/evidence/20261104/r9-normal44-terminal-r1/rog/result.public.json)保留真实失败与每组 stdout。
+
+Mac R9 源准备的首次 Git 网络 fetch 在原 90 秒期限内失败；原错误和旧源码证据保留。之后的只读诊断确认缺少 canonical commit，对完整历史的离线续接仍在源级审阅，尚未启动 Mac R9 Cargo 构建。R9 的 Mac／ROG／Pocket4 真实 LAN 回归、官方 CLI Phase B 和 native snapshot relay 均没有新通过结论。云执行环境暂不可用，尚未冻结的 relay 草案也不能当作发布源码。
+
+当前候选中，59 个产品面台账仍有 2 项 runtime_complete、52 项 runtime_partial、5 项 tooling_partial，whole_surface_admitted 全为 false；2.7.1 准入台账另有 11 个必需门槛、15 个安全差异与 11 个功能／正确性差异。台账中的历史失败不能替代当前运行结果，局部新通过也不能自动关闭这些完整准入范围。**全量替代、生产切流、所有客户端和备份迁移、旧版删除均仍未获完整证据。**
+
+## 既有检查点与历史合同（保留原候选绑定）
 
 本检查点记录 2026-11-04 已完成且可复核的工作。**正常构建的原始三机 128 项和 Pocket4 → Mac 独立方向 98 项已经通过；完整 OpenBao 2.7.1 替代、生产切流及旧版清理仍未获完整证据。** 下文明确区分已通过的合同、历史失败和仍开放的能力。
 
