@@ -28,6 +28,9 @@ jobs:
       EXPECTED_SOURCE: ${{ matrix.source_kind == 'merge' && github.sha || (github.event.pull_request.head.sha || github.sha) }}
       PR_HEAD: ${{ github.event.pull_request.head.sha }}
       PR_BASE: ${{ github.event.pull_request.base.sha }}
+      # Bound compiler fan-out on hosted workers; test-thread and fixture
+      # concurrency, features, profiles and all runtime deadlines are unchanged.
+      CARGO_BUILD_JOBS: "1"
     steps:
       - name: Checkout immutable candidate without persisted credentials
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -107,7 +110,49 @@ jobs:
         shell: bash
         # Keep independent wall-clock fixtures from racing each other for runner CPU.
         # Their own deadlines and descendant concurrency remain unchanged.
-        run: cargo +1.98.0 test --locked --workspace --all-targets --no-fail-fast -- --test-threads=1
+        run: |
+          set -euo pipefail
+          # Observe only compilation. Stop and reap this sampler before any Rust test
+          # or timed runtime fixture starts. Prior shutdown-signal failures remain failed.
+          python -u - <<'PY' &
+          import json, os, pathlib, shutil, subprocess, time
+          parent = os.getppid()
+          while os.getppid() == parent:
+              row = {"kind": "heptabao_build_resources", "unix_ms": time.time_ns() // 1000000,
+                     "cargo_build_jobs": os.environ["CARGO_BUILD_JOBS"]}
+              try:
+                  mem = {}
+                  for line in pathlib.Path("/proc/meminfo").read_text().splitlines():
+                      key, value = line.split(":", 1)
+                      if key in {"MemTotal", "MemAvailable", "SwapTotal", "SwapFree"}:
+                          mem[key + "_kib"] = int(value.split()[0])
+                  row["memory"] = mem
+                  row["disk"] = dict(zip(("total_bytes", "used_bytes", "free_bytes"), shutil.disk_usage(".")))
+                  row["cgroup"] = {}
+                  for name in ("memory.current", "memory.peak", "memory.max", "memory.events"):
+                      path = pathlib.Path("/sys/fs/cgroup") / name
+                      if path.is_file():
+                          row["cgroup"][name] = path.read_text().strip()
+                  result = subprocess.run(["ps", "-eo", "pid=,ppid=,rss=,comm=", "--sort=-rss"],
+                                          capture_output=True, text=True, timeout=2, check=False)
+                  row["process_observation_exit"] = result.returncode
+                  # Names and resource counters only: no command arguments or environment.
+                  row["largest_processes_pid_ppid_rss_kib_name"] = result.stdout.splitlines()[:10]
+              except Exception as error:
+                  row["observation_error"] = type(error).__name__
+              print(json.dumps(row, sort_keys=True), flush=True)
+              time.sleep(15)
+          PY
+          sampler_pid=$!
+          stop_sampler() {
+            kill "$sampler_pid" 2>/dev/null || true
+            wait "$sampler_pid" 2>/dev/null || true
+          }
+          trap stop_sampler EXIT
+          cargo +1.98.0 test --locked --workspace --all-targets --no-fail-fast --no-run
+          stop_sampler
+          trap - EXIT
+          cargo +1.98.0 test --locked --workspace --all-targets --no-fail-fast -- --test-threads=1
 
       - name: Check strict first-party workspace Clippy
         shell: bash
