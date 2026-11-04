@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.ha-api-source-patch-reconstruction.v1",
+  "patch_sha256": "7f60296cf4ee53cb468acd56f79c05c1155619ba8b659d1e7b8472a6a533a6d9",
+  "files": [
+    {
+      "path": "crates/heptabao-server/src/http_formal_api_fixture.rs",
+      "bytes": 10257,
+      "sha256": "8f46816dc8a7e6cf2338cdae2e6a72a377f88d33adb1dc1edba6d6084a295c4a",
+      "git_blob": "fa3a41ae30afaa3bac1f276789659458bad43272",
+      "exact": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_formal_api_pipeline_tests.rs",
+      "bytes": 7301,
+      "sha256": "16f92d2ba2006811f0d3b0bc72c3df68e950d0f122978af29908318235cc6213",
+      "git_blob": "91e940ea09d19b3ee46f33bb4f653f9a084f935b",
+      "exact": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs",
+      "bytes": 18225,
+      "sha256": "22e4f5432e7b35db13bcf43da1ab6c308c277f3f0b8e330027c5282d5a554d64",
+      "git_blob": "300bb86d95c6fd812ab6877e8eaecac746d0fefb",
+      "exact": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs",
+      "bytes": 18963,
+      "sha256": "be1c636aa2115305bfd20c2e7b8ea687aa0c36bb2113bd308fd7e3fa44c6651c",
+      "git_blob": "fbf227834e90f0bfa6b0e289e2ee971fa5500c8a",
+      "exact": true
+    },
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "bytes": 231872,
+      "sha256": "c81de43fae7b9bed3462ca0dccd44dd6569d39e7c613f2c57ceb240180e4d7d4",
+      "git_blob": "9301c19637fae2e81e8befc42708913e2acb6636",
+      "exact": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_storage_tests.rs",
+      "bytes": 26173,
+      "sha256": "f68d0a5e23962d507dce39d6f34c0cf941f5c910c7261e7c7706e0a08a8782a6",
+      "git_blob": "61a6d9750d03fc5c6e8a57a9ad786640237ecd2a",
+      "exact": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+      "bytes": 72053,
+      "sha256": "d45af70a5f58e9ff7d7f5e8863a4e82a107ab2eedb44c795099d99adeec2f561",
+      "git_blob": "b8db6568d936adf788a5e9eeaaead4f2ee42230c",
+      "exact": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+      "bytes": 33680,
+      "sha256": "ef2da7061546012e32c06776b3d3aa64c594286b8fa2d4c35dde24f0a03403d5",
+      "git_blob": "c335d985eb3a3701b4f98f9383c739e7e3768983",
+      "exact": true
+    },
+    {
+      "path": "qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+      "bytes": 49483,
+      "sha256": "33377bc52b520c53aa2195ee68556581ea78036fbb887ffc2e5bb6fd4d985e47",
+      "git_blob": "def438a011a389920e824b3ab29f853a4db862ed",
+      "exact": true
+    },
+    {
+      "path": "tools/migration/openbao271_kv2_native_large_migrate.py",
+      "bytes": 16591,
+      "sha256": "8043bce5e2443ca10f09d88dc854fc1a850ae4ac8b904763fbfc1ae3fa2de52a",
+      "git_blob": "6f1e114e545c1f292c696f4cd881a982db95114b",
+      "exact": true
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+      "bytes": 27730,
+      "sha256": "049a2d74aca4482b6b5dbe27289b1e0199b9522d34861f71bd5db18c0b8913e9",
+      "git_blob": "f7c23c52a1dea616522426204f2b7416bcb728f1",
+      "exact": true
+    }
+  ],
+  "runtime_qualification": false
+}
