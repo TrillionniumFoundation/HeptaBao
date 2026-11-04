@@ -1,0 +1,51 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "--ro-bind",
+      "/",
+      "/",
+      "--proc",
+      "/proc",
+      "--dev",
+      "/dev",
+      "--unshare-net",
+      "--unshare-pid",
+      "--die-with-parent",
+      "--",
+      "/usr/bin/python3",
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import ast,sys,json,hashlib,subprocess,os\nassert os.statvfs('/home/qian-qi/.openclaw').f_flag & os.ST_RDONLY\nx=json.loads(sys.stdin.buffer.read(1048577));out=[]\nfor n,s in x.items():\n if n.endswith('.py'):ast.parse(s,filename=n)\n elif n.endswith('.mjs'):\n  p=subprocess.run(['/usr/bin/node','--input-type=module','--check'],input=s.encode(),capture_output=True,timeout=10)\n  if p.returncode:raise RuntimeError(n+': '+p.stderr.decode())\n else:raise AssertionError('only reviewed syntax sources')\n out.append({'name':n,'sha256':hashlib.sha256(s.encode()).hexdigest(),'bytes':len(s.encode()),'syntaxOk':True})\nprint(json.dumps({'schema':'heptabao.native-control-syntax-only.v1','providerCalled':False,'nativeStarted':False,'productionChanged':False,'files':out},sort_keys=True))\n"
+    ],
+    "created_unix_ms": 1793818029271,
+    "cwd": null,
+    "env_keys": [
+      "HOME",
+      "PATH"
+    ],
+    "executable": "/usr/bin/bwrap",
+    "execution_mode": "operator",
+    "host": "rog",
+    "id": "1a1a7e2ecd7-fc05-2cca",
+    "idempotency_key": "authbus61ff-native-baseline-control-syntax-only-20261104-r2c",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1a7e2ecd7-fc05-2cca",
+    "request_digest": "69e293ac83bc6c8277033aa1a7d28ad6a7faa6d7528bd5250823c1371d3ad361",
+    "request_fingerprint": 7629823087872863000,
+    "ssh_target": "rog-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1a7e2ecd7-fc05-2cca"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1a7e2ecd7-fc05-2cca"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

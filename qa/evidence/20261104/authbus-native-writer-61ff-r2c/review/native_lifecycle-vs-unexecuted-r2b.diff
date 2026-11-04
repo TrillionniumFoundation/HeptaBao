@@ -1,0 +1,14 @@
+--- unexecuted-r2b/native_lifecycle.mjs
++++ baseline-r2c/native_lifecycle.mjs
+@@ -140,7 +140,10 @@
+   function acquire(label) {
+     const state = {label,settled:false,client:null,released:false,promise:null,sharedStartup:null,
+       initialBarrier:n.patched&&label==='new'?globalThis[STATE]?.retiring?.get(oldKey):null};
+-    const promise = factory.a(options()); state.promise = promise; acquires.push(state);
++    acquires.push(state);
++    let promise;
++    try { promise = factory.a(options()); } catch (error) { promise = Promise.reject(error); }
++    state.promise = promise;
+     promise.then(client => {
+       state.settled = true; state.client = client;
+       if (closed) {

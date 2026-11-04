@@ -1,0 +1,313 @@
+--- baseline-r1/native_lifecycle.mjs
++++ baseline-r2c/native_lifecycle.mjs
+@@ -28,6 +28,16 @@
+   while (Date.now() < end) { const value = predicate(); if (value) return value; await delay(20); }
+   throw Object.assign(new Error(code), { safeCode: code });
+ }
++async function untilDeadline(promise, deadline, code) {
++  const remaining = deadline - Number(process.hrtime.bigint() / 1000000n);
++  need(remaining > 0, code);
++  let timer;
++  try {
++    return await Promise.race([promise, new Promise((_, reject) => {
++      timer = setTimeout(() => reject(Object.assign(new Error(code), {safeCode:code})), remaining);
++    })]);
++  } finally { clearTimeout(timer); }
++}
+ function privateBytes(file) {
+   const fd = fs.openSync(file, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW);
+   try {
+@@ -48,7 +58,7 @@
+   return hash(b);
+ }
+ 
+-export async function createNativeLifecycle({ plan, cfg, agentDir, before, childProcess, originalSpawn, check, sensitive }) {
++export async function createNativeLifecycle({ plan, cfg, agentDir, before, childProcess, originalSpawn, check, sensitive, journal }) {
+   const n = plan.native;
+   need(n && ['active-lease','pending-initialize','pending-before-client','abnormal-wrapper'].includes(n.scenario),
+     'native_scenario_scope');
+@@ -63,8 +73,10 @@
+     twoReadyLeasesObserved:false, singleWriterInvariantPassed:null,
+     harnessCleanupUsedAsRetirementProof:false, cleanup:{ attempted:false, allOwnedStopped:false } };
+   const clock = () => Number(process.hrtime.bigint() / 1000000n);
+-  function event(kind, detail={}) { report.events.push({ sequence:report.events.length + 1,
+-    monotonicMs:clock(), kind, ...detail }); }
++  function event(kind, detail={}) {
++    const record = {sequence:report.events.length + 1,monotonicMs:clock(),kind,...detail};
++    report.events.push(record); journal('native_event', {event:record});
++  }
+   need(digest(cfg.plugins.entries.codex) === n.sourceCodexConfigurationSha256, 'original_codex_configuration_preserved');
+   const nativeAuth = path.join(n.nativeHome, 'auth.json'), nativeConfig = path.join(n.nativeHome, 'config.toml');
+   need(process.env.HOME === n.home && process.env.CODEX_HOME === n.nativeHome
+@@ -103,7 +115,9 @@
+     try { checkpoint('filesystem_event_' + report.nativeCheckpoints.length); }
+     catch { watchFailure = true; report.generationsUnchanged = false; }
+   }); }
++  event('before_original_factory_import');
+   const factory = await import(pathToFileURL(n.factoryEntry));
++  event('after_original_factory_import');
+   const configModule = await import(pathToFileURL(n.configEntry));
+   const recycler = await import(pathToFileURL(path.join(path.dirname(plan.pluginEntry), 'codex-client-recycler.js')));
+   const runtime = configModule.d({ pluginConfig:cfg.plugins.entries.codex.config, env:process.env,
+@@ -119,8 +133,75 @@
+   let startedResolve; const started = new Promise(resolve => { startedResolve = resolve; });
+   let gateResolve; const gate = new Promise(resolve => { gateResolve = resolve; });
+   let gateReleased = false, oldPromise, newerPromise, newerOutcome, oldKey, oldEntry, first, second;
+-  const tracked = [], children = [];
+-  let callbackRetirement = null, cleanupStarted = false;
++  const tracked = [], children = [], ownedSpawns = [], acquires = [], sharedStartups = [];
++  let sharedEntryCaptureFailed = false;
++  const lifecycleAbort = new AbortController();
++  let callbackRetirement = null, cleanupStarted = false, closed = false;
++  function acquire(label) {
++    const state = {label,settled:false,client:null,released:false,promise:null,sharedStartup:null,
++      initialBarrier:n.patched&&label==='new'?globalThis[STATE]?.retiring?.get(oldKey):null};
++    acquires.push(state);
++    let promise;
++    try { promise = factory.a(options()); } catch (error) { promise = Promise.reject(error); }
++    state.promise = promise;
++    promise.then(client => {
++      state.settled = true; state.client = client;
++      if (closed) {
++        state.released = factory.o(client) === true;
++        event('late_owned_lease_released_after_close',{label,released:state.released});
++        try { factory.s(client); } catch {}
++      }
++    }, error => {
++      state.settled = true;
++      const stage = label + (tracked.some(r => r.ordinal === (label === 'old' ? 1 : 2))
++        ? '.acquire.after_onStarted' : '.acquire.before_onStarted');
++      const errorClass = ['Error','TypeError','RangeError','SyntaxError','AbortError'].includes(error?.name)
++        ? error.name : 'unknown';
++      let privateReasonSha256 = null;
++      try { privateReasonSha256 = savePrivate(path.join(n.outputDir,label+'-factory-rejection.private.json'),
++        {stage,name:String(error?.name??''),message:String(error?.message??error),stack:String(error?.stack??''),
++         code:String(error?.code??''),safeCode:String(error?.safeCode??'')}); } catch {}
++      report.acquireFailures ??= []; report.acquireFailures.push({stage,errorClass,privateReasonSha256});
++      event('actual_factory_acquire_rejected',{stage,errorClass,privateReasonSha256});
++    }).catch(() => {});
++    promise.catch(() => {}); return promise;
++  }
++  function captureSharedPromise(record) {
++    const promise=record.entry.promise;
++    if(!promise)return;
++    if(record.promise&&record.promise!==promise){record.replaced=true;return;}
++    if(record.promise)return;
++    if(typeof promise.then!=='function'){record.observationFailed=true;return;}
++    record.promise=promise;
++    event('actual_shared_startup_promise_captured',{ordinal:record.ordinal,entryKeySha256:record.keySha256});
++    const settled=outcome=>{
++      record.settled=true;record.outcome=outcome;
++      event('actual_shared_startup_settled',{ordinal:record.ordinal,outcome});
++    };
++    promise.then(()=>settled('fulfilled'),()=>settled('rejected')).catch(()=>{record.observationFailed=true;});
++  }
++  function sharedStartupBeforeActualSpawn() {
++    const state=globalThis[STATE], pairs=state?.clients instanceof Map?[...state.clients.entries()]:[];
++    const valid=pairs.length===1&&pairs[0][1]?.client===undefined
++      &&pairs[0][1]?.pendingAcquires===1;
++    if(!valid)sharedEntryCaptureFailed=true;
++    need(valid,'exact_actual_spawn_shared_entry');
++    const [key,entry]=pairs[0], owner=acquires.find(a=>!a.sharedStartup&&!a.settled);
++    if(!owner)sharedEntryCaptureFailed=true;
++    need(owner,'exact_actual_spawn_acquire_owner');
++    let record=sharedStartups.find(r=>r.entry===entry);
++    if(!record){record={ordinal:sharedStartups.length+1,entry,keySha256:hash(key),
++      promise:null,settled:false,replaced:false,observationFailed:false,outcome:null};
++      sharedStartups.push(record);}
++    owner.sharedStartup=record;
++    captureSharedPromise(record);
++    // Original factory assigns entry.promise after its synchronous spawn stack.
++    // Keep the exact object even if the callback retires it before that write.
++    queueMicrotask(()=>{try{captureSharedPromise(record);}catch{record.observationFailed=true;}});
++    event('actual_shared_entry_retained_before_spawn',{ordinal:record.ordinal,
++      entryKeySha256:record.keySha256,promiseAlreadyPublished:record.promise!==null});
++    return record;
++  }
+   function living(saved) { return sameProcess(saved, identity(saved?.pid)); }
+   function nativeFor(wrapperPid) {
+     const candidates = [];
+@@ -138,17 +219,27 @@
+     process.kill(saved.pid, signal);
+   }
+   childProcess.spawn = (command, args, options) => {
+-    need(command === n.command && JSON.stringify(args) === JSON.stringify(runtime.args)
+-      && options?.shell === false && options.detached === false && options.env?.HOME === n.home
+-      && options.env?.CODEX_HOME === n.nativeHome && !options.env.OPENAI_API_KEY && !options.env.CODEX_API_KEY,
+-      'only_exact_original_native_spawn');
++    need(!closed && !cleanupStarted, 'native_spawn_after_lifecycle_close_refused');
++    const predicates = {commandExact:command===n.command,argsExact:JSON.stringify(args)===JSON.stringify(runtime.args),
++      // The pinned Linux direct adapter preserves shell: undefined; it never selects a shell.
++      shellExactlyUndefined:options?.shell===undefined,detachedFalse:options?.detached===false,
++      homeExact:options?.env?.HOME===n.home,codexHomeExact:options?.env?.CODEX_HOME===n.nativeHome,
++      noOpenaiApiKey:!options?.env?.OPENAI_API_KEY,noCodexApiKey:!options?.env?.CODEX_API_KEY};
++    event('original_spawn_predicates',predicates);
++    need(Object.values(predicates).every(value=>value===true),'only_exact_original_native_spawn');
+     need(children.length < 2, 'bounded_two_actual_native_starts');
+     checkpoint('before_spawn_' + (children.length + 1));
+     const priorNativeAlive = tracked.some(x => x.native && living(x.native));
+     event('native_wrapper_spawn_requested', {ordinal:children.length + 1,priorNativeAlive,
+       priorWrapperAlive:tracked.some(x => x.wrapper && living(x.wrapper))});
+     // Observe the original decision; an unsafe second spawn is not blocked here.
++    const sharedStartup=sharedStartupBeforeActualSpawn();
+     const child = originalSpawn(command, args, options); children.push(child);
++    // Register the actual child before any onStarted assertion can fail.
++    const owned = {child,ordinal:children.length,initialWrapper:identity(child.pid),native:null,sharedStartup};
++    ownedSpawns.push(owned);
++    event('actual_wrapper_spawn_returned',{ordinal:owned.ordinal,pid:child.pid??null,
++      initialWrapper:owned.initialWrapper});
+     if (children.length === 2) { report.secondProcessSpawned = true;
+       report.secondSpawnPriorNativeAlive = priorNativeAlive; }
+     if (children.length === 1 && n.scenario === 'pending-before-client') {
+@@ -208,8 +299,9 @@
+     };
+     if (ordinal === 1) { first=rec; startedResolve(rec); } else second=rec;
+   }
+-  async function attachNative(rec) {
+-    rec.native = await waitFor(() => nativeFor(rec.wrapper.pid),5000,'real_native_child_identity_timeout');
++  async function attachNative(rec, deadline) {
++    rec.native = await waitFor(() => nativeFor(rec.wrapper.pid),Math.min(5000, Math.max(1, (deadline ?? clock()+5000)-clock())),'real_native_child_identity_timeout');
++    ownedSpawns.find(own=>own.child===rec.client.child).native = rec.native;
+     need(rec.native.pgid === process.pid && rec.wrapper.pgid === process.pid,
+       'qa_original_transport_owned_process_group');
+     report.transports.push({ordinal:rec.ordinal,wrapper:rec.wrapper,native:rec.native});
+@@ -228,14 +320,25 @@
+   }
+   function release(rec, label) {
+     need(rec.lease && factory.o(rec.client) === true, 'original_factory_lease_release');
+-    rec.lease = false; event(label,{ordinal:rec.ordinal});
++    rec.lease = false;
++    const acquired = acquires.find(a=>a.client===rec.client&&!a.released);
++    need(acquired,'owned_lease_release_record'); acquired.released = true;
++    event(label,{ordinal:rec.ordinal});
+   }
+-  const options = () => ({agentDir,config:cfg,startOptions:runtime,timeoutMs:15000,onStartedClient:observe});
++  const options = () => ({agentDir,config:cfg,startOptions:runtime,timeoutMs:15000,
++    abandonSignal:lifecycleAbort.signal,onStartedClient:observe});
+   async function begin() {
+     process.env.OPENCLAW_QA_PARENT_PID = String(process.pid);
+     // The existing factory uses this supported lifetime flag only; no auth override.
+-    oldPromise = factory.a(options()); oldPromise.catch(()=>{});
+-    await started; await attachNative(first);
++    const deadline = clock()+15000;
++    event('old_acquire_started',{absoluteDeadlineMonotonicMs:deadline});
++    oldPromise = acquire('old');
++    const beforeStartedFailure = oldPromise.then(() => {
++      need(first,'factory_completed_without_onStarted'); return first;
++    });
++    beforeStartedFailure.catch(()=>{});
++    await untilDeadline(Promise.race([started,beforeStartedFailure]),deadline,'old_factory_before_onStarted_timeout');
++    await attachNative(first,deadline);
+     if (!oldEntry) {
+       const entries=[...globalThis[STATE].clients.entries()];
+       need(entries.length===1&&entries[0][1].client===first.client,'original_factory_shared_entry');
+@@ -243,7 +346,7 @@
+     }
+     report.sharedKeySha256=hash(oldKey);
+     if (!n.scenario.startsWith('pending-')) {
+-      need(await oldPromise===first.client,'old_actual_factory_lease');
++      need(await untilDeadline(oldPromise,deadline,'old_factory_initialize_timeout')===first.client,'old_actual_factory_lease');
+       first.lease=true;await account(first,'old-before-import');
+       need(oldEntry.activeLeases===1&&oldEntry.pendingAcquires===0,'old_real_active_lease_counts');
+     } else need(oldEntry.activeLeases===0&&oldEntry.pendingAcquires===1&&!first.client.initialized,
+@@ -267,7 +370,7 @@
+     event('before_concurrent_acquire',{oldActiveLeases:oldEntry.activeLeases,oldPendingAcquires:oldEntry.pendingAcquires,
+       oldInitialized:first.client.initialized,oldWriterAlive:living(first.native),
+       retirementBarrierPresent:globalThis[STATE].retiring?.has(oldKey)??false});
+-    newerPromise=factory.a(options()).then(client=>{second.lease=true;newerOutcome={ok:true,client};return client;},
++    newerPromise=acquire('new').then(client=>{need(!closed,'new_lease_after_lifecycle_close');second.lease=true;newerOutcome={ok:true,client};return client;},
+       error=>{newerOutcome={ok:false,code:String(error.message)};throw error;});
+     newerPromise.catch(()=>{});
+     if(!n.patched) {
+@@ -339,30 +442,78 @@
+     return report;
+   }
+   async function cleanup() {
+-    cleanupStarted=true;report.cleanup.attempted=true;event('owned_harness_cleanup_started');
++    cleanupStarted=true;closed=true;report.cleanup.attempted=true;
++    const deadline=clock()+5000;
++    try {
++    lifecycleAbort.abort();event('owned_harness_cleanup_started',{closed:true});
+     if(!gateReleased){gateReleased=true;gateResolve();}
+     if(first&&n.scenario==='abnormal-wrapper'&&living(first.native)&&identity(first.native.pid)?.state==='T')
+       exactSignal(first.native,'SIGCONT','cleanup_native_resume');
+     for(const rec of tracked){
+       if(rec.lease){try{release(rec,'cleanup_original_lease_release');}catch{}}
+       try{factory.s(rec.client);}catch{}
+-      try{await rec.client.closeAndWait({forceKillDelayMs:1000,exitTimeoutMs:2000});}catch{}
+-    }
+-    for(const rec of tracked)for(const saved of [rec.native,rec.wrapper]){
+-      if(saved&&living(saved)){exactSignal(saved,'SIGTERM','cleanup_exact_owned_sigterm');}
++      try{await rec.client.closeAndWait({forceKillDelayMs:1000,exitTimeoutMs:Math.max(1,Math.min(2000,deadline-clock()))});}catch{}
+     }
+-    await delay(100);
+-    for(const rec of tracked)for(const saved of [rec.native,rec.wrapper]){
+-      if(saved&&living(saved)){exactSignal(saved,'SIGKILL','cleanup_exact_owned_sigkill');}
++    const ownedIdentities=[];
++    for(const own of ownedSpawns) {
++      const rec=tracked.find(r=>r.client.child===own.child), current=identity(own.child.pid), initial=own.initialWrapper;
++      let wrapper=rec?.wrapper??null;
++      // An exact child may exec /usr/bin/env -> the pinned Node wrapper. Keep
++      // PID/startTicks/parent/group/session ownership while observing that exec.
++      if(!wrapper&&initial&&current&&initial.pid===current.pid&&initial.startTicks===current.startTicks
++        &&current.ppid===process.pid&&current.pgid===process.pid&&current.session===process.pid
++        &&[n.nodeRealpath,'/usr/bin/env'].includes(current.executable)) wrapper=current;
++      let native=rec?.native??own.native;
++      if(!native&&wrapper&&living(wrapper))native=nativeFor(wrapper.pid);
++      if(native)need(native.pgid===process.pid,'unobserved_native_owned_group');
++      own.cleanupWrapper=wrapper;own.native=native;
++      if(native)ownedIdentities.push(native);if(wrapper)ownedIdentities.push(wrapper);
+     }
+-    await waitFor(()=>tracked.every(rec=>!living(rec.native)&&!living(rec.wrapper)),3000,'owned_native_cleanup_timeout');
+-    report.cleanup.everySpawnTracked=children.length===tracked.length;
+-    report.cleanup.allOwnedStopped=report.cleanup.everySpawnTracked&&tracked.every(rec=>!living(rec.native)&&!living(rec.wrapper));
+-    report.cleanup.identities=tracked.map(rec=>({ordinal:rec.ordinal,wrapperGone:!living(rec.wrapper),nativeGone:!living(rec.native)}));
+-    checkpoint('after_owned_cleanup');watcher?.close();
++    for(const saved of ownedIdentities)if(living(saved))exactSignal(saved,'SIGTERM','cleanup_exact_owned_sigterm');
++    await delay(Math.min(100,Math.max(0,deadline-clock())));
++    for(const saved of ownedIdentities)if(living(saved))exactSignal(saved,'SIGKILL','cleanup_exact_owned_sigkill');
++    for(const record of sharedStartups){try{captureSharedPromise(record);}catch{record.observationFailed=true;}}
++    const originals=sharedStartups.filter(r=>r.promise).map(r=>r.promise);
++    try{await untilDeadline(Promise.allSettled([...acquires.map(a=>a.promise),...originals]),
++      deadline,'owned_acquire_and_shared_startup_settlement_timeout');}catch{}
++    try{await waitFor(()=>ownedIdentities.every(saved=>!living(saved)),Math.max(1,deadline-clock()),'owned_native_cleanup_timeout');}catch{}
++    report.cleanup.closed=true;report.cleanup.actualSpawnCount=children.length;
++    report.cleanup.ownerRegistryCount=ownedSpawns.length;
++    report.cleanup.acquirePromisesSettled=acquires.every(a=>a.settled);
++    const validStartup=r=>r&&r.promise&&r.settled&&!r.replaced&&!r.observationFailed
++      &&r.entry.promise===r.promise;
++    report.cleanup.sharedStartupCoverage=acquires.map(a=>{
++      const barrierOnly=!a.sharedStartup&&a.initialBarrier&&a.initialBarrier.entry===oldEntry
++        &&globalThis[STATE].retiring?.get(oldKey)===a.initialBarrier
++        &&a.initialBarrier.confirmed===false&&a.settled&&a.client===null;
++      return {label:a.label,originalStartupCaptured:!!a.sharedStartup,
++        originalStartupSettled:!!validStartup(a.sharedStartup),retainedBarrierOnly:!!barrierOnly,
++        covered:!!validStartup(a.sharedStartup)||!!barrierOnly};
++    });
++    report.cleanup.startupPromisesSettled=!sharedEntryCaptureFailed
++      &&report.cleanup.sharedStartupCoverage.every(x=>x.covered)
++      &&sharedStartups.every(validStartup)
++      &&ownedSpawns.every(own=>sharedStartups.includes(own.sharedStartup));
++    report.cleanup.sharedStartupPromises=sharedStartups.map(r=>({ordinal:r.ordinal,
++      entryKeySha256:r.keySha256,promiseCaptured:!!r.promise,settled:r.settled,
++      outcome:r.outcome,replaced:r.replaced,observationFailed:r.observationFailed}));
++    report.cleanup.allOwnedLeasesReleased=acquires.every(a=>a.client===null||a.released);
++    report.cleanup.everySpawnTracked=children.length===tracked.length&&ownedSpawns.length===children.length;
++    report.cleanup.allOwnedStopped=report.cleanup.acquirePromisesSettled&&report.cleanup.startupPromisesSettled&&report.cleanup.allOwnedLeasesReleased&&report.cleanup.everySpawnTracked
++      &&tracked.every(rec=>rec.wrapper&&rec.native&&!living(rec.native)&&!living(rec.wrapper));
++    report.cleanup.identities=ownedSpawns.map(own=>({ordinal:own.ordinal,
++      wrapperObserved:!!own.cleanupWrapper,nativeObserved:!!own.native,
++      wrapperGone:!!own.cleanupWrapper&&!living(own.cleanupWrapper),
++      nativeGone:!!own.native&&!living(own.native),
++      exitCode:own.child.exitCode,signalCode:own.child.signalCode}));
++    checkpoint('after_owned_cleanup');
+     report.generationsUnchanged=!watchFailure&&report.nativeCheckpoints.every(x=>x.exact);
++    event('owned_harness_cleanup_completed',{acquirePromisesSettled:report.cleanup.acquirePromisesSettled,
++      startupPromisesSettled:report.cleanup.startupPromisesSettled,
++      actualSpawnCount:children.length,allOwnedStopped:report.cleanup.allOwnedStopped});
+     need(report.cleanup.allOwnedStopped&&report.generationsUnchanged,'native_owned_cleanup_and_generation');
+     return report;
++    } finally { watcher?.close(); }
+   }
+   startWatcher();
+   return {begin,finish,cleanup,report};
