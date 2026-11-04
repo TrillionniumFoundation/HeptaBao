@@ -1,0 +1,100 @@
+{
+  "schema": "heptabao-authbus-native-baseline-independent-static-review-v1",
+  "reviewed_commit": "93dfe2aa6c92f554bc2e4aa57f087a709d77093e",
+  "reviewer": "bao_acceptance",
+  "reviewed_files": [
+    {
+      "path": "control/consumer.mjs",
+      "bytes": 17913,
+      "sha256": "a3361ccfdc961e62b58d7e78be692417b7f71e354476caee0a9587a48e5555ff"
+    },
+    {
+      "path": "control/native_lifecycle.mjs",
+      "bytes": 23775,
+      "sha256": "9af836615f637696b0e0c42ed249fb979c8be1cfe6af7fdcee3ebbb681ce3272"
+    },
+    {
+      "path": "control/driver.py",
+      "bytes": 25542,
+      "sha256": "9b79996b1beaf4ea7f469819dacc6aa7634d0ab41986a02902c5864a93ccd42a"
+    },
+    {
+      "path": "control/launcher.py",
+      "bytes": 6165,
+      "sha256": "1149053227db92f7cbd7c21ddc840c80a24aed0584307aecba5aaee230788eeb"
+    },
+    {
+      "path": "control/provider-proof.public.json",
+      "bytes": 2679,
+      "sha256": "5715a487fd8bee4d004539ca9e6830199bea72de33b1d78b06eabe3dd471a75c"
+    },
+    {
+      "path": "review/consumer.diff",
+      "bytes": 7296,
+      "sha256": "d6f68af1086b44ff71887e19018055f85e7540e78427d07f6a852e8bf0bb6613"
+    },
+    {
+      "path": "review/driver.diff",
+      "bytes": 18670,
+      "sha256": "00080ca09a21d1b826f69c0dbefb10d7853eddd3fc74416942cb792c2d458796"
+    },
+    {
+      "path": "review/launcher.diff",
+      "bytes": 4988,
+      "sha256": "0a86f0a54656979d4f1811d70a79e7db02434d809b6b6367ddf31d9b62ba83c5"
+    },
+    {
+      "path": "source/codex-client-recycler.js",
+      "bytes": 2120,
+      "sha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d"
+    },
+    {
+      "path": "source/rog-shared-client-4ICy3U6d.js",
+      "bytes": 77233,
+      "sha256": "bff60f1bb2cb73ad44c7f9c9d779576a2ffd9836b22ecba0bd5b6046e7ce9103"
+    },
+    {
+      "path": "source/config-CYEDnLJ2.js",
+      "bytes": 53801,
+      "sha256": "dd8d2fc434fc538ba8e69ebe0f2aa470eadcfb86c2ef95b19a7570afb51290a0"
+    }
+  ],
+  "stage_input_sha256": "971052cef47d440f5a26bdf0d6c03d8d4b7e1d4c479db619c533ea30d57cb1f6",
+  "stage_source_pins": 39,
+  "all_source_manifest_pins_matched": true,
+  "static_blockers_found": [],
+  "checks": {
+    "candidate_mode_closed_to_baseline": true,
+    "actual_pinned_installed_factory": true,
+    "original_onStarted_precedes_initialize_and_installed_refresh_handler": true,
+    "only_initialize_initialized_and_nonrefresh_account_read": true,
+    "actual_native_version_and_process_start_identity_checked": true,
+    "exact_private_home_codex_home_and_credential_generation_checked": true,
+    "kernel_private_network_and_pid_namespace": true,
+    "production_and_code_kernel_readonly": true,
+    "actual_three_case_negative_requires_two_live_native_processes_and_ready_leases": true,
+    "baseline_one_writer_gate_required_false": true,
+    "normal_old_writer_exit_precedes_harness_cleanup": true,
+    "owned_cleanup_and_generation_checks_required_for_success": true,
+    "whole_store_installed_sdk_cas_rollback_and_original_order_usage_preserved": true
+  },
+  "budgets": {
+    "outer_seconds": 440,
+    "consumer_seconds": 70,
+    "rollback_seconds": 35,
+    "http_seconds": 10,
+    "original_acquire_ms": 15000,
+    "account_read_ms": 8000
+  },
+  "limits": [
+    "Static source review only; no native execution or kernel isolation was started by this reviewer.",
+    "A successful baseline exit proves the recorded negative observation and cleanup, not the product single-writer gate.",
+    "Fixed-candidate and abnormal-wrapper branches are outside this baseline and require a separate freeze and actual run.",
+    "Native internal background network attempts are not measured; egress is denied by the private network namespace.",
+    "Provider validity links to the earlier exact managed-profile generation proof; this fixture performs no fresh external provider request.",
+    "The normal33 service binary is the baseline; this does not qualify unified 70714605 or production gateway migration."
+  ],
+  "production_modified": false,
+  "runtime_qualified": false,
+  "full_replacement_qualified": false
+}
