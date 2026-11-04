@@ -1,0 +1,12 @@
+diff --git a/crates/heptabao-server/src/http_snapshot_accept_tests.rs b/crates/heptabao-server/src/http_snapshot_accept_tests.rs
+--- a/crates/heptabao-server/src/http_snapshot_accept_tests.rs
++++ b/crates/heptabao-server/src/http_snapshot_accept_tests.rs
+@@ -722,7 +722,7 @@
+         "denied HTTP requests cannot allocate a snapshot spool"
+     );
+     let corrupted = fixture.snapshot("POST", &root, "", b"invalid gzip archive")?;
+-    assert_eq!(corrupted.status, 400);
++    assert_eq!(corrupted.status, 500);
+     assert!(corrupted.json()?.get("data").is_none());
+     exact_history(&fixture, &root)?;
+     assert!(

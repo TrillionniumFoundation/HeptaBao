@@ -722,7 +722,7 @@ fn native_snapshot_https_json_accept_keeps_actor_namespace_seal_and_archive_refu
         "denied HTTP requests cannot allocate a snapshot spool"
     );
     let corrupted = fixture.snapshot("POST", &root, "", b"invalid gzip archive")?;
-    assert_eq!(corrupted.status, 400);
+    assert_eq!(corrupted.status, 500);
     assert!(corrupted.json()?.get("data").is_none());
     exact_history(&fixture, &root)?;
     assert!(

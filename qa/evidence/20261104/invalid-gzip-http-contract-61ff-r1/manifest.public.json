@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.invalid-gzip-http-fixture-contract-fix.v1",
+  "base_commit": "c71b405970544682e7b9b25c91214f66351a767b",
+  "physical_base": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "path": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+  "base": {
+    "path": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+    "ref": "c71b405970544682e7b9b25c91214f66351a767b",
+    "blob": "b1e2ecea4c3edc3d6094e0166fe58eb78799fbcb",
+    "bytes": 27730,
+    "sha256": "00b296789f5adb5393ddb9f2e07a994e0d0f6be36ccfd2805563fd913f1dd25a"
+  },
+  "candidate": {
+    "bytes": 27730,
+    "sha256": "049a2d74aca4482b6b5dbe27289b1e0199b9522d34861f71bd5db18c0b8913e9"
+  },
+  "changes": [
+    "One exact assertion: HTTP POST of b\\\"invalid gzip archive\\\" now requires500, replacing400. All original actor/namespace/no-data/spool/seal/history assertions and budgets remain byte-for-byte unchanged."
+  ],
+  "evidence": {
+    "original_heptabao_fulltest_job": "1a1a7e9ec36-fc05-2cea",
+    "actual_failure": "http_snapshot_accept_tests.rs:725, actual500 expected400",
+    "official_oracle_commit": "ebbd4c2e16d215dba6984ea6f65292ce0665f714",
+    "official_oracle_job": "1a1a81dde69-fc05-2dbb",
+    "exact_body_case": "non_gzip_http_literal_node1",
+    "sequence": 79,
+    "status": 500,
+    "marker_retained": true,
+    "reference_limit": "Overall oracle failed its final node2 role control. This exact node1 body observation is complete, and its state control passed; it is not an all-ten-case or healthy-standby qualification."
+  },
+  "not_changed": "service_snapshot_transfer_tests.rs universal truncation/concatenation refusal remains a known real compatibility gap and is deliberately not patched here.",
+  "runtime_status": "Not recompiled or rerun; original7071 full-workspace red retained.",
+  "full_replacement_qualified": false
+}
