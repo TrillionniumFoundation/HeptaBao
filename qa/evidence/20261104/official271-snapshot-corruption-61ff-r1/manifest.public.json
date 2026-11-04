@@ -1,0 +1,63 @@
+{
+  "schema": "heptabao.official271-exact-snapshot-corruption-source.v1",
+  "status": "source_only_pending_syntax_and_review",
+  "base": {
+    "git_blob": "5c19e15a6c8697bdfd24b2fec0eb588f74344276",
+    "sha256": "448cce0cedef1b2010beb789634d3b195750c25c8f96f7deb7b6919e9b2419fd",
+    "bytes": 46195,
+    "commit": "67c737b0bfc3966ea598c27f814ebde7d54cb482"
+  },
+  "candidate": {
+    "bytes": 47122,
+    "sha256": "8363e7af8b37016c386285c79c411745d7b928d3dc6cbaa0e8dc33e8e0acab71"
+  },
+  "wrapper": {
+    "bytes": 2894,
+    "sha256": "ea8c80907a27b3ab9b53178f73dfddf0867f68be27e96885d1491278c2f56ee2"
+  },
+  "changes": [
+    "Replace only the prior business observe section with five exact corruption classes on leader and default standby (ten observations).",
+    "Each candidate derives from a fresh actual official snapshot kept private. A new unique CAS0 KV marker is written and read after source capture, and its actual presence is observed after the POST.",
+    "No response status or no-effect assumption is forced; accepted restores remain in this owned fixture and their actual state is recorded.",
+    "Retain the original fixed 2.7.1 binary pin, setup, real TLS, original 15-second HTTP and 45-second readiness budgets, no-replay handling, all original owned-child registration and cleanup.",
+    "Use a fresh isolated control/live namespace and explicit observation-only report/intent labels."
+  ],
+  "cases": {
+    "variants": [
+      "truncate_last_byte",
+      "concatenate_self",
+      "flip_middle_bit_64",
+      "non_gzip_transfer_literal",
+      "non_gzip_http_literal"
+    ],
+    "nodes": [
+      1,
+      2
+    ],
+    "route": "POST /v1/sys/storage/raft/snapshot",
+    "credential": "actual bootstrap root",
+    "headers": {},
+    "content_type": "application/octet-stream",
+    "expected_status_forced": false,
+    "exact_denominator": 10
+  },
+  "limits": {
+    "http_seconds": 15,
+    "readiness_seconds": 45,
+    "supervisor_seconds": 300,
+    "private_body_bound": 16777216
+  },
+  "security": {
+    "unmodified_snapshot_posted": false,
+    "archive_candidates_may_be_accepted": true,
+    "private_archives_or_credentials_published": false,
+    "production_services_touched": false,
+    "physical_hosts": 1,
+    "process_nodes": 3
+  },
+  "scope": "Official malformed-archive status/effect observation only. Neither syntax-only success nor completed_observation is HeptaBao runtime qualification or full replacement proof.",
+  "source_patch": {
+    "bytes": 16654,
+    "sha256": "b66523b9910e4a64b536f7a7f2a6fc53752cf44802ebba5b10ec4fb4710aca96"
+  }
+}

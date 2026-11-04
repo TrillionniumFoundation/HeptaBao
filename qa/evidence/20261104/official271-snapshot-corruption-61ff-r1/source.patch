@@ -1,0 +1,240 @@
+diff --git a/official_271_snapshot_corruption_reference_r1.py b/official_271_snapshot_corruption_reference_r1.py
+--- a/official_271_snapshot_corruption_reference_r1.py
++++ b/official_271_snapshot_corruption_reference_r1.py
+@@ -1,9 +1,10 @@
+ #!/usr/bin/env python3
+ """Bounded, fresh, loopback-only OpenBao 2.7.1 standby wire observation.
+ 
+-No redirect following, no valid restore body, no operation replay.  Bootstrap
+-credentials and all raw HTTP bodies stay in the owned 0700 fixture.  Public
+-receipts contain only fixed labels, status/header shapes, sizes and digests.
++No redirect following or operation replay. Archive candidates may be accepted
++by the official server; any restore remains inside this fresh owned fixture.
++Bootstrap credentials and all raw bodies stay private. Public receipts contain
++fixed labels, status/header shapes, state-control outcomes, sizes and digests.
+ """
+ from __future__ import annotations
+ 
+@@ -292,7 +293,7 @@
+     regular(binary)
+     if digest(binary) != EXPECTED_SHA:
+         raise Refused('official_binary_digest_mismatch')
+-    if work.parent != BASE or not re.fullmatch(r'official271-standby-ttl-restore-oracle-live-61ff-r[0-9]+', work.name):
++    if work.parent != BASE or not re.fullmatch(r'official271-snapshot-corruption-oracle-live-61ff-r[0-9]+', work.name):
+         raise Refused('work_root_outside_owned_namespace')
+     if work.exists() or work.is_symlink():
+         raise Refused('fresh_work_root_required')
+@@ -314,7 +315,8 @@
+             'node_disable_standby_reads_config': {1: 'omitted', 2: 'omitted', 3: 'omitted'},
+             'node_consistency_missing_header_forward': {1: False, 2: False, 3: True},
+             'node3_local_setup_and_role_control': 'X-Vault-Inconsistent: fail; business cases retain their declared headers',
+-            'redirect_following': False, 'valid_restore_bodies': 0,
++            'redirect_following': False, 'unmodified_restore_bodies': 0,
++            'archive_candidates_may_be_accepted': True,
+             'old_generations_reopened': False}
+ 
+ 
+@@ -385,7 +387,8 @@
+                   'headers': headers or {}, 'http_seconds': HTTP_SECONDS,
+                   'deadline_monotonic_ns': until, 'parent_deadline_monotonic_ns': parent_deadline_ns,
+                   'intent_unix_ns': time.time_ns(),
+-                  'redirect_following': False, 'valid_restore_body': False}
++                  'redirect_following': False, 'archive_validity_presumed': False,
++                  'unmodified_snapshot_posted': False}
+         write_json(self.public / f'{number}.intent.public.json', intent)
+         spec = dict(port=API_PORTS[node], method=method, path=path, credential=credential,
+                     body_file=str(body_file), response_meta_file=str(meta_file),
+@@ -683,22 +686,10 @@
+         o, _ = self.request(1, 'POST', '/v1/owned/data/read-marker', 'owned_kv_write_once',
+                             body={'options': {'cas': 0}, 'data': {'marker': 'owned-policy-oracle'}})
+         self.check('owned_kv_write_acknowledged', o['status'] == 200)
+-        initial = self.create_token('ttl-default', 0)
+-        self.check('ttl_root_unlimited_actual', initial['status'] == 200 and initial['num_uses'] == 0)
+-        for node, credential in [(2, 'root'), (2, 'ttl-default'), (3, 'root'), (3, 'ttl-default')]:
+-            for header in ('1', 'false'):
+-                self.observed(node, 'GET', '/v1/owned/data/read-marker',
+-                              f'ttl_kv_node{node}_{credential}_{header}', credential=credential,
+-                              headers={'X-Vault-No-Request-Forwarding': header})
+-        for label, capabilities in [('snapshot-read', ['read']),
+-                                    ('snapshot-update', ['read', 'update'])]:
+-            self.create_policy_token(label, capabilities)
+-            for node in (1, 2, 3):
+-                self.observed(node, 'GET', '/v1/sys/storage/raft/snapshot',
+-                              f'{label}_node{node}_snapshot', credential=label)
+-            self.observed(2, 'GET', '/v1/sys/storage/raft/snapshot',
+-                          label + '_node2_snapshot_no_forward_false', credential=label,
+-                          headers={'X-Vault-No-Request-Forwarding': 'false'})
++        variants = ('truncate_last_byte', 'concatenate_self', 'flip_middle_bit_64',
++                    'non_gzip_transfer_literal', 'non_gzip_http_literal')
++        expected = {f'{variant}_node{node}' for variant in variants for node in (1, 2)}
++        for variant in variants:
+             for node in (1, 2):
+                 self.observed(node, 'POST', '/v1/sys/storage/raft/snapshot',
+                               f'{label}_node{node}_invalid_restore', credential=label,
+@@ -700,58 +691,87 @@
+                           label + '_node2_snapshot_no_forward_false', credential=label,
+                           headers={'X-Vault-No-Request-Forwarding': 'false'})
+             for node in (1, 2):
+-                self.observed(node, 'POST', '/v1/sys/storage/raft/snapshot',
+-                              f'{label}_node{node}_invalid_restore', credential=label,
+-                              raw_body=b'owned-invalid-snapshot', content_type='application/octet-stream')
+-            if 'update' in capabilities:
+-                self.observed(2, 'PUT', '/v1/sys/storage/raft/snapshot-force',
+-                              label + '_node2_invalid_force_restore', credential=label,
+-                              raw_body=b'owned-invalid-snapshot', content_type='application/octet-stream')
+-        for node, with_policy in [(2, False), (3, False), (3, True)]:
+-            suffix = f'node{node}_explicit_policy_{str(with_policy).lower()}'
+-            headers = {'X-Vault-No-Request-Forwarding': '1'}
+-            if with_policy:
+-                headers['X-Vault-Inconsistent'] = 'forward-active-node'
+-            self.observed(node, 'GET', '/v1/owned/data/read-marker',
+-                          'consistency_read_' + suffix, headers=headers)
+-            path = '/v1/owned/data/precedence-' + suffix
+-            o, _ = self.observed(node, 'POST', path, 'consistency_write_' + suffix,
+-                                body={'options': {'cas': 0}, 'data': {'marker': suffix}}, headers=headers)
+-            effect, raw = self.observed(1, 'GET', path, 'consistency_write_effect_' + suffix)
+-            self.check('consistency_write_exact_effect_' + suffix,
+-                       (o['status'] == 307 and effect['status'] == 404)
+-                       or (o['status'] == 200 and effect['status'] == 200
+-                           and json.loads(raw).get('data', {}).get('data') == {'marker': suffix}))
+-        # Supplemental reference: authenticate the actual expiring, unlimited
+-        # root-policy token on the default read standby, then issue the exact
+-        # snapshot GET and invalid-body POST used by the normal observer.
+-        o, raw = self.request(2, 'GET', '/v1/auth/token/lookup-self',
+-                              'ttl_root_default_standby_actual_authentication',
+-                              credential='ttl-default')
+-        data = json.loads(raw).get('data', {})
+-        self.check('ttl_root_default_standby_actual_identity',
+-                   o['status'] == 200 and data.get('policies') == ['root']
+-                   and data.get('num_uses') == 0
+-                   and isinstance(data.get('ttl'), int) and 0 < data['ttl'] <= 600)
+-        self.cases.append({'kind': 'actual_ttl_policy_identity',
+-                           'credential_class': 'ttl-default',
+-                           'policies': data['policies'], 'num_uses': data['num_uses'],
+-                           'ttl': data['ttl'], **o})
+-        self.observed(2, 'GET', '/v1/sys/storage/raft/snapshot',
+-                      'ttl_root_default_standby_snapshot', credential='ttl-default')
+-        self.observed(2, 'POST', '/v1/sys/storage/raft/snapshot',
+-                      'ttl_root_default_standby_invalid_restore', credential='ttl-default',
+-                      raw_body=b'owned-invalid-snapshot', content_type='application/octet-stream')
+-        after_invalid = self.lookup_token('ttl-default', 'after_invalid_restore')
+-        self.check('ttl_root_after_invalid_restore_still_unlimited_and_valid',
+-                   after_invalid['status'] == 200 and after_invalid['num_uses'] == 0
+-                   and after_invalid['policies'] == ['root']
+-                   and isinstance(after_invalid['ttl'], int) and after_invalid['ttl'] > 0)
+-        for label in ('ttl-default', 'snapshot-read', 'snapshot-update'):
+-            token = json.loads((self.private / (label + '.token.json')).read_text())['token']
+-            o, _ = self.request(1, 'POST', '/v1/auth/token/revoke', label + '_revoke_once',
+-                                body={'token': token})
+-            self.check(label + '_revocation_acknowledged', o['status'] == 204)
++                label = f'{variant}_node{node}'
++                # Fresh authentic archive immediately precedes the marker whose
++                # presence distinguishes refusal from an accepted restore.
++                source_observation, archive = self.request(
++                    1, 'GET', '/v1/sys/storage/raft/snapshot', label + '_actual_source')
++                self.check(label + '_source_complete', source_observation['status'] == 200)
++                shape = self.snapshot_shape(archive)
++                self.check(label + '_source_actual_archive',
++                           shape['sealed_hashes_nonempty'] and 2 < len(archive) <= MAX_RESPONSE // 2)
++                if variant == 'truncate_last_byte':
++                    payload = archive[:-1]
++                elif variant == 'concatenate_self':
++                    payload = archive + archive
++                elif variant == 'flip_middle_bit_64':
++                    changed = bytearray(archive)
++                    changed[len(changed) // 2] ^= 64
++                    payload = bytes(changed)
++                elif variant == 'non_gzip_transfer_literal':
++                    payload = b'not a gzip native snapshot'
++                else:
++                    payload = b'invalid gzip archive'
++                self.check(label + '_candidate_bounded_and_not_pristine',
++                           0 < len(payload) <= MAX_RESPONSE and payload != archive)
++                marker_path = '/v1/owned/data/corruption-' + label
++                marker = {'marker': label}
++                o, _ = self.request(1, 'POST', marker_path, label + '_post_source_marker_write',
++                                    body={'options': {'cas': 0}, 'data': marker})
++                self.check(label + '_post_source_marker_written', o['status'] == 200)
++                control, control_raw = self.request(
++                    1, 'GET', marker_path, label + '_marker_before_restore')
++                self.check(label + '_marker_before_restore_exact',
++                           control['status'] == 200
++                           and json.loads(control_raw).get('data', {}).get('data') == marker)
++                # No response status is prescribed. A concatenated or truncated
++                # candidate may be accepted and actually roll back this fixture.
++                observation, response = self.request(
++                    node, 'POST', '/v1/sys/storage/raft/snapshot', label,
++                    raw_body=payload, content_type='application/octet-stream')
++                row = {'kind': 'exact_archive_corruption', 'variant': variant,
++                       'method': 'POST', 'route': '/v1/sys/storage/raft/snapshot',
++                       'credential_class': 'root', 'headers': {},
++                       'actual_source_sequence': source_observation['sequence'],
++                       'actual_source_bytes': len(archive),
++                       'actual_source_sha256': hashlib.sha256(archive).hexdigest(),
++                       'candidate_bytes': len(payload),
++                       'candidate_sha256': hashlib.sha256(payload).hexdigest(),
++                       'source_archive_shape': shape,
++                       'expected_status_forced': False, **observation}
++                if observation['status'] == 307:
++                    row['exact_empty_redirect'] = (
++                        observation['location_node'] == 1
++                        and observation['location_matches_enrolled_origin_and_exact_target']
++                        and observation['content_length'] == '0' and response == b'')
++                # Record the real new state after every known response. This is
++                # a read, never a retry or an assumption that POST had no effect.
++                after_marker, after_raw = self.request(
++                    1, 'GET', marker_path, label + '_marker_after_restore')
++                if after_marker['status'] == 404:
++                    marker_state = 'post_source_marker_absent'
++                elif after_marker['status'] == 200:
++                    marker_state = ('post_source_marker_retained'
++                                    if json.loads(after_raw).get('data', {}).get('data') == marker
++                                    else 'unexpected_marker_value')
++                else:
++                    marker_state = 'unexpected_marker_status'
++                row['after_marker_sequence'] = after_marker['sequence']
++                row['after_marker_status'] = after_marker['status']
++                row['actual_marker_state'] = marker_state
++                self.cases.append(row)
++                self.check(label + '_after_state_control_known',
++                           marker_state in ('post_source_marker_absent', 'post_source_marker_retained'))
++                baseline, baseline_raw = self.request(
++                    1, 'GET', '/v1/owned/data/read-marker', label + '_baseline_after_restore')
++                self.check(label + '_original_baseline_retained',
++                           baseline['status'] == 200
++                           and json.loads(baseline_raw).get('data', {}).get('data')
++                           == {'marker': 'owned-policy-oracle'})
++        actual = [case['label'] for case in self.cases
++                  if case.get('kind') == 'exact_archive_corruption']
++        self.check('exact_five_variants_by_two_nodes_observed',
++                   len(actual) == 10 and len(set(actual)) == 10 and set(actual) == expected)
+         after = self.roles('roles_after')
+         self.check('actual_leader_unchanged', after['actual_leader'] == 1)
+         write_json(self.root / 'wire-observations.public.json', {'cases': self.cases,
+@@ -755,11 +775,12 @@
+         after = self.roles('roles_after')
+         self.check('actual_leader_unchanged', after['actual_leader'] == 1)
+         write_json(self.root / 'wire-observations.public.json', {'cases': self.cases,
+-            'qualification': 'official271_scoped_acl_consistency_and_ttl_restore_reference_only',
+-            'default_read_standby_node': 2, 'consistency_missing_header_forward_node': 3,
+-            'disable_standby_reads': False, 'automatic_redirect_following': False,
+-            'unknown_mutation_replay': False, 'cold_restart_tested': False,
+-            'physical_hosts': 1, 'process_nodes': 3})
++            'qualification': 'official271_exact_archive_corruption_observation_only',
++            'expected_cases': sorted(expected), 'expected_status_forced': False,
++            'default_read_standby_node': 2, 'disable_standby_reads': False,
++            'automatic_redirect_following': False, 'unknown_mutation_replay': False,
++            'unmodified_snapshot_posted': False, 'private_archives_published': False,
++            'cold_restart_tested': False, 'physical_hosts': 1, 'process_nodes': 3})
+ 
+     def finish(self, failed: str | None) -> int:
+         cleanup, client_cleanup = [], []
+@@ -775,7 +796,7 @@
+         complete = self.seq == len(self.observations) and unknown == 0 and not self.outcome_unknown
+         unchanged = digest(self.binary) == EXPECTED_SHA and digest(Path(__file__)) == self.prepared['controller_sha256']
+         status = 'completed_observation' if not failed and clean and complete and unchanged else 'failed'
+-        report = {'schema':'official271_ttl_restore_reference_61ff_r1','status':status,
++        report = {'schema':'official271_exact_archive_corruption_61ff_r1','status':status,
+             'prepared':self.prepared,'failure_code':failed,'checks':self.checks,
+             'http_intents':self.seq,'http_outcomes':len(self.observations),'http_unknown':unknown,
+             'missing_outcome_sequences':missing,'all_owned_stopped':clean,
