@@ -8,6 +8,20 @@ use crate::snapshot_file::{MAX_NATIVE_ARCHIVE, SnapshotFile};
 // raw escaping and ordering without allowing request bytes into an authority.
 pub(super) struct NativeTarget(Zeroizing<String>);
 impl NativeTarget {
+    // The ordinary no-forward path has already completed the HTTP parser's
+    // route/query/body checks. This constructor does not select a native body
+    // lane, and the strict native-route constructor below remains unchanged.
+    pub(super) fn checked_no_forward(target: &str) -> Result<Self, ParseError> {
+        if !target.starts_with("/v1/")
+            || target.len() > 8192
+            || !target.bytes().all(|byte| (33..=126).contains(&byte))
+            || target.contains('#')
+        {
+            return Err(bad("invalid no-forward redirect target"));
+        }
+        Ok(Self(Zeroizing::new(target.to_owned())))
+    }
+
     pub(super) fn checked(target: &str) -> Result<Self, ParseError> {
         let path = target.split('?').next();
         let accepted = matches!(
@@ -91,6 +105,37 @@ impl NativeReply {
                 writer.write_all(b"\r\n")?;
                 writer.flush()
             }
+        }
+    }
+}
+
+pub(super) fn finish_redirect_connection(
+    stream: &mut StreamOwned<rustls::ServerConnection, DeadlineStream>,
+) {
+    // The actual redirect is already written. This close helper never parses
+    // or forwards an upload. An immediate close with unread TCP bytes can
+    // reset the peer and erase even a fully written TLS response.
+    // Perform the staged close from HTTP/1.1 connection teardown: finish TLS,
+    // half-close the write side, then discard transport bytes until peer EOF
+    // or the unchanged accepted connection deadline. No request body decoder,
+    // Service call, spool, retry or additional I/O budget is involved.
+    stream.conn.send_close_notify();
+    if stream.flush().is_err()
+        || stream
+            .sock
+            .stream
+            .shutdown(std::net::Shutdown::Write)
+            .is_err()
+    {
+        return;
+    }
+    let mut discarded = Zeroizing::new([0u8; 8192]);
+    loop {
+        match stream.sock.read(&mut *discarded) {
+            Ok(0) => break,
+            Ok(_) => {}
+            Err(error) if error.kind() == io::ErrorKind::Interrupted => continue,
+            Err(_) => break,
         }
     }
 }
@@ -297,10 +342,23 @@ pub(super) fn execute(
     };
     // No network/body I/O occurs under the service writer. The final request
     // audit must succeed before this file capability can reach the socket.
-    let response = match lock_until(service, deadline) {
+    let mut response = match lock_until(service, deadline) {
         Ok(mut writer) => writer.finish_external_request(*pending, observation),
         Err(_) => return NativeReply::Json(Response::error(503, "snapshot finalize unavailable")),
     };
+    if let Some(origin) = response.response_headers.take_ha_redirect() {
+        return if response.status == 307 && file.is_none() {
+            NativeReply::Redirect {
+                origin,
+                target: native.target,
+            }
+        } else {
+            NativeReply::Json(Response::error(
+                503,
+                "snapshot redirect lost its original route",
+            ))
+        };
+    }
     if response.status == 200
         && let Some(file) = file
     {

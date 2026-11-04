@@ -45,6 +45,35 @@ impl<'a> BorrowedSnapshotProof<'a> {
 }
 
 impl NativeHaReadProof {
+    /// Only data from this actual committed selection. In particular, the
+    /// logical publication generation is never the local journal generation
+    /// returned by generation(), which can differ across physical replicas.
+    pub(in crate::service) fn snapshot_clock_shared_state(
+        &self,
+    ) -> crate::ha::snapshot_clock::SharedSnapshotClockState {
+        use crate::ha::snapshot_clock::{SharedSnapshotClockState, SnapshotClockLogId};
+        let published = self.committed.published();
+        let log = published.publication_log_id();
+        SharedSnapshotClockState {
+            epoch: self.committed.enrollment().epoch(),
+            enrollment_digest: self.committed.enrollment().digest(),
+            root_digest: published.root_digest(),
+            logical_generation: published.generation(),
+            publication_log: SnapshotClockLogId {
+                term: log.committed_leader_id().term,
+                node_id: log.committed_leader_id().node_id,
+                index: log.index,
+            },
+            auth_sha256: self.owner_fingerprints[1],
+        }
+    }
+
+    pub(in crate::service) fn snapshot_clock_enrollment(
+        &self,
+    ) -> &heptabao_raft_runtime::NativeV6PeerEnrollment {
+        self.committed.enrollment()
+    }
+
     // Observe only the original consensus component for refusal attribution.
     // This mints no proof, refreshes no ReadIndex, and checks no local Seal grant.
     #[cfg(test)]

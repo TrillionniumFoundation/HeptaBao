@@ -68,6 +68,14 @@ pub use authenticated_peer_frame::{
     AuthenticatedPeerFrame, serve_one_mtls_authenticated_peer_frame,
 };
 
+#[cfg(feature = "native-v6-peer-ingress")]
+mod snapshot_clock_transport;
+#[cfg(feature = "native-v6-peer-ingress")]
+pub use snapshot_clock_transport::{
+    MAX_SNAPSHOT_CLOCK_FRAME_BYTES, SNAPSHOT_CLOCK_REQUEST_MAGIC, SNAPSHOT_CLOCK_RESPONSE_MAGIC,
+    is_snapshot_clock_request,
+};
+
 // Opt-in private V6 ciphertext transport admission. Existing production HA
 // request dispatch and all V6/HA mutually exclusive writer fences are unchanged.
 #[cfg(feature = "native-v6-peer-ingress")]

@@ -87,6 +87,8 @@ pub(crate) fn process_with_api(
         forward_timeout: Duration::from_secs(1),
         emit_legacy_peer_v1: false,
         forward_handler: Arc::new(Mutex::new(None)),
+        #[cfg(feature = "native-v6-ha")]
+        snapshot_clock_handler: Arc::new(Mutex::new(None)),
         listener: None,
     })
 }

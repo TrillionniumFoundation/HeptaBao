@@ -668,6 +668,23 @@ fn serve_inner(
         ha.lock()
             .map_err(|_| "HA process lock is unavailable".to_owned())?
             .register_forward_handler(handler)?;
+        #[cfg(feature = "native-v6-ha")]
+        {
+            let weak_clock_service = Arc::downgrade(&service);
+            ha.lock()
+                .map_err(|_| "HA process lock is unavailable".to_owned())?
+                .register_snapshot_clock_handler(Arc::new(move |request| {
+                    let deadline = request.deadline();
+                    let _scope = RequestDeadlineScope::enter(deadline);
+                    let service = weak_clock_service.upgrade().ok_or_else(|| {
+                        Response::error(503, "snapshot clock Service is unavailable")
+                    })?;
+                    let mut writer = lock_until(&service, deadline).map_err(|_| {
+                        Response::error(503, "snapshot clock Service owner is unavailable")
+                    })?;
+                    writer.observe_snapshot_terminal_clock(request)
+                }))?;
+        }
     }
     let listener = match TcpListener::bind(config.listen) {
         Ok(value) => value,
@@ -963,7 +980,11 @@ fn serve_inner(
                     deadline,
                 );
                 mutation_profile.point(mutation_profile::Point::DispatchEnd);
+                let native_redirect = matches!(&reply, snapshot::NativeReply::Redirect { .. });
                 write_http1_reply(&mut stream, reply, head, &namespace, deadline);
+                if native_redirect {
+                    snapshot::finish_redirect_connection(&mut stream);
+                }
             });
         if spawn.is_err() {
             #[cfg(target_os = "linux")]
@@ -1096,6 +1117,17 @@ fn process_parsed_request(
                     false,
                 ))
             };
+            if let snapshot::NativeReply::Json(response) = &mut reply
+                && let Some(origin) = response.response_headers.take_ha_redirect()
+            {
+                reply = match (response.status, request.no_forward_target.take()) {
+                    (307, Some(target)) => snapshot::NativeReply::Redirect { origin, target },
+                    _ => snapshot::NativeReply::Json(Response::error(
+                        503,
+                        "HA redirect lost its original HTTP target",
+                    )),
+                };
+            }
             logical::project_in_namespace(
                 &mut reply,
                 attempt_id,
@@ -1142,6 +1174,42 @@ fn execute_deferred_native_body(
         return native_kv2_large::execute(service, request, native, source, deadline);
     }
     snapshot::execute(service, request, native, source, deadline)
+}
+
+/// Exercise the actual HTTP parser, ingress scope, Service admission/finalize,
+/// and wire writer against a real formal HA Service. This does not substitute
+/// a public TLS socket, a Raft proof, an Actor, or a publication receipt.
+#[cfg(all(test, feature = "native-v6-ha"))]
+pub(crate) fn formal_standby_http_wire_fixture(
+    service: &Arc<Mutex<Service>>,
+    bytes: &[u8],
+    deadline: Instant,
+) -> Result<Zeroizing<Vec<u8>>, String> {
+    let _scope = RequestDeadlineScope::enter(deadline);
+    let mut reader = bytes;
+    let parsed = read_request_mode(
+        &mut reader,
+        deadline.saturating_duration_since(Instant::now()),
+        true,
+    )
+    .map(|request| ParsedRequest::Api(Box::new(request)));
+    let attempt = crypto::random::<16>().map_err(|_| "fixture ingress randomness unavailable")?;
+    let (reply, head, namespace) = process_parsed_request(
+        service,
+        None,
+        parsed,
+        &mut reader,
+        None,
+        IpAddr::from([127, 0, 0, 1]),
+        &attempt,
+        consistency::Settings::default(),
+        deadline,
+    );
+    let mut output = Zeroizing::new(Vec::new());
+    reply
+        .write_with_namespace(&mut *output, head, &namespace)
+        .map_err(|_| "fixture HTTP response writer failed")?;
+    Ok(output)
 }
 
 #[cfg(all(test, feature = "native-v6-storage"))]
@@ -1505,6 +1573,7 @@ struct Request {
     logical_data: Option<crate::request_metadata::DataFrame>,
     consistency: consistency::Headers,
     native_snapshot: Option<snapshot::NativeRequest>,
+    no_forward_target: Option<snapshot::NativeTarget>,
     method: String,
     path: String,
     namespace: String,
@@ -1955,6 +2024,7 @@ fn read_request_with_ui(
                         | "x-vault-request"
                         | "x-vault-wrap-ttl"
                         | "x-vault-wrap-format"
+                        | "x-vault-no-request-forwarding"
                 )
         })
     {
@@ -1980,6 +2050,9 @@ fn read_request_with_ui(
         });
     }
     let raw_query = target[4..].split_once('?').map_or("", |(_, query)| query);
+    let no_forward_requested = map
+        .get("x-vault-no-request-forwarding")
+        .is_some_and(|value| !value.is_empty());
     let help_selected = !leader_route && help::requested(&method, raw_query);
     let health_probe = route == "sys/health" && matches!(method.as_str(), "GET" | "HEAD");
     let wrap_ttl_seconds = if leader_route || health_probe || help_selected {
@@ -2193,9 +2266,19 @@ fn read_request_with_ui(
         }
         return Ok(ParsedRequest::Api(Box::new(Request {
             lexical_wrapping_body: None,
-            logical_data: None,
+            logical_data: no_forward_requested.then(|| {
+                let mut frame = crate::request_metadata::DataFrame::default();
+                frame.headers.insert(
+                    "x-vault-no-request-forwarding".to_owned(),
+                    vec!["1".to_owned()],
+                );
+                frame
+            }),
             consistency,
             native_snapshot: None,
+            no_forward_target: no_forward_requested
+                .then(|| snapshot::NativeTarget::checked_no_forward(&target))
+                .transpose()?,
             method: "HELP".to_owned(),
             path: route.to_owned(),
             namespace,
@@ -2233,6 +2316,7 @@ fn read_request_with_ui(
             logical_data: None,
             consistency,
             native_snapshot: None,
+            no_forward_target: None,
             method,
             path: "sys/leader".to_owned(),
             namespace: String::new(),
@@ -2486,6 +2570,9 @@ fn read_request_with_ui(
         logical_data,
         consistency,
         native_snapshot,
+        no_forward_target: no_forward_requested
+            .then(|| snapshot::NativeTarget::checked_no_forward(&target))
+            .transpose()?,
         method,
         path: path.to_owned(),
         namespace,

@@ -235,8 +235,10 @@ impl Service {
                         },
                         &|| source.before_delivery(),
                         &|| deadline.check().map_err(|_| RecordError::Invalid),
-                        deadline,
-                        &stopped,
+                        crate::engines::NativeKv2LosslessExportBudget {
+                            deadline,
+                            stop: &stopped,
+                        },
                     )
                     .map_err(Response::from_engine_error)?;
                 writer.finish().map_err(|_| unavailable())?;

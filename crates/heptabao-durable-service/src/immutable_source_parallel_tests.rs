@@ -155,10 +155,10 @@ fn borrowed_file_reader_preserves_every_original_failure_boundary() -> TestResul
             assert!(matches!(result, Err(ServiceError::ReplayEpochMismatch)));
             assert_eq!(seen, fail_at);
         }
-        assert!(matches!(
-            view.pin_immutable_object_before_read(&session, locator()?, length + 1, &mut || Ok(())),
-            Err(_)
-        ));
+        assert!(
+            view.pin_immutable_object_before_read(&session, locator()?, length + 1, &mut || Ok(()))
+                .is_err()
+        );
     }
     assert!(!owner.recovery_required());
     Ok(())
@@ -299,7 +299,9 @@ fn borrowed_file_reader_injected_failure_is_latched_even_when_view_is_abandoned(
         view.verify_immutable_source_session(&session),
         Err(ServiceError::RecoveryRequired)
     ));
-    std::mem::forget(view);
+    // Keep the same borrowed view without running its destructor, including
+    // if the view later acquires Drop. The owner must already retain the fault.
+    let _abandoned = std::mem::ManuallyDrop::new(view);
     assert!(owner.recovery_required());
     assert!(matches!(
         owner.verify_live_ownership(),

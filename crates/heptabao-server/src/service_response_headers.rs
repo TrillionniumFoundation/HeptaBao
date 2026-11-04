@@ -6,7 +6,14 @@ use std::io::{self, Write};
 use zeroize::{Zeroize, Zeroizing};
 
 #[derive(Default)]
-pub(crate) struct Headers(BTreeMap<String, Vec<Zeroizing<String>>>);
+pub(crate) struct Headers(
+    BTreeMap<String, Vec<Zeroizing<String>>>,
+    Option<Box<HaRedirect>>,
+);
+enum HaRedirect {
+    BeforeAuthentication(super::TrustedSnapshotOrigin),
+    SnapshotValidated(super::TrustedSnapshotOrigin),
+}
 impl Drop for Headers {
     fn drop(&mut self) {
         for (mut name, values) in std::mem::take(&mut self.0) {
@@ -59,13 +66,45 @@ fn canonical_name(name: &str) -> String {
         .collect()
 }
 impl Headers {
+    // Only the local HA routing decision constructs this marker, before actor
+    // admission or any business effect. SDK maps and the peer deserializer
+    // cannot construct it. The listener alone joins the original raw target.
+    pub(super) fn ha_redirect(origin: super::TrustedSnapshotOrigin) -> Self {
+        Self(
+            BTreeMap::new(),
+            Some(Box::new(HaRedirect::BeforeAuthentication(origin))),
+        )
+    }
+
+    pub(super) fn validated_snapshot_redirect(origin: super::TrustedSnapshotOrigin) -> Self {
+        Self(
+            BTreeMap::new(),
+            Some(Box::new(HaRedirect::SnapshotValidated(origin))),
+        )
+    }
+
+    pub(super) fn is_ha_routing_refusal(&self) -> bool {
+        matches!(self.1.as_deref(), Some(HaRedirect::BeforeAuthentication(_)))
+    }
+
+    pub(crate) fn take_ha_redirect(&mut self) -> Option<super::TrustedSnapshotOrigin> {
+        self.1.take().map(|redirect| match *redirect {
+            HaRedirect::BeforeAuthentication(origin) | HaRedirect::SnapshotValidated(origin) => {
+                origin
+            }
+        })
+    }
+
     /// Transport metadata for a local retry decision. A u64 decimal value is
     /// bounded to twenty digits and cannot introduce additional header lines.
     pub(crate) fn retry_after_seconds(seconds: u64) -> Self {
-        Self(BTreeMap::from([(
-            "Retry-After".to_owned(),
-            vec![Zeroizing::new(seconds.to_string())],
-        )]))
+        Self(
+            BTreeMap::from([(
+                "Retry-After".to_owned(),
+                vec![Zeroizing::new(seconds.to_string())],
+            )]),
+            None,
+        )
     }
 
     pub(crate) fn from_sdk(value: Option<&Value>, allowed: &[String]) -> Result<Self, ()> {
@@ -169,6 +208,7 @@ impl Headers {
                     )
                 })
                 .collect(),
+            None,
         )
     }
     /// Add only locally computed numeric quota metadata. Existing logical
@@ -230,7 +270,7 @@ impl Headers {
         self.0.get("Date").is_some_and(|values| !values.is_empty())
     }
     pub(crate) fn is_empty(&self) -> bool {
-        self.0.is_empty()
+        self.0.is_empty() && self.1.is_none()
     }
 }
 

@@ -467,6 +467,21 @@ impl Pipeline {
                 request.token.zeroize();
                 response
             }))?;
+        let weak_clock_service = Arc::downgrade(&service);
+        process
+            .lock()
+            .map_err(|_| "pipeline process poisoned")?
+            .register_snapshot_clock_handler(Arc::new(move |request| {
+                let deadline = request.deadline();
+                let _scope = RequestDeadlineScope::enter(deadline);
+                let service = weak_clock_service.upgrade().ok_or_else(|| {
+                    Response::error(503, "native pipeline snapshot clock owner closed")
+                })?;
+                let mut writer = lock_until(&service, deadline).map_err(|_| {
+                    Response::error(503, "native pipeline snapshot clock owner unavailable")
+                })?;
+                writer.observe_snapshot_terminal_clock(request)
+            }))?;
         self.services[index] = Some(service);
         Ok(())
     }

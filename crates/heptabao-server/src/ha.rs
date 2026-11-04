@@ -61,6 +61,10 @@ pub(crate) use native_v6_runtime::{
     NativeV6RequestObservation, NativeV6TimingSpan,
 };
 
+#[cfg(feature = "native-v6-ha")]
+#[path = "ha_snapshot_clock.rs"]
+pub(crate) mod snapshot_clock;
+
 // Timing only: every caller's original operation is evaluated exactly once.
 // With no native request observation this wrapper retains no data or output.
 pub(crate) fn observe_native_v6_timing<T, E>(
@@ -697,6 +701,8 @@ pub struct HaProcess {
     forward_timeout: Duration,
     emit_legacy_peer_v1: bool,
     forward_handler: Arc<Mutex<Option<ForwardHandler>>>,
+    #[cfg(feature = "native-v6-ha")]
+    snapshot_clock_handler: Arc<Mutex<Option<snapshot_clock::SnapshotClockHandler>>>,
     listener: Option<PeerListener>,
 }
 
@@ -920,6 +926,8 @@ impl HaProcess {
         let identities = Arc::new(identities);
         let ids_by_node = Arc::new(ids_by_node);
         let forward_handler: Arc<Mutex<Option<ForwardHandler>>> = Arc::new(Mutex::new(None));
+        #[cfg(feature = "native-v6-ha")]
+        let snapshot_clock_handler = Arc::new(Mutex::new(None));
         let worker_budget = PeerWorkerBudget::for_limit(config.max_inflight);
         let forward_slots = Arc::new(Semaphore::new(worker_budget.forwarding));
         #[cfg(feature = "native-v6-ha")]
@@ -965,6 +973,8 @@ impl HaProcess {
             let rpc_service = rpc_service.clone();
             let runtime_handle = runtime.handle().clone();
             let listener_forward_handler = forward_handler.clone();
+            #[cfg(feature = "native-v6-ha")]
+            let listener_snapshot_clock_handler = snapshot_clock_handler.clone();
             let forward_slots = forward_slots.clone();
             let read_slots = read_slots.clone();
             #[cfg(feature = "native-v6-ha")]
@@ -996,6 +1006,22 @@ impl HaProcess {
                             |authenticated| {
                                 #[cfg(feature = "private-ha-forward-diagnostic")]
                                 { receiver_kind = Some("authenticated_unclassified"); }
+                                #[cfg(feature = "native-v6-ha")]
+                                if heptabao_ha_service::is_snapshot_clock_request(authenticated.payload()) {
+                                    return snapshot_clock::handle_authenticated(
+                                        authenticated,
+                                        snapshot_clock::ListenerContext {
+                                            cluster: &listener_cluster_id,
+                                            cluster_digest: native_cluster_digest,
+                                            local: local_id,
+                                            ids,
+                                            native_candidate,
+                                            node: &listener_native_node,
+                                            handler: &listener_snapshot_clock_handler,
+                                            slots: &forward_slots,
+                                        },
+                                    );
+                                }
                                 #[cfg(feature = "native-v6-ha")]
                                 if heptabao_ha_service::is_native_v6_closure_frame(authenticated.payload())
                                     || heptabao_ha_service::is_native_v6_root_pull_frame(authenticated.payload())
@@ -1044,7 +1070,9 @@ impl HaProcess {
                                         listener_allow_legacy_peer_v1,
                                     )
                                     .map_err(|_| heptabao_ha_service::HaError::InvalidFrame)?;
-                                    if request.native_index_response && !native_candidate {
+                                    if (request.native_index_response
+                                        || request.native_original_reply_profile.is_some())
+                                        && !native_candidate {
                                         return Err(heptabao_ha_service::HaError::InvalidFrame);
                                     }
                                     if Instant::now() >= inbound_deadlines.forward_request {
@@ -1067,6 +1095,7 @@ impl HaProcess {
                                     let unwrap_response = request.unwrap_response;
                                     let native_index_response = request.native_index_response;
                                     let _raw_reply_ingress = crate::auth::IngressReplyScope::authenticated_forward(request.wrapped_reply_ingress, request.wrapped_reply_lexical.take());
+                                    let _native_original_reply_profile = crate::ha_forward::NativeOriginalReplyScope::authenticated_forward(request.native_original_reply_profile);
                                     // Forward admission leaves independent workers for
                                     // consensus while product requests await the service writer.
                                     let _forward_slot =
@@ -1290,6 +1319,8 @@ impl HaProcess {
             forward_timeout,
             emit_legacy_peer_v1,
             forward_handler,
+            #[cfg(feature = "native-v6-ha")]
+            snapshot_clock_handler,
             listener: Some(listener_pool),
         })
     }
@@ -1381,7 +1412,26 @@ impl HaProcess {
         ),
         String,
     > {
-        self.forward_request_exchange(context, true)
+        self.forward_request_exchange(context, true, None)
+            .and_then(|(response, receipt)| {
+                receipt
+                    .map(|receipt| (response, receipt))
+                    .ok_or_else(|| "HA completed-forward proof is missing".into())
+            })
+    }
+
+    pub(crate) fn forward_request_completed_with_native_original_reply(
+        &self,
+        context: crate::ha_forward::ForwardContext<'_>,
+        profile: crate::ha_forward::NativeOriginalReplyProfile,
+    ) -> Result<
+        (
+            Response,
+            crate::ha_forward_completion::CompletedForwardReceipt,
+        ),
+        String,
+    > {
+        self.forward_request_exchange(context, true, Some(profile))
             .and_then(|(response, receipt)| {
                 receipt
                     .map(|receipt| (response, receipt))
@@ -1424,6 +1474,7 @@ impl HaProcess {
         &self,
         context: crate::ha_forward::ForwardContext<'_>,
         completed: bool,
+        native_original_reply_profile: Option<crate::ha_forward::NativeOriginalReplyProfile>,
     ) -> Result<
         (
             Response,
@@ -1460,10 +1511,14 @@ impl HaProcess {
         let native_index_capacity = completed && self.native_v6_enabled();
         #[cfg(not(feature = "native-v6-ha"))]
         let native_index_capacity = false;
+        if native_original_reply_profile.is_some() && !native_index_capacity {
+            return Err("HA native original reply requires native completed forwarding".into());
+        }
         let unwrap_response = path == "sys/wrapping/unwrap"
             || path.starts_with("sys/workflows/execute/")
             || wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
-                && crate::auth::current_ingress().is_some();
+                && crate::auth::current_ingress().is_some()
+            || native_original_reply_profile.is_some();
         if unwrap_response && (legacy_v1 || !completed) {
             return Err("HA unwrap requires negotiated completed-forward authority".into());
         }
@@ -1490,27 +1545,33 @@ impl HaProcess {
                 local, leader, method, path, namespace, token, body,
             )?
         } else {
-            let encode = if native_index_capacity {
-                crate::ha_forward::encode_completed_request_with_native_index_capacity
-            } else {
-                crate::ha_forward::encode_completed_index_request_for_cluster
+            let context = crate::ha_forward::ForwardContext {
+                method,
+                path,
+                namespace,
+                token,
+                body,
+                wrap_ttl_seconds,
+                origin_peer,
+                client_certificates,
+                caller_deadline,
             };
-            encode(
-                &self.cluster_id,
-                (local, leader),
-                &crate::ha_forward::ForwardContext {
-                    method,
-                    path,
-                    namespace,
-                    token,
-                    body,
-                    wrap_ttl_seconds,
-                    origin_peer,
-                    client_certificates,
-                    caller_deadline,
-                },
-                nonce,
-            )?
+            if let Some(profile) = native_original_reply_profile {
+                crate::ha_forward::encode_completed_request_with_native_original_reply(
+                    &self.cluster_id,
+                    (local, leader),
+                    &context,
+                    nonce,
+                    profile,
+                )?
+            } else {
+                let encode = if native_index_capacity {
+                    crate::ha_forward::encode_completed_request_with_native_index_capacity
+                } else {
+                    crate::ha_forward::encode_completed_index_request_for_cluster
+                };
+                encode(&self.cluster_id, (local, leader), &context, nonce)?
+            }
         });
         // Capacity follows this exact request, never an unsolicited S7 reply.
         let native_index_response = request

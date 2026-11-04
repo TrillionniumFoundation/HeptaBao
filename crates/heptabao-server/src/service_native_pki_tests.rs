@@ -1097,7 +1097,7 @@ fn native_pki_formal_selectors_retain_acme_external_and_foreign_owner_fences() -
     assert!(f.service.pending_native_remount.is_none());
     assert!(f.service.native_remount_jobs.is_empty());
     assert!(f.service.native_remount_statuses.is_empty());
-    let denied = f.admin("POST", "sys/mounts/foreign", json!({"type":"ssh"}))?;
+    let denied = f.admin("POST", "sys/mounts/foreign", json!({"type":"database"}))?;
     status(&denied, 501);
     f.graphs_unchanged(&before)?;
     let mut f = f.restart()?;

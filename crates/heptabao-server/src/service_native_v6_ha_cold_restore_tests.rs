@@ -601,39 +601,58 @@ fn cold_dr_complete_archive_old_shamir_new_quorum_and_second_cold_restart() -> T
 fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss() -> TestResult {
     let source = Pipeline::start()?;
     let leader = source.ready_leader()?;
-    // Local Transit and TOTP have formal native owners. This still-refused
-    // SSH CA carries actual private key state through the authenticated archive;
-    // keep complete-graph rejection and every source-retention assertion.
+    const CHILD_NAMESPACE: &str = "unsupported-cold-ssh-child";
     expect(
         source.call(
             leader,
             "POST",
-            "sys/mounts/cold-ssh",
+            "sys/namespaces/unsupported-cold-ssh-child",
             source.admin(),
-            json!({"type":"ssh"}),
+            json!({}),
         )?,
+        200,
+        "unsupported-cold-ssh-child-namespace",
+    )?;
+    // Match Pipeline::call's original request budget, writer lock and phase
+    // observation. Only the actual request namespace differs from root.
+    let child_call = |method: &str, path: &str, body: Value| -> TestResult<Response> {
+        let began = Instant::now();
+        let until = began + REQUEST_BUDGET;
+        let _scope = RequestDeadlineScope::enter(until);
+        let service = source.services[leader]
+            .as_ref()
+            .ok_or("unsupported cold child Service absent")?;
+        let mut writer = lock_until(service, until)
+            .map_err(|_| "unsupported cold child Service lock deadline")?;
+        let timing =
+            crate::ha::NativeV6RequestObservation::start(until, "cold_child_ssh_test", false);
+        let response = writer.handle(method, path, CHILD_NAMESPACE, source.admin(), body);
+        timing.finish(Some(response.status));
+        errors_only(path, &response);
+        if began.elapsed() >= REQUEST_BUDGET {
+            return Err("unsupported cold child original request deadline".into());
+        }
+        Ok(response)
+    };
+    // Root SSH, local Transit and TOTP have formal native owners. This
+    // still-refused child SSH CA carries real private key state through the archive;
+    // keep complete-graph rejection and every source-retention assertion.
+    expect(
+        child_call("POST", "sys/mounts/cold-ssh", json!({"type":"ssh"}))?,
         204,
         "unsupported-cold-ssh-mount",
     )?;
     expect(
-        source.call(
-            leader,
+        child_call(
             "POST",
             "cold-ssh/config/ca",
-            source.admin(),
             json!({"generate_signing_key":true,"key_type":"ssh-ed25519"}),
         )?,
         200,
         "unsupported-cold-ssh-key",
     )?;
     let retained = expect(
-        source.call(
-            leader,
-            "GET",
-            "cold-ssh/config/ca",
-            source.admin(),
-            json!({}),
-        )?,
+        child_call("GET", "cold-ssh/config/ca", json!({}))?,
         200,
         "unsupported-cold-ssh-before",
     )?
@@ -642,18 +661,12 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
     activate(&source, leader)?;
     let archive = export(&source, leader, source.admin())?;
     let seal_bytes = fs::read(source.directory(leader).join("data/seal.json"))?;
-    // Native activation deliberately closes the protected SSH config/ca route.
+    // Native activation deliberately closes the child SSH config/ca route.
     // This is not the separate public_key fast path. Observe the same activated
     // path before and after recovery refusal, and inspect the stored EngineState
     // clone below. The authenticated full-state encoding retains its private CA.
     let boundary_before = expect(
-        source.call(
-            leader,
-            "GET",
-            "cold-ssh/config/ca",
-            source.admin(),
-            json!({}),
-        )?,
+        child_call("GET", "cold-ssh/config/ca", json!({}))?,
         501,
         "unsupported-cold-ssh-activated-before",
     )?;
@@ -777,7 +790,13 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
         let owner_bytes = project(engines)?;
         let mut inspected = engines.clone();
         let response = inspected
-            .handle("", "GET", "cold-ssh/config/ca", &json!({}), observed_at)?
+            .handle(
+                CHILD_NAMESPACE,
+                "GET",
+                "cold-ssh/config/ca",
+                &json!({}),
+                observed_at,
+            )?
             .ok_or("unsupported cold retained SSH CA route absent")?;
         assert_eq!(response.status, 200);
         assert!(!response.mutated);
@@ -842,13 +861,7 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
         share_hash
     );
     let boundary_after = expect(
-        source.call(
-            leader,
-            "GET",
-            "cold-ssh/config/ca",
-            source.admin(),
-            json!({}),
-        )?,
+        child_call("GET", "cold-ssh/config/ca", json!({}))?,
         501,
         "unsupported-cold-ssh-activated-after",
     )?;
@@ -858,3 +871,6 @@ fn cold_dr_unsupported_engine_archive_refused_without_destination_or_source_loss
 
 #[path = "service_native_v6_ha_cold_restore_clock_floor_tests.rs"]
 mod clock_floor_tests;
+
+#[path = "service_native_v6_ha_standby_http_tests.rs"]
+mod standby_http_tests;

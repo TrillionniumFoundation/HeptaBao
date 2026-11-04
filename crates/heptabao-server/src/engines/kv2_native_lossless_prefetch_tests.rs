@@ -88,7 +88,7 @@ fn lossless_prefetch_bounds_workers_refs_bytes_and_repeated_fresh_reads() -> Rea
                 let bytes = reader.read_object(reference).map_err(engine_error)?;
                 reference.verify(&key, &bytes).map_err(engine_error)?;
                 let window = reader.window.borrow();
-                assert!(window.pending.len() + 1 <= MAX_OUTSTANDING);
+                assert!(window.pending.len() < MAX_OUTSTANDING);
                 assert!(window.encoded_bytes + bytes.len() <= MAX_ENCODED_BYTES);
                 observed_count_bound |= window.pending.len() + 1 == MAX_OUTSTANDING;
                 observed_byte_bound |= window.encoded_bytes + bytes.len()
@@ -244,7 +244,10 @@ fn lossless_prefetch_source_error_wrong_length_and_panic_join_workers() -> ReadR
                         bytes.push(0);
                         Ok(Zeroizing::new(bytes))
                     }
-                    _ => panic!("synthetic bounded prefetch worker failure"),
+                    // Inject an actual unwind to exercise the worker join path.
+                    _ => std::panic::resume_unwind(Box::new(
+                        "synthetic bounded prefetch worker failure",
+                    )),
                 }
             },
             &|| Ok(()),
@@ -425,7 +428,8 @@ fn lossless_prefetch_consumer_unwind_stops_sources_before_scoped_join() -> ReadR
                 entered_rx
                     .recv_timeout(deadline.instant().saturating_duration_since(Instant::now()))
                     .map_err(|_| super::super::rejected())?;
-                panic!("synthetic private writer unwind");
+                // Inject an actual unwind through the consumer cleanup guard.
+                std::panic::resume_unwind(Box::new("synthetic private writer unwind"));
             },
         );
     }));

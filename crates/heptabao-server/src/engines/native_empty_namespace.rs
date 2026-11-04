@@ -108,7 +108,7 @@ impl EngineState {
                         | Backend::Kv2(_)
                         | Backend::Kv2Native(_) => true,
                         Backend::Transit(engine) if name.is_empty() => !engine.has_external_state(),
-                        Backend::Totp(_) if name.is_empty() => true,
+                        Backend::Totp(_) | Backend::Ssh(_) if name.is_empty() => true,
                         Backend::Pki(engine) if name.is_empty() => engine.native_local_profile(),
                         _ => false,
                     })

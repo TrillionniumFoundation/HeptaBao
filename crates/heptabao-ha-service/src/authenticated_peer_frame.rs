@@ -104,12 +104,27 @@ where
             .ok_or(HaError::PeerAuthenticationFailed)?
             .as_ref(),
     );
+    #[cfg(not(feature = "native-v6-peer-ingress"))]
     let payload = native_kv2_write_request::read_authenticated_request(
         &mut tls,
         strict_raft_alpn.then_some(RAFT_ALPN_PROTOCOL),
     )
     .map_err(|error| forward_transport_frame_error("receiver_frame_read", error))?;
+    #[cfg(feature = "native-v6-peer-ingress")]
+    let payload = snapshot_clock_transport::read_authenticated_request(
+        &mut tls,
+        strict_raft_alpn.then_some(RAFT_ALPN_PROTOCOL),
+        accepted_at,
+        deadline,
+        |tls, shortened| tls.sock.deadline = shortened,
+    )
+    .map_err(|error| forward_transport_frame_error("receiver_frame_read", error))?;
+    // A private terminal-observation request can only shorten the already
+    // running socket bound. Handler work and final TLS flush share that bound.
+    let deadline = tls.sock.deadline;
     let response_profile = ResponseFrameProfile::for_request(&payload)?;
+    #[cfg(feature = "native-v6-peer-ingress")]
+    let snapshot_clock_reply = is_snapshot_clock_request(&payload);
     #[cfg(feature = "native-v6-peer-ingress")]
     let coalesced_root_reply = strict_raft_alpn
         && response_profile == ResponseFrameProfile::Legacy
@@ -132,6 +147,14 @@ where
         })
         .map_err(|error| forward_transport_frame_error("receiver_handler_result", error))?,
     );
+    #[cfg(feature = "native-v6-peer-ingress")]
+    if snapshot_clock_reply {
+        snapshot_clock_transport::validate_response(&response)?;
+        return write_coalesced_bounded_frame(
+            &mut rustls::Stream::new(&mut tls.conn, &mut tls.sock),
+            &response,
+        );
+    }
     // Only an authenticated HBVP2 handler result uses the existing bounded
     // coalesced writer. Borrow Stream: StreamOwned's default write_vectored
     // otherwise sends only the first slice and emits a separate header record.

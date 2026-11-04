@@ -374,6 +374,8 @@ mod recovery_keys;
 mod token_delivery;
 #[path = "service_token_precision.rs"]
 mod token_precision;
+#[cfg(feature = "native-v6-ha")]
+pub(crate) use token_precision::SnapshotClockObservation;
 #[path = "service_wrapper_ha.rs"]
 mod wrapper_ha;
 #[cfg(target_os = "linux")]
@@ -1533,6 +1535,11 @@ pub struct Service {
     pending_ordinary_kv_commit_notice: Option<ordinary_kv_delivery::OrdinaryKvCommitNoticeCapture>,
     native_snapshot_transport: bool,
     native_snapshot_clock: Option<(std::time::Instant, Duration)>,
+    // Scoped only by actual native snapshot admission while this writer is
+    // held. The original read-only Principal is moved once into normal ACL
+    // dispatch; client headers and peer frames cannot select these fields.
+    native_snapshot_standby_read: bool,
+    native_snapshot_standby_actor: Option<Principal>,
     snapshot_spool: Option<Arc<crate::snapshot_file::SnapshotSpool>>,
     openldap_in_flight: openldap_secret::OpenLdapFlights,
     openldap_cursor: Option<(String, String, String)>,
@@ -1998,6 +2005,8 @@ impl Service {
             pending_ordinary_kv_commit_notice: None,
             native_snapshot_transport: false,
             native_snapshot_clock: None,
+            native_snapshot_standby_read: false,
+            native_snapshot_standby_actor: None,
             snapshot_spool: None,
             openldap_in_flight: openldap_secret::OpenLdapFlights::default(),
             openldap_cursor: None,
@@ -2751,9 +2760,28 @@ impl Service {
         &mut self,
         fingerprint: &str,
         request_clock: (u64, Option<RequestClock>),
+        response: Response,
+        after_audit: impl FnOnce(),
+        retain_clock_receipt: bool,
+    ) -> (Response, Option<token_precision::TerminalClockReceipt>) {
+        self.audit_completed_response_with_clock_source(
+            fingerprint,
+            request_clock,
+            response,
+            after_audit,
+            retain_clock_receipt,
+            None,
+        )
+    }
+
+    fn audit_completed_response_with_clock_source(
+        &mut self,
+        fingerprint: &str,
+        request_clock: (u64, Option<RequestClock>),
         mut response: Response,
         after_audit: impl FnOnce(),
         retain_clock_receipt: bool,
+        standby_snapshot: Option<&snapshot_transfer::SnapshotTransferPlan>,
     ) -> (Response, Option<token_precision::TerminalClockReceipt>) {
         let (now, token_clock) = request_clock;
         #[cfg(feature = "native-v6-storage")]
@@ -2824,6 +2852,27 @@ impl Service {
         let terminal_floor = terminal_owner.and_then(|()| {
             if let Some(refusal) = pre_admission_refusal {
                 return Err(refusal);
+            }
+            if let Some(plan) = standby_snapshot {
+                #[cfg(feature = "native-v6-ha")]
+                return self
+                    .check_native_standby_snapshot_before_audit(plan)
+                    .map(|()| None);
+                #[cfg(not(feature = "native-v6-ha"))]
+                {
+                    let _ = plan;
+                    return Err(Response::error(
+                        503,
+                        "standby snapshot clock requires native HA",
+                    ));
+                }
+            }
+            if response.status == 307 && response.response_headers.is_ha_routing_refusal() {
+                // The actual local forwarding branch produced this typed
+                // refusal before authentication, finite-use admission or a
+                // business effect. It owns mandatory request/response audit,
+                // but has no token observation to publish on this standby.
+                return Ok(None);
             }
             if self.pending_forward_delivery.is_some() {
                 self.check_pending_forward_delivery(&response)
@@ -2963,11 +3012,13 @@ impl Service {
                 None,
             );
         }
-        crate::ha_forward_completion::audited(if terminal_floor_succeeded {
-            token_clock
-        } else {
-            None
-        });
+        crate::ha_forward_completion::audited(
+            if terminal_floor_succeeded && standby_snapshot.is_none() {
+                token_clock
+            } else {
+                None
+            },
+        );
         self.stamp_consistency_index(&mut response);
         if let Some(authority) = self.pending_ordinary_kv_authority.as_mut() {
             authority.mark_response_audited(fingerprint);
@@ -3040,6 +3091,61 @@ impl Service {
         }
     }
 
+    fn has_pending_external_dispatch(&self) -> bool {
+        #[cfg(any(target_os = "linux", target_os = "macos"))]
+        let sdk_pending = self.pending_sdk_request.is_some()
+            || self.pending_sdk_auth_request.is_some()
+            || self.pending_sdk_control_authority.is_some()
+            || self.pending_sdk_credential_list.is_some();
+        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
+        let sdk_pending = false;
+        #[cfg(feature = "native-v6-storage")]
+        let native_auth_pending = self.pending_native_auth_delivery.is_some()
+            || self.pending_native_cg_delivery.is_some()
+            || self.pending_native_kv2_large.is_some()
+            || self.pending_native_kv2_witness.is_some()
+            || self.pending_native_file_gc.is_some();
+        #[cfg(not(feature = "native-v6-storage"))]
+        let native_auth_pending = false;
+        #[cfg(feature = "native-v6-ha")]
+        let native_ha_gc_pending = self.pending_native_ha_gc.is_some();
+        #[cfg(not(feature = "native-v6-ha"))]
+        let native_ha_gc_pending = false;
+        sdk_pending
+            || self.rate_limit_quotas.has_pending_ingress()
+            || native_auth_pending
+            || native_ha_gc_pending
+            || self.pending_database_effect.is_some()
+            || self.pending_database_config_effect.is_some()
+            || self.pending_database_rotation_effect.is_some()
+            || self.pending_database_batch_effect.is_some()
+            || self.pending_online_auth_effect.is_some()
+            || self.pending_plugin_auth.is_some()
+            || self.pending_plugin_read.is_some()
+            || self.pending_plugin_kms.is_some()
+            || self.pending_external_key.is_some()
+            || self.pending_external_transit.is_some()
+            || self.pending_external_pki.is_some()
+            || self.pending_external_pki_no_effect.is_some()
+            || self.pending_acme_external.is_some()
+            || self.pending_kubernetes_token.is_some()
+            || self.pending_openldap_effect.is_some()
+            || self.pending_snapshot_transfer.is_some()
+            || self.pending_workflow_external_hold.is_some()
+            || self.pending_ordinary_kv_authority.is_some()
+            || self.pending_token_api_authority.is_some()
+            || self.pending_ha_step_down.is_some()
+            || self.pending_forward_delivery.is_some()
+            || self.pending_help_authority.is_some()
+            || self.pending_namespace_deletion.is_some()
+            || self.pending_approle_tidy.is_some()
+            || self.pending_native_remount.is_some()
+            || self.pending_transit_cache_reload.is_some()
+            || self.pending_acme_authority.is_some()
+            || self.pending_local_unseal_completion.is_some()
+            || self.pending_ordinary_kv_commit_notice.is_some()
+    }
+
     fn begin_at_mode_started_clock_with_quota(
         &mut self,
         request: RequestDispatch<'_>,
@@ -3088,59 +3194,7 @@ impl Service {
             erase_json(&mut body);
             return RequestExecution::Complete(self.leader_response(method));
         }
-        #[cfg(any(target_os = "linux", target_os = "macos"))]
-        let sdk_pending = self.pending_sdk_request.is_some()
-            || self.pending_sdk_auth_request.is_some()
-            || self.pending_sdk_control_authority.is_some()
-            || self.pending_sdk_credential_list.is_some();
-        #[cfg(not(any(target_os = "linux", target_os = "macos")))]
-        let sdk_pending = false;
-        #[cfg(feature = "native-v6-storage")]
-        let native_auth_pending = self.pending_native_auth_delivery.is_some()
-            || self.pending_native_cg_delivery.is_some()
-            || self.pending_native_kv2_large.is_some()
-            || self.pending_native_kv2_witness.is_some()
-            || self.pending_native_file_gc.is_some();
-        #[cfg(not(feature = "native-v6-storage"))]
-        let native_auth_pending = false;
-        #[cfg(feature = "native-v6-ha")]
-        let native_ha_gc_pending = self.pending_native_ha_gc.is_some();
-        #[cfg(not(feature = "native-v6-ha"))]
-        let native_ha_gc_pending = false;
-        if sdk_pending
-            || self.rate_limit_quotas.has_pending_ingress()
-            || native_auth_pending
-            || native_ha_gc_pending
-            || self.pending_database_effect.is_some()
-            || self.pending_database_config_effect.is_some()
-            || self.pending_database_rotation_effect.is_some()
-            || self.pending_database_batch_effect.is_some()
-            || self.pending_online_auth_effect.is_some()
-            || self.pending_plugin_auth.is_some()
-            || self.pending_plugin_read.is_some()
-            || self.pending_plugin_kms.is_some()
-            || self.pending_external_key.is_some()
-            || self.pending_external_transit.is_some()
-            || self.pending_external_pki.is_some()
-            || self.pending_external_pki_no_effect.is_some()
-            || self.pending_acme_external.is_some()
-            || self.pending_kubernetes_token.is_some()
-            || self.pending_openldap_effect.is_some()
-            || self.pending_snapshot_transfer.is_some()
-            || self.pending_workflow_external_hold.is_some()
-            || self.pending_ordinary_kv_authority.is_some()
-            || self.pending_token_api_authority.is_some()
-            || self.pending_ha_step_down.is_some()
-            || self.pending_forward_delivery.is_some()
-            || self.pending_help_authority.is_some()
-            || self.pending_namespace_deletion.is_some()
-            || self.pending_approle_tidy.is_some()
-            || self.pending_native_remount.is_some()
-            || self.pending_transit_cache_reload.is_some()
-            || self.pending_acme_authority.is_some()
-            || self.pending_local_unseal_completion.is_some()
-            || self.pending_ordinary_kv_commit_notice.is_some()
-        {
+        if self.has_pending_external_dispatch() {
             erase_json(&mut body);
             return RequestExecution::Complete(Response::error(
                 503,
@@ -4039,7 +4093,7 @@ impl Service {
                 }
                 Err(_) => return Response::error(503, "HA process lock is unavailable"),
             };
-            if leader != Some(local) {
+            if leader != Some(local) && !self.native_snapshot_standby_read {
                 let Some(_) = leader else {
                     return Response::error(503, "HA cluster has no elected leader");
                 };
@@ -4089,6 +4143,56 @@ impl Service {
                 {
                     return response;
                 }
+                let no_forward = logical_data.as_ref().is_some_and(|data| {
+                    data.headers
+                        .get("x-vault-no-request-forwarding")
+                        .is_some_and(|values| values.iter().any(|value| !value.is_empty()))
+                });
+                if no_forward {
+                    // OpenBao 2.7.1 first attempts an eligible local read. The
+                    // header forbids forwarding; any nonempty value, including
+                    // "false", selects this behavior. Authentication failures
+                    // before a read retain the redirect and consume no token.
+                    #[cfg(feature = "native-v6-storage")]
+                    if self.native_root.is_some()
+                        && let Some(response) = self.immutable_kv_response_mode(&request, true)
+                    {
+                        return response;
+                    }
+                    return match self.native_snapshot_destination() {
+                        Ok(Some(origin)) => Response {
+                            unwrapped_json: None,
+                            response_headers: ResponseHeaders::ha_redirect(origin),
+                            consistency_index: None,
+                            status: 307,
+                            body: Value::Null,
+                        },
+                        Ok(None) => Response::error(503, "HA role changed before redirect"),
+                        Err(error) => error,
+                    };
+                }
+                // This choice follows the actual catch-up above, not a URL
+                // suffix or a stale standby registry. Resumed control-group
+                // work skips that catch-up and cannot select this new profile.
+                // The profile carries the original ingress only; the active
+                // node must still capture and complete its real SSH owner.
+                #[cfg(feature = "native-v6-storage")]
+                let native_original_reply_profile = if !resumed_control_group
+                    && namespace.is_empty()
+                    && self.native_root.is_some()
+                    && wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+                    && crate::auth::current_ingress().is_some()
+                    && self.state.as_ref().is_some_and(|state| {
+                        state
+                            .engines
+                            .is_public_ssh_key_read(namespace, method, path)
+                    }) {
+                    Some(crate::ha_forward::NativeOriginalReplyProfile::RootSshPublicKey)
+                } else {
+                    None
+                };
+                #[cfg(not(feature = "native-v6-storage"))]
+                let native_original_reply_profile = None;
                 self.pending_forward_delivery =
                     Some(forward_delivery::PendingForwardDelivery::Rejected);
                 #[cfg(feature = "native-v6-ha")]
@@ -4099,7 +4203,7 @@ impl Service {
                 );
                 let forwarded = match ha.lock_for_request() {
                     Ok(process) => {
-                        process.forward_request_completed(crate::ha_forward::ForwardContext {
+                        let context = crate::ha_forward::ForwardContext {
                             method,
                             path,
                             namespace,
@@ -4109,7 +4213,14 @@ impl Service {
                             origin_peer,
                             client_certificates,
                             caller_deadline: crate::request_deadline::current(),
-                        })
+                        };
+                        if let Some(profile) = native_original_reply_profile {
+                            process.forward_request_completed_with_native_original_reply(
+                                context, profile,
+                            )
+                        } else {
+                            process.forward_request_completed(context)
+                        }
                     }
                     Err(_) => return Response::error(503, "HA process lock is unavailable"),
                 };
@@ -4194,6 +4305,33 @@ impl Service {
             #[cfg(all(feature = "native-v6-ha", feature = "private-ha-forward-diagnostic"))]
             if let Some(phase) = phase {
                 phase.finish(true);
+            }
+        }
+        if let Some(crate::ha_forward::NativeOriginalReplyProfile::RootSshPublicKey) =
+            crate::ha_forward::current_native_original_reply_profile()
+        {
+            // Recheck the receiving leader's actual mount after its own HA
+            // admission. A peer's selection, or a concurrently replaced mount,
+            // cannot redirect this profile into an ordinary KV read or another
+            // backend. Refusal never downgrades or replays the request.
+            #[cfg(feature = "native-v6-storage")]
+            let actual_native_ssh = !resumed_control_group
+                && namespace.is_empty()
+                && self.native_root.is_some()
+                && wrap_ttl_seconds.is_none_or(|ttl| ttl == 0)
+                && crate::auth::current_ingress().is_some()
+                && self.state.as_ref().is_some_and(|state| {
+                    state
+                        .engines
+                        .is_public_ssh_key_read(namespace, method, path)
+                });
+            #[cfg(not(feature = "native-v6-storage"))]
+            let actual_native_ssh = false;
+            if !actual_native_ssh {
+                return Response::error(
+                    503,
+                    "HA native SSH reply profile no longer has its root mount",
+                );
             }
         }
         // HA forwards the authenticated transport body above. Interpret this
@@ -4342,10 +4480,13 @@ impl Service {
         // A trusted wall-clock observation is persisted before a wrapping
         // token can be rejected/consumed. Observed expiry cannot be undone by
         // a later clock rollback, process restart, or HA leader change.
-        if !owner_manifest_migration {
+        if self.native_snapshot_standby_read && !self.native_standby_snapshot_is_read_eligible() {
+            return Response::error(503, "standby snapshot now requires resource maintenance");
+        }
+        if !owner_manifest_migration && !self.native_snapshot_standby_read {
             #[cfg(feature = "native-v6-storage")]
             let native_pki_maintenance =
-                self.native_root.is_some() && admitted.engines.has_native_local_pki();
+                self.native_root.is_some() && admitted.engines.has_native_local_lease_owner();
             #[cfg(not(feature = "native-v6-storage"))]
             let native_pki_maintenance = false;
             #[cfg(feature = "native-v6-storage")]
@@ -4430,6 +4571,9 @@ impl Service {
             && admitted.engines.native_local_pki_mounted(namespace, path);
         #[cfg(not(feature = "native-v6-storage"))]
         let native_pki_mounted = false;
+        #[cfg(feature = "native-v6-storage")]
+        let native_ssh_mounted = self.native_root.is_some()
+            && admitted.engines.native_local_ssh_mounted(namespace, path);
         if !native_pki_mounted && let Some(response) = self.handle_pki_acme(&request, &mut admitted)
         {
             return response;
@@ -4446,6 +4590,10 @@ impl Service {
             None
         };
         if help_projection.as_ref().is_some_and(|help| help.anonymous) {
+            #[cfg(feature = "native-v6-storage")]
+            if native_ssh_mounted {
+                return self.dispatch_native_ssh_request(admitted, None, &request);
+            }
             #[cfg(feature = "native-v6-storage")]
             if native_pki_mounted {
                 return self.dispatch_native_pki_request(
@@ -4502,6 +4650,13 @@ impl Service {
                 .engines
                 .is_public_ssh_key_read(namespace, method, path)
         {
+            #[cfg(feature = "native-v6-storage")]
+            if self.native_root.is_some() {
+                if !native_ssh_mounted {
+                    return Response::error(501, "native SSH public key requires its root owner");
+                }
+                return self.dispatch_native_ssh_request(admitted, None, &request);
+            }
             return Self::native_ssh_public_response(&admitted, namespace, method, path, body)
                 .unwrap_or_else(|| Response::error(503, "SSH public key owner changed"));
         }
@@ -4634,7 +4789,14 @@ impl Service {
         {
             return response;
         }
-        let mut principal = if let Some(actor) = resume {
+        let mut principal = if self.native_snapshot_standby_read {
+            match self.native_snapshot_standby_actor.take() {
+                Some(actor) => Some(actor),
+                None => {
+                    return Response::error(503, "standby snapshot original actor is unavailable");
+                }
+            }
+        } else if let Some(actor) = resume {
             Some(actor)
         } else if !authenticate_bearer {
             None
@@ -4857,6 +5019,13 @@ impl Service {
                     .engines
                     .native_totp_registry_route(method, path, request.body));
         #[cfg(feature = "native-v6-storage")]
+        let native_local_ssh = self.native_root.is_some()
+            && namespace.is_empty()
+            && (admitted.engines.native_local_ssh_route(namespace, path)
+                || admitted
+                    .engines
+                    .native_ssh_registry_route(method, path, request.body));
+        #[cfg(feature = "native-v6-storage")]
         let native_local_pki = self.native_root.is_some()
             && namespace.is_empty()
             && (admitted.engines.native_local_pki_route(namespace, path)
@@ -4889,6 +5058,7 @@ impl Service {
             && !native_local_transit
             && !native_local_totp
             && !native_local_pki
+            && !native_local_ssh
             && !native_metadata_read;
         #[cfg(feature = "native-v6-storage")]
         let native_capabilities = self.native_root.is_some()
@@ -4999,6 +5169,7 @@ impl Service {
                 && !native_local_transit
                 && !native_local_totp
                 && !native_local_pki
+                && !native_local_ssh
                 && !native_kv2_mount
                 && !native_kv1_mount
                 && !native_remount
@@ -5148,6 +5319,10 @@ impl Service {
         #[cfg(feature = "native-v6-storage")]
         if native_local_totp {
             return self.dispatch_native_totp_request(admitted, principal.take(), &request);
+        }
+        #[cfg(feature = "native-v6-storage")]
+        if native_local_ssh {
+            return self.dispatch_native_ssh_request(admitted, principal.take(), &request);
         }
         #[cfg(feature = "native-v6-storage")]
         if native_local_pki {
@@ -6184,6 +6359,14 @@ impl Service {
     }
 
     fn immutable_kv_response(&mut self, request: &RequestView<'_>) -> Option<Response> {
+        self.immutable_kv_response_mode(request, false)
+    }
+
+    fn immutable_kv_response_mode(
+        &mut self,
+        request: &RequestView<'_>,
+        route_refused_read: bool,
+    ) -> Option<Response> {
         if self
             .state
             .as_ref()
@@ -6211,7 +6394,7 @@ impl Service {
             return None;
         }
         if request.token.is_empty() {
-            return Some(Response::error(403, "permission denied"));
+            return (!route_refused_read).then(|| Response::error(403, "permission denied"));
         }
         let time = match request.token_time() {
             Ok(time) => time,
@@ -6224,14 +6407,17 @@ impl Service {
         ) {
             Ok(Some(principal)) => principal,
             Ok(None) => return None,
-            Err(error) => return Some(Response::error(error.status, &error.message)),
+            Err(error) => {
+                return (!route_refused_read)
+                    .then(|| Response::error(error.status, &error.message));
+            }
         };
         if let Err(error) = principal.bind_request_clock(request.token_clock) {
             return Some(Response::error(error.status, &error.message));
         }
         if let Err(error) = Self::bind_identity_principal(state, &mut principal, request.namespace)
         {
-            return Some(error);
+            return (!route_refused_read).then_some(error);
         }
         if let Err(error) = state.auth.authorize_request_parameters_observed(
             &principal,
@@ -6241,7 +6427,7 @@ impl Service {
             request.body,
             time,
         ) {
-            return Some(Response::error(error.status, &error.message));
+            return (!route_refused_read).then(|| Response::error(error.status, &error.message));
         }
         // Direct Service callers must authorize the same operation as the HTTP
         // parser: GET+list is a LIST, never a read-only-policy enumeration bypass.
@@ -6257,7 +6443,7 @@ impl Service {
             capability,
             time,
         ) {
-            return Some(Response::error(error.status, &error.message));
+            return (!route_refused_read).then(|| Response::error(error.status, &error.message));
         }
         let authority = match ordinary_kv_delivery::OrdinaryKvAuthority::new(
             principal,

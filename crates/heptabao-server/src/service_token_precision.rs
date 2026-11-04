@@ -2,6 +2,12 @@
 //! This is observation state, never a new actor/provider publication grant.
 use super::*;
 
+#[cfg(feature = "native-v6-ha")]
+#[path = "service_snapshot_clock.rs"]
+mod snapshot_clock;
+#[cfg(feature = "native-v6-ha")]
+pub(crate) use snapshot_clock::SnapshotClockObservation;
+
 #[cfg(all(unix, feature = "native-v6-storage"))]
 #[path = "service_token_precision_offline.rs"]
 pub(super) mod offline;
