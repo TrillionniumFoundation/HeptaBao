@@ -1,0 +1,17 @@
+{
+  "actual_remote_and_local_final_files_equal": 19,
+  "base_commit_published_equivalent": "054d17cd50951efa46d78db3911ad1d277a0c584",
+  "base_tree": "cdc2376e7b39c1d8bbbeb10a813d58bfe923f336",
+  "files_sha256": {
+    "base-ha-provenance.public.json": "6396f7448c6243ef5e242715d5bdeda6fe921d78a9af6af52c4a8d7975218ad7",
+    "normal33-to-r4.patch": "037e3d405e61b896fd2701f6cc597f4d8072e722dc7c4f62166a1cb0d7169731",
+    "r4-source-manifest.public.json": "d717df7e2eb9a52d36b47d9dccdf8080879fa47d6730ecdd28c24e3c1513a1e7",
+    "r4-to-r5.patch": "b9eab71bd778acd818fbedb006ea9bee2db83759402eef0a166ffe27bbc852e4",
+    "r5-source-manifest.public.json": "ebed64594498eb3ea37f737319e3d969967d036aba8bef876fdd2620481c7ec7"
+  },
+  "r4_to_r5_patch_reconstructs_actual_final_four_files": true,
+  "remote_readonly_job": "rog/1a1a6b12a72-fc05-2831",
+  "schema": "heptabao.root-review-ssh-r5-source-chain.v1",
+  "source": "830f28505af7306bab898a648918a65a9e3e8c60",
+  "tree": "112394355eb52c4f88e90a0eea40e3a8ea6daef4"
+}

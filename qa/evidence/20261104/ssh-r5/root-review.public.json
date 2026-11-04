@@ -1,0 +1,53 @@
+{
+  "actual_cargo_features": [
+    "default",
+    "native-v6-ha",
+    "native-v6-storage"
+  ],
+  "actual_cargo_profile": {
+    "debug_assertions": true,
+    "debuginfo": 0,
+    "opt_level": "3",
+    "overflow_checks": true,
+    "test": true
+  },
+  "actual_compiler_artifact_readback": true,
+  "all_phase_owned_processes_stopped": true,
+  "binary_sha256": "6026cd5d54d63a9ec13dcf28c37536afb866ea6d0e76a2f6c3ccdbdcb5073470",
+  "combined_candidate_qualified": false,
+  "evidence_sha256": {
+    "assessment.public.json": "76725fae2d79e678373522f9872d71eac8714dba2cbbcda4593b8bed3dc6b0f6",
+    "build-artifact-and-finish.jsonl": "ef8c8f4235f2719ef68d1f687fefa7e4b5f665817a948b764c47033bc21e5e95",
+    "build.public.json": "7cf9aa9a63afce2e6f3b147a71f079640312d10e64dac48414e97b50a63f0c5d",
+    "list.public.json": "f05dc1aaafbde3520f4dfb32824c0f383ebb0b6f8a27c48a56d3e4a5c2f28e03",
+    "list.stdout": "e8481ed123ead9f78abfeb288b819047f27e401d4387de96599a4d1f960dfa79",
+    "result.public.json": "a42964639a80cf5beff278a6c76b70da6291de4d1ab35dc525e7cbc5057fd454",
+    "run_r5_normal_tests.py": "879135955c0a6586eadc606c8f20746f30464025f6b014a680da2667f43177b4",
+    "terminal-status.public.json": "ac8bb10b2ad737315fc4ff44b31f5eb1abded621a12b70c9853dedb423474e86",
+    "tests.public.json": "4f7c5a009342d8154cc2d517eb2b20b8781e7e4633bd74828b834645bc5cad78",
+    "tests.stderr": "0599311b57c5c4bbf9c5356819b047e8c1c75ef621e146e35f85558e949129da",
+    "tests.stdout": "7814cc54ed271ee9dbcca907a7e6304444685915a592c95b0ed056e1dc8e43ae"
+  },
+  "executed_source_files_independently_verified": 19,
+  "full_build_stderr_readback": false,
+  "full_build_stdout_readback": false,
+  "full_openbao_271_replacement_qualified": false,
+  "full_test_stdout_stderr_readback": true,
+  "ha_tests_executed": 3,
+  "host": "rog",
+  "ignored": 0,
+  "job_id": "1a1a688e298-fc05-2698",
+  "ok": true,
+  "physical_three_host_ha_qualified": false,
+  "production_changed": false,
+  "promotion_allowed": false,
+  "remaining_blocker": "Path-only public_key reply selection can misclassify ordinary KV2 keys. Actual engine ownership and large same-name KV2 regression required.",
+  "reviewed_source_patch_chain_included": true,
+  "schema": "heptabao.root-reviewed-ssh-r5.v1",
+  "source": "830f28505af7306bab898a648918a65a9e3e8c60",
+  "source_and_retained_binary_unchanged": true,
+  "source_chain_review_sha256": "047385c38ee363b0a89a7d061bb818322b82dae2a90629173998edd2c0e8e049",
+  "tests_passed": 22,
+  "tests_total": 22,
+  "tree": "112394355eb52c4f88e90a0eea40e3a8ea6daef4"
+}

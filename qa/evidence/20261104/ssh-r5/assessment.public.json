@@ -1,0 +1,101 @@
+{
+  "schema": "bao_acceptance_ssh_r5_independent_receipt_review_v1",
+  "host": "rog",
+  "job_id": "1a1a688e298-fc05-2698",
+  "source": "830f28505af7306bab898a648918a65a9e3e8c60",
+  "tree": "112394355eb52c4f88e90a0eea40e3a8ea6daef4",
+  "actual_cargo_features": [
+    "default",
+    "native-v6-ha",
+    "native-v6-storage"
+  ],
+  "actual_cargo_profile": {
+    "opt_level": "3",
+    "debuginfo": 0,
+    "debug_assertions": true,
+    "overflow_checks": true,
+    "test": true
+  },
+  "actual_libtest_source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/source-r5/crates/heptabao-server/src/lib.rs",
+  "build_command": [
+    "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "test",
+    "--release",
+    "--locked",
+    "--offline",
+    "-p",
+    "heptabao-server",
+    "--lib",
+    "--no-run",
+    "--message-format=json-render-diagnostics"
+  ],
+  "test_command": [
+    "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/normal-tests-r5/retained-heptabao-server-libtest",
+    "native_ssh_",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "declared_tests_equal_executed_tests": true,
+  "executed_test_count": 22,
+  "actual_ha_tests": [
+    "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex",
+    "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay",
+    "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key"
+  ],
+  "ignored_tests": 0,
+  "retained_binary": {
+    "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/normal-tests-r5/retained-heptabao-server-libtest",
+    "sha256": "6026cd5d54d63a9ec13dcf28c37536afb866ea6d0e76a2f6c3ccdbdcb5073470",
+    "bytes": 187022320
+  },
+  "readback_full_stream_sha256_verified": [
+    "tests.stdout",
+    "tests.stderr",
+    "list.stdout"
+  ],
+  "build_stdout_evidence": "Exact selected server compiler-artifact and build-finished records; full build stdout hash retained in build.public.json. Full build.stdout not downloaded.",
+  "build_stderr_readback": "Remote read failed with SSH connection closed; build.stderr hash and successful compiler exit remain in build.public.json. No rerun performed.",
+  "not_external_explicit_r6": true,
+  "promotion_allowed": false,
+  "promotion_blocker": "r5 common GET */public_key original-reply detection also matches ordinary KV2 key names and may downgrade large native KV2 read framing. Explicit actual-engine classification is required.",
+  "not_physical_three_host_ha_evidence": true,
+  "not_ci0dc_or_normal33_pass_evidence": true,
+  "files": {
+    "build-artifact-and-finish.jsonl": {
+      "bytes": 963,
+      "sha256": "ef8c8f4235f2719ef68d1f687fefa7e4b5f665817a948b764c47033bc21e5e95"
+    },
+    "build.public.json": {
+      "bytes": 621,
+      "sha256": "7cf9aa9a63afce2e6f3b147a71f079640312d10e64dac48414e97b50a63f0c5d"
+    },
+    "list.public.json": {
+      "bytes": 507,
+      "sha256": "f05dc1aaafbde3520f4dfb32824c0f383ebb0b6f8a27c48a56d3e4a5c2f28e03"
+    },
+    "list.stdout": {
+      "bytes": 2541,
+      "sha256": "e8481ed123ead9f78abfeb288b819047f27e401d4387de96599a4d1f960dfa79"
+    },
+    "result.public.json": {
+      "bytes": 7635,
+      "sha256": "a42964639a80cf5beff278a6c76b70da6291de4d1ab35dc525e7cbc5057fd454"
+    },
+    "run_r5_normal_tests.py": {
+      "bytes": 8831,
+      "sha256": "879135955c0a6586eadc606c8f20746f30464025f6b014a680da2667f43177b4"
+    },
+    "tests.public.json": {
+      "bytes": 536,
+      "sha256": "4f7c5a009342d8154cc2d517eb2b20b8781e7e4633bd74828b834645bc5cad78"
+    },
+    "tests.stderr": {
+      "bytes": 13196,
+      "sha256": "0599311b57c5c4bbf9c5356819b047e8c1c75ef621e146e35f85558e949129da"
+    },
+    "tests.stdout": {
+      "bytes": 2768,
+      "sha256": "7814cc54ed271ee9dbcca907a7e6304444685915a592c95b0ed056e1dc8e43ae"
+    }
+  }
+}

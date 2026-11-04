@@ -1,0 +1,3449 @@
+diff --git a/crates/heptabao-server/src/auth.rs b/crates/heptabao-server/src/auth.rs
+index 1d295eac..d63f6aed 100644
+--- a/crates/heptabao-server/src/auth.rs
++++ b/crates/heptabao-server/src/auth.rs
+@@ -229,7 +229,8 @@ pub(crate) use wrapping::{
+ };
+ #[cfg(feature = "native-v6-storage")]
+ pub(crate) use wrapping::{
+-    NativeResponseWrappingOwner, NativeWrappingObservation, NativeWrappingOwner,
++    NativeResponseWrappingOwner, NativeSshPublicReplyOwner, NativeWrappingObservation,
++    NativeWrappingOwner,
+ };
+ 
+ const LEGACY_DEFAULT_TTL: u64 = 3600;
+diff --git a/crates/heptabao-server/src/auth_native_ssh_reply.rs b/crates/heptabao-server/src/auth_native_ssh_reply.rs
+new file mode 100644
+index 00000000..a02ee6e7
+--- /dev/null
++++ b/crates/heptabao-server/src/auth_native_ssh_reply.rs
+@@ -0,0 +1,71 @@
++//! Affine custody of the existing native SSH public-key HTTP projection.
++//! This binds an actual mount-produced response; it never manufactures raw
++//! bytes, an ingress, a bearer or a response-wrapping token.
++use super::*;
++use crate::v6_native_custody::OriginalDeadline;
++
++fn unavailable() -> AuthError {
++    err(503, "native SSH public-key response ownership changed")
++}
++
++fn digest(
++    response: &UnwrappedJson,
++    logical: &Value,
++    nonce: [u8; 32],
++    deadline: OriginalDeadline,
++) -> Result<[u8; 32], AuthError> {
++    deadline.check().map_err(|_| unavailable())?;
++    if response.state.native_owner != Some(nonce)
++        || response.state.workflow_output_failure.is_some()
++        || response.state.static_kv1_lease.is_some()
++        || response.raw_http_transport(logical)? != Some((200, "text/plain"))
++    {
++        return Err(unavailable());
++    }
++    // Audit may attach its actual selected ingress to the same private object.
++    // That is not permission to substitute another stored projection.
++    response.framing_wire(logical)?;
++    let stored = response.stored_reply().ok_or_else(unavailable)?;
++    let bytes = crate::secret_serde::to_vec(
++        &(nonce, logical, stored),
++        crate::MAX_APPLICATION_STATE_BYTES,
++    )
++    .map_err(|_| unavailable())?;
++    let result = crate::crypto::digest(&bytes);
++    deadline.check().map_err(|_| unavailable())?;
++    Ok(result)
++}
++
++pub(crate) struct NativeSshPublicReplyOwner {
++    nonce: [u8; 32],
++    projection: [u8; 32],
++    deadline: OriginalDeadline,
++}
++impl NativeSshPublicReplyOwner {
++    pub(crate) fn check(&self, response: &UnwrappedJson, logical: &Value) -> Result<(), AuthError> {
++        if digest(response, logical, self.nonce, self.deadline)? != self.projection {
++            return Err(unavailable());
++        }
++        Ok(())
++    }
++}
++
++impl UnwrappedJson {
++    pub(crate) fn bind_native_ssh_public_reply(
++        &mut self,
++        logical: &Value,
++        deadline: OriginalDeadline,
++    ) -> Result<NativeSshPublicReplyOwner, AuthError> {
++        deadline.check().map_err(|_| unavailable())?;
++        if self.state.native_owner.is_some() {
++            return Err(unavailable());
++        }
++        let nonce = crate::crypto::random::<32>().map_err(|_| unavailable())?;
++        self.state.native_owner = Some(nonce);
++        Ok(NativeSshPublicReplyOwner {
++            nonce,
++            projection: digest(self, logical, nonce, deadline)?,
++            deadline,
++        })
++    }
++}
+diff --git a/crates/heptabao-server/src/auth_wrapping.rs b/crates/heptabao-server/src/auth_wrapping.rs
+index 48da3a91..3141fe06 100644
+--- a/crates/heptabao-server/src/auth_wrapping.rs
++++ b/crates/heptabao-server/src/auth_wrapping.rs
+@@ -14,6 +14,12 @@ mod native_output;
+ #[cfg(feature = "native-v6-storage")]
+ pub(crate) use native_output::NativeResponseWrappingOwner;
+ 
++#[cfg(feature = "native-v6-storage")]
++#[path = "auth_native_ssh_reply.rs"]
++mod native_ssh_reply;
++#[cfg(feature = "native-v6-storage")]
++pub(crate) use native_ssh_reply::NativeSshPublicReplyOwner;
++
+ /// Private, response-only origin. Local construction occurs only after an
+ /// actual wrapper was consumed, including the admitted affine final-use view.
+ /// Neither user JSON, a header, an SDK response nor the URL constructs it.
+diff --git a/crates/heptabao-server/src/engine_native_pki.rs b/crates/heptabao-server/src/engine_native_pki.rs
+index fc4d8d10..038a4309 100644
+--- a/crates/heptabao-server/src/engine_native_pki.rs
++++ b/crates/heptabao-server/src/engine_native_pki.rs
+@@ -117,6 +117,17 @@ impl EngineState {
+             )
+         })
+     }
++    /// The shared original lease reconciler has exact root-local PKI and SSH
++    /// lease custody. This does not grant SSH operations to a PKI request.
++    pub(crate) fn has_native_local_lease_owner(&self) -> bool {
++        self.has_native_local_pki()
++            || self.namespaces.get("").is_some_and(|owner| {
++                owner
++                    .mounts
++                    .values()
++                    .any(|mount| matches!(&mount.backend, Backend::Ssh(_)))
++            })
++    }
+     fn native_pki_mount(&self, path: &str) -> Option<(&str, &Mount)> {
+         if path.starts_with('/') {
+             return None;
+@@ -174,7 +185,8 @@ impl EngineState {
+             && self.namespaces.iter().all(|(namespace, owner)| {
+                 owner.mounts.values().all(|mount| match &mount.backend {
+                     Backend::Pki(pki) => namespace.is_empty() && pki.native_local_profile(),
+-                    Backend::Ssh(_) | Backend::Kubernetes(_) | Backend::OpenLdap(_) => false,
++                    Backend::Ssh(_) => namespace.is_empty(),
++                    Backend::Kubernetes(_) | Backend::OpenLdap(_) => false,
+                     _ => true,
+                 })
+             })
+@@ -239,7 +251,7 @@ impl EngineState {
+         root: &RecordStateRootV6,
+         check: &impl Fn() -> bool,
+     ) -> Result<NativePkiEngineOwner> {
+-        if !self.has_native_local_pki() {
++        if !self.has_native_local_lease_owner() {
+             return Err(rejected());
+         }
+         Self::pki_owner(self, Scope::Maintenance, false, root, check)
+@@ -400,6 +412,15 @@ impl NativePkiEngineOwner {
+                             return Err(rejected());
+                         }
+                         target.backend = before.backend.clone();
++                    } else if let Backend::Ssh(source) = &before.backend {
++                        let target = next.mounts.get_mut(name).ok_or_else(rejected)?;
++                        let Backend::Ssh(after) = &mut target.backend else {
++                            return Err(rejected());
++                        };
++                        // Shared lease administration/reconciliation may retire
++                        // only this backend's real lease records. Roles, CA keys,
++                        // issuers, signature counts and descriptor stay exact.
++                        after.leases = source.leases.clone();
+                     }
+                 }
+             }
+diff --git a/crates/heptabao-server/src/engine_native_ssh.rs b/crates/heptabao-server/src/engine_native_ssh.rs
+new file mode 100644
+index 00000000..d2c2c5c6
+--- /dev/null
++++ b/crates/heptabao-server/src/engine_native_ssh.rs
+@@ -0,0 +1,500 @@
++//! Exact Engine custody for one original root-local SSH operation. The Service
++//! capsule invokes the existing OTP/CA domain once and binds its actual result.
++//! Native KV data is compared by authenticated graph roots, never flattened.
++use super::*;
++use crate::state_record_root_v6::{OwnerDomain, RecordStateRootV6};
++use sha2::{Digest, Sha256};
++
++fn rejected() -> EngineError {
++    error(503, "native local SSH ownership changed")
++}
++fn live(check: &impl Fn() -> bool) -> Result<()> {
++    check().then_some(()).ok_or_else(rejected)
++}
++fn digest(state: &EngineState, check: &impl Fn() -> bool) -> Result<[u8; 32]> {
++    live(check)?;
++    let mut metadata = state.clone();
++    for namespace in metadata.namespaces.values_mut() {
++        for mount in namespace.mounts.values_mut() {
++            live(check)?;
++            if matches!(mount.backend, Backend::Kv2Native(_)) {
++                mount.backend = Backend::Kv2(kv::Kv2::default());
++            }
++        }
++    }
++    struct Sink<'a, F>(&'a F, Sha256, usize);
++    impl<F: Fn() -> bool> std::io::Write for Sink<'_, F> {
++        fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
++            if !(self.0)() {
++                return Err(std::io::Error::other(
++                    "native SSH original deadline expired",
++                ));
++            }
++            self.2 = self
++                .2
++                .checked_add(bytes.len())
++                .filter(|n| *n <= crate::MAX_APPLICATION_STATE_BYTES)
++                .ok_or_else(|| std::io::Error::other("native SSH owner capacity exceeded"))?;
++            self.1.update(bytes);
++            Ok(bytes.len())
++        }
++        fn flush(&mut self) -> std::io::Result<()> {
++            Ok(())
++        }
++    }
++    let mut sink = Sink(check, Sha256::new(), 0);
++    serde_json::to_writer(&mut sink, &metadata).map_err(|_| rejected())?;
++    live(check)?;
++    Ok(sink.1.finalize().into())
++}
++fn same_root(a: &RecordStateRootV6, b: &RecordStateRootV6) -> Result<bool> {
++    Ok(a.encode().map_err(|_| rejected())?.as_slice()
++        == b.encode().map_err(|_| rejected())?.as_slice())
++}
++fn only_roles(
++    prior: &RecordStateRootV6,
++    next: &RecordStateRootV6,
++    roles: &[OwnerDomain],
++) -> Result<()> {
++    prior.validate().map_err(|_| rejected())?;
++    next.validate().map_err(|_| rejected())?;
++    if next.state_schema < prior.state_schema
++        || next.reader_floor.minimum_state_schema < prior.reader_floor.minimum_state_schema
++    {
++        return Err(rejected());
++    }
++    let mut normalized = next.clone();
++    normalized.state_schema = prior.state_schema;
++    normalized.reader_floor.minimum_state_schema = prior.reader_floor.minimum_state_schema;
++    for (old, new) in prior.owners.iter().zip(&mut normalized.owners) {
++        if old.domain == new.domain && roles.contains(&old.domain) {
++            *new = old.clone();
++        }
++    }
++    same_root(prior, &normalized)?
++        .then_some(())
++        .ok_or_else(rejected)
++}
++#[derive(Clone, Copy, Eq, PartialEq)]
++enum Registry {
++    Read,
++    Enable,
++    Tune,
++    Disable,
++}
++enum Scope {
++    Mount(String),
++    Registry(String, Registry),
++}
++fn registry_target(path: &str) -> Result<(String, bool)> {
++    let path = path
++        .strip_prefix("sys/mounts/")
++        .ok_or_else(rejected)?
++        .trim_end_matches('/');
++    let (path, tune) = path
++        .strip_suffix("/tune")
++        .map_or((path, false), |p| (p, true));
++    Ok((format!("{}/", canonical_secret_mount(path)?), tune))
++}
++
++pub(crate) struct NativeSshEngineOwner {
++    source: EngineState,
++    source_digest: [u8; 32],
++    source_root: RecordStateRootV6,
++    scope: Scope,
++    read_only: bool,
++    candidate_digest: Option<[u8; 32]>,
++    installed_root: Option<RecordStateRootV6>,
++    terminal_finished: bool,
++}
++impl EngineState {
++    #[cfg(test)]
++    pub(crate) fn native_ssh_signature_count(&self, path: &str) -> Option<u64> {
++        let (_, mount) = self.native_ssh_mount(path)?;
++        match &mount.backend {
++            Backend::Ssh(engine) => engine.native_signature_count(),
++            _ => None,
++        }
++    }
++
++    /// Data-only lookup of the actual OTP result. It neither validates a
++    /// credential nor consumes it; the original SSH handler remains sole owner.
++    pub(crate) fn native_ssh_otp_lease(
++        &self,
++        path: &str,
++        raw: &str,
++        consumed: bool,
++    ) -> Option<(crate::auth::LeaseOwner, String, u64)> {
++        let (_, mount) = self.native_ssh_mount(path)?;
++        let Backend::Ssh(engine) = &mount.backend else {
++            return None;
++        };
++        let lease = engine.native_otp_lease(raw, consumed)?;
++        Some((lease.owner.clone(), lease.id.clone(), lease.expires))
++    }
++    fn native_ssh_mount(&self, path: &str) -> Option<(&str, &Mount)> {
++        if path.starts_with('/') {
++            return None;
++        }
++        self.namespaces
++            .get("")?
++            .mounts
++            .iter()
++            .filter(|(mount, _)| path.starts_with(mount.as_str()))
++            .max_by_key(|(mount, _)| mount.len())
++            .and_then(|(name, mount)| {
++                matches!(&mount.backend, Backend::Ssh(_)).then_some((name.as_str(), mount))
++            })
++    }
++    pub(crate) fn native_local_ssh_mounted(&self, namespace: &str, path: &str) -> bool {
++        namespace.is_empty() && self.native_ssh_mount(path).is_some()
++    }
++    pub(crate) fn native_local_ssh_route(&self, namespace: &str, path: &str) -> bool {
++        namespace.is_empty() && self.native_ssh_mount(path).is_some()
++    }
++    pub(crate) fn native_ssh_registry_route(&self, method: &str, path: &str, body: &Value) -> bool {
++        let Ok((mount, tune)) = registry_target(path) else {
++            return false;
++        };
++        (!tune
++            && matches!(method, "POST" | "PUT")
++            && body.get("type").and_then(Value::as_str) == Some("ssh"))
++            || self
++                .namespaces
++                .get("")
++                .and_then(|owner| owner.mounts.get(&mount))
++                .is_some_and(|mount| matches!(&mount.backend, Backend::Ssh(_)))
++    }
++    pub(crate) fn capture_native_ssh_engine_owner(
++        &self,
++        method: &str,
++        path: &str,
++        body: &Value,
++        _public: bool,
++        root: &RecordStateRootV6,
++        check: &impl Fn() -> bool,
++    ) -> Result<NativeSshEngineOwner> {
++        live(check)?;
++        let (scope, read_only) = if path.starts_with("sys/mounts/") {
++            let (mount, tune) = registry_target(path)?;
++            let before = self
++                .namespaces
++                .get("")
++                .and_then(|owner| owner.mounts.get(&mount));
++            let change = match (method, tune) {
++                ("GET", _) => Registry::Read,
++                ("POST" | "PUT", true) => Registry::Tune,
++                ("DELETE", false) => Registry::Disable,
++                ("POST" | "PUT", false)
++                    if body.get("type").and_then(Value::as_str) == Some("ssh") =>
++                {
++                    Registry::Enable
++                }
++                _ => return Err(unsupported()),
++            };
++            if change != Registry::Enable
++                && before.is_none_or(|mount| !matches!(&mount.backend, Backend::Ssh(_)))
++            {
++                return Err(rejected());
++            }
++            (Scope::Registry(mount, change), change == Registry::Read)
++        } else {
++            let (mount, owner) = self.native_ssh_mount(path).ok_or_else(rejected)?;
++            if owner.incarnation == 0 || owner.revision == 0 {
++                return Err(rejected());
++            }
++            // Anonymous OTP verification is a write. Public visibility alone
++            // must never turn that operation into an immutable read.
++            let read_only = matches!(method, "GET" | "HEAD" | "LIST" | "SCAN" | "HELP");
++            (Scope::Mount(mount.to_owned()), read_only)
++        };
++        Self::ssh_owner(self, scope, read_only, root, check)
++    }
++    fn ssh_owner(
++        &self,
++        scope: Scope,
++        read_only: bool,
++        root: &RecordStateRootV6,
++        check: &impl Fn() -> bool,
++    ) -> Result<NativeSshEngineOwner> {
++        root.validate().map_err(|_| rejected())?;
++        let owner = NativeSshEngineOwner {
++            source: self.clone(),
++            source_digest: digest(self, check)?,
++            source_root: root.clone(),
++            scope,
++            read_only,
++            candidate_digest: None,
++            installed_root: None,
++            terminal_finished: false,
++        };
++        owner.check_source(self, check)?;
++        Ok(owner)
++    }
++}
++impl NativeSshEngineOwner {
++    pub(crate) fn read_only(&self) -> bool {
++        self.read_only
++    }
++    pub(crate) fn check_source(
++        &self,
++        engines: &EngineState,
++        check: &impl Fn() -> bool,
++    ) -> Result<()> {
++        if digest(engines, check)? != self.source_digest
++            || engines.record_root() != self.source.record_root()
++        {
++            return Err(rejected());
++        }
++        live(check)
++    }
++    fn check_scope(&self, engines: &EngineState, check: &impl Fn() -> bool) -> Result<()> {
++        live(check)?;
++        if engines.record_root() != self.source.record_root()
++            || engines.lease_clock < self.source.lease_clock
++        {
++            return Err(rejected());
++        }
++        if digest(engines, check)? == self.source_digest {
++            return Ok(());
++        }
++        if self.read_only {
++            return Err(rejected());
++        }
++        let mut normalized = engines.clone();
++        normalized.lease_clock = self.source.lease_clock;
++        if normalized.ssh_ca_format != self.source.ssh_ca_format {
++            // Only the original SSH domain may introduce its existing CA
++            // serialization marker. The reader floor can never move back.
++            if self.source.ssh_ca_format.is_some()
++                || normalized.ssh_ca_format != Some(115)
++                || !engines.has_ssh_ca_state()
++            {
++                return Err(rejected());
++            }
++            normalized.ssh_ca_format = self.source.ssh_ca_format;
++        }
++        let prior = self.source.namespaces.get("").ok_or_else(rejected)?;
++        let next = normalized.namespaces.get_mut("").ok_or_else(rejected)?;
++        match &self.scope {
++            Scope::Registry(name, change) => {
++                let before = prior.mounts.get(name);
++                let after = next.mounts.get(name);
++                match change {
++                    Registry::Read => return Err(rejected()),
++                    Registry::Enable => {
++                        let after = after.ok_or_else(rejected)?;
++                        if before.is_some()
++                            || !matches!(&after.backend, Backend::Ssh(_))
++                            || after.incarnation
++                                != prior.mount_epochs.get(name).copied().unwrap_or(1).max(1)
++                            || after.revision != 1
++                            || next.mount_epochs.get(name) != prior.mount_epochs.get(name)
++                        {
++                            return Err(rejected());
++                        }
++                    }
++                    Registry::Tune => {
++                        let before = before.ok_or_else(rejected)?;
++                        let after = after.ok_or_else(rejected)?;
++                        if after.incarnation != before.incarnation
++                            || !matches!(&after.backend, Backend::Ssh(_))
++                            || next.mount_epochs.get(name) != prior.mount_epochs.get(name)
++                        {
++                            return Err(rejected());
++                        }
++                        let mut comparison = after.clone();
++                        comparison.revision = before.revision;
++                        let expected_revision = if comparison.encode_tune_state()?.as_slice()
++                            == before.encode_tune_state()?.as_slice()
++                        {
++                            before.revision
++                        } else {
++                            next_mount_revision(before.revision)?
++                        };
++                        if after.revision != expected_revision {
++                            return Err(rejected());
++                        }
++                    }
++                    Registry::Disable => {
++                        let before = before.ok_or_else(rejected)?;
++                        let next_epoch = before
++                            .incarnation
++                            .max(1)
++                            .checked_add(1)
++                            .ok_or_else(rejected)?;
++                        if after.is_some() || next.mount_epochs.get(name) != Some(&next_epoch) {
++                            return Err(rejected());
++                        }
++                    }
++                }
++                match before {
++                    Some(mount) => {
++                        next.mounts.insert(name.clone(), mount.clone());
++                    }
++                    None => {
++                        next.mounts.remove(name);
++                    }
++                }
++                match prior.mount_epochs.get(name) {
++                    Some(epoch) => {
++                        next.mount_epochs.insert(name.clone(), *epoch);
++                    }
++                    None => {
++                        next.mount_epochs.remove(name);
++                    }
++                }
++            }
++            Scope::Mount(name) => {
++                let before = prior.mounts.get(name).ok_or_else(rejected)?;
++                let target = next.mounts.get_mut(name).ok_or_else(rejected)?;
++                if !matches!(&target.backend, Backend::Ssh(_)) {
++                    return Err(rejected());
++                }
++                target.backend = before.backend.clone();
++            }
++        }
++        if digest(&normalized, check)? != self.source_digest {
++            return Err(rejected());
++        }
++        live(check)
++    }
++    /// Bind once, immediately after the actual retained Service invocation.
++    /// Callers cannot supply expected bytes, a restored witness or a receipt.
++    pub(crate) fn bind_executed(
++        &mut self,
++        engines: &EngineState,
++        check: &impl Fn() -> bool,
++    ) -> Result<()> {
++        if self.candidate_digest.is_some() || self.installed_root.is_some() {
++            return Err(rejected());
++        }
++        self.check_scope(engines, check)?;
++        self.candidate_digest = Some(digest(engines, check)?);
++        Ok(())
++    }
++    pub(crate) fn admit_candidate(
++        &self,
++        engines: &EngineState,
++        check: &impl Fn() -> bool,
++    ) -> Result<()> {
++        if self.candidate_digest != Some(digest(engines, check)?) {
++            return Err(rejected());
++        }
++        self.check_scope(engines, check)
++    }
++    pub(crate) fn disabled_mount(&self) -> Option<(&str, &str)> {
++        match &self.scope {
++            Scope::Registry(mount, Registry::Disable)
++                if self
++                    .candidate_digest
++                    .is_some_and(|digest| digest != self.source_digest) =>
++            {
++                Some(("", mount.as_str()))
++            }
++            _ => None,
++        }
++    }
++
++    pub(crate) fn admit_root(
++        &mut self,
++        prior: &RecordStateRootV6,
++        next: &RecordStateRootV6,
++        check: &impl Fn() -> bool,
++    ) -> Result<()> {
++        self.admit_root_inner(prior, next, None, check)
++    }
++
++    pub(crate) fn admit_root_with_quota_retirement(
++        &mut self,
++        prior: &RecordStateRootV6,
++        next: &RecordStateRootV6,
++        retirement: crate::auth::rate_limit_quotas::MountRetirement,
++        check: &impl Fn() -> bool,
++    ) -> Result<()> {
++        self.admit_root_inner(prior, next, Some(retirement), check)
++    }
++
++    fn admit_root_inner(
++        &mut self,
++        prior: &RecordStateRootV6,
++        next: &RecordStateRootV6,
++        retirement: Option<crate::auth::rate_limit_quotas::MountRetirement>,
++        check: &impl Fn() -> bool,
++    ) -> Result<()> {
++        live(check)?;
++        if self.candidate_digest.is_none()
++            || self.installed_root.is_some()
++            || !same_root(prior, &self.source_root)?
++        {
++            return Err(rejected());
++        }
++        let domains = &[OwnerDomain::Engines][..];
++        if let Some(retirement) = retirement {
++            let (namespace, mount) = self.disabled_mount().ok_or_else(rejected)?;
++            let mut comparison = next.clone();
++            retirement
++                .normalize_owned_disable(namespace, mount, prior, &mut comparison, check)
++                .map_err(|_| rejected())?;
++            only_roles(prior, &comparison, &[OwnerDomain::Engines])?;
++        } else {
++            only_roles(prior, next, domains)?;
++        }
++        if self.read_only && !same_root(prior, next)? {
++            return Err(rejected());
++        }
++        self.installed_root = Some(next.clone());
++        live(check)
++    }
++    pub(crate) fn check_installed(
++        &self,
++        engines: &EngineState,
++        root: &RecordStateRootV6,
++        check: &impl Fn() -> bool,
++    ) -> Result<()> {
++        if self.candidate_digest != Some(digest(engines, check)?)
++            || !same_root(self.installed_root.as_ref().ok_or_else(rejected)?, root)?
++        {
++            return Err(rejected());
++        }
++        live(check)
++    }
++    pub(crate) fn bind_terminal(
++        &mut self,
++        engines: &EngineState,
++        root: &RecordStateRootV6,
++        written: bool,
++        check: &impl Fn() -> bool,
++    ) -> Result<()> {
++        if self.terminal_finished {
++            return Err(rejected());
++        }
++        let prior = self.installed_root.as_ref().ok_or_else(rejected)?;
++        if written {
++            if same_root(prior, root)? {
++                return Err(rejected());
++            }
++            // The caller has consumed the actual TerminalClockReceipt and
++            // matched its complete resulting checkpoint before this method.
++            let mut normalized = engines.clone();
++            if normalized.kubernetes_artifact_clock != self.source.kubernetes_artifact_clock {
++                if !self.source.has_kubernetes_opaque_artifact_state()
++                    || normalized.kubernetes_artifact_clock.is_none()
++                    || normalized.kubernetes_artifact_clock < self.source.kubernetes_artifact_clock
++                {
++                    return Err(rejected());
++                }
++                normalized.kubernetes_artifact_clock = self.source.kubernetes_artifact_clock;
++            }
++            if self.candidate_digest != Some(digest(&normalized, check)?) {
++                return Err(rejected());
++            }
++            only_roles(prior, root, &[OwnerDomain::Auth, OwnerDomain::Engines])?;
++            self.candidate_digest = Some(digest(engines, check)?);
++            self.installed_root = Some(root.clone());
++        }
++        self.check_installed(engines, root, check)?;
++        self.terminal_finished = true;
++        live(check)
++    }
++}
+diff --git a/crates/heptabao-server/src/engines.rs b/crates/heptabao-server/src/engines.rs
+index 277c5f7d..d4eb1817 100644
+--- a/crates/heptabao-server/src/engines.rs
++++ b/crates/heptabao-server/src/engines.rs
+@@ -71,6 +71,11 @@ mod native_pki;
+ #[cfg(feature = "native-v6-storage")]
+ pub(crate) use native_pki::NativePkiEngineOwner;
+ #[cfg(feature = "native-v6-storage")]
++#[path = "engine_native_ssh.rs"]
++mod native_ssh;
++#[cfg(feature = "native-v6-storage")]
++pub(crate) use native_ssh::NativeSshEngineOwner;
++#[cfg(feature = "native-v6-storage")]
+ #[path = "engine_native_kv2_lossless_export.rs"]
+ mod native_kv2_lossless_export;
+ #[cfg(feature = "native-v6-storage")]
+@@ -200,7 +205,7 @@ impl EngineState {
+                         | Backend::Kv2(_)
+                         | Backend::Kv2Native(_) => true,
+                         Backend::Transit(engine) => !engine.has_external_state(),
+-                        Backend::Totp(_) => true,
++                        Backend::Totp(_) | Backend::Ssh(_) => true,
+                         Backend::Pki(engine) => engine.native_local_profile(),
+                         _ => false,
+                     })
+diff --git a/crates/heptabao-server/src/engines/native_empty_namespace.rs b/crates/heptabao-server/src/engines/native_empty_namespace.rs
+index ceee308b..a48529a3 100644
+--- a/crates/heptabao-server/src/engines/native_empty_namespace.rs
++++ b/crates/heptabao-server/src/engines/native_empty_namespace.rs
+@@ -108,7 +108,7 @@ impl EngineState {
+                         | Backend::Kv2(_)
+                         | Backend::Kv2Native(_) => true,
+                         Backend::Transit(engine) if name.is_empty() => !engine.has_external_state(),
+-                        Backend::Totp(_) if name.is_empty() => true,
++                        Backend::Totp(_) | Backend::Ssh(_) if name.is_empty() => true,
+                         Backend::Pki(engine) if name.is_empty() => engine.native_local_profile(),
+                         _ => false,
+                     })
+diff --git a/crates/heptabao-server/src/engines/ssh.rs b/crates/heptabao-server/src/engines/ssh.rs
+index ae355c34..4ebb12ae 100644
+--- a/crates/heptabao-server/src/engines/ssh.rs
++++ b/crates/heptabao-server/src/engines/ssh.rs
+@@ -183,6 +183,21 @@ impl Role {
+ }
+ 
+ impl SshOtp {
++    #[cfg(feature = "native-v6-storage")]
++    pub(super) fn native_otp_lease(&self, raw: &str, consumed: bool) -> Option<&Lease> {
++        if raw.is_empty() || raw.len() > 256 {
++            return None;
++        }
++        self.leases
++            .get(&digest_hex(raw.as_bytes()))
++            .filter(|lease| lease.consumed == consumed)
++    }
++    #[cfg(test)]
++    pub(super) fn native_signature_count(&self) -> Option<u64> {
++        self.ca
++            .as_ref()
++            .map(super::ssh_ca::CaState::native_signature_count)
++    }
+     pub(super) fn has_ca_state(&self) -> bool {
+         self.ca.is_some()
+     }
+diff --git a/crates/heptabao-server/src/engines/ssh_ca.rs b/crates/heptabao-server/src/engines/ssh_ca.rs
+index 7c79b078..1e04abc0 100644
+--- a/crates/heptabao-server/src/engines/ssh_ca.rs
++++ b/crates/heptabao-server/src/engines/ssh_ca.rs
+@@ -115,6 +115,11 @@ fn signing_public_key(text: &str) -> Result<PublicKey> {
+ }
+ 
+ impl CaState {
++    #[cfg(test)]
++    pub(super) fn native_signature_count(&self) -> u64 {
++        self.signatures
++    }
++
+     pub(super) fn roles(&self) -> impl Iterator<Item = &String> {
+         self.roles.keys()
+     }
+diff --git a/crates/heptabao-server/src/service.rs b/crates/heptabao-server/src/service.rs
+index 3c572c63..a14d90ba 100644
+--- a/crates/heptabao-server/src/service.rs
++++ b/crates/heptabao-server/src/service.rs
+@@ -4345,7 +4345,7 @@ impl Service {
+         if !owner_manifest_migration {
+             #[cfg(feature = "native-v6-storage")]
+             let native_pki_maintenance =
+-                self.native_root.is_some() && admitted.engines.has_native_local_pki();
++                self.native_root.is_some() && admitted.engines.has_native_local_lease_owner();
+             #[cfg(not(feature = "native-v6-storage"))]
+             let native_pki_maintenance = false;
+             #[cfg(feature = "native-v6-storage")]
+@@ -4430,6 +4430,9 @@ impl Service {
+             && admitted.engines.native_local_pki_mounted(namespace, path);
+         #[cfg(not(feature = "native-v6-storage"))]
+         let native_pki_mounted = false;
++        #[cfg(feature = "native-v6-storage")]
++        let native_ssh_mounted = self.native_root.is_some()
++            && admitted.engines.native_local_ssh_mounted(namespace, path);
+         if !native_pki_mounted && let Some(response) = self.handle_pki_acme(&request, &mut admitted)
+         {
+             return response;
+@@ -4446,6 +4449,10 @@ impl Service {
+             None
+         };
+         if help_projection.as_ref().is_some_and(|help| help.anonymous) {
++            #[cfg(feature = "native-v6-storage")]
++            if native_ssh_mounted {
++                return self.dispatch_native_ssh_request(admitted, None, &request);
++            }
+             #[cfg(feature = "native-v6-storage")]
+             if native_pki_mounted {
+                 return self.dispatch_native_pki_request(
+@@ -4502,6 +4509,13 @@ impl Service {
+                 .engines
+                 .is_public_ssh_key_read(namespace, method, path)
+         {
++            #[cfg(feature = "native-v6-storage")]
++            if self.native_root.is_some() {
++                if !native_ssh_mounted {
++                    return Response::error(501, "native SSH public key requires its root owner");
++                }
++                return self.dispatch_native_ssh_request(admitted, None, &request);
++            }
+             return Self::native_ssh_public_response(&admitted, namespace, method, path, body)
+                 .unwrap_or_else(|| Response::error(503, "SSH public key owner changed"));
+         }
+@@ -4857,6 +4871,13 @@ impl Service {
+                     .engines
+                     .native_totp_registry_route(method, path, request.body));
+         #[cfg(feature = "native-v6-storage")]
++        let native_local_ssh = self.native_root.is_some()
++            && namespace.is_empty()
++            && (admitted.engines.native_local_ssh_route(namespace, path)
++                || admitted
++                    .engines
++                    .native_ssh_registry_route(method, path, request.body));
++        #[cfg(feature = "native-v6-storage")]
+         let native_local_pki = self.native_root.is_some()
+             && namespace.is_empty()
+             && (admitted.engines.native_local_pki_route(namespace, path)
+@@ -4889,6 +4910,7 @@ impl Service {
+             && !native_local_transit
+             && !native_local_totp
+             && !native_local_pki
++            && !native_local_ssh
+             && !native_metadata_read;
+         #[cfg(feature = "native-v6-storage")]
+         let native_capabilities = self.native_root.is_some()
+@@ -4999,6 +5021,7 @@ impl Service {
+                 && !native_local_transit
+                 && !native_local_totp
+                 && !native_local_pki
++                && !native_local_ssh
+                 && !native_kv2_mount
+                 && !native_kv1_mount
+                 && !native_remount
+@@ -5150,6 +5173,10 @@ impl Service {
+             return self.dispatch_native_totp_request(admitted, principal.take(), &request);
+         }
+         #[cfg(feature = "native-v6-storage")]
++        if native_local_ssh {
++            return self.dispatch_native_ssh_request(admitted, principal.take(), &request);
++        }
++        #[cfg(feature = "native-v6-storage")]
+         if native_local_pki {
+             return self.dispatch_native_pki_request(
+                 admitted,
+diff --git a/crates/heptabao-server/src/service_lifecycle.rs b/crates/heptabao-server/src/service_lifecycle.rs
+index 143c50b3..90d73de0 100644
+--- a/crates/heptabao-server/src/service_lifecycle.rs
++++ b/crates/heptabao-server/src/service_lifecycle.rs
+@@ -70,7 +70,7 @@ impl Service {
+         let now = time.seconds();
+         #[cfg(feature = "native-v6-storage")]
+         if self.native_root.is_some() {
+-            if current.engines.has_native_local_pki() {
++            if current.engines.has_native_local_lease_owner() {
+                 return self.maintain_native_pki_lifetimes(now, clock);
+             }
+             return self.maintain_native_transit_lifetimes(now, clock);
+diff --git a/crates/heptabao-server/src/service_native_auth.rs b/crates/heptabao-server/src/service_native_auth.rs
+index 52679439..855e353d 100644
+--- a/crates/heptabao-server/src/service_native_auth.rs
++++ b/crates/heptabao-server/src/service_native_auth.rs
+@@ -11,6 +11,8 @@ pub(super) mod batch_issuer_test_observer;
+ mod native_batch;
+ #[path = "service_native_pki.rs"]
+ mod native_pki;
++#[path = "service_native_ssh.rs"]
++mod native_ssh;
+ #[path = "service_native_identity.rs"]
+ mod root_identity;
+ pub(super) use native_pki::NativePkiIdleCheckpoint;
+@@ -109,6 +111,7 @@ enum NativeLocalOwner {
+     Userpass(Box<crate::auth::NativeUserpassOwner>),
+     Wrapping(Box<crate::auth::NativeWrappingOwner>),
+     Pki(Box<native_pki::NativePkiOwner>),
++    Ssh(Box<native_ssh::NativeSshOwner>),
+     Mount(Box<crate::engines::NativeKv2MountOwner>),
+     Transit(Box<crate::engines::NativeTransitOwner>),
+     Kv1(Box<crate::engines::NativeKv1Owner>),
+@@ -142,6 +145,8 @@ pub(super) struct NativeAuthDelivery {
+     batch_issuer_owner: Option<crate::auth::NativeBatchIssuerOwner>,
+     batch_issuer_reply: Option<[u8; 32]>,
+     pki_owner: Option<Box<native_pki::NativePkiOwner>>,
++    // Root SSH has its own exact mount/OTP/CA and typed public-response owner.
++    ssh_owner: Option<Box<native_ssh::NativeSshOwner>>,
+     // Independent engine/graph constraint for the root KV2 registry route.
+     // Authentication routes retain their original identity-only constraint.
+     mount_owner: Option<crate::engines::NativeKv2MountOwner>,
+@@ -273,6 +278,10 @@ impl NativeAuthDelivery {
+                 .pki_owner
+                 .as_ref()
+                 .is_some_and(|owner| owner.read_only())
++            || self
++                .ssh_owner
++                .as_ref()
++                .is_some_and(|owner| owner.read_only())
+             || self
+                 .wrapping_owner
+                 .as_ref()
+@@ -295,6 +304,8 @@ impl NativeAuthDelivery {
+             owner.authorization_method()
+         } else if let Some(owner) = self.pki_owner.as_ref() {
+             owner.authorization_method()
++        } else if let Some(owner) = self.ssh_owner.as_ref() {
++            owner.authorization_method()
+         } else if let Some(owner) = self.identity_owner.as_ref() {
+             owner.authorization_method()
+         } else if let Some(owner) = self.totp_owner.as_ref() {
+@@ -315,6 +326,7 @@ impl NativeAuthDelivery {
+             || self.userpass_owner.is_some()
+             || self.batch_issuer_owner.is_some()
+             || self.pki_owner.is_some()
++            || self.ssh_owner.is_some()
+             || self.transit_owner.is_some()
+             || self.kv1_owner.is_some()
+             || self.totp_owner.is_some()
+@@ -334,6 +346,7 @@ impl NativeAuthDelivery {
+             || self.userpass_owner.is_some()
+             || self.batch_issuer_owner.is_some()
+             || self.pki_owner.is_some()
++            || self.ssh_owner.is_some()
+             || self.ha.is_some()
+             || self.wrapping_owner.is_some()
+             || self.response_wrapping_owner.is_some()
+@@ -361,6 +374,9 @@ impl NativeAuthDelivery {
+         if let Some(owner) = self.pki_owner.as_ref() {
+             owner.authorize(auth, self.principal.as_ref(), time)?;
+         }
++        if let Some(owner) = self.ssh_owner.as_ref() {
++            owner.authorize(auth, self.principal.as_ref(), time)?;
++        }
+         if let Some(owner) = self.userpass_owner.as_ref() {
+             owner
+                 .check_source(auth)
+@@ -712,6 +728,12 @@ impl NativeAuthDelivery {
+                 service.native_root.as_ref().ok_or_else(rejected)?,
+             )?;
+         }
++        if let Some(owner) = self.ssh_owner.as_ref() {
++            owner.check_installed(
++                service.state.as_ref().ok_or_else(rejected)?,
++                service.native_root.as_ref().ok_or_else(rejected)?,
++            )?;
++        }
+         match (&self.ha, &service.ha) {
+             (None, None) => {}
+             #[cfg(feature = "native-v6-ha")]
+@@ -783,6 +805,7 @@ impl NativeAuthDelivery {
+             || self.userpass_owner.is_some()
+             || self.batch_issuer_owner.is_some()
+             || self.pki_owner.is_some()
++            || self.ssh_owner.is_some()
+             || self.mount_owner.is_some()
+             || self.wrapping_owner.is_some()
+             || self.response_wrapping_owner.is_some()
+@@ -952,6 +975,13 @@ impl NativeAuthDelivery {
+                 terminal_write,
+             )?;
+         }
++        if let Some(owner) = self.ssh_owner.as_mut() {
++            owner.bind_terminal(
++                service.state.as_ref().ok_or_else(rejected)?,
++                service.native_root.as_ref().ok_or_else(rejected)?,
++                terminal_write,
++            )?;
++        }
+         if let Some(owner) = self.identity_owner.as_mut() {
+             owner.bind_terminal(
+                 service.state.as_ref().ok_or_else(rejected)?,
+@@ -1010,6 +1040,9 @@ impl NativeAuthDelivery {
+         if let Some(owner) = self.pki_owner.as_ref() {
+             let time = self.time(&state.auth)?;
+             owner.authorize_current(state, self.principal.as_mut(), time)
++        } else if let Some(owner) = self.ssh_owner.as_ref() {
++            let time = self.time(&state.auth)?;
++            owner.authorize_current(state, self.principal.as_mut(), time)
+         } else if let Some(owner) = self.identity_owner.as_ref() {
+             let time = self.time(&state.auth)?;
+             owner.authorize_current(state, self.principal.as_mut().ok_or_else(rejected)?, time)
+@@ -1029,6 +1062,9 @@ impl NativeAuthDelivery {
+         if let Some(owner) = self.pki_owner.as_ref() {
+             owner.authorize(auth, self.principal.as_ref(), time)?;
+         }
++        if let Some(owner) = self.ssh_owner.as_ref() {
++            owner.authorize(auth, self.principal.as_ref(), time)?;
++        }
+         if let Some(owner) = self.userpass_owner.as_ref() {
+             owner
+                 .authorize_reply(auth, self.principal.as_ref(), status, time)
+@@ -1056,6 +1092,7 @@ impl NativeAuthDelivery {
+         // removed its own actor. It carries no credential or private payload.
+         if (status != 204
+             || self.pki_owner.is_some()
++            || self.ssh_owner.is_some()
+             || self
+                 .userpass_owner
+                 .as_ref()
+@@ -1694,9 +1731,10 @@ impl Service {
+             missing_route_owner,
+             pki_owner,
+             capabilities_owner,
++            ssh_owner,
+         ) = match owner {
+             NativeLocalOwner::Auth => (
+-                None, None, None, None, None, None, None, None, None, None, None, None,
++                None, None, None, None, None, None, None, None, None, None, None, None, None,
+             ),
+             NativeLocalOwner::Userpass(owner) => (
+                 None,
+@@ -1711,6 +1749,7 @@ impl Service {
+                 None,
+                 None,
+                 None,
++                None,
+             ),
+             NativeLocalOwner::Mount(owner) => (
+                 Some(*owner),
+@@ -1725,6 +1764,7 @@ impl Service {
+                 None,
+                 None,
+                 None,
++                None,
+             ),
+             NativeLocalOwner::Transit(owner) => (
+                 None,
+@@ -1739,6 +1779,7 @@ impl Service {
+                 None,
+                 None,
+                 None,
++                None,
+             ),
+             NativeLocalOwner::Kv1(owner) => (
+                 None,
+@@ -1753,6 +1794,7 @@ impl Service {
+                 None,
+                 None,
+                 None,
++                None,
+             ),
+             NativeLocalOwner::EmptyNamespace(owner) => (
+                 None,
+@@ -1767,6 +1809,7 @@ impl Service {
+                 None,
+                 None,
+                 None,
++                None,
+             ),
+             NativeLocalOwner::Identity(owner) => (
+                 None,
+@@ -1781,6 +1824,7 @@ impl Service {
+                 None,
+                 None,
+                 None,
++                None,
+             ),
+             NativeLocalOwner::RaftObservation(owner) => (
+                 None,
+@@ -1795,6 +1839,7 @@ impl Service {
+                 None,
+                 None,
+                 None,
++                None,
+             ),
+             NativeLocalOwner::Totp(owner) => (
+                 None,
+@@ -1809,6 +1854,7 @@ impl Service {
+                 None,
+                 None,
+                 None,
++                None,
+             ),
+             NativeLocalOwner::Wrapping(owner) => (
+                 None,
+@@ -1823,6 +1869,7 @@ impl Service {
+                 None,
+                 None,
+                 None,
++                None,
+             ),
+             NativeLocalOwner::MissingRoute(owner) => (
+                 None,
+@@ -1837,6 +1884,7 @@ impl Service {
+                 Some(owner),
+                 None,
+                 None,
++                None,
+             ),
+             NativeLocalOwner::Pki(owner) => (
+                 None,
+@@ -1851,6 +1899,7 @@ impl Service {
+                 None,
+                 Some(owner),
+                 None,
++                None,
+             ),
+             NativeLocalOwner::Capabilities(owner) => (
+                 None,
+@@ -1865,6 +1914,22 @@ impl Service {
+                 None,
+                 None,
+                 Some(owner),
++                None,
++            ),
++            NativeLocalOwner::Ssh(owner) => (
++                None,
++                None,
++                None,
++                None,
++                None,
++                None,
++                None,
++                None,
++                None,
++                None,
++                None,
++                None,
++                Some(owner),
+             ),
+         };
+         if self.pending_native_auth_delivery.is_some()
+@@ -1876,6 +1941,7 @@ impl Service {
+                 && (userpass_owner.is_some()
+                     || wrapping_owner.is_some()
+                     || pki_owner.is_some()
++                    || ssh_owner.is_some()
+                     || transit_owner.is_some()
+                     || totp_owner.is_some()
+                     || capabilities_owner.is_some()
+@@ -1936,6 +2002,7 @@ impl Service {
+             && namespace_owner.is_none()
+             && wrapping_owner.is_none()
+             && !pki_owner.as_ref().is_some_and(|owner| owner.public())
++            && !ssh_owner.as_ref().is_some_and(|owner| owner.public())
+         {
+             return Response::error(403, "missing client token");
+         }
+@@ -2017,6 +2084,7 @@ impl Service {
+             batch_issuer_owner,
+             batch_issuer_reply: None,
+             pki_owner,
++            ssh_owner,
+             mount_owner,
+             transit_owner,
+             transit_reply: None,
+@@ -2089,6 +2157,11 @@ impl Service {
+         {
+             return error;
+         }
++        if let Some(owner) = delivery.ssh_owner.as_ref()
++            && let Err(error) = owner.check_source(&source.engines)
++        {
++            return error;
++        }
+         if let Some(owner) = delivery.identity_owner.as_ref()
+             && let Err(error) = owner.check_source(&source.engines)
+         {
+@@ -2115,6 +2188,7 @@ impl Service {
+             || delivery.userpass_owner.is_some()
+             || delivery.batch_issuer_owner.is_some()
+             || delivery.pki_owner.is_some()
++            || delivery.ssh_owner.is_some()
+             || delivery.transit_owner.is_some()
+             || delivery.kv1_owner.is_some()
+             || delivery.totp_owner.is_some()
+@@ -2160,6 +2234,8 @@ impl Service {
+                 request,
+                 pki_role_fields,
+             )
++        } else if let Some(owner) = delivery.ssh_owner.as_mut() {
++            owner.execute(&mut candidate, delivery.principal.as_ref(), request)
+         } else if let Some(owner) = delivery.wrapping_owner.as_mut() {
+             match owner.execute(&mut candidate.auth, delivery.principal.as_ref()) {
+                 Ok(response) => response,
+@@ -2655,6 +2731,8 @@ impl Service {
+             }
+             if let Some(owner) = delivery.pki_owner.as_ref() {
+                 owner.admit_candidate(&candidate)?;
++            } else if let Some(owner) = delivery.ssh_owner.as_ref() {
++                owner.admit_candidate(&candidate)?;
+             } else if let Some(owner) = delivery.mount_owner.as_mut() {
+                 owner
+                     .admit_candidate(&candidate.engines, response.status, &|| {
+@@ -2732,6 +2810,12 @@ impl Service {
+                         .as_ref()
+                         .and_then(|owner| owner.disabled_mount())
+                 })
++                .or_else(|| {
++                    delivery
++                        .ssh_owner
++                        .as_ref()
++                        .and_then(|owner| owner.disabled_mount())
++                })
+                 .map(|(namespace, mount)| (namespace.to_owned(), mount.to_owned()));
+             if let Some((namespace, mount)) = &disabled_mount {
+                 candidate
+@@ -2781,6 +2865,16 @@ impl Service {
+                     )?,
+                     None => owner.admit_root(prior, &plan.candidate, &plan.root)?,
+                 }
++            } else if let Some(owner) = delivery.ssh_owner.as_mut() {
++                match quota_retirement.take() {
++                    Some(retirement) => owner.admit_root_with_quota_retirement(
++                        prior,
++                        &plan.candidate,
++                        &plan.root,
++                        retirement,
++                    )?,
++                    None => owner.admit_root(prior, &plan.candidate, &plan.root)?,
++                }
+             } else if let Some(owner) = delivery.namespace_owner.as_mut() {
+                 owner.admit_candidate(
+                     self.state.as_ref().ok_or_else(rejected)?,
+@@ -2867,7 +2961,9 @@ impl Service {
+             if plan.root.identity().map_err(|_| rejected())?
+                 != prior.identity().map_err(|_| rejected())?
+             {
+-                let purpose = if delivery.pki_owner.is_some() {
++                let purpose = if delivery.ssh_owner.is_some() {
++                    "ssh-local"
++                } else if delivery.pki_owner.is_some() {
+                     "pki-local"
+                 } else if delivery.userpass_owner.is_some() {
+                     "userpass"
+@@ -3077,6 +3173,7 @@ impl Service {
+         }
+         if response.status >= 300
+             && delivery.pki_owner.is_none()
++            && delivery.ssh_owner.is_none()
+             && delivery.userpass_owner.is_none()
+             && delivery.batch_issuer_owner.is_none()
+             && delivery.response_wrapping_owner.is_none()
+@@ -3092,6 +3189,10 @@ impl Service {
+             return response;
+         }
+         #[cfg(test)]
++        if delivery.ssh_owner.is_some() {
++            ssh_tests::after_actual_ssh_audit(self, &mut response);
++        }
++        #[cfg(test)]
+         if delivery.mount_owner.is_some() {
+             mount_tests::after_actual_mount_audit(self);
+         }
+@@ -3141,6 +3242,9 @@ impl Service {
+             if let Some(owner) = delivery.pki_owner.as_ref() {
+                 owner.check_reply(&response)?;
+             }
++            if let Some(owner) = delivery.ssh_owner.as_ref() {
++                owner.check_reply(&response)?;
++            }
+             if let Some(owner) = delivery.identity_owner.as_ref() {
+                 owner.check_reply(&response)?;
+             }
+@@ -3333,3 +3437,7 @@ mod pki_tests;
+ #[cfg(test)]
+ #[path = "service_native_capabilities_tests.rs"]
+ pub(super) mod capabilities_tests;
++
++#[cfg(test)]
++#[path = "service_native_ssh_tests.rs"]
++mod ssh_tests;
+diff --git a/crates/heptabao-server/src/service_native_pki_ha_tests.rs b/crates/heptabao-server/src/service_native_pki_ha_tests.rs
+index a792a2bb..fa7a0c50 100644
+--- a/crates/heptabao-server/src/service_native_pki_ha_tests.rs
++++ b/crates/heptabao-server/src/service_native_pki_ha_tests.rs
+@@ -5,6 +5,11 @@ use crate::configuration::NativeStorageProfile;
+ use openssl::x509::{X509, X509Crl};
+ use std::ops::{Deref, DerefMut};
+ 
++// SSH reuses this exact configured normal three-voter/pinned-TLS pipeline.
++// Only the selected engine operations and their assertions differ.
++#[path = "service_native_ssh_ha_tests.rs"]
++mod ssh_tests;
++
+ struct PkiPipeline {
+     inner: Pipeline,
+     servers: Vec<crate::http::Config>,
+diff --git a/crates/heptabao-server/src/service_native_ssh.rs b/crates/heptabao-server/src/service_native_ssh.rs
+new file mode 100644
+index 00000000..3b03ce4d
+--- /dev/null
++++ b/crates/heptabao-server/src/service_native_ssh.rs
+@@ -0,0 +1,526 @@
++//! Root-local SSH requests retain their source, original clock, actual
++//! authenticated identity, one domain execution and exact published reply.
++//! NativeAuthDelivery owns the source proof, terminal observation and audit.
++//! Shared local lease maintenance remains independently admitted.
++use super::*;
++
++fn unavailable() -> Response {
++    Response::error(503, "native local SSH publication or delivery unavailable")
++}
++fn owner_digest<T: serde::Serialize>(owner: &T) -> Result<[u8; 32], Response> {
++    let bytes = owner_store::serialize_owner(owner).map_err(|_| unavailable())?;
++    Ok(crypto::digest(&bytes))
++}
++fn unchanged_state_owners(
++    source: &State,
++    candidate: &State,
++    allow_auth: bool,
++) -> Result<(), Response> {
++    if candidate.cluster_id != source.cluster_id
++        || candidate.replay_epoch != source.replay_epoch
++        || candidate.global_lossless_json_format != source.global_lossless_json_format
++        || candidate.namespace_protected.is_some()
++        || !candidate.namespace_leases.is_empty()
++        || owner_digest(&candidate.namespaces)? != owner_digest(&source.namespaces)?
++        || owner_digest(&candidate.database)? != owner_digest(&source.database)?
++        || owner_digest(&candidate.raft_admin)? != owner_digest(&source.raft_admin)?
++        || !allow_auth && owner_digest(&candidate.auth)? != owner_digest(&source.auth)?
++    {
++        return Err(unavailable());
++    }
++    Ok(())
++}
++
++pub(super) struct NativeSshOwner {
++    source: State,
++    method: String,
++    path: String,
++    body: Value,
++    public: bool,
++    public_key: bool,
++    verify: bool,
++    verified: bool,
++    executed: bool,
++    verify_target: Option<(crate::auth::LeaseOwner, String, u64)>,
++    public_reply: Option<crate::auth::NativeSshPublicReplyOwner>,
++    help: bool,
++    capability: &'static str,
++    sudo: bool,
++    issuer: Option<crate::auth::ResolvedLeaseOwner>,
++    issued_expires: Option<u64>,
++    deadline: OriginalDeadline,
++    engine: crate::engines::NativeSshEngineOwner,
++    reply: Option<[u8; 32]>,
++}
++impl Drop for NativeSshOwner {
++    fn drop(&mut self) {
++        erase_json(&mut self.body);
++    }
++}
++impl NativeSshOwner {
++    pub(super) fn prepare(
++        source: &State,
++        root: &RecordStateRootV6,
++        actor: Option<&Principal>,
++        request: &RequestView<'_>,
++    ) -> Result<Self, Response> {
++        if !request.namespace.is_empty() || request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) {
++            return Err(Response::error(
++                501,
++                "native local SSH requires an unwrapped root request",
++            ));
++        }
++        let mounted = source.engines.native_local_ssh_route("", request.path);
++        let registry =
++            source
++                .engines
++                .native_ssh_registry_route(request.method, request.path, request.body);
++        if !mounted && !registry {
++            return Err(unavailable());
++        }
++        let help = mounted && request.method == "HELP";
++        let public_key = source
++            .engines
++            .is_public_ssh_key_read("", request.method, request.path);
++        let verify = source
++            .engines
++            .is_ssh_verification("", request.method, request.path);
++        let public = public_key
++            || verify
++            || help
++                && source
++                    .engines
++                    .help_projection("", request.path)
++                    .map_err(Response::from_engine_error)?
++                    .is_some_and(|help| help.anonymous);
++        if !public && actor.is_none() {
++            return Err(Response::error(403, "missing client token"));
++        }
++        let method = kv_authorization_method(request.method, request.body);
++        let lease = source.engines.is_ssh_service_route("", request.path);
++        let capability = if lease {
++            if method == "LIST" { "list" } else { "update" }
++        } else if registry {
++            match method {
++                "GET" | "HEAD" => "read",
++                "LIST" => "list",
++                "DELETE" => "delete",
++                _ => "update",
++            }
++        } else {
++            source
++                .engines
++                .required_capability("", method, request.path)
++                .ok_or_else(unavailable)?
++        };
++        let sudo = registry && !matches!(request.method, "GET" | "LIST" | "HEAD");
++        let deadline = OriginalDeadline::capture().map_err(|_| unavailable())?;
++        let time = request.token_time()?;
++        let issuer = if lease && !verify {
++            Some(
++                source
++                    .auth
++                    .typed_lease_issuer_observed(actor.ok_or_else(unavailable)?, "", time)
++                    .map_err(|e| Response::error(e.status, &e.message))?,
++            )
++        } else {
++            None
++        };
++        let owner = Self {
++            source: source.clone(),
++            method: request.method.to_owned(),
++            path: request.path.to_owned(),
++            body: request.body.clone(),
++            public,
++            public_key,
++            verify,
++            verified: false,
++            executed: false,
++            verify_target: if verify {
++                request
++                    .body
++                    .get("otp")
++                    .and_then(Value::as_str)
++                    .and_then(|raw| {
++                        source
++                            .engines
++                            .native_ssh_otp_lease(request.path, raw, false)
++                    })
++            } else {
++                None
++            },
++            public_reply: None,
++            help,
++            capability,
++            sudo,
++            issuer,
++            issued_expires: None,
++            deadline,
++            engine: source
++                .engines
++                .capture_native_ssh_engine_owner(
++                    request.method,
++                    request.path,
++                    request.body,
++                    public,
++                    root,
++                    &|| deadline.check().is_ok(),
++                )
++                .map_err(Response::from_engine_error)?,
++            reply: None,
++        };
++        owner.authorize(&source.auth, actor, time)?;
++        Ok(owner)
++    }
++    pub(super) fn public(&self) -> bool {
++        self.public
++    }
++    pub(super) fn read_only(&self) -> bool {
++        self.engine.read_only()
++    }
++    pub(super) fn authorization_method(&self) -> &str {
++        kv_authorization_method(&self.method, &self.body)
++    }
++    pub(super) fn authorize(
++        &self,
++        auth: &AuthState,
++        actor: Option<&Principal>,
++        time: AuthorityTime,
++    ) -> Result<(), Response> {
++        self.deadline.check().map_err(|_| unavailable())?;
++        if self.verified {
++            let (owner, _, expires) = self.verify_target.as_ref().ok_or_else(unavailable)?;
++            if time.seconds() >= *expires
++                || auth.resolve_lease_owner_observed(owner, "", time).is_none()
++            {
++                return Err(Response::error(
++                    403,
++                    "original SSH OTP issuer or lease is no longer live",
++                ));
++            }
++        }
++        if self.public {
++            return Ok(());
++        }
++        let actor = actor.ok_or_else(unavailable)?;
++        auth.authorize_request_parameters_observed(
++            actor,
++            "",
++            self.authorization_method(),
++            &self.path,
++            &self.body,
++            time,
++        )
++        .and_then(|()| {
++            auth.authorize_request_observed(actor, "", &self.path, self.capability, time)
++        })
++        .and_then(|()| {
++            if self.sudo {
++                auth.authorize_request_observed(actor, "", &self.path, "sudo", time)
++            } else {
++                Ok(())
++            }
++        })
++        .map_err(|e| Response::error(e.status, &e.message))?;
++        if let Some(original) = self.issuer.as_ref() {
++            let current = auth
++                .typed_lease_issuer_observed(actor, "", time)
++                .map_err(|e| Response::error(e.status, &e.message))?;
++            if !original.owner.same_credential(&current.owner)
++                || original
++                    .precise_expires_at
++                    .is_some_and(|end| time.exact().is_none_or(|at| at > end))
++                || original.precise_expires_at.is_none()
++                    && original.expires_at.is_some_and(|end| time.seconds() >= end)
++                || self.issued_expires.is_some_and(|end| time.seconds() >= end)
++            {
++                return Err(Response::error(
++                    403,
++                    "original SSH issuer or OTP is no longer live",
++                ));
++            }
++        }
++        self.deadline.check().map_err(|_| unavailable())
++    }
++    pub(super) fn authorize_current(
++        &self,
++        state: &State,
++        actor: Option<&mut Principal>,
++        time: AuthorityTime,
++    ) -> Result<(), Response> {
++        if self.public {
++            self.authorize(&state.auth, None, time)?;
++            if self.verified {
++                let (owner, _, _) = self.verify_target.as_ref().ok_or_else(unavailable)?;
++                let current = state
++                    .auth
++                    .resolve_lease_owner_observed(owner, "", time)
++                    .ok_or_else(unavailable)?;
++                if let Some(id) = current.entity_id.as_deref() {
++                    let identity = state
++                        .engines
++                        .identity_projection("", id)
++                        .map_err(Response::from_engine_error)?;
++                    if identity.disabled {
++                        return Err(Response::error(
++                            403,
++                            "original SSH OTP identity is disabled",
++                        ));
++                    }
++                }
++            }
++            return Ok(());
++        }
++        let actor = actor.ok_or_else(unavailable)?;
++        let result = Service::bind_identity_principal(state, actor, "")
++            .and_then(|()| self.authorize(&state.auth, Some(actor), time));
++        Service::bind_identity_principal(&self.source, actor, "")?;
++        result
++    }
++    pub(super) fn check_source(&self, engines: &EngineState) -> Result<(), Response> {
++        self.engine
++            .check_source(engines, &|| self.deadline.check().is_ok())
++            .map_err(Response::from_engine_error)
++    }
++    pub(super) fn execute(
++        &mut self,
++        candidate: &mut State,
++        actor: Option<&Principal>,
++        request: &RequestView<'_>,
++    ) -> Response {
++        let result = (|| -> Result<Response, Response> {
++            if self.executed || self.reply.is_some() {
++                return Err(unavailable());
++            }
++            self.check_source(&candidate.engines)?;
++            unchanged_state_owners(&self.source, candidate, false)?;
++            if request.method != self.method
++                || request.path != self.path
++                || request.body != &self.body
++            {
++                return Err(unavailable());
++            }
++            self.authorize(&candidate.auth, actor, request.token_time()?)?;
++            self.executed = true;
++            let mut consumption = None;
++            let mut response = if self.help {
++                if crate::http::help::request(&self.method, &self.path, &self.body).is_none() {
++                    return Err(unavailable());
++                }
++                let help = candidate
++                    .engines
++                    .help_projection("", &self.path)
++                    .map_err(Response::from_engine_error)?
++                    .filter(|help| help.anonymous)
++                    .ok_or_else(unavailable)?;
++                Response {
++                    unwrapped_json: None,
++                    response_headers: Default::default(),
++                    consistency_index: None,
++                    status: 200,
++                    body: help.body,
++                }
++            } else {
++                // Preserve the actual principal, identity-template inputs and
++                // original domain operation. No response or signature is predicted.
++                Service::dispatch_native_authorized_subrequest(
++                    candidate,
++                    actor,
++                    "",
++                    &self.method,
++                    &self.path,
++                    &self.body,
++                    None,
++                    None,
++                    request.now,
++                    request.token_clock,
++                    request.client_certificates,
++                    request.origin_peer,
++                    &mut consumption,
++                )
++            };
++            let checked = (|| -> Result<(), Response> {
++                if consumption.is_some() {
++                    return Err(unavailable());
++                }
++                unchanged_state_owners(&self.source, candidate, false)?;
++                self.engine
++                    .bind_executed(&candidate.engines, &|| self.deadline.check().is_ok())
++                    .map_err(Response::from_engine_error)?;
++                if response.status == 200 && self.issuer.is_some() {
++                    let raw = response.body["data"]["key"]
++                        .as_str()
++                        .ok_or_else(unavailable)?;
++                    let (owner, id, expires) = candidate
++                        .engines
++                        .native_ssh_otp_lease(&self.path, raw, false)
++                        .ok_or_else(unavailable)?;
++                    if response.body["lease_id"].as_str() != Some(id.as_str())
++                        || !owner
++                            .same_credential(&self.issuer.as_ref().ok_or_else(unavailable)?.owner)
++                    {
++                        return Err(unavailable());
++                    }
++                    self.issued_expires = Some(expires);
++                    self.authorize(&candidate.auth, actor, request.token_time()?)?;
++                }
++                if response.status == 200 && self.verify {
++                    let raw = self.body["otp"].as_str().ok_or_else(unavailable)?;
++                    let actual = candidate
++                        .engines
++                        .native_ssh_otp_lease(&self.path, raw, true)
++                        .ok_or_else(unavailable)?;
++                    let expected = self.verify_target.as_ref().ok_or_else(unavailable)?;
++                    if !actual.0.same_credential(&expected.0)
++                        || actual.1 != expected.1
++                        || actual.2 != expected.2
++                    {
++                        return Err(unavailable());
++                    }
++                    self.verified = true;
++                    self.authorize(&candidate.auth, None, request.token_time()?)?;
++                }
++                if response.status == 200 && self.public_key {
++                    let raw = response.unwrapped_json.as_mut().ok_or_else(unavailable)?;
++                    self.public_reply = Some(
++                        raw.bind_native_ssh_public_reply(&response.body, self.deadline)
++                            .map_err(|error| Response::error(error.status, &error.message))?,
++                    );
++                } else if response.unwrapped_json.is_some() {
++                    return Err(unavailable());
++                }
++                self.reply = Some(transit_reply_digest(
++                    response.status,
++                    &response.body,
++                    self.deadline,
++                )?);
++                Ok(())
++            })();
++            if let Err(error) = checked {
++                erase_json(&mut response.body);
++                return Err(error);
++            }
++            Ok(response)
++        })();
++        result.unwrap_or_else(|error| error)
++    }
++    pub(super) fn admit_candidate(&self, candidate: &State) -> Result<(), Response> {
++        if self.reply.is_none() {
++            return Err(unavailable());
++        }
++        unchanged_state_owners(&self.source, candidate, false)?;
++        self.engine
++            .admit_candidate(&candidate.engines, &|| self.deadline.check().is_ok())
++            .map_err(Response::from_engine_error)
++    }
++    pub(super) fn admit_root(
++        &mut self,
++        prior: &RecordStateRootV6,
++        candidate: &State,
++        root: &RecordStateRootV6,
++    ) -> Result<(), Response> {
++        self.admit_candidate(candidate)?;
++        self.engine
++            .admit_root(prior, root, &|| self.deadline.check().is_ok())
++            .map_err(Response::from_engine_error)
++    }
++    pub(super) fn disabled_mount(&self) -> Option<(&str, &str)> {
++        self.engine.disabled_mount()
++    }
++
++    pub(super) fn admit_root_with_quota_retirement(
++        &mut self,
++        prior: &RecordStateRootV6,
++        candidate: &State,
++        root: &RecordStateRootV6,
++        retirement: crate::auth::rate_limit_quotas::MountRetirement,
++    ) -> Result<(), Response> {
++        if self.reply.is_none() || self.engine.disabled_mount().is_none() {
++            return Err(unavailable());
++        }
++        retirement
++            .check_auth_candidates(&self.source.auth, &candidate.auth, &|| {
++                self.deadline.check().is_ok()
++            })
++            .map_err(|error| Response::error(error.status, &error.message))?;
++        unchanged_state_owners(&self.source, candidate, true)?;
++        self.engine
++            .admit_candidate(&candidate.engines, &|| self.deadline.check().is_ok())
++            .map_err(Response::from_engine_error)?;
++        self.engine
++            .admit_root_with_quota_retirement(prior, root, retirement, &|| {
++                self.deadline.check().is_ok()
++            })
++            .map_err(Response::from_engine_error)
++    }
++
++    pub(super) fn check_installed(
++        &self,
++        state: &State,
++        root: &RecordStateRootV6,
++    ) -> Result<(), Response> {
++        self.engine
++            .check_installed(&state.engines, root, &|| self.deadline.check().is_ok())
++            .map_err(Response::from_engine_error)
++    }
++    pub(super) fn bind_terminal(
++        &mut self,
++        state: &State,
++        root: &RecordStateRootV6,
++        written: bool,
++    ) -> Result<(), Response> {
++        self.engine
++            .bind_terminal(&state.engines, root, written, &|| {
++                self.deadline.check().is_ok()
++            })
++            .map_err(Response::from_engine_error)
++    }
++    pub(super) fn check_reply(&self, response: &Response) -> Result<(), Response> {
++        if self.reply
++            != Some(transit_reply_digest(
++                response.status,
++                &response.body,
++                self.deadline,
++            )?)
++            || !response.response_headers.is_empty()
++        {
++            return Err(unavailable());
++        }
++        match (&self.public_reply, &response.unwrapped_json) {
++            (Some(owner), Some(raw)) if response.status == 200 && self.public_key => {
++                owner
++                    .check(raw, &response.body)
++                    .map_err(|error| Response::error(error.status, &error.message))?;
++            }
++            (None, None) => {}
++            _ => return Err(unavailable()),
++        }
++        Ok(())
++    }
++}
++
++impl Service {
++    pub(in crate::service) fn dispatch_native_ssh_request(
++        &mut self,
++        candidate: State,
++        principal: Option<Principal>,
++        request: &RequestView<'_>,
++    ) -> Response {
++        let owner = match (self.state.as_ref(), self.native_root.as_ref()) {
++            (Some(source), Some(root)) => {
++                NativeSshOwner::prepare(source, root, principal.as_ref(), request)
++            }
++            _ => Err(unavailable()),
++        };
++        match owner {
++            Ok(owner) => self.dispatch_native_owner_request(
++                candidate,
++                principal,
++                request,
++                None,
++                NativeLocalOwner::Ssh(Box::new(owner)),
++            ),
++            Err(error) => error,
++        }
++    }
++}
+diff --git a/crates/heptabao-server/src/service_native_ssh_archive_tests.rs b/crates/heptabao-server/src/service_native_ssh_archive_tests.rs
+new file mode 100644
+index 00000000..fca8c213
+--- /dev/null
++++ b/crates/heptabao-server/src/service_native_ssh_archive_tests.rs
+@@ -0,0 +1,224 @@
++//! Actual public archive download and ordinary restore; no fabricated metadata,
++//! plan, lease, identity, or clock receipt. The retained snapshot already holds
++//! the consumed OTP marker; consumption before the snapshot is the tested scope.
++use super::*;
++use crate::service::snapshot_transfer::NativeSnapshotAdmission;
++use std::io::{self, Cursor, Read};
++use std::time::{SystemTime, UNIX_EPOCH};
++
++fn pending(f: &mut Fixture, method: &str, deadline: Instant) -> TestResult<PendingExternalRequest> {
++    match f.service.begin_native_snapshot_before(
++        ServiceRequest::new(method, "sys/storage/raft/snapshot", "", &f.admin, json!({})),
++        deadline,
++    ) {
++        NativeSnapshotAdmission::Execute(RequestExecution::External(pending)) => Ok(*pending),
++        NativeSnapshotAdmission::Execute(RequestExecution::Complete(response)) => {
++            Err(format!("actual SSH archive admission status {}", response.status).into())
++        }
++        NativeSnapshotAdmission::Redirect(_) => Err("File snapshot unexpectedly redirected".into()),
++    }
++}
++fn download(f: &mut Fixture) -> TestResult<Zeroizing<Vec<u8>>> {
++    let until = Instant::now() + Duration::from_secs(15);
++    let _scope = crate::request_deadline::RequestDeadlineScope::enter(until);
++    let mut request = pending(f, "GET", until)?;
++    let (result, file) = request.execute_snapshot_transfer(&mut io::empty());
++    status(&f.service.finish_external_request(request, result), 200);
++    let mut file = file.ok_or("actual SSH archive descriptor")?;
++    file.rewind_checked()?;
++    let mut bytes = Zeroizing::new(Vec::new());
++    Read::by_ref(&mut file)
++        .take(crate::snapshot_file::MAX_NATIVE_ARCHIVE + 1)
++        .read_to_end(&mut bytes)?;
++    assert!(
++        bytes.starts_with(&[0x1f, 0x8b])
++            && bytes.len() as u64 <= crate::snapshot_file::MAX_NATIVE_ARCHIVE
++    );
++    Ok(bytes)
++}
++fn restore(f: &mut Fixture, archive: &[u8]) -> TestResult {
++    let until = Instant::now() + Duration::from_secs(15);
++    let _scope = crate::request_deadline::RequestDeadlineScope::enter(until);
++    let mut request = pending(f, "POST", until)?;
++    let (result, file) = request.execute_snapshot_transfer(&mut Cursor::new(archive));
++    assert!(file.is_none());
++    status(&f.service.finish_external_request(request, result), 200);
++    assert!(
++        fs::read_dir(f.service.data_dir.join(".snapshot-transfer"))?
++            .next()
++            .is_none()
++    );
++    assert!(f.service.native_root.is_some() && f.service.record_root.is_none());
++    assert!(f.service.pending_native_auth_delivery.is_none());
++    Ok(())
++}
++fn batch(f: &mut Fixture) -> TestResult<Zeroizing<String>> {
++    for (path, body) in [
++        ("sys/auth/up", json!({"type":"userpass"})),
++        (
++            "sys/policies/acl/archive-ssh",
++            json!({"policy":"path \"ssh/creds/test\" { capabilities=[\"update\"] }"}),
++        ),
++        (
++            "auth/up/users/batch",
++            json!({"password":"synthetic-ssh-archive-batch","policies":["archive-ssh"],
++            "token_type":"batch","token_ttl":120,"token_max_ttl":600,"token_num_uses":0}),
++        ),
++    ] {
++        status(&f.admin("POST", path, body)?, 204);
++    }
++    let mut response = f.actor(
++        "",
++        "POST",
++        "auth/up/login/batch",
++        json!({"password":"synthetic-ssh-archive-batch"}),
++    )?;
++    status(&response, 200);
++    assert_eq!(response.body["auth"]["token_type"], "batch");
++    secret(&mut response, "/auth/client_token")
++}
++fn sentinel(f: &mut Fixture, version: u64, value: &str) -> TestResult {
++    let response = f.admin("GET", "kept/data/sentinel", json!({}))?;
++    status(&response, 200);
++    assert_eq!(response.body["data"]["metadata"]["version"], version);
++    assert_eq!(response.body["data"]["data"], json!({"value":value}));
++    Ok(())
++}
++
++#[test]
++fn native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor()
++-> TestResult {
++    let mut f = Fixture::initialized()?;
++    // Select the wall-clock epoch before creating any finite actual credential.
++    // Each public request still owns its original RequestClock and deadline.
++    f.now = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
++    f.activate()?;
++    f.install()?;
++    let ca = install_ca(&mut f)?;
++    status(
++        &f.admin(
++            "POST",
++            "sys/mounts/kept",
++            json!({"type":"kv","options":{"version":"2"}}),
++        )?,
++        204,
++    );
++    status(
++        &f.admin(
++            "POST",
++            "kept/data/sentinel",
++            json!({"options":{"cas":0},"data":{"value":"before-archive"}}),
++        )?,
++        200,
++    );
++    let admin = f.admin.clone();
++    let (consumed, _) = f.issue(&admin)?;
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":consumed.as_str()}))?,
++        200,
++    );
++    let (live, _) = f.issue(&admin)?;
++    let actor = batch(&mut f)?;
++    let (expires, lease) = f.issue(&actor)?;
++    let lookup = f.admin("POST", "sys/leases/lookup", json!({"lease_id":lease}))?;
++    status(&lookup, 200);
++    let until = chrono::DateTime::parse_from_rfc3339(
++        lookup.body["data"]["expire_time"]
++            .as_str()
++            .ok_or("real issuer expiry")?,
++    )?
++    .timestamp();
++    let until = u64::try_from(until)?;
++    let archived = f.service.native_root.clone().ok_or("actual archive root")?;
++    let archive = download(&mut f)?;
++
++    status(&f.admin("POST", "ssh/roles/test", json!({"key_type":"otp","default_user":"backup","allowed_users":"backup","cidr_list":"127.0.0.0/8"}))?, 204);
++    status(
++        &f.admin(
++            "POST",
++            "kept/data/sentinel",
++            json!({"options":{"cas":1},"data":{"value":"after-archive"}}),
++        )?,
++        200,
++    );
++    sentinel(&mut f, 2, "after-archive")?;
++    assert!(f.idle(until + 1)?);
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":expires.as_str()}))?,
++        400,
++    );
++    let before_restore = f
++        .service
++        .native_root
++        .clone()
++        .ok_or("actual before-restore root")?;
++    restore(&mut f, &archive)?;
++    let restored = f
++        .service
++        .native_root
++        .as_ref()
++        .ok_or("actual restored root")?;
++    assert_eq!(restored.cluster_id, archived.cluster_id);
++    assert!(
++        restored.replay_epoch > before_restore.replay_epoch
++            && restored.replay_epoch > archived.replay_epoch
++    );
++    f.service
++        .state
++        .as_ref()
++        .ok_or("restored state")?
++        .validate_format()
++        .map_err(|_| "restored SSH format")?;
++    sentinel(&mut f, 1, "before-archive")?;
++    let role = f.admin("GET", "ssh/roles/test", json!({}))?;
++    status(&role, 200);
++    assert_eq!(role.body["data"]["default_user"], "deploy");
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":consumed.as_str()}))?,
++        400,
++    );
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":expires.as_str()}))?,
++        400,
++    );
++    let mut f = f.restart()?;
++    sentinel(&mut f, 1, "before-archive")?;
++    let _ingress = crate::auth::IngressReplyScope::listener(&[0xd4; 16]);
++    let public = f.actor("", "GET", "ssh/public_key", json!({}))?;
++    status(&public, 200);
++    let raw = public
++        .unwrapped_json
++        .as_ref()
++        .ok_or("actual restored raw key")?;
++    assert_eq!(
++        raw.raw_http_transport(&public.body)?,
++        Some((200, "text/plain"))
++    );
++    assert_eq!(
++        raw.raw_bytes(&public.body)?
++            .ok_or("actual restored public bytes")?,
++        ca.as_bytes()
++    );
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":consumed.as_str()}))?,
++        400,
++    );
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":expires.as_str()}))?,
++        400,
++    );
++    status(
++        &f.actor(&actor, "POST", "ssh/creds/test", json!({"ip":"127.0.0.1"}))?,
++        403,
++    );
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":live.as_str()}))?,
++        200,
++    );
++    let mut f = f.restart()?;
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":live.as_str()}))?,
++        400,
++    );
++    Ok(())
++}
+diff --git a/crates/heptabao-server/src/service_native_ssh_ha_tests.rs b/crates/heptabao-server/src/service_native_ssh_ha_tests.rs
+new file mode 100644
+index 00000000..b45be53a
+--- /dev/null
++++ b/crates/heptabao-server/src/service_native_ssh_ha_tests.rs
+@@ -0,0 +1,274 @@
++//! Real configured NativeV6Raft and original request/forward/ReadIndex budgets.
++//! This process-local three-voter test is not a physical-host/wire qualification.
++use super::*;
++use ssh_key::{Certificate, HashAlg, PublicKey};
++
++fn ssh_setup(pipeline: &PkiPipeline, node: usize) -> TestResult {
++    for (path, body) in [
++        (
++            "sys/mounts/ssh",
++            json!({"type":"ssh","config":{"default_lease_ttl":"1h","max_lease_ttl":"2h"}}),
++        ),
++        (
++            "ssh/roles/otp",
++            json!({"key_type":"otp","default_user":"deploy","allowed_users":"deploy","cidr_list":"127.0.0.0/8"}),
++        ),
++    ] {
++        expect(
++            pipeline.call(node, "POST", path, pipeline.admin(), body)?,
++            204,
++            "formal-HA-actual-SSH-setup",
++        )?;
++    }
++    Ok(())
++}
++fn text(response: &Response, path: &str) -> TestResult<String> {
++    response
++        .body
++        .pointer(path)
++        .and_then(Value::as_str)
++        .filter(|value| !value.is_empty())
++        .map(str::to_owned)
++        .ok_or_else(|| "HA SSH synthetic field absent".into())
++}
++fn issue(pipeline: &PkiPipeline, node: usize) -> TestResult<(Zeroizing<String>, String)> {
++    let mut response = expect(
++        pipeline.call(
++            node,
++            "POST",
++            "ssh/creds/otp",
++            pipeline.admin(),
++            json!({"ip":"127.0.0.1"}),
++        )?,
++        200,
++        "formal-HA-original-OTP-issuer",
++    )?;
++    let lease = text(&response, "/lease_id")?;
++    let otp = secret_field(&mut response, "/data/key")?;
++    erase_json(&mut response.body);
++    Ok((otp, lease))
++}
++fn configured(pipeline: &PkiPipeline, node: usize) -> TestResult {
++    pipeline.with_service(node, |service| {
++        assert!(matches!(
++            service.native_storage_profile,
++            Some(NativeStorageProfile::Raft)
++        ));
++        assert!(service.native_candidate_profile.is_none());
++        assert!(service.native_root.is_some() && service.record_root.is_none());
++        assert!(service.pending_native_auth_delivery.is_none());
++        Ok(())
++    })?;
++    pipeline.assert_history(node, &[(1, "seed-v5")])
++}
++fn setup_ca(pipeline: &PkiPipeline, node: usize) -> TestResult<String> {
++    let result = expect(
++        pipeline.call(
++            node,
++            "POST",
++            "ssh/config/ca",
++            pipeline.admin(),
++            json!({"key_type":"ed25519"}),
++        )?,
++        200,
++        "formal-HA-real-SSH-CA",
++    )?;
++    let public = text(&result, "/data/public_key")?;
++    expect(pipeline.call(node, "POST", "ssh/roles/operators", pipeline.admin(),
++        json!({"key_type":"ca","allow_user_certificates":true,"allowed_users":"alice","default_user":"alice","ttl":"1h"}))?,
++        204, "formal-HA-SSH-CA-role")?;
++    Ok(public)
++}
++fn exact_public(pipeline: &PkiPipeline, node: usize, expected: &str) -> TestResult {
++    let _ingress = crate::auth::IngressReplyScope::listener(&[0xd3; 16]);
++    let response = expect(
++        pipeline.call(
++            node,
++            "GET",
++            "ssh/public_key",
++            "invalid-ignored-bearer",
++            json!({}),
++        )?,
++        200,
++        "formal-HA-actual-raw-public-key",
++    )?;
++    let actual = response
++        .unwrapped_json
++        .as_ref()
++        .ok_or("actual affine SSH raw reply")?;
++    assert_eq!(
++        actual.raw_http_transport(&response.body)?,
++        Some((200, "text/plain"))
++    );
++    assert_eq!(
++        actual
++            .raw_bytes(&response.body)?
++            .ok_or("actual raw bytes")?,
++        expected.as_bytes()
++    );
++    configured(pipeline, node)
++}
++
++#[test]
++fn formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay() -> TestResult {
++    let mut pipeline = PkiPipeline::start()?;
++    let leader = pipeline.ready_leader()?;
++    let follower = (leader + 1) % 3;
++    ssh_setup(&pipeline, follower)?;
++    let (otp, lease) = issue(&pipeline, follower)?;
++    pipeline.stop_process(leader)?;
++    let next = pipeline.ready_leader()?;
++    assert_ne!(next, leader);
++    expect(
++        pipeline.call(
++            next,
++            "POST",
++            "sys/leases/lookup",
++            pipeline.admin(),
++            json!({"lease_id":lease}),
++        )?,
++        200,
++        "formal-HA-elected-SSH-lease",
++    )?;
++    pipeline.start_formal_process(leader)?;
++    pipeline.wait_cold_native_readindex_ready(leader)?;
++    pipeline.unseal(leader)?;
++    let verified = expect(
++        pipeline.call(
++            leader,
++            "POST",
++            "ssh/verify",
++            "invalid-ignored-bearer",
++            json!({"otp":otp.as_str()}),
++        )?,
++        200,
++        "formal-HA-cold-anonymous-OTP-verification",
++    )?;
++    assert_eq!(
++        verified.body["data"],
++        json!({"ip":"127.0.0.1","username":"deploy","role_name":"otp"})
++    );
++    configured(&pipeline, leader)?;
++    pipeline.stop_process(leader)?;
++    pipeline.start_formal_process(leader)?;
++    pipeline.wait_cold_native_readindex_ready(leader)?;
++    pipeline.unseal(leader)?;
++    expect(
++        pipeline.call(
++            leader,
++            "POST",
++            "ssh/verify",
++            "",
++            json!({"otp":otp.as_str()}),
++        )?,
++        400,
++        "formal-HA-durable-OTP-replay-refusal",
++    )?;
++    configured(&pipeline, leader)
++}
++
++#[test]
++fn formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex() -> TestResult {
++    let mut pipeline = PkiPipeline::start()?;
++    let leader = pipeline.ready_leader()?;
++    let follower = (leader + 1) % 3;
++    ssh_setup(&pipeline, follower)?;
++    let ca = setup_ca(&pipeline, follower)?;
++    let mut issued = expect(
++        pipeline.call(
++            follower,
++            "POST",
++            "ssh/issue/operators",
++            pipeline.admin(),
++            json!({"key_type":"ed25519"}),
++        )?,
++        200,
++        "formal-HA-one-real-SSH-signature",
++    )?;
++    let signed = text(&issued, "/data/signed_key")?;
++    let cert = Certificate::from_openssh(&signed)?;
++    cert.validate_at(
++        SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
++        [&PublicKey::from_openssh(&ca)?.fingerprint(HashAlg::Sha256)],
++    )?;
++    assert_eq!(cert.valid_principals(), &["alice"]);
++    erase_json(&mut issued.body);
++    exact_public(&pipeline, follower, &ca)?;
++    pipeline.stop_process(leader)?;
++    let next = pipeline.ready_leader()?;
++    assert_ne!(next, leader);
++    pipeline.start_formal_process(leader)?;
++    pipeline.wait_cold_native_readindex_ready(leader)?;
++    pipeline.unseal(leader)?;
++    exact_public(&pipeline, leader, &ca)?;
++    pipeline.with_service(leader, |service| {
++        assert_eq!(
++            service
++                .state
++                .as_ref()
++                .ok_or("cold state")?
++                .engines
++                .native_ssh_signature_count("ssh/"),
++            Some(1)
++        );
++        Ok(())
++    })
++}
++
++#[test]
++fn formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key() -> TestResult {
++    let mut pipeline = PkiPipeline::start()?;
++    let leader = pipeline.ready_leader()?;
++    ssh_setup(&pipeline, leader)?;
++    setup_ca(&pipeline, leader)?;
++    let before = pipeline.with_service(leader, |service| {
++        service
++            .current_state_identity()
++            .map_err(|_| "SSH HA source identity".into())
++    })?;
++    for peer in (0..3).filter(|peer| *peer != leader) {
++        pipeline.stop_process(peer)?;
++    }
++    for (method, path, body) in [
++        ("POST", "ssh/creds/otp", json!({"ip":"127.0.0.1"})),
++        ("POST", "ssh/issue/operators", json!({"key_type":"ed25519"})),
++        ("GET", "ssh/public_key", json!({})),
++    ] {
++        let response = expect(
++            pipeline.call(
++                leader,
++                method,
++                path,
++                if method == "GET" {
++                    ""
++                } else {
++                    pipeline.admin()
++                },
++                body,
++            )?,
++            503,
++            "formal-HA-no-quorum-SSH-proof-veto",
++        )?;
++        assert!(response.body.get("data").is_none() && response.body.get("auth").is_none());
++        assert!(response.consistency_index.is_none() && response.unwrapped_json.is_none());
++    }
++    pipeline.with_service(leader, |service| {
++        assert!(
++            service
++                .current_state_identity()
++                .map_err(|_| "SSH HA final identity")?
++                == before
++        );
++        assert!(service.pending_native_auth_delivery.is_none());
++        assert_eq!(
++            service
++                .state
++                .as_ref()
++                .ok_or("state")?
++                .engines
++                .native_ssh_signature_count("ssh/"),
++            Some(0)
++        );
++        Ok(())
++    })
++}
+diff --git a/crates/heptabao-server/src/service_native_ssh_tests.rs b/crates/heptabao-server/src/service_native_ssh_tests.rs
+new file mode 100644
+index 00000000..9068ccce
+--- /dev/null
++++ b/crates/heptabao-server/src/service_native_ssh_tests.rs
+@@ -0,0 +1,1130 @@
++//! Synthetic credentials through the configured normal File profile, public
++//! activation, real SSH crypto, exact native publication, audit and cold open.
++use super::*;
++use crate::configuration::NativeStorageProfile;
++use crate::service::tests::Root;
++use ssh_key::{Certificate, HashAlg, PublicKey};
++use std::cell::RefCell;
++
++#[path = "service_native_ssh_archive_tests.rs"]
++mod archive;
++
++type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
++type AfterAudit = Box<dyn FnOnce(&mut Service, &mut Response)>;
++thread_local! { static AFTER_AUDIT: RefCell<Option<AfterAudit>> = RefCell::new(None); }
++
++pub(super) fn after_actual_ssh_audit(service: &mut Service, response: &mut Response) {
++    let hook = AFTER_AUDIT.with(|slot| slot.borrow_mut().take());
++    if let Some(hook) = hook {
++        assert!(service.native_failure_notice.is_none());
++        let binding = service.native_request_binding.take();
++        assert!(binding.is_some());
++        assert!(service.pending_native_auth_delivery.is_none());
++        hook(service, response);
++        assert!(service.native_request_binding.is_none());
++        assert!(service.native_failure_notice.is_none());
++        assert!(service.pending_native_auth_delivery.is_none());
++        service.native_request_binding = binding;
++    }
++}
++struct HookGuard;
++impl Drop for HookGuard {
++    fn drop(&mut self) {
++        AFTER_AUDIT.with(|slot| {
++            slot.borrow_mut().take();
++        });
++    }
++}
++fn after_audit(hook: impl FnOnce(&mut Service, &mut Response) + 'static) -> TestResult<HookGuard> {
++    AFTER_AUDIT.with(|slot| {
++        let mut slot = slot.borrow_mut();
++        if slot.is_some() {
++            return Err("SSH audit hook already armed".into());
++        }
++        *slot = Some(Box::new(hook));
++        Ok(HookGuard)
++    })
++}
++fn status(response: &Response, expected: u16) {
++    assert_eq!(response.status, expected, "native SSH response status");
++}
++fn field(response: &Response, path: &str) -> TestResult<String> {
++    response
++        .body
++        .pointer(path)
++        .and_then(Value::as_str)
++        .filter(|value| !value.is_empty())
++        .map(str::to_owned)
++        .ok_or_else(|| "required synthetic SSH field absent".into())
++}
++fn secret(response: &mut Response, path: &str) -> TestResult<Zeroizing<String>> {
++    let result = Zeroizing::new(field(response, path)?);
++    erase_json(&mut response.body);
++    Ok(result)
++}
++fn call(
++    service: &mut Service,
++    now: &mut u64,
++    token: &str,
++    method: &str,
++    path: &str,
++    body: Value,
++) -> TestResult<Response> {
++    scoped_call(service, now, token, method, path, body, "", None)
++}
++#[allow(clippy::too_many_arguments)]
++fn scoped_call(
++    service: &mut Service,
++    now: &mut u64,
++    token: &str,
++    method: &str,
++    path: &str,
++    body: Value,
++    namespace: &str,
++    wrap_ttl_seconds: Option<u64>,
++) -> TestResult<Response> {
++    *now += 1;
++    let started = Instant::now();
++    let clock = RequestClock::anchored(Duration::from_secs(*now), started)?;
++    let _deadline =
++        crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));
++    let execution = service.begin_at_mode_precise(
++        RequestDispatch {
++            method,
++            path,
++            namespace,
++            token,
++            body,
++            now: *now,
++            allow_forward: true,
++            enforce_namespace: true,
++            wrap_ttl_seconds,
++            origin_peer: None,
++            client_certificates: None,
++        },
++        clock,
++    );
++    let response = service.finish_synchronous_request(execution);
++    assert!(
++        started.elapsed() < Duration::from_secs(15),
++        "original SSH request budget"
++    );
++    assert!(service.pending_native_auth_delivery.is_none());
++    Ok(response)
++}
++struct Fixture {
++    files: Root,
++    service: Service,
++    key: Zeroizing<String>,
++    admin: Zeroizing<String>,
++    now: u64,
++}
++impl Fixture {
++    fn initialized() -> TestResult<Self> {
++        let files = Root::new();
++        let mut service = files.service()?;
++        service.configure_native_v6_storage(NativeStorageProfile::File)?;
++        let mut now = 100;
++        let mut init = call(
++            &mut service,
++            &mut now,
++            "",
++            "POST",
++            "sys/init",
++            json!({"secret_shares":1,"secret_threshold":1}),
++        )?;
++        status(&init, 200);
++        let key = Zeroizing::new(field(&init, "/keys/0")?);
++        let admin = secret(&mut init, "/root_token")?;
++        status(
++            &call(
++                &mut service,
++                &mut now,
++                "",
++                "POST",
++                "sys/unseal",
++                json!({"key":key.as_str()}),
++            )?,
++            200,
++        );
++        status(
++            &call(
++                &mut service,
++                &mut now,
++                &admin,
++                "POST",
++                "sys/init/ack",
++                json!({}),
++            )?,
++            204,
++        );
++        Ok(Self {
++            files,
++            service,
++            key,
++            admin,
++            now,
++        })
++    }
++    fn new() -> TestResult<Self> {
++        let mut f = Self::initialized()?;
++        f.activate()?;
++        Ok(f)
++    }
++    fn activate(&mut self) -> TestResult {
++        status(
++            &self.admin("POST", native_storage::ACTIVATE_PATH, json!({}))?,
++            204,
++        );
++        assert!(self.service.native_root.is_some());
++        assert!(self.service.record_root.is_none());
++        Ok(())
++    }
++    fn admin(&mut self, method: &str, path: &str, body: Value) -> TestResult<Response> {
++        call(
++            &mut self.service,
++            &mut self.now,
++            &self.admin,
++            method,
++            path,
++            body,
++        )
++    }
++    fn actor(
++        &mut self,
++        actor: &str,
++        method: &str,
++        path: &str,
++        body: Value,
++    ) -> TestResult<Response> {
++        call(&mut self.service, &mut self.now, actor, method, path, body)
++    }
++    fn install(&mut self) -> TestResult {
++        status(
++            &self.admin(
++                "POST",
++                "sys/mounts/ssh",
++                json!({"type":"ssh",
++            "config":{"default_lease_ttl":"600s","max_lease_ttl":"1200s"}}),
++            )?,
++            204,
++        );
++        status(
++            &self.admin(
++                "POST",
++                "ssh/roles/test",
++                json!({"key_type":"otp",
++            "default_user":"deploy","allowed_users":"deploy,backup",
++            "cidr_list":"127.0.0.0/8,::1/128","exclude_cidr_list":"127.1.0.0/16"}),
++            )?,
++            204,
++        );
++        Ok(())
++    }
++    fn issue(&mut self, actor: &str) -> TestResult<(Zeroizing<String>, String)> {
++        let mut issued = self.actor(actor, "POST", "ssh/creds/test", json!({"ip":"127.0.0.1"}))?;
++        status(&issued, 200);
++        assert_eq!(issued.body["renewable"], false);
++        let id = field(&issued, "/lease_id")?;
++        let otp = secret(&mut issued, "/data/key")?;
++        Ok((otp, id))
++    }
++    fn restart(mut self) -> TestResult<Self> {
++        drop(self.service);
++        self.service = self.files.service()?;
++        self.service
++            .configure_native_v6_storage(NativeStorageProfile::File)?;
++        status(
++            &self.actor("", "POST", "sys/unseal", json!({"key":self.key.as_str()}))?,
++            200,
++        );
++        assert!(self.service.native_root.is_some());
++        Ok(self)
++    }
++    fn policy_actor(&mut self) -> TestResult<Zeroizing<String>> {
++        status(
++            &self.admin(
++                "POST",
++                "sys/policies/acl/ssh-issue",
++                json!({"policy":
++            "path \"ssh/creds/test\" { capabilities=[\"update\"] }"}),
++            )?,
++            204,
++        );
++        let mut issued = self.admin(
++            "POST",
++            "auth/token/create",
++            json!({
++            "policies":["ssh-issue"],"no_default_policy":true,"ttl":"1h"}),
++        )?;
++        status(&issued, 200);
++        secret(&mut issued, "/auth/client_token")
++    }
++    fn audited(
++        &mut self,
++        actor: &str,
++        method: &str,
++        path: &str,
++        body: Value,
++        budget: Duration,
++    ) -> TestResult<(Response, Instant)> {
++        self.now += 1;
++        let started = Instant::now();
++        let until = started + budget;
++        let clock = RequestClock::anchored(Duration::from_secs(self.now), started)?;
++        let _deadline = crate::request_deadline::RequestDeadlineScope::enter(until);
++        let response = self.service.handle_inner(RequestView {
++            method,
++            path,
++            namespace: "",
++            token: actor,
++            body: &body,
++            now: self.now,
++            admission_started: started,
++            token_clock: Some(clock),
++            allow_forward: true,
++            enforce_namespace: true,
++            wrap_ttl_seconds: None,
++            origin_peer: None,
++            client_certificates: None,
++        });
++        status(&response, 200);
++        let delivery = self
++            .service
++            .pending_native_auth_delivery
++            .as_ref()
++            .ok_or("actual SSH owner")?;
++        assert!(delivery.ssh_owner.is_some() && delivery.requires_local_proof());
++        assert!(delivery.tracks_terminal_checkpoint() && delivery.proof.is_none());
++        let response = self.service.audit_completed_response_with_receipt(
++            "native-ssh-actual-audit",
++            self.now,
++            Some(clock),
++            response,
++            || {},
++        );
++        status(&response, 200);
++        let delivery = self
++            .service
++            .pending_native_auth_delivery
++            .as_ref()
++            .ok_or("audited SSH owner")?;
++        assert!(matches!(
++            delivery.proof.as_ref(),
++            Some(native_v6_reader::NativeProof::Single(_))
++        ));
++        Ok((response, until))
++    }
++    fn complete(&mut self, response: Response, until: Instant) -> Response {
++        let _deadline = crate::request_deadline::RequestDeadlineScope::enter(until);
++        self.service
++            .complete_native_auth_delivery(true, response, "ssh-original-audited-delivery")
++    }
++    fn idle(&mut self, now: u64) -> TestResult<bool> {
++        self.now = now;
++        let started = Instant::now();
++        let clock = RequestClock::anchored(Duration::from_secs(now), started)?;
++        let _deadline =
++            crate::request_deadline::RequestDeadlineScope::enter(started + Duration::from_secs(15));
++        Ok(self
++            .service
++            .maintain_native_transit_with_clock_for_test(now, clock)?)
++    }
++}
++fn private_bytes_absent(path: &std::path::Path, secret: &[u8]) -> TestResult {
++    for entry in fs::read_dir(path)? {
++        let path = entry?.path();
++        if path.is_dir() {
++            private_bytes_absent(&path, secret)?;
++        } else if path.is_file() {
++            assert!(
++                !fs::read(path)?
++                    .windows(secret.len())
++                    .any(|bytes| bytes == secret),
++                "issued OTP must not appear in durable plaintext"
++            );
++        }
++    }
++    Ok(())
++}
++
++#[test]
++fn native_ssh_formal_otp_promotion_cold_verify_and_replay() -> TestResult {
++    let mut f = Fixture::initialized()?;
++    f.install()?;
++    let admin = f.admin.clone();
++    let (otp, lease) = f.issue(&admin)?;
++    f.activate()?;
++    private_bytes_absent(&f.files.path.join("data"), otp.as_bytes())?;
++    let mut f = f.restart()?;
++    status(
++        &f.admin("POST", "sys/leases/lookup", json!({"lease_id":lease}))?,
++        200,
++    );
++    let verified = f.actor(
++        "invalid-ignored-bearer",
++        "POST",
++        "ssh/verify",
++        json!({"otp":otp.as_str()}),
++    )?;
++    status(&verified, 200);
++    assert_eq!(
++        verified.body["data"],
++        json!({"ip":"127.0.0.1","username":"deploy","role_name":"test"})
++    );
++    let mut f = f.restart()?;
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":otp.as_str()}))?,
++        400,
++    );
++    status(
++        &f.admin("POST", "sys/leases/lookup", json!({"lease_id":lease}))?,
++        200,
++    );
++    Ok(())
++}
++
++#[test]
++fn native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix() -> TestResult {
++    let mut f = Fixture::new()?;
++    f.install()?;
++    let actor = f.policy_actor()?;
++    status(
++        &f.actor(&actor, "POST", "ssh/creds/test", json!({"ip":"127.1.0.1"}))?,
++        400,
++    );
++    status(
++        &f.actor(
++            &actor,
++            "POST",
++            "ssh/creds/test",
++            json!({"ip":"127.0.0.1","username":"root"}),
++        )?,
++        400,
++    );
++    status(
++        &f.actor(&actor, "POST", "ssh/roles/other", json!({"key_type":"otp"}))?,
++        403,
++    );
++    let (otp, lease) = f.issue(&actor)?;
++    status(
++        &f.admin(
++            "POST",
++            "sys/leases/renew",
++            json!({"lease_id":lease,"increment":60}),
++        )?,
++        400,
++    );
++    status(
++        &f.admin("POST", "sys/leases/revoke-prefix/ssh/creds/tes", json!({}))?,
++        204,
++    );
++    status(
++        &f.admin("POST", "sys/leases/lookup", json!({"lease_id":lease}))?,
++        200,
++    );
++    status(
++        &f.admin("POST", "sys/leases/revoke", json!({"lease_id":lease}))?,
++        204,
++    );
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":otp.as_str()}))?,
++        400,
++    );
++    let (second, _) = f.issue(&actor)?;
++    status(
++        &f.admin("POST", "auth/token/revoke", json!({"token":actor.as_str()}))?,
++        204,
++    );
++    let mut f = f.restart()?;
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":second.as_str()}))?,
++        400,
++    );
++    Ok(())
++}
++
++fn install_ca(f: &mut Fixture) -> TestResult<String> {
++    let created = f.admin("POST", "ssh/config/ca", json!({"key_type":"ed25519"}))?;
++    status(&created, 200);
++    let public = field(&created, "/data/public_key")?;
++    status(
++        &f.admin(
++            "POST",
++            "ssh/roles/operators",
++            json!({"key_type":"ca",
++        "allow_user_certificates":true,"allowed_users":"alice","default_user":"alice","ttl":"60s"}),
++        )?,
++        204,
++    );
++    Ok(public)
++}
++
++#[test]
++fn native_ssh_formal_ca_real_signature_cold_typed_public_transport() -> TestResult {
++    let mut f = Fixture::new()?;
++    f.install()?;
++    let public = install_ca(&mut f)?;
++    let mut f = f.restart()?;
++    let mut issued = f.admin("POST", "ssh/issue/operators", json!({"key_type":"ed25519"}))?;
++    status(&issued, 200);
++    let certificate = Certificate::from_openssh(
++        issued.body["data"]["signed_key"]
++            .as_str()
++            .ok_or("certificate")?,
++    )?;
++    certificate.validate_at(
++        f.now,
++        [&PublicKey::from_openssh(&public)?.fingerprint(HashAlg::Sha256)],
++    )?;
++    assert_eq!(certificate.valid_principals(), &["alice"]);
++    erase_json(&mut issued.body);
++    assert_eq!(
++        f.service
++            .state
++            .as_ref()
++            .ok_or("state")?
++            .engines
++            .native_ssh_signature_count("ssh/"),
++        Some(1)
++    );
++    let _ingress = crate::auth::IngressReplyScope::listener(&[0xd1; 16]);
++    let response = f.actor("", "GET", "ssh/public_key", json!({}))?;
++    status(&response, 200);
++    let origin = response
++        .unwrapped_json
++        .as_ref()
++        .ok_or("actual public transport")?;
++    assert_eq!(
++        origin.raw_http_transport(&response.body)?,
++        Some((200, "text/plain"))
++    );
++    assert_eq!(
++        origin.raw_bytes(&response.body)?.ok_or("public bytes")?,
++        public.as_bytes()
++    );
++    status(&f.actor("", "GET", "ssh/config/ca", json!({}))?, 403);
++    Ok(())
++}
++
++#[test]
++fn native_ssh_after_actual_audit_actor_revocation_never_delivers_otp() -> TestResult {
++    let mut f = Fixture::new()?;
++    f.install()?;
++    let actor = f.policy_actor()?;
++    let revoke_root = f.admin.clone();
++    let revoke_actor = actor.clone();
++    let mut hook_now = f.now + 1;
++    let _hook = after_audit(move |service, response| {
++        assert!(response.status == 200 && response.body["data"]["key"].is_string());
++        let revoked = call(
++            service,
++            &mut hook_now,
++            &revoke_root,
++            "POST",
++            "auth/token/revoke",
++            json!({"token":revoke_actor.as_str()}),
++        )
++        .expect("actual token revocation");
++        status(&revoked, 204);
++    })?;
++    let response = f.actor(&actor, "POST", "ssh/creds/test", json!({"ip":"127.0.0.1"}))?;
++    assert!(response.status >= 400);
++    assert!(response.body.get("data").is_none());
++    status(
++        &f.actor(&actor, "POST", "ssh/creds/test", json!({"ip":"127.0.0.1"}))?,
++        403,
++    );
++    Ok(())
++}
++
++#[test]
++fn native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign() -> TestResult {
++    let mut f = Fixture::new()?;
++    f.install()?;
++    install_ca(&mut f)?;
++    let _hook = after_audit(|service, response| {
++        assert!(response.status == 200 && response.body["data"]["private_key"].is_string());
++        assert_eq!(
++            service
++                .state
++                .as_ref()
++                .expect("state")
++                .engines
++                .native_ssh_signature_count("ssh/"),
++            Some(1)
++        );
++        response.status = 503;
++    })?;
++    let response = f.admin("POST", "ssh/issue/operators", json!({"key_type":"ed25519"}))?;
++    status(&response, 503);
++    assert!(response.body.get("data").is_none());
++    assert_eq!(
++        f.service
++            .state
++            .as_ref()
++            .ok_or("state")?
++            .engines
++            .native_ssh_signature_count("ssh/"),
++        Some(1)
++    );
++    let f = f.restart()?;
++    assert_eq!(
++        f.service
++            .state
++            .as_ref()
++            .ok_or("state")?
++            .engines
++            .native_ssh_signature_count("ssh/"),
++        Some(1)
++    );
++    Ok(())
++}
++
++#[test]
++fn native_ssh_public_reply_cannot_lose_affine_transport_after_audit() -> TestResult {
++    let mut f = Fixture::new()?;
++    f.install()?;
++    install_ca(&mut f)?;
++    let _hook = after_audit(|_service, response| {
++        assert!(response.status == 200 && response.unwrapped_json.is_some());
++        response.unwrapped_json = None;
++    })?;
++    let _ingress = crate::auth::IngressReplyScope::listener(&[0xd2; 16]);
++    let response = f.actor("", "GET", "ssh/public_key", json!({}))?;
++    status(&response, 503);
++    assert!(response.body.get("data").is_none());
++    Ok(())
++}
++
++#[test]
++fn native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv() -> TestResult {
++    let mut f = Fixture::new()?;
++    f.install()?;
++    let public = install_ca(&mut f)?;
++    status(
++        &f.admin(
++            "POST",
++            "sys/mounts/kv",
++            json!({"type":"kv","options":{"version":"2"}}),
++        )?,
++        204,
++    );
++    status(
++        &f.admin(
++            "POST",
++            "kv/data/sentinel",
++            json!({"options":{"cas":0},"data":{"kept":"unchanged"}}),
++        )?,
++        200,
++    );
++    status(
++        &f.admin("POST", "sys/mounts/pki", json!({"type":"pki"}))?,
++        204,
++    );
++    status(
++        &f.admin(
++            "POST",
++            "pki/root/generate/internal",
++            json!({"common_name":"ca.example.test",
++        "key_type":"ec","key_bits":256,"ttl":"48h"}),
++        )?,
++        200,
++    );
++    status(&f.admin("POST", "pki/roles/web", json!({"allowed_domains":["example.test"],
++        "allow_subdomains":true,"key_type":"ec","key_bits":256,"max_ttl":"2h","generate_lease":true}))?, 200);
++    let mut leaf = f.admin(
++        "POST",
++        "pki/issue/web",
++        json!({"common_name":"api.example.test","ttl":"60s"}),
++    )?;
++    status(&leaf, 200);
++    let pki_lease = field(&leaf, "/lease_id")?;
++    erase_json(&mut leaf.body);
++    let admin = f.admin.clone();
++    let (otp, ssh_lease) = f.issue(&admin)?;
++    let before = f.service.native_root.clone().ok_or("native root")?;
++    let old = f.now;
++    assert!(f.idle(old + 1300)?);
++    let after = f.service.native_root.clone().ok_or("native root")?;
++    assert!(before.kv1 == after.kv1 && before.kv2 == after.kv2);
++    assert_eq!(
++        f.service
++            .state
++            .as_ref()
++            .ok_or("state")?
++            .engines
++            .native_ssh_signature_count("ssh/"),
++        Some(0)
++    );
++    let generation = f.service.durable.as_ref().ok_or("durable")?.generation();
++    assert!(!f.idle(old)?);
++    assert_eq!(
++        f.service.durable.as_ref().ok_or("durable")?.generation(),
++        generation
++    );
++    let mut f = f.restart()?;
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":otp.as_str()}))?,
++        400,
++    );
++    for lease in [ssh_lease, pki_lease] {
++        let response = f.admin("POST", "sys/leases/lookup", json!({"lease_id":lease}))?;
++        assert!(response.status >= 400);
++    }
++    let _ingress = crate::auth::IngressReplyScope::listener(&[0xd3; 16]);
++    let response = f.actor("", "GET", "ssh/public_key", json!({}))?;
++    status(&response, 200);
++    assert_eq!(
++        response
++            .unwrapped_json
++            .as_ref()
++            .ok_or("public owner")?
++            .raw_bytes(&response.body)?
++            .ok_or("public bytes")?,
++        public.as_bytes()
++    );
++    let response = f.admin("GET", "kv/data/sentinel", json!({}))?;
++    status(&response, 200);
++    assert_eq!(response.body["data"]["data"], json!({"kept":"unchanged"}));
++    Ok(())
++}
++
++#[test]
++fn native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit() -> TestResult {
++    let mut f = Fixture::new()?;
++    f.install()?;
++    let actor = f.policy_actor()?;
++    let (otp, _) = f.issue(&actor)?;
++    let revoke_root = f.admin.clone();
++    let revoke_actor = actor.clone();
++    let mut hook_now = f.now + 1;
++    let _hook = after_audit(move |service, response| {
++        assert!(response.status == 200 && response.body["data"]["username"].is_string());
++        status(
++            &call(
++                service,
++                &mut hook_now,
++                &revoke_root,
++                "POST",
++                "auth/token/revoke",
++                json!({"token":revoke_actor.as_str()}),
++            )
++            .expect("actual issuer revoke"),
++            204,
++        );
++    })?;
++    let response = f.actor("", "POST", "ssh/verify", json!({"otp":otp.as_str()}))?;
++    assert!(response.status >= 400 && response.body.get("data").is_none());
++    let mut f = f.restart()?;
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":otp.as_str()}))?,
++        400,
++    );
++    Ok(())
++}
++
++#[test]
++fn native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable() -> TestResult {
++    let mut f = Fixture::new()?;
++    f.install()?;
++    status(
++        &f.admin(
++            "POST",
++            "sys/policies/acl/ssh-issue",
++            json!({"policy":
++        "path \"ssh/creds/test\" { capabilities=[\"update\"] }"}),
++        )?,
++        204,
++    );
++    status(
++        &f.admin("POST", "sys/auth/up", json!({"type":"userpass"}))?,
++        204,
++    );
++    status(
++        &f.admin(
++            "POST",
++            "auth/up/users/batch",
++            json!({
++        "password":"synthetic-ssh-batch-password","policies":["ssh-issue"],
++        "token_type":"batch","token_ttl":120,"token_max_ttl":600,"token_num_uses":0}),
++        )?,
++        204,
++    );
++    let mut login = f.actor(
++        "",
++        "POST",
++        "auth/up/login/batch",
++        json!({"password":"synthetic-ssh-batch-password"}),
++    )?;
++    status(&login, 200);
++    assert_eq!(login.body["auth"]["token_type"], "batch");
++    let actor = secret(&mut login, "/auth/client_token")?;
++    let lookup = f.actor(&actor, "GET", "auth/token/lookup-self", json!({}))?;
++    status(&lookup, 200);
++    let expires = lookup.body["data"]["expire_time_unix"]
++        .as_u64()
++        .ok_or("batch expiry")?;
++    let mut issued = f.actor(&actor, "POST", "ssh/creds/test", json!({"ip":"127.0.0.1"}))?;
++    status(&issued, 200);
++    let ttl = issued.body["lease_duration"]
++        .as_u64()
++        .ok_or("actual OTP lifetime")?;
++    assert!(ttl > 0 && ttl <= expires.saturating_sub(f.now));
++    let otp = secret(&mut issued, "/data/key")?;
++    let mut f = f.restart()?;
++    assert!(f.idle(expires + 1)?);
++    f.now = 100;
++    let mut f = f.restart()?;
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":otp.as_str()}))?,
++        400,
++    );
++    Ok(())
++}
++
++#[test]
++fn native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold() -> TestResult {
++    let mut f = Fixture::new()?;
++    f.install()?;
++    status(
++        &f.admin(
++            "POST",
++            "sys/policies/acl/ssh-issue",
++            json!({"policy":
++        "path \"ssh/creds/test\" { capabilities=[\"update\"] }"}),
++        )?,
++        204,
++    );
++    status(
++        &f.admin("POST", "sys/auth/ssh-login", json!({"type":"approle"}))?,
++        204,
++    );
++    status(
++        &f.admin(
++            "POST",
++            "auth/ssh-login/role/test",
++            json!({"token_policies":["ssh-issue"]}),
++        )?,
++        204,
++    );
++    let mut role = f.admin("GET", "auth/ssh-login/role/test/role-id", json!({}))?;
++    let mut sid = f.admin("POST", "auth/ssh-login/role/test/secret-id", json!({}))?;
++    status(&role, 200);
++    status(&sid, 200);
++    let mut login = f.actor(
++        "",
++        "POST",
++        "auth/ssh-login/login",
++        json!({
++        "role_id":role.body["data"]["role_id"],"secret_id":sid.body["data"]["secret_id"]}),
++    )?;
++    erase_json(&mut role.body);
++    erase_json(&mut sid.body);
++    status(&login, 200);
++    let entity = field(&login, "/auth/entity_id")?;
++    let actor = secret(&mut login, "/auth/client_token")?;
++    let (otp, _) = f.issue(&actor)?;
++    let path = format!("identity/entity/id/{entity}");
++    status(&f.admin("POST", &path, json!({"disabled":true}))?, 204);
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":otp.as_str()}))?,
++        400,
++    );
++    status(&f.admin("POST", &path, json!({"disabled":false}))?, 204);
++    let mut f = f.restart()?;
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":otp.as_str()}))?,
++        400,
++    );
++    let _ = f.issue(&actor)?;
++    Ok(())
++}
++
++#[test]
++fn native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature() -> TestResult {
++    let mut f = Fixture::new()?;
++    f.install()?;
++    install_ca(&mut f)?;
++    let admin = f.admin.clone();
++    let (response, until) = f.audited(
++        &admin,
++        "POST",
++        "ssh/issue/operators",
++        json!({"key_type":"ed25519"}),
++        Duration::from_millis(1500),
++    )?;
++    assert_eq!(
++        f.service
++            .state
++            .as_ref()
++            .ok_or("state")?
++            .engines
++            .native_ssh_signature_count("ssh/"),
++        Some(1)
++    );
++    std::thread::sleep(until.saturating_duration_since(Instant::now()) + Duration::from_millis(20));
++    let denied = f.complete(response, until);
++    status(&denied, 503);
++    assert!(denied.body.get("data").is_none() && denied.consistency_index.is_none());
++    assert_eq!(
++        f.service
++            .state
++            .as_ref()
++            .ok_or("state")?
++            .engines
++            .native_ssh_signature_count("ssh/"),
++        Some(1)
++    );
++    Ok(())
++}
++
++#[test]
++fn native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs() -> TestResult {
++    let mut f = Fixture::new()?;
++    f.install()?;
++    status(
++        &f.admin(
++            "POST",
++            "sys/mounts/kept",
++            json!({"type":"kv","options":{"version":"2"}}),
++        )?,
++        204,
++    );
++    status(
++        &f.admin(
++            "POST",
++            "kept/data/sentinel",
++            json!({"options":{"cas":0},"data":{"kept":true}}),
++        )?,
++        200,
++    );
++    let graph = f
++        .service
++        .state
++        .as_ref()
++        .ok_or("state")?
++        .engines
++        .record_root();
++    let admin = f.admin.clone();
++    let (old, _) = f.issue(&admin)?;
++    status(
++        &f.admin(
++            "POST",
++            "sys/mounts/ssh/tune",
++            json!({"default_lease_ttl":"300s","max_lease_ttl":"900s"}),
++        )?,
++        204,
++    );
++    let tuned = f.admin("GET", "sys/mounts/ssh/tune", json!({}))?;
++    status(&tuned, 200);
++    assert_eq!(tuned.body["data"]["max_lease_ttl"], 900);
++    let mut f = f.restart()?;
++    status(&f.admin("DELETE", "sys/mounts/ssh", json!({}))?, 204);
++    assert_eq!(
++        f.service
++            .state
++            .as_ref()
++            .ok_or("state")?
++            .engines
++            .record_root(),
++        graph
++    );
++    let mut f = f.restart()?;
++    let mounts = f.admin("GET", "sys/mounts", json!({}))?;
++    status(&mounts, 200);
++    assert!(mounts.body["data"].get("ssh/").is_none());
++    f.install()?;
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":old.as_str()}))?,
++        400,
++    );
++    let value = f.admin("GET", "kept/data/sentinel", json!({}))?;
++    status(&value, 200);
++    assert_eq!(value.body["data"]["data"], json!({"kept":true}));
++    Ok(())
++}
++
++#[test]
++fn native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation() -> TestResult {
++    let mut f = Fixture::new()?;
++    f.install()?;
++    let admin = f.admin.clone();
++    let (response, until) = f.audited(
++        &admin,
++        "POST",
++        "ssh/creds/test",
++        json!({"ip":"127.0.0.1"}),
++        Duration::from_secs(15),
++    )?;
++    let otp = Zeroizing::new(field(&response, "/data/key")?);
++    let capsule = f
++        .service
++        .pending_native_auth_delivery
++        .take()
++        .ok_or("audited SSH capsule")?;
++    status(&f.admin("DELETE", "sys/mounts/ssh", json!({}))?, 204);
++    f.install()?;
++    assert!(f.service.pending_native_auth_delivery.is_none());
++    f.service.pending_native_auth_delivery = Some(capsule);
++    let rejected = f.complete(response, until);
++    status(&rejected, 503);
++    assert!(rejected.body.get("data").is_none() && rejected.consistency_index.is_none());
++    let mut f = f.restart()?;
++    status(
++        &f.actor("", "POST", "ssh/verify", json!({"otp":otp.as_str()}))?,
++        400,
++    );
++    Ok(())
++}
++
++#[test]
++fn native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed() -> TestResult {
++    let mut f = Fixture::new()?;
++    f.install()?;
++    let before = f
++        .service
++        .state
++        .as_ref()
++        .ok_or("state")?
++        .engines
++        .lease_owners();
++    let wrapped = scoped_call(
++        &mut f.service,
++        &mut f.now,
++        &f.admin,
++        "POST",
++        "ssh/creds/test",
++        json!({"ip":"127.0.0.1"}),
++        "",
++        Some(60),
++    )?;
++    status(&wrapped, 501);
++    assert!(wrapped.body.get("data").is_none() && wrapped.body.get("wrap_info").is_none());
++    assert!(
++        f.service
++            .state
++            .as_ref()
++            .ok_or("state")?
++            .engines
++            .lease_owners()
++            == before
++    );
++    status(&f.admin("POST", "sys/namespaces/child", json!({}))?, 200);
++    let child = scoped_call(
++        &mut f.service,
++        &mut f.now,
++        &f.admin,
++        "POST",
++        "sys/mounts/ssh",
++        json!({"type":"ssh"}),
++        "child",
++        None,
++    )?;
++    status(&child, 501);
++    assert!(
++        !f.service
++            .state
++            .as_ref()
++            .ok_or("state")?
++            .engines
++            .native_local_ssh_mounted("child", "ssh/")
++    );
++    Ok(())
++}
++
++#[test]
++fn native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply() -> TestResult {
++    let mut f = Fixture::new()?;
++    f.install()?;
++    install_ca(&mut f)?;
++    f.now += 1;
++    let started = Instant::now();
++    let until = started + Duration::from_secs(15);
++    let clock = RequestClock::anchored(Duration::from_secs(f.now), started)?;
++    let _scope = crate::request_deadline::RequestDeadlineScope::enter(until);
++    let body = json!({"key_type":"ed25519"});
++    let response = f.service.handle_inner(RequestView {
++        method: "POST",
++        path: "ssh/issue/operators",
++        namespace: "",
++        token: &f.admin,
++        body: &body,
++        now: f.now,
++        admission_started: started,
++        token_clock: Some(clock),
++        allow_forward: true,
++        enforce_namespace: true,
++        wrap_ttl_seconds: None,
++        origin_peer: None,
++        client_certificates: None,
++    });
++    status(&response, 200);
++    assert!(response.body["data"]["private_key"].is_string());
++    assert_eq!(
++        f.service
++            .state
++            .as_ref()
++            .ok_or("actual signed state")?
++            .engines
++            .native_ssh_signature_count("ssh/"),
++        Some(1)
++    );
++    assert!(
++        f.service
++            .pending_native_auth_delivery
++            .as_ref()
++            .is_some_and(|delivery| delivery.ssh_owner.is_some())
++    );
++    // The actual mandatory audit writer now has the same owned file opened
++    // read-only. Its real append fails; no successful audit receipt is invented.
++    f.service.audit = fs::File::open(f.files.path.join("audit.jsonl"))?;
++    let denied = f.service.audit_completed_response_with_receipt(
++        "native-ssh-real-readonly-audit-failure",
++        f.now,
++        Some(clock),
++        response,
++        || {},
++    );
++    status(&denied, 503);
++    assert!(denied.body.get("data").is_none() && denied.body.get("auth").is_none());
++    assert!(denied.unwrapped_json.is_none() && denied.consistency_index.is_none());
++    assert!(f.service.audit_failed && f.service.pending_native_auth_delivery.is_none());
++    Ok(())
++}
++
++#[test]
++fn native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry() -> TestResult {
++    let mut f = Fixture::new()?;
++    f.install()?;
++    status(
++        &f.admin(
++            "POST",
++            "sys/policies/acl/ssh-short",
++            json!({"policy":
++        "path \"ssh/creds/test\" { capabilities=[\"update\"] }"}),
++        )?,
++        204,
++    );
++    let mut token = f.admin(
++        "POST",
++        "auth/token/create",
++        json!({"policies":["ssh-short"],"no_default_policy":true,"ttl":"2s"}),
++    )?;
++    status(&token, 200);
++    let actor = secret(&mut token, "/auth/client_token")?;
++    let (response, until) = f.audited(
++        &actor,
++        "POST",
++        "ssh/creds/test",
++        json!({"ip":"127.0.0.1"}),
++        Duration::from_secs(15),
++    )?;
++    assert!(response.body["data"]["key"].is_string());
++    std::thread::sleep(Duration::from_millis(1200));
++    let denied = f.complete(response, until);
++    status(&denied, 403);
++    assert!(denied.body.get("data").is_none() && denied.body.get("auth").is_none());
++    assert!(denied.consistency_index.is_none() && f.service.pending_native_auth_delivery.is_none());
++    Ok(())
++}

@@ -1,0 +1,279 @@
+diff --git a/crates/heptabao-server/src/ha.rs b/crates/heptabao-server/src/ha.rs
+index 88f7ed0a..56b8b516 100644
+--- a/crates/heptabao-server/src/ha.rs
++++ b/crates/heptabao-server/src/ha.rs
+@@ -1460,10 +1460,16 @@ impl HaProcess {
+         let native_index_capacity = completed && self.native_v6_enabled();
+         #[cfg(not(feature = "native-v6-ha"))]
+         let native_index_capacity = false;
+-        let unwrap_response = path == "sys/wrapping/unwrap"
+-            || path.starts_with("sys/workflows/execute/")
+-            || wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
+-                && crate::auth::current_ingress().is_some();
++        let original_ingress = crate::auth::current_ingress();
++        let unwrap_response = crate::ha_forward::requires_original_reply(
++            method,
++            path,
++            wrap_ttl_seconds,
++            original_ingress.is_some(),
++            original_ingress
++                .as_ref()
++                .is_some_and(|ingress| ingress.wrapping_body().is_some()),
++        );
+         if unwrap_response && (legacy_v1 || !completed) {
+             return Err("HA unwrap requires negotiated completed-forward authority".into());
+         }
+diff --git a/crates/heptabao-server/src/ha_forward.rs b/crates/heptabao-server/src/ha_forward.rs
+index f04b8b44..c7c1ece9 100644
+--- a/crates/heptabao-server/src/ha_forward.rs
++++ b/crates/heptabao-server/src/ha_forward.rs
+@@ -58,6 +58,28 @@ pub(crate) struct ForwardContext<'a> {
+     pub caller_deadline: Option<std::time::Instant>,
+ }
+ 
++/// Select the existing authenticated complete-reply framing, never a backend
++/// or authorization decision. An SSH mount may have any path (including a
++/// named issuer); only the actual engine owner can produce its private raw
++/// reply after normal Service admission. Carry the already admitted ingress
++/// through the peer frame rather than minting another one at the leader.
++pub(crate) fn requires_original_reply(
++    method: &str,
++    path: &str,
++    wrap_ttl_seconds: Option<u64>,
++    original_ingress: bool,
++    lexical_body: bool,
++) -> bool {
++    let public_key_reply = method == "GET"
++        && path
++            .rsplit_once('/')
++            .is_some_and(|(owner, leaf)| !owner.is_empty() && leaf == "public_key");
++    path == "sys/wrapping/unwrap"
++        || path.starts_with("sys/workflows/execute/")
++        || original_ingress && (wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) || public_key_reply)
++        || lexical_body
++}
++
+ #[derive(Deserialize)]
+ #[serde(deny_unknown_fields)]
+ pub(crate) struct ForwardRequest {
+@@ -575,10 +597,13 @@ fn encode_completed_request_for_profile(
+             .lexical_request_binding(method, path, body)
+             .map_err(|_| "HA private lexical request binding differs")?;
+     }
+-    let full_reply = path == "sys/wrapping/unwrap"
+-        || path.starts_with("sys/workflows/execute/")
+-        || wrap_ttl_seconds.is_some_and(|ttl| ttl > 0) && wrapped_reply_ingress.is_some()
+-        || wrapped_reply_lexical.is_some();
++    let full_reply = requires_original_reply(
++        method,
++        path,
++        wrap_ttl_seconds,
++        wrapped_reply_ingress.is_some(),
++        wrapped_reply_lexical.is_some(),
++    );
+     if full_reply && completion_nonce.is_none() {
+         return Err("HA unwrap requires original completed-request nonce".into());
+     }
+@@ -696,11 +721,13 @@ pub(crate) fn decode_request(encoded: &[u8]) -> Result<ForwardRequest, String> {
+     if unwrap_response && request.completion_nonce.is_none() {
+         return Err("HA unwrap framing requires original completion nonce".into());
+     }
+-    let full_reply = request.path == "sys/wrapping/unwrap"
+-        || request.path.starts_with("sys/workflows/execute/")
+-        || request.wrap_ttl_seconds.is_some_and(|ttl| ttl > 0)
+-            && request.wrapped_reply_ingress.is_some()
+-        || request.wrapped_reply_lexical.is_some();
++    let full_reply = requires_original_reply(
++        &request.method,
++        &request.path,
++        request.wrap_ttl_seconds,
++        request.wrapped_reply_ingress.is_some(),
++        request.wrapped_reply_lexical.is_some(),
++    );
+     if let Some(lexical) = &request.wrapped_reply_lexical {
+         if !unwrap_response
+             || request.wrapped_reply_ingress.is_none()
+@@ -1361,6 +1388,125 @@ fn erase_json(value: &mut Value) {
+ #[cfg(test)]
+ mod tests {
+ 
++    #[test]
++    fn native_ssh_forward_public_key_original_ingress_and_completion_cannot_downgrade()
++    -> Result<(), Box<dyn std::error::Error>> {
++        let _ingress = crate::auth::IngressReplyScope::listener(&[0xd4; 16]);
++        let body = json!({});
++        for path in ["ssh/public_key", "teams/ssh/issuer/rotated/public_key"] {
++            let context = ForwardContext {
++                method: "GET",
++                path,
++                namespace: "",
++                token: "ignored-public-bearer",
++                body: &body,
++                wrap_ttl_seconds: None,
++                origin_peer: None,
++                client_certificates: None,
++                caller_deadline: None,
++            };
++            assert!(
++                encode_completed_request_with_native_index_capacity(
++                    "native-ssh-public",
++                    (1, 2),
++                    &context,
++                    None,
++                )
++                .is_err()
++            );
++            assert!(
++                encode_completed_index_request_for_cluster(
++                    "native-ssh-public",
++                    (1, 2),
++                    &context,
++                    None,
++                )
++                .is_err()
++            );
++            let encoded = encode_completed_request_with_native_index_capacity(
++                "native-ssh-public",
++                (1, 2),
++                &context,
++                Some([0xd5; 32]),
++            )?;
++            assert!(encoded.starts_with(UNWRAP_REQUEST_MAGIC));
++            let admitted = decode_request_for_cluster(&encoded, "native-ssh-public")?;
++            assert!(admitted.unwrap_response && admitted.index_response);
++            assert!(!admitted.native_index_response);
++            assert_eq!(admitted.wrapped_reply_ingress, Some([0xd4; 16]));
++            assert_eq!(admitted.completion_nonce, Some([0xd5; 32]));
++            assert!(admitted.wrapped_reply_lexical.is_none());
++            assert_eq!(admitted.path, path);
++            for magic in [INDEX_REQUEST_MAGIC, NATIVE_INDEX_REQUEST_MAGIC] {
++                let mut downgraded = encoded.clone();
++                downgraded[..5].copy_from_slice(magic);
++                assert!(decode_request_for_cluster(&downgraded, "native-ssh-public").is_err());
++            }
++            let wire: Value = serde_json::from_slice(&encoded[9..])?;
++            for mutation in 0..4 {
++                let mut changed = wire.clone();
++                match mutation {
++                    0 => changed["wrapped_reply_ingress"] = Value::Null,
++                    1 => changed["completion_nonce"] = Value::Null,
++                    2 => changed["method"] = json!("POST"),
++                    _ => changed["path"] = json!("ssh/config/ca"),
++                }
++                assert!(
++                    decode_request_for_cluster(
++                        &encode(UNWRAP_REQUEST_MAGIC, &changed)?,
++                        "native-ssh-public",
++                    )
++                    .is_err()
++                );
++                erase_json(&mut changed);
++            }
++        }
++        Ok(())
++    }
++
++    #[test]
++    fn native_ssh_forward_public_key_does_not_invent_ingress_or_select_other_operations()
++    -> Result<(), Box<dyn std::error::Error>> {
++        let body = json!({});
++        for (method, path, ingress) in [
++            ("GET", "ssh/public_key", false),
++            ("POST", "ssh/public_key", true),
++            ("HEAD", "ssh/public_key", true),
++            ("GET", "ssh/public_key/extra", true),
++            ("GET", "ssh/config/ca", true),
++            ("GET", "public_key", true),
++        ] {
++            let _ingress = if ingress {
++                crate::auth::IngressReplyScope::listener(&[0xd6; 16])
++            } else {
++                crate::auth::IngressReplyScope::restore(None)
++            };
++            let context = ForwardContext {
++                method,
++                path,
++                namespace: "",
++                token: "fixture",
++                body: &body,
++                wrap_ttl_seconds: None,
++                origin_peer: None,
++                client_certificates: None,
++                caller_deadline: None,
++            };
++            let encoded = encode_completed_index_request_for_cluster(
++                "native-ssh-public",
++                (1, 2),
++                &context,
++                Some([0xd7; 32]),
++            )?;
++            assert!(encoded.starts_with(INDEX_REQUEST_MAGIC));
++            let admitted = decode_request_for_cluster(&encoded, "native-ssh-public")?;
++            assert!(!admitted.unwrap_response);
++            assert!(admitted.wrapped_reply_ingress.is_none());
++            assert!(admitted.wrapped_reply_lexical.is_none());
++        }
++        Ok(())
++    }
++
+     #[test]
+     fn raw113_actual_q8_lexical_shadow_binding_oldpeer_nonce_and_s6_immutable_reply()
+     -> Result<(), Box<dyn std::error::Error>> {
+diff --git a/crates/heptabao-server/src/service_native_ssh_ha_tests.rs b/crates/heptabao-server/src/service_native_ssh_ha_tests.rs
+index b45be53a..be53af47 100644
+--- a/crates/heptabao-server/src/service_native_ssh_ha_tests.rs
++++ b/crates/heptabao-server/src/service_native_ssh_ha_tests.rs
+@@ -220,7 +220,8 @@ fn formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key() -
+     let mut pipeline = PkiPipeline::start()?;
+     let leader = pipeline.ready_leader()?;
+     ssh_setup(&pipeline, leader)?;
+-    setup_ca(&pipeline, leader)?;
++    let ca = setup_ca(&pipeline, leader)?;
++    exact_public(&pipeline, leader, &ca)?;
+     let before = pipeline.with_service(leader, |service| {
+         service
+             .current_state_identity()
+@@ -234,6 +235,9 @@ fn formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key() -
+         ("POST", "ssh/issue/operators", json!({"key_type":"ed25519"})),
+         ("GET", "ssh/public_key", json!({})),
+     ] {
++        // Supply valid original ingress so the public-read denial must cross
++        // the lost-quorum proof gate, not the missing-ingress fallback.
++        let _ingress = crate::auth::IngressReplyScope::listener(&[0xd8; 16]);
+         let response = expect(
+             pipeline.call(
+                 leader,
+diff --git a/crates/heptabao-server/src/service_native_ssh_tests.rs b/crates/heptabao-server/src/service_native_ssh_tests.rs
+index 9068ccce..76e073d8 100644
+--- a/crates/heptabao-server/src/service_native_ssh_tests.rs
++++ b/crates/heptabao-server/src/service_native_ssh_tests.rs
+@@ -1079,13 +1079,27 @@ fn native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply() -
+     // The actual mandatory audit writer now has the same owned file opened
+     // read-only. Its real append fails; no successful audit receipt is invented.
+     f.service.audit = fs::File::open(f.files.path.join("audit.jsonl"))?;
++    let fingerprint = f
++        .service
++        .request_fingerprint("POST", "ssh/issue/operators", "", &f.admin);
++    let sequence = f.service.audit_sequence;
++    let after_audit = std::cell::Cell::new(false);
+     let denied = f.service.audit_completed_response_with_receipt(
+-        "native-ssh-real-readonly-audit-failure",
++        &fingerprint,
+         f.now,
+         Some(clock),
+         response,
+-        || {},
++        || after_audit.set(true),
+     );
++    assert!(f.service.audit_failed);
++    assert_eq!(f.service.audit_sequence, sequence);
++    assert!(!after_audit.get());
++    // begin_at_mode_started_clock_with_quota retains this exact capsule over
++    // response audit and consumes it at the following delivery boundary.
++    // Exercise that production finalizer even when mandatory audit refused.
++    let denied = f
++        .service
++        .complete_native_auth_delivery(true, denied, &fingerprint);
+     status(&denied, 503);
+     assert!(denied.body.get("data").is_none() && denied.body.get("auth").is_none());
+     assert!(denied.unwrapped_json.is_none() && denied.consistency_index.is_none());
