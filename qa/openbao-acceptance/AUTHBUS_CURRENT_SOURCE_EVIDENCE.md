@@ -1,7 +1,7 @@
 # Current AuthBus source and real consumer evidence (2026-11-04)
 
-These acceptance programs are separate from the server implementation. The final
-normal candidate used below is commit `36076db5f5afe00db75eba9b607dee7802dae554`,
+These acceptance programs are separate from the server implementation. The normal
+candidate used for the Mac and X230 lifecycle receipts below is commit `36076db5f5afe00db75eba9b607dee7802dae554`,
 tree `ae71c4b243afd4099db66e7d9882b3f28c777a95`. No fixture binary or provider mock
 qualifies as a replacement for the real lifecycle.
 
@@ -13,6 +13,7 @@ qualifies as a replacement for the real lifecycle.
 | X230 independent assessment | Same root, `assessment.public.json` | SHA256 `4336a6e7dd4d6e31c83fd6d6cb339e4b9887a048f8345a4e8f9f7d003de0fc5f` |
 | Mac installed AuthBus plugin, installed SDK default resolver | `/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/final360-core-r2/result.public.json` | 54 parent assertions; two consumer phases of 51 assertions each; two SDK rollbacks of 40 each |
 | Mac final core receipt | Same receipt | SHA256 `3ac84a78cb6f6fb145508adbb6918cf7de40478ec92854eeb4427ec5c04242a7` |
+| Mac actual registered Codex native consumer | Same Mac root, `final360-native-codex-live-r5/result.public.json` | 60 parent; initial/cold native 95 each; initial/cold full-store CAS rollback 62 each; exact four terminal phases |
 
 The X230 actual receipt SHA256 is
 `87e8182fd7a04e4194800811737f5b2f48d7d20b6455641421c3bfdd19132d61`.
@@ -246,7 +247,7 @@ The exact primary source entry points are:
 * https://github.com/openai/codex/blob/rust-v0.144.3/codex-rs/app-server/src/request_processors/account_processor.rs
 * https://github.com/openai/codex/blob/rust-v0.144.3/codex-rs/app-server/src/message_processor.rs
 * https://github.com/openai/codex/blob/rust-v0.144.3/codex-rs/app-server/src/models_refresh_worker.rs
-* https://github.com/openai/codex/blob/rust-v0.144.3/codex-rs/core/src/auth/manager.rs
+* https://github.com/openai/codex/blob/rust-v0.144.3/codex-rs/login/src/auth/manager.rs
 
 A subsequent native consumption check must use actual installed registration,
 the actual harness selector and the original agent-scope auth builder. The
@@ -258,6 +259,138 @@ or reject RPCs; it must not replace token parameters, native responses or SDK
 selection. Kernel network denial must include all native descendants. Background
 attempts cannot be reported as zero merely because egress is blocked. No native
 factory success or business availability is claimed by this source-only audit.
+
+### Actual Mac native lifecycle: one complete normal360 run
+
+`final360-native-codex-live-r5/result.public.json`, SHA256
+`6caa9ebfc2a3bf3ae637676a8055022817ec0efa85b09c6ffc304ac854ca6236`,
+is the accepted complete native run. It passed 60/60 parent assertions, 95/95
+in each initial/cold native consumer, and 62/62 in each complete logical-store
+CAS rollback, in 14.113 seconds. The actual terminal sequence is exactly:
+
+1. `consumer-initial`;
+2. `consumer-cold-new-process`;
+3. `consumer-initial.rollback`;
+4. `consumer-cold-new-process.rollback`.
+
+The real installed registry row was captured in a read-only SQLite transaction
+and staged with its original schema. The actual installed loader registered the
+enabled harness owners `codex`, `google`, and the `openai` provider. The real
+selector chose the registered Codex harness for the unchanged main default
+`openai/gpt-5.6-sol`; no runtime, model, preferred profile, `authProfileId`, or
+`authProfileStore` override was supplied to the native factory. Original managed
+command, argv, stdio and agent home-scope semantics were retained. The isolated
+factory shares the pinned process/auth builder with the production leased factory;
+its lifecycle is private to this test.
+
+Actual AuthBus TLS/AppRole reads imported the two real, same-account generations.
+The current SDK selected ordinal 1 in both phases, rather than fixing the earlier
+ordinal 2 selection. The captured ordinal-1 quota timestamp had elapsed; its
+committed quota metadata was retained. Each real native 0.144.3 process completed
+`initialize`, its own `account/login/start` with exactly the selected access token
+and account, and `account/read` with `refreshToken:false`. The original RPC
+parameters and response objects passed through unchanged. Both native responses
+and the exact isolated native home were checked. No model or explicit refresh
+RPC was dispatched. Native startup background network attempts were not counted;
+all external egress was blocked by the kernel. Local success does not certify
+model quota, current provider connectivity, or production gateway availability.
+
+The caller's existing process-lifecycle test hook keeps Node, its actual npm
+launcher, and the actual native executable in the owned parent process group.
+Before the first RPC, the outer Python owner reads only that lineage through
+macOS libproc. It binds the exact executables, UID, PPID, PGID and microsecond
+birth identities, then rechecks the complete chain. Its response pipe's write
+end belongs only to the outer owner. Node waits for the matching nonce and real
+identity acknowledgement before returning the spawned child to the installed
+transport. The three-second observation deadline is capped by the unchanged
+120-second parent deadline, including the second observation and successful ACK;
+the native initialization budget remains 15 seconds.
+
+One inherited kernel policy covers Node and native. They share the fresh run
+directory and the exact test HeptaBao loopback endpoint. Other files below the
+external-disk BASE are denied except exact pinned QA source files; production
+agents/state/credentials, user Codex authentication, and production OpenClaw
+configuration are denied. Signals are allowed only to children, so the actual
+SDK can close its own transport. There is no native-exclusive home/tmp sandbox
+or blanket local-network-denial claim. Four control files' bytes are hashed in
+Node memory before native startup and compared after close: plan, original SDK
+baseline, committed rollback checkpoint and private configuration. The committed
+SDK store also remains completely unchanged by native consumption. Native
+external tokens stay Ephemeral: no `auth.json` is created, and no literal provider
+access/refresh token appears in native-home files.
+
+`native-outer-observer-preflight-r2/result.public.json`, SHA256
+`339368eb94ec0058bffcac531b343c941aa4f1cac161b6d89f3fac2fe7403f5a`,
+proves the actual receiver/outer observer with synthetic processes: the real
+lineage passes, a forged launcher-parent claim fails, owned children accept
+SIGTERM/SIGKILL and are awaited, while signal 0 to this fixture's owned outer
+ancestor is refused. No production PID, credential, app-server or provider is
+used by that probe. Its prior r1 receipt, SHA256
+`440782b784c154f3fd42c621d49bc7f7315e320271718eacf4135b730d23973d`,
+remains failed because the original sandbox also refused child signals.
+
+The complete r5 also proves policy denial, AppRole token renewal, revocation and
+rejection of the revoked token, formal V6 persistence, actual SIGKILL/wait, cold
+sealed startup and unseal. All four owned process groups were reaped with no
+survivors or unknown outcome, and the HeptaBao process stopped. All five live
+auth stores, user native source, production agent native inputs and legacy relay
+PIDs stayed unchanged. This is a main-agent isolated native qualification, not a
+restart or cutover of the production gateway or every live session.
+
+The private full store differs from production in a deliberate, bounded way.
+All three original identities remain. Ordinals 1 and 2 receive their independently
+bound new generations and captured quota states; ordinal 3's credential remains
+unchanged. The private managed order is 1,2, whereas the unchanged production
+main SDK currently falls back through 1,2,3. This test does not authorize dropping
+ordinal 3's production fallback, identity, failed-generation record or recovery
+material. Both full-store rollbacks restore their own complete original baseline.
+
+The final executed program hashes are:
+
+| Program | SHA256 |
+|---|---|
+| `authbus_native_codex_consumer.mjs` | `a0faff4f0da0f9afd505476715495bf2ae4af040693020cf46e56b707aa7a733` |
+| `authbus_native_codex_live.py` | `c384de8d1ada71f5fc4461a1cb5c03faaa178d42d88bfe6a652aa77c0ca101d0` |
+| `authbus_native_process_observer.py` | `5cdebff7fc0f3350838abf02f0cbcd4a2b98862cd11b54a5d7ee683d48d3ca51` |
+
+### Native attempts retained separately, including the r4 accounting defect
+
+The native r1 receipt, SHA256
+`0814acbe73fafc28e743916cad6a98e4717ca09db4396704d6179cf0edab4483`,
+failed because the observer demanded `shell:false`; the actual POSIX spawn
+contract uses undefined for no shell. Native r2, SHA256
+`4f6869e6edf7dc39b199da31976eb0ef56aae7fff2315c38b45d37db33d32598`,
+failed before any native RPC under the nested sandbox design. The independent
+no-credential nested diagnostic, SHA256
+`0035f98d5770db4a374876cc61666847959ae6c127903856b83dcd9c74c83eac`,
+reports `sandbox_apply: Operation not permitted`; it is not retroactively
+represented as r2's native stderr.
+
+Native r3, SHA256
+`0168c4a3a0703f2240145117366a42dbc31f7cd1ecdc5647282c53b369f5b4e6`,
+used the single sandbox but its in-sandbox `/bin/ps` observer was refused. It sent
+no native RPC. The original 120-second Node timeout remains `outcomeUnknown:true`;
+the owner killed/reaped the group, and its one reached strict rollback passed.
+Numbered checks before an exception are not an overall successful consumer.
+
+Native r4, SHA256
+`2c79b976d1cb3bdc18735a2e5c6d313515fb9b41be804154bfbbd21df2884086`,
+contains two actual 95/95 native phases but is **not accepted as a complete
+lifecycle**, despite its original `ok:true`. `consume(name)` reused `name` in
+native-config loops. Both plan registrations used `requirements.toml`, so the
+cold plan replaced the initial plan and only the cold rollback ran. This is a QA
+accounting defect, not a successful initial rollback or a server rollback failure.
+
+The initial rollback had never been attempted. A separate, create-only cleanup
+used its exact original committed checkpoint and one installed-SDK CAS, passed
+62/62, and reaped all owned processes. Its receipt is
+`final360-native-codex-live-r4/initial-missing-rollback-cleanup-r1/result.public.json`,
+SHA256 `8ebbdc7b15818d2dc4e213eccddf0486b112bb123b5a3c1e080c040e72c10024`.
+That independent cleanup does not convert r4 into a same-run complete pass.
+The original r4 bytes remain unchanged. R5 fixes the loop variable and requires
+exactly two named plans, two distinct attempted/successful rollback guards, and
+the precise four successful terminal phases. The fix patch SHA256 is
+`8d912e7c344263ed04c73719d8ce49764bbe26a118553f89c49cc204d97b030e`.
 
 ### ROG's parallel native-user consumer is a different contract
 
@@ -288,6 +421,87 @@ Changing the model, forcing agent scope or adding an unused alias would not
 qualify the actual consumer. A separate isolated native preservation test and
 later production restart/rollback must preserve this fourth account and actual
 home scope. The source-binding receipt is not a successful runtime test.
+
+The later ROG native-preservation run has a separate, narrower successful scope.
+`/home/qian-qi/heptabao-installed-authbus-consumer-36076-20261104-r1/native-preservation-live-r3/result.public.json`,
+SHA256 `4c905377b40663d972839117579fa3e0a317528ac6e6b9fddfd0765cd18c7472`,
+passed 60/60 controller checks, 94/94 for each initial/cold consumer and 64/64
+for each complete rollback. Its scope assessment SHA256 is
+`bdcc830eb0d5becb0a26f5cb3f601ed34c31ab55e57fa2e1ad19ee7f872470a5`.
+SDK source 1 is imported while the independent user-native source 4 is preserved.
+Actual native CLI traces bind the copied native auth/config; the actual 0.159.2
+factory initializes with the isolated user home. No explicit native login,
+account-read or turn RPC is sent. Startup background attempts are unmeasured and
+external egress is blocked. This does not claim source 1 drove native source 4,
+or that the actual production gateway restarted or changed its auth binding.
+The original generic 41/42 failure remains unchanged.
+
+### Pocket's current default identity is a separate source
+
+The bounded current runtime projection is
+`/home/alex/heptabao-installed-authbus-consumer-36076-20261104-r1/pocket-native-runtime-source-r2/result.public.json`,
+SHA256 `7668332584a3a7194f6579fbb899ecc0e329ee3588a18f3d057158ac5921329f`.
+The default `openai/gpt-5.6-sol` has an explicit matching Codex runtime override,
+agent home scope, and the managed 0.144.3 executable. The main store contains five
+identities and its current `openai` order contains only local ordinal 5. That
+identity/generation is distinct from the earlier imported ROG source 1. The
+separate user-native file maps to local ordinal 4, not this default agent choice.
+Earlier generic SDK import success must not be presented as preserving or
+qualifying this current native consumer.
+
+The actual installed registry/policy/auth-plan/native selector was separately
+run on both configured agents, with no native process or provider request:
+`actual-native-selector-r6/result.public.json`, SHA256
+`79e232c4282796ffb07c174fbc32c5e4a4cb5f87167ec42851fd042cc8a8f3ea`,
+passed 30/30. Both choose ordinal 5. The second agent inherits main's effective
+profiles/order/usage through the real SDK. Its local profile map is empty, but
+its raw SQLite representation contains one profile-free `primary` store row and
+no state row. The shape correction receipt, SHA256
+`158fb3da106d0b81abb110a002938aa2df86a1a76cc85d927e8dd6306b249adb`,
+binds complete rows and timestamps to digest
+`76f1ceb53832209d67692c17ba4967df8fa0114f2365989fa5a8c963b095c4e6`.
+That distinction is necessary for exact rollback; an empty profile map does not
+authorize deleting the original row or changing its timestamp.
+
+Two subsequent Pocket native scopes were independently read in full. They use
+normal server commit `33cafa4c6e29f0bde1553e041550d21b4c725d9c`, tree
+`cdc2376e7b39c1d8bbbeb10a813d58bfe923f336`, Linux binary SHA256
+`7dc5bc5157d62fd92e8cb10f1270f9ea776a929fde77a87eeb284509e82f1bba`.
+They must not be relabeled as the Mac/X230 normal360 build.
+
+| Pocket scope under the same host root | Receipt SHA256 | Original checks and observed effect |
+|---|---|---|
+| `current-native-full-r2/live/result.public.json` | `9006c6d0eae73de89dd62ed381877c873cabd1fff94f790ded7c3e2e2241c7dd` | 49 parent, 111 per initial/cold consumer, 80 per strict rollback; full-current import was idempotent in both agents |
+| `current-native-missing-r2/live/result.public.json` | `133e1060d327bd14cae5b0673d3c5649c92d99c5d306f946114bcd480c691b41` | 49 parent, 110 per initial/cold consumer, 80 per strict rollback; real current ordinal-5 insertion into the owned main store, inherited by the second agent |
+
+The latter private fixture removes only the current fifth credential from a
+copy; production is kernel read-only. Real HeptaBao TLS/AppRole import restores
+the exact full five-profile source. Main's raw auth rows change; the second
+agent's raw row remains unchanged while its effective profile set inherits the
+restored credential. Both retain current order and usage exactly. The real
+installed loader, explicit default runtime and unforced native selector choose
+ordinal 5 for both agents. Each factory performs real initialize and exact
+`chatgptAuthTokens` login, and checks the native response type without replacing
+the response. Native version/home, full local SDK store, inherited effective
+store and complete original raw rows are separately verified.
+
+Each scope has the four expected initial/cold/initial-rollback/cold-rollback
+terminal records. The SDK transaction's actual local store is captured using
+its updater-return-false contract; it is not confused with the merged effective
+view. Each rollback guard is consumed once, including failures or unknowns.
+Raw-row CAS preserves the profile-free primary row and original timestamp.
+Both production auth tables, configuration, metadata, native inputs and held
+unit registrations remain unchanged; all owned native groups and servers stop.
+Private PID/network namespaces, read-only production mounts and the original
+10/70/35-second HTTP/consumer/rollback budgets remain in effect. Startup backend
+attempts are unmeasured, with no external network egress or model request. The
+production held gateway is not restarted or released by these isolated results.
+
+The earlier `current-native-full-r1` preflight remains 12/13 and overall false,
+receipt SHA256 `9ea170dd126fdcd936c9d05ebf06c054596b1472f89610e4ecc23e10061097f2`.
+It started no HeptaBao, SDK consumer or native process. Its incorrect raw-empty
+premise was replaced by exact equality to the already captured profile-free
+primary row; the native, CAS and budget requirements were retained.
 
 The confirmed old-OpenBao consumer on these hosts is the installed AuthBus
 importer/order service. It still points at J3160. Its SDK-store imports, Mac's
@@ -410,6 +624,37 @@ and main-store paths are absent. Pocket4's exact comparison receipt is
 SHA256 `ac60715ada039f141c2ba40255790580c5fb72aba1f6a9c88b5d59b63995c01d`.
 No J3160 access or whole-disk credential search was used.
 
+### Finite current-consumer attribution of the rejected generation
+
+`profile3-current-bindings-r1/result.public.json`, SHA256
+`6a059b7f4b69b5cb37808b2e447eea6a89dda4a003d2eb5c4816510a0d0aba4e`,
+uses already captured Mac configuration, five auth stores, the actual original
+main SDK order and the replacement manifest. It performs no new provider request
+or broad credential search. Exact nonmetadata configuration references to profile
+3 were zero, but the original main SDK fallback is 1,2,3: profile 3 remains the
+third candidate. This is not proof it is inactive or only historical. No current
+session-specific profile override was observed. Its identity, rejected generation
+and recovery materials must remain available in a migration; the private two-source
+test's 1,2 order does not authorize removing that production fallback.
+
+On Pocket, the same rejected generation remains stored, but both configured
+default native selectors were actually evaluated and choose only ordinal 5.
+Its finite exact configuration-reference count for profile 3 is zero. The
+applicable source/reference and selector receipts are
+`current-profile3-reference-r1/result.public.json` (SHA256
+`eaa993fce1a8ce57c2d485344b7895de01c4713303d7057ff78c46fa0d20747b`)
+and the 30/30 two-agent selector receipt above. ROG's user-native default source
+is the separate fourth account. These bounded facts do not prove every possible
+future/manual session choice, but they do not establish that restoring profile 3
+is necessary for either Pocket default consumer or ROG's independent native path.
+
+The exact rejected refresh is an external account-recovery fact. Existing model
+quota limits and this failed generation are reported separately from HeptaBao
+TLS, AppRole, KV, policy, persistence and rollback capability. They are not
+automatically expanded into new prerequisites for replacing the credential store.
+The human login helper remains prepared only; no rejected refresh, unknown login
+or sealed business POST is replayed.
+
 ## Native authentication backend and prepared human recovery
 
 The separately installed user CLI used for recovery preparation is Codex 0.133.0;
@@ -512,10 +757,14 @@ selected final HeptaBao TLS endpoint, retain host inbox boundaries, preserve all
 existing account identity mappings and quota state, and snapshot the exact
 previous configuration and every affected logical auth store before publication.
 The same stopped gateway state and startup registration must be restorable.
-Default resolver and actual business consumption must be evaluated per host;
-ROG's `codex/gpt-6.1-sol` custom provider cannot be assumed equivalent merely from
-its name. A failed consumer or provider gate stays failed until independently
-resolved. A private rollback does not qualify the production recovery path.
+The actual credential consumer, default runtime and restart/rollback must be
+evaluated per host. ROG's `codex/gpt-6.1-sol` uses its independently bound user
+native source; a generic provider-name alias would not qualify that path.
+Provider business availability remains a separate recorded qualification. A
+pre-existing quota limitation or retained rejected historical generation does
+not by itself show that faithful credential-store migration failed. Conversely,
+local token consumption does not claim provider availability. A private rollback
+does not qualify the production recovery path.
 
 All enumerated consumer configurations, startup jobs and backup paths must be
 migrated or explicitly retired before old OpenBao/HeptaBao services, binaries or
@@ -523,3 +772,13 @@ recovery assets are deleted. Recent inventory found relay-internal bindings but
 no direct current default-model binding to the old relay ports; that is not proof
 that no legacy consumer exists. Legacy relay reconstruction is consequently not
 an invented prerequisite for the independently configured native AuthBus path.
+
+The finite four-host startup/client/backup planning scope is recorded at
+`/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/finite-cutover-registration-scope-r2.public.json`,
+SHA256 `f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64`.
+It is a planning inventory, not proof of cutover or permission to ignore an
+observed dependency. Newly observed active command/configuration or restore
+bindings reopen that bounded scope. Hypothetical unregistered manual paths do
+not add an unbounded search gate. Mac's four relay registrations, ROG's dormant
+restart/accept helpers, Pocket's exact held startup markers, and X230's disabled
+proxy/dev oracle remain individually tracked until their disposition is proved.
