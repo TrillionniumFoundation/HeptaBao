@@ -1,0 +1,1445 @@
+--- a/crates/heptabao-server/src/service.rs
++++ b/crates/heptabao-server/src/service.rs
+@@ -2325,7 +2325,9 @@
+     /// provider effect may be returned as an owned external plan after its
+     /// intent has been durably committed.
+     pub(crate) fn begin_request(&mut self, request: ServiceRequest<'_>) -> RequestExecution {
+-        let started = std::time::Instant::now();
++        let started = self
++            .native_snapshot_clock
++            .map_or_else(std::time::Instant::now, |(started, _)| started);
+         let observed = self.native_snapshot_clock.map_or_else(
+             || {
+                 SystemTime::now()
+@@ -5626,7 +5628,13 @@
+             )
+         {
+             if self.native_snapshot_transport {
+-                let Some(principal) = principal.take().filter(Principal::is_root) else {
++                let Some(principal) = principal.take().filter(|actor| {
++                    actor.is_root()
++                        || (matches!(
++                            path,
++                            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
++                        ) && request.body.as_object().is_some_and(|body| body.is_empty()))
++                }) else {
+                     return Response::error(403, "permission denied");
+                 };
+                 return self.stage_snapshot_transfer(principal, &request);
+--- a/crates/heptabao-server/src/service_snapshot_transfer.rs
++++ b/crates/heptabao-server/src/service_snapshot_transfer.rs
+@@ -73,6 +73,20 @@
+ #[path = "service_snapshot_v6.rs"]
+ mod v6;
+ 
++#[cfg(feature = "native-v6-ha")]
++#[path = "service_snapshot_denial.rs"]
++mod denial;
++
++#[cfg(feature = "native-v6-ha")]
++enum StandbySnapshotAdmission {
++    Redirect,
++    Authenticated {
++        actor: Box<Principal>,
++        clock: (Instant, Duration),
++    },
++    Denied(Box<denial::StandbySnapshotDenial>),
++}
++
+ // A routing hint is deliberately not an application read/write capability.
+ // Only this module can construct one, from a configured HA peer API origin.
+ pub(crate) struct TrustedSnapshotOrigin(String);
+@@ -455,9 +469,10 @@
+             )));
+         }
+         #[cfg(feature = "native-v6-ha")]
+-        let mut standby_actor = None;
++        let (mut standby_actor, mut standby_observation) = (None, None);
+         #[cfg(not(feature = "native-v6-ha"))]
+-        let standby_actor: Option<Principal> = None;
++        let (standby_actor, standby_observation): (Option<Principal>, Option<(Instant, Duration)>) =
++            (None, None);
+         // This is before authentication/finite-use persistence, staging and
+         // JSON HA forwarding. The receiving leader independently authorizes
+         // the original request; observing a leader never grants authority.
+@@ -465,7 +480,17 @@
+             Ok(Some(origin)) => {
+                 #[cfg(feature = "native-v6-ha")]
+                 match self.prepare_native_standby_snapshot_read(&request) {
+-                    Ok(actor) => standby_actor = actor,
++                    Ok(StandbySnapshotAdmission::Redirect) => {}
++                    Ok(StandbySnapshotAdmission::Authenticated { actor, clock }) => {
++                        standby_actor = Some(*actor);
++                        standby_observation = Some(clock);
++                    }
++                    Ok(StandbySnapshotAdmission::Denied(denied)) => {
++                        erase_json(&mut request.body);
++                        return NativeSnapshotAdmission::Execute(RequestExecution::Complete(
++                            self.complete_standby_snapshot_denial(*denied),
++                        ));
++                    }
+                     Err(response) => {
+                         erase_json(&mut request.body);
+                         return NativeSnapshotAdmission::Execute(RequestExecution::Complete(
+@@ -515,10 +540,13 @@
+         }
+         // Pair wall time and the monotonic anchor before reconciliation, audit,
+         // authentication and finite-use persistence can spend admission time.
+-        let started = Instant::now();
+-        let now = SystemTime::now()
+-            .duration_since(UNIX_EPOCH)
+-            .unwrap_or(Duration::ZERO);
++        let (started, now) = standby_observation.unwrap_or_else(|| {
++            let started = Instant::now();
++            let now = SystemTime::now()
++                .duration_since(UNIX_EPOCH)
++                .unwrap_or(Duration::ZERO);
++            (started, now)
++        });
+         let previous_clock = self.native_snapshot_clock.replace((started, now));
+         let previous = self.native_snapshot_transport;
+         let previous_standby = self.native_snapshot_standby_read;
+@@ -578,7 +606,7 @@
+     fn prepare_native_standby_snapshot_read(
+         &mut self,
+         request: &ServiceRequest<'_>,
+-    ) -> Result<Option<Principal>, Response> {
++    ) -> Result<StandbySnapshotAdmission, Response> {
+         if !self.native_ha_snapshot_transport_enabled()
+             || !matches!(
+                 (request.method, request.path),
+@@ -592,60 +620,84 @@
+             || request.wrap_ttl_seconds.is_some()
+             || request.body.as_object().is_none_or(|body| !body.is_empty())
+         {
+-            return Ok(None);
++            return Ok(StandbySnapshotAdmission::Redirect);
+         }
+-        // ReadIndex and authenticated materialization precede inspecting the
+-        // real token. A stale replica cannot select a revoked or newly finite
+-        // token. No mutation, use consumption or optimistic snapshot is made.
++        // Actual synchronization and ReadIndex precede token inspection.
++        // A routing hint cannot select stale credentials or spend a use.
+         self.sync_from_ha_with_anchor(false)?;
+         if !self.native_standby_snapshot_is_read_eligible() {
+-            return Ok(None);
++            return Ok(StandbySnapshotAdmission::Redirect);
+         }
++        let started = Instant::now();
+         let observed = SystemTime::now()
+             .duration_since(UNIX_EPOCH)
+             .map_err(|_| Response::error(503, "trusted snapshot clock is unavailable"))?;
+-        let at = RequestClock::anchored(observed, Instant::now())
+-            .and_then(RequestClock::observed_at)
++        let clock = RequestClock::anchored(observed, started)
+             .map_err(|_| Response::error(503, "trusted snapshot clock is unavailable"))?;
++        let at = clock
++            .observed_at()
++            .map_err(|_| Response::error(503, "trusted snapshot clock is unavailable"))?;
+         let state = self
+             .state
+             .as_ref()
+             .ok_or_else(|| Response::error(503, "server is sealed"))?;
+-        let actor = match state.auth.authenticate_read_only_from_observed(
++        let mut actor = match state.auth.authenticate_read_only_from_observed(
+             request.token,
+             AuthorityTime::Precise(at),
+             request.origin_peer,
+         ) {
+-            Ok(Some(actor)) if actor.is_root() => actor,
+-            // The fixed OpenBao 2.7.1 default standby redirects missing,
+-            // invalid, finite-use and wrapping credentials without spending a
+-            // use. The leader remains responsible for their normal admission.
+-            _ => return Ok(None),
++            Ok(Some(actor)) => actor,
++            // Missing, invalid, finite-use and wrapping credentials still
++            // redirect without consumption; only a real unlimited Actor can
++            // select local ACL handling.
++            _ => return Ok(StandbySnapshotAdmission::Redirect),
+         };
+-        if state
+-            .auth
+-            .authorize_request_observed(
+-                &actor,
+-                request.namespace,
+-                request.path,
+-                if matches!(request.method, "GET" | "HEAD") {
+-                    "read"
+-                } else {
+-                    "update"
+-                },
+-                AuthorityTime::Precise(at),
+-            )
+-            .is_err()
+-        {
+-            return Ok(None);
+-        }
++        let admission = Self::bind_identity_principal(state, &mut actor, request.namespace)
++            .and_then(|()| {
++                state
++                    .auth
++                    .authorize_request_parameters_observed(
++                        &actor,
++                        request.namespace,
++                        request.method,
++                        request.path,
++                        &request.body,
++                        AuthorityTime::Precise(at),
++                    )
++                    .map_err(|error| Response::error(error.status, &error.message))
++            })
++            .and_then(|()| {
++                state
++                    .auth
++                    .authorize_request_observed(
++                        &actor,
++                        request.namespace,
++                        request.path,
++                        if matches!(request.method, "GET" | "HEAD") {
++                            "read"
++                        } else {
++                            "update"
++                        },
++                        AuthorityTime::Precise(at),
++                    )
++                    .map_err(|error| Response::error(error.status, &error.message))
++            });
+         if state.has_token_api_precision_state() && crate::auth::current_ingress().is_none() {
+             return Err(Response::error(
+                 503,
+                 "standby clock requires original HTTP ingress",
+             ));
+         }
+-        Ok(Some(actor))
++        match admission {
++            Ok(()) => Ok(StandbySnapshotAdmission::Authenticated {
++                actor: Box::new(actor),
++                clock: (started, observed),
++            }),
++            Err(response) if response.status == 403 => self
++                .prepare_standby_snapshot_denial(request, actor, response, clock, observed, started)
++                .map(|denied| StandbySnapshotAdmission::Denied(Box::new(denied))),
++            Err(response) => Err(response),
++        }
+     }
+ 
+     pub(super) fn stage_snapshot_transfer(
+@@ -696,6 +748,18 @@
+                 "native snapshot requires the root namespace and no query fields",
+             );
+         }
++        if !actor.is_root()
++            && !matches!(
++                request.path,
++                "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
++            )
++        {
++            return Response::error(403, "permission denied");
++        }
++        #[cfg(feature = "native-v6-ha")]
++        if !actor.is_root() && native_ha_pending_restore.is_some() {
++            return Response::error(403, "permission denied");
++        }
+         let Some((started, now)) = self.native_snapshot_clock else {
+             return Response::error(503, "snapshot admission clock unavailable");
+         };
+@@ -708,6 +772,25 @@
+         if !download && !matches!(request.method, "POST" | "PUT") {
+             return Response::error(405, "snapshot restore requires POST or PUT");
+         }
++        // Public snapshot policy tokens must pass the same real read/update
++        // ACL before any V5/V6 export, validation lease or restore preparation.
++        // Internal repair/lossless/pending-restore operations remain root-only.
++        let time = match request.token_time() {
++            Ok(time) => time,
++            Err(error) => return error,
++        };
++        let Some(state) = self.state.as_ref() else {
++            return Response::error(503, "server is sealed");
++        };
++        if let Err(error) = state.auth.authorize_request_observed(
++            &actor,
++            request.namespace,
++            request.path,
++            if download { "read" } else { "update" },
++            time,
++        ) {
++            return Response::error(error.status, &error.message);
++        }
+         if !download
+             && !repair
+             && self.state.as_ref().is_some_and(|state| {
+--- a/crates/heptabao-server/src/service_snapshot_v6_ha.rs
++++ b/crates/heptabao-server/src/service_snapshot_v6_ha.rs
+@@ -100,7 +100,11 @@
+         {
+             return Err(unavailable());
+         }
+-        if !plan.actor.is_root() || !plan.namespace.is_empty() {
++        let public_snapshot = matches!(
++            plan.path.as_str(),
++            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
++        );
++        if (!plan.actor.is_root() && !public_snapshot) || !plan.namespace.is_empty() {
+             return Err(Response::error(403, "permission denied"));
+         }
+         let now = snapshot_observed_time(plan.now, plan.started.elapsed());
+@@ -446,40 +450,34 @@
+                     receipt.consume(&process, context)?
+                 };
+                 self.sync_from_ha_with_anchor(false)?;
+-                let expected = terminal.unwrap_or(source);
+-                self.check_native_ha_snapshot_owner_at(
+-                    plan,
+-                    StateIdentity::RecordsV6(expected.root_digest),
+-                )?;
+-                let source_auth = self.state.as_ref().ok_or_else(unavailable)?.auth.clone();
++                let expected = terminal.successor().unwrap_or(source);
++                self.check_native_ha_snapshot_owner_before_identity(plan)?;
++                if self.current_state_identity()?
++                    != StateIdentity::RecordsV6(expected.root_digest)
++                    || self.current_snapshot_seal_identity_for_plan(plan)? != plan.seal_identity
++                {
++                    return Err(unavailable());
++                }
++                // A Denied completion still has to prove actual B before a
++                // final actor refusal may be delivered. Shared metadata and
++                // the status alone cannot stand in for this real ReadIndex.
+                 let current = self
+                     .capture_native_ha_request_proof(&mut || {
+                         if Instant::now() >= plan.deadline {
+-                            return Err(unavailable());
++                            Err(unavailable())
++                        } else {
++                            Ok(())
+                         }
+-                        source_auth
+-                            .authorize_request(
+-                                &plan.actor,
+-                                &plan.namespace,
+-                                &plan.path,
+-                                if plan.is_download { "read" } else { "update" },
+-                                snapshot_observed_time(plan.now, plan.started.elapsed()),
+-                            )
+-                            .map_err(|error| Response::error(error.status, &error.message))
+                     })?
+                     .ok_or_else(unavailable)?;
+                 if current.snapshot_clock_shared_state() != expected {
+                     return Err(unavailable());
+                 }
+-                // The remote receipt proves ONLY the actual clock-only
+-                // writer. This separate real B proof must authenticate the
+-                // direct A -> B shared publication. Its local journal may have
+-                // advanced by a different amount during replica catch-up.
+                 let local_checkpoint = (
+                     self.current_state_identity()?,
+                     self.external_effect_generation()?,
+                 );
+-                if terminal.is_some() {
++                if terminal.successor().is_some() {
+                     exported.check_snapshot_terminal_successor(self, &current)?;
+                 } else {
+                     exported.check_with(self, Service::check_native_installed)?;
+@@ -490,7 +488,28 @@
+                 {
+                     return Err(unavailable());
+                 }
+-                self.check_native_ha_snapshot_owner_at(plan, local_checkpoint.0)?;
++                self.check_native_ha_snapshot_owner_before_identity(plan)?;
++                let actor = self.check_native_ha_snapshot_owner_after_identity(plan);
++                if terminal.is_denied() {
++                    match actor {
++                        Err(error) if error.status == 403 => {
++                            terminal.finish_denied()?;
++                            return Err(error);
++                        }
++                        _ => return Err(unavailable()),
++                    }
++                }
++                // A newly observed expiry after an Allowed floor is not a
++                // Denied proof; refuse without releasing A or replaying the
++                // clock operation. Pre-writer expiry retains sealed Denied403.
++                actor.map_err(|error| {
++                    if error.status == 403 {
++                        unavailable()
++                    } else {
++                        error
++                    }
++                })?;
++                terminal.finish_allowed()?;
+             } else {
+                 // The old pure case still checks its original actual proof
+                 // after mandatory audit. It is not an exemption for a store
+--- a/crates/heptabao-server/src/service_snapshot_v6.rs
++++ b/crates/heptabao-server/src/service_snapshot_v6.rs
+@@ -156,7 +156,11 @@
+             .ok_or_else(unavailable)?
+             .check_environment(self)?;
+         let state = self.state.as_ref().ok_or_else(unavailable)?;
+-        if !plan.actor.is_root() || !plan.namespace.is_empty() {
++        let public_snapshot = matches!(
++            plan.path.as_str(),
++            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
++        );
++        if (!plan.actor.is_root() && !public_snapshot) || !plan.namespace.is_empty() {
+             return Err(Response::error(403, "permission denied"));
+         }
+         let now = snapshot_observed_time(plan.now, plan.started.elapsed());
+--- a/crates/heptabao-server/src/service_snapshot_clock.rs
++++ b/crates/heptabao-server/src/service_snapshot_clock.rs
+@@ -3,7 +3,8 @@
+ //! operation. Its sealed result is created only after the actual clock writer.
+ use super::*;
+ use crate::ha::snapshot_clock::{
+-    AuthenticatedSnapshotClockRequest, SharedSnapshotClockState, SnapshotClockOperation,
++    AuthenticatedSnapshotClockRequest, SharedSnapshotClockState, SnapshotClockDisposition,
++    SnapshotClockOperation,
+ };
+ 
+ // Neither serde nor a public field/constructor can turn shared root metadata
+@@ -12,11 +13,18 @@
+ pub(crate) struct SnapshotClockObservation {
+     source: SharedSnapshotClockState,
+     successor: Option<SharedSnapshotClockState>,
++    disposition: SnapshotClockDisposition,
+ }
+ 
+ impl SnapshotClockObservation {
+-    pub(crate) fn into_parts(self) -> (SharedSnapshotClockState, Option<SharedSnapshotClockState>) {
+-        (self.source, self.successor)
++    pub(crate) fn into_parts(
++        self,
++    ) -> (
++        SharedSnapshotClockState,
++        Option<SharedSnapshotClockState>,
++        SnapshotClockDisposition,
++    ) {
++        (self.source, self.successor, self.disposition)
+     }
+ }
+ 
+@@ -24,7 +32,128 @@
+     Response::error(503, "snapshot terminal clock authority is unavailable")
+ }
+ 
++// A real authentication/ACL outcome, retained through the actual terminal
++// writer. A denied admission can never be converted into a resource plan.
++struct SnapshotClockActor {
++    actor: Option<Principal>,
++    denied_before_floor: bool,
++}
++
+ impl Service {
++    fn admit_snapshot_clock_actor(
++        state: &State,
++        request: &AuthenticatedSnapshotClockRequest,
++        clock: RequestClock,
++        capability: &str,
++    ) -> Result<SnapshotClockActor, Response> {
++        let time = AuthorityTime::Precise(clock.observed_at().map_err(|_| unavailable())?);
++        let mut actor = match state.auth.authenticate_read_only_from_observed(
++            request.token(),
++            time,
++            request.origin_peer(),
++        ) {
++            Ok(Some(actor)) => actor,
++            // Finite-use/wrapping eligibility is not an authenticated Actor.
++            Ok(None) => return Err(Response::error(403, "permission denied")),
++            Err(error) if error.status == 403 => {
++                return Ok(SnapshotClockActor {
++                    actor: None,
++                    denied_before_floor: true,
++                });
++            }
++            Err(error) => return Err(Response::error(error.status, &error.message)),
++        };
++        actor
++            .bind_request_clock(Some(clock))
++            .map_err(|error| Response::error(error.status, &error.message))?;
++        let admission = Self::authorize_snapshot_clock_actor(
++            state,
++            &mut actor,
++            request,
++            capability,
++            time,
++        );
++        let denied_before_floor = match admission {
++            Ok(()) => false,
++            Err(error) if error.status == 403 => true,
++            Err(error) => return Err(error),
++        };
++        Ok(SnapshotClockActor {
++            actor: Some(actor),
++            denied_before_floor,
++        })
++    }
++
++    fn authorize_snapshot_clock_actor(
++        state: &State,
++        actor: &mut Principal,
++        request: &AuthenticatedSnapshotClockRequest,
++        capability: &str,
++        time: AuthorityTime,
++    ) -> Result<(), Response> {
++        Self::bind_identity_principal(state, actor, request.namespace())?;
++        let parameters = json!({});
++        state
++            .auth
++            .authorize_request_parameters_observed(
++                actor,
++                request.namespace(),
++                request.method(),
++                request.path(),
++                &parameters,
++                time,
++            )
++            .map_err(|error| Response::error(error.status, &error.message))?;
++        state
++            .auth
++            .authorize_request_observed(
++                actor,
++                request.namespace(),
++                request.path(),
++                capability,
++                time,
++            )
++            .map_err(|error| Response::error(error.status, &error.message))
++    }
++
++    fn finish_snapshot_clock_actor(
++        &self,
++        admitted: &mut SnapshotClockActor,
++        request: &AuthenticatedSnapshotClockRequest,
++        capability: &str,
++        clock: RequestClock,
++    ) -> Result<SnapshotClockDisposition, Response> {
++        let state = self.state.as_ref().ok_or_else(unavailable)?;
++        let time = AuthorityTime::Precise(clock.observed_at().map_err(|_| unavailable())?);
++        let denied_now = if let Some(actor) = admitted.actor.as_mut() {
++            match Self::authorize_snapshot_clock_actor(state, actor, request, capability, time) {
++                Ok(()) => false,
++                Err(error) if error.status == 403 => true,
++                Err(error) => return Err(error),
++            }
++        } else {
++            // This is the same real rejected bearer. Reauthentication cannot
++            // replace a previously admitted affine Actor or grant any output.
++            match state.auth.authenticate_read_only_from_observed(
++                request.token(),
++                time,
++                request.origin_peer(),
++            ) {
++                Err(error) if error.status == 403 => true,
++                Err(error) => return Err(Response::error(error.status, &error.message)),
++                Ok(_) => return Err(unavailable()),
++            }
++        };
++        match (admitted.denied_before_floor, denied_now) {
++            (false, false) => Ok(SnapshotClockDisposition::Allowed),
++            (true, true) => Ok(SnapshotClockDisposition::Denied),
++            // A new expiry observed only after the writer is not covered by
++            // this earlier observation receipt. Refuse without another write,
++            // replay, stale output, or manufactured Denied completion.
++            _ => Err(unavailable()),
++        }
++    }
++
+     fn check_snapshot_clock_leader(
+         &self,
+         request: &AuthenticatedSnapshotClockRequest,
+@@ -145,31 +274,16 @@
+             SnapshotClockOperation::ValidateUpload
+             | SnapshotClockOperation::ValidateForceUpload => "update",
+         };
+-        let admitted: Result<Principal, Response> = (|| {
+-            let state = self.state.as_ref().ok_or_else(unavailable)?;
+-            let time = AuthorityTime::Precise(clock.observed_at().map_err(|_| unavailable())?);
+-            let mut actor = state
+-                .auth
+-                .authenticate_read_only_from_observed(request.token(), time, request.origin_peer())
+-                .map_err(|error| Response::error(error.status, &error.message))?
+-                .filter(Principal::is_root)
+-                .ok_or_else(|| Response::error(403, "permission denied"))?;
+-            actor
+-                .bind_request_clock(Some(clock))
+-                .map_err(|error| Response::error(error.status, &error.message))?;
+-            state
+-                .auth
+-                .authorize_request_observed(
+-                    &actor,
+-                    request.namespace(),
+-                    request.path(),
+-                    capability,
+-                    time,
+-                )
+-                .map_err(|error| Response::error(error.status, &error.message))?;
+-            Ok(actor)
+-        })();
+-        let status = admitted.as_ref().map_or_else(|error| error.status, |_| 200);
++        let admitted = Self::admit_snapshot_clock_actor(
++            self.state.as_ref().ok_or_else(unavailable)?,
++            request,
++            clock,
++            capability,
++        );
++        let status = admitted.as_ref().map_or_else(
++            |error| error.status,
++            |actor| if actor.denied_before_floor { 403 } else { 200 },
++        );
+         if self
+             .audit_event("snapshot-clock-response", fingerprint, now, Some(status))
+             .is_err()
+@@ -190,23 +304,15 @@
+         // performs the normal Raft publication. No client/peer floor is used.
+         let receipt = self.persist_terminal_token_clock_with_receipt(Some(clock), now, true)?;
+         self.check_snapshot_clock_leader(request)?;
+-        let actor = admitted?;
+-        let after_auth = self.state.as_ref().ok_or_else(unavailable)?.auth.clone();
++        // Both dispositions first authenticate real B. A policy/expiry
++        // refusal cannot bypass the receipt or turn shared metadata into proof.
+         let current = self
+             .capture_native_ha_request_proof(&mut || {
+                 if Instant::now() >= request.deadline() {
+-                    return Err(unavailable());
++                    Err(unavailable())
++                } else {
++                    Ok(())
+                 }
+-                let time = AuthorityTime::Precise(clock.observed_at().map_err(|_| unavailable())?);
+-                after_auth
+-                    .authorize_request_observed(
+-                        &actor,
+-                        request.namespace(),
+-                        request.path(),
+-                        capability,
+-                        time,
+-                    )
+-                    .map_err(|error| Response::error(error.status, &error.message))
+             })?
+             .ok_or_else(unavailable)?;
+         request.check_enrollment(current.snapshot_clock_enrollment())?;
+@@ -238,12 +344,18 @@
+                 None
+             }
+         };
++        let mut admitted = admitted?;
++        let disposition = self.finish_snapshot_clock_actor(&mut admitted, request, capability, clock)?;
+         self.check_snapshot_clock_leader(request)?;
+         if self.current_state_identity()? != after.0
+             || self.external_effect_generation()? != after.1
+         {
+             return Err(unavailable());
+         }
+-        Ok(SnapshotClockObservation { source, successor })
++        Ok(SnapshotClockObservation {
++            source,
++            successor,
++            disposition,
++        })
+     }
+ }
+--- /dev/null
++++ b/crates/heptabao-server/src/service_snapshot_denial.rs
+@@ -0,0 +1,357 @@
++//! One authenticated standby snapshot refusal, never a transfer capability.
++//! It retains the original Actor, real source A, physical seal and deadline.
++//! Only an authenticated leader clock receipt plus real local B proof can
++//! finish a precise-time denial. No archive or resource writer is reachable.
++use super::*;
++
++pub(super) struct StandbySnapshotDenial {
++    actor: Principal,
++    response: Response,
++    method: String,
++    path: String,
++    namespace: String,
++    fingerprint: String,
++    clock: RequestClock,
++    now: Duration,
++    started: Instant,
++    deadline: Instant,
++    activation: String,
++    ha: Arc<Mutex<HaProcess>>,
++    base: StateIdentity,
++    original: native_v6_ha_install::NativeHaReadProof,
++    clock_request: Option<StandbySnapshotClockRequest>,
++    spool: Arc<SnapshotSpool>,
++    seal_identity: [u8; 32],
++    seal_metadata: SealMetadata,
++    seal_bytes: Zeroizing<Vec<u8>>,
++}
++
++fn unavailable() -> Response {
++    Response::error(503, "standby snapshot denial authority is unavailable")
++}
++
++impl Service {
++    pub(in crate::service::snapshot_transfer) fn prepare_standby_snapshot_denial(
++        &mut self,
++        request: &ServiceRequest<'_>,
++        mut actor: Principal,
++        response: Response,
++        clock: RequestClock,
++        now: Duration,
++        started: Instant,
++    ) -> Result<StandbySnapshotDenial, Response> {
++        if response.status != 403
++            || !request.namespace.is_empty()
++            || request.wrap_ttl_seconds.is_some()
++            || request.body.as_object().is_none_or(|body| !body.is_empty())
++            || self.has_pending_external_dispatch()
++            || self.native_request_binding.is_some()
++            || self.native_failure_notice.is_some()
++        {
++            return Err(unavailable());
++        }
++        let deadline = crate::request_deadline::current().ok_or_else(unavailable)?;
++        if Instant::now() >= deadline {
++            return Err(unavailable());
++        }
++        actor
++            .bind_request_clock(Some(clock))
++            .map_err(|error| Response::error(error.status, &error.message))?;
++        let view = RequestView {
++            method: request.method,
++            path: request.path,
++            namespace: request.namespace,
++            token: request.token,
++            body: &request.body,
++            now: now.as_secs(),
++            admission_started: started,
++            token_clock: Some(clock),
++            allow_forward: false,
++            enforce_namespace: true,
++            wrap_ttl_seconds: None,
++            origin_peer: request.origin_peer,
++            client_certificates: request.client_certificates,
++        };
++        let clock_request = if self
++            .state
++            .as_ref()
++            .is_some_and(State::has_token_api_precision_state)
++        {
++            Some(StandbySnapshotClockRequest::capture(&view)?)
++        } else {
++            None
++        };
++        let base = self.current_state_identity()?;
++        // This proof authenticates only shared metadata for a refusal. It is
++        // never returned as an export, restore or ordinary KV capability.
++        let original = self
++            .capture_native_ha_request_proof(&mut || {
++                if Instant::now() >= deadline {
++                    Err(unavailable())
++                } else {
++                    Ok(())
++                }
++            })?
++            .ok_or_else(unavailable)?;
++        if base != StateIdentity::RecordsV6(original.snapshot_clock_shared_state().root_digest) {
++            return Err(unavailable());
++        }
++        let spool = match self.snapshot_spool.as_ref() {
++            Some(spool) => Arc::clone(spool),
++            None => {
++                let spool = SnapshotSpool::open(&self.data_dir).map_err(|_| unavailable())?;
++                self.snapshot_spool = Some(Arc::clone(&spool));
++                spool
++            }
++        };
++        let seal_bytes = spool.read_seal_metadata(deadline).map_err(|_| unavailable())?;
++        let seal_metadata: SealMetadata =
++            serde_json::from_slice(&seal_bytes).map_err(|_| unavailable())?;
++        if self.seal.as_ref() != Some(&seal_metadata) {
++            return Err(unavailable());
++        }
++        let seal_identity = canonical_seal_identity(&seal_metadata).map_err(|_| unavailable())?;
++        let mut denied = StandbySnapshotDenial {
++            actor,
++            response,
++            method: request.method.to_owned(),
++            path: request.path.to_owned(),
++            namespace: request.namespace.to_owned(),
++            fingerprint: self.request_fingerprint(
++                request.method,
++                request.path,
++                request.namespace,
++                request.token,
++            ),
++            clock,
++            now,
++            started,
++            deadline,
++            activation: self.unseal_nonce.clone(),
++            ha: self.ha.as_ref().ok_or_else(unavailable)?.clone(),
++            base,
++            original,
++            clock_request,
++            spool,
++            seal_identity,
++            seal_metadata,
++            seal_bytes,
++        };
++        self.check_standby_snapshot_denial_environment(&denied, base)?;
++        self.check_standby_snapshot_actor_is_denied(&mut denied)?;
++        denied.original.check_warm(self)?;
++        Ok(denied)
++    }
++
++    fn check_standby_snapshot_denial_environment(
++        &self,
++        denied: &StandbySnapshotDenial,
++        expected: StateIdentity,
++    ) -> Result<(), Response> {
++        if !self.ha.as_ref().is_some_and(|ha| Arc::ptr_eq(ha, &denied.ha))
++            || self.recovery_required
++            || self.audit_failed
++            || self.barrier_key.is_none()
++            || self.unseal_nonce != denied.activation
++            || !self.native_ha_snapshot_transport_enabled()
++            || !self.native_standby_snapshot_is_read_eligible()
++            || crate::request_deadline::current() != Some(denied.deadline)
++            || Instant::now() >= denied.deadline
++            || self.current_state_identity()? != expected
++        {
++            return Err(unavailable());
++        }
++        let bytes = denied
++            .spool
++            .read_seal_metadata(denied.deadline)
++            .map_err(|_| unavailable())?;
++        if Self::snapshot_seal_identity_checked_against_admission(
++            &bytes,
++            &denied.seal_bytes,
++            &denied.seal_metadata,
++            self.seal.as_ref(),
++            denied.seal_identity,
++        )? != denied.seal_identity
++        {
++            return Err(unavailable());
++        }
++        if let Some(request) = &denied.clock_request
++            && crate::auth::current_ingress().map(|ingress| ingress.attempt_id())
++                != Some(request.ingress)
++        {
++            return Err(unavailable());
++        }
++        Ok(())
++    }
++
++    fn check_standby_snapshot_actor_is_denied(
++        &self,
++        denied: &mut StandbySnapshotDenial,
++    ) -> Result<(), Response> {
++        let state = self.state.as_ref().ok_or_else(unavailable)?;
++        let time = AuthorityTime::Precise(denied.clock.observed_at().map_err(|_| unavailable())?);
++        let parameters = json!({});
++        let decision = Self::bind_identity_principal(state, &mut denied.actor, &denied.namespace)
++            .and_then(|()| {
++                state
++                    .auth
++                    .authorize_request_parameters_observed(
++                        &denied.actor,
++                        &denied.namespace,
++                        &denied.method,
++                        &denied.path,
++                        &parameters,
++                        time,
++                    )
++                    .map_err(|error| Response::error(error.status, &error.message))
++            })
++            .and_then(|()| {
++                state
++                    .auth
++                    .authorize_request_observed(
++                        &denied.actor,
++                        &denied.namespace,
++                        &denied.path,
++                        if matches!(denied.method.as_str(), "GET" | "HEAD") {
++                            "read"
++                        } else {
++                            "update"
++                        },
++                        time,
++                    )
++                    .map_err(|error| Response::error(error.status, &error.message))
++            });
++        match decision {
++            Err(error) if error.status == 403 => Ok(()),
++            Err(error) => Err(error),
++            Ok(()) => Err(unavailable()),
++        }
++    }
++
++    pub(in crate::service::snapshot_transfer) fn complete_standby_snapshot_denial(
++        &mut self,
++        mut denied: StandbySnapshotDenial,
++    ) -> Response {
++        let _deadline = crate::request_deadline::RequestDeadlineScope::enter(denied.deadline);
++        let mut response_audited = false;
++        let result: Result<(), Response> = (|| {
++            self.check_standby_snapshot_denial_environment(&denied, denied.base)?;
++            denied.original.check_warm(self)?;
++            self.check_standby_snapshot_actor_is_denied(&mut denied)?;
++            if self
++                .audit_event("request", &denied.fingerprint, denied.now.as_secs(), None)
++                .is_err()
++            {
++                return Err(unavailable());
++            }
++            if self
++                .audit_event(
++                    "response",
++                    &denied.fingerprint,
++                    denied.now.as_secs(),
++                    Some(403),
++                )
++                .is_err()
++            {
++                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
++                self.recovery_required = true;
++                self.ha_activation = None;
++                return Err(unavailable());
++            }
++            response_audited = true;
++            // Mandatory response audit precedes the one leader observation.
++            self.check_standby_snapshot_denial_environment(&denied, denied.base)?;
++            denied.original.check_warm(self)?;
++            if let Some(request) = &denied.clock_request {
++                let source = denied.original.snapshot_clock_shared_state();
++                let context = crate::ha::snapshot_clock::SnapshotClockContext {
++                    operation: request.operation,
++                    method: &request.method,
++                    token: &request.token,
++                    origin_peer: request.origin_peer,
++                    ingress: request.ingress,
++                    source,
++                    enrollment: denied.original.snapshot_clock_enrollment(),
++                    deadline: denied.deadline,
++                };
++                let completion = {
++                    let process = denied.ha.lock_for_request().map_err(|_| unavailable())?;
++                    let receipt = process.observe_snapshot_terminal_clock(context)?;
++                    receipt.consume(&process, context)?
++                };
++                self.sync_from_ha_with_anchor(false)?;
++                let expected = completion.successor().unwrap_or(source);
++                let expected_identity = StateIdentity::RecordsV6(expected.root_digest);
++                self.check_standby_snapshot_denial_environment(&denied, expected_identity)?;
++                // Even a 403 is unavailable until the actual replica has B.
++                // Actor refusal never short-circuits this proof.
++                let current = self
++                    .capture_native_ha_request_proof(&mut || {
++                        if Instant::now() >= denied.deadline {
++                            Err(unavailable())
++                        } else {
++                            Ok(())
++                        }
++                    })?
++                    .ok_or_else(unavailable)?;
++                if current.snapshot_clock_shared_state() != expected {
++                    return Err(unavailable());
++                }
++                if completion.successor().is_some() {
++                    denied.original.check_snapshot_terminal_successor(self, &current)?;
++                } else {
++                    denied.original.check_with(self, Service::check_native_installed)?;
++                    current.check_warm(self)?;
++                }
++                let checkpoint = (
++                    self.current_state_identity()?,
++                    self.external_effect_generation()?,
++                );
++                self.check_standby_snapshot_denial_environment(&denied, expected_identity)?;
++                self.check_standby_snapshot_actor_is_denied(&mut denied)?;
++                if !completion.is_denied()
++                    || self.current_state_identity()? != checkpoint.0
++                    || self.external_effect_generation()? != checkpoint.1
++                {
++                    return Err(unavailable());
++                }
++                completion.finish_denied()?;
++            } else {
++                if self
++                    .state
++                    .as_ref()
++                    .is_none_or(State::has_token_api_precision_state)
++                {
++                    return Err(unavailable());
++                }
++                denied.original.check_with(self, Service::check_native_installed)?;
++                self.check_standby_snapshot_denial_environment(&denied, denied.base)?;
++                self.check_standby_snapshot_actor_is_denied(&mut denied)?;
++            }
++            Ok(())
++        })();
++        if let Err(error) = result {
++            erase_json(&mut denied.response.body);
++            denied.response.consistency_index = None;
++            if response_audited
++                && self
++                    .audit_event(
++                        "native-ha-snapshot-denial-veto",
++                        &denied.fingerprint,
++                        snapshot_observed_time(denied.now, denied.started.elapsed()),
++                        Some(error.status),
++                    )
++                    .is_err()
++            {
++                crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);
++                self.recovery_required = true;
++                self.ha_activation = None;
++                return unavailable();
++            }
++            return error;
++        }
++        crate::ha_forward_completion::audited(Some(denied.clock));
++        self.stamp_consistency_index(&mut denied.response);
++        denied.response
++    }
++}
+--- a/crates/heptabao-server/src/snapshot_file.rs
++++ b/crates/heptabao-server/src/snapshot_file.rs
+@@ -200,33 +200,8 @@
+         Ok(current)
+     }
+ 
+-    pub(crate) fn lease(self: &Arc<Self>) -> io::Result<Arc<SnapshotLease>> {
+-        self.verify()?;
+-        self.busy
+-            .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
+-            .map_err(|_| {
+-                io::Error::new(
+-                    io::ErrorKind::WouldBlock,
+-                    "snapshot transfer is already active",
+-                )
+-            })?;
+-        Ok(Arc::new(SnapshotLease {
+-            spool: Arc::clone(self),
+-        }))
+-    }
+-}
+-
+-pub(crate) struct SnapshotLease {
+-    spool: Arc<SnapshotSpool>,
+-}
+-impl Drop for SnapshotLease {
+-    fn drop(&mut self) {
+-        self.spool.busy.store(false, Ordering::Release);
+-    }
+-}
+-impl SnapshotLease {
+-    /// Read only the committed seal metadata, through the already-held parent
+-    /// capability. Never resolve an archive-supplied path or a replaced parent.
++    /// Read the committed seal through the retained checked parent; this
++    /// read-only capability neither acquires a transfer lease nor creates a file.
+     pub(crate) fn read_seal_metadata(
+         &self,
+         deadline: Instant,
+@@ -238,7 +213,7 @@
+         }
+         #[cfg(unix)]
+         {
+-            self.spool.verify()?;
++            self.verify()?;
+             if Instant::now() >= deadline {
+                 return Err(io::Error::new(
+                     io::ErrorKind::TimedOut,
+@@ -246,7 +221,7 @@
+                 ));
+             }
+             let file = File::from(rustix::fs::openat(
+-                &self.spool.parent,
++                &self.parent,
+                 "seal.json",
+                 rustix::fs::OFlags::RDONLY
+                     | rustix::fs::OFlags::NOFOLLOW
+@@ -258,7 +233,7 @@
+             if !metadata.is_file()
+                 || metadata.nlink() != 1
+                 || metadata.mode() & 0o077 != 0
+-                || metadata.uid() != self.spool.parent.metadata()?.uid()
++                || metadata.uid() != self.parent.metadata()?.uid()
+                 || metadata.len() > SEAL_METADATA_LIMIT as u64
+             {
+                 return Err(invalid());
+@@ -267,7 +242,7 @@
+             if bytes.len() > SEAL_METADATA_LIMIT {
+                 return Err(invalid());
+             }
+-            self.spool.verify()?;
++            self.verify()?;
+             if Instant::now() >= deadline {
+                 return Err(io::Error::new(
+                     io::ErrorKind::TimedOut,
+@@ -278,6 +253,40 @@
+         }
+     }
+ 
++    pub(crate) fn lease(self: &Arc<Self>) -> io::Result<Arc<SnapshotLease>> {
++        self.verify()?;
++        self.busy
++            .compare_exchange(false, true, Ordering::AcqRel, Ordering::Acquire)
++            .map_err(|_| {
++                io::Error::new(
++                    io::ErrorKind::WouldBlock,
++                    "snapshot transfer is already active",
++                )
++            })?;
++        Ok(Arc::new(SnapshotLease {
++            spool: Arc::clone(self),
++        }))
++    }
++}
++
++pub(crate) struct SnapshotLease {
++    spool: Arc<SnapshotSpool>,
++}
++impl Drop for SnapshotLease {
++    fn drop(&mut self) {
++        self.spool.busy.store(false, Ordering::Release);
++    }
++}
++impl SnapshotLease {
++    /// Read only the committed seal metadata, through the already-held parent
++    /// capability. Never resolve an archive-supplied path or a replaced parent.
++    pub(crate) fn read_seal_metadata(
++        &self,
++        deadline: Instant,
++    ) -> io::Result<zeroize::Zeroizing<Vec<u8>>> {
++        self.spool.read_seal_metadata(deadline)
++    }
++
+     pub(crate) fn file(
+         self: &Arc<Self>,
+         maximum: u64,
+--- a/crates/heptabao-server/src/ha_snapshot_clock.rs
++++ b/crates/heptabao-server/src/ha_snapshot_clock.rs
+@@ -238,6 +238,14 @@
+         + Sync,
+ >;
+ 
++/// The decision attached to a sealed Service clock observation. This enum is
++/// data only: constructing it cannot mint an observation or remote completion.
++#[derive(Clone, Copy, Debug, Eq, PartialEq)]
++pub(crate) enum SnapshotClockDisposition {
++    Allowed,
++    Denied,
++}
++
+ #[derive(Serialize, Deserialize)]
+ #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+ enum OutcomeWire {
+@@ -245,6 +253,11 @@
+         source: SharedSnapshotClockState,
+         successor: Box<Option<SharedSnapshotClockState>>,
+     },
++    Denied {
++        source: SharedSnapshotClockState,
++        successor: Box<Option<SharedSnapshotClockState>>,
++        status: u16,
++    },
+     Rejected {
+         status: u16,
+     },
+@@ -413,14 +426,21 @@
+     check_leader(context.node, context.local, reply.leader_term, true)?;
+     reply.outcome = match observation {
+         Ok(observation) => {
+-            let (before, after) = observation.into_parts();
++            let (before, after, disposition) = observation.into_parts();
+             if before != source || !valid_successor(before, after, context.local, reply.leader_term)
+             {
+                 return Err(HaError::OutcomeUnknown);
+             }
+-            OutcomeWire::Completed {
+-                source: before,
+-                successor: Box::new(after),
++            match disposition {
++                SnapshotClockDisposition::Allowed => OutcomeWire::Completed {
++                    source: before,
++                    successor: Box::new(after),
++                },
++                SnapshotClockDisposition::Denied => OutcomeWire::Denied {
++                    source: before,
++                    successor: Box::new(after),
++                    status: 403,
++                },
+             }
+         }
+         Err(response) => OutcomeWire::Rejected {
+@@ -482,12 +502,19 @@
+     original: &'a OriginalBinding,
+ }
+ 
+-// This pure metadata check cannot construct a RemoteSnapshotClockReceipt.
+-// Its production caller must first complete the actual pinned TLS exchange.
++// Data from the pure metadata check, not an authenticated remote capability.
++// Only the actual TLS caller can retain it in a RemoteSnapshotClockReceipt.
++struct CheckedClockReply {
++    successor: Option<SharedSnapshotClockState>,
++    disposition: SnapshotClockDisposition,
++}
++
++// This pure metadata check cannot construct a RemoteSnapshotClockReceipt or a
++// RemoteSnapshotClockCompletion. Production must complete the pinned exchange.
+ fn check_response_binding(
+     reply: ResponseWire,
+     expected: ExpectedResponse<'_>,
+-) -> Result<Option<SharedSnapshotClockState>, Response> {
++) -> Result<CheckedClockReply, Response> {
+     if reply.cluster != expected.cluster
+         || reply.source_node != expected.leader
+         || reply.target_node != expected.caller
+@@ -505,30 +532,78 @@
+             if source == expected.original.source
+                 && valid_successor(source, *successor, expected.leader, expected.term) =>
+         {
+-            Ok(*successor)
++            Ok(CheckedClockReply {
++                successor: *successor,
++                disposition: SnapshotClockDisposition::Allowed,
++            })
+         }
++        OutcomeWire::Denied {
++            source,
++            successor,
++            status: 403,
++        } if source == expected.original.source
++            && valid_successor(source, *successor, expected.leader, expected.term) =>
++        {
++            Ok(CheckedClockReply {
++                successor: *successor,
++                disposition: SnapshotClockDisposition::Denied,
++            })
++        }
+         OutcomeWire::Rejected { status } => Err(rejected(status)),
+         _ => Err(unavailable()),
+     }
+ }
+ 
+ /// One authenticated reply, retained only by its original local operation.
+-/// Consuming it gives publication metadata, not local storage or read authority.
++/// Consuming it yields one affine completion, never a local ReadIndex proof.
+ pub(crate) struct RemoteSnapshotClockReceipt {
+     process: Arc<ProcessRaftNode>,
+     binding: OriginalBinding,
+     leader: u64,
+     term: u64,
+     effective_deadline: Instant,
+-    successor: Option<SharedSnapshotClockState>,
++    checked: CheckedClockReply,
+ }
+ 
++/// Sealed by the original authenticated receipt's one-time consume. Metadata
++/// getters do not authorize any bytes: the Service must still sync, obtain its
++/// real ReadIndex proof, verify A/B and the original actor/seal/deadline, then
++/// consume the matching disposition. No public constructor, Clone or serde.
++pub(crate) struct RemoteSnapshotClockCompletion {
++    checked: CheckedClockReply,
++}
++
++impl RemoteSnapshotClockCompletion {
++    pub(crate) fn successor(&self) -> Option<SharedSnapshotClockState> {
++        self.checked.successor
++    }
++
++    pub(crate) fn is_denied(&self) -> bool {
++        self.checked.disposition == SnapshotClockDisposition::Denied
++    }
++
++    pub(crate) fn finish_allowed(self) -> Result<(), Response> {
++        self.finish(SnapshotClockDisposition::Allowed)
++    }
++
++    pub(crate) fn finish_denied(self) -> Result<(), Response> {
++        self.finish(SnapshotClockDisposition::Denied)
++    }
++
++    fn finish(self, expected: SnapshotClockDisposition) -> Result<(), Response> {
++        if self.checked.disposition != expected {
++            return Err(unavailable());
++        }
++        Ok(())
++    }
++}
++
+ impl RemoteSnapshotClockReceipt {
+     pub(crate) fn consume(
+         self,
+         process: &HaProcess,
+         expected: SnapshotClockContext<'_>,
+-    ) -> Result<Option<SharedSnapshotClockState>, Response> {
++    ) -> Result<RemoteSnapshotClockCompletion, Response> {
+         let node = process.node.as_ref().ok_or_else(unavailable)?;
+         if !Arc::ptr_eq(node, &self.process)
+             || OriginalBinding::capture(expected)? != self.binding
+@@ -538,7 +613,9 @@
+             return Err(unavailable());
+         }
+         check_leader(node, self.leader, self.term, false).map_err(|_| unavailable())?;
+-        Ok(self.successor)
++        Ok(RemoteSnapshotClockCompletion {
++            checked: self.checked,
++        })
+     }
+ }
+ 
+@@ -630,7 +707,7 @@
+         let reply: ResponseWire =
+             serde_json::from_slice(&response[SNAPSHOT_CLOCK_RESPONSE_MAGIC.len()..])
+                 .map_err(|_| unavailable())?;
+-        let successor = check_response_binding(
++        let checked = check_response_binding(
+             reply,
+             ExpectedResponse {
+                 cluster: &self.cluster_id,
+@@ -651,7 +728,7 @@
+             leader,
+             term: selected.term,
+             effective_deadline: deadline,
+-            successor,
++            checked,
+         })
+     }
+ }
+@@ -722,7 +799,8 @@
+         let original = original();
+         assert!(matches!(
+             check_response_binding(response(), expected(&original)),
+-            Ok(None)
++            Ok(checked) if checked.successor.is_none()
++                && checked.disposition == SnapshotClockDisposition::Allowed
+         ));
+         let mutations: [fn(&mut ResponseWire); 8] = [
+             |reply| reply.nonce[0] ^= 1,
+@@ -776,7 +854,8 @@
+         };
+         assert!(matches!(
+             check_response_binding(reply, expected(&original)),
+-            Ok(Some(actual)) if actual == successor
++            Ok(checked) if checked.successor == Some(successor)
++                && checked.disposition == SnapshotClockDisposition::Allowed
+         ));
+         for changed in [
+             SharedSnapshotClockState {
+@@ -820,7 +899,100 @@
+         assert!(!SnapshotClockOperation::ValidateForceUpload.accepts(ClockMethod::Get));
+     }
+ 
++
+     #[test]
++    fn snapshot_clock_denied_requires_original_binding_exact_successor_and_only_status_403() {
++        let original = original();
++        let successor = SharedSnapshotClockState {
++            root_digest: [20; 32],
++            logical_generation: 10,
++            publication_log: SnapshotClockLogId {
++                term: 5,
++                node_id: 2,
++                index: 55,
++            },
++            auth_sha256: [21; 32],
++            ..source()
++        };
++        // These are pure metadata checks, never a constructed remote receipt
++        // or completion. The actual three-voter Service tests own that proof.
++        for successor in [None, Some(successor)] {
++            let mut reply = response();
++            reply.outcome = OutcomeWire::Denied {
++                source: source(),
++                successor: Box::new(successor),
++                status: 403,
++            };
++            assert!(matches!(
++                check_response_binding(reply, expected(&original)),
++                Ok(checked) if checked.successor == successor
++                    && checked.disposition == SnapshotClockDisposition::Denied
++            ));
++        }
++        let mutations: [fn(&mut ResponseWire); 8] = [
++            |reply| reply.nonce[0] ^= 1,
++            |reply| reply.request_sha256[0] ^= 1,
++            |reply| reply.ingress[0] ^= 1,
++            |reply| reply.source_node = 1,
++            |reply| reply.target_node = 1,
++            |reply| reply.leader_term += 1,
++            |reply| reply.operation = SnapshotClockOperation::ValidateUpload,
++            |reply| reply.method = ClockMethod::Post,
++        ];
++        for mutate in mutations {
++            let mut reply = response();
++            reply.outcome = OutcomeWire::Denied {
++                source: source(),
++                successor: Box::new(None),
++                status: 403,
++            };
++            mutate(&mut reply);
++            assert!(matches!(
++                check_response_binding(reply, expected(&original)),
++                Err(error) if error.status == 503
++            ));
++        }
++        for status in [0, 200, 400, 401, 409, 500, 503, u16::MAX] {
++            let mut reply = response();
++            reply.outcome = OutcomeWire::Denied {
++                source: source(),
++                successor: Box::new(None),
++                status,
++            };
++            assert!(matches!(
++                check_response_binding(reply, expected(&original)),
++                Err(error) if error.status == 503
++            ));
++        }
++        let mut wrong_source = source();
++        wrong_source.auth_sha256[0] ^= 1;
++        for (before, after) in [
++            (wrong_source, None),
++            (source(), Some(SharedSnapshotClockState {
++                logical_generation: 11,
++                ..successor
++            })),
++        ] {
++            let mut reply = response();
++            reply.outcome = OutcomeWire::Denied {
++                source: before,
++                successor: Box::new(after),
++                status: 403,
++            };
++            assert!(matches!(
++                check_response_binding(reply, expected(&original)),
++                Err(error) if error.status == 503
++            ));
++        }
++        let mut reply = response();
++        reply.outcome = OutcomeWire::Rejected { status: 403 };
++        assert!(matches!(
++            check_response_binding(reply, expected(&original)),
++            Err(error) if error.status == 403
++        ));
++    }
++
++    #[test]
+     fn snapshot_clock_token_wire_keeps_maximum_escaped_token_within_small_frame()
+     -> Result<(), serde_json::Error> {
+         let token = "\u{1}".repeat(MAX_TOKEN_BYTES);
+--- a/crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs
++++ b/crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs
+@@ -156,7 +156,15 @@
+     }
+ }
+ fn actor_original(auth: &AuthState, plan: &SnapshotTransferPlan) -> Result<(), Response> {
+-    if Instant::now() >= plan.deadline || !plan.actor.is_root() || !plan.namespace.is_empty() {
++    if Instant::now() >= plan.deadline
++        || plan.is_download
++        || !matches!(plan.method.as_str(), "POST" | "PUT")
++        || !matches!(
++            plan.path.as_str(),
++            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
++        )
++        || !plan.namespace.is_empty()
++    {
+         return Err(unavailable());
+     }
+     auth.authorize_request(

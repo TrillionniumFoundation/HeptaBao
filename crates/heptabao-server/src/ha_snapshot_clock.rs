@@ -238,12 +238,25 @@ pub(crate) type SnapshotClockHandler = Arc<
         + Sync,
 >;
 
+/// The decision attached to a sealed Service clock observation. This enum is
+/// data only: constructing it cannot mint an observation or remote completion.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub(crate) enum SnapshotClockDisposition {
+    Allowed,
+    Denied,
+}
+
 #[derive(Serialize, Deserialize)]
 #[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
 enum OutcomeWire {
     Completed {
         source: SharedSnapshotClockState,
         successor: Box<Option<SharedSnapshotClockState>>,
+    },
+    Denied {
+        source: SharedSnapshotClockState,
+        successor: Box<Option<SharedSnapshotClockState>>,
+        status: u16,
     },
     Rejected {
         status: u16,
@@ -413,14 +426,21 @@ pub(super) fn handle_authenticated(
     check_leader(context.node, context.local, reply.leader_term, true)?;
     reply.outcome = match observation {
         Ok(observation) => {
-            let (before, after) = observation.into_parts();
+            let (before, after, disposition) = observation.into_parts();
             if before != source || !valid_successor(before, after, context.local, reply.leader_term)
             {
                 return Err(HaError::OutcomeUnknown);
             }
-            OutcomeWire::Completed {
-                source: before,
-                successor: Box::new(after),
+            match disposition {
+                SnapshotClockDisposition::Allowed => OutcomeWire::Completed {
+                    source: before,
+                    successor: Box::new(after),
+                },
+                SnapshotClockDisposition::Denied => OutcomeWire::Denied {
+                    source: before,
+                    successor: Box::new(after),
+                    status: 403,
+                },
             }
         }
         Err(response) => OutcomeWire::Rejected {
@@ -482,12 +502,19 @@ struct ExpectedResponse<'a> {
     original: &'a OriginalBinding,
 }
 
-// This pure metadata check cannot construct a RemoteSnapshotClockReceipt.
-// Its production caller must first complete the actual pinned TLS exchange.
+// Data from the pure metadata check, not an authenticated remote capability.
+// Only the actual TLS caller can retain it in a RemoteSnapshotClockReceipt.
+struct CheckedClockReply {
+    successor: Option<SharedSnapshotClockState>,
+    disposition: SnapshotClockDisposition,
+}
+
+// This pure metadata check cannot construct a RemoteSnapshotClockReceipt or a
+// RemoteSnapshotClockCompletion. Production must complete the pinned exchange.
 fn check_response_binding(
     reply: ResponseWire,
     expected: ExpectedResponse<'_>,
-) -> Result<Option<SharedSnapshotClockState>, Response> {
+) -> Result<CheckedClockReply, Response> {
     if reply.cluster != expected.cluster
         || reply.source_node != expected.leader
         || reply.target_node != expected.caller
@@ -505,7 +532,22 @@ fn check_response_binding(
             if source == expected.original.source
                 && valid_successor(source, *successor, expected.leader, expected.term) =>
         {
-            Ok(*successor)
+            Ok(CheckedClockReply {
+                successor: *successor,
+                disposition: SnapshotClockDisposition::Allowed,
+            })
+        }
+        OutcomeWire::Denied {
+            source,
+            successor,
+            status: 403,
+        } if source == expected.original.source
+            && valid_successor(source, *successor, expected.leader, expected.term) =>
+        {
+            Ok(CheckedClockReply {
+                successor: *successor,
+                disposition: SnapshotClockDisposition::Denied,
+            })
         }
         OutcomeWire::Rejected { status } => Err(rejected(status)),
         _ => Err(unavailable()),
@@ -513,14 +555,47 @@ fn check_response_binding(
 }
 
 /// One authenticated reply, retained only by its original local operation.
-/// Consuming it gives publication metadata, not local storage or read authority.
+/// Consuming it yields one affine completion, never a local ReadIndex proof.
 pub(crate) struct RemoteSnapshotClockReceipt {
     process: Arc<ProcessRaftNode>,
     binding: OriginalBinding,
     leader: u64,
     term: u64,
     effective_deadline: Instant,
-    successor: Option<SharedSnapshotClockState>,
+    checked: CheckedClockReply,
+}
+
+/// Sealed by the original authenticated receipt's one-time consume. Metadata
+/// getters do not authorize any bytes: the Service must still sync, obtain its
+/// real ReadIndex proof, verify A/B and the original actor/seal/deadline, then
+/// consume the matching disposition. No public constructor, Clone or serde.
+pub(crate) struct RemoteSnapshotClockCompletion {
+    checked: CheckedClockReply,
+}
+
+impl RemoteSnapshotClockCompletion {
+    pub(crate) fn successor(&self) -> Option<SharedSnapshotClockState> {
+        self.checked.successor
+    }
+
+    pub(crate) fn is_denied(&self) -> bool {
+        self.checked.disposition == SnapshotClockDisposition::Denied
+    }
+
+    pub(crate) fn finish_allowed(self) -> Result<(), Response> {
+        self.finish(SnapshotClockDisposition::Allowed)
+    }
+
+    pub(crate) fn finish_denied(self) -> Result<(), Response> {
+        self.finish(SnapshotClockDisposition::Denied)
+    }
+
+    fn finish(self, expected: SnapshotClockDisposition) -> Result<(), Response> {
+        if self.checked.disposition != expected {
+            return Err(unavailable());
+        }
+        Ok(())
+    }
 }
 
 impl RemoteSnapshotClockReceipt {
@@ -528,7 +603,7 @@ impl RemoteSnapshotClockReceipt {
         self,
         process: &HaProcess,
         expected: SnapshotClockContext<'_>,
-    ) -> Result<Option<SharedSnapshotClockState>, Response> {
+    ) -> Result<RemoteSnapshotClockCompletion, Response> {
         let node = process.node.as_ref().ok_or_else(unavailable)?;
         if !Arc::ptr_eq(node, &self.process)
             || OriginalBinding::capture(expected)? != self.binding
@@ -538,7 +613,9 @@ impl RemoteSnapshotClockReceipt {
             return Err(unavailable());
         }
         check_leader(node, self.leader, self.term, false).map_err(|_| unavailable())?;
-        Ok(self.successor)
+        Ok(RemoteSnapshotClockCompletion {
+            checked: self.checked,
+        })
     }
 }
 
@@ -630,7 +707,7 @@ impl HaProcess {
         let reply: ResponseWire =
             serde_json::from_slice(&response[SNAPSHOT_CLOCK_RESPONSE_MAGIC.len()..])
                 .map_err(|_| unavailable())?;
-        let successor = check_response_binding(
+        let checked = check_response_binding(
             reply,
             ExpectedResponse {
                 cluster: &self.cluster_id,
@@ -651,7 +728,7 @@ impl HaProcess {
             leader,
             term: selected.term,
             effective_deadline: deadline,
-            successor,
+            checked,
         })
     }
 }
@@ -722,7 +799,8 @@ mod tests {
         let original = original();
         assert!(matches!(
             check_response_binding(response(), expected(&original)),
-            Ok(None)
+            Ok(checked) if checked.successor.is_none()
+                && checked.disposition == SnapshotClockDisposition::Allowed
         ));
         let mutations: [fn(&mut ResponseWire); 8] = [
             |reply| reply.nonce[0] ^= 1,
@@ -776,7 +854,8 @@ mod tests {
         };
         assert!(matches!(
             check_response_binding(reply, expected(&original)),
-            Ok(Some(actual)) if actual == successor
+            Ok(checked) if checked.successor == Some(successor)
+                && checked.disposition == SnapshotClockDisposition::Allowed
         ));
         for changed in [
             SharedSnapshotClockState {
@@ -818,6 +897,99 @@ mod tests {
         ));
         assert!(!SnapshotClockOperation::Download.accepts(ClockMethod::Post));
         assert!(!SnapshotClockOperation::ValidateForceUpload.accepts(ClockMethod::Get));
+    }
+
+
+    #[test]
+    fn snapshot_clock_denied_requires_original_binding_exact_successor_and_only_status_403() {
+        let original = original();
+        let successor = SharedSnapshotClockState {
+            root_digest: [20; 32],
+            logical_generation: 10,
+            publication_log: SnapshotClockLogId {
+                term: 5,
+                node_id: 2,
+                index: 55,
+            },
+            auth_sha256: [21; 32],
+            ..source()
+        };
+        // These are pure metadata checks, never a constructed remote receipt
+        // or completion. The actual three-voter Service tests own that proof.
+        for successor in [None, Some(successor)] {
+            let mut reply = response();
+            reply.outcome = OutcomeWire::Denied {
+                source: source(),
+                successor: Box::new(successor),
+                status: 403,
+            };
+            assert!(matches!(
+                check_response_binding(reply, expected(&original)),
+                Ok(checked) if checked.successor == successor
+                    && checked.disposition == SnapshotClockDisposition::Denied
+            ));
+        }
+        let mutations: [fn(&mut ResponseWire); 8] = [
+            |reply| reply.nonce[0] ^= 1,
+            |reply| reply.request_sha256[0] ^= 1,
+            |reply| reply.ingress[0] ^= 1,
+            |reply| reply.source_node = 1,
+            |reply| reply.target_node = 1,
+            |reply| reply.leader_term += 1,
+            |reply| reply.operation = SnapshotClockOperation::ValidateUpload,
+            |reply| reply.method = ClockMethod::Post,
+        ];
+        for mutate in mutations {
+            let mut reply = response();
+            reply.outcome = OutcomeWire::Denied {
+                source: source(),
+                successor: Box::new(None),
+                status: 403,
+            };
+            mutate(&mut reply);
+            assert!(matches!(
+                check_response_binding(reply, expected(&original)),
+                Err(error) if error.status == 503
+            ));
+        }
+        for status in [0, 200, 400, 401, 409, 500, 503, u16::MAX] {
+            let mut reply = response();
+            reply.outcome = OutcomeWire::Denied {
+                source: source(),
+                successor: Box::new(None),
+                status,
+            };
+            assert!(matches!(
+                check_response_binding(reply, expected(&original)),
+                Err(error) if error.status == 503
+            ));
+        }
+        let mut wrong_source = source();
+        wrong_source.auth_sha256[0] ^= 1;
+        for (before, after) in [
+            (wrong_source, None),
+            (source(), Some(SharedSnapshotClockState {
+                logical_generation: 11,
+                ..successor
+            })),
+        ] {
+            let mut reply = response();
+            reply.outcome = OutcomeWire::Denied {
+                source: before,
+                successor: Box::new(after),
+                status: 403,
+            };
+            assert!(matches!(
+                check_response_binding(reply, expected(&original)),
+                Err(error) if error.status == 503
+            ));
+        }
+        let mut reply = response();
+        reply.outcome = OutcomeWire::Rejected { status: 403 };
+        assert!(matches!(
+            check_response_binding(reply, expected(&original)),
+            Err(error) if error.status == 403
+        ));
     }
 
     #[test]

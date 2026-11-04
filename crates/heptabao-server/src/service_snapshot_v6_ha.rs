@@ -100,7 +100,11 @@ impl Service {
         {
             return Err(unavailable());
         }
-        if !plan.actor.is_root() || !plan.namespace.is_empty() {
+        let public_snapshot = matches!(
+            plan.path.as_str(),
+            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+        );
+        if (!plan.actor.is_root() && !public_snapshot) || !plan.namespace.is_empty() {
             return Err(Response::error(403, "permission denied"));
         }
         let now = snapshot_observed_time(plan.now, plan.started.elapsed());
@@ -446,40 +450,34 @@ impl Service {
                     receipt.consume(&process, context)?
                 };
                 self.sync_from_ha_with_anchor(false)?;
-                let expected = terminal.unwrap_or(source);
-                self.check_native_ha_snapshot_owner_at(
-                    plan,
-                    StateIdentity::RecordsV6(expected.root_digest),
-                )?;
-                let source_auth = self.state.as_ref().ok_or_else(unavailable)?.auth.clone();
+                let expected = terminal.successor().unwrap_or(source);
+                self.check_native_ha_snapshot_owner_before_identity(plan)?;
+                if self.current_state_identity()?
+                    != StateIdentity::RecordsV6(expected.root_digest)
+                    || self.current_snapshot_seal_identity_for_plan(plan)? != plan.seal_identity
+                {
+                    return Err(unavailable());
+                }
+                // A Denied completion still has to prove actual B before a
+                // final actor refusal may be delivered. Shared metadata and
+                // the status alone cannot stand in for this real ReadIndex.
                 let current = self
                     .capture_native_ha_request_proof(&mut || {
                         if Instant::now() >= plan.deadline {
-                            return Err(unavailable());
+                            Err(unavailable())
+                        } else {
+                            Ok(())
                         }
-                        source_auth
-                            .authorize_request(
-                                &plan.actor,
-                                &plan.namespace,
-                                &plan.path,
-                                if plan.is_download { "read" } else { "update" },
-                                snapshot_observed_time(plan.now, plan.started.elapsed()),
-                            )
-                            .map_err(|error| Response::error(error.status, &error.message))
                     })?
                     .ok_or_else(unavailable)?;
                 if current.snapshot_clock_shared_state() != expected {
                     return Err(unavailable());
                 }
-                // The remote receipt proves ONLY the actual clock-only
-                // writer. This separate real B proof must authenticate the
-                // direct A -> B shared publication. Its local journal may have
-                // advanced by a different amount during replica catch-up.
                 let local_checkpoint = (
                     self.current_state_identity()?,
                     self.external_effect_generation()?,
                 );
-                if terminal.is_some() {
+                if terminal.successor().is_some() {
                     exported.check_snapshot_terminal_successor(self, &current)?;
                 } else {
                     exported.check_with(self, Service::check_native_installed)?;
@@ -490,7 +488,28 @@ impl Service {
                 {
                     return Err(unavailable());
                 }
-                self.check_native_ha_snapshot_owner_at(plan, local_checkpoint.0)?;
+                self.check_native_ha_snapshot_owner_before_identity(plan)?;
+                let actor = self.check_native_ha_snapshot_owner_after_identity(plan);
+                if terminal.is_denied() {
+                    match actor {
+                        Err(error) if error.status == 403 => {
+                            terminal.finish_denied()?;
+                            return Err(error);
+                        }
+                        _ => return Err(unavailable()),
+                    }
+                }
+                // A newly observed expiry after an Allowed floor is not a
+                // Denied proof; refuse without releasing A or replaying the
+                // clock operation. Pre-writer expiry retains sealed Denied403.
+                actor.map_err(|error| {
+                    if error.status == 403 {
+                        unavailable()
+                    } else {
+                        error
+                    }
+                })?;
+                terminal.finish_allowed()?;
             } else {
                 // The old pure case still checks its original actual proof
                 // after mandatory audit. It is not an exemption for a store

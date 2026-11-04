@@ -2325,7 +2325,9 @@ impl Service {
     /// provider effect may be returned as an owned external plan after its
     /// intent has been durably committed.
     pub(crate) fn begin_request(&mut self, request: ServiceRequest<'_>) -> RequestExecution {
-        let started = std::time::Instant::now();
+        let started = self
+            .native_snapshot_clock
+            .map_or_else(std::time::Instant::now, |(started, _)| started);
         let observed = self.native_snapshot_clock.map_or_else(
             || {
                 SystemTime::now()
@@ -5626,7 +5628,13 @@ impl Service {
             )
         {
             if self.native_snapshot_transport {
-                let Some(principal) = principal.take().filter(Principal::is_root) else {
+                let Some(principal) = principal.take().filter(|actor| {
+                    actor.is_root()
+                        || (matches!(
+                            path,
+                            "sys/storage/raft/snapshot" | "sys/storage/raft/snapshot-force"
+                        ) && request.body.as_object().is_some_and(|body| body.is_empty()))
+                }) else {
                     return Response::error(403, "permission denied");
                 };
                 return self.stage_snapshot_transfer(principal, &request);

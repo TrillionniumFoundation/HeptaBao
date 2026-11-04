@@ -3,7 +3,8 @@
 //! operation. Its sealed result is created only after the actual clock writer.
 use super::*;
 use crate::ha::snapshot_clock::{
-    AuthenticatedSnapshotClockRequest, SharedSnapshotClockState, SnapshotClockOperation,
+    AuthenticatedSnapshotClockRequest, SharedSnapshotClockState, SnapshotClockDisposition,
+    SnapshotClockOperation,
 };
 
 // Neither serde nor a public field/constructor can turn shared root metadata
@@ -12,11 +13,18 @@ use crate::ha::snapshot_clock::{
 pub(crate) struct SnapshotClockObservation {
     source: SharedSnapshotClockState,
     successor: Option<SharedSnapshotClockState>,
+    disposition: SnapshotClockDisposition,
 }
 
 impl SnapshotClockObservation {
-    pub(crate) fn into_parts(self) -> (SharedSnapshotClockState, Option<SharedSnapshotClockState>) {
-        (self.source, self.successor)
+    pub(crate) fn into_parts(
+        self,
+    ) -> (
+        SharedSnapshotClockState,
+        Option<SharedSnapshotClockState>,
+        SnapshotClockDisposition,
+    ) {
+        (self.source, self.successor, self.disposition)
     }
 }
 
@@ -24,7 +32,128 @@ fn unavailable() -> Response {
     Response::error(503, "snapshot terminal clock authority is unavailable")
 }
 
+// A real authentication/ACL outcome, retained through the actual terminal
+// writer. A denied admission can never be converted into a resource plan.
+struct SnapshotClockActor {
+    actor: Option<Principal>,
+    denied_before_floor: bool,
+}
+
 impl Service {
+    fn admit_snapshot_clock_actor(
+        state: &State,
+        request: &AuthenticatedSnapshotClockRequest,
+        clock: RequestClock,
+        capability: &str,
+    ) -> Result<SnapshotClockActor, Response> {
+        let time = AuthorityTime::Precise(clock.observed_at().map_err(|_| unavailable())?);
+        let mut actor = match state.auth.authenticate_read_only_from_observed(
+            request.token(),
+            time,
+            request.origin_peer(),
+        ) {
+            Ok(Some(actor)) => actor,
+            // Finite-use/wrapping eligibility is not an authenticated Actor.
+            Ok(None) => return Err(Response::error(403, "permission denied")),
+            Err(error) if error.status == 403 => {
+                return Ok(SnapshotClockActor {
+                    actor: None,
+                    denied_before_floor: true,
+                });
+            }
+            Err(error) => return Err(Response::error(error.status, &error.message)),
+        };
+        actor
+            .bind_request_clock(Some(clock))
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        let admission = Self::authorize_snapshot_clock_actor(
+            state,
+            &mut actor,
+            request,
+            capability,
+            time,
+        );
+        let denied_before_floor = match admission {
+            Ok(()) => false,
+            Err(error) if error.status == 403 => true,
+            Err(error) => return Err(error),
+        };
+        Ok(SnapshotClockActor {
+            actor: Some(actor),
+            denied_before_floor,
+        })
+    }
+
+    fn authorize_snapshot_clock_actor(
+        state: &State,
+        actor: &mut Principal,
+        request: &AuthenticatedSnapshotClockRequest,
+        capability: &str,
+        time: AuthorityTime,
+    ) -> Result<(), Response> {
+        Self::bind_identity_principal(state, actor, request.namespace())?;
+        let parameters = json!({});
+        state
+            .auth
+            .authorize_request_parameters_observed(
+                actor,
+                request.namespace(),
+                request.method(),
+                request.path(),
+                &parameters,
+                time,
+            )
+            .map_err(|error| Response::error(error.status, &error.message))?;
+        state
+            .auth
+            .authorize_request_observed(
+                actor,
+                request.namespace(),
+                request.path(),
+                capability,
+                time,
+            )
+            .map_err(|error| Response::error(error.status, &error.message))
+    }
+
+    fn finish_snapshot_clock_actor(
+        &self,
+        admitted: &mut SnapshotClockActor,
+        request: &AuthenticatedSnapshotClockRequest,
+        capability: &str,
+        clock: RequestClock,
+    ) -> Result<SnapshotClockDisposition, Response> {
+        let state = self.state.as_ref().ok_or_else(unavailable)?;
+        let time = AuthorityTime::Precise(clock.observed_at().map_err(|_| unavailable())?);
+        let denied_now = if let Some(actor) = admitted.actor.as_mut() {
+            match Self::authorize_snapshot_clock_actor(state, actor, request, capability, time) {
+                Ok(()) => false,
+                Err(error) if error.status == 403 => true,
+                Err(error) => return Err(error),
+            }
+        } else {
+            // This is the same real rejected bearer. Reauthentication cannot
+            // replace a previously admitted affine Actor or grant any output.
+            match state.auth.authenticate_read_only_from_observed(
+                request.token(),
+                time,
+                request.origin_peer(),
+            ) {
+                Err(error) if error.status == 403 => true,
+                Err(error) => return Err(Response::error(error.status, &error.message)),
+                Ok(_) => return Err(unavailable()),
+            }
+        };
+        match (admitted.denied_before_floor, denied_now) {
+            (false, false) => Ok(SnapshotClockDisposition::Allowed),
+            (true, true) => Ok(SnapshotClockDisposition::Denied),
+            // A new expiry observed only after the writer is not covered by
+            // this earlier observation receipt. Refuse without another write,
+            // replay, stale output, or manufactured Denied completion.
+            _ => Err(unavailable()),
+        }
+    }
+
     fn check_snapshot_clock_leader(
         &self,
         request: &AuthenticatedSnapshotClockRequest,
@@ -145,31 +274,16 @@ impl Service {
             SnapshotClockOperation::ValidateUpload
             | SnapshotClockOperation::ValidateForceUpload => "update",
         };
-        let admitted: Result<Principal, Response> = (|| {
-            let state = self.state.as_ref().ok_or_else(unavailable)?;
-            let time = AuthorityTime::Precise(clock.observed_at().map_err(|_| unavailable())?);
-            let mut actor = state
-                .auth
-                .authenticate_read_only_from_observed(request.token(), time, request.origin_peer())
-                .map_err(|error| Response::error(error.status, &error.message))?
-                .filter(Principal::is_root)
-                .ok_or_else(|| Response::error(403, "permission denied"))?;
-            actor
-                .bind_request_clock(Some(clock))
-                .map_err(|error| Response::error(error.status, &error.message))?;
-            state
-                .auth
-                .authorize_request_observed(
-                    &actor,
-                    request.namespace(),
-                    request.path(),
-                    capability,
-                    time,
-                )
-                .map_err(|error| Response::error(error.status, &error.message))?;
-            Ok(actor)
-        })();
-        let status = admitted.as_ref().map_or_else(|error| error.status, |_| 200);
+        let admitted = Self::admit_snapshot_clock_actor(
+            self.state.as_ref().ok_or_else(unavailable)?,
+            request,
+            clock,
+            capability,
+        );
+        let status = admitted.as_ref().map_or_else(
+            |error| error.status,
+            |actor| if actor.denied_before_floor { 403 } else { 200 },
+        );
         if self
             .audit_event("snapshot-clock-response", fingerprint, now, Some(status))
             .is_err()
@@ -190,23 +304,15 @@ impl Service {
         // performs the normal Raft publication. No client/peer floor is used.
         let receipt = self.persist_terminal_token_clock_with_receipt(Some(clock), now, true)?;
         self.check_snapshot_clock_leader(request)?;
-        let actor = admitted?;
-        let after_auth = self.state.as_ref().ok_or_else(unavailable)?.auth.clone();
+        // Both dispositions first authenticate real B. A policy/expiry
+        // refusal cannot bypass the receipt or turn shared metadata into proof.
         let current = self
             .capture_native_ha_request_proof(&mut || {
                 if Instant::now() >= request.deadline() {
-                    return Err(unavailable());
+                    Err(unavailable())
+                } else {
+                    Ok(())
                 }
-                let time = AuthorityTime::Precise(clock.observed_at().map_err(|_| unavailable())?);
-                after_auth
-                    .authorize_request_observed(
-                        &actor,
-                        request.namespace(),
-                        request.path(),
-                        capability,
-                        time,
-                    )
-                    .map_err(|error| Response::error(error.status, &error.message))
             })?
             .ok_or_else(unavailable)?;
         request.check_enrollment(current.snapshot_clock_enrollment())?;
@@ -238,12 +344,18 @@ impl Service {
                 None
             }
         };
+        let mut admitted = admitted?;
+        let disposition = self.finish_snapshot_clock_actor(&mut admitted, request, capability, clock)?;
         self.check_snapshot_clock_leader(request)?;
         if self.current_state_identity()? != after.0
             || self.external_effect_generation()? != after.1
         {
             return Err(unavailable());
         }
-        Ok(SnapshotClockObservation { source, successor })
+        Ok(SnapshotClockObservation {
+            source,
+            successor,
+            disposition,
+        })
     }
 }
