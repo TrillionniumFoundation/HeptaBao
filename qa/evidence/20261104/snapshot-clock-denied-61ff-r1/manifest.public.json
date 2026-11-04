@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao-private-clock-denied-draft-v1",
+  "base_review_commit": "c71b405970544682e7b9b25c91214f66351a767b",
+  "base_physical_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "base_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "file": "crates/heptabao-server/src/ha_snapshot_clock.rs",
+  "base_sha256": "a3ee9092a2539a0557710197972565c99efd29c0a4e14d72462557cb4a2cbcf7",
+  "candidate_sha256": "188b1e44be59e8bcae0e8184e2925be5f8ca9c04bbaf02bec00c5665913c5f5f",
+  "candidate_bytes": 38750,
+  "scope": [
+    "new fixed Denied403 small response variant; old Completed and Rejected wire shapes unchanged",
+    "pure CheckedClockReply metadata cannot construct RemoteReceipt or Completion",
+    "actual authenticated receipt.consume alone constructs non-Clone non-serde private completion",
+    "completion exposes successor/disposition data and consumes matching finish_allowed/finish_denied",
+    "one new pure metadata test covers exact status, original binding, source and single successor; old literal fixtures retained"
+  ],
+  "required_service_changes": [
+    "sealed SnapshotClockObservation.into_parts returns (source,successor,SnapshotClockDisposition) after actual writer/nochange proof",
+    "follower obtains completion data then actual sync/ReadIndex A-B proof and original actor/seal/deadline before matching disposition consume",
+    "Denied path returns only real403 and no archive/restore/KV body"
+  ],
+  "normal_profile_changed": false,
+  "frame_limit_changed": false,
+  "snapshot_payload_forwarding_added": false,
+  "clock_retries_added": false,
+  "physical_source_modified": false,
+  "compiled": false,
+  "runtime_tested": false,
+  "integration_complete": false,
+  "qualification": false
+}
