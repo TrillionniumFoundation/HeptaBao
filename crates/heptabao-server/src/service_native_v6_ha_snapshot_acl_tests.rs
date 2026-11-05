@@ -186,7 +186,156 @@ fn formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update
     assert!(!restored.headers.contains_key("transfer-encoding"));
     let installed = selection(&pipeline, leader, migration_source)?;
     assert_eq!(installed.0, 1);
+    // The restore baseline stays immediately after the real 204. Subsequent
+    // authenticated reads and reconciliation observe the precise token clock;
+    // those durable observations must not change any restored logical state.
+    let capture_clock_state = || {
+        pipeline.with_service(leader, |service| {
+            let process_owner = pipeline.processes[leader]
+                .as_ref()
+                .ok_or("snapshot clock process absent")?;
+            assert!(
+                service
+                    .ha
+                    .as_ref()
+                    .is_some_and(|actual| std::sync::Arc::ptr_eq(actual, process_owner))
+            );
+            let process = process_owner
+                .lock_for_request()
+                .map_err(|_| "snapshot clock observation lock")?;
+            let read = process
+                .native_v6_committed_read(OriginalDeadline::capture()?)?
+                .ok_or("snapshot clock committed root absent")?;
+            process.verify_native_v6_committed_read(&read)?;
+            let native = service
+                .native_root
+                .as_ref()
+                .ok_or("snapshot clock native root absent")?;
+            let state = service
+                .state
+                .as_ref()
+                .ok_or("snapshot clock Auth state absent")?;
+            let committed_identity = StateIdentity::RecordsV6(read.published().root_digest());
+            assert!(
+                native
+                    .identity()
+                    .map_err(|_| "snapshot clock root identity")?
+                    == committed_identity
+            );
+            assert!(
+                service
+                    .current_state_identity()
+                    .map_err(|_| "snapshot clock Service identity")?
+                    == committed_identity
+            );
+            assert_eq!(state.replay_epoch, read.enrollment().epoch());
+            assert_eq!(native.replay_epoch, read.enrollment().epoch());
+            assert_eq!(native.state_schema, state.schema);
+            assert_eq!(
+                read.published().enrollment_digest(),
+                read.enrollment().digest()
+            );
+            assert_eq!(
+                read.published().migration_source().0,
+                migration_source.digest()
+            );
+            assert!(state.auth.has_token_api_precision_state());
+            assert!(!state.auth.has_control_group_state());
+            assert!(!state.engines.has_kubernetes_opaque_artifact_state());
+            let observed = state
+                .auth
+                .terminal_token_clock_floor()
+                .ok_or("snapshot clock precise floor absent")?;
+            assert_eq!(
+                native.owners.len(),
+                crate::state_record_root_v6::OwnerDomain::ALL.len()
+            );
+            for (owner, domain) in native
+                .owners
+                .iter()
+                .zip(crate::state_record_root_v6::OwnerDomain::ALL)
+            {
+                assert_eq!(owner.domain, domain);
+            }
+            Ok((
+                read.enrollment().clone(),
+                read.published().clone(),
+                (*state.auth).clone(),
+                native.clone(),
+                observed,
+            ))
+        })
+    };
+    let (
+        installed_enrollment,
+        installed_publication,
+        installed_auth,
+        installed_native,
+        installed_floor,
+    ) = capture_clock_state()?;
+    assert!(installed_publication == installed.1);
+    assert_eq!(installed_enrollment.epoch(), installed.0);
+    let last_floor = std::cell::Cell::new(installed_floor);
+    let assert_clock_only = || -> TestResult {
+        let (enrollment, published, auth, mut normalized, observed) = capture_clock_state()?;
+        assert!(enrollment == installed_enrollment);
+        assert_eq!(enrollment.epoch(), installed.0);
+        assert_eq!(published.intent().epoch, installed.0);
+        assert_eq!(published.migration_source(), installed.1.migration_source());
+        assert_eq!(
+            published.native_origin_epoch(),
+            installed.1.native_origin_epoch()
+        );
+        // Borrowed lineage equality compares the complete underlying records,
+        // including retained_roots; an operation-ID projection is insufficient.
+        assert!(
+            published
+                .epoch_transitions()
+                .eq(installed.1.epoch_transitions())
+        );
+        assert_eq!(
+            published.intent().object_count,
+            installed.1.intent().object_count
+        );
+        assert!(observed > last_floor.get());
+        assert!(published.generation() > installed.1.generation());
+        assert!(published.publication_log_id().index > installed.1.publication_log_id().index);
+        let mut expected_auth = installed_auth.clone();
+        expected_auth.observe_token_api_time(AuthorityTime::Precise(observed))?;
+        // No assertion dumps the complete Auth owner or address material.
+        assert!(
+            owner_store::serialize_owner(&auth)?.as_slice()
+                == owner_store::serialize_owner(&expected_auth)?.as_slice()
+        );
+        assert_eq!(normalized.owners.len(), installed_native.owners.len());
+        let mut auth_owners = 0;
+        for (prior, owner) in installed_native
+            .owners
+            .iter()
+            .zip(normalized.owners.iter_mut())
+        {
+            assert_eq!(prior.domain, owner.domain);
+            if owner.domain == crate::state_record_root_v6::OwnerDomain::Auth {
+                auth_owners += 1;
+                *owner = prior.clone();
+            }
+        }
+        assert_eq!(auth_owners, 1);
+        assert!(
+            normalized
+                .encode()
+                .map_err(|_| "snapshot clock normalized root encoding")?
+                .as_slice()
+                == installed_native
+                    .encode()
+                    .map_err(|_| "snapshot clock installed root encoding")?
+                    .as_slice()
+        );
+        last_floor.set(observed);
+        Ok(())
+    };
     pipeline.assert_history(leader, &[(1, "seed-v5")])?;
+    assert_clock_only()?;
     expect(
         pipeline.call(
             leader,
@@ -198,6 +347,7 @@ fn formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update
         404,
         "actual-nonroot-restore-removes-later-version",
     )?;
+    assert_clock_only()?;
     // These also use External SnapshotTransfer on the public POST/PUT route,
     // but their typed PendingRestore observation must retain the 200 JSON
     // reconciliation result. Read the actual committed ID, never replay upload.
@@ -244,7 +394,7 @@ fn formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update
         if method == "PUT" {
             assert_eq!(body["data"]["recovery_reference"], reference);
         }
-        assert_eq!(selection(&pipeline, leader, migration_source)?, installed);
+        assert_clock_only()?;
         assert!(observed_pending_reference(&pipeline, leader)?.is_none());
     }
     no_snapshot_custody(&pipeline, leader)?;

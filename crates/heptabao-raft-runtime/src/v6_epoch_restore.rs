@@ -269,6 +269,7 @@ impl NativeV6EpochRetainedRoots {
 /// Read-only lineage from an actual published root. This borrowed metadata can
 /// compare authenticated old local cursor facts during catch-up; it is not a
 /// fresh read witness, Actor authority, peer custody or a local install permit.
+#[derive(Eq, PartialEq)]
 pub struct NativeV6EpochTransition<'a>(pub(crate) &'a NativeV6EpochRestoreRecord);
 
 impl NativeV6EpochTransition<'_> {
