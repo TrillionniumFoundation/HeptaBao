@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"admission_is_not_dispatch_completion\":true,\"async_state\":\"queued\",\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"delivery_proven\":false,\"execution_resume_after_restart\":false,\"idempotency_binding_retained\":true,\"operation_id\":\"341b67979d0f03a71e8f844a0a5dcee3bfc64e8dc4a119a9c7eac826c9b75f72\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"reused\":false,\"session_scope\":\"authenticated_private_operator_credential\",\"tool_name\":\"binary_read\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

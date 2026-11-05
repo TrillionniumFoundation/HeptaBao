@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.sdk-body-prior-packets.v1",
+  "original_requests": {
+    "tree": "9cc81357deaf49fb277df727a6999c276c4286e8",
+    "root_review": "fb93717ba2c38909cf19887b36dcf0c8b539f049"
+  },
+  "first_three_original_partial": "df282bad33bae04e947cea7a6d823dc7e1bf18e5",
+  "third_tail_adoption": "9e7e3bb7c7e3e891506ca7109625a28d3f8a8fa0",
+  "four_to_ten_and_eleven_partial": {
+    "tree": "6fc7c9b76208bfdba84106373644eef97fb7cb3f",
+    "root_363_checks": "05bc0d3511efcb4936feabecdbb4ebb970c36927"
+  },
+  "r28_checkpoint": "eeeb22dc2804cf5452852ab6caa309df0f67a335",
+  "this_completion_does_not_rewrite_prior_checkpoints": true
+}

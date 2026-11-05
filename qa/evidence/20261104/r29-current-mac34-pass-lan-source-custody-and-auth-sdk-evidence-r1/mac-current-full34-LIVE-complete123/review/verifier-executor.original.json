@@ -1,0 +1,7 @@
+{
+  "chunk_id": "32287a",
+  "wall_time_seconds": 0.331865692,
+  "exit_code": 0,
+  "original_token_count": 63,
+  "output": "{\"checks_passed\": 648, \"operations\": 8, \"pages\": 16, \"snapshot_bytes\": 9018321, \"status\": \"PASS_MAC_SINGLE_NODE_FULL34_ORIGINAL31\", \"verification_bytes\": 38851, \"verification_sha256\": \"f0126274bea2ebd0257c636ee1ed889c6ec1907b621d577ff3bf2dc3601b679a\"}\n"
+}

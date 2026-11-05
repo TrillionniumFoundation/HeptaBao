@@ -1,0 +1,806 @@
+{
+  "schema": "heptabao.actual-public-source-records.excerpt.r1",
+  "origin": {
+    "blob": "bdde97e2ec7a167619ea24b0ce9660086e81ebce",
+    "path": "finiteInputClosure.sourceRecords"
+  },
+  "totalOriginalRecords": 48,
+  "publicRecords": [
+    {
+      "bytes": 1130832,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "1152921500312572476",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "1130832",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "path": "/usr/bin/openssl",
+      "private": false,
+      "sha256": "f81b4fcec5048ea1eceb40fc08f4e06f1668181f0b5bacfa8be27d0da181dcb7"
+    },
+    {
+      "bytes": 102368,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "1152921500312572700",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "102368",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "path": "/usr/bin/sandbox-exec",
+      "private": false,
+      "sha256": "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
+    },
+    {
+      "bytes": 363488,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "1152921500312571385",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "363488",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "path": "/bin/launchctl",
+      "private": false,
+      "sha256": "b4dbf509754d8e1117f7851baa93ede75bc75218c48d6ddf19fbb1505d261be7"
+    },
+    {
+      "bytes": 1937776,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "1152921500312575979",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "1937776",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "path": "/usr/sbin/diskutil",
+      "private": false,
+      "sha256": "624a8601b97ddfaa4b18dd2854c299e084cd45eb18fc152011c97615c3b9da1f"
+    },
+    {
+      "bytes": 170432,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "1152921500312571399",
+        "0",
+        "0",
+        "35309",
+        "1",
+        "170432",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "path": "/bin/ps",
+      "private": false,
+      "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+    },
+    {
+      "bytes": 174016,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "1152921500312571481",
+        "0",
+        "0",
+        "33133",
+        "1",
+        "174016",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "path": "/sbin/mount",
+      "private": false,
+      "sha256": "e0368cc89f48770e30dcbc639ae4d99d3ee478516b0186baf3e030ce9828e5dd"
+    },
+    {
+      "bytes": 3386,
+      "cap": 65536,
+      "identity": [
+        "16777244",
+        "72626767",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "3386",
+        "1793876826902261004",
+        "1793876826902261004"
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-result.public.json",
+      "private": false,
+      "sha256": "2fdafe3670a0a7365245e509343ce1cf23ac28b071351d4f30ea12751d90a571"
+    },
+    {
+      "bytes": 814,
+      "cap": 65536,
+      "identity": [
+        "16777244",
+        "72626768",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "814",
+        "1793876826903716038",
+        "1793876826903716038"
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/native-build.public.json",
+      "private": false,
+      "sha256": "25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49"
+    },
+    {
+      "bytes": 92398928,
+      "cap": 268435456,
+      "identity": [
+        "16777244",
+        "72626763",
+        "501",
+        "20",
+        "33088",
+        "1",
+        "92398928",
+        "1793876826299674364",
+        "1793876826322472740"
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server",
+      "private": false,
+      "sha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63"
+    },
+    {
+      "bytes": 51466,
+      "cap": 2097152,
+      "identity": [
+        "16777244",
+        "72395439",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "51466",
+        "1793780682484705229",
+        "1793780682484705229"
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/final360-native-codex-live-r5/result.public.json",
+      "private": false,
+      "sha256": "6caa9ebfc2a3bf3ae637676a8055022817ec0efa85b09c6ffc304ac854ca6236"
+    },
+    {
+      "bytes": 1788,
+      "cap": 65536,
+      "identity": [
+        "16777244",
+        "72377065",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "1788",
+        "1793774693484819809",
+        "1793774693484819809"
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/runtime-contract-source-r1/native-pin.public.json",
+      "private": false,
+      "sha256": "fce8536b33a83b920accd7264991759a13011057cac3502b0ce14fffc075339e"
+    },
+    {
+      "bytes": 54455,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "527753287",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "54455",
+        "1786452790844162483",
+        "1786452790844261399"
+      ],
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/index.js",
+      "private": false,
+      "sha256": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b"
+    },
+    {
+      "bytes": 5438,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "527753284",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "5438",
+        "1786452790843154284",
+        "1786452790843223784"
+      ],
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/bad-refresh-quarantine.js",
+      "private": false,
+      "sha256": "916617f296bd2e4b97b240a13418ac6220bb6513a1a0b83f5ee21854edc62286"
+    },
+    {
+      "bytes": 2120,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "527753291",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "2120",
+        "1786452790845419721",
+        "1786452790845502928"
+      ],
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/codex-client-recycler.js",
+      "private": false,
+      "sha256": "d3fffe4c401af1dd997017a22930da241d2a4a899c518ce6d25c7047f1b3a13d"
+    },
+    {
+      "bytes": 6932,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "527753285",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "6932",
+        "1786452790843413115",
+        "1786452790843464573"
+      ],
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/lease-assignments.js",
+      "private": false,
+      "sha256": "24192dc82ddd682e836ea2df717b065b76773c0a1f4b0905f6764e4d498d77e7"
+    },
+    {
+      "bytes": 7376,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "527753283",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "7376",
+        "1786452790842751580",
+        "1786452790842859287"
+      ],
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/order-policy.js",
+      "private": false,
+      "sha256": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301"
+    },
+    {
+      "bytes": 4670,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "527753288",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "4670",
+        "1786452790844541938",
+        "1786452790844595479"
+      ],
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/provider-error-classifier.js",
+      "private": false,
+      "sha256": "3f9470edea686a0eb46400efecc4c12a284e7fdef018565c34185b0cff102d77"
+    },
+    {
+      "bytes": 956,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "527753289",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "956",
+        "1786452790844883684",
+        "1786452790844939809"
+      ],
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/runtime-refresh-policy.js",
+      "private": false,
+      "sha256": "8257a6d2ee04868f3a7de5ff8ffaa7fdd3b37bb12a07ac993a3e9c7480c83547"
+    },
+    {
+      "bytes": 980,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "527753290",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "980",
+        "1786452790845165806",
+        "1786452790845207348"
+      ],
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/package.json",
+      "private": false,
+      "sha256": "e9a39d1880a285e76b5b09fb69c9614cfbecff0e1021eb29ce214a6340fd7334"
+    },
+    {
+      "bytes": 116017,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405240704",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "116017",
+        "1784843466398982859",
+        "1784843466398982859"
+      ],
+      "path": "/opt/homebrew/lib/node_modules/openclaw/package.json",
+      "private": false,
+      "sha256": "695b6ee36df7fc69606dc390cf97bb2ca809114337b18c573707637cd2a4e3db"
+    },
+    {
+      "bytes": 19513,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405234936",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "19513",
+        "1784843452482277116",
+        "1784843452482277116"
+      ],
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/plugin-sdk/agent-runtime.js",
+      "private": false,
+      "sha256": "7831532d17eeaddd62889b2e8bb7b65ea7a7851901f69ceec23607a8c579dd95"
+    },
+    {
+      "bytes": 40383,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405239823",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "40383",
+        "1784843464708586221",
+        "1784843464708586221"
+      ],
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/store-DH33UrUj.js",
+      "private": false,
+      "sha256": "25a5c7075e13b8fb32f498a90e5ee91d93b7e15972b3b74796f1325b5ba98ebf"
+    },
+    {
+      "bytes": 41853,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405239644",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "41853",
+        "1784843464350296920",
+        "1784843464350296920"
+      ],
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/source-check-ZSz5NzGW.js",
+      "private": false,
+      "sha256": "9c02bbf2df3cf123efe8c34c423ae4ea044371aab91d727f38986351695ce1c9"
+    },
+    {
+      "bytes": 34532,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405237901",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "34532",
+        "1784843459853953219",
+        "1784843459853953219"
+      ],
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/oauth-B4aOCsid.js",
+      "private": false,
+      "sha256": "505d561b6fe271c95d29d7b93b44cd0780ac5859342a98e46f20b4e08487234e"
+    },
+    {
+      "bytes": 11008,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405238069",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "11008",
+        "1784843460147322575",
+        "1784843460147322575"
+      ],
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/order-CeBlX0NH.js",
+      "private": false,
+      "sha256": "4674b1d9ccf77f2b3ef7dd87c394ad99404ba34e6b2a0efed661c4546ac5c732"
+    },
+    {
+      "bytes": 46788,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405237643",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "46788",
+        "1784843459494708831",
+        "1784843459494708831"
+      ],
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/model-auth-CJEm9SNp.js",
+      "private": false,
+      "sha256": "2b5e700c9f7a7b012f8e7d7b0b56b06267e58861b3ebf8ca3a092bd74dd90aa7"
+    },
+    {
+      "bytes": 9713,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405239693",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "9713",
+        "1784843464405272412",
+        "1784843464405272412"
+      ],
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/sqlite-wal-Bhk2Ro-u.js",
+      "private": false,
+      "sha256": "ef69e7cad95ff5cd5fe3087331294daae557833bcbc3d0ae140394d16855c3da"
+    },
+    {
+      "bytes": 6047,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405239125",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "6047",
+        "1784843462897326061",
+        "1784843462897326061"
+      ],
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/runtime-registry-loader-Duw3fvRO.js",
+      "private": false,
+      "sha256": "bd6a9f363bc7aac2fb0503640e339ffce52e0eab15336e6489b6f8129df748fb"
+    },
+    {
+      "bytes": 173,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405239124",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "173",
+        "1784843462897059185",
+        "1784843462897059185"
+      ],
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/runtime-registry-loader-d7xui8oD.js",
+      "private": false,
+      "sha256": "60625cfb3742d35a39a70df71eacb6160718e4beac0b1b7649dac8fb5d0e2600"
+    },
+    {
+      "bytes": 673468,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405239260",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "673468",
+        "1784843463381890779",
+        "1784843463381890779"
+      ],
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+      "private": false,
+      "sha256": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66"
+    },
+    {
+      "bytes": 3135,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405238784",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "3135",
+        "1784843461892399454",
+        "1784843461892399454"
+      ],
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-DtLZ3rba.js",
+      "private": false,
+      "sha256": "a845875a1998c2a6bdd9fe4c824a0a7c3e7da0f3ee75ec56dc6163d4327f7ff0"
+    },
+    {
+      "bytes": 9035,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405240472",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "9035",
+        "1784843466082438877",
+        "1784843466082438877"
+      ],
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/windows-spawn-C5RDaB22.js",
+      "private": false,
+      "sha256": "24f856187f26ed4d6ffbddb8ec44f13e01527841a6cac0839064bb4a6dd64549"
+    },
+    {
+      "bytes": 480,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405240473",
+        "501",
+        "80",
+        "33188",
+        "1",
+        "480",
+        "1784843466082968462",
+        "1784843466082968462"
+      ],
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/plugin-sdk/windows-spawn.js",
+      "private": false,
+      "sha256": "d97a1228e01c249bc2d7feabff40987beb8f8419f39c35002643fd05a2c590e4"
+    },
+    {
+      "bytes": 77233,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405276655",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "77233",
+        "1784844051300408927",
+        "1784844051300408927"
+      ],
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/shared-client-4ICy3U6d.js",
+      "private": false,
+      "sha256": "bff60f1bb2cb73ad44c7f9c9d779576a2ffd9836b22ecba0bd5b6046e7ce9103"
+    },
+    {
+      "bytes": 53801,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405276631",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "53801",
+        "1784844051296605647",
+        "1784844051296605647"
+      ],
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/config-CYEDnLJ2.js",
+      "private": false,
+      "sha256": "dd8d2fc434fc538ba8e69ebe0f2aa470eadcfb86c2ef95b19a7570afb51290a0"
+    },
+    {
+      "bytes": 115196,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405276635",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "115196",
+        "1784844051297297853",
+        "1784844051297297853"
+      ],
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/index.js",
+      "private": false,
+      "sha256": "ade01b0285488ab9c9cb2c963c85210cf97720d7188b772ecf9ce423f82c7ca5"
+    },
+    {
+      "bytes": 3596,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405276634",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "3596",
+        "1784844051297089646",
+        "1784844051297089646"
+      ],
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+      "private": false,
+      "sha256": "8919eefce05b3127251724c8f8cad7f1ac1a0994c57b243361092ea4de096f72"
+    },
+    {
+      "bytes": 19517,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405276662",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "19517",
+        "1784844051301080758",
+        "1784844051301080758"
+      ],
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/openclaw.plugin.json",
+      "private": false,
+      "sha256": "e6121fbc68131d7c320da9a23ece1a41864e51c2ff04fef6b72a1d114353aa8d"
+    },
+    {
+      "bytes": 1545,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405276663",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "1545",
+        "1784844051301185008",
+        "1784844051301185008"
+      ],
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/package.json",
+      "private": false,
+      "sha256": "a11aced690f9a6e1d8c85a66bc0abd5bd6f397301609a2b15cf066fcd75ffdb8"
+    },
+    {
+      "bytes": 7236,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405276699",
+        "501",
+        "20",
+        "33261",
+        "1",
+        "7236",
+        "1784844054018398102",
+        "1784844055416957303"
+      ],
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex/bin/codex.js",
+      "private": false,
+      "sha256": "134063e133f0b4244fa3b251acf973d4fe4b4aeeacbdc135211bf480f59f1477"
+    },
+    {
+      "bytes": 260408304,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405276720",
+        "501",
+        "20",
+        "33261",
+        "1",
+        "260408304",
+        "1784844055051808269",
+        "1784844055051808269"
+      ],
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex-darwin-arm64/vendor/aarch64-apple-darwin/bin/codex",
+      "private": false,
+      "sha256": "718724d7221cf1298071ca92411cb74caa8422809154150cedca7b569a4518e3"
+    },
+    {
+      "bytes": 1082,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405276707",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "1082",
+        "1784844054018639476",
+        "1784844054018639476"
+      ],
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex/package.json",
+      "private": false,
+      "sha256": "66d383ce5fef10d874cbec37ab0405287c76d10b2e746f9ac8726059db038a1a"
+    },
+    {
+      "bytes": 517,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405278964",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "517",
+        "1784844055212059480",
+        "1784844055212059480"
+      ],
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/node_modules/@openai/codex-darwin-arm64/package.json",
+      "private": false,
+      "sha256": "5d3349fb11db7efea6eab4c1d7efd4eee546ba91e12f7583996bccc9992a3953"
+    },
+    {
+      "bytes": 68384,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "42479374",
+        "501",
+        "80",
+        "33133",
+        "1",
+        "68384",
+        "1775693589374925413",
+        "1775693590180968789"
+      ],
+      "path": "/opt/homebrew/Cellar/node/25.9.0_1/bin/node",
+      "private": false,
+      "sha256": "a46ed02589ca3af795237111ff854262064f8ff5c5b58d75c1509f37311eb15e"
+    }
+  ],
+  "count": 44,
+  "originalCodeCount": 40,
+  "publicReceiptDocumentCount": 4,
+  "extraction": "Only records with private === false; no content/private values added."
+}

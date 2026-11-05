@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.selected-owner-source-provenance.r1",
+  "sourceReadFinal": {
+    "tree": "abc61330ace8f4c2b9ab8f35a5e6a0d1932be8f9",
+    "files": 116,
+    "bytes": 1445423,
+    "merkleTrees": 41,
+    "rootReview": "210f829b0bb393874c0f314dad988e11252b94a1",
+    "rootChecks": 227
+  },
+  "actualPredicate": {
+    "tree": "9cc0e5423626cb0e2525a29e96f0f5dcddc14a73",
+    "stdout": "e311f02d58594fa70957751d303c2a2df9c31c49",
+    "source": "c23db528a0454408db56e280a5f9e143db3a2cfd",
+    "request": "0a6df248e9e4780bbe3d625bfeeebd5728eeea1d",
+    "knownExit": 0,
+    "actualSelected": null
+  },
+  "originalFailedCurrent": {
+    "tree": "4a4e35f46eabadbfe5e0ccec3f9b49163d02ac08",
+    "stdout": "bdde97e2ec7a167619ea24b0ce9660086e81ebce",
+    "rootReview": "bc93e8cdc6c9e0f8330743e115e0aa62662d2148",
+    "errorCode": "actual_finite_harness_code_root",
+    "beforeCapturePassed": true,
+    "ownedPhases": 0
+  },
+  "readerProof": {
+    "originalSource": "c23db528a0454408db56e280a5f9e143db3a2cfd",
+    "finalSource": "ce7b983c88ae53833ffe285b924470e14a450bba",
+    "diff": "6279c7e9068035375b06d56fe66ed7f9924de66c",
+    "finalCatalogSameAs62CheckResult": true
+  },
+  "observerProof": {
+    "finalSource": "7a246176115ce675242fd5e0d413b91683a4c61d",
+    "priorDraftIn62CheckResultSha256": "fba7606ed3870cbf70ef5b92221f6e2c468da1cbd04fd4c098fde1b81246572b",
+    "finalOneExpressionProof": "verification/observer-final-combined-guard.public.json",
+    "nodeCheck": "verification/node-final-check-exec.original.json",
+    "executed": false
+  },
+  "newRequests": {
+    "catalogAlias": "d58b231c703a41fa259a5efee2142d37025a41c5",
+    "catalogRegular": "19b9a25626b2c7b7c270283646bd91fbee818ca1",
+    "submitted": 0,
+    "newPublicInfos": 3,
+    "bodyRequestsNotYetFrozen": true
+  },
+  "noHostActions": true,
+  "noSdkExecution": true,
+  "noActualOwnerClaim": true,
+  "noOldGuardChanges": true
+}

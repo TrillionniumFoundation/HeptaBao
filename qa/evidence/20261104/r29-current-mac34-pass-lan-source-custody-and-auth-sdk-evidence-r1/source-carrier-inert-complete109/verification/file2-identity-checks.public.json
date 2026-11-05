@@ -1,0 +1,38 @@
+[
+  {
+    "name": "fixed path",
+    "pass": true
+  },
+  {
+    "name": "version has five exact decimal fields",
+    "pass": true
+  },
+  {
+    "name": "mode uid gid nlink",
+    "pass": true
+  },
+  {
+    "name": "size version equality and cap",
+    "pass": true
+  },
+  {
+    "name": "whole hash format",
+    "pass": true
+  },
+  {
+    "name": "publisher fixed path and source bytes",
+    "pass": true
+  },
+  {
+    "name": "publisher and reviewed whole SHA",
+    "pass": true
+  },
+  {
+    "name": "publisher regular fullmode with matching permission projection",
+    "pass": true
+  },
+  {
+    "name": "publisher all nine identity fields including nanoseconds",
+    "pass": true
+  }
+]

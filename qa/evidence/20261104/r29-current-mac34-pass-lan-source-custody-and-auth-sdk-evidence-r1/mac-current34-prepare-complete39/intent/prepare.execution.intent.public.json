@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.mac-current-full34-readonly-prepare-execution-intent.v1",
+  "status": "EXTERNAL_INTENT_BEFORE_UNIQUE_PREPARE_START",
+  "root_go_blob": "a03f7aa41b6c081113811fb0ab154ad534a4f65f",
+  "root_go_json_original": "{\n  \"schema\": \"heptabao.mac-current34-exact-readonly-prepare-go.r1\",\n  \"status\": \"GO_EXACT_READONLY_PREPARE_AFTER_INERT_READBACKS_CLOSE\",\n  \"root_source_review\": \"68f387a48322055bf65d919118d03557189dee2a\",\n  \"root_source_addendum\": \"83628af68759ee5044853fdb7df6e09fb08dd3c0\",\n  \"inert_go\": \"4a5c43e0e50f4869c692056316b17e5aacdfeb38\",\n  \"inert_ACK_authority_review\": \"8988752c3258150793476ef02fd5511cdae4f348\",\n  \"exact_request\": {\n    \"blob\": \"3bb99480cd474a15e5528bd68091e705a620d633\",\n    \"bytes\": 552,\n    \"sha256\": \"638fdf9a7a5eb7ecc133381a79fc05d5d9177e3a0df64d562ffe1dbbfb7e5405\",\n    \"request\": {\n      \"args\": [\n        \"-I\",\n        \"-S\",\n        \"-B\",\n        \"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1/control/run_current_mac_full34_r1.py\",\n        \"--prepare-only\"\n      ],\n      \"cwd\": \"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1\",\n      \"executable\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\n      \"host\": \"mac\",\n      \"idempotency_key\": \"heptabao-mac-current-full34-prepare-29785927-20261105-r1\",\n      \"timeout_seconds\": 90\n    }\n  },\n  \"mandatory_before_submission\": [\n    \"Original inert authority and complete854/0 streams are externally archived; original observer operations are completed/stored/inactive.\",\n    \"Independent fixed-path wrapper and receipt file_info and full bodies are whole and closed; original wrapper bytes20538/SHA29785927055d2e676c702aa79b97db9a6d274d8d8de0916073c08face41c6c9a match exactly.\",\n    \"Wrapper independent version/full9 equals the original publisher receipt; mode0600, uid501, regular single link; receipt independently hashed and losslessly equals original stdout.\",\n    \"Inert receipt status prepared, fresh ROOT/control created, exactly one source, python_compile_only true and source/git/compiler/service/artifact_transfer flags false.\",\n    \"No unknown in these current prerequisite observations; if a transport failure prevents proof, preserve it and stop before prepare.\"\n  ],\n  \"execution_order\": [\n    \"Save a separate completed external intent linking all actual prerequisite proofs and this exact request.\",\n    \"Submit only this unchanged prepare request once; original ACK externally saved before parsing.\",\n    \"Read only original job authority/streams; preserve error or missing ACK, no process replay.\",\n    \"Return full prepared object and its actual prepared_sha256, original terminal and closed/read proofs for root review before any live --run request.\"\n  ],\n  \"line_B_owner\": \"compatibility_audit\",\n  \"line_A_unchanged\": true,\n  \"root_runtime_calls\": 0,\n  \"prepare_internal_seconds\": 60,\n  \"prepare_outer_seconds\": 90,\n  \"original_runtime_outer_seconds\": 1800,\n  \"original_business_HTTP_seconds\": 15,\n  \"original_business_migration_seconds\": 360,\n  \"private_fixture_allowed\": false,\n  \"product_service_allowed\": false,\n  \"production_change_allowed\": false,\n  \"live_go\": false,\n  \"full_replacement_qualified\": false\n}\n",
+  "exact_request_blob": "3bb99480cd474a15e5528bd68091e705a620d633",
+  "exact_request_json_original": "{\n  \"args\": [\n    \"-I\",\n    \"-S\",\n    \"-B\",\n    \"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1/control/run_current_mac_full34_r1.py\",\n    \"--prepare-only\"\n  ],\n  \"cwd\": \"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1\",\n  \"executable\": \"/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14\",\n  \"host\": \"mac\",\n  \"idempotency_key\": \"heptabao-mac-current-full34-prepare-29785927-20261105-r1\",\n  \"timeout_seconds\": 90\n}\n",
+  "actual_inert_packet": {
+    "status": "FULL_INERT_ACTUAL_PACKET_WHOLE_VERIFIED",
+    "tree": "1571044456e90e23cff4443d88d92840b81439a9",
+    "files": 67,
+    "bytes": 718950,
+    "merkle_trees": 12,
+    "read_operations": 5,
+    "immutable_pages": 6,
+    "lossless_checks": 192,
+    "runtime_inflight": false,
+    "native_futures_inflight": false,
+    "prepare_submitted": false,
+    "live_submitted": false
+  },
+  "inert_prerequisite_verification": {
+    "blob": "59187c48155843deeab8a56d11e1411670e76c85",
+    "bytes": 10904,
+    "sha256": "a3d2bd12c70913b4aee53f0d0754e6e322c0886c0397c902fe5f9c9e2bda3d77",
+    "checks": 192,
+    "status": "PASS_INERT_ONLY_CONDITIONAL_PREPARE_PREREQUISITES"
+  },
+  "line_B_exclusive_to_this_owner": true,
+  "current_runtime_calls_inflight": 0,
+  "current_native_futures_inflight": 0,
+  "process_start_submitted": false,
+  "live_submitted": false,
+  "product_service_allowed": false,
+  "private_fixture_allowed": false,
+  "original_prepare_seconds": 60,
+  "outer_seconds": 90,
+  "unknown_policy": "Preserve any error or missing ACK and stop; do not repeat process_start or change its key."
+}

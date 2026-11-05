@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.root-conditional-source-bundle-relay-go.r29.v1",
+  "status": "GO_ONLY_AFTER_ORIGINAL_CARRIER_INERT_FULL_READBACK",
+  "line": "A",
+  "line_owner": "/root/ha_validation",
+  "max_runtime_calls_inflight": 1,
+  "scope": "One create-only transfer of the two exact public canonical-source files from the admitted ROG source paths to the fresh desktop source-carrier root. No Git, importer, compiler, server or HTTP execution.",
+  "prerequisites": [
+    "Source export81 packet f5af874eee6ec59d2afccb90898fcdb69251dffd is complete; root independently passed411 original-operation/file/core checks in1ee2dc78e17e938ff9d3c4111d3483c6d654ce95.",
+    "The one carrier inert submission under3eedc101ee18c577c4a10a318f2bbeaae8f5f7a4 must be authoritative terminal exit0/full/durable, with all original streams and every returned read observer closed/inactive/full.",
+    "All three published helpers and inert receipt must have independent metadata and whole bodies under the fixed four paths. Every helper byte/size/SHA must equal source24; actual full9 must equal original inert publication rows; receipt and original stdout must be losslessly equal.",
+    "Publish the complete inert evidence/readback packet and verifier and send its exact tree to root before this relay execution intent.",
+    "No current lineA tool call or native future remains in flight."
+  ],
+  "source_packet": "cccc8d56f0729f558ba6b5e826c6082b97a8eb2b",
+  "source_prior_root138": "7d6cb5c53926931f5ada9f040161883b1daaf891",
+  "source_actual_binding_root_AST_checks": 28,
+  "all_42_function_class_definitions_unchanged": true,
+  "exact_request": {
+    "path": "requests/RELAY.REVIEW-ONLY.public.json",
+    "blob": "223fbd0102a6e1aa803ea2e7528e79fd63776b00",
+    "bytes": 380,
+    "sha256": "562ed81a329a6ec932ee52cf807a10f6162abbdf9f37fbb7010bf95564929ca2",
+    "mode": "100644",
+    "request": {
+      "host": "desktop",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/relay.py"
+      ],
+      "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+      "timeout_seconds": 360,
+      "idempotency_key": "heptabao-4e808-source-carrier-relay-r1-b1a9a177"
+    }
+  },
+  "controller_sha256": "b1a9a177a6969add781e076067781c746c570161e27354480154781b099ad284",
+  "source_files": [
+    {
+      "bytes": 22320862,
+      "name": "canonical-4e808-full.bundle",
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle",
+      "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28091464:22320862:1793885177495300186:1793885177498300179"
+    },
+    {
+      "bytes": 39692,
+      "name": "source-export.result.public.json",
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json",
+      "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28091501:39692:1793885177751063403:1793885177751063403"
+    }
+  ],
+  "source_bytes": 22360554,
+  "fresh_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1",
+  "budgets": {
+    "outer_seconds": 360,
+    "relay_seconds": 300,
+    "endpoint_and_SSH_child_seconds": 90,
+    "connect_seconds": 10,
+    "connection_attempts": 1,
+    "TERM_seconds": 5,
+    "KILL_seconds": 5
+  },
+  "admission": [
+    "Use the exact380-byte request blob. The argv is exactly4 arguments; do not append a digest or otherwise alter the approved controller interface.",
+    "First complete and whole-verify a separate external execution intent referencing this GO, the final inert packet, actual helper full9 and exact request; only then submit that process_start once.",
+    "Externally save and whole-verify the original SDK ACK before parsing; check isError first. Missing ACK/UNKNOWN never permits another business submission, key, root or retry.",
+    "Preserve all original job authority, streams and immutable observer pages. No inference that a transport timeout proves remote termination."
+  ],
+  "success_and_evidence": [
+    "Require original terminal exit0/full/durable/confirmed, publication within original deadline, exact source before/after and trust/controller pins, two received whole-file hashes and modes, all three child records reaped and no remaining process groups.",
+    "Read the one fixed fresh-root/control/result.public.json by independent info and exact version-pinned whole bytes. Inspect only original job plus these exact fresh owned public evidence paths.",
+    "After positive core, perform independent file_info for fresh-root/incoming/canonical-4e808-full.bundle and fresh-root/incoming/source-export.result.public.json and require every returned full9 field matches the receiver's actual same-FD whole-file observation.",
+    "Archive the original three command records and actual saved stdout/stderr files identified by the reviewed relay/core. Binary sender stdout is a pipe and must not be invented as a separate saved file.",
+    "Retain SDK/native errors and stop the dependent sequence for root reconciliation. Do not increase budgets or change source/transport/trust settings."
+  ],
+  "not_authorized": [
+    "Git bundle import or clone",
+    "new source export",
+    "X230 transfer or runtime",
+    "physical HA launch",
+    "production cutover",
+    "legacy cleanup",
+    "provider/model/refresh/quota/J3160 changes"
+  ],
+  "source_import_qualified": false,
+  "product_runtime_qualified": false,
+  "full_replacement_qualified": false
+}

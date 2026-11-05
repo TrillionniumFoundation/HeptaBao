@@ -1,0 +1,82 @@
+[
+  {
+    "name": "complete_independent_files",
+    "passed": true
+  },
+  {
+    "name": "0_exact_path_eof_size_hash",
+    "passed": true
+  },
+  {
+    "name": "0_version_retained",
+    "passed": true
+  },
+  {
+    "name": "0_record_lossless_equals_original_core",
+    "passed": true
+  },
+  {
+    "name": "1_exact_path_eof_size_hash",
+    "passed": true
+  },
+  {
+    "name": "1_version_retained",
+    "passed": true
+  },
+  {
+    "name": "1_stream_exact_original_core",
+    "passed": true
+  },
+  {
+    "name": "2_exact_path_eof_size_hash",
+    "passed": true
+  },
+  {
+    "name": "2_version_retained",
+    "passed": true
+  },
+  {
+    "name": "2_stream_exact_original_core",
+    "passed": true
+  },
+  {
+    "name": "3_exact_path_eof_size_hash",
+    "passed": true
+  },
+  {
+    "name": "3_version_retained",
+    "passed": true
+  },
+  {
+    "name": "3_record_lossless_equals_original_core",
+    "passed": true
+  },
+  {
+    "name": "4_exact_path_eof_size_hash",
+    "passed": true
+  },
+  {
+    "name": "4_version_retained",
+    "passed": true
+  },
+  {
+    "name": "4_stream_exact_original_core",
+    "passed": true
+  },
+  {
+    "name": "5_exact_path_eof_size_hash",
+    "passed": true
+  },
+  {
+    "name": "5_version_retained",
+    "passed": true
+  },
+  {
+    "name": "5_stream_exact_original_core",
+    "passed": true
+  },
+  {
+    "name": "batch_expected_bytes",
+    "passed": true
+  }
+]

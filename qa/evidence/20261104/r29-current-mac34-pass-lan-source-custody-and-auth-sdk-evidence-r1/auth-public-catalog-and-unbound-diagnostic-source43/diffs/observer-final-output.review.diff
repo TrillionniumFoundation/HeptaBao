@@ -1,0 +1,5 @@
+--- before/observer.unbound.mjs
++++ after/observer.unbound.mjs
+@@ -165 +165 @@
+-    wouldSatisfyOriginalRegisteredInstancePredicate:sameRegisteredInstance,
++    wouldSatisfyOriginalNativeWorkerSelectionGuards:selectedId==='codex' && sameRegisteredInstance,

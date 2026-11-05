@@ -1,0 +1,39 @@
+[
+  {
+    "name": "r29-mac-current34-bound-source-root-review.public.json",
+    "expected": "68f387a48322055bf65d919118d03557189dee2a",
+    "bytes": 4429,
+    "create": {
+      "content": [
+        {
+          "type": "text",
+          "text": "RemoteProtocolError: Server disconnected without sending a response."
+        }
+      ],
+      "structuredContent": {
+        "error": "RemoteProtocolError: Server disconnected without sending a response.",
+        "error_code": "UNKNOWN"
+      },
+      "isError": true
+    },
+    "read": {
+      "content": [
+        {
+          "type": "text",
+          "text": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+        }
+      ],
+      "structuredContent": {
+        "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}",
+        "error_code": "NOT_FOUND",
+        "error_data": {
+          "message": "Not Found",
+          "documentation_url": "https://docs.github.com/rest/git/blobs#get-a-blob",
+          "status": "404"
+        }
+      },
+      "isError": true
+    },
+    "create_error_reconciled_by_exact_content_address": false
+  }
+]

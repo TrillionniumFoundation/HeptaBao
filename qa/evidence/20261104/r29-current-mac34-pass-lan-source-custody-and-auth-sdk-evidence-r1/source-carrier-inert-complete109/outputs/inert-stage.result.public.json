@@ -1,0 +1,70 @@
+{
+  "artifact_transfer_started": false,
+  "compiler_started": false,
+  "files": [
+    {
+      "bytes": 6430,
+      "identity": [
+        2050,
+        7361525,
+        1000,
+        1000,
+        33152,
+        1,
+        6430,
+        1793897883715794912,
+        1793897883764199707
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/sender.py",
+      "publication": "created",
+      "sha256": "c7e4fcbbd6d6962165e81b9d4fcd568986ec292515f2ffe62cb47ce6a3694e56"
+    },
+    {
+      "bytes": 8857,
+      "identity": [
+        2050,
+        7361526,
+        1000,
+        1000,
+        33152,
+        1,
+        8857,
+        1793897883774949872,
+        1793897883780526579
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/receiver.py",
+      "publication": "created",
+      "sha256": "3b0240aabbf3e8b6bd20724e0aff7d87b71b65b44512dac6e10b6a47ad4bea6e"
+    },
+    {
+      "bytes": 15541,
+      "identity": [
+        2050,
+        7361535,
+        1000,
+        1000,
+        33152,
+        1,
+        15541,
+        1793897883826244575,
+        1793897883835843877
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/relay.py",
+      "publication": "created",
+      "sha256": "b1a9a177a6969add781e076067781c746c570161e27354480154781b099ad284"
+    }
+  ],
+  "git_started": false,
+  "python_compile_only": true,
+  "schema": "heptabao.same-root-publication-4e808-source-carrier-inert.v1",
+  "service_started": false,
+  "source_executed": false,
+  "started_ns": 1793897883689926414,
+  "status": "prepared",
+  "stdin_bytes": 41273,
+  "stdin_sha256": "2588299918df718248164c08629280f93d85491ab8aaf79a769b4c7b61162162",
+  "terminal_ns": 1793897883882466581
+}

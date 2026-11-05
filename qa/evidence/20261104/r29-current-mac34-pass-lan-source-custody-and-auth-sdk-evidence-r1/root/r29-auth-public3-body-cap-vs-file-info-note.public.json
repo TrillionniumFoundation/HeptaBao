@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.public-readset-byte-bound-clarification.r1",
+  "packet": "67278f5e4ea494d1394f5eb8185e3af64f93aa76",
+  "readset": "8457a24c7ba9ecf7dd14b621672ab8cd225a2a90",
+  "sourceOrRequestChanged": false,
+  "status": "SOURCE_ONLY_NO_GO",
+  "meaningOfMaximumWholeBytes": "265740 is the maximum accepted subsequent binary_read whole-body total, not a separately enforced byte ceiling for file_info's internal SHA hashing.",
+  "requestedBodyCaps": {
+    "harnessPolicy": 131072,
+    "supportContext": 131072,
+    "codexHarness": 3596,
+    "total": 265740
+  },
+  "fileInfo": {
+    "fixedPaths": 3,
+    "toolAcceptsByteCap": false,
+    "toolPerformsWholeSha256": true,
+    "internalBytesReadForTwoUnobservedHelpers": "NOT_YET_OBSERVED",
+    "enforcement": "Original purpose-built tool limits/deadline apply. Oversize metadata prevents subsequent body request; it cannot retroactively make metadata hashing a <=131072-byte read."
+  },
+  "newRuntimeCalls": 0,
+  "wholePublicRequestKeysUnchanged": true
+}

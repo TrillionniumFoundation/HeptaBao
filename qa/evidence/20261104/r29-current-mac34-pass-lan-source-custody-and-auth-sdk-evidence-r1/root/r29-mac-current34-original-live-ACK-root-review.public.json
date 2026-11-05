@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.root-mac-full34-original-live-ACK-review.r29.v1",
+  "status": "ORIGINAL_LIVE_ACK_VERIFIED_NO_RESULT_CLAIM",
+  "checks_passed": 9,
+  "checks": [
+    "SDK-noerror-native-byte-exact",
+    "exact-args",
+    "exact-cwd",
+    "exact-host",
+    "exact-executable",
+    "exact-idempotency_key",
+    "exact-original-request-digest",
+    "lossless-fingerprint",
+    "one-ack-launch"
+  ],
+  "host": "mac",
+  "job_id": "1a1ac9bd07c-fc05-55cf",
+  "request_blob": "daa406a9cf802d77e92c5339eb4762be2cfddf34",
+  "execution_intent": "6b51183a04b1457552bad221129ffcf6f9182b3d",
+  "ACK_SDK": "d74a0b9781f56ef537c956682807c3a158fd7dee",
+  "ACK_native": "6dbe7c089f72e4a18a3d785eaf822a620980a1db",
+  "request_digest": "8bfc672565bb087cfaafe5e9b5b948d6e8a4585af584d0974bcf2aadff570bdf",
+  "fingerprint_decimal": "10087050675721275516",
+  "outer_seconds": 1800,
+  "original_submissions": 1,
+  "current_run_result_proven": false,
+  "full_replacement_qualified": false
+}

@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.mac-current-full34-inert-original-observation-intent.v1",
+  "name": "wrapper-info",
+  "root_go_blob": "4a5c43e0e50f4869c692056316b17e5aacdfeb38",
+  "job_ack_blob": "6bdcd26b8d261720d27e18f3f7b153d250992afd",
+  "request": {
+    "idempotency_key": "heptabao-mac-full34-inert-wrapper-info-29785927-r1",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "mac",
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1/control/run_current_mac_full34_r1.py"
+      }
+    }
+  },
+  "submitted": false,
+  "read_only": true,
+  "no_new_product_operation": true
+}

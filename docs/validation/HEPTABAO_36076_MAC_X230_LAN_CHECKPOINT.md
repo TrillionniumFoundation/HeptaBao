@@ -1,5 +1,77 @@
 # HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
 
+## 当前 R29：Mac 当前版本 34MiB 正式存储通过；LAN 源码与 AuthBus 输入闭环继续推进
+
+状态截点 **2026-11-05T17:23:16Z**。产品仍固定为 `4e808d0ecb1bcded22870a7ec960dfb2491cf6ec` / `eba5e650bd080b8ad41ea52a2bc68867f541d255`，Draft PR #159 未合并。**当前 Mac 的官方 OpenBao 2.7.1 对照 full34 原始 31 项已经全部通过，完整原始证据已闭合。完整替代 OpenBao 2.7.1 仍未达标；未正式切流，未删除旧服务、二进制、备份或中间资产。**
+
+[机器状态](../../qa/evidence/20261104/r29-current-mac34-pass-lan-source-custody-and-auth-sdk-evidence-r1/state.public.json) · [完整清单](../../qa/evidence/20261104/r29-current-mac34-pass-lan-source-custody-and-auth-sdk-evidence-r1/manifest.public.json)。本冻结纳入 **16 个完整归档包、1,450 份包内文件、11,453,391 B、486 个 Merkle 子树**；另有 78 份根审、原始回复、调度与错误记录，以及状态和清单。整文件 SHA-256、Git blob 与目录 Merkle 均已核验。归档完成只说明证据完整，不将源码审查、文件传输或未执行项目升格为产品通过。
+
+### 一、Mac 正式 KV2：当前版本取得实际迁移与恢复证据
+
+唯一任务 `mac/1a1ac9bd07c-fc05-55cf` 为 exit0、output_complete、output_durable、terminal publication confirmed，stdout 297 B、stderr 0，实际耗时 **47.534 秒**。原始检查数为 **31/31**。wrapper、实际 prepare 哈希、官方 oracle、当前源码与当前 server 全部固定，运行前后源码和二进制不变，所有自有测试进程均已停止。
+
+| 已证项目 | 当前任务的实际结果 |
+|---|---|
+| 数据规模 | 17 个 2MiB 有效版本，逻辑 payload **35,651,584 B**；每阶段包含 19 版历史。 |
+| 正式存储 | active native-v6，`heptabao-state-records-v6`，profile `bounded-native-record-state-v6-paged`；native KV2 logical payload **35,655,894 B**。 |
+| 迁移 | 原 export 与 import 各一次，均真实完成、未重试；原单操作预算 360 秒。迁移 bundle **35,658,766 B**，SHA-256 `eb60c409df6d00b691ee8797605ef5e827671be1d40c9ea32595e83393997b74`。 |
+| 历史与持久化 | import 后、目标冷重启后、快照恢复后共 **3 × 19 = 57** 个 native storage witnesses，payload、删除与销毁状态及时间字段无损匹配。 |
+| 快照恢复 | 实际 HTTP snapshot 成功；archive **9,018,321 B**，SHA-256 `baffe549dee36624eda867aa62e94f9b47760315aafd8a3805efd213d9417273`；一次真实 restore 后冷读历史一致。此数值与旧版本 9,007,344 B 的历史结果分别保存。 |
+| KV2 语义 | 软删除 payload 可准确 undelete；destroyed payload 仍缺失；data 与 metadata CAS 拒绝及成功计数均按原断言验证。 |
+| 原始读链 | 8 个原观察操作全部 completed/stored/inactive；16 个 immutable pages 全量重组，summary 91,727 B、result 1,122 B、driver stdout 209 B、两组 stderr 均完整保存。 |
+
+完整 live 包 [mac-current-full34-LIVE-complete123](../../qa/evidence/20261104/r29-current-mac34-pass-lan-source-custody-and-auth-sdk-evidence-r1/mac-current-full34-LIVE-complete123/manifest.public.json) 含 123 文件、2,235,741 B。根审 [177 项运行契约](../../qa/evidence/20261104/r29-current-mac34-pass-lan-source-custody-and-auth-sdk-evidence-r1/root/r29-mac-current-full34-root-contract-review.public.json) 与 [193 项原始读链](../../qa/evidence/20261104/r29-current-mac34-pass-lan-source-custody-and-auth-sdk-evidence-r1/root/r29-Mac31-root-original-read-chain-review.public.json) 分别通过。作者的 648 项离线证据核验及其最初 basename selector 错误也原样保留；根审最初将已解析 request 对象传给字节比较器的输入错误另存，仅换回同一原始 request 字符串后通过，未修改或重跑产品。
+
+原 31 项、HTTP 15 秒、migration 360 秒、native worker 5 秒、外层 1800 秒均未放宽。专用系统 Git 读取器仅绑定已观察的 `/usr/bin/git`、完整身份、118,640 B、SHA、root:root、0755 与 nlink78，通用单链接 guard 未改。原 Mac standalone Popen 的异常清理限制仍存在；本次通过依赖实际 owned-processes-stopped 证据，不声称具备 Linux affine Owner 的所有保证。
+
+### 二、LAN 原始源码、导出记录与传输前置证据
+
+| 项目 | 本冻结已证 | 仍未授权或未通过 |
+|---|---|---|
+| 九份 LAN 控制源码 | 9 份源共 357,306 B；9 infos、25 body chunks、34 个返回 operation IDs 全部关闭且原始内容完整。完整包 415 文件；根审 **958 项**。 | 这些源只完成 compile-only 发布，当前三机 98+12 回归尚未执行。source3 最初无 ACK 的只读请求仍保留 UNKNOWN；同 typed request/key 的后继返回 reused=false，不能据此抹去原 UNKNOWN。 |
+| 原源码导出 | 原 ROG export 的 27 份 command records 与 54 份 streams，合计 **81 文件/28,080 B**，经六个固定只读批次取齐；根审 **411 项**。25 个命令 exit0，两个 partial-config 查询按原逻辑 exit1，27 个子进程均已回收、无残留。 | 未重跑 exporter 或 Git 命令。导出完整不等于目标源码已导入。 |
+| 两个 source-carrier 输入 | canonical full bundle **22,320,862 B** / SHA `bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac`；原 export receipt **39,692 B** / SHA `47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b`，实际原版本已绑定。 | importer 的目标元数据尚待实际传输闭合后绑定。 |
+| source-carrier inert | 唯一 `desktop/1a1aca557a2-fc05-561b` exit0/full/durable；3 源只 compile，7 observers/11 pages 闭合，独立源码全文/full9 与 receipt 核验通过，根审 **161 项**。 | 未执行 Git、编译器或产品。receipt 自身 full9 来自独立 info/body，publisher 未输出自身 identity；不补造该字段或汇总 FD ledger。 |
+| source-carrier relay | 唯一 `desktop/1a1acb4e995-fc05-567a` 的独立 external intent 与原 ACK 已纳入，typed request/digest/无损 fingerprint 等根审 **9 项**。 | 本冻结尚不纳入完整 relay 结果、目标两文件与原命令闭环；不据 ACK 声称导入、X230 或 HA 通过。 |
+
+ROG normal5 的五个实际构建资产及完整传输闭环仍沿用 R28 的已证记录。旧 Mac/ROG 失败、旧物理三机 91/98 与 post-cold 0/12、旧 X230 relay UNKNOWN、旧 H2 UNKNOWN 均保留。当前 retained-A 修复必须以真实跨机断主、自然重新选主、ReadIndex、持久化和重启结果验证。
+
+### 三、AuthBus：完整 SDK 输入已取得，真实 owner 与凭证链仍需攻克
+
+13 个固定 SDK 正文原操作已全部完成，共 **682,650 B**：loader 6,047 B、selector 673,468 B、registry 3,135 B。根审 **227 项**确认原请求、原 ACK/status、原 immutable pages 和全文身份；第 11 次原 page 超时、第 12 次原 status 超时及原 ID 对账记录均保留，没有业务重放。
+
+实际源码说明 loader 的 onlyPluginIds 参数不能单独证明 registry 是排他的候选集合；selector 的 auto 路径会调用全部注册候选的 supports；registry 的 registration owner 与 harness.pluginId 是两个独立字段。因此既不能移除 ordinal22，也不能强制 Codex 或把静态源码阅读当作实际 owner 选择。
+
+新 catalog reader 源码仅从既有 **195,155 B 私有 capsule** 投影两个原 ordinal 的受限公开 ID/root；三个原值哈希、原 namespace/composite 判据、全部原 guard、5/60 秒、9 FD、原 metadata/read/output cap 均保留。这明确是私有 capsule 读取，不是后续 credential-free SDK 诊断。根审 30 项 AST 与 16 项原来源/精确请求绑定通过。
+
+Mac 主机窗口在全部原 8 observers 关闭后正式交给 Auth，根审 20 项交接记录已封存。catalog 唯一原任务 `mac/1a1acb902f1-fc05-5693` 的 intent 与 ACK 已整件保存、根审 8 项绑定通过；**本冻结不包含 catalog 的实际输出或后三个公开 info 的结果**。条件 GO 仅允许该固定读闭合后依次读取三个已指定公开路径的 file_info，正文须再绑定实际版本。265,740 B 限制的是拟读取正文合计，不冒称 file_info 内部 whole-SHA 也受此字节上限限制。
+
+后续 SDK observer 仍为 unbound SOURCE：公开配置等价性、全部候选和 owner 代码 pin、实际 OS sandbox 拒绝证据、完整 parent/worker 绑定仍缺失。没有授权或执行 SDK import/loader/supports/factory，没有 J3160、provider/model/refresh/quota 修改，也没有新 credential fixture 重放。可信 issuer/CA、AppRole、TLS、KV、Policy、实际续期延长与撤销仍未取得完整资格。
+
+### 四、五个最终门槛
+
+| 门槛 | 本次状态 | 下一项必须取得的证据 |
+|---|---|---|
+| KV2 正式迁移/恢复 | **当前 Mac 原 31/31 通过**；正式 native-v6、full34、完整历史、cold/snapshot/restore 已证。 | X230 相同当前版本的正式迁移、恢复与回滚；跨机持久化场景。 |
+| HA | 当前源码与资产前置证据完整；真实三机回归未完成。 | Mac、ROG、Pocket4 原 98+12，真实断主、自然选主、ReadIndex、持久化与重启。 |
+| AuthBus | SDK 原输入完成；catalog 原任务已提交一次；实际 owner 和可信凭证链未通过。 | 实际可信凭证来源、AppRole/TLS/KV/Policy、有效续期和撤销，保留原候选与策略。 |
+| 逐台切换 | 未正式切流。 | 每台真实凭证读写、重启、回滚及真实消费者证据；完成所有客户端与备份迁移。 |
+| 旧版清理 | 未删除。 | 前四门槛与全部客户端/备份路径完成后，才清理旧服务、二进制和可再生资产，只保留最新版服务。 |
+
+官方 2.7.1 源码的静态 API/声明目录继续只作差距地图，不作 runtime parity 分母。JWT/K8s/OIDC/MFA、外部租约副作用、PKI/ACME/EAB/KMS/Transit custody、rekey/recovery/root generation、插件/namespace/workflow/control-group 等尚未验证或未支持的 owner，仍是完整替代的独立门槛。Mac 的 31 项成功不能代替这些证据。
+
+### 五、冻结、历史和继续执行
+
+本检查点以 R28 `eeeb22dc2804cf5452852ab6caa309df0f67a335` 为唯一父提交，保留原 19,598 份非文档叶项；仅更新本文件与公共索引，新增不可变证据。下方保留 **R28 完整文档原始字节**，索引也保留旧原始整数 token；没有将历史失败、UNKNOWN 或缺失的原 ACK 改成通过。
+
+继续工作使用两个指定 Runtime 窗口，每线最多一个调用/自有 future；根保持 0 Runtime。每次新 dispatch 均先单独完成外部 exact intent，再唯一提交、保存原 SDK ACK 后解析；错误或 UNKNOWN 只对账原身份，不换 key、重置预算或重放业务。当前两线只继续原 source-carrier relay 与原 catalog/固定公开 infos，具体 importer、三机 HA、X230 和真实凭证执行还需完成各自实际输入绑定。冻结后新结果放入后续检查点。
+
+---
+
+## 历史原文：R28 完整保留
+
+# HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
+
 ## 当前 R28：原 LAN 发布确认、normal5 实际传输与 Mac 34MiB 前置输入
 
 状态截点 **2026-11-05T15:59:15Z**。产品继续固定为 `4e808d0ecb1bcded22870a7ec960dfb2491cf6ec` / `eba5e650bd080b8ad41ea52a2bc68867f541d255`，Draft PR #159 未合并。**完整替代 OpenBao 2.7.1 尚未达标；未正式切流，未删除旧服务、二进制、备份或中间资产。** Mac 与 ROG 已有 normal61 的实际通过证据；当前34MiB、物理三机HA、官方CLI和真实凭证切换仍分别需要证据。

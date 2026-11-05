@@ -1,0 +1,10 @@
+{
+  "existing_directory_observed_empty": true,
+  "host_execution": false,
+  "next_execution_uses_same_assembler_after_preserving_empty_output": true,
+  "observed_failure": "FileExistsError at offline output.mkdir before assemble",
+  "owned_empty_directory_preserved_as": "review/second-empty-offline-output",
+  "reason_directory_reappeared": "not established; no runtime or wrapper effect inferred",
+  "schema": "heptabao.mac-full34-offline-output-refusal.v1",
+  "source_guard_or_input_changes": false
+}

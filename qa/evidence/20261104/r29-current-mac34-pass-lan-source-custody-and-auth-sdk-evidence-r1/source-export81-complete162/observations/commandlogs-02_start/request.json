@@ -1,0 +1,28 @@
+{
+  "idempotency_key": "heptabao-4e808-export-5122-commandlogs-02-r1",
+  "operation": {
+    "tool": "read_multiple_files",
+    "arguments": {
+      "host": "rog",
+      "max_file_bytes": 65536,
+      "max_response_bytes": 131072,
+      "paths": [
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/005-source-before-shallow.public.json",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/005-source-before-shallow.stdout",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/005-source-before-shallow.stderr",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/006-source-before-partial-config.public.json",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/006-source-before-partial-config.stdout",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/006-source-before-partial-config.stderr",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/007-source-before-origin.public.json",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/007-source-before-origin.stdout",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/007-source-before-origin.stderr",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/008-source-before-refs.public.json",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/008-source-before-refs.stdout",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/008-source-before-refs.stderr",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/009-export-proof-kind.public.json",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/009-export-proof-kind.stdout",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/009-export-proof-kind.stderr"
+      ]
+    }
+  }
+}

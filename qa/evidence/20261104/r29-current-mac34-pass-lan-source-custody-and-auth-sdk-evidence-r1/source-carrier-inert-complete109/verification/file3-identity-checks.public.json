@@ -1,0 +1,26 @@
+[
+  {
+    "name": "fixed path",
+    "pass": true
+  },
+  {
+    "name": "version has five exact decimal fields",
+    "pass": true
+  },
+  {
+    "name": "mode uid gid nlink",
+    "pass": true
+  },
+  {
+    "name": "size version equality and cap",
+    "pass": true
+  },
+  {
+    "name": "whole hash format",
+    "pass": true
+  },
+  {
+    "name": "receipt identity independently observed; not claimed publisher emitted",
+    "pass": true
+  }
+]

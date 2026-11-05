@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.mac-current34-exact-readonly-prepare-go.r1",
+  "status": "GO_EXACT_READONLY_PREPARE_AFTER_INERT_READBACKS_CLOSE",
+  "root_source_review": "68f387a48322055bf65d919118d03557189dee2a",
+  "root_source_addendum": "83628af68759ee5044853fdb7df6e09fb08dd3c0",
+  "inert_go": "4a5c43e0e50f4869c692056316b17e5aacdfeb38",
+  "inert_ACK_authority_review": "8988752c3258150793476ef02fd5511cdae4f348",
+  "exact_request": {
+    "blob": "3bb99480cd474a15e5528bd68091e705a620d633",
+    "bytes": 552,
+    "sha256": "638fdf9a7a5eb7ecc133381a79fc05d5d9177e3a0df64d562ffe1dbbfb7e5405",
+    "request": {
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1/control/run_current_mac_full34_r1.py",
+        "--prepare-only"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1",
+      "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "host": "mac",
+      "idempotency_key": "heptabao-mac-current-full34-prepare-29785927-20261105-r1",
+      "timeout_seconds": 90
+    }
+  },
+  "mandatory_before_submission": [
+    "Original inert authority and complete854/0 streams are externally archived; original observer operations are completed/stored/inactive.",
+    "Independent fixed-path wrapper and receipt file_info and full bodies are whole and closed; original wrapper bytes20538/SHA29785927055d2e676c702aa79b97db9a6d274d8d8de0916073c08face41c6c9a match exactly.",
+    "Wrapper independent version/full9 equals the original publisher receipt; mode0600, uid501, regular single link; receipt independently hashed and losslessly equals original stdout.",
+    "Inert receipt status prepared, fresh ROOT/control created, exactly one source, python_compile_only true and source/git/compiler/service/artifact_transfer flags false.",
+    "No unknown in these current prerequisite observations; if a transport failure prevents proof, preserve it and stop before prepare."
+  ],
+  "execution_order": [
+    "Save a separate completed external intent linking all actual prerequisite proofs and this exact request.",
+    "Submit only this unchanged prepare request once; original ACK externally saved before parsing.",
+    "Read only original job authority/streams; preserve error or missing ACK, no process replay.",
+    "Return full prepared object and its actual prepared_sha256, original terminal and closed/read proofs for root review before any live --run request."
+  ],
+  "line_B_owner": "compatibility_audit",
+  "line_A_unchanged": true,
+  "root_runtime_calls": 0,
+  "prepare_internal_seconds": 60,
+  "prepare_outer_seconds": 90,
+  "original_runtime_outer_seconds": 1800,
+  "original_business_HTTP_seconds": 15,
+  "original_business_migration_seconds": 360,
+  "private_fixture_allowed": false,
+  "product_service_allowed": false,
+  "production_change_allowed": false,
+  "live_go": false,
+  "full_replacement_qualified": false
+}

@@ -1,0 +1,69 @@
+--- before/predicate_reader.py
++++ after/public_catalog_reader.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""One exact already-captured private capsule; public predicate results only.
++"""One exact already-captured private capsule; bounded public code catalog only.
+ 
+ No current database, SDK, service, network, subprocess or filesystem write.
+ The old capture/runtime is not replayed. Actual selector execution is explicitly
+@@ -15,6 +15,9 @@
+ AGENTS = ("main", "trnm", "hepta-ui", "hepta", "hepta-backend")
+ LIVE = Path("/Users/qianqi/.openclaw")
+ KNOWN_CODEX_ROOT = "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex"
++PUBLIC_SDK_ROOT = Path("/opt/homebrew/lib/node_modules/openclaw")
++# Only the two exact value triples already observed in the original public diagnostic.
++CATALOG_RECORD_PINS = {"22":["7d0eacef0de836233bf69fc88fcab76ae6d5d1b4bd19982d683eeec79da0cefa","1307e12ae383395e3455a480c653b122b6898856f1e525e8c809945d83e0a691","d03c7cc032377784613c1f21d72403bd681658d324226d713fa756bbfdb022eb"],"68":["08f6b585592467d20717e8abd8dd02b9fb430ba65eb4b745c373ce3001ef5dae","b7d3dd983a296b81381c241b131cfabc4e3a56a9a656f9d197743a16917aeeec","e25eaf648dc7039953915d93cac78cc23b21b780b60f562ff1aaa53086f25364"]}
+ PUBLIC_EXPECTED_MODEL = {"provider":"openai","id":"gpt-5.6-sol"}
+ CONFIG_SHA256 = "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d"
+ SOURCE_RUNTIME_JOB = "1a1abb090b9-fc05-4fc5"
+@@ -255,6 +258,14 @@
+         normalized = bool(root is not None and root == Path(os.path.normpath(str(root))))
+         namespace = bool(root is not None and root.is_relative_to(LIVE/"npm/projects"))
+         known_root = bool(root is not None and root == Path(KNOWN_CODEX_ROOT))
++        public_sdk_root = bool(root is not None and root.is_relative_to(PUBLIC_SDK_ROOT))
++        catalog_pin = CATALOG_RECORD_PINS.get(str(registry_index))
++        catalog_values_match = bool(catalog_pin == [sha(encoded(identifier)), sha(encoded(raw_root)),
++            sha(encoded(plugin["startup"]["agentHarnesses"]))])
++        catalog_public = bool(id_matches and root_constructible and absolute and normalized
++            and str(root) == raw_root and re.fullmatch(r"/[A-Za-z0-9_.@+~/-]{1,4095}", raw_root)
++            and len(raw_root.encode("utf-8")) <= 4096 and (known_root or public_sdk_root)
++            and catalog_values_match)
+         output.append({
+             "enabledOrdinal":enabled_index, "registryOrdinal":registry_index,
+             "originalEnabledStartupAgentHarnesses":True,
+@@ -268,6 +279,10 @@
+             "originalCompositePredicate":bool(id_matches and root_constructible and absolute and normalized and namespace),
+             "rootEqualsAlreadyPinnedCodexRoot":known_root,
+             "publicCodeRoot":KNOWN_CODEX_ROOT if known_root else None,
++            "publicCatalogPluginId":identifier if catalog_public else None,
++            "publicCatalogCodeRoot":str(root) if catalog_public else None,
++            "publicCatalogScope":("already_pinned_codex" if known_root else "fixed_public_sdk_tree") if catalog_public else None,
++            "catalogMetadataOnlyNotCodeAdmission":True,
+             "agentHarnessesMetadataSha256":sha(encoded(plugin["startup"]["agentHarnesses"])),
+             "actualSelectedForCurrentAgents":None,
+             "selectionEvidence":"NOT_OBSERVED_NO_NATIVE_WORKER_RAN",
+@@ -294,9 +309,12 @@
+         "enabledDoesNotMeanSelected":True,
+         "unselectedHarnessClaimed":False,
+         "actualSelectedHarnessSetKnown":False,
+-        "originalNativeWorkerContract":"After loader.r(onlyPluginIds), selector.o(provider/modelId) must equal the real registry.r('codex').harness. No worker/selector ran in this failed attempt.",
++        "originalNativeWorkerContract":"After loader.t(onlyPluginIds), selector.o(provider/modelId) must equal the real registry.r('codex').harness. No worker/selector ran in this failed attempt.",
+         "futureScopeRule":"Determine selected owners from the real selector and complete pinned sources before changing admission. Do not broaden npm namespace or classify another enabled owner as unused from this diagnostic.",
+-        "pluginIdsPublished":False, "unknownCodePathsPublished":False,
++        "pluginIdsPublished":any(x["publicCatalogPluginId"] is not None for x in output),
++        "unknownCodePathsPublished":any(x["publicCatalogScope"] == "fixed_public_sdk_tree" for x in output),
++        "publicCatalogDisclosureScope":["already_pinned_codex","fixed_public_sdk_tree"],
++        "newFilesystemPathsRead":False, "sdkOrLoaderExecuted":False,
+         "privateDocumentBodyPublished":False, "rootGuardRelaxed":False,
+     }
+ 
+@@ -308,7 +326,7 @@
+     stage = "signal_setup"
+     completed = False
+     report = {
+-        "schema":"heptabao.mac-captured-harness-predicate-observation.r1",
++        "schema":"heptabao.mac-captured-public-harness-catalog.r2",
+         "sourceRuntimeJobId":SOURCE_RUNTIME_JOB,
+         "sourceRuntimeStdoutSha256":SOURCE_RUNTIME_STDOUT_SHA256,
+         "sourceEntryStdoutSha256":SOURCE_ENTRY_SHA256,

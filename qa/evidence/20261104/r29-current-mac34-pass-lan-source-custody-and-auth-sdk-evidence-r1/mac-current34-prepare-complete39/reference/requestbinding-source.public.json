@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.current-prepare-requestbinding-source.v1",
+  "repository": "TrillionniumFoundation/hepta-runtime",
+  "blob": "fc559bec715e95fee000b65c54c083f4fdd43450",
+  "bytes": 171794,
+  "sha256": "98344ab61981793fa8b6cda92d777c62639dd6d61b4e3b6db0e94bb96f011fe5",
+  "lines": [
+    1673,
+    1732
+  ],
+  "excerpt_blob": "420ede9cc31e39ac677797480640aa570df10b35",
+  "canonical_field_order": [
+    "args",
+    "cpu_quota_percent",
+    "cwd",
+    "env",
+    "executable",
+    "host",
+    "memory_max_bytes",
+    "nice",
+    "stdin",
+    "timeout_seconds"
+  ],
+  "encoding": "serde_json::to_writer compact UTF-8; optional absent values are null, current env is empty BTreeMap; original args and stdin retained exactly",
+  "fingerprint": "first 16 hex characters of the SHA256 digest interpreted as unsigned u64",
+  "deployment_source_identity_proven": false,
+  "positive_controls": [
+    "mac inert actual a5384594744bfda60d62fd2cbd36516e8393f714e09714bf5bb099fa84d6ac8a",
+    "mac prepare actual b35b8731505c9124294eea673a1b62f3df6a414547ac90926f4194b4b778217a"
+  ],
+  "generic_nonempty_env_calculator_qualified": false
+}

@@ -1,0 +1,66 @@
+[
+  {
+    "name": "nine_source_complete_external",
+    "passed": true
+  },
+  {
+    "name": "export81_complete_external",
+    "passed": true
+  },
+  {
+    "name": "export81_27rows_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source3_history_unknown_preserved",
+    "passed": true
+  },
+  {
+    "name": "no_prior_inert_submit",
+    "passed": true
+  },
+  {
+    "name": "exact_seven_request_keys",
+    "passed": true
+  },
+  {
+    "name": "exact_host_executable_cwd_key_budget",
+    "passed": true
+  },
+  {
+    "name": "exact_argv5_and_code",
+    "passed": true
+  },
+  {
+    "name": "exact_stdin_and_payload",
+    "passed": true
+  },
+  {
+    "name": "exact_payload_closed_roles",
+    "passed": true
+  },
+  {
+    "name": "sender.py_root_size_sha",
+    "passed": true
+  },
+  {
+    "name": "sender.py_source_packet_manifest_member",
+    "passed": true
+  },
+  {
+    "name": "receiver.py_root_size_sha",
+    "passed": true
+  },
+  {
+    "name": "receiver.py_source_packet_manifest_member",
+    "passed": true
+  },
+  {
+    "name": "relay.py_root_size_sha",
+    "passed": true
+  },
+  {
+    "name": "relay.py_source_packet_manifest_member",
+    "passed": true
+  }
+]

@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.mac-current34-inert-original-ACK-authority-root-review.r1",
+  "status": "ORIGINAL_ACK_AND_TERMINAL_VERIFIED_FILE_READBACKS_PENDING",
+  "checks_passed": 10,
+  "checks": [
+    "exact_typed_request_digest",
+    "exact_lossless_fingerprint",
+    "ACK_exact_host",
+    "ACK_exact_executable",
+    "ACK_exact_args",
+    "ACK_exact_cwd",
+    "ACK_exact_idempotency_key",
+    "one_original_launch",
+    "same_original_authority",
+    "complete854_0_stream_storage"
+  ],
+  "request": "2dc3d757994d094f6293cf3b7a6dbf2b1681e69e",
+  "execution_intent": "a74295e62155fe4476694abd8b9e3625efd4c18a",
+  "original_ACK_SDK": "71c86690b7e42eba86aada0dc7149e9bba1b224d",
+  "original_authority": "05a94a4e88aba5699628da2917dda704d3b521e4",
+  "host": "mac",
+  "job_id": "1a1ac8387b9-fc05-54e4",
+  "request_digest": "a5384594744bfda60d62fd2cbd36516e8393f714e09714bf5bb099fa84d6ac8a",
+  "original_submissions": 1,
+  "stdout_bytes": 854,
+  "stderr_bytes": 0,
+  "full_observer_chain_packet_pending": true,
+  "independent_source_and_receipt_readbacks_pending": true,
+  "product_started": false,
+  "full_replacement_qualified": false
+}

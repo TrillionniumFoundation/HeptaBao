@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.unbound-observer-selection-guard-output.r1",
+  "before": {
+    "bytes": 11104,
+    "sha256": "fba7606ed3870cbf70ef5b92221f6e2c468da1cbd04fd4c098fde1b81246572b"
+  },
+  "after": {
+    "bytes": 11128,
+    "sha256": "b76fb72808ab0fe13b28272a11951eecc123df02b29b591b217d8e93b4c9ef8e",
+    "blob": "7a246176115ce675242fd5e0d413b91683a4c61d"
+  },
+  "exactOneExpressionReplacement": true,
+  "expression": "selectedId==='codex' && sameRegisteredInstance",
+  "checks": [
+    {
+      "selectedId": "codex",
+      "sameRegisteredInstance": true,
+      "result": true,
+      "expected": true,
+      "passed": true
+    },
+    {
+      "selectedId": "codex",
+      "sameRegisteredInstance": false,
+      "result": false,
+      "expected": false,
+      "passed": true
+    },
+    {
+      "selectedId": "fixture-other",
+      "sameRegisteredInstance": true,
+      "result": false,
+      "expected": false,
+      "passed": true
+    },
+    {
+      "selectedId": "fixture-other",
+      "sameRegisteredInstance": false,
+      "result": false,
+      "expected": false,
+      "passed": true
+    }
+  ],
+  "actualSdk": false,
+  "fullModuleExecuted": false,
+  "actualRegistry": false,
+  "runtimeCalls": 0
+}

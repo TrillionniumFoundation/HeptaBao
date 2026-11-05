@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.mac-harness-sdk-public-body-read-intent.v1",
+  "created_utc": "2026-11-05 16:09:26 UTC",
+  "sequence": 12,
+  "request_packet": "9cc81357deaf49fb277df727a6999c276c4286e8",
+  "root_source_review": "fb93717ba2c38909cf19887b36dcf0c8b539f049",
+  "root_window_handoff": "ec4c1436786743417dc92f95d70f0ce726df6240",
+  "root_window_resume_go": "b255a0d1ab726eb1c57bca40a05cfe0820a52cc2",
+  "request_pin": {
+    "bytes": 414,
+    "sha256": "860cdf33eece03dda857068c4e7a1100bb38925e5e06b1a6c84b95949b0fb286",
+    "blob": "6a358ed8b0c816a252ac857371415b113b8d705b"
+  },
+  "exact_request_original": "{\n  \"idempotency_key\": \"heptabao-mac-harness-sdk-body-selector-ccff1311-o655360-20261105-r1\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"path\": \"/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js\",\n      \"expected_version\": \"16777233:405239260:673468:1784843463381890779:1784843463381890779\",\n      \"offset\": 655360,\n      \"limit\": 18108\n    }\n  }\n}\n",
+  "previous_sequence_known_complete": 11,
+  "policy": {
+    "one_original_operation_in_flight": true,
+    "sdk_saved_before_parse": true,
+    "isError_checked_before_parse": true,
+    "stop_new_admissions_on_any_error": true,
+    "no_sdk_execution": true,
+    "no_business_replay": true
+  }
+}

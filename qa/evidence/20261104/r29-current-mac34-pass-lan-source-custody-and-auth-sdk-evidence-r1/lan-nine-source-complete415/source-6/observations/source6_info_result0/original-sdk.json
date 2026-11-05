@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"data_base64\":\"eyJyZXN1bHRUeXBlIjoiY29tcGxldGUiLCJjb250ZW50IjpbeyJ0eXBlIjoidGV4dCIsInRleHQiOiJ7XCJtZXRhZGF0YVwiOntcImFjbF9zaGEyNTZcIjpcImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTVcIixcImdpZFwiOjEwMDAsXCJsaW5rX2NvdW50XCI6MSxcIm1ldGFkYXRhX3BsYXRmb3JtXCI6XCJsaW51eFwiLFwibW9kZVwiOjM4NCxcInVpZFwiOjEwMDAsXCJ4YXR0cl9uYW1lc1wiOltdLFwieGF0dHJfc2hhMjU2XCI6e319LFwibW9kZVwiOjM4NCxcInBhdGhcIjpcIi9ob21lL3FpYW4tcWkvaGVwdGFiYW8taGEtY2xvc3VyZS0yMDI2MTEwMy1yMS9ub3JtYWwtc2FtZS1yb290LXB1YmxpY2F0aW9uLXBvY2tldDMtbWFjMS1wb3N0cmVjb3ZlcnktY29sZC1jb250cm9sLXIxL2RlYWRsaW5lX3FhL25hdGl2ZV92Nl9oYV9kaXJlY3RfbGFuX2xpdmUucHlcIixcInNoYTI1NlwiOlwiYmM5OWYxNTRkODlkZmJlOGE4MmJhYmI4YzUwYmNkYTNhY2NhZjhjNDg2YzUxNzUwZGI0OGJmYzQwMDM5MzJlYVwiLFwic2l6ZVwiOjE0MDQ2LFwidmVyc2lvblwiOlwiMjA1MDo3MzYwOTUyOjE0MDQ2OjE3OTM4ODg1MDY1MTk4ODU4MzU6MTc5Mzg4ODUwNjU1MTQxMzc3MlwifSJ9XSwiaXNFcnJvciI6ZmFsc2V9\",\"delivery_proven\":false,\"eof\":true,\"format\":\"serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization\",\"immutable_snapshot\":true,\"next_offset\":663,\"offset\":0,\"operation_id\":\"6a627c9827a633a2b38dcfa4ce7b6f5782c11b6ab20f1046d1ecb17b9c224bcc\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_kind\":\"native_result\",\"result_sha256\":\"a2a8b30e016e61a51856abf4fc94e70ee4f491c2f1333b318a9c02660b89456e\",\"session_scope\":\"authenticated_private_operator_credential\",\"total_bytes\":663}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

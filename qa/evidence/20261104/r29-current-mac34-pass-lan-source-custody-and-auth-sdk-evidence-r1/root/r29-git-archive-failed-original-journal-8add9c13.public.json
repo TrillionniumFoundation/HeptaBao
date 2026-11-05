@@ -1,0 +1,35 @@
+[
+  {
+    "name": "r29-sdk11-git-archive-error-provenance.public.json",
+    "expected": "8add9c136ea6444af174f1468ef7a4c64d13b83b",
+    "bytes": 1307,
+    "create": {
+      "content": [
+        {
+          "type": "text",
+          "text": "tool call error: tool call failed for `codex_apps/github.create_blob`\n\nCaused by:\n    Mcp error: -32603: Internal error"
+        }
+      ],
+      "isError": true
+    },
+    "read": {
+      "content": [
+        {
+          "type": "text",
+          "text": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}"
+        }
+      ],
+      "structuredContent": {
+        "error": "GitHub API error 404: {\"message\":\"Not Found\",\"documentation_url\":\"https://docs.github.com/rest/git/blobs#get-a-blob\",\"status\":\"404\"}",
+        "error_code": "NOT_FOUND",
+        "error_data": {
+          "message": "Not Found",
+          "documentation_url": "https://docs.github.com/rest/git/blobs#get-a-blob",
+          "status": "404"
+        }
+      },
+      "isError": true
+    },
+    "create_error_reconciled_by_exact_content_address": true
+  }
+]

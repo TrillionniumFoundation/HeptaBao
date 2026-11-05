@@ -1,0 +1,35 @@
+{
+  "actual_prepared_sha256": "ff9ccbc62be817c507ad47e1f2aea7463a2e7b5e636e7ac1c292f4b88e504da3",
+  "argv": [
+    "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "-I",
+    "-S",
+    "-B",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source/qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+    "--binary",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server",
+    "--private-work-root",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1/actual-r1/private-run",
+    "--migration-lane",
+    "native-large",
+    "--profile",
+    "full34"
+  ],
+  "default_build_receipt_sha256": "25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49",
+  "default_build_result_sha256": "2fdafe3670a0a7365245e509343ce1cf23ac28b071351d4f30ea12751d90a571",
+  "driver_sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+  "full_replacement_qualified": false,
+  "network_scope": "Mac loopback only",
+  "new_private_synthetic_target": true,
+  "normal_default_build_verified": true,
+  "original_http_seconds": 15,
+  "original_migration_seconds": 360,
+  "production_cutover": false,
+  "schema": "heptabao.4e808-mac-full34-intent.v1",
+  "source_before": {
+    "binary_sha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63",
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "dirty": false,
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  }
+}

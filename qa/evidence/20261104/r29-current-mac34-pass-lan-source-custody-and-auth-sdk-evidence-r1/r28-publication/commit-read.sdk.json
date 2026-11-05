@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"sha\":\"eeeb22dc2804cf5452852ab6caa309df0f67a335\",\"node_id\":\"C_kwDOUGncwNoAKGVlZWIyMmRjMjgwNGNmNTQ1Mjg1MmFiNmNhYTMwOWRmMGY2N2EzMzU\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/eeeb22dc2804cf5452852ab6caa309df0f67a335\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/eeeb22dc2804cf5452852ab6caa309df0f67a335\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T16:01:36Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T16:01:36Z\"},\"tree\":{\"sha\":\"78a595e3eaa34c3f50a1182f7b7b0aa2a70c3d37\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/78a595e3eaa34c3f50a1182f7b7b0aa2a70c3d37\"},\"message\":\"qa: archive original LAN closure, normal5 copy and Mac34 prerequisites\\n\\nFreeze R28 with recovered original effect identity, complete public artifact transfer, six Mac oracle/tool observations, partial original SDK recovery and targeted renewal fake fixes. Preserve all earlier evidence, failures and UNKNOWNs; current full replacement, cutover and cleanup remain unqualified.\",\"parents\":[{\"sha\":\"eee0e46af0891db43c1e3c6317f09f777abadf23\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/eee0e46af0891db43c1e3c6317f09f777abadf23\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/eee0e46af0891db43c1e3c6317f09f777abadf23\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+    "title": "eeeb22dc2804cf5452852ab6caa309df0f67a335",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/eeeb22dc2804cf5452852ab6caa309df0f67a335",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/eeeb22dc2804cf5452852ab6caa309df0f67a335",
+    "display_title": "eeeb22dc2804cf5452852ab6caa309df0f67a335",
+    "structuredContent": {
+      "title": "eeeb22dc2804cf5452852ab6caa309df0f67a335",
+      "content": "{\"sha\":\"eeeb22dc2804cf5452852ab6caa309df0f67a335\",\"node_id\":\"C_kwDOUGncwNoAKGVlZWIyMmRjMjgwNGNmNTQ1Mjg1MmFiNmNhYTMwOWRmMGY2N2EzMzU\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/eeeb22dc2804cf5452852ab6caa309df0f67a335\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/eeeb22dc2804cf5452852ab6caa309df0f67a335\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T16:01:36Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T16:01:36Z\"},\"tree\":{\"sha\":\"78a595e3eaa34c3f50a1182f7b7b0aa2a70c3d37\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/78a595e3eaa34c3f50a1182f7b7b0aa2a70c3d37\"},\"message\":\"qa: archive original LAN closure, normal5 copy and Mac34 prerequisites\\n\\nFreeze R28 with recovered original effect identity, complete public artifact transfer, six Mac oracle/tool observations, partial original SDK recovery and targeted renewal fake fixes. Preserve all earlier evidence, failures and UNKNOWNs; current full replacement, cutover and cleanup remain unqualified.\",\"parents\":[{\"sha\":\"eee0e46af0891db43c1e3c6317f09f777abadf23\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/eee0e46af0891db43c1e3c6317f09f777abadf23\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/eee0e46af0891db43c1e3c6317f09f777abadf23\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/eeeb22dc2804cf5452852ab6caa309df0f67a335"
+    }
+  },
+  "isError": false
+}

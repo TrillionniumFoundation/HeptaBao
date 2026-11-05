@@ -1,0 +1,76 @@
+{
+  "schema": "heptabao.4e808.original-export81.external-read-intent.v1",
+  "root_GO": "1db8f1aed967bdcb4dbfd9a3326330f42d544558",
+  "LAN_complete_tree": "6a8b6b46d8f68826bce01782b649512eb03374e9",
+  "LAN_root_review": "e1ff01895b3ae0bb534c4ccf2f5d92efcbf91d75",
+  "original_export_job": "rog/1a1abe371de-fc05-5122",
+  "source_core": {
+    "blob": "0109d7597b2754ee665367177ba1cd3e832d4b34",
+    "bytes": 39692,
+    "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b"
+  },
+  "fixed_plan": {
+    "blob": "9f60d88c19ab9282bfabb520ae5a2d1fe0c90602",
+    "bytes": 46310,
+    "sha256": "32c6c14117fea3a8c06f7aa5df725cbd47d27d2a2da21b23758516f45f98b019"
+  },
+  "requests": [
+    {
+      "name": "commandlogs-01",
+      "blob": "547e69984ec7e177e334dd4be46a82ff685d5645",
+      "bytes": 2004,
+      "sha256": "163934cad07138417f02b29b73ebf2f0af67686b55aaae4a1d70a2ea5f29c44a",
+      "key": "heptabao-4e808-export-5122-commandlogs-01-r1",
+      "never_submitted_before_this_intent": true
+    },
+    {
+      "name": "commandlogs-02",
+      "blob": "700fcd373b857f6e69ff0c13586cb23bf9ae6524",
+      "bytes": 2013,
+      "sha256": "80606aca3ec5e40d0185404a6dcd901a94323eba0f2569595ff6f9075d1dfd4d",
+      "key": "heptabao-4e808-export-5122-commandlogs-02-r1",
+      "never_submitted_before_this_intent": true
+    },
+    {
+      "name": "commandlogs-03",
+      "blob": "b5c7d7b8241cf6f8da0a42201c9fe88e52767430",
+      "bytes": 1986,
+      "sha256": "cff3d211cdac185b17666a41a2da81e84c439f8a14a8311eea63b5b806f4699e",
+      "key": "heptabao-4e808-export-5122-commandlogs-03-r1",
+      "never_submitted_before_this_intent": true
+    },
+    {
+      "name": "commandlogs-04",
+      "blob": "41175fb72a1eb9c5ae049c044e5a10e6d894d102",
+      "bytes": 1917,
+      "sha256": "4d27636666ae10285f908a989641dd0cf3ebfcbe530f62d76b8bedc83bd0707f",
+      "key": "heptabao-4e808-export-5122-commandlogs-04-r1",
+      "never_submitted_before_this_intent": true
+    },
+    {
+      "name": "commandlogs-05",
+      "blob": "210df7fbc0361a4af79233fcf13cb38bbc88c4c2",
+      "bytes": 2028,
+      "sha256": "c2199984534c688d5eeedad58ef55c1961ee7aaa3abab178ce30b62ad427017a",
+      "key": "heptabao-4e808-export-5122-commandlogs-05-r1",
+      "never_submitted_before_this_intent": true
+    },
+    {
+      "name": "commandlogs-06",
+      "blob": "f8f416835124c8af0f9803404ff9f2110b706985",
+      "bytes": 948,
+      "sha256": "4a23fe2175d3a737a37ca622bc818cd12e07193f8eed6f83e356986eba8b2477",
+      "key": "heptabao-4e808-export-5122-commandlogs-06-r1",
+      "never_submitted_before_this_intent": true
+    }
+  ],
+  "exact_order": "01,02,03,04,05,06",
+  "new_native_futures_at_once": 1,
+  "all_original_SDKs_external_before_parse": true,
+  "on_error": "Stop new admissions and ask root to reconcile; no implicit same-ID or key retry.",
+  "bundle_info_repeat": false,
+  "export_replay": false,
+  "carrier_import_product_GO": false,
+  "source3_original_lost_ACK": "UNKNOWN_PRESERVED",
+  "submitted_batches": 0
+}

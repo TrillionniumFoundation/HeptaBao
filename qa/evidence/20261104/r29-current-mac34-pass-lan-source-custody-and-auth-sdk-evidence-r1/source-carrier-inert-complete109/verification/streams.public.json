@@ -1,0 +1,42 @@
+[
+  {
+    "name": "same_job",
+    "passed": true
+  },
+  {
+    "name": "stdout_complete_hex_text_authority",
+    "passed": true
+  },
+  {
+    "name": "stderr_complete_hex_text_authority",
+    "passed": true
+  },
+  {
+    "name": "empty_stderr",
+    "passed": true
+  },
+  {
+    "name": "prepared_compile_only",
+    "passed": true
+  },
+  {
+    "name": "exact_stdin_pin",
+    "passed": true
+  },
+  {
+    "name": "three_files",
+    "passed": true
+  },
+  {
+    "name": "sender.py_whole_created",
+    "passed": true
+  },
+  {
+    "name": "receiver.py_whole_created",
+    "passed": true
+  },
+  {
+    "name": "relay.py_whole_created",
+    "passed": true
+  }
+]

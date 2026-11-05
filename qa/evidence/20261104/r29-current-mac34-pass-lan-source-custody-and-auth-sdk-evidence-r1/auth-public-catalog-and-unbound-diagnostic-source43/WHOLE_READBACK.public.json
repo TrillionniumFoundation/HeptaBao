@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.mac-selected-owner-source-packet.whole.r1",
+  "bodyCount": 42,
+  "dataCount": 41,
+  "dataBytes": 1209066,
+  "manifest": {
+    "bytes": 9829,
+    "sha256": "9b8d44b144f6bf485dd37aa6bbaf0ccd1b73a15bfc186e4e9089a49cfbd37a0b",
+    "blob": "b9b7e945903f6ada0cb5ab2139fd567b64c48edd"
+  },
+  "allDataUtf8SizeShaAndGitBlobsVerified": true,
+  "allNewBlobsCreateReturnedExactShaAndWholeFetchExact": true,
+  "existingImmutableReferencesRehashedFromPreviouslyWholeReadCache": 12,
+  "existingReferencePaths": [
+    "references/original-predicate-reader.py",
+    "references/original-predicate-request.json",
+    "references/original-predicate-stdout.public.json",
+    "references/original-failed-outer-stdout.public.json",
+    "references/python-regular-file-info.public.json",
+    "references/current-input-guards.py",
+    "references/current-native-worker.mjs",
+    "references/current-materializer.py",
+    "references/actual-installed-loader.js",
+    "references/actual-installed-selector.js",
+    "references/actual-installed-registry.js",
+    "references/loader-registry-limited-peer.md"
+  ],
+  "sourceReviewOnly": true,
+  "resourceReadCountOnMac": 0,
+  "privateInputsUsedInComponents": 0,
+  "fullSdkImportCount": 0,
+  "local62ChecksExactCatalog": true,
+  "finalObserverOneExpressionProof": "verification/observer-final-combined-guard.public.json",
+  "finalTreeIndependentMerkleCheck": "Performed after adding this seal; final tree hash is delivered separately and not self-referential."
+}

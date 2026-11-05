@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-4e808-source-carrier-inert-readback-148698c8-r1-authority",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1aca557a2-fc05-561b"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "schema": "heptabao.root-pure-Mac31-read-chain-input-selector-error.r29.v1",
+  "error": "Error: exact-reviewed-live-request-and-controller",
+  "initial_verifier_source_unchanged": true,
+  "initial_data_request_cache_type": "object",
+  "initial_data_expression": "load(\"r29_mac_current34_live_request\").text ?? load(\"r29_mac_current34_live_request\")",
+  "cause": "The request cache is the already parsed request object rather than an immutable blob text object; strict byte-string comparison refused it. No candidate, original evidence or host execution changed.",
+  "correction": "Supply whole verified original request blob daa406a9cf802d77e92c5339eb4762be2cfddf34.text to the same unchanged pure verifier.",
+  "host_calls": 0,
+  "candidate_reexecuted": false,
+  "original_error_retained": true
+}

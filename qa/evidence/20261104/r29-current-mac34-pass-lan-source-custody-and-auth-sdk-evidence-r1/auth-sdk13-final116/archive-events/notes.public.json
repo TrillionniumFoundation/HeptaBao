@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.sdk-public-git-archive-observation.v1",
+  "runtime_page3_returned_known_success": true,
+  "page3_successful_sdk": "253990ecd93dabf7a2c3be82985fbda5e4f12a36",
+  "page3_successful_native": "3a7fba6d30e0578d5868f51e3effd9a7b0e755cf",
+  "first_two_git_create_error_responses_not_retained": true,
+  "first_two_error_messages": "External raw pin",
+  "third_actual_git_error_sdk_saved_by_root": "3defd914de59404674092ba549a1926f1c5e7db2",
+  "auxiliary_correction_expected_blob": "383de89216a05c9aa58b09deec91740809efccfc",
+  "auxiliary_correction_fetch_observed_404": true,
+  "auxiliary_404_not_claimed_success": true,
+  "root_saved_exact_page4_request": "35be576fc1802406263c3805d38a6db5704e1a6b",
+  "root_saved_exact_page4_intent": "f933f96080852cda9d04e50b9564ab49330df3ff",
+  "root_saved_pair_independently_whole_fetched": true,
+  "subsequent_supported_base64_encoding_same_utf8_bytes": true,
+  "successful_base64_creates_whole_fetched": true,
+  "no_original_runtime_page_replayed_for_archive_error": true
+}

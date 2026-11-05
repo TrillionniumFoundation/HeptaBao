@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.root-private-capsule-public-catalog-original-ACK.r29.v1",
+  "status": "PASS_ORIGINAL_ACK_ONLY",
+  "checks_passed": 8,
+  "checks": [
+    "SDK-not-error",
+    "original-native-text-exact",
+    "external-intent-exact-request",
+    "exact-job-host-key",
+    "exact-executable-cwd-argv",
+    "original-digest",
+    "original-lossless-fingerprint",
+    "launched-once-no-error"
+  ],
+  "job": "mac/1a1acb902f1-fc05-5693",
+  "request": "19b9a25626b2c7b7c270283646bd91fbee818ca1",
+  "request_digest": "10080341f55a01d7c13d26178bb7fe33c6a9504f3a82045b797e357e67e16902",
+  "request_fingerprint": "1155176886244606423",
+  "original_intent": "dc63a8875243adb65cad16d3c9778cce4b9cc0e4",
+  "original_ACK_SDK": "de0ff0a6641e04168bff10227a477ea372125226",
+  "original_ACK_native": "26a253a0a01e8765e7b39a9afe782e011b4cdab6",
+  "private_capsule_read_disclosure_scope_only": true,
+  "actual_catalog_result_in_this_review": false,
+  "actual_selected_owner_proven": false,
+  "SDK_executed": false,
+  "root_Runtime_calls": 0,
+  "full_replacement_qualified": false
+}

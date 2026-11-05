@@ -1,0 +1,76 @@
+{
+  "schema": "heptabao.mac-harness-sdk-public-sources-complete.r3",
+  "status": "PASS_EXACT_PUBLIC_READS_ONLY",
+  "all13_original_operations_complete": true,
+  "all13_original_futures_inactive": true,
+  "three_whole_source_bytes": 682650,
+  "whole_sources": {
+    "loader": {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/runtime-registry-loader-Duw3fvRO.js",
+      "version": "16777233:405239125:6047:1784843462897326061:1784843462897326061",
+      "bytes": 6047,
+      "sha256": "bd6a9f363bc7aac2fb0503640e339ffce52e0eab15336e6489b6f8129df748fb",
+      "blob": "909ec9eab6932b1f9241fbb0969c772639f18cb3",
+      "sequences": [
+        1
+      ]
+    },
+    "selector": {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+      "version": "16777233:405239260:673468:1784843463381890779:1784843463381890779",
+      "bytes": 673468,
+      "sha256": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66",
+      "blob": "41d3492a4965c62292eaa74a4d0b746b6bc4e4b2",
+      "sequences": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ]
+    },
+    "registry": {
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-DtLZ3rba.js",
+      "version": "16777233:405238784:3135:1784843461892399454:1784843461892399454",
+      "bytes": 3135,
+      "sha256": "a845875a1998c2a6bdd9fe4c824a0a7c3e7da0f3ee75ec56dc6163d4327f7ff0",
+      "blob": "9f5042ec5442239f12975e3680c0568b3c85bdf8",
+      "sequences": [
+        13
+      ]
+    }
+  },
+  "completed_in_this_packet": [
+    11,
+    12,
+    13
+  ],
+  "prior1to10_in_immutable_packets": true,
+  "original11_native_read_replayed": false,
+  "original11_page_error_offsets_preserved": [
+    16384,
+    32768
+  ],
+  "original12_status_timeout_preserved": true,
+  "original12_same_id_status_reconciliation_count": 1,
+  "root_go": "b255a0d1ab726eb1c57bca40a05cfe0820a52cc2",
+  "root_previous_checkpoints_unchanged": true,
+  "runtime_calls_inflight_at_handoff": 0,
+  "native_futures_active_at_handoff": 0,
+  "line_B_released": true,
+  "after_handoff_runtime_calls": 0,
+  "git_archive_errors_preserved_separately": true,
+  "supported_base64_archive_encoding_did_not_change_bytes": true,
+  "byte_checks": 92,
+  "selected_owner_observed": false,
+  "loader_or_sdk_executed": false,
+  "fixture_or_provider_executed": false,
+  "production_qualified": false,
+  "full_replacement_qualified": false
+}

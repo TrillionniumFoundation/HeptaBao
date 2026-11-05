@@ -1,0 +1,16 @@
+--- a/unbound
++++ b/proposed-bound
+@@ -7,11 +7,11 @@
+ PARENT = Path('/Volumes/T5/hepta-vnext-recovery-20261013')
+ ROOT = PARENT / 'continuation-20261105-official271-full34-4e808-r1'
+ BASE = ROOT / 'control'
+-BINDING_READY = False
++BINDING_READY = True
+ created_root = False
+ created_base = False
+ RECEIPT = BASE / 'inert-stage.result.public.json'
+-PINS = {'run_current_mac_full34_r1.py': [None, None]}
++PINS = {'run_current_mac_full34_r1.py': [20538, '29785927055d2e676c702aa79b97db9a6d274d8d8de0916073c08face41c6c9a']}
+ def sha(raw):
+     return hashlib.sha256(raw).hexdigest()
+ def ident(s):

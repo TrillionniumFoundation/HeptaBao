@@ -1,0 +1,202 @@
+{
+  "schema": "heptabao.current4e808-source-carrier-actual-source-bindings-manifest.r1",
+  "status": "SOURCE_ONLY_NO_DISPATCH_GO",
+  "source_proposal": "66308ebc25cce838ac5c5f5b92b13a090ccec138",
+  "files_excluding_this_manifest": [
+    {
+      "path": "binding/exact-literal-edits.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "bedf9fc3072d42a0752bb87a20ebdc5244d2a663",
+      "bytes": 6547,
+      "sha256": "7aae0ebbb2dcaf68f415a10d5a012995b87c5d79f3af34292cab39547062dc80"
+    },
+    {
+      "path": "binding/two-actual-source-files.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "9751ff9ebd1d15d531fdfdcdc6f10ffb21888743",
+      "bytes": 2311,
+      "sha256": "14fa80d3dd46dabc9851ac7514b9be056ef274eb916d23f1acf3d801f75b8de1"
+    },
+    {
+      "path": "candidate/inert.py",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "b0813e89d52c58aa4ba14d655d57dd8e0303dc7a",
+      "bytes": 5083,
+      "sha256": "148698c8d0586ba6d7c9b6fb455b6858ea973dd814261e90b30fab5d58c61e74"
+    },
+    {
+      "path": "candidate/receiver.py",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "47269d10371ee77ddb391fd0dff7700bd8ee85e8",
+      "bytes": 8857,
+      "sha256": "3b0240aabbf3e8b6bd20724e0aff7d87b71b65b44512dac6e10b6a47ad4bea6e"
+    },
+    {
+      "path": "candidate/relay.py",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "ac53578df52992c72d752ab09a8dc0a0fb0a0cbd",
+      "bytes": 15541,
+      "sha256": "b1a9a177a6969add781e076067781c746c570161e27354480154781b099ad284"
+    },
+    {
+      "path": "candidate/sender.py",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "ab1d3f07cef07dd7c86feec5f34b1e098c8671c0",
+      "bytes": 6430,
+      "sha256": "c7e4fcbbd6d6962165e81b9d4fcd568986ec292515f2ffe62cb47ce6a3694e56"
+    },
+    {
+      "path": "diffs/inert.py.diff",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "f11cb7335d257657458e1684c4283a524cb8cf79",
+      "bytes": 770,
+      "sha256": "39848fe48fcb68a25fa67794da68cb72aafdc88b20d16d4f3e4c1e36dce79213"
+    },
+    {
+      "path": "diffs/receiver.py.diff",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "b2a2a5b02b02b2cd335aa3e5c6c6b955d5aff00f",
+      "bytes": 1310,
+      "sha256": "fa79ea0cbfe25c8a8d51c48c90b50c88b9927fa30f35d9338de12d2537fd32be"
+    },
+    {
+      "path": "diffs/relay.py.diff",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "2a24b25b9fc63304e946b6f1280e04984a2d1f10",
+      "bytes": 1775,
+      "sha256": "fa4b8d27d1cc53e751e480ab8514f66ddceb09ea8f61db36a7857d96d0d78e7c"
+    },
+    {
+      "path": "diffs/sender.py.diff",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "9903ba8318a7bf9ac85f77108d152ffb7cadcab2",
+      "bytes": 1306,
+      "sha256": "bd8cfa7cd9ce42dda32277ba8b3c3e0bfc6427be75d1011d858f82fbedd1c2da"
+    },
+    {
+      "path": "payload/controls.json",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "3fc2bbbe5776d7b655f38eaf9756b8610616b265",
+      "bytes": 41273,
+      "sha256": "2588299918df718248164c08629280f93d85491ab8aaf79a769b4c7b61162162"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "67c977a0ad251985ec32516d2a56c0476edb681b",
+      "bytes": 1263,
+      "sha256": "42a23cfbc386512810d716c8c2505a91777a951dc34a1dbaf8579114be85c714"
+    },
+    {
+      "path": "reference/importer-still-unbound.py",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "f162a3e7976ede50439526c8a806b2253e1e6dd3",
+      "bytes": 32296,
+      "sha256": "a9fd588525c87733bdec6e98d278617d94d5aa431b9052a8a19d96dee5337909"
+    },
+    {
+      "path": "reference/inert.py",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "09313da154049019fbeb82c186ed97e1a862f29d",
+      "bytes": 5083,
+      "sha256": "f9b0e31d5e72b0f10080e946eea29a4fbcd8a40bc724caccd97b1aa3ed584dd8"
+    },
+    {
+      "path": "reference/receiver.py",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "025b92c0fc9255aacdac0b07a91683320853bc0c",
+      "bytes": 8610,
+      "sha256": "a6035826290eb23afce0e42dc3ebcf3bf4c7773111efbb7108dbbe241c46e903"
+    },
+    {
+      "path": "reference/relay.py",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "967a36d3f1e8f480761159a66ef810908ff54949",
+      "bytes": 15294,
+      "sha256": "57cabecda96d2aca0213fc6e1023330a272beba21764cfa5f80f525c5a5158fe"
+    },
+    {
+      "path": "reference/sender.py",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "2612aebafe8750df7eea8bb6ae99dc7d1c538671",
+      "bytes": 6183,
+      "sha256": "f22631fde5db9125b7986f37eea161d5f5809ec972bc95a1b6be3fc6766cf1e2"
+    },
+    {
+      "path": "reference/source-proposal-PLAN.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "87007f6179f5bfb812468c15d64402929809b949",
+      "bytes": 4598,
+      "sha256": "33b53771a57462afbc242ded3821f46ec401d75abe3c96e77c97608659fe460a"
+    },
+    {
+      "path": "requests/INERT.REVIEW-ONLY.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "9445c47e405b4ac579a43b6cb995712301c477eb",
+      "bytes": 46818,
+      "sha256": "7581f5ed56528ce94a34b1c5708b4971ce52d457c5c1948cdf4e2569d182f8c6"
+    },
+    {
+      "path": "requests/RELAY.REVIEW-ONLY.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "223fbd0102a6e1aa803ea2e7528e79fd63776b00",
+      "bytes": 380,
+      "sha256": "562ed81a329a6ec932ee52cf807a10f6162abbdf9f37fbb7010bf95564929ca2"
+    },
+    {
+      "path": "review/ast-executor.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "8bc03a86b94ce034637d8a206ea25a26161a1a78",
+      "bytes": 10025,
+      "sha256": "4d6751dc7d5f219d6c173e6d2a052cf776dab0b2df1f79bc56392700d1566ac6"
+    },
+    {
+      "path": "review/ast-result.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "f232ddbf9c445043fba1a6c10330db2f3c235e02",
+      "bytes": 8962,
+      "sha256": "5221ebb990dcbf0301b684656803b951554215f53ece7e00b2b807427c433f5f"
+    },
+    {
+      "path": "review/ast-verifier-with-public-input.py",
+      "mode": "100644",
+      "type": "blob",
+      "blob": "f3fdbc55d18ac2b3b196ae8aed37449653cff990",
+      "bytes": 101651,
+      "sha256": "46cbdb82aaf8d2e630d15a440630c6d59efc30c228c41356624117153a020ff8"
+    }
+  ],
+  "source_files": 2,
+  "actual_source_bytes": 22360554,
+  "source_definitions_unchanged": 42,
+  "pure_AST_checks": 28,
+  "compiled_modules": 8,
+  "executed_modules": 0,
+  "original_export_command_archive_pending": 81,
+  "inert_submissions": 0,
+  "relay_submissions": 0,
+  "import_submissions": 0,
+  "full_replacement_qualified": false
+}

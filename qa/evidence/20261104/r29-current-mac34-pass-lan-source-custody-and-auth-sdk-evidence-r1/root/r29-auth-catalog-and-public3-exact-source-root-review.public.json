@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.root-auth-catalog-and-three-public-info-exact-source-review.r29.v1",
+  "status": "PASS_SOURCE_BINDINGS_ONLY",
+  "checks_passed": 16,
+  "checks": [
+    "source_exact_root30_reviewed",
+    "regular_request_exact_reviewed",
+    "regular_request_exact_code",
+    "actual_selector_policy_import",
+    "actual_selector_support_import",
+    "actual_wal_source_records48",
+    "actual_codex_pin_unique",
+    "actual_codex_full9_bytes_hash_exact",
+    "info1_exact_request",
+    "info1_fixed_path",
+    "info2_exact_request",
+    "info2_fixed_path",
+    "info3_exact_request",
+    "info3_fixed_path",
+    "exact_original_counts_and_body_caps",
+    "exact_per_source_body_caps"
+  ],
+  "source_packet": "67278f5e4ea494d1394f5eb8185e3af64f93aa76",
+  "source_packet_files": 43,
+  "source_packet_bytes": 1220402,
+  "source_packet_merkle_trees": 6,
+  "catalog_root_AST_review": "580b5e9d79050db6878661e28b5b6d9eed7bf531",
+  "catalog_root_AST_checks": 30,
+  "catalog_regular_request": {
+    "blob": "19b9a25626b2c7b7c270283646bd91fbee818ca1",
+    "bytes": 23435,
+    "sha256": "2df83173f4b330bd043e570334c53598f20cc376c33b5c5f674358c43de3be7d",
+    "request_digest": "10080341f55a01d7c13d26178bb7fe33c6a9504f3a82045b797e357e67e16902",
+    "fingerprint_unsigned64": "1155176886244606423"
+  },
+  "actual_code_sources": {
+    "selector": "41d3492a4965c62292eaa74a4d0b746b6bc4e4b2",
+    "failed_WAL_public_stdout": "bdde97e2ec7a167619ea24b0ce9660086e81ebce",
+    "record_count": 48,
+    "codex": {
+      "bytes": 3596,
+      "cap": 268435456,
+      "identity": [
+        "16777233",
+        "405276634",
+        "501",
+        "20",
+        "33188",
+        "1",
+        "3596",
+        "1784844051297089646",
+        "1784844051297089646"
+      ],
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+      "private": false,
+      "sha256": "8919eefce05b3127251724c8f8cad7f1ac1a0994c57b243361092ea4de096f72"
+    }
+  },
+  "readset": "8457a24c7ba9ecf7dd14b621672ab8cd225a2a90",
+  "counting_note": "36bb52ab660c3e62afdfb2f1befaf1433626c712",
+  "file_info_internal_hash_byte_cap_claimed": false,
+  "future_body_requests_frozen": false,
+  "catalog_is_private_capsule_read": true,
+  "SDK_execution_authorized": false,
+  "root_Runtime_calls": 0
+}

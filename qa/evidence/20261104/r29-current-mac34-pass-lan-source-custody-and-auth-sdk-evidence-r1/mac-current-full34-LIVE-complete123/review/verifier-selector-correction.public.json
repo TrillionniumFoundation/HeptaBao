@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.local-evidence-verifier-correction.v1",
+  "initial_execution_exit_code": 1,
+  "initial_error": "KeyError: 'controller.py'",
+  "cause": "The verifier selected the original wrapper basename for the public driver copy; the actual fixed batch file is named controller.py. This was an offline verifier selector error, not a candidate or runtime error.",
+  "only_change": {
+    "before": "'run_current_mac_full34_r1.py': 'actual/controller.original.py'",
+    "after": "'controller.py': 'actual/controller.original.py'"
+  },
+  "original_sdk_or_candidate_changed": false,
+  "host_or_product_reexecuted": false,
+  "second_execution_exit_code": 0,
+  "second_checks_passed": 648,
+  "original_failed_verifier_and_execution_retained": true
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.mac-harness-sdk-public-body-read-intent.v1",
+  "created_utc": "2026-11-05 16:17:14 UTC",
+  "sequence": 13,
+  "request_packet": "9cc81357deaf49fb277df727a6999c276c4286e8",
+  "root_source_review": "fb93717ba2c38909cf19887b36dcf0c8b539f049",
+  "root_window_handoff": "ec4c1436786743417dc92f95d70f0ce726df6240",
+  "root_window_resume_go": "b255a0d1ab726eb1c57bca40a05cfe0820a52cc2",
+  "request_pin": {
+    "bytes": 405,
+    "sha256": "a61b6af6cdb8a2f3eb5cfaf61d7a8979da41f0b4b336e9d840157471a8f479df",
+    "blob": "601c0c0b77ee3bc2dc92b54af4c3491245fd098b"
+  },
+  "exact_request_original": "{\n  \"idempotency_key\": \"heptabao-mac-harness-sdk-body-registry-a845875a-o000000-20261105-r1\",\n  \"operation\": {\n    \"tool\": \"binary_read\",\n    \"arguments\": {\n      \"host\": \"mac\",\n      \"path\": \"/opt/homebrew/lib/node_modules/openclaw/dist/registry-DtLZ3rba.js\",\n      \"expected_version\": \"16777233:405238784:3135:1784843461892399454:1784843461892399454\",\n      \"offset\": 0,\n      \"limit\": 3135\n    }\n  }\n}\n",
+  "previous_sequence_known_complete": 12,
+  "policy": {
+    "one_original_operation_in_flight": true,
+    "sdk_saved_before_parse": true,
+    "isError_checked_before_parse": true,
+    "stop_new_admissions_on_any_error": true,
+    "no_sdk_execution": true,
+    "no_business_replay": true
+  }
+}

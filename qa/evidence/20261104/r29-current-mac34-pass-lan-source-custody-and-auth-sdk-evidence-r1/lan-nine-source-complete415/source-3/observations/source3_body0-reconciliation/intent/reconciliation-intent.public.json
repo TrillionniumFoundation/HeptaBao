@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.lan-source3-body0.identical-read-admission-reconciliation.r1",
+  "scope": "Exactly one operation_start reconciliation for the original read-only admission whose ACK was lost",
+  "request_blob": "2921f085878eb3fa79089c5855f14fbeee41ff8c",
+  "request_sha256": "af397306cf7146b7e6e8f26248fb25d0179ccd515b549cd83dbbcc313ca06e2d",
+  "original_error_blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+  "original_partial_tree": "e88f0c2796e15d21505301ca810aa1b9376c60cf",
+  "exact_request": {
+    "idempotency_key": "ha-4e808-lan-inert-source3-body0-r1-20261105",
+    "operation": {
+      "tool": "binary_read",
+      "arguments": {
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+        "offset": 0,
+        "limit": 16384,
+        "expected_version": "2050:7360919:25879:1793888506331235190:1793888506363151955"
+      }
+    }
+  },
+  "root_authorization": "One identical typed arguments and key operation_start reconciliation. No change of key/path/offset/limit/expected_version. Save ACK before parsing and preserve reused literally; false does not prove the earlier read never occurred. Only same returned operation ID status/result; stop new admissions if no ACK or closure remains unknown.",
+  "operation_start_reconciliations_before_this": 0,
+  "process_start": false,
+  "business_replay": false,
+  "new_path_or_key": false,
+  "original_read_future_state": "unknown",
+  "submitted": false
+}

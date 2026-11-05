@@ -1,0 +1,130 @@
+{
+  "actual_host_access": false,
+  "business_dispatch": false,
+  "checks": [
+    "sender.py:all_definitions_byte_exact",
+    "sender.py:only_declared_top_bindings",
+    "sender.py:all_other_ast_identical",
+    "sender.py:actual_two_source_rows",
+    "sender.py:ready_literal_true",
+    "sender.py:original_deadline",
+    "receiver.py:all_definitions_byte_exact",
+    "receiver.py:only_declared_top_bindings",
+    "receiver.py:all_other_ast_identical",
+    "receiver.py:actual_two_source_rows",
+    "receiver.py:ready_literal_true",
+    "receiver.py:original_deadline",
+    "relay.py:all_definitions_byte_exact",
+    "relay.py:only_declared_top_bindings",
+    "relay.py:all_other_ast_identical",
+    "relay.py:actual_two_source_rows",
+    "relay.py:ready_literal_true",
+    "relay.py:original_deadline",
+    "relay:final_helper_pins",
+    "inert.py:all_definitions_byte_exact",
+    "inert.py:only_declared_top_bindings",
+    "inert.py:all_other_ast_identical",
+    "inert:final_source_pins",
+    "sender.py:size_hash_matches_inert_pin",
+    "receiver.py:size_hash_matches_inert_pin",
+    "relay.py:size_hash_matches_inert_pin",
+    "sender.py:hash_matches_relay_pin",
+    "receiver.py:hash_matches_relay_pin"
+  ],
+  "checks_passed": 28,
+  "compiled_modules": 8,
+  "diffs": {
+    "inert.py": "--- before/inert.py\n+++ after/inert.py\n@@ -10,16 +10,16 @@\n RECEIPT = BASE / 'inert-stage.result.public.json'\n PINS = {\n     \"sender.py\": [\n-        6183,\n-        \"f22631fde5db9125b7986f37eea161d5f5809ec972bc95a1b6be3fc6766cf1e2\"\n+        6430,\n+        \"c7e4fcbbd6d6962165e81b9d4fcd568986ec292515f2ffe62cb47ce6a3694e56\"\n     ],\n     \"receiver.py\": [\n-        8610,\n-        \"a6035826290eb23afce0e42dc3ebcf3bf4c7773111efbb7108dbbe241c46e903\"\n+        8857,\n+        \"3b0240aabbf3e8b6bd20724e0aff7d87b71b65b44512dac6e10b6a47ad4bea6e\"\n     ],\n     \"relay.py\": [\n-        15294,\n-        \"57cabecda96d2aca0213fc6e1023330a272beba21764cfa5f80f525c5a5158fe\"\n+        15541,\n+        \"b1a9a177a6969add781e076067781c746c570161e27354480154781b099ad284\"\n     ]\n }\n def sha(raw):\n",
+    "receiver.py": "--- before/receiver.py\n+++ after/receiver.py\n@@ -1,6 +1,6 @@\n from pathlib import Path\n import hashlib,json,os,platform,select,signal,stat,subprocess,sys,time\n-ACTUAL_INPUTS_READY=False\n+ACTUAL_INPUTS_READY=True\n if not ACTUAL_INPUTS_READY:\n  raise RuntimeError('actual 4e808 source-export metadata unresolved')\n os.umask(0o077)\n@@ -10,22 +10,22 @@\n TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'\n FILES=[\n  {\n-  \"bytes\": None,\n+  \"bytes\": 22320862,\n   \"name\": \"canonical-4e808-full.bundle\",\n   \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle\",\n-  \"sha256\": None,\n+  \"sha256\": \"bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac\",\n   \"source_mode\": 384,\n   \"target_mode\": 256,\n-  \"version\": None\n+  \"version\": \"66306:28091464:22320862:1793885177495300186:1793885177498300179\"\n  },\n  {\n-  \"bytes\": None,\n+  \"bytes\": 39692,\n   \"name\": \"source-export.result.public.json\",\n   \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json\",\n-  \"sha256\": None,\n+  \"sha256\": \"47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b\",\n   \"source_mode\": 384,\n   \"target_mode\": 256,\n-  \"version\": None\n+  \"version\": \"66306:28091501:39692:1793885177751063403:1793885177751063403\"\n  }\n ]\n protected=0\n",
+    "relay.py": "--- before/relay.py\n+++ after/relay.py\n@@ -4,7 +4,7 @@\n \"\"\"\n from pathlib import Path\n import hashlib,json,os,shlex,signal,stat,subprocess,sys,time\n-ACTUAL_INPUTS_READY=False\n+ACTUAL_INPUTS_READY=True\n if not ACTUAL_INPUTS_READY:\n  raise RuntimeError('actual 4e808 source-export metadata unresolved')\n os.umask(0o077)\n@@ -18,27 +18,27 @@\n TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'\n FILES=[\n  {\n-  \"bytes\": None,\n+  \"bytes\": 22320862,\n   \"name\": \"canonical-4e808-full.bundle\",\n   \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle\",\n-  \"sha256\": None,\n+  \"sha256\": \"bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac\",\n   \"source_mode\": 384,\n   \"target_mode\": 256,\n-  \"version\": None\n+  \"version\": \"66306:28091464:22320862:1793885177495300186:1793885177498300179\"\n  },\n  {\n-  \"bytes\": None,\n+  \"bytes\": 39692,\n   \"name\": \"source-export.result.public.json\",\n   \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json\",\n-  \"sha256\": None,\n+  \"sha256\": \"47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b\",\n   \"source_mode\": 384,\n   \"target_mode\": 256,\n-  \"version\": None\n+  \"version\": \"66306:28091501:39692:1793885177751063403:1793885177751063403\"\n  }\n ]\n HELPERS={\n- \"sender.py\": \"f22631fde5db9125b7986f37eea161d5f5809ec972bc95a1b6be3fc6766cf1e2\",\n- \"receiver.py\": \"a6035826290eb23afce0e42dc3ebcf3bf4c7773111efbb7108dbbe241c46e903\"\n+ \"sender.py\": \"c7e4fcbbd6d6962165e81b9d4fcd568986ec292515f2ffe62cb47ce6a3694e56\",\n+ \"receiver.py\": \"3b0240aabbf3e8b6bd20724e0aff7d87b71b65b44512dac6e10b6a47ad4bea6e\"\n }\n SSH=['/usr/bin/ssh','-T','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes',\n      '-o','ConnectTimeout=10','-o','ConnectionAttempts=1',\n",
+    "sender.py": "--- before/sender.py\n+++ after/sender.py\n@@ -1,6 +1,6 @@\n from pathlib import Path\n import hashlib,json,os,platform,select,signal,stat,subprocess,sys,time\n-ACTUAL_INPUTS_READY=False\n+ACTUAL_INPUTS_READY=True\n if not ACTUAL_INPUTS_READY:\n  raise RuntimeError('actual 4e808 source-export metadata unresolved')\n os.umask(0o077)\n@@ -10,22 +10,22 @@\n TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'\n FILES=[\n  {\n-  \"bytes\": None,\n+  \"bytes\": 22320862,\n   \"name\": \"canonical-4e808-full.bundle\",\n   \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle\",\n-  \"sha256\": None,\n+  \"sha256\": \"bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac\",\n   \"source_mode\": 384,\n   \"target_mode\": 256,\n-  \"version\": None\n+  \"version\": \"66306:28091464:22320862:1793885177495300186:1793885177498300179\"\n  },\n  {\n-  \"bytes\": None,\n+  \"bytes\": 39692,\n   \"name\": \"source-export.result.public.json\",\n   \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json\",\n-  \"sha256\": None,\n+  \"sha256\": \"47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b\",\n   \"source_mode\": 384,\n   \"target_mode\": 256,\n-  \"version\": None\n+  \"version\": \"66306:28091501:39692:1793885177751063403:1793885177751063403\"\n  }\n ]\n protected=0\n"
+  },
+  "executed_modules": 0,
+  "files": {
+    "inert.py": {
+      "bytes": 5083,
+      "changed_assignments": [
+        "PINS"
+      ],
+      "sha256": "148698c8d0586ba6d7c9b6fb455b6858ea973dd814261e90b30fab5d58c61e74",
+      "unchanged_definitions": [
+        "sha",
+        "ident",
+        "sync_dir",
+        "exact",
+        "publish"
+      ]
+    },
+    "receiver.py": {
+      "bytes": 8857,
+      "changed_assignments": [
+        "ACTUAL_INPUTS_READY",
+        "FILES"
+      ],
+      "sha256": "3b0240aabbf3e8b6bd20724e0aff7d87b71b65b44512dac6e10b6a47ad4bea6e",
+      "unchanged_definitions": [
+        "Cancelled",
+        "handler",
+        "remaining",
+        "identity",
+        "stop_active",
+        "snapshot",
+        "read_file",
+        "dir_fsync",
+        "run_and_report",
+        "receive"
+      ]
+    },
+    "relay.py": {
+      "bytes": 15541,
+      "changed_assignments": [
+        "ACTUAL_INPUTS_READY",
+        "FILES",
+        "HELPERS"
+      ],
+      "sha256": "b1a9a177a6969add781e076067781c746c570161e27354480154781b099ad284",
+      "unchanged_definitions": [
+        "Cancelled",
+        "signal_handler",
+        "remaining",
+        "identity",
+        "stable",
+        "fsync_dir",
+        "create",
+        "public",
+        "snapshot",
+        "stop_active",
+        "log_file",
+        "start_child",
+        "wait_child",
+        "read_log",
+        "known_hosts_state",
+        "inspect_config",
+        "remote_command"
+      ]
+    },
+    "sender.py": {
+      "bytes": 6430,
+      "changed_assignments": [
+        "ACTUAL_INPUTS_READY",
+        "FILES"
+      ],
+      "sha256": "c7e4fcbbd6d6962165e81b9d4fcd568986ec292515f2ffe62cb47ce6a3694e56",
+      "unchanged_definitions": [
+        "Cancelled",
+        "handler",
+        "remaining",
+        "identity",
+        "stop_active",
+        "snapshot",
+        "read_file",
+        "dir_fsync",
+        "run_and_report",
+        "send"
+      ]
+    }
+  },
+  "network_calls": 0,
+  "original81_archive_pending": true,
+  "schema": "heptabao.source-carrier-two-actual-inputs-root-ast-verification.r1"
+}

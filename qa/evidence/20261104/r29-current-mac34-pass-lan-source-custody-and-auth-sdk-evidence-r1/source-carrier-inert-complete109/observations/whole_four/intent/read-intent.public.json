@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.source-carrier.inert.fixed-read-intent.v1",
+  "root_GO": "3eedc101ee18c577c4a10a318f2bbeaae8f5f7a4",
+  "original_job_id": "1a1aca557a2-fc05-561b",
+  "observation_name": "whole_four",
+  "exact_request": {
+    "idempotency_key": "heptabao-4e808-source-carrier-inert-readback-148698c8-r1-whole-four",
+    "operation": {
+      "tool": "read_multiple_files",
+      "arguments": {
+        "host": "desktop",
+        "paths": [
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/sender.py",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/receiver.py",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/relay.py",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/inert-stage.result.public.json"
+        ],
+        "max_file_bytes": 32768,
+        "max_response_bytes": 131072
+      }
+    }
+  },
+  "original_business_submit_once": true,
+  "new_business_or_product": false,
+  "original_SDK_external_before_parse": true,
+  "same_returned_ID_status_and_immutable_pages_only": true,
+  "on_error": "Stop new admissions; no implicit retry; preserve exact SDK and seek root reconciliation."
+}

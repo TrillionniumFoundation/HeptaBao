@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"authenticated_chatgpt_caller_isolation\":false,\"automatic_retry\":false,\"credential_metadata_resume\":true,\"cross_session_resume\":true,\"data_base64\":\"WTJVcExDQW5jMjkxY21ObFgyTnZiVzFwZENjNklHTm1aMXNuWTI5dGJXbDBKMTBzSUNkemIzVnlZMlZmZEhKbFpTYzZJR05tWjFzbmRISmxaU2RkTEFvZ0lDQWdKM052ZFhKalpWOWpiR1ZoYmljNklGUnlkV1VzSUNkbWFXeGxjeWM2SUdacGJHVnpMQ0FuYm05eWJXRnNYM0J5YjJwbFkzUmZabVZoZEhWeVpYTW5PaUJ3Y205cVpXTjBYMlpsWVhSMWNtVnpMQW9nSUNBZ0ozQnlhWFpoZEdWZlpHbGhaMjV2YzNScFkxOW1aV0YwZFhKbFgyVnVZV0pzWldRbk9pQkdZV3h6WlN3Z0ozUmhjbWRsZEY5bGVHVmpkWFJsWkNjNklFWmhiSE5sTEFvZ0lDQWdKMjVoZEdsMlpWOXlZWGRmWW1GelpUWTBKem9nWW1GelpUWTBMbUkyTkdWdVkyOWtaU2h5WVhkYkoyNWhkR2wyWlMxaWRXbHNaQzV3ZFdKc2FXTXVhbk52YmlkZEtTNWtaV052WkdVb0tTd0tJQ0FnSUNkeVpYTjFiSFJmY21GM1gySmhjMlUyTkNjNklHSmhjMlUyTkM1aU5qUmxibU52WkdVb2NtRjNXeWR1YjNKdFlXd3RjbVZzWldGelpTMXlaWE4xYkhRdWNIVmliR2xqTG1wemIyNG5YU2t1WkdWamIyUmxLQ2w5TENCemIzSjBYMnRsZVhNOVZISjFaU2twQ2c9PVwiLFwiZW9mXCI6dHJ1ZSxcIm5leHRfb2Zmc2V0XCI6NjQ0NSxcIm9mZnNldFwiOjAsXCJwYXRoXCI6XCIvaG9tZS9xaWFuLXFpL2hlcHRhYmFvLWhhLWNsb3N1cmUtMjAyNjExMDMtcjEvbm9ybWFsLXNhbWUtcm9vdC1wdWJsaWNhdGlvbi1wb2NrZXQzLW1hYzEtcG9zdHJlY292ZXJ5LWNvbGQtY29udHJvbC1yMS9wcm9iZV9ub3JtYWxfYnVpbGRfcjEwX3IxLnB5XCIsXCJzaXplXCI6NjQ0NSxcInZlcnNpb25cIjpcIjIwNTA6NzM2MDk3NDo2NDQ1OjE3OTM4ODg1MDY2NDM4ODI2MDc6MTc5Mzg4ODUwNjY4NDAwMjg5OFwifSJ9XSwiaXNFcnJvciI6ZmFsc2V9\",\"delivery_proven\":false,\"eof\":true,\"format\":\"serialized_original_native_sdk_payload_before_operation_metadata_and_transport_normalization\",\"immutable_snapshot\":true,\"next_offset\":9077,\"offset\":8192,\"operation_id\":\"bab6856015ee18c9289dff469756b2f7e451b2446e3ad6b255d378a2d17ea154\",\"ownership_scope\":\"authenticated_private_operator_credential\",\"payload_kind\":\"native_result\",\"result_sha256\":\"405bf1c50df2df31caf5c65119c691ee33adb81a1c9f9f302a6627faba34996d\",\"session_scope\":\"authenticated_private_operator_credential\",\"total_bytes\":9077}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

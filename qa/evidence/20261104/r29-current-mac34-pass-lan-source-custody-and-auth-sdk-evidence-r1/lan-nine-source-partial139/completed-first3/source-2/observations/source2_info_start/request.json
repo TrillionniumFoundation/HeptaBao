@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "ha-4e808-lan-inert-source2-info-r1-20261105",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/native_v6_pocket_source_postrecovery_cold_4e808_r1.py"
+    }
+  }
+}

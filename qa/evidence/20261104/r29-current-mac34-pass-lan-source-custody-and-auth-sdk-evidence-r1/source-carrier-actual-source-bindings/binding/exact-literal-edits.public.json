@@ -1,0 +1,58 @@
+[
+  {
+    "file": "sender.py",
+    "label": "two_actual_export_rows",
+    "start_before": 376,
+    "before": "[\n {\n  \"bytes\": None,\n  \"name\": \"canonical-4e808-full.bundle\",\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle\",\n  \"sha256\": None,\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n },\n {\n  \"bytes\": None,\n  \"name\": \"source-export.result.public.json\",\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json\",\n  \"sha256\": None,\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n }\n]",
+    "after": "[\n {\n  \"bytes\": 22320862,\n  \"name\": \"canonical-4e808-full.bundle\",\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle\",\n  \"sha256\": \"bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:28091464:22320862:1793885177495300186:1793885177498300179\"\n },\n {\n  \"bytes\": 39692,\n  \"name\": \"source-export.result.public.json\",\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json\",\n  \"sha256\": \"47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:28091501:39692:1793885177751063403:1793885177751063403\"\n }\n]"
+  },
+  {
+    "file": "sender.py",
+    "label": "readiness_only_after_concrete_metadata",
+    "start_before": 96,
+    "before": "ACTUAL_INPUTS_READY=False",
+    "after": "ACTUAL_INPUTS_READY=True"
+  },
+  {
+    "file": "receiver.py",
+    "label": "two_actual_export_rows",
+    "start_before": 376,
+    "before": "[\n {\n  \"bytes\": None,\n  \"name\": \"canonical-4e808-full.bundle\",\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle\",\n  \"sha256\": None,\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n },\n {\n  \"bytes\": None,\n  \"name\": \"source-export.result.public.json\",\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json\",\n  \"sha256\": None,\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n }\n]",
+    "after": "[\n {\n  \"bytes\": 22320862,\n  \"name\": \"canonical-4e808-full.bundle\",\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle\",\n  \"sha256\": \"bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:28091464:22320862:1793885177495300186:1793885177498300179\"\n },\n {\n  \"bytes\": 39692,\n  \"name\": \"source-export.result.public.json\",\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json\",\n  \"sha256\": \"47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:28091501:39692:1793885177751063403:1793885177751063403\"\n }\n]"
+  },
+  {
+    "file": "receiver.py",
+    "label": "readiness_only_after_concrete_metadata",
+    "start_before": 96,
+    "before": "ACTUAL_INPUTS_READY=False",
+    "after": "ACTUAL_INPUTS_READY=True"
+  },
+  {
+    "file": "relay.py",
+    "label": "two_actual_export_rows",
+    "start_before": 900,
+    "before": "[\n {\n  \"bytes\": None,\n  \"name\": \"canonical-4e808-full.bundle\",\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle\",\n  \"sha256\": None,\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n },\n {\n  \"bytes\": None,\n  \"name\": \"source-export.result.public.json\",\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json\",\n  \"sha256\": None,\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n }\n]",
+    "after": "[\n {\n  \"bytes\": 22320862,\n  \"name\": \"canonical-4e808-full.bundle\",\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle\",\n  \"sha256\": \"bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:28091464:22320862:1793885177495300186:1793885177498300179\"\n },\n {\n  \"bytes\": 39692,\n  \"name\": \"source-export.result.public.json\",\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json\",\n  \"sha256\": \"47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:28091501:39692:1793885177751063403:1793885177751063403\"\n }\n]"
+  },
+  {
+    "file": "relay.py",
+    "label": "readiness_only_after_concrete_metadata",
+    "start_before": 282,
+    "before": "ACTUAL_INPUTS_READY=False",
+    "after": "ACTUAL_INPUTS_READY=True"
+  },
+  {
+    "file": "relay.py",
+    "label": "derived_final_endpoint_hashes",
+    "start_before": 1668,
+    "before": "{\n \"sender.py\": \"f22631fde5db9125b7986f37eea161d5f5809ec972bc95a1b6be3fc6766cf1e2\",\n \"receiver.py\": \"a6035826290eb23afce0e42dc3ebcf3bf4c7773111efbb7108dbbe241c46e903\"\n}",
+    "after": "{\n \"sender.py\": \"c7e4fcbbd6d6962165e81b9d4fcd568986ec292515f2ffe62cb47ce6a3694e56\",\n \"receiver.py\": \"3b0240aabbf3e8b6bd20724e0aff7d87b71b65b44512dac6e10b6a47ad4bea6e\"\n}"
+  },
+  {
+    "file": "inert.py",
+    "label": "derived_final_source_sizes_hashes",
+    "start_before": 427,
+    "before": "{\n    \"sender.py\": [\n        6183,\n        \"f22631fde5db9125b7986f37eea161d5f5809ec972bc95a1b6be3fc6766cf1e2\"\n    ],\n    \"receiver.py\": [\n        8610,\n        \"a6035826290eb23afce0e42dc3ebcf3bf4c7773111efbb7108dbbe241c46e903\"\n    ],\n    \"relay.py\": [\n        15294,\n        \"57cabecda96d2aca0213fc6e1023330a272beba21764cfa5f80f525c5a5158fe\"\n    ]\n}",
+    "after": "{\n    \"sender.py\": [\n        6430,\n        \"c7e4fcbbd6d6962165e81b9d4fcd568986ec292515f2ffe62cb47ce6a3694e56\"\n    ],\n    \"receiver.py\": [\n        8857,\n        \"3b0240aabbf3e8b6bd20724e0aff7d87b71b65b44512dac6e10b6a47ad4bea6e\"\n    ],\n    \"relay.py\": [\n        15541,\n        \"b1a9a177a6969add781e076067781c746c570161e27354480154781b099ad284\"\n    ]\n}"
+  }
+]

@@ -1,0 +1,43 @@
+{
+  "schema": "heptabao.mac-harness-sdk-body-observation.v1",
+  "sequence": 12,
+  "id": "selector_655360",
+  "request_blob": "6a358ed8b0c816a252ac857371415b113b8d705b",
+  "intent_blob": "7b5c5e92e2ba2f6cc3449b1695015a3a71e2bb35",
+  "ack_blob": "7a3116cb3078d2ee0e722e02b9d4b497ba2bbd12",
+  "operation_id": "e1acabca942f49b898428d39a9c390647b12143b47f71e11080b6fb83ce5474d",
+  "status_blob": "fd3cda8308e1d8b71e4de7d10de4ed3e9bc3edc5",
+  "original_sdk_blob": "78967768ba6418f59348f57abf5fe611f82fa87b",
+  "original_native_blob": "4a6fda61d12805c9d7bba5573aa4adf1c784708c",
+  "actual_chunk_bytes": 18108,
+  "actual_chunk_sha256": "f88a0c44e41f91fa86aa788b7b88d896974d77c7f380980116e209ff8cb5fa9b",
+  "offset": 655360,
+  "next_offset": 673468,
+  "eof": true,
+  "exact_path_version_size_offset_eof": true,
+  "operation_completed": true,
+  "owned_future_active": false,
+  "original_sdk_payload_pages": 2,
+  "all_original_payload_pages_verified": true,
+  "root_resume_go": "b255a0d1ab726eb1c57bca40a05cfe0820a52cc2",
+  "page_provenance": [
+    {
+      "page": 0,
+      "offset": 0,
+      "bytes": 16384,
+      "sdk_blob": "7c9db0eeb772d17f2b6027e051a0506f1fa58ba7",
+      "native_blob": "9cf25ba8c0cd6dfb22405dcfdcbcaa75cd76b70a"
+    },
+    {
+      "page": 1,
+      "offset": 16384,
+      "bytes": 8179,
+      "sdk_blob": "8e861ba656c2ca20cacf7f87c889c5b3c3b4e242",
+      "native_blob": "97f48e268acce199eda321b5bd2e5fb33291f760"
+    }
+  ],
+  "status_error_preserved": true,
+  "original_native_read_replayed": false,
+  "sdk_executed": false,
+  "selected_owner_conclusion": false
+}

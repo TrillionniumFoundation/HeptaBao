@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.mac-sdk-original-status-reconciliation-intent.v1",
+  "root_go": "b255a0d1ab726eb1c57bca40a05cfe0820a52cc2",
+  "sequence": 12,
+  "request": {
+    "operation_id": "e1acabca942f49b898428d39a9c390647b12143b47f71e11080b6fb83ce5474d"
+  },
+  "request_blob": "185c98cbce669f00d1bd79e60ef4dd588d881198",
+  "prior_status_error_sdk": "0cede4881f37869cfd279b69b738c87eb62b4889",
+  "prior_status_error_native": "b9e4761d70f7a3086ee8d571cfba3cea9fbdf487",
+  "attempt": 1,
+  "original_operation_replayed": false,
+  "new_native_read": false,
+  "second_unresolved_error_stops_line": true
+}

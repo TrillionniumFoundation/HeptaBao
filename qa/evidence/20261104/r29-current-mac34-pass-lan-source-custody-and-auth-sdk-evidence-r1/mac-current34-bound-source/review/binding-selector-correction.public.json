@@ -1,0 +1,13 @@
+{
+  "correction": "one exact status literal only",
+  "empty_directory_preserved_as": "review/initial-empty-offline-output",
+  "initial_binder_sha256": "20b7e0a8d173a6660973983fa2019d7ceb0cdf1c5ad0ed7a501f3b2c3b3180b5",
+  "initial_expected_status": "SIX_NATIVE_READS_COMPLETE_KNOWN_GIT_SINGLE_LINK_BINDING_REFUSAL",
+  "initial_failure": "assertion on exact projection status label before metadata binding/output bodies",
+  "local_output_directory_created_empty": true,
+  "no_runtime_calls": true,
+  "observed_projection_status": "SIX_NATIVE_READS_COMPLETE_WITH_KNOWN_GIT_BINDING_REFUSAL",
+  "original_projection_bytes_unchanged": true,
+  "schema": "heptabao.mac-full34-binding-local-status-selector-correction.v1",
+  "source_wrapper_publisher_and_guards_unchanged": true
+}

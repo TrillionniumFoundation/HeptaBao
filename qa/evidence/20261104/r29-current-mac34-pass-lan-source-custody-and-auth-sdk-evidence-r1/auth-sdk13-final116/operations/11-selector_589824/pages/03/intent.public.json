@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.mac-sdk-original-result-page-intent.v1",
+  "root_go": "b255a0d1ab726eb1c57bca40a05cfe0820a52cc2",
+  "sequence": 11,
+  "page_index": 3,
+  "request_blob": "b581950847bf80b2eeae64387d24c84bdaa5def3",
+  "request": {
+    "operation_id": "0a76e36c0f77a78517a742fbcae67a51ea7e7e109c056c2348750086441f0d05",
+    "offset": 49152,
+    "limit": 16384
+  },
+  "known_native_state": "completed/stored_observed/inactive",
+  "new_native_read": false,
+  "first_attempt": true,
+  "max_same_page_transport_reconciliation": 1
+}

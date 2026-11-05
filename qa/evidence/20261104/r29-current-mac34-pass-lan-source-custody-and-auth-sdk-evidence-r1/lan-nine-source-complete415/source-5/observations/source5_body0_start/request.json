@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "ha-4e808-lan-inert-source5-body0-r1-20261105",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_ha_foreground_watchdog.py",
+      "offset": 0,
+      "limit": 16384,
+      "expected_version": "2050:7360941:41618:1793888506459247366:1793888506489395876"
+    }
+  }
+}

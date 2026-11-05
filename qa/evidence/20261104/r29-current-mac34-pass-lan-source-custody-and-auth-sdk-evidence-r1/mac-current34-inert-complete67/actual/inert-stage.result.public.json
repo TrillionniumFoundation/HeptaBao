@@ -1,0 +1,36 @@
+{
+  "artifact_transfer_started": false,
+  "compiler_started": false,
+  "control_created": true,
+  "files": [
+    {
+      "bytes": 20538,
+      "identity": [
+        16777244,
+        72666174,
+        501,
+        20,
+        33152,
+        1,
+        20538,
+        1793895668495493038,
+        1793895668498952600
+      ],
+      "mode": "0600",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1/control/run_current_mac_full34_r1.py",
+      "publication": "created",
+      "sha256": "29785927055d2e676c702aa79b97db9a6d274d8d8de0916073c08face41c6c9a"
+    }
+  ],
+  "git_started": false,
+  "python_compile_only": true,
+  "root_created": true,
+  "schema": "heptabao.current-mac-full34-inert.v1",
+  "service_started": false,
+  "source_executed": false,
+  "started_ns": 1793895668492660000,
+  "status": "prepared",
+  "stdin_bytes": 27485,
+  "stdin_sha256": "39519775637edd562521696958f2bed6620e4d834618b794d307fee4cb6bcd87",
+  "terminal_ns": 1793895668499021000
+}

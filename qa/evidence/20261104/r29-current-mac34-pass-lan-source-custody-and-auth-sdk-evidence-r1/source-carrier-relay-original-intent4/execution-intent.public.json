@@ -1,0 +1,160 @@
+{
+  "schema": "heptabao.current4e808.source-carrier.relay.external-execution-intent.v1",
+  "root_conditional_GO": "51d5cc8b40d3563d9f1e471aaadb3d41d7b1838a",
+  "exact_request": {
+    "blob": "223fbd0102a6e1aa803ea2e7528e79fd63776b00",
+    "bytes": 380,
+    "sha256": "562ed81a329a6ec932ee52cf807a10f6162abbdf9f37fbb7010bf95564929ca2"
+  },
+  "request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/relay.py"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-4e808-source-carrier-relay-r1-b1a9a177"
+  },
+  "typed_request_digest": "056d0cc0154f9e0ff91cd5ed714bbc4a704fd9fe2c1dc01658bb0469b1375805",
+  "typed_request_fingerprint": "390982761781894671",
+  "positive_control": {
+    "exact_inert_request": "9445c47e405b4ac579a43b6cb995712301c477eb",
+    "actual_inert_job": "1a1aca557a2-fc05-561b",
+    "actual_request_digest": "8c95b53f755afac242d7cdd8c31cc646daf8d9ebde97287ff2d45d3361dcaacf",
+    "actual_fingerprint": "10130202220996262594",
+    "exact_match": true
+  },
+  "source_packet": "cccc8d56f0729f558ba6b5e826c6082b97a8eb2b",
+  "inert_actual_complete_tree": "08fa09f554a015ca4dcd4034e1a041e70d82ea33",
+  "inert_actual_outputs": [
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/sender.py",
+      "bytes": 6430,
+      "sha256": "c7e4fcbbd6d6962165e81b9d4fcd568986ec292515f2ffe62cb47ce6a3694e56",
+      "blob": "ab1d3f07cef07dd7c86feec5f34b1e098c8671c0",
+      "independent_version": "2050:7361525:6430:1793897883715794912:1793897883764199707",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "publisher_emitted_identity": [
+        2050,
+        7361525,
+        1000,
+        1000,
+        33152,
+        1,
+        6430,
+        "1793897883715794912",
+        "1793897883764199707"
+      ],
+      "source_exact_against_reviewed_candidate": true,
+      "receipt_lossless_stdout_equal": false
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/receiver.py",
+      "bytes": 8857,
+      "sha256": "3b0240aabbf3e8b6bd20724e0aff7d87b71b65b44512dac6e10b6a47ad4bea6e",
+      "blob": "47269d10371ee77ddb391fd0dff7700bd8ee85e8",
+      "independent_version": "2050:7361526:8857:1793897883774949872:1793897883780526579",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "publisher_emitted_identity": [
+        2050,
+        7361526,
+        1000,
+        1000,
+        33152,
+        1,
+        8857,
+        "1793897883774949872",
+        "1793897883780526579"
+      ],
+      "source_exact_against_reviewed_candidate": true,
+      "receipt_lossless_stdout_equal": false
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/relay.py",
+      "bytes": 15541,
+      "sha256": "b1a9a177a6969add781e076067781c746c570161e27354480154781b099ad284",
+      "blob": "ac53578df52992c72d752ab09a8dc0a0fb0a0cbd",
+      "independent_version": "2050:7361535:15541:1793897883826244575:1793897883835843877",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "publisher_emitted_identity": [
+        2050,
+        7361535,
+        1000,
+        1000,
+        33152,
+        1,
+        15541,
+        "1793897883826244575",
+        "1793897883835843877"
+      ],
+      "source_exact_against_reviewed_candidate": true,
+      "receipt_lossless_stdout_equal": false
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/inert-stage.result.public.json",
+      "bytes": 1941,
+      "sha256": "44813eb6e2262d796bebda5ba7e6b0ce437ba7e9993a1fa439548758b9f74e0a",
+      "blob": "e161a5fc35decd2c7b1ccaa8caaff65a2464747d",
+      "independent_version": "2050:7361540:1941:1793897883882760531:1793897883888327791",
+      "mode": 384,
+      "uid": 1000,
+      "gid": 1000,
+      "nlink": 1,
+      "publisher_emitted_identity": null,
+      "source_exact_against_reviewed_candidate": false,
+      "receipt_lossless_stdout_equal": true
+    }
+  ],
+  "export81_complete_tree": "f5af874eee6ec59d2afccb90898fcdb69251dffd",
+  "export81_root_review": "1ee2dc78e17e938ff9d3c4111d3483c6d654ce95",
+  "source_files": [
+    {
+      "bytes": 22320862,
+      "name": "canonical-4e808-full.bundle",
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle",
+      "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28091464:22320862:1793885177495300186:1793885177498300179"
+    },
+    {
+      "bytes": 39692,
+      "name": "source-export.result.public.json",
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json",
+      "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28091501:39692:1793885177751063403:1793885177751063403"
+    }
+  ],
+  "destination_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1",
+  "source_bytes": 22360554,
+  "budgets": {
+    "outer_seconds": 360,
+    "relay_seconds": 300,
+    "endpoint_and_SSH_child_seconds": 90,
+    "connect_seconds": 10,
+    "connection_attempts": 1,
+    "TERM_seconds": 5,
+    "KILL_seconds": 5
+  },
+  "submission_count_before_intent": 0,
+  "submitted": false,
+  "readback_remaining": false,
+  "new_Git_import_Cargo_product": false,
+  "original_source3_lost_ack": "UNKNOWN_PRESERVED",
+  "on_missing_ACK_or_unknown": "Stop new admissions; reconcile only this original request/job. Never repeat business or change its key/root/arguments."
+}

@@ -1,0 +1,849 @@
+{
+  "batches": [
+    {
+      "expected_body_bytes": 5052,
+      "name": "commandlogs-01",
+      "paths": 15
+    },
+    {
+      "expected_body_bytes": 5119,
+      "name": "commandlogs-02",
+      "paths": 15
+    },
+    {
+      "expected_body_bytes": 5236,
+      "name": "commandlogs-03",
+      "paths": 15
+    },
+    {
+      "expected_body_bytes": 5543,
+      "name": "commandlogs-04",
+      "paths": 15
+    },
+    {
+      "expected_body_bytes": 5089,
+      "name": "commandlogs-05",
+      "paths": 15
+    },
+    {
+      "expected_body_bytes": 2041,
+      "name": "commandlogs-06",
+      "paths": 6
+    }
+  ],
+  "bundle_info": {
+    "expected_identity_scope": "Publisher full9 only; actual independent file_info pending. No binding-ready or transport eligibility.",
+    "reported_expected": {
+      "bytes": 22320862,
+      "header": {
+        "header_bytes": 63,
+        "header_sha256": "c86b1deb14c31b2f2e89a53afbb2be28ea8e1fd0b8dbc5e4677710d134ae9aa5",
+        "heads": [
+          [
+            "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+            "HEAD"
+          ]
+        ],
+        "prerequisites": [],
+        "version": 2
+      },
+      "identity": [
+        66306,
+        28091464,
+        1000,
+        1000,
+        33152,
+        1,
+        22320862,
+        "1793885177495300186",
+        "1793885177498300179"
+      ],
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle",
+      "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac"
+    },
+    "request": {
+      "idempotency_key": "heptabao-4e808-export-5122-bundle-info-r1",
+      "operation": {
+        "arguments": {
+          "host": "rog",
+          "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle"
+        },
+        "tool": "file_info"
+      }
+    }
+  },
+  "command_log_rows": [
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 975,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/000-source-before-head.public.json",
+      "role": "command_record",
+      "sha256": "09a760f2f3f9a0398eeff99dac2521541ae27925ad3b58f4aa245e7c69862399"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 41,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/000-source-before-head.stdout",
+      "role": "stdout",
+      "sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/000-source-before-head.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 966,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/001-source-before-tree.public.json",
+      "role": "command_record",
+      "sha256": "6fdd2202abbeb3af329660a99ddc0925525fbedbc6cdf5916e3b6fc01410d231"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 41,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/001-source-before-tree.stdout",
+      "role": "stdout",
+      "sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/001-source-before-tree.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 996,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/002-source-before-status.public.json",
+      "role": "command_record",
+      "sha256": "38e0224f34544916c1c37d97cf7f68282fc1c43e122b0bf1ad759dfeaa032d36"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/002-source-before-status.stdout",
+      "role": "stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/002-source-before-status.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 976,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/003-source-before-git-dir.public.json",
+      "role": "command_record",
+      "sha256": "1abfba7833dd6f7063a955812293d3d325dc3098b896b66f6e158faeb0ce05d5"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 76,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/003-source-before-git-dir.stdout",
+      "role": "stdout",
+      "sha256": "36b71642418f1a9d900c4aaccad1a63c8977b800da7c47bc66fdcef9eed68f03"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/003-source-before-git-dir.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 976,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/004-source-before-common-dir.public.json",
+      "role": "command_record",
+      "sha256": "a0501f62e76e42b7956d0d8b95b03f540faedd06581f17645cbf206a0e106477"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 5,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/004-source-before-common-dir.stdout",
+      "role": "stdout",
+      "sha256": "fd03f16fc5ad8be70d6e0491fa2e029bc4a31f5b0de6d4adf8e7dd709d23840f"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/004-source-before-common-dir.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 980,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/005-source-before-shallow.public.json",
+      "role": "command_record",
+      "sha256": "cdb3f3eaf6d5aefd347396adf442f5aa1fb6b5998a42101f8d039adda1de0ecd"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 6,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/005-source-before-shallow.stdout",
+      "role": "stdout",
+      "sha256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/005-source-before-shallow.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 1081,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/006-source-before-partial-config.public.json",
+      "role": "command_record",
+      "sha256": "551e0bf899bf02ec7da15f0bb8c6df688be4ccdc0197b91bce08d1cab3c81b8c"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/006-source-before-partial-config.stdout",
+      "role": "stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/006-source-before-partial-config.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 999,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/007-source-before-origin.public.json",
+      "role": "command_record",
+      "sha256": "35fda06c0d68fb5ab531083c013c818489e819e5bd279e280b1be284ed1a8146"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 55,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/007-source-before-origin.stdout",
+      "role": "stdout",
+      "sha256": "ed681d18836fa9d79209441dd2db055f0ac9ad47beb9db23973a3c0712f61adb"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/007-source-before-origin.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 989,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/008-source-before-refs.public.json",
+      "role": "command_record",
+      "sha256": "ebac3524852fc30fceadb184777bb874effac28cfde2d7861dde72ba86fc028d"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/008-source-before-refs.stdout",
+      "role": "stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/008-source-before-refs.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 1002,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/009-export-proof-kind.public.json",
+      "role": "command_record",
+      "sha256": "833f64844b1f2659e58d14b2a5c87a4359a9a0a8ef9afccf5941c19629cc7a56"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 7,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/009-export-proof-kind.stdout",
+      "role": "stdout",
+      "sha256": "50836eee574ecff79dea3b4fd40673d7d000f7a5f177d8a6a3000b59c78383b8"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/009-export-proof-kind.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 1001,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/010-export-proof-tree.public.json",
+      "role": "command_record",
+      "sha256": "decbaf6eeaa002ab644932d01196c62be8ed2a166095077ab176a3b9ea854617"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 41,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/010-export-proof-tree.stdout",
+      "role": "stdout",
+      "sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/010-export-proof-tree.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 1021,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/011-export-proof-parents.public.json",
+      "role": "command_record",
+      "sha256": "e0cb2ac6ccc824dfc914bfd642a0946daedc02848af80a3d4503bc1161fef4a2"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 41,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/011-export-proof-parents.stdout",
+      "role": "stdout",
+      "sha256": "879eced507590ac79f5778a13b1c3c5e0cb4e0608932eeeec872920e3935a56a"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/011-export-proof-parents.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 1008,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/012-export-proof-count.public.json",
+      "role": "command_record",
+      "sha256": "1038344f98ac9851ab07b1aedb42340712a24664c9bbf6b969ad49a7d1aad92e"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 5,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/012-export-proof-count.stdout",
+      "role": "stdout",
+      "sha256": "0f5e00b716f0b5370c83215bd9f7864900922c672fe995beff4925497e64893e"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/012-export-proof-count.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 1016,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/013-export-proof-roots.public.json",
+      "role": "command_record",
+      "sha256": "2e24ac582351b3ad332b6abe0752bd6d6f3184a0c8d01e3a26663221139bb68d"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 41,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/013-export-proof-roots.stdout",
+      "role": "stdout",
+      "sha256": "8dfbdd110e323dd4c1726edf01071847a9c1032805aedcbb3584d0513880ac1f"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/013-export-proof-roots.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 1062,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/014-export-proof-full-fsck.public.json",
+      "role": "command_record",
+      "sha256": "923d078b31e173553ea6c54e6bf6b450d16d7a696362db3c9c55eac6d7ca66dc"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/014-export-proof-full-fsck.stdout",
+      "role": "stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/014-export-proof-full-fsck.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 1088,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/015-bundle-create.public.json",
+      "role": "command_record",
+      "sha256": "e16f0392836b179fefa523b93729c007d6deebb3b93ca71986f6a5dabb951058"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/015-bundle-create.stdout",
+      "role": "stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/015-bundle-create.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 1062,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/016-bundle-verify.public.json",
+      "role": "command_record",
+      "sha256": "6544b5c4e16e940a638f31cfe6a1b102ed7dc87701e4a7bee281776a31685d6b"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 157,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/016-bundle-verify.stdout",
+      "role": "stdout",
+      "sha256": "b31aa8e063d47cd1dc8c3440ef6fe2bf3ff3ca5166ecc19eabbd5302ab91da5b"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 107,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/016-bundle-verify.stderr",
+      "role": "stderr",
+      "sha256": "ccbd3ec23ac68d2777c6ef0aa9f9577d958bc3f5d12928f522dbf7d5fc4c9a10"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 1062,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/017-bundle-heads.public.json",
+      "role": "command_record",
+      "sha256": "f5ede39230948eec217227c9201f3f754d53d6bc2f60b9687a9d4c65770dee26"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 46,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/017-bundle-heads.stdout",
+      "role": "stdout",
+      "sha256": "1d7ec04605d0264e6ac1492e39bc81fb3b913a202c8eaef82738b1347147a217"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/017-bundle-heads.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 974,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/018-source-after-head.public.json",
+      "role": "command_record",
+      "sha256": "a450828b20006589a289fdf22bef3411816c31f78965444251284f453fa71bac"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 41,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/018-source-after-head.stdout",
+      "role": "stdout",
+      "sha256": "563acb7c1de815cc6e990150190f137d1c218db6566a228fadd8e550a3f9d57c"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/018-source-after-head.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 965,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/019-source-after-tree.public.json",
+      "role": "command_record",
+      "sha256": "429ee397b66bd4808e0ba53c45a745ffb2d348fb63804eb60afc9c682371811b"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 41,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/019-source-after-tree.stdout",
+      "role": "stdout",
+      "sha256": "9f5293c8c19686df077cfb69270edefb2df2c42411b37dcdd974a7aa092b4ba0"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/019-source-after-tree.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 995,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/020-source-after-status.public.json",
+      "role": "command_record",
+      "sha256": "a037214c31f871e9bfc5e1d90fcebad0ba65e1ee61000627f58576f17e469efe"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/020-source-after-status.stdout",
+      "role": "stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/020-source-after-status.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 974,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/021-source-after-git-dir.public.json",
+      "role": "command_record",
+      "sha256": "9dfa0a9df59c6a6386f9682c0815749734c838f7857404b67fa51766df30e71c"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 76,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/021-source-after-git-dir.stdout",
+      "role": "stdout",
+      "sha256": "36b71642418f1a9d900c4aaccad1a63c8977b800da7c47bc66fdcef9eed68f03"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/021-source-after-git-dir.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 974,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/022-source-after-common-dir.public.json",
+      "role": "command_record",
+      "sha256": "296b64b16d1931180c4d813eb0a6b8b8675d5c1f3013369e616fad363e444c2d"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 5,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/022-source-after-common-dir.stdout",
+      "role": "stdout",
+      "sha256": "fd03f16fc5ad8be70d6e0491fa2e029bc4a31f5b0de6d4adf8e7dd709d23840f"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/022-source-after-common-dir.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 979,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/023-source-after-shallow.public.json",
+      "role": "command_record",
+      "sha256": "ecbb8130eaaefdee65cadf5337b428cb8fd8a77ea08b0a30d1c5723cab4e07cf"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 6,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/023-source-after-shallow.stdout",
+      "role": "stdout",
+      "sha256": "2ed27c1421e6928dbe13dbfdb5c59e1045b30341fe7ebe05700006bc5ac572c0"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/023-source-after-shallow.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 1080,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/024-source-after-partial-config.public.json",
+      "role": "command_record",
+      "sha256": "14ee576173f82730832addda9260aa4f24fb1bc91eb07248f2d825c038ef4165"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/024-source-after-partial-config.stdout",
+      "role": "stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/024-source-after-partial-config.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 998,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/025-source-after-origin.public.json",
+      "role": "command_record",
+      "sha256": "053c568b39d7bb1108fb49057e936e97b1531d8cceabb0201e664f8078b46a37"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 55,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/025-source-after-origin.stdout",
+      "role": "stdout",
+      "sha256": "ed681d18836fa9d79209441dd2db055f0ac9ad47beb9db23973a3c0712f61adb"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/025-source-after-origin.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "derived exact expected bytes from recovered original core row and original exporter json.dumps(indent=2,sort_keys=True); not an observed command file",
+      "bytes": 988,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/026-source-after-refs.public.json",
+      "role": "command_record",
+      "sha256": "0673dce0b188c1ad5dc4789506a9d3ed9b72396f4b10939406500951eacbdf6b"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/026-source-after-refs.stdout",
+      "role": "stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binding": "original recovered command row; independent stream file not yet read",
+      "bytes": 0,
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/026-source-after-refs.stderr",
+      "role": "stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "requests": [
+    {
+      "name": "bundle-info",
+      "request": {
+        "idempotency_key": "heptabao-4e808-export-5122-bundle-info-r1",
+        "operation": {
+          "arguments": {
+            "host": "rog",
+            "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle"
+          },
+          "tool": "file_info"
+        }
+      }
+    },
+    {
+      "name": "commandlogs-01",
+      "request": {
+        "idempotency_key": "heptabao-4e808-export-5122-commandlogs-01-r1",
+        "operation": {
+          "arguments": {
+            "host": "rog",
+            "max_file_bytes": 65536,
+            "max_response_bytes": 131072,
+            "paths": [
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/000-source-before-head.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/000-source-before-head.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/000-source-before-head.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/001-source-before-tree.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/001-source-before-tree.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/001-source-before-tree.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/002-source-before-status.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/002-source-before-status.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/002-source-before-status.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/003-source-before-git-dir.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/003-source-before-git-dir.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/003-source-before-git-dir.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/004-source-before-common-dir.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/004-source-before-common-dir.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/004-source-before-common-dir.stderr"
+            ]
+          },
+          "tool": "read_multiple_files"
+        }
+      }
+    },
+    {
+      "name": "commandlogs-02",
+      "request": {
+        "idempotency_key": "heptabao-4e808-export-5122-commandlogs-02-r1",
+        "operation": {
+          "arguments": {
+            "host": "rog",
+            "max_file_bytes": 65536,
+            "max_response_bytes": 131072,
+            "paths": [
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/005-source-before-shallow.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/005-source-before-shallow.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/005-source-before-shallow.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/006-source-before-partial-config.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/006-source-before-partial-config.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/006-source-before-partial-config.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/007-source-before-origin.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/007-source-before-origin.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/007-source-before-origin.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/008-source-before-refs.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/008-source-before-refs.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/008-source-before-refs.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/009-export-proof-kind.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/009-export-proof-kind.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/009-export-proof-kind.stderr"
+            ]
+          },
+          "tool": "read_multiple_files"
+        }
+      }
+    },
+    {
+      "name": "commandlogs-03",
+      "request": {
+        "idempotency_key": "heptabao-4e808-export-5122-commandlogs-03-r1",
+        "operation": {
+          "arguments": {
+            "host": "rog",
+            "max_file_bytes": 65536,
+            "max_response_bytes": 131072,
+            "paths": [
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/010-export-proof-tree.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/010-export-proof-tree.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/010-export-proof-tree.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/011-export-proof-parents.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/011-export-proof-parents.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/011-export-proof-parents.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/012-export-proof-count.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/012-export-proof-count.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/012-export-proof-count.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/013-export-proof-roots.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/013-export-proof-roots.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/013-export-proof-roots.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/014-export-proof-full-fsck.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/014-export-proof-full-fsck.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/014-export-proof-full-fsck.stderr"
+            ]
+          },
+          "tool": "read_multiple_files"
+        }
+      }
+    },
+    {
+      "name": "commandlogs-04",
+      "request": {
+        "idempotency_key": "heptabao-4e808-export-5122-commandlogs-04-r1",
+        "operation": {
+          "arguments": {
+            "host": "rog",
+            "max_file_bytes": 65536,
+            "max_response_bytes": 131072,
+            "paths": [
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/015-bundle-create.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/015-bundle-create.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/015-bundle-create.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/016-bundle-verify.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/016-bundle-verify.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/016-bundle-verify.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/017-bundle-heads.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/017-bundle-heads.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/017-bundle-heads.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/018-source-after-head.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/018-source-after-head.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/018-source-after-head.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/019-source-after-tree.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/019-source-after-tree.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/019-source-after-tree.stderr"
+            ]
+          },
+          "tool": "read_multiple_files"
+        }
+      }
+    },
+    {
+      "name": "commandlogs-05",
+      "request": {
+        "idempotency_key": "heptabao-4e808-export-5122-commandlogs-05-r1",
+        "operation": {
+          "arguments": {
+            "host": "rog",
+            "max_file_bytes": 65536,
+            "max_response_bytes": 131072,
+            "paths": [
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/020-source-after-status.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/020-source-after-status.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/020-source-after-status.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/021-source-after-git-dir.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/021-source-after-git-dir.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/021-source-after-git-dir.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/022-source-after-common-dir.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/022-source-after-common-dir.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/022-source-after-common-dir.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/023-source-after-shallow.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/023-source-after-shallow.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/023-source-after-shallow.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/024-source-after-partial-config.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/024-source-after-partial-config.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/024-source-after-partial-config.stderr"
+            ]
+          },
+          "tool": "read_multiple_files"
+        }
+      }
+    },
+    {
+      "name": "commandlogs-06",
+      "request": {
+        "idempotency_key": "heptabao-4e808-export-5122-commandlogs-06-r1",
+        "operation": {
+          "arguments": {
+            "host": "rog",
+            "max_file_bytes": 65536,
+            "max_response_bytes": 131072,
+            "paths": [
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/025-source-after-origin.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/025-source-after-origin.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/025-source-after-origin.stderr",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/026-source-after-refs.public.json",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/026-source-after-refs.stdout",
+              "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/026-source-after-refs.stderr"
+            ]
+          },
+          "tool": "read_multiple_files"
+        }
+      }
+    }
+  ],
+  "rules": [
+    "Exactly one fixed bundle file_info, then six fixed small-file batches only after root grants window.",
+    "Native file_info computes whole hash; this is not pure stat.",
+    "One operation at a time unless root gives an explicit alternate concurrency window; preserve original SDK before parsing and every immutable original result page.",
+    "A metadata/read error never triggers product/export replay. Preserve the error and stop; read reconciliation follows same-key/same-ID contracts only when authorized.",
+    "read_multiple_files returns independent file versions and whole hashes, not an atomic snapshot across files.",
+    "The 27 commands are never rerun; no directory scan, arbitrary path, source mutation, carrier/importer, Cargo or product execution.",
+    "No host read has been submitted for any request in this plan."
+  ],
+  "schema": "heptabao.4e808-export.fixed-public-evidence-read-plan.v1",
+  "source_core_blob": "0109d7597b2754ee665367177ba1cd3e832d4b34",
+  "source_core_sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+  "status": "SOURCE_ONLY_NOT_SUBMITTED_REQUIRES_ROOT_WINDOW"
+}

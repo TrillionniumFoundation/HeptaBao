@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.root-auth-catalog-pure-verifier-correction.r29.v1",
+  "original_attempt": [
+    {
+      "name": "r29-auth-catalog-root-AST-initial-verifier-with-public-input.py",
+      "blob": "3ca0396e999895ac141f1913ad362762c64c43c5",
+      "bytes": 77439,
+      "sha256": "a828a660b356087eae1cdc20fb6ec27db29e73fb539fad9294a7c89be8a8a05a"
+    },
+    {
+      "name": "r29-auth-catalog-root-AST-initial-executor.original.json",
+      "blob": "e3ae14d1463ac7b90813e20af6fa5a1a2fcb4e2b",
+      "bytes": 292,
+      "sha256": "0c650f41ed08183524c609b90cf9344273cf772b71753c09b98516e66234eb82"
+    }
+  ],
+  "scope": "Local pure AST comparison only; candidate never executed; no capsule, Runtime, host or network read.",
+  "failure": "new_calls_lexical_or_memory_only",
+  "cause": "The verifier omitted the one added lexical Path constructor used for the exact /opt/homebrew/lib/node_modules/openclaw literal. An earlier explicit AST check had already required that exact call.",
+  "correction": "Add only Path to the pure-call allowlist. Retain the independent exact literal check and entire normalized AST equality; candidate source and all input bytes remain unchanged.",
+  "runtime_replays": 0
+}

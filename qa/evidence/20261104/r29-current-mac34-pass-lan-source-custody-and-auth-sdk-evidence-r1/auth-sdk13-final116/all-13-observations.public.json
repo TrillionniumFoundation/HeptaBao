@@ -1,0 +1,392 @@
+[
+  {
+    "sequence": 1,
+    "id": "loader_000000",
+    "request_blob": "01c4204a56c959338feda02a0f9de355fd2be977",
+    "operation_id": "4067ea1adf703ac98617ad01d82659d0b54e4d041eddfe64d14bd0c5bf0989b0",
+    "known_complete": true,
+    "original_sdk": {
+      "blob": "7488f3ff66a7a88da2e76fa9d4a533cc8b39e6b2",
+      "bytes": 8486,
+      "sha256": "4d50c14fe6104e56cc055b5abe3f8e9f73c22494f7b399db98f984330ca746ad"
+    },
+    "original_native": {
+      "blob": "d189679d00d3239551162f018112151ed44c69db",
+      "bytes": 8383,
+      "sha256": "0385acff61da9b812f3cd69d1e87684a154a978a34ab7929b3ff2e47df765bc1"
+    },
+    "observation_blob": "c73b60f0e493555d185cf5a904d0e4d6f14948de",
+    "prior_adoption_document": null,
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/runtime-registry-loader-Duw3fvRO.js",
+    "version": "16777233:405239125:6047:1784843462897326061:1784843462897326061",
+    "size": 6047,
+    "offset": 0,
+    "next_offset": 6047,
+    "chunk_bytes": 6047,
+    "chunk_sha256": "bd6a9f363bc7aac2fb0503640e339ffce52e0eab15336e6489b6f8129df748fb",
+    "eof": true,
+    "async_state": "completed",
+    "result_state": "stored_observed",
+    "owned_future_active": false
+  },
+  {
+    "sequence": 2,
+    "id": "selector_000000",
+    "request_blob": "ddafa46271fd09336365988f68f1e8815babf2a0",
+    "operation_id": "8947cbc2b20c9dd2d5365f787b06053d20e4f0e356c36368669e931127b138ea",
+    "known_complete": true,
+    "original_sdk": {
+      "blob": "81718fe2af5f20d40e05fa2b721835a2496d0e08",
+      "bytes": 87798,
+      "sha256": "bd29c4314914785f6361658994c13b5cd214c77c6bbae515c484c2c0416ca87d"
+    },
+    "original_native": {
+      "blob": "0358f546c3fc0baf5401e4df8bad36ee7d2bbf35",
+      "bytes": 87695,
+      "sha256": "3ed0bd582fe7b716616ce483de203f24d0ab6256fa7bb092bf1546e4b7fe95b6"
+    },
+    "observation_blob": "e5c739911ee293c7f6a1bd786b01e426728a1b30",
+    "prior_adoption_document": null,
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+    "version": "16777233:405239260:673468:1784843463381890779:1784843463381890779",
+    "size": 673468,
+    "offset": 0,
+    "next_offset": 65536,
+    "chunk_bytes": 65536,
+    "chunk_sha256": "0d3dba924335fe23d8a6b518dff9202c1208bc78bfe084e2181d531d49ea811c",
+    "eof": false,
+    "async_state": "completed",
+    "result_state": "stored_observed",
+    "owned_future_active": false
+  },
+  {
+    "sequence": 3,
+    "id": "selector_065536",
+    "request_blob": "a12b460cc182eed9edaed705291f4b7cd9ac67b9",
+    "operation_id": "44fad35eccde74abf7cf77aff0b526359be12d07ffa3899ab58952f9a3f7c73f",
+    "known_complete": true,
+    "original_sdk": {
+      "blob": "117b2a2e861a3d77f257ea67a6b3d74907d1fd20",
+      "bytes": 87803,
+      "sha256": "6efeb4a3f01be7c69be076b6872b1857518b0bb48d71400609f0b621bad1ef74"
+    },
+    "original_native": {
+      "blob": "7e330a915a3a69739a502d9fb9efac1afe938dc4",
+      "bytes": 87700,
+      "sha256": "ecd2cb08bfc8dc94aff4dc839f4828b2762b1eb2263f745c6e852a5dc1f8c937"
+    },
+    "observation_blob": null,
+    "prior_adoption_document": "6604b671c8fe49eddf3f5c516aa6e36db46bdec8",
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+    "version": "16777233:405239260:673468:1784843463381890779:1784843463381890779",
+    "size": 673468,
+    "offset": 65536,
+    "next_offset": 131072,
+    "chunk_bytes": 65536,
+    "chunk_sha256": "d3f211c9477cd58343ca6b7fbeb57321157f4734565bd8191a020c86718169dd",
+    "eof": false,
+    "async_state": "completed",
+    "result_state": "stored_observed",
+    "owned_future_active": false
+  },
+  {
+    "sequence": 4,
+    "id": "selector_131072",
+    "request_blob": "a2a547a6bbc82a257554894738921a5aa6c3af40",
+    "operation_id": "a367f2c2bc4230171642510a7675293bb68efdebfd67a067f0d1d355390c1076",
+    "known_complete": true,
+    "original_sdk": {
+      "blob": "013a162c82928920f9d23dab5d53fa516f398235",
+      "bytes": 87804,
+      "sha256": "b5309ecd1e741d68ea415a62c51ed92c902e7d18e55e125074a4610aba39ad57"
+    },
+    "original_native": {
+      "blob": "7b70cc0ab8a9dad3cfe2d5ef392aee3a157fbb61",
+      "bytes": 87701,
+      "sha256": "1a2bb0c2b14a6e01617aa06f69c63bfc897d99657b9237818e74092c93f1b476"
+    },
+    "observation_blob": "2bac1543a2304c99e4a8362052715ebc2cdf60e2",
+    "prior_adoption_document": null,
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+    "version": "16777233:405239260:673468:1784843463381890779:1784843463381890779",
+    "size": 673468,
+    "offset": 131072,
+    "next_offset": 196608,
+    "chunk_bytes": 65536,
+    "chunk_sha256": "be086cee58c4c0a2fa7673cface95b8241b902415ce2e505ec89a09ca2dcbee3",
+    "eof": false,
+    "async_state": "completed",
+    "result_state": "stored_observed",
+    "owned_future_active": false
+  },
+  {
+    "sequence": 5,
+    "id": "selector_196608",
+    "request_blob": "f18cf31a59d44d67a555e1f825cb81c04217f25b",
+    "operation_id": "e9948697cee0046a36825d0d20d7e768d95fb6291f0449dcab01007cca79ef1e",
+    "known_complete": true,
+    "original_sdk": {
+      "blob": "c61fd6b01b813b375b36527ff392d95ae7f35be2",
+      "bytes": 87804,
+      "sha256": "25c05bf0121506cb81863bd403a57ccb3f2660b62a520923c4edbc0d3cbeb285"
+    },
+    "original_native": {
+      "blob": "6fe3d4e5dca22566fae84a8c778433e918df4cd1",
+      "bytes": 87701,
+      "sha256": "1b45974682a3d5b6ed2530f69e990c9e8f78c26e99e1cb04898fe1448b32c24c"
+    },
+    "observation_blob": "30c064d4b5e3c5c732af946b0aaa5df3bf2840e0",
+    "prior_adoption_document": null,
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+    "version": "16777233:405239260:673468:1784843463381890779:1784843463381890779",
+    "size": 673468,
+    "offset": 196608,
+    "next_offset": 262144,
+    "chunk_bytes": 65536,
+    "chunk_sha256": "c4091c4c3f8dadf5668619f567feaec3feb359351aa88f8006085dc81a9f6d63",
+    "eof": false,
+    "async_state": "completed",
+    "result_state": "stored_observed",
+    "owned_future_active": false
+  },
+  {
+    "sequence": 6,
+    "id": "selector_262144",
+    "request_blob": "99ed54191e78751c355e56dcad4a9092738ee651",
+    "operation_id": "60dae6e75c7878643e8fb5db5f58689d3f8e6aa29406fd7b0588c1f187198fef",
+    "known_complete": true,
+    "original_sdk": {
+      "blob": "7eaf1bfd2422120a06af9bf7de77a431ba68ebd0",
+      "bytes": 87804,
+      "sha256": "4d8b89098d05aa1b6098c377393044ca5de6eca105396aa63730dd32a982e6b2"
+    },
+    "original_native": {
+      "blob": "a1e1fb11fd2011e1e87a0ed6a904b50ccb1c0014",
+      "bytes": 87701,
+      "sha256": "0e3e56ae46b89d1f1b125aef30a298d9021b3daba579f7030b801acd31794e9a"
+    },
+    "observation_blob": "38a88b074ef5f5b2f4075e50256f2801a9887681",
+    "prior_adoption_document": null,
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+    "version": "16777233:405239260:673468:1784843463381890779:1784843463381890779",
+    "size": 673468,
+    "offset": 262144,
+    "next_offset": 327680,
+    "chunk_bytes": 65536,
+    "chunk_sha256": "fc5cfb53599bf2c8564948b7dde48c8b8c2cf0088315c9f1dc052b52d9a57d33",
+    "eof": false,
+    "async_state": "completed",
+    "result_state": "stored_observed",
+    "owned_future_active": false
+  },
+  {
+    "sequence": 7,
+    "id": "selector_327680",
+    "request_blob": "f7ca139554917c00dc1b1e0f645c71271227eadd",
+    "operation_id": "de6faa200cafd85920051ca48b42d75ffd9d14451cf55eecf9ec81190f79e38e",
+    "known_complete": true,
+    "original_sdk": {
+      "blob": "6b05ece27c7c53aeed5330240b2bda0c62838d0a",
+      "bytes": 87804,
+      "sha256": "d390f54642864b62718b9c4e8ebdaa0c628ef7cdaa8f5b1e18066326e8de746e"
+    },
+    "original_native": {
+      "blob": "923d595ad1e360c25174ea32a968d433d8f23b32",
+      "bytes": 87701,
+      "sha256": "6c056268c58d3dfd8e8854a0cafa8a9fb8a3422cf270ce59bbb2b3c06c1c2a75"
+    },
+    "observation_blob": "f1e38f91f211dc66fa6d0f49524d4bd6f9e3ebc1",
+    "prior_adoption_document": null,
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+    "version": "16777233:405239260:673468:1784843463381890779:1784843463381890779",
+    "size": 673468,
+    "offset": 327680,
+    "next_offset": 393216,
+    "chunk_bytes": 65536,
+    "chunk_sha256": "a147467f4e42d95e88c9e94eff588e136241723f13730817d81ac35fbe944c1c",
+    "eof": false,
+    "async_state": "completed",
+    "result_state": "stored_observed",
+    "owned_future_active": false
+  },
+  {
+    "sequence": 8,
+    "id": "selector_393216",
+    "request_blob": "d315599c4ba52f9acd464b5d892c53ad1cee7dac",
+    "operation_id": "823358d3caa01175e9f8cc5ffa1a2c5c296cbeb9031c5554aacb7533809b481f",
+    "known_complete": true,
+    "original_sdk": {
+      "blob": "d43f5dcd154a6c6e448902ba2b1a7cd6872f016f",
+      "bytes": 87804,
+      "sha256": "373cbc5ef3a9136121116fd438960c817df357a337ae373ad39556eb9cec5c38"
+    },
+    "original_native": {
+      "blob": "ad57b5f35bfed6e55b985acabb7fda394b301277",
+      "bytes": 87701,
+      "sha256": "de2e1ec9261f8cc554661ff228b4eca6b5dfd9e47f6b17ad1d3f34e1697596aa"
+    },
+    "observation_blob": "2db4c4235f88c58888a4043a6417aaa661f98a70",
+    "prior_adoption_document": null,
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+    "version": "16777233:405239260:673468:1784843463381890779:1784843463381890779",
+    "size": 673468,
+    "offset": 393216,
+    "next_offset": 458752,
+    "chunk_bytes": 65536,
+    "chunk_sha256": "ca286a4591124275b85282b8e4dedcb7aec84d508a1269b8f7c9e775de52aa9c",
+    "eof": false,
+    "async_state": "completed",
+    "result_state": "stored_observed",
+    "owned_future_active": false
+  },
+  {
+    "sequence": 9,
+    "id": "selector_458752",
+    "request_blob": "6b07dc690f283226e0818f2eb4ba225f1eb4015f",
+    "operation_id": "096ecfced51ea8e0d6086fa464e1dc41c7262fde761e94ff3553ede30b14f073",
+    "known_complete": true,
+    "original_sdk": {
+      "blob": "dc357209cced6d1a4c3375f6c62a78c8c94860f6",
+      "bytes": 87804,
+      "sha256": "68b64623c791351b472cbbacae062083db6ab4daa4f92b610bbd311af095a45c"
+    },
+    "original_native": {
+      "blob": "06cd22f7c21190ec4b847d27b3cad3e5c9d58c1b",
+      "bytes": 87701,
+      "sha256": "9575666b9098b8cddf27d8ff91cae2333a914927c6dd92cb9fd7c7d6b1079b80"
+    },
+    "observation_blob": "d157bf77e57f7f233acd09176c2f9b893ae03835",
+    "prior_adoption_document": null,
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+    "version": "16777233:405239260:673468:1784843463381890779:1784843463381890779",
+    "size": 673468,
+    "offset": 458752,
+    "next_offset": 524288,
+    "chunk_bytes": 65536,
+    "chunk_sha256": "4ad2b4c59ea4caab99114bc26ef5a791f2d8f3074695be8dd4759fd20dbada14",
+    "eof": false,
+    "async_state": "completed",
+    "result_state": "stored_observed",
+    "owned_future_active": false
+  },
+  {
+    "sequence": 10,
+    "id": "selector_524288",
+    "request_blob": "b2c92e92721193ea322807adf98db5c1d89cb089",
+    "operation_id": "e2ce91fdf5140badf6c17f30a4e9921f02bf79ac85c5dc03e543457a0952e3b4",
+    "known_complete": true,
+    "original_sdk": {
+      "blob": "592a256b8e74c33d4d7139ecf0a95a4712e18e6a",
+      "bytes": 87804,
+      "sha256": "42b52fbef47a4e3b650aab3a7bf798a79859512cb6a1532fb36681f8f0f0840e"
+    },
+    "original_native": {
+      "blob": "9496214d3a1e85221adfbeb7d71c0fd14a2fa436",
+      "bytes": 87701,
+      "sha256": "a04749bd6df1e3d87db206a1a6974ed4d06da9e3969b7b453eb13cb5f2ccf679"
+    },
+    "observation_blob": "02b370d22ed023a2f91576e7ae49380f9385f669",
+    "prior_adoption_document": null,
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+    "version": "16777233:405239260:673468:1784843463381890779:1784843463381890779",
+    "size": 673468,
+    "offset": 524288,
+    "next_offset": 589824,
+    "chunk_bytes": 65536,
+    "chunk_sha256": "405192c7925c5e625c3107caff39caaebcbc9ffe5fe275f334aa9cc861ee53c0",
+    "eof": false,
+    "async_state": "completed",
+    "result_state": "stored_observed",
+    "owned_future_active": false
+  },
+  {
+    "sequence": 11,
+    "id": "selector_589824",
+    "request_blob": "3d69268de77fe52a32a9aa617b7ee91e6451d490",
+    "operation_id": "0a76e36c0f77a78517a742fbcae67a51ea7e7e109c056c2348750086441f0d05",
+    "known_complete": true,
+    "original_sdk": {
+      "blob": "77797cb1f2b5748527f0c3d348f8d8014fb4a6ad",
+      "bytes": 87804,
+      "sha256": "baa65dd47007b282ee88b093f9e06cc5b7752c9add95b4ba10be53e436ad3bdb"
+    },
+    "original_native": {
+      "blob": "710f616b60bf489b0e720447a364594eb041d3be",
+      "bytes": 87701,
+      "sha256": "614003fe2afa5e505b7bf6a3a423b9c7f6754df0c4820ed1bcc26a0cdccc78f1"
+    },
+    "observation_blob": "bb49c2fa079f8712656b7177a1ba37dc12e99545",
+    "prior_adoption_document": null,
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+    "version": "16777233:405239260:673468:1784843463381890779:1784843463381890779",
+    "size": 673468,
+    "offset": 589824,
+    "next_offset": 655360,
+    "chunk_bytes": 65536,
+    "chunk_sha256": "d2667717795b6c04682c4104960681b04e5ed3d0c1ecaf75041c78562c12ba0d",
+    "eof": false,
+    "async_state": "completed",
+    "result_state": "stored_observed",
+    "owned_future_active": false
+  },
+  {
+    "sequence": 12,
+    "id": "selector_655360",
+    "request_blob": "6a358ed8b0c816a252ac857371415b113b8d705b",
+    "operation_id": "e1acabca942f49b898428d39a9c390647b12143b47f71e11080b6fb83ce5474d",
+    "known_complete": true,
+    "original_sdk": {
+      "blob": "78967768ba6418f59348f57abf5fe611f82fa87b",
+      "bytes": 24563,
+      "sha256": "c0b2fc5d553e64e87ac1eec8b6d4f5cbfea7cdaa4c64a333fd51dd2b3f663865"
+    },
+    "original_native": {
+      "blob": "4a6fda61d12805c9d7bba5573aa4adf1c784708c",
+      "bytes": 24460,
+      "sha256": "93c9b2000e4d146cc215550185af8171dd2a93f8211be2249c220e8501da51d9"
+    },
+    "observation_blob": "42754c5d367141c66631194396596fbe17b88320",
+    "prior_adoption_document": null,
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+    "version": "16777233:405239260:673468:1784843463381890779:1784843463381890779",
+    "size": 673468,
+    "offset": 655360,
+    "next_offset": 673468,
+    "chunk_bytes": 18108,
+    "chunk_sha256": "f88a0c44e41f91fa86aa788b7b88d896974d77c7f380980116e209ff8cb5fa9b",
+    "eof": true,
+    "async_state": "completed",
+    "result_state": "stored_observed",
+    "owned_future_active": false
+  },
+  {
+    "sequence": 13,
+    "id": "registry_000000",
+    "request_blob": "601c0c0b77ee3bc2dc92b54af4c3491245fd098b",
+    "operation_id": "4d4824374594581381eeec03d2d4ec29be2114ca4db0a284ff3f26aa21638ae6",
+    "known_complete": true,
+    "original_sdk": {
+      "blob": "cab0a2c6bb5edd5180f6ae0823edfb336dc514ea",
+      "bytes": 4587,
+      "sha256": "03b5dc05903abca8aaeda1fd92071645f714fd1198c9a66b226067fa61cba98c"
+    },
+    "original_native": {
+      "blob": "73db3622c6ebdb8958c38febe764153bc2940512",
+      "bytes": 4484,
+      "sha256": "9335b90d7318c6c509ecd78aab846b00ae3cccabaacd18724d85ea779d9faf39"
+    },
+    "observation_blob": "1c6493e062ecd91e1800536830398e7f83c723f0",
+    "prior_adoption_document": null,
+    "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-DtLZ3rba.js",
+    "version": "16777233:405238784:3135:1784843461892399454:1784843461892399454",
+    "size": 3135,
+    "offset": 0,
+    "next_offset": 3135,
+    "chunk_bytes": 3135,
+    "chunk_sha256": "a845875a1998c2a6bdd9fe4c824a0a7c3e7da0f3ee75ec56dc6163d4327f7ff0",
+    "eof": true,
+    "async_state": "completed",
+    "result_state": "stored_observed",
+    "owned_future_active": false
+  }
+]

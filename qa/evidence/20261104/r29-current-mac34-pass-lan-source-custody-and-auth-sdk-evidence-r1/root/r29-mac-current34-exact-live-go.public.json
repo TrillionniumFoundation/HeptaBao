@@ -1,0 +1,74 @@
+{
+  "schema": "heptabao.root-mac-current34-exact-live-go.r29.v1",
+  "status": "GO_AFTER_ORIGINAL_PREPARE_EVIDENCE_PACKET_PUBLISHED",
+  "line_owner": "/root/compatibility_audit",
+  "line": "B",
+  "max_runtime_calls_inflight": 1,
+  "scope": "One fresh Mac loopback synthetic full34 original31 migration/snapshot/restore/cold-restart run against the retained normal current4e808 binary and exact official OpenBao2.7.1 oracle.",
+  "prerequisites": [
+    "The original prepare job mac/1a1ac939a61-fc05-5570 remains succeeded/exit0/full/durable with exact complete4290/0 streams; both original authority/stream observers must be completed/stored_observed/inactive with all immutable result pages preserved.",
+    "Publish the final whole prepare evidence packet and send its exact tree to root before the live external execution intent.",
+    "No other current lineB tool call or native future is in flight. Auth SDK reads are complete and Auth owns0Runtime.",
+    "Use the unchanged published20538-byte wrapper29785927055d2e676c702aa79b97db9a6d274d8d8de0916073c08face41c6c9a. It must re-evaluate actual prepare and compare the exact SHA before creating the fresh private root."
+  ],
+  "evidence": {
+    "source_packet": "eb4ae3b92dd1238d1477873fb36280cfa8a8a349",
+    "source_root43": "68f387a48322055bf65d919118d03557189dee2a",
+    "inert_packet": "1571044456e90e23cff4443d88d92840b81439a9",
+    "inert_root104": "cfb071830b34fbd7142659e3f207fe460ccfec38",
+    "prepare_root37": "c5f108be1fea634bbe89a46ac722a2c63d0364b4",
+    "actual_prepare_stdout": "b4a606d6ed225fb4c112c24480a192fc521ea4c8",
+    "actual_prepared_canonical": "62aab88998638bbfd73fe693157ceb3db87406b1",
+    "actual_prepared_bytes": 4876,
+    "actual_prepared_sha256": "ff9ccbc62be817c507ad47e1f2aea7463a2e7b5e636e7ac1c292f4b88e504da3"
+  },
+  "exact_request": {
+    "name": "r29-mac-current34-exact-live.request.public.json",
+    "blob": "daa406a9cf802d77e92c5339eb4762be2cfddf34",
+    "bytes": 622,
+    "sha256": "3884cf33b91bfadeacc8b0cf2d7018dc635bacaa094ab521473569ad32e6a847",
+    "request": {
+      "host": "mac",
+      "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "args": [
+        "-I",
+        "-S",
+        "-B",
+        "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1/control/run_current_mac_full34_r1.py",
+        "--run",
+        "ff9ccbc62be817c507ad47e1f2aea7463a2e7b5e636e7ac1c292f4b88e504da3"
+      ],
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1",
+      "timeout_seconds": 1800,
+      "idempotency_key": "heptabao-mac-current-full34-run-29785927-ff9ccbc6-20261105-r1"
+    }
+  },
+  "fresh_work_root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1/actual-r1",
+  "original_limits": {
+    "checks": 31,
+    "http_seconds": 15,
+    "migration_seconds": 360,
+    "native_large_worker_request_seconds": 5,
+    "outer_seconds": 1800,
+    "readonly_recheck_seconds": 60
+  },
+  "admission": [
+    "Read and verify the exact622-byte request from its blob; no extra env/options, source edits or argv changes.",
+    "Externally save a separate completed execution intent containing the exact request and linking this GO, actual prepared SHA, and complete prepare packet. Then submit this process_start exactly once.",
+    "Retain and externally verify the original SDK ACK before parsing. If SDK isError or ACK absent, preserve UNKNOWN and reconcile only that original submission; no new key, root or retry.",
+    "Observe only the original returned job and exact evidence under the fresh owned root. All read intents, SDKs, immutable pages, authority and whole streams are retained. Any transport error pauses observation for a separate root reconciliation decision."
+  ],
+  "success_criteria": [
+    "Original job terminal exit0, full and durable original streams, terminal publication confirmed, no timeout/cancel.",
+    "Exact actual result and summary both independently read whole and pinned; original31/31 checks, full34_qualified=true, owned_processes_stopped=true and clean unchanged source/current retained binary.",
+    "Recover original driver streams and required public evidence; separately account for saved/restore/cold-restart results. A successful process exit alone does not establish KV2 qualification."
+  ],
+  "limits_on_claims": [
+    "This GO authorizes the one controlled test; it does not assert a future pass.",
+    "The inherited Mac standalone process branch remains unchanged. No Linux affine-owner or bounded exceptional cleanup claim is made; failure/timeout/UNKNOWN requires original owned-process reconciliation.",
+    "A Mac single-node full34 pass does not establish X230 or physical multi-node HA, CLI PhaseB, production AuthBus, complete OpenBao2.7.1 parity, cutover or legacy cleanup."
+  ],
+  "production_changed": false,
+  "production_cutover": false,
+  "full_replacement_qualified": false
+}

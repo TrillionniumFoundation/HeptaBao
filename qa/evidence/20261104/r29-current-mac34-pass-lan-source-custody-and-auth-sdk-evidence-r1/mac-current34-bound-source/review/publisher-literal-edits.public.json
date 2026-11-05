@@ -1,0 +1,57 @@
+[
+  {
+    "after": "\"\"\"SOURCE-only template: publish one reviewed Mac full34 wrapper, never execute it.\"\"\"",
+    "before": "\"\"\"Create-only distribution and compile-check of the three reviewed shared artifact controls.\"\"\"",
+    "purpose": "scope"
+  },
+  {
+    "after": "PARENT = Path('/Volumes/T5/hepta-vnext-recovery-20261013')\nROOT = PARENT / 'continuation-20261105-official271-full34-4e808-r1'\nBASE = ROOT / 'control'\nBINDING_READY = False\ncreated_root = False\ncreated_base = False",
+    "before": "PARENT = Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')\nBASE = PARENT / 'normal-cold-h2-source-carrier-controls-r1'\ncreated_base = False",
+    "purpose": "fresh Mac root and unresolved admission"
+  },
+  {
+    "after": "PINS = {'run_current_mac_full34_r1.py': [None, None]}",
+    "before": "PINS = {\n    \"sender.py\": [\n        6257,\n        \"51cb936aabb86ae7845da30477ded90f9bd85513f93725c5cc4083e1b11f37ca\"\n    ],\n    \"receiver.py\": [\n        8656,\n        \"833baaaff2dfad1f245b8b41a77e4b05bb3f0c652ddc40f5cd40765ad29e0417\"\n    ],\n    \"relay.py\": [\n        15333,\n        \"8317dc3e0722ce319c2af57f63dc394c560b5b30cc7534e26cc44cf4bb68005b\"\n    ]\n}",
+    "purpose": "one unresolved payload"
+  },
+  {
+    "after": "before.st_uid == os.geteuid()",
+    "before": "before.st_uid == 1000",
+    "purpose": "Mac dynamic current owner in exact"
+  },
+  {
+    "after": "made.st_uid == os.geteuid()",
+    "before": "made.st_uid == 1000",
+    "purpose": "Mac dynamic current owner in publish"
+  },
+  {
+    "after": "'.mac-full34-inert-r1.tmp'",
+    "before": "'.hepta-r10-inert-r1.tmp'",
+    "purpose": "owned temp basename"
+  },
+  {
+    "after": "assert BINDING_READY is True\nassert all(type(length) is int and length > 0 and isinstance(digest, str) and len(digest) == 64 and all(c in '0123456789abcdef' for c in digest) for length, digest in PINS.values())\nassert (os.uname().sysname, os.uname().machine) == ('Darwin', 'arm64')\nassert os.getuid() == os.geteuid() and PARENT.resolve(strict=True) == PARENT\nassert stat.S_ISDIR(PARENT.lstat().st_mode) and PARENT.stat().st_uid == os.geteuid()\nassert not os.path.lexists(ROOT)\nassert not os.path.lexists(BASE)\nassert not os.path.lexists(RECEIPT)",
+    "before": "assert (os.uname().sysname, os.uname().machine) == ('Linux', 'x86_64')\nassert os.getuid() == 1000 and PARENT.resolve(strict=True) == PARENT and PARENT.stat().st_uid == 1000\nassert not os.path.lexists(BASE)\nassert not os.path.lexists(RECEIPT)",
+    "purpose": "fail closed before any new root or stdin processing"
+  },
+  {
+    "after": "'heptabao.current-mac-full34-inert.v1'",
+    "before": "'heptabao.df026-source-carrier-inert.v1'",
+    "purpose": "receipt schema"
+  },
+  {
+    "after": "'heptabao.current-mac-full34-inert-inputs.v1'",
+    "before": "'heptabao.df026-source-carrier-inputs.v1'",
+    "purpose": "carrier schema"
+  },
+  {
+    "after": "    ROOT.mkdir(mode=0o700)\n    created_root = True\n    parent_fd = os.open(PARENT, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)\n    try:\n        os.fsync(parent_fd)\n    finally:\n        os.close(parent_fd)\n    BASE.mkdir(mode=0o700)\n    created_base = True\n    root_fd = os.open(ROOT, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)\n    try:\n        os.fsync(root_fd)\n    finally:\n        os.close(root_fd)",
+    "before": "    BASE.mkdir(mode=0o700)\n    created_base = True\n    parent_fd = os.open(PARENT, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)\n    try:\n        os.fsync(parent_fd)\n    finally:\n        os.close(parent_fd)",
+    "purpose": "two create-only private directories and both parent fsyncs"
+  },
+  {
+    "after": "    result['root_created'] = created_root\n    result['control_created'] = created_base\n    result['terminal_ns'] = time.time_ns()",
+    "before": "    result['terminal_ns'] = time.time_ns()",
+    "purpose": "partial directory creation is retained explicitly"
+  }
+]

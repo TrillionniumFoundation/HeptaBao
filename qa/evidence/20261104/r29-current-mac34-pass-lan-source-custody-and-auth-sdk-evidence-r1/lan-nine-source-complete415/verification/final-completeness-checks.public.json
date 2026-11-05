@@ -1,0 +1,222 @@
+[
+  {
+    "name": "exact_nine_sources",
+    "passed": true
+  },
+  {
+    "name": "source0_independent_full_identity",
+    "passed": true
+  },
+  {
+    "name": "source0_whole_frozen_bytes",
+    "passed": true
+  },
+  {
+    "name": "source0_info_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source0_body0_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source1_independent_full_identity",
+    "passed": true
+  },
+  {
+    "name": "source1_whole_frozen_bytes",
+    "passed": true
+  },
+  {
+    "name": "source1_info_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source1_body0_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source2_independent_full_identity",
+    "passed": true
+  },
+  {
+    "name": "source2_whole_frozen_bytes",
+    "passed": true
+  },
+  {
+    "name": "source2_info_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source2_body0_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source2_body16384_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source2_body32768_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source2_body49152_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source2_body65536_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source3_independent_full_identity",
+    "passed": true
+  },
+  {
+    "name": "source3_whole_frozen_bytes",
+    "passed": true
+  },
+  {
+    "name": "source3_info_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source3_body0_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source3_body16384_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source4_independent_full_identity",
+    "passed": true
+  },
+  {
+    "name": "source4_whole_frozen_bytes",
+    "passed": true
+  },
+  {
+    "name": "source4_info_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source4_body0_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source4_body16384_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source4_body32768_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source4_body49152_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source4_body65536_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source5_independent_full_identity",
+    "passed": true
+  },
+  {
+    "name": "source5_whole_frozen_bytes",
+    "passed": true
+  },
+  {
+    "name": "source5_info_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source5_body0_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source5_body16384_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source5_body32768_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source6_independent_full_identity",
+    "passed": true
+  },
+  {
+    "name": "source6_whole_frozen_bytes",
+    "passed": true
+  },
+  {
+    "name": "source6_info_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source6_body0_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source7_independent_full_identity",
+    "passed": true
+  },
+  {
+    "name": "source7_whole_frozen_bytes",
+    "passed": true
+  },
+  {
+    "name": "source7_info_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source7_body0_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source7_body16384_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source7_body32768_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source7_body49152_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source7_body65536_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source7_body81920_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source8_independent_full_identity",
+    "passed": true
+  },
+  {
+    "name": "source8_whole_frozen_bytes",
+    "passed": true
+  },
+  {
+    "name": "source8_info_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "source8_body0_returned_id_full_closed",
+    "passed": true
+  },
+  {
+    "name": "exact_357306_bytes_25_chunks_34_unique_returned_ids",
+    "passed": true
+  },
+  {
+    "name": "lost_ack_historical_boundary_preserved",
+    "passed": true
+  }
+]

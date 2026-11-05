@@ -1,0 +1,1 @@
+{"content":[{"type":"text","text":"tool call error: tool call failed for `codex_apps/github.create_blob`\n\nCaused by:\n    Mcp error: -32603: Internal error"}],"isError":true}

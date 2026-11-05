@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.whole-packet-manifest.v1",
+  "files": [
+    {
+      "path": "PEER.md",
+      "bytes": 4423,
+      "sha256": "5a458e61c21ad9ec4b4f0635b6f4e4c7ceb8b09a69c5fec3babcfdcf871adb17",
+      "blob": "cab556e17c63cfc6c18a13a8ba319094e35f93c4"
+    },
+    {
+      "path": "references/loader.js",
+      "bytes": 6047,
+      "sha256": "bd6a9f363bc7aac2fb0503640e339ffce52e0eab15336e6489b6f8129df748fb",
+      "blob": "909ec9eab6932b1f9241fbb0969c772639f18cb3"
+    },
+    {
+      "path": "references/registry.js",
+      "bytes": 3135,
+      "sha256": "a845875a1998c2a6bdd9fe4c824a0a7c3e7da0f3ee75ec56dc6163d4327f7ff0",
+      "blob": "9f5042ec5442239f12975e3680c0568b3c85bdf8"
+    }
+  ]
+}

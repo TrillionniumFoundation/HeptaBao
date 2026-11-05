@@ -1,0 +1,7 @@
+{
+  "schema": "heptabao.verifier-executor-capture-note.v1",
+  "capture": "Verbatim transcription of the immediately preceding exec_command return object from the tool transcript; no second execution.",
+  "chunk_id": "b50947",
+  "exit_code": 0,
+  "original_result_unchanged": true
+}

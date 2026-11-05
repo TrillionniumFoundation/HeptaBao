@@ -1,0 +1,28 @@
+{
+  "idempotency_key": "heptabao-4e808-export-5122-commandlogs-01-r1",
+  "operation": {
+    "tool": "read_multiple_files",
+    "arguments": {
+      "host": "rog",
+      "max_file_bytes": 65536,
+      "max_response_bytes": 131072,
+      "paths": [
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/000-source-before-head.public.json",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/000-source-before-head.stdout",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/000-source-before-head.stderr",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/001-source-before-tree.public.json",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/001-source-before-tree.stdout",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/001-source-before-tree.stderr",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/002-source-before-status.public.json",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/002-source-before-status.stdout",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/002-source-before-status.stderr",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/003-source-before-git-dir.public.json",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/003-source-before-git-dir.stdout",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/003-source-before-git-dir.stderr",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/004-source-before-common-dir.public.json",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/004-source-before-common-dir.stdout",
+        "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/004-source-before-common-dir.stderr"
+      ]
+    }
+  }
+}

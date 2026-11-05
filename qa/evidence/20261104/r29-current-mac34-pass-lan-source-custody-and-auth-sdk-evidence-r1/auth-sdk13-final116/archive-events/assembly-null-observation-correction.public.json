@@ -1,0 +1,6 @@
+{
+  "stage": "all13 observation table",
+  "error": "TypeError reading undefined observation_proof.blob for previously root-recovered sequence3",
+  "correction": "Preserve observation_blob=null and cite existing adoption document 6604b671c8fe49eddf3f5c516aa6e36db46bdec8; original payloads unchanged",
+  "runtime_calls": 0
+}

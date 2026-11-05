@@ -1,0 +1,255 @@
+[
+  {
+    "name": "authority",
+    "request": {
+      "idempotency_key": "heptabao-mac-full34-prepare-authority-1a1ac939a61-r1",
+      "operation": {
+        "tool": "process_status",
+        "arguments": {
+          "host": "mac",
+          "job_id": "1a1ac939a61-fc05-5570"
+        }
+      }
+    },
+    "intent": {
+      "path": "reads/authority/intent.public.json",
+      "bytes": 559,
+      "sha256": "95ef9f6c0fbc3722e5d390b9643d30caf3acf717f318d368e02f704f4b44d5cc",
+      "blob": "f828d01a3b66f58aed96384ae1a961fdce3a1091",
+      "carrier_tree": "b9d9e69b6436d447897eab5edd9506a8e7828a63"
+    },
+    "stage": "COMPLETE",
+    "operation_id": "f2823e74d305431421d7863fe1ae6443a3311c003ed84e6b5b5db93025bf3095",
+    "offset": 910,
+    "pages": [
+      {
+        "offset": 0,
+        "bytes": 910,
+        "sdk": {
+          "path": "reads/authority/page-0000000.original.sdk.json",
+          "bytes": 2068,
+          "sha256": "1148ec65430fb3ca7f23208cdfd626438cbe8e6d6ac37dacf54a12ac72316cbb",
+          "blob": "52e8f052f4d7899ffc0ea15ceaea90ddbc1d230b",
+          "carrier_tree": "fdd2657b68a5193a0c908397b34d769fe7b97ca3"
+        },
+        "native": {
+          "path": "reads/authority/page-0000000.original.native.json",
+          "bytes": 1897,
+          "sha256": "4f1f970c27de48c31a4e72544e4de18ad6b3f4b98706dec3c5d07f3f3c864fb4",
+          "blob": "a32e7b33da856e96eb4d58b4905a9e6b137b2eb0",
+          "carrier_tree": "8e349ea57d3c87e6a28a023797d6998d9d0b2672"
+        }
+      }
+    ],
+    "admission_sdk": {
+      "path": "reads/authority/admission.original.sdk.json",
+      "bytes": 709,
+      "sha256": "f8a1c916b1b89928ec7782cd46a6d9e766ef85719ad6bf775c5111338cc5f9e3",
+      "blob": "ce9176d32771e38777e0dad0f014aeef3a646eb4",
+      "carrier_tree": "4db19c8a0a6d6cfc6e67b675fa03750c03f68aa9"
+    },
+    "admission_native": {
+      "path": "reads/authority/admission.original.native.json",
+      "bytes": 548,
+      "sha256": "1cc76a36fbf8f7721d63054b1b622733cfd4770618a9458dd98834d7bc7f9247",
+      "blob": "36f8acc694e735b401ce9f873e60893051a3d683",
+      "carrier_tree": "2d7b48545a02c17a9d3ce82f2d8795d9d0866551"
+    },
+    "admission": {
+      "admission_is_not_dispatch_completion": true,
+      "async_state": "queued",
+      "authenticated_chatgpt_caller_isolation": false,
+      "automatic_retry": false,
+      "credential_metadata_resume": true,
+      "cross_session_resume": true,
+      "delivery_proven": false,
+      "execution_resume_after_restart": false,
+      "idempotency_binding_retained": true,
+      "operation_id": "f2823e74d305431421d7863fe1ae6443a3311c003ed84e6b5b5db93025bf3095",
+      "ownership_scope": "authenticated_private_operator_credential",
+      "reused": false,
+      "session_scope": "authenticated_private_operator_credential",
+      "tool_name": "process_status"
+    },
+    "status_sdk": {
+      "path": "reads/authority/status.original.sdk.json",
+      "bytes": 980,
+      "sha256": "7948b032b7fd23f0548690d82761f95f5a83dc38e075741920bbc2171a462433",
+      "blob": "635c9dcd45632c59503e0255d77b56ce6adca1fa",
+      "carrier_tree": "e3801f4510074b9584423e578304bfb21092448b"
+    },
+    "status_native": {
+      "path": "reads/authority/status.original.native.json",
+      "bytes": 805,
+      "sha256": "8692f1bff561d0009cf78f4cbaa341b73bc4b3c3d397a43c7cbaeb9aa74485f4",
+      "blob": "2fe984771f87fd51cffb46f96d51df4c0b6f66cf",
+      "carrier_tree": "9445ac0d5e4786f77c3bbb7178cb6b7d059808e0"
+    },
+    "status": {
+      "async_state": "completed",
+      "audit_metadata_available": true,
+      "authenticated_chatgpt_caller_isolation": false,
+      "automatic_retry": false,
+      "cancellation_does_not_prove_remote_effect_stopped": true,
+      "credential_metadata_resume": true,
+      "cross_session_resume": true,
+      "delivery_proven": false,
+      "early_return_async_start_supported": true,
+      "execution_resume_after_restart": false,
+      "operation_id": "f2823e74d305431421d7863fe1ae6443a3311c003ed84e6b5b5db93025bf3095",
+      "original_payload_is_not_transport_delivery_proof": true,
+      "owned_future_active": false,
+      "ownership_scope": "authenticated_private_operator_credential",
+      "payload_available": true,
+      "remote_termination_confirmed": false,
+      "result_state": "stored_observed",
+      "retention_max_original_bytes": 1048576,
+      "session_scope": "authenticated_private_operator_credential",
+      "tool_name": "process_status"
+    },
+    "total_bytes": 910,
+    "result_sha256": "461bd89dd005657c310189d1a9cba17af8b383f3b2d2a941615b88e85a81bf51",
+    "payload": {
+      "path": "reads/authority/immutable-payload.original.json",
+      "bytes": 910,
+      "sha256": "461bd89dd005657c310189d1a9cba17af8b383f3b2d2a941615b88e85a81bf51",
+      "blob": "dc4f9a01d200c38ca9f7357bdfbdbc854c165bb4",
+      "carrier_tree": "8600e72aaade94d388888c999ad6a2d71883f6bd"
+    },
+    "outcome": {
+      "path": "actual/authority.original.json",
+      "bytes": 731,
+      "sha256": "d9f5f0459a049a7d4822869476702be368c50cb2ba168602835a660a9a7c3f98",
+      "blob": "3e69c257daeb17bd639c2e86d23a91bdf7983174",
+      "carrier_tree": "e603e78464de6588567939bbed716bfe753add2f"
+    }
+  },
+  {
+    "name": "streams",
+    "request": {
+      "idempotency_key": "heptabao-mac-full34-prepare-streams-1a1ac939a61-r1",
+      "operation": {
+        "tool": "process_read",
+        "arguments": {
+          "host": "mac",
+          "job_id": "1a1ac939a61-fc05-5570",
+          "stdout_offset": 0,
+          "stderr_offset": 0,
+          "limit": 16384
+        }
+      }
+    },
+    "intent": {
+      "path": "reads/streams/intent.public.json",
+      "bytes": 633,
+      "sha256": "34647ad36fa68a380fae8f2ceb4fdca7d4fda20cca02a835d5b03c20a780b7e5",
+      "blob": "7a104990fe1670dace4ecdd80aa24bcea2fdef5e",
+      "carrier_tree": "42df32037f626c1e23a328447b55d11bc809f9e1"
+    },
+    "stage": "COMPLETE",
+    "operation_id": "98928b2c5fd9f1c45af6924fd7515b0a9fdcc19ae71e3006ef1720d754201f09",
+    "offset": 13959,
+    "pages": [
+      {
+        "offset": 0,
+        "bytes": 13959,
+        "sdk": {
+          "path": "reads/streams/page-0000000.original.sdk.json",
+          "bytes": 19468,
+          "sha256": "6e434d407652c0f03901196fe3db102d64cd2c0d3bb00b63cc0074747e4079a5",
+          "blob": "353cab5833b440fd3137b2a02690821f782ce2a5",
+          "carrier_tree": "e09be0a950a9f6abd594b08e6880e30b6c155776"
+        },
+        "native": {
+          "path": "reads/streams/page-0000000.original.native.json",
+          "bytes": 19297,
+          "sha256": "71936e794fc4a788e344dd9c90e28df707f9d44880895c2062f6b006809345aa",
+          "blob": "fcc57bf733777c4f625aa5ef62f4336971063e0d",
+          "carrier_tree": "8325d82b017aeb713354e4e1533f24ed7d7d434b"
+        }
+      }
+    ],
+    "admission_sdk": {
+      "path": "reads/streams/admission.original.sdk.json",
+      "bytes": 707,
+      "sha256": "42c69d42a70cb3e31ed259fd0ffb20e34ba8299412f2fc22a9876a2493ea0d58",
+      "blob": "43daf8bbab061afe7af98db963418e236b66ebb3",
+      "carrier_tree": "fd421119f012f13e3ecfd7dfdaa24672ab335386"
+    },
+    "admission_native": {
+      "path": "reads/streams/admission.original.native.json",
+      "bytes": 546,
+      "sha256": "12748a767316841bf21565e7d2204d469e77be86de4059fb328d6078e86fe5ad",
+      "blob": "1529865958e762b129fba4130bda5c6459a6658f",
+      "carrier_tree": "913535b40f02a6508ab4eea81d7f8ed9491a9aa4"
+    },
+    "admission": {
+      "admission_is_not_dispatch_completion": true,
+      "async_state": "queued",
+      "authenticated_chatgpt_caller_isolation": false,
+      "automatic_retry": false,
+      "credential_metadata_resume": true,
+      "cross_session_resume": true,
+      "delivery_proven": false,
+      "execution_resume_after_restart": false,
+      "idempotency_binding_retained": true,
+      "operation_id": "98928b2c5fd9f1c45af6924fd7515b0a9fdcc19ae71e3006ef1720d754201f09",
+      "ownership_scope": "authenticated_private_operator_credential",
+      "reused": false,
+      "session_scope": "authenticated_private_operator_credential",
+      "tool_name": "process_read"
+    },
+    "status_sdk": {
+      "path": "reads/streams/status.original.sdk.json",
+      "bytes": 978,
+      "sha256": "688f9fdf4ffc41a774c0a6ae62c83e28dd537b1b1d66cbcd9bcdb2e849d4186c",
+      "blob": "13e10028c275c93bd3c7cc18c082168935abdf0d",
+      "carrier_tree": "08a91e0c22b0c275d820e16e4da04cec0b788590"
+    },
+    "status_native": {
+      "path": "reads/streams/status.original.native.json",
+      "bytes": 803,
+      "sha256": "18d7204ee406702a16ec25499a2d94ed62ba13ff33245ff0e147a60ac0a9614e",
+      "blob": "14be52d972f532c1758d70fad2534e1390b67eeb",
+      "carrier_tree": "09e0159295108cb1799e472471b9f73dc25070b1"
+    },
+    "status": {
+      "async_state": "completed",
+      "audit_metadata_available": true,
+      "authenticated_chatgpt_caller_isolation": false,
+      "automatic_retry": false,
+      "cancellation_does_not_prove_remote_effect_stopped": true,
+      "credential_metadata_resume": true,
+      "cross_session_resume": true,
+      "delivery_proven": false,
+      "early_return_async_start_supported": true,
+      "execution_resume_after_restart": false,
+      "operation_id": "98928b2c5fd9f1c45af6924fd7515b0a9fdcc19ae71e3006ef1720d754201f09",
+      "original_payload_is_not_transport_delivery_proof": true,
+      "owned_future_active": false,
+      "ownership_scope": "authenticated_private_operator_credential",
+      "payload_available": true,
+      "remote_termination_confirmed": false,
+      "result_state": "stored_observed",
+      "retention_max_original_bytes": 1048576,
+      "session_scope": "authenticated_private_operator_credential",
+      "tool_name": "process_read"
+    },
+    "total_bytes": 13959,
+    "result_sha256": "c3e4dfe7f638f26f37f7a5f4a3f19cc9121d50e198453ac4b0a16b6729c62cb1",
+    "payload": {
+      "path": "reads/streams/immutable-payload.original.json",
+      "bytes": 13959,
+      "sha256": "c3e4dfe7f638f26f37f7a5f4a3f19cc9121d50e198453ac4b0a16b6729c62cb1",
+      "blob": "6ed3bd2cf6b76a48b0102dbffb631878ab0de415",
+      "carrier_tree": "5a4f9cdbc49febe0b9a4ac2d485403a513542366"
+    },
+    "outcome": {
+      "path": "actual/streams.original.json",
+      "bytes": 13402,
+      "sha256": "d968f38156411a623aee2c584b221467821e39e6cf7824728f018368a13fe55e",
+      "blob": "8daf45d8ef5a0d6449cd4448230150bb9126f2a8",
+      "carrier_tree": "d81c19630697e77bbcf5c3cfa23ffb6f5a175f8e"
+    }
+  }
+]

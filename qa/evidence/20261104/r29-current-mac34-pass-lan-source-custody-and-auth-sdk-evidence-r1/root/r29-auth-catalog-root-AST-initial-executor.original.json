@@ -1,0 +1,7 @@
+{
+  "chunk_id": "576df2",
+  "wall_time_seconds": 0.071656454,
+  "exit_code": 1,
+  "original_token_count": 40,
+  "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 34, in <module>\n  File \"<stdin>\", line 5, in need\nAssertionError: new_calls_lexical_or_memory_only\n"
+}

@@ -1,0 +1,834 @@
+{
+  "schema": "heptabao.immutable-checkpoint-manifest.r29.v1",
+  "as_of_utc": "2026-11-05T17:23:16Z",
+  "previous_commit": "eeeb22dc2804cf5452852ab6caa309df0f67a335",
+  "prefix": "qa/evidence/20261104/r29-current-mac34-pass-lan-source-custody-and-auth-sdk-evidence-r1",
+  "packets": [
+    {
+      "tree": "e88f0c2796e15d21505301ca810aa1b9376c60cf",
+      "key": "r29_lan_nine_source_partial139",
+      "name": "lan-nine-source-partial139",
+      "files": 139,
+      "bytes": 746928,
+      "merkle_trees": 59,
+      "path": "lan-nine-source-partial139"
+    },
+    {
+      "tree": "36140fcf6ecb4b0a9f1029b4a3227ae9b079bc6c",
+      "key": "r29_lan_source3_admission_error",
+      "name": "lan-source3-admission-error",
+      "files": 2,
+      "bytes": 747,
+      "merkle_trees": 1,
+      "path": "lan-source3-admission-error"
+    },
+    {
+      "tree": "eb4ae3b92dd1238d1477873fb36280cfa8a8a349",
+      "key": "r29_mac_bound_source_packet",
+      "name": "mac-current34-bound-source",
+      "files": 38,
+      "bytes": 241931,
+      "merkle_trees": 6,
+      "path": "mac-current34-bound-source"
+    },
+    {
+      "tree": "cccc8d56f0729f558ba6b5e826c6082b97a8eb2b",
+      "key": "r29_source_carrier_bound_packet",
+      "name": "source-carrier-actual-source-bindings",
+      "files": 24,
+      "bytes": 339042,
+      "merkle_trees": 8,
+      "path": "source-carrier-actual-source-bindings"
+    },
+    {
+      "tree": "abc61330ace8f4c2b9ab8f35a5e6a0d1932be8f9",
+      "key": "r29_sdk13_final116",
+      "name": "auth-sdk13-final116",
+      "files": 116,
+      "bytes": 1445423,
+      "merkle_trees": 41,
+      "path": "auth-sdk13-final116"
+    },
+    {
+      "tree": "9f5f2147cca7c61ea085b7e53d6c9ea66d803e6b",
+      "key": "r29_lan_first4_reconciled163",
+      "name": "lan-first4-reconciled163",
+      "files": 163,
+      "bytes": 875396,
+      "merkle_trees": 69,
+      "path": "lan-first4-reconciled163"
+    },
+    {
+      "tree": "1571044456e90e23cff4443d88d92840b81439a9",
+      "key": "r29_mac_inert_complete67",
+      "name": "mac-current34-inert-complete67",
+      "files": 67,
+      "bytes": 718950,
+      "merkle_trees": 12,
+      "path": "mac-current34-inert-complete67"
+    },
+    {
+      "tree": "aae6a00d81718eb11c07b68881beabc3bb192844",
+      "key": "r29_sdk_owner_peer_packet",
+      "name": "sdk-loader-registry-peer",
+      "files": 4,
+      "bytes": 14302,
+      "merkle_trees": 2,
+      "path": "sdk-loader-registry-peer"
+    },
+    {
+      "tree": "6a8b6b46d8f68826bce01782b649512eb03374e9",
+      "key": "r29_lan9_complete415",
+      "name": "lan-nine-source-complete415",
+      "files": 415,
+      "bytes": 2328237,
+      "merkle_trees": 170,
+      "path": "lan-nine-source-complete415"
+    },
+    {
+      "tree": "e97e8aa0aabc61c6ab33d74a532b5db0fd73a019",
+      "key": "r29_mac_prepare_complete39",
+      "name": "mac-current34-prepare-complete39",
+      "files": 39,
+      "bytes": 347298,
+      "merkle_trees": 10,
+      "path": "mac-current34-prepare-complete39"
+    },
+    {
+      "tree": "f5af874eee6ec59d2afccb90898fcdb69251dffd",
+      "key": "r29_export81_complete162",
+      "name": "source-export81-complete162",
+      "files": 162,
+      "bytes": 485260,
+      "merkle_trees": 30,
+      "path": "source-export81-complete162"
+    },
+    {
+      "tree": "67278f5e4ea494d1394f5eb8185e3af64f93aa76",
+      "key": "r29_auth_catalog_combined43",
+      "name": "auth-public-catalog-and-unbound-diagnostic-source43",
+      "files": 43,
+      "bytes": 1220402,
+      "merkle_trees": 6,
+      "path": "auth-public-catalog-and-unbound-diagnostic-source43"
+    },
+    {
+      "tree": "08fa09f554a015ca4dcd4034e1a041e70d82ea33",
+      "key": "r29_source_carrier_inert_actual109",
+      "name": "source-carrier-inert-complete109",
+      "files": 109,
+      "bytes": 439188,
+      "merkle_trees": 55,
+      "path": "source-carrier-inert-complete109"
+    },
+    {
+      "tree": "94d05cf6bc98a271bb1f805416939389cebe113d",
+      "key": "r29_source_carrier_relay_intent4",
+      "name": "source-carrier-relay-original-intent4",
+      "files": 4,
+      "bytes": 12775,
+      "merkle_trees": 1,
+      "path": "source-carrier-relay-original-intent4"
+    },
+    {
+      "tree": "da119cc764c3aa1667b83aa70bbdc9440dd8fc17",
+      "key": "r29_source_carrier_relay_ack2",
+      "name": "source-carrier-relay-original-ACK2",
+      "files": 2,
+      "bytes": 1771,
+      "merkle_trees": 1,
+      "path": "source-carrier-relay-original-ACK2"
+    },
+    {
+      "tree": "233207265d877ec0cb9bdcac18cb1882b96d9a3d",
+      "key": "r29_mac_full34_complete123",
+      "name": "mac-current-full34-LIVE-complete123",
+      "files": 123,
+      "bytes": 2235741,
+      "merkle_trees": 15,
+      "path": "mac-current-full34-LIVE-complete123"
+    }
+  ],
+  "packet_files": 1450,
+  "packet_bytes": 11453391,
+  "packet_merkle_trees": 486,
+  "root_files_including_state_and_manifest": 80,
+  "root_leaves_excluding_this_manifest": [
+    {
+      "name": "r28-pre-publication-tree-proof.public.json",
+      "blob": "b95047ab830f3d90324941f246dd125ad7f76374",
+      "bytes": 536,
+      "sha256": "2336ad137c086f3cc30092fce9b1881e28fed51f2a34a4467a0798c4ca8dc9d3",
+      "path": "r28-publication/pre-publication-proof.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-checkpoint-create-tree.sdk.json",
+      "blob": "22e0ed61624bc5a8739783c0ca5cd1da73e7d231",
+      "bytes": 195,
+      "sha256": "4450b2b386eee0215eb26afec9b95c0587c9826121f0665a62cfb99a2ca23bab",
+      "path": "r28-publication/create-tree.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-checkpoint-root-tree-read.sdk.json",
+      "blob": "c99e1013a4f1426cbb9a094deddc9e5c43f2062d",
+      "bytes": 13939,
+      "sha256": "770ad5f7d6234739925d2e313f33352e00eb6a2bb0df3fe44bf1bfb8f7eee8c4",
+      "path": "r28-publication/root-tree-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-checkpoint-create-commit.sdk.json",
+      "blob": "ed91a52d6b798f5c4c5e9e1766a43ac23e0fde7b",
+      "bytes": 195,
+      "sha256": "68ff0f38342705861a8cac8eae6a4586c06a92bfd1e8067e8d73c6269f625a09",
+      "path": "r28-publication/create-commit.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-checkpoint-commit-read.sdk.json",
+      "blob": "ff7393d2b95435625ffb09c21cbca70eb01c6d6b",
+      "bytes": 4161,
+      "sha256": "560f5c09b0355b7d2cfce422306cf6cdd5bbd712fc5880ee0ff5a23271438dc0",
+      "path": "r28-publication/commit-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-checkpoint-update-ref.sdk.json",
+      "blob": "bc792cbeafd69869c1bb177d2380534078196a99",
+      "bytes": 161,
+      "sha256": "0aad31566ba642e38c47f18ab55ad16470654eade0b74575427dd592d966998e",
+      "path": "r28-publication/update-ref.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-checkpoint-branch-read.sdk.json",
+      "blob": "7e85463a89d1678a51ce15d6a18ce33488733948",
+      "bytes": 10080,
+      "sha256": "7fe85f3729502e9ac8480328cb32371ab96bafc2e675d1069db21abb61fe2d49",
+      "path": "r28-publication/branch-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r28-post-publication-proof.public.json",
+      "blob": "159e52c552efbea43107e4235da355f856d91508",
+      "bytes": 2342,
+      "sha256": "f9fc3a4cd243211cf6ca05cc861a14f6e9a53635b3ed245aee6cf90f7c2cdfe1",
+      "path": "r28-publication/post-publication-proof.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-sdk11-page49152-agent-supplied-original-git-error.sdk.json",
+      "blob": "3defd914de59404674092ba549a1926f1c5e7db2",
+      "bytes": 176,
+      "sha256": "0a8abaafb0f0a1815cc479d2d53a3957ca4a968d98af0382c20ad9403546177e",
+      "path": "root/r29-sdk11-page49152-agent-supplied-original-git-error.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-sdk11-page65536-request.public.json",
+      "blob": "35be576fc1802406263c3805d38a6db5704e1a6b",
+      "bytes": 126,
+      "sha256": "eaa9975754aa2d5db864956aa79336de1a4aaf1618eceafcfd9e5a39c952ff4c",
+      "path": "root/r29-sdk11-page65536-request.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-sdk11-page65536-intent.public.json",
+      "blob": "f933f96080852cda9d04e50b9564ab49330df3ff",
+      "bytes": 532,
+      "sha256": "5630572aaf9cdf89d5ee55e1e1c356bdc990cc06138e08d15bc1778705abe4ca",
+      "path": "root/r29-sdk11-page65536-intent.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-bound-source-root-review.public.json",
+      "blob": "68f387a48322055bf65d919118d03557189dee2a",
+      "bytes": 4429,
+      "sha256": "ded5336c4b7d695f52c9cbb31fe39e233c0baf05e4cff99ba90d6c94231bfb59",
+      "path": "root/r29-mac-current34-bound-source-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-root-ast-executor.original.json",
+      "blob": "4c86d5de9eb3e4005e62002b5f541cfc17d33eef",
+      "bytes": 2756,
+      "sha256": "417403ab21de5765fd89f3b817103ad361260985e1a805349ee56b306da70d13",
+      "path": "root/r29-mac-current34-root-ast-executor.original.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-root-ast-verifier-with-public-input.py",
+      "blob": "6f03146a0221f9915727a3408f6467b990698dbf",
+      "bytes": 113590,
+      "sha256": "bcf79c96196ef27bbb2a52120d685bd439515e38a19f5d9ef87fc27460f8b0a2",
+      "path": "root/r29-mac-current34-root-ast-verifier-with-public-input.py",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-full-source-packet-root-addendum.public.json",
+      "blob": "83628af68759ee5044853fdb7df6e09fb08dd3c0",
+      "bytes": 1521,
+      "sha256": "0805607dd0df86bfa517cbd61d5b38ec25584916931c655be790dd247e73a883",
+      "path": "root/r29-mac-current34-full-source-packet-root-addendum.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-exact-inert-go.public.json",
+      "blob": "4a5c43e0e50f4869c692056316b17e5aacdfeb38",
+      "bytes": 2980,
+      "sha256": "ece3f6263628cdbca75261c5a3261ebc20d099d019dc59106a330f5f0c0a99dc",
+      "path": "root/r29-mac-current34-exact-inert-go.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-source-carrier-bound-create-tree.sdk.json",
+      "blob": "743d6cefea6c49474b1fefa197cb61121bf30c7a",
+      "bytes": 195,
+      "sha256": "daa697ea0a39db177cc987a1bf082fb0fcf6c74dd08ae4f3fc500f0a13d3bfe5",
+      "path": "root/r29-source-carrier-bound-create-tree.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-inert-ACK-authority-root-review.public.json",
+      "blob": "8988752c3258150793476ef02fd5511cdae4f348",
+      "bytes": 1132,
+      "sha256": "6c6e10424169010dca0b521996d7e2d74b9e83f840cac14b412af9f1382efb06",
+      "path": "root/r29-mac-current34-inert-ACK-authority-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-exact-prepare-go.public.json",
+      "blob": "a03f7aa41b6c081113811fb0ab154ad534a4f65f",
+      "bytes": 3055,
+      "sha256": "db435d776ee8a45a1da36fd9bb997714f5cb61fb850b50b0290518176c973009",
+      "path": "root/r29-mac-current34-exact-prepare-go.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-original-export81-six-fixed-read-go.public.json",
+      "blob": "1db8f1aed967bdcb4dbfd9a3326330f42d544558",
+      "bytes": 17168,
+      "sha256": "38efe340a541990936359d17373aa373f6131aabbe4bc87b40406719618f3068",
+      "path": "root/r29-original-export81-six-fixed-read-go.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-sdk13-original-chains-and-whole-sources-root-review.public.json",
+      "blob": "210f829b0bb393874c0f314dad988e11252b94a1",
+      "bytes": 18426,
+      "sha256": "b1e9e4be8d797646639905bd35d68d5d70d3d7ba9bbb476b9b9e4410ceea934b",
+      "path": "root/r29-sdk13-original-chains-and-whole-sources-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-sdk13-original-chains-root-verifier.js",
+      "blob": "bb2a16c35a01e996a23d726cb826ca9689a7bec1",
+      "bytes": 7509,
+      "sha256": "ff5b143f35b82d8a0fe5038d8f7b064bf1f6d741c0b8afcb56dc8db3f9c042ae",
+      "path": "root/r29-sdk13-original-chains-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-git-archive-failed-original-journal-8add9c13.public.json",
+      "blob": "ab6a80a19fdf9e76b0cbffd274e6216c684fb36e",
+      "bytes": 1178,
+      "sha256": "f149510cc3a14bbf5bdf1497bf372386398ee1706d464c657064edabd0bf0eee",
+      "path": "root/r29-git-archive-failed-original-journal-8add9c13.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-git-archive-failed-original-journal-68f387a4.public.json",
+      "blob": "d33cbc12db9486015ca40d9d504c5b7f568211be",
+      "bytes": 1288,
+      "sha256": "2f442fd2082a09bc2b7aa37895e9c5144be6536bd68ad79c5de140156c8fac9a",
+      "path": "root/r29-git-archive-failed-original-journal-68f387a4.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-git-archive-error-provenance-and-helper-correction.public.json",
+      "blob": "2a627224432ff0fc01a4460cb5d39ce52fabbf4f",
+      "bytes": 2286,
+      "sha256": "e24fd50a488dc27405b8e4a9558f4c44bbd19b2a383d8b1bb5e5b7ba02349837",
+      "path": "root/r29-git-archive-error-provenance-and-helper-correction.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-journaled-exact-public-blob-archiver.js",
+      "blob": "daccfb2a785528e75c933ed6313e7992d77ef1f8",
+      "bytes": 1741,
+      "sha256": "2b4894c034412c824490e66fb571b05abdfa03dff89a2f43eed867703091bd04",
+      "path": "root/r29-journaled-exact-public-blob-archiver.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-inert-whole-root-review.public.json",
+      "blob": "cfb071830b34fbd7142659e3f207fe460ccfec38",
+      "bytes": 6809,
+      "sha256": "85ebd1eeb3248823f013cb72d28dbff7cd1c9e560d8120ccde9540d2daa51b9c",
+      "path": "root/r29-mac-current34-inert-whole-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-inert-whole-root-verifier.js",
+      "blob": "1b623e69357c77dbf208c60255ffc443fb839fa9",
+      "bytes": 7494,
+      "sha256": "835f2cfdf9472a8b25860a0457de48f688261ca1db16f42fe1091a8fc5c518be",
+      "path": "root/r29-mac-current34-inert-whole-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-source-carrier-inert-conditional-go.public.json",
+      "blob": "3eedc101ee18c577c4a10a318f2bbeaae8f5f7a4",
+      "bytes": 6414,
+      "sha256": "773c711bfe208ec07098ef846c0c33a23f945b3e59097b3e1a02435c98b6a7ba",
+      "path": "root/r29-source-carrier-inert-conditional-go.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-actual-prepared.canonical.json",
+      "blob": "62aab88998638bbfd73fe693157ceb3db87406b1",
+      "bytes": 4876,
+      "sha256": "ff9ccbc62be817c507ad47e1f2aea7463a2e7b5e636e7ac1c292f4b88e504da3",
+      "path": "root/r29-mac-current34-actual-prepared.canonical.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-prepare-root-verifier-with-public-input.py",
+      "blob": "8634263936819a0c46a231eb2ae1c7adb3500ebd",
+      "bytes": 91134,
+      "sha256": "b28b5cad6cab2944231848ff5aab74c55ed0d44da7b2a483538fc2d01e1edd8c",
+      "path": "root/r29-mac-current34-prepare-root-verifier-with-public-input.py",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-prepare-root-executor.original.json",
+      "blob": "9d57fce35d779058811bd203cb641e0769753e56",
+      "bytes": 8706,
+      "sha256": "2299eae8661ea7fc6596bc5203f5822e652221be381b1e35908cebd14f3a559f",
+      "path": "root/r29-mac-current34-prepare-root-executor.original.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-actual-prepare-root-binding-review.public.json",
+      "blob": "c5f108be1fea634bbe89a46ac722a2c63d0364b4",
+      "bytes": 3148,
+      "sha256": "61ccb48ed643dc4a6b097f80555ce03dd539d8b40bd4c1824b8df85ce4484518",
+      "path": "root/r29-mac-current34-actual-prepare-root-binding-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-exact-live.request.public.json",
+      "blob": "daa406a9cf802d77e92c5339eb4762be2cfddf34",
+      "bytes": 622,
+      "sha256": "3884cf33b91bfadeacc8b0cf2d7018dc635bacaa094ab521473569ad32e6a847",
+      "path": "root/r29-mac-current34-exact-live.request.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-exact-live-go.public.json",
+      "blob": "a18dd24a7f863fc93a9d4e71a3cea123c3d262d1",
+      "bytes": 5031,
+      "sha256": "4062a9d806bade516102a14372dfcadd405ab2f13cc6db7affd2c8831bf15048",
+      "path": "root/r29-mac-current34-exact-live-go.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-lan-nine-source-original-readback-root-review.public.json",
+      "blob": "e1ff01895b3ae0bb534c4ccf2f5d92efcbf91d75",
+      "bytes": 73046,
+      "sha256": "18deca777c82d33af3240a2f618010f55aff96aef7998b0a7a39738f217f1761",
+      "path": "root/r29-lan-nine-source-original-readback-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-lan-nine-source-original-readback-root-verifier.js",
+      "blob": "dc8848f154f1711c08aa8c6369162a913eb64946",
+      "bytes": 7187,
+      "sha256": "68dc843ee3888d3ab2b60e08980b85ddd2376ca8912229a075646b0a66456cf4",
+      "path": "root/r29-lan-nine-source-original-readback-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-prepare-original-closure-root-review.public.json",
+      "blob": "dcfe542afd7dc624447f0b91719292f7fa79403c",
+      "bytes": 2814,
+      "sha256": "6073d18ec34bc8b5556e76a6362cbd1480104d927c609552121733926601a964",
+      "path": "root/r29-mac-current34-prepare-original-closure-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-prepare-original-closure-root-verifier.js",
+      "blob": "df500843b67f82dba8a81c381fda729a9cd8f652",
+      "bytes": 4169,
+      "sha256": "6470250554aa90c44bc23ad499262175db3973de6b6fba9e0ce210b2c6bd2bae",
+      "path": "root/r29-mac-current34-prepare-original-closure-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-original-live-ACK-root-review.public.json",
+      "blob": "04d5b7c125b4a0c6cb630ef1508e0fd92d031dfa",
+      "bytes": 970,
+      "sha256": "432a700808a1d3682e91af154034258eaf5345faf18ac9b918d64e5717cc6861",
+      "path": "root/r29-mac-current34-original-live-ACK-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-live-execution-intent.public.json",
+      "blob": "6b51183a04b1457552bad221129ffcf6f9182b3d",
+      "bytes": 8648,
+      "sha256": "f75876a195896ac6685cffcce4503ff9575283546b4e7f0bda9f832bb9f6a151",
+      "path": "root/r29-mac-current34-live-execution-intent.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-live-ACK.original.sdk.json",
+      "blob": "d74a0b9781f56ef537c956682807c3a158fd7dee",
+      "bytes": 1728,
+      "sha256": "938a96bd9ede6b86031fa0bf444871ab165fcbf83ddf29ebf44fb5bdee302634",
+      "path": "root/r29-mac-current34-live-ACK.original.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current34-live-ACK.original.native.json",
+      "blob": "6dbe7c089f72e4a18a3d785eaf822a620980a1db",
+      "bytes": 1474,
+      "sha256": "29c2297730825bd3dbf5eb1cd8fd42c811e29780897288976a498a2a40a741a5",
+      "path": "root/r29-mac-current34-live-ACK.original.native.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-source-export81-original-files-root-review.public.json",
+      "blob": "1ee2dc78e17e938ff9d3c4111d3483c6d654ce95",
+      "bytes": 55963,
+      "sha256": "32410eebcd37efd471f9ee2769d12084a476b8c674e545400a5c515bc2ffd144",
+      "path": "root/r29-source-export81-original-files-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-source-export81-original-files-root-verifier.js",
+      "blob": "c22a6bc8bec071a70f9e4d684acc7c2daefb4d45",
+      "bytes": 6541,
+      "sha256": "012e7ce6d3770a7085ad06bf069f5374beb28463ceb963e72333e5dcc29e810e",
+      "path": "root/r29-source-export81-original-files-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-source-bundle-relay-conditional-go.public.json",
+      "blob": "51d5cc8b40d3563d9f1e471aaadb3d41d7b1838a",
+      "bytes": 5794,
+      "sha256": "cc86b246ac3ecf14e26e2258b70c4229f54c229843dd5cd3d0b1352bc50a82ee",
+      "path": "root/r29-source-bundle-relay-conditional-go.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-auth-catalog-root-AST-initial-verifier-with-public-input.py",
+      "blob": "3ca0396e999895ac141f1913ad362762c64c43c5",
+      "bytes": 77439,
+      "sha256": "a828a660b356087eae1cdc20fb6ec27db29e73fb539fad9294a7c89be8a8a05a",
+      "path": "root/r29-auth-catalog-root-AST-initial-verifier-with-public-input.py",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-auth-catalog-root-AST-initial-executor.original.json",
+      "blob": "e3ae14d1463ac7b90813e20af6fa5a1a2fcb4e2b",
+      "bytes": 292,
+      "sha256": "0c650f41ed08183524c609b90cf9344273cf772b71753c09b98516e66234eb82",
+      "path": "root/r29-auth-catalog-root-AST-initial-executor.original.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-auth-catalog-root-AST-verifier-correction.public.json",
+      "blob": "cc9832edafd8566831fdeebf928824387cca051d",
+      "bytes": 1203,
+      "sha256": "9ab9516ff95964efdc5176d1833cd5f0a7dabe431d18f2611008ef9d260a0516",
+      "path": "root/r29-auth-catalog-root-AST-verifier-correction.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-auth-catalog-root-corrected-AST-verifier-with-public-input.py",
+      "blob": "5320415a7fb25d971b903ee4b377b9a0095212ca",
+      "bytes": 77446,
+      "sha256": "ee34545ed5483623312571444c09820700358f5ad7a34f7870d95274c99325b1",
+      "path": "root/r29-auth-catalog-root-corrected-AST-verifier-with-public-input.py",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-auth-catalog-root-corrected-AST-original-yield.json",
+      "blob": "db6447ab3678dd1f1926f2915795dd6d8e9f8c90",
+      "bytes": 132,
+      "sha256": "96aff7878c6a83a78c39c9f8bdb02b81fd60175df7070b20821269687dc67713",
+      "path": "root/r29-auth-catalog-root-corrected-AST-original-yield.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-auth-catalog-root-corrected-AST-original-session-completion.json",
+      "blob": "f61576ed619d8c581b1ba5d5687b02eb6ae25252",
+      "bytes": 2766,
+      "sha256": "e80acf00974d508a207833aa8a346edc988ac844cfac62e00157ad5d15da60d8",
+      "path": "root/r29-auth-catalog-root-corrected-AST-original-session-completion.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-auth-captured-catalog-source-root-review.public.json",
+      "blob": "580b5e9d79050db6878661e28b5b6d9eed7bf531",
+      "bytes": 3828,
+      "sha256": "6e7b24299fcd6f16bffa15c54655b967a51dac1444b242078dcbe82981c26a75",
+      "path": "root/r29-auth-captured-catalog-source-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current-full34-root-contract-verifier.js",
+      "blob": "4c706bcd076622c0fda15997aabbc29d1b89b82c",
+      "bytes": 9104,
+      "sha256": "2d45a964760dfe0e6242c6f8a57faedef71372f48012f7d2b82cabec7f3a9f74",
+      "path": "root/r29-mac-current-full34-root-contract-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-mac-current-full34-root-contract-review.public.json",
+      "blob": "4fbf398eb5d7eb45e43c8a80746c98f153148cb7",
+      "bytes": 14064,
+      "sha256": "ead54afa8c0304e8d7d317438b5643fbb359d19aeca916f507737dfc5b87334b",
+      "path": "root/r29-mac-current-full34-root-contract-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-auth-public3-body-cap-vs-file-info-note.public.json",
+      "blob": "36bb52ab660c3e62afdfb2f1befaf1433626c712",
+      "bytes": 1009,
+      "sha256": "6976f7ac182214ceb39ba4c2c484402dab05b90b39ea0052394f07c27e428c1a",
+      "path": "root/r29-auth-public3-body-cap-vs-file-info-note.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-auth-catalog-and-public3-exact-source-root-review.public.json",
+      "blob": "16d33e6836fad77b0da1b143d80c6a3a2458659a",
+      "bytes": 2358,
+      "sha256": "0f7212beab67330817b7de64d1a83c9180a724b03d168e0afe4a9465e4b60dc5",
+      "path": "root/r29-auth-catalog-and-public3-exact-source-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-auth-lineB-catalog-and-three-public-info-conditional-GO.public.json",
+      "blob": "4596ffd1730be1b3181107eb25b3e19eac51b58a",
+      "bytes": 5073,
+      "sha256": "1d18473ed4af4d5bf036c406d2f4af35f5a2824ee6ae37dc0755881fdcf43fea",
+      "path": "root/r29-auth-lineB-catalog-and-three-public-info-conditional-GO.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-source-carrier-inert-root-verifier.js",
+      "blob": "2eaeba74a0ad484148d5f84dd0d5c8894af2f18a",
+      "bytes": 8812,
+      "sha256": "dffb5c10783a10ca1b3a86de0396e414de134a657b1c2ec3b3d69c3d2abf081f",
+      "path": "root/r29-source-carrier-inert-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-source-carrier-inert-root-review.public.json",
+      "blob": "c60d15f7cb50858bc4b39cdbcedf5034a5d7423b",
+      "bytes": 13437,
+      "sha256": "082ba164b0306e3a9632cd473f4d447f96f38fff485fb67cb77e9ad6b0d2d5a5",
+      "path": "root/r29-source-carrier-inert-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-Mac31-original-lineB-closed-receipt.public.json",
+      "blob": "7ed0c2b2af09063dd8a9eb7d296af8daba808729",
+      "bytes": 11548,
+      "sha256": "a1bd7292f1a3317019e59d297396541de4edf82c00c3bb407e5d4939c4d801ea",
+      "path": "root/r29-Mac31-original-lineB-closed-receipt.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-Mac31-lineB-release-and-Auth-read-handoff.public.json",
+      "blob": "386b56b456ce6db89631d4d6bf887e7e29a5c0c8",
+      "bytes": 4096,
+      "sha256": "2c7bc3735d6f7d35e67febb71d64bf85cdaaddb7c5f35bbcf318a8f3648f8ac2",
+      "path": "root/r29-Mac31-lineB-release-and-Auth-read-handoff.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-Mac31-original-closed-status-44c5c41b633210f002fa484fb89a0f19d25c11a1.json",
+      "blob": "44c5c41b633210f002fa484fb89a0f19d25c11a1",
+      "bytes": 805,
+      "sha256": "cc09f071914784d3b41e57d7f0432cbb1b28d196b961c3ea01a1f84cf3faf96e",
+      "path": "root/r29-Mac31-original-closed-status-44c5c41b633210f002fa484fb89a0f19d25c11a1.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-Mac31-original-closed-status-aabbb453defbd7f16e3ca4c97416fa73c3a45ec8.json",
+      "blob": "aabbb453defbd7f16e3ca4c97416fa73c3a45ec8",
+      "bytes": 803,
+      "sha256": "40034bdd5846a28cd65ae01dfecd65c6bda259e1255b942a5eb5bc090bf60f59",
+      "path": "root/r29-Mac31-original-closed-status-aabbb453defbd7f16e3ca4c97416fa73c3a45ec8.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-Mac31-original-closed-status-9325d2f1672673a7e6830c42175dc178e7dcc7b9.json",
+      "blob": "9325d2f1672673a7e6830c42175dc178e7dcc7b9",
+      "bytes": 810,
+      "sha256": "b09e51745804111441ec92fd1207045c09f195920d2e543e7c1cd69de3c1e834",
+      "path": "root/r29-Mac31-original-closed-status-9325d2f1672673a7e6830c42175dc178e7dcc7b9.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-Mac31-original-closed-status-c7ece266232dbe083a93a949e44be4f2b040c8e3.json",
+      "blob": "c7ece266232dbe083a93a949e44be4f2b040c8e3",
+      "bytes": 800,
+      "sha256": "5129c825e7e1d75f0e89021e98520bedbac82ea8c1245f68c746f42ea14a04e5",
+      "path": "root/r29-Mac31-original-closed-status-c7ece266232dbe083a93a949e44be4f2b040c8e3.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-Mac31-original-closed-status-265750fcbfebebab091f1fb9536ce9c629163e10.json",
+      "blob": "265750fcbfebebab091f1fb9536ce9c629163e10",
+      "bytes": 802,
+      "sha256": "507128474a87ac98cec77223664e3908db86d7a6968d3580eeb4cf6fba86a635",
+      "path": "root/r29-Mac31-original-closed-status-265750fcbfebebab091f1fb9536ce9c629163e10.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-Mac31-original-closed-status-cadb44c405d34c28a187cdca9e8f93257a4e2227.json",
+      "blob": "cadb44c405d34c28a187cdca9e8f93257a4e2227",
+      "bytes": 802,
+      "sha256": "24e402ad5cab1ad298dbb0ebc5fbc97164f9b1766c87c9934b293801198bbab9",
+      "path": "root/r29-Mac31-original-closed-status-cadb44c405d34c28a187cdca9e8f93257a4e2227.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-Mac31-original-closed-status-f180d6c6ddfd0e36e8db00b997b865cd184a621f.json",
+      "blob": "f180d6c6ddfd0e36e8db00b997b865cd184a621f",
+      "bytes": 800,
+      "sha256": "6ecb9288b2d4278d4e603fbbaec201a90892ee8c0cd08dfde32ffb0e0b5339e0",
+      "path": "root/r29-Mac31-original-closed-status-f180d6c6ddfd0e36e8db00b997b865cd184a621f.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-Mac31-original-closed-status-f00c6758ffbf56eea8586a95f3dffa5eb430bfa2.json",
+      "blob": "f00c6758ffbf56eea8586a95f3dffa5eb430bfa2",
+      "bytes": 802,
+      "sha256": "dbe965ef42dd5964b837da6e9c6dccdbe3c11b8f464e33b8d539b91b57691a5a",
+      "path": "root/r29-Mac31-original-closed-status-f00c6758ffbf56eea8586a95f3dffa5eb430bfa2.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-source-carrier-relay-original-ACK-root-review.public.json",
+      "blob": "3f67f4211929af2094427778b0f27bbc6cf204b6",
+      "bytes": 1036,
+      "sha256": "66fe1c95b94dfa0773366a788148fc468fb7a55cfb4acd1dcb5bdc706c22e5ff",
+      "path": "root/r29-source-carrier-relay-original-ACK-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-Mac31-root-original-pure-verifier-input-selector-error.public.json",
+      "blob": "2e2671809ab0e83aca5381140d345cfcc6fc7ae0",
+      "bytes": 806,
+      "sha256": "4b5a585d030491f0616ab1c39f8e4c0c0db91c9d887c6150ca7bb41f6ad58482",
+      "path": "root/r29-Mac31-root-original-pure-verifier-input-selector-error.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-Mac31-root-original-read-chain-verifier.js",
+      "blob": "ea5793db8d6dcaebf146126a013a8af8eef6d613",
+      "bytes": 9899,
+      "sha256": "195044010fa5450e4504effe71bb8daa8ad93c374afbc07598aaed881ca4965b",
+      "path": "root/r29-Mac31-root-original-read-chain-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-Mac31-root-original-read-chain-review.public.json",
+      "blob": "a827cac7c79e833d4dc56d29bba490dc873c15fa",
+      "bytes": 13521,
+      "sha256": "76b2faab779b2da90634b60c4d890aa8eaf20fef7b71c935c7544603ec053395",
+      "path": "root/r29-Mac31-root-original-read-chain-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-auth-catalog-original-ACK-root-review.public.json",
+      "blob": "9ca42e112072e5a6593cd49f656a89a56053c329",
+      "bytes": 1068,
+      "sha256": "e72cdf401439668cc307450cb4d96bab1ab7857577dc93051cf02befc37628de",
+      "path": "root/r29-auth-catalog-original-ACK-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-auth-catalog-original-intent.json",
+      "blob": "dc63a8875243adb65cad16d3c9778cce4b9cc0e4",
+      "bytes": 24914,
+      "sha256": "a0ca740696c2610551e21b460bbebf9b3f60d5406d300c613870d50a41aa2912",
+      "path": "root/r29-auth-catalog-original-intent.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-auth-catalog-original-ACK_sdk.json",
+      "blob": "de0ff0a6641e04168bff10227a477ea372125226",
+      "bytes": 26549,
+      "sha256": "5d9ae939a3f57f30bfbac9f383b0693a6d25c31569b16f572fcac13e5edd1519",
+      "path": "root/r29-auth-catalog-original-ACK_sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-auth-catalog-original-ACK_native.json",
+      "blob": "26a253a0a01e8765e7b39a9afe782e011b4cdab6",
+      "bytes": 24286,
+      "sha256": "8064ab2658ecd48d45645f59e0eafe45c822c13e28080b7969b0fc895ae479ff",
+      "path": "root/r29-auth-catalog-original-ACK_native.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r29-state.public.json",
+      "blob": "f40134bf85be33e15277573e97f752abf0040b42",
+      "bytes": 79365,
+      "sha256": "c1f35a7cae27a25ad318649d3a667564ac6fa808fd44eb8589b5e1486afbfbfa",
+      "path": "state.public.json",
+      "mode": "100644"
+    }
+  ],
+  "updated_documents": [
+    {
+      "name": "r29-checkpoint.md",
+      "blob": "ca3f5bfada83716a8d3f3c133bdee551f7af5c90",
+      "bytes": 285326,
+      "sha256": "7960ad6dea1875fbd842feda2cef5049c63e1224dca16e421499d205c1e10e9f",
+      "path": "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+      "mode": "100644",
+      "previous_blob": "0a0e0ec6e91b128f635f06c6cbec42b86823b597"
+    },
+    {
+      "name": "r29-checkpoint-index.public.json",
+      "blob": "bc2d9f6362cee738bd93d3e72a2ffd72f3440888",
+      "bytes": 651372,
+      "sha256": "ef8966b9d6f4f3ef60c8625fb739309f3c0ab6d6ea1ab43086e2b1dd68decaf4",
+      "path": "qa/evidence/20261104/36076-checkpoint.public.json",
+      "mode": "100644",
+      "previous_blob": "6f338d0f5ed2e1d1de89363d95c4b931bcc80bc8"
+    }
+  ],
+  "freeze_checks": [
+    "all_integer_values_safe_or_preserved_strings",
+    "Mac_current31_qualified_only_with_whole_evidence",
+    "all_top_level_replacement_cutover_cleanup_claims_false",
+    "old_unknown_preserved",
+    "export81_fully_closed",
+    "source_import_still_false",
+    "current_HA_still_false",
+    "SDK_not_executed_and_owner_unproven",
+    "16_packets_exact",
+    "78_unique_root_artifacts"
+  ],
+  "integrity": {
+    "whole_blob_bytes_sha256_git_object_verified": true,
+    "all_packet_merkle_subtrees_verified": true,
+    "all_prior_non_document_leaves_preserved": true,
+    "whole_previous_document_preserved": true,
+    "original_index_raw_bytes_preserved_except_first_asof_and_new_append": true,
+    "original_int64_tokens_not_reserialized": true,
+    "no_business_or_unknown_replay": true,
+    "no_production_cutover_or_legacy_deletion": true,
+    "complete_packet_integrity_does_not_grant_runtime_qualification": true,
+    "freeze_includes_only_listed_immutable_packets": true
+  }
+}

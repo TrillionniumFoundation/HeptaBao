@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.mac-current34-full-source-packet-root-addendum.r1",
+  "packet": "eb4ae3b92dd1238d1477873fb36280cfa8a8a349",
+  "files": 38,
+  "bytes": 241931,
+  "merkle_trees": 6,
+  "whole_packet_verified": true,
+  "root_review": "68f387a48322055bf65d919118d03557189dee2a",
+  "root_ast_verifier": {
+    "name": "r29-mac-current34-root-ast-verifier-with-public-input.py",
+    "blob": "6f03146a0221f9915727a3408f6467b990698dbf",
+    "bytes": 113590,
+    "sha256": "bcf79c96196ef27bbb2a52120d685bd439515e38a19f5d9ef87fc27460f8b0a2"
+  },
+  "root_ast_executor": {
+    "name": "r29-mac-current34-root-ast-executor.original.json",
+    "blob": "4c86d5de9eb3e4005e62002b5f541cfc17d33eef",
+    "bytes": 2756,
+    "sha256": "417403ab21de5765fd89f3b817103ad361260985e1a805349ee56b306da70d13"
+  },
+  "strict_diffs": [
+    {
+      "diff": "diff/mac-wrapper-system-git.diff",
+      "hunks": 1,
+      "exact": true
+    },
+    {
+      "diff": "diff/metadata-binding.diff",
+      "hunks": 1,
+      "exact": true
+    },
+    {
+      "diff": "diff/inert-original-to-mac.diff",
+      "hunks": 8,
+      "exact": true
+    },
+    {
+      "diff": "diff/publisher-binding.diff",
+      "hunks": 1,
+      "exact": true
+    }
+  ],
+  "author_checks": 95,
+  "author_fake_IO_cases": 14,
+  "root_reexecuted_author_fakes": false,
+  "author_fake_digest_and_IO_not_host_qualification": true,
+  "original_wrapper_publisher_inert_prepare_pins_unchanged": true,
+  "inert_dispatch_go": false,
+  "prepare_dispatch_go": false,
+  "live_dispatch_go": false
+}

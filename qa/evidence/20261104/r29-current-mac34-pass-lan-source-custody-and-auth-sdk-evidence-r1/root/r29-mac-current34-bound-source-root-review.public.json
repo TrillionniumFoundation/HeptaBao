@@ -1,0 +1,119 @@
+{
+  "schema": "heptabao.mac-current34-bound-source-and-inert-request-root-review.r1",
+  "status": "BOUND_SOURCE_AND_INERT_REQUEST_REVIEWED_PENDING_LINE_B_HANDOFF",
+  "source": {
+    "original_packet": "bdb1dd296ac147ddcd355655814df099e59c571d",
+    "actual_metadata_packet": "7335151a16006015891c4fe62655d7907f8fedc1",
+    "actual_metadata_root_review": "b137fc849b441e3e70e44a0c29cbf6d8bb3676ca",
+    "wrapper": {
+      "blob": "4456a595b83a6355c2df41c82f9727fd13dc7b72",
+      "bytes": 20538,
+      "sha256": "29785927055d2e676c702aa79b97db9a6d274d8d8de0916073c08face41c6c9a"
+    },
+    "publisher": {
+      "blob": "9059475e5717ef5ee66c91db22db00bce5d8690a",
+      "bytes": 5454,
+      "sha256": "65e8361e6d3f67e44198ba60ed451dafda33dd351798c3bcc1fe05701bd70796"
+    },
+    "inert_request": {
+      "blob": "2dc3d757994d094f6293cf3b7a6dbf2b1681e69e",
+      "bytes": 33458,
+      "sha256": "d3c1ebd36eb063bee62481a519cf88d6d66279d55e93cd8e592d80c7a6231db1"
+    },
+    "prepare_request": {
+      "blob": "3bb99480cd474a15e5528bd68091e705a620d633",
+      "bytes": 552,
+      "sha256": "638fdf9a7a5eb7ecc133381a79fc05d5d9177e3a0df64d562ffe1dbbfb7e5405"
+    }
+  },
+  "root_ast": {
+    "actual_host_access": false,
+    "added_definitions": [
+      "fixed_system_git"
+    ],
+    "candidate_bytes": 20538,
+    "candidate_or_publisher_executed": false,
+    "candidate_sha256": "29785927055d2e676c702aa79b97db9a6d274d8d8de0916073c08face41c6c9a",
+    "changed_old_definitions": [
+      "readonly_prepare"
+    ],
+    "checks": [
+      "only_readonly_prepare_definition_modified",
+      "only_fixed_system_git_added",
+      "generic_fixed_file_byte_exact",
+      "only_role_dispatch_in_prepare",
+      "only_ready_and_actual_table_assignments_changed",
+      "binding_ready_literal",
+      "lossless_actual_binding_oracle_binary",
+      "exact_identity_version_oracle_binary",
+      "lossless_actual_binding_oracle_archive",
+      "exact_identity_version_oracle_archive",
+      "lossless_actual_binding_server",
+      "exact_identity_version_server",
+      "lossless_actual_binding_python",
+      "exact_identity_version_python",
+      "lossless_actual_binding_git",
+      "exact_identity_version_git",
+      "lossless_actual_binding_openssl",
+      "exact_identity_version_openssl",
+      "git_exact_inode_not_float",
+      "openssl_exact_inode_not_float",
+      "generic_single_link_still_required",
+      "git_helper_fixed_path",
+      "git_helper_root_mode_nlink",
+      "git_helper_nofollow",
+      "git_helper_before_name",
+      "git_helper_fd_open",
+      "git_helper_short_extra",
+      "git_helper_eof",
+      "git_helper_fd_after",
+      "git_helper_name_and_sha_after",
+      "helper_no_subprocess",
+      "original_main_unchanged",
+      "original_caps_unchanged",
+      "inert_exact_publisher",
+      "same_observed_python",
+      "single_pinned_payload",
+      "wrapper_payload_byte_exact",
+      "publisher_exact_pin",
+      "publisher_no_child_import",
+      "publisher_compile_not_exec",
+      "fresh_t5_root",
+      "root_control_fsync",
+      "prepare_exact_fixed_argv"
+    ],
+    "checks_passed": 43,
+    "inert_stdin_bytes": 27485,
+    "inert_stdin_sha256": "39519775637edd562521696958f2bed6620e4d834618b794d307fee4cb6bcd87",
+    "product_execution": false,
+    "publisher_bytes": 5454,
+    "publisher_sha256": "65e8361e6d3f67e44198ba60ed451dafda33dd351798c3bcc1fe05701bd70796",
+    "pure_ast_only": true,
+    "schema": "heptabao.mac-full34-system-git-bound-source-root-ast-review.r1",
+    "unchanged_old_definitions": [
+      "need",
+      "sha",
+      "save",
+      "enc",
+      "git",
+      "source",
+      "normal61_admission",
+      "prepare_remaining",
+      "full9",
+      "fixed_file",
+      "main"
+    ]
+  },
+  "root_whole_source_read": true,
+  "original_same_file_identity_guards_retained": true,
+  "git_specific_role": "Only exact observed /usr/bin/git118640B root:root0755 nlink78 full9/version/hash. No global alias admission or shim claim.",
+  "inert_scope": "Create fresh T5-named control root and one compile-only wrapper plus public receipt; no Git/compiler/service/HTTP/product or credential execution.",
+  "source_ready": true,
+  "inert_dispatch_go": false,
+  "prepare_dispatch_go": false,
+  "live_dispatch_go": false,
+  "all_original_business_caps_unchanged": true,
+  "original_preexisting_mac_popen_cleanup_unchanged": true,
+  "full_replacement_qualified": false,
+  "production_cutover": false
+}

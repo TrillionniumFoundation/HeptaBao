@@ -1,0 +1,7 @@
+{
+  "chunk_id": "b50947",
+  "wall_time_seconds": 0.060050741,
+  "exit_code": 0,
+  "original_token_count": 70,
+  "output": "{\"checks_passed\": 192, \"immutable_pages\": 6, \"job_id\": \"1a1ac8387b9-fc05-54e4\", \"original_operations\": 5, \"output_bytes\": 10904, \"output_sha256\": \"a3d2bd12c70913b4aee53f0d0754e6e322c0886c0397c902fe5f9c9e2bda3d77\", \"status\": \"PASS_INERT_ONLY_CONDITIONAL_PREPARE_PREREQUISITES\"}\n"
+}

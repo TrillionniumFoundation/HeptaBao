@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.mac-current34-exact-inert-go.r1",
+  "status": "GO_EXACT_CREATE_ONLY_INERT_AFTER_LINE_B_HANDOFF",
+  "source_packet": "eb4ae3b92dd1238d1477873fb36280cfa8a8a349",
+  "root_review": "68f387a48322055bf65d919118d03557189dee2a",
+  "root_full_packet_addendum": "83628af68759ee5044853fdb7df6e09fb08dd3c0",
+  "root_ast_checks": 43,
+  "author_source_checks": 95,
+  "author_selected_fake_IO_cases": 14,
+  "exact_request": {
+    "blob": "2dc3d757994d094f6293cf3b7a6dbf2b1681e69e",
+    "bytes": 33458,
+    "sha256": "d3c1ebd36eb063bee62481a519cf88d6d66279d55e93cd8e592d80c7a6231db1",
+    "host": "mac",
+    "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013",
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-mac-current-full34-inert-65e8361e-20261105-r1",
+    "args_contract": "Exactly frozen five argv: -I -S -B -c followed by the whole5454B publisher; no extra argv",
+    "stdin_bytes": 27485,
+    "stdin_sha256": "39519775637edd562521696958f2bed6620e4d834618b794d307fee4cb6bcd87"
+  },
+  "wrapper": {
+    "blob": "4456a595b83a6355c2df41c82f9727fd13dc7b72",
+    "bytes": 20538,
+    "sha256": "29785927055d2e676c702aa79b97db9a6d274d8d8de0916073c08face41c6c9a"
+  },
+  "publisher": {
+    "blob": "9059475e5717ef5ee66c91db22db00bce5d8690a",
+    "bytes": 5454,
+    "sha256": "65e8361e6d3f67e44198ba60ed451dafda33dd351798c3bcc1fe05701bd70796"
+  },
+  "handoff": {
+    "line_B": "Only after authbus_migration reports original12 and13 native closed, complete original SDK payloads, and zero in-flight calls. It then stays pure static.",
+    "line_A": "HA fixed original LAN source reads continue independently, maximum one native future.",
+    "root_runtime_calls": 0
+  },
+  "execution_order": [
+    "Complete and whole-read a separate external execution intent containing this GO and exact original request before any process_start.",
+    "Submit process_start exactly once with that unchanged request.",
+    "Save the complete original ACK externally and whole-verify before parsing; inspect isError first.",
+    "Use only the original job authority and streams. Preserve any missing ACK or transport error; do not resubmit under any key.",
+    "On known successful terminal, independently verify the single public wrapper and public inert receipt against exact source/whole hashes/full file identities; send complete records for root review."
+  ],
+  "effects": {
+    "fresh_root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1",
+    "public_source_files": 1,
+    "python_compile_only": true,
+    "source_executed": false,
+    "git_started": false,
+    "compiler_started": false,
+    "service_started": false,
+    "product_http": false,
+    "private_credentials_created": false,
+    "production_changed": false
+  },
+  "prepare_go": false,
+  "live_go": false,
+  "full_replacement_qualified": false
+}

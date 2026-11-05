@@ -1,0 +1,15 @@
+{
+  "host": "mac",
+  "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1/control/run_current_mac_full34_r1.py",
+    "--run",
+    "ff9ccbc62be817c507ad47e1f2aea7463a2e7b5e636e7ac1c292f4b88e504da3"
+  ],
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1",
+  "timeout_seconds": 1800,
+  "idempotency_key": "heptabao-mac-current-full34-run-29785927-ff9ccbc6-20261105-r1"
+}

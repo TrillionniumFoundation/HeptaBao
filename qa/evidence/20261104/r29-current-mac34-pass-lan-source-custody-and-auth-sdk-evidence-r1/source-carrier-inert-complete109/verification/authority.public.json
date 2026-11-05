@@ -1,0 +1,9 @@
+{
+  "job": true,
+  "exit_zero": true,
+  "complete": true,
+  "durable": true,
+  "terminal_confirmed": true,
+  "not_timed_out": true,
+  "not_cancelled": true
+}

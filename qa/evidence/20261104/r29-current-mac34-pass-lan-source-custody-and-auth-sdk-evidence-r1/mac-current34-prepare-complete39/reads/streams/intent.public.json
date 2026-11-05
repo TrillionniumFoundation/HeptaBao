@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.mac-current-full34-inert-original-observation-intent.v1",
+  "name": "streams",
+  "root_go_blob": "a03f7aa41b6c081113811fb0ab154ad534a4f65f",
+  "job_ack_blob": "8d0773948beaddcd09464d932ba8b3e0e1fd7bf2",
+  "request": {
+    "idempotency_key": "heptabao-mac-full34-prepare-streams-1a1ac939a61-r1",
+    "operation": {
+      "tool": "process_read",
+      "arguments": {
+        "host": "mac",
+        "job_id": "1a1ac939a61-fc05-5570",
+        "stdout_offset": 0,
+        "stderr_offset": 0,
+        "limit": 16384
+      }
+    }
+  },
+  "submitted": false,
+  "read_only": true,
+  "no_new_product_operation": true
+}

@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.read-line-b-mac-metadata-to-sdk-original-pages-handoff.r1",
+  "status": "GO_READ_ONLY_FIXED_ORIGINAL_RECOVERY",
+  "prior_go": "6e6e472415916dfde5a08063dcbaaecba1c4fdb0",
+  "completed_handoff": {
+    "mac_prerequisite_infos": 6,
+    "all_original_operations": "completed/stored_observed/inactive with complete original payloads",
+    "mac_runtime_calls_inflight": 0,
+    "git_binding_blocker": "Observed nlink78; candidate remains unbound while specific system-tool reader source is reviewed",
+    "reported_by": "compatibility_audit after sixth original OpenSSL payload was saved"
+  },
+  "line_A": "ha_validation: original LAN9 source readbacks only, one native future, no publish/prepare/live",
+  "line_B": {
+    "owner": "authbus_migration",
+    "first": "Recover only remaining original immutable operation_result pages for completed native read11",
+    "operation_id": "0a76e36c0f77a78517a742fbcae67a51ea7e7e109c056c2348750086441f0d05",
+    "offsets": [
+      16384,
+      32768,
+      49152,
+      65536,
+      81920
+    ],
+    "limit": 16384,
+    "total_original_payload_bytes": 87804,
+    "prior_complete_first_page": 16384,
+    "prior_page_errors_preserved": true,
+    "exact_plan_blob": "20646d685ea26e1494077c253b115427e7ff0998",
+    "plan_packet": "ecf2bc28449d7a0b7306171fe1e5f361a86c310b",
+    "one_page_call_at_a_time": true,
+    "not_authorized": "No replacement native binary_read for11, no different idempotency key, no SDK/product/credential/fixture execution",
+    "after11": "Only after original SDK total/hash/native chunk verification, admit original fixed12 selector655360/18108 then original fixed13 registry0/3135 sequentially; verify closed operation and complete original SDK before next.",
+    "transport_error_rule": "Save full original SDK before parsing and inspect isError. A renewed error on either previously failed page stops line. A first error on a new page or new readonly operation permits one original same-id/same-offset reconciliation only; unresolved second error stops. No business retry."
+  },
+  "root_runtime_calls": 0,
+  "max_runtime_lines": 2,
+  "source_only_tasks_may_continue": true,
+  "full_replacement_qualified": false
+}

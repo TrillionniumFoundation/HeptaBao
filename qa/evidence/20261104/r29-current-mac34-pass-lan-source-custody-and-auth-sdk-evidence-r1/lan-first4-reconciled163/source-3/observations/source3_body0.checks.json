@@ -1,0 +1,10 @@
+{
+  "path": true,
+  "offset": true,
+  "next_offset": true,
+  "bytes": true,
+  "size": true,
+  "version": true,
+  "chunk_sha256": true,
+  "eof": true
+}

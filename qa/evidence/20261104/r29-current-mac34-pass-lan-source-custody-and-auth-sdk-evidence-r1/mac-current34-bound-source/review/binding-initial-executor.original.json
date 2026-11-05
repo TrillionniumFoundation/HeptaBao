@@ -1,0 +1,7 @@
+{
+  "chunk_id": "71b1a0",
+  "wall_time_seconds": 0.000026089,
+  "exit_code": 1,
+  "original_token_count": 200,
+  "output": "Traceback (most recent call last):\n  File \"/workspace/scratch/f86faac821c4/mac_full34_publication_source_r1/candidate/bind_actual_metadata.py\", line 119, in <module>\n    main()\n  File \"/workspace/scratch/f86faac821c4/mac_full34_publication_source_r1/candidate/bind_actual_metadata.py\", line 107, in main\n    result = assemble(reference, wrapper, publisher, projection, review)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/workspace/scratch/f86faac821c4/mac_full34_publication_source_r1/candidate/bind_actual_metadata.py\", line 56, in assemble\n    assert projection['status'] == 'SIX_NATIVE_READS_COMPLETE_KNOWN_GIT_SINGLE_LINK_BINDING_REFUSAL'\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+}

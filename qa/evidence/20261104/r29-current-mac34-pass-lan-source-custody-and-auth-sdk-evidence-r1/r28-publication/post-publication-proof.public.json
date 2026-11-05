@@ -1,0 +1,63 @@
+{
+  "schema": "heptabao.checkpoint-post-publication-proof.r28",
+  "as_of_utc": "2026-11-05T15:59:15Z",
+  "branch": "codex/heptabao-validation-20261104",
+  "commit": "eeeb22dc2804cf5452852ab6caa309df0f67a335",
+  "tree": "78a595e3eaa34c3f50a1182f7b7b0aa2a70c3d37",
+  "sole_parent": "eee0e46af0891db43c1e3c6317f09f777abadf23",
+  "cas_expected_sha": "eee0e46af0891db43c1e3c6317f09f777abadf23",
+  "force": false,
+  "branch_read_back_exact": true,
+  "root_tree_entries_read_back": 26,
+  "pre_tree_proof": {
+    "name": "r28-pre-publication-tree-proof.public.json",
+    "blob": "b95047ab830f3d90324941f246dd125ad7f76374",
+    "bytes": 536,
+    "sha256": "2336ad137c086f3cc30092fce9b1881e28fed51f2a34a4467a0798c4ca8dc9d3"
+  },
+  "state": {
+    "name": "r28-state.public.json",
+    "blob": "a7a2245dd308c779bdfa12371d4758e333b69795",
+    "bytes": 54912,
+    "sha256": "72c0415f9ff5ad325cb8554071bcaab586995054139be441e1eec0e7fa42a2ee",
+    "path": "state.public.json",
+    "mode": "100644"
+  },
+  "manifest": {
+    "name": "r28-manifest.public.json",
+    "blob": "11bf5d3301ef57cb7accfa0de895bfa4d0998814",
+    "bytes": 17076,
+    "sha256": "9c4598412c3a5d9a45a6238699672da4b0df9b71260ce2796dc5c9c8e51cc5a4",
+    "path": "manifest.public.json",
+    "mode": "100644"
+  },
+  "documents": [
+    {
+      "name": "r28-checkpoint.md",
+      "blob": "0a0e0ec6e91b128f635f06c6cbec42b86823b597",
+      "bytes": 274191,
+      "sha256": "ffc82506b23de794802a7c441abd44e9617b21c11950fc65046773c621e07d40",
+      "path": "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+      "mode": "100644",
+      "previous_blob": "1a01206840998ebd83e3b2f5e427b2e9dd8fd03b"
+    },
+    {
+      "name": "r28-checkpoint-index.public.json",
+      "blob": "6f338d0f5ed2e1d1de89363d95c4b931bcc80bc8",
+      "bytes": 568531,
+      "sha256": "33ff005b1324684efac9bea9a104870795413aaa18975e691f17520954090487",
+      "path": "qa/evidence/20261104/36076-checkpoint.public.json",
+      "mode": "100644",
+      "previous_blob": "fdf9569cb836d8af7e2227fcc7888524e1203708"
+    }
+  ],
+  "files_added": 769,
+  "documents_changed": 2,
+  "files_deleted": 0,
+  "prior_non_document_leaves_preserved": 18829,
+  "whole_prior_doc_preserved": true,
+  "prior_index_lossless_preserved": true,
+  "full_replacement_qualified": false,
+  "production_cutover": false,
+  "legacy_deletion": false
+}

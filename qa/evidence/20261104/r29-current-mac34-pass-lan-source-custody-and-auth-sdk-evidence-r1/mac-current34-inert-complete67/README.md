@@ -1,0 +1,11 @@
+# Mac current full34 inert actual closure
+
+This packet records exactly one approved create-only inert publication on mac, original job 1a1ac8387b9-fc05-54e4. The original process returned succeeded/exit 0 with full durable 854-byte stdout and empty stderr. The one wrapper and public receipt were independently observed and read in full. All five original native read operations completed, stored their immutable payloads and became inactive; six immutable pages reproduce those payloads exactly. No Runtime transport error occurred in this inert closure chain.
+
+The lossless Python verification checks the original request/GO/intent/ACK, all native SDK pages and hashes, independent file versions, full nine-field wrapper identity, single-link 0600/501:20 ownership and exact source bytes. The 1,016-byte receipt is exactly the publisher's sorted, indented serialization of the original stdout object, including every nanosecond token. Its observed wall-clock duration is 6,361,000 ns; this is not a new independent monotonic deadline claim. The original outer supervisor was 60 seconds.
+
+The verifier returned exit 0 and 192 checks. Its original returned exec object is preserved by a disclosed verbatim transcription from the immediately preceding tool transcript; it was not rerun. All runtime SDK results themselves were saved externally before parsing. The evidence input and verifier are included for exact offline reconstruction.
+
+The published wrapper is 20,538 bytes with SHA256 29785927055d2e676c702aa79b97db9a6d274d8d8de0916073c08face41c6c9a and exactly equals the approved source. The successful publisher compiled it without executing it. Its original flags report no Git, compiler, service or artifact transfer started, and fresh root/control creation. No product/HTTP/private fixture work is performed by this packet; no Linux affine Owner or extra FD telemetry is claimed.
+
+At this packet's freeze, prepare and live have not been submitted. The root's separate conditional readonly-prepare GO is included and its inert prerequisites are satisfied by this packet. Any following prepare must have a separate completed external intent and its single unchanged request. Live remains unapproved.

@@ -1,0 +1,135 @@
+{
+  "schema": "heptabao.root-conditional-source-carrier-inert-go.r29.v1",
+  "status": "GO_ONLY_AFTER_ORIGINAL_EXPORT81_FILES_COMPLETE",
+  "line_owner": "/root/ha_validation",
+  "line": "A",
+  "max_runtime_calls_inflight": 1,
+  "scope": "Create-only publication and Python compile-only of three exact carrier helpers; no source transfer, Git, importer or product launch.",
+  "prerequisites": [
+    "Current nine LAN source independent info/body readbacks must be fully closed, verified, and externally published.",
+    "The six exact original-export81 reads authorized in 1db8f1aed967bdcb4dbfd9a3326330f42d544558 must each have one acknowledged original operation, completed/stored_observed/inactive, with all immutable payload pages retained.",
+    "All 81 whole command-record/stdout/stderr files must match every fixed path, byte count and SHA256 in plan9f60d88c19ab9282bfabb520ae5a2d1fe0c90602 and the original 27 command/core rows. Preserve the two expected config exit1 outcomes.",
+    "Publish the complete original81 result/evidence packet and finite whole-byte verification before this inert submission; give root its exact tree.",
+    "No unresolved current tool call or returned operation future; source3 historical lost-ACK read remains explicitly UNKNOWN."
+  ],
+  "source": {
+    "tree": "cccc8d56f0729f558ba6b5e826c6082b97a8eb2b",
+    "manifest": "657099422648a893a45ae0ddb8697ae61939b99e",
+    "prior_source_root_review": "7d6cb5c53926931f5ada9f040161883b1daaf891",
+    "new_root_ast_review": {
+      "path": "review/ast-result.public.json",
+      "blob": "f232ddbf9c445043fba1a6c10330db2f3c235e02",
+      "bytes": 8962,
+      "sha256": "5221ebb990dcbf0301b684656803b951554215f53ece7e00b2b807427c433f5f",
+      "mode": "100644"
+    },
+    "root_ast_checks": 28,
+    "all_42_function_class_definitions_unchanged": true,
+    "source_binding": {
+      "path": "binding/two-actual-source-files.public.json",
+      "blob": "9751ff9ebd1d15d531fdfdcdc6f10ffb21888743",
+      "bytes": 2311,
+      "sha256": "14fa80d3dd46dabc9851ac7514b9be056ef274eb916d23f1acf3d801f75b8de1",
+      "mode": "100644"
+    },
+    "inert": {
+      "path": "candidate/inert.py",
+      "blob": "b0813e89d52c58aa4ba14d655d57dd8e0303dc7a",
+      "bytes": 5083,
+      "sha256": "148698c8d0586ba6d7c9b6fb455b6858ea973dd814261e90b30fab5d58c61e74",
+      "mode": "100644"
+    },
+    "payload": {
+      "path": "payload/controls.json",
+      "blob": "3fc2bbbe5776d7b655f38eaf9756b8610616b265",
+      "bytes": 41273,
+      "sha256": "2588299918df718248164c08629280f93d85491ab8aaf79a769b4c7b61162162",
+      "mode": "100644"
+    }
+  },
+  "request": {
+    "path": "requests/INERT.REVIEW-ONLY.public.json",
+    "blob": "9445c47e405b4ac579a43b6cb995712301c477eb",
+    "bytes": 46818,
+    "sha256": "7581f5ed56528ce94a34b1c5708b4971ce52d457c5c1948cdf4e2569d182f8c6",
+    "mode": "100644",
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args_prefix": [
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "code_bytes": 5083,
+    "code_sha256": "148698c8d0586ba6d7c9b6fb455b6858ea973dd814261e90b30fab5d58c61e74",
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 60,
+    "idempotency_key": "heptabao-4e808-source-carrier-inert-r1-148698c8",
+    "stdin_bytes": 41273,
+    "stdin_sha256": "2588299918df718248164c08629280f93d85491ab8aaf79a769b4c7b61162162",
+    "extra_options": false
+  },
+  "admission": [
+    "Read the exact source packet request and verify all pins locally. Do not reconstruct executable source or stdin from prose.",
+    "Externally save one separate completed execution intent linking this GO, source packet, original81 completion packet and exact request. Only then submit that exact process_start once.",
+    "Save the original SDK ACK externally before parsing; check SDK isError first. Observe only the original job. No ACK or UNKNOWN is a stop requiring reconciliation of that original submission, never a second business start."
+  ],
+  "expected_result": {
+    "status": "prepared",
+    "files": {
+      "sender.py": [
+        6430,
+        "c7e4fcbbd6d6962165e81b9d4fcd568986ec292515f2ffe62cb47ce6a3694e56"
+      ],
+      "receiver.py": [
+        8857,
+        "3b0240aabbf3e8b6bd20724e0aff7d87b71b65b44512dac6e10b6a47ad4bea6e"
+      ],
+      "relay.py": [
+        15541,
+        "b1a9a177a6969add781e076067781c746c570161e27354480154781b099ad284"
+      ]
+    },
+    "source_executed": false,
+    "git_started": false,
+    "compiler_started": false,
+    "service_started": false,
+    "python_compile_only": true,
+    "artifact_transfer_started": false,
+    "control_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1"
+  },
+  "post_publication_reads": {
+    "scope": "Only after original inert terminal exit0/full/durable streams and returned observer closures: independent file_info of these four exact paths and one whole-file read of those same four paths, sequential. Every new read intent external first, original SDK/pages kept, failure stops for root reconciliation.",
+    "paths": [
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/sender.py",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/receiver.py",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/relay.py",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1/inert-stage.result.public.json"
+    ],
+    "max_file_bytes": 32768,
+    "max_response_bytes": 131072,
+    "max_native_operations": 5,
+    "require_full9_against_publisher": true,
+    "require_whole_source_against_reviewed_blobs": true,
+    "require_receipt_stdout_lossless_equality": true,
+    "read_keys_prefix": "heptabao-4e808-source-carrier-inert-readback-148698c8-r1-"
+  },
+  "not_authorized": [
+    "relay or binary/source transfer",
+    "source import",
+    "new export",
+    "Git/Cargo build",
+    "HA/product/service execution",
+    "production change",
+    "legacy cleanup"
+  ],
+  "budgets_unchanged": {
+    "inert_outer_seconds": 60,
+    "relay_outer_seconds": 360,
+    "relay_internal_seconds": 300,
+    "endpoint_seconds": 90
+  },
+  "source3_original_lost_ack_state": "UNKNOWN_PRESERVED",
+  "full_replacement_qualified": false
+}

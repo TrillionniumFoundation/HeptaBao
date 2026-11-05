@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.checkpoint-pre-publication-tree-proof.r28",
+  "previous_commit": "eee0e46af0891db43c1e3c6317f09f777abadf23",
+  "previous_tree": "b525875daea4978ffceafd60f72e7591f43db859",
+  "expected_tree": "78a595e3eaa34c3f50a1182f7b7b0aa2a70c3d37",
+  "all_prior_non_document_leaves_preserved": 18829,
+  "documents_changed": 2,
+  "deleted": 0,
+  "added": 769,
+  "new_packet_files": 734,
+  "new_root_files": 35,
+  "total_leaves": 19600,
+  "packet_subtrees_verified": 15,
+  "all_original_unsafe_integer_tokens_preserved": true
+}

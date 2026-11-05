@@ -1,0 +1,7 @@
+{
+  "chunk_id": "f2c716",
+  "wall_time_seconds": 0.071747175,
+  "exit_code": 1,
+  "original_token_count": 57,
+  "output": "Traceback (most recent call last):\n  File \"/workspace/scratch/f86faac821c4/mac34_live_actual_r1/verify_actual.py\", line 153, in <module>\n    raw = raws[core_map[k]].encode()\n               ~~~~~~~~^^^\nKeyError: 'controller.py'\n"
+}

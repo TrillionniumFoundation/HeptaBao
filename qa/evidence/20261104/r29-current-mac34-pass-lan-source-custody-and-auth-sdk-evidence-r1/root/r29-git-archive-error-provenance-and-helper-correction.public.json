@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.root-git-archive-error-provenance.r29.v2",
+  "scope": "GitHub evidence archiving only; no host or product action",
+  "journals": [
+    {
+      "name": "r29-git-archive-failed-original-journal-8add9c13.public.json",
+      "blob": "ab6a80a19fdf9e76b0cbffd274e6216c684fb36e",
+      "bytes": 1178,
+      "sha256": "f149510cc3a14bbf5bdf1497bf372386398ee1706d464c657064edabd0bf0eee"
+    },
+    {
+      "name": "r29-git-archive-failed-original-journal-68f387a4.public.json",
+      "blob": "d33cbc12db9486015ca40d9d504c5b7f568211be",
+      "bytes": 1288,
+      "sha256": "2f442fd2082a09bc2b7aa37895e9c5144be6536bd68ad79c5de140156c8fac9a"
+    }
+  ],
+  "original_aux_error_blob": "3defd914de59404674092ba549a1926f1c5e7db2",
+  "facts": [
+    "Two original UTF-8 create_blob failures and their exact content-address read failures are preserved in the journals.",
+    "The initial journal helper prematurely set create_error_reconciled_by_exact_content_address=true whenever create.isError was true; the subsequent 404 still made the helper throw. No artifact from either failed attempt was accepted.",
+    "The helper was corrected so reconciliation requires an actually successful exact-byte read. The original erroneous auxiliary flag remains visible in the historical journal.",
+    "The Mac 4429-byte source review was later created using the supported base64 encoding with the same bytes and expected Git blob 68f387a48322055bf65d919118d03557189dee2a, then read back in full.",
+    "The 1307-byte SDK11 auxiliary provenance note expected at 8add9c136ea6444af174f1468ef7a4c64d13b83b was not available in the observed failed attempts; no successful creation or reconstructed original note is claimed.",
+    "Earlier old-helper errors retained only the helper exception, not the underlying original Git SDK response. Those responses are unavailable and are not invented.",
+    "No automatic approval-review rejection occurred in these errors; these were Git transport or server errors."
+  ],
+  "page_49152_original_sdk": "253990ecd93dabf7a2c3be82985fbda5e4f12a36",
+  "page_49152_original_native": "3a7fba6d30e0578d5868f51e3effd9a7b0e755cf",
+  "runtime_replays": 0,
+  "SDK13_root_review": "210f829b0bb393874c0f314dad988e11252b94a1",
+  "full_replacement_qualified": false
+}

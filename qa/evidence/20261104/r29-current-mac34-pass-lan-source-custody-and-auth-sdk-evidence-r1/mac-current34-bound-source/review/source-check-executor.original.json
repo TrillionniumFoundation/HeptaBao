@@ -1,0 +1,7 @@
+{
+  "chunk_id": "98b657",
+  "wall_time_seconds": 0.022541142,
+  "exit_code": 0,
+  "original_token_count": 75,
+  "output": "{\"checks_passed\": 95, \"selected_components\": 14, \"strict_hunks\": {\"mac-wrapper-system-git.diff\": 1, \"metadata-binding.diff\": 1, \"inert-original-to-mac.diff\": 8, \"publisher-binding.diff\": 1}, \"result_bytes\": 9383, \"result_sha256\": \"3ed4e4dab44495f2a2c24ceeb8b475d3896677f03bbfc986ffcac58a8dd1c5ac\"}\n"
+}

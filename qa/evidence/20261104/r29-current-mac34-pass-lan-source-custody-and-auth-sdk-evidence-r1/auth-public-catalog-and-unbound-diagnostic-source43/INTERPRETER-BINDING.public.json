@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.catalog-regular-python-binding.source.r1",
+  "status": "SOURCE_ONLY_NO_GO",
+  "before": {
+    "blob": "d58b231c703a41fa259a5efee2142d37025a41c5",
+    "bytes": 23356,
+    "sha256": "1701b87d2442b91d4e5a90ff57306e740a599535240e6a0b775b3892d3352102"
+  },
+  "actualPythonInfo": {
+    "blob": "aa9a0a5b4a421c6e55dd4a303e52b0ca59bb056c",
+    "bytes": 488,
+    "sha256": "a67bad0d0dc2ea5866f9abcbb05fefba11a6dcba203206aa0fdc8d319ca6853d",
+    "value": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 80,
+        "link_count": 1,
+        "metadata_platform": "darwin",
+        "mode": 493,
+        "uid": 501,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 493,
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13",
+      "size": 34640,
+      "version": "16777233:587518380:34640:1793798038915516382:1793798038915695047"
+    }
+  },
+  "changedFields": [
+    "executable",
+    "idempotency_key"
+  ],
+  "sourceByteExact": true,
+  "cwdByteExact": true,
+  "argsByteExact": true,
+  "outer60Unchanged": true,
+  "inner5AndAllIOCapsUnchanged": true,
+  "allOtherTypedFieldsExact": true,
+  "oldAliasProposalRetained": true,
+  "aliasResolvedInThisWork": false,
+  "newRuntimeCalls": 0,
+  "existingActualInfoOnly": true
+}

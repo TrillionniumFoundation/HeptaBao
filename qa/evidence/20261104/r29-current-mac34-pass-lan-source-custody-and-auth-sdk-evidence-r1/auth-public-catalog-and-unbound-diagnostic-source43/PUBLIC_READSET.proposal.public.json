@@ -1,0 +1,125 @@
+{
+  "schema": "heptabao.mac-selected-owner-three-public-sources.proposal.r1",
+  "status": "SOURCE_ONLY_NO_GO",
+  "host": "mac",
+  "requests": [
+    {
+      "ordinal": 1,
+      "id": "harness-policy",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/harness-runtimes-CA3PNIDt.js",
+      "origin": {
+        "blob": "41d3492a4965c62292eaa74a4d0b746b6bc4e4b2",
+        "line": 35,
+        "symbol": "resolveAgentHarnessPolicy"
+      },
+      "observed": null,
+      "maxBytes": 131072,
+      "request": {
+        "idempotency_key": "heptabao-mac-harness-public-source-info-harness-policy-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/harness-runtimes-CA3PNIDt.js"
+          }
+        }
+      }
+    },
+    {
+      "ordinal": 2,
+      "id": "support-context",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/thinking-runtime-rftFo2fO.js",
+      "origin": {
+        "blob": "41d3492a4965c62292eaa74a4d0b746b6bc4e4b2",
+        "line": 106,
+        "symbol": "buildAgentHarnessSupportContext / compareHarnessSupport"
+      },
+      "observed": null,
+      "maxBytes": 131072,
+      "request": {
+        "idempotency_key": "heptabao-mac-harness-public-source-info-support-context-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/thinking-runtime-rftFo2fO.js"
+          }
+        }
+      }
+    },
+    {
+      "ordinal": 3,
+      "id": "codex-harness",
+      "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+      "origin": {
+        "blob": "bdde97e2ec7a167619ea24b0ce9660086e81ebce",
+        "field": "finiteInputClosure.sourceRecords",
+        "record": {
+          "bytes": 3596,
+          "cap": 268435456,
+          "identity": [
+            "16777233",
+            "405276634",
+            "501",
+            "20",
+            "33188",
+            "1",
+            "3596",
+            "1784844051297089646",
+            "1784844051297089646"
+          ],
+          "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+          "private": false,
+          "sha256": "8919eefce05b3127251724c8f8cad7f1ac1a0994c57b243361092ea4de096f72"
+        }
+      },
+      "observed": {
+        "bytes": 3596,
+        "cap": 268435456,
+        "identity": [
+          "16777233",
+          "405276634",
+          "501",
+          "20",
+          "33188",
+          "1",
+          "3596",
+          "1784844051297089646",
+          "1784844051297089646"
+        ],
+        "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js",
+        "private": false,
+        "sha256": "8919eefce05b3127251724c8f8cad7f1ac1a0994c57b243361092ea4de096f72"
+      },
+      "maxBytes": 3596,
+      "request": {
+        "idempotency_key": "heptabao-mac-harness-public-source-info-codex-harness-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/Users/qianqi/.openclaw/npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex/dist/harness.js"
+          }
+        }
+      }
+    }
+  ],
+  "maximumWholeBytes": 265740,
+  "maximumInfoOperations": 3,
+  "maximumFutureBodyOperations": 5,
+  "maximumBinaryChunk": 65536,
+  "admission": "file_info must report a regular non-symlink file. For Codex require original whole SHA/size/all nine identity fields; for new helper paths acquire actual size/SHA/version within stated caps and preserve raw. New helper content hashes are unknown and must not be fabricated.",
+  "subsequentBodyBinding": "Freeze new exact binary_read requests using actual file_info versions/hashes and offset/limit <=65536 before any body admission. Every whole body must end at exact size/EOF and match SHA; no expansion/fallback/additional imports.",
+  "ordering": "One native operation at a time, separate exact external intent, single original key, SDK saved before isError/parse, status completed+inactive and full immutable payload before next. Current GO is false.",
+  "codeExecution": false,
+  "privateRead": false,
+  "write": false,
+  "additionalRootScan": false,
+  "bodyRequestsYetFrozen": false,
+  "unresolvedDependencies": [
+    "normalization/load-options/loadOpenClawPlugins transitive behavior is not fully reviewed",
+    "public configuration projection equivalence not established",
+    "ordinal 22 ID/root still hash-only",
+    "complete owner code/manifest/pins not available"
+  ]
+}

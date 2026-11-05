@@ -1,0 +1,32 @@
+{
+  "alias_inventory_claimed": false,
+  "all_original_metadata_slots_none": true,
+  "generic_fixed_file_byte_equal": true,
+  "host_execution": false,
+  "http_seconds": 15,
+  "migration_seconds": 360,
+  "new_system_reader_extra_eof_probe_cap": 1,
+  "new_system_reader_input_body_cap": 118640,
+  "one_new_function": "fixed_system_git",
+  "only_existing_function_changed": "readonly_prepare",
+  "prepare_seconds": 60,
+  "ready_still_false": true,
+  "runtime_outer_seconds": 1800,
+  "schema": "heptabao.mac-full34-system-git-source-delta.v1",
+  "source_bytes": 18428,
+  "source_sha256": "0a8e879b3accb189fe2cd3c6849e56b8c8600b66896d4ba8507cfe16db0e1386",
+  "system_shim_claimed": false,
+  "unchanged_functions": [
+    "need",
+    "sha",
+    "save",
+    "enc",
+    "git",
+    "source",
+    "normal61_admission",
+    "prepare_remaining",
+    "full9",
+    "fixed_file",
+    "main"
+  ]
+}

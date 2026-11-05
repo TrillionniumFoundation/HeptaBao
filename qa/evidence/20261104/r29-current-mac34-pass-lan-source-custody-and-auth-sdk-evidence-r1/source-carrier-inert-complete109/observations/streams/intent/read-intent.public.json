@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.source-carrier.inert.fixed-read-intent.v1",
+  "root_GO": "3eedc101ee18c577c4a10a318f2bbeaae8f5f7a4",
+  "original_job_id": "1a1aca557a2-fc05-561b",
+  "observation_name": "streams",
+  "exact_request": {
+    "idempotency_key": "heptabao-4e808-source-carrier-inert-readback-148698c8-r1-streams",
+    "operation": {
+      "tool": "process_read",
+      "arguments": {
+        "host": "desktop",
+        "job_id": "1a1aca557a2-fc05-561b",
+        "stdout_offset": 0,
+        "stderr_offset": 0,
+        "limit": 16384
+      }
+    }
+  },
+  "original_business_submit_once": true,
+  "new_business_or_product": false,
+  "original_SDK_external_before_parse": true,
+  "same_returned_ID_status_and_immutable_pages_only": true,
+  "on_error": "Stop new admissions; no implicit retry; preserve exact SDK and seek root reconciliation."
+}

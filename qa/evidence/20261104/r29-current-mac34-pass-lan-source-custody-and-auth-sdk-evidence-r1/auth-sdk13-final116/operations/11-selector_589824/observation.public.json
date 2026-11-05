@@ -1,0 +1,77 @@
+{
+  "schema": "heptabao.mac-harness-sdk-body-observation.v1",
+  "sequence": 11,
+  "id": "selector_589824",
+  "request_blob": "3d69268de77fe52a32a9aa617b7ee91e6451d490",
+  "intent_blob": "fbf923a66ac074f37cb8bd142a26cf02e308ced4",
+  "ack_blob": "59f76cd172bd02f078323aa028e3291a94a1605f",
+  "operation_id": "0a76e36c0f77a78517a742fbcae67a51ea7e7e109c056c2348750086441f0d05",
+  "status_blob": "ae1fa0aa940b4eb8b95fb065ad60520857bf82b5",
+  "original_sdk_blob": "77797cb1f2b5748527f0c3d348f8d8014fb4a6ad",
+  "original_native_blob": "710f616b60bf489b0e720447a364594eb041d3be",
+  "actual_chunk_bytes": 65536,
+  "actual_chunk_sha256": "d2667717795b6c04682c4104960681b04e5ed3d0c1ecaf75041c78562c12ba0d",
+  "offset": 589824,
+  "next_offset": 655360,
+  "eof": false,
+  "exact_path_version_size_offset_eof": true,
+  "operation_completed": true,
+  "owned_future_active": false,
+  "original_sdk_payload_pages": 6,
+  "all_original_payload_pages_verified": true,
+  "root_recovery_go": "b255a0d1ab726eb1c57bca40a05cfe0820a52cc2",
+  "page_provenance": [
+    {
+      "page": 0,
+      "offset": 0,
+      "bytes": 16384,
+      "sdk_blob": "87b76e99dd899cef4c806d44a1476cd41876c732",
+      "native_blob": "2490e5048ddb6786b5c616f4fb4c0ff3f5e887ef",
+      "recovered_from_original_error": false
+    },
+    {
+      "page": 1,
+      "offset": 16384,
+      "bytes": 16384,
+      "sdk_blob": "f21f4cf925e4c40f5e0f8b35697cb5029ac93adb",
+      "native_blob": "a738ab972da48b9b4709a2a74784915630a2986b",
+      "recovered_from_original_error": true
+    },
+    {
+      "page": 2,
+      "offset": 32768,
+      "bytes": 16384,
+      "sdk_blob": "2cc26c859214345dca9c65f7ef6e2158904995d9",
+      "native_blob": "00c6a67af306be58a68095853a65578e6056b41c",
+      "recovered_from_original_error": true
+    },
+    {
+      "page": 3,
+      "offset": 49152,
+      "bytes": 16384,
+      "sdk_blob": "253990ecd93dabf7a2c3be82985fbda5e4f12a36",
+      "native_blob": "3a7fba6d30e0578d5868f51e3effd9a7b0e755cf",
+      "recovered_from_original_error": false
+    },
+    {
+      "page": 4,
+      "offset": 65536,
+      "bytes": 16384,
+      "sdk_blob": "9d12ad594b0fdddc35c3fa7ae7c2c27010e92bff",
+      "native_blob": "709d92347b3246acb77048be5e516f69678e9c4f",
+      "recovered_from_original_error": false
+    },
+    {
+      "page": 5,
+      "offset": 81920,
+      "bytes": 5884,
+      "sdk_blob": "5532ad5a1162e73fc3eb17af2466d01a3d4db5f3",
+      "native_blob": "765763ec2ed6be2c45d36a4a0edcc2ee65fb337e",
+      "recovered_from_original_error": false
+    }
+  ],
+  "original_two_page_errors_preserved": true,
+  "original_native_read_replayed": false,
+  "sdk_executed": false,
+  "selected_owner_conclusion": false
+}

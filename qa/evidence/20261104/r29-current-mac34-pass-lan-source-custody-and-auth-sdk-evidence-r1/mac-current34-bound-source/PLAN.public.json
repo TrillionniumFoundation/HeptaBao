@@ -1,0 +1,52 @@
+{
+  "actual_six_metadata_tree": "7335151a16006015891c4fe62655d7907f8fedc1",
+  "candidate_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "candidate_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "exact_requests": {
+    "inert": {
+      "bytes": 33458,
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013",
+      "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "idempotency_key": "heptabao-mac-current-full34-inert-65e8361e-20261105-r1",
+      "path": "proposed-bound/INERT.request.REVIEW-ONLY.json",
+      "sha256": "d3c1ebd36eb063bee62481a519cf88d6d66279d55e93cd8e592d80c7a6231db1",
+      "timeout_seconds": 60
+    },
+    "prepare": {
+      "bytes": 552,
+      "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1",
+      "executable": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "idempotency_key": "heptabao-mac-current-full34-prepare-29785927-20261105-r1",
+      "path": "proposed-bound/PREPARE.request.REVIEW-ONLY.json",
+      "sha256": "638fdf9a7a5eb7ecc133381a79fc05d5d9177e3a0df64d562ffe1dbbfb7e5405",
+      "timeout_seconds": 90
+    }
+  },
+  "generic_fixed_file_unchanged": true,
+  "live_request_generated": false,
+  "only_git_role_uses_new_reader": true,
+  "original_cases": 31,
+  "original_http_seconds": 15,
+  "original_migration_seconds": 360,
+  "original_worker_http_seconds": 5,
+  "pending": [
+    "root review of complete successor and exact inert request",
+    "separate one-time inert GO and durable external intent",
+    "actual inert authority/streams/file_info/full readback",
+    "separate prepare GO",
+    "actual prepared SHA and independent live GO"
+  ],
+  "prepare_original_new_seconds": 60,
+  "prepare_outer_seconds": 90,
+  "publication_internal_deadline_claim": false,
+  "publication_outer_seconds": 60,
+  "root_actual_review": "b137fc849b441e3e70e44a0c29cbf6d8bb3676ca",
+  "runtime_inert_submitted": false,
+  "runtime_original_outer_seconds": 1800,
+  "runtime_prepare_submitted": false,
+  "schema": "heptabao.current-mac-full34-publication-and-prepare-review-plan.v1",
+  "source_baseline_tree": "bdb1dd296ac147ddcd355655814df099e59c571d",
+  "source_only": true,
+  "system_git_shim_or_alias_census_proven": false,
+  "wrapper_publisher_readiness_is_review_only": true
+}

@@ -1,0 +1,54 @@
+[
+  {
+    "name": "four independent complete UTF8 snapshots",
+    "pass": true
+  },
+  {
+    "name": "sender.py exact path and EOF",
+    "pass": true
+  },
+  {
+    "name": "sender.py whole size hash and independent version",
+    "pass": true
+  },
+  {
+    "name": "sender.py entire reviewed source exact",
+    "pass": true
+  },
+  {
+    "name": "receiver.py exact path and EOF",
+    "pass": true
+  },
+  {
+    "name": "receiver.py whole size hash and independent version",
+    "pass": true
+  },
+  {
+    "name": "receiver.py entire reviewed source exact",
+    "pass": true
+  },
+  {
+    "name": "relay.py exact path and EOF",
+    "pass": true
+  },
+  {
+    "name": "relay.py whole size hash and independent version",
+    "pass": true
+  },
+  {
+    "name": "relay.py entire reviewed source exact",
+    "pass": true
+  },
+  {
+    "name": "inert-stage.result.public.json exact path and EOF",
+    "pass": true
+  },
+  {
+    "name": "inert-stage.result.public.json whole size hash and independent version",
+    "pass": true
+  },
+  {
+    "name": "receipt lossless object equals original stdout",
+    "pass": true
+  }
+]

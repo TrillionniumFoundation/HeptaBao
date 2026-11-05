@@ -1,0 +1,10 @@
+{
+  "path": true,
+  "bytes": true,
+  "sha256": true,
+  "mode": true,
+  "uid": true,
+  "gid": true,
+  "nlink": true,
+  "version_equals_original_receipt": true
+}

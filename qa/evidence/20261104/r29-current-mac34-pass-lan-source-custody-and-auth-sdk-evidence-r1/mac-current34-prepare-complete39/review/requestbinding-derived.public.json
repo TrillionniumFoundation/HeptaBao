@@ -1,0 +1,9 @@
+{
+  "digest": "b35b8731505c9124294eea673a1b62f3df6a414547ac90926f4194b4b778217a",
+  "fingerprint": "12924072201541161252",
+  "canonical_bytes": 504,
+  "inert_control_digest": "a5384594744bfda60d62fd2cbd36516e8393f714e09714bf5bb099fa84d6ac8a",
+  "reference_repository": "TrillionniumFoundation/hepta-runtime",
+  "reference_blob": "fc559bec715e95fee000b65c54c083f4fdd43450",
+  "reference_is_deployed_version_proof": false
+}

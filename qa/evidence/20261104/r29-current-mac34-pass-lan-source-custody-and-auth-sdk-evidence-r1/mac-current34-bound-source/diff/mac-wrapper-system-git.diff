@@ -1,0 +1,35 @@
+--- a/original-wrapper.py
++++ b/system-git-wrapper.py
+@@ -111,11 +111,31 @@
+  need(full9(p.lstat())==m['identity'] and observed==m['bytes'] and digest.hexdigest()==m['sha256'],'input_whole_bytes_or_name_changed')
+  prepare_remaining();return m
+ 
++def fixed_system_git():
++ prepare_remaining();m=INPUT_METADATA['git'];p=Path('/usr/bin/git')
++ need(INPUT_PATHS['git']==str(p),'system_git_fixed_path')
++ need(isinstance(m,dict) and set(m)=={'path','bytes','sha256','identity','version'},'system_git_metadata_unresolved')
++ need(m['path']==str(p) and m['bytes']==118640 and m['sha256']=='b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9','system_git_exact_whole_pin')
++ need(isinstance(m['identity'],list) and len(m['identity'])==9 and all(type(x) is int for x in m['identity']),'system_git_full_identity')
++ need(m['identity']==[16777233,1152921500312571562,0,0,stat.S_IFREG|0o755,78,118640,1786589515000000000,1786589515000000000],'system_git_exact_root_owned_identity')
++ need(m['version']=='16777233:1152921500312571562:118640:1786589515000000000:1786589515000000000','system_git_exact_version')
++ before=p.lstat();need(stat.S_ISREG(before.st_mode) and full9(before)==m['identity'],'system_git_named_before')
++ observed=0;digest=hashlib.sha256()
++ with open(p,'rb',opener=lambda path,flags:os.open(path,flags|os.O_NOFOLLOW|os.O_NONBLOCK)) as f:
++  need(full9(os.fstat(f.fileno()))==m['identity'],'system_git_open_identity')
++  while observed<118640:
++   prepare_remaining();block=f.read(min(65536,118640-observed));observed+=len(block)
++   need(bool(block) and observed<=118640,'system_git_short_or_extra_read');digest.update(block)
++  prepare_remaining();extra=f.read(1);need(extra==b'','system_git_eof')
++  need(full9(os.fstat(f.fileno()))==m['identity'],'system_git_fd_changed')
++ need(full9(p.lstat())==m['identity'] and observed==118640 and digest.hexdigest()==m['sha256'],'system_git_whole_or_name_changed')
++ prepare_remaining();return m
++
+ def readonly_prepare():
+  need(BINDING_READY is True,'normal61_and_local_prerequisite_bindings_unresolved')
+  need(set(INPUT_METADATA)==set(INPUT_PATHS) and all(isinstance(v,dict) for v in INPUT_METADATA.values()),'all_six_prerequisites_required')
+  need(sys.platform=='darwin','mac_native_host_required')
+- inputs={name:fixed_file(name) for name in INPUT_PATHS}
++ inputs={name:(fixed_system_git() if name=='git' else fixed_file(name)) for name in INPUT_PATHS}
+  need(Path(sys.executable).samefile(PYTHON),'actual_python_executable_binding')
+  need(ROOT.resolve(strict=True)==ROOT and ROOT.stat().st_uid==os.geteuid() and stat.S_IMODE(ROOT.stat().st_mode)==0o700,'fresh_control_root_custody')
+  need(not os.path.lexists(OUT),'fresh_full34_work_root_required')

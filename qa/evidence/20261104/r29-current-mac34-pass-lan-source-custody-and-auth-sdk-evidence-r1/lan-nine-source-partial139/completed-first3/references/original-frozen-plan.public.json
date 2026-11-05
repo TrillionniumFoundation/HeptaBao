@@ -1,0 +1,796 @@
+{
+  "schema": "heptabao.current-lan-inert-fixed-readback-source-plan.v1",
+  "execution_ready": false,
+  "dispatch_authorized": false,
+  "source_only": true,
+  "runtime_calls": 0,
+  "original": {
+    "request_blob": "70f27390d318755075562482091b3bf27946b37d",
+    "key": "heptabao-4e808-postcold-inert-r1-57cb2b31-7ee5ee82",
+    "host": "desktop",
+    "outer_seconds": 60,
+    "external_intent_tree": "61d258ee4c035e56aa1e1ea11465717bb0388dd1",
+    "unknown_packet_tree": "90fb803c6c686008e6c13fca3208fa08e6347f7f",
+    "start_submissions": 1,
+    "replay": false,
+    "original_unknown_preserved": true
+  },
+  "stages": {
+    "original_status_and_streams": {
+      "requirement": "Original job ID must first be established by root from exact request binding; a timestamp, matching directory name or a successful status alone is insufficient.",
+      "expected_request_digest": "5df3e472d540fcee1b5d2534607d051900f9abd52f979f156e822f7a752802f0",
+      "confirmed_original_job_id": null,
+      "reuse_prior_root_closed_observations": true,
+      "status_request_template": {
+        "idempotency_key": "ha-4e808-lan-inert-original-status-r1-20261105",
+        "operation": {
+          "tool": "process_status",
+          "arguments": {
+            "host": "desktop",
+            "job_id": null
+          }
+        }
+      },
+      "stream_request_template": {
+        "idempotency_key": "ha-4e808-lan-inert-original-stream0-r1-20261105",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "desktop",
+            "job_id": null,
+            "stdout_offset": 0,
+            "stderr_offset": 0,
+            "limit": 16384
+          }
+        }
+      },
+      "stream_continuation": "Use only returned offsets against the same confirmed original job and authoritative stored stream sizes. Do not repeat a completed first read or add a new process.",
+      "job_identity_and_stream_templates_ready": false
+    },
+    "receipt_first": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/inert-stage.result.public.json",
+      "info_request": {
+        "idempotency_key": "ha-4e808-lan-inert-receipt-info-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/inert-stage.result.public.json"
+          }
+        }
+      },
+      "actual_info": null,
+      "body_request_template": {
+        "idempotency_key": "ha-4e808-lan-inert-receipt-body0-r1-20261105",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/inert-stage.result.public.json",
+            "offset": 0,
+            "limit": 16384,
+            "expected_version": null
+          }
+        }
+      },
+      "expected_receipt_byte_limit": 65536,
+      "body_binding": "After successful fixed file_info, fill only its exact nonempty version. The first request remains 16KiB; use returned next_offset for any remainder within the actual independently observed size. Whole size/SHA/version must match.",
+      "receipt_json": "Preserve raw UTF-8 and the final LF. Parse original stdout and receipt through the lossless integer parser and compare complete JSON values; source uses sorted pretty JSON plus one LF for receipt and compact JSON for stdout.",
+      "own_metadata_note": "The receipt publication return value is not appended to the carrier stdout. Do not invent a receipt full9 or a per-FD close ledger from the report.",
+      "requests_submitted": false
+    },
+    "source_readback_after_receipt": [
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/read_stopped_postrecovery_frontier_same_root_publication_r1.py",
+        "expected_bytes": 16310,
+        "expected_sha256": "e23df808914e8bc828c78b875753021f9dc67da94e697d67b33732f55e46ba1f",
+        "kind": "reviewed-public-source",
+        "observation_submitted": false,
+        "actual_version": null,
+        "source_index": 0,
+        "info_request": {
+          "idempotency_key": "ha-4e808-lan-inert-source0-info-r1-20261105",
+          "operation": {
+            "tool": "file_info",
+            "arguments": {
+              "host": "desktop",
+              "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/read_stopped_postrecovery_frontier_same_root_publication_r1.py"
+            }
+          }
+        },
+        "actual_info": null,
+        "body_chunks": [
+          {
+            "offset": 0,
+            "expected_decoded_bytes": 16310,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source0-body0-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/read_stopped_postrecovery_frontier_same_root_publication_r1.py",
+                  "offset": 0,
+                  "limit": 16310,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          }
+        ]
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/read_stopped_recovered_cipher_same_root_publication_r1.py",
+        "expected_bytes": 13225,
+        "expected_sha256": "62be0f577ace2ce3a7754b10d310dfc3f7cc6aa667f566b883c8575d320366b5",
+        "kind": "reviewed-public-source",
+        "observation_submitted": false,
+        "actual_version": null,
+        "source_index": 1,
+        "info_request": {
+          "idempotency_key": "ha-4e808-lan-inert-source1-info-r1-20261105",
+          "operation": {
+            "tool": "file_info",
+            "arguments": {
+              "host": "desktop",
+              "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/read_stopped_recovered_cipher_same_root_publication_r1.py"
+            }
+          }
+        },
+        "actual_info": null,
+        "body_chunks": [
+          {
+            "offset": 0,
+            "expected_decoded_bytes": 13225,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source1-body0-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/read_stopped_recovered_cipher_same_root_publication_r1.py",
+                  "offset": 0,
+                  "limit": 13225,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          }
+        ]
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/native_v6_pocket_source_postrecovery_cold_4e808_r1.py",
+        "expected_bytes": 72753,
+        "expected_sha256": "7ee5ee8218b50b7edc3cc010bdd1306f6d03b3301f00811034425b591ad76754",
+        "kind": "reviewed-public-source",
+        "observation_submitted": false,
+        "actual_version": null,
+        "source_index": 2,
+        "info_request": {
+          "idempotency_key": "ha-4e808-lan-inert-source2-info-r1-20261105",
+          "operation": {
+            "tool": "file_info",
+            "arguments": {
+              "host": "desktop",
+              "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/native_v6_pocket_source_postrecovery_cold_4e808_r1.py"
+            }
+          }
+        },
+        "actual_info": null,
+        "body_chunks": [
+          {
+            "offset": 0,
+            "expected_decoded_bytes": 16384,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source2-body0-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/native_v6_pocket_source_postrecovery_cold_4e808_r1.py",
+                  "offset": 0,
+                  "limit": 16384,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          },
+          {
+            "offset": 16384,
+            "expected_decoded_bytes": 16384,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source2-body16384-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/native_v6_pocket_source_postrecovery_cold_4e808_r1.py",
+                  "offset": 16384,
+                  "limit": 16384,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          },
+          {
+            "offset": 32768,
+            "expected_decoded_bytes": 16384,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source2-body32768-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/native_v6_pocket_source_postrecovery_cold_4e808_r1.py",
+                  "offset": 32768,
+                  "limit": 16384,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          },
+          {
+            "offset": 49152,
+            "expected_decoded_bytes": 16384,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source2-body49152-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/native_v6_pocket_source_postrecovery_cold_4e808_r1.py",
+                  "offset": 49152,
+                  "limit": 16384,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          },
+          {
+            "offset": 65536,
+            "expected_decoded_bytes": 7217,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source2-body65536-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/native_v6_pocket_source_postrecovery_cold_4e808_r1.py",
+                  "offset": 65536,
+                  "limit": 7217,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          }
+        ]
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+        "expected_bytes": 25879,
+        "expected_sha256": "57cb2b31c6dfdd13a63cc99714e205386361efc9d6bf32230a03861f36cd5a92",
+        "kind": "reviewed-public-source",
+        "observation_submitted": false,
+        "actual_version": null,
+        "source_index": 3,
+        "info_request": {
+          "idempotency_key": "ha-4e808-lan-inert-source3-info-r1-20261105",
+          "operation": {
+            "tool": "file_info",
+            "arguments": {
+              "host": "desktop",
+              "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py"
+            }
+          }
+        },
+        "actual_info": null,
+        "body_chunks": [
+          {
+            "offset": 0,
+            "expected_decoded_bytes": 16384,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source3-body0-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+                  "offset": 0,
+                  "limit": 16384,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          },
+          {
+            "offset": 16384,
+            "expected_decoded_bytes": 9495,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source3-body16384-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+                  "offset": 16384,
+                  "limit": 9495,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          }
+        ]
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/ha_multihost_live.py",
+        "expected_bytes": 79776,
+        "expected_sha256": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460",
+        "kind": "reviewed-public-source",
+        "observation_submitted": false,
+        "actual_version": null,
+        "source_index": 4,
+        "info_request": {
+          "idempotency_key": "ha-4e808-lan-inert-source4-info-r1-20261105",
+          "operation": {
+            "tool": "file_info",
+            "arguments": {
+              "host": "desktop",
+              "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/ha_multihost_live.py"
+            }
+          }
+        },
+        "actual_info": null,
+        "body_chunks": [
+          {
+            "offset": 0,
+            "expected_decoded_bytes": 16384,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source4-body0-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/ha_multihost_live.py",
+                  "offset": 0,
+                  "limit": 16384,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          },
+          {
+            "offset": 16384,
+            "expected_decoded_bytes": 16384,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source4-body16384-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/ha_multihost_live.py",
+                  "offset": 16384,
+                  "limit": 16384,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          },
+          {
+            "offset": 32768,
+            "expected_decoded_bytes": 16384,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source4-body32768-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/ha_multihost_live.py",
+                  "offset": 32768,
+                  "limit": 16384,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          },
+          {
+            "offset": 49152,
+            "expected_decoded_bytes": 16384,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source4-body49152-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/ha_multihost_live.py",
+                  "offset": 49152,
+                  "limit": 16384,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          },
+          {
+            "offset": 65536,
+            "expected_decoded_bytes": 14240,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source4-body65536-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/ha_multihost_live.py",
+                  "offset": 65536,
+                  "limit": 14240,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          }
+        ]
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_ha_foreground_watchdog.py",
+        "expected_bytes": 41618,
+        "expected_sha256": "04189572097f5f7ac1f4ea3eaf53afaa3bf9854043cec9e190b9fd96d628ef89",
+        "kind": "reviewed-public-source",
+        "observation_submitted": false,
+        "actual_version": null,
+        "source_index": 5,
+        "info_request": {
+          "idempotency_key": "ha-4e808-lan-inert-source5-info-r1-20261105",
+          "operation": {
+            "tool": "file_info",
+            "arguments": {
+              "host": "desktop",
+              "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_ha_foreground_watchdog.py"
+            }
+          }
+        },
+        "actual_info": null,
+        "body_chunks": [
+          {
+            "offset": 0,
+            "expected_decoded_bytes": 16384,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source5-body0-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_ha_foreground_watchdog.py",
+                  "offset": 0,
+                  "limit": 16384,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          },
+          {
+            "offset": 16384,
+            "expected_decoded_bytes": 16384,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source5-body16384-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_ha_foreground_watchdog.py",
+                  "offset": 16384,
+                  "limit": 16384,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          },
+          {
+            "offset": 32768,
+            "expected_decoded_bytes": 8850,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source5-body32768-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_ha_foreground_watchdog.py",
+                  "offset": 32768,
+                  "limit": 8850,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          }
+        ]
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_v6_ha_direct_lan_live.py",
+        "expected_bytes": 14046,
+        "expected_sha256": "bc99f154d89dfbe8a82babb8c50bcda3accaf8c486c51750db48bfc4003932ea",
+        "kind": "reviewed-public-source",
+        "observation_submitted": false,
+        "actual_version": null,
+        "source_index": 6,
+        "info_request": {
+          "idempotency_key": "ha-4e808-lan-inert-source6-info-r1-20261105",
+          "operation": {
+            "tool": "file_info",
+            "arguments": {
+              "host": "desktop",
+              "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_v6_ha_direct_lan_live.py"
+            }
+          }
+        },
+        "actual_info": null,
+        "body_chunks": [
+          {
+            "offset": 0,
+            "expected_decoded_bytes": 14046,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source6-body0-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_v6_ha_direct_lan_live.py",
+                  "offset": 0,
+                  "limit": 14046,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          }
+        ]
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_v6_ha_multihost_live.py",
+        "expected_bytes": 87254,
+        "expected_sha256": "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429",
+        "kind": "reviewed-public-source",
+        "observation_submitted": false,
+        "actual_version": null,
+        "source_index": 7,
+        "info_request": {
+          "idempotency_key": "ha-4e808-lan-inert-source7-info-r1-20261105",
+          "operation": {
+            "tool": "file_info",
+            "arguments": {
+              "host": "desktop",
+              "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_v6_ha_multihost_live.py"
+            }
+          }
+        },
+        "actual_info": null,
+        "body_chunks": [
+          {
+            "offset": 0,
+            "expected_decoded_bytes": 16384,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source7-body0-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_v6_ha_multihost_live.py",
+                  "offset": 0,
+                  "limit": 16384,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          },
+          {
+            "offset": 16384,
+            "expected_decoded_bytes": 16384,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source7-body16384-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_v6_ha_multihost_live.py",
+                  "offset": 16384,
+                  "limit": 16384,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          },
+          {
+            "offset": 32768,
+            "expected_decoded_bytes": 16384,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source7-body32768-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_v6_ha_multihost_live.py",
+                  "offset": 32768,
+                  "limit": 16384,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          },
+          {
+            "offset": 49152,
+            "expected_decoded_bytes": 16384,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source7-body49152-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_v6_ha_multihost_live.py",
+                  "offset": 49152,
+                  "limit": 16384,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          },
+          {
+            "offset": 65536,
+            "expected_decoded_bytes": 16384,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source7-body65536-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_v6_ha_multihost_live.py",
+                  "offset": 65536,
+                  "limit": 16384,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          },
+          {
+            "offset": 81920,
+            "expected_decoded_bytes": 5334,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source7-body81920-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/deadline_qa/native_v6_ha_multihost_live.py",
+                  "offset": 81920,
+                  "limit": 5334,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          }
+        ]
+      },
+      {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/probe_normal_build_r10_r1.py",
+        "expected_bytes": 6445,
+        "expected_sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+        "kind": "reviewed-public-source",
+        "observation_submitted": false,
+        "actual_version": null,
+        "source_index": 8,
+        "info_request": {
+          "idempotency_key": "ha-4e808-lan-inert-source8-info-r1-20261105",
+          "operation": {
+            "tool": "file_info",
+            "arguments": {
+              "host": "desktop",
+              "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/probe_normal_build_r10_r1.py"
+            }
+          }
+        },
+        "actual_info": null,
+        "body_chunks": [
+          {
+            "offset": 0,
+            "expected_decoded_bytes": 6445,
+            "request_template": {
+              "idempotency_key": "ha-4e808-lan-inert-source8-body0-r1-20261105",
+              "operation": {
+                "tool": "binary_read",
+                "arguments": {
+                  "host": "desktop",
+                  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/probe_normal_build_r10_r1.py",
+                  "offset": 0,
+                  "limit": 6445,
+                  "expected_version": null
+                }
+              }
+            },
+            "actual_operation_id": null,
+            "submitted": false
+          }
+        ]
+      }
+    ]
+  },
+  "fixed_scope": {
+    "paths": 10,
+    "public_sources": 9,
+    "public_source_bytes": 357306,
+    "source_binary_chunks": 25,
+    "file_info_calls": 10,
+    "body_limit_per_chunk": 16384,
+    "immutable_payload_page_limit": 8192,
+    "maximum_concurrent_new_operations": 1,
+    "no_directory_listing": true,
+    "no_new_process": true,
+    "no_product": true,
+    "no_prepare": true,
+    "no_live": true,
+    "no_relay": true
+  },
+  "admission_and_observation_protocol": [
+    "Keep all request templates unsubmitted and execution_ready=false until root separately releases an observation window and confirms the original job binding.",
+    "Each operation admission SDK is externally persisted before isError and parsing. Persist the returned operation_id once; never infer it.",
+    "For that same operation_id obtain completed/stored_observed/owned_future_active=false, then every immutable payload page (8192-byte limit) and whole payload hash/EOF before admitting another operation.",
+    "Any tool error or RPC error is preserved and stops later admissions on this line. Reconciliation uses only the original operation ID or a separately authorized same-key immutable read contract; do not replay process_start.",
+    "file_info responses must name the exact fixed path, match the reviewed source bytes/SHA where applicable, and preserve actual uid/gid/mode/nlink and version. Unknown/mismatch stops qualification.",
+    "Fill binary_read expected_version from that exact independent file_info. Reassemble raw decoded bytes with the binary-safe base64 decoder; do not UTF-8 re-encode opaque data.",
+    "For each source require full size, SHA256, version equality and byte equality with the original admitted source. Match report file identity fields losslessly without rounding nanoseconds.",
+    "read_multiple_files has no expected_version input in the public schema and is not used to fabricate that contract here.",
+    "A missing file is an observation error, not evidence the original job never executed. Any partial stage failure remains separate from terminal authority and cleanup.",
+    "Full successful inert qualification requires authoritative exit0/full/durable, complete original streams, exact receipt equality, nine reviewed source bodies and independent metadata; it grants no prepare/live/relay authority."
+  ],
+  "unresolved": {
+    "job_id": true,
+    "authority": true,
+    "streams": true,
+    "receipt_info": true,
+    "receipt_body": true,
+    "source_infos": 9,
+    "source_bodies": 9,
+    "actual_complete_import_sha256": null
+  }
+}

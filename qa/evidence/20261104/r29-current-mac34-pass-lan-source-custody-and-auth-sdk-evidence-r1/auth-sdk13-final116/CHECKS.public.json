@@ -1,0 +1,379 @@
+{
+  "schema": "heptabao.sdk-final-originals-author-byte-checks.v1",
+  "checks": [
+    {
+      "name": "11_frozen_request_whole",
+      "passed": true
+    },
+    {
+      "name": "start_external_pins_present",
+      "passed": true
+    },
+    {
+      "name": "start_sdk_native_exact",
+      "passed": true
+    },
+    {
+      "name": "11_ack_not_error",
+      "passed": true
+    },
+    {
+      "name": "11_ack_unique_binding",
+      "passed": true
+    },
+    {
+      "name": "status_0_external_pins_present",
+      "passed": true
+    },
+    {
+      "name": "status_0_sdk_native_exact",
+      "passed": true
+    },
+    {
+      "name": "11_status_known_full",
+      "passed": true
+    },
+    {
+      "name": "result_0_external_pins_present",
+      "passed": true
+    },
+    {
+      "name": "result_0_sdk_native_exact",
+      "passed": true
+    },
+    {
+      "name": "11_page_0_success",
+      "passed": true
+    },
+    {
+      "name": "11_page_0_native_equals_stored",
+      "passed": true
+    },
+    {
+      "name": "11_page_0_bound",
+      "passed": true
+    },
+    {
+      "name": "result_1_recovery_b255_1_external_pins_present",
+      "passed": true
+    },
+    {
+      "name": "result_1_recovery_b255_1_sdk_native_exact",
+      "passed": true
+    },
+    {
+      "name": "11_page_1_success",
+      "passed": true
+    },
+    {
+      "name": "11_page_1_native_equals_stored",
+      "passed": true
+    },
+    {
+      "name": "11_page_1_bound",
+      "passed": true
+    },
+    {
+      "name": "result_2_recovery_b255_1_external_pins_present",
+      "passed": true
+    },
+    {
+      "name": "result_2_recovery_b255_1_sdk_native_exact",
+      "passed": true
+    },
+    {
+      "name": "11_page_2_success",
+      "passed": true
+    },
+    {
+      "name": "11_page_2_native_equals_stored",
+      "passed": true
+    },
+    {
+      "name": "11_page_2_bound",
+      "passed": true
+    },
+    {
+      "name": "result_3_external_pins_present",
+      "passed": true
+    },
+    {
+      "name": "result_3_sdk_native_exact",
+      "passed": true
+    },
+    {
+      "name": "11_page_3_success",
+      "passed": true
+    },
+    {
+      "name": "11_page_3_native_equals_stored",
+      "passed": true
+    },
+    {
+      "name": "11_page_3_bound",
+      "passed": true
+    },
+    {
+      "name": "result_4_external_pins_present",
+      "passed": true
+    },
+    {
+      "name": "result_4_sdk_native_exact",
+      "passed": true
+    },
+    {
+      "name": "11_page_4_success",
+      "passed": true
+    },
+    {
+      "name": "11_page_4_native_equals_stored",
+      "passed": true
+    },
+    {
+      "name": "11_page_4_bound",
+      "passed": true
+    },
+    {
+      "name": "result_5_external_pins_present",
+      "passed": true
+    },
+    {
+      "name": "result_5_sdk_native_exact",
+      "passed": true
+    },
+    {
+      "name": "11_page_5_success",
+      "passed": true
+    },
+    {
+      "name": "11_page_5_native_equals_stored",
+      "passed": true
+    },
+    {
+      "name": "11_page_5_bound",
+      "passed": true
+    },
+    {
+      "name": "11_whole_original_byte_exact",
+      "passed": true
+    },
+    {
+      "name": "11_original_native_pair",
+      "passed": true
+    },
+    {
+      "name": "11_native_fixed_binding",
+      "passed": true
+    },
+    {
+      "name": "11_known_complete",
+      "passed": true
+    },
+    {
+      "name": "12_frozen_request_whole",
+      "passed": true
+    },
+    {
+      "name": "start_external_pins_present",
+      "passed": true
+    },
+    {
+      "name": "start_sdk_native_exact",
+      "passed": true
+    },
+    {
+      "name": "12_ack_not_error",
+      "passed": true
+    },
+    {
+      "name": "12_ack_unique_binding",
+      "passed": true
+    },
+    {
+      "name": "status_1_external_pins_present",
+      "passed": true
+    },
+    {
+      "name": "status_1_sdk_native_exact",
+      "passed": true
+    },
+    {
+      "name": "12_status_known_full",
+      "passed": true
+    },
+    {
+      "name": "result_0_external_pins_present",
+      "passed": true
+    },
+    {
+      "name": "result_0_sdk_native_exact",
+      "passed": true
+    },
+    {
+      "name": "12_page_0_success",
+      "passed": true
+    },
+    {
+      "name": "12_page_0_native_equals_stored",
+      "passed": true
+    },
+    {
+      "name": "12_page_0_bound",
+      "passed": true
+    },
+    {
+      "name": "result_1_external_pins_present",
+      "passed": true
+    },
+    {
+      "name": "result_1_sdk_native_exact",
+      "passed": true
+    },
+    {
+      "name": "12_page_1_success",
+      "passed": true
+    },
+    {
+      "name": "12_page_1_native_equals_stored",
+      "passed": true
+    },
+    {
+      "name": "12_page_1_bound",
+      "passed": true
+    },
+    {
+      "name": "12_whole_original_byte_exact",
+      "passed": true
+    },
+    {
+      "name": "12_original_native_pair",
+      "passed": true
+    },
+    {
+      "name": "12_native_fixed_binding",
+      "passed": true
+    },
+    {
+      "name": "12_known_complete",
+      "passed": true
+    },
+    {
+      "name": "13_frozen_request_whole",
+      "passed": true
+    },
+    {
+      "name": "start_external_pins_present",
+      "passed": true
+    },
+    {
+      "name": "start_sdk_native_exact",
+      "passed": true
+    },
+    {
+      "name": "13_ack_not_error",
+      "passed": true
+    },
+    {
+      "name": "13_ack_unique_binding",
+      "passed": true
+    },
+    {
+      "name": "status_0_external_pins_present",
+      "passed": true
+    },
+    {
+      "name": "status_0_sdk_native_exact",
+      "passed": true
+    },
+    {
+      "name": "13_status_known_full",
+      "passed": true
+    },
+    {
+      "name": "result_0_external_pins_present",
+      "passed": true
+    },
+    {
+      "name": "result_0_sdk_native_exact",
+      "passed": true
+    },
+    {
+      "name": "13_page_0_success",
+      "passed": true
+    },
+    {
+      "name": "13_page_0_native_equals_stored",
+      "passed": true
+    },
+    {
+      "name": "13_page_0_bound",
+      "passed": true
+    },
+    {
+      "name": "13_whole_original_byte_exact",
+      "passed": true
+    },
+    {
+      "name": "13_original_native_pair",
+      "passed": true
+    },
+    {
+      "name": "13_native_fixed_binding",
+      "passed": true
+    },
+    {
+      "name": "13_known_complete",
+      "passed": true
+    },
+    {
+      "name": "11_original_page_1_error_preserved",
+      "passed": true
+    },
+    {
+      "name": "11_recovery_1_same_request",
+      "passed": true
+    },
+    {
+      "name": "11_original_page_2_error_preserved",
+      "passed": true
+    },
+    {
+      "name": "11_recovery_2_same_request",
+      "passed": true
+    },
+    {
+      "name": "12_original_status_error_preserved",
+      "passed": true
+    },
+    {
+      "name": "whole_loader_expected_hash",
+      "passed": true
+    },
+    {
+      "name": "whole_selector_expected_hash",
+      "passed": true
+    },
+    {
+      "name": "whole_registry_expected_hash",
+      "passed": true
+    },
+    {
+      "name": "three_whole_sources_total",
+      "passed": true
+    },
+    {
+      "name": "all13_known_complete",
+      "passed": true
+    },
+    {
+      "name": "no_current_operation",
+      "passed": true
+    }
+  ],
+  "passed": true,
+  "count": 92,
+  "scope": "Cached exact original payloads, byte hashes and typed binding only",
+  "sdk_imported": false,
+  "host_calls": 0,
+  "selected_owner_observed": false
+}

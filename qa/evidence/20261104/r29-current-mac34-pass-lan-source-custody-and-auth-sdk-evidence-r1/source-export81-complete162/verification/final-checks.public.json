@@ -1,0 +1,690 @@
+[
+  {
+    "name": "81_unique_whole_files",
+    "passed": true
+  },
+  {
+    "name": "commandlogs-01_full_completed_inactive",
+    "passed": true
+  },
+  {
+    "name": "commandlogs-02_full_completed_inactive",
+    "passed": true
+  },
+  {
+    "name": "commandlogs-03_full_completed_inactive",
+    "passed": true
+  },
+  {
+    "name": "commandlogs-04_full_completed_inactive",
+    "passed": true
+  },
+  {
+    "name": "commandlogs-05_full_completed_inactive",
+    "passed": true
+  },
+  {
+    "name": "commandlogs-06_full_completed_inactive",
+    "passed": true
+  },
+  {
+    "name": "six_unique_read_ids",
+    "passed": true
+  },
+  {
+    "name": "whole_000-source-before-head.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_000-source-before-head.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_000-source-before-head.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_001-source-before-tree.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_001-source-before-tree.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_001-source-before-tree.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_002-source-before-status.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_002-source-before-status.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_002-source-before-status.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_003-source-before-git-dir.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_003-source-before-git-dir.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_003-source-before-git-dir.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_004-source-before-common-dir.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_004-source-before-common-dir.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_004-source-before-common-dir.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_005-source-before-shallow.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_005-source-before-shallow.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_005-source-before-shallow.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_006-source-before-partial-config.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_006-source-before-partial-config.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_006-source-before-partial-config.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_007-source-before-origin.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_007-source-before-origin.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_007-source-before-origin.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_008-source-before-refs.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_008-source-before-refs.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_008-source-before-refs.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_009-export-proof-kind.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_009-export-proof-kind.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_009-export-proof-kind.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_010-export-proof-tree.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_010-export-proof-tree.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_010-export-proof-tree.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_011-export-proof-parents.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_011-export-proof-parents.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_011-export-proof-parents.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_012-export-proof-count.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_012-export-proof-count.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_012-export-proof-count.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_013-export-proof-roots.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_013-export-proof-roots.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_013-export-proof-roots.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_014-export-proof-full-fsck.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_014-export-proof-full-fsck.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_014-export-proof-full-fsck.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_015-bundle-create.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_015-bundle-create.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_015-bundle-create.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_016-bundle-verify.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_016-bundle-verify.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_016-bundle-verify.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_017-bundle-heads.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_017-bundle-heads.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_017-bundle-heads.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_018-source-after-head.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_018-source-after-head.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_018-source-after-head.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_019-source-after-tree.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_019-source-after-tree.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_019-source-after-tree.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_020-source-after-status.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_020-source-after-status.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_020-source-after-status.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_021-source-after-git-dir.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_021-source-after-git-dir.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_021-source-after-git-dir.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_022-source-after-common-dir.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_022-source-after-common-dir.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_022-source-after-common-dir.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_023-source-after-shallow.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_023-source-after-shallow.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_023-source-after-shallow.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_024-source-after-partial-config.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_024-source-after-partial-config.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_024-source-after-partial-config.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_025-source-after-origin.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_025-source-after-origin.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_025-source-after-origin.stderr",
+    "passed": true
+  },
+  {
+    "name": "whole_026-source-after-refs.public.json",
+    "passed": true
+  },
+  {
+    "name": "whole_026-source-after-refs.stdout",
+    "passed": true
+  },
+  {
+    "name": "whole_026-source-after-refs.stderr",
+    "passed": true
+  },
+  {
+    "name": "record_000-source-before-head",
+    "passed": true
+  },
+  {
+    "name": "000-source-before-head_stdout",
+    "passed": true
+  },
+  {
+    "name": "000-source-before-head_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_001-source-before-tree",
+    "passed": true
+  },
+  {
+    "name": "001-source-before-tree_stdout",
+    "passed": true
+  },
+  {
+    "name": "001-source-before-tree_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_002-source-before-status",
+    "passed": true
+  },
+  {
+    "name": "002-source-before-status_stdout",
+    "passed": true
+  },
+  {
+    "name": "002-source-before-status_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_003-source-before-git-dir",
+    "passed": true
+  },
+  {
+    "name": "003-source-before-git-dir_stdout",
+    "passed": true
+  },
+  {
+    "name": "003-source-before-git-dir_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_004-source-before-common-dir",
+    "passed": true
+  },
+  {
+    "name": "004-source-before-common-dir_stdout",
+    "passed": true
+  },
+  {
+    "name": "004-source-before-common-dir_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_005-source-before-shallow",
+    "passed": true
+  },
+  {
+    "name": "005-source-before-shallow_stdout",
+    "passed": true
+  },
+  {
+    "name": "005-source-before-shallow_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_006-source-before-partial-config",
+    "passed": true
+  },
+  {
+    "name": "006-source-before-partial-config_stdout",
+    "passed": true
+  },
+  {
+    "name": "006-source-before-partial-config_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_007-source-before-origin",
+    "passed": true
+  },
+  {
+    "name": "007-source-before-origin_stdout",
+    "passed": true
+  },
+  {
+    "name": "007-source-before-origin_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_008-source-before-refs",
+    "passed": true
+  },
+  {
+    "name": "008-source-before-refs_stdout",
+    "passed": true
+  },
+  {
+    "name": "008-source-before-refs_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_009-export-proof-kind",
+    "passed": true
+  },
+  {
+    "name": "009-export-proof-kind_stdout",
+    "passed": true
+  },
+  {
+    "name": "009-export-proof-kind_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_010-export-proof-tree",
+    "passed": true
+  },
+  {
+    "name": "010-export-proof-tree_stdout",
+    "passed": true
+  },
+  {
+    "name": "010-export-proof-tree_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_011-export-proof-parents",
+    "passed": true
+  },
+  {
+    "name": "011-export-proof-parents_stdout",
+    "passed": true
+  },
+  {
+    "name": "011-export-proof-parents_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_012-export-proof-count",
+    "passed": true
+  },
+  {
+    "name": "012-export-proof-count_stdout",
+    "passed": true
+  },
+  {
+    "name": "012-export-proof-count_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_013-export-proof-roots",
+    "passed": true
+  },
+  {
+    "name": "013-export-proof-roots_stdout",
+    "passed": true
+  },
+  {
+    "name": "013-export-proof-roots_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_014-export-proof-full-fsck",
+    "passed": true
+  },
+  {
+    "name": "014-export-proof-full-fsck_stdout",
+    "passed": true
+  },
+  {
+    "name": "014-export-proof-full-fsck_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_015-bundle-create",
+    "passed": true
+  },
+  {
+    "name": "015-bundle-create_stdout",
+    "passed": true
+  },
+  {
+    "name": "015-bundle-create_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_016-bundle-verify",
+    "passed": true
+  },
+  {
+    "name": "016-bundle-verify_stdout",
+    "passed": true
+  },
+  {
+    "name": "016-bundle-verify_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_017-bundle-heads",
+    "passed": true
+  },
+  {
+    "name": "017-bundle-heads_stdout",
+    "passed": true
+  },
+  {
+    "name": "017-bundle-heads_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_018-source-after-head",
+    "passed": true
+  },
+  {
+    "name": "018-source-after-head_stdout",
+    "passed": true
+  },
+  {
+    "name": "018-source-after-head_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_019-source-after-tree",
+    "passed": true
+  },
+  {
+    "name": "019-source-after-tree_stdout",
+    "passed": true
+  },
+  {
+    "name": "019-source-after-tree_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_020-source-after-status",
+    "passed": true
+  },
+  {
+    "name": "020-source-after-status_stdout",
+    "passed": true
+  },
+  {
+    "name": "020-source-after-status_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_021-source-after-git-dir",
+    "passed": true
+  },
+  {
+    "name": "021-source-after-git-dir_stdout",
+    "passed": true
+  },
+  {
+    "name": "021-source-after-git-dir_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_022-source-after-common-dir",
+    "passed": true
+  },
+  {
+    "name": "022-source-after-common-dir_stdout",
+    "passed": true
+  },
+  {
+    "name": "022-source-after-common-dir_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_023-source-after-shallow",
+    "passed": true
+  },
+  {
+    "name": "023-source-after-shallow_stdout",
+    "passed": true
+  },
+  {
+    "name": "023-source-after-shallow_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_024-source-after-partial-config",
+    "passed": true
+  },
+  {
+    "name": "024-source-after-partial-config_stdout",
+    "passed": true
+  },
+  {
+    "name": "024-source-after-partial-config_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_025-source-after-origin",
+    "passed": true
+  },
+  {
+    "name": "025-source-after-origin_stdout",
+    "passed": true
+  },
+  {
+    "name": "025-source-after-origin_stderr",
+    "passed": true
+  },
+  {
+    "name": "record_026-source-after-refs",
+    "passed": true
+  },
+  {
+    "name": "026-source-after-refs_stdout",
+    "passed": true
+  },
+  {
+    "name": "026-source-after-refs_stderr",
+    "passed": true
+  },
+  {
+    "name": "expected_two_config_exit1_preserved",
+    "passed": true
+  },
+  {
+    "name": "27_original_owned_terminal_rows",
+    "passed": true
+  }
+]

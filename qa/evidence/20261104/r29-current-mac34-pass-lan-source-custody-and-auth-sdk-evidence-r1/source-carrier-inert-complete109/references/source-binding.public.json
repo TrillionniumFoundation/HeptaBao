@@ -1,0 +1,59 @@
+{
+  "schema": "heptabao.source-carrier-two-actual-inputs-literal-binding.r1",
+  "source_proposal": "66308ebc25cce838ac5c5f5b92b13a090ccec138",
+  "source_root_review": "7d6cb5c53926931f5ada9f040161883b1daaf891",
+  "actual_export_packet": "77c8372e11f2f128cc8cd76ac9b52a9b9d1d329d",
+  "export_core_root_review": "f5ba075194d439a50f5ea8907a708cbf867b54fd",
+  "bundle_info_root_review": "29a455f6c2e8c85667f9a025146c473ed0e33b9c",
+  "source_metadata": [
+    {
+      "bytes": 22320862,
+      "name": "canonical-4e808-full.bundle",
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle",
+      "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28091464:22320862:1793885177495300186:1793885177498300179"
+    },
+    {
+      "bytes": 39692,
+      "name": "source-export.result.public.json",
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json",
+      "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28091501:39692:1793885177751063403:1793885177751063403"
+    }
+  ],
+  "derived_pins": {
+    "sender.py": [
+      6430,
+      "c7e4fcbbd6d6962165e81b9d4fcd568986ec292515f2ffe62cb47ce6a3694e56"
+    ],
+    "receiver.py": [
+      8857,
+      "3b0240aabbf3e8b6bd20724e0aff7d87b71b65b44512dac6e10b6a47ad4bea6e"
+    ],
+    "relay.py": [
+      15541,
+      "b1a9a177a6969add781e076067781c746c570161e27354480154781b099ad284"
+    ]
+  },
+  "inert": {
+    "bytes": 5083,
+    "sha256": "148698c8d0586ba6d7c9b6fb455b6858ea973dd814261e90b30fab5d58c61e74"
+  },
+  "payload": {
+    "bytes": 41273,
+    "sha256": "2588299918df718248164c08629280f93d85491ab8aaf79a769b4c7b61162162"
+  },
+  "readiness_scope": "Two actual source bytes/hash/version bindings only; no dispatch and no complete-export qualification until original81 log files are independently archived.",
+  "all_function_bodies_expected_unchanged": true,
+  "importer_unchanged_and_unbound": true,
+  "original_export_log_files_pending": 81,
+  "inert_go": false,
+  "relay_go": false,
+  "import_go": false,
+  "runtime_calls": 0,
+  "production_changed": false
+}

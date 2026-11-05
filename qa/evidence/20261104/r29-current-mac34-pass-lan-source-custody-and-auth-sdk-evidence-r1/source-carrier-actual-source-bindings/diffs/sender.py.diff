@@ -1,0 +1,39 @@
+--- before/sender.py
++++ after/sender.py
+@@ -1,6 +1,6 @@
+ from pathlib import Path
+ import hashlib,json,os,platform,select,signal,stat,subprocess,sys,time
+-ACTUAL_INPUTS_READY=False
++ACTUAL_INPUTS_READY=True
+ if not ACTUAL_INPUTS_READY:
+  raise RuntimeError('actual 4e808 source-export metadata unresolved')
+ os.umask(0o077)
+@@ -10,22 +10,22 @@
+ TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'
+ FILES=[
+  {
+-  "bytes": None,
++  "bytes": 22320862,
+   "name": "canonical-4e808-full.bundle",
+   "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle",
+-  "sha256": None,
++  "sha256": "bb014971cb243db71e07d04b862fbba2436ceec09d2c1bafa707e4aa558bf5ac",
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": None
++  "version": "66306:28091464:22320862:1793885177495300186:1793885177498300179"
+  },
+  {
+-  "bytes": None,
++  "bytes": 39692,
+   "name": "source-export.result.public.json",
+   "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json",
+-  "sha256": None,
++  "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": None
++  "version": "66306:28091501:39692:1793885177751063403:1793885177751063403"
+  }
+ ]
+ protected=0

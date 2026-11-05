@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.derived-state-field-addendum.v1",
+  "original_packet": "3a0405db3a0fabbe6dfe435436f54ba0bcfe68e6",
+  "scope": "The first derived state omitted request_digest because it addressed the ACK envelope instead of ACK.job; original SDK bytes were always complete and remain unchanged. This successor adds the original request_digest and lossless request_fingerprint from that same ACK.job.",
+  "original_SDK_changed": false,
+  "host_calls": 0,
+  "source_or_runtime_changed": false,
+  "request_digest": "8c95b53f755afac242d7cdd8c31cc646daf8d9ebde97287ff2d45d3361dcaacf",
+  "request_fingerprint": "10130202220996262594"
+}

@@ -1,0 +1,135 @@
+{
+  "candidate_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "candidate_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "control_root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1",
+  "driver_sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581",
+  "fixed_inputs": {
+    "git": {
+      "bytes": 118640,
+      "identity": [
+        16777233,
+        1152921500312571562,
+        0,
+        0,
+        33261,
+        78,
+        118640,
+        1786589515000000000,
+        1786589515000000000
+      ],
+      "path": "/usr/bin/git",
+      "sha256": "b8763cf250e607a778bb4603cecb5b90338814d0a3dfcba0d57b1de242f610e9",
+      "version": "16777233:1152921500312571562:118640:1786589515000000000:1786589515000000000"
+    },
+    "openssl": {
+      "bytes": 1130832,
+      "identity": [
+        16777233,
+        1152921500312572476,
+        0,
+        0,
+        33261,
+        1,
+        1130832,
+        1786589515000000000,
+        1786589515000000000
+      ],
+      "path": "/usr/bin/openssl",
+      "sha256": "f81b4fcec5048ea1eceb40fc08f4e06f1668181f0b5bacfa8be27d0da181dcb7",
+      "version": "16777233:1152921500312572476:1130832:1786589515000000000:1786589515000000000"
+    },
+    "oracle_archive": {
+      "bytes": 73965161,
+      "identity": [
+        16777244,
+        65545462,
+        501,
+        20,
+        33152,
+        1,
+        73965161,
+        1792120357000000000,
+        1792120404926889359
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/official-openbao-271-macos-20261016/oracle-official.tar.gz",
+      "sha256": "15625b5f69aee5bb4578b4e76e856a2141647342b0f8e5969a8875b44e0fbf91",
+      "version": "16777244:65545462:73965161:1792120357000000000:1792120404926889359"
+    },
+    "oracle_binary": {
+      "bytes": 177888914,
+      "identity": [
+        16777244,
+        65550548,
+        501,
+        20,
+        33216,
+        1,
+        177888914,
+        1790862000000000000,
+        1792120619730365564
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/official-openbao-271-macos-20261016/bao",
+      "sha256": "50c3588e64271171cc2147bddeace8ec2b6742f94fd3fe53baa60f6d938cda0c",
+      "version": "16777244:65550548:177888914:1790862000000000000:1792120619730365564"
+    },
+    "python": {
+      "bytes": 34640,
+      "identity": [
+        16777233,
+        587518380,
+        501,
+        80,
+        33261,
+        1,
+        34640,
+        1793798038915516382,
+        1793798038915695047
+      ],
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13",
+      "version": "16777233:587518380:34640:1793798038915516382:1793798038915695047"
+    },
+    "server": {
+      "bytes": 92398928,
+      "identity": [
+        16777244,
+        72626763,
+        501,
+        20,
+        33088,
+        1,
+        92398928,
+        1793876826299674364,
+        1793876826322472740
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server",
+      "sha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63",
+      "version": "16777244:72626763:92398928:1793876826299674364:1793876826322472740"
+    }
+  },
+  "fresh_work_root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-official271-full34-4e808-r1/actual-r1",
+  "full_replacement_qualified": false,
+  "native_build_sha256": "25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49",
+  "native_v6_ha_qualified": false,
+  "new_readonly_prepare_seconds": 60,
+  "normal61_sha256": "02422f0070827e4940ae819d117b80ead30b993dba5ec9fe4a1aee21f286c113",
+  "normal_release_sha256": "2fdafe3670a0a7365245e509343ce1cf23ac28b071351d4f30ea12751d90a571",
+  "official_cli_phaseb_qualified": false,
+  "original_checks": 31,
+  "original_http_seconds": 15,
+  "original_migration_seconds": 360,
+  "original_outer_seconds": 1800,
+  "private_fixture_created": false,
+  "product_started": false,
+  "production_changed": false,
+  "retained_server": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/artifacts/heptabao-server",
+  "schema": "heptabao.current-mac-full34-readonly-prepare.v1",
+  "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
+  "source_before": {
+    "binary_sha256": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63",
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "dirty": false,
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  },
+  "wrapper_sha256": "29785927055d2e676c702aa79b97db9a6d274d8d8de0916073c08face41c6c9a"
+}

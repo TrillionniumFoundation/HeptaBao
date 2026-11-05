@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.public-source-preparation-notes.r1",
+  "notes": [
+    {
+      "kind": "local_v8_preparation_failure",
+      "error": "TextEncoder is not defined",
+      "sourcePublished": false,
+      "runtimeCalls": 0,
+      "correction": "Use existing reviewed UTF8-byte-string/hash helpers; no source/runtime replay."
+    },
+    {
+      "kind": "local_v8_to_executor_input_transport_failure",
+      "error": "Argument list too long (os error 7)",
+      "processCreated": false,
+      "runtimeCalls": 0,
+      "correction": "Split identical public verification input into bounded local base64 parts; no private input or Runtime read."
+    }
+  ],
+  "scope": "Only local source transport/setup failures; no Runtime call or private read. Exact successful source/test originals retained separately."
+}

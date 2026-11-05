@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.immutable-result-batch-errors.v1",
+  "operation_id": "0a76e36c0f77a78517a742fbcae67a51ea7e7e109c056c2348750086441f0d05",
+  "outcomes": [
+    {
+      "stage": "result_1",
+      "message": "MCP isError before parse",
+      "sdk_blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+      "native_blob": "2bc15a5e63d2c8371f42ce25e1fc4939608bd46d"
+    },
+    {
+      "stage": "result_2",
+      "message": "MCP isError before parse",
+      "sdk_blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+      "native_blob": "2bc15a5e63d2c8371f42ce25e1fc4939608bd46d"
+    }
+  ],
+  "all_promises_settled": true,
+  "original_read_completed_inactive": true,
+  "successful_payload_bytes": 16384,
+  "total_payload_bytes": 87804,
+  "new_admissions_stopped": true,
+  "reconciliation_submitted": false
+}

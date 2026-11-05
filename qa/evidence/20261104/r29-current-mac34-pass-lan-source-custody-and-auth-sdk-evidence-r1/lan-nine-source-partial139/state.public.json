@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.4e808.lan-source-readback.partial-after-observation-transport-timeout.v1",
+  "original_job_id": "1a1ac1641eb-fc05-521f",
+  "original_inert_authority_zero_preserved": true,
+  "original_process_start_replayed": false,
+  "complete_sources": [
+    0,
+    1,
+    2
+  ],
+  "complete_source_count": 3,
+  "total_sources": 9,
+  "source3_independent_info_completed_inactive": true,
+  "source3_info_operation": "7ca4da0057f96613fab349565c418c9e43f1c08e1c56fa0cfacff34cf8a0826b",
+  "source3_body0": {
+    "request": {
+      "idempotency_key": "ha-4e808-lan-inert-source3-body0-r1-20261105",
+      "operation": {
+        "tool": "binary_read",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+          "offset": 0,
+          "limit": 16384,
+          "expected_version": "2050:7360919:25879:1793888506331235190:1793888506363151955"
+        }
+      }
+    },
+    "single_admission_returned": "MCP -32603 timeout",
+    "operation_id": null,
+    "ack_received": false,
+    "native_future_state": "unknown",
+    "original_sdk_tree": "36140fcf6ecb4b0a9f1029b4a3227ae9b079bc6c",
+    "admission_replayed": false
+  },
+  "source3_body16384_submitted": false,
+  "source4_to8_submitted": false,
+  "new_admissions_paused": true,
+  "runtime_calls_inflight": 0,
+  "source_executed": false,
+  "source_republished": false,
+  "prepare_live_GO": false,
+  "canonical_source_import_qualification": false
+}

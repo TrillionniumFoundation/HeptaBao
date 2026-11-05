@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.root-source-carrier-relay-original-ACK-review.r29.v1",
+  "status": "PASS_ORIGINAL_ACK_ONLY",
+  "checks_passed": 9,
+  "checks": [
+    "SDK-not-error",
+    "one-native-text",
+    "exact-reviewed-four-argument-request",
+    "job-host-key",
+    "original-argv-cwd-executable",
+    "actual-original-request-digest",
+    "lossless-fingerprint",
+    "launched-once-no-error",
+    "required-prerequisite-reviewed"
+  ],
+  "job": "desktop/1a1acb4e995-fc05-567a",
+  "request_digest": "056d0cc0154f9e0ff91cd5ed714bbc4a704fd9fe2c1dc01658bb0469b1375805",
+  "fingerprint_unsigned64": "390982761781894671",
+  "request_blob": "223fbd0102a6e1aa803ea2e7528e79fd63776b00",
+  "original_intent_tree": "94d05cf6bc98a271bb1f805416939389cebe113d",
+  "original_ACK_tree": "da119cc764c3aa1667b83aa70bbdc9440dd8fc17",
+  "root_inert_review": "c60d15f7cb50858bc4b39cdbcedf5034a5d7423b",
+  "inert_checks": 161,
+  "root_Runtime_calls": 0,
+  "actual_transfer_qualified": false,
+  "source_import_qualified": false,
+  "product_qualified": false
+}

@@ -1,0 +1,43 @@
+{
+  "all_input_metadata_root_reviewed": true,
+  "binding_only_functions_byte_equal": true,
+  "files": [
+    {
+      "bytes": 20538,
+      "path": "run_current_mac_full34_r1.py",
+      "sha256": "29785927055d2e676c702aa79b97db9a6d274d8d8de0916073c08face41c6c9a"
+    },
+    {
+      "bytes": 5454,
+      "path": "inert-publisher.py",
+      "sha256": "65e8361e6d3f67e44198ba60ed451dafda33dd351798c3bcc1fe05701bd70796"
+    },
+    {
+      "bytes": 27485,
+      "path": "carrier.json",
+      "sha256": "39519775637edd562521696958f2bed6620e4d834618b794d307fee4cb6bcd87"
+    },
+    {
+      "bytes": 2852,
+      "path": "input-metadata.public.json",
+      "sha256": "f4a3cd437369e333272f530e74511964ae39456d282bf83b9dfbfb8edecaca13"
+    },
+    {
+      "bytes": 33458,
+      "path": "INERT.request.REVIEW-ONLY.json",
+      "sha256": "d3c1ebd36eb063bee62481a519cf88d6d66279d55e93cd8e592d80c7a6231db1"
+    },
+    {
+      "bytes": 552,
+      "path": "PREPARE.request.REVIEW-ONLY.json",
+      "sha256": "638fdf9a7a5eb7ecc133381a79fc05d5d9177e3a0df64d562ffe1dbbfb7e5405"
+    }
+  ],
+  "generic_fixed_file_byte_equal": true,
+  "live_request_generated": false,
+  "proposed_readiness_requires_new_source_review_and_explicit_runtime_go": true,
+  "published_to_host": false,
+  "root_review_blob": "b137fc849b441e3e70e44a0c29cbf6d8bb3676ca",
+  "runtime_requests_submitted": 0,
+  "schema": "heptabao.mac-full34-offline-binding-proposal.v1"
+}
