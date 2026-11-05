@@ -1,0 +1,92 @@
+diff --git a/source/authbus_production_p01_projector.py b/source/authbus_production_p01_projector.py
+--- a/source/authbus_production_p01_projector.py
++++ b/source/authbus_production_p01_projector.py
+@@ -356,8 +356,87 @@
+             "actualOwnerAndNamedParentPins": None,
+             "automaticServiceStart": False, "automaticHoldRelease": False,
+         })
++        if host == "mac":
++            # Formal service and backup stay on the actual guarded external T5.
++            # Client credential generation keeps its separately proposed home path.
++            proposed[-1].update({
++                "proposalOnlyNewRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-authbus-registration-r1",
++                "publicRegistrationPath": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-authbus-registration-r1/registration.public.json",
++                "serverBinaryPath": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-authbus-registration-r1/server/artifacts/heptabao-server",
++                "serverConfigurationPath": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-authbus-registration-r1/server/config.private.json",
++                "serverDataPath": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-authbus-registration-r1/server/data",
++                "backupRegistrationPath": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-authbus-registration-r1/backup/registration.public.json",
++                "backupDataPath": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-authbus-registration-r1/backup/archives",
++                "clientCredentialHomeRoot": "/Users/qianqi/heptabao-production-authbus-registration-r1",
++                "clientCredentialRootExistenceObserved": False,
++                "serverAndBackupOnExternalT5": True,
++                "clientCredentialGenerationRemainsAtHome": True,
++                "volumeBinding": {
++                    "mountPoint": "/Volumes/T5",
++                    "volumeUUID": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
++                    "expectedVolumeDevice": "16777244",
++                    "publicAnchor": {
++                        "bytes": 967,
++                        "sha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
++                        "blob": "837f7d23be8380144cc7ed1212e5fc646cf56a43"
++                    },
++                    "historicalOriginalAnchors": [
++                        {
++                            "identity": [
++                                "16777233",
++                                "2",
++                                "0",
++                                "0",
++                                "16877",
++                                "22",
++                                "704",
++                                "1786589515000000000",
++                                "1786589515000000000"
++                            ],
++                            "path": "/"
++                        },
++                        {
++                            "identity": [
++                                "16777233",
++                                "18336",
++                                "0",
++                                "0",
++                                "16877",
++                                "5",
++                                "160",
++                                "1793100597756515591",
++                                "1793100597756515591"
++                            ],
++                            "path": "/Volumes"
++                        },
++                        {
++                            "identity": [
++                                "16777244",
++                                "2",
++                                "0",
++                                "0",
++                                "16893",
++                                "12",
++                                "384",
++                                "1793152973144260495",
++                                "1793152973144260495"
++                            ],
++                            "path": "/Volumes/T5"
++                        }
++                    ],
++                    "sourceCurrentRuntimeStdout": {
++                        "blob": "bdde97e2ec7a167619ea24b0ce9660086e81ebce",
++                        "bytes": 91043,
++                        "sha256": "8d3f357bf75b11c1ce37e34bb7304460271a1cb74d1bd5200031d2f2bd3f9302"
++                    },
++                    "actualVolumeUuidVerifiedInThatRuntime": True,
++                    "heldFdNamedUuidDeviceRequiredBeforeAnyT5PrivateReadOrWrite": True,
++                    "prospectiveRootExistenceOrCurrentMountQualification": False,
++                    "freshAdmissionAndFinalClosureStillRequired": True
++                }
++            })
+     return {
+-        "schema": "heptabao.authbus-production-p01-public-projection.r1",
++        "schema": "heptabao.authbus-production-p01-public-projection.r2",
+         "qualification": "ARCHIVED_PUBLIC_SOURCE_MAPPING_ONLY",
+         "sourceReferences": SOURCE_PINS, "hostOrder": HOST_ORDER, "hosts": hosts,
+         "newProductionRegistrationReusableFromTheseReceipts": False,

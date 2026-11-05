@@ -1,0 +1,182 @@
+{
+  "actualScope": {
+    "fullModulesCompiledOnly": 2,
+    "fullModulesExecuted": 0,
+    "fullModulesParsed": 2,
+    "mockCasesRerun": 0,
+    "runtimeRequests": 0,
+    "scratchPublicFileReads": 2,
+    "selectedFunctionsExecuted": 0,
+    "sourceModified": false
+  },
+  "checkCount": 28,
+  "checks": [
+    {
+      "name": "before.py_whole",
+      "passed": true
+    },
+    {
+      "name": "after.py_whole",
+      "passed": true
+    },
+    {
+      "name": "exact_23_old_definitions_byte_unchanged",
+      "passed": true
+    },
+    {
+      "name": "only_two_existing_definitions_changed",
+      "passed": true
+    },
+    {
+      "name": "only_two_top_level_definitions_added",
+      "passed": true
+    },
+    {
+      "name": "all_other_top_level_statements_unchanged",
+      "passed": true
+    },
+    {
+      "name": "ready_is_literal_false",
+      "passed": true
+    },
+    {
+      "name": "first_main_statement_refuses_unbound_before_any_setup",
+      "passed": true
+    },
+    {
+      "name": "one_guard_token_read_with_original_limit",
+      "passed": true
+    },
+    {
+      "name": "original_token_read_prefix_exact",
+      "passed": true
+    },
+    {
+      "name": "one_pre_lookup",
+      "passed": true
+    },
+    {
+      "name": "exact_original_and_post_lookup_route_order",
+      "passed": true
+    },
+    {
+      "name": "all_six_calls_same_explicit_token",
+      "passed": true
+    },
+    {
+      "name": "renew_body_empty_object",
+      "passed": true
+    },
+    {
+      "name": "revoke_body_empty_object",
+      "passed": true
+    },
+    {
+      "name": "original_status_403_204_403",
+      "passed": true
+    },
+    {
+      "name": "no_loop_sleep_or_deadline_reset_in_new_functions",
+      "passed": true
+    },
+    {
+      "name": "no_new_http_deadline_override",
+      "passed": true
+    },
+    {
+      "name": "pre_accessor_registered_in_secret_guard",
+      "passed": true
+    },
+    {
+      "name": "snapshot_public_exact_three_fields",
+      "passed": true
+    },
+    {
+      "name": "lifecycle_public_exact_closed_field_set",
+      "passed": true
+    },
+    {
+      "name": "returned_lifecycle_excludes_private_fields",
+      "passed": true
+    },
+    {
+      "name": "two_pre_lookup_and_lifecycle_callers",
+      "passed": true
+    },
+    {
+      "name": "pre_read_pre_lookup_before_original_kv_before_lifecycle",
+      "passed": true
+    },
+    {
+      "name": "all_original_four_phase_order",
+      "passed": true
+    },
+    {
+      "name": "both_inverses_and_manager_finish_precede_extension_check",
+      "passed": true
+    },
+    {
+      "name": "no_delta_qualification_failure_inside_token_chain",
+      "passed": true
+    },
+    {
+      "name": "final_existing_exception_and_cleanup_body_byte_unchanged",
+      "passed": true
+    }
+  ],
+  "operationOrder": [
+    "openclaw-auth/data/profiles/unassigned",
+    "auth/token/renew-self",
+    "auth/token/lookup-self",
+    "auth/token/revoke-self",
+    "openclaw-auth/data/manifest"
+  ],
+  "passed": true,
+  "publicLifecycleKeys": [
+    "actualTokenCaptured",
+    "expiryDeltaSeconds",
+    "expiryExtensionObserved",
+    "expiryObservation",
+    "lookupAfter",
+    "lookupBefore",
+    "phase",
+    "renewalLeaseTtlSeconds",
+    "renewed",
+    "revoked",
+    "sameAccessorAcrossLookupAndRenew",
+    "sameCredentialAcrossLookupAndRenew",
+    "successfulRenewResponseAloneIsNotExtensionQualification",
+    "unassignedAndRevokedRequestsRejected"
+  ],
+  "publicSnapshotKeys": [
+    "expiresAtUnix",
+    "renewable",
+    "ttlSeconds"
+  ],
+  "schema": "heptabao.independent-renewal-peer-ast.v1",
+  "unchangedDefinitions": [
+    "Refused",
+    "need",
+    "sha",
+    "encoded",
+    "canonical",
+    "digest",
+    "ident",
+    "valid_pin",
+    "exact_json",
+    "Context",
+    "read_public_source",
+    "read_system_tool",
+    "LoopbackHTTP",
+    "add_secrets",
+    "reserve_port",
+    "generated_read_fsync",
+    "tls_material",
+    "capture_once",
+    "seed_documents",
+    "exact_data",
+    "bootstrap_api",
+    "canonical_and_inbox",
+    "scan_owned_plaintext"
+  ]
+}

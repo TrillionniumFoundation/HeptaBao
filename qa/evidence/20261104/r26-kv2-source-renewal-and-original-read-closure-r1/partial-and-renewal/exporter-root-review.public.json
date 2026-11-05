@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.export-partial-original-read-chain-root-review.r1",
+  "status": "PASS_ARCHIVE_OF_THREE_CLOSED_READS_AND_ONE_UNKNOWN_READ",
+  "tree": "23dc4dd95a930de4356c8fedee4c853a642b6594",
+  "whole": {
+    "files": 52,
+    "bytes": 66009,
+    "merkle": {
+      "root_sha": "23dc4dd95a930de4356c8fedee4c853a642b6594",
+      "trees_verified": 12
+    }
+  },
+  "checks": 93,
+  "export_job": "1a1abe371de-fc05-5122",
+  "export_exit_code": 0,
+  "export_output_complete": true,
+  "export_output_durable": true,
+  "closed_reads": 3,
+  "original_unresolved_read": "79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2",
+  "body_bytes_received": 0,
+  "status_errors": 2,
+  "result_page_errors": 1,
+  "unknown_read_replayed": false,
+  "bundle_info_submitted": false,
+  "command_log_files_submitted": 0,
+  "carrier_binding_allowed": false,
+  "local_parser_failure_preserved": true,
+  "new_runtime_calls": 0,
+  "scope_note": "The preceding root terminal review remains authoritative for typed exporter start and 534/0 streams. This review adds immutable read chains and error-history closure, not missing receipt bytes."
+}

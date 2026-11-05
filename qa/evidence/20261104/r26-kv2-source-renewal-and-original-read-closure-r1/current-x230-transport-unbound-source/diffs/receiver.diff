@@ -1,0 +1,212 @@
+--- a/receiver.py
++++ b/receiver.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Receive fixed df026 public artifacts and one standalone full Git bundle.
++"""Receive fixed 4e808 public artifacts and one standalone full Git bundle.
+ 
+ No old X230 repository is used as a prerequisite. No binary, compiler, provider
+ request, acceptance suite or production service is started.
+@@ -9,83 +9,83 @@
+ 
+ os.umask(0o077)
+ BASE=Path('/home/qian')
+-ROOT=BASE/'heptabao-cold-h2-normal-20261105-r1'
++ROOT=BASE/'heptabao-same-root-publication-normal-20261105-r1'
+ CONTROL=ROOT/'control'
+ ART=ROOT/'artifacts'
+ SOURCE=ROOT/'source'
+-CANONICAL='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
+-TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
+-PARENT='6304a898192bfdf7eabec3c4ea40f7166e59a137'
++CANONICAL='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
++TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'
++PARENT='1c66541993662f92cf717154e33717abedb2ea74'
+ ROOT_COMMIT='67d79b3b5442ed033d38929eab2010403463e56d'
+-CANONICAL_COUNT=3757
+-TRACKED_FILES=3913
++CANONICAL_COUNT=3763
++TRACKED_FILES=3914
+ MAX_BUNDLE=64*1024*1024
+ UID=1000
+ SYSTEM=('Linux','x86_64')
+-BINDING_READY=True
++BINDING_READY=False
+ FILES=[
+   {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/heptabao-server",
++    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/heptabao-server",
+     "name": "heptabao-server",
+-    "bytes": 110339520,
+-    "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2",
++    "bytes": None,
++    "sha256": None,
+     "source_mode": 320,
+     "target_mode": 320,
+-    "version": "2050:5019547:110339520:1793857530819632046:1793857530819632046"
++    "version": None
+   },
+   {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/native-build.public.json",
++    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/native-build.public.json",
+     "name": "native-build.public.json",
+-    "bytes": 772,
+-    "sha256": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
++    "bytes": None,
++    "sha256": None,
+     "source_mode": 256,
+     "target_mode": 256,
+-    "version": "2050:5019549:772:1793857533118564089:1793857533118564089"
++    "version": None
+   },
+   {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/normal-release-result.public.json",
++    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-result.public.json",
+     "name": "result.public.json",
+-    "bytes": 3137,
+-    "sha256": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d",
++    "bytes": None,
++    "sha256": None,
+     "source_mode": 256,
+     "target_mode": 256,
+-    "version": "2050:5019550:3137:1793857533123563941:1793857533123563941"
++    "version": None
+   },
+   {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1/incoming/canonical-df026-full.bundle",
+-    "name": "canonical-df026-full.bundle",
+-    "bytes": 23429893,
+-    "sha256": "2f25963c59ecfd0918f786c98e6babcd7ba35daec02f00d899e987f19c28ad71",
++    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/canonical-4e808-full.bundle",
++    "name": "canonical-4e808-full.bundle",
++    "bytes": None,
++    "sha256": None,
+     "source_mode": 256,
+     "target_mode": 256,
+-    "version": "2050:5019525:23429893:1793856420289823382:1793856420289823382"
++    "version": None
+   },
+   {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1/incoming/source-export.result.public.json",
++    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/source-export.result.public.json",
+     "name": "source-export.result.public.json",
+-    "bytes": 38783,
+-    "sha256": "34816ca251e2cf420ed63db97bd56c10e0c1a725e16470f28f9eedf70dd21bb4",
++    "bytes": None,
++    "sha256": None,
+     "source_mode": 256,
+     "target_mode": 256,
+-    "version": "2050:5019527:38783:1793856420629814207:1793856420629814207"
++    "version": None
+   },
+   {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
+-    "name": "normal60-result.public.json",
+-    "bytes": 48188,
+-    "sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
++    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
++    "name": "normal61-result.public.json",
++    "bytes": None,
++    "sha256": None,
+     "source_mode": 256,
+     "target_mode": 256,
+-    "version": "2050:5019551:48188:1793857533128563794:1793857533128563794"
++    "version": None
+   },
+   {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/groups.json",
++    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/groups.json",
+     "name": "groups.json",
+-    "bytes": 6249,
+-    "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
++    "bytes": None,
++    "sha256": None,
+     "source_mode": 256,
+     "target_mode": 256,
+-    "version": "2050:5019552:6249:1793857533133563646:1793857533133563646"
++    "version": None
+   }
+ ]
+ 
+@@ -96,7 +96,7 @@
+ protected=0
+ pending_signal=None
+ created_control=False
+-result={'schema':'heptabao.df026.x230-standalone-source-receiver.v1','status':'failed',
++result={'schema':'heptabao.4e808.x230-standalone-source-receiver.v1','status':'failed',
+  'source_commit':CANONICAL,'source_tree':TREE,'expected_full_commit_count':CANONICAL_COUNT,
+  'expected_prerequisites':[],'network_git_protocols_enabled':False,'old_source_opened':False,
+  'server_started':False,'compiler_started':False,'runtime_qualification':False,
+@@ -304,7 +304,7 @@
+     return results,json_bytes
+ 
+ def binding_ready():
+- assert BINDING_READY is True,'actual_normal60_export_and_transport_file_bindings_unresolved'
++ assert BINDING_READY is True,'actual_normal61_export_and_transport_file_bindings_unresolved'
+  assert len(FILES)==7 and len({x['name'] for x in FILES})==7
+  for item in FILES:
+   assert type(item['bytes']) is int and item['bytes']>0
+@@ -315,18 +315,19 @@
+ def need(value,label):
+  if not value:raise RuntimeError(label)
+ 
+-def verify_normal60(raw):
+- n=json.loads(raw['normal60-result.public.json'])
+- need(n.get('schema')=='heptabao.linux-normal-cold-h2-exact-tests.v1'
++def verify_normal61(raw):
++ n=json.loads(raw['normal61-result.public.json'])
++ need(n.get('schema')=='heptabao.linux-normal-same-root-publication-exact-tests.v1'
+       and n.get('source_commit')==CANONICAL and n.get('source_tree')==TREE
+-      and n.get('controller_sha256')=='1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40'
++      and n.get('controller_sha256')=='93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be'
+       and n.get('status')=='passed' and n.get('test_count')==44
+-      and n.get('selected_test_total')==60 and n.get('normal_default_features') is True
++      and n.get('selected_test_total')==61 and n.get('normal_default_features') is True
+       and n.get('fixture_features')==[] and n.get('original_44_status')=='passed'
+       and n.get('original_44_and_ingress_7_status')=='passed'
+-      and n.get('additional_test_counts')=={'ingress_observer':7,'cold_h2':9}
++      and n.get('original_60_status')=='passed' and n.get('original_60_test_total')==60
++      and n.get('additional_test_counts')=={'ingress_observer':7,'cold_h2':9,'same_root_publication':1}
+       and n.get('source_unchanged') is True and n.get('binary_unchanged') is True
+-      and n.get('release_artifacts_unchanged') is True,'exact_normal60_qualification')
++      and n.get('release_artifacts_unchanged') is True,'exact_normal61_qualification')
+  for key,names in (
+      ('ingress_observer_regression',["service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms","service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root","service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result","ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata","ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates","ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results","ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success"]),
+      ('cold_h2_regression',["service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity","service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results","service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file","http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context","http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work","http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result","http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture","http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context","http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity"])):
+@@ -342,14 +343,22 @@
+  need(n.get('groups_sha256')==digest(raw['groups.json'])=='0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1',
+       'unchanged_original44_groups_whole_pin')
+  need(n.get('native_build_receipt_sha256')==digest(raw['native-build.public.json']),
+-      'combined_normal60_native_receipt_exact')
++      'combined_normal61_native_receipt_exact')
+  need(n.get('original_outer_seconds')==12000 and n.get('within_original_outer_before_receipt') is True
+-      and n.get('additional_group_caps_seconds')=={'ingress_observer':600,'cold_h2':600},
+-      'original_normal60_budgets_and_publication')
+- result['normal60_qualification_verified']=True
++      and n.get('additional_group_caps_seconds')=={'ingress_observer':600,'cold_h2':600,'same_root_publication':600},
++      'original_normal61_budgets_and_publication')
++ same=n.get('same_root_publication_regression',{})
++ need(same.get('schema')=='heptabao.normal-same-root-publication-regression.v1'
++      and same.get('status')=='passed' and same.get('test_count')==1
++      and same.get('actual_test_names')==['service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors']
++      and same.get('original_44_7_9_denominators_unchanged') is True
++      and same.get('clamped_to_original_outer_deadline') is True
++      and same.get('new_total_group_cap_seconds')==600,
++      'independent_same_root_publication_regression')
++ result['normal61_qualification_verified']=True
+ 
+ def verify_receipts(raw):
+-    verify_normal60(raw)
++    verify_normal61(raw)
+     native=json.loads(raw['native-build.public.json'])
+     build=json.loads(raw['result.public.json'])
+     exported=json.loads(raw['source-export.result.public.json'])
+@@ -500,7 +509,7 @@
+     file_rows,json_bytes=receive_files()
+     result['file_results']=file_rows
+     verify_receipts(json_bytes)
+-    bundle=ART/'canonical-df026-full.bundle'
++    bundle=ART/'canonical-4e808-full.bundle'
+     raw,binding=stable(bundle,MAX_BUNDLE)
+     assert binding['bytes']==FILES[3]['bytes'] and binding['sha256']==FILES[3]['sha256']
+     result['bundle_header']=bundle_header(raw)

@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "ha4e808-mac61-cargo-f0-245760-16k-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+      "expected_version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+      "offset": 245760,
+      "limit": 16384
+    }
+  }
+}

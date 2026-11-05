@@ -1,0 +1,151 @@
+{
+  "actualChild": false,
+  "actualCredential": false,
+  "actualHostAccess": false,
+  "actualNetwork": false,
+  "actualSqlite": false,
+  "caseCount": 8,
+  "checks": [
+    {
+      "case": "same_credential_chain_and_existing_kv_position",
+      "passed": true
+    },
+    {
+      "case": "public_projection_has_no_token_or_accessor",
+      "passed": true
+    },
+    {
+      "case": "same_second_legal_renew_is_not_extension",
+      "passed": true
+    },
+    {
+      "case": "decreased_expiry_is_observed_not_qualified",
+      "passed": true
+    },
+    {
+      "case": "wrong_lookup_credential_refused",
+      "passed": true
+    },
+    {
+      "case": "changed_accessor_refused",
+      "passed": true
+    },
+    {
+      "case": "wrong_renewed_credential_refused_without_continuation",
+      "passed": true
+    },
+    {
+      "case": "ttl_type_zero_bound_and_nonrenewable_refused",
+      "passed": true
+    }
+  ],
+  "completeModuleCompiledOnly": true,
+  "completeModuleImportedOrExecuted": false,
+  "decreasedCase": {
+    "actualTokenCaptured": true,
+    "expiryDeltaSeconds": -1,
+    "expiryExtensionObserved": false,
+    "expiryObservation": "decreased",
+    "lookupAfter": {
+      "expiresAtUnix": 1179,
+      "renewable": true,
+      "ttlSeconds": 175
+    },
+    "lookupBefore": {
+      "expiresAtUnix": 1180,
+      "renewable": true,
+      "ttlSeconds": 170
+    },
+    "phase": "initial",
+    "renewalLeaseTtlSeconds": 180,
+    "renewed": true,
+    "revoked": true,
+    "sameAccessorAcrossLookupAndRenew": true,
+    "sameCredentialAcrossLookupAndRenew": true,
+    "successfulRenewResponseAloneIsNotExtensionQualification": true,
+    "unassignedAndRevokedRequestsRejected": true
+  },
+  "fakeTokenFileReadCountPerChain": 1,
+  "increasedCase": {
+    "actualTokenCaptured": true,
+    "expiryDeltaSeconds": 5,
+    "expiryExtensionObserved": true,
+    "expiryObservation": "increased",
+    "lookupAfter": {
+      "expiresAtUnix": 1185,
+      "renewable": true,
+      "ttlSeconds": 175
+    },
+    "lookupBefore": {
+      "expiresAtUnix": 1180,
+      "renewable": true,
+      "ttlSeconds": 170
+    },
+    "phase": "initial",
+    "renewalLeaseTtlSeconds": 180,
+    "renewed": true,
+    "revoked": true,
+    "sameAccessorAcrossLookupAndRenew": true,
+    "sameCredentialAcrossLookupAndRenew": true,
+    "successfulRenewResponseAloneIsNotExtensionQualification": true,
+    "unassignedAndRevokedRequestsRejected": true
+  },
+  "modifiedExistingDefinitions": [
+    "token_lifecycle",
+    "main"
+  ],
+  "onlyChangedTopLevelAssignment": "BINDING_READY=False",
+  "schema": "heptabao.renewal-lookup-increment-pure-selected-checks.r1",
+  "scope": "Eight selected pure/mock groups; not a service, expiry extension, SDK selector, or runtime qualification.",
+  "selectedFunctionCount": 3,
+  "status": "passed",
+  "topLevelFunctionsAndClassesUnchanged": [
+    "Refused",
+    "need",
+    "sha",
+    "encoded",
+    "canonical",
+    "digest",
+    "ident",
+    "valid_pin",
+    "exact_json",
+    "Context",
+    "read_public_source",
+    "read_system_tool",
+    "LoopbackHTTP",
+    "add_secrets",
+    "reserve_port",
+    "generated_read_fsync",
+    "tls_material",
+    "capture_once",
+    "seed_documents",
+    "exact_data",
+    "bootstrap_api",
+    "canonical_and_inbox",
+    "scan_owned_plaintext"
+  ],
+  "unchangedCase": {
+    "actualTokenCaptured": true,
+    "expiryDeltaSeconds": 0,
+    "expiryExtensionObserved": false,
+    "expiryObservation": "unchanged",
+    "lookupAfter": {
+      "expiresAtUnix": 1180,
+      "renewable": true,
+      "ttlSeconds": 175
+    },
+    "lookupBefore": {
+      "expiresAtUnix": 1180,
+      "renewable": true,
+      "ttlSeconds": 170
+    },
+    "phase": "initial",
+    "renewalLeaseTtlSeconds": 180,
+    "renewed": true,
+    "revoked": true,
+    "sameAccessorAcrossLookupAndRenew": true,
+    "sameCredentialAcrossLookupAndRenew": true,
+    "successfulRenewResponseAloneIsNotExtensionQualification": true,
+    "unassignedAndRevokedRequestsRejected": true
+  }
+}

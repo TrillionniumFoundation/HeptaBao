@@ -1,0 +1,222 @@
+{
+  "schema": "heptabao.mac-current-renewal-lookup-source-increment.r1",
+  "qualification": "SOURCE_ONLY_NOT_BOUND_TO_A_FRESH_EXECUTABLE_CANDIDATE",
+  "canonicalCommit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "canonicalTree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "baseSource": {
+    "bytes": 68348,
+    "sha256": "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01",
+    "blob": "8459b949c07982f56dae2e252565f3db0971e246"
+  },
+  "candidateSource": {
+    "bytes": 71496,
+    "sha256": "72ecfcd586a4ab4c48fd95d2e15b4a44165a754570c699eae18dceaa02f3b262",
+    "blob": "26622454186ba28ada489c9a10b34cf4ad254b97"
+  },
+  "diff": {
+    "bytes": 7255,
+    "sha256": "1a22d264f16e43df7615e109a9c175cc12045930c4815f21f47e2aa3e43484e0",
+    "blob": "27215ad2c8309de2e21335adb5f93c8b5efae6be"
+  },
+  "strictReconstruction": {
+    "hunks": 4,
+    "exact": true
+  },
+  "authorization": {
+    "hostDispatch": false,
+    "sourceReviewOnly": true,
+    "currentFailedRuntimeReplayed": false,
+    "production": false,
+    "provider": false,
+    "j3160": false
+  },
+  "dependencies": {
+    "selectedHarnessOwner": "NOT_OBSERVED; three public SDK bodies remain unsubmitted while Runtime service is unavailable",
+    "currentFailedCapsuleAndDiagnostic": "Preserved byte-for-byte; this source does not select a harness or widen the original npm code-root guard",
+    "freshRootAndSourceNamesAndManifest": "NOT_BOUND; the proposal intentionally retains the base paths for a minimal source diff and sets BINDING_READY=False",
+    "currentActualArtifactQualifications": "No inherited consumer PASS; exact normal61 product pins remain the unchanged reviewed base",
+    "futureExactRequest": "NONE; root must review a complete fresh successor after selected-owner admission is resolved"
+  },
+  "graphPerPhase": [
+    "Existing owned initial or cold phase completes.",
+    "Move the original single owned token-file read here (same 65,536-byte limit and same schema); register the same private token in the existing secrets guard.",
+    "One new GET auth/token/lookup-self under the original HTTP10/global900 deadline; same presented credential and typed renewable service-token lifetime are validated.",
+    "Run the existing canonical_and_inbox operations unchanged.",
+    "Original unassigned-profile GET must return 403.",
+    "Original single POST auth/token/renew-self keeps the empty object body; validate same presented credential/accessor and bounded returned lease TTL.",
+    "One new GET auth/token/lookup-self independently observes actual TTL/expiry and verifies same token/accessor/creation identity.",
+    "Original revoke-self must return 204, followed by original revoked-profile GET 403.",
+    "No sleep, retry, token issuance or altered expiry policy is introduced."
+  ],
+  "publicProjection": {
+    "lookupFields": [
+      "ttlSeconds",
+      "expiresAtUnix",
+      "renewable"
+    ],
+    "lifetimeDerivedFields": [
+      "renewalLeaseTtlSeconds",
+      "expiryDeltaSeconds",
+      "expiryObservation",
+      "expiryExtensionObserved"
+    ],
+    "identityFields": [
+      "sameCredentialAcrossLookupAndRenew",
+      "sameAccessorAcrossLookupAndRenew"
+    ],
+    "forbidden": [
+      "raw token",
+      "raw accessor",
+      "ID",
+      "RoleID",
+      "SecretID",
+      "provider credential",
+      "private capsule body"
+    ],
+    "privateMemoryOnly": [
+      "token",
+      "accessor",
+      "creationTime"
+    ],
+    "privateAccessorAddedToExistingSecretLiteralScan": true
+  },
+  "interpretation": {
+    "sameSecondOrCappedUnchangedExpiry": "Known successful renewal response with extension not demonstrated; the original revoke/403 chain still executes.",
+    "decreasingExpiry": "Recorded as decreasing, no extension qualification; no application retry or policy change.",
+    "increasedExpiry": "True only when the independently observed post expiry is greater than the independently observed pre expiry for the same credential/accessor.",
+    "completeFutureScope": "After both independent inverse phases and original validation, both renewal expiry observations must have increased. Otherwise the new evidence requirement fails known with both_actual_renewal_expiries_increased, not an HTTP/service error, and no extension is invented.",
+    "noBlindQualificationFrom200": true
+  },
+  "constraints": {
+    "tokenFileReadsPerPhase": 1,
+    "additionalLookupRequestsPerPhase": 2,
+    "originalRenewRequestsPerPhase": 1,
+    "originalRenewBody": {},
+    "originalRoleTtlSeconds": 180,
+    "originalRoleMaxTtlSeconds": 600,
+    "allRoleAndPolicyDefinitionsUnchanged": true,
+    "global900": 900,
+    "manager600": 600,
+    "phase120": 120,
+    "capture45": 45,
+    "query3": 3,
+    "http10": 10,
+    "ready30": 30,
+    "nativeBudgets": [
+      15,
+      8,
+      3
+    ],
+    "outer1080": 1080,
+    "registryWalCapBytes": 5969912,
+    "rowCapBytes": 1048576,
+    "aggregateCapBytes": 8388608,
+    "noCapOrDeadlineIncrease": true,
+    "originalHttpBodyCapBytes": 2097152,
+    "originalPublicReportCapBytes": 2097152
+  },
+  "validation": {
+    "componentScope": "Eight selected pure/mock groups. Full outer only AST-parsed and compiled, never imported or run.",
+    "result": {
+      "bytes": 3967,
+      "sha256": "edaa6eb633802dc32c0949108b2e5bef0c0b858762904a97ee44d4aa522b74c2",
+      "blob": "41017c562b880f57bea7dbd9213f01bc3a428053"
+    },
+    "unchangedTopLevelDefinitions": [
+      "Refused",
+      "need",
+      "sha",
+      "encoded",
+      "canonical",
+      "digest",
+      "ident",
+      "valid_pin",
+      "exact_json",
+      "Context",
+      "read_public_source",
+      "read_system_tool",
+      "LoopbackHTTP",
+      "add_secrets",
+      "reserve_port",
+      "generated_read_fsync",
+      "tls_material",
+      "capture_once",
+      "seed_documents",
+      "exact_data",
+      "bootstrap_api",
+      "canonical_and_inbox",
+      "scan_owned_plaintext"
+    ],
+    "modifiedExistingDefinitions": [
+      "token_lifecycle",
+      "main"
+    ],
+    "noActualHostOrCredentialOrNetworkOrSqliteOrChild": true,
+    "noProofOfRealTokenLifetime": true,
+    "unrelatedMatricesRerun": false
+  },
+  "sourceReferences": {
+    "baseCurrentOuter": {
+      "bytes": 68348,
+      "sha256": "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01",
+      "blob": "8459b949c07982f56dae2e252565f3db0971e246"
+    },
+    "auth": {
+      "blob": "d63f6aed31dde907321a43392f4fb0f95547a1c2",
+      "bytes": 395371,
+      "sha256": "f28541658b6663ebdfed8d5fc4f019c976f2daf24bc372961e17755ebc2ad601"
+    },
+    "nativeAuth": {
+      "blob": "604bee0a92af08720cbd33b5c7c72f71d019e738",
+      "bytes": 137388,
+      "sha256": "dbf07f20dc30ac077761c6ec01936c7f7cd03a3687409d60cca674d4b2ed11cf"
+    },
+    "appRoleRenewal": {
+      "blob": "6ebf2075dd10652c782e24cba894d066b5aada27",
+      "bytes": 7819,
+      "sha256": "d06e6d7edbb66acdaf37c52ca6080c205e9292a4677899e067eea27b8ffa8bf8"
+    },
+    "nativeToken": {
+      "blob": "cf1badcf04556a9c2c57bf3572b179e7a0739bc8",
+      "bytes": 4382,
+      "sha256": "c676a4c710279451933defd7e50a06526d2441052d208ceda1e9db1033d76b56"
+    },
+    "tokenLookupTests": {
+      "blob": "9ebd39b05d39c69db82e95a3373f83603b78cecc",
+      "bytes": 6955,
+      "sha256": "a219e9f637600f614699d58b8dded66d98d254a958753d9604966310ae72b43f"
+    }
+  },
+  "exactSourceBasis": [
+    {
+      "source": "auth",
+      "lines": "6963-6967",
+      "meaning": "lookup-self resolves the authenticated principal and projects observed token data without mutation."
+    },
+    {
+      "source": "auth",
+      "lines": "9249-9256",
+      "meaning": "service token lookup exposes creation_time, ttl, expire_time_unix, renewable, namespace and accessor."
+    },
+    {
+      "source": "nativeAuth",
+      "lines": "2539-2569",
+      "meaning": "native reply echoes the presented credential only inside authorized renewal/lookup response fields."
+    },
+    {
+      "source": "appRoleRenewal",
+      "lines": "135-197",
+      "meaning": "renewal checks actual AppRole provenance, active mount, role and renewable flag; updates expiry using the role's lifetime calculation; responds with accessor and lease duration."
+    },
+    {
+      "source": "nativeToken",
+      "lines": "30-66",
+      "meaning": "expiry follows live TTL/max limits and original issue-time/explicit maximum. An unchanged expiry is not proof that the renew request failed."
+    },
+    {
+      "source": "baseCurrentOuter",
+      "lines": "747-754",
+      "meaning": "the already frozen ACL permits lookup-self and role keeps 180-second TTL and 600-second max."
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.renewal-source-increment-root-review.r1",
+  "status": "PASS_FOUR_HUNK_SOURCE_ONLY_NO_EXECUTION_QUALIFICATION",
+  "tree": "fcb76baae4e87b159fc7704ae13185c862de3854",
+  "whole": {
+    "files": 18,
+    "bytes": 733095,
+    "merkle": {
+      "root_sha": "fcb76baae4e87b159fc7704ae13185c862de3854",
+      "trees_verified": 6
+    }
+  },
+  "checks": 30,
+  "candidate": {
+    "bytes": 71496,
+    "sha256": "72ecfcd586a4ab4c48fd95d2e15b4a44165a754570c699eae18dceaa02f3b262",
+    "blob": "26622454186ba28ada489c9a10b34cf4ad254b97"
+  },
+  "before": {
+    "bytes": 68348,
+    "sha256": "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01",
+    "blob": "8459b949c07982f56dae2e252565f3db0971e246"
+  },
+  "diff": {
+    "bytes": 7255,
+    "sha256": "1a22d264f16e43df7615e109a9c175cc12045930c4815f21f47e2aa3e43484e0",
+    "blob": "27215ad2c8309de2e21335adb5f93c8b5efae6be"
+  },
+  "strict_forward_and_reverse": true,
+  "author_selected_mock_cases": 8,
+  "author_complete_module_executed": false,
+  "root_reran_mock_cases": false,
+  "source_observations": [
+    "Same single token-file read moves ahead of existing canonical KV calls; pre and post lookup are each added once.",
+    "Empty renewal body, same credential/accessor checks, original revoke204 and revoked403 remain.",
+    "Only public numeric TTL/expiry, fixed labels and identity booleans are added; private token/accessor remain in secret guard.",
+    "Both inverse phases and original restoration checks precede final expiry-extension qualification. Same-second unchanged expiry remains a known evidence gap.",
+    "Four-hunk minimal diff leaves all existing deadline/HTTP implementations, policies, TTL settings and selected-harness guard unchanged."
+  ],
+  "selected_harness_owner_observed": false,
+  "fresh_executable_candidate_bound": false,
+  "host_request_frozen": false,
+  "host_execution_go": false,
+  "actual_renewal_extension_proven": false,
+  "new_runtime_calls": 0
+}

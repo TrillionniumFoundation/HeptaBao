@@ -1,0 +1,181 @@
+{
+  "schema": "heptabao.root.current-x230-unbound-source.r1",
+  "status": "PASS_SOURCE_SCOPE_ONLY",
+  "packet": "49942321c517ac522988e3f4df4eb79e3bb3a6d7",
+  "files": 36,
+  "bytes": 648898,
+  "checks": 62,
+  "checked": [
+    "manifest35_exact_whole_files",
+    "source_only_unbound_no_dispatch",
+    "canonical_exact",
+    "all_seven_actual_slots_null",
+    "source_inputs_exact_table",
+    "sender.strict_forward_reverse",
+    "sender.before_is_published_R25_leaf",
+    "sender.frozen_source_input_exact",
+    "sender.binding_false_and_current_identity",
+    "sender.source_pin_matches",
+    "sender.seven_same_frozen_null_slots",
+    "receiver.strict_forward_reverse",
+    "receiver.before_is_published_R25_leaf",
+    "receiver.frozen_source_input_exact",
+    "receiver.binding_false_and_current_identity",
+    "receiver.source_pin_matches",
+    "receiver.seven_same_frozen_null_slots",
+    "relay.strict_forward_reverse",
+    "relay.before_is_published_R25_leaf",
+    "relay.frozen_source_input_exact",
+    "relay.binding_false_and_current_identity",
+    "relay.source_pin_matches",
+    "relay.seven_same_frozen_null_slots",
+    "full34.strict_forward_reverse",
+    "full34.before_is_published_R25_leaf",
+    "full34.frozen_source_input_exact",
+    "full34.binding_false_and_current_identity",
+    "full34.source_pin_matches",
+    "comparison69.strict_forward_reverse",
+    "comparison69.before_is_published_R25_leaf",
+    "comparison69.frozen_source_input_exact",
+    "comparison69.binding_false_and_current_identity",
+    "comparison69.source_pin_matches",
+    "sender.only_binding_label_change",
+    "receiver.only_binding_label_change",
+    "relay.only_binding_label_change",
+    "sender_ten_functions_unchanged",
+    "receiver_receipts_only_admission_call_rename",
+    "relay_existing17_functions_unchanged",
+    "full34.runtime_body_exact_name_schema_only",
+    "full34.actual_receive_pins_unbound",
+    "comparison69.runtime_body_exact_name_schema_only",
+    "comparison69.actual_receive_pins_unbound",
+    "fence_prior_closed_success_unknown_kept",
+    "fence_root_exact_original_full9",
+    "fence_marker_exact_original_full9",
+    "fence_shared_parent_exact_first5",
+    "fence_marker_whole_and_independent_info",
+    "fence_and_qualification_refs_previously_published",
+    "actual_ROG_normal61_source_not_historic_QA",
+    "unchanged_total_deadlines",
+    "fence_acquired_before_new_root",
+    "fence_rechecked_before_endpoints",
+    "fence_final_checks_required_for_success",
+    "heldFD_and_named_pins_no_mutating_fence_operations",
+    "acquisition_registered_before_pending_cancel",
+    "close_once_failure_not_success",
+    "unknown_never_promoted_to_terminal",
+    "receiver_self_digest_contract_preserved",
+    "future_caller_shape_not_request",
+    "author70_actual_local_result_preserved",
+    "author_selected_inputs_fence_exact"
+  ],
+  "diffs_and_definitions": {
+    "sender": {
+      "hunks": 2,
+      "before_definitions": 11,
+      "after_definitions": 11,
+      "unchanged_definitions": 10,
+      "changed_definitions": [
+        "binding_ready"
+      ],
+      "new_definitions": [],
+      "removed_definitions": []
+    },
+    "receiver": {
+      "hunks": 7,
+      "before_definitions": 29,
+      "after_definitions": 29,
+      "unchanged_definitions": 26,
+      "changed_definitions": [
+        "binding_ready",
+        "verify_receipts"
+      ],
+      "new_definitions": [
+        "verify_normal61"
+      ],
+      "removed_definitions": [
+        "verify_normal60"
+      ]
+    },
+    "relay": {
+      "hunks": 6,
+      "before_definitions": 18,
+      "after_definitions": 22,
+      "unchanged_definitions": 17,
+      "changed_definitions": [
+        "binding_ready"
+      ],
+      "new_definitions": [
+        "acquire_effect_fence",
+        "close_effect_fence",
+        "fence_open_fd",
+        "verify_effect_fence"
+      ],
+      "removed_definitions": []
+    },
+    "full34": {
+      "hunks": 4,
+      "before_definitions": 8,
+      "after_definitions": 8,
+      "unchanged_definitions": 6,
+      "changed_definitions": [
+        "main"
+      ],
+      "new_definitions": [
+        "normal61_admission"
+      ],
+      "removed_definitions": [
+        "normal60_admission"
+      ]
+    },
+    "comparison69": {
+      "hunks": 4,
+      "before_definitions": 7,
+      "after_definitions": 7,
+      "unchanged_definitions": 5,
+      "changed_definitions": [
+        "main"
+      ],
+      "new_definitions": [
+        "normal61_admission"
+      ],
+      "removed_definitions": [
+        "normal60_admission"
+      ]
+    }
+  },
+  "author_local_component_assertions": 70,
+  "root_reran_author_components": false,
+  "root_ast_executed_candidate_modules": false,
+  "held_fence_scope": "three readonly descriptors; exact prior objects and whole marker verified before new ROOT, before endpoints and after cleanup; named stability is a required condition, not an atomic continuous observation",
+  "original_relay_state": "UNKNOWN",
+  "original_relay_termination_proven": false,
+  "actual_input_slots_unresolved": 7,
+  "product_runtime_qualification": false,
+  "dispatch_GO": false,
+  "full_replacement": false,
+  "root_checker_corrections": [
+    {
+      "initial": "sender.seven_same_frozen_null_slots",
+      "cause": "AST JSON serialized sorted object keys; comparator corrected to canonical object equality"
+    },
+    {
+      "initial": "fence_prior_closed_success_unknown_kept",
+      "cause": "expected exact original terminal label effect_fence_published, not invented generic passed"
+    },
+    {
+      "initial": "fence_prior_closed_success_unknown_kept",
+      "cause": "original runtime state string is lowercase unknown; copied uppercase report label corrected"
+    }
+  ],
+  "root_ast_display_correction": {
+    "schema": "heptabao.root.x230-ast-display-correction.r1",
+    "original_output_preserved": true,
+    "initial_display_used_json_parse": true,
+    "initial_display_rounded_large_integer_constants": true,
+    "not_used_for_identity_verification": true,
+    "verification_parser": "parseLosslessIntegers",
+    "source_modified": false,
+    "original_exec_repeated": false
+  }
+}

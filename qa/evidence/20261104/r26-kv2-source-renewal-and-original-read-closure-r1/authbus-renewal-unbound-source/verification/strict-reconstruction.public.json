@@ -1,0 +1,50 @@
+{
+  "schema": "heptabao.source-only.strict-reconstruction.r1",
+  "before": {
+    "bytes": 68348,
+    "sha256": "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01",
+    "blob": "8459b949c07982f56dae2e252565f3db0971e246"
+  },
+  "after": {
+    "bytes": 71496,
+    "sha256": "72ecfcd586a4ab4c48fd95d2e15b4a44165a754570c699eae18dceaa02f3b262",
+    "blob": "26622454186ba28ada489c9a10b34cf4ad254b97"
+  },
+  "diff": {
+    "bytes": 7255,
+    "sha256": "1a22d264f16e43df7615e109a9c175cc12045930c4815f21f47e2aa3e43484e0",
+    "blob": "27215ad2c8309de2e21335adb5f93c8b5efae6be"
+  },
+  "hunks": 4,
+  "exact": true,
+  "unchangedTopLevelFunctionsAndClasses": [
+    "Refused",
+    "need",
+    "sha",
+    "encoded",
+    "canonical",
+    "digest",
+    "ident",
+    "valid_pin",
+    "exact_json",
+    "Context",
+    "read_public_source",
+    "read_system_tool",
+    "LoopbackHTTP",
+    "add_secrets",
+    "reserve_port",
+    "generated_read_fsync",
+    "tls_material",
+    "capture_once",
+    "seed_documents",
+    "exact_data",
+    "bootstrap_api",
+    "canonical_and_inbox",
+    "scan_owned_plaintext"
+  ],
+  "modifiedExistingDefinitions": [
+    "token_lifecycle",
+    "main"
+  ],
+  "fullModuleExecuted": false
+}

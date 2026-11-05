@@ -1,0 +1,47 @@
+{
+  "CONTRACT.public.json": {
+    "blob": "c1446c8e00703e55f255a6c0e70755c96db82c54",
+    "bytes": 8577,
+    "sha256": "48bdd7bb279edcd6d12b165de40f15afe2a91f0a5dea65d765e578ca83640954"
+  },
+  "README.md": {
+    "blob": "39c39b3578882b11653d92509fcfed3a3d2df6d5",
+    "bytes": 2940,
+    "sha256": "ad364a885686cee6954ececd9c4480cb90665946a2c2afe8501e6f68e13202d8"
+  },
+  "verification/strict-reconstruction.public.json": {
+    "blob": "88c72d8db0e5c8373661adb9b0baec957ee95aaa",
+    "bytes": 1212,
+    "sha256": "da29ff695efe144438e18e48ea4658145f08f2b0f5021d90665386f5d122507a"
+  },
+  "verification/result.public.json": {
+    "blob": "41017c562b880f57bea7dbd9213f01bc3a428053",
+    "bytes": 3967,
+    "sha256": "edaa6eb633802dc32c0949108b2e5bef0c0b858762904a97ee44d4aa522b74c2"
+  },
+  "reference/auth_approle_renewal.rs": {
+    "blob": "6ebf2075dd10652c782e24cba894d066b5aada27",
+    "bytes": 7819,
+    "sha256": "d06e6d7edbb66acdaf37c52ca6080c205e9292a4677899e067eea27b8ffa8bf8"
+  },
+  "reference/auth_native_token.rs": {
+    "blob": "cf1badcf04556a9c2c57bf3572b179e7a0739bc8",
+    "bytes": 4382,
+    "sha256": "c676a4c710279451933defd7e50a06526d2441052d208ceda1e9db1033d76b56"
+  },
+  "reference/service_token_lookup_tests.rs": {
+    "blob": "9ebd39b05d39c69db82e95a3373f83603b78cecc",
+    "bytes": 6955,
+    "sha256": "a219e9f637600f614699d58b8dded66d98d254a958753d9604966310ae72b43f"
+  },
+  "reference/auth.rs": {
+    "blob": "d63f6aed31dde907321a43392f4fb0f95547a1c2",
+    "bytes": 395371,
+    "sha256": "f28541658b6663ebdfed8d5fc4f019c976f2daf24bc372961e17755ebc2ad601"
+  },
+  "reference/service_native_auth.rs": {
+    "blob": "604bee0a92af08720cbd33b5c7c72f71d019e738",
+    "bytes": 137388,
+    "sha256": "dbf07f20dc30ac077761c6ec01936c7f7cd03a3687409d60cca674d4b2ed11cf"
+  }
+}

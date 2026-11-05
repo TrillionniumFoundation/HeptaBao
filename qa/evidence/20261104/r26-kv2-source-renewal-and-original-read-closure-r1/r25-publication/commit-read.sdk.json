@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"sha\":\"9a56fe7b32140045d0ef7ddf8b3a9309392a9a76\",\"node_id\":\"C_kwDOUGncwNoAKDlhNTZmZTdiMzIxNDAwNDVkMGVmN2RkZjhiM2E5MzA5MzkyYTlhNzY\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/9a56fe7b32140045d0ef7ddf8b3a9309392a9a76\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/9a56fe7b32140045d0ef7ddf8b3a9309392a9a76\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T13:23:57Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T13:23:57Z\"},\"tree\":{\"sha\":\"943359c4affeabcc4ff068199b651d982a585dc3\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/943359c4affeabcc4ff068199b651d982a585dc3\"},\"message\":\"Record R25 normal61, exact Mac harness diagnosis, and current source distribution evidence\\n\\nPreserve the failed AuthBus runtime and all historical unknowns. Record read-only diagnostic closure, QA12 transfer core and partial independent metadata, and exact source/inert gates. Full OpenBao 2.7.1 replacement, production cutover, and legacy cleanup remain unqualified.\",\"parents\":[{\"sha\":\"d93c3446a092e5c66a5f39b2e6e3cc559d99b12f\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/d93c3446a092e5c66a5f39b2e6e3cc559d99b12f\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/d93c3446a092e5c66a5f39b2e6e3cc559d99b12f\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+    "title": "9a56fe7b32140045d0ef7ddf8b3a9309392a9a76",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/9a56fe7b32140045d0ef7ddf8b3a9309392a9a76",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/9a56fe7b32140045d0ef7ddf8b3a9309392a9a76",
+    "display_title": "9a56fe7b32140045d0ef7ddf8b3a9309392a9a76",
+    "structuredContent": {
+      "title": "9a56fe7b32140045d0ef7ddf8b3a9309392a9a76",
+      "content": "{\"sha\":\"9a56fe7b32140045d0ef7ddf8b3a9309392a9a76\",\"node_id\":\"C_kwDOUGncwNoAKDlhNTZmZTdiMzIxNDAwNDVkMGVmN2RkZjhiM2E5MzA5MzkyYTlhNzY\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/9a56fe7b32140045d0ef7ddf8b3a9309392a9a76\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/9a56fe7b32140045d0ef7ddf8b3a9309392a9a76\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T13:23:57Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T13:23:57Z\"},\"tree\":{\"sha\":\"943359c4affeabcc4ff068199b651d982a585dc3\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/943359c4affeabcc4ff068199b651d982a585dc3\"},\"message\":\"Record R25 normal61, exact Mac harness diagnosis, and current source distribution evidence\\n\\nPreserve the failed AuthBus runtime and all historical unknowns. Record read-only diagnostic closure, QA12 transfer core and partial independent metadata, and exact source/inert gates. Full OpenBao 2.7.1 replacement, production cutover, and legacy cleanup remain unqualified.\",\"parents\":[{\"sha\":\"d93c3446a092e5c66a5f39b2e6e3cc559d99b12f\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/d93c3446a092e5c66a5f39b2e6e3cc559d99b12f\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/d93c3446a092e5c66a5f39b2e6e3cc559d99b12f\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/9a56fe7b32140045d0ef7ddf8b3a9309392a9a76"
+    }
+  },
+  "isError": false
+}

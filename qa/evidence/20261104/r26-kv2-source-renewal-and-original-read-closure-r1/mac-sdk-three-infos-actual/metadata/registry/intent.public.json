@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.mac-harness-public-sdk-info-intent.r1",
+  "exactOperationRequest": {
+    "blob": "31ac89bbb344abbda1c08509ff75ebd8f79f05d0",
+    "bytes": 262,
+    "sha256": "31c7a05f7caa026c2a5967bbff5f8e67fd13ad1f76d68038069267334eec0053"
+  },
+  "readset": "bd50f91f35968ceef5485f57c7960cdf5b8407d8",
+  "host": "mac",
+  "publicPath": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-DtLZ3rba.js",
+  "expectedWholeSource": {
+    "bytes": 3135,
+    "sha256": "a845875a1998c2a6bdd9fe4c824a0a7c3e7da0f3ee75ec56dc6163d4327f7ff0"
+  },
+  "readOnly": true,
+  "oneOperationInFlight": true,
+  "rootAuthorizedExactThreeFiles": true,
+  "haWindowMustBeReleasedBeforeSubmit": true,
+  "noCurrentPrivateData": true,
+  "noSdkExecution": true,
+  "noProcessStart": true,
+  "unknownUsesOnlySameTypedKeyReconciliation": true
+}

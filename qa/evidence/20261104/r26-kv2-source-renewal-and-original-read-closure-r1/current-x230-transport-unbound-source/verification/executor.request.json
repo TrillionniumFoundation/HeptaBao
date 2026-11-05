@@ -1,0 +1,5 @@
+{
+  "cmd": "python3 /tmp/heptabao_current_x230_source_r1/verify.py",
+  "workdir": "/tmp",
+  "max_output_tokens": 3500
+}

@@ -1,0 +1,94 @@
+--- a/comparison69.py
++++ b/comparison69.py
+@@ -2,13 +2,13 @@
+ import hashlib,json,os,subprocess,time
+ os.umask(0o077)
+ BINDING_READY=False
+-NORMAL60_SHA=None
++NORMAL61_SHA=None
+ NORMAL_NATIVE_SHA=None
+ NORMAL_RELEASE_SHA=None
+ TRANSFER_SHA=None
+-ROOT=Path('/home/qian/heptabao-cold-h2-normal-20261105-r1')
++ROOT=Path('/home/qian/heptabao-same-root-publication-normal-20261105-r1')
+ SOURCE=ROOT/'source';OUT=ROOT/'evidence/comparison69-r1';ART=ROOT/'artifacts'
+-HEAD='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c';TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
++HEAD='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec';TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'
+ BINARY_SHA=None
+ DRIVER_SHA='fd88ed0b8f1c1010e79f9393dfbf6464cabcac48ece8c6e448a64b7ccc45272e'
+ MODULES=sorted('core,kv,token,transit,pki,totp,userpass,approle,identity,wrapping,edge_tls,system,operations'.split(','))
+@@ -28,24 +28,25 @@
+ def git(*args):return subprocess.check_output(['/usr/bin/git','-C',str(SOURCE),*args],text=True,timeout=30).strip()
+ def source():
+  return {'commit':git('rev-parse','HEAD'),'tree':git('rev-parse','HEAD^{tree}'),'dirty_including_untracked':bool(git('status','--porcelain')),'binary_sha256':sha(ART/'heptabao-server')}
+-def normal60_admission():
+- need(BINDING_READY is True,'normal60_and_transport_bindings_unresolved')
++def normal61_admission():
++ need(BINDING_READY is True,'normal61_and_transport_bindings_unresolved')
+  need(all(isinstance(x,str) and len(x)==64 and all(c in '0123456789abcdef' for c in x)
+-          for x in (NORMAL60_SHA,NORMAL_NATIVE_SHA,NORMAL_RELEASE_SHA,TRANSFER_SHA)),
++          for x in (NORMAL61_SHA,NORMAL_NATIVE_SHA,NORMAL_RELEASE_SHA,TRANSFER_SHA)),
+       'exact_actual_provenance_pins_required')
+- actual=ROOT/'artifacts/normal60-result.public.json'
+- need(sha(actual)==NORMAL60_SHA,'combined_normal60_whole_pin')
++ actual=ROOT/'artifacts/normal61-result.public.json'
++ need(sha(actual)==NORMAL61_SHA,'combined_normal61_whole_pin')
+  n=json.loads(actual.read_bytes())
+- need(n.get('schema')=='heptabao.linux-normal-cold-h2-exact-tests.v1'
++ need(n.get('schema')=='heptabao.linux-normal-same-root-publication-exact-tests.v1'
+       and n.get('source_commit')==HEAD and n.get('source_tree')==TREE
+-      and n.get('controller_sha256')=='1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40'
++      and n.get('controller_sha256')=='93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be'
+       and n.get('status')=='passed' and n.get('test_count')==44
+-      and n.get('selected_test_total')==60 and n.get('normal_default_features') is True
++      and n.get('selected_test_total')==61 and n.get('normal_default_features') is True
+       and n.get('fixture_features')==[] and n.get('original_44_status')=='passed'
+       and n.get('original_44_and_ingress_7_status')=='passed'
+-      and n.get('additional_test_counts')=={'ingress_observer':7,'cold_h2':9}
++      and n.get('original_60_status')=='passed' and n.get('original_60_test_total')==60
++      and n.get('additional_test_counts')=={'ingress_observer':7,'cold_h2':9,'same_root_publication':1}
+       and n.get('source_unchanged') is True and n.get('binary_unchanged') is True
+-      and n.get('release_artifacts_unchanged') is True,'exact_normal60_qualification')
++      and n.get('release_artifacts_unchanged') is True,'exact_normal61_qualification')
+  for key,names in (
+      ('ingress_observer_regression',["service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms","service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root","service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result","ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata","ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates","ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results","ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success"]),
+      ('cold_h2_regression',["service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity","service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results","service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file","http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context","http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work","http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result","http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture","http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context","http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity"])):
+@@ -53,18 +54,26 @@
+   need(group.get('status')=='passed' and group.get('test_count')==len(names)
+        and group.get('actual_test_names')==names and group.get('clamped_to_original_outer_deadline') is True,
+        'exact_separate_normal_regression')
++ same=n.get('same_root_publication_regression',{})
++ need(same.get('schema')=='heptabao.normal-same-root-publication-regression.v1'
++      and same.get('status')=='passed' and same.get('test_count')==1
++      and same.get('actual_test_names')==['service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors']
++      and same.get('original_44_7_9_denominators_unchanged') is True
++      and same.get('clamped_to_original_outer_deadline') is True
++      and same.get('new_total_group_cap_seconds')==600,
++      'independent_same_root_publication_regression')
+  cleanup=n.get('cleanup')
+  need(isinstance(cleanup,list) and cleanup and all(
+       row.get('exit_code')==0 and row.get('direct_child_reaped') is True
+       and row.get('remaining')==[] and not row.get('cleanup_error_type') for row in cleanup),
+       'normal_all_children_terminal')
+  need(sha(ROOT/'artifacts/transfer.result.public.json')==TRANSFER_SHA,'new_exact_transfer_receipt_pin')
+- return NORMAL60_SHA
++ return NORMAL61_SHA
+ 
+ def main():
+- normal60_admission()
++ normal61_admission()
+  OUT.parent.mkdir(mode=0o700,exist_ok=True);OUT.mkdir(mode=0o700);start=time.monotonic()
+- report={'schema':'heptabao.df026-x230-original-comparison69-assessment.v1','ok':False,'execution_host':'x230','full_openbao_compatibility':False,'production_qualified':False,'production_changed':False,'original_modules_unmodified':True,'original_driver_unmodified':True}
++ report={'schema':'heptabao.4e808-x230-original-comparison69-assessment.v1','ok':False,'execution_host':'x230','full_openbao_compatibility':False,'production_qualified':False,'production_changed':False,'original_modules_unmodified':True,'original_driver_unmodified':True}
+  try:
+   before=source();need(before=={'commit':HEAD,'tree':TREE,'dirty_including_untracked':False,'binary_sha256':BINARY_SHA},'source_and_binary_pin')
+   driver=ROOT/'native271_comparison_final_r1.py';need(sha(driver)==DRIVER_SHA,'original69_driver_pin')
+@@ -76,7 +85,7 @@
+   need(sha(SOURCE/'qa/openbao-acceptance/acceptance.py')=='8312c400ec5f0946f8a87fb3241bf8db832ddd04763010af7245d6557f55f94d','unchanged_69_acceptance_contract')
+   argv=['/usr/bin/python3','-I','-S','-B',str(driver),'--binary',str(ART/'heptabao-server'),'--expected-binary-sha256',BINARY_SHA,'--expected-source-commit',HEAD,'--candidate-source',str(SOURCE),'--work-dir',str(OUT/'private-run'),'--build-log',str(ART/'result.public.json'),'--oracle-version','2.7.1']
+   env={'PATH':'/usr/bin:/bin:/usr/sbin:/sbin','LANG':'C.UTF-8','TZ':'UTC','HB_ORACLE_BINARY':str(oracle),'HB_ORACLE_ARCHIVE':str(archive)}
+-  intent={'schema':'heptabao.df026-x230-original-comparison69-intent.v1','argv':argv,'env':env,'source_before':before,'driver_sha256':DRIVER_SHA,'normal_receipt_pins':pins,'build_log_argument_is_immutable_normal_build_result_receipt':True,'modules_argument_omitted_to_preserve_original_13_module_default':True,'default_modules':MODULES,'controller_sha256':sha(Path(__file__)),'new_private_fixture_root':str(OUT/'private-run'),'network_scope':'X230 loopback only','full_openbao_compatibility':False,'production_qualified':False}
++  intent={'schema':'heptabao.4e808-x230-original-comparison69-intent.v1','argv':argv,'env':env,'source_before':before,'driver_sha256':DRIVER_SHA,'normal_receipt_pins':pins,'build_log_argument_is_immutable_normal_build_result_receipt':True,'modules_argument_omitted_to_preserve_original_13_module_default':True,'default_modules':MODULES,'controller_sha256':sha(Path(__file__)),'new_private_fixture_root':str(OUT/'private-run'),'network_scope':'X230 loopback only','full_openbao_compatibility':False,'production_qualified':False}
+   report['intent_sha256']=save(OUT/'intent.public.json',intent)
+   with (OUT/'run.stdout').open('xb') as so,(OUT/'run.stderr').open('xb') as se:
+    p=subprocess.run(argv,stdin=subprocess.DEVNULL,stdout=so,stderr=se,env=env)

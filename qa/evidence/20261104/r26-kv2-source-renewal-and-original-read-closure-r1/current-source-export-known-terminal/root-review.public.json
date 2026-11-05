@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.root.current-source-export-known-terminal.r1",
+  "status": "PASS_ORIGINAL_JOB_TERMINAL_AND_STREAMS_ONLY",
+  "checks": 12,
+  "checked": [
+    "exact_authorized_request_and_intent",
+    "unique_ACK_original_request_binding",
+    "ACK_original_SDK_native_exact",
+    "authority_original_SDK_native_exact",
+    "known_process_terminal_not_UNKNOWN",
+    "streams_same_original_job",
+    "stdout.whole_hex_text_cursor_EOF",
+    "stdout.authority_log_sync_exact",
+    "stderr.whole_hex_text_cursor_EOF",
+    "stderr.authority_log_sync_exact",
+    "frozen_export_terminal_claim",
+    "result_info_exact_terminal_path"
+  ],
+  "job": "1a1abe371de-fc05-5122",
+  "request_digest": "d2dc110e3e901abadfe5c8eb57ef7e3b58c98de223cdd9ed3ac636eb2fef02f8",
+  "authority": {
+    "name": "export-status.original-native.json",
+    "blob": "7706b3d95bd33dde06394513c9035cdd2de9c0ee",
+    "bytes": 729,
+    "sha256": "ba6f48b903cc9c853c9ad5cc948f1a961cc30f80176ef2429ea80b5fc7dc9947"
+  },
+  "stdout_bytes": 534,
+  "stderr_bytes": 0,
+  "elapsed_after_publication_seconds": 3.3388441129936837,
+  "result_info": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json",
+    "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+    "size": 39692,
+    "version": "66306:28091501:39692:1793885177751063403:1793885177751063403"
+  },
+  "full_export_result_body_closed": false,
+  "bundle_independent_metadata_observed": false,
+  "all_27_command_records_and_streams_closed": false,
+  "readonly_body_operation_id": "79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2",
+  "readonly_body_operation_state": "UNKNOWN after status transport errors; does not change known export process terminal",
+  "carrier_GO": false,
+  "import_GO": false,
+  "product_qualification": false,
+  "full_replacement": false
+}

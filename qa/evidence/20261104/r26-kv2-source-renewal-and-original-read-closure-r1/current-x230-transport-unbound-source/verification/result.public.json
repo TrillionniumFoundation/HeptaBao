@@ -1,0 +1,297 @@
+{
+  "schema": "heptabao.current4e808-x230-source-selected-checks.v1",
+  "status": "passed",
+  "checks": [
+    {
+      "name": "sender explicitly unbound",
+      "passed": true
+    },
+    {
+      "name": "receiver explicitly unbound",
+      "passed": true
+    },
+    {
+      "name": "relay explicitly unbound",
+      "passed": true
+    },
+    {
+      "name": "full34 explicitly unbound",
+      "passed": true
+    },
+    {
+      "name": "comparison69 explicitly unbound",
+      "passed": true
+    },
+    {
+      "name": "sender exact seven unresolved records",
+      "passed": true
+    },
+    {
+      "name": "sender current product canonical",
+      "passed": true
+    },
+    {
+      "name": "receiver exact seven unresolved records",
+      "passed": true
+    },
+    {
+      "name": "receiver current product canonical",
+      "passed": true
+    },
+    {
+      "name": "relay exact seven unresolved records",
+      "passed": true
+    },
+    {
+      "name": "relay current product canonical",
+      "passed": true
+    },
+    {
+      "name": "full34 all actual receive pins remain unresolved",
+      "passed": true
+    },
+    {
+      "name": "full34 admission before fixture creation",
+      "passed": true
+    },
+    {
+      "name": "full34 original runtime body identical after explicit name/schema mapping",
+      "passed": true
+    },
+    {
+      "name": "comparison69 all actual receive pins remain unresolved",
+      "passed": true
+    },
+    {
+      "name": "comparison69 admission before fixture creation",
+      "passed": true
+    },
+    {
+      "name": "comparison69 original runtime body identical after explicit name/schema mapping",
+      "passed": true
+    },
+    {
+      "name": "selected exact need,verify_normal61",
+      "passed": true
+    },
+    {
+      "name": "actual ROG 4e808 61 accepted",
+      "passed": true
+    },
+    {
+      "name": "old selected60 rejected",
+      "passed": true
+    },
+    {
+      "name": "old product source rejected",
+      "passed": true
+    },
+    {
+      "name": "old normal60 driver rejected",
+      "passed": true
+    },
+    {
+      "name": "original60 failure rejected",
+      "passed": true
+    },
+    {
+      "name": "missing new1 rejected",
+      "passed": true
+    },
+    {
+      "name": "new1 wrong name rejected",
+      "passed": true
+    },
+    {
+      "name": "new1 group budget 601 rejected",
+      "passed": true
+    },
+    {
+      "name": "new1 not clipped rejected",
+      "passed": true
+    },
+    {
+      "name": "new1 changed original denominator rejected",
+      "passed": true
+    },
+    {
+      "name": "owned survivor rejected",
+      "passed": true
+    },
+    {
+      "name": "fence pins bind original actual bytes",
+      "passed": true
+    },
+    {
+      "name": "fence root remains old and transport root fresh",
+      "passed": true
+    },
+    {
+      "name": "fence before any new root creation",
+      "passed": true
+    },
+    {
+      "name": "named fence check before actual endpoints",
+      "passed": true
+    },
+    {
+      "name": "cleanup final fence required before success publication",
+      "passed": true
+    },
+    {
+      "name": "old relay remains unknown and not terminated",
+      "passed": true
+    },
+    {
+      "name": "selected exact identity,fence_open_fd,verify_effect_fence,acquire_effect_fence,close_effect_fence",
+      "passed": true
+    },
+    {
+      "name": "three real selected opens use fake descriptors",
+      "passed": true
+    },
+    {
+      "name": "only shared-parent mutable suffix can change",
+      "passed": true
+    },
+    {
+      "name": "all three close once",
+      "passed": true
+    },
+    {
+      "name": "selected exact identity,fence_open_fd,verify_effect_fence,acquire_effect_fence,close_effect_fence",
+      "passed": true
+    },
+    {
+      "name": "root named replacement rejected",
+      "passed": true
+    },
+    {
+      "name": "root named replacement rejected still closes all once",
+      "passed": true
+    },
+    {
+      "name": "selected exact identity,fence_open_fd,verify_effect_fence,acquire_effect_fence,close_effect_fence",
+      "passed": true
+    },
+    {
+      "name": "marker named replacement rejected",
+      "passed": true
+    },
+    {
+      "name": "marker named replacement rejected still closes all once",
+      "passed": true
+    },
+    {
+      "name": "selected exact identity,fence_open_fd,verify_effect_fence,acquire_effect_fence,close_effect_fence",
+      "passed": true
+    },
+    {
+      "name": "shared parent inode drift rejected",
+      "passed": true
+    },
+    {
+      "name": "shared parent inode drift rejected still closes all once",
+      "passed": true
+    },
+    {
+      "name": "selected exact identity,fence_open_fd,verify_effect_fence,acquire_effect_fence,close_effect_fence",
+      "passed": true
+    },
+    {
+      "name": "marker content drift rejected",
+      "passed": true
+    },
+    {
+      "name": "marker content drift rejected still closes all once",
+      "passed": true
+    },
+    {
+      "name": "selected exact identity,fence_open_fd,verify_effect_fence,acquire_effect_fence,close_effect_fence",
+      "passed": true
+    },
+    {
+      "name": "extra marker byte rejected",
+      "passed": true
+    },
+    {
+      "name": "extra marker byte rejected still closes all once",
+      "passed": true
+    },
+    {
+      "name": "selected exact identity,fence_open_fd,verify_effect_fence,acquire_effect_fence,close_effect_fence",
+      "passed": true
+    },
+    {
+      "name": "owned root metadata drift rejected",
+      "passed": true
+    },
+    {
+      "name": "owned root metadata drift rejected still closes all once",
+      "passed": true
+    },
+    {
+      "name": "selected exact identity,fence_open_fd,verify_effect_fence,acquire_effect_fence,close_effect_fence",
+      "passed": true
+    },
+    {
+      "name": "second open failure preserved",
+      "passed": true
+    },
+    {
+      "name": "partial acquisition closes only owned fd",
+      "passed": true
+    },
+    {
+      "name": "selected exact identity,fence_open_fd,verify_effect_fence,acquire_effect_fence,close_effect_fence",
+      "passed": true
+    },
+    {
+      "name": "cancellation after second acquisition observed",
+      "passed": true
+    },
+    {
+      "name": "cancelled acquisition registered before close",
+      "passed": true
+    },
+    {
+      "name": "selected exact identity,fence_open_fd,verify_effect_fence,acquire_effect_fence,close_effect_fence",
+      "passed": true
+    },
+    {
+      "name": "close failure is not green",
+      "passed": true
+    },
+    {
+      "name": "failed close never retried",
+      "passed": true
+    },
+    {
+      "name": "close error explicit ledger",
+      "passed": true
+    },
+    {
+      "name": "selected exact identity,fence_open_fd,verify_effect_fence,acquire_effect_fence,close_effect_fence",
+      "passed": true
+    },
+    {
+      "name": "expired before acquisition opens no fd",
+      "passed": true
+    },
+    {
+      "name": "expired no resources fake",
+      "passed": true
+    }
+  ],
+  "check_count": 70,
+  "python_sources_compiled_only": 5,
+  "actual_candidate_modules_executed": 0,
+  "selected_actual_functions_only": true,
+  "fake_os": true,
+  "actual_native_descriptors": 0,
+  "remote_host_calls": 0,
+  "children": 0,
+  "product_calls": 0,
+  "test_denominators_31_69_preserved": true,
+  "old_unknown_replayed": false
+}

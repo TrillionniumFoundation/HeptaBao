@@ -1,0 +1,1476 @@
+[
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 0,
+    "bytes": 16384,
+    "chunk_sha256": "35ddf035e8a127a2d2cfe3c340db240ee09cc3fc747c80a0682b20c8d9f6aca8",
+    "file_size": 440534,
+    "operation_id": "e76b4ceaa600681f65fa07f408b698d04bf2bfafed823cfa72a2e751416089ec",
+    "closed_status_sdk_tree": "de3c9afd6686bf73ac7d7883be6687f3de96c377",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "65e5801aea900cdea4a03488dced988a7c0500ed",
+    "original_payload_sha256": "b38dbd6447a45e8ceeeb02c80619ed82a311c4aee40088dca81f935fab08bd7b",
+    "original_payload_bytes": 22342,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 16384,
+        "external_tree": "33180947688d11c7f407c5dfc03ddb67954eb15d"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5958,
+        "external_tree": "c5a47f9161f1d641c5fa7cbb7b1ca96eabc7d468"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 16384,
+    "bytes": 16384,
+    "chunk_sha256": "1ec209b2864af1d7a7b7ba1246c478869a6b3ffb4b2f168107ac35f92d48bcd7",
+    "file_size": 440534,
+    "operation_id": "21d7b672c6d3aac7f2ac15704c815cb5148ca99b214daef818a9b250a24f0a38",
+    "closed_status_sdk_tree": "1531c23253fdfdcebef0692eb910b6c79fc09a47",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "75c4fe1d65b9119629afb161bb52ab3a7a1a7f9d",
+    "original_payload_sha256": "8e74bdc26158867f443056044683eac3543e6d86a21df26cf104028f67a59720",
+    "original_payload_bytes": 22346,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 16384,
+        "external_tree": "16ffc30cfb412e307bebb25758136ad3caa7bf05"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5962,
+        "external_tree": "fe9c2e5098aaeeb429f6549a5c45d1823c20889f"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 32768,
+    "bytes": 16384,
+    "chunk_sha256": "c5d1774041b230f0a8a5705e13a6851925a3e616b75c72faa7b50c96b8a978ce",
+    "file_size": 440534,
+    "operation_id": "fc1aaed2bb3ab925a707219c2f4cd77f8c37939f099df512eac5295dca660906",
+    "closed_status_sdk_tree": "d165361dbd0e9432136cfed6ef4c0fcdd841d333",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "6a66432921cb9cd0e438c2b81864daf5ce7987cf",
+    "original_payload_sha256": "60be1660d8ac199d924479fa482796931265ff2f0076e9450423d5b909e75611",
+    "original_payload_bytes": 22346,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 16384,
+        "external_tree": "8e20e295e19a379d8bdb1bcbb3a00dd005f4eaf7"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5962,
+        "external_tree": "d937046efa86e10c4e068e11345fb4c7abef98ef"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 49152,
+    "bytes": 16384,
+    "chunk_sha256": "ff0d014f0bb1dbc16b4d9972f8657ccbe77b51aa81ea7130439e979abd17ca51",
+    "file_size": 440534,
+    "operation_id": "2662a636f40393261a6ad9dea688a7bc1587d7abea2466982b550b2bbf3ddd37",
+    "closed_status_sdk_tree": "3d143d937d68c09bde6ae86f44759e86360f18e6",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "a6ee94dc2e1bee0adc4c5b7f2c634dfb0fccd515",
+    "original_payload_sha256": "1b2891298fee248145a4f21f0bc284f99de66b112bb0b0cefe84cd65ae1b2c13",
+    "original_payload_bytes": 22346,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 16384,
+        "external_tree": "90dde7c1fedea69669302aa0272d7e36d8c337d1"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5962,
+        "external_tree": "3c71eacd537074a3096848a5284446d2f1a505f2"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 65536,
+    "bytes": 16384,
+    "chunk_sha256": "6bd860fa1abcaca850e26eea8f2a89e56fe9dd6bfd847c4a6beb3a91532742db",
+    "file_size": 440534,
+    "operation_id": "fa911ba56b2328577f9a17e873912ec50e5317d87a63123a8c9c77f39c7f43c6",
+    "closed_status_sdk_tree": "e11bd4c2339104e023283a643f2ccd88aef18b56",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "e8470583666f8088f6461f69690a3200723c1b58",
+    "original_payload_sha256": "c50ad3597d6c1a3177f43d564d0bcebe2fe19ab53bca12f72b5bf3702a5f6bed",
+    "original_payload_bytes": 22346,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 16384,
+        "external_tree": "ddd5cbe4add24054040cba41a3521c36a0bd8f74"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5962,
+        "external_tree": "0bea26f70149c368bbf248a03543e73e24b9acc8"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 81920,
+    "bytes": 16384,
+    "chunk_sha256": "5e65c4bc44f070deb9b831f9ec0f39f59432f98457dcd6aedd02ad0f094e60c7",
+    "file_size": 440534,
+    "operation_id": "a4f45fa0efcebbb33390c66e60758cdba87128d5b779b13483661eabc0d4ab3a",
+    "closed_status_sdk_tree": "b32f09177a7884af66d3c15bf7c2db6cd436eae3",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "ef9116946cfe1c739428a8450dbdbb25bcf88486",
+    "original_payload_sha256": "7112819a028f531ad70526124777f62e4c345b74d733ffd1c580ef5ff99de5a9",
+    "original_payload_bytes": 22346,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 16384,
+        "external_tree": "99ddec2739dde26b0f043c7581d87949b9eec08c"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5962,
+        "external_tree": "94057057b2819a7566ffdcdb654e5c7c7e3ba538"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 98304,
+    "bytes": 16384,
+    "chunk_sha256": "c28eac8c81dbf5d33ba6adeda14db233b268e378bc1a4989ec9ec7c01cd862dc",
+    "file_size": 440534,
+    "operation_id": "60650a043a2bde0236f45c59936bd61dddc448798fdedceb9a117f3019aa793c",
+    "closed_status_sdk_tree": "f638634ed890f1adbf4278dfd2b3fde586ce83e5",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "11651323727141b9e4c14b5f5206f33aa98a6b1b",
+    "original_payload_sha256": "aeafceef85cb557471ec8b413cbbced243304fb59dce0fd1575b719b62139deb",
+    "original_payload_bytes": 22347,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "432bb6b63170ba7e6d8579534c1b07ec60cea43d"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "2355ee03446bb708c3425dd06ff1b6e99b99a363"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5963,
+        "external_tree": "712600f91f5cfd2c65a3ed8ac0c0342604d22640"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 114688,
+    "bytes": 16384,
+    "chunk_sha256": "24b7acc73b67849097174f869dfd7b8b9ef22c0d4657a4f8a76292873f9e2e1e",
+    "file_size": 440534,
+    "operation_id": "063af61da11815e5c8b723dbb283fb5bdb12bccc6874aa06ef903e5abd2b7eb3",
+    "closed_status_sdk_tree": "d37c935bedd1d9fec4075e577cc7889b67cee916",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "1e3cd3e072328f9d01d71256202aa0735f6af6a5",
+    "original_payload_sha256": "912f3487d70272734bccea0bdd373be2cb05d4d424e274ec7d6fa839ada8fd84",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "9f266d6ca459390e649c9d8bd252a2425941fd2e"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "322fd388de3013ef58c155203ecdc986dd5b8433"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "2a3b1d94e0301d89e3f596438599004001caffa1"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 131072,
+    "bytes": 16384,
+    "chunk_sha256": "ff0c459197b1452137b17db21602ed2034a0bd5d382da39b119d593cb950bc47",
+    "file_size": 440534,
+    "operation_id": "f375a8777022b4a562a10dca84bfb128ed4507e6d79173d9ae7a1d26b45fdbeb",
+    "closed_status_sdk_tree": "b80fbf8bd87882a82d64cfdf4cd4c7b3e6ec521c",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "6ee850ceb551c38bd324d823a21828cb6bb86dc4",
+    "original_payload_sha256": "ddc16962319c5a62745e60f119053c0750a46b1dd6a1fe68a24f01e4a05c815a",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "6227c6ae97f8b49d197280a2bcca64ac917dc62b"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "804fdfb5abb3f0b601e7fd73a8cb2cc7862cb5bf"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "f84d0fc0eabb2e54d4f5d3be20e3cd91117c0ecd"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 147456,
+    "bytes": 16384,
+    "chunk_sha256": "8ec37f07aa10587b6732ee087bd9bd12e3dbc7401001be12aef43e4aa8dd4dd3",
+    "file_size": 440534,
+    "operation_id": "9ff26d5d7ed5bf14e60eddfdff7cca457a9eff67493fffc6ec50c9fc084ad9ae",
+    "closed_status_sdk_tree": "1ec5d2f097ca6f369ca7c98f08ac6c84859457cc",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "27e5d77cc075a0018da65c1c7737db7e0bcbdfe6",
+    "original_payload_sha256": "961f2b87ac19dd74ab75d50c7b1867e8a8b646dd9eca8957fe60385ae273b376",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "233d42728a98b5b251aec82acd7003e1cd3e9835"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "da8ad1790074c907729a31bc534d589aab1d816a"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "13a7d94ea770dba1b7a1397ec39a75d6306c5115"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 163840,
+    "bytes": 16384,
+    "chunk_sha256": "878590b3fc38100da0c7b216ec352a34c05ebb46994c40641eab3087221eb52d",
+    "file_size": 440534,
+    "operation_id": "429d7f474f0daec8edb6d9785c4c5b43f2258ebc8c21bcc3a8553a3644c015ce",
+    "closed_status_sdk_tree": "52d18a0eb0fcb333bc0b7ad60988ef1cb72d1063",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "ba3efb6cfbba131e5291b423f349cf2420ec9b0b",
+    "original_payload_sha256": "78c0858cca91f03640dfb25c206051927fa28a8cc9602e1832b948f39d4715ae",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "6df31feb566974d09f10181fbc153bee7282fb29"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "d7e697c7278a0087ea6174b5ff5d183b9aa0ae7b"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "7fb8acad733b405c8f3b937a991459ab85593424"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 180224,
+    "bytes": 16384,
+    "chunk_sha256": "daff48d852fbcbcaaa28a9c0ed08ea64c10f1822d37a827d196eb206557fbe20",
+    "file_size": 440534,
+    "operation_id": "6735f083a4295fae4ae28c6908cd6588c84ac97e16ae5ddfe0cf7c64d357e9df",
+    "closed_status_sdk_tree": "d37539a4bf8b32c21de8aeacc19585fcb357aa1a",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "42830a5201dc944410c8f3cddbae1036dff5824b",
+    "original_payload_sha256": "4d54a3386ef6b226adf2f22720b030da0cd0943a71352bdaca236fed1be47797",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "025afbc3e4a3da8efbfdb3e23a3495785efad4e4"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "9ff65d1a5dd67dc69372a933d8a0568bda35b762"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "5687e1a5bda3896e848af4fc923e0d73868f194a"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 196608,
+    "bytes": 16384,
+    "chunk_sha256": "2ddc5afc5dd442c8313af046a70e172b686a03389fa6f9afa01994fbd8e43a56",
+    "file_size": 440534,
+    "operation_id": "65842dbbfafc88c17c8c9d64f02656b2753bba24868cd0b65e4b26042c2764b6",
+    "closed_status_sdk_tree": "20c405b0e9c221125c1107a27876593132d167df",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "4872ef3850f12f2055dce5e7b68daa349ce8e2e4",
+    "original_payload_sha256": "f7850c88f3b729344087738de57b9008749804570a9dc6e8269c0cb9bf623874",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "4faf9596cf6cf265ba3e682d6f9a3ca2908fcffe"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "ef41b5f06132fb74343c0bc9fe0ebe85c7c2edb0"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "d87d7f129911be59791b5c47a47fbd797e563360"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 212992,
+    "bytes": 16384,
+    "chunk_sha256": "6f4882898101177c45b3bada003941d37e3d3cfb0288485ff0bdb46b6ee2bc01",
+    "file_size": 440534,
+    "operation_id": "bd57f0f610dd38d0444c759d3befcc846da2b5aa3a75673a52303beaf54f3f5c",
+    "closed_status_sdk_tree": "570234e062398b9d576b4746b984fda2049ba6d8",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "a82bedc0083af648322d31f171ce7219e00b880b",
+    "original_payload_sha256": "991f04caa4500a33f99f64a2c2ed557e6db0ac87bb2411bde5c33fd9d8031c97",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "725b2a8abf52e6545606ce572f5a5f8eb4cadd48"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "1a15c2213b41ddc151e6486e84fe01b08404c9ac"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "af54891de52aecb7f2e417018da85c82a810e456"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 229376,
+    "bytes": 16384,
+    "chunk_sha256": "1c08039663cb6d90510d0fcdd86807ffc357a5bab53dcad2ac28a0f91f986a8f",
+    "file_size": 440534,
+    "operation_id": "20de8f0810d29d5ecdc13f12c04c44b265738cfbba4147ef48496117bbadc063",
+    "closed_status_sdk_tree": "ab285d2020a357cf0a16e9c3a88f54dd333ad3a0",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "7fc13c426249d8c8b97f87a6905b1bd5444fe73d",
+    "original_payload_sha256": "01da7d4cb2011db84e6561d25f9bd67df644505af5e1071994480ee040f2038a",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "97a006e8f56fa17e2c5c127f10f5df7c1c076054"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "a5eb5a4caaebc5acb7d01274a17c41f8f31f37e9"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "a046cedb56c787d931c2526d343ff8dc1c6570dd"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 245760,
+    "bytes": 16384,
+    "chunk_sha256": "a202b980d3c7b58e93ff5a7b6417338baa49e415bd1f895c7431bcb8ec1ba5d8",
+    "file_size": 440534,
+    "operation_id": "e34d6fb951b701a769754dd55139d6e192a1e340ab931b162442cfe4d9fb826e",
+    "closed_status_sdk_tree": "a33a8593d62b8f96ba2f0d629cd1376d857d72a1",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "cb67c043d129c8e568255cae689ba968c92494f3",
+    "original_payload_sha256": "850af73225745caa0faeec3e4fdc9fd9575e2c789b6870552e5cdbf4314c6d20",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "75f0406380f2cdacdaa6510c8eadae123a17014d"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "f1fccfb93eba796d14c12c3a505d02e5b8950c59"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "0a08bef54522be2c08a8f46fd461fa5d99c07f84"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 262144,
+    "bytes": 16384,
+    "chunk_sha256": "0217c09cc280b59a7403c7151e9e5b58f02560b12b3f9cdd6b51eed26f191125",
+    "file_size": 440534,
+    "operation_id": "39c417c31c41f854a5b17b239c2822e926a60b2300dbf25df0a0170d47319dc4",
+    "closed_status_sdk_tree": "33e48440ab50785b47dcf2dcb4e3ab49c1f30278",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "deef9d87d68c3877762a5ab3889c8f34197c5ac0",
+    "original_payload_sha256": "1a5b36248ac47fcffe6163e7251d9507198c24c367e9e8acdf56979791c74139",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "56763c0be316d994ff50efc80dca3bda0eadbe60"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "e426145137bfb576b84ad4b295ff3fb2eb6cad85"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "edcd9b9f74c777adc21b9812a9a380bd4a407eee"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 278528,
+    "bytes": 16384,
+    "chunk_sha256": "2e926286acb26400b9e57d6407687da67d98a37f25a96ce932759ab864b0de73",
+    "file_size": 440534,
+    "operation_id": "d1b22c8ff043dcdf8be473c7899dab2878c1c90f162100856dd589dbeb8931ba",
+    "closed_status_sdk_tree": "398afb1893e6d0a05fc82479bfacd6b8a11b6049",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "ccac13bac09a50367b1281711f1d201ce760a149",
+    "original_payload_sha256": "7a0e0ca4d1cb40ca278914f22521881d73e87535a4ba7e00435a226364d4790b",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "7bf94848ccd58fd37c8c2ee58a8f396746c708fc"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "423325fdcfbc289ecc7de2e23a803bca9eb6e16e"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "07b595988dd21c41fb5b10f8d9a6a75968e2a914"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 294912,
+    "bytes": 16384,
+    "chunk_sha256": "b0ac570a7a6929b71fcce82ef9968be8aeef4f2227897ab46083e6790afc86d2",
+    "file_size": 440534,
+    "operation_id": "60db10cb00fb7b666a7666ac91baf438e0675d11d84d21dd9f8e8d457ac0d641",
+    "closed_status_sdk_tree": "91731c337b88bee638eab323995760df33741c08",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "fb930e05251003345bf6b4cb787ed9dac20efd2e",
+    "original_payload_sha256": "15c77b55c41df5a1d6e6a1307bc533248c9d0c31e4f9a46b1fd109b5a3091eab",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "00628683b6a7e7379253fb1e31b11750adc9267d"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "a6b93412ba955998f75a64e31a0404ed1a5c9c23"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "b1ce55b07e5b8bfdb03ff6c574679e7a032d7e90"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 311296,
+    "bytes": 16384,
+    "chunk_sha256": "b92325fd6484e7be041ba192b65becd197a08547d40c80dc9521134bb763434d",
+    "file_size": 440534,
+    "operation_id": "e2a6d1ba2abfda4372911b5bd2bb4fad4171e33e79621cad609548b1c6b2d355",
+    "closed_status_sdk_tree": "a44f3d7eb1135977b87242584c061cf6a402c26b",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "e4c9901aea01a8c4b460f8a76b8a4cb7f1fefe7c",
+    "original_payload_sha256": "24b46a181296de8460780dd6ba76d3712f350d4d3e23841eeb88bdb96045430e",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "6167e900f3fd37e68b9ce5308ac6d29f93e96f59"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "e709ea98a6e3a00a7d316d38982d78aa32e78323"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "9e9063bc0e9d9dac4cb13b96d63ef2c644f7e58f"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 327680,
+    "bytes": 16384,
+    "chunk_sha256": "b0dc263f294ce5b8e677302662b1044a4bab3eacc2d5641497d388c4bb075794",
+    "file_size": 440534,
+    "operation_id": "2b0db2b6e5a9fc2abc6b78381ebbe9603245e750ac1ccadd12bbb36c661f4f20",
+    "closed_status_sdk_tree": "ba28dbc5487cab68868245c85425fa61ac2ad9e2",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "bbee8a965932e31da9caa1cfdb52ed622a9ac180",
+    "original_payload_sha256": "da7205efb1a0a44704cb328d8e4422612e62d8114e5dfa3221a8f81adf570008",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "1e672fd48ee095026f7d014d540bcdae34ffc072"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "7586d3fe790d2b2421cd9dcdba24db207763f297"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "6c5c08bc040c6ead713fa8d987d0d9bd63bca6d8"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 344064,
+    "bytes": 16384,
+    "chunk_sha256": "3a20fa91df6dbf6fa59b15bf61c122cfcbf28f430a2fc2a21ea8794f7954f93d",
+    "file_size": 440534,
+    "operation_id": "4049240ea8b1640574416d6f753639ccb287c709055bfba73509f21a1415d8d1",
+    "closed_status_sdk_tree": "d3b40f169fbba45d19cf8d6d8f818f345694fac4",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "f60b438755aca82030248e05ba687e33e5a40bad",
+    "original_payload_sha256": "fe3d036a06c1a8682fc69a531e164521142446db3fb8c73c36cf59348561b6bb",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "a75f26d83e03161d31d79bc93d81ba860e897029"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "e9ef195771584a4e0160a7ccf5ee68b1307023c4"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "7c883838b828b8c13bbdd75ad12761044ab56799"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 360448,
+    "bytes": 16384,
+    "chunk_sha256": "67d2008f163203b7275f9f2ae6e0f36fcad604ff2f36d5947ef3674f207ac9de",
+    "file_size": 440534,
+    "operation_id": "bcc3cdd42d09d4d6ed74b5560d0e41de7bf8cc331774ad0c9758a0e83a2c50c4",
+    "closed_status_sdk_tree": "0dccf1c88c30f4a2b451ca0ea5d786eb3db1d05b",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "441af6ed3b434d204d96401fafcbfa4ad481baff",
+    "original_payload_sha256": "4ed52dc5d2a5ec33266018c11c23cd2371af80496032bfd43ab2486c4b7f479c",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "2e50684521f1bb5e3d27d422de66b00381cb9274"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "e9a5f1baed9525544b86343353545ee781211e83"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "2528a61ea636106dd096eacf5013b53c8f2f6692"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 376832,
+    "bytes": 16384,
+    "chunk_sha256": "a6e9bcf3ad80f75bb4b0759c8d36ec6edd95ec8f4c2efc0cd7beb0f1b8b0cbf5",
+    "file_size": 440534,
+    "operation_id": "1b93fd3658ae3c8bae0f875c82274fee6c9b69d8a5b8f83cb2c72ae31fa6eddd",
+    "closed_status_sdk_tree": "caf2d9c0928a19c20771b0ec1c4500607555da6b",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "d082092418c74047bdf2f149e55ff2a54eb12ca9",
+    "original_payload_sha256": "2d7c6a33b0f7751caa6334c719dcc20c05f8cf2197adaec9bad387d0c1f444cc",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "303ea10a6474b9b445716249fe0d5584395f0a45"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "f5e7ec496faeca9f69bfba313bc2b102f3a5a030"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "bfb6ab2d08bab8e8677193cb70af4398a597d44e"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 393216,
+    "bytes": 16384,
+    "chunk_sha256": "14b3e611c440a565e3884d36aea198c11c42f7d2e5b5100cce1719c57630b558",
+    "file_size": 440534,
+    "operation_id": "3667fa98064666c40319ac9aaeab3a4f6faf4b5a5b099e5bcb38808066389b47",
+    "closed_status_sdk_tree": "46a92658ece7e81176c79d6425c56c031bfe695b",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "c1092a9870f2a625bb0e80cf451323cc8cf4e44b",
+    "original_payload_sha256": "0d971b4caf00150f2cb2c63dab0633272a6822387ef75d3d774a02887e85f9a9",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "6d9e4c24102697b13668d9f4f24b38a922942bf3"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "58f9034f0fdbf4209b8e7a3e4aee6ea1a69aba87"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "099339b49190bc8758faef562698bbcae888a62a"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 409600,
+    "bytes": 16384,
+    "chunk_sha256": "0bd8a63372e0b8b78b4fe3f6a7eec006154d1c271f16655f89d3ef5b99e519b5",
+    "file_size": 440534,
+    "operation_id": "f38829d593eaca08bb00dd6aafc66847751f214ac39acc92837fd08a46be2c6c",
+    "closed_status_sdk_tree": "7e42f38e2f4157d83af3ca415d0892f235b76878",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "bf22d624a8175de74eaa508295a9fa4031dec661",
+    "original_payload_sha256": "3ddc9c0ce0ce85eae81093f4d29d1053cec75eb261427daa9b440e17a6272c20",
+    "original_payload_bytes": 22348,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "914a3185a350b396c6e6e4a0a6963bb125f661ee"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "bb02756bc5691d78e5883a3e09510af8ea349872"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5964,
+        "external_tree": "c204f0f7a5a4bb1059d95717a66550e6b4a887ad"
+      }
+    ]
+  },
+  {
+    "file": 0,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+    "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+    "offset": 425984,
+    "bytes": 14550,
+    "chunk_sha256": "0e7d9506830026743ff87e54f3d273690c1d8ec5a681eb45cfe4918af03bf960",
+    "file_size": 440534,
+    "operation_id": "94cf406080cccd6640649df54c7809823e1cf2ce09451001e503770ff15d82ec",
+    "closed_status_sdk_tree": "332cc29d7bae4fbefb5b15655ab2b6beb3ebd8bc",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "68ef621db43dd527c4d1a69527cfd3693244aba9",
+    "original_payload_sha256": "7b68bee2e3afece2705a8a28b1340c9eb3c058d6aae0f436946046ede729c8e8",
+    "original_payload_bytes": 19899,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "84e447306dc19287ebbd0bbc706e72dcf1efdab7"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "e43ff0fd61ff3833da8ba1755aa05a43add15a1f"
+      },
+      {
+        "offset": 16384,
+        "bytes": 3515,
+        "external_tree": "58642d2217f4deafb84ab365ce75f3e41b25df2b"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 0,
+    "bytes": 16384,
+    "chunk_sha256": "f2f7cd459d05d76d49899feefe9c0f4ba1bec9859bdb9b5f577bf4291c5a0b6a",
+    "file_size": 438208,
+    "operation_id": "e7a255a1601e6f364d832ee3c2745ec35e60eb798da17e3766830159980c9a67",
+    "closed_status_sdk_tree": "fae180bdd908306392a9f1ee5ef259b7bba90e78",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "4a1bb44b124e37a88269d29f5a3fe37044074732",
+    "original_payload_sha256": "3cd0c02b038752497c241a50e0338dd5423716abec33ccec5ae44a73d68e0faa",
+    "original_payload_bytes": 22327,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "6db5b5f411b729cbee1277a4c4d4ff1286599301"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "d5a432651aab28c34df2c0a366c30582af22e735"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5943,
+        "external_tree": "ac9f6cb05771d7ef6d5d72fc3679a4835006bf5a"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 16384,
+    "bytes": 16384,
+    "chunk_sha256": "4b421ed64012b7d647dd4e150a378384a347745894076c32fd859e8352e751fc",
+    "file_size": 438208,
+    "operation_id": "ff02f753c3c73807c32681b490ebd92d7384463210d43f8f56430d593ea9e838",
+    "closed_status_sdk_tree": "61047a36f0fb1368bc74b9b0fc276f9903b54daf",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "9264a65bab72220cddce7ba09ee51bc5d0aed9dc",
+    "original_payload_sha256": "31b0fb90f0f5da9c8cc4be8e917e0773cb493ed5ec23c7f81f455bedaa597810",
+    "original_payload_bytes": 22331,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "a421f98fc7ed886ea9a43ccad5225834bf62e10f"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "7724f0ca44238ed4f7871c0788e4f6a3ea0ec500"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5947,
+        "external_tree": "384443cd16759bca5deccc389c1a4c5311bc35c6"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 32768,
+    "bytes": 16384,
+    "chunk_sha256": "4a91e5e50c05caa5d65c92dab1797a663ff73692ef9d8a9e14ee03b0ac89d660",
+    "file_size": 438208,
+    "operation_id": "beae09542e72e3ee7055138e6d1eb2838b4a6aaf6206dc85f843a63bb4da2bb9",
+    "closed_status_sdk_tree": "d1e272b66291a9a2dce2d4828ad9080ae0454cc4",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "81fba498835ef2adab27e3433bb5bcd1bce13a16",
+    "original_payload_sha256": "ccb4cb861d18ebd4a909f2730b2d0852ac36f3fe64263b6b65b0692d3ae0f400",
+    "original_payload_bytes": 22331,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "4bbbfebbea33d6ee85d9f35f686e2d83c814899a"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "c5dcfde3707b47bc7e01499b436cbe4b07eade62"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5947,
+        "external_tree": "acf45f50b54c40fb75c4d1c71514cfe412fa1765"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 49152,
+    "bytes": 16384,
+    "chunk_sha256": "fffaa7757096a0d4f2f0f1fd44b9c3282605e355df252d681d162b8055119ca0",
+    "file_size": 438208,
+    "operation_id": "89cb7344ed107cea7472689c60eddd6e34e09b43426adfc6981bb70275aa8d61",
+    "closed_status_sdk_tree": "e2a5c598675b62fb8e402d317f38d2a62e227ac2",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "3914f484ff275a9490f18dba5233e16486401914",
+    "original_payload_sha256": "6ec35c0d4a088ac85b97ec16ec78b830fc9c0f7b3226a04d44364a91f230b63d",
+    "original_payload_bytes": 22331,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "64b2fb70850a38de6dfb20d847954a913a475206"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "73662281dad33069f48dff9417b13f01eac746b3"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5947,
+        "external_tree": "e80eb1d484072301d62cf80f66180e2a6cbb47b6"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 65536,
+    "bytes": 16384,
+    "chunk_sha256": "6d627589168c54548130e7d11838071766325e5c4d124a310a2cb72f947a6bb3",
+    "file_size": 438208,
+    "operation_id": "727882c873f4f459de09670237aea9b2cb476b26bc6b1dab97ec0cf73cc75f09",
+    "closed_status_sdk_tree": "225c679bd75a7294dd4e226c865618e990de86f3",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "d45e4838588cc04393bce00a5d93cd22345e6f36",
+    "original_payload_sha256": "36905a74cd72d2f3272073b2008d65611ee65b919d7698c2f8ffb0a36fee809b",
+    "original_payload_bytes": 22331,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "a13c8723f2c6fb00ee41cd5a73891c0effe0c969"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "18543c83ab4277b560045df20f2b720312263fae"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5947,
+        "external_tree": "2b05a0c5299079e101ca0e37854394c05148bae6"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 81920,
+    "bytes": 16384,
+    "chunk_sha256": "e99be0d98126015c2ca4ffc719374d39fb477353ceab9b2d08ce60d2df7503e0",
+    "file_size": 438208,
+    "operation_id": "fcb7a81c039855084f392fe347ba2bad99454a5778172736ee32172f93244dc0",
+    "closed_status_sdk_tree": "00dcf6f60b64425ba5e4cfd79657cc9623427769",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "f58c7d209358e9493eaec38df83ef4d775a28df9",
+    "original_payload_sha256": "598fc96c302bab5cc8977329bfa9992f8eefd25bece340ad55457788fe15c5c4",
+    "original_payload_bytes": 22331,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "951ad64b5f08eef5069841e6cfac1b550712872e"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "683f12666864f26c4390ff3b76504f1a3c005188"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5947,
+        "external_tree": "15ef62b8f23c007bbd3fc7711dd8f1b589f768b0"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 98304,
+    "bytes": 16384,
+    "chunk_sha256": "c915859c71d09435f363a3d4f0373cea4211808eaf5112c70d5ad9c87b4ed21e",
+    "file_size": 438208,
+    "operation_id": "1cfb9aa6bd0c586ba7f46d0fc98024f742f1b270607374de9b04d9b9a87d3770",
+    "closed_status_sdk_tree": "a397a15cad510d3cdc8a48fd3b823877b278d46b",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "c9a75a15716ba75b1aefd8fe618ffc41a363f21c",
+    "original_payload_sha256": "487775d3a384ff67d61a4265b2374878a3a0bc1129e92089b1e0912b04dc0275",
+    "original_payload_bytes": 22332,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "426e9997b31528dbcd5027e289ce9ce6e2e1ece5"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "f6b5be84f9c1cf35c4bdfdd204033d0656d3fba4"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5948,
+        "external_tree": "e9da486f1d5d838eeb21c839c89d4017d29447a2"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 114688,
+    "bytes": 16384,
+    "chunk_sha256": "778f8c673f8adbff40e00603431b86da6b043ef379d09188e0629d20214f3623",
+    "file_size": 438208,
+    "operation_id": "31e1e83455e42824d6d11af6ad0b6e12bc1c518d04e40df8fbc9f7c08d78156b",
+    "closed_status_sdk_tree": "67b536d1ce0dabb7574277ec3b76d2319a0a0d8a",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "e7b81c9bd482974edb088c7bfdd81547dcca8b93",
+    "original_payload_sha256": "c428e9aee4b59a7422848b4c0ef9d5ed79fd5f9d6706768f07336b64eb695b49",
+    "original_payload_bytes": 22333,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "cb1409604005bbd0e532652cb740c61b57a730f1"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "d6cfb7be63e382895b359e67e4876c2291b69907"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5949,
+        "external_tree": "74526be30928f509a387c5a70ef42441bd8ca46a"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 131072,
+    "bytes": 16384,
+    "chunk_sha256": "13b620ab8d89a17afe62c5d5ca7f28f97c0b8b28f541b437c307304ae40c59d1",
+    "file_size": 438208,
+    "operation_id": "275b1455c61ee1a228195c1e120aa513f17aa33c37bab7667fbeb4edd156774d",
+    "closed_status_sdk_tree": "3faff09e270e24431255f7d7b9bb324ee0aecebf",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "1bfd6bda08fb32a2ffbda4d8b2f2b858a2dd8c38",
+    "original_payload_sha256": "132ee9d1b7e6d8c20c99e9dcd7995bfff746c04f1b2a5a61b0a3067e36834853",
+    "original_payload_bytes": 22333,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "44394848d867a94bfee39c647a87f5f7694a78ce"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "e9ca532273a3aff57903a707c965ddd4f4d25574"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5949,
+        "external_tree": "4ec9396218bb604c21cc03620129dc4da9ba7abf"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 147456,
+    "bytes": 16384,
+    "chunk_sha256": "bfe6a68f50673db42ed6df020a930f95b5fa8a16f228cceea96d47aa429bb15c",
+    "file_size": 438208,
+    "operation_id": "1ee4d8712fe14f0a38441f6af97236d36eeb7228eed3d8a1ff40d0dd4d6040d3",
+    "closed_status_sdk_tree": "ce226e04818448e7ef42481f2086b74bc544ceac",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "63198194f426f39e7dfc4db999a9833bac2f3adc",
+    "original_payload_sha256": "86075b7e675934f5f1281b48bc1f8dbf29dc4599447c924586219db7ec0bdb1a",
+    "original_payload_bytes": 22333,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "cedf977c6a94116c8475330d032632b7a951bbbc"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "4967f763fb6fc69aed86197e9393dffc9640f0aa"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5949,
+        "external_tree": "41ff3c06eede6b7aca5b40214b5c0bb8c3f86fa9"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 163840,
+    "bytes": 16384,
+    "chunk_sha256": "734a4372d7aa9e9ef854e30ed3311458f016651898ef3b48563bceae60d6ff4f",
+    "file_size": 438208,
+    "operation_id": "39dff76089ee5baa9a9cf3564162acf687c76218f9c473f926380029e1500fc0",
+    "closed_status_sdk_tree": "6b1b0bf93d436696b502fde043dc80a4e507db92",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "2d1dfe86ec06968f9e1ca7354fa33aee3591667c",
+    "original_payload_sha256": "9365771b939af4409aea8a17758a1629ff424571262db341a92fcc34f462bb12",
+    "original_payload_bytes": 22333,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "2c99ef1861339bbcbe29c7813c0ad52596c55d7b"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "01f252a75f74ac1462f40c020b7b5607bacc42a6"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5949,
+        "external_tree": "d6f0e48bad3ca1d540ed86e4d2cf1f69d81fcecd"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 180224,
+    "bytes": 16384,
+    "chunk_sha256": "ecbf3a61ff1ca9aeeb52ecdba5437b76b6a572e2436be448fb5df64a1eee5080",
+    "file_size": 438208,
+    "operation_id": "75f85e25e045687633390236c66a0e341ee91865f606f68bcf72f569379c8c16",
+    "closed_status_sdk_tree": "1b21934efe337d19024809b6f383d756ec97fbea",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "d7ffa9f3eb24b4bc445eb1166cac6b9bd9c9e61f",
+    "original_payload_sha256": "920cb6a171b48b7ca73f481f355a61051fe054c8031798432d91c859916d9c43",
+    "original_payload_bytes": 22333,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "4f2edaa89259738cfc3df6d94d01b0a9e8754ab2"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "55735eb47381da0e00b177e49ad30b141fdeee79"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5949,
+        "external_tree": "e0b439be34f9eabefb3733d024f2ed080b727933"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 196608,
+    "bytes": 16384,
+    "chunk_sha256": "6496966a88256acf082ba2b2f16a5c0209eb003f2d56144d9d4acb422f1097f0",
+    "file_size": 438208,
+    "operation_id": "7ff65028e5cb24249b8744cbe77e005611d9d1bd44ae849dd3409ab4cd595a91",
+    "closed_status_sdk_tree": "1bd2b22055d73b3b555a215e046e3eb87aa767ce",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "9ad827eb3960d45e6989bba3f4d93a6a005a8cf4",
+    "original_payload_sha256": "0e9115b8a495cc1e0414813688a725886cbe1ea8c790cece475480a50853a949",
+    "original_payload_bytes": 22333,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "0a3e13e5b1c9a8104022140501f04bde4d6e53b1"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "b2e599b7c3276117d29a97ce29b5d3ba4bf4d9f0"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5949,
+        "external_tree": "280d2ed118542454739220f53421d0b086d6ad6e"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 212992,
+    "bytes": 16384,
+    "chunk_sha256": "8ba6e011206c298cb1c3f640bb3f2c3fea3133bc0ecc243e95dca6b559f6a64f",
+    "file_size": 438208,
+    "operation_id": "c72af1a32bc8cb185269de71f06939e06b6e1f1912b2669314009515b65a8f64",
+    "closed_status_sdk_tree": "7eff60d5d241fba84f4143647e089aa275cd3dd5",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "092b42215167efda837232a71c7ad5adbca8f678",
+    "original_payload_sha256": "bd7238c6e55bc5b801456b9c505b97f0de434449a81f004412a0346e86c7c8d6",
+    "original_payload_bytes": 22333,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "7701c5a91ea5639620b2f0aadd6de57128cb0f94"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "b44de0f4e2dd7769288d67c7369d941004c1d8ca"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5949,
+        "external_tree": "820758de0499e6c6811c059217cb1217ddc4ba26"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 229376,
+    "bytes": 16384,
+    "chunk_sha256": "03f689ca83a202c4afa4515f7eb8e210e8d4151bda9f1280d3cd1916f4b01839",
+    "file_size": 438208,
+    "operation_id": "6a7ebeb0d20f48bedd81533d2a708fb06729f99a5f9be99115be7fe23b322fd9",
+    "closed_status_sdk_tree": "602d290445b395f9cc8aded2821e22ca3e76600b",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "8d9abdcfe5bd8069cc71714f16ee54dc4634f28f",
+    "original_payload_sha256": "89472f17825f2cf31c3c00072817d3e64c818736fda153705460dbbd5741dd9d",
+    "original_payload_bytes": 22333,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "ff11be651fe800f157b9d8bf2ae0512b9588bfaf"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "755eaba52328205eeba09ff6991ae819d896887e"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5949,
+        "external_tree": "cc209fc17fa0171dd279e758e614af4f07607131"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 245760,
+    "bytes": 16384,
+    "chunk_sha256": "85488aacaa16387b1c2b4edbbf7cdae648208acc53794557db4075ffcd25dfa2",
+    "file_size": 438208,
+    "operation_id": "60a79dba9245275e7f316df8efc901939885c4f7c9ebcef37d27ddc4ac9866f9",
+    "closed_status_sdk_tree": "3cadb6aec1becb1f35b9f893fb55885c2e1a3efb",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "07a8f31ee6dfe780b36fe5d2b64904b8ed231498",
+    "original_payload_sha256": "77e600cfd81f19ac25bbac38b673e5698a34c0ef764539ed9366ca1e17586ad8",
+    "original_payload_bytes": 22333,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "58603f2244637fca84f098015a6b7f39aad02f52"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "c69d67ee10b427ad5c9abba1699b47d8d390abf4"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5949,
+        "external_tree": "827149b9323261cd9e39345d765a21a0a3d4baea"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 262144,
+    "bytes": 16384,
+    "chunk_sha256": "a30a82b004aa8fdf46e4191bb15d3d2c71e69f8b4708a584ee609ec40d8f2fd5",
+    "file_size": 438208,
+    "operation_id": "1c7301354fd1e5ab83611cf2f62ab3e3ceb60194f98ba80c4afc4f6a49d7b49e",
+    "closed_status_sdk_tree": "0db8bae019f2539d95e5b958f54a92e983ab6009",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "21c4dcd37c2ce3cb6c2f3ade595a64567812ba63",
+    "original_payload_sha256": "fe42adca9fbf92200cefa2e670198c59fb362c70cce8e4192b1a0324729d7f0a",
+    "original_payload_bytes": 22333,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "f25072442562c48754baab2e406eab1ec067c0c3"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "ce8b2df64b13170768f5eea6feb46394d57bd7c7"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5949,
+        "external_tree": "ec105e40cc77a084563ca558a639a6a29f019b32"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 278528,
+    "bytes": 16384,
+    "chunk_sha256": "5e54b6618fa169c91d336a8de0b77b1f8c06017ff0c2a63e99ca7c07dc8aca9c",
+    "file_size": 438208,
+    "operation_id": "5704e1625aa13cd404d5efea48432295a97b2b094f4e0cb5eaad30fcf7d7d111",
+    "closed_status_sdk_tree": "622e6144b408f56c86624b6bdd60daf58b842ebf",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "cc0f7639207c65822e0b51f92dfef4a973940bf9",
+    "original_payload_sha256": "735bd998e41ac199e60ff3afc0a0f1de6dbb1aacd901963ae307d387034d2806",
+    "original_payload_bytes": 22333,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "af64becb194559a87bc3606f173752e2f328ff94"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "39f72b50588e81fb91f5cd80c2106ded8942e670"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5949,
+        "external_tree": "8471754b060ea6c96007e5ef71fc13695fffd478"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 294912,
+    "bytes": 16384,
+    "chunk_sha256": "ee5bf36c8f032e59a027181589a6ba726cbdeaf00b9d76c1fa517c1b94bd5e7c",
+    "file_size": 438208,
+    "operation_id": "34668a6c72a203c0bc74eccce27830e95c06c578f0ded8bbc5159188758172bb",
+    "closed_status_sdk_tree": "68a0468d097d5f096e1c8f0ab2ee608de69ea892",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "de11f1e4ee114b5f441c5a6ac6d41189e4a51ec7",
+    "original_payload_sha256": "7ec7ba524d1c629ec91899f4e748be9c50f4d239ed0c922fda01794c132f7737",
+    "original_payload_bytes": 22333,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "1bef0f348df6a1b31441140787a0f1c4a7b676b1"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "7a7de925e02f0f0e4413c92e164d5db0065e0732"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5949,
+        "external_tree": "c793d1d61f2b1a9a4a3fa841e66e8aff4b4189ae"
+      }
+    ]
+  },
+  {
+    "file": 1,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+    "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+    "offset": 311296,
+    "bytes": 16384,
+    "chunk_sha256": "bb4d84c00df42dede5b0e73b6f46acc5e86088e9e6d99581341371f1ef8d9475",
+    "file_size": 438208,
+    "operation_id": "675b2d2c3dd7c846d7af10755a68a7b04be5b2d8e974627d6dafdb687d6fdd2d",
+    "closed_status_sdk_tree": "28dbdc08b3c8a1fcf458964c89cc96972aadcc98",
+    "closed_state": "completed/stored_observed/owned_future_active=false",
+    "start_sdk_tree": "b008a8634919e697e9cb2f68adca64bd5f84241d",
+    "original_payload_sha256": "683cc6f4c695449760d3748040cf4130343f97568e53f86bede1a3fb3a0a4271",
+    "original_payload_bytes": 22333,
+    "result_pages": [
+      {
+        "offset": 0,
+        "bytes": 8192,
+        "external_tree": "0fe7827e61f8eaa9a5b129a0c51a82ac0e572b52"
+      },
+      {
+        "offset": 8192,
+        "bytes": 8192,
+        "external_tree": "292c489d2053c84dea8c0e3e39aca07fd1e46db5"
+      },
+      {
+        "offset": 16384,
+        "bytes": 5949,
+        "external_tree": "65c784930e1900de0c61424ff9c8cb262e187d33"
+      }
+    ]
+  }
+]

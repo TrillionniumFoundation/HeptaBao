@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.runtime-public-local-readiness-recheck-observation.r1",
+  "at_utc": "2026-11-05 14:01:30 UTC",
+  "status": "CONTROLLER_LOCAL_PUBLIC_DTO_RETURNED_HOST_REACHABILITY_NOT_PROBED",
+  "intent": {
+    "name": "r26-runtime-local-readiness-recheck-intent.public.json",
+    "blob": "999159d00f5cb737dd2c00fc0c06e2dd738ddc1b",
+    "bytes": 751,
+    "sha256": "0e6e49c40d57fe2c33e3800280f3f94248ada60b8d4bba0484731101f40fedbb"
+  },
+  "original_sdk": {
+    "name": "r26-runtime-local-readiness-recheck-original-sdk.json",
+    "blob": "e98614a5de4de8c2d958c5ce68fc8641479c5d1f",
+    "bytes": 5103,
+    "sha256": "c6cee1f7d470c2f3fa239509c15720df6120f69c701078331104493cdee3f573"
+  },
+  "capability_schema": "hepta-effective-config-v1",
+  "configured_aliases": [
+    "ai395",
+    "desktop",
+    "mac",
+    "main",
+    "pocket4",
+    "rog",
+    "x230"
+  ],
+  "target_probe_performed": false,
+  "configuration_mutated": false,
+  "controller_restart_requested": false,
+  "host_process_started": false,
+  "prior_timeout_observations_preserved": true,
+  "original_unresolved_operation": "79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2",
+  "original_read_state_at_this_observation": "UNKNOWN_UNTIL_SAME_ID_RECONCILIATION",
+  "next_authorized_scope": "Compatibility agent only: same-ID status then immutable pages only when stored/closed; no binary_read or exporter resubmission. Other host work remains paused.",
+  "full_replacement": false
+}

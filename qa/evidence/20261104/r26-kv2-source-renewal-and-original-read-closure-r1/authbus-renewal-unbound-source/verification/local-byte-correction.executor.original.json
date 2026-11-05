@@ -1,0 +1,7 @@
+{
+  "chunk_id": "5ee76d",
+  "wall_time_seconds": 0.000024828,
+  "exit_code": 0,
+  "original_token_count": 59,
+  "output": "{\"outer.before.py\": {\"bytes\": 68348, \"sha256\": \"bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01\"}, \"outer.proposed.py\": {\"bytes\": 71496, \"sha256\": \"72ecfcd586a4ab4c48fd95d2e15b4a44165a754570c699eae18dceaa02f3b262\"}}\n"
+}

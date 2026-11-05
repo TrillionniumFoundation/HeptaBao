@@ -1,0 +1,5 @@
+{
+  "cmd": "python3 /tmp/authbus-renewal-source-increment-r1/selected_checks.py",
+  "workdir": "/tmp",
+  "max_output_tokens": 5000
+}

@@ -1,0 +1,155 @@
+{
+  "schema": "heptabao.runtime-pause-resumption-interfaces.v1",
+  "execution_enabled": false,
+  "pause_reason": "Root explicitly paused all new Runtime requests after controller-local effective_config also timed out.",
+  "existing_root_go_preserved": true,
+  "normal5_actual_partial_tree": "ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736",
+  "steps": [
+    {
+      "step": "normal5-info1",
+      "already_submitted": false,
+      "admitted_scope": "root normal5 inert GO eca93bc6fde759e36818fed839bd1957d53a947f; independent fixed readback only",
+      "idempotency_key": "ha-4e808-normal5-inert-info1-observation-r1-20261105",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/receiver.py"
+        }
+      },
+      "completion_gate": "same operation completed/stored_observed/owned_future_active=false; original immutable payload whole SHA/EOF; no next admission before gate",
+      "expected": {
+        "key": "info1",
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/receiver.py",
+        "bytes": 9138,
+        "sha256": "dbe951e3cb615df1c026a43862ff6e8478b99955f6f8e54cd21b8620dd431d19",
+        "identity": [
+          2050,
+          7360657,
+          1000,
+          1000,
+          33152,
+          1,
+          9138,
+          "1793884028944391717",
+          "1793884028951075515"
+        ],
+        "mode": 384,
+        "uid": 1000,
+        "gid": 1000,
+        "nlink": 1
+      },
+      "on_unknown": "preserve original SDK and stop the chain; no new operation key"
+    },
+    {
+      "step": "normal5-info2",
+      "already_submitted": false,
+      "admitted_scope": "root normal5 inert GO eca93bc6fde759e36818fed839bd1957d53a947f; independent fixed readback only",
+      "idempotency_key": "ha-4e808-normal5-inert-info2-observation-r1-20261105",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/relay.py"
+        }
+      },
+      "completion_gate": "same operation completed/stored_observed/owned_future_active=false; original immutable payload whole SHA/EOF; no next admission before gate",
+      "expected": {
+        "key": "info2",
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/relay.py",
+        "bytes": 16719,
+        "sha256": "075193b0494e4cffc87aedebd1ac2407efef8007963aa6ff48388095d5967ad4",
+        "identity": [
+          2050,
+          7360808,
+          1000,
+          1000,
+          33152,
+          1,
+          16719,
+          "1793884028960515194",
+          "1793884028968904561"
+        ],
+        "mode": 384,
+        "uid": 1000,
+        "gid": 1000,
+        "nlink": 1
+      },
+      "on_unknown": "preserve original SDK and stop the chain; no new operation key"
+    },
+    {
+      "step": "normal5-info3",
+      "already_submitted": false,
+      "admitted_scope": "root normal5 inert GO eca93bc6fde759e36818fed839bd1957d53a947f; independent fixed readback only",
+      "idempotency_key": "ha-4e808-normal5-inert-info3-observation-r1-20261105",
+      "operation": {
+        "tool": "file_info",
+        "arguments": {
+          "host": "desktop",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/inert-stage.result.public.json"
+        }
+      },
+      "completion_gate": "same operation completed/stored_observed/owned_future_active=false; original immutable payload whole SHA/EOF; no next admission before gate",
+      "expected": {
+        "key": "info3",
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/inert-stage.result.public.json",
+        "bytes": null,
+        "sha256": null,
+        "identity": null,
+        "mode": 384,
+        "uid": 1000,
+        "gid": 1000,
+        "nlink": 1
+      },
+      "on_unknown": "preserve original SDK and stop the chain; no new operation key"
+    },
+    {
+      "step": "normal5-four-bodies",
+      "already_submitted": false,
+      "idempotency_key": "ha-4e808-normal5-inert-bodies-observation-r1-20261105",
+      "operation": {
+        "tool": "read_multiple_files",
+        "arguments": {
+          "host": "desktop",
+          "paths": [
+            "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/sender.py",
+            "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/receiver.py",
+            "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/relay.py",
+            "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/inert-stage.result.public.json"
+          ],
+          "max_file_bytes": 65536,
+          "max_response_bytes": 131072
+        }
+      },
+      "requires": "all four independent file_info observations closed with exact metadata and hashes; root Runtime pause released",
+      "completion_gate": "same operation closed; original whole payload; each returned version/whole SHA equals its independent file_info; source text equals exact admitted source; receipt lossless-equals authoritative stdout",
+      "on_unknown": "preserve original SDK and stop; no body read replay"
+    },
+    {
+      "step": "lan-inert-source-publication",
+      "already_submitted": false,
+      "root_go_git_blob": "08fbd1dfbf36ec8ee7bc3aeb8eadac18e6bf9cf9",
+      "exact_request_git_blob": "70f27390d318755075562482091b3bf27946b37d",
+      "request_sha256": "cd78b96c0b45bf687f70e2723883c60a5c12bde2c3435759e70396298b3e3633",
+      "key": "heptabao-4e808-postcold-inert-r1-57cb2b31-7ee5ee82",
+      "requires": "normal5 fixed observations closed; separate external intent completed before single start; root Runtime pause released",
+      "scope": "create-only nine source files plus receipt and compile-only; no prepare/product/LAN runtime",
+      "on_unknown": "preserve original request/SDK and reconcile original job only; no new start or key"
+    }
+  ],
+  "other_pending": {
+    "qa12_destination_infos": 5,
+    "rog_retained_libtest_info": 1,
+    "mac_cargo_chunks": 7,
+    "auth_sdk_body_chunks": 13
+  },
+  "excluded_actions": [
+    "normal5 artifact relay lacks GO",
+    "LAN prepare/live require current complete source import and independent GO",
+    "X230 current seven inputs remain unbound; no dispatch GO",
+    "no original UNKNOWN relay or other business replay"
+  ]
+}

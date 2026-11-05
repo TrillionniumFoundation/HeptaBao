@@ -1,0 +1,106 @@
+{
+  "schema": "heptabao.current4e808-export-partial-independent-peer.r1",
+  "reviewer": "authbus_migration",
+  "conclusion": "PARTIAL_EVIDENCE_BOUNDARIES_CONFIRMED; ONE_NONBLOCKING_ARCHIVE_PATH_ALIAS_NOTE",
+  "sourceTree": "23dc4dd95a930de4356c8fedee4c853a642b6594",
+  "verification": {
+    "wholeFiles": 52,
+    "wholeBytes": 66009,
+    "merkleNodes": 12,
+    "pureByteBindingChecks": 122,
+    "allChecksPassed": true,
+    "checks": {
+      "bytes": 11789,
+      "sha256": "9f114eb00390e10d2408457167e9aa5342a64ebfed27c7c4981935ece5348565",
+      "blob": "35c2b6b895976ff8015d9ea68ac4e46fc0bf6132"
+    },
+    "runtimeRequests": 0
+  },
+  "originalExporter": {
+    "jobId": "1a1abe371de-fc05-5122",
+    "request": {
+      "blob": "93e41338e8e24a65a8c9fcff2887a65f1b646467",
+      "bytes": 374,
+      "sha256": "b389fef4b9169107a0cd81b15ed804ecd6015e08232d881b4d4e3c9d207a2e67"
+    },
+    "ack": {
+      "blob": "41509cb4adc81419b8a74bd2350aebf1623efdb0",
+      "bytes": 1140,
+      "sha256": "e02086cdc5bd0ba6538844d2c7c302f1d7074b2bc4c3df82ab3e09dcade51570"
+    },
+    "authority": {
+      "blob": "7706b3d95bd33dde06394513c9035cdd2de9c0ee",
+      "bytes": 729,
+      "sha256": "ba6f48b903cc9c853c9ad5cc948f1a961cc30f80176ef2429ea80b5fc7dc9947"
+    },
+    "stdout": {
+      "blob": "5f5b4ae984dc114f09c402c1a5ecf1da998076d8",
+      "bytes": 534,
+      "sha256": "4a917d0e06fd49ad036c573a937116460eb1f0cd9b6809670fc0cdbc61f4d105"
+    },
+    "state": "succeeded",
+    "exitCode": 0,
+    "complete": true,
+    "durable": true,
+    "stdoutBytes": 534,
+    "stderrBytes": 0,
+    "reportedOwnedStopped": true,
+    "reportedPublicationWithinOriginalDeadline": true,
+    "fullExportQualification": false
+  },
+  "unresolvedBodyRead": {
+    "operationId": "79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2",
+    "request": {
+      "blob": "7f0a6541e730fa065587389281c3793dd1661318",
+      "bytes": 401,
+      "sha256": "f13c80a7d4571540724ad3456d834a88fb29fbeab18f8eb545df82c096f8bd88"
+    },
+    "ack": {
+      "blob": "47db88c662bc5e23fe1c8f1955359fb6935ff4b9",
+      "bytes": 545,
+      "sha256": "a5348931b51ff700115b3e0957ffdebf726debb3829ec4cf67cad39979eead16"
+    },
+    "expectedVersion": "66306:28091501:39692:1793885177751063403:1793885177751063403",
+    "expectedBytes": 39692,
+    "expectedSha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+    "statusObservations": 2,
+    "resultPageObservations": 1,
+    "bodyBytesObservedByCollector": 0,
+    "ownedFutureActive": "UNKNOWN",
+    "payloadAvailable": "UNKNOWN",
+    "originalReadReplayed": false
+  },
+  "findings": [
+    "The exact export request and original ACK agree on host rog, executable, args, cwd and key. The successful authority and complete stdout/stderr belong to the same job. Original process ACK fingerprint and nanosecond metadata are preserved as raw bytes; no lossy reserialization is used as proof.",
+    "The three separate authority, streams and file-info operations have completed/stored_observed/owned_future_active=false records. Every original page hash, offset, EOF and native SDK payload reconstructs exactly. The 534-byte stdout hex equals the original text and authority counts; stderr is exactly empty.",
+    "The only result-body binary_read request is pinned to the independently observed 39,692-byte file version. Its queued ACK is admission evidence only. Two recorded same-ID status observations and one same-ID page-zero observation have original isError=true SDK responses with MCP -32603 request timed out text, not native job or file terminal records.",
+    "Zero body bytes means none have been obtained or archived by this collector. It does not establish zero remote I/O, no stored payload, an inactive future, a terminated read or an absent file. A lack of tool calls currently in flight is not read-operation closure.",
+    "The first status error was durably preserved by the collection helper before JSON.parse attempted to decode the non-JSON error text. Its local SyntaxError is consistent with the saved original text and helper line. This local parser error neither changed the original exporter authority nor dispatched a replacement read.",
+    "The packet accurately withholds bundle-info, independent command records/streams, full source-export qualification and downstream carrier/import/product qualification. The successful exporter is not reclassified as UNKNOWN because a later read is unresolved.",
+    "Two human-readable path fields in the first status descriptor use pre-package aliases. Their exact bytes/SHA/blob resolve to the actual saved first-status paths. This is an archival path-label note, not missing or modified evidence; the original package remains immutable."
+  ],
+  "archivePathAliasNote": [
+    {
+      "declaredPath": "errors/status-attempt-01.original.sdk.json",
+      "blob": "0cede4881f37869cfd279b69b738c87eb62b4889",
+      "actualMatchingPaths": [
+        "reads/result-body/status-later-01.original.sdk.json",
+        "reads/result-body/status.original.sdk.json"
+      ]
+    },
+    {
+      "declaredPath": "errors/status-attempt-01.original.txt",
+      "blob": "b9e4761d70f7a3086ee8d571cfba3cea9fbdf487",
+      "actualMatchingPaths": [
+        "reads/result-body/status-later-01.original.json",
+        "reads/result-body/status.original.json"
+      ]
+    }
+  ],
+  "limits": [
+    "This peer performed only immutable Git whole-byte/Merkle reconstruction and memory-only parsing/hash checks.",
+    "The recorded two identical status error payloads remain separate observations; matching error bytes do not establish the underlying future state.",
+    "No Runtime API, host, original export/read retry, current capture, carrier or product action was submitted.",
+    "Further reconciliation remains same operation ID under root scheduling; this review is not execution authorization."
+  ]
+}

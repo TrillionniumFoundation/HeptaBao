@@ -1,0 +1,80 @@
+[
+  {
+    "key": "info0",
+    "host": "desktop",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/sender.py",
+    "bytes": 7602,
+    "sha256": "f2a6cbfca7dc2d92a64d0f0173d570fcf5e6c084e531f50c86c2220842770c96",
+    "identity": [
+      2050,
+      7360639,
+      1000,
+      1000,
+      33152,
+      1,
+      7602,
+      "1793884028932043583",
+      "1793884028937079006"
+    ],
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "nlink": 1
+  },
+  {
+    "key": "info1",
+    "host": "desktop",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/receiver.py",
+    "bytes": 9138,
+    "sha256": "dbe951e3cb615df1c026a43862ff6e8478b99955f6f8e54cd21b8620dd431d19",
+    "identity": [
+      2050,
+      7360657,
+      1000,
+      1000,
+      33152,
+      1,
+      9138,
+      "1793884028944391717",
+      "1793884028951075515"
+    ],
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "nlink": 1
+  },
+  {
+    "key": "info2",
+    "host": "desktop",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/relay.py",
+    "bytes": 16719,
+    "sha256": "075193b0494e4cffc87aedebd1ac2407efef8007963aa6ff48388095d5967ad4",
+    "identity": [
+      2050,
+      7360808,
+      1000,
+      1000,
+      33152,
+      1,
+      16719,
+      "1793884028960515194",
+      "1793884028968904561"
+    ],
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "nlink": 1
+  },
+  {
+    "key": "info3",
+    "host": "desktop",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/inert-stage.result.public.json",
+    "bytes": null,
+    "sha256": null,
+    "identity": null,
+    "mode": 384,
+    "uid": 1000,
+    "gid": 1000,
+    "nlink": 1
+  }
+]

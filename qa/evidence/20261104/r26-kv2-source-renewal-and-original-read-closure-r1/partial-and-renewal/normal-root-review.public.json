@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.normal5-inert-partial-root-review.r1",
+  "status": "PASS_ORIGINAL_INERT_TERMINAL_AND_ONE_INFO_ONLY",
+  "tree": "ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736",
+  "whole": {
+    "files": 29,
+    "bytes": 177432,
+    "merkle": {
+      "root_sha": "ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736",
+      "trees_verified": 19
+    }
+  },
+  "checks": 57,
+  "job": "1a1abd1f635-fc05-50c9",
+  "exit_code": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "stdout_bytes": 1520,
+  "stderr_bytes": 0,
+  "independent_infos_closed": 1,
+  "independent_infos_unsubmitted": 3,
+  "bodies_unsubmitted": 4,
+  "full_independent_readback": false,
+  "relay_go": false,
+  "lan_runtime_qualification": false,
+  "integer_identity_comparison": "Original lossless decimal tokens; original ACK/stdout bytes unchanged.",
+  "new_runtime_calls": 0
+}

@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.current-x230-strict-source-diffs.v1",
+  "sources": [
+    {
+      "name": "sender",
+      "hunks": 2,
+      "whole_forward_reverse_exact": true
+    },
+    {
+      "name": "receiver",
+      "hunks": 7,
+      "whole_forward_reverse_exact": true
+    },
+    {
+      "name": "relay",
+      "hunks": 6,
+      "whole_forward_reverse_exact": true
+    },
+    {
+      "name": "full34",
+      "hunks": 4,
+      "whole_forward_reverse_exact": true
+    },
+    {
+      "name": "comparison69",
+      "hunks": 4,
+      "whole_forward_reverse_exact": true
+    }
+  ],
+  "actual_selected_input_sources_and_diffs_exact_final": true,
+  "all_actual_components_used_current_candidate_sources": true
+}

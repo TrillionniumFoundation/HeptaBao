@@ -1,0 +1,5 @@
+{
+  "cmd": "cat /tmp/heptabao_current_x230_source_r1/result.public.json",
+  "workdir": "/tmp",
+  "max_output_tokens": 10000
+}

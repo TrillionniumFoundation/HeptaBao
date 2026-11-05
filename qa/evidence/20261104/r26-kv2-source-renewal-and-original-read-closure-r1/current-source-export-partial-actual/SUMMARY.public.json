@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.current4e808-export-actual-partial-evidence.v1",
+  "state": "export_authority_succeeded_receipt_body_read_reconciliation_unknown",
+  "job_id": "1a1abe371de-fc05-5122",
+  "process_start_submissions": 1,
+  "original_authority": {
+    "state": "succeeded",
+    "exit_code": 0,
+    "complete": true,
+    "durable": true,
+    "stdout_bytes": 534,
+    "stderr_bytes": 0
+  },
+  "terminal": {
+    "status": "exported",
+    "all_owned_stopped": true,
+    "publication_within_original_deadline": true
+  },
+  "independent_receipt_info": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json",
+    "sha256": "47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b",
+    "size": 39692,
+    "version": "66306:28091501:39692:1793885177751063403:1793885177751063403"
+  },
+  "closed_read_operations": [
+    {
+      "label": "authority",
+      "operation_id": "9233d99a4010314f65620183c2aa349c1d73c375f423ef3c153d04ece7e571b4"
+    },
+    {
+      "label": "streams",
+      "operation_id": "29444317a124e7bb30e3a1e49ade18c1a377f9b7f2df55c3036c7530e3dab27e"
+    },
+    {
+      "label": "result-info",
+      "operation_id": "264e552801984cbf4fb7b0b49132e3fb45bd8f94a371c8a527bf7304757e8752"
+    }
+  ],
+  "unresolved_read_operation": {
+    "label": "result-body",
+    "operation_id": "79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2",
+    "tool": "binary_read",
+    "request_blob": "7f0a6541e730fa065587389281c3793dd1661318",
+    "owned_future_active": "UNKNOWN",
+    "payload_available": "UNKNOWN",
+    "status_query_attempts": 2,
+    "immutable_result_page_query_attempts": 1,
+    "observed_errors": "MCP request timed out"
+  },
+  "original_body_bytes_received": 0,
+  "bundle_info_submitted": false,
+  "command_records_archived": 0,
+  "command_streams_archived": 0,
+  "current_tool_calls_in_flight": 0,
+  "read_closed_not_claimed": true,
+  "native_read_or_export_replayed": false,
+  "carrier_source_slots_filled": false,
+  "source_export_full_qualification": false,
+  "carrier_import_product_qualification": false,
+  "local_collection_error": "First status error was durably saved before a JSON.parse attempt failed. Later status/result calls branched on isError before parsing; no product source was changed.",
+  "next_step": "Root one local effective_config observation; original operation may only be reconciled under explicit same-ID continuation. No new host operation submitted by this packet."
+}

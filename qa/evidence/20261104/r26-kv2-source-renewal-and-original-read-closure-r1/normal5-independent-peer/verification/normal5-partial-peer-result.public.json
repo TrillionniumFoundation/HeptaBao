@@ -1,0 +1,731 @@
+{
+  "admitted_membership_merkle_directories": 10,
+  "admitted_source_tree": "1c48f9519ce6d13dbe2f4484db279102c9e33676",
+  "authority_exit_code": 0,
+  "bytes": 177432,
+  "checks": 175,
+  "checks_passed": [
+    {
+      "name": "tree_exact:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736",
+      "passed": true
+    },
+    {
+      "name": "tree_unique:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:/",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:admission",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:dispatch",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:observations",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:observations/observe_info0",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:observations/observe_info0/result0",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:observations/observe_info0/start",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:observations/observe_info0/status0",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:pending",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:public",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:sdk",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:sdk/authority",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:sdk/streams",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:sources",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:sources/admitted",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:submission",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:submission/dispatch",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:submission/sdk",
+      "passed": true
+    },
+    {
+      "name": "merkle:ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736:verification",
+      "passed": true
+    },
+    {
+      "name": "actual_leaf_set",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:README.md",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:admission/root-go.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:assessment.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:dispatch/exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:manifest.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:observations/observe_info0/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:observations/observe_info0/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:observations/observe_info0/result0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:observations/observe_info0/result0/request.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:observations/observe_info0/start/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:observations/observe_info0/start/request.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:observations/observe_info0/status0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:observations/observe_info0/status0/request.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:pending/fixed-readback-plan.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:public/ack.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:public/authority.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:public/stderr.original.txt",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:public/stdout.original.txt",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:sdk/authority/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:sdk/authority/request.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:sdk/streams/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:sdk/streams/request.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:sources/admitted/receiver.py",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:sources/admitted/relay.py",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:sources/admitted/sender.py",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:submission/dispatch/exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:submission/sdk/ack.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole_blob:verification/checks.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_schema",
+      "passed": true
+    },
+    {
+      "name": "manifest_complete28",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:dispatch/exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:admission/root-go.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:submission/sdk/ack.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:submission/dispatch/exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:sdk/authority/request.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:sdk/authority/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:sdk/streams/request.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:sdk/streams/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:public/ack.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:public/authority.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:public/stdout.original.txt",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:public/stderr.original.txt",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:sources/admitted/sender.py",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:sources/admitted/receiver.py",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:sources/admitted/relay.py",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:observations/observe_info0/start/request.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:observations/observe_info0/start/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:observations/observe_info0/status0/request.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:observations/observe_info0/status0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:observations/observe_info0/result0/request.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:observations/observe_info0/result0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:observations/observe_info0/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:observations/observe_info0/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:assessment.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:verification/checks.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:pending/fixed-readback-plan.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_whole:README.md",
+      "passed": true
+    },
+    {
+      "name": "tree_exact:1c48f9519ce6d13dbe2f4484db279102c9e33676",
+      "passed": true
+    },
+    {
+      "name": "tree_unique:1c48f9519ce6d13dbe2f4484db279102c9e33676",
+      "passed": true
+    },
+    {
+      "name": "merkle:1c48f9519ce6d13dbe2f4484db279102c9e33676:/",
+      "passed": true
+    },
+    {
+      "name": "merkle:1c48f9519ce6d13dbe2f4484db279102c9e33676:actual",
+      "passed": true
+    },
+    {
+      "name": "merkle:1c48f9519ce6d13dbe2f4484db279102c9e33676:before",
+      "passed": true
+    },
+    {
+      "name": "merkle:1c48f9519ce6d13dbe2f4484db279102c9e33676:candidate",
+      "passed": true
+    },
+    {
+      "name": "merkle:1c48f9519ce6d13dbe2f4484db279102c9e33676:diffs",
+      "passed": true
+    },
+    {
+      "name": "merkle:1c48f9519ce6d13dbe2f4484db279102c9e33676:dispatch",
+      "passed": true
+    },
+    {
+      "name": "merkle:1c48f9519ce6d13dbe2f4484db279102c9e33676:metadata",
+      "passed": true
+    },
+    {
+      "name": "merkle:1c48f9519ce6d13dbe2f4484db279102c9e33676:references",
+      "passed": true
+    },
+    {
+      "name": "merkle:1c48f9519ce6d13dbe2f4484db279102c9e33676:sdk",
+      "passed": true
+    },
+    {
+      "name": "merkle:1c48f9519ce6d13dbe2f4484db279102c9e33676:verification",
+      "passed": true
+    },
+    {
+      "name": "duplicate_request_exact",
+      "passed": true
+    },
+    {
+      "name": "request_admitted_membership",
+      "passed": true
+    },
+    {
+      "name": "request_contract",
+      "passed": true
+    },
+    {
+      "name": "go_request_whole",
+      "passed": true
+    },
+    {
+      "name": "intent_request_whole",
+      "passed": true
+    },
+    {
+      "name": "go_request_length_mode_path",
+      "passed": true
+    },
+    {
+      "name": "go_intent_scope",
+      "passed": true
+    },
+    {
+      "name": "go_exact_request_host",
+      "passed": true
+    },
+    {
+      "name": "go_exact_request_executable",
+      "passed": true
+    },
+    {
+      "name": "go_exact_request_cwd",
+      "passed": true
+    },
+    {
+      "name": "go_exact_request_idempotency_key",
+      "passed": true
+    },
+    {
+      "name": "go_exact_request_timeout_seconds",
+      "passed": true
+    },
+    {
+      "name": "no_transport_go",
+      "passed": true
+    },
+    {
+      "name": "sdk_not_error:submission/sdk/ack.original.json",
+      "passed": true
+    },
+    {
+      "name": "single_native_text:submission/sdk/ack.original.json",
+      "passed": true
+    },
+    {
+      "name": "ack_original_byte_identity",
+      "passed": true
+    },
+    {
+      "name": "ack_single_launch",
+      "passed": true
+    },
+    {
+      "name": "ack_exact_request_host",
+      "passed": true
+    },
+    {
+      "name": "ack_exact_request_executable",
+      "passed": true
+    },
+    {
+      "name": "ack_exact_request_args",
+      "passed": true
+    },
+    {
+      "name": "ack_exact_request_cwd",
+      "passed": true
+    },
+    {
+      "name": "ack_exact_request_idempotency_key",
+      "passed": true
+    },
+    {
+      "name": "ack_env_scope",
+      "passed": true
+    },
+    {
+      "name": "sdk_not_error:sdk/authority/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_native_text:sdk/authority/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "authority_original_byte_identity",
+      "passed": true
+    },
+    {
+      "name": "authority_request",
+      "passed": true
+    },
+    {
+      "name": "authority_terminal",
+      "passed": true
+    },
+    {
+      "name": "sdk_not_error:sdk/streams/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_native_text:sdk/streams/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "streams_request",
+      "passed": true
+    },
+    {
+      "name": "streams_job",
+      "passed": true
+    },
+    {
+      "name": "stream_whole_stdout",
+      "passed": true
+    },
+    {
+      "name": "stream_authority_stdout",
+      "passed": true
+    },
+    {
+      "name": "stream_whole_stderr",
+      "passed": true
+    },
+    {
+      "name": "stream_authority_stderr",
+      "passed": true
+    },
+    {
+      "name": "inert_admitted_member",
+      "passed": true
+    },
+    {
+      "name": "compile_only_not_exec_eval",
+      "passed": true
+    },
+    {
+      "name": "compile_precedes_mkdir",
+      "passed": true
+    },
+    {
+      "name": "no_child_import",
+      "passed": true
+    },
+    {
+      "name": "source_scope_matches_go",
+      "passed": true
+    },
+    {
+      "name": "terminal_schema_status",
+      "passed": true
+    },
+    {
+      "name": "terminal_false_source_executed",
+      "passed": true
+    },
+    {
+      "name": "terminal_false_git_started",
+      "passed": true
+    },
+    {
+      "name": "terminal_false_compiler_started",
+      "passed": true
+    },
+    {
+      "name": "terminal_false_service_started",
+      "passed": true
+    },
+    {
+      "name": "terminal_false_artifact_transfer_started",
+      "passed": true
+    },
+    {
+      "name": "terminal_compile_flag",
+      "passed": true
+    },
+    {
+      "name": "terminal_exact_recorded_interval",
+      "passed": true
+    },
+    {
+      "name": "authority_after_terminal",
+      "passed": true
+    },
+    {
+      "name": "carrier_whole_admitted_member",
+      "passed": true
+    },
+    {
+      "name": "carrier_terminal_pin",
+      "passed": true
+    },
+    {
+      "name": "carrier_schema_keys",
+      "passed": true
+    },
+    {
+      "name": "source_order_exact",
+      "passed": true
+    },
+    {
+      "name": "source_identity:sender.py",
+      "passed": true
+    },
+    {
+      "name": "reported_full9:sender.py",
+      "passed": true
+    },
+    {
+      "name": "source_identity:receiver.py",
+      "passed": true
+    },
+    {
+      "name": "reported_full9:receiver.py",
+      "passed": true
+    },
+    {
+      "name": "source_identity:relay.py",
+      "passed": true
+    },
+    {
+      "name": "reported_full9:relay.py",
+      "passed": true
+    },
+    {
+      "name": "info0_exact_scope",
+      "passed": true
+    },
+    {
+      "name": "sdk_not_error:observations/observe_info0/start/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_native_text:observations/observe_info0/start/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "sdk_not_error:observations/observe_info0/status0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_native_text:observations/observe_info0/status0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "sdk_not_error:observations/observe_info0/result0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_native_text:observations/observe_info0/result0/original-sdk.json",
+      "passed": true
+    },
+    {
+      "name": "info0_same_id",
+      "passed": true
+    },
+    {
+      "name": "info0_queries_exact",
+      "passed": true
+    },
+    {
+      "name": "info0_closed",
+      "passed": true
+    },
+    {
+      "name": "info0_immutable_page",
+      "passed": true
+    },
+    {
+      "name": "info0_complete_native",
+      "passed": true
+    },
+    {
+      "name": "info0_lossless_full9",
+      "passed": true
+    },
+    {
+      "name": "info0_whole_binding",
+      "passed": true
+    },
+    {
+      "name": "assessment_partial",
+      "passed": true
+    },
+    {
+      "name": "pending_exact_three_infos_four_bodies",
+      "passed": true
+    },
+    {
+      "name": "pending_reported_full9:0",
+      "passed": true
+    },
+    {
+      "name": "pending_reported_full9:1",
+      "passed": true
+    },
+    {
+      "name": "pending_reported_full9:2",
+      "passed": true
+    },
+    {
+      "name": "pending_receipt_unbound",
+      "passed": true
+    },
+    {
+      "name": "only_info0_observation_in_packet",
+      "passed": true
+    },
+    {
+      "name": "exact_one_ack_file",
+      "passed": true
+    }
+  ],
+  "files": 29,
+  "info0_operation_id": "3a2554cd41d2692bbbfdc260738ac8864fe70e83969531ab5d165a60f7b702bc",
+  "info0_original_payload_bytes": 613,
+  "input_tree": "ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736",
+  "job_id": "1a1abd1f635-fc05-50c9",
+  "limits": {
+    "body_reads_submitted": false,
+    "candidate_module_executed": false,
+    "host_or_runtime_calls_by_verifier": 0,
+    "intent_order_independently_timestamp_proved": false,
+    "lan_submitted": false,
+    "other_infos_submitted": false,
+    "per_fd_ledger_supplied": false,
+    "relay_go": false,
+    "relay_submitted": false
+  },
+  "merkle_directories": 19,
+  "reported_interval_ns": "72037986",
+  "schema": "heptabao.compat-peer.normal5-partial-offline-verification.v1",
+  "status": "PASS_LIMITED_PARTIAL_EVIDENCE",
+  "stderr_bytes": 0,
+  "stdout_bytes": 1520
+}

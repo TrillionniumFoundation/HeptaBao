@@ -1,0 +1,526 @@
+{
+  "schema": "heptabao.checkpoint-whole-evidence-manifest.r26.v1",
+  "as_of_utc": "2026-11-05T14:04:34Z",
+  "previous_commit": "9a56fe7b32140045d0ef7ddf8b3a9309392a9a76",
+  "prefix": "qa/evidence/20261104/r26-kv2-source-renewal-and-original-read-closure-r1",
+  "packets": [
+    {
+      "name": "mac-sdk-three-infos-actual",
+      "tree": "e543a922a661b02341a27b30d1bc7d264de400c3",
+      "files": 40,
+      "bytes": 45679,
+      "merkle": {
+        "root_sha": "e543a922a661b02341a27b30d1bc7d264de400c3",
+        "trees_verified": 5
+      }
+    },
+    {
+      "name": "current-x230-transport-unbound-source",
+      "tree": "49942321c517ac522988e3f4df4eb79e3bb3a6d7",
+      "files": 36,
+      "bytes": 648898,
+      "merkle": {
+        "root_sha": "49942321c517ac522988e3f4df4eb79e3bb3a6d7",
+        "trees_verified": 7
+      }
+    },
+    {
+      "name": "authbus-p01-t5-increment-source",
+      "tree": "7271d09f732745192f4b05bce6a4f021ea80b37b",
+      "files": 23,
+      "bytes": 410683,
+      "merkle": {
+        "root_sha": "7271d09f732745192f4b05bce6a4f021ea80b37b",
+        "trees_verified": 7
+      }
+    },
+    {
+      "name": "mac-cargo47-original-read-operations",
+      "tree": "9885e4b01cbfbab50348cca9b2f9bcd172b37290",
+      "files": 560,
+      "bytes": 4030291,
+      "merkle": {
+        "root_sha": "9885e4b01cbfbab50348cca9b2f9bcd172b37290",
+        "trees_verified": 281
+      }
+    },
+    {
+      "name": "normal5-inert-partial-actual",
+      "tree": "ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736",
+      "files": 29,
+      "bytes": 177432,
+      "merkle": {
+        "root_sha": "ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736",
+        "trees_verified": 19
+      }
+    },
+    {
+      "name": "current-source-export-partial-actual",
+      "tree": "23dc4dd95a930de4356c8fedee4c853a642b6594",
+      "files": 52,
+      "bytes": 66009,
+      "merkle": {
+        "root_sha": "23dc4dd95a930de4356c8fedee4c853a642b6594",
+        "trees_verified": 12
+      }
+    },
+    {
+      "name": "authbus-renewal-unbound-source",
+      "tree": "fcb76baae4e87b159fc7704ae13185c862de3854",
+      "files": 18,
+      "bytes": 733095,
+      "merkle": {
+        "root_sha": "fcb76baae4e87b159fc7704ae13185c862de3854",
+        "trees_verified": 6
+      }
+    },
+    {
+      "name": "normal5-paused-continuation",
+      "tree": "c5365e0c9867944720ffd61c63a2976717083cf3",
+      "files": 1,
+      "bytes": 6910,
+      "merkle": {
+        "root_sha": "c5365e0c9867944720ffd61c63a2976717083cf3",
+        "trees_verified": 1
+      }
+    },
+    {
+      "name": "authbus-renewal-independent-peer",
+      "tree": "23b4f3b8c1d4e6cc77fcbe7def71e993c393d948",
+      "files": 8,
+      "bytes": 29775,
+      "merkle": {
+        "root_sha": "23b4f3b8c1d4e6cc77fcbe7def71e993c393d948",
+        "trees_verified": 2
+      }
+    },
+    {
+      "name": "mac-sdk13-body-read-requests",
+      "tree": "9cc81357deaf49fb277df727a6999c276c4286e8",
+      "files": 21,
+      "bytes": 40655,
+      "merkle": {
+        "root_sha": "9cc81357deaf49fb277df727a6999c276c4286e8",
+        "trees_verified": 3
+      }
+    },
+    {
+      "name": "normal5-independent-peer",
+      "tree": "c3ae8a92967a4f1824e06d9fa75f4cca6f72764d",
+      "files": 3,
+      "bytes": 37534,
+      "merkle": {
+        "root_sha": "c3ae8a92967a4f1824e06d9fa75f4cca6f72764d",
+        "trees_verified": 2
+      }
+    }
+  ],
+  "packet_files": 791,
+  "packet_bytes": 6226961,
+  "packet_merkle_trees": 345,
+  "root_files_including_state_and_manifest": 48,
+  "root_leaves_excluding_this_manifest": [
+    {
+      "name": "r25-checkpoint-create-tree.sdk.json",
+      "blob": "67e49597fffc956c2f7ab7511aac967e1aeb51c5",
+      "bytes": 195,
+      "sha256": "c799d1b96f5e801bd4c92472d2043a47289429c6515ab5eb7ff57f002db42c2f",
+      "path": "r25-publication/create-tree.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-checkpoint-create-commit.sdk.json",
+      "blob": "79192ea72bb6c37d1a4c3a667fd4edd48cf82a7a",
+      "bytes": 195,
+      "sha256": "4f9f41a8a2672eb0990820162ced95dde8efb59bd81ac75712b4eb0300348022",
+      "path": "r25-publication/create-commit.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-checkpoint-update-ref.sdk.json",
+      "blob": "bc792cbeafd69869c1bb177d2380534078196a99",
+      "bytes": 161,
+      "sha256": "0aad31566ba642e38c47f18ab55ad16470654eade0b74575427dd592d966998e",
+      "path": "r25-publication/update-ref.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-checkpoint-root-tree-read.sdk.json",
+      "blob": "726c70a1349f8b446559f22683cba9eed8a57659",
+      "bytes": 13939,
+      "sha256": "ca70fcd689dc6ea521a600eb9d9353602fe56e0db2a0be6eb61ed776dcd36e98",
+      "path": "r25-publication/root-tree-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-checkpoint-commit-read.sdk.json",
+      "blob": "2be87be14beb1986a76d67eea96abf297a76ded9",
+      "bytes": 4145,
+      "sha256": "d51a409b9cf702b1ac976d63a27ece43a74e63b762a1ffaba41150ce15a1bd18",
+      "path": "r25-publication/commit-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-checkpoint-ref-read.sdk.json",
+      "blob": "f8e30b0efef23107861aee2870cd7008d43119c5",
+      "bytes": 1753,
+      "sha256": "311429a256fcebcf561b9cc943306b7354f1630278596de24510e3b73383d8f6",
+      "path": "r25-publication/ref-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-checkpoint-pre-publication-proof.public.json",
+      "blob": "d93d36dd2dc99c1e02bf784d51b7fc539846d4d1",
+      "bytes": 851,
+      "sha256": "300a534b52f185ed0107534b4c84432f822a309b1343f03d8f5380cd877952f6",
+      "path": "r25-publication/pre-publication-proof.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-checkpoint-post-publication-proof.public.json",
+      "blob": "14854d1044e829b3b113d4c049ae990ae006f588",
+      "bytes": 1423,
+      "sha256": "a3689786af3e3ed5b9d389f5079bf20a712d46805bd06578c77fdeeac4001cf2",
+      "path": "r25-publication/post-publication-proof.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "mac-sdk-three-infos-root-verifier.js",
+      "blob": "8fdf6bee6f06403b000a1fda4f5e95d4e523a433",
+      "bytes": 4647,
+      "sha256": "259cf33986fc8f7752f0472e9b7e26ff04c6069e6548edc4a40ef192b3ed3d86",
+      "path": "mac-sdk-three-infos/mac-sdk-three-infos-root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "mac-sdk-three-infos-root-review.public.json",
+      "blob": "4f7edd03cfa424e3fdb719f6a818023d92c28cc4",
+      "bytes": 3145,
+      "sha256": "07a8172039d7fced1859fce2e9016736dee9cfc7af538630241f8707a8180c89",
+      "path": "mac-sdk-three-infos/mac-sdk-three-infos-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-x230-ast-extraction.py",
+      "blob": "ed6ba854dbb82f661f9a1317dbc24e5bf40a3030",
+      "bytes": 1468,
+      "sha256": "0b8087fdb08879dcecca67d80439653bf246c31c99d712d611f04eb63f1d90db",
+      "path": "current-x230-source/ast-extraction.py",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-x230-ast-input.json",
+      "blob": "add7e48ca9ec51d3cdb1f802cf27061e73b26c30",
+      "bytes": 167843,
+      "sha256": "932759c356b62cb4a88866726a64ac92d5a51edb73b012ef9ade2ab22bc0a219",
+      "path": "current-x230-source/ast-input.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-x230-ast-executor.original.json",
+      "blob": "bd29bc63c5a82872012f2e6476c069a0f89cb851",
+      "bytes": 77904,
+      "sha256": "0cb2c7fb88d8c1a07b5d2b52c69d2d1e3a636580451d966bc95c12e846290de9",
+      "path": "current-x230-source/ast-executor.original.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-x230-ast-output.original.json",
+      "blob": "c5472c3ff0a0ce9a5916ac6fac62c24e26da5077",
+      "bytes": 75189,
+      "sha256": "2e586d29ef947bf31b719eaaabc50ad2ba77cc35edc578e9e95cbb4d16f61940",
+      "path": "current-x230-source/ast-output.original.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-x230-root-verifier.js",
+      "blob": "583b3a43e3c81095cf71cbd48f283d3183ba8d26",
+      "bytes": 10900,
+      "sha256": "7e87a433ace9e8a66984cef56687751320a84b9939587d8658027bed648e194c",
+      "path": "current-x230-source/root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-x230-root-review.public.json",
+      "blob": "e8bf1f192c2371f2b18b131a254a25ef5fcba46a",
+      "bytes": 6124,
+      "sha256": "513b7c14af358e349c7c0730b12774fbdf5ebee0f7db420a22db270ad5ffecbe",
+      "path": "current-x230-source/root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-p01-t5-root-verifier.js",
+      "blob": "0c52ddd886cd45124c982bad79e5e02d9d1c4413",
+      "bytes": 9294,
+      "sha256": "fb26ad712c11cd15f636a3b3b445a6753e57f541dcd04350c0e38d69ce770ff6",
+      "path": "authbus-p01-t5/root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-p01-t5-root-review.public.json",
+      "blob": "7c3ccf640bb8a463ee2e6d02556211c28807a2a7",
+      "bytes": 1986,
+      "sha256": "2d433be094e0464502963889d4cebfe48449c43a0d2e55d2192a7d5b0d94aa7e",
+      "path": "authbus-p01-t5/root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-current-kv2-route-map.public.json",
+      "blob": "572b8c4da2556791d78c144faeecdbb7f77fd4c0",
+      "bytes": 8751,
+      "sha256": "27de820b9d650efa0d843b4c0d476cd9914574e57da77c6ec16e85a8b976f740",
+      "path": "current-kv2-route-map.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "mac-harness-method-description-correction.public.json",
+      "blob": "d7a4ce97b14096f425824ec81d5d447ab2edc3ea",
+      "bytes": 1068,
+      "sha256": "0699e30c8476fc64b26f94658d7edf19090a9b88b86ac2991ae5994508e219eb",
+      "path": "mac-harness-predicates/method-description-correction.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "export.intent.public.json",
+      "blob": "9b955414fae9e9240d1e52f498c3eec5d445f37e",
+      "bytes": 1787,
+      "sha256": "6c22f5bd651f703d42bb1a66cb9f7e3dbad6ded33e0cb9fcbfde3973253fff93",
+      "path": "current-source-export-known-terminal/export.intent.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "export-start.original-sdk.json",
+      "blob": "1e6f249f62f41cee00f688d553772f4a46754c84",
+      "bytes": 1383,
+      "sha256": "0ba20d509480d9897f105db66e6aaa8f4d2fa32a47ec0bfde26336dac7b218de",
+      "path": "current-source-export-known-terminal/export-start.original-sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "export-start.original-native.json",
+      "blob": "41509cb4adc81419b8a74bd2350aebf1623efdb0",
+      "bytes": 1140,
+      "sha256": "e02086cdc5bd0ba6538844d2c7c302f1d7074b2bc4c3df82ab3e09dcade51570",
+      "path": "current-source-export-known-terminal/export-start.original-native.json",
+      "mode": "100644"
+    },
+    {
+      "name": "export-status.original-native.json",
+      "blob": "7706b3d95bd33dde06394513c9035cdd2de9c0ee",
+      "bytes": 729,
+      "sha256": "ba6f48b903cc9c853c9ad5cc948f1a961cc30f80176ef2429ea80b5fc7dc9947",
+      "path": "current-source-export-known-terminal/export-status.original-native.json",
+      "mode": "100644"
+    },
+    {
+      "name": "export-status.original-sdk.json",
+      "blob": "0f1254a69ee4b6224c41f8842faa2e7782426dc3",
+      "bytes": 908,
+      "sha256": "bbcc4693684b0094e8656b45de9211d702e0e602ce047c2709945bc63b093de5",
+      "path": "current-source-export-known-terminal/export-status.original-sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "export-streams.original-native.json",
+      "blob": "fea1a5d1b7fb51a0e7454acae0fd230c9d6729c1",
+      "bytes": 1958,
+      "sha256": "b7a0194a88d61a5d83c9b33ad154c49a1ebe239bc06040a314b1fc2743c344af",
+      "path": "current-source-export-known-terminal/export-streams.original-native.json",
+      "mode": "100644"
+    },
+    {
+      "name": "export-result-info.original-native.json",
+      "blob": "0c10544cc211fe71ea282bb32e242b700e5f9275",
+      "bytes": 477,
+      "sha256": "1ead42174e74457af83aa726da1cd57e64bed9ea3d12c342a8cd105079a8eeb6",
+      "path": "current-source-export-known-terminal/export-result-info.original-native.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-export-known-terminal-root-verifier.js",
+      "blob": "35debd10d7b7438d55c6a85ec1716aed76d9784a",
+      "bytes": 4543,
+      "sha256": "5fda13a1df6c74512ef5b97a7866b18d5b4c28bf96411ecdb92b18b53fc1444d",
+      "path": "current-source-export-known-terminal/root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-export-known-terminal-root-review.public.json",
+      "blob": "b3e016fbb103bb7f99893e8fecf1a958510f44c9",
+      "bytes": 2173,
+      "sha256": "874c4d930aff30567675b31d6ea034f5b85bccfb435c666c820e3f60b2df541c",
+      "path": "current-source-export-known-terminal/root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-runtime-capability-connection-observation.intent.public.json",
+      "blob": "fde3e0353113baecf9762665e2d73efebba2c3d1",
+      "bytes": 811,
+      "sha256": "11397ef752da8c0b0ea37a31635fd5f6f88204ec2a82ecc5a002223ae5a5401e",
+      "path": "runtime-connection/intent.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-runtime-capability-connection-observation.original-sdk.json",
+      "blob": "73a81b7aa6c66453d270c855a975978d0d20f853",
+      "bytes": 248,
+      "sha256": "337dbde915f4fd582b754e2cdf20a8146e955706c4eaa0b45706d918bdfec3ee",
+      "path": "runtime-connection/original-sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-runtime-connection-observation.public.json",
+      "blob": "3e5f39d4804a13f86d7e4ac0e311907947a79371",
+      "bytes": 1789,
+      "sha256": "613e785f6e4138d9bb0d1e1e8b2801b34c668f1471a114a7b823bede94be50d9",
+      "path": "runtime-connection/observation.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-mac47-root-verifier.js",
+      "blob": "6518bb1f5232783a16b9f9004c4b17aa92ad3ff2",
+      "bytes": 8466,
+      "sha256": "322fe1b9aad006e00cc42d407d1dd4b93279ead1df2aa27979213c04d87e5e17",
+      "path": "mac-cargo47/root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-mac47-root-review.public.json",
+      "blob": "c9c0eb8ded63ab431f99b066d883abca3d23f615",
+      "bytes": 4215,
+      "sha256": "4bf730ba9d8cf640648ad727ab168089c02e2b8ad68818d345c861d4632bde11",
+      "path": "mac-cargo47/root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-x230-fence-peer.public.json",
+      "path": "current-x230-source/fence-peer-review.public.json",
+      "blob": "7900a80bc849c7f1f496fed27adcf2b5e962c416",
+      "bytes": 5461,
+      "sha256": "7081fedb5d027ddd164da56f3cff7482d2ffc22d9400ea4c3048317657406a4e",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-partial-renewal-root-verifier.js",
+      "blob": "36157b7c6f49bc45e869febfb49e16cb55faf958",
+      "bytes": 14971,
+      "sha256": "5a5f0441dfd917428c760f045deff35fcb2b0531b487809a3aff9362565e9649",
+      "path": "partial-and-renewal/root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-normal-root-review.public.json",
+      "blob": "1d9115e3ad557d844d194c7e22e2784e6ae12180",
+      "bytes": 841,
+      "sha256": "0631b10e1e5435c72ac9f0d6613f8bd201cc637d5b62efccfa6915ba8d506e5e",
+      "path": "partial-and-renewal/normal-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-exporter-root-review.public.json",
+      "blob": "124d34d42d62afa1035f4a0f284d316d20823e4e",
+      "bytes": 1134,
+      "sha256": "27ea2a02fea537ba42e6a99757f07046e1bbb46d86c17594cb6ee4c50f6c78ec",
+      "path": "partial-and-renewal/exporter-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-renewal-root-review.public.json",
+      "blob": "0994a389a3d2609e97d704a8e0f4d3f2491061e0",
+      "bytes": 1963,
+      "sha256": "38ffa14db2065231fbec4adce7e0bba9c3533256f485e38d9cc15ba2f68f4fe6",
+      "path": "partial-and-renewal/renewal-root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-runtime-local-readiness-recheck-intent.public.json",
+      "blob": "999159d00f5cb737dd2c00fc0c06e2dd738ddc1b",
+      "bytes": 751,
+      "sha256": "0e6e49c40d57fe2c33e3800280f3f94248ada60b8d4bba0484731101f40fedbb",
+      "path": "runtime-connection/recheck-intent.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-runtime-local-readiness-recheck-original-sdk.json",
+      "blob": "e98614a5de4de8c2d958c5ce68fc8641479c5d1f",
+      "bytes": 5103,
+      "sha256": "c6cee1f7d470c2f3fa239509c15720df6120f69c701078331104493cdee3f573",
+      "path": "runtime-connection/recheck-original-sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-runtime-local-readiness-recheck-observation.public.json",
+      "blob": "e72589b762b88dde43872fbc1873b89bd49f45fd",
+      "bytes": 1464,
+      "sha256": "a41bb0c2514066596edf84dbf08631674deeb9baeddf278a0f4716df4eca75ff",
+      "path": "runtime-connection/recheck-observation.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "peer-review.public.json",
+      "path": "current-source-export-partial/peer-review.public.json",
+      "blob": "6f427d2c76879624683b873eb9ccc05ecc463b56",
+      "bytes": 5871,
+      "sha256": "7172f521dfcf58c4117b718855fc1363607e1aeca2196064d7256555491c6496",
+      "mode": "100644"
+    },
+    {
+      "name": "peer-checks.public.json",
+      "path": "current-source-export-partial/peer-checks.public.json",
+      "blob": "35c2b6b895976ff8015d9ea68ac4e46fc0bf6132",
+      "bytes": 11789,
+      "sha256": "9f114eb00390e10d2408457167e9aa5342a64ebfed27c7c4981935ece5348565",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-sdk13-exact-read-requests-root-review-final.public.json",
+      "blob": "fb93717ba2c38909cf19887b36dcf0c8b539f049",
+      "bytes": 927,
+      "sha256": "38df61c197a69ee9be57d1dab8e3571cec463deed0dadbb3e71ec860a0262301",
+      "path": "mac-sdk13-body-read-root/root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-normal5-independent-peer.public.json",
+      "path": "normal5-partial/peer-review.public.json",
+      "blob": "8ee018c108244bef7c9777885b27fcc520bb60fc",
+      "bytes": 5199,
+      "sha256": "14bee71976c1fcc1c4c8c0c9c1590ab7942221a576889fa54ecc2a9d73e58995",
+      "mode": "100644"
+    },
+    {
+      "name": "r26-checkpoint-state.public.json",
+      "blob": "ad9131d191b8980fb01cedb82e2dd1f4f810d708",
+      "bytes": 34789,
+      "sha256": "64318aaffeaf39cbfde6474a40ff3adfab21a86eee8f7b381744ce04c4e6ac60",
+      "path": "state.public.json",
+      "mode": "100644"
+    }
+  ],
+  "updated_documents": [
+    {
+      "path": "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+      "name": "r26-checkpoint-document.md",
+      "blob": "99bbdc192bea78df52b6fabee9d0b1bec44145fd",
+      "bytes": 258089,
+      "sha256": "c406390c2ccb8b8fe0e6bcb3b024f55f703a2b173537eae7dc942dccf9f86cc8"
+    },
+    {
+      "path": "qa/evidence/20261104/36076-checkpoint.public.json",
+      "name": "r26-checkpoint-index.public.json",
+      "blob": "77d0ec7d0f9ba8c7caeff779554ecbd48f35760c",
+      "bytes": 468547,
+      "sha256": "27a596d5c74045b5a234673a23f3d368c59567151707747dc7a67bf3032f0c4f"
+    }
+  ],
+  "integrity": {
+    "all_packets_complete": true,
+    "all_leaf_bytes_git_blob_sha256_and_merkle_verified": true,
+    "immutable_cached_bytes_reverified_allowed": true,
+    "original_sdk_native_unsafe_integer_tokens_preserved": true,
+    "partial_actual_and_source_only_scopes_preserved": true,
+    "no_private_capsules_or_credentials_in_public_evidence": true,
+    "no_product_service_change_by_checkpoint": true,
+    "full_replacement": false
+  }
+}

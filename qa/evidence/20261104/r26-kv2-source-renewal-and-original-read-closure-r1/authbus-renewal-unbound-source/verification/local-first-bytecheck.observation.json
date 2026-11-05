@@ -1,0 +1,8 @@
+{
+  "source": "exec_command result copied verbatim from this turn",
+  "chunk_id": "f7daf6",
+  "wall_time_seconds": 0.000027481,
+  "exit_code": 0,
+  "original_token_count": 59,
+  "output": "{\"outer.before.py\": {\"bytes\": 68349, \"sha256\": \"b4d7f60ea86335ecc267651082fb0e74956bba5ee632f5db7dd1ee8699db4628\"}, \"outer.proposed.py\": {\"bytes\": 71497, \"sha256\": \"21fc34c10f46be8b75f2861f67588a11d4f5acb32cbe5f5a6533564c53373fd8\"}}\n"
+}

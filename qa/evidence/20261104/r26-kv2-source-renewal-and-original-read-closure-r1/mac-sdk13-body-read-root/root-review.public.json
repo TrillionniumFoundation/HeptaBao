@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.sdk13-exact-read-requests-root-review.r1",
+  "status": "PASS_FROZEN_READ_REQUEST_BYTES_ONLY",
+  "tree": "9cc81357deaf49fb277df727a6999c276c4286e8",
+  "whole": {
+    "files": 21,
+    "bytes": 40655,
+    "merkle": {
+      "root_sha": "9cc81357deaf49fb277df727a6999c276c4286e8",
+      "trees_verified": 3
+    }
+  },
+  "checks": 87,
+  "three_metadata_root_review": "4f7edd03cfa424e3fdb719f6a818023d92c28cc4",
+  "requests": 13,
+  "files": 3,
+  "bytes": 682650,
+  "coverage": {
+    "loader": 6047,
+    "selector": 673468,
+    "registry": 3135
+  },
+  "all_body_requests_unsubmitted_at_freeze": true,
+  "host_process_or_sdk_execution": false,
+  "scheduling": "Existing exporter original read must close before root releases the body window.",
+  "permission_scope": "Exact existing public readset; no additional file/SDK execution/credential body.",
+  "all13_typed_requests_equal_previously_frozen_plan": true
+}

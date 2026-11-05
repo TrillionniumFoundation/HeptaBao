@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.export-body-read-status-unresolved.v1",
+  "operation_id": "79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2",
+  "admission": {
+    "path": "reads/result-body/admission.original.json",
+    "bytes": 545,
+    "sha256": "a5348931b51ff700115b3e0957ffdebf726debb3829ec4cf67cad39979eead16",
+    "blob": "47db88c662bc5e23fe1c8f1955359fb6935ff4b9"
+  },
+  "original_native_tool": "binary_read",
+  "no_native_read_resubmission": true,
+  "status_observations": [
+    {
+      "request": {
+        "operation_id": "79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2"
+      },
+      "sdk": {
+        "path": "errors/status-attempt-01.original.sdk.json",
+        "bytes": 248,
+        "sha256": "b85d625e0a8999ce34020675f0a2f8ba093e807dc725c16053a63c92fbbc9c70",
+        "blob": "0cede4881f37869cfd279b69b738c87eb62b4889"
+      },
+      "native": {
+        "path": "errors/status-attempt-01.original.txt",
+        "bytes": 152,
+        "sha256": "2395b66a6a6b772851af42e65f4f859c26c316cf1824099405ab805caf337478",
+        "blob": "b9e4761d70f7a3086ee8d571cfba3cea9fbdf487"
+      }
+    },
+    {
+      "request": {
+        "path": "reads/result-body/status-later-01.request.json",
+        "bytes": 89,
+        "sha256": "7d03b667a86ca39a922aaabe2eb89023a75231e32364d221d3f30c849129c0f9",
+        "blob": "7d5ca953cd6f6a13da4b63ddf1adb3616e9f322a"
+      },
+      "sdk": {
+        "path": "reads/result-body/status-later-01.original.sdk.json",
+        "bytes": 248,
+        "sha256": "b85d625e0a8999ce34020675f0a2f8ba093e807dc725c16053a63c92fbbc9c70",
+        "blob": "0cede4881f37869cfd279b69b738c87eb62b4889"
+      },
+      "native": {
+        "path": "reads/result-body/status-later-01.original.json",
+        "bytes": 152,
+        "sha256": "2395b66a6a6b772851af42e65f4f859c26c316cf1824099405ab805caf337478",
+        "blob": "b9e4761d70f7a3086ee8d571cfba3cea9fbdf487"
+      }
+    }
+  ],
+  "closure": "UNKNOWN",
+  "original_export_authority": "succeeded exit0 complete durable",
+  "remaining": [
+    "original retained body payload not obtained",
+    "owned_future_active not observed",
+    "bundle-info not submitted"
+  ],
+  "current_tool_call_active": false,
+  "product_or_native_read_replayed": false
+}

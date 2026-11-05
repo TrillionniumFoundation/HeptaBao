@@ -1,0 +1,182 @@
+{
+  "schema": "heptabao.mac-public-harness-sdk-exact-readset.r1",
+  "authorization": "Root collaboration message authorizes these exact three public SDK files via operation_start stable keys, info then version-pinned whole binary_read; no process_start or SDK execution.",
+  "originRuntimeStdoutBlob": "bdde97e2ec7a167619ea24b0ce9660086e81ebce",
+  "itemCount": 3,
+  "totalBytes": 682650,
+  "bodyChunks": 13,
+  "maxBinaryChunk": 65536,
+  "maxOperationResultChunk": 16384,
+  "oneOperationInFlight": true,
+  "wholeHashesMustMatchBeforeUse": true,
+  "actualVersionsComeFromEachSuccessfulInfo": true,
+  "oldIdentityRecordedNotReinterpretedAsCurrentBeforeInfo": true,
+  "unknownReconcileSameTypedKeyOnly": true,
+  "noDirectoryScan": true,
+  "noPrivateFiles": true,
+  "noSdkImport": true,
+  "noSubprocessStart": true,
+  "scheduling": "Only 3 info after HA releases its existing metadata; body reads wait a later explicit window.",
+  "items": [
+    {
+      "name": "loader",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/runtime-registry-loader-Duw3fvRO.js",
+      "bytes": 6047,
+      "sha256": "bd6a9f363bc7aac2fb0503640e339ffce52e0eab15336e6489b6f8129df748fb",
+      "originRecord": {
+        "bytes": 6047,
+        "cap": 268435456,
+        "identity": [
+          "16777233",
+          "405239125",
+          "501",
+          "80",
+          "33188",
+          "1",
+          "6047",
+          "1784843462897326061",
+          "1784843462897326061"
+        ],
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/runtime-registry-loader-Duw3fvRO.js",
+        "private": false,
+        "sha256": "bd6a9f363bc7aac2fb0503640e339ffce52e0eab15336e6489b6f8129df748fb"
+      },
+      "infoRequest": {
+        "idempotency_key": "heptabao-mac-harness-sdk-info-loader-bd6a9f36-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/runtime-registry-loader-Duw3fvRO.js"
+          }
+        }
+      },
+      "bodyOffsets": [
+        {
+          "offset": 0,
+          "limit": 6047
+        }
+      ]
+    },
+    {
+      "name": "selector",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+      "bytes": 673468,
+      "sha256": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66",
+      "originRecord": {
+        "bytes": 673468,
+        "cap": 268435456,
+        "identity": [
+          "16777233",
+          "405239260",
+          "501",
+          "80",
+          "33188",
+          "1",
+          "673468",
+          "1784843463381890779",
+          "1784843463381890779"
+        ],
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+        "private": false,
+        "sha256": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66"
+      },
+      "infoRequest": {
+        "idempotency_key": "heptabao-mac-harness-sdk-info-selector-ccff1311-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js"
+          }
+        }
+      },
+      "bodyOffsets": [
+        {
+          "offset": 0,
+          "limit": 65536
+        },
+        {
+          "offset": 65536,
+          "limit": 65536
+        },
+        {
+          "offset": 131072,
+          "limit": 65536
+        },
+        {
+          "offset": 196608,
+          "limit": 65536
+        },
+        {
+          "offset": 262144,
+          "limit": 65536
+        },
+        {
+          "offset": 327680,
+          "limit": 65536
+        },
+        {
+          "offset": 393216,
+          "limit": 65536
+        },
+        {
+          "offset": 458752,
+          "limit": 65536
+        },
+        {
+          "offset": 524288,
+          "limit": 65536
+        },
+        {
+          "offset": 589824,
+          "limit": 65536
+        },
+        {
+          "offset": 655360,
+          "limit": 18108
+        }
+      ]
+    },
+    {
+      "name": "registry",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-DtLZ3rba.js",
+      "bytes": 3135,
+      "sha256": "a845875a1998c2a6bdd9fe4c824a0a7c3e7da0f3ee75ec56dc6163d4327f7ff0",
+      "originRecord": {
+        "bytes": 3135,
+        "cap": 268435456,
+        "identity": [
+          "16777233",
+          "405238784",
+          "501",
+          "80",
+          "33188",
+          "1",
+          "3135",
+          "1784843461892399454",
+          "1784843461892399454"
+        ],
+        "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-DtLZ3rba.js",
+        "private": false,
+        "sha256": "a845875a1998c2a6bdd9fe4c824a0a7c3e7da0f3ee75ec56dc6163d4327f7ff0"
+      },
+      "infoRequest": {
+        "idempotency_key": "heptabao-mac-harness-sdk-info-registry-a845875a-20261105-r1",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "mac",
+            "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-DtLZ3rba.js"
+          }
+        }
+      },
+      "bodyOffsets": [
+        {
+          "offset": 0,
+          "limit": 3135
+        }
+      ]
+    }
+  ]
+}

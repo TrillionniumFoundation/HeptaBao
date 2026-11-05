@@ -1,0 +1,6 @@
+{
+  "cmd": "python3 -I -S -B /tmp/heptabao_auth_renewal_peer_r1/verify.py",
+  "workdir": "/tmp",
+  "yield_time_ms": 10000,
+  "max_output_tokens": 6000
+}

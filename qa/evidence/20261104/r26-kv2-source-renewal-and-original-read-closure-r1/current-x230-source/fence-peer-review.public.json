@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.current-x230-relay-effect-fence-independent-source-review.r1",
+  "reviewer": "authbus_migration",
+  "scope": "Four new read-only effect-fence helpers and their admission / endpoint / final cleanup call sites in the single current relay source.",
+  "conclusion": "NO_NEW_SOURCE_BLOCKER_IN_REVIEWED_SCOPE",
+  "hostExecution": false,
+  "sourceTree": "49942321c517ac522988e3f4df4eb79e3bb3a6d7",
+  "candidate": {
+    "bytes": 24875,
+    "sha256": "d230a0fddaa18d1feb05cac8d598111ee43b1383e67885d0c95044b8d39689ac",
+    "blob": "d60bed4f99d11be06ed1395b35dbf4480fb53621"
+  },
+  "before": {
+    "bytes": 21085,
+    "sha256": "732fa7e74d859c48cd3844967409254e6f7cd44d4ceb148a20d2ea89ed07388f",
+    "blob": "b076da8a629694e0dc988c57c13e03fa1b2ec548"
+  },
+  "diff": {
+    "bytes": 16716,
+    "sha256": "4779b00395f5531d73e631d8facff37bd2d09129e5c3a478798d8c590cbf64be",
+    "blob": "aa4b87943600a7a216f62c15f541bbf477fc69c9"
+  },
+  "strictWholeReconstruction": {
+    "hunks": 6,
+    "exact": true
+  },
+  "legacyTopLevelFunctionByteComparison": {
+    "names": [
+      "signal_handler",
+      "remaining",
+      "identity",
+      "stable",
+      "fsync_dir",
+      "create",
+      "public",
+      "snapshot",
+      "stop_active",
+      "log_file",
+      "start_child",
+      "wait_child",
+      "read_log",
+      "known_hosts_state",
+      "inspect_config",
+      "remote_command",
+      "binding_ready"
+    ],
+    "allUnchanged": false,
+    "newNames": [
+      "fence_open_fd",
+      "verify_effect_fence",
+      "acquire_effect_fence",
+      "close_effect_fence"
+    ]
+  },
+  "referenceActuals": {
+    "marker": {
+      "bytes": 2709,
+      "sha256": "69a6a00997c2165414238ad27b699b34aab569ef003a579c0e568ea8d272ee33",
+      "blob": "57e60bde940b51814c47af72fd3b1880cc8cb41e"
+    },
+    "independentFileInfo": {
+      "bytes": 492,
+      "sha256": "977ce381866ad55bb5412e3aece9f0e93688eb426626b58d67d197efc3c080ea",
+      "blob": "f57a98ee20a392f0646a10cfdf12c6945c967b7c"
+    },
+    "closedFenceResult": {
+      "bytes": 11422,
+      "sha256": "e712045479eda6e2cc5f8da6ca748fd982d2ae873fb6fed62a4bf91b565a6bd2",
+      "blob": "cd41a1a2ec255437d3dad7e1396964302bbe5c47"
+    }
+  },
+  "findings": [
+    "All 24,875 candidate bytes were read. The published six-hunk diff strictly reconstructs these exact bytes from the 21,085-byte original. Sixteen legacy function definitions remain byte-identical; binding_ready changes the required unresolved provenance label. The four added helpers were reviewed in their complete caller context.",
+    "acquire_effect_fence opens only the fixed BASE, its fixed old relay ROOT, and the fixed marker. O_DIRECTORY and O_NOFOLLOW constrain directory opens; the marker additionally uses O_NONBLOCK. These three read-only descriptors remain registered across new transport work.",
+    "fence_open_fd increments protected before remaining/open/registration. A signal deferred during open is checked after descriptor registration; the surrounding top-level finally closes registered descriptors. close_effect_fence sets its once-attempt marker inside protected before os.close, records any exception and never retries a consumed descriptor number.",
+    "verify_effect_fence compares held BASE and named BASE on dev/ino/uid/gid/full mode only, deliberately excluding mutable directory nlink/size/times. The old ROOT and marker retain all nine identity fields. The reference actual result uses the final root identity after marker publication, not the earlier root-at-mkdir timestamp.",
+    "The actual marker raw SHA/bytes and independent version match the fixed 2,709-byte marker. Every verification seeks the held marker to zero, reads at most expected size plus one, checks EOF and whole SHA, and repeats held/named full9 checks for marker and ROOT plus first5 for BASE. Unsafe nanosecond identity tokens were compared as original decimal strings rather than through JavaScript numbers.",
+    "The first successful fence verification precedes new ROOT.mkdir. The second verification occurs after strict SSH preflight and before the two transport endpoints. The final verification occurs after existing owned cleanup, before once-closing the three fence descriptors. Any missing verification, close error, signal, owned cleanup failure or original 300-second deadline failure forces failed status.",
+    "No helper writes/deletes the old ROOT or marker, signals the old job, or resolves its UNKNOWN state. The new ROOT remains create-only and an existing entry/race is rejected by the unchanged mkdir path. New actual file slots remain None and BINDING_READY remains False.",
+    "These are sequential held/named observations, not an atomic filesystem reservation spanning every instruction. Late synchronous returns are refused by the original remaining/final deadline guards; no syscall preemption claim is made."
+  ],
+  "validationLimits": [
+    "Pure Git/V8 byte and source review only; no host access, Python import/AST execution, real FD, child, SSH, transfer or test run.",
+    "The author's 70 selected checks were not rerun or adopted as independent runtime evidence.",
+    "This narrow review does not grant execution, bind the seven actual artifacts, review the complete receiver/sender anew, or alter any earlier UNKNOWN/FAIL."
+  ],
+  "originalBudgetsPreserved": {
+    "parent": 300,
+    "sender": 90,
+    "receiver": 300,
+    "clone": 90,
+    "git": 60,
+    "cleanupTerm": 5,
+    "cleanupKill": 5
+  }
+}

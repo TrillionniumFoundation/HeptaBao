@@ -1,0 +1,102 @@
+{
+  "schema": "heptabao.mac47-original-operations-root-review.r1",
+  "status": "PASS_WHOLE_ARCHIVE_AND_ORIGINAL_READ_CHAINS_ONLY",
+  "source_tree": "9885e4b01cbfbab50348cca9b2f9bcd172b37290",
+  "whole": {
+    "files": 560,
+    "bytes": 4030291,
+    "merkle": {
+      "root_sha": "9885e4b01cbfbab50348cca9b2f9bcd172b37290",
+      "trees_verified": 281
+    }
+  },
+  "checks": 2237,
+  "passed": true,
+  "operations": 47,
+  "original_observations": 230,
+  "successful_immutable_pages": 135,
+  "preserved_failed_pages": 1,
+  "coverage": [
+    {
+      "file": 0,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/normal-release-build.stdout",
+      "version": "16777244:72626337:440534:1793876825836663089:1793876825836663089",
+      "file_bytes": 440534,
+      "covered_bytes": 440534,
+      "chunks": 27,
+      "covered_sha256": "8dc68d2435e0c431df2f153d7125ab841427265e987726cfbfa6280dc05dddd6",
+      "complete": true
+    },
+    {
+      "file": 1,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+      "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+      "file_bytes": 438208,
+      "covered_bytes": 327680,
+      "chunks": 20,
+      "covered_sha256": "5aae5d1ea3a3c7bd4b4a23b2b679e84d2afeef2a688add877acf0648fbfcdf53",
+      "complete": false
+    }
+  ],
+  "remaining_plan": [
+    {
+      "file": 1,
+      "offset": 327680,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+      "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+      "limit": 16384
+    },
+    {
+      "file": 1,
+      "offset": 344064,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+      "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+      "limit": 16384
+    },
+    {
+      "file": 1,
+      "offset": 360448,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+      "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+      "limit": 16384
+    },
+    {
+      "file": 1,
+      "offset": 376832,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+      "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+      "limit": 16384
+    },
+    {
+      "file": 1,
+      "offset": 393216,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+      "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+      "limit": 16384
+    },
+    {
+      "file": 1,
+      "offset": 409600,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+      "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+      "limit": 16384
+    },
+    {
+      "file": 1,
+      "offset": 425984,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1/build.stdout",
+      "version": "16777244:72626769:438208:1793877277217169751:1793877277217169751",
+      "limit": 12224
+    }
+  ],
+  "historical_direct_rpc_unknowns_preserved": true,
+  "new_runtime_requests": 0,
+  "new_business_requests": 0,
+  "full_second_cargo_log": false,
+  "full_product_qualification": false,
+  "limitations": [
+    "This verifies immutable reads of public Cargo logs and their original SDK chain, not a new product execution.",
+    "Second Cargo log remains incomplete: 327680 of 438208 bytes; seven fixed reads are still unsubmitted.",
+    "Two earlier direct binary-read RPC unknowns and one failed immutable page remain historical observations."
+  ]
+}

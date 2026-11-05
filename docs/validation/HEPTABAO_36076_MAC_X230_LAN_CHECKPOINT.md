@@ -1,5 +1,51 @@
 # HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
 
+## 当前 R26：KV2 路由复核、续期证据增量与原始读取归档
+
+状态截点 **2026-11-05T14:04:34Z**。当前产品仍是 `4e808d0ecb1bcded22870a7ec960dfb2491cf6ec` / `eba5e650bd080b8ad41ea52a2bc68867f541d255`，Draft PR #159 未合并。**完整替代 OpenBao 2.7.1 仍未达标；逐台正式切流和旧版清理条件均未满足。** 本轮补齐可核查的读取原件、修正部署与续期验证源码，不把源码审查计作真实凭证、恢复或 HA 通过。
+
+[机器状态](../../qa/evidence/20261104/r26-kv2-source-renewal-and-original-read-closure-r1/state.public.json) · [完整清单](../../qa/evidence/20261104/r26-kv2-source-renewal-and-original-read-closure-r1/manifest.public.json)。本轮冻结 **11 个完整归档包、791 份分包文件、6,226,961 B**，另含根审、独立交叉审查及上一轮发布回执。文件完整字节、SHA-256、Git blob 与目录 Merkle 均核验。包内的“部分实际结果”仍是部分结果；SOURCE-only 仍未运行。以下以截点所列不可变对象为准，截点后的同 ID 对账进入下一轮。
+
+### 已取得的实际证据与边界
+
+| 项目 | 已证事实 | 仍缺的证据 |
+|---|---|---|
+| Mac normal61 原始日志 | 原61项通过保持；47个读取操作的560份原件完整，47 ACK、47 closed status、135成功 immutable页重建；根审2237项均通过 | 第一份Cargo日志27/27块完整；第二份20/27块、327680/438208 B，余7块未提交。两次历史直接RPC不确定性和一个原结果页超时原样保留 |
+| 当前 normal5 控制源码发布 | 唯一任务 `1a1abd1f635-fc05-50c9` exit0/full/durable，stdout1520 B/stderr0；三份公开源码仅发布并compile检查。sender独立info闭合；根审57项、peer175项 | 其余3个独立info与4份正文均未提交；无relay GO，无产品或LAN执行资格；该发布器没有逐FD台账，不补造台账 |
+| ROG 当前 canonical 导出 | 唯一任务 `1a1abe371de-fc05-5122` exit0/full/durable，完整534/0双流；原终端报告exported、owned stopped与原期限内发布；独立回执info为39692 B | 本截点归档中的原body-read79cdb…尚未取得正文，2次status与1次page超时原件全部保留。bundle-info与27命令的81份记录/流未提交；carrier/importer仍未绑定 |
+| Mac SDK 元数据 | 三份公开loader/selector/registry的独立版本、大小和SHA与原捕获一致，3操作均closed，根审35项通过 | 13条固定正文请求只冻结未提交，总682650 B；未执行SDK，未观察5个agent实际selected owner |
+| 控制器连接 | 首次本地effective_config也超时，后一次仅本地公开DTO已返回；两次原SDK分开保存 | 本地DTO不证明任何目标主机可达，不自行关闭原body-read。只释放原ID对账窗口，未重发exporter或binary_read |
+
+[Mac原件根审](../../qa/evidence/20261104/r26-kv2-source-renewal-and-original-read-closure-r1/mac-cargo47/root-review.public.json) · [normal5根审](../../qa/evidence/20261104/r26-kv2-source-renewal-and-original-read-closure-r1/partial-and-renewal/normal-root-review.public.json) · [export读取链根审](../../qa/evidence/20261104/r26-kv2-source-renewal-and-original-read-closure-r1/partial-and-renewal/exporter-root-review.public.json) · [连接复查](../../qa/evidence/20261104/r26-kv2-source-renewal-and-original-read-closure-r1/runtime-connection/recheck-observation.public.json)。
+
+### 本轮已完成的源码工作
+
+**KV2 当前路由校准。** 对当前canonical的13份文件逐字核SHA并作重点路径检查，确认active-native全历史写入与native-large HA接入代码已经存在。普通小JSON active-native导入仍受root/单节点限制；large路径包含HA读证明、finalization、提交与最终交付边界。当前large上限为64 MiB包、4 MiB记录、4194304语法节点、深度128。旧文档中的“尚无active writer”“HA一律拒绝”等描述不能作为当前缺失实现的证据。该结论仅为源码路径检查，当前候选34 MiB迁移、save/restore、cold读与回滚实际闭环仍待执行。[完整路径说明](../../qa/evidence/20261104/r26-kv2-source-renewal-and-original-read-closure-r1/current-kv2-route-map.public.json)。
+
+**续期验证增量。** 四个最小hunk把原单次token文件读取移到KV观察前，各增加一次pre/post lookup-self；绑定同一token、accessor与creation identity，核TTL/实际到期时间。原空JSON renew、revoke204与撤销后403保留，原HTTP10、共享900秒等预算没有扩展或重置。到期时间相同或下降时先完成原撤销和两次inverse，再报告未证延长；200响应本身不够。公开报告仅含数值、枚举和身份一致布尔，不导出token或accessor。作者8组纯mock、独立28项AST检查及根四hunk正逆核验通过；**未运行完整模块、未建立新运行根或请求，BINDING_READY=False，selected-owner问题仍未解决**。[候选合同](../../qa/evidence/20261104/r26-kv2-source-renewal-and-original-read-closure-r1/authbus-renewal-unbound-source/CONTRACT.public.json) · [独立审查](../../qa/evidence/20261104/r26-kv2-source-renewal-and-original-read-closure-r1/authbus-renewal-independent-peer/review.public.json)。
+
+**Mac外接盘部署提案修正。** Mac服务、二进制、配置、数据和备份提案统一落到 `/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-authbus-registration-r1`；home下的client credential generation位置保留。历史T5 UUID已绑定，12个Mac投影字段变更，其他主机提案不变。该修改仍需真实新根、issuer/cluster/CA/AppRole/Policy和注册回执验证，不能以历史磁盘观察替代当前准入。[根审](../../qa/evidence/20261104/r26-kv2-source-renewal-and-original-read-closure-r1/authbus-p01-t5/root-review.public.json)。
+
+**X230 当前候选运输源码。** 五份源码已完成当前候选迁移与原差分正逆核验，原期限保持；新的relay在新ROOT建立前、端点启动前及清理后检查固定旧UNKNOWN命名空间与marker，三个只读FD保持至原收尾。该保护是顺序held/named观察，未宣称跨所有指令的原子保留。7个实际输入槽仍为空，无冻结可执行请求或GO；旧relay `1a1aa57458d-fc05-4156` 仍为UNKNOWN。[根审](../../qa/evidence/20261104/r26-kv2-source-renewal-and-original-read-closure-r1/current-x230-source/root-review.public.json) · [独立围栏审查](../../qa/evidence/20261104/r26-kv2-source-renewal-and-original-read-closure-r1/current-x230-source/fence-peer-review.public.json)。
+
+### 五道门槛仍按实际结果判定
+
+1. **KV2：** 当前4e808的正式34 MiB历史迁移、持久化、snapshot save/restore、重启cold读与回滚必须全部实际闭合。
+2. **HA：** 当前Mac/ROG/Pocket4真实断主、自然选主、ReadIndex和重启仍未运行；上一候选df026的物理LAN是91/98、post-cold0/12失败，保持失败，不能由两平台normal61替代。
+3. **AuthBus：** 原Mac隔离WAL任务为明确exit1，触发actual_finite_harness_code_root；失败原件与清理已完整归档。公开诊断显示两个enabled owner中的一个不满足原命名空间条件，但5个agent的实际selected owner仍未知，不能据此跳过检查。还需不依赖J3160的真实可信凭证和完整TLS/AppRole/KV/Policy/续期/撤销证据。
+4. **逐台切换：** 各机当前真实凭证读写、重启及回滚尚未全部合格，Pocket4 manager与X230当前消费者范围仍待核，正式流量保持未切换。
+5. **旧版清理：** 所有客户端、所有备份路径和OpenBao2.7.1原生功能范围尚未全部完成迁移。旧服务、二进制及中间资产暂未删除；清理只在这些条件满足后执行。
+
+官方2.7.1源码清单已固定，但词法423声明、720操作等数量不是运行兼容率分母。JWT/Kubernetes/OIDC/MFA、外部动态租约与副作用、PKI/外部密钥托管、系统生命周期和插件等原生owner门槛仍列在机器状态中，既有保护不得移除来制造通过。
+
+### 接续顺序
+
+先完成原79cdb…同ID对账并保存原页，再分配有界读取窗口：三份SDK的13条固定正文、normal5剩余独立info/正文、当前export bundle/原命令流。随后完成canonical carrier/import、LAN准备、X230实际绑定与正式34 MiB/凭证/恢复验证。任何原UNKNOWN不换key重放，产品与QA工具资格不互相转移，原期限不放宽。本检查点完整保留上一轮正文及JSON历史。
+
+---
+
+# HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
+
 ## 当前 R25：两平台 61 项核心通过；Mac 准入失败已定位，当前产物与源码分发继续推进
 
 状态截点 **2026-11-05T13:20:28Z**。当前候选为 `4e808d0ecb1bcded22870a7ec960dfb2491cf6ec`，树 `eba5e650bd080b8ad41ea52a2bc68867f541d255`。**完整替代 OpenBao 2.7.1 仍未达标；没有正式切流，也没有清理旧服务、二进制或备份资产。** 本轮仅追加证据并更新两个状态文档，不修改产品源码。

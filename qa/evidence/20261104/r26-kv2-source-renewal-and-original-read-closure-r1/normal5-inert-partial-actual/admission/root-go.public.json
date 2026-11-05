@@ -1,0 +1,55 @@
+{
+  "schema": "heptabao.root.normal5-current-single-inert-go.r1",
+  "decision": "GO_ONE_EXACT_INERT_PROCESS_START",
+  "request": {
+    "path": "dispatch/inert.request.json",
+    "blob": "2f19e131dd373e7bbb7e16977c4829dae70dcbd0",
+    "bytes": 50263,
+    "sha256": "ff4a8538f070960dc0f71330fc5e3181359c8b535ec3c49170d4233fa903aaee",
+    "mode": "100644",
+    "idempotency_key": "heptabao-4e808-normal5-controls-inert-r1-895d6cc9",
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 60
+  },
+  "rootReview": {
+    "name": "r25-normal5-bound-root-review.public.json",
+    "blob": "60adf9e31d99d260984864884e553147767ce48f",
+    "bytes": 24904,
+    "sha256": "e0b4518461f0c2e531380f96f44718446fc1455c89caca2e4cb2a0eb72c4ac11"
+  },
+  "sourceTree": "1c48f9519ce6d13dbe2f4484db279102c9e33676",
+  "scope": {
+    "createOnlyDirectory": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1",
+    "files": [
+      "sender.py",
+      "receiver.py",
+      "relay.py",
+      "inert-stage.result.public.json"
+    ],
+    "compileOnly": true,
+    "transport": false,
+    "Git": false,
+    "compiler": false,
+    "service": false,
+    "productExecution": false,
+    "oldUnknownReplay": false
+  },
+  "protocol": [
+    "Wait for current short readonly window to close if the shared runtime host channel is occupied.",
+    "Persist exact independent external intent before one submit.",
+    "Save original ACK externally before parse; reconcile only original job.",
+    "Whole original stdout/stderr, authority and independent four files metadata/body readback before transport GO."
+  ],
+  "originalCaps": {
+    "outerSeconds": 60,
+    "payloadBytes": 262144
+  },
+  "futureRelay": {
+    "reviewedSourceOnly": true,
+    "notAuthorized": true,
+    "request": "337709a2869237259b8576b63623e7b74f138fb8"
+  },
+  "fullReplacement": false
+}

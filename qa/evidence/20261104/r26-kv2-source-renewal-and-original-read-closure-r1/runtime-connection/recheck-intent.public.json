@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.runtime-public-local-readiness-recheck-intent.r1",
+  "at_utc": "2026-11-05 14:00:07 UTC",
+  "tool": "heptaruntime_mac_controller.effective_config",
+  "arguments": {},
+  "scope": "One controller-local read-only public DTO after source review; no SSH, process launch, configuration mutation or business replay.",
+  "prior_probe": "3e5f39d4804a13f86d7e4ac0e311907947a79371",
+  "all_agents_still_paused": true,
+  "no_other_runtime_calls_in_flight": true,
+  "submit_once": true,
+  "on_transport_error": "Preserve exact SDK and connection blocker; no automatic retry.",
+  "on_success": "Close original unresolved operation79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2 by same ID before admitting new host work."
+}

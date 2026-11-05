@@ -1,0 +1,7 @@
+{
+  "chunk_id": "bab23b",
+  "wall_time_seconds": 0.183597428,
+  "exit_code": 0,
+  "original_token_count": 101,
+  "output": "{\"actual_candidate_modules_executed\": 0, \"actual_native_descriptors\": 0, \"check_count\": 70, \"children\": 0, \"fake_os\": true, \"old_unknown_replayed\": false, \"product_calls\": 0, \"python_sources_compiled_only\": 5, \"remote_host_calls\": 0, \"schema\": \"heptabao.current4e808-x230-source-selected-checks.v1\", \"selected_actual_functions_only\": true, \"status\": \"passed\", \"test_denominators_31_69_preserved\": true}\n"
+}

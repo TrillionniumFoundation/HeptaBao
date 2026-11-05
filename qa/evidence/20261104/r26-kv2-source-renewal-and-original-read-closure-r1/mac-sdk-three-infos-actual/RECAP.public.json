@@ -1,0 +1,188 @@
+{
+  "schema": "heptabao.mac-public-sdk-three-info-actual.r1",
+  "qualification": "THREE_FIXED_PUBLIC_SOURCE_INFOS_ONLY",
+  "checksPassed": 36,
+  "checks": [
+    {
+      "case": "known_complete.loader",
+      "passed": true
+    },
+    {
+      "case": "typed_exact_info.loader",
+      "passed": true
+    },
+    {
+      "case": "unique_ack.loader",
+      "passed": true
+    },
+    {
+      "case": "completed_operation.loader",
+      "passed": true
+    },
+    {
+      "case": "immutable_result_closed.loader",
+      "passed": true
+    },
+    {
+      "case": "payload_exact_bytes.loader",
+      "passed": true
+    },
+    {
+      "case": "original_info_success.loader",
+      "passed": true
+    },
+    {
+      "case": "actual_whole_code_pin.loader",
+      "passed": true
+    },
+    {
+      "case": "historical_nine_binding_matches.loader",
+      "passed": true
+    },
+    {
+      "case": "mcp_native_exact.loader.ack",
+      "passed": true
+    },
+    {
+      "case": "mcp_native_exact.loader.status",
+      "passed": true
+    },
+    {
+      "case": "mcp_native_exact.loader.result",
+      "passed": true
+    },
+    {
+      "case": "known_complete.selector",
+      "passed": true
+    },
+    {
+      "case": "typed_exact_info.selector",
+      "passed": true
+    },
+    {
+      "case": "unique_ack.selector",
+      "passed": true
+    },
+    {
+      "case": "completed_operation.selector",
+      "passed": true
+    },
+    {
+      "case": "immutable_result_closed.selector",
+      "passed": true
+    },
+    {
+      "case": "payload_exact_bytes.selector",
+      "passed": true
+    },
+    {
+      "case": "original_info_success.selector",
+      "passed": true
+    },
+    {
+      "case": "actual_whole_code_pin.selector",
+      "passed": true
+    },
+    {
+      "case": "historical_nine_binding_matches.selector",
+      "passed": true
+    },
+    {
+      "case": "mcp_native_exact.selector.ack",
+      "passed": true
+    },
+    {
+      "case": "mcp_native_exact.selector.status",
+      "passed": true
+    },
+    {
+      "case": "mcp_native_exact.selector.result",
+      "passed": true
+    },
+    {
+      "case": "known_complete.registry",
+      "passed": true
+    },
+    {
+      "case": "typed_exact_info.registry",
+      "passed": true
+    },
+    {
+      "case": "unique_ack.registry",
+      "passed": true
+    },
+    {
+      "case": "completed_operation.registry",
+      "passed": true
+    },
+    {
+      "case": "immutable_result_closed.registry",
+      "passed": true
+    },
+    {
+      "case": "payload_exact_bytes.registry",
+      "passed": true
+    },
+    {
+      "case": "original_info_success.registry",
+      "passed": true
+    },
+    {
+      "case": "actual_whole_code_pin.registry",
+      "passed": true
+    },
+    {
+      "case": "historical_nine_binding_matches.registry",
+      "passed": true
+    },
+    {
+      "case": "mcp_native_exact.registry.ack",
+      "passed": true
+    },
+    {
+      "case": "mcp_native_exact.registry.status",
+      "passed": true
+    },
+    {
+      "case": "mcp_native_exact.registry.result",
+      "passed": true
+    }
+  ],
+  "sourceBytesSum": 682650,
+  "items": [
+    {
+      "name": "loader",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/runtime-registry-loader-Duw3fvRO.js",
+      "bytes": 6047,
+      "sha256": "bd6a9f363bc7aac2fb0503640e339ffce52e0eab15336e6489b6f8129df748fb",
+      "infoBlob": "5a95153882bce136e65036c0d6430fbff7987628",
+      "operationId": "209a503775f2cff5e20c8e704166695a35b59d062b6346184c3794ce2d3b6c89",
+      "actualVersion": "16777233:405239125:6047:1784843462897326061:1784843462897326061"
+    },
+    {
+      "name": "selector",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+      "bytes": 673468,
+      "sha256": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66",
+      "infoBlob": "74c95b75092f5884cf30037578edd4f1c54cd55b",
+      "operationId": "38c5ab5c404a947294d50550d13d7ed178db3587055e46479f0eab5d5951ff00",
+      "actualVersion": "16777233:405239260:673468:1784843463381890779:1784843463381890779"
+    },
+    {
+      "name": "registry",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/registry-DtLZ3rba.js",
+      "bytes": 3135,
+      "sha256": "a845875a1998c2a6bdd9fe4c824a0a7c3e7da0f3ee75ec56dc6163d4327f7ff0",
+      "infoBlob": "4866c9770b983dc8ee2ead57ae4e801c58b9ebf7",
+      "operationId": "ec383dfc795d90e4e100b9b8430f401f54c6781096ac2e812e0dc57a703fc619",
+      "actualVersion": "16777233:405238784:3135:1784843461892399454:1784843461892399454"
+    }
+  ],
+  "allOperationsCompletedAndOwnedFutureInactive": true,
+  "binaryReadOperationsSubmitted": 0,
+  "sdkCodeExecuted": false,
+  "selectedHarnessObserved": false,
+  "currentProductQualification": false,
+  "oldUnknownsChanged": false,
+  "publicRawBodiesStillPendingSeparateWindow": true
+}

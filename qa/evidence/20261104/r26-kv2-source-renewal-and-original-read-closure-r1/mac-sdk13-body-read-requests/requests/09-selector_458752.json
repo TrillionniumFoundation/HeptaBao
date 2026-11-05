@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-mac-harness-sdk-body-selector-ccff1311-o458752-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "mac",
+      "path": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+      "expected_version": "16777233:405239260:673468:1784843463381890779:1784843463381890779",
+      "offset": 458752,
+      "limit": 65536
+    }
+  }
+}

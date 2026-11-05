@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.current-normal5-inert-actual-partial.v1",
+  "status": "INERT_ACTUAL_SUCCESS_INDEPENDENT_READBACK_PARTIAL",
+  "scope": "create-only three public Python control sources plus one public receipt; compile-only",
+  "job_id": "1a1abd1f635-fc05-50c9",
+  "request_git_blob": "2f19e131dd373e7bbb7e16977c4829dae70dcbd0",
+  "request_sha256": "ff4a8538f070960dc0f71330fc5e3181359c8b535ec3c49170d4233fa903aaee",
+  "root_go_git_blob": "eca93bc6fde759e36818fed839bd1957d53a947f",
+  "authority": {
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "timed_out": false
+  },
+  "elapsed_ns": "72037986",
+  "source_publications_reported": 3,
+  "independent_infos_completed": 1,
+  "independent_bodies_completed": 0,
+  "remaining_infos_not_submitted": [
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/receiver.py",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/relay.py",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/inert-stage.result.public.json"
+  ],
+  "remaining_whole_bodies_not_submitted": [
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/sender.py",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/receiver.py",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/relay.py",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1/inert-stage.result.public.json"
+  ],
+  "fixed_body_observation_operation_not_submitted": true,
+  "all_independent_readbacks_complete": false,
+  "relay_go": false,
+  "relay_submitted": false,
+  "lan_inert_separately_authorized_but_not_submitted": true,
+  "product_or_lan_runtime_qualification": false,
+  "explicit_fd_ledger_present": false,
+  "fd_scope_note": "Authority exit 0 and successful source-defined close/finally paths are available; this carrier emits no per-FD ledger and this packet invents none.",
+  "transport_pause": "Runtime MCP observations, including controller-local effective_config, have timed out on other lines. No new Runtime request is authorized during the current pause; their historical uncertainties are not changed by this packet.",
+  "checks": 24,
+  "checks_passed": true
+}

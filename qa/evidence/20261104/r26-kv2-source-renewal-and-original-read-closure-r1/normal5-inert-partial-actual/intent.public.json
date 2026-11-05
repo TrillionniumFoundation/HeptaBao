@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.4e808-normal5-inert-external-intent.v1",
+  "intent_state": "RECORDED_BEFORE_SUBMISSION",
+  "request_blob": "2f19e131dd373e7bbb7e16977c4829dae70dcbd0",
+  "request_sha256": "ff4a8538f070960dc0f71330fc5e3181359c8b535ec3c49170d4233fa903aaee",
+  "source_tree": "1c48f9519ce6d13dbe2f4484db279102c9e33676",
+  "root_go_blob": "eca93bc6fde759e36818fed839bd1957d53a947f",
+  "host": "desktop",
+  "idempotency_key": "heptabao-4e808-normal5-controls-inert-r1-895d6cc9",
+  "outer_seconds": 60,
+  "source_publication_only": true,
+  "transport": false,
+  "product_execution": false,
+  "existing_unknown_replay": false,
+  "readonly_window_explicitly_returned_by_compat": true,
+  "submit_once": true,
+  "unknown_requires_reconciliation_not_replay": true
+}

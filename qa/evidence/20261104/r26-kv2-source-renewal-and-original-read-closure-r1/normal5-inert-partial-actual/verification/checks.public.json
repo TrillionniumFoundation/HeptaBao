@@ -1,0 +1,100 @@
+{
+  "checks": [
+    {
+      "name": "external_intent_persisted_before_unique_start",
+      "passed": true
+    },
+    {
+      "name": "single_ack_bound_to_exact_request",
+      "passed": true
+    },
+    {
+      "name": "authority_same_job",
+      "passed": true
+    },
+    {
+      "name": "authority_success_full_durable",
+      "passed": true
+    },
+    {
+      "name": "same_stream_job",
+      "passed": true
+    },
+    {
+      "name": "stdout_whole_hex_text",
+      "passed": true
+    },
+    {
+      "name": "stderr_whole_hex_text",
+      "passed": true
+    },
+    {
+      "name": "inert_success_schema",
+      "passed": true
+    },
+    {
+      "name": "no_source_or_build_or_transfer_or_service",
+      "passed": true
+    },
+    {
+      "name": "reported_elapsed_positive_below_outer60",
+      "passed": true
+    },
+    {
+      "name": "three_exact_source_publications",
+      "passed": true
+    },
+    {
+      "name": "reported_source0_matches_frozen_bytes",
+      "passed": true
+    },
+    {
+      "name": "reported_source1_matches_frozen_bytes",
+      "passed": true
+    },
+    {
+      "name": "reported_source2_matches_frozen_bytes",
+      "passed": true
+    },
+    {
+      "name": "info0_operation_closed",
+      "passed": true
+    },
+    {
+      "name": "info0_page_0",
+      "passed": true
+    },
+    {
+      "name": "info0_payload_whole",
+      "passed": true
+    },
+    {
+      "name": "info0_exact_full9",
+      "passed": true
+    },
+    {
+      "name": "info0_whole_sha_mode_uid_gid_links",
+      "passed": true
+    },
+    {
+      "name": "info1_not_submitted",
+      "passed": true
+    },
+    {
+      "name": "info2_not_submitted",
+      "passed": true
+    },
+    {
+      "name": "info3_not_submitted",
+      "passed": true
+    },
+    {
+      "name": "four_body_read_not_submitted",
+      "passed": true
+    },
+    {
+      "name": "lan_inert_not_submitted",
+      "passed": true
+    }
+  ]
+}

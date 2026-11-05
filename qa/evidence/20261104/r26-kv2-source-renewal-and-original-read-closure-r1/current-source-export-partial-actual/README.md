@@ -1,0 +1,9 @@
+# Current 4e808 export: partial actual evidence with a read reconciliation gap
+
+The one authorized exporter job is `1a1abe371de-fc05-5122`. Its exact ACK, successful exit-0 durable authority, 534-byte complete terminal stdout and empty stderr are preserved. The terminal reports exported, all owned processes stopped, and publication within the original deadline. These observations are distinct from full export qualification.
+
+The authority, stream and result-file-info read operations are closed with their complete original SDK payloads and immutable pages. The result file independently measures 39,692 bytes, SHA-256 `47feb984dbda306b523071e09107ecade8bda10e712d74e5116a58d164eb027b`, version `66306:28091501:39692:1793885177751063403:1793885177751063403`, mode 0600 and UID/GID 1000, nlink 1.
+
+The one version-pinned result-body operation `79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2` was admitted. Two same-ID status queries and one same-ID immutable result query returned MCP request timed out. Every original error SDK and native error string is retained, including separate observation paths where bytes are equal. The first status error was saved before the collection helper mistakenly attempted JSON.parse; that local parser failure is separately preserved. Later calls checked isError first. None of these query errors establishes that the original operation timed out, terminated, or returned a file error.
+
+At packet closure there is no tool call in flight. The original readonly operation's future state and stored payload remain UNKNOWN. No result-body bytes, bundle-info observation, or 81 independent command files have yet been obtained. No export or binary_read was replayed. No carrier/import/product action was submitted, and future carrier slots remain null. Root will decide continuation after its separate local control-capability observation.

@@ -1,0 +1,32 @@
+{
+  "schema": "heptabao.runtime-connection-observation.r1",
+  "as_of_utc": "2026-11-05T13:50:02Z",
+  "observed_tool": "effective_config",
+  "arguments": {},
+  "tool_is_readonly_local_public_projection": true,
+  "tool_does_not_issue_SSH_challenge": true,
+  "observation_count": 1,
+  "original_sdk": {
+    "name": "r26-runtime-capability-connection-observation.original-sdk.json",
+    "blob": "73a81b7aa6c66453d270c855a975978d0d20f853",
+    "bytes": 248,
+    "sha256": "337dbde915f4fd582b754e2cdf20a8146e955706c4eaa0b45706d918bdfec3ee"
+  },
+  "intent": {
+    "name": "r26-runtime-capability-connection-observation.intent.public.json",
+    "blob": "fde3e0353113baecf9762665e2d73efebba2c3d1",
+    "bytes": 811,
+    "sha256": "11397ef752da8c0b0ea37a31635fd5f6f88204ec2a82ecc5a002223ae5a5401e"
+  },
+  "is_error": true,
+  "original_error": "tool call error: tool call failed for `codex_apps/heptaruntime_mac_controller.effective_config`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out",
+  "interpretation": "The current HeptaRuntime MCP path also times out on a public local capability DTO. The blocker is not confined to the original ROG file read. This does not diagnose the exact network/server cause or establish the state of an earlier owned read future.",
+  "new_runtime_dispatches_paused": true,
+  "original_export_process_terminal": "KNOWN_SUCCESS exit0/full/durable",
+  "original_body_read_operation_id": "79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2",
+  "original_body_read_state": "UNKNOWN; retain and reconcile only this ID after connection recovery",
+  "process_restart_or_kill_performed": false,
+  "configuration_or_permissions_modified": false,
+  "request_user_to_restore_controller_connection_if_not_recovered": true,
+  "full_replacement": false
+}

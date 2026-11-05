@@ -1,0 +1,10 @@
+{
+  "error": "Strict source delta assertion before source freeze",
+  "hostCalls": 0,
+  "sourceSubmitted": false,
+  "correction": "strictApply returns {text,hunks}; compare its text field rather than the result object. Candidate source remained the exact pre-existing draft; no host request or source rerun from this check correction.",
+  "correctedStrictApply": {
+    "whole": true,
+    "hunks": 1
+  }
+}

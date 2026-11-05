@@ -1,0 +1,109 @@
+{
+  "schema": "heptabao.renewal-lookup-source-increment-manifest.r1",
+  "files": [
+    {
+      "path": "candidate/mac_current_outer_renewal.source-only.py",
+      "bytes": 71496,
+      "sha256": "72ecfcd586a4ab4c48fd95d2e15b4a44165a754570c699eae18dceaa02f3b262",
+      "blob": "26622454186ba28ada489c9a10b34cf4ad254b97"
+    },
+    {
+      "path": "before/mac_current_outer_wal_r1.py",
+      "bytes": 68348,
+      "sha256": "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01",
+      "blob": "8459b949c07982f56dae2e252565f3db0971e246"
+    },
+    {
+      "path": "diffs/outer.review.diff",
+      "bytes": 7255,
+      "sha256": "1a22d264f16e43df7615e109a9c175cc12045930c4815f21f47e2aa3e43484e0",
+      "blob": "27215ad2c8309de2e21335adb5f93c8b5efae6be"
+    },
+    {
+      "path": "CONTRACT.public.json",
+      "bytes": 8577,
+      "sha256": "48bdd7bb279edcd6d12b165de40f15afe2a91f0a5dea65d765e578ca83640954",
+      "blob": "c1446c8e00703e55f255a6c0e70755c96db82c54"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2940,
+      "sha256": "ad364a885686cee6954ececd9c4480cb90665946a2c2afe8501e6f68e13202d8",
+      "blob": "39c39b3578882b11653d92509fcfed3a3d2df6d5"
+    },
+    {
+      "path": "reference/auth.rs",
+      "bytes": 395371,
+      "sha256": "f28541658b6663ebdfed8d5fc4f019c976f2daf24bc372961e17755ebc2ad601",
+      "blob": "d63f6aed31dde907321a43392f4fb0f95547a1c2"
+    },
+    {
+      "path": "reference/service_native_auth.rs",
+      "bytes": 137388,
+      "sha256": "dbf07f20dc30ac077761c6ec01936c7f7cd03a3687409d60cca674d4b2ed11cf",
+      "blob": "604bee0a92af08720cbd33b5c7c72f71d019e738"
+    },
+    {
+      "path": "reference/auth_approle_renewal.rs",
+      "bytes": 7819,
+      "sha256": "d06e6d7edbb66acdaf37c52ca6080c205e9292a4677899e067eea27b8ffa8bf8",
+      "blob": "6ebf2075dd10652c782e24cba894d066b5aada27"
+    },
+    {
+      "path": "reference/auth_native_token.rs",
+      "bytes": 4382,
+      "sha256": "c676a4c710279451933defd7e50a06526d2441052d208ceda1e9db1033d76b56",
+      "blob": "cf1badcf04556a9c2c57bf3572b179e7a0739bc8"
+    },
+    {
+      "path": "reference/service_token_lookup_tests.rs",
+      "bytes": 6955,
+      "sha256": "a219e9f637600f614699d58b8dded66d98d254a958753d9604966310ae72b43f",
+      "blob": "9ebd39b05d39c69db82e95a3373f83603b78cecc"
+    },
+    {
+      "path": "verification/selected-checks.py",
+      "bytes": 7895,
+      "sha256": "bd3e8ad155b9d219b992c091f124a61a1fc82470008629584ca423055a630f28",
+      "blob": "62602cd0b487afc6e06da71e29c04739dc3bb42b"
+    },
+    {
+      "path": "verification/executor.request.json",
+      "bytes": 133,
+      "sha256": "a7a26660f3d4e0eb27f3143258ae2fbd09aa364e682d51ffa0b50ae4d654bc66",
+      "blob": "c7c847340474d3f4bcaadc9a1fb1c96a6fee7742"
+    },
+    {
+      "path": "verification/executor.original.json",
+      "bytes": 4524,
+      "sha256": "f4969d429a90a2548e93eb48b1fe5a0739f65b166dbeabf0fa7197158b4d3d85",
+      "blob": "655e5fec0c397d1308e5f45d0c92db16ba207851"
+    },
+    {
+      "path": "verification/result.public.json",
+      "bytes": 3967,
+      "sha256": "edaa6eb633802dc32c0949108b2e5bef0c0b858762904a97ee44d4aa522b74c2",
+      "blob": "41017c562b880f57bea7dbd9213f01bc3a428053"
+    },
+    {
+      "path": "verification/strict-reconstruction.public.json",
+      "bytes": 1212,
+      "sha256": "da29ff695efe144438e18e48ea4658145f08f2b0f5021d90665386f5d122507a",
+      "blob": "88c72d8db0e5c8373661adb9b0baec957ee95aaa"
+    },
+    {
+      "path": "verification/local-first-bytecheck.observation.json",
+      "bytes": 443,
+      "sha256": "6f3e685f1b2c0de5c6ecf700e1fd4c2fded977b9bc592e356c86e7ee8403ee0d",
+      "blob": "0f956ae5cc2c95a59a92cfa31b8abaa5f74a8a67"
+    },
+    {
+      "path": "verification/local-byte-correction.executor.original.json",
+      "bytes": 377,
+      "sha256": "32cdf228a5095ea3e53246eb0468f5e2e8860b693833727745a1d0605aed58e1",
+      "blob": "8fd5873f3549948881606b73af0682895822f65f"
+    }
+  ],
+  "hostDispatchAuthorized": false,
+  "includesFutureRequest": false
+}

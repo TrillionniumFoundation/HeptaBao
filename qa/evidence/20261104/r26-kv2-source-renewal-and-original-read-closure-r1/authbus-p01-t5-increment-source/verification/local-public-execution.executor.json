@@ -1,0 +1,7 @@
+{
+  "chunk_id": "093a40",
+  "wall_time_seconds": 0.000037847,
+  "exit_code": 0,
+  "original_token_count": 214,
+  "output": "{\"candidateExitCode\": 0, \"exactOldOtherHostProposalsPreserved\": true, \"exactOldOtherProjectionFieldsPreserved\": true, \"inputBytes\": 328295, \"inputSha256\": \"d0bab0c53bd92524b6a7ca7c3d5bc7ab60b26eb742c4a8e2c6f094c62e3f7b59\", \"macClientCredentialFilesUnchanged\": true, \"macServerBinaryDataBackupOnT5\": true, \"noChild\": true, \"noHostCalls\": true, \"noNetwork\": true, \"noSqlite\": true, \"onlyLocalPublicSourceAndEvidence\": true, \"schema\": \"heptabao.authbus-p01-t5-increment-local-execution.r2\", \"sourceBytes\": 29033, \"sourceImports\": [\"hashlib\", \"json\", \"sys\", \"time\"], \"sourceSha256\": \"5e4463d260402989b44833ebe2a899f37c7fa6b9fe12df18e8975bcc87860e00\", \"stderrBytes\": 0, \"stderrSha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\", \"stdoutBytes\": 106392, \"stdoutSha256\": \"36b53106cc56d732061d5e028885c48bc17a4dfc6d61b07f3e592731908e75ae\"}\n"
+}

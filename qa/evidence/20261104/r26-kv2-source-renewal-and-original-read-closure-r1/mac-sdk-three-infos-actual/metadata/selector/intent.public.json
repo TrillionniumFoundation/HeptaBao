@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.mac-harness-public-sdk-info-intent.r1",
+  "exactOperationRequest": {
+    "blob": "11a7caf856d44d0b731dc8f3d017e4bce356a8fd",
+    "bytes": 263,
+    "sha256": "190915fae00ec8d42077922aa5e7f24f0d98447baeb82cf9b3c236164014c970"
+  },
+  "readset": "bd50f91f35968ceef5485f57c7960cdf5b8407d8",
+  "host": "mac",
+  "publicPath": "/opt/homebrew/lib/node_modules/openclaw/dist/selection-JInn13lc.js",
+  "expectedWholeSource": {
+    "bytes": 673468,
+    "sha256": "ccff13111aa60369ac9d88b526a58a7df1f733f1d99d205c01c6186036957e66"
+  },
+  "readOnly": true,
+  "oneOperationInFlight": true,
+  "rootAuthorizedExactThreeFiles": true,
+  "haWindowMustBeReleasedBeforeSubmit": true,
+  "noCurrentPrivateData": true,
+  "noSdkExecution": true,
+  "noProcessStart": true,
+  "unknownUsesOnlySameTypedKeyReconciliation": true
+}

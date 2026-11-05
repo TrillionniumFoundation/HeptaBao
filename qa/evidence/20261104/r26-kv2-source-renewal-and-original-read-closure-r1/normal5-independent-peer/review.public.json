@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.compatibility-audit.normal5-inert-partial-peer.v1",
+  "decision": "PASS_WITH_EXPLICIT_PARTIAL_SCOPE",
+  "reviewer": "compatibility_audit",
+  "input_tree": "ed0b6e2fe0f4b8e5be3c17833adefe49ef9bc736",
+  "input_manifest": "2cfea0389c9ce50a9598df36266063b97e493bf3",
+  "admitted_source_tree": "1c48f9519ce6d13dbe2f4484db279102c9e33676",
+  "method": {
+    "whole_files": 29,
+    "whole_bytes": 177432,
+    "actual_merkle_directories": 19,
+    "admitted_membership_merkle_directories": 10,
+    "offline_checks": 175,
+    "unsafe_json_integers": "Python arbitrary precision from original raw JSON; no JS numeric reserialization",
+    "candidate_modules_executed": false,
+    "runtime_or_host_calls": 0,
+    "verifier": {
+      "path": "verification/normal5-partial-peer-verifier.py",
+      "bytes": 15318,
+      "sha256": "b732fe42ccc6b1b56910d88aac34839c07ba536d98997ce74af265cb6713fa70",
+      "blob": "a33480bd79dc0d9b44905e9234f7324ee315d0dc"
+    },
+    "result": {
+      "path": "verification/normal5-partial-peer-result.public.json",
+      "bytes": 17017,
+      "sha256": "064756d0e02c74ab03e1de2a058188cdbec61a605f3a4421d6de355c8282338e",
+      "blob": "6f686daaffa57e2a369a34db9c1db1b1c6028218"
+    }
+  },
+  "submission": {
+    "request_blob": "2f19e131dd373e7bbb7e16977c4829dae70dcbd0",
+    "request_bytes": 50263,
+    "request_sha256": "ff4a8538f070960dc0f71330fc5e3181359c8b535ec3c49170d4233fa903aaee",
+    "root_go_blob": "eca93bc6fde759e36818fed839bd1957d53a947f",
+    "intent_blob": "22440fe43d7fa92a8f543a76b697d769e5427054",
+    "ack_blob": "eabf96144a41dfa980f68457657ee3d0cc8f7c4d",
+    "job_id": "1a1abd1f635-fc05-50c9",
+    "key": "heptabao-4e808-normal5-controls-inert-r1-895d6cc9",
+    "binding": "One preserved launched/non-reused ACK matches exact host, executable, entire argv including inert body, cwd and key. The original SDK native text is byte-identical to the ACK leaf. Exact request and stdin are admitted-source-tree members.",
+    "intent_limit": "The external intent records before-submission and submit-once; this static packet independently proves byte/binding consistency, not a timestamped global absence of additional jobs."
+  },
+  "terminal": {
+    "authority_blob": "021fc3691a584333ab63033c3802c4a888140ac4",
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "stdout_blob": "59015d585d961f84465b1974b37c25182672e3a1",
+    "stdout_bytes": 1520,
+    "stderr_bytes": 0,
+    "evidence": "Original authority SDK equals native leaf; original streams hex and text agree byte-for-byte with whole stdout/stderr, exact offsets and both EOFs. No truncation/log error, timed_out=false, cancelled=false.",
+    "reported_interval_ns": "72037986",
+    "interval_limit": "This is the publisher's started_ns-to-terminal_ns interval; terminal_ns is set before receipt publication/print. Process authority separately reports normal exit and no timeout under the original 60-second outer cap.",
+    "source_identity": "All three carried base64 sources equal admitted raw blobs and PINS; ordered publication rows report matching SHA/length/mode0600/UID1000/nlink1. Inert source uses compile without exec/eval and emits no transport/Git/compiler/service execution.",
+    "fd_limit": "No per-FD ledger exists in this carrier. Exit0 and source close/finally paths are recorded; no synthetic per-FD cleanup evidence is claimed."
+  },
+  "info0": {
+    "operation_id": "3a2554cd41d2692bbbfdc260738ac8864fe70e83969531ab5d165a60f7b702bc",
+    "payload_blob": "9a1ad72b452f51c65890315d109c2f8dd04d7b1a",
+    "native_blob": "55126d871bf6a74e02ee04f7dffc705f32cc10bf",
+    "status": "completed/stored_observed/owned_future_active=false",
+    "verification": "Exact sender path/host/key, same operation across admission/status/page, single immutable 613-byte page with exact SHA/EOF and native-payload byte equality. Independent whole SHA, size, UID/GID, permissions and nlink plus five version numbers match the publisher identity without integer loss. The regular-file type bits are the publisher's observation; file_info reports permission mode."
+  },
+  "pending_scope": {
+    "independent_infos_completed": 1,
+    "independent_whole_bodies_completed": 0,
+    "three_infos_not_submitted": [
+      "receiver.py",
+      "relay.py",
+      "inert-stage.result.public.json"
+    ],
+    "four_whole_bodies_not_submitted": [
+      "sender.py",
+      "receiver.py",
+      "relay.py",
+      "inert-stage.result.public.json"
+    ],
+    "not_submitted_scope": "Author's explicit preserved pending plan and current task state; no new inventory or host observation was made by this peer.",
+    "relay_go": false,
+    "relay_submitted": false,
+    "lan_inert_submitted": false,
+    "transport_qualified": false,
+    "product_or_lan_runtime_qualified": false,
+    "all_independent_readbacks_complete": false
+  },
+  "findings": [],
+  "conclusion": "No concrete blocking inconsistency found within this partial inert-publication evidence. This does not close the seven pending reads, authorize relay, or qualify product/LAN behavior. Existing Runtime uncertainties remain unchanged."
+}

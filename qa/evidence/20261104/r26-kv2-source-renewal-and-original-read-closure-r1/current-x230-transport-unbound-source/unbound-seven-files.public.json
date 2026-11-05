@@ -1,0 +1,65 @@
+[
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/heptabao-server",
+    "name": "heptabao-server",
+    "bytes": null,
+    "sha256": null,
+    "source_mode": 320,
+    "target_mode": 320,
+    "version": null
+  },
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/native-build.public.json",
+    "name": "native-build.public.json",
+    "bytes": null,
+    "sha256": null,
+    "source_mode": 256,
+    "target_mode": 256,
+    "version": null
+  },
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-result.public.json",
+    "name": "result.public.json",
+    "bytes": null,
+    "sha256": null,
+    "source_mode": 256,
+    "target_mode": 256,
+    "version": null
+  },
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/canonical-4e808-full.bundle",
+    "name": "canonical-4e808-full.bundle",
+    "bytes": null,
+    "sha256": null,
+    "source_mode": 256,
+    "target_mode": 256,
+    "version": null
+  },
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/source-export.result.public.json",
+    "name": "source-export.result.public.json",
+    "bytes": null,
+    "sha256": null,
+    "source_mode": 256,
+    "target_mode": 256,
+    "version": null
+  },
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
+    "name": "normal61-result.public.json",
+    "bytes": null,
+    "sha256": null,
+    "source_mode": 256,
+    "target_mode": 256,
+    "version": null
+  },
+  {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming/groups.json",
+    "name": "groups.json",
+    "bytes": null,
+    "sha256": null,
+    "source_mode": 256,
+    "target_mode": 256,
+    "version": null
+  }
+]

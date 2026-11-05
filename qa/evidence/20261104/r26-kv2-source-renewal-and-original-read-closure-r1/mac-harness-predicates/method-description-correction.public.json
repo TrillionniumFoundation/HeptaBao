@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.mac-predicate-descriptive-loader-correction.r1",
+  "originalDiagnosticSourceBlob": "c23db528a0454408db56e280a5f9e143db3a2cfd",
+  "originalDiagnosticActualStdoutBlob": "e311f02d58594fa70957751d303c2a2df9c31c49",
+  "actualObserverImportedOrExecutedSdk": false,
+  "originalDescription": "originalNativeWorkerContract states loader.r(onlyPluginIds)",
+  "exactReferencedWorkerBlob": "3614c27cb06f311870ceeeda3f01e806306ae0d1",
+  "actualSourceCall": "await loader.t({ scope:'all', config:cfg, activationSourceConfig:cfg, workspaceDir:plan.workspace, onlyPluginIds:plan.harnessOwnerPluginIds });",
+  "subsequentCalls": [
+    "selector.o({ provider:plan.model.provider, modelId:plan.model.id, config:cfg, agentId:plan.agentId })",
+    "selectedHarness?.id === 'codex'",
+    "registry.r('codex')?.harness === selectedHarness"
+  ],
+  "descriptionCorrectionOnly": true,
+  "originalSourceAndActualStdoutChanged": false,
+  "originalNamespaceObservationChanged": false,
+  "selectionRemainsUnobserved": true,
+  "hostCalls": 0,
+  "replayedDiagnostic": false
+}

@@ -1,0 +1,495 @@
+{
+  "schema": "heptabao.partial-export-independent-byte-binding-checks.r1",
+  "sourceTree": "23dc4dd95a930de4356c8fedee4c853a642b6594",
+  "checks": [
+    {
+      "name": "whole_file_count_52",
+      "passed": true
+    },
+    {
+      "name": "content_manifest_51_files_53676_bytes",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/authority/request.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/authority/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/authority/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/authority/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/authority/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/authority/payload.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_actual/authority.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/authority/page-000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/authority/page-000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/streams/request.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/streams/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/streams/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/streams/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/streams/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/streams/payload.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_actual/streams.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/streams/page-000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/streams/page-000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-info/request.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-info/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-info/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-info/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-info/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-info/payload.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_actual/result-info.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-info/page-000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-info/page-000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-body/request.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-body/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-body/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-body/status-later-01.request.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-body/status-later-01.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-body/status-later-01.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_errors/result-body-status-parser-attempt1.txt",
+      "passed": true
+    },
+    {
+      "name": "manifest_errors/result-body-status-unknown.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-body/page-zero-reconcile.request.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-body/page-zero-reconcile.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-body/page-zero-reconcile.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-body/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_reads/result-body/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_actual/process-start.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_actual/ACK.original.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_intent/external-intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_intent/window-handoff.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_actual/stdout.original.txt",
+      "passed": true
+    },
+    {
+      "name": "manifest_actual/stderr.original.txt",
+      "passed": true
+    },
+    {
+      "name": "manifest_admission/root-export-go.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_dispatch/export.request.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_SUMMARY.public.json",
+      "passed": true
+    },
+    {
+      "name": "manifest_README.md",
+      "passed": true
+    },
+    {
+      "name": "manifest_collection/finish-read.before-iserror-guard.js",
+      "passed": true
+    },
+    {
+      "name": "full_merkle_exact",
+      "passed": true
+    },
+    {
+      "name": "content_merkle_exact",
+      "passed": true
+    },
+    {
+      "name": "merkle_actual",
+      "passed": true
+    },
+    {
+      "name": "merkle_admission",
+      "passed": true
+    },
+    {
+      "name": "merkle_collection",
+      "passed": true
+    },
+    {
+      "name": "merkle_dispatch",
+      "passed": true
+    },
+    {
+      "name": "merkle_errors",
+      "passed": true
+    },
+    {
+      "name": "merkle_intent",
+      "passed": true
+    },
+    {
+      "name": "merkle_reads",
+      "passed": true
+    },
+    {
+      "name": "merkle_reads/authority",
+      "passed": true
+    },
+    {
+      "name": "merkle_reads/result-body",
+      "passed": true
+    },
+    {
+      "name": "merkle_reads/result-info",
+      "passed": true
+    },
+    {
+      "name": "merkle_reads/streams",
+      "passed": true
+    },
+    {
+      "name": "export_request_ack_exact_typed_fields",
+      "passed": true
+    },
+    {
+      "name": "sdk_native_actual/process-start.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_text_actual/process-start.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "original_authority_succeeded_zero_complete_durable",
+      "passed": true
+    },
+    {
+      "name": "stdout_complete_hex_text_authority",
+      "passed": true
+    },
+    {
+      "name": "stderr_complete_hex_text_authority",
+      "passed": true
+    },
+    {
+      "name": "terminal_is_observed_export_success",
+      "passed": true
+    },
+    {
+      "name": "sdk_native_reads/authority/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_text_reads/authority/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "sdk_native_reads/authority/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_text_reads/authority/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "sdk_native_reads/authority/page-000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_text_reads/authority/page-000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "authority_operation_binding",
+      "passed": true
+    },
+    {
+      "name": "authority_future_closed_and_payload_stored",
+      "passed": true
+    },
+    {
+      "name": "authority_immutable_whole_page",
+      "passed": true
+    },
+    {
+      "name": "authority_payload_complete_exact_native",
+      "passed": true
+    },
+    {
+      "name": "sdk_native_reads/streams/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_text_reads/streams/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "sdk_native_reads/streams/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_text_reads/streams/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "sdk_native_reads/streams/page-000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_text_reads/streams/page-000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "streams_operation_binding",
+      "passed": true
+    },
+    {
+      "name": "streams_future_closed_and_payload_stored",
+      "passed": true
+    },
+    {
+      "name": "streams_immutable_whole_page",
+      "passed": true
+    },
+    {
+      "name": "streams_payload_complete_exact_native",
+      "passed": true
+    },
+    {
+      "name": "sdk_native_reads/result-info/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_text_reads/result-info/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "sdk_native_reads/result-info/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_text_reads/result-info/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "sdk_native_reads/result-info/page-000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_text_reads/result-info/page-000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "result-info_operation_binding",
+      "passed": true
+    },
+    {
+      "name": "result-info_future_closed_and_payload_stored",
+      "passed": true
+    },
+    {
+      "name": "result-info_immutable_whole_page",
+      "passed": true
+    },
+    {
+      "name": "result-info_payload_complete_exact_native",
+      "passed": true
+    },
+    {
+      "name": "sdk_native_reads/result-body/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_text_reads/result-body/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "body_request_bound_to_observed_info",
+      "passed": true
+    },
+    {
+      "name": "body_ack_is_admission_only",
+      "passed": true
+    },
+    {
+      "name": "sdk_native_reads/result-body/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_text_reads/result-body/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "status_MCP_layer_error_not_native_terminal",
+      "passed": true
+    },
+    {
+      "name": "sdk_native_reads/result-body/status-later-01.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_text_reads/result-body/status-later-01.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "status-later-01_MCP_layer_error_not_native_terminal",
+      "passed": true
+    },
+    {
+      "name": "sdk_native_reads/result-body/page-zero-reconcile.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "single_text_reads/result-body/page-zero-reconcile.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "page-zero-reconcile_MCP_layer_error_not_native_terminal",
+      "passed": true
+    },
+    {
+      "name": "later_status_same_id",
+      "passed": true
+    },
+    {
+      "name": "page_zero_same_id_exact",
+      "passed": true
+    },
+    {
+      "name": "first_status_same_id_original_reference",
+      "passed": true
+    },
+    {
+      "name": "first_error_saved_before_local_parse",
+      "passed": true
+    },
+    {
+      "name": "no_body_payload_in_packet",
+      "passed": true
+    },
+    {
+      "name": "partial_summary_preserves_unknown_and_no_downstream",
+      "passed": true
+    }
+  ],
+  "runtimeCalls": 0
+}

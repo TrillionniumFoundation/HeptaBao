@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.runtime-public-capability-connection-observation.intent.r1",
+  "tool": "mcp__codex_apps__heptaruntime_mac_controller_effective_config",
+  "arguments": {},
+  "single_observation": true,
+  "read_only": true,
+  "ssh_or_host_challenge": false,
+  "reason": "Two same-operation status observations and one immutable result-page observation returned MCP request timeout. Distinguish controller connection availability from original binary-read state without dispatching another read or process.",
+  "original_binary_read_operation_id": "79cdbefb4f02efdf3493dba6fe6afa05ae7ef665783011af06a6b333e99bb9a2",
+  "known_export_job_terminal_unchanged": "1a1abe371de-fc05-5122 exit0/full/durable",
+  "original_body_read_not_replayed": true,
+  "configuration_changes": false,
+  "policy_changes": false
+}

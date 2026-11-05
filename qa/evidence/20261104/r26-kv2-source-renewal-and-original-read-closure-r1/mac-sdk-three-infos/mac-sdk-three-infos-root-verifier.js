@@ -1,0 +1,23 @@
+function verifySdkThreeInfos(raw,audit,runtimeRaw){
+const u=eval(load("root_utf8_bytes_r1_source")+";utf8Bytes"),bs=eval(load("root_byte_string_r1_source")+";byteString"),h=eval(load("root_sha256_latin1_r1_source")+";sha256Latin1"),b64=eval(load("root_base64_bytes_source")+";unb64");
+const checks=[];function need(n,v){if(!v)throw Error(n);checks.push(n);}function canon(x){return JSON.stringify(x&&typeof x==="object"?(Array.isArray(x)?x.map(y=>JSON.parse(canon(y))):Object.fromEntries(Object.keys(x).sort().map(k=>[k,JSON.parse(canon(x[k]))]))):x);}const parse=p=>JSON.parse(raw[p]),records=Object.fromEntries(audit.records.map(x=>[x.path,x]));
+const readset=parse("readset.original.public.json"), runtime=JSON.parse(runtimeRaw), manifest=parse("manifest.public.json");
+need("all39_manifest_entries_exact",manifest.files.length===39&&manifest.files.every(x=>{const r=records[x.path];return r&&r.blob===x.blob&&r.bytes===x.bytes&&r.sha256===x.sha256;}));
+need("three_exact_readset_and_no_execution",readset.itemCount===3&&readset.totalBytes===682650&&readset.bodyChunks===13&&readset.noSdkImport&&readset.noSubprocessStart);
+const items=[];
+for(const it of readset.items){const p="metadata/"+it.name+"/",req=parse(p+"request.original.json"),intent=parse(p+"intent.public.json"),ack=parse(p+"start.native-original.json"),status=parse(p+"status.native-original.json"),page=parse(p+"result.native-original.json"),payload=parse(p+"original-sdk-payload.json"),info=parse(p+"file-info.original.json");
+need(it.name+".typed_request_and_intent",canon(req)===canon(it.infoRequest)&&req.operation.tool==="file_info"&&req.operation.arguments.host==="mac"&&req.operation.arguments.path===it.path&&intent.exactOperationRequest.blob===records[p+"request.original.json"].blob&&intent.exactOperationRequest.sha256===records[p+"request.original.json"].sha256&&intent.exactOperationRequest.bytes===records[p+"request.original.json"].bytes);
+need(it.name+".unique_ack",ack.reused===false&&ack.tool_name==="file_info"&&/^[0-9a-f]{64}$/.test(ack.operation_id));
+need(it.name+".terminal_owned_read",status.operation_id===ack.operation_id&&status.async_state==="completed"&&status.result_state==="stored_observed"&&status.owned_future_active===false&&status.payload_available===true&&status.tool_name==="file_info");
+need(it.name+".same_operation_requests",parse(p+"status.request.json").operation_id===ack.operation_id&&parse(p+"result.request.json").operation_id===ack.operation_id&&parse(p+"result.request.json").offset===0&&parse(p+"result.request.json").limit===16384);
+for(const part of ["start","status","result"]){const sdk=parse(p+part+".mcp-snapshot.json");need(it.name+".sdk_native_exact."+part,sdk.isError===false&&sdk.content.length===1&&sdk.content[0].type==="text"&&sdk.content[0].text===raw[p+part+".native-original.json"]);}
+const body=b64(page.data_base64),original=u(raw[p+"original-sdk-payload.json"]);
+need(it.name+".whole_immutable_payload",page.operation_id===ack.operation_id&&page.immutable_snapshot===true&&page.payload_kind==="native_result"&&page.offset===0&&page.eof===true&&page.total_bytes===original.length&&page.next_offset===original.length&&canon(body)===canon(original)&&h(bs(body))===page.result_sha256);
+need(it.name+".native_info_exact",payload.resultType==="complete"&&payload.isError===false&&payload.content.length===1&&payload.content[0].text===raw[p+"file-info.original.json"]);
+need(it.name+".actual_code_pin",info.path===it.path&&info.size===it.bytes&&info.sha256===it.sha256&&info.mode===420&&info.metadata.uid===501&&info.metadata.gid===80&&info.metadata.link_count===1&&info.metadata.mode===420&&info.metadata.metadata_platform==="darwin");
+const origin=runtime.finiteInputClosure.sourceRecords.find(x=>x.path===it.path);const id=it.originRecord.identity;
+need(it.name+".prior_captured_record_exact",canon(origin)===canon(it.originRecord)&&info.version===[id[0],id[1],id[6],id[7],id[8]].join(":")&&String(info.metadata.uid)===id[2]&&String(info.metadata.gid)===id[3]&&String(info.metadata.link_count)===id[5]&&String(info.size)===id[6]&&(Number(id[4])&4095)===info.mode);
+items.push({name:it.name,path:info.path,size:info.size,sha256:info.sha256,version:info.version,operation_id:ack.operation_id,info_blob:records[p+"file-info.original.json"].blob});
+}
+return {schema:"heptabao.root.mac-sdk-three-infos-actual.r1",status:"PASS_THREE_INDEPENDENT_READONLY_METADATA_OBSERVATIONS",packet:audit.tree,files:audit.files,bytes:audit.bytes,checks:checks.length,checked:checks,items,public_source_bodies_observed:false,sdk_executed:false,selected_owner_proven:false,current_product_qualification:false,full_replacement:false};
+}

@@ -1,0 +1,127 @@
+{
+  "schema": "heptabao.independent-renewal-source-peer.r1",
+  "reviewer": "/root/ha_validation",
+  "date_utc": "2026-11-05",
+  "decision": "NO_NEW_SOURCE_BLOCKER_IN_REVIEWED_INCREMENT",
+  "source_tree": "fcb76baae4e87b159fc7704ae13185c862de3854",
+  "reviewed_source": {
+    "before": {
+      "blob": "8459b949c07982f56dae2e252565f3db0971e246",
+      "bytes": 68348,
+      "sha256": "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01"
+    },
+    "after": {
+      "blob": "26622454186ba28ada489c9a10b34cf4ad254b97",
+      "bytes": 71496,
+      "sha256": "72ecfcd586a4ab4c48fd95d2e15b4a44165a754570c699eae18dceaa02f3b262"
+    },
+    "diff": {
+      "blob": "27215ad2c8309de2e21335adb5f93c8b5efae6be",
+      "bytes": 7255,
+      "sha256": "1a22d264f16e43df7615e109a9c175cc12045930c4815f21f47e2aa3e43484e0"
+    }
+  },
+  "exact_scope": "Independent review of the four-hunk outer caller renewal evidence increment. No candidate edits, Runtime requests, complete-module execution, selected-function execution, or repetition of the author's eight mocks.",
+  "source_integrity": {
+    "strict_forward_hunks": 4,
+    "forward_whole_equal": true,
+    "strict_reverse_hunks": 4,
+    "reverse_whole_equal": true,
+    "tree_merkle_checks": 6,
+    "tree_blob_rows": 18,
+    "whole_blobs_read_in_this_review": 12,
+    "other_top_level_definitions_byte_unchanged": 23,
+    "existing_definitions_changed": [
+      "token_lifecycle",
+      "main"
+    ],
+    "added_top_level_definitions": [
+      "token_lookup_snapshot",
+      "token_lifecycle_before"
+    ],
+    "only_changed_top_level_assignment": "BINDING_READY: True -> False",
+    "entry_guard": "First main statement rejects BINDING_READY=False before setup."
+  },
+  "findings": [
+    {
+      "id": "R01",
+      "status": "PASS_SOURCE",
+      "topic": "Single private token read and operation order",
+      "evidence": "The original five-line token-file read/shape check/secrets registration prefix is byte-identical, moved to token_lifecycle_before. Exactly one guard.read per phase retains the 65,536-byte cap. In both initial and cold callers it runs immediately after the phase, before the unchanged canonical_and_inbox. Its only HTTP call is one lookup-self; token_lifecycle then retains unassigned 403, renew-self, adds exactly one post lookup, then retains revoke-self 204 and revoked GET 403.",
+      "anchors": [
+        "candidate:816-851",
+        "candidate:1044-1059"
+      ]
+    },
+    {
+      "id": "R02",
+      "status": "PASS_SOURCE",
+      "topic": "Same private identity across actual responses",
+      "evidence": "Both lookup responses must echo the presented token in data.id; the service type, empty namespace, renewable true, strict integer positive TTL <=600 and bounded creation/expiry are required. The post lookup must retain accessor and creationTime. The renewal response must echo the same client_token and accessor, renewable true and strict integer positive lease_duration <=600. All six direct HTTP calls explicitly use the same phase token. Renewal is the original empty JSON object {}, not a new increment or zero-byte-body contract.",
+      "anchors": [
+        "candidate:797-851",
+        "reference/auth.rs:6963-6967,9249-9256",
+        "reference/service_native_auth.rs:2539-2569",
+        "reference/auth_approle_renewal.rs:135-195"
+      ]
+    },
+    {
+      "id": "R03",
+      "status": "PASS_SOURCE",
+      "topic": "Budgets and unknown-stop behavior",
+      "evidence": "Context, LoopbackHTTP, capture_once, bootstrap_api and the remaining unchanged definitions are byte-identical. Apart from BINDING_READY, every top-level statement is AST-identical. HTTP calls remain single-attempt HTTP10 clamped to the original START+900 outer deadline; the existing manager deadline is constructed once and not reset. The proposal adds no sleep, retry, issuance, role change, loop, until override, deadline assignment or cleanup budget. Original capture45, manager600, phase/native bindings and final cleanup paths are not changed by this diff.",
+      "anchors": [
+        "candidate:117-123,239-275,423-532,1026-1029",
+        "verification:28 independent AST checks"
+      ]
+    },
+    {
+      "id": "R04",
+      "status": "PASS_SOURCE",
+      "topic": "Unchanged/decreasing expiry is a known evidence gap",
+      "evidence": "After a valid renew 200 and typed post lookup, token_lifecycle computes delta but does not require it to be positive. It completes the original revoke 204 and revoked 403 before returning increased/unchanged/decreased plus expiryExtensionObserved. In main the final both_actual_renewal_expiries_increased check follows both inverse phases, manager.finish, original restoration/source checks and ten-lineage check. Thus unchanged expiry alone does not suppress inverse work or label the 200 invalid. If all preceding steps and closures are known and within their original deadlines, the false final check remains a known Refused qualification gap; independent unknown/closure failures still preserve outcomeUnknown.",
+      "anchors": [
+        "candidate:838-851,1057-1099,1118-1179",
+        "reference/auth_native_token.rs:23-61"
+      ]
+    },
+    {
+      "id": "R05",
+      "status": "PASS_SOURCE",
+      "topic": "Public projection excludes bearer and accessor",
+      "evidence": "The snapshot public object contains exactly ttlSeconds, expiresAtUnix and renewable. The final lifecycle return has the exact 14 closed keys recorded by the verifier: numeric lifetime observations, booleans, fixed phase and the three-value expiry enum. Raw token/accessor/creationTime remain in private local dictionaries; no such field is copied to report. The pre accessor joins the existing secret-literal guard, and both new responses are validated against that same identity. The unchanged HTTP public ledger emits status/length/hash/framing and fixed error codes, not headers or response bodies. Existing candidate-report and final-stdout literal scans remain byte-identical.",
+      "anchors": [
+        "candidate:797-851,482-532,1143-1179"
+      ]
+    },
+    {
+      "id": "R06",
+      "status": "PASS_SOURCE",
+      "topic": "Source remains deliberately unbound",
+      "evidence": "BINDING_READY=False is the first main guard. Existing paths and product pins remain only as the review baseline. This packet supplies no fresh request, root, source inventory binding, Runtime GO or selected-harness-owner proof.",
+      "anchors": [
+        "candidate:15-22,884-886",
+        "CONTRACT.public.json:authorization/dependencies"
+      ]
+    }
+  ],
+  "blocking_findings": [],
+  "independent_verification": {
+    "check_count": 28,
+    "passed": true,
+    "full_modules_parsed": 2,
+    "full_modules_compiled_only": 2,
+    "full_modules_executed": 0,
+    "selected_functions_executed": 0,
+    "author_mock_cases_rerun": 0,
+    "runtime_requests": 0,
+    "scratch_public_file_reads": 2
+  },
+  "limitations": [
+    "This is an outer-caller source review, not proof of real token expiry extension, real service behavior, total-runtime performance or successful restoration.",
+    "The known same-second/non-extension conclusion is conditional on the preceding operations and final closures remaining known; it does not override any independent HTTP, manager, deadline or FD failure.",
+    "No claim is made that the four extra lookups fit an actual run; they consume the original shared budgets without extension.",
+    "Selected-harness-owner evidence and a separately reviewed fresh complete executable binding remain unresolved; this peer is not a GO.",
+    "Reference blobs were read and their package membership/hashes checked. This review does not replace the prior canonical-membership review for the unchanged product tree."
+  ]
+}

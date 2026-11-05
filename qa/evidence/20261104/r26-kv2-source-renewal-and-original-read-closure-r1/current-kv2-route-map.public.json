@@ -1,0 +1,191 @@
+{
+  "schema": "heptabao.root.current-kv2-route-map.r1",
+  "status": "FOCUSED_CANONICAL_SOURCE_INSPECTION_ONLY",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "sources": {
+    "cargo": {
+      "path": "crates/heptabao-server/Cargo.toml",
+      "blob": "666dc6d056a8f653bb86ca5ba7ed89b229dfe228",
+      "bytes": 4796,
+      "sha256": "6464e7c760943ef3e973e1416ea91f469780261e28afb3c0a5267d62d7d06642"
+    },
+    "service_dispatch": {
+      "path": "crates/heptabao-server/src/service.rs",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+      "bytes": 518245,
+      "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2"
+    },
+    "service_native_import": {
+      "path": "crates/heptabao-server/src/service_native_kv2_import.rs",
+      "blob": "5f7483a0f0f6cc5cd58acee5362e0650ce03bae3",
+      "bytes": 6222,
+      "sha256": "8836bf7938e0266d13aaa092d4cec67b0392bb07c2c2d78be11ebf7dfd6def25"
+    },
+    "engine_native_import": {
+      "path": "crates/heptabao-server/src/engine_kv2_native_import.rs",
+      "blob": "d3902c3fd45cd1df24f7802bdb2bf2243cda19b3",
+      "bytes": 5120,
+      "sha256": "ac91f5e9284cba768ff0c60119b22ea56f5490e027c73a5498bb45a986f21ffd"
+    },
+    "service_native_large": {
+      "path": "crates/heptabao-server/src/service_native_kv2_large.rs",
+      "blob": "eca7d8c28bd2490e248ed30b828d2ba17f798e8a",
+      "bytes": 30882,
+      "sha256": "25512774b6200d58ebbf0a13d71bea68dace9540b49660db0f22fd99d328c4d3"
+    },
+    "http_large": {
+      "path": "crates/heptabao-server/src/http_native_kv2_large.rs",
+      "blob": "20afd1b5f6003b1df2dcde0e73ce8c9de08bc293",
+      "bytes": 4776,
+      "sha256": "9d29d987df99ab190558cc2be1ae7fe1a5aad5519944d4480df236b3ee618512"
+    },
+    "large_codec": {
+      "path": "crates/heptabao-server/src/engines/kv_lossless_native_large.rs",
+      "blob": "3eda07cff27f1a5d0e05652f9d6215d2ef3ce567",
+      "bytes": 14723,
+      "sha256": "1a2d6881dfb10b19081275f8a6e44b38f541972c2d6652a9b00a1642efeca929"
+    },
+    "graph_import": {
+      "path": "crates/heptabao-server/src/engines/kv2_native_import.rs",
+      "blob": "3ac3b48d91e5cb187a664bdfad7013634fd4811e",
+      "bytes": 9075,
+      "sha256": "a8e6c7b9bf0ef5ca4906d3b7af5b2225185d14b50ba1c4065551365fbe9ea6f9"
+    },
+    "native_writer": {
+      "path": "crates/heptabao-server/src/service_native_v6_writer.rs",
+      "blob": "713b6906ad6a566fb6e5580b28083e2292b53565",
+      "bytes": 129750,
+      "sha256": "9690f3658febcab99bd36b266868f25c29d3ba65c2dcb97df5918430b5cbcf11"
+    },
+    "native_large_migrator": {
+      "path": "tools/migration/openbao271_kv2_native_large_migrate.py",
+      "blob": "6778b602c3a02d56874249fcf873f241846a346f",
+      "bytes": 16505,
+      "sha256": "4df0d5eaf069905e5a5bfd9e0e699391ba104ac27d54c5cbb18a79a9d8b1284d"
+    },
+    "kv2_lossless_live": {
+      "path": "qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+      "blob": "87db25eab1258c8a2d7f9047e2009b62404b6259",
+      "bytes": 49393,
+      "sha256": "383176647f0670837f40f3989496c6d1c902f8503dfa006d386b75877436b581"
+    },
+    "large_import_doc": {
+      "path": "docs/native-kv2-large-import-20261019.md",
+      "blob": "6da30492277461bdc4ca0b2815eb1d951b05920d",
+      "bytes": 6694,
+      "sha256": "467505415fd2da045259acf2fd5cfd13f9607766860900445233880e17e3d8e2"
+    },
+    "migration_gate": {
+      "path": "planning/HEPTABAO_KV2_V6_MIGRATION_GATE_R265.md",
+      "blob": "1d1f8df9eaa54cbb6b1fbb315c9292f724aa7147",
+      "bytes": 5474,
+      "sha256": "486f7a0c989244d78d8bf597879792cc1632b815d3ee464dca8e0ee086d4d6f6"
+    }
+  },
+  "source_findings": [
+    {
+      "id": "default_features",
+      "finding": "Normal heptabao-server builds compile native-v6-storage and native-v6-ha by default. Cargo explicitly states that compilation does not select a backend, admit a writer or unseal storage.",
+      "sources": [
+        "cargo"
+      ]
+    },
+    {
+      "id": "active_native_dispatch",
+      "finding": "Service routes the native-large path to stage_native_kv2_large and routes sys/migration/openbao/kv2 to dispatch_native_kv2_import when native_root exists. Active native full-history import is implemented; legacy documentation saying it is absent is stale.",
+      "sources": [
+        "service_dispatch",
+        "service_native_import"
+      ]
+    },
+    {
+      "id": "small_native_route",
+      "finding": "The ordinary JSON migration route preserves its bounded bundle envelope, requires root namespace, a real Principal and trusted clock, native paged destination, sudo and original deadline; it explicitly refuses HA. This small route is distinct from native-large.",
+      "sources": [
+        "service_native_import"
+      ]
+    },
+    {
+      "id": "large_native_route",
+      "finding": "The dedicated typed upload has a 64 MiB bundle cap and 4 MiB record cap, with 4,194,304 syntax nodes and depth 128. It admits root-namespace, unwrapped POST to an actual pristine paged native KV2 mount before body allocation and keeps one affine upload lease per Service instance.",
+      "sources": [
+        "service_native_large",
+        "http_large",
+        "large_codec",
+        "graph_import"
+      ]
+    },
+    {
+      "id": "detached_graph",
+      "finding": "The native graph importer validates the actual pristine destination and scope, creates immutable typed objects, clears hydrated payloads and new blocks from the returned metadata view, and returns an opaque preparation that still requires the Service publisher.",
+      "sources": [
+        "engine_native_import",
+        "graph_import"
+      ]
+    },
+    {
+      "id": "ha_publication_path",
+      "finding": "With native-v6-ha and an actual HA owner, native-large captures a current read proof before transfer, checks it at finalization, calls the native root publisher, captures committed proof, and validates final delivery including any affine terminal clock successor. commit_native_root_plan delegates to commit_native_ha_root_plan when self.ha is present.",
+      "sources": [
+        "service_native_large",
+        "native_writer"
+      ]
+    },
+    {
+      "id": "unknown_not_replayed",
+      "finding": "The large route marks a committed or uncertain publication requiring recovery with retry_allowed=false and fences local response delivery on custody failure. The migration client retains original absolute budgets and does not retry import on unknown outcome.",
+      "sources": [
+        "service_native_large",
+        "native_large_migrator"
+      ]
+    },
+    {
+      "id": "full34_test_contract",
+      "finding": "The frozen full34 driver seeds 17 live 2 MiB values plus deleted/destroyed history and checks exact source/target APIs and storage, cold restarts, snapshot download, an observed post-snapshot mutation, restore, restored cold history, undelete/destroy invariants and CAS refusals. Source presence is not a passing result.",
+      "sources": [
+        "kv2_lossless_live"
+      ]
+    }
+  ],
+  "historical_document_drift": [
+    {
+      "path": "crates/heptabao-server/V6_MIGRATION_RECOVERY.md",
+      "blob": "72a5675577d00c038a91867bf5d3e05128bb0ceb",
+      "stale_claims": [
+        "writer is only opt-in fixture",
+        "active native full-history writer still missing",
+        "Service native HA still excluded"
+      ],
+      "treatment": "Do not promote historical prose into a current missing-feature conclusion; current frozen source and actual runtime evidence govern."
+    },
+    {
+      "path": "docs/native-kv2-large-import-20261019.md",
+      "blob": "6da30492277461bdc4ca0b2815eb1d951b05920d",
+      "stale_claims": [
+        "native-large always refuses HA",
+        "syntax node cap 1,048,576"
+      ],
+      "treatment": "Current code contains conditional HA integration and node cap 4,194,304; original document remains unmodified."
+    },
+    {
+      "path": "planning/HEPTABAO_KV2_V6_MIGRATION_GATE_R265.md",
+      "blob": "1d1f8df9eaa54cbb6b1fbb315c9292f724aa7147",
+      "treatment": "R265/R266 research-only status describes its historical trial and is not current implementation status."
+    }
+  ],
+  "runtime_evidence_not_provided_by_this_review": [
+    "current-candidate X230 full34 actual",
+    "current Mac/ROG/Pocket4 physical leader-kill/election/ReadIndex/persistence/restart pass",
+    "snapshot CLI save/restore/cold/standby closure",
+    "production credentials and backup restore",
+    "full OpenBao 2.7.1 parity"
+  ],
+  "candidate_files_changed": false,
+  "product_tests_run_by_root_review": false,
+  "current_full34_qualified": false,
+  "physical_HA_qualified": false,
+  "production_cutover": false,
+  "legacy_cleanup": false,
+  "full_replacement": false
+}

@@ -1,0 +1,239 @@
+{
+  "schema": "heptabao.authbus-p01-new-registration-contract.r2",
+  "sourceProjection": {
+    "bytes": 106392,
+    "sha256": "36b53106cc56d732061d5e028885c48bc17a4dfc6d61b07f3e592731908e75ae",
+    "blob": "990b4994ed0857f83e6fe9a2f6528a8f82ddeb67"
+  },
+  "scope": "PROPOSAL_ONLY_NO_HOST_DISPATCH_OR_ISSUANCE",
+  "proposedRoots": [
+    {
+      "actualOwnerAndNamedParentPins": null,
+      "allowedClientChangeKeys": [
+        "plugins.entries.openclaw-authbus.config.address",
+        "plugins.entries.openclaw-authbus.config.caFile",
+        "plugins.entries.openclaw-authbus.config.roleIdFile",
+        "plugins.entries.openclaw-authbus.config.secretIdFile"
+      ],
+      "automaticHoldRelease": false,
+      "automaticServiceStart": false,
+      "backupDataPath": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-authbus-registration-r1/backup/archives",
+      "backupRegistrationPath": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-authbus-registration-r1/backup/registration.public.json",
+      "clientConfigurationPath": "/Users/qianqi/.openclaw/openclaw.json",
+      "clientCredentialGenerationPath": "/Users/qianqi/heptabao-production-authbus-registration-r1/credentials/generation-r1",
+      "clientCredentialGenerationRemainsAtHome": true,
+      "clientCredentialHomeRoot": "/Users/qianqi/heptabao-production-authbus-registration-r1",
+      "clientCredentialRootExistenceObserved": false,
+      "createOnly": true,
+      "existingEntryRefused": true,
+      "homeFromExistingEvidence": "/Users/qianqi",
+      "host": "mac",
+      "newRoleAndPolicyMustBeAbsent": true,
+      "privateDirectoryMode": "0700",
+      "privateFileMode": "0600",
+      "proposalOnlyNewRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-authbus-registration-r1",
+      "proposedNewClientFiles": {
+        "caFile": "/Users/qianqi/heptabao-production-authbus-registration-r1/credentials/generation-r1/ca.crt",
+        "roleIdFile": "/Users/qianqi/heptabao-production-authbus-registration-r1/credentials/generation-r1/role_id",
+        "secretIdFile": "/Users/qianqi/heptabao-production-authbus-registration-r1/credentials/generation-r1/secret_id"
+      },
+      "proposedPolicyName": "heptabao-authbus-mac-r1",
+      "proposedRoleName": "heptabao-authbus-mac-r1",
+      "publicRegistrationPath": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-authbus-registration-r1/registration.public.json",
+      "rootExistenceObserved": false,
+      "serverAndBackupOnExternalT5": true,
+      "serverBinaryPath": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-authbus-registration-r1/server/artifacts/heptabao-server",
+      "serverConfigurationPath": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-authbus-registration-r1/server/config.private.json",
+      "serverDataPath": "/Volumes/T5/hepta-vnext-recovery-20261013/heptabao-production-authbus-registration-r1/server/data",
+      "volumeBinding": {
+        "actualVolumeUuidVerifiedInThatRuntime": true,
+        "expectedVolumeDevice": "16777244",
+        "freshAdmissionAndFinalClosureStillRequired": true,
+        "heldFdNamedUuidDeviceRequiredBeforeAnyT5PrivateReadOrWrite": true,
+        "historicalOriginalAnchors": [
+          {
+            "identity": [
+              "16777233",
+              "2",
+              "0",
+              "0",
+              "16877",
+              "22",
+              "704",
+              "1786589515000000000",
+              "1786589515000000000"
+            ],
+            "path": "/"
+          },
+          {
+            "identity": [
+              "16777233",
+              "18336",
+              "0",
+              "0",
+              "16877",
+              "5",
+              "160",
+              "1793100597756515591",
+              "1793100597756515591"
+            ],
+            "path": "/Volumes"
+          },
+          {
+            "identity": [
+              "16777244",
+              "2",
+              "0",
+              "0",
+              "16893",
+              "12",
+              "384",
+              "1793152973144260495",
+              "1793152973144260495"
+            ],
+            "path": "/Volumes/T5"
+          }
+        ],
+        "mountPoint": "/Volumes/T5",
+        "prospectiveRootExistenceOrCurrentMountQualification": false,
+        "publicAnchor": {
+          "blob": "837f7d23be8380144cc7ed1212e5fc646cf56a43",
+          "bytes": 967,
+          "sha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8"
+        },
+        "sourceCurrentRuntimeStdout": {
+          "blob": "bdde97e2ec7a167619ea24b0ce9660086e81ebce",
+          "bytes": 91043,
+          "sha256": "8d3f357bf75b11c1ce37e34bb7304460271a1cb74d1bd5200031d2f2bd3f9302"
+        },
+        "volumeUUID": "FB804D1B-24CB-4D6E-AEA7-A9E180807758"
+      }
+    },
+    {
+      "actualOwnerAndNamedParentPins": null,
+      "allowedClientChangeKeys": [
+        "plugins.entries.openclaw-authbus.config.address",
+        "plugins.entries.openclaw-authbus.config.caFile",
+        "plugins.entries.openclaw-authbus.config.roleIdFile",
+        "plugins.entries.openclaw-authbus.config.secretIdFile"
+      ],
+      "automaticHoldRelease": false,
+      "automaticServiceStart": false,
+      "clientConfigurationPath": "/home/qian-qi/.openclaw/openclaw.json",
+      "clientCredentialGenerationPath": "/home/qian-qi/heptabao-production-authbus-registration-r1/credentials/generation-r1",
+      "createOnly": true,
+      "existingEntryRefused": true,
+      "homeFromExistingEvidence": "/home/qian-qi",
+      "host": "rog",
+      "newRoleAndPolicyMustBeAbsent": true,
+      "privateDirectoryMode": "0700",
+      "privateFileMode": "0600",
+      "proposalOnlyNewRoot": "/home/qian-qi/heptabao-production-authbus-registration-r1",
+      "proposedNewClientFiles": {
+        "caFile": "/home/qian-qi/heptabao-production-authbus-registration-r1/credentials/generation-r1/ca.crt",
+        "roleIdFile": "/home/qian-qi/heptabao-production-authbus-registration-r1/credentials/generation-r1/role_id",
+        "secretIdFile": "/home/qian-qi/heptabao-production-authbus-registration-r1/credentials/generation-r1/secret_id"
+      },
+      "proposedPolicyName": "heptabao-authbus-rog-r1",
+      "proposedRoleName": "heptabao-authbus-rog-r1",
+      "publicRegistrationPath": "/home/qian-qi/heptabao-production-authbus-registration-r1/registration.public.json",
+      "rootExistenceObserved": false,
+      "serverConfigurationPath": "/home/qian-qi/heptabao-production-authbus-registration-r1/server/config.private.json",
+      "serverDataPath": "/home/qian-qi/heptabao-production-authbus-registration-r1/server/data"
+    },
+    {
+      "actualOwnerAndNamedParentPins": null,
+      "allowedClientChangeKeys": [
+        "plugins.entries.openclaw-authbus.config.address",
+        "plugins.entries.openclaw-authbus.config.caFile",
+        "plugins.entries.openclaw-authbus.config.roleIdFile",
+        "plugins.entries.openclaw-authbus.config.secretIdFile"
+      ],
+      "automaticHoldRelease": false,
+      "automaticServiceStart": false,
+      "clientConfigurationPath": "/home/alex/.openclaw/openclaw.json",
+      "clientCredentialGenerationPath": "/home/alex/heptabao-production-authbus-registration-r1/credentials/generation-r1",
+      "createOnly": true,
+      "existingEntryRefused": true,
+      "homeFromExistingEvidence": "/home/alex",
+      "host": "pocket4",
+      "newRoleAndPolicyMustBeAbsent": true,
+      "privateDirectoryMode": "0700",
+      "privateFileMode": "0600",
+      "proposalOnlyNewRoot": "/home/alex/heptabao-production-authbus-registration-r1",
+      "proposedNewClientFiles": {
+        "caFile": "/home/alex/heptabao-production-authbus-registration-r1/credentials/generation-r1/ca.crt",
+        "roleIdFile": "/home/alex/heptabao-production-authbus-registration-r1/credentials/generation-r1/role_id",
+        "secretIdFile": "/home/alex/heptabao-production-authbus-registration-r1/credentials/generation-r1/secret_id"
+      },
+      "proposedPolicyName": "heptabao-authbus-pocket4-r1",
+      "proposedRoleName": "heptabao-authbus-pocket4-r1",
+      "publicRegistrationPath": "/home/alex/heptabao-production-authbus-registration-r1/registration.public.json",
+      "rootExistenceObserved": false,
+      "serverConfigurationPath": "/home/alex/heptabao-production-authbus-registration-r1/server/config.private.json",
+      "serverDataPath": "/home/alex/heptabao-production-authbus-registration-r1/server/data"
+    }
+  ],
+  "steps": [
+    {
+      "action": "Bind accepted canonical binaries, actual host/member identities, addresses/ports and HA source evidence to a new cluster deployment contract; no loopback fixture identity is accepted.",
+      "step": "T01"
+    },
+    {
+      "action": "After separate exact GO, verify each proposed new root and role/policy name absent; create only the owned registration roots and retain complete independent readbacks. Any existing entry stops.",
+      "step": "T02"
+    },
+    {
+      "action": "Under a separately reviewed secure issuer, generate one new independent CA and per-member leaf key/certificate; SANs must equal the actually bound addresses/names. Private keys remain private; public chains/full hashes and issuer receipts are required.",
+      "step": "T03"
+    },
+    {
+      "action": "Initialize the new cluster once, retain actual clusterId/member evidence and private recovery custody, and read back the real native profile. Never import fixture root tokens, unseal keys, role IDs or SecretIDs.",
+      "step": "T04"
+    },
+    {
+      "action": "Render exact per-host ACL from the installed AuthBus operation closure and real profile/grant mapping: canonical read grants separated from per-host inbox proposals; freeze policy hash, create once and independently read back.",
+      "step": "T05"
+    },
+    {
+      "action": "Create each new per-host AppRole once with explicitly reviewed token/SecretID TTL and use limits; obtain RoleID and issue SecretID from real authenticated responses. Bind response, issuer/cluster, policy hash and the private generation files without public values.",
+      "step": "T06"
+    },
+    {
+      "action": "Use actual issued tokens for lookup-self before renewal, renewal and lookup-self after renewal, unassigned rejection, revoke and revoked rejection. HTTP200 alone is not TTL/expiry extension evidence. Unknown stops without replay.",
+      "step": "T07"
+    },
+    {
+      "action": "For one host at a time, obtain an exact private rollback capsule and real service writer custody, then change only four client connection fields under expected-before/after guards. Keep models, enabled, provider, refresh/quota, order, caches and hold directives unchanged.",
+      "step": "T08"
+    },
+    {
+      "action": "Qualify actual persistence/cold-start and one strict inverse for that host under separate manager GO. Existing inactive or held services are not automatically started or released.",
+      "step": "T09"
+    },
+    {
+      "action": "Register the newly introduced cluster/credential backup dependency explicitly, prove one source-bound encrypted capture/restore on the accepted product, and only then consider separately authorized legacy cleanup.",
+      "step": "T10"
+    }
+  ],
+  "actualIssuedProductionValues": {
+    "address": null,
+    "backupRestoreReceipt": null,
+    "caAndLeafReadback": null,
+    "clusterId": null,
+    "issuerReceipt": null,
+    "memberSet": null,
+    "perHostRoleIdSource": null,
+    "perHostSecretIdSource": null,
+    "policyReadbacks": null,
+    "renewalLookupBeforeAfter": null,
+    "serviceTransitions": null,
+    "tokenLifetimeUsePolicy": null
+  },
+  "generationRule": "All generated values must come from later real secure issuance responses, with exact root-reviewed binding; never populate these slots from the loopback qualification fixture.",
+  "nativeClosedGuardsRemain": [
+    "MFA state and JWT/Kubernetes/OIDC state must remain compatible with the admitted native profile; unsupported routes remain refused.",
+    "A route selector is not an authentication grant.",
+    "No relaxed namespace/profile or unknown-delivery replay."
+  ]
+}
