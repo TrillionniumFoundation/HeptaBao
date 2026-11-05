@@ -1,0 +1,101 @@
+{
+  "schema": "heptabao.current4e808-normal5-source-binding.v1",
+  "scope": "SOURCE_ONLY; no current normal5 inert or transfer submitted",
+  "ready": true,
+  "dispatch_authorized": false,
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "normal61_root_review": "fdf6e1228b24fdbcb56f350f88a7069c137d8661",
+  "normal61_core_packet": "f5d3875b2ab325691b701b186624fa38b17cc34f",
+  "normal61_core_full_archive_pending": true,
+  "source_stage_full_packet": "1bc4d16fda3830dd6b035a1fd36a4ca21fbc018d",
+  "destination": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1/incoming",
+  "source_controls": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifact-controls-r1",
+  "files": [
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-server",
+      "name": "heptabao-server",
+      "bytes": 110219600,
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+      "source_mode": 320,
+      "target_mode": 320,
+      "version": "66306:35799524:110219600:1793878962288901433:1793878962422900772"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/native-build.public.json",
+      "name": "native-build.public.json",
+      "bytes": 786,
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:35799527:786:1793878962882813897:1793878962882813897"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/normal-release-result.public.json",
+      "name": "normal-release-result.public.json",
+      "bytes": 3192,
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:35799526:3192:1793878962880898513:1793878962880898513"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/result.public.json",
+      "name": "normal-release-tests-result.public.json",
+      "bytes": 57532,
+      "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:35799670:57532:1793880513628576356:1793880513628576356"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/normal-test-groups.public.json",
+      "name": "groups.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:33211565:6249:1793875489336258402:1793875489336258402"
+    }
+  ],
+  "bytes": 110287359,
+  "source_modes": [
+    320,
+    384,
+    384,
+    384,
+    384
+  ],
+  "destination_modes": [
+    320,
+    256,
+    256,
+    256,
+    256
+  ],
+  "original_caps": {
+    "inert_outer": 60,
+    "inert_payload_bytes": 262144,
+    "relay": 300,
+    "endpoint": 90,
+    "connect": 10,
+    "cleanup": [
+      5,
+      5
+    ],
+    "supervisor": 360
+  },
+  "groups_metadata_provenance": "Original independent 4e808 source-stage file_info, whose whole SHA and version exactly equal the current post-normal complete body read; not described as a new stat.",
+  "definitions_byte_unchanged": {
+    "sender.py": 10,
+    "receiver.py": 10,
+    "relay.py": 17,
+    "inert-carrier.py": 5
+  },
+  "receiver_qualification_scope": "Unchanged actual normal-release/native receipt predicates use current HEAD/TREE. Combined61 and groups are transported as exact pinned original bytes; full 61 semantics remain the independent normal gate and downstream binder's responsibility.",
+  "old_df026_incoming_unchanged": true,
+  "qa12_instrument_directory_separate": true,
+  "canonical_source_transport_owner": "compatibility_audit",
+  "product_or_LAN_execution": false,
+  "unknowns_not_replayed": true
+}

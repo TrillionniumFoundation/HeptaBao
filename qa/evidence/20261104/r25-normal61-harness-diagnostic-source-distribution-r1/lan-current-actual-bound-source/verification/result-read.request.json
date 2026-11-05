@@ -1,0 +1,5 @@
+{
+  "cmd": "cat /tmp/heptabao_4e808_lan_bound_r1/result.public.json",
+  "workdir": "/tmp",
+  "max_output_tokens": 5000
+}

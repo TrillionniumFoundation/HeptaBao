@@ -1,0 +1,106 @@
+{
+  "schema": "heptabao.mac-captured-harness-predicate-source-contract.r1",
+  "qualification": "SOURCE_ONLY_NOT_HOST_GO",
+  "source": {
+    "bytes": 20025,
+    "sha256": "2b999a66c6c3578673fd4611c4d89bf14fd7fd3605c3839ddb4379216d0b3805",
+    "blob": "c23db528a0454408db56e280a5f9e143db3a2cfd"
+  },
+  "host": "mac",
+  "fixedPrivateInput": {
+    "bytes": 195155,
+    "identity": [
+      "16777244",
+      "72635869",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "195155",
+      "1793881838780757114",
+      "1793881838780765364"
+    ],
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1/captures/before/output/capsule.private.json",
+    "sha256": "f4e4f83ced4229302b85231628ebc1a797474389265e2005e44be0ae4aafae04"
+  },
+  "fixedPublicInputProvenance": {
+    "runtimeStdout": {
+      "blob": "bdde97e2ec7a167619ea24b0ce9660086e81ebce",
+      "bytes": 91043,
+      "sha256": "8d3f357bf75b11c1ce37e34bb7304460271a1cb74d1bd5200031d2f2bd3f9302"
+    },
+    "entryStdout": {
+      "blob": "4d8bdf3cc8fa25ebc85954eae32de542431fa200",
+      "bytes": 30308,
+      "sha256": "88883315e4d9f343cbbc967224fc7a177f5cc8e216d09f811ef1c59c5de5fbd4"
+    },
+    "authority": {
+      "blob": "b56a7a6cf15a8b274061720debc80cb7f3070bbd",
+      "bytes": 730,
+      "sha256": "0594f87341d29cea0465a91bd42596fdfc81196c933d66156a6415d8947c2f27"
+    }
+  },
+  "additionalPrivateOrPublicFileReads": 0,
+  "noCurrentDbOrSdkReads": true,
+  "bounds": {
+    "newSharedSoftSeconds": 5,
+    "newSupervisorSeconds": 60,
+    "parentDirectories": 8,
+    "maximumRegisteredDescriptors": 9,
+    "metadataCap": 80,
+    "successPathMetadataCalls": 72,
+    "maximumReadCalls": 4,
+    "exactPayloadBytes": 195155,
+    "maximumIncludingUnexpectedEofByte": 195156,
+    "maximumOutputBytes": 16384,
+    "registryPlugins": 128,
+    "enabledHarnessOwners": 8,
+    "agents": 5
+  },
+  "originalEnabledPredicate": "isinstance(plugin,dict) and plugin.get('enabled') is True and isinstance(plugin.get('startup'),dict) and plugin['startup'].get('agentHarnesses')",
+  "originalRootPredicateComponents": [
+    "pluginId is str and matches [a-z0-9][a-z0-9_.-]{0,79}",
+    "Path(rootDir).is_absolute()",
+    "root == Path(os.path.normpath(str(root)))",
+    "root.is_relative_to(LIVE / 'npm/projects')"
+  ],
+  "fixedOutputRules": {
+    "pluginIds": "canonical JSON SHA256 only",
+    "unknownRoots": "canonical JSON SHA256 only",
+    "knownRootLiteral": "Only exact equality to the already actual-hashed codex public root in sourceRecords.",
+    "authDocumentsOrRawCapsule": "Never output, even on errors",
+    "errors": "Fixed stage, fixed Refused code, class name and bounded errno only; no exception filename/message"
+  },
+  "selectionScope": {
+    "actualSelectedSetKnown": false,
+    "why": "The exact actual outer has ownedPhases=[] and the original worker's loader/selector/registry-instance check was never invoked.",
+    "output": "Every enabled owner remains explicitly NOT_OBSERVED_NO_NATIVE_WORKER_RAN for selected-agent status; separate five captured model declaration hashes and match to the already public openai/gpt-5.6-sol literal.",
+    "notAllowed": "Do not call any other enabled owner unused. Do not use this read to broaden the npm root whitelist or bypass original selected-instance checks."
+  },
+  "resourceContract": {
+    "fixedThreeAnchorsFullNine": true,
+    "otherParentNoFollowAndUid501Device16777244NoExternalWrite": true,
+    "eachObservationHeldNamedFullNine": true,
+    "leafFullNineBeforeOpenAndAfterRead": true,
+    "wholeCapsuleHashBeforeProjection": true,
+    "resourcesProtectedThroughAcquisitionAndFinally": true,
+    "closeAttemptBeforeClose": true,
+    "closeUnknownNoRetry": true,
+    "allClosuresAndNoPendingAfterHandlerRestoreRequired": true,
+    "sameDeadlineAfterOutputFlush": true,
+    "noSyscallHardPreemptionClaim": true,
+    "uuidRemeasured": false,
+    "priorUuidAuthorityNotRewritten": true,
+    "accessTimeUnchangedClaimed": false
+  },
+  "dispatchProtocol": "Root exact GO required. Persist independent external intent, one start, save original ACK before parse, reconcile only original job. Archive whole public stdout/stderr and authority. Completion of this observation is not all predicates passed or current runtime qualification.",
+  "noReplay": true,
+  "noFileMutation": true,
+  "noChild": true,
+  "noSqlite": true,
+  "noNetwork": true,
+  "noSdkExecution": true,
+  "noProductionMutation": true,
+  "noProviderOrJ3160": true,
+  "oldUnknownsUnchanged": true
+}

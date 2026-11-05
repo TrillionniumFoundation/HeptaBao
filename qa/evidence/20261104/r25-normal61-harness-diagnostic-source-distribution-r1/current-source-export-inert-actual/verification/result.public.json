@@ -1,0 +1,402 @@
+{
+  "schema": "heptabao.current4e808-exporter-inert-actual-verification.v1",
+  "status": "passed_inert_only",
+  "job_id": "1a1abb9785a-fc05-5029",
+  "checks_count": 86,
+  "checks": [
+    {
+      "name": "exact approved request bytes and blob",
+      "passed": true
+    },
+    {
+      "name": "exact root GO blob",
+      "passed": true
+    },
+    {
+      "name": "one explicit external intent and submission",
+      "passed": true
+    },
+    {
+      "name": "actual unique ACK not reused",
+      "passed": true
+    },
+    {
+      "name": "actual ACK exact source argv and host",
+      "passed": true
+    },
+    {
+      "name": "source in exact carrier",
+      "passed": true
+    },
+    {
+      "name": "actual source source-only packet pin",
+      "passed": true
+    },
+    {
+      "name": "authority admission and status original same operation",
+      "passed": true
+    },
+    {
+      "name": "authority observation closed with retained original payload",
+      "passed": true
+    },
+    {
+      "name": "authority exact immutable page continuity at 0",
+      "passed": true
+    },
+    {
+      "name": "authority complete page EOF and whole original SHA",
+      "passed": true
+    },
+    {
+      "name": "authority raw reconstructed original SDK exact",
+      "passed": true
+    },
+    {
+      "name": "original complete SDK result",
+      "passed": true
+    },
+    {
+      "name": "one original native text",
+      "passed": true
+    },
+    {
+      "name": "authority original native exact",
+      "passed": true
+    },
+    {
+      "name": "streams admission and status original same operation",
+      "passed": true
+    },
+    {
+      "name": "streams observation closed with retained original payload",
+      "passed": true
+    },
+    {
+      "name": "streams exact immutable page continuity at 0",
+      "passed": true
+    },
+    {
+      "name": "streams complete page EOF and whole original SHA",
+      "passed": true
+    },
+    {
+      "name": "streams raw reconstructed original SDK exact",
+      "passed": true
+    },
+    {
+      "name": "original complete SDK result",
+      "passed": true
+    },
+    {
+      "name": "one original native text",
+      "passed": true
+    },
+    {
+      "name": "streams original native exact",
+      "passed": true
+    },
+    {
+      "name": "source-info admission and status original same operation",
+      "passed": true
+    },
+    {
+      "name": "source-info observation closed with retained original payload",
+      "passed": true
+    },
+    {
+      "name": "source-info exact immutable page continuity at 0",
+      "passed": true
+    },
+    {
+      "name": "source-info complete page EOF and whole original SHA",
+      "passed": true
+    },
+    {
+      "name": "source-info raw reconstructed original SDK exact",
+      "passed": true
+    },
+    {
+      "name": "original complete SDK result",
+      "passed": true
+    },
+    {
+      "name": "one original native text",
+      "passed": true
+    },
+    {
+      "name": "source-info original native exact",
+      "passed": true
+    },
+    {
+      "name": "receipt-info admission and status original same operation",
+      "passed": true
+    },
+    {
+      "name": "receipt-info observation closed with retained original payload",
+      "passed": true
+    },
+    {
+      "name": "receipt-info exact immutable page continuity at 0",
+      "passed": true
+    },
+    {
+      "name": "receipt-info complete page EOF and whole original SHA",
+      "passed": true
+    },
+    {
+      "name": "receipt-info raw reconstructed original SDK exact",
+      "passed": true
+    },
+    {
+      "name": "original complete SDK result",
+      "passed": true
+    },
+    {
+      "name": "one original native text",
+      "passed": true
+    },
+    {
+      "name": "receipt-info original native exact",
+      "passed": true
+    },
+    {
+      "name": "source-body admission and status original same operation",
+      "passed": true
+    },
+    {
+      "name": "source-body observation closed with retained original payload",
+      "passed": true
+    },
+    {
+      "name": "source-body exact immutable page continuity at 0",
+      "passed": true
+    },
+    {
+      "name": "source-body exact immutable page continuity at 8192",
+      "passed": true
+    },
+    {
+      "name": "source-body exact immutable page continuity at 16384",
+      "passed": true
+    },
+    {
+      "name": "source-body complete page EOF and whole original SHA",
+      "passed": true
+    },
+    {
+      "name": "source-body raw reconstructed original SDK exact",
+      "passed": true
+    },
+    {
+      "name": "original complete SDK result",
+      "passed": true
+    },
+    {
+      "name": "one original native text",
+      "passed": true
+    },
+    {
+      "name": "source-body original native exact",
+      "passed": true
+    },
+    {
+      "name": "receipt-body admission and status original same operation",
+      "passed": true
+    },
+    {
+      "name": "receipt-body observation closed with retained original payload",
+      "passed": true
+    },
+    {
+      "name": "receipt-body exact immutable page continuity at 0",
+      "passed": true
+    },
+    {
+      "name": "receipt-body complete page EOF and whole original SHA",
+      "passed": true
+    },
+    {
+      "name": "receipt-body raw reconstructed original SDK exact",
+      "passed": true
+    },
+    {
+      "name": "original complete SDK result",
+      "passed": true
+    },
+    {
+      "name": "one original native text",
+      "passed": true
+    },
+    {
+      "name": "receipt-body original native exact",
+      "passed": true
+    },
+    {
+      "name": "exact six read operations only",
+      "passed": true
+    },
+    {
+      "name": "authoritative job terminal successful and durable",
+      "passed": true
+    },
+    {
+      "name": "streams same one job",
+      "passed": true
+    },
+    {
+      "name": "stdout complete byte offsets and EOF",
+      "passed": true
+    },
+    {
+      "name": "stdout text and hex and saved body exact",
+      "passed": true
+    },
+    {
+      "name": "stdout authority full synced not truncated",
+      "passed": true
+    },
+    {
+      "name": "stderr complete byte offsets and EOF",
+      "passed": true
+    },
+    {
+      "name": "stderr text and hex and saved body exact",
+      "passed": true
+    },
+    {
+      "name": "stderr authority full synced not truncated",
+      "passed": true
+    },
+    {
+      "name": "complete original stderr empty",
+      "passed": true
+    },
+    {
+      "name": "complete stdout 837 bytes",
+      "passed": true
+    },
+    {
+      "name": "source independent exact path mode uid gid nlink",
+      "passed": true
+    },
+    {
+      "name": "source expected_version request exact actual info",
+      "passed": true
+    },
+    {
+      "name": "source full pinned binary read exact",
+      "passed": true
+    },
+    {
+      "name": "source saved body exact native binary",
+      "passed": true
+    },
+    {
+      "name": "actual source whole body equals reviewed exporter",
+      "passed": true
+    },
+    {
+      "name": "receipt independent exact path mode uid gid nlink",
+      "passed": true
+    },
+    {
+      "name": "receipt expected_version request exact actual info",
+      "passed": true
+    },
+    {
+      "name": "receipt full pinned binary read exact",
+      "passed": true
+    },
+    {
+      "name": "receipt saved body exact native binary",
+      "passed": true
+    },
+    {
+      "name": "actual receipt whole JSON equals original stdout",
+      "passed": true
+    },
+    {
+      "name": "receipt exact original publisher formatting",
+      "passed": true
+    },
+    {
+      "name": "inert actual status and schema",
+      "passed": true
+    },
+    {
+      "name": "one exact published source",
+      "passed": true
+    },
+    {
+      "name": "published source expected mode byte hash path",
+      "passed": true
+    },
+    {
+      "name": "exact nine source identity and native version without JS rounding",
+      "passed": true
+    },
+    {
+      "name": "exact original stdin payload binding",
+      "passed": true
+    },
+    {
+      "name": "Python compile only no child product source execution",
+      "passed": true
+    },
+    {
+      "name": "original external 60s and lossless actual interval",
+      "passed": true
+    }
+  ],
+  "operations": [
+    {
+      "label": "authority",
+      "operation_id": "c32c7a6f84fdf3563bb0fbc01cce55eac9611eef251ea0d6ef806f059c246c24",
+      "payload_bytes": 908,
+      "payload_sha256": "558458c5753261c567ab711ce7cc2aa62543a20e254f4ed2f1f60cfdc2040f98",
+      "pages": 1
+    },
+    {
+      "label": "streams",
+      "operation_id": "9180407470534b693ddf56815bc4df87504e8dccdb07a0da9f18af88109a2d50",
+      "payload_bytes": 3130,
+      "payload_sha256": "f8e9080b4cf5797bd7f1f961559a4d3dcbb7cac614f5ed41f9dd9c242f22a12b",
+      "pages": 1
+    },
+    {
+      "label": "source-info",
+      "operation_id": "a1e81cca278e3bfab1941b7bdc1410ac0b4c72dce3648051b5af15015b8723d6",
+      "payload_bytes": 632,
+      "payload_sha256": "f366c4c0eb7adde3c065977809b4aaf7737e108ba1e65ed6e6769417bf3bebcd",
+      "pages": 1
+    },
+    {
+      "label": "receipt-info",
+      "operation_id": "50d9c4011a47c0bc46bd5890e3e658b5ee1606f618fcfd194e11138713c2b798",
+      "payload_bytes": 611,
+      "payload_sha256": "ac519bf51914f175647bd3f76f04a29fb5f74a60e1eb7389b4c32c8b7cd3ba66",
+      "pages": 1
+    },
+    {
+      "label": "source-body",
+      "operation_id": "ad830b5fa08d8b3bc608d1c0032199a1ecfc42ebed3f1c57f5004484c5ae17f8",
+      "payload_bytes": 20956,
+      "payload_sha256": "a6e0ca6049709c35259a1f79a544902c9dc91adda6427608d5288e79e878353c",
+      "pages": 3
+    },
+    {
+      "label": "receipt-body",
+      "operation_id": "972782aa9e3e4ce056b91cb733719eba3b6f1a9af2b9837231ff68ed207c0bf9",
+      "payload_bytes": 1773,
+      "payload_sha256": "7e3d41de3875287d5c27ba3e54f0d663744f97b1c40ea7700e01974b45f14bfb",
+      "pages": 1
+    }
+  ],
+  "elapsed_ns": "6338962",
+  "inputs_source_body_matches": true,
+  "receipt_body_matches": true,
+  "source_execute_export_transport_import_or_product": false,
+  "old_unknown_or_failures_replayed": false,
+  "unsafe_integer_comparison": "Python exact int from original native bytes; no JS numeric reserialization"
+}

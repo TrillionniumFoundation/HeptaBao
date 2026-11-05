@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/result.public.json\",\"sha256\":\"7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475\",\"size\":57532,\"version\":\"66306:35799670:57532:1793880513628576356:1793880513628576356\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

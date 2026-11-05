@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.mac-captured-harness-predicate-actual-recap.r1",
+  "sourceTree": "5f82ad1ca7dd63cc25f890f6597445e54ed9e920",
+  "actualJobId": "1a1abcc26f6-fc05-50a4",
+  "sourceRequestBlob": "0a6df248e9e4780bbe3d625bfeeebd5728eeea1d",
+  "authority": "f7bdd2224bc09ffe48d47678e40da096c3210f10",
+  "stdout": "e311f02d58594fa70957751d303c2a2df9c31c49",
+  "actualChecksPassed": 96,
+  "qualification": "KNOWN_ZERO_COMPLETE_READONLY_DIAGNOSTIC_ONLY",
+  "originalRuntimeRemainsKnownInputRefused": true,
+  "exactFailure": {
+    "registryOrdinal": 22,
+    "enabledOrdinal": 0,
+    "originalComposite": false,
+    "identifierString": true,
+    "identifierRegex": true,
+    "rootAbsolute": true,
+    "rootNormalized": true,
+    "rootInOriginalNpmProjectsNamespace": false
+  },
+  "secondOwner": {
+    "registryOrdinal": 68,
+    "enabledOrdinal": 1,
+    "alreadyPinnedCodexRoot": true,
+    "originalComposite": true
+  },
+  "actualSelectedForFiveAgents": "NOT_OBSERVED_NO_NATIVE_WORKER_RAN",
+  "closure": {
+    "allOwnedDescriptorsClosed": true,
+    "registered": 9,
+    "metadataCalls": 72,
+    "readCalls": 4,
+    "privateBytesRead": 195155,
+    "elapsedSeconds": 0.005912791937589645,
+    "postClosureDeadline": true,
+    "authoritativeExitZero": true,
+    "handlerRestoreErrors": [],
+    "pendingSignal": null
+  },
+  "oneStartOnly": true,
+  "readOnlyDiagnosticReplaysOriginalCapture": false,
+  "privateBodyExported": false,
+  "runtimeQualification": false,
+  "productionQualification": false,
+  "oldUnknownsChanged": false,
+  "hostWindow": "No pending job after this exact diagnostic terminal and all descriptor closure; root retains scheduling authority.",
+  "localObservationCorrection": "Initial ACK parser expected top-level host/job_id, whereas exact original native ACK uses job.host/job.id. Original ACK had been externally persisted before parsing. Corrected field access only, no host replay. Unsafe request_fingerprint is evidence only in original raw ACK."
+}

@@ -1,0 +1,117 @@
+--- a/receiver.py
++++ b/receiver.py
+@@ -6,59 +6,59 @@
+ os.umask(0o077)
+ START=time.monotonic()
+ UNTIL=START+90
+-HEAD='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
++HEAD='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
+-TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
++TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'
+ FILES=[
+  {
+-  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server",
+-  "name": "heptabao-server",
+-  "bytes": 110339520,
+-  "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2",
+-  "source_mode": 320,
+-  "target_mode": 320,
+-  "version": "66306:31618600:110339520:1793854196517721681:1793854196660721163"
+- },
+- {
+-  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/native-build.public.json",
+-  "name": "native-build.public.json",
+-  "bytes": 772,
+-  "sha256": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": "66306:31618604:772:1793854197085814600:1793854197085814600"
+- },
+- {
+-  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/normal-release-result.public.json",
+-  "name": "normal-release-result.public.json",
+-  "bytes": 3137,
+-  "sha256": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d",
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": "66306:31618602:3137:1793854197085005556:1793854197085005556"
+- },
+- {
+-  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json",
+-  "name": "normal-release-tests-result.public.json",
+-  "bytes": 48188,
+-  "sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": "66306:31618802:48188:1793855417596045434:1793855417596045434"
+- },
+- {
+-  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/normal-test-groups.public.json",
+-  "name": "groups.json",
+-  "bytes": 6249,
+-  "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": "66306:27299399:6249:1793850441629209928:1793850441629209928"
++  "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-server",
++  "name": "heptabao-server",
++  "bytes": 110219600,
++  "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
++  "source_mode": 320,
++  "target_mode": 320,
++  "version": "66306:35799524:110219600:1793878962288901433:1793878962422900772"
++ },
++ {
++  "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/native-build.public.json",
++  "name": "native-build.public.json",
++  "bytes": 786,
++  "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:35799527:786:1793878962882813897:1793878962882813897"
++ },
++ {
++  "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/normal-release-result.public.json",
++  "name": "normal-release-result.public.json",
++  "bytes": 3192,
++  "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:35799526:3192:1793878962880898513:1793878962880898513"
++ },
++ {
++  "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/result.public.json",
++  "name": "normal-release-tests-result.public.json",
++  "bytes": 57532,
++  "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:35799670:57532:1793880513628576356:1793880513628576356"
++ },
++ {
++  "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/normal-test-groups.public.json",
++  "name": "groups.json",
++  "bytes": 6249,
++  "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:33211565:6249:1793875489336258402:1793875489336258402"
+  }
+ ]
+ protected=0
+ pending_signal=None
+ children=[]
+-result={'schema':'heptabao.df026.fixed-public-normal-endpoint.v1','status':'failed',
++result={'schema':'heptabao.4e808.fixed-public-normal-endpoint.v1','status':'failed',
+         'request_seconds':90,'git_operations':0,'server_started':False,'compiler_started':False}
+ class Cancelled(BaseException):pass
+ def handler(sig,_frame):
+@@ -134,7 +134,7 @@
+   sys.stderr.write(json.dumps(result,sort_keys=True)+'\n');sys.stderr.flush()
+  sys.exit(0 if result['status']=='complete' and time.monotonic()<UNTIL else 1)
+ 
+-ROOT=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1')
++ROOT=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-shared-artifacts-r1')
+ DESTINATION=ROOT/'incoming'
+ def receive():
+  assert (platform.system(),platform.machine(),os.getuid())==('Linux','x86_64',1000)

@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-4e808-export-inert-5029-streams-r1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1abb9785a-fc05-5029",
+      "limit": 16384,
+      "stdout_offset": 0,
+      "stderr_offset": 0
+    }
+  }
+}

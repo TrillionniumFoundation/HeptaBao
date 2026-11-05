@@ -1,0 +1,6 @@
+{
+  "schema": "heptabao.root.review-local-error-observation.r1",
+  "error": "TypeError: Cannot read properties of undefined (reading 'map') after immutable packet fetch completed; root wrapper mistakenly used raw function return instead of *_audit cache. No host call or ref publication. Provisional record corrected from verified cached audit.",
+  "recovery": "Used the already verified *_audit cache; no immutable packet refetch, host call, branch publication or qualification inference.",
+  "privateDataPublished": false
+}

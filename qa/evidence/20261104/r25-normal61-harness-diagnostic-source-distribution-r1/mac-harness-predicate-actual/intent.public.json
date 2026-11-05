@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.mac-captured-harness-predicate-exact-intent.r1",
+  "intent_time_utc": "2026-11-05 12:59:45 UTC",
+  "host": "mac",
+  "idempotency_key": "heptabao-mac-captured-harness-predicates-2b999a66-20261105-r1",
+  "source": {
+    "bytes": 20025,
+    "sha256": "2b999a66c6c3578673fd4611c4d89bf14fd7fd3605c3839ddb4379216d0b3805",
+    "blob": "c23db528a0454408db56e280a5f9e143db3a2cfd"
+  },
+  "exactRequest": {
+    "blob": "0a6df248e9e4780bbe3d625bfeeebd5728eeea1d",
+    "bytes": 21428,
+    "sha256": "041b1a9b5b4f8055f6dfc442027af47b8c3921c37d84c04c2399679600a7b8ae"
+  },
+  "rootGo": {
+    "blob": "8d4e14282a309a089b0474ba52fbf3cb1f83c861",
+    "bytes": 2124,
+    "sha256": "c71064e9ef1dde3a03aa7e8889f7e78f95d5245f2da6e804b56085922065ae8f"
+  },
+  "sourceTree": "5f82ad1ca7dd63cc25f890f6597445e54ed9e920",
+  "operation": "ONE_EXACT_PROCESS_START",
+  "capsule": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1/captures/before/output/capsule.private.json",
+    "bytes": 195155,
+    "sha256": "f4e4f83ced4229302b85231628ebc1a797474389265e2005e44be0ae4aafae04"
+  },
+  "limits": {
+    "softSeconds": 5,
+    "outerSeconds": 60,
+    "metadataCalls": 80,
+    "fileDescriptors": 9,
+    "readCalls": 4,
+    "readBytes": 195156
+  },
+  "noCurrentCaptureReplay": true,
+  "noSqlite": true,
+  "noSdkExecution": true,
+  "noChildFromObserver": true,
+  "noProvider": true,
+  "noServiceOrProductionMutation": true,
+  "selectedHarnessEvidence": "NOT_OBSERVED_NO_NATIVE_WORKER_RAN",
+  "acknowledgementMustBeExternallySavedBeforeParse": true,
+  "unknownStopsWithoutReplay": true
+}

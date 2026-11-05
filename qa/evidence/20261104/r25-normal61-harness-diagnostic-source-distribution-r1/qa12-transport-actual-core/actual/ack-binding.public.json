@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.qa12.relay-ack-binding.v1",
+  "job_id": "1a1abb3fe28-fc05-4fef",
+  "host": "desktop",
+  "request_digest": "e42cb9d58d98502cd931e75b50b3ee3ef730fef3ff7c8d08345c816650e8d9f9",
+  "request_fingerprint_decimal": "16441720666477580332",
+  "request_blob": "776bad1dfb3862850f4763ebb285d1d5b3dda2f2",
+  "root_go_blob": "41c0f8a0bc4c490aa800636869d9fdeeb777b7e9",
+  "external_intent_tree": "d349bd567076193a3ba70acb53b8fe76a78b8a66",
+  "original_ack_tree": "2a9bbbb3d341c8df5bdf73a13585e770da46d3a1",
+  "exact_visible_argv_cwd_key": true,
+  "timeout_seconds_from_exact_request": 360,
+  "timeout_not_projected_in_ack": true,
+  "only_submission": true
+}

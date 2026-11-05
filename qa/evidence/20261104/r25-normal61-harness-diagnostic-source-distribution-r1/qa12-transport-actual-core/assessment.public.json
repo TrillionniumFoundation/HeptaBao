@@ -1,0 +1,159 @@
+{
+  "schema": "heptabao.qa12.instrument-transport-actual-core.v1",
+  "status": "PASS_TRANSFER_TERMINAL_PARTIAL_INDEPENDENT_METADATA",
+  "job_id": "1a1abb3fe28-fc05-4fef",
+  "source_tree": "88e7ded49e5557982ad693102f9ccc6cdec87e06",
+  "intent_tree": "d349bd567076193a3ba70acb53b8fe76a78b8a66",
+  "original_request": "776bad1dfb3862850f4763ebb285d1d5b3dda2f2",
+  "authoritative_exit_code": 0,
+  "source_identity": {
+    "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825"
+  },
+  "transferred_files": 12,
+  "bytes": 4892547,
+  "elapsed_seconds": 1.1733463960699737,
+  "all_three_owned_closed": true,
+  "independent_metadata_complete_roles": [
+    "executable",
+    "rust_source",
+    "test_source",
+    "cargo_manifest",
+    "cargo_lock",
+    "canonical_lock"
+  ],
+  "unresolved_observation_roles": [
+    "build_receipt",
+    "build_controller"
+  ],
+  "unsubmitted_metadata_roles": [
+    "build_binding",
+    "component_stdout",
+    "component_record",
+    "component_list_stdout"
+  ],
+  "unresolved_original_sdk_tree": "1226bc2fa3646784ff9ca6a8fc917951ce64853a",
+  "unresolved_detail": "Two original file_info calls returned MCP timeout; both original settled SDKs are retained. No retry has been submitted. The known transport terminal and endpoint records are not relabelled UNKNOWN.",
+  "sender_stdout": "Original data stream was piped to receiver; no separate send-rog.stdout file was created. Exact source and receiver byte/hash proof retained.",
+  "product_qualification": false,
+  "http_h2_execution": false,
+  "current_4e808_product_qualification": false,
+  "checks": [
+    {
+      "name": "authority known0 full durable",
+      "passed": true
+    },
+    {
+      "name": "terminal whole hex and EOF",
+      "passed": true
+    },
+    {
+      "name": "core whole",
+      "passed": true
+    },
+    {
+      "name": "all3 owned",
+      "passed": true
+    },
+    {
+      "name": "original caps and nonproduct",
+      "passed": true
+    },
+    {
+      "name": "sender exact original",
+      "passed": true
+    },
+    {
+      "name": "receiver exact original",
+      "passed": true
+    },
+    {
+      "name": "original and SSH trust fences",
+      "passed": true
+    },
+    {
+      "name": "sender actual completion",
+      "passed": true
+    },
+    {
+      "name": "receiver actual completion",
+      "passed": true
+    },
+    {
+      "name": "QA historical provenance only",
+      "passed": true
+    },
+    {
+      "name": "wire file executable",
+      "passed": true
+    },
+    {
+      "name": "independent metadata executable",
+      "passed": true
+    },
+    {
+      "name": "wire file rust_source",
+      "passed": true
+    },
+    {
+      "name": "independent metadata rust_source",
+      "passed": true
+    },
+    {
+      "name": "wire file test_source",
+      "passed": true
+    },
+    {
+      "name": "independent metadata test_source",
+      "passed": true
+    },
+    {
+      "name": "wire file cargo_manifest",
+      "passed": true
+    },
+    {
+      "name": "independent metadata cargo_manifest",
+      "passed": true
+    },
+    {
+      "name": "wire file cargo_lock",
+      "passed": true
+    },
+    {
+      "name": "independent metadata cargo_lock",
+      "passed": true
+    },
+    {
+      "name": "wire file canonical_lock",
+      "passed": true
+    },
+    {
+      "name": "independent metadata canonical_lock",
+      "passed": true
+    },
+    {
+      "name": "wire file build_receipt",
+      "passed": true
+    },
+    {
+      "name": "wire file build_controller",
+      "passed": true
+    },
+    {
+      "name": "wire file build_binding",
+      "passed": true
+    },
+    {
+      "name": "wire file component_stdout",
+      "passed": true
+    },
+    {
+      "name": "wire file component_record",
+      "passed": true
+    },
+    {
+      "name": "wire file component_list_stdout",
+      "passed": true
+    }
+  ]
+}

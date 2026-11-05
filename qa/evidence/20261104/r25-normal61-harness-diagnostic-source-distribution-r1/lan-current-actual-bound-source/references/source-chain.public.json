@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.4e808-lan-actual-binding-source-chain.v1",
+  "prior_unbound_tree": "d93ea226dceadbed501799835f5d290faaf1f750",
+  "prior_unbound_root_review": "3f8e94f23a79bbb1f304be7ccfbb7fd036052fc0",
+  "actual_inert_base_request": "642468e6697635904c7c514aea38cb4de28a74dd",
+  "actual_prepare_base_request": "43509c69abd176551395e86800d24a584196d042",
+  "canonical": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  },
+  "qualification_scope": "two independent actual61 cores and root reviews; original large-log archive incomplete",
+  "linux_release_stdout_sha_source": "actual normal-release receipt / normal61 core only; full independent Cargo event-body archive pending",
+  "mac_release_stdout_whole_archive": "14b4c7b731a4bc43476b984173c820cb365f9079",
+  "root_go_for_any_new_dispatch": false
+}

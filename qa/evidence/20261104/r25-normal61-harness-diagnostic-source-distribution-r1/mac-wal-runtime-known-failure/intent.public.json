@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.mac-current-wal-4e808-runtime-external-intent.r1",
+  "createdUtc": "2026-11-05 12:30:19 UTC",
+  "rootGo": {
+    "blob": "a358962bfd80a8c6ef7324a63abdc7a081bbf740",
+    "bytes": 2902,
+    "sha256": "7f97c77bfe6f0c8b529b98eeca1590f3ef7c07a611c09edbbf9c915a473c1a3c"
+  },
+  "exactRequest": {
+    "blob": "db1c0badddf800b253a5476cdb1ab49f2cabf543",
+    "bytes": 5267,
+    "sha256": "5c612c632efed01b0e4ec97c2d1822b15b23628610dd679eff24dba99d43fde8"
+  },
+  "host": "mac",
+  "idempotencyKey": "heptabao-mac-current-five-agent-registry-wal-4e808-bce47fd1-20261105-r1",
+  "inertActualTree": "c2a3562c7cf772ef2078d4175d665ae5e00e6876",
+  "maximumProcessStartCalls": 1,
+  "requestNotAltered": true,
+  "protocol": "This external intent must be saved in a completed call before process_start. Original ACK is externally saved before parsing. Any unknown is reconciled only on the same operation/job.",
+  "allowedScope": "Exactly the reviewed current five-agent read-only registry/WAL capture and isolated local AuthBus fixture with owned launchd server/consumer, restart and inverse local rollback, using fixed T5 namespace. Execute only the frozen request.",
+  "originalCaps": {
+    "supervisor": 1080,
+    "controller": 900,
+    "manager": 600,
+    "failure_cleanup": 60,
+    "phase": 120,
+    "capture": 45,
+    "query": 3,
+    "native": [
+      15,
+      8,
+      3
+    ],
+    "http": 10,
+    "ready": 30,
+    "tls": 30,
+    "wal": 5969912,
+    "row": 1048576,
+    "aggregate": 8388608,
+    "private_capsule": 4194304,
+    "entry_report": 262144,
+    "envelope": 196608
+  },
+  "productionCutover": false,
+  "providerOrJ3160": false
+}

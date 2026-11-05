@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.local-ack-shape-observation.r1",
+  "error": "Expected top-level job_id/host but native ACK uses job object; original ACK had already been persisted; no repeated submission.",
+  "actualTopKeys": [
+    "audit_recorded",
+    "job",
+    "launch",
+    "local_record_pending",
+    "reused"
+  ],
+  "originalAckBlob": "696612143d7e3b40ffb80d7530510aae0574b1ce",
+  "hostCallsRepeated": 0
+}

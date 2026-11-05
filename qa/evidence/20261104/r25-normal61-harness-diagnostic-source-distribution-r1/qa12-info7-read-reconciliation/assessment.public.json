@@ -1,0 +1,61 @@
+{
+  "schema": "heptabao.qa12-independent-metadata-single-recovery.v1",
+  "scope": "QA12 destination index6 build_receipt only",
+  "operation_id": "58e9e98dbe378a84ac415f02c25b0a3883c09f4258f820ae2a6c4a27ef61f018",
+  "reconciliation_returned_reused": false,
+  "original_start_timeout_preserved": true,
+  "old_direct_file_info_timeout_preserved": true,
+  "original_submission_execution_not_inferred": true,
+  "not_claimed_as_old_stored_operation": true,
+  "closed_status": {
+    "async_state": "completed",
+    "audit_metadata_available": true,
+    "authenticated_chatgpt_caller_isolation": false,
+    "automatic_retry": false,
+    "cancellation_does_not_prove_remote_effect_stopped": true,
+    "credential_metadata_resume": true,
+    "cross_session_resume": true,
+    "delivery_proven": false,
+    "early_return_async_start_supported": true,
+    "execution_resume_after_restart": false,
+    "operation_id": "58e9e98dbe378a84ac415f02c25b0a3883c09f4258f820ae2a6c4a27ef61f018",
+    "original_payload_is_not_transport_delivery_proof": true,
+    "owned_future_active": false,
+    "ownership_scope": "authenticated_private_operator_credential",
+    "payload_available": true,
+    "remote_termination_confirmed": false,
+    "result_state": "stored_observed",
+    "retention_max_original_bytes": 1048576,
+    "session_scope": "authenticated_private_operator_credential",
+    "tool_name": "file_info"
+  },
+  "exact_file_info": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 256,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 256,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/build-result.public.json",
+    "sha256": "b8a2e83ea012f11cef7dc83bc79758d2b624df7eac2265efddbd32e2880db95e",
+    "size": 62314,
+    "version": "2050:7257430:62314:1793882066235718761:1793882066235718761"
+  },
+  "whole_and_full_identity_matches_receiver": true,
+  "independent_destination_metadata_completed": 7,
+  "independent_destination_metadata_total": 12,
+  "remaining_indices": [
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "new_business_or_process_calls": 0,
+  "window_handed_to_compat": true
+}

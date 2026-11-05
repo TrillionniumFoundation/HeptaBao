@@ -1,0 +1,362 @@
+{
+  "schema": "heptabao.authbus-p01-existing-public-readset.r1",
+  "sourceProjection": {
+    "bytes": 104595,
+    "sha256": "79ec619f16916d1a08fc5c6d4fcf9cfe1421f604c90ab41440883653e7ac11c5",
+    "blob": "fe80011264f727f7c5623903c7c4eef68e3e5ec3"
+  },
+  "hostDispatchAuthorized": false,
+  "entries": [
+    {
+      "admission": {
+        "maximumBytes": 2097152,
+        "regularNoSymlink": true,
+        "sha256MustEqual": "51636e6bccc57ecff7f221522d45bc72e357c137cda26969217ad3d6413eb757",
+        "versionRequired": true
+      },
+      "automaticRetry": false,
+      "dispatchReady": false,
+      "expectedSha256": "51636e6bccc57ecff7f221522d45bc72e357c137cda26969217ad3d6413eb757",
+      "firstOperation": {
+        "args": {
+          "host": "mac",
+          "path": "/Users/qianqi/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json"
+        },
+        "tool": "file_info"
+      },
+      "followingOperation": {
+        "chunkLimitBytes": 65536,
+        "expectedVersion": "THE_SUCCESSFUL_SAME_FILE_INFO_VERSION",
+        "host": "mac",
+        "maximumWholeBytes": 2097152,
+        "path": "/Users/qianqi/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+        "tool": "binary_read"
+      },
+      "host": "mac",
+      "id": "REG-01",
+      "path": "/Users/qianqi/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+      "requiresSeparateExactRootReadGo": true,
+      "scope": "Existing exact public startup/backup/hold receipt, not private payload or a new restore.",
+      "source": {
+        "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+        "bytes": 18231,
+        "jsonPointer": "/evidence/0",
+        "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+        "source": "registration"
+      },
+      "stopOnDriftOrUnknown": true
+    },
+    {
+      "admission": {
+        "maximumBytes": 2097152,
+        "regularNoSymlink": true,
+        "sha256MustEqual": "1b0efcdcef80e059ac46bc56bff08d71c0856f251e4340ecdc710582dea94fec",
+        "versionRequired": true
+      },
+      "automaticRetry": false,
+      "dispatchReady": false,
+      "expectedSha256": "1b0efcdcef80e059ac46bc56bff08d71c0856f251e4340ecdc710582dea94fec",
+      "firstOperation": {
+        "args": {
+          "host": "rog",
+          "path": "/home/qian-qi/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json"
+        },
+        "tool": "file_info"
+      },
+      "followingOperation": {
+        "chunkLimitBytes": 65536,
+        "expectedVersion": "THE_SUCCESSFUL_SAME_FILE_INFO_VERSION",
+        "host": "rog",
+        "maximumWholeBytes": 2097152,
+        "path": "/home/qian-qi/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+        "tool": "binary_read"
+      },
+      "host": "rog",
+      "id": "REG-02",
+      "path": "/home/qian-qi/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+      "requiresSeparateExactRootReadGo": true,
+      "scope": "Existing exact public startup/backup/hold receipt, not private payload or a new restore.",
+      "source": {
+        "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+        "bytes": 18231,
+        "jsonPointer": "/evidence/1",
+        "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+        "source": "registration"
+      },
+      "stopOnDriftOrUnknown": true
+    },
+    {
+      "admission": {
+        "maximumBytes": 2097152,
+        "regularNoSymlink": true,
+        "sha256MustEqual": "ce4179cab478b925c99d05e1a80e34df21d911e242c827323f0c17b3a6d8d64c",
+        "versionRequired": true
+      },
+      "automaticRetry": false,
+      "dispatchReady": false,
+      "expectedSha256": "ce4179cab478b925c99d05e1a80e34df21d911e242c827323f0c17b3a6d8d64c",
+      "firstOperation": {
+        "args": {
+          "host": "rog",
+          "path": "/home/qian-qi/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-coverage-r2.public.json"
+        },
+        "tool": "file_info"
+      },
+      "followingOperation": {
+        "chunkLimitBytes": 65536,
+        "expectedVersion": "THE_SUCCESSFUL_SAME_FILE_INFO_VERSION",
+        "host": "rog",
+        "maximumWholeBytes": 2097152,
+        "path": "/home/qian-qi/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-coverage-r2.public.json",
+        "tool": "binary_read"
+      },
+      "host": "rog",
+      "id": "REG-03",
+      "path": "/home/qian-qi/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-coverage-r2.public.json",
+      "requiresSeparateExactRootReadGo": true,
+      "scope": "Existing exact public startup/backup/hold receipt, not private payload or a new restore.",
+      "source": {
+        "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+        "bytes": 18231,
+        "jsonPointer": "/evidence/2",
+        "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+        "source": "registration"
+      },
+      "stopOnDriftOrUnknown": true
+    },
+    {
+      "admission": {
+        "maximumBytes": 2097152,
+        "regularNoSymlink": true,
+        "sha256MustEqual": "401b596105ed9e1610e2119246438a53346293c83e3635739511d3f6041be2bf",
+        "versionRequired": true
+      },
+      "automaticRetry": false,
+      "dispatchReady": false,
+      "expectedSha256": "401b596105ed9e1610e2119246438a53346293c83e3635739511d3f6041be2bf",
+      "firstOperation": {
+        "args": {
+          "host": "pocket4",
+          "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json"
+        },
+        "tool": "file_info"
+      },
+      "followingOperation": {
+        "chunkLimitBytes": 65536,
+        "expectedVersion": "THE_SUCCESSFUL_SAME_FILE_INFO_VERSION",
+        "host": "pocket4",
+        "maximumWholeBytes": 2097152,
+        "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+        "tool": "binary_read"
+      },
+      "host": "pocket4",
+      "id": "REG-04",
+      "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+      "requiresSeparateExactRootReadGo": true,
+      "scope": "Existing exact public startup/backup/hold receipt, not private payload or a new restore.",
+      "source": {
+        "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+        "bytes": 18231,
+        "jsonPointer": "/evidence/3",
+        "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+        "source": "registration"
+      },
+      "stopOnDriftOrUnknown": true
+    },
+    {
+      "admission": {
+        "maximumBytes": 2097152,
+        "regularNoSymlink": true,
+        "sha256MustEqual": "fb745eead3657d514db27ac2f83a3e10a5744550d980201ccf1363fff86053be",
+        "versionRequired": true
+      },
+      "automaticRetry": false,
+      "dispatchReady": false,
+      "expectedSha256": "fb745eead3657d514db27ac2f83a3e10a5744550d980201ccf1363fff86053be",
+      "firstOperation": {
+        "args": {
+          "host": "pocket4",
+          "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-coverage-r2.public.json"
+        },
+        "tool": "file_info"
+      },
+      "followingOperation": {
+        "chunkLimitBytes": 65536,
+        "expectedVersion": "THE_SUCCESSFUL_SAME_FILE_INFO_VERSION",
+        "host": "pocket4",
+        "maximumWholeBytes": 2097152,
+        "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-coverage-r2.public.json",
+        "tool": "binary_read"
+      },
+      "host": "pocket4",
+      "id": "REG-05",
+      "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-coverage-r2.public.json",
+      "requiresSeparateExactRootReadGo": true,
+      "scope": "Existing exact public startup/backup/hold receipt, not private payload or a new restore.",
+      "source": {
+        "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+        "bytes": 18231,
+        "jsonPointer": "/evidence/4",
+        "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+        "source": "registration"
+      },
+      "stopOnDriftOrUnknown": true
+    },
+    {
+      "admission": {
+        "maximumBytes": 2097152,
+        "regularNoSymlink": true,
+        "sha256MustEqual": "c716ec63afaafdebf40c5bba604130c62f3b8a2e47903931c8b2077c68a1aa8c",
+        "versionRequired": true
+      },
+      "automaticRetry": false,
+      "dispatchReady": false,
+      "expectedSha256": "c716ec63afaafdebf40c5bba604130c62f3b8a2e47903931c8b2077c68a1aa8c",
+      "firstOperation": {
+        "args": {
+          "host": "x230",
+          "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json"
+        },
+        "tool": "file_info"
+      },
+      "followingOperation": {
+        "chunkLimitBytes": 65536,
+        "expectedVersion": "THE_SUCCESSFUL_SAME_FILE_INFO_VERSION",
+        "host": "x230",
+        "maximumWholeBytes": 2097152,
+        "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+        "tool": "binary_read"
+      },
+      "host": "x230",
+      "id": "REG-06",
+      "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-r1.public.json",
+      "requiresSeparateExactRootReadGo": true,
+      "scope": "Existing exact public startup/backup/hold receipt, not private payload or a new restore.",
+      "source": {
+        "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+        "bytes": 18231,
+        "jsonPointer": "/evidence/5",
+        "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+        "source": "registration"
+      },
+      "stopOnDriftOrUnknown": true
+    },
+    {
+      "admission": {
+        "maximumBytes": 2097152,
+        "regularNoSymlink": true,
+        "sha256MustEqual": "792b6968d566e42b50df0f7d262ba92fae3c52f78e4058ea7eb00663634b3abd",
+        "versionRequired": true
+      },
+      "automaticRetry": false,
+      "dispatchReady": false,
+      "expectedSha256": "792b6968d566e42b50df0f7d262ba92fae3c52f78e4058ea7eb00663634b3abd",
+      "firstOperation": {
+        "args": {
+          "host": "x230",
+          "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-coverage-r2.public.json"
+        },
+        "tool": "file_info"
+      },
+      "followingOperation": {
+        "chunkLimitBytes": 65536,
+        "expectedVersion": "THE_SUCCESSFUL_SAME_FILE_INFO_VERSION",
+        "host": "x230",
+        "maximumWholeBytes": 2097152,
+        "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-coverage-r2.public.json",
+        "tool": "binary_read"
+      },
+      "host": "x230",
+      "id": "REG-07",
+      "path": "/home/qian/heptabao-cutover-cleanup-inventory-20261104-r1/registered-startup-backup-coverage-r2.public.json",
+      "requiresSeparateExactRootReadGo": true,
+      "scope": "Existing exact public startup/backup/hold receipt, not private payload or a new restore.",
+      "source": {
+        "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+        "bytes": 18231,
+        "jsonPointer": "/evidence/6",
+        "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+        "source": "registration"
+      },
+      "stopOnDriftOrUnknown": true
+    },
+    {
+      "admission": {
+        "maximumBytes": 2097152,
+        "regularNoSymlink": true,
+        "sha256MustEqual": "f4eeb5dfa1cf014bf6699c9c433d29493bdfb61f478292ce627d97f5ca194872",
+        "versionRequired": true
+      },
+      "automaticRetry": false,
+      "dispatchReady": false,
+      "expectedSha256": "f4eeb5dfa1cf014bf6699c9c433d29493bdfb61f478292ce627d97f5ca194872",
+      "firstOperation": {
+        "args": {
+          "host": "pocket4",
+          "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/exact-hold-directives-r1.public.json"
+        },
+        "tool": "file_info"
+      },
+      "followingOperation": {
+        "chunkLimitBytes": 65536,
+        "expectedVersion": "THE_SUCCESSFUL_SAME_FILE_INFO_VERSION",
+        "host": "pocket4",
+        "maximumWholeBytes": 2097152,
+        "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/exact-hold-directives-r1.public.json",
+        "tool": "binary_read"
+      },
+      "host": "pocket4",
+      "id": "REG-08",
+      "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/exact-hold-directives-r1.public.json",
+      "requiresSeparateExactRootReadGo": true,
+      "scope": "Existing exact public startup/backup/hold receipt, not private payload or a new restore.",
+      "source": {
+        "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+        "bytes": 18231,
+        "jsonPointer": "/evidence/7",
+        "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+        "source": "registration"
+      },
+      "stopOnDriftOrUnknown": true
+    },
+    {
+      "admission": {
+        "maximumBytes": 2097152,
+        "regularNoSymlink": true,
+        "sha256MustEqual": "6325f3da5c79dc560be35d7f92bceab2c13cd8c944513ac436d8e46fb8e0d1a1",
+        "versionRequired": true
+      },
+      "automaticRetry": false,
+      "dispatchReady": false,
+      "expectedSha256": "6325f3da5c79dc560be35d7f92bceab2c13cd8c944513ac436d8e46fb8e0d1a1",
+      "firstOperation": {
+        "args": {
+          "host": "pocket4",
+          "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/hold-marker-source-binding-r1.public.json"
+        },
+        "tool": "file_info"
+      },
+      "followingOperation": {
+        "chunkLimitBytes": 65536,
+        "expectedVersion": "THE_SUCCESSFUL_SAME_FILE_INFO_VERSION",
+        "host": "pocket4",
+        "maximumWholeBytes": 2097152,
+        "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/hold-marker-source-binding-r1.public.json",
+        "tool": "binary_read"
+      },
+      "host": "pocket4",
+      "id": "REG-09",
+      "path": "/home/alex/heptabao-cutover-cleanup-inventory-20261104-r1/hold-marker-source-binding-r1.public.json",
+      "requiresSeparateExactRootReadGo": true,
+      "scope": "Existing exact public startup/backup/hold receipt, not private payload or a new restore.",
+      "source": {
+        "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+        "bytes": 18231,
+        "jsonPointer": "/evidence/8",
+        "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+        "source": "registration"
+      },
+      "stopOnDriftOrUnknown": true
+    }
+  ]
+}

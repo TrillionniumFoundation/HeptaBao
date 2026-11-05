@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-4e808-export-inert-5029-receipt-info-r1",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-controls-20261105-r1/inert-stage.result.public.json"
+    }
+  }
+}

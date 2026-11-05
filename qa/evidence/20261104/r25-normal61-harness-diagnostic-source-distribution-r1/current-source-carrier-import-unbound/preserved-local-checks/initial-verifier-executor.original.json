@@ -1,0 +1,7 @@
+{
+  "chunk_id": "a09f79",
+  "wall_time_seconds": 0.115512372,
+  "exit_code": 1,
+  "original_token_count": 113,
+  "output": "Traceback (most recent call last):\n  File \"/workspace/scratch/f86faac821c4/source4e808_carrier_import_r1/verify.py\", line 103, in <module>\n    check(name + \" inverse literal occurrences \" + row[\"after\"][:55],\n  File \"/workspace/scratch/f86faac821c4/source4e808_carrier_import_r1/verify.py\", line 16, in check\n    assert value, name\n           ^^^^^\nAssertionError: importer.py inverse literal occurrences normal-same-root-publication-source-carrier-r1\n"
+}

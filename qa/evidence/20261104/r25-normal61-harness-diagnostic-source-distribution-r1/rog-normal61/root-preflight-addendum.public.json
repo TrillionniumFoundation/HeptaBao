@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.root.rog-normal61-preflight-addendum.v1",
+  "status": "PASS_ORIGINAL_PREFLIGHT_AND_GROUP_BINDING",
+  "checks": 18,
+  "cases": [
+    "original two-file SDK/native exact",
+    "two whole originals",
+    "actual current admission",
+    "same original outer time",
+    "original complete budgets",
+    "original denominations",
+    "same stage and runner",
+    "lock actual no holders",
+    "groups raw core exact",
+    "groups original source independent-info exact",
+    "source stage original file-info member",
+    "actual Linux early-failure scope",
+    "Linux original evidence original_rejected_launcher",
+    "Linux original evidence prior-normal-early-failure.authority.original.json",
+    "Linux original evidence prior-normal-early-failure.stderr",
+    "Linux original evidence prior-normal-target-metadata.authority.original.json",
+    "Linux original evidence prior-normal-target-metadata.stdout.json",
+    "no inherited cache performance or replay"
+  ],
+  "packet": "9780156c7af6b57d7dc5bc57860bf25ea70843f5",
+  "source_stage_original_info_member": "native/control-3-info.json",
+  "actual_historical_fence_scope": "ROG six df026 retained qualification files plus five launcher early-failure records including original rejected launcher; no ROG1c665 failed run.",
+  "preflight_original_raw_not_rewritten": true,
+  "new_old_failure_file_reads_claimed": false,
+  "core_review": "fdf6e1228b24fdbcb56f350f88a7069c137d8661",
+  "original_budgets_preserved": true,
+  "full_product_qualification": false
+}

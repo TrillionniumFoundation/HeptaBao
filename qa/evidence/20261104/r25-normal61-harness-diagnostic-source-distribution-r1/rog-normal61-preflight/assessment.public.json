@@ -1,0 +1,117 @@
+{
+  "schema": "heptabao.4e808-rog-normal61-preflight-evidence.v1",
+  "status": "PASS_ACTUAL_ADMISSION_RECEIPT",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "launch_preflight": {
+    "eof": true,
+    "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/build-control-r1/launch-preflight.public.json",
+    "sha256": "47da7b21d180412a49d969020bb40c6b1411b5d6bfad7bc3f873454b1017c9c5",
+    "size": 26649,
+    "version": "66306:35799517:26649:1793878061337306563:1793878061337306563"
+  },
+  "actual_limits": {
+    "outer": 12000,
+    "release": 1800,
+    "libtest": 3600,
+    "list": 30,
+    "groups": 600,
+    "new_groups": 600
+  },
+  "linux_retained_scope": {
+    "runner": "Six immutable df026 qualification files; before and after core observations",
+    "launcher": "Four existing Linux missing-target failure/metadata receipts plus original rejected launcher",
+    "actual_failure_evidence": {
+      "files": {
+        "original_rejected_launcher": {
+          "bytes": 31963,
+          "identity": [
+            66306,
+            27299398,
+            1000,
+            1000,
+            33152,
+            1,
+            31963,
+            "1793850441628142457",
+            "1793850441628142457"
+          ],
+          "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/launch_normal_cold_h2.py",
+          "sha256": "7c3dbf522f51931aaa5c1947ec0742883bdcc1405913d45f8b43f217983acb98"
+        },
+        "prior-normal-early-failure.authority.original.json": {
+          "bytes": 726,
+          "identity": [
+            66306,
+            31606574,
+            1000,
+            1000,
+            33152,
+            1,
+            726,
+            "1793852678947020091",
+            "1793852678950419791"
+          ],
+          "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control-r3/prior-normal-early-failure.authority.original.json",
+          "sha256": "9188213431c349616ecd8dd329f930d909fb3b973ff27848ae3afb7957e2bfae"
+        },
+        "prior-normal-early-failure.stderr": {
+          "bytes": 693,
+          "identity": [
+            66306,
+            31606575,
+            1000,
+            1000,
+            33152,
+            1,
+            693,
+            "1793852678951020050",
+            "1793852678952496094"
+          ],
+          "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control-r3/prior-normal-early-failure.stderr",
+          "sha256": "bb032403580f205d6e15f90da809c666b4accec08a0acf00f0a83611ecbbe01e"
+        },
+        "prior-normal-target-metadata.authority.original.json": {
+          "bytes": 733,
+          "identity": [
+            66306,
+            31606577,
+            1000,
+            1000,
+            33152,
+            1,
+            733,
+            "1793852678954243905",
+            "1793852678956056997"
+          ],
+          "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control-r3/prior-normal-target-metadata.authority.original.json",
+          "sha256": "70a9289777c626b8ea795ae017161f923638a74459b79c350f94b5650ef72752"
+        },
+        "prior-normal-target-metadata.stdout.json": {
+          "bytes": 13741,
+          "identity": [
+            66306,
+            31606576,
+            1000,
+            1000,
+            33152,
+            1,
+            13741,
+            "1793852678952496094",
+            "1793852678954243905"
+          ],
+          "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control-r3/prior-normal-target-metadata.stdout.json",
+          "sha256": "e4e062eacfb4b6080f973d053d301504b90b27d0782172c227745488ec826a6a"
+        }
+      },
+      "historical_missing_target_recreated": false,
+      "original_job_replayed": false,
+      "target_removal_cause_known": false
+    }
+  },
+  "not_claimed": "No Linux 1c665 A-B-A failure existed; the four 1c665 failure fences are Mac-only. No new reading of the old failure files was performed by this evidence collector.",
+  "groups_current_whole_and_version": "66306:33211565:6249:1793875489336258402:1793875489336258402",
+  "groups_independent_file_info_source": "actual 4e808 ROG source-stage packet 1bc4d16fda3830dd6b035a1fd36a4ca21fbc018d, native/control-3-info.json",
+  "current_groups_whole_version_equals_original_independent_metadata": true,
+  "normal61_core_packet": "f5d3875b2ab325691b701b186624fa38b17cc34f"
+}

@@ -1,0 +1,126 @@
+{
+  "schema": "heptabao.authbus-p01-source-manifest.r1",
+  "scope": "Archived public inputs and local projection; no host dispatch or production issuance",
+  "files": [
+    {
+      "path": "source/authbus_production_p01_projector.py",
+      "bytes": 24624,
+      "sha256": "dc41337d1aa4009a5359564e1b7330584b69aa94215610c7325a5af14d76227a",
+      "blob": "8c3686237f5f03148ed3fb28cd9cb795d785676f"
+    },
+    {
+      "path": "input/frozen-public-inputs.original.json",
+      "bytes": 328295,
+      "sha256": "d0bab0c53bd92524b6a7ca7c3d5bc7ab60b26eb742c4a8e2c6f094c62e3f7b59",
+      "blob": "6fdd0a99d151551b57f7b8f77d69fa47a8a5a910"
+    },
+    {
+      "path": "actual/local-projection.stdout.original.json",
+      "bytes": 104595,
+      "sha256": "79ec619f16916d1a08fc5c6d4fcf9cfe1421f604c90ab41440883653e7ac11c5",
+      "blob": "fe80011264f727f7c5623903c7c4eef68e3e5ec3"
+    },
+    {
+      "path": "actual/local-projection.stderr.original.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "verification/local-public-execution.py",
+      "bytes": 2741,
+      "sha256": "65595fed1e864575d7bdfd71e5ace2cda29ae672dac67f0c7ca54a1eaeb7dc49",
+      "blob": "ce717e2cbcc66d41f27bcde930efbffa98d6fe77"
+    },
+    {
+      "path": "verification/local-public-execution.executor.json",
+      "bytes": 1506,
+      "sha256": "acea9adf9c9e2467c90942e3b26f3f1dc082120188d7336ffe0ba28a0c680f94",
+      "blob": "759c82b5c54be40c8c5c171912d849a8d1c9c0a0"
+    },
+    {
+      "path": "verification/local-public-execution.stdout.original.json",
+      "bytes": 1259,
+      "sha256": "eafaa2ed91b869edbe01eab24d9835cba1fd2a7a462b4019c0550ace0994c5a4",
+      "blob": "51bf383b025a505b32132cebe1a20d692415b5ae"
+    },
+    {
+      "path": "readsets/exact-existing-public-receipts.source-only.json",
+      "bytes": 14788,
+      "sha256": "b5712c40413b52d2bf8de8fd24858ac73d235b28ca28da0e6ea388357bc26a43",
+      "blob": "402883b8a2a53a02d5cfc9d9dd644c25468ecc19"
+    },
+    {
+      "path": "readsets/exact-dependency-resolution.source-only.json",
+      "bytes": 2514,
+      "sha256": "afb5c0e5a2c7d3fc8658c376a1633ab480454276f18f4ae125290f0b9de13837",
+      "blob": "9856f6ac0ab73899c703a4455e673d8d27aac117"
+    },
+    {
+      "path": "contracts/new-production-registration.source-only.json",
+      "bytes": 9480,
+      "sha256": "aadc90e6b9c507c5d4a6afd20993e41e3b07be945e9ca9685d353738674c36be",
+      "blob": "242b4e6e238e39220a4c12848e577618aa9f6ee5"
+    },
+    {
+      "path": "references/mac.original.json",
+      "bytes": 46277,
+      "sha256": "001d9d3384f1b8c00fa3cba8af7f3020bedc54f26678611ab3cd3a524ce23902",
+      "blob": "53996b7f5c59b2cb18fe6979efded3d6138ad67c"
+    },
+    {
+      "path": "references/rog.original.json",
+      "bytes": 46630,
+      "sha256": "aee43560000aa4878be8c2175a3ab13e056ce0442e2bba1a9606ae0ffadd5531",
+      "blob": "f44ea5f57b3db01bbe04a4bf24629997ae480bb7"
+    },
+    {
+      "path": "references/x230.original.json",
+      "bytes": 23439,
+      "sha256": "63f198cd17e100f9ce8e9e7329d2c1e711a46afe223878afd6cd74900e80feb5",
+      "blob": "197ff767f16fbda8eb20aac80418a02915291925"
+    },
+    {
+      "path": "references/pocket.original.json",
+      "bytes": 58853,
+      "sha256": "b55436c3622263112b429517e821f41c9a58225619e1e375d65804e1484f1ef6",
+      "blob": "e36e19e00b75dc313ce1a750751dfa5f2f1aafb4"
+    },
+    {
+      "path": "references/registration.original.json",
+      "bytes": 18231,
+      "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64",
+      "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924"
+    },
+    {
+      "path": "references/cleanup.original.json",
+      "bytes": 96796,
+      "sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0",
+      "blob": "16a6217e0163265b27a2e79f9aeffb26431b47ca"
+    },
+    {
+      "path": "references/xr01Raw.original.json",
+      "bytes": 11770,
+      "sha256": "df94b577ce539fa23316d686c287b8aaeb8f6f3ee2561a5d1875368c8420dbff",
+      "blob": "b8df3efcf2ba7eb510abd5b9a203d68b4f12d856"
+    },
+    {
+      "path": "references/macCanonicalCron.original.json",
+      "bytes": 1274,
+      "sha256": "8e4397c745b22bf834e52fd352f3fdb98985c792b1506f34c1c024da3f303ab1",
+      "blob": "62350066cecf7a534c5a7370a7e9ac59a5f02545"
+    },
+    {
+      "path": "CONTRACT.public.json",
+      "bytes": 4699,
+      "sha256": "2fc9207e4d303404e1e0fbd0a792e2adb042808db935125e50b7a34b0c50b5a8",
+      "blob": "9e82c24623b078d7681fb338512e57240dd33c19"
+    },
+    {
+      "path": "README.md",
+      "bytes": 5774,
+      "sha256": "391dcd34d5389afe758ee6c756e1a639e0b7fa91c191036a66f202c21d2cafb8",
+      "blob": "b0d11f0b281886b708745c6466c0d2721d4f6b23"
+    }
+  ]
+}

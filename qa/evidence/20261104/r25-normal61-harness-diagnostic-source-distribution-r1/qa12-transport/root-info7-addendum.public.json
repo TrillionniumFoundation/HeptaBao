@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.root.qa12-independent-info7-addendum.r1",
+  "status": "PASS_SEVENTH_INDEPENDENT_DESTINATION_METADATA",
+  "checksPassed": 13,
+  "checks": [
+    "packet14 complete whole",
+    "exact original and reconciled typed arguments same raw bytes",
+    "exact fixed readonly admission",
+    "original timeout preserved",
+    "ACK explicitly reused false",
+    "closed original operation payload available",
+    "immutable single complete original payload page",
+    "original payload bytes/hash and stored raw exact",
+    "original native success contains exact file info raw",
+    "same actual receiver full-nine version losslessly",
+    "same receiver file identity ownership mode nlink",
+    "same receiver and same FD readback whole hash",
+    "exact originally planned metadata"
+  ],
+  "packet": {
+    "tree": "e4c07d230697a3599c6cc2f617f17447eab57efe",
+    "files": 14,
+    "bytes": 12343
+  },
+  "originalOperationId": "58e9e98dbe378a84ac415f02c25b0a3883c09f4258f820ae2a6c4a27ef61f018",
+  "reconciledAckReused": false,
+  "originalTimeoutPreserved": true,
+  "oldSubmissionExecutedNotInferred": true,
+  "originalPayloadSha256": "d2804c796282d15d5a7dea9be0e3059b7b3f58a6958529d4b436fc2cfd8b159a",
+  "receiverFullNineExactStrings": [
+    "2050",
+    "7257430",
+    "1000",
+    "1000",
+    "33024",
+    "1",
+    "62314",
+    "1793882066235718761",
+    "1793882066235718761"
+  ],
+  "fileInfo": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 256,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 256,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/build-result.public.json",
+    "sha256": "b8a2e83ea012f11cef7dc83bc79758d2b624df7eac2265efddbd32e2880db95e",
+    "size": 62314,
+    "version": "2050:7257430:62314:1793882066235718761:1793882066235718761"
+  },
+  "completedIndependentInfos": 7,
+  "totalIndependentInfos": 12,
+  "remainingIndices": [
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "noNewBusinessOrProcess": true,
+  "fullInstrumentTransferMetadataNotYetComplete": true,
+  "productRuntimeQualified": false
+}

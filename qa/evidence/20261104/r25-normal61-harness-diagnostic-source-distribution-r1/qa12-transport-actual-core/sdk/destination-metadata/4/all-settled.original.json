@@ -1,0 +1,28 @@
+[
+  {
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":256,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":256,\"path\":\"/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/Cargo.lock\",\"sha256\":\"f1882bc0bb81e5f74da28502e8cbd718e87fcda0100bf85ad118b007a8faf9bf\",\"size\":17409,\"version\":\"2050:7255771:17409:1793882066153721347:1793882066153721347\"}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":256,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":256,\"path\":\"/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/canonical.Cargo.lock\",\"sha256\":\"d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5\",\"size\":101193,\"version\":\"2050:7255772:101193:1793882066162721063:1793882066162721063\"}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  }
+]

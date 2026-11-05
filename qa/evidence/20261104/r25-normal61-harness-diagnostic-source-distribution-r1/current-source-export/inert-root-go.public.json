@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.root.current4e808-exporter-inert-go.v1",
+  "decision": "GO_ONE_EXACT_INERT_SOURCE_PUBLISHER",
+  "as_of_utc": "2026-11-05 12:38:17 UTC",
+  "maximum_submissions": 1,
+  "exact_request": {
+    "path": "dispatch/inert.request.json",
+    "blob": "6b00d3d5d8f1fb95e3aa7b302c966180396ae61b",
+    "bytes": 25931,
+    "sha256": "0e6e356403b756d599d2a90e5792e147f2df2f1b59323f7057a169ebc68fabe8",
+    "mode": "100644"
+  },
+  "idempotency_key": "heptabao-4e808-standalone-source-export-inert-aa4a7615-20261105-r1",
+  "source_tree": "ef4509aecc8a4e595e9d6c4ba1ad6784bad52fef",
+  "root_source_review": {
+    "name": "r25-exporter-root-review.public.json",
+    "blob": "e3d6022d54ae1b3b8895de53acaf25dabdae1624",
+    "bytes": 3737,
+    "sha256": "049b621be8a27c7979095862f5045c7117006a06385a8f44f6966e27c7f1913d"
+  },
+  "host": "rog",
+  "scope": {
+    "root": "/home/qian-qi/heptabao-same-root-publication-source-export-controls-20261105-r1",
+    "sources": 1,
+    "receipt": 1,
+    "source_compile_only": true,
+    "source_execution": false,
+    "Git": false,
+    "Cargo": false,
+    "server": false,
+    "transport": false,
+    "supervisor_seconds": 60
+  },
+  "required_protocol": "Separate completed durable intent before one exact process_start, external original ACK before parsing; original authority/whole output and 2 independent file_info/versioned bodies, close owned descriptors. UNKNOWN reconciles original only.",
+  "future_export_GO": false,
+  "product_qualification": false,
+  "production_cutover": false
+}

@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-I\",\n      \"-S\",\n      \"-B\",\n      \"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/launch_normal_same_root_publication.py\",\n      \"--host\",\n      \"rog\",\n      \"--commit\",\n      \"4e808d0ecb1bcded22870a7ec960dfb2491cf6ec\",\n      \"--tree\",\n      \"eba5e650bd080b8ad41ea52a2bc68867f541d255\",\n      \"--stage-sha256\",\n      \"1bbe84d728f91058ecca7045483a231b993e1409577d2bc87191fa14af972bce\",\n      \"--runner-sha256\",\n      \"93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be\",\n      \"--groups-sha256\",\n      \"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1\"\n    ],\n    \"created_unix_ms\": 1793878052584,\n    \"cwd\": \"/home/qian-qi\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"rog\",\n    \"id\": \"1a1ab76cee8-fc05-4e13\",\n    \"idempotency_key\": \"heptabao-same-root-publication-4e808-rog-normal61-20261105-r2-8c0ba96f-93dd6190\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ab76cee8-fc05-4e13\",\n    \"request_digest\": \"d79e75bbc8e29d377db05738b0aada8420a42b059031f6c4bea2e84fa94a0fb9\",\n    \"request_fingerprint\": 15536985213864418615,\n    \"ssh_target\": \"rog-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ab76cee8-fc05-4e13\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1ab76cee8-fc05-4e13\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

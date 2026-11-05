@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.checkpoint-pre-publication-proof.r24.v1",
+  "as_of_utc": "2026-11-05T12:33:29Z",
+  "previous_commit": "0fd064a37d8c00194aa926640b9ef8b6e5cdeeb2",
+  "base_tree": "d4cfe5efee7aa04f2fc3f0157b8f2dbb1dc14ae5",
+  "candidate_tree": "73ce98477b7efab0127ed0a4f277c0c2a486d2d4",
+  "prior_blobs": 16004,
+  "unchanged_prior_blobs": 16002,
+  "updated_prior_blobs": 2,
+  "new_blobs": 1148,
+  "new_blob_bytes": 23086683,
+  "total_blobs": 17152,
+  "merkle_trees_including_root": 2480,
+  "deleted_blobs": 0,
+  "create_tree_elements": 87,
+  "packets": 23,
+  "packet_files": 1086,
+  "root_files": 62,
+  "all_input_packet_audits_verified": true,
+  "raw_prior_document_preserved": true,
+  "raw_prior_index_preserved_except_top_asof": true,
+  "product_code_active_services_unchanged_by_checkpoint": true
+}

@@ -1,0 +1,11 @@
+{
+  "failure": {
+    "name": "Error",
+    "message": "entry_actual_success"
+  },
+  "correction": "Successful capture has captureLibraryFailureLedgerAvailable=false because no exception envelope was used; captureLibraryLedgerAvailable=true and complete returned ledger remain required. Original reports were unchanged.",
+  "diffFormattingFailure": {
+    "error": "terminal LF required",
+    "scope": "local unified diff helper input; source function text initially lacked a final LF, no actual/original mutation"
+  }
+}

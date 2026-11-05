@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-4e808-export-inert-5029-authority-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1abb9785a-fc05-5029"
+    }
+  }
+}

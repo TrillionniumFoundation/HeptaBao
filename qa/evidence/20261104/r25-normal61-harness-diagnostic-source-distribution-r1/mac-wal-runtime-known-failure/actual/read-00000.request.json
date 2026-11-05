@@ -1,0 +1,7 @@
+{
+  "host": "mac",
+  "job_id": "1a1abb090b9-fc05-4fc5",
+  "limit": 16384,
+  "stdout_offset": 0,
+  "stderr_offset": 0
+}

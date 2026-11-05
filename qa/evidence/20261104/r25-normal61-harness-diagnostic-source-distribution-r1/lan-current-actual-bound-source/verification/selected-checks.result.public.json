@@ -1,0 +1,288 @@
+{
+  "schema": "heptabao.4e808-lan-actual-binding-source-checks.v1",
+  "status": "passed",
+  "checks": [
+    {
+      "name": "fixed payload schema",
+      "passed": true
+    },
+    {
+      "name": "same nine source names",
+      "passed": true
+    },
+    {
+      "name": "read_stopped_postrecovery_frontier_same_root_publication_r1.py exact payload pin",
+      "passed": true
+    },
+    {
+      "name": "read_stopped_postrecovery_frontier_same_root_publication_r1.py complete unchanged",
+      "passed": true
+    },
+    {
+      "name": "read_stopped_recovered_cipher_same_root_publication_r1.py exact payload pin",
+      "passed": true
+    },
+    {
+      "name": "read_stopped_recovered_cipher_same_root_publication_r1.py complete unchanged",
+      "passed": true
+    },
+    {
+      "name": "native_v6_pocket_source_postrecovery_cold_4e808_r1.py exact payload pin",
+      "passed": true
+    },
+    {
+      "name": "native_v6_pocket_source_postrecovery_cold_4e808_r1.py complete unchanged",
+      "passed": true
+    },
+    {
+      "name": "launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py exact payload pin",
+      "passed": true
+    },
+    {
+      "name": "deadline_qa/ha_multihost_live.py exact payload pin",
+      "passed": true
+    },
+    {
+      "name": "deadline_qa/ha_multihost_live.py complete unchanged",
+      "passed": true
+    },
+    {
+      "name": "deadline_qa/native_ha_foreground_watchdog.py exact payload pin",
+      "passed": true
+    },
+    {
+      "name": "deadline_qa/native_ha_foreground_watchdog.py complete unchanged",
+      "passed": true
+    },
+    {
+      "name": "deadline_qa/native_v6_ha_direct_lan_live.py exact payload pin",
+      "passed": true
+    },
+    {
+      "name": "deadline_qa/native_v6_ha_direct_lan_live.py complete unchanged",
+      "passed": true
+    },
+    {
+      "name": "deadline_qa/native_v6_ha_multihost_live.py exact payload pin",
+      "passed": true
+    },
+    {
+      "name": "deadline_qa/native_v6_ha_multihost_live.py complete unchanged",
+      "passed": true
+    },
+    {
+      "name": "probe_normal_build_r10_r1.py exact payload pin",
+      "passed": true
+    },
+    {
+      "name": "probe_normal_build_r10_r1.py complete unchanged",
+      "passed": true
+    },
+    {
+      "name": "all launcher definitions unchanged",
+      "passed": true
+    },
+    {
+      "name": "single assignment BUILDS",
+      "passed": true
+    },
+    {
+      "name": "actual ten builds exact",
+      "passed": true
+    },
+    {
+      "name": "single assignment BUILDS",
+      "passed": true
+    },
+    {
+      "name": "single assignment BUILDS",
+      "passed": true
+    },
+    {
+      "name": "ten complete SHA256 bindings",
+      "passed": true
+    },
+    {
+      "name": "single assignment COMPARISON_PINS",
+      "passed": true
+    },
+    {
+      "name": "single assignment COMPARISON_PINS",
+      "passed": true
+    },
+    {
+      "name": "COMPARISON_PINS unchanged",
+      "passed": true
+    },
+    {
+      "name": "single assignment POSTCOLD_CHECKS",
+      "passed": true
+    },
+    {
+      "name": "single assignment POSTCOLD_CHECKS",
+      "passed": true
+    },
+    {
+      "name": "POSTCOLD_CHECKS unchanged",
+      "passed": true
+    },
+    {
+      "name": "single assignment QA_PINS",
+      "passed": true
+    },
+    {
+      "name": "single assignment QA_PINS",
+      "passed": true
+    },
+    {
+      "name": "QA_PINS unchanged",
+      "passed": true
+    },
+    {
+      "name": "single assignment DEADLINE_QA_PINS",
+      "passed": true
+    },
+    {
+      "name": "single assignment DEADLINE_QA_PINS",
+      "passed": true
+    },
+    {
+      "name": "DEADLINE_QA_PINS unchanged",
+      "passed": true
+    },
+    {
+      "name": "single assignment COMMIT",
+      "passed": true
+    },
+    {
+      "name": "single assignment COMMIT",
+      "passed": true
+    },
+    {
+      "name": "COMMIT unchanged",
+      "passed": true
+    },
+    {
+      "name": "single assignment TREE",
+      "passed": true
+    },
+    {
+      "name": "single assignment TREE",
+      "passed": true
+    },
+    {
+      "name": "TREE unchanged",
+      "passed": true
+    },
+    {
+      "name": "single assignment RUNNER_SHA256",
+      "passed": true
+    },
+    {
+      "name": "single assignment RUNNER_SHA256",
+      "passed": true
+    },
+    {
+      "name": "RUNNER_SHA256 unchanged",
+      "passed": true
+    },
+    {
+      "name": "single assignment NUMERIC_HELPER_SHA256",
+      "passed": true
+    },
+    {
+      "name": "single assignment NUMERIC_HELPER_SHA256",
+      "passed": true
+    },
+    {
+      "name": "NUMERIC_HELPER_SHA256 unchanged",
+      "passed": true
+    },
+    {
+      "name": "single assignment CIPHER_HELPER_SHA256",
+      "passed": true
+    },
+    {
+      "name": "single assignment CIPHER_HELPER_SHA256",
+      "passed": true
+    },
+    {
+      "name": "CIPHER_HELPER_SHA256 unchanged",
+      "passed": true
+    },
+    {
+      "name": "single assignment COMPARISON_PINS",
+      "passed": true
+    },
+    {
+      "name": "36 old fences unchanged",
+      "passed": true
+    },
+    {
+      "name": "single assignment POSTCOLD_CHECKS",
+      "passed": true
+    },
+    {
+      "name": "12 postcold names unchanged",
+      "passed": true
+    },
+    {
+      "name": "single assignment RUNNER_SHA256",
+      "passed": true
+    },
+    {
+      "name": "runner exact SHA",
+      "passed": true
+    },
+    {
+      "name": "entry self filename present",
+      "passed": true
+    },
+    {
+      "name": "all inert definitions unchanged",
+      "passed": true
+    },
+    {
+      "name": "single assignment PINS",
+      "passed": true
+    },
+    {
+      "name": "nine carrier pins exact",
+      "passed": true
+    },
+    {
+      "name": "unchanged 1MiB stdin cap",
+      "passed": true
+    },
+    {
+      "name": "inert argv exact",
+      "passed": true
+    },
+    {
+      "name": "prepare argv exact",
+      "passed": true
+    },
+    {
+      "name": "original outer stages",
+      "passed": true
+    },
+    {
+      "name": "two normal61 exact independent counts",
+      "passed": true
+    },
+    {
+      "name": "no host or runtime admission",
+      "passed": true
+    },
+    {
+      "name": "desktop canonical still explicitly unobserved",
+      "passed": true
+    }
+  ],
+  "candidate_function_class_definitions": 227,
+  "inert_definitions": 5,
+  "compiled_only_sources": 10,
+  "candidate_modules_executed": 0,
+  "host_requests": 0,
+  "products_started": 0
+}

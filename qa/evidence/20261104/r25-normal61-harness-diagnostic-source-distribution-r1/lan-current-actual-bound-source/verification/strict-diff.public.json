@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.4e808-lan-bound-strict-diff.v1",
+  "status": "passed",
+  "launcher_hunks": 1,
+  "carrier_hunks": 2,
+  "launcher_bytes_exact": true,
+  "carrier_bytes_exact": true,
+  "unbound_source_tree": "d93ea226dceadbed501799835f5d290faaf1f750",
+  "unchanged_candidate_sources": [
+    {
+      "path": "read_stopped_postrecovery_frontier_same_root_publication_r1.py",
+      "bytes": 16310,
+      "sha256": "e23df808914e8bc828c78b875753021f9dc67da94e697d67b33732f55e46ba1f",
+      "blob": "d2fc9a7d79240a32a026f8cd096b7e3d37a9bc23",
+      "same_as_unbound": true
+    },
+    {
+      "path": "read_stopped_recovered_cipher_same_root_publication_r1.py",
+      "bytes": 13225,
+      "sha256": "62be0f577ace2ce3a7754b10d310dfc3f7cc6aa667f566b883c8575d320366b5",
+      "blob": "3dd0dbfccd0f0522a106ea2a77659d49f4a4b411",
+      "same_as_unbound": true
+    },
+    {
+      "path": "deadline_qa/ha_multihost_live.py",
+      "bytes": 79776,
+      "sha256": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460",
+      "blob": "1cb1da88b239d46e9cae7666249e0f7f97338c97",
+      "same_as_unbound": true
+    },
+    {
+      "path": "deadline_qa/native_ha_foreground_watchdog.py",
+      "bytes": 41618,
+      "sha256": "04189572097f5f7ac1f4ea3eaf53afaa3bf9854043cec9e190b9fd96d628ef89",
+      "blob": "eb37adcc3eb4d3fdd726c922163c4fda603b212b",
+      "same_as_unbound": true
+    },
+    {
+      "path": "deadline_qa/native_v6_ha_direct_lan_live.py",
+      "bytes": 14046,
+      "sha256": "bc99f154d89dfbe8a82babb8c50bcda3accaf8c486c51750db48bfc4003932ea",
+      "blob": "bb07666bde008d18697e0979200b20058a609a7a",
+      "same_as_unbound": true
+    },
+    {
+      "path": "deadline_qa/native_v6_ha_multihost_live.py",
+      "bytes": 87254,
+      "sha256": "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429",
+      "blob": "74fa468a13b4a77e1a38b0b816e57fdfb1decc8a",
+      "same_as_unbound": true
+    },
+    {
+      "path": "probe_normal_build_r10_r1.py",
+      "bytes": 6445,
+      "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+      "blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a",
+      "same_as_unbound": true
+    },
+    {
+      "path": "native_v6_pocket_source_postrecovery_cold_4e808_r1.py",
+      "bytes": 72753,
+      "sha256": "7ee5ee8218b50b7edc3cc010bdd1306f6d03b3301f00811034425b591ad76754",
+      "blob": "c87a051609f0e0a8049367e6df27618c8931c784",
+      "same_as_unbound": true
+    }
+  ],
+  "full_before_after": true,
+  "modules_executed": 0,
+  "host_calls": 0
+}

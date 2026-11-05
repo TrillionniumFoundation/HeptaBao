@@ -1,0 +1,97 @@
+{
+  "schema": "heptabao.root.p01-archived-public-projection-review.r1",
+  "status": "PASS_ARCHIVED_MAPPING_ONLY_DEPLOYMENT_PROPOSAL_REQUIRES_T5_CORRECTION",
+  "checksPassed": 30,
+  "checks": [
+    "complete immutable source21 packet",
+    "exact source bytes and SHA",
+    "original frozen public stdin hash and size",
+    "exact eight archived source members",
+    "whole original archived source mac",
+    "whole original archived source rog",
+    "whole original archived source x230",
+    "whole original archived source pocket",
+    "whole original archived source registration",
+    "whole original archived source cleanup",
+    "whole original archived source xr01Raw",
+    "whole original archived source macCanonicalCron",
+    "actual public stdout and zero stderr exact",
+    "original local actual execution proof",
+    "public projection original imports and no host activity",
+    "four exact host order",
+    "host agent denominator exact historical scope",
+    "service definitions counts are not active counts",
+    "ROG disabled drift not repaired",
+    "X230 absence not inferred",
+    "all three proposed client inverses only four fields",
+    "every archived evidence pointer resolves with exact source identity",
+    "nine public refs exact source projection",
+    "nine public refs original inventory exact host path SHA",
+    "two dependency contracts exact projection",
+    "X230 dependency stays metadata-only one path",
+    "unissued issuer values all remain null",
+    "proposal-only steps and no fixture qualification transfer",
+    "Mac proposal home server path discrepancy retained",
+    "renewal proof explicitly still unissued"
+  ],
+  "archivedEvidencePointersResolved": 76,
+  "packet": {
+    "tree": "90b8d6307f14a134a43e015866614c44c4fa8734",
+    "files": 21,
+    "bytes": 808351
+  },
+  "source": {
+    "bytes": 24624,
+    "sha256": "dc41337d1aa4009a5359564e1b7330584b69aa94215610c7325a5af14d76227a",
+    "blob": "8c3686237f5f03148ed3fb28cd9cb795d785676f"
+  },
+  "output": {
+    "bytes": 104595,
+    "sha256": "79ec619f16916d1a08fc5c6d4fcf9cfe1421f604c90ab41440883653e7ac11c5",
+    "blob": "fe80011264f727f7c5623903c7c4eef68e3e5ec3"
+  },
+  "observations": {
+    "hostOrder": [
+      "mac",
+      "rog",
+      "pocket4",
+      "x230"
+    ],
+    "agentCounts": {
+      "mac": 5,
+      "rog": 6,
+      "pocket4": 2,
+      "x230": null
+    },
+    "definitionEntryCounts": {
+      "mac": 5,
+      "rog": 8,
+      "pocket4": 5,
+      "x230": 4
+    },
+    "definitionsAreNotActiveServiceCounts": true,
+    "configPredecessorsRequireFreshExactPrivateRollbackBeforeMutation": true,
+    "rogOriginalFailedObservationRemainsFailed": true,
+    "x230HistoricalErrno2NotCurrentAbsence": true,
+    "allHostObservationsSequentialNotAtomic": true
+  },
+  "productionRegistrationEstablished": false,
+  "acceptedCurrentServiceOwnership": false,
+  "allClientsEnumerated": false,
+  "existingNineReceiptsAreBackupPayloads": false,
+  "hostReadsetGo": false,
+  "correctionRequired": {
+    "host": "mac",
+    "currentProposal": "server/config/data below the home registration directory",
+    "required": "Retain Mac service binary, configuration, persistent data and backups under the external T5 deployment root, with actual volume and parent identity binding. Home client credential generation is separately permitted. Publish a separate minimal contract diff; retain original projector/stdout.",
+    "noHostMutationOccurred": true
+  },
+  "next": {
+    "reuseWholeArchivedPublicReceiptsByExactShaBeforeNewHostReads": true,
+    "actualSdkSelectionSourcesSeparateTask": true,
+    "issuerValuesAndTTLBeforeAfterEvidenceStillRequired": true
+  },
+  "productionCutover": false,
+  "oldCleanup": false,
+  "fullReplacement": false
+}

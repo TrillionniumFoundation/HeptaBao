@@ -1,0 +1,289 @@
+{
+  "schema": "heptabao.root.normal5-current-actual-bound-source-review.r1",
+  "status": "PASS_EXACT_INERT_SOURCE_ONLY",
+  "checksPassed": 95,
+  "checks": [
+    "exact packet denominator",
+    "current root147 qualification is already core accepted",
+    "current commit/tree only",
+    "new control/incoming namespace",
+    "actual five files and aggregate",
+    "exact unchanged original caps",
+    "strict full patch sender.py",
+    "before source is original dispatch payload sender.py",
+    "unique assignment FILES",
+    "unique assignment FILES",
+    "actual five-row literal table sender.py",
+    "unique reviewed literal sender.py FILES table",
+    "unique reviewed literal sender.py HEAD",
+    "unique reviewed literal sender.py TREE",
+    "unique reviewed literal sender.py schema",
+    "ready flag unchanged true sender.py",
+    "entire source changed only reviewed literal slots sender.py",
+    "strict full patch receiver.py",
+    "before source is original dispatch payload receiver.py",
+    "unique assignment FILES",
+    "unique assignment FILES",
+    "actual five-row literal table receiver.py",
+    "unique reviewed literal receiver.py FILES table",
+    "unique reviewed literal receiver.py HEAD",
+    "unique reviewed literal receiver.py TREE",
+    "unique reviewed literal receiver.py schema",
+    "ready flag unchanged true receiver.py",
+    "unique reviewed literal receiver.py ROOT",
+    "entire source changed only reviewed literal slots receiver.py",
+    "strict full patch relay.py",
+    "before source is original dispatch payload relay.py",
+    "unique assignment FILES",
+    "unique assignment FILES",
+    "actual five-row literal table relay.py",
+    "unique reviewed literal relay.py FILES table",
+    "unique reviewed literal relay.py HEAD",
+    "unique reviewed literal relay.py TREE",
+    "unique reviewed literal relay.py schema",
+    "ready flag unchanged true relay.py",
+    "unique reviewed literal relay doc label",
+    "unique reviewed literal relay SOURCES",
+    "unique reviewed literal relay ROOT",
+    "unique assignment HELPERS",
+    "unique assignment HELPERS",
+    "derived endpoint hashes",
+    "unique reviewed literal relay HELPERS",
+    "entire source changed only reviewed literal slots relay.py",
+    "strict full patch inert-carrier.py",
+    "before source is original dispatch payload inert-carrier.py",
+    "unique reviewed literal inert BASE",
+    "unique assignment PINS",
+    "unique assignment PINS",
+    "inert pins exact three candidate source bytes/hashes",
+    "unique reviewed literal inert PINS",
+    "unique reviewed literal inert output schema",
+    "unique reviewed literal inert stdin schema",
+    "entire source changed only reviewed literal slots inert-carrier.py",
+    "strict eight total hunks",
+    "original SDK contains exact native metadata heptabao-server",
+    "actual path size SHA version and mode heptabao-server",
+    "actual uid gid nlink and target mode heptabao-server",
+    "original SDK contains exact native metadata native-build.public.json",
+    "actual path size SHA version and mode native-build.public.json",
+    "actual uid gid nlink and target mode native-build.public.json",
+    "actual whole public body native-build.public.json",
+    "root-accepted current actual body membership native-build.public.json",
+    "original SDK contains exact native metadata normal-release-result.public.json",
+    "actual path size SHA version and mode normal-release-result.public.json",
+    "actual uid gid nlink and target mode normal-release-result.public.json",
+    "actual whole public body normal-release-result.public.json",
+    "root-accepted current actual body membership normal-release-result.public.json",
+    "original SDK contains exact native metadata normal-release-tests-result.public.json",
+    "actual path size SHA version and mode normal-release-tests-result.public.json",
+    "actual uid gid nlink and target mode normal-release-tests-result.public.json",
+    "actual whole public body normal-release-tests-result.public.json",
+    "root-accepted current actual body membership normal-release-tests-result.public.json",
+    "original SDK contains exact native metadata groups.json",
+    "actual path size SHA version and mode groups.json",
+    "actual uid gid nlink and target mode groups.json",
+    "actual whole public body groups.json",
+    "root-accepted current actual body membership groups.json",
+    "server identity tied to normal/native actual provenance",
+    "normal/native source current",
+    "exact native receipt parent hash",
+    "normal/native exit and actual features",
+    "inert exact isolated source argv",
+    "inert raw stdin identical and bounded",
+    "inert exact key and 60s",
+    "both desktop immutable parent",
+    "future relay exact argv and no extra SHA argument",
+    "stdin three and only three source files",
+    "whole decoded stdin exact sender.py",
+    "whole decoded stdin exact receiver.py",
+    "whole decoded stdin exact relay.py",
+    "author 53 pure source checks retained"
+  ],
+  "packet": {
+    "tree": "1c48f9519ce6d13dbe2f4484db279102c9e33676",
+    "files": 39,
+    "bytes": 494117
+  },
+  "strictHunks": 8,
+  "reviewedLiteralSlots": 21,
+  "changes": [
+    {
+      "name": "sender.py FILES table",
+      "from": "FILES=[\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server\",\n  \"name\": \"heptabao-server\",\n  \"bytes\": 110339520,\n  \"sha256\": \"7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2\",\n  \"source_mode\": 320,\n  \"target_mode\": 320,\n  \"version\": \"66306:31618600:110339520:1793854196517721681:1793854196660721163\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/native-build.public.json\",\n  \"name\": \"native-build.public.json\",\n  \"bytes\": 772,\n  \"sha256\": \"ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:31618604:772:1793854197085814600:1793854197085814600\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/normal-release-result.public.json\",\n  \"name\": \"normal-release-result.public.json\",\n  \"bytes\": 3137,\n  \"sha256\": \"6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:31618602:3137:1793854197085005556:1793854197085005556\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json\",\n  \"name\": \"normal-release-tests-result.public.json\",\n  \"bytes\": 48188,\n  \"sha256\": \"84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:31618802:48188:1793855417596045434:1793855417596045434\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/normal-test-groups.public.json\",\n  \"name\": \"groups.json\",\n  \"bytes\": 6249,\n  \"sha256\": \"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:27299399:6249:1793850441629209928:1793850441629209928\"\n }\n]",
+      "to": "FILES=[\n {\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-server\",\n  \"name\": \"heptabao-server\",\n  \"bytes\": 110219600,\n  \"sha256\": \"cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0\",\n  \"source_mode\": 320,\n  \"target_mode\": 320,\n  \"version\": \"66306:35799524:110219600:1793878962288901433:1793878962422900772\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/native-build.public.json\",\n  \"name\": \"native-build.public.json\",\n  \"bytes\": 786,\n  \"sha256\": \"3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:35799527:786:1793878962882813897:1793878962882813897\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/normal-release-result.public.json\",\n  \"name\": \"normal-release-result.public.json\",\n  \"bytes\": 3192,\n  \"sha256\": \"78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:35799526:3192:1793878962880898513:1793878962880898513\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/result.public.json\",\n  \"name\": \"normal-release-tests-result.public.json\",\n  \"bytes\": 57532,\n  \"sha256\": \"7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:35799670:57532:1793880513628576356:1793880513628576356\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/normal-test-groups.public.json\",\n  \"name\": \"groups.json\",\n  \"bytes\": 6249,\n  \"sha256\": \"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:33211565:6249:1793875489336258402:1793875489336258402\"\n }\n]"
+    },
+    {
+      "name": "sender.py HEAD",
+      "from": "HEAD='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'",
+      "to": "HEAD='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'"
+    },
+    {
+      "name": "sender.py TREE",
+      "from": "TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'",
+      "to": "TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'"
+    },
+    {
+      "name": "sender.py schema",
+      "from": "heptabao.df026.",
+      "to": "heptabao.4e808."
+    },
+    {
+      "name": "receiver.py FILES table",
+      "from": "FILES=[\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server\",\n  \"name\": \"heptabao-server\",\n  \"bytes\": 110339520,\n  \"sha256\": \"7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2\",\n  \"source_mode\": 320,\n  \"target_mode\": 320,\n  \"version\": \"66306:31618600:110339520:1793854196517721681:1793854196660721163\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/native-build.public.json\",\n  \"name\": \"native-build.public.json\",\n  \"bytes\": 772,\n  \"sha256\": \"ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:31618604:772:1793854197085814600:1793854197085814600\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/normal-release-result.public.json\",\n  \"name\": \"normal-release-result.public.json\",\n  \"bytes\": 3137,\n  \"sha256\": \"6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:31618602:3137:1793854197085005556:1793854197085005556\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json\",\n  \"name\": \"normal-release-tests-result.public.json\",\n  \"bytes\": 48188,\n  \"sha256\": \"84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:31618802:48188:1793855417596045434:1793855417596045434\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/normal-test-groups.public.json\",\n  \"name\": \"groups.json\",\n  \"bytes\": 6249,\n  \"sha256\": \"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:27299399:6249:1793850441629209928:1793850441629209928\"\n }\n]",
+      "to": "FILES=[\n {\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-server\",\n  \"name\": \"heptabao-server\",\n  \"bytes\": 110219600,\n  \"sha256\": \"cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0\",\n  \"source_mode\": 320,\n  \"target_mode\": 320,\n  \"version\": \"66306:35799524:110219600:1793878962288901433:1793878962422900772\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/native-build.public.json\",\n  \"name\": \"native-build.public.json\",\n  \"bytes\": 786,\n  \"sha256\": \"3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:35799527:786:1793878962882813897:1793878962882813897\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/normal-release-result.public.json\",\n  \"name\": \"normal-release-result.public.json\",\n  \"bytes\": 3192,\n  \"sha256\": \"78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:35799526:3192:1793878962880898513:1793878962880898513\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/result.public.json\",\n  \"name\": \"normal-release-tests-result.public.json\",\n  \"bytes\": 57532,\n  \"sha256\": \"7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:35799670:57532:1793880513628576356:1793880513628576356\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/normal-test-groups.public.json\",\n  \"name\": \"groups.json\",\n  \"bytes\": 6249,\n  \"sha256\": \"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:33211565:6249:1793875489336258402:1793875489336258402\"\n }\n]"
+    },
+    {
+      "name": "receiver.py HEAD",
+      "from": "HEAD='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'",
+      "to": "HEAD='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'"
+    },
+    {
+      "name": "receiver.py TREE",
+      "from": "TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'",
+      "to": "TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'"
+    },
+    {
+      "name": "receiver.py schema",
+      "from": "heptabao.df026.",
+      "to": "heptabao.4e808."
+    },
+    {
+      "name": "receiver.py ROOT",
+      "from": "normal-cold-h2-shared-artifacts-r1",
+      "to": "normal-same-root-publication-shared-artifacts-r1"
+    },
+    {
+      "name": "relay.py FILES table",
+      "from": "FILES=[\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server\",\n  \"name\": \"heptabao-server\",\n  \"bytes\": 110339520,\n  \"sha256\": \"7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2\",\n  \"source_mode\": 320,\n  \"target_mode\": 320,\n  \"version\": \"66306:31618600:110339520:1793854196517721681:1793854196660721163\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/native-build.public.json\",\n  \"name\": \"native-build.public.json\",\n  \"bytes\": 772,\n  \"sha256\": \"ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:31618604:772:1793854197085814600:1793854197085814600\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/normal-release-result.public.json\",\n  \"name\": \"normal-release-result.public.json\",\n  \"bytes\": 3137,\n  \"sha256\": \"6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:31618602:3137:1793854197085005556:1793854197085005556\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json\",\n  \"name\": \"normal-release-tests-result.public.json\",\n  \"bytes\": 48188,\n  \"sha256\": \"84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:31618802:48188:1793855417596045434:1793855417596045434\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/normal-test-groups.public.json\",\n  \"name\": \"groups.json\",\n  \"bytes\": 6249,\n  \"sha256\": \"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:27299399:6249:1793850441629209928:1793850441629209928\"\n }\n]",
+      "to": "FILES=[\n {\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-server\",\n  \"name\": \"heptabao-server\",\n  \"bytes\": 110219600,\n  \"sha256\": \"cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0\",\n  \"source_mode\": 320,\n  \"target_mode\": 320,\n  \"version\": \"66306:35799524:110219600:1793878962288901433:1793878962422900772\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/native-build.public.json\",\n  \"name\": \"native-build.public.json\",\n  \"bytes\": 786,\n  \"sha256\": \"3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:35799527:786:1793878962882813897:1793878962882813897\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/normal-release-result.public.json\",\n  \"name\": \"normal-release-result.public.json\",\n  \"bytes\": 3192,\n  \"sha256\": \"78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:35799526:3192:1793878962880898513:1793878962880898513\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/result.public.json\",\n  \"name\": \"normal-release-tests-result.public.json\",\n  \"bytes\": 57532,\n  \"sha256\": \"7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:35799670:57532:1793880513628576356:1793880513628576356\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/normal-test-groups.public.json\",\n  \"name\": \"groups.json\",\n  \"bytes\": 6249,\n  \"sha256\": \"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:33211565:6249:1793875489336258402:1793875489336258402\"\n }\n]"
+    },
+    {
+      "name": "relay.py HEAD",
+      "from": "HEAD='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'",
+      "to": "HEAD='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'"
+    },
+    {
+      "name": "relay.py TREE",
+      "from": "TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'",
+      "to": "TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'"
+    },
+    {
+      "name": "relay.py schema",
+      "from": "heptabao.df026.",
+      "to": "heptabao.4e808."
+    },
+    {
+      "name": "relay doc label",
+      "from": "five fixed public df026 normal-build artifacts.",
+      "to": "five fixed public 4e808 normal-build artifacts."
+    },
+    {
+      "name": "relay SOURCES",
+      "from": "normal-cold-h2-shared-artifact-controls-r1",
+      "to": "normal-same-root-publication-shared-artifact-controls-r1"
+    },
+    {
+      "name": "relay ROOT",
+      "from": "normal-cold-h2-shared-artifacts-r1",
+      "to": "normal-same-root-publication-shared-artifacts-r1"
+    },
+    {
+      "name": "relay HELPERS",
+      "from": "HELPERS={\"sender.py\":\"bdd3164c3140f45375b2c543f87d87e5e978a5d02cbbe9237c6a9dee3f1becd4\",\"receiver.py\":\"96506bb62ea514f58b995e0202a78c29219290ce0b2977a5204e2cb4c540a465\"}",
+      "to": "HELPERS={\"sender.py\":\"f2a6cbfca7dc2d92a64d0f0173d570fcf5e6c084e531f50c86c2220842770c96\",\"receiver.py\":\"dbe951e3cb615df1c026a43862ff6e8478b99955f6f8e54cd21b8620dd431d19\"}"
+    },
+    {
+      "name": "inert BASE",
+      "from": "normal-cold-h2-shared-artifact-controls-r1",
+      "to": "normal-same-root-publication-shared-artifact-controls-r1"
+    },
+    {
+      "name": "inert PINS",
+      "from": "PINS = {\n    \"sender.py\": [\n        7532,\n        \"bdd3164c3140f45375b2c543f87d87e5e978a5d02cbbe9237c6a9dee3f1becd4\"\n    ],\n    \"receiver.py\": [\n        9054,\n        \"96506bb62ea514f58b995e0202a78c29219290ce0b2977a5204e2cb4c540a465\"\n    ],\n    \"relay.py\": [\n        16621,\n        \"cd610740ae736561d4291fb5113d113349bf3c7f7fd53ebe208d0b1f98f81cc7\"\n    ]\n}",
+      "to": "PINS = {\n    \"sender.py\": [\n        7602,\n        \"f2a6cbfca7dc2d92a64d0f0173d570fcf5e6c084e531f50c86c2220842770c96\"\n    ],\n    \"receiver.py\": [\n        9138,\n        \"dbe951e3cb615df1c026a43862ff6e8478b99955f6f8e54cd21b8620dd431d19\"\n    ],\n    \"relay.py\": [\n        16719,\n        \"075193b0494e4cffc87aedebd1ac2407efef8007963aa6ff48388095d5967ad4\"\n    ]\n}"
+    },
+    {
+      "name": "inert output schema",
+      "from": "heptabao.df026-shared-normal5-inert-carrier.v1",
+      "to": "heptabao.4e808-shared-normal5-inert-carrier.v1"
+    },
+    {
+      "name": "inert stdin schema",
+      "from": "heptabao.df026-shared-normal5-inputs.v1",
+      "to": "heptabao.4e808-shared-normal5-inputs.v1"
+    }
+  ],
+  "entireSourceOutsideReviewedLiteralSlotsUnchanged": true,
+  "orderedDefinitionsUnchanged": 42,
+  "inertRequest": {
+    "path": "dispatch/inert.request.json",
+    "blob": "2f19e131dd373e7bbb7e16977c4829dae70dcbd0",
+    "bytes": 50263,
+    "sha256": "ff4a8538f070960dc0f71330fc5e3181359c8b535ec3c49170d4233fa903aaee",
+    "mode": "100644"
+  },
+  "futureRelayRequest": {
+    "path": "dispatch/relay.request.json",
+    "blob": "337709a2869237259b8576b63623e7b74f138fb8",
+    "bytes": 383,
+    "sha256": "5dcd03bc159a47f0fea71e9908cfcb4d520aa5ef97a4681d310a1e652962deff",
+    "mode": "100644"
+  },
+  "currentFiles": [
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-server",
+      "name": "heptabao-server",
+      "bytes": 110219600,
+      "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+      "source_mode": 320,
+      "target_mode": 320,
+      "version": "66306:35799524:110219600:1793878962288901433:1793878962422900772"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/native-build.public.json",
+      "name": "native-build.public.json",
+      "bytes": 786,
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:35799527:786:1793878962882813897:1793878962882813897"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/normal-release-result.public.json",
+      "name": "normal-release-result.public.json",
+      "bytes": 3192,
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:35799526:3192:1793878962880898513:1793878962880898513"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/result.public.json",
+      "name": "normal-release-tests-result.public.json",
+      "bytes": 57532,
+      "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:35799670:57532:1793880513628576356:1793880513628576356"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/normal-test-groups.public.json",
+      "name": "groups.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:33211565:6249:1793875489336258402:1793875489336258402"
+    }
+  ],
+  "bytes": 110287359,
+  "scope": {
+    "inertMayCreateOnlyThreeControlsAndReceipt": true,
+    "transportNotYetAuthorized": true,
+    "currentProductRuntimeNotExecuted": true,
+    "fullNormalArchivePending": true,
+    "oldInstrumentIdentitySeparate": true,
+    "fullReplacement": false
+  },
+  "groupsInfoScope": "Original independent 4e808 source-stage file_info, whose whole SHA and version exactly equal the current post-normal complete body read; not described as a new stat."
+}

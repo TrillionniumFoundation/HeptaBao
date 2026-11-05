@@ -1,0 +1,12 @@
+{
+  "host": "rog",
+  "paths": [
+    "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/same-root-publication-1.public.json",
+    "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/same-root-publication-1.stdout",
+    "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/same-root-publication-1.stderr",
+    "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/normal-release-result.public.json",
+    "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/native-build.public.json"
+  ],
+  "max_file_bytes": 16384,
+  "max_response_bytes": 65536
+}

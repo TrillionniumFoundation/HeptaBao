@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.root.mac-harness-predicate-actual-review.r1",
+  "status": "PASS_COMPLETED_READONLY_DIAGNOSTIC_ORIGINAL_NAMESPACE_REJECTION_CONFIRMED",
+  "rootBindingChecks": 14,
+  "checks": [
+    "actual24 packet whole denominator",
+    "request exact root source18",
+    "root GO original blob",
+    "source exact original reviewed program",
+    "three failed-origin raw references unchanged",
+    "source contract original exact",
+    "external intent matches source request GO",
+    "external intent precedes original launch",
+    "one original exact request digest",
+    "original authority and stream requests same job",
+    "actual first failure solely original namespace",
+    "actual selection still unknown",
+    "only original capsule leaf in nine descriptor scope",
+    "descriptive loader method discrepancy observed"
+  ],
+  "reviewedAuthorChecks": 96,
+  "authorVerifierReexecutedAgainstOriginalRawInputs": true,
+  "authorChecksNotRelabeledIndependentRuntimeTests": true,
+  "packet": {
+    "tree": "9cc0e5423626cb0e2525a29e96f0f5dcddc14a73",
+    "files": 24,
+    "bytes": 308744
+  },
+  "job": "1a1abcc26f6-fc05-50a4",
+  "stdout": {
+    "path": "actual/stdout.original.json",
+    "blob": "e311f02d58594fa70957751d303c2a2df9c31c49",
+    "bytes": 8353,
+    "sha256": "69fe257541afa58e07c0486cb269883488cf132f154756f4bc8da694cbd37469",
+    "mode": "100644"
+  },
+  "authority": {
+    "path": "actual/authority.native.json",
+    "blob": "f7bdd2224bc09ffe48d47678e40da096c3210f10",
+    "bytes": 731,
+    "sha256": "d3a1aa42fe5554e57145d7d3fa7ec57d578b32c78c5d095652001259a70cea01",
+    "mode": "100644"
+  },
+  "finding": {
+    "plugins": 75,
+    "enabledOwners": 2,
+    "firstEnabledOrdinal": 0,
+    "firstRegistryOrdinal": 22,
+    "failedOriginalClause": "rootInOriginalNpmProjectsNamespace",
+    "allOtherOriginalClausesTrue": true,
+    "secondRegistryOrdinal": 68,
+    "secondAllOriginalClausesTrue": true,
+    "actualSelectedForFiveAgentsUnknown": true
+  },
+  "closure": {
+    "descriptors": 9,
+    "metadata": 72,
+    "readCalls": 4,
+    "privateBytes": 195155,
+    "elapsedSeconds": 0.005912791937589645,
+    "softSeconds": 5,
+    "supervisorSeconds": 60,
+    "exitCode": 0,
+    "fullDurable": true
+  },
+  "descriptionCorrection": {
+    "originalDiagnostic": "loader.r(onlyPluginIds)",
+    "actualPinnedWorker": "loader.t({scope:'all',config,activationSourceConfig,workspaceDir,onlyPluginIds})",
+    "effect": "Diagnostic never executed SDK; original raw stdout retained. Namespace observation unaffected; follow-up uses actual pinned worker."
+  },
+  "localRootVerificationCorrection": {
+    "firstError": "reexecuted author review mismatch",
+    "reason": "Root reconstruction called first SDK pair 'start', while original verifier case label was 'ack'. All 96 assertions passed in both runs. Exact original label restores semantic report equality.",
+    "secondObservation": "A subsequent code-mode orchestration failed JavaScript parsing with Unexpected token ')', before any operation in that invocation. No host or Git mutation occurred.",
+    "correction": "Reexecuted only the unchanged pure verifier with the exact original label; canonical JSON equality passed.",
+    "originalActualArtifactsUnchanged": true,
+    "hostReplay": false
+  },
+  "scope": {
+    "diagnosticOnly": true,
+    "originalRuntimeStillFailed": true,
+    "currentMacDiagnosticOwnedWindowClosed": true,
+    "historicalUnknownsUnchanged": true,
+    "productionCutover": false,
+    "cleanup": false,
+    "fullReplacement": false
+  },
+  "unsafeRequestFingerprintUsedAsNumber": false
+}

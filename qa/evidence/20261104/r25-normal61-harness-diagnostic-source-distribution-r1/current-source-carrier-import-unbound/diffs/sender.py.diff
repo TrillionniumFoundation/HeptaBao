@@ -1,0 +1,52 @@
+--- reference/sender.py
++++ candidate/sender.py
+@@ -1,34 +1,37 @@
+ from pathlib import Path
+ import hashlib,json,os,platform,select,signal,stat,subprocess,sys,time
++ACTUAL_INPUTS_READY=False
++if not ACTUAL_INPUTS_READY:
++ raise RuntimeError('actual 4e808 source-export metadata unresolved')
+ os.umask(0o077)
+ START=time.monotonic()
+ UNTIL=START+90
+-HEAD='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
+-TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
++HEAD='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
++TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'
+ FILES=[
+  {
+-  "bytes": 23429893,
+-  "name": "canonical-df026-full.bundle",
+-  "path": "/home/qian-qi/heptabao-cold-h2-source-export-20261105-r1/canonical-df026-full.bundle",
+-  "sha256": "2f25963c59ecfd0918f786c98e6babcd7ba35daec02f00d899e987f19c28ad71",
++  "bytes": None,
++  "name": "canonical-4e808-full.bundle",
++  "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle",
++  "sha256": None,
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": "66306:28491499:23429893:1793854798728349517:1793854798731349506"
++  "version": None
+  },
+  {
+-  "bytes": 38783,
++  "bytes": None,
+   "name": "source-export.result.public.json",
+-  "path": "/home/qian-qi/heptabao-cold-h2-source-export-20261105-r1/result.public.json",
+-  "sha256": "34816ca251e2cf420ed63db97bd56c10e0c1a725e16470f28f9eedf70dd21bb4",
++  "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json",
++  "sha256": None,
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": "66306:28491536:38783:1793854798988258235:1793854798988258235"
++  "version": None
+  }
+ ]
+ protected=0
+ pending_signal=None
+ children=[]
+-result={'schema':'heptabao.df026.fixed-public-source-endpoint.v1','status':'failed',
++result={'schema':'heptabao.same-root-publication-4e808.fixed-public-source-endpoint.v1','status':'failed',
+         'request_seconds':90,'git_operations':0,'server_started':False,'compiler_started':False}
+ class Cancelled(BaseException):pass
+ def handler(sig,_frame):

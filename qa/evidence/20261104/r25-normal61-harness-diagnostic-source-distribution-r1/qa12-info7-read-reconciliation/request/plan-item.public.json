@@ -1,0 +1,15 @@
+{
+  "key": "qa12_dst_6",
+  "idempotency_key": "ha-qa12-destination-6-file-info-observation-r1-20261105",
+  "host": "desktop",
+  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/incoming/build-result.public.json",
+  "size": 62314,
+  "sha256": "b8a2e83ea012f11cef7dc83bc79758d2b624df7eac2265efddbd32e2880db95e",
+  "mode": 256,
+  "uid": 1000,
+  "gid": 1000,
+  "nlink": 1,
+  "version": "2050:7257430:62314:1793882066235718761:1793882066235718761",
+  "role": "build_receipt",
+  "original_index": 6
+}

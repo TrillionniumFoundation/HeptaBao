@@ -1,0 +1,7 @@
+{
+  "host": "mac",
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-4e808-current-registry-wal-r1/captures/before/stdout.public.json",
+  "expected_version": "16777244:72635870:30308:1793881838873136780:1793881838873146946",
+  "offset": 0,
+  "limit": 30308
+}

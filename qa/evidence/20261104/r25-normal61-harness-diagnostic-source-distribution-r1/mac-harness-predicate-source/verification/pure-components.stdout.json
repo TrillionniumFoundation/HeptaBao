@@ -1,0 +1,69 @@
+{
+  "actualCapturedPrivateBodyLoaded": false,
+  "actualDescriptors": 0,
+  "actualHostCalls": 0,
+  "actualNetwork": 0,
+  "actualSignalsSent": 0,
+  "actualSqlite": 0,
+  "actualSubprocess": 0,
+  "candidateFullModuleMainNotRunOnHost": true,
+  "checks": [
+    {
+      "case": "01_exact_original_valid_root_and_selection_not_claimed",
+      "passed": true
+    },
+    {
+      "case": "02_scoped_identifier_is_exact_legacy_regex_rejection",
+      "passed": true
+    },
+    {
+      "case": "03_bundled_enabled_not_falsely_selected_or_unused",
+      "passed": true
+    },
+    {
+      "case": "04_nonnormalized_root_rejected_exact_original_expression",
+      "passed": true
+    },
+    {
+      "case": "05_no_private_or_unknown_id_root_literals_published",
+      "passed": true
+    },
+    {
+      "case": "06_original_128_registry_and_8_enabled_caps",
+      "passed": true
+    },
+    {
+      "case": "07_fake_complete_fullnine_72_metadata_9_fd_4_reads",
+      "passed": true
+    },
+    {
+      "case": "08_cancel_after_open_returns_still_registered_and_closed",
+      "passed": true
+    },
+    {
+      "case": "09_parent_fullnine_drift_refuses_after_whole_read",
+      "passed": true
+    },
+    {
+      "case": "10_one_eof_byte_counts_no_extra_read",
+      "passed": true
+    },
+    {
+      "case": "11_close_error_keeps_false_and_no_second_close",
+      "passed": true
+    },
+    {
+      "case": "12_same_absolute_deadline_refuses_late_read_but_closes",
+      "passed": true
+    },
+    {
+      "case": "13_actual_main_late_restore_cancellation_cannot_return_success",
+      "passed": true
+    }
+  ],
+  "checksPassed": 13,
+  "schema": "heptabao.mac-captured-harness-predicate-pure-components.r1",
+  "selectedSourceDefinitionsExecutedAgainstMemoryFakesOnly": true,
+  "sourceSha256": "2b999a66c6c3578673fd4611c4d89bf14fd7fd3605c3839ddb4379216d0b3805",
+  "syntheticMemoryCapsuleHashRebindingNotHostQualification": true
+}

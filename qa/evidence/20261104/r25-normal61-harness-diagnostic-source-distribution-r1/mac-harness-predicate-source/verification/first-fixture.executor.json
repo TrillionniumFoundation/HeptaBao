@@ -1,0 +1,7 @@
+{
+  "chunk_id": "582da0",
+  "wall_time_seconds": 0.071878129,
+  "exit_code": 1,
+  "original_token_count": 41,
+  "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 188, in <module>\n  File \"<stdin>\", line 15, in check\nAssertionError: 10_one_eof_byte_counts_no_extra_read\n"
+}

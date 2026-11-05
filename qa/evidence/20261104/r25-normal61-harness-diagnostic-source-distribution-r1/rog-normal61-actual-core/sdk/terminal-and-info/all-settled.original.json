@@ -1,0 +1,28 @@
+[
+  {
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1ab76cee8-fc05-4e13\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b22737461747573223a2022706173736564222c2022736f757263655f636f6d6d6974223a202234653830386430656362316263646564323238373061376563393630646662323439316366366563222c2022736f757263655f74726565223a202265626135653635306264303830623861643431656135326132626336383836376635343164323535222c2022726573756c745f70617468223a20222f686f6d652f7169616e2d71692f686570746162616f2d73616d652d726f6f742d7075626c69636174696f6e2d6e6f726d616c2d32303236313130352d72322f6e6f726d616c2d72656c656173652d74657374732d72312f726573756c742e7075626c69632e6a736f6e222c2022726573756c745f736861323536223a202237383330383435313732373332343332383935633234366437376334373236363433326130336330373838653135363839656137346431356466663134343735222c20227075626c69636174696f6e5f77697468696e5f6f726967696e616c5f6f75746572223a20747275652c2022616c6c5f6f776e65645f73746f70706564223a20747275657d0a\",\n    \"eof\": true,\n    \"next_offset\": 2220,\n    \"offset\": 1799,\n    \"size\": 2220,\n    \"text\": \"{\\\"status\\\": \\\"passed\\\", \\\"source_commit\\\": \\\"4e808d0ecb1bcded22870a7ec960dfb2491cf6ec\\\", \\\"source_tree\\\": \\\"eba5e650bd080b8ad41ea52a2bc68867f541d255\\\", \\\"result_path\\\": \\\"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/result.public.json\\\", \\\"result_sha256\\\": \\\"7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475\\\", \\\"publication_within_original_outer\\\": true, \\\"all_owned_stopped\\\": true}\\n\"\n  }\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  {
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/result.public.json\",\"sha256\":\"7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475\",\"size\":57532,\"version\":\"66306:35799670:57532:1793880513628576356:1793880513628576356\"}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  }
+]

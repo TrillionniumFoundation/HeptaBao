@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.root.current-source-export-single-start-go.r1",
+  "decision": "GO_ONE_EXACT_STANDALONE_EXPORT_PROCESS_START",
+  "request": {
+    "blob": "93e41338e8e24a65a8c9fcff2887a65f1b646467",
+    "bytes": 374,
+    "sha256": "b389fef4b9169107a0cd81b15ed804ecd6015e08232d881b4d4e3c9d207a2e67",
+    "host": "rog",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-same-root-publication-source-export-controls-20261105-r1/source_export_same_root_publication_4e808_r1.py"
+    ],
+    "cwd": "/home/qian-qi",
+    "timeout_seconds": 330,
+    "idempotency_key": "heptabao-4e808-standalone-source-export-9af6738d-20261105-r1"
+  },
+  "sourceReview": {
+    "name": "r25-exporter-root-review.public.json",
+    "blob": "e3d6022d54ae1b3b8895de53acaf25dabdae1624",
+    "bytes": 3737,
+    "sha256": "049b621be8a27c7979095862f5045c7117006a06385a8f44f6966e27c7f1913d"
+  },
+  "inertActualReview": {
+    "name": "r25-current-exporter-inert-actual-root-review.public.json",
+    "blob": "b50c17caab9a66a703b12d6273c6306e38da5c7b",
+    "bytes": 5347,
+    "sha256": "16a4c170c8b3b33528761b669ac7aecc8e330a52b5041a4247d16ab1f5d10d20"
+  },
+  "source": {
+    "blob": "2540cac365b9c0afd91ae4b8adee80e01221f38e",
+    "bytes": 15364,
+    "sha256": "9af6738da8526ad5a0dcd6402bf4693f652a4f428eb4b22d0914761292f66d20"
+  },
+  "candidate": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  },
+  "scope": {
+    "readCanonicalSource": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/source",
+    "createOnlyExportRoot": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1",
+    "bundleName": "canonical-4e808-full.bundle",
+    "fullHistory": true,
+    "zeroPrerequisites": true,
+    "transport": false,
+    "import": false,
+    "productExecution": false
+  },
+  "originalCaps": {
+    "actionSeconds": 300,
+    "gitLeafSeconds": 90,
+    "cleanupSeconds": [
+      5,
+      5
+    ],
+    "outerSeconds": 330,
+    "bundleBytes": 67108864
+  },
+  "protocol": [
+    "Coordinate a brief original dispatch/observation window with HA; do not interrupt any in-flight call.",
+    "Persist external exact intent in completed separate call before ONE start.",
+    "Original ACK externally preserved before parse; reconcile only original job.",
+    "No new-key replay of an unknown outcome, no changed deadline.",
+    "Original authority plus whole27-command records/streams, bundle verification and whole source-before/after identity required for exporter completion.",
+    "Actual bundle and export-receipt size/SHA/version must be newly observed before filling any carrier slots."
+  ],
+  "qualification": {
+    "sourceExportOnly": true,
+    "inertAndSourceReviewed": true,
+    "carrierImportGo": false,
+    "productOrLanGo": false,
+    "productionCutover": false,
+    "cleanup": false,
+    "fullReplacement": false
+  }
+}

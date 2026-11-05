@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.external.exact-once.intent.v1",
+  "request_blob": "776bad1dfb3862850f4763ebb285d1d5b3dda2f2",
+  "request_sha256": "03767c7c7ebadda9f95e02892f6b2f3522abe71ea0fa68317b45c23f97dc7352",
+  "request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifact-controls-r1/relay.py"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-df026-h2qa12-artifact-relay-r1-d34b6df5"
+  },
+  "root_go_blob": "41c0f8a0bc4c490aa800636869d9fdeeb777b7e9",
+  "source_tree": "88e7ded49e5557982ad693102f9ccc6cdec87e06",
+  "inert_actual_tree": "81a7463424e628054e332d9eedbcae4e363ce09b",
+  "maximum_submissions": 1,
+  "effect": "Create-only 12 public df026 QA instrument artifacts on desktop",
+  "product_or_LAN_execution": false,
+  "unknown_replay": false
+}

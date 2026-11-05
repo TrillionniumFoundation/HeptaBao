@@ -1,0 +1,53 @@
+--- a/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py
++++ b/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py
+@@ -68,28 +68,28 @@
+         "cargo": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+         "build_driver_sha256": "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be",
+         "files": {
+-            "artifacts/heptabao-seed": None,
+-            "artifacts/heptabao-server": None,
+-            "normal-release-build.stdout": None,
+-            "native-build.public.json": None,
+-            "normal-release-result.public.json": None
+-        }
+-    },
+-    "mac": {
+-        "abi": "aarch64-apple-darwin",
+-        "actual_native_build_host": "mac",
+-        "alias": "mac-ts",
+-        "build": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1",
+-        "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
+-        "python": "/opt/homebrew/bin/python3",
+-        "cargo": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+-        "build_driver_sha256": "3e013354f125cc4c282905beb6347d19f84448a14c304efd576b4d8705e0c2d8",
+-        "files": {
+-            "artifacts/heptabao-seed": None,
+-            "artifacts/heptabao-server": None,
+-            "normal-release-build.stdout": None,
+-            "native-build.public.json": None,
+-            "normal-release-result.public.json": None
++            "artifacts/heptabao-seed": "0edc8d3c1fb3b78a4b018f684bfc07269d273c72925582a849b68df6c003b6a6",
++            "artifacts/heptabao-server": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
++            "normal-release-build.stdout": "064a4de5bc8a6dd76faddd9bcac7e444b27c1f7128000fdf9638695e6ecc9e24",
++            "native-build.public.json": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
++            "normal-release-result.public.json": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22"
++        }
++    },
++    "mac": {
++        "abi": "aarch64-apple-darwin",
++        "actual_native_build_host": "mac",
++        "alias": "mac-ts",
++        "build": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1",
++        "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
++        "python": "/opt/homebrew/bin/python3",
++        "cargo": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
++        "build_driver_sha256": "3e013354f125cc4c282905beb6347d19f84448a14c304efd576b4d8705e0c2d8",
++        "files": {
++            "artifacts/heptabao-seed": "faa8e1c443b26b9c459e8d628bfb7be7f8a4bac8c3afd072ac046360f4247429",
++            "artifacts/heptabao-server": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63",
++            "normal-release-build.stdout": "8dc68d2435e0c431df2f153d7125ab841427265e987726cfbfa6280dc05dddd6",
++            "native-build.public.json": "25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49",
++            "normal-release-result.public.json": "2fdafe3670a0a7365245e509343ce1cf23ac28b071351d4f30ea12751d90a571"
+         }
+     }
+ }

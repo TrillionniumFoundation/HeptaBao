@@ -1,0 +1,7 @@
+{
+  "chunk_id": "8f65e1",
+  "wall_time_seconds": 0.098832756,
+  "exit_code": 0,
+  "original_token_count": 315,
+  "output": "{\"candidateChild\": 0, \"candidateExitCode\": 0, \"candidateHostCalls\": 0, \"candidateInvokedWithInMemoryStdin\": true, \"candidateNetwork\": 0, \"candidateSqlite\": 0, \"exactPublicReadsetCount\": 9, \"executorReadAndWroteOnlyLocalPublicArtifacts\": true, \"fullCaptureOrConsumerModuleExecuted\": false, \"inputBytes\": 328295, \"inputSha256\": \"d0bab0c53bd92524b6a7ca7c3d5bc7ab60b26eb742c4a8e2c6f094c62e3f7b59\", \"newRegistrationProposalCount\": 3, \"projectedHosts\": [{\"agents\": [\"main\", \"trnm\", \"hepta-ui\", \"hepta\", \"hepta-backend\"], \"host\": \"mac\", \"serviceDefinitionCount\": 5}, {\"agents\": [\"main\", \"azi2\", \"azi3\", \"azi4\", \"azi5\", \"zbj-llm-runtime\"], \"host\": \"rog\", \"serviceDefinitionCount\": 8}, {\"agents\": [\"main\", \"tg8687951891\"], \"host\": \"pocket4\", \"serviceDefinitionCount\": 5}, {\"agents\": null, \"host\": \"x230\", \"serviceDefinitionCount\": 4}], \"schema\": \"heptabao.authbus-p01-local-projection-execution.r1\", \"sourceBytes\": 24624, \"sourceImports\": [\"hashlib\", \"json\", \"sys\", \"time\"], \"sourceSha256\": \"dc41337d1aa4009a5359564e1b7330584b69aa94215610c7325a5af14d76227a\", \"stderrBytes\": 0, \"stderrSha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\", \"stdoutBytes\": 104595, \"stdoutSha256\": \"79ec619f16916d1a08fc5c6d4fcf9cfe1421f604c90ab41440883653e7ac11c5\"}\n"
+}

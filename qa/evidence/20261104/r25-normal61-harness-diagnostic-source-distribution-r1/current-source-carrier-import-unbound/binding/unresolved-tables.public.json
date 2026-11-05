@@ -1,0 +1,48 @@
+{
+  "source_files": [
+    {
+      "bytes": null,
+      "name": "canonical-4e808-full.bundle",
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle",
+      "sha256": null,
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "bytes": null,
+      "name": "source-export.result.public.json",
+      "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json",
+      "sha256": null,
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    }
+  ],
+  "received_files": [
+    {
+      "name": "canonical-4e808-full.bundle",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/canonical-4e808-full.bundle",
+      "bytes": null,
+      "sha256": null,
+      "mode": 256,
+      "version": null
+    },
+    {
+      "name": "source-export.result.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/source-export.result.public.json",
+      "bytes": null,
+      "sha256": null,
+      "mode": 256,
+      "version": null
+    }
+  ],
+  "transfer": {
+    "name": "source-carrier.result.public.json",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/result.public.json",
+    "bytes": null,
+    "sha256": null,
+    "mode": 384,
+    "version": null
+  }
+}

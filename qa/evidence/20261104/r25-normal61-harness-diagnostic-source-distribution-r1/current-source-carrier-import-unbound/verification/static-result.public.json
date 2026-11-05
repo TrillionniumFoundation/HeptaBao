@@ -1,0 +1,761 @@
+{
+  "schema": "heptabao.same-root-publication-4e808-unbound-carrier-import-source-review.v1",
+  "status": "passed_source_only",
+  "checks_count": 169,
+  "checks": [
+    {
+      "name": "sender.py original exact actual source",
+      "passed": true
+    },
+    {
+      "name": "sender.py original literal occurrences FILES=[\n {\n  \"bytes\": 23429893,\n  \"name\": \"canonical-df",
+      "passed": true
+    },
+    {
+      "name": "sender.py original literal occurrences df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+      "passed": true
+    },
+    {
+      "name": "sender.py original literal occurrences 424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+      "passed": true
+    },
+    {
+      "name": "sender.py original literal occurrences os.umask(0o077)",
+      "passed": true
+    },
+    {
+      "name": "sender.py original literal occurrences heptabao.df026.fixed-public-source-endpoint.v1",
+      "passed": true
+    },
+    {
+      "name": "sender.py whole exact literal replay",
+      "passed": true
+    },
+    {
+      "name": "sender.py exact inverse spans heptabao.same-root-publication-4e808.fixed-public-sourc",
+      "passed": true
+    },
+    {
+      "name": "sender.py exact inverse spans ACTUAL_INPUTS_READY=False\nif not ACTUAL_INPUTS_READY:\n ",
+      "passed": true
+    },
+    {
+      "name": "sender.py exact inverse spans eba5e650bd080b8ad41ea52a2bc68867f541d255",
+      "passed": true
+    },
+    {
+      "name": "sender.py exact inverse spans 4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "passed": true
+    },
+    {
+      "name": "sender.py exact inverse spans FILES=[\n {\n  \"bytes\": None,\n  \"name\": \"canonical-4e808-",
+      "passed": true
+    },
+    {
+      "name": "sender.py whole original restored by inverse",
+      "passed": true
+    },
+    {
+      "name": "sender.py strict unified diff reconstruction",
+      "passed": true
+    },
+    {
+      "name": "sender.py original definition set retained",
+      "passed": true
+    },
+    {
+      "name": "sender.py only receipt identity predicate definition changes",
+      "passed": true
+    },
+    {
+      "name": "receiver.py original exact actual source",
+      "passed": true
+    },
+    {
+      "name": "receiver.py original literal occurrences FILES=[\n {\n  \"bytes\": 23429893,\n  \"name\": \"canonical-df",
+      "passed": true
+    },
+    {
+      "name": "receiver.py original literal occurrences df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+      "passed": true
+    },
+    {
+      "name": "receiver.py original literal occurrences 424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+      "passed": true
+    },
+    {
+      "name": "receiver.py original literal occurrences os.umask(0o077)",
+      "passed": true
+    },
+    {
+      "name": "receiver.py original literal occurrences heptabao.df026.fixed-public-source-endpoint.v1",
+      "passed": true
+    },
+    {
+      "name": "receiver.py original literal occurrences normal-cold-h2-source-carrier-r1",
+      "passed": true
+    },
+    {
+      "name": "receiver.py original literal occurrences heptabao.cold-h2.rog-df026-standalone-source-export.v1",
+      "passed": true
+    },
+    {
+      "name": "receiver.py original literal occurrences 6304a898192bfdf7eabec3c4ea40f7166e59a137",
+      "passed": true
+    },
+    {
+      "name": "receiver.py original literal occurrences 3757",
+      "passed": true
+    },
+    {
+      "name": "receiver.py original literal occurrences exported['controller']['bytes']==15324",
+      "passed": true
+    },
+    {
+      "name": "receiver.py original literal occurrences a9b3ea4263481153c4546bd984f6a0dc496c7e459abb037eed1c78f",
+      "passed": true
+    },
+    {
+      "name": "receiver.py whole exact literal replay",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact inverse spans 9af6738da8526ad5a0dcd6402bf4693f652a4f428eb4b22d0914761",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact inverse spans exported['controller']['bytes']==15364",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact inverse spans 3763",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact inverse spans 1c66541993662f92cf717154e33717abedb2ea74",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact inverse spans heptabao.same-root-publication.rog-4e808-standalone-sou",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact inverse spans normal-same-root-publication-source-carrier-r1",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact inverse spans heptabao.same-root-publication-4e808.fixed-public-sourc",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact inverse spans ACTUAL_INPUTS_READY=False\nif not ACTUAL_INPUTS_READY:\n ",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact inverse spans eba5e650bd080b8ad41ea52a2bc68867f541d255",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact inverse spans 4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact inverse spans FILES=[\n {\n  \"bytes\": None,\n  \"name\": \"canonical-4e808-",
+      "passed": true
+    },
+    {
+      "name": "receiver.py whole original restored by inverse",
+      "passed": true
+    },
+    {
+      "name": "receiver.py strict unified diff reconstruction",
+      "passed": true
+    },
+    {
+      "name": "receiver.py original definition set retained",
+      "passed": true
+    },
+    {
+      "name": "receiver.py only receipt identity predicate definition changes",
+      "passed": true
+    },
+    {
+      "name": "relay.py original exact actual source",
+      "passed": true
+    },
+    {
+      "name": "relay.py original literal occurrences FILES=[\n {\n  \"bytes\": 23429893,\n  \"name\": \"canonical-df",
+      "passed": true
+    },
+    {
+      "name": "relay.py original literal occurrences df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+      "passed": true
+    },
+    {
+      "name": "relay.py original literal occurrences 424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+      "passed": true
+    },
+    {
+      "name": "relay.py original literal occurrences os.umask(0o077)",
+      "passed": true
+    },
+    {
+      "name": "relay.py original literal occurrences heptabao.df026.public-source-carrier-relay.v1",
+      "passed": true
+    },
+    {
+      "name": "relay.py original literal occurrences public df026 standalone",
+      "passed": true
+    },
+    {
+      "name": "relay.py original literal occurrences normal-cold-h2-source-carrier-controls-r1",
+      "passed": true
+    },
+    {
+      "name": "relay.py original literal occurrences normal-cold-h2-source-carrier-r1",
+      "passed": true
+    },
+    {
+      "name": "relay.py original literal occurrences HELPERS={\"sender.py\":\"51cb936aabb86ae7845da30477ded90f9",
+      "passed": true
+    },
+    {
+      "name": "relay.py whole exact literal replay",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact inverse spans HELPERS={\n \"sender.py\": \"f22631fde5db9125b7986f37eea161",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact inverse spans normal-same-root-publication-source-carrier-r1",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact inverse spans normal-same-root-publication-source-carrier-controls-r1",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact inverse spans public 4e808 standalone",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact inverse spans heptabao.same-root-publication-4e808.public-source-carr",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact inverse spans ACTUAL_INPUTS_READY=False\nif not ACTUAL_INPUTS_READY:\n ",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact inverse spans eba5e650bd080b8ad41ea52a2bc68867f541d255",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact inverse spans 4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact inverse spans FILES=[\n {\n  \"bytes\": None,\n  \"name\": \"canonical-4e808-",
+      "passed": true
+    },
+    {
+      "name": "relay.py whole original restored by inverse",
+      "passed": true
+    },
+    {
+      "name": "relay.py strict unified diff reconstruction",
+      "passed": true
+    },
+    {
+      "name": "relay.py original definition set retained",
+      "passed": true
+    },
+    {
+      "name": "relay.py only receipt identity predicate definition changes",
+      "passed": true
+    },
+    {
+      "name": "inert.py original exact actual source",
+      "passed": true
+    },
+    {
+      "name": "inert.py original literal occurrences normal-cold-h2-source-carrier-controls-r1",
+      "passed": true
+    },
+    {
+      "name": "inert.py original literal occurrences heptabao.df026-source-carrier-inputs.v1",
+      "passed": true
+    },
+    {
+      "name": "inert.py original literal occurrences heptabao.df026-source-carrier-inert.v1",
+      "passed": true
+    },
+    {
+      "name": "inert.py original literal occurrences PINS = {\n    \"sender.py\": [\n        6257,\n        \"51cb",
+      "passed": true
+    },
+    {
+      "name": "inert.py whole exact literal replay",
+      "passed": true
+    },
+    {
+      "name": "inert.py exact inverse spans PINS = {\n    \"sender.py\": [\n        6183,\n        \"f226",
+      "passed": true
+    },
+    {
+      "name": "inert.py exact inverse spans heptabao.same-root-publication-4e808-source-carrier-ine",
+      "passed": true
+    },
+    {
+      "name": "inert.py exact inverse spans heptabao.same-root-publication-4e808-source-carrier-inp",
+      "passed": true
+    },
+    {
+      "name": "inert.py exact inverse spans normal-same-root-publication-source-carrier-controls-r1",
+      "passed": true
+    },
+    {
+      "name": "inert.py whole original restored by inverse",
+      "passed": true
+    },
+    {
+      "name": "inert.py strict unified diff reconstruction",
+      "passed": true
+    },
+    {
+      "name": "inert.py original definition set retained",
+      "passed": true
+    },
+    {
+      "name": "inert.py only receipt identity predicate definition changes",
+      "passed": true
+    },
+    {
+      "name": "importer.py original exact actual source",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences SOURCE_FILES=[\n {\n  \"bytes\": 23429893,\n  \"name\": \"canon",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences FILES=[\n {\n  \"name\": \"canonical-df026-full.bundle\",\n  \"",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences TRANSFER={\n \"name\": \"source-carrier.result.public.json\"",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences standalone df026 public",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences normal-cold-h2-source-import-r1",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences normal-cold-h2-source-carrier-r1",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences normal-cold-h2-validation-source-r1",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences 424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences 6304a898192bfdf7eabec3c4ea40f7166e59a137",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences CANONICAL_COUNT=3757",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences TRACKED_FILES=3913",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences ACTUAL_INPUTS_READY=True",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences heptabao.df026.desktop-standalone-source-import.v1",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences heptabao.cold-h2.rog-df026-standalone-source-export.v1",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences exported['controller']['bytes']==15324",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences a9b3ea4263481153c4546bd984f6a0dc496c7e459abb037eed1c78f",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences heptabao.df026.public-source-carrier-relay.v1",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences transported['controller']['bytes']==15333",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences transported['controller']['sha256']=='8317dc3e0722ce319",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences transported['helpers']['sender.py']['sha256']=='51cb936",
+      "passed": true
+    },
+    {
+      "name": "importer.py original literal occurrences transported['helpers']['receiver.py']['sha256']=='833ba",
+      "passed": true
+    },
+    {
+      "name": "importer.py whole exact literal replay",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans transported['helpers']['receiver.py']['sha256']==None",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans transported['helpers']['sender.py']['sha256']==None",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans transported['controller']['sha256']==None",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans transported['controller']['bytes']==None",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans heptabao.same-root-publication-4e808.public-source-carr",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans 9af6738da8526ad5a0dcd6402bf4693f652a4f428eb4b22d0914761",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans exported['controller']['bytes']==15364",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans heptabao.same-root-publication.rog-4e808-standalone-sou",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans heptabao.same-root-publication-4e808.desktop-standalone",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans ACTUAL_INPUTS_READY=False",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans TRACKED_FILES=3914",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans CANONICAL_COUNT=3763",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans 1c66541993662f92cf717154e33717abedb2ea74",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans eba5e650bd080b8ad41ea52a2bc68867f541d255",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans 4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans normal-same-root-publication-validation-source-r1",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans normal-same-root-publication-source-carrier-r1",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans normal-same-root-publication-source-import-r1",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans standalone 4e808 public",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans TRANSFER={\n \"name\": \"source-carrier.result.public.json\"",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans FILES=[\n {\n  \"name\": \"canonical-4e808-full.bundle\",\n  \"",
+      "passed": true
+    },
+    {
+      "name": "importer.py exact inverse spans SOURCE_FILES=[\n {\n  \"bytes\": None,\n  \"name\": \"canonical",
+      "passed": true
+    },
+    {
+      "name": "importer.py whole original restored by inverse",
+      "passed": true
+    },
+    {
+      "name": "importer.py strict unified diff reconstruction",
+      "passed": true
+    },
+    {
+      "name": "importer.py original definition set retained",
+      "passed": true
+    },
+    {
+      "name": "importer.py only receipt identity predicate definition changes",
+      "passed": true
+    },
+    {
+      "name": "two ordered source roles names",
+      "passed": true
+    },
+    {
+      "name": "source bytes hash version all unresolved",
+      "passed": true
+    },
+    {
+      "name": "source fixed paths and separate modes",
+      "passed": true
+    },
+    {
+      "name": "received two identities unresolved distinct paths",
+      "passed": true
+    },
+    {
+      "name": "transfer receipt unresolved",
+      "passed": true
+    },
+    {
+      "name": "sender.py exact current identity and unbound table",
+      "passed": true
+    },
+    {
+      "name": "sender.py early readiness guard precedes all operational statements",
+      "passed": true
+    },
+    {
+      "name": "sender.py selected actual false guard rejects before calls",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact current identity and unbound table",
+      "passed": true
+    },
+    {
+      "name": "receiver.py early readiness guard precedes all operational statements",
+      "passed": true
+    },
+    {
+      "name": "receiver.py selected actual false guard rejects before calls",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact current identity and unbound table",
+      "passed": true
+    },
+    {
+      "name": "relay.py early readiness guard precedes all operational statements",
+      "passed": true
+    },
+    {
+      "name": "relay.py selected actual false guard rejects before calls",
+      "passed": true
+    },
+    {
+      "name": "relay strict SSH and trust are old exact literals",
+      "passed": true
+    },
+    {
+      "name": "transport helpers bind exact unbound source bytes",
+      "passed": true
+    },
+    {
+      "name": "inert binds three exact unbound source bytes",
+      "passed": true
+    },
+    {
+      "name": "source carrier namespaces agree",
+      "passed": true
+    },
+    {
+      "name": "sender.py original endpoint absolute deadline",
+      "passed": true
+    },
+    {
+      "name": "receiver.py original endpoint absolute deadline",
+      "passed": true
+    },
+    {
+      "name": "relay original absolute deadline",
+      "passed": true
+    },
+    {
+      "name": "inert payload exact schema and names",
+      "passed": true
+    },
+    {
+      "name": "sender.py exact inert base64 full source",
+      "passed": true
+    },
+    {
+      "name": "receiver.py exact inert base64 full source",
+      "passed": true
+    },
+    {
+      "name": "relay.py exact inert base64 full source",
+      "passed": true
+    },
+    {
+      "name": "payload original size bound retained",
+      "passed": true
+    },
+    {
+      "name": "importer exact current identity history and leaf count",
+      "passed": true
+    },
+    {
+      "name": "importer exact source and destination contract",
+      "passed": true
+    },
+    {
+      "name": "importer exact unresolved tables and false ready",
+      "passed": true
+    },
+    {
+      "name": "importer original total and only-file Git environment",
+      "passed": true
+    },
+    {
+      "name": "importer source facts match actual current source",
+      "passed": true
+    },
+    {
+      "name": "new receiver and importer pin exact reviewed new exporter",
+      "passed": true
+    },
+    {
+      "name": "future final transport control four expected pins explicitly unresolved",
+      "passed": true
+    },
+    {
+      "name": "old actual import request has required self SHA",
+      "passed": true
+    },
+    {
+      "name": "first six importer argument/readiness statements unchanged",
+      "passed": true
+    },
+    {
+      "name": "correct trailing self SHA passes argv then rejects unresolved inputs",
+      "passed": true
+    },
+    {
+      "name": "missing trailing self SHA rejects original first argument guard",
+      "passed": true
+    }
+  ],
+  "definition_details": {
+    "sender.py": {
+      "count": 10,
+      "whole_unchanged_count": 10,
+      "changed_definitions": []
+    },
+    "receiver.py": {
+      "count": 10,
+      "whole_unchanged_count": 9,
+      "changed_definitions": [
+        "receive"
+      ]
+    },
+    "relay.py": {
+      "count": 17,
+      "whole_unchanged_count": 17,
+      "changed_definitions": []
+    },
+    "inert.py": {
+      "count": 5,
+      "whole_unchanged_count": 5,
+      "changed_definitions": []
+    },
+    "importer.py": {
+      "count": 31,
+      "whole_unchanged_count": 30,
+      "changed_definitions": [
+        "verify_receipts"
+      ]
+    }
+  },
+  "strict_diffs": {
+    "sender.py": {
+      "hunks": 1,
+      "bytes": 2076,
+      "sha256": "a982f13def9555bd6e6e458ca96afca164f7b9be9f997d356b2381d1bcd9010b"
+    },
+    "receiver.py": {
+      "hunks": 3,
+      "bytes": 4522,
+      "sha256": "99769d8846eb7a57d0d08bbfe6aac30ea888599d72fdb41002b051a44c3bef48"
+    },
+    "relay.py": {
+      "hunks": 1,
+      "bytes": 3587,
+      "sha256": "bf13e52ab482d67ff69c71e58dfa105dc114a1b828f0e6a722e00cae60f394c4"
+    },
+    "inert.py": {
+      "hunks": 3,
+      "bytes": 2144,
+      "sha256": "9da0177a8bccff9ae31ff500ab8dd5689236126928d0f760fbdaaa6a93fbb831"
+    },
+    "importer.py": {
+      "hunks": 7,
+      "bytes": 8453,
+      "sha256": "b395bbf6cc01de6b504e172e285531163c9175252231a0e124c1c27cf59e06ac"
+    }
+  },
+  "compiled_modules": 10,
+  "complete_candidate_modules_executed": 0,
+  "selected_pure_ready_guards_executed": 3,
+  "selected_original_import_arg_contract_cases": 2,
+  "host_requests": 0,
+  "cargo_or_product_or_transport_or_import_execution": false,
+  "source_carrier_actual_ready": false,
+  "source_import_actual_ready": false,
+  "proposed_original_limits": {
+    "endpoints": 90,
+    "relay": 300,
+    "relay_outer": 360,
+    "inert_outer": 60,
+    "import": 300,
+    "git_leaf": 60,
+    "clone": 90,
+    "import_outer": 330,
+    "term": 5,
+    "kill": 5
+  }
+}

@@ -1,0 +1,888 @@
+{
+  "additional_cold_h2_tests": 9,
+  "additional_existing_ingress_tests": 7,
+  "additional_same_root_publication_tests": 1,
+  "compiler_holders_before_lock": [],
+  "compiler_holders_under_lock": [],
+  "each_additional_group_total_cap_seconds": 600,
+  "each_listing_cap_seconds": 30,
+  "each_runtime_group_cap_seconds": 600,
+  "exact_test_count": 44,
+  "fresh_cache": false,
+  "groups": {
+    "bytes": 6249,
+    "identity": [
+      66306,
+      33211565,
+      1000,
+      1000,
+      33152,
+      1,
+      6249,
+      1793875489336258402,
+      1793875489336258402
+    ],
+    "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/normal-test-groups.public.json",
+    "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+  },
+  "host": "rog",
+  "inherits_prior_cache_performance": false,
+  "normal_runner_argv": [
+    "/usr/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/normal_same_root_publication_build.py",
+    "--source",
+    "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/source",
+    "--output",
+    "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1",
+    "--commit",
+    "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "--tree",
+    "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "--toolchain",
+    "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin",
+    "--cargo-home",
+    "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+    "--target",
+    "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+    "--groups",
+    "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/normal-test-groups.public.json",
+    "--groups-sha256",
+    "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+    "--outer-started-monotonic",
+    "208267.388159089",
+    "--launcher-pid",
+    "2504712"
+  ],
+  "normal_runner_started": false,
+  "old_build_receipt": {
+    "bytes": 3164,
+    "identity": [
+      66306,
+      34376992,
+      1000,
+      1000,
+      33152,
+      1,
+      3164,
+      1793803943781791459,
+      1793803943781791459
+    ],
+    "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/normal-release-tests-r8-r1/normal-release-result.public.json",
+    "sha256": "2dad4d882854850cbe05825785e77532656da255a11ce7a551969bd7439456a5"
+  },
+  "old_exact_test_receipt": {
+    "bytes": 18940,
+    "identity": [
+      66306,
+      34377352,
+      1000,
+      1000,
+      33152,
+      1,
+      18940,
+      1793805088725131776,
+      1793805088725131776
+    ],
+    "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/normal-release-tests-r8-r1/result.public.json",
+    "sha256": "8fa3a928de5c705e6da80d9dd6fc64c5252035226013650c37941105e4069715"
+  },
+  "old_native_receipt": {
+    "bytes": 777,
+    "identity": [
+      66306,
+      34376993,
+      1000,
+      1000,
+      33152,
+      1,
+      777,
+      1793803943782647086,
+      1793803943782647086
+    ],
+    "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/normal-release-tests-r8-r1/native-build.public.json",
+    "sha256": "f96740372ada668a566aa1b90b2cd8daf463c009de8eed5ba86cb20a2883b8f9"
+  },
+  "old_source_before": {
+    "commit": "384c957612186d64c5a530044af0ae62c568cc3d",
+    "status": "",
+    "tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04"
+  },
+  "original_60_test_count": 60,
+  "original_libtest_build_cap_seconds": 3600,
+  "original_release_build_cap_seconds": 1800,
+  "original_supervisor_seconds": 12000,
+  "outer_started_monotonic": 208267.388159089,
+  "outer_until_monotonic": 220267.388159089,
+  "prior_r8_failure_replayed": false,
+  "production_changed": false,
+  "retained_current_early_failure": {
+    "files": {
+      "original_rejected_launcher": {
+        "bytes": 31963,
+        "identity": [
+          66306,
+          27299398,
+          1000,
+          1000,
+          33152,
+          1,
+          31963,
+          1793850441628142457,
+          1793850441628142457
+        ],
+        "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/launch_normal_cold_h2.py",
+        "sha256": "7c3dbf522f51931aaa5c1947ec0742883bdcc1405913d45f8b43f217983acb98"
+      },
+      "prior-normal-early-failure.authority.original.json": {
+        "bytes": 726,
+        "identity": [
+          66306,
+          31606574,
+          1000,
+          1000,
+          33152,
+          1,
+          726,
+          1793852678947020091,
+          1793852678950419791
+        ],
+        "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control-r3/prior-normal-early-failure.authority.original.json",
+        "sha256": "9188213431c349616ecd8dd329f930d909fb3b973ff27848ae3afb7957e2bfae"
+      },
+      "prior-normal-early-failure.stderr": {
+        "bytes": 693,
+        "identity": [
+          66306,
+          31606575,
+          1000,
+          1000,
+          33152,
+          1,
+          693,
+          1793852678951020050,
+          1793852678952496094
+        ],
+        "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control-r3/prior-normal-early-failure.stderr",
+        "sha256": "bb032403580f205d6e15f90da809c666b4accec08a0acf00f0a83611ecbbe01e"
+      },
+      "prior-normal-target-metadata.authority.original.json": {
+        "bytes": 733,
+        "identity": [
+          66306,
+          31606577,
+          1000,
+          1000,
+          33152,
+          1,
+          733,
+          1793852678954243905,
+          1793852678956056997
+        ],
+        "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control-r3/prior-normal-target-metadata.authority.original.json",
+        "sha256": "70a9289777c626b8ea795ae017161f923638a74459b79c350f94b5650ef72752"
+      },
+      "prior-normal-target-metadata.stdout.json": {
+        "bytes": 13741,
+        "identity": [
+          66306,
+          31606576,
+          1000,
+          1000,
+          33152,
+          1,
+          13741,
+          1793852678952496094,
+          1793852678954243905
+        ],
+        "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control-r3/prior-normal-target-metadata.stdout.json",
+        "sha256": "e4e062eacfb4b6080f973d053d301504b90b27d0782172c227745488ec826a6a"
+      }
+    },
+    "historical_missing_target_recreated": false,
+    "original_job_replayed": false,
+    "target_removal_cause_known": false
+  },
+  "retained_failed_observer": {
+    "authority": {
+      "bytes": 726,
+      "identity": [
+        66306,
+        33211566,
+        1000,
+        1000,
+        33152,
+        1,
+        726,
+        1793875489339615691,
+        1793875489339615691
+      ],
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/prior-observer-build-authority.public.json",
+      "sha256": "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6",
+      "source": "exact cached authoritative terminal receipt"
+    },
+    "files": {
+      "build-control-r1/launch-preflight.public.json": {
+        "bytes": 12914,
+        "identity": [
+          66306,
+          33072021,
+          1000,
+          1000,
+          33152,
+          1,
+          12914,
+          1793828282418613404,
+          1793828282418613404
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/build-control-r1/launch-preflight.public.json",
+        "sha256": "91b8fe2e1d6e34d1e0b885a9bbb81c27e83e1d6f3f07cb4235cb2314b27e29d4"
+      },
+      "control/launch_normal_phaseb_observer.py": {
+        "bytes": 22961,
+        "identity": [
+          66306,
+          28228644,
+          1000,
+          1000,
+          33152,
+          1,
+          22961,
+          1793827577463293983,
+          1793827577463293983
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/launch_normal_phaseb_observer.py",
+        "sha256": "56c7b06d4329e4fdb72079a089ad2f1509e856357328d849d58844236b86fd63"
+      },
+      "control/normal-test-groups.public.json": {
+        "bytes": 6249,
+        "identity": [
+          66306,
+          28228645,
+          1000,
+          1000,
+          33152,
+          1,
+          6249,
+          1793827577464354338,
+          1793827577464354338
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/normal-test-groups.public.json",
+        "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+      },
+      "control/normal_phaseb_observer_build.py": {
+        "bytes": 20791,
+        "identity": [
+          66306,
+          28228643,
+          1000,
+          1000,
+          33152,
+          1,
+          20791,
+          1793827577462263895,
+          1793827577462263895
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/normal_phaseb_observer_build.py",
+        "sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273"
+      },
+      "control/stage-result.public.json": {
+        "bytes": 6838,
+        "identity": [
+          66306,
+          28228881,
+          1000,
+          1000,
+          33152,
+          1,
+          6838,
+          1793827589265840218,
+          1793827589265840218
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/stage-result.public.json",
+        "sha256": "bb2bd7b46974dc18bcb87325ea55c46383e17f2f8a521f2eaa77b1fc9fba8d2b"
+      },
+      "control/stage_source_phaseb_observer.py": {
+        "bytes": 18774,
+        "identity": [
+          66306,
+          28228642,
+          1000,
+          1000,
+          33152,
+          1,
+          18774,
+          1793827577461070972,
+          1793827577461070972
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/control/stage_source_phaseb_observer.py",
+        "sha256": "2cfc47c230d7a4780e758ee8736e4cd6f1412a2f65174c5581be48038581b32a"
+      },
+      "normal-release-tests-r1/intent.public.json": {
+        "bytes": 7838,
+        "identity": [
+          66306,
+          33072023,
+          1000,
+          1000,
+          33152,
+          1,
+          7838,
+          1793828282456385272,
+          1793828282456385272
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/intent.public.json",
+        "sha256": "ad7adbf410217af34555e9b9135505cb8f70309facfa748f4fb1c3f0614eedb2"
+      },
+      "normal-release-tests-r1/normal-release-build.public.json": {
+        "bytes": 710,
+        "identity": [
+          66306,
+          33072026,
+          1000,
+          1000,
+          33152,
+          1,
+          710,
+          1793828344558640174,
+          1793828344558640174
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/normal-release-build.public.json",
+        "sha256": "654c0e9dd676855d585746275be3dc92188c843e576d873d6b3607141fb9f412"
+      },
+      "normal-release-tests-r1/normal-release-build.stderr": {
+        "bytes": 27914,
+        "identity": [
+          66306,
+          33072025,
+          1000,
+          1000,
+          33152,
+          1,
+          27914,
+          1793828344504145242,
+          1793828344504145242
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/normal-release-build.stderr",
+        "sha256": "d47156c8828983229eccec58c9a4cd5f1535b653c7d59fab9ddf4db72839ee3e"
+      },
+      "normal-release-tests-r1/normal-release-build.stdout": {
+        "bytes": 384196,
+        "identity": [
+          66306,
+          33072024,
+          1000,
+          1000,
+          33152,
+          1,
+          384196,
+          1793828344504145242,
+          1793828344504145242
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/normal-release-build.stdout",
+        "sha256": "324a6b59e740e1ed2dc0c447ce638557d5cbd53cdec2c5b3afaa0a701cee3c92"
+      },
+      "normal-release-tests-r1/result.public.json": {
+        "bytes": 9233,
+        "identity": [
+          66306,
+          33072044,
+          1000,
+          1000,
+          33152,
+          1,
+          9233,
+          1793828344571144982,
+          1793828344571144982
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1/result.public.json",
+        "sha256": "2947b177c2b7ca145a499175567aec632c76d12641c8afa4276ae900dda3a122"
+      },
+      "source/crates/heptabao-server/src/ha_native_v6_runtime.rs": {
+        "bytes": 61578,
+        "identity": [
+          66306,
+          30562620,
+          1000,
+          1000,
+          33152,
+          1,
+          61578,
+          1793827585518089345,
+          1793827585518089345
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source/crates/heptabao-server/src/ha_native_v6_runtime.rs",
+        "sha256": "cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d"
+      }
+    },
+    "prior_failed_build_replayed": false,
+    "source_after": {
+      "commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+      "status": "",
+      "tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a"
+    },
+    "source_before": {
+      "commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+      "status": "",
+      "tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a"
+    }
+  },
+  "retained_r10_evidence": {
+    "all_unchanged": true,
+    "exact44": {
+      "bytes": 24311,
+      "identity": [
+        66306,
+        32420811,
+        1000,
+        1000,
+        33152,
+        1,
+        24311,
+        1793818077546165541,
+        1793818077546165541
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/result.public.json",
+      "sha256": "409b8a02557cc5d2985d15f01ff28ff64a6fb43c4a8b1e0f50f03bb748fcbeee"
+    },
+    "native_build": {
+      "bytes": 801,
+      "identity": [
+        66306,
+        32420770,
+        1000,
+        1000,
+        33152,
+        1,
+        801,
+        1793816931839994753,
+        1793816931839994753
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/native-build.public.json",
+      "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77"
+    },
+    "normal_release": {
+      "bytes": 3227,
+      "identity": [
+        66306,
+        32420769,
+        1000,
+        1000,
+        33152,
+        1,
+        3227,
+        1793816931839107644,
+        1793816931839107644
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/normal-release-result.public.json",
+      "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee"
+    },
+    "prior_failures_replayed": false,
+    "retained": [
+      {
+        "bytes": 109091112,
+        "identity": [
+          66306,
+          32420767,
+          1000,
+          1000,
+          33088,
+          1,
+          109091112,
+          1793816931326390006,
+          1793816931458389281
+        ],
+        "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/artifacts/heptabao-server",
+        "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113"
+      },
+      {
+        "bytes": 101159496,
+        "identity": [
+          66306,
+          32420768,
+          1000,
+          1000,
+          33088,
+          1,
+          101159496,
+          1793816931616388413,
+          1793816931738387743
+        ],
+        "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/artifacts/heptabao-seed",
+        "sha256": "6befec74076fb891e12a9dd3a1b2563c995ec7f7f1c7df18dc787d1163e0e018"
+      },
+      {
+        "bytes": 187607928,
+        "identity": [
+          66306,
+          32420774,
+          1000,
+          1000,
+          33088,
+          1,
+          187607928,
+          1793818013670005300,
+          1793818013895004213
+        ],
+        "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+        "sha256": "248dac36e0ba89732ef6c3c0055dab38a6458d762171b4883cbdbd50286467bf"
+      }
+    ],
+    "source_after": {
+      "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "status": "",
+      "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+    },
+    "source_before": {
+      "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "status": "",
+      "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+    }
+  },
+  "retained_r8_artifacts": [
+    {
+      "bytes": 102021848,
+      "identity": [
+        66306,
+        34376991,
+        1000,
+        1000,
+        33088,
+        1,
+        102021848,
+        1793803943526421457,
+        1793803943651420275
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/normal-release-tests-r8-r1/artifacts/heptabao-seed",
+      "sha256": "91ea85884e98436bdae0b8c41ebd2e5cb172c6178e3113901cc7acc909934670"
+    },
+    {
+      "bytes": 110064840,
+      "identity": [
+        66306,
+        34376990,
+        1000,
+        1000,
+        33088,
+        1,
+        110064840,
+        1793803943228424274,
+        1793803943362423007
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/normal-release-tests-r8-r1/artifacts/heptabao-server",
+      "sha256": "666370dba0a1e2df4cb2b3177f54b1e190bc2a281aa64fd8501c4625f30e74ed"
+    },
+    {
+      "bytes": 188077176,
+      "identity": [
+        66306,
+        34377327,
+        1000,
+        1000,
+        33088,
+        1,
+        188077176,
+        1793805033162829655,
+        1793805033391828662
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/normal-release-tests-r8-r1/retained-heptabao-server-libtest",
+      "sha256": "9f498c4c2c14f2198dcbe746be81be1cf0c7caabca28671bba83fb003a65b46a"
+    }
+  ],
+  "retained_r9_evidence": {
+    "failed_exact44": {
+      "bytes": 24242,
+      "identity": [
+        66306,
+        31362744,
+        1000,
+        1000,
+        33152,
+        1,
+        24242,
+        1793812525041254777,
+        1793812525041254777
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r9-http-routing-r1/normal-release-tests-r1/result.public.json",
+      "sha256": "b4d3f25c0694dfa7cc24dd3d2a8bdf780ec9eb43716abb61a4581b26c8cc676f"
+    },
+    "native_build": {
+      "bytes": 793,
+      "identity": [
+        66306,
+        31362703,
+        1000,
+        1000,
+        33152,
+        1,
+        793,
+        1793811378934065480,
+        1793811378934065480
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r9-http-routing-r1/normal-release-tests-r1/native-build.public.json",
+      "sha256": "771f53ae44858d9bb73809b997103edfd69bc564e152d9ee40f3a45ca7f854d5"
+    },
+    "normal_release": {
+      "bytes": 3202,
+      "identity": [
+        66306,
+        31362702,
+        1000,
+        1000,
+        33152,
+        1,
+        3202,
+        1793811378931793470,
+        1793811378931793470
+      ],
+      "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r9-http-routing-r1/normal-release-tests-r1/normal-release-result.public.json",
+      "sha256": "103bbb68367a13ec3df53a8b437f6e33bd44c75a4ad23a6a792692ef858deb3d"
+    },
+    "prior_failures_replayed": false,
+    "retained_artifacts": [
+      {
+        "bytes": 101159496,
+        "identity": [
+          66306,
+          31362701,
+          1000,
+          1000,
+          33088,
+          1,
+          101159496,
+          1793811378710588106,
+          1793811378829586953
+        ],
+        "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r9-http-routing-r1/normal-release-tests-r1/artifacts/heptabao-seed",
+        "sha256": "6befec74076fb891e12a9dd3a1b2563c995ec7f7f1c7df18dc787d1163e0e018"
+      },
+      {
+        "bytes": 109091112,
+        "identity": [
+          66306,
+          31362700,
+          1000,
+          1000,
+          33088,
+          1,
+          109091112,
+          1793811378419590925,
+          1793811378552589637
+        ],
+        "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r9-http-routing-r1/normal-release-tests-r1/artifacts/heptabao-server",
+        "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113"
+      },
+      {
+        "bytes": 188176568,
+        "identity": [
+          66306,
+          31362707,
+          1000,
+          1000,
+          33088,
+          1,
+          188176568,
+          1793812462091736667,
+          1793812462326735253
+        ],
+        "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r9-http-routing-r1/normal-release-tests-r1/retained-heptabao-server-libtest",
+        "sha256": "9b871dd8d12c063e6ea042d5bb4415d9a042da0e4d18d83fca3e184396879cf4"
+      }
+    ],
+    "source_after": {
+      "commit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+      "status": "",
+      "tree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907"
+    },
+    "source_before": {
+      "commit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+      "status": "",
+      "tree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907"
+    }
+  },
+  "retained_successful_observer": {
+    "all_unchanged": true,
+    "exact44": {
+      "bytes": 35178,
+      "identity": [
+        66306,
+        28096731,
+        1000,
+        1000,
+        33152,
+        1,
+        35178,
+        1793833636072093870,
+        1793833636072093870
+      ],
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/result.public.json",
+      "sha256": "8899a7acc647505c230430b35771ae1eccaf48cc5aea27a034906d513fd0b0f7"
+    },
+    "native_build": {
+      "bytes": 794,
+      "identity": [
+        66306,
+        28096637,
+        1000,
+        1000,
+        33152,
+        1,
+        794,
+        1793832490491671044,
+        1793832490491671044
+      ],
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/native-build.public.json",
+      "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce"
+    },
+    "normal_release": {
+      "bytes": 3200,
+      "identity": [
+        66306,
+        28096636,
+        1000,
+        1000,
+        33152,
+        1,
+        3200,
+        1793832490490761645,
+        1793832490490761645
+      ],
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/normal-release-result.public.json",
+      "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f"
+    },
+    "prior_failures_replayed": false,
+    "retained": [
+      {
+        "bytes": 109074848,
+        "identity": [
+          66306,
+          28096634,
+          1000,
+          1000,
+          33088,
+          1,
+          109074848,
+          1793832489924040522,
+          1793832490062039381
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-server",
+        "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0"
+      },
+      {
+        "bytes": 101143984,
+        "identity": [
+          66306,
+          28096635,
+          1000,
+          1000,
+          33088,
+          1,
+          101143984,
+          1793832490223038051,
+          1793832490361036911
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-seed",
+        "sha256": "bdbf53cfebc25d3932aaba3bf608e0459e3399c513bbdeafecde5659eb688689"
+      },
+      {
+        "bytes": 187656088,
+        "identity": [
+          66306,
+          28096652,
+          1000,
+          1000,
+          33088,
+          1,
+          187656088,
+          1793833571175502778,
+          1793833571405501325
+        ],
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/retained-heptabao-server-libtest",
+        "sha256": "94e2daa8448807079472264fb19d39d00619ac6a046c59ac7849aa39a70161fa"
+      }
+    ],
+    "source_after": {
+      "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+      "status": "",
+      "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060"
+    },
+    "source_before": {
+      "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+      "status": "",
+      "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060"
+    }
+  },
+  "reuses_existing_df026_target": true,
+  "runner": {
+    "bytes": 35452,
+    "identity": [
+      66306,
+      33211563,
+      1000,
+      1000,
+      33152,
+      1,
+      35452,
+      1793875489334230663,
+      1793875489334230663
+    ],
+    "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/normal_same_root_publication_build.py",
+    "sha256": "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be"
+  },
+  "schema": "heptabao.same-root-publication-normal-target-admission.v1",
+  "source_and_retained_artifacts_unchanged": true,
+  "source_before": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "status": "",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255"
+  },
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "stage": {
+    "bytes": 27181,
+    "identity": [
+      66306,
+      33211737,
+      1000,
+      1000,
+      33152,
+      1,
+      27181,
+      1793875510495507826,
+      1793875510495507826
+    ],
+    "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/stage-result.public.json",
+    "sha256": "1bbe84d728f91058ecca7045483a231b993e1409577d2bc87191fa14af972bce"
+  },
+  "started_ns": 1793878058166728186,
+  "status": "admitted",
+  "target": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+  "target_identity_before": [
+    66306,
+    31606588,
+    1000,
+    1000,
+    16832,
+    3,
+    4096,
+    1793852863779349510,
+    1793852863779349510
+  ],
+  "target_lock": {
+    "identity": [
+      66306,
+      31606590,
+      1000,
+      1000,
+      33152,
+      1,
+      0,
+      1793852862522711011,
+      1793852862522711011
+    ],
+    "nonblocking_exclusive_probe": true
+  },
+  "terminal_ns": 1793878061336683716
+}

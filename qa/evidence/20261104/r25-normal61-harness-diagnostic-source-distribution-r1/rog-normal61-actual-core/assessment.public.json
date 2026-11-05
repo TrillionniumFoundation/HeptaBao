@@ -1,0 +1,162 @@
+{
+  "schema": "heptabao.4e808-rog-normal61-core-evidence.v1",
+  "scope": "Core and terminal evidence; complete 48-command archive remains separate",
+  "job_id": "1a1ab76cee8-fc05-4e13",
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "status": "PASS_CORE_OBSERVED",
+  "original44": 44,
+  "additional7": 7,
+  "additional9": 9,
+  "additional_same_root": 1,
+  "selected61": 61,
+  "new_test_elapsed_seconds": 0.7772148039948661,
+  "per_request_reported_warm_ms": 85,
+  "per_request_reported_cold_ms": 92,
+  "per_request_budget_ms": 15000,
+  "owned_closed": 48,
+  "retained_df026_whole_fences": 6,
+  "failed_1c665_launcher_fences": "not independently reread in this core packet",
+  "old_failures_unchanged": true,
+  "product_production_changed": false,
+  "lan_execution_authorized": false,
+  "critical_input_versions": [
+    {
+      "eof": true,
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/same-root-publication-1.public.json",
+      "sha256": "94fe84d5afffce9bf36df414b58a89625d7b1c321d2425d7e2b68255b482c180",
+      "size": 756,
+      "version": "66306:35799669:756:1793880512662605667:1793880512662605667"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/same-root-publication-1.stdout",
+      "sha256": "6b3bbc1ae1b5789811d16ac024ce5bc54373dedbb0223578f635743dd9f98753",
+      "size": 261,
+      "version": "66306:35799667:261:1793880512616579242:1793880512616579242"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/same-root-publication-1.stderr",
+      "sha256": "d5a9d574aae7929b768669669a23774ac0014205b7adcdcf7944da7825ccec0b",
+      "size": 722,
+      "version": "66306:35799668:722:1793880512586579327:1793880512586579327"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/normal-release-result.public.json",
+      "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
+      "size": 3192,
+      "version": "66306:35799526:3192:1793878962880898513:1793878962880898513"
+    },
+    {
+      "eof": true,
+      "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/native-build.public.json",
+      "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+      "size": 786,
+      "version": "66306:35799527:786:1793878962882813897:1793878962882813897"
+    }
+  ],
+  "checks": [
+    {
+      "name": "core whole independent file_info",
+      "passed": true
+    },
+    {
+      "name": "authority complete known zero",
+      "passed": true
+    },
+    {
+      "name": "stdout offset 0",
+      "passed": true
+    },
+    {
+      "name": "stdout hex 0",
+      "passed": true
+    },
+    {
+      "name": "stderr empty 1799",
+      "passed": true
+    },
+    {
+      "name": "stdout offset 1799",
+      "passed": true
+    },
+    {
+      "name": "stdout hex 1799",
+      "passed": true
+    },
+    {
+      "name": "stderr empty 2220",
+      "passed": true
+    },
+    {
+      "name": "terminal output 2220 exact",
+      "passed": true
+    },
+    {
+      "name": "terminal core binding",
+      "passed": true
+    },
+    {
+      "name": "source identity",
+      "passed": true
+    },
+    {
+      "name": "original60 plus new1",
+      "passed": true
+    },
+    {
+      "name": "61 names unique",
+      "passed": true
+    },
+    {
+      "name": "48 owned closed",
+      "passed": true
+    },
+    {
+      "name": "source and artifacts unchanged",
+      "passed": true
+    },
+    {
+      "name": "retained six lossless equal",
+      "passed": true
+    },
+    {
+      "name": "critical whole same-root-publication-1.public.json",
+      "passed": true
+    },
+    {
+      "name": "critical whole same-root-publication-1.stdout",
+      "passed": true
+    },
+    {
+      "name": "critical whole same-root-publication-1.stderr",
+      "passed": true
+    },
+    {
+      "name": "critical whole normal-release-result.public.json",
+      "passed": true
+    },
+    {
+      "name": "critical whole native-build.public.json",
+      "passed": true
+    },
+    {
+      "name": "new record equals core",
+      "passed": true
+    },
+    {
+      "name": "new stdout and stderr exact hashes",
+      "passed": true
+    },
+    {
+      "name": "normal and native source",
+      "passed": true
+    },
+    {
+      "name": "native whole core pin",
+      "passed": true
+    }
+  ]
+}

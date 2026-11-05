@@ -1,0 +1,7 @@
+# Current 4e808 normal five-file transport — source only
+
+This is a literal successor of the executed df026 normal5 transport. Only the current commit/tree, five exact input paths/whole pins/immutable versions, fresh control and destination roots, schemas, and derived helper/carrier hashes change. All 37 transport definitions and five inert definitions are byte-for-byte identical, including framing, EOF, retained descriptors, trust, process ownership, cleanup and deadline behavior.
+
+The five source modes remain 0500/0600; destination modes remain 0500/0400. The existing df026 artifacts and the separately transported df026 H2 instrument remain in their original roots. The 61-test qualification is not inferred by the transport: the unchanged receiver verifies the normal-release/native provenance, while combined61 and groups remain exact original pinned bodies for the normal gate and downstream binder.
+
+The source-stage independent groups metadata is historical and explicitly version-matched to the new post-normal whole read. The other four files have independent post-normal file_info originals here. Runtime admission remains false until root reviews these exact requests. Inert may only compile and publish three public controls; relay needs a subsequent distinct GO and performs no product or HTTP requests. No binary, source tree, service, or old unknown request is re-executed by this package.

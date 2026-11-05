@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.authbus-p01-dependency-resolution.r1",
+  "sourceProjection": {
+    "bytes": 104595,
+    "sha256": "79ec619f16916d1a08fc5c6d4fcf9cfe1421f604c90ab41440883653e7ac11c5",
+    "blob": "fe80011264f727f7c5623903c7c4eef68e3e5ec3"
+  },
+  "hostDispatchAuthorized": false,
+  "entries": [
+    {
+      "dispatchReady": false,
+      "entries": [
+        {
+          "bytes": 1420,
+          "evidence": {
+            "blob": "53996b7f5c59b2cb18fe6979efded3d6138ad67c",
+            "bytes": 46277,
+            "jsonPointer": "/passes/5/entries/0",
+            "sha256": "001d9d3384f1b8c00fa3cba8af7f3020bedc54f26678611ab3cd3a524ce23902",
+            "source": "mac"
+          },
+          "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.gateway.plist",
+          "sha256": "e176c41f40b462b288177c20ced94c0e645b3a58f6bda024e53366f1592e8d08"
+        },
+        {
+          "bytes": 722,
+          "evidence": {
+            "blob": "53996b7f5c59b2cb18fe6979efded3d6138ad67c",
+            "bytes": 46277,
+            "jsonPointer": "/passes/13/entries/0",
+            "sha256": "001d9d3384f1b8c00fa3cba8af7f3020bedc54f26678611ab3cd3a524ce23902",
+            "source": "mac"
+          },
+          "path": "/Users/qianqi/.openclaw/service-env/ai.openclaw.gateway.env",
+          "sha256": "58a4e773de84c023f9fb57147b5a4a6e5a46582ea16746c0b832dbad87f44df8"
+        }
+      ],
+      "host": "mac",
+      "id": "MAC-GATEWAY-DEFINITION",
+      "newPathsFromUnknownArgumentsAllowed": false,
+      "publicValuesOnly": true,
+      "purpose": "Resolve seven hashed non-executable plist arguments and environment source order using exact pinned bodies; publish only semantically proven executable/script/config paths. Never evaluate shell/env or expose arbitrary argv values."
+    },
+    {
+      "directoryListing": false,
+      "dispatchReady": false,
+      "fileBodyRead": false,
+      "host": "x230",
+      "id": "X230-EXACT-CONFIG-METADATA",
+      "path": "/home/qian/.openclaw/openclaw.json",
+      "purpose": "One exact-path held ancestor/named/FD metadata observation and repeated errno2 classification. A present file remains metadata-only; a missing ancestor is distinguished from a missing leaf.",
+      "secondGuessedPath": false,
+      "source": {
+        "blob": "b8df3efcf2ba7eb510abd5b9a203d68b4f12d856",
+        "bytes": 11770,
+        "jsonPointer": "/errors",
+        "sha256": "df94b577ce539fa23316d686c287b8aaeb8f6f3ee2561a5d1875368c8420dbff",
+        "source": "xr01Raw"
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "host": "desktop",
+  "paths": [
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/control/intent.public.json",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/control/ssh-preflight.public.json",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/control/rog-ts-effective-config.stdout",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/control/rog-ts-effective-config.stderr",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/control/receive-desktop.stdout",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/control/receive-desktop.stderr",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-native-h2-qa-shared-artifacts-r1/control/send-rog.stderr"
+  ],
+  "max_file_bytes": 65536,
+  "max_response_bytes": 131072
+}

@@ -1,0 +1,84 @@
+{
+  "schema": "heptabao.mac-current-registry-wal-4e808-actual-recap.r1",
+  "jobId": "1a1abb090b9-fc05-4fc5",
+  "requestBlob": "db1c0badddf800b253a5476cdb1ab49f2cabf543",
+  "rootGoBlob": "a358962bfd80a8c6ef7324a63abdc7a081bbf740",
+  "outcome": "KNOWN_RUNTIME_INPUT_ADMISSION_FAILURE_AFTER_SUCCESSFUL_READONLY_CAPTURE",
+  "processExitCode": 1,
+  "authoritativeFullDurable": true,
+  "originalStdoutBytes": 91043,
+  "stderrBytes": 0,
+  "failure": {
+    "errorType": "InputRefused",
+    "errorCode": null,
+    "publicFrames": [
+      {
+        "file": "mac_current_outer_wal_r1.py",
+        "line": 956
+      },
+      {
+        "file": "mac_current_outer_inputs_r2.py",
+        "line": 363
+      },
+      {
+        "file": "mac_current_outer_inputs_r2.py",
+        "line": 64
+      }
+    ],
+    "staticCompositeGuard": "actual_finite_harness_code_root",
+    "clauseActuallyFailedKnown": false
+  },
+  "capture": {
+    "stage": "before",
+    "knownChildExitCode": 0,
+    "entryOk": true,
+    "returnedConnectionsClosed": 7,
+    "explicitCursorsClosed": 11,
+    "heldDescriptorsClosed": 46,
+    "publicCodeDescriptorsClosed": 6,
+    "returnedAggregateBytes": 205284,
+    "registryWalObservedBytes": 5969912,
+    "oneRegistryQueryCompletedWithinOriginal3s": true,
+    "privateCapsuleBytes": 195155,
+    "privateCapsuleBodyArchived": false,
+    "allFourKernelRefusals": true,
+    "original45MetAfterClosure": true,
+    "pointInTimeObservationOnly": true,
+    "wholeDatabaseBackup": false,
+    "crossAgentAtomic": false
+  },
+  "allOwnedClosure": {
+    "outerCommands": 2,
+    "nestedCommands": 1,
+    "allNaturalExit0ReapedGroupEmpty": true,
+    "streamsClosed": true,
+    "outerDescriptors": 28,
+    "outerDescriptorsClosed": true,
+    "inputDescriptorsClosed": true,
+    "t5Closed": true,
+    "sourceOuterUnknown": false,
+    "sourceCaptureUnknown": false
+  },
+  "noBusiness": {
+    "phases": 0,
+    "serverStarted": false,
+    "consumerStarted": false,
+    "serviceOperationDispatched": false,
+    "productionWrite": false,
+    "provider": false,
+    "j3160": false,
+    "automaticBusinessRetry": false
+  },
+  "currentFiveAgentConsumerQualified": false,
+  "oldUnknownsUnchanged": true,
+  "noHostReplay": true,
+  "archive": {
+    "originalSdkNativePairs": 10,
+    "terminalStdoutPages": 6,
+    "entryIndependentFileInfoAndVersionPinnedWhole": true,
+    "entryWholeRawTokenEqualsEmbeddedReport": true,
+    "pureActualChecks": 146,
+    "finalCandidateResultFileIndependentlyRead": false
+  },
+  "next": "Only SOURCE diagnosis of the three original predicates using existing public source mapping, or a separately reviewed bounded host-side capsule predicate projection. Do not export private capsule content or relax the namespace."
+}

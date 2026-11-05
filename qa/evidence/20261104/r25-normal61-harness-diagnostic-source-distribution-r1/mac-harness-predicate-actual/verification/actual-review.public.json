@@ -1,0 +1,402 @@
+{
+  "schema": "heptabao.mac-captured-harness-predicate-actual-review.r1",
+  "qualification": "PASS_READONLY_DIAGNOSTIC_ONLY_ORIGINAL_COMPOSITE_FALSE",
+  "actualJobId": "1a1abcc26f6-fc05-50a4",
+  "checksPassed": 96,
+  "checks": [
+    {
+      "case": "raw_pin.go",
+      "passed": true
+    },
+    {
+      "case": "raw_pin.request",
+      "passed": true
+    },
+    {
+      "case": "raw_pin.ack",
+      "passed": true
+    },
+    {
+      "case": "raw_pin.authority",
+      "passed": true
+    },
+    {
+      "case": "raw_pin.read",
+      "passed": true
+    },
+    {
+      "case": "raw_pin.stdout",
+      "passed": true
+    },
+    {
+      "case": "raw_pin.stderr",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.ack",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.authority",
+      "passed": true
+    },
+    {
+      "case": "sdk_native_exact.read",
+      "passed": true
+    },
+    {
+      "case": "exact_dispatch",
+      "passed": true
+    },
+    {
+      "case": "fixed_key",
+      "passed": true
+    },
+    {
+      "case": "exact_source_in_argv",
+      "passed": true
+    },
+    {
+      "case": "root_go_exact_source_request",
+      "passed": true
+    },
+    {
+      "case": "ack_exact_binding_no_reuse",
+      "passed": true
+    },
+    {
+      "case": "ack_launched",
+      "passed": true
+    },
+    {
+      "case": "one_original_job",
+      "passed": true
+    },
+    {
+      "case": "known_zero_full_durable",
+      "passed": true
+    },
+    {
+      "case": "no_timeout_cancel_retry",
+      "passed": true
+    },
+    {
+      "case": "whole_stream_offsets.stdout",
+      "passed": true
+    },
+    {
+      "case": "whole_hex_text.stdout",
+      "passed": true
+    },
+    {
+      "case": "authority_stream.stdout",
+      "passed": true
+    },
+    {
+      "case": "whole_stream_offsets.stderr",
+      "passed": true
+    },
+    {
+      "case": "whole_hex_text.stderr",
+      "passed": true
+    },
+    {
+      "case": "authority_stream.stderr",
+      "passed": true
+    },
+    {
+      "case": "empty_stderr",
+      "passed": true
+    },
+    {
+      "case": "diagnostic_complete",
+      "passed": true
+    },
+    {
+      "case": "diagnostic_no_error",
+      "passed": true
+    },
+    {
+      "case": "handler_restore_and_authority",
+      "passed": true
+    },
+    {
+      "case": "original_deadline_after_closure",
+      "passed": true
+    },
+    {
+      "case": "exact_failed_origin",
+      "passed": true
+    },
+    {
+      "case": "exact_capsule_bytes_hash_path",
+      "passed": true
+    },
+    {
+      "case": "capsule_all_nine_strings",
+      "passed": true
+    },
+    {
+      "case": "all_fd_closure_known",
+      "passed": true
+    },
+    {
+      "case": "nine_registered_descriptors",
+      "passed": true
+    },
+    {
+      "case": "actual_original_io_counts",
+      "passed": true
+    },
+    {
+      "case": "exact_descriptor_paths",
+      "passed": true
+    },
+    {
+      "case": "descriptor_once_closed.0",
+      "passed": true
+    },
+    {
+      "case": "descriptor_once_closed.1",
+      "passed": true
+    },
+    {
+      "case": "descriptor_once_closed.2",
+      "passed": true
+    },
+    {
+      "case": "descriptor_once_closed.3",
+      "passed": true
+    },
+    {
+      "case": "descriptor_once_closed.4",
+      "passed": true
+    },
+    {
+      "case": "descriptor_once_closed.5",
+      "passed": true
+    },
+    {
+      "case": "descriptor_once_closed.6",
+      "passed": true
+    },
+    {
+      "case": "descriptor_once_closed.7",
+      "passed": true
+    },
+    {
+      "case": "descriptor_once_closed.8",
+      "passed": true
+    },
+    {
+      "case": "eight_parent_observations",
+      "passed": true
+    },
+    {
+      "case": "original_anchor_nine.0",
+      "passed": true
+    },
+    {
+      "case": "original_anchor_nine.1",
+      "passed": true
+    },
+    {
+      "case": "original_anchor_nine.2",
+      "passed": true
+    },
+    {
+      "case": "parent_nine_string_shape.0",
+      "passed": true
+    },
+    {
+      "case": "parent_nine_string_shape.1",
+      "passed": true
+    },
+    {
+      "case": "parent_nine_string_shape.2",
+      "passed": true
+    },
+    {
+      "case": "parent_nine_string_shape.3",
+      "passed": true
+    },
+    {
+      "case": "parent_nine_string_shape.4",
+      "passed": true
+    },
+    {
+      "case": "parent_nine_string_shape.5",
+      "passed": true
+    },
+    {
+      "case": "parent_nine_string_shape.6",
+      "passed": true
+    },
+    {
+      "case": "parent_nine_string_shape.7",
+      "passed": true
+    },
+    {
+      "case": "no_new_uuid_claim",
+      "passed": true
+    },
+    {
+      "case": "scope_false.captureOrFixtureReplayed",
+      "passed": true
+    },
+    {
+      "case": "scope_false.currentProductionFilesOpened",
+      "passed": true
+    },
+    {
+      "case": "scope_false.currentSqliteOpened",
+      "passed": true
+    },
+    {
+      "case": "scope_false.filesystemWritesByProgram",
+      "passed": true
+    },
+    {
+      "case": "scope_false.historicalUnknownsChanged",
+      "passed": true
+    },
+    {
+      "case": "scope_false.libraryOrSdkImported",
+      "passed": true
+    },
+    {
+      "case": "scope_false.networkUsed",
+      "passed": true
+    },
+    {
+      "case": "scope_false.privateCapsuleBodyPublished",
+      "passed": true
+    },
+    {
+      "case": "scope_false.providerOrJ3160",
+      "passed": true
+    },
+    {
+      "case": "scope_false.runtimeQualificationGranted",
+      "passed": true
+    },
+    {
+      "case": "scope_false.subprocessStarted",
+      "passed": true
+    },
+    {
+      "case": "actual_registry_denominator",
+      "passed": true
+    },
+    {
+      "case": "selection_unknown",
+      "passed": true
+    },
+    {
+      "case": "bounded_public_projection",
+      "passed": true
+    },
+    {
+      "case": "original_composite_known_false",
+      "passed": true
+    },
+    {
+      "case": "enabled_original_order.0",
+      "passed": true
+    },
+    {
+      "case": "owner_selected_unknown.0",
+      "passed": true
+    },
+    {
+      "case": "other_original_clauses_true.0",
+      "passed": true
+    },
+    {
+      "case": "namespace_only_actual_failure.0",
+      "passed": true
+    },
+    {
+      "case": "approved_root_literal_only.0",
+      "passed": true
+    },
+    {
+      "case": "public_digest.0.identifierValueSha256",
+      "passed": true
+    },
+    {
+      "case": "public_digest.0.rootValueSha256",
+      "passed": true
+    },
+    {
+      "case": "public_digest.0.agentHarnessesMetadataSha256",
+      "passed": true
+    },
+    {
+      "case": "enabled_original_order.1",
+      "passed": true
+    },
+    {
+      "case": "owner_selected_unknown.1",
+      "passed": true
+    },
+    {
+      "case": "other_original_clauses_true.1",
+      "passed": true
+    },
+    {
+      "case": "namespace_only_actual_failure.1",
+      "passed": true
+    },
+    {
+      "case": "approved_root_literal_only.1",
+      "passed": true
+    },
+    {
+      "case": "public_digest.1.identifierValueSha256",
+      "passed": true
+    },
+    {
+      "case": "public_digest.1.rootValueSha256",
+      "passed": true
+    },
+    {
+      "case": "public_digest.1.agentHarnessesMetadataSha256",
+      "passed": true
+    },
+    {
+      "case": "five_original_agents",
+      "passed": true
+    },
+    {
+      "case": "agent_model_not_selection.main",
+      "passed": true
+    },
+    {
+      "case": "agent_model_not_selection.trnm",
+      "passed": true
+    },
+    {
+      "case": "agent_model_not_selection.hepta-ui",
+      "passed": true
+    },
+    {
+      "case": "agent_model_not_selection.hepta",
+      "passed": true
+    },
+    {
+      "case": "agent_model_not_selection.hepta-backend",
+      "passed": true
+    }
+  ],
+  "actualEnabledOwnerCount": 2,
+  "firstRegistryOrdinal": 22,
+  "firstFailure": "rootInOriginalNpmProjectsNamespace",
+  "otherOriginalClausesPassed": true,
+  "selectedHarnessSet": "NOT_OBSERVED",
+  "newHostRequestsByVerifier": 0,
+  "privateBodyReadByVerifier": false,
+  "originalRuntimeReplayed": false,
+  "currentRuntimeQualified": false,
+  "productionQualified": false
+}

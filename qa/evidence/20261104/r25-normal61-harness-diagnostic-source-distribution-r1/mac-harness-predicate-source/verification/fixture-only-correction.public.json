@@ -1,0 +1,5 @@
+{
+  "reason": "Fixture-only count correction: the extra byte arrives in read 3 because the bounded last read requests remaining+1, so refusal happens before read 4. Source unchanged.",
+  "sourceUnchanged": true,
+  "hostCalls": 0
+}

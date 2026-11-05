@@ -1,0 +1,40 @@
+function reviewP01ArchivedProjection(r,a,u,sha,parse){
+ const checks=[],ck=(n,v)=>{if(!v)throw Error(n);checks.push(n);};
+ const canon=v=>v&&typeof v==="object"?Array.isArray(v)?v.map(canon):Object.fromEntries(Object.keys(v).sort().map(k=>[k,canon(v[k])])):v;
+ const eq=(x,y)=>JSON.stringify(canon(x))===JSON.stringify(canon(y));
+ const contract=JSON.parse(r["CONTRACT.public.json"]),input=JSON.parse(r["input/frozen-public-inputs.original.json"]),out=parse(r["actual/local-projection.stdout.original.json"]),run=JSON.parse(r["verification/local-public-execution.stdout.original.json"]),exec=JSON.parse(r["verification/local-public-execution.executor.json"]);
+ const refs={},pins=Object.fromEntries(contract.exactSources.map(x=>[x.name,x]));
+ ck("complete immutable source21 packet",a.files===21&&a.bytes===808351&&a.merkle.trees_verified===8);
+ ck("exact source bytes and SHA",u(r["source/authbus_production_p01_projector.py"]).length===24624&&sha(r["source/authbus_production_p01_projector.py"])===contract.source.sha256&&run.sourceSha256===contract.source.sha256);
+ ck("original frozen public stdin hash and size",u(r["input/frozen-public-inputs.original.json"]).length===328295&&sha(r["input/frozen-public-inputs.original.json"])===contract.input.sha256&&run.inputSha256===contract.input.sha256);
+ ck("exact eight archived source members",Object.keys(input.sources).length===8&&Object.keys(pins).length===8);
+ for(const [name,pin] of Object.entries(pins)){
+  const body=input.sources[name],path="references/"+name+".original.json",meta=a.records.find(x=>x.path===path);
+  ck("whole original archived source "+name,body===r[path]&&u(body).length===pin.bytes&&sha(body)===pin.sha256&&meta.blob===pin.blob);
+  refs[name]=parse(body);
+ }
+ ck("actual public stdout and zero stderr exact",u(r["actual/local-projection.stdout.original.json"]).length===104595&&sha(r["actual/local-projection.stdout.original.json"])===contract.output.sha256&&run.stdoutSha256===contract.output.sha256&&r["actual/local-projection.stderr.original.txt"]===""&&run.stderrBytes===0);
+ ck("original local actual execution proof",exec.exit_code===0&&exec.output===r["verification/local-public-execution.stdout.original.json"]&&run.candidateExitCode===0&&run.candidateInvokedWithInMemoryStdin===true);
+ ck("public projection original imports and no host activity",eq(run.sourceImports,["hashlib","json","sys","time"])&&["candidateChild","candidateHostCalls","candidateNetwork","candidateSqlite"].every(k=>run[k]===0));
+ ck("four exact host order",eq(out.hostOrder,["mac","rog","pocket4","x230"])&&eq(out.hosts.map(h=>h.host),out.hostOrder));
+ ck("host agent denominator exact historical scope",eq(out.hosts.map(h=>h.observedConfiguredAgentIds),[["main","trnm","hepta-ui","hepta","hepta-backend"],["main","azi2","azi3","azi4","azi5","zbj-llm-runtime"],["main","tg8687951891"],null]));
+ ck("service definitions counts are not active counts",eq(out.hosts.map(h=>h.serviceDefinitions.length),[5,8,5,4])&&out.hosts.every(h=>h.currentLiveStateProvedByProjection===false));
+ ck("ROG disabled drift not repaired",out.hosts[1].config.enabled===false&&out.hosts[1].disabledConfigMustRemainDisabled===true&&out.hosts[1].historicalConfigDriftNotRepaired===true);
+ ck("X230 absence not inferred",out.hosts[3].installedConsumerCount===null&&out.hosts[3].rollback.configurationMutationReady===false&&out.hosts[3].rollback.noClientInstallationFromHistoricalAbsence===true);
+ const fields=["plugins.entries.openclaw-authbus.config.address","plugins.entries.openclaw-authbus.config.caFile","plugins.entries.openclaw-authbus.config.roleIdFile","plugins.entries.openclaw-authbus.config.secretIdFile"];
+ ck("all three proposed client inverses only four fields",out.hosts.slice(0,3).every(h=>eq(h.rollback.allowedChangedKeys,fields)&&h.rollback.privateOriginalBytesRequiredBeforeAnyMutation===true&&h.rollback.cannotRestoreConfigFromPublicProjection===true&&h.rollback.requireExpectedAfterHashBeforeSingleInverse===true&&h.rollback.unknownInverseStopsWithoutRetry===true));
+ let citationCount=0,invalid=[];
+ function pointer(source,p){if(p==="")return source;if(!p.startsWith("/"))return undefined;let v=source;for(const part of p.slice(1).split("/")){const k=part.replace(/~1/g,"/").replace(/~0/g,"~");if(v===null||typeof v!=="object"||!(k in v))return undefined;v=v[k];}return v;}
+ function walk(v){if(!v||typeof v!=="object")return;if(!Array.isArray(v)&&typeof v.source==="string"&&typeof v.jsonPointer==="string"&&typeof v.blob==="string"){citationCount++;const p=pins[v.source];if(!p||p.blob!==v.blob||p.sha256!==v.sha256||p.bytes!==v.bytes||pointer(refs[v.source],v.jsonPointer)===undefined)invalid.push(v);}for(const x of Object.values(v))walk(x);}
+ walk(out);ck("every archived evidence pointer resolves with exact source identity",citationCount>20&&invalid.length===0);
+ const rs=JSON.parse(r["readsets/exact-existing-public-receipts.source-only.json"]),ds=JSON.parse(r["readsets/exact-dependency-resolution.source-only.json"]),reg=JSON.parse(r["contracts/new-production-registration.source-only.json"]);
+ ck("nine public refs exact source projection",rs.entries.length===9&&eq(rs.entries,out.exactExistingPublicReceiptReadset)&&rs.hostDispatchAuthorized===false);
+ ck("nine public refs original inventory exact host path SHA",rs.entries.every((e,i)=>e.host===refs.registration.evidence[i].host&&e.path===refs.registration.evidence[i].path&&e.expectedSha256===refs.registration.evidence[i].sha256&&e.dispatchReady===false&&e.stopOnDriftOrUnknown===true));
+ ck("two dependency contracts exact projection",ds.entries.length===2&&eq(ds.entries,out.exactDependencyResolutionReadset)&&ds.hostDispatchAuthorized===false);
+ ck("X230 dependency stays metadata-only one path",ds.entries[1].host==="x230"&&ds.entries[1].path==="/home/qian/.openclaw/openclaw.json"&&ds.entries[1].fileBodyRead===false&&ds.entries[1].directoryListing===false&&ds.entries[1].secondGuessedPath===false);
+ ck("unissued issuer values all remain null",Object.values(out.actualIssuedProductionValues).every(x=>x===null)&&eq(reg.actualIssuedProductionValues,out.actualIssuedProductionValues));
+ ck("proposal-only steps and no fixture qualification transfer",reg.scope==="PROPOSAL_ONLY_NO_HOST_DISPATCH_OR_ISSUANCE"&&reg.steps.length===10&&eq(reg.steps,out.productionIssuerDependencyGraph)&&out.currentProductOrProductionQualificationTransferred===false&&out.hostDispatchAuthorized===false);
+ ck("Mac proposal home server path discrepancy retained",reg.proposedRoots[0].host==="mac"&&reg.proposedRoots[0].serverDataPath==="/Users/qianqi/heptabao-production-authbus-registration-r1/server/data"&&reg.proposedRoots[0].rootExistenceObserved===false);
+ ck("renewal proof explicitly still unissued",reg.actualIssuedProductionValues.renewalLookupBeforeAfter===null&&reg.steps.find(x=>x.step==="T07").action.includes("lookup-self before renewal"));
+ return {schema:"heptabao.root.p01-archived-public-projection-review.r1",status:"PASS_ARCHIVED_MAPPING_ONLY_DEPLOYMENT_PROPOSAL_REQUIRES_T5_CORRECTION",checksPassed:checks.length,checks,archivedEvidencePointersResolved:citationCount,packet:{tree:a.tree,files:a.files,bytes:a.bytes},source:contract.source,output:contract.output,observations:contract.observations,productionRegistrationEstablished:false,acceptedCurrentServiceOwnership:false,allClientsEnumerated:false,existingNineReceiptsAreBackupPayloads:false,hostReadsetGo:false,correctionRequired:{host:"mac",currentProposal:"server/config/data below the home registration directory",required:"Retain Mac service binary, configuration, persistent data and backups under the external T5 deployment root, with actual volume and parent identity binding. Home client credential generation is separately permitted. Publish a separate minimal contract diff; retain original projector/stdout.",noHostMutationOccurred:true},next:{reuseWholeArchivedPublicReceiptsByExactShaBeforeNewHostReads:true,actualSdkSelectionSourcesSeparateTask:true,issuerValuesAndTTLBeforeAfterEvidenceStillRequired:true},productionCutover:false,oldCleanup:false,fullReplacement:false};
+}

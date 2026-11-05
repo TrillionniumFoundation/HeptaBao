@@ -1,0 +1,160 @@
+--- reference/importer.py
++++ candidate/importer.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Import one fixed, future received standalone df026 public source bundle locally.
++"""Import one fixed, future received standalone 4e808 public source bundle locally.
+ 
+ This is a new source-only draft: unresolved actual transport metadata refuses
+ before any filesystem access or Git child. No old source, binary, compiler,
+@@ -10,66 +10,66 @@
+ 
+ os.umask(0o077)
+ BASE=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-ROOT=BASE/'normal-cold-h2-source-import-r1'
++ROOT=BASE/'normal-same-root-publication-source-import-r1'
+ CONTROL=ROOT/'control'
+-CARRIER=BASE/'normal-cold-h2-source-carrier-r1'
++CARRIER=BASE/'normal-same-root-publication-source-carrier-r1'
+ ART=CARRIER/'incoming'
+-SOURCE=BASE/'normal-cold-h2-validation-source-r1'
+-CANONICAL='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
+-TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
+-PARENT='6304a898192bfdf7eabec3c4ea40f7166e59a137'
++SOURCE=BASE/'normal-same-root-publication-validation-source-r1'
++CANONICAL='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
++TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'
++PARENT='1c66541993662f92cf717154e33717abedb2ea74'
+ ROOT_COMMIT='67d79b3b5442ed033d38929eab2010403463e56d'
+-CANONICAL_COUNT=3757
+-TRACKED_FILES=3913
++CANONICAL_COUNT=3763
++TRACKED_FILES=3914
+ MAX_BUNDLE=64*1024*1024
+ UID=1000
+ SYSTEM=('Linux','x86_64')
+-ACTUAL_INPUTS_READY=True
++ACTUAL_INPUTS_READY=False
+ SOURCE_FILES=[
+  {
+-  "bytes": 23429893,
+-  "name": "canonical-df026-full.bundle",
+-  "path": "/home/qian-qi/heptabao-cold-h2-source-export-20261105-r1/canonical-df026-full.bundle",
+-  "sha256": "2f25963c59ecfd0918f786c98e6babcd7ba35daec02f00d899e987f19c28ad71",
++  "bytes": None,
++  "name": "canonical-4e808-full.bundle",
++  "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle",
++  "sha256": None,
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": "66306:28491499:23429893:1793854798728349517:1793854798731349506"
++  "version": None
+  },
+  {
+-  "bytes": 38783,
++  "bytes": None,
+   "name": "source-export.result.public.json",
+-  "path": "/home/qian-qi/heptabao-cold-h2-source-export-20261105-r1/result.public.json",
+-  "sha256": "34816ca251e2cf420ed63db97bd56c10e0c1a725e16470f28f9eedf70dd21bb4",
++  "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json",
++  "sha256": None,
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": "66306:28491536:38783:1793854798988258235:1793854798988258235"
++  "version": None
+  }
+ ]
+ FILES=[
+  {
+-  "name": "canonical-df026-full.bundle",
+-  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1/incoming/canonical-df026-full.bundle",
+-  "bytes": 23429893,
+-  "sha256": "2f25963c59ecfd0918f786c98e6babcd7ba35daec02f00d899e987f19c28ad71",
++  "name": "canonical-4e808-full.bundle",
++  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/canonical-4e808-full.bundle",
++  "bytes": None,
++  "sha256": None,
+   "mode": 256,
+-  "version": "2050:5019525:23429893:1793856420289823382:1793856420289823382"
++  "version": None
+  },
+  {
+   "name": "source-export.result.public.json",
+-  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1/incoming/source-export.result.public.json",
+-  "bytes": 38783,
+-  "sha256": "34816ca251e2cf420ed63db97bd56c10e0c1a725e16470f28f9eedf70dd21bb4",
++  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/incoming/source-export.result.public.json",
++  "bytes": None,
++  "sha256": None,
+   "mode": 256,
+-  "version": "2050:5019527:38783:1793856420629814207:1793856420629814207"
++  "version": None
+  }
+ ]
+ TRANSFER={
+  "name": "source-carrier.result.public.json",
+- "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1/control/result.public.json",
+- "bytes": 11847,
+- "sha256": "f20889c9b1e1e4a7df18498b58376dbd7295b5caef85ab308c19cb36589ef58f",
++ "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1/control/result.public.json",
++ "bytes": None,
++ "sha256": None,
+  "mode": 384,
+- "version": "2050:5019529:11847:1793856420787308422:1793856420787308422"
++ "version": None
+ }
+ 
+ START=time.monotonic()
+@@ -82,7 +82,7 @@
+ input_handles=[]
+ input_directories=[]
+ source_directory=None
+-result={'schema':'heptabao.df026.desktop-standalone-source-import.v1','status':'failed',
++result={'schema':'heptabao.same-root-publication-4e808.desktop-standalone-source-import.v1','status':'failed',
+  'source_commit':CANONICAL,'source_tree':TREE,'expected_full_commit_count':CANONICAL_COUNT,
+  'expected_prerequisites':[],'network_git_protocols_enabled':False,'old_source_opened':False,
+  'server_started':False,'compiler_started':False,'runtime_qualification':False,
+@@ -362,7 +362,7 @@
+ def verify_receipts(raw,input_rows):
+     exported=json.loads(raw['source-export.result.public.json'])
+     transported=json.loads(raw['source-carrier.result.public.json'])
+-    assert exported['schema']=='heptabao.cold-h2.rog-df026-standalone-source-export.v1'
++    assert exported['schema']=='heptabao.same-root-publication.rog-4e808-standalone-source-export.v1'
+     assert exported['status']=='exported' and exported['all_owned_stopped']
+     assert exported['canonical_commit']==CANONICAL and exported['canonical_tree']==TREE
+     assert exported['canonical_proof']=={
+@@ -372,8 +372,8 @@
+     assert exported['source_before']==exported['source_after']
+     assert exported['source_before']['head']==CANONICAL and exported['source_before']['tree']==TREE
+     assert exported['source_before']['clean'] and exported['source_before']['independent_git_directory']
+-    assert exported['controller']['bytes']==15324
+-    assert exported['controller']['sha256']=='a9b3ea4263481153c4546bd984f6a0dc496c7e459abb037eed1c78fdcdeafeaa'
++    assert exported['controller']['bytes']==15364
++    assert exported['controller']['sha256']=='9af6738da8526ad5a0dcd6402bf4693f652a4f428eb4b22d0914761292f66d20'
+     assert exported['bundle']['path']==SOURCE_FILES[0]['path']
+     assert exported['bundle']['bytes']==FILES[0]['bytes'] and exported['bundle']['sha256']==FILES[0]['sha256']
+     assert exported['bundle']['header']['prerequisites']==[]
+@@ -383,7 +383,7 @@
+     assert len(exported['cleanup'])==27 and all(row['direct_child_reaped'] and row['remaining']==[] for row in exported['cleanup'])
+     assert not exported['network_git_protocols_enabled'] and not exported['server_started'] and not exported['compiler_started']
+     assert not exported['source_imported'] and not exported['runtime_qualification'] and exported['product_tests_executed']==0
+-    assert transported['schema']=='heptabao.df026.public-source-carrier-relay.v1'
++    assert transported['schema']=='heptabao.same-root-publication-4e808.public-source-carrier-relay.v1'
+     assert transported['status']=='transferred' and transported['all_owned_stopped']
+     assert transported['all_local_owned_stopped'] and transported['remote_endpoint_completion_verified']
+     assert not transported['remote_cleanup_unknown'] and not transported['cleanup_errors']
+@@ -394,10 +394,10 @@
+     assert transported['ssh_child_seconds']==transported['endpoint_seconds']==90
+     assert transported['git_operations']==0 and not transported['server_started'] and not transported['compiler_started']
+     assert not transported['runtime_qualification'] and not transported['production_changed']
+-    assert transported['controller']['bytes']==15333
+-    assert transported['controller']['sha256']=='8317dc3e0722ce319c2af57f63dc394c560b5b30cc7534e26cc44cf4bb68005b'
+-    assert transported['helpers']['sender.py']['sha256']=='51cb936aabb86ae7845da30477ded90f9bd85513f93725c5cc4083e1b11f37ca'
+-    assert transported['helpers']['receiver.py']['sha256']=='833baaaff2dfad1f245b8b41a77e4b05bb3f0c652ddc40f5cd40765ad29e0417'
++    assert transported['controller']['bytes']==None
++    assert transported['controller']['sha256']==None
++    assert transported['helpers']['sender.py']['sha256']==None
++    assert transported['helpers']['receiver.py']['sha256']==None
+     assert len(transported['cleanup'])==3
+     assert all(row['direct_child_reaped'] and row['remaining']==[] and row['exit_code']==0
+                for row in transported['cleanup'])

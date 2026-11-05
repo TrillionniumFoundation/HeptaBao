@@ -1,0 +1,12 @@
+diff --git a/verification/pure-components.py b/verification/pure-components.py
+--- a/verification/pure-components.py
++++ b/verification/pure-components.py
+@@ -186,7 +186,7 @@
+ ns,clock,fs,out,sig,fake,r,body=reader_fixture(extra=b'X')
+ _,error=read_and_close(r,sig)
+ check('10_one_eof_byte_counts_no_extra_read',
+-      isinstance(error,ns['Refused']) and r.read_bytes==195156 and r.read_calls==4
++      isinstance(error,ns['Refused']) and str(error)=='fixed_private_byte_bound' and r.read_bytes==195156 and r.read_calls==3
+       and r.public()['allOwnedDescriptorsClosed'])
+ 
+ ns,clock,fs,out,sig,fake,r,body=reader_fixture()

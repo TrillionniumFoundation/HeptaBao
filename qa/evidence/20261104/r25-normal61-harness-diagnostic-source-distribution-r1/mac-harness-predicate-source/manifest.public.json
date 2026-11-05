@@ -1,0 +1,124 @@
+{
+  "schema": "heptabao.mac-captured-harness-predicate-source-manifest.r1",
+  "files": [
+    {
+      "path": "source/captured_harness_predicate_observer.py",
+      "mode": "100644",
+      "bytes": 20025,
+      "sha256": "2b999a66c6c3578673fd4611c4d89bf14fd7fd3605c3839ddb4379216d0b3805",
+      "blob": "c23db528a0454408db56e280a5f9e143db3a2cfd"
+    },
+    {
+      "path": "requests/observer-start.public.json",
+      "mode": "100644",
+      "bytes": 21428,
+      "sha256": "041b1a9b5b4f8055f6dfc442027af47b8c3921c37d84c04c2399679600a7b8ae",
+      "blob": "0a6df248e9e4780bbe3d625bfeeebd5728eeea1d"
+    },
+    {
+      "path": "CONTRACT.public.json",
+      "mode": "100644",
+      "bytes": 4510,
+      "sha256": "e74d4012dcbbb514c2937b541c95e7803190abe143590ed32049e7fb07c5f68b",
+      "blob": "1013046d413110d4650f7b04f14c02473c7e3e2b"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "bytes": 3747,
+      "sha256": "d21a90648ed4a8b147227eaaa25c774804734faf3d63fc37a1df82a6762d05f3",
+      "blob": "dc7f79559c121891885a95309d3789e80459769b"
+    },
+    {
+      "path": "references/runtime-stdout.original.json",
+      "mode": "100644",
+      "bytes": 91043,
+      "sha256": "8d3f357bf75b11c1ce37e34bb7304460271a1cb74d1bd5200031d2f2bd3f9302",
+      "blob": "bdde97e2ec7a167619ea24b0ce9660086e81ebce"
+    },
+    {
+      "path": "references/entry-stdout.original.json",
+      "mode": "100644",
+      "bytes": 30308,
+      "sha256": "88883315e4d9f343cbbc967224fc7a177f5cc8e216d09f811ef1c59c5de5fbd4",
+      "blob": "4d8bdf3cc8fa25ebc85954eae32de542431fa200"
+    },
+    {
+      "path": "references/runtime-authority.original.json",
+      "mode": "100644",
+      "bytes": 730,
+      "sha256": "0594f87341d29cea0465a91bd42596fdfc81196c933d66156a6415d8947c2f27",
+      "blob": "b56a7a6cf15a8b274061720debc80cb7f3070bbd"
+    },
+    {
+      "path": "references/inputs.original.py",
+      "mode": "100644",
+      "bytes": 27292,
+      "sha256": "6645e7375e1c3a5e0fbf994a2f035d4922c4def4d5bbfd333236293db78f9b11",
+      "blob": "7f4802e5225b73af247f371f3dc5c197c6e4425c"
+    },
+    {
+      "path": "references/worker.original.mjs",
+      "mode": "100644",
+      "bytes": 28533,
+      "sha256": "8c4a2cc09330cfda7a488e7e5caa811f4e190a10054a31f683b3466124210431",
+      "blob": "3614c27cb06f311870ceeeda3f01e806306ae0d1"
+    },
+    {
+      "path": "references/outer.original.py",
+      "mode": "100644",
+      "bytes": 68348,
+      "sha256": "bce47fd194be7ec1d1ec340e24d8e759dbf7611ef3c75eca2adeb62e9b4ccf01",
+      "blob": "8459b949c07982f56dae2e252565f3db0971e246"
+    },
+    {
+      "path": "verification/pure-components.py",
+      "mode": "100644",
+      "bytes": 11823,
+      "sha256": "220ba4b4ba2a849a764ee783ac98c5b45bf7729e9533709d1ff6069c5f7d2be2",
+      "blob": "84e8d9227e6a4847816a2ef2c338bbc04ca6bd66"
+    },
+    {
+      "path": "verification/pure-components.stdout.json",
+      "mode": "100644",
+      "bytes": 1906,
+      "sha256": "7d639a4791a14b68850f59ba7246027099c7d38be3a9d362d0a0212355bc7b5d",
+      "blob": "48063666a7d13b085151ef787897fab54aa6d1c6"
+    },
+    {
+      "path": "verification/pure-components.executor.json",
+      "mode": "100644",
+      "bytes": 2213,
+      "sha256": "c79bc0132d16b8d3ed48bc7fd4654c649f474de1af605a09c462a2a7cbcbce81",
+      "blob": "735f5c9fcfee6e9ab53f2f1ace7f08ff970e0a13"
+    },
+    {
+      "path": "verification/first-fixture.py",
+      "mode": "100644",
+      "bytes": 11780,
+      "sha256": "2a5ebc93278ba2a3691064a8bbbb7293cbbb68b70cee136d18a2a43d9231eaf8",
+      "blob": "77154e53899b5576c011b45be79f779372389903"
+    },
+    {
+      "path": "verification/first-fixture.executor.json",
+      "mode": "100644",
+      "bytes": 299,
+      "sha256": "3fb1c3e3c6997cbf7132fb40d1205bc27669dfa62d41fc05e069f2808d04dbb2",
+      "blob": "a673b1887b03b96b5fd1b1c1fe46b7ef0887830b"
+    },
+    {
+      "path": "verification/fixture-only-correction.diff",
+      "mode": "100644",
+      "bytes": 628,
+      "sha256": "0d665d02b24e765c42ae117d733ae19147c3a11a42a53e47fa82f523cef901a0",
+      "blob": "85b587a681637a833fd0fa47e94a91f73ee2e2a1"
+    },
+    {
+      "path": "verification/fixture-only-correction.public.json",
+      "mode": "100644",
+      "bytes": 231,
+      "sha256": "dc6f87e726aa698bc34998bafbc03441c3c5873bc92221c850e235e0e441861a",
+      "blob": "d8f6e0bcf30a9d58a406a4264670387339471727"
+    }
+  ]
+}

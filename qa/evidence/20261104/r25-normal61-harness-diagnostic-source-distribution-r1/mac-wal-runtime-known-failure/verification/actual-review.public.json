@@ -1,0 +1,622 @@
+{
+  "schema": "heptabao.mac-current-wal-runtime-actual-review.r1",
+  "decision": "PASS_KNOWN_FAILED_RUNTIME_ARCHIVE_WITH_CAPTURE_COMPONENT_SUCCESS",
+  "checksPassed": 146,
+  "checks": [
+    {
+      "case": "sdk_native.actual/start",
+      "passed": true
+    },
+    {
+      "case": "sdk_native.actual/authority",
+      "passed": true
+    },
+    {
+      "case": "one_exact_runtime_go",
+      "passed": true
+    },
+    {
+      "case": "external_intent_exact",
+      "passed": true
+    },
+    {
+      "case": "fixed_job_and_key",
+      "passed": true
+    },
+    {
+      "case": "exact_start_binding",
+      "passed": true
+    },
+    {
+      "case": "one_fresh_submission",
+      "passed": true
+    },
+    {
+      "case": "original_outer1080",
+      "passed": true
+    },
+    {
+      "case": "known_terminal_exit1",
+      "passed": true
+    },
+    {
+      "case": "sdk_native.actual/read-00000",
+      "passed": true
+    },
+    {
+      "case": "page.0",
+      "passed": true
+    },
+    {
+      "case": "stderr.0",
+      "passed": true
+    },
+    {
+      "case": "sdk_native.actual/read-16384",
+      "passed": true
+    },
+    {
+      "case": "page.16384",
+      "passed": true
+    },
+    {
+      "case": "stderr.16384",
+      "passed": true
+    },
+    {
+      "case": "sdk_native.actual/read-32768",
+      "passed": true
+    },
+    {
+      "case": "page.32768",
+      "passed": true
+    },
+    {
+      "case": "stderr.32768",
+      "passed": true
+    },
+    {
+      "case": "sdk_native.actual/read-49152",
+      "passed": true
+    },
+    {
+      "case": "page.49152",
+      "passed": true
+    },
+    {
+      "case": "stderr.49152",
+      "passed": true
+    },
+    {
+      "case": "sdk_native.actual/read-65536",
+      "passed": true
+    },
+    {
+      "case": "page.65536",
+      "passed": true
+    },
+    {
+      "case": "stderr.65536",
+      "passed": true
+    },
+    {
+      "case": "sdk_native.actual/read-81920",
+      "passed": true
+    },
+    {
+      "case": "page.81920",
+      "passed": true
+    },
+    {
+      "case": "stderr.81920",
+      "passed": true
+    },
+    {
+      "case": "whole91043",
+      "passed": true
+    },
+    {
+      "case": "authority_stream.stdout",
+      "passed": true
+    },
+    {
+      "case": "authority_stream.stderr",
+      "passed": true
+    },
+    {
+      "case": "sdk_native.entry-before/file-info",
+      "passed": true
+    },
+    {
+      "case": "sdk_native.entry-before/read",
+      "passed": true
+    },
+    {
+      "case": "entry_info_full",
+      "passed": true
+    },
+    {
+      "case": "entry_whole_pinned_read",
+      "passed": true
+    },
+    {
+      "case": "one_capture_original_token_exact",
+      "passed": true
+    },
+    {
+      "case": "known_outer_input_refusal",
+      "passed": true
+    },
+    {
+      "case": "exact_public_failure_frames",
+      "passed": true
+    },
+    {
+      "case": "static_composite_guard_location",
+      "passed": true
+    },
+    {
+      "case": "original_business_caps",
+      "passed": true
+    },
+    {
+      "case": "no_business_phase",
+      "passed": true
+    },
+    {
+      "case": "qualification_false.productionChangedByController",
+      "passed": true
+    },
+    {
+      "case": "qualification_false.providerRequested",
+      "passed": true
+    },
+    {
+      "case": "qualification_false.j3160Contacted",
+      "passed": true
+    },
+    {
+      "case": "qualification_false.credentialValuesPublished",
+      "passed": true
+    },
+    {
+      "case": "qualification_false.automaticBusinessRetry",
+      "passed": true
+    },
+    {
+      "case": "qualification_false.allAccountsQualified",
+      "passed": true
+    },
+    {
+      "case": "qualification_false.fullReplacementQualified",
+      "passed": true
+    },
+    {
+      "case": "current_capture_attempted",
+      "passed": true
+    },
+    {
+      "case": "outer_closure",
+      "passed": true
+    },
+    {
+      "case": "t5.outer",
+      "passed": true
+    },
+    {
+      "case": "t5.entry",
+      "passed": true
+    },
+    {
+      "case": "two_outer_one_nested_command",
+      "passed": true
+    },
+    {
+      "case": "command_terminal.outer0",
+      "passed": true
+    },
+    {
+      "case": "command_owned_cleanup.outer0",
+      "passed": true
+    },
+    {
+      "case": "command_caps.outer0",
+      "passed": true
+    },
+    {
+      "case": "command_terminal.outer1",
+      "passed": true
+    },
+    {
+      "case": "command_owned_cleanup.outer1",
+      "passed": true
+    },
+    {
+      "case": "command_caps.outer1",
+      "passed": true
+    },
+    {
+      "case": "command_terminal.entry0",
+      "passed": true
+    },
+    {
+      "case": "command_owned_cleanup.entry0",
+      "passed": true
+    },
+    {
+      "case": "command_caps.entry0",
+      "passed": true
+    },
+    {
+      "case": "entry_actual_success",
+      "passed": true
+    },
+    {
+      "case": "kernel_four_denied",
+      "passed": true
+    },
+    {
+      "case": "capsule_public_binding_only",
+      "passed": true
+    },
+    {
+      "case": "seven_sql_closed",
+      "passed": true
+    },
+    {
+      "case": "ledger_count.connection",
+      "passed": true
+    },
+    {
+      "case": "closed_once.connection.0",
+      "passed": true
+    },
+    {
+      "case": "closed_once.connection.1",
+      "passed": true
+    },
+    {
+      "case": "closed_once.connection.2",
+      "passed": true
+    },
+    {
+      "case": "closed_once.connection.3",
+      "passed": true
+    },
+    {
+      "case": "closed_once.connection.4",
+      "passed": true
+    },
+    {
+      "case": "closed_once.connection.5",
+      "passed": true
+    },
+    {
+      "case": "closed_once.connection.6",
+      "passed": true
+    },
+    {
+      "case": "ledger_count.cursor",
+      "passed": true
+    },
+    {
+      "case": "closed_once.cursor.0",
+      "passed": true
+    },
+    {
+      "case": "closed_once.cursor.1",
+      "passed": true
+    },
+    {
+      "case": "closed_once.cursor.2",
+      "passed": true
+    },
+    {
+      "case": "closed_once.cursor.3",
+      "passed": true
+    },
+    {
+      "case": "closed_once.cursor.4",
+      "passed": true
+    },
+    {
+      "case": "closed_once.cursor.5",
+      "passed": true
+    },
+    {
+      "case": "closed_once.cursor.6",
+      "passed": true
+    },
+    {
+      "case": "closed_once.cursor.7",
+      "passed": true
+    },
+    {
+      "case": "closed_once.cursor.8",
+      "passed": true
+    },
+    {
+      "case": "closed_once.cursor.9",
+      "passed": true
+    },
+    {
+      "case": "closed_once.cursor.10",
+      "passed": true
+    },
+    {
+      "case": "ledger_count.held_fd",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.0",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.1",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.2",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.3",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.4",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.5",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.6",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.7",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.8",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.9",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.10",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.11",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.12",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.13",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.14",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.15",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.16",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.17",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.18",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.19",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.20",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.21",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.22",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.23",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.24",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.25",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.26",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.27",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.28",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.29",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.30",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.31",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.32",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.33",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.34",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.35",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.36",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.37",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.38",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.39",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.40",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.41",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.42",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.43",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.44",
+      "passed": true
+    },
+    {
+      "case": "closed_once.held_fd.45",
+      "passed": true
+    },
+    {
+      "case": "ledger_count.public_code_fd",
+      "passed": true
+    },
+    {
+      "case": "closed_once.public_code_fd.0",
+      "passed": true
+    },
+    {
+      "case": "closed_once.public_code_fd.1",
+      "passed": true
+    },
+    {
+      "case": "closed_once.public_code_fd.2",
+      "passed": true
+    },
+    {
+      "case": "closed_once.public_code_fd.3",
+      "passed": true
+    },
+    {
+      "case": "closed_once.public_code_fd.4",
+      "passed": true
+    },
+    {
+      "case": "closed_once.public_code_fd.5",
+      "passed": true
+    },
+    {
+      "case": "capture_complete_closure",
+      "passed": true
+    },
+    {
+      "case": "exact_registry_wal_byte_bound",
+      "passed": true
+    },
+    {
+      "case": "one_original_3s_query",
+      "passed": true
+    },
+    {
+      "case": "row_and_aggregate_bounds",
+      "passed": true
+    },
+    {
+      "case": "original_connect_unknown_scope",
+      "passed": true
+    },
+    {
+      "case": "observation_not_backup_or_atomic",
+      "passed": true
+    },
+    {
+      "case": "no_credential_write_or_provider",
+      "passed": true
+    }
+  ],
+  "jobId": "1a1abb090b9-fc05-4fc5",
+  "authority": {
+    "bytes": 730,
+    "sha256": "0594f87341d29cea0465a91bd42596fdfc81196c933d66156a6415d8947c2f27",
+    "blob": "b56a7a6cf15a8b274061720debc80cb7f3070bbd"
+  },
+  "stdout": {
+    "bytes": 91043,
+    "sha256": "8d3f357bf75b11c1ce37e34bb7304460271a1cb74d1bd5200031d2f2bd3f9302",
+    "blob": "bdde97e2ec7a167619ea24b0ce9660086e81ebce"
+  },
+  "entryStdout": {
+    "bytes": 30308,
+    "sha256": "88883315e4d9f343cbbc967224fc7a177f5cc8e216d09f811ef1c59c5de5fbd4",
+    "blob": "4d8bdf3cc8fa25ebc85954eae32de542431fa200"
+  },
+  "streamPages": 6,
+  "sdkNativePairs": 10,
+  "actualOutcome": "Outer InputRefused at composite actual_finite_harness_code_root; no which-clause conclusion from public data.",
+  "publicCaptureSuccess": {
+    "returnedConnections": 7,
+    "cursors": 11,
+    "heldDescriptors": 46,
+    "publicCodeDescriptors": 6,
+    "aggregateReturnedBytes": 205284,
+    "registryWalBytes": 5969912
+  },
+  "noPrivateCapsuleBodyArchived": true,
+  "wholeConsumerQualification": false,
+  "rootReleaseDecisionSeparate": true,
+  "noHostReplay": true
+}

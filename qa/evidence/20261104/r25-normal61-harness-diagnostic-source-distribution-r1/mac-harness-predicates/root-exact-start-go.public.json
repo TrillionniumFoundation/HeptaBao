@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.root.exact-single-readonly-diagnostic-go.r1",
+  "decision": "GO_ONE_EXACT_PROCESS_START_ONLY",
+  "request": {
+    "blob": "0a6df248e9e4780bbe3d625bfeeebd5728eeea1d",
+    "bytes": 21428,
+    "sha256": "041b1a9b5b4f8055f6dfc442027af47b8c3921c37d84c04c2399679600a7b8ae",
+    "idempotency_key": "heptabao-mac-captured-harness-predicates-2b999a66-20261105-r1",
+    "host": "mac",
+    "executable": "/opt/homebrew/bin/python3",
+    "timeout_seconds": 60
+  },
+  "review": {
+    "name": "r25-mac-harness-predicate-source-root-review.public.json",
+    "blob": "a0181aa4c94ff9268854a4679f15e4e48874b209",
+    "bytes": 4094,
+    "sha256": "5db4f9d6b3cea72b9861dbfb2b70c9330c197cc1b28c6712dd3f1450fd28641d"
+  },
+  "source": {
+    "path": "source/captured_harness_predicate_observer.py",
+    "blob": "c23db528a0454408db56e280a5f9e143db3a2cfd",
+    "bytes": 20025,
+    "sha256": "2b999a66c6c3578673fd4611c4d89bf14fd7fd3605c3839ddb4379216d0b3805",
+    "mode": "100644"
+  },
+  "scope": "Read only the exact immutable already-captured 195155-byte private capsule; publish bounded original predicate booleans and approved hashes, never private body. No original capture, fixture, current DB, SDK, login, provider or refresh replay.",
+  "caps": {
+    "absoluteSoftSeconds": 5,
+    "supervisorSeconds": 60,
+    "metadataCalls": 80,
+    "descriptors": 9,
+    "readCalls": 4,
+    "readBytes": 195156,
+    "outputBytes": 16384
+  },
+  "protocol": [
+    "Persist independent exact intent externally and finish that call before start.",
+    "Submit original exact request once.",
+    "Save original ACK externally before parsing.",
+    "Reconcile only the original durable job and original output; no replay or new-key retry.",
+    "Whole stdout/stderr and authoritative terminal plus all descriptor/deadline closure required."
+  ],
+  "qualification": {
+    "readOnlyDiagnosticOnly": true,
+    "allPredicatesMayFail": true,
+    "selectedHarnessUnobserved": true,
+    "currentRuntimeQualified": false,
+    "productionCutover": false,
+    "oldCleanup": false,
+    "fullReplacement": false,
+    "oldUnknownsChanged": false
+  }
+}

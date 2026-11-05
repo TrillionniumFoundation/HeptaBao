@@ -1,0 +1,127 @@
+--- a/relay.py
++++ b/relay.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Create-only shared desktop copy of five fixed public df026 normal-build artifacts.
++"""Create-only shared desktop copy of five fixed public 4e808 normal-build artifacts.
+ Uses the prior reviewed rog-ts transport. No Git, compiler, server or HTTP starts.
+ """
+ from pathlib import Path
+@@ -9,68 +9,68 @@
+  raise RuntimeError('unresolved exact normal artifact transport input metadata')
+ os.umask(0o077)
+ BASE=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-SOURCES=BASE/'normal-cold-h2-shared-artifact-controls-r1'
++SOURCES=BASE/'normal-same-root-publication-shared-artifact-controls-r1'
+-ROOT=BASE/'normal-cold-h2-shared-artifacts-r1'
++ROOT=BASE/'normal-same-root-publication-shared-artifacts-r1'
+ CONTROL=ROOT/'control'
+ ORIGINAL=BASE/'normal-33cafa-full128-control-r2/launch_normal_33cafa_full128_r2.py'
+ ORIGINAL_SHA='c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e'
+-HEAD='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
++HEAD='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
+-TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
++TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'
+ FILES=[
+  {
+-  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server",
+-  "name": "heptabao-server",
+-  "bytes": 110339520,
+-  "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2",
+-  "source_mode": 320,
+-  "target_mode": 320,
+-  "version": "66306:31618600:110339520:1793854196517721681:1793854196660721163"
+- },
+- {
+-  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/native-build.public.json",
+-  "name": "native-build.public.json",
+-  "bytes": 772,
+-  "sha256": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": "66306:31618604:772:1793854197085814600:1793854197085814600"
+- },
+- {
+-  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/normal-release-result.public.json",
+-  "name": "normal-release-result.public.json",
+-  "bytes": 3137,
+-  "sha256": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d",
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": "66306:31618602:3137:1793854197085005556:1793854197085005556"
+- },
+- {
+-  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json",
+-  "name": "normal-release-tests-result.public.json",
+-  "bytes": 48188,
+-  "sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": "66306:31618802:48188:1793855417596045434:1793855417596045434"
+- },
+- {
+-  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/normal-test-groups.public.json",
+-  "name": "groups.json",
+-  "bytes": 6249,
+-  "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": "66306:27299399:6249:1793850441629209928:1793850441629209928"
++  "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/artifacts/heptabao-server",
++  "name": "heptabao-server",
++  "bytes": 110219600,
++  "sha256": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
++  "source_mode": 320,
++  "target_mode": 320,
++  "version": "66306:35799524:110219600:1793878962288901433:1793878962422900772"
++ },
++ {
++  "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/native-build.public.json",
++  "name": "native-build.public.json",
++  "bytes": 786,
++  "sha256": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:35799527:786:1793878962882813897:1793878962882813897"
++ },
++ {
++  "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/normal-release-result.public.json",
++  "name": "normal-release-result.public.json",
++  "bytes": 3192,
++  "sha256": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:35799526:3192:1793878962880898513:1793878962880898513"
++ },
++ {
++  "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/result.public.json",
++  "name": "normal-release-tests-result.public.json",
++  "bytes": 57532,
++  "sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:35799670:57532:1793880513628576356:1793880513628576356"
++ },
++ {
++  "path": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/normal-test-groups.public.json",
++  "name": "groups.json",
++  "bytes": 6249,
++  "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:33211565:6249:1793875489336258402:1793875489336258402"
+  }
+ ]
+-HELPERS={"sender.py":"bdd3164c3140f45375b2c543f87d87e5e978a5d02cbbe9237c6a9dee3f1becd4","receiver.py":"96506bb62ea514f58b995e0202a78c29219290ce0b2977a5204e2cb4c540a465"}
++HELPERS={"sender.py":"f2a6cbfca7dc2d92a64d0f0173d570fcf5e6c084e531f50c86c2220842770c96","receiver.py":"dbe951e3cb615df1c026a43862ff6e8478b99955f6f8e54cd21b8620dd431d19"}
+ SSH=['/usr/bin/ssh','-T','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes',
+      '-o','ConnectTimeout=10','-o','ConnectionAttempts=1',
+      '-o','ClearAllForwardings=yes','-o','ForwardAgent=no','-o','UpdateHostKeys=no',
+      '-o','ControlMaster=no','-o','ControlPath=none']
+ START=time.monotonic();UNTIL=START+300
+ children=[];commands=[];handles=[];protected=0;pending_signal=None;created=False;remote_endpoints_verified=False
+-result={'schema':'heptabao.df026.shared-public-normal-artifacts-relay.v1','status':'failed',
++result={'schema':'heptabao.4e808.shared-public-normal-artifacts-relay.v1','status':'failed',
+  'overall_seconds':300,'ssh_child_seconds':90,'endpoint_seconds':90,
+  'source_alias':'rog-ts','destination_host':'desktop',
+  'destination_root':str(ROOT),'source_commit':HEAD,'source_tree':TREE,'files':FILES,

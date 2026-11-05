@@ -1,0 +1,230 @@
+{
+  "schema": "heptabao.4e808-normal5-selected-source-checks.v1",
+  "status": "passed",
+  "checks": [
+    {
+      "name": "sender.py all ordered definitions byte identical",
+      "passed": true
+    },
+    {
+      "name": "one assignment ACTUAL_INPUTS_READY",
+      "passed": true
+    },
+    {
+      "name": "sender.py ready actual",
+      "passed": true
+    },
+    {
+      "name": "one assignment FILES",
+      "passed": true
+    },
+    {
+      "name": "sender.py actual table exact",
+      "passed": true
+    },
+    {
+      "name": "one assignment HEAD",
+      "passed": true
+    },
+    {
+      "name": "sender.py current commit",
+      "passed": true
+    },
+    {
+      "name": "one assignment TREE",
+      "passed": true
+    },
+    {
+      "name": "sender.py current tree",
+      "passed": true
+    },
+    {
+      "name": "sender.py no None binding",
+      "passed": true
+    },
+    {
+      "name": "receiver.py all ordered definitions byte identical",
+      "passed": true
+    },
+    {
+      "name": "one assignment ACTUAL_INPUTS_READY",
+      "passed": true
+    },
+    {
+      "name": "receiver.py ready actual",
+      "passed": true
+    },
+    {
+      "name": "one assignment FILES",
+      "passed": true
+    },
+    {
+      "name": "receiver.py actual table exact",
+      "passed": true
+    },
+    {
+      "name": "one assignment HEAD",
+      "passed": true
+    },
+    {
+      "name": "receiver.py current commit",
+      "passed": true
+    },
+    {
+      "name": "one assignment TREE",
+      "passed": true
+    },
+    {
+      "name": "receiver.py current tree",
+      "passed": true
+    },
+    {
+      "name": "receiver.py no None binding",
+      "passed": true
+    },
+    {
+      "name": "relay.py all ordered definitions byte identical",
+      "passed": true
+    },
+    {
+      "name": "one assignment ACTUAL_INPUTS_READY",
+      "passed": true
+    },
+    {
+      "name": "relay.py ready actual",
+      "passed": true
+    },
+    {
+      "name": "one assignment FILES",
+      "passed": true
+    },
+    {
+      "name": "relay.py actual table exact",
+      "passed": true
+    },
+    {
+      "name": "one assignment HEAD",
+      "passed": true
+    },
+    {
+      "name": "relay.py current commit",
+      "passed": true
+    },
+    {
+      "name": "one assignment TREE",
+      "passed": true
+    },
+    {
+      "name": "relay.py current tree",
+      "passed": true
+    },
+    {
+      "name": "relay.py no None binding",
+      "passed": true
+    },
+    {
+      "name": "inert-carrier.py all ordered definitions byte identical",
+      "passed": true
+    },
+    {
+      "name": "fixed five names",
+      "passed": true
+    },
+    {
+      "name": "exact source and destination permissions",
+      "passed": true
+    },
+    {
+      "name": "heptabao-server actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "heptabao-server actual uid/gid/nlink",
+      "passed": true
+    },
+    {
+      "name": "native-build.public.json actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "native-build.public.json actual uid/gid/nlink",
+      "passed": true
+    },
+    {
+      "name": "normal-release-result.public.json actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "normal-release-result.public.json actual uid/gid/nlink",
+      "passed": true
+    },
+    {
+      "name": "normal-release-tests-result.public.json actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "normal-release-tests-result.public.json actual uid/gid/nlink",
+      "passed": true
+    },
+    {
+      "name": "groups.json actual whole/version",
+      "passed": true
+    },
+    {
+      "name": "groups.json actual uid/gid/nlink",
+      "passed": true
+    },
+    {
+      "name": "inert exact schema and file set",
+      "passed": true
+    },
+    {
+      "name": "one assignment PINS",
+      "passed": true
+    },
+    {
+      "name": "sender.py payload exact",
+      "passed": true
+    },
+    {
+      "name": "receiver.py payload exact",
+      "passed": true
+    },
+    {
+      "name": "relay.py payload exact",
+      "passed": true
+    },
+    {
+      "name": "inert raw stdin cap",
+      "passed": true
+    },
+    {
+      "name": "inert exact argv",
+      "passed": true
+    },
+    {
+      "name": "inert and relay budgets",
+      "passed": true
+    },
+    {
+      "name": "relay invocation from actual source",
+      "passed": true
+    },
+    {
+      "name": "both desktop and fixed cwd",
+      "passed": true
+    }
+  ],
+  "ordered_definition_counts": {
+    "sender.py": 10,
+    "receiver.py": 10,
+    "relay.py": 17,
+    "inert-carrier.py": 5
+  },
+  "total_definitions_unchanged": 42,
+  "compiled_only": 4,
+  "candidate_modules_executed": 0,
+  "remote_requests": 0,
+  "cargo": 0,
+  "service_requests": 0
+}

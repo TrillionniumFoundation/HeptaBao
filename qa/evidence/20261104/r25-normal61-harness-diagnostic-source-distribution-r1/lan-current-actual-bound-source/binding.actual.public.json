@@ -1,0 +1,110 @@
+{
+  "schema": "heptabao.future-same-root-lan-normal61-binding.v1",
+  "status": "SOURCE_ONLY_ACTUAL_ARTIFACT_BOUND",
+  "ready": true,
+  "dispatch_authorized": false,
+  "source_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "source_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "independent_normal61_required": {
+    "linux": {
+      "canonical_source_root": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/source",
+      "output": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1",
+      "driver_sha256": "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be",
+      "source_authority_closed": true,
+      "normal_result_sha256": "7830845172732432895c246d77c47266432a03c0788e15689ea74d15dff14475",
+      "normal_result_blob": "162336b81e26f391b12d2e6c860c6eb9cc2a9c71",
+      "authoritative_terminal_blob": "ea91d9d6d597323d55fc501b587dbcc7be44da15",
+      "root_review_blob": "fdf6e1228b24fdbcb56f350f88a7069c137d8661",
+      "source_core_blob": "079369dac398d8fab512bd52c00657af7357467c",
+      "normal_job": "1a1ab76cee8-fc05-4e13",
+      "source_full_archive_tree": "1bc4d16fda3830dd6b035a1fd36a4ca21fbc018d",
+      "source_core_root_review_blob": "63ebbf09459d89c246f6cdc793e9692e8d3a00e8",
+      "normal_state": "ACTUAL_61_PASSED_CORE_ROOT_REVIEWED",
+      "full_original_log_archive_complete": false
+    },
+    "mac": {
+      "canonical_source_root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
+      "output": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1",
+      "driver_sha256": "3e013354f125cc4c282905beb6347d19f84448a14c304efd576b4d8705e0c2d8",
+      "source_authority_closed": true,
+      "source_core_blob": "05f3c12a962dc60660b092567c52a4b7499ab3d1",
+      "normal_job": "1a1ab60127b-fc05-4d18",
+      "normal_result_sha256": "02422f0070827e4940ae819d117b80ead30b993dba5ec9fe4a1aee21f286c113",
+      "normal_result_blob": "8d6bb7e39a591f0f50bfba5697e719103f509a57",
+      "authoritative_terminal_blob": "791e259a207753160e4abb274cc14b6a5f7a143c",
+      "root_review_blob": "1c5ebf2bea9cabb6c64deb3810b56f977e103e05",
+      "source_full_archive_tree": "16bb1439f5cea1fd37a3d8a1319d2c37b21f6de8",
+      "source_core_root_review_blob": "3e5af92d147f789e4857c99cfd331b5bed15bd78",
+      "normal_state": "ACTUAL_61_PASSED_CORE_AND_190_PARTIAL_ROOT_REVIEWED",
+      "artifact_info_root_addendum": "eef1b661623b95cdb548f113b9d936d00b38ad09",
+      "full_original_log_archive_complete": false
+    }
+  },
+  "each_platform_original60": 60,
+  "each_platform_additional_same_root_regression": 1,
+  "additional_test_name": "service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors",
+  "all10_actual_artifact_pins": {
+    "linux": {
+      "abi": "x86_64-unknown-linux-gnu",
+      "actual_native_build_host": "rog",
+      "alias": "rog-ts",
+      "build": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1",
+      "source": "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/source",
+      "python": "/usr/bin/python3",
+      "cargo": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "build_driver_sha256": "93dd6190c7f081305defdbc1c49600974bfa581d943736c77798d51a1c8f54be",
+      "files": {
+        "artifacts/heptabao-seed": "0edc8d3c1fb3b78a4b018f684bfc07269d273c72925582a849b68df6c003b6a6",
+        "artifacts/heptabao-server": "cb840a0f275f5c56c5b60e774d613020160853495f821975df7a1451522e15f0",
+        "normal-release-build.stdout": "064a4de5bc8a6dd76faddd9bcac7e444b27c1f7128000fdf9638695e6ecc9e24",
+        "native-build.public.json": "3bfc21f48ce6dd831c8bde094b2f24f53ed0266e57e5fd55839b0a5977f5db5a",
+        "normal-release-result.public.json": "78d5eeb0235f62896ec57ca4d0243e31c56e861a4dde438ccd23eac3edafdd22"
+      }
+    },
+    "mac": {
+      "abi": "aarch64-apple-darwin",
+      "actual_native_build_host": "mac",
+      "alias": "mac-ts",
+      "build": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/normal-release-tests-r1",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-same-root-publication-normal-r2/source",
+      "python": "/opt/homebrew/bin/python3",
+      "cargo": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+      "build_driver_sha256": "3e013354f125cc4c282905beb6347d19f84448a14c304efd576b4d8705e0c2d8",
+      "files": {
+        "artifacts/heptabao-seed": "faa8e1c443b26b9c459e8d628bfb7be7f8a4bac8c3afd072ac046360f4247429",
+        "artifacts/heptabao-server": "c1b005a9f73c3f28681613d6fa3a5703d74e4f30358da4b7d9fa1949eb25ae63",
+        "normal-release-build.stdout": "8dc68d2435e0c431df2f153d7125ab841427265e987726cfbfa6280dc05dddd6",
+        "native-build.public.json": "25c1ecc14b5b989d34227cef8d26964fdd0a6682fb3f8be754c2e1c501825f49",
+        "normal-release-result.public.json": "2fdafe3670a0a7365245e509343ce1cf23ac28b071351d4f30ea12751d90a571"
+      }
+    }
+  },
+  "desktop_source": {
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+    "actual_complete_import_sha256": null,
+    "exists_claimed": false
+  },
+  "normal_qualification_is_external_root_gate": true,
+  "artifact_hash_shape_component_is_not_qualification": true,
+  "prior_candidate_failure": {
+    "source_commit": "1c66541993662f92cf717154e33717abedb2ea74",
+    "job": "1a1ab058659-fc05-4989",
+    "original60": "passed",
+    "added1": "failed",
+    "overall61": "failed",
+    "core_blob": "da5827d733a433f768bc624730e1a5ce3880462e",
+    "qualification_transferred": false
+  },
+  "actual_stage_or_runtime_submitted": false,
+  "qualified_normal61_both_platforms": true,
+  "normal_test_denominators_remain_independent": true,
+  "whole_pins_are_actual": true,
+  "full_original_build_log_archives_pending": true,
+  "linux_cargo_event_body_independent_archive_pending": true,
+  "mac_release_cargo_full_archive_tree": "14b4c7b731a4bc43476b984173c820cb365f9079",
+  "normal_core_scope_not_full_archive_claim": true,
+  "mac_all_cargo_archive_verified_chunks": 47,
+  "mac_all_cargo_archive_total_chunks": 54,
+  "mac_libtest_archive_verified_chunks": 20,
+  "mac_libtest_archive_total_chunks": 27
+}

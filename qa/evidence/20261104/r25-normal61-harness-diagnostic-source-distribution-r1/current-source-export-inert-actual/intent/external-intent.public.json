@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.current4e808-exporter-inert-external-intent.v1",
+  "decision": "submit_one_exact_approved_request",
+  "recorded_after_utc": "2026-11-05 12:39:20 UTC",
+  "host": "rog",
+  "exact_go": {
+    "blob": "81c17a0f21d42211229f8b14ba9d4105a152c02b",
+    "bytes": 1531,
+    "sha256": "5446b46b14d4fd726c27ff05b39c21e98e0930c652993168dab498c50aa11c2b"
+  },
+  "exact_request": {
+    "blob": "6b00d3d5d8f1fb95e3aa7b302c966180396ae61b",
+    "bytes": 25931,
+    "sha256": "0e6e356403b756d599d2a90e5792e147f2df2f1b59323f7057a169ebc68fabe8"
+  },
+  "idempotency_key": "heptabao-4e808-standalone-source-export-inert-aa4a7615-20261105-r1",
+  "maximum_submissions": 1,
+  "scope": "one compile-only public source publication and receipt",
+  "future_export_authorized": false,
+  "source_execute_or_cargo_or_product_or_transport": false,
+  "separate_completed_intent_call_required_before_process_start": true,
+  "unknown_policy": "no automatic replay; reconcile exact original key/job and preserve original unknown"
+}

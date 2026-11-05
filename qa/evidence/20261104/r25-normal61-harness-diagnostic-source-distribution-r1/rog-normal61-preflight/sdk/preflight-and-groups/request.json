@@ -1,0 +1,9 @@
+{
+  "host": "rog",
+  "paths": [
+    "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/build-control-r1/launch-preflight.public.json",
+    "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/control/normal-test-groups.public.json"
+  ],
+  "max_file_bytes": 65536,
+  "max_response_bytes": 131072
+}

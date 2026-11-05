@@ -1,0 +1,92 @@
+{
+  "schema": "heptabao.same-root-publication-4e808-source-carrier-import-plan.v1",
+  "status": "source_only_unresolved",
+  "no_runtime_dispatch_in_this_packet": true,
+  "identity": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "parent": "1c66541993662f92cf717154e33717abedb2ea74",
+    "history": 3763,
+    "tracked_leaves": 3914
+  },
+  "source_export_packet_tree": "ef4509aecc8a4e595e9d6c4ba1ad6784bad52fef",
+  "exact_exporter": {
+    "bytes": 15364,
+    "sha256": "9af6738da8526ad5a0dcd6402bf4693f652a4f428eb4b22d0914761292f66d20",
+    "blob": "2540cac365b9c0afd91ae4b8adee80e01221f38e"
+  },
+  "destination_source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+  "source_carrier_controls": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-controls-r1",
+  "source_carrier_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-carrier-r1",
+  "source_import_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1",
+  "changed_scope": {
+    "all_original_algorithms_recovered_from_exact_successful_df026_requests": true,
+    "new_top_level_false_guards": [
+      "sender.py",
+      "receiver.py",
+      "relay.py"
+    ],
+    "transport_common_function_bodies_unchanged": true,
+    "receiver_receive_changed_only_fixed_export_provenance_values": true,
+    "importer_verify_receipts_changed_only_fixed_provenance_expectations_and_unbound_future_control_pins": true,
+    "importer_30_other_definitions_byte_identical": true,
+    "original_file_protocols_ssh_trust_deadlines_retry_policy_custody_logic_unchanged": true
+  },
+  "unresolved": {
+    "two_source_export_rows": [
+      "bytes",
+      "sha256",
+      "version"
+    ],
+    "two_received_rows": [
+      "bytes",
+      "sha256",
+      "version"
+    ],
+    "transfer_receipt_row": [
+      "bytes",
+      "sha256",
+      "version"
+    ],
+    "importer_four_inline_control_pins": [
+      "transported.controller.bytes",
+      "transported.controller.sha256",
+      "transported.helpers.sender.py.sha256",
+      "transported.helpers.receiver.py.sha256"
+    ],
+    "final_bound_transport_source_hashes_and_publisher_payload_recomputed_after_binding": true,
+    "all_actual_inputs_ready": false
+  },
+  "binding_order": [
+    "Receive root-qualified actual new4e808 standalone export result/authority and two exact source file metadata records.",
+    "Replace only the two source FILES rows in all three transport modules and set each readiness flag true. Recompute exact endpoint HELPER hashes, relay hash/size, publisher PINS and payload, then freeze concrete new inert/relay requests for review.",
+    "After separate inert/relay actual completion and root acceptance, mirror the exact bound source rows into importer SOURCE_FILES. Fill its two destination FILES rows and TRANSFER row from actual full file metadata.",
+    "Fill the four importer inline expected controller/helper pins from the final transported control sources. They are None in this package, not the unbound predecessor hashes. Set importer readiness true only after all inputs are concrete.",
+    "Freeze full importer text and SHA256; include that SHA as the final argv element required by the unchanged original contract. Root reviews the exact request before any source import."
+  ],
+  "original_budgets": {
+    "endpoint_seconds": 90,
+    "relay_seconds": 300,
+    "relay_outer_seconds": 360,
+    "inert_outer_seconds": 60,
+    "import_seconds": 300,
+    "git_leaf_seconds": 60,
+    "clone_seconds": 90,
+    "import_outer_seconds": 330,
+    "term_seconds": 5,
+    "kill_seconds": 5
+  },
+  "offline_validation": {
+    "checks": 169,
+    "parse_compile_modules": 10,
+    "complete_modules_executed": 0,
+    "selected_pure_false_ready_guards": 3,
+    "selected_original_import_argv_contract_cases": 2,
+    "host_or_product_requests": 0
+  },
+  "preserved_preparation_errors": [
+    "The first generator expected an incorrect previous inert schema spelling. A strict occurrence assertion refused before any candidate store or Git publication. Exact original source was then used.",
+    "The first inverse verifier expected every replacement string globally unique, but a new namespace already occurred in whole replaced tables. It failed on the importer path. The verifier now reverses the exact recorded forward byte spans; candidate and input did not change."
+  ],
+  "all_runtime_and_transport_and_import_qualification": false
+}

@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-same-root-publication-normal-20261105-r2/normal-release-tests-r1/retained-heptabao-server-libtest",
+    "service::native_v6_ha_install::tests::same_root_republication_tests::native_ha_same_root_republication_advances_warm_and_cold_cursors",
+    "--exact",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.7772148039948661,
+  "exit_code": 0,
+  "label": "same-root-publication-1",
+  "outer_cap_seconds": 599.9823910910054,
+  "owned_pgid": 2582354,
+  "remaining": [],
+  "stderr_sha256": "d5a9d574aae7929b768669669a23774ac0014205b7adcdcf7944da7825ccec0b",
+  "stdout_sha256": "6b3bbc1ae1b5789811d16ac024ce5bc54373dedbb0223578f635743dd9f98753",
+  "timed_out": false
+}

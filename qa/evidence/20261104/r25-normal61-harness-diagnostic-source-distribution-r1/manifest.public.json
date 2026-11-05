@@ -1,0 +1,479 @@
+{
+  "schema": "heptabao.checkpoint-whole-evidence-manifest.r25.v1",
+  "as_of_utc": "2026-11-05T13:20:28Z",
+  "previous_commit": "d93c3446a092e5c66a5f39b2e6e3cc559d99b12f",
+  "prefix": "qa/evidence/20261104/r25-normal61-harness-diagnostic-source-distribution-r1",
+  "packets": [
+    {
+      "name": "rog-normal61-actual-core",
+      "tree": "f5d3875b2ab325691b701b186624fa38b17cc34f",
+      "files": 43,
+      "bytes": 215061,
+      "merkle": {
+        "root_sha": "f5d3875b2ab325691b701b186624fa38b17cc34f",
+        "trees_verified": 23
+      }
+    },
+    {
+      "name": "current-source-carrier-import-unbound",
+      "tree": "66308ebc25cce838ac5c5f5b92b13a090ccec138",
+      "files": 33,
+      "bytes": 674964,
+      "merkle": {
+        "root_sha": "66308ebc25cce838ac5c5f5b92b13a090ccec138",
+        "trees_verified": 9
+      }
+    },
+    {
+      "name": "mac-wal-runtime-known-failure",
+      "tree": "4a4e35f46eabadbfe5e0ccec3f9b49163d02ac08",
+      "files": 48,
+      "bytes": 1006354,
+      "merkle": {
+        "root_sha": "4a4e35f46eabadbfe5e0ccec3f9b49163d02ac08",
+        "trees_verified": 5
+      }
+    },
+    {
+      "name": "qa12-transport-actual-core",
+      "tree": "5c30a0b1956bfb8b0c5fa8ade8f687b9ed84c23b",
+      "files": 66,
+      "bytes": 333731,
+      "merkle": {
+        "root_sha": "5c30a0b1956bfb8b0c5fa8ade8f687b9ed84c23b",
+        "trees_verified": 34
+      }
+    },
+    {
+      "name": "rog-normal61-preflight",
+      "tree": "9780156c7af6b57d7dc5bc57860bf25ea70843f5",
+      "files": 9,
+      "bytes": 115349,
+      "merkle": {
+        "root_sha": "9780156c7af6b57d7dc5bc57860bf25ea70843f5",
+        "trees_verified": 5
+      }
+    },
+    {
+      "name": "normal5-current-actual-bound-source",
+      "tree": "1c48f9519ce6d13dbe2f4484db279102c9e33676",
+      "files": 39,
+      "bytes": 494117,
+      "merkle": {
+        "root_sha": "1c48f9519ce6d13dbe2f4484db279102c9e33676",
+        "trees_verified": 10
+      }
+    },
+    {
+      "name": "mac-harness-predicate-source",
+      "tree": "5f82ad1ca7dd63cc25f890f6597445e54ed9e920",
+      "files": 18,
+      "bytes": 329217,
+      "merkle": {
+        "root_sha": "5f82ad1ca7dd63cc25f890f6597445e54ed9e920",
+        "trees_verified": 5
+      }
+    },
+    {
+      "name": "lan-current-actual-bound-source",
+      "tree": "6116305e15768546bd3f06ef38db865134b05190",
+      "files": 40,
+      "bytes": 2119293,
+      "merkle": {
+        "root_sha": "6116305e15768546bd3f06ef38db865134b05190",
+        "trees_verified": 11
+      }
+    },
+    {
+      "name": "qa12-info7-read-reconciliation",
+      "tree": "e4c07d230697a3599c6cc2f617f17447eab57efe",
+      "files": 14,
+      "bytes": 12343,
+      "merkle": {
+        "root_sha": "e4c07d230697a3599c6cc2f617f17447eab57efe",
+        "trees_verified": 8
+      }
+    },
+    {
+      "name": "mac-harness-predicate-actual",
+      "tree": "9cc0e5423626cb0e2525a29e96f0f5dcddc14a73",
+      "files": 24,
+      "bytes": 308744,
+      "merkle": {
+        "root_sha": "9cc0e5423626cb0e2525a29e96f0f5dcddc14a73",
+        "trees_verified": 4
+      }
+    },
+    {
+      "name": "authbus-p01-public-projector-source",
+      "tree": "90b8d6307f14a134a43e015866614c44c4fa8734",
+      "files": 21,
+      "bytes": 808351,
+      "merkle": {
+        "root_sha": "90b8d6307f14a134a43e015866614c44c4fa8734",
+        "trees_verified": 8
+      }
+    },
+    {
+      "name": "current-source-export-inert-actual",
+      "tree": "4dda7ea3992a2c186f9c1e7effeb5576a1ce8c05",
+      "files": 76,
+      "bytes": 484967,
+      "merkle": {
+        "root_sha": "4dda7ea3992a2c186f9c1e7effeb5576a1ce8c05",
+        "trees_verified": 14
+      }
+    }
+  ],
+  "packet_files": 431,
+  "packet_bytes": 6902491,
+  "packet_merkle_trees": 136,
+  "root_files_including_state_and_manifest": 41,
+  "root_leaves_excluding_this_manifest": [
+    {
+      "name": "r24-checkpoint-create-tree.sdk.json",
+      "blob": "f1cc2feacb0c5f114bc22e4398306df1940fbde9",
+      "bytes": 195,
+      "sha256": "5e46804813e10734908ddfdb9cb99672a8e7b37e09fa8849d48bbc93dd8e2d6f",
+      "path": "r24-publication/create-tree.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r24-checkpoint-create-commit.sdk.json",
+      "blob": "282ee633d672d86dbf093e06465991ea753d3679",
+      "bytes": 195,
+      "sha256": "a319204a3ab47c00026077f079b8a55ca372d6b911a49c667609478cc72676fb",
+      "path": "r24-publication/create-commit.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r24-checkpoint-update-ref.sdk.json",
+      "blob": "bc792cbeafd69869c1bb177d2380534078196a99",
+      "bytes": 161,
+      "sha256": "0aad31566ba642e38c47f18ab55ad16470654eade0b74575427dd592d966998e",
+      "path": "r24-publication/update-ref.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r24-checkpoint-root-tree-read.sdk.json",
+      "blob": "9abf16d84c326afa221f6561a5080badf8811d79",
+      "bytes": 13939,
+      "sha256": "d2f80b1b86f597230fbba810dcb33524040d7602abda103823afe1037c635ebb",
+      "path": "r24-publication/root-tree-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r24-checkpoint-commit-read.sdk.json",
+      "blob": "ef7ecc39b37117be19899371835a85b4b19ad0a0",
+      "bytes": 3551,
+      "sha256": "631c97ebd9abe8db34787c5c02f7d98a61dfc230af1eb6f8472aae3d49bc131d",
+      "path": "r24-publication/commit-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r24-checkpoint-ref-read.sdk.json",
+      "blob": "b5f1d5d592c109eaca8e0d46ced13f5539af1d0a",
+      "bytes": 1753,
+      "sha256": "05cd24a889d2446c8e99a9dfd31f85dbd7c734c555ce481813fd317731c821c3",
+      "path": "r24-publication/ref-read.sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r24-checkpoint-pre-publication-proof.public.json",
+      "blob": "a746cb40f7bd00cc5aa2db40deb5afe1203f4111",
+      "bytes": 808,
+      "sha256": "463b1bc27caf5016c9ba643646527cb119a0beb432ca3540e3b2327e23fcbc6e",
+      "path": "r24-publication/pre-publication-proof.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r24-checkpoint-post-publication-proof.public.json",
+      "blob": "d9b1ddb9b98ad9a83f1306072bc0bd4bae7dbf8a",
+      "bytes": 1380,
+      "sha256": "b685d3da02d26cf0820645401cad942bf7215e3729027ff8495d3dced8ce89d6",
+      "path": "r24-publication/post-publication-proof.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-exporter-root-verifier.js",
+      "blob": "ecbe341b65aff392f13f8a1244450cc18630afd6",
+      "bytes": 4756,
+      "sha256": "f3bb094660c13961950ab0849ba63e36d44a254b0ba1ef2c015ff5f16d221980",
+      "path": "current-source-export/root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-exporter-root-review.public.json",
+      "blob": "e3d6022d54ae1b3b8895de53acaf25dabdae1624",
+      "bytes": 3737,
+      "sha256": "049b621be8a27c7979095862f5045c7117006a06385a8f44f6966e27c7f1913d",
+      "path": "current-source-export/root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-exporter-inert-root-go.public.json",
+      "blob": "81c17a0f21d42211229f8b14ba9d4105a152c02b",
+      "bytes": 1531,
+      "sha256": "5446b46b14d4fd726c27ff05b39c21e98e0930c652993168dab498c50aa11c2b",
+      "path": "current-source-export/inert-root-go.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-rog-normal61-core-root-verifier.js",
+      "blob": "79ae6196c8ee8882f6e7b7eb9574ab68e586b55f",
+      "bytes": 9776,
+      "sha256": "8ead722c9a9ee95dac19e505626b0e4e6e08a2ddfd8f0a26e63f5f5ef26911cc",
+      "path": "rog-normal61/root-core-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-rog-normal61-core-root-review.public.json",
+      "blob": "fdf6e1228b24fdbcb56f350f88a7069c137d8661",
+      "bytes": 8818,
+      "sha256": "c516521fb031086dd0cf0f71789583e69b30e7f0a9c8789898dda38ba4eadd36",
+      "path": "rog-normal61/root-core-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-mac-wal-failure-root-binding-verifier.js",
+      "blob": "7276a48aa2eabcaee15411d4a2c90add60c1b340",
+      "bytes": 3383,
+      "sha256": "901beee172295604903e2fe4fc06792655016309442c99ce7da5b9bdf9747ef9",
+      "path": "mac-wal-failure/root-binding-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-mac-wal-failure-root-review.public.json",
+      "blob": "bc93e8cdc6c9e0f8330743e115e0aa62662d2148",
+      "bytes": 1375,
+      "sha256": "8cac45be39837e23d6e41e64f86111ba977bf972a8852dad6e6f476794597513",
+      "path": "mac-wal-failure/root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-source-carrier-unbound-root-verifier.js",
+      "blob": "c0ebc6ae20069111816c13949ae0433ea8ce4c30",
+      "bytes": 5367,
+      "sha256": "5abd6d4a1d26271a5dd644cf50290370831f1124c921bf4e0420b7438f3e6c87",
+      "path": "current-source-carrier/root-unbound-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-source-carrier-unbound-root-review.public.json",
+      "blob": "7d6cb5c53926931f5ada9f040161883b1daaf891",
+      "bytes": 4994,
+      "sha256": "6461dccbed34596166df76dd495a0fcbf04d85dd516998451aa6c0fac6ccf7b7",
+      "path": "current-source-carrier/root-unbound-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-runtime-effective-config-capacity-observation.sdk.json",
+      "blob": "e98614a5de4de8c2d958c5ce68fc8641479c5d1f",
+      "bytes": 5103,
+      "sha256": "c6cee1f7d470c2f3fa239509c15720df6120f69c701078331104493cdee3f573",
+      "path": "runtime-read-capacity/effective-config.original-sdk.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-qa12-transport-core-root-verifier.js",
+      "blob": "269d68dc31d3f73cdf5d184ed7322755e1b31e8f",
+      "bytes": 8816,
+      "sha256": "9a08a818aa37986a6a616803f6c78faef4d8cf16ecc7edb302db21c04121eeca",
+      "path": "qa12-transport/root-core-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-qa12-transport-core-root-review.public.json",
+      "blob": "e56e822bf32c1cfa5477e5316732e03116b86725",
+      "bytes": 4555,
+      "sha256": "cc8295de70899d21e9a567aa414f0fd02fd23e701be07159c2e8b9f4d9f47716",
+      "path": "qa12-transport/root-core-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-rog-normal61-preflight-root-addendum.public.json",
+      "blob": "a8f27b51cdc41c4085df75059bbca0b6b7c6d751",
+      "bytes": 1531,
+      "sha256": "8a59f94823f730aa3b585d247730431cd3be49521b79131528f72aa4484a5952",
+      "path": "rog-normal61/root-preflight-addendum.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-mac-harness-predicate-source-root-verifier.js",
+      "blob": "d4e3034722e107d18e302652aa066105464763b3",
+      "bytes": 8364,
+      "sha256": "0d6fa18fdee6dde12ed99f678e3ad5f38518c1b081427f313074b3888c16570d",
+      "path": "mac-harness-predicates/root-source-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-mac-harness-predicate-source-root-review.public.json",
+      "blob": "a0181aa4c94ff9268854a4679f15e4e48874b209",
+      "bytes": 4094,
+      "sha256": "5db4f9d6b3cea72b9861dbfb2b70c9330c197cc1b28c6712dd3f1450fd28641d",
+      "path": "mac-harness-predicates/root-source-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-mac-harness-predicate-exact-start-go.public.json",
+      "blob": "8d4e14282a309a089b0474ba52fbf3cb1f83c861",
+      "bytes": 2124,
+      "sha256": "c71064e9ef1dde3a03aa7e8889f7e78f95d5245f2da6e804b56085922065ae8f",
+      "path": "mac-harness-predicates/root-exact-start-go.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-normal5-bound-root-verifier.js",
+      "blob": "5eb91cca344062b91a4608a71d6dfbb5fcb3da70",
+      "bytes": 9634,
+      "sha256": "567e2a982e595c6fccf324b07141e3966633da7a6e4ac43d79dba47c4b1cea5b",
+      "path": "normal5-current/root-source-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-normal5-bound-root-review.public.json",
+      "blob": "60adf9e31d99d260984864884e553147767ce48f",
+      "bytes": 24904,
+      "sha256": "e0b4518461f0c2e531380f96f44718446fc1455c89caca2e4cb2a0eb72c4ac11",
+      "path": "normal5-current/root-source-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-normal5-current-inert-go.public.json",
+      "blob": "eca93bc6fde759e36818fed839bd1957d53a947f",
+      "bytes": 1956,
+      "sha256": "acb3cd80ea9130d310945c8a0c55037bdf4dd9586bac7d5939d77841930ef115",
+      "path": "normal5-current/root-inert-go.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-lan-root-metadata-wrapper-observation.public.json",
+      "blob": "77ffcf9bbe8ba9ab345b8041ce9808f988f389a2",
+      "bytes": 526,
+      "sha256": "92bdd62e960658cfba460f60ca8c6e210de89283cee0f10c7dd65fc0fe4eaef9",
+      "path": "lan-current/root-metadata-wrapper-observation.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-lan-actual-bound-root-verifier.js",
+      "blob": "a675b97d4a80cb481f20708e36ca22cca5290335",
+      "bytes": 9750,
+      "sha256": "62bc445566439ce852ae893360ae316ccf2a68dba0ec151b0671324bdc7dafef",
+      "path": "lan-current/root-source-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-lan-actual-bound-root-review.public.json",
+      "blob": "da34eedd281b7a39de558d93efb4569544570b1b",
+      "bytes": 8787,
+      "sha256": "8ff98c3f962d56ecb25e6e801bea13b41f5d43aa97d7f8e851cb1286fbeafced",
+      "path": "lan-current/root-source-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-lan-current-inert-go.public.json",
+      "blob": "08fbd1dfbf36ec8ee7bc3aeb8eadac18e6bf9cf9",
+      "bytes": 1956,
+      "sha256": "e48dcb50df72a25be438ac50d476eab40baa9b74ac83b75c0d4dff184d587f78",
+      "path": "lan-current/root-inert-go.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-qa12-info7-root-addendum.public.json",
+      "blob": "ee3c7c6d358c65d281c1fe13260b28e1fb47dc38",
+      "bytes": 2279,
+      "sha256": "f95df3dd9df425c388b362a05c7b70fd703e427a6ccf47d28d73d42f7cb9bc7d",
+      "path": "qa12-transport/root-info7-addendum.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-current-exporter-inert-actual-root-verifier.js",
+      "blob": "3d3570713c910db963d1803229e4dc2e65af0073",
+      "bytes": 8345,
+      "sha256": "5701bb5a130693ba3ed24c651ebf86a2ccc5a2fc90dcbe74a685e45df041c910",
+      "path": "current-source-export/root-inert-actual-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-current-exporter-inert-actual-root-review.public.json",
+      "blob": "b50c17caab9a66a703b12d6273c6306e38da5c7b",
+      "bytes": 5347,
+      "sha256": "16a4c170c8b3b33528761b669ac7aecc8e330a52b5041a4247d16ab1f5d10d20",
+      "path": "current-source-export/root-inert-actual-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-current-source-export-exact-start-go.public.json",
+      "blob": "67ebf4aa754a26328b3316515f462fe9d8932ac8",
+      "bytes": 2954,
+      "sha256": "697454de64a827fbad94ef6d95cd74b7010a918a6d314fc72acf98cb69a47519",
+      "path": "current-source-export/root-exact-export-go.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-mac-harness-predicate-actual-root-verifier.js",
+      "blob": "869429d8c7e7fb3c8b6bf2dd816db794215d79c8",
+      "bytes": 4524,
+      "sha256": "7b265df491fb9a4baf94cbdb1473e29c411bf7a426050717cb75928a19cfbc72",
+      "path": "mac-harness-predicates/root-actual-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-mac-harness-predicate-actual-root-review.public.json",
+      "blob": "fc1d8a6bb436bce391046ae55e1aeb0c9ff30cc0",
+      "bytes": 3578,
+      "sha256": "d94c26dd7b7e7298563dbf76b341ae74d86d03c5b54339a77acf9270707a33ad",
+      "path": "mac-harness-predicates/root-actual-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-p01-projector-root-verifier.js",
+      "blob": "908681d5c9ac82ed687bf5f5899d880116c56b40",
+      "bytes": 8071,
+      "sha256": "954057558bc54262fe67487663ae696bd910a721686b9934a92cc91d8be0ed7b",
+      "path": "authbus-p01/root-verifier.js",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-p01-projector-root-review.public.json",
+      "blob": "b467415358b8dce373494bef993ec1e0b22d4675",
+      "bytes": 3735,
+      "sha256": "e97475f218750bba7d49ff7a4fccba4698f24535500bf8c53ab11d5b0d36fddb",
+      "path": "authbus-p01/root-review.public.json",
+      "mode": "100644"
+    },
+    {
+      "name": "r25-checkpoint-state.public.json",
+      "blob": "251e5913e94288a63edd581acba343a708649062",
+      "bytes": 25910,
+      "sha256": "b757ade5aca8dd398d5344e019c376026c17fbe51d7f4c25f75c414d614415c3",
+      "path": "state.public.json",
+      "mode": "100644"
+    }
+  ],
+  "updated_documents": [
+    {
+      "path": "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+      "name": "r25-checkpoint-document.md",
+      "blob": "8aaa418fe3acf287b22e7755895e5e8593f7cec8",
+      "bytes": 249501,
+      "sha256": "d19d9d563c741ff5be7b51562550d47467f7c54dd49f4dfdccd0fa8661717d3e"
+    },
+    {
+      "path": "qa/evidence/20261104/36076-checkpoint.public.json",
+      "name": "r25-checkpoint-index.public.json",
+      "blob": "a26b196737189683f0c282c35ca2cfc77cea3b77",
+      "bytes": 432232,
+      "sha256": "9da5b943773d8da4f0a76de2d5565845a64f905749cbfc2a795244f572277066"
+    }
+  ],
+  "integrity": {
+    "all_packets_complete": true,
+    "all_leaf_bytes_git_blob_sha256_and_merkle_verified": true,
+    "immutable_cached_bytes_reverified_allowed": true,
+    "original_sdk_native_unsafe_integer_tokens_preserved": true,
+    "no_private_capsules_or_credentials_in_public_evidence": true,
+    "no_product_code_or_service_change_by_checkpoint": true,
+    "full_replacement": false
+  }
+}

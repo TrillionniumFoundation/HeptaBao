@@ -1,0 +1,71 @@
+--- reference/relay.py
++++ candidate/relay.py
+@@ -1,46 +1,52 @@
+ #!/usr/bin/env python3
+-"""Create-only shared desktop copy of two fixed public df026 standalone source files.
++"""Create-only shared desktop copy of two fixed public 4e808 standalone source files.
+ Uses the prior reviewed rog-ts transport. No Git, compiler, server or HTTP starts.
+ """
+ from pathlib import Path
+ import hashlib,json,os,shlex,signal,stat,subprocess,sys,time
++ACTUAL_INPUTS_READY=False
++if not ACTUAL_INPUTS_READY:
++ raise RuntimeError('actual 4e808 source-export metadata unresolved')
+ os.umask(0o077)
+ BASE=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-SOURCES=BASE/'normal-cold-h2-source-carrier-controls-r1'
+-ROOT=BASE/'normal-cold-h2-source-carrier-r1'
++SOURCES=BASE/'normal-same-root-publication-source-carrier-controls-r1'
++ROOT=BASE/'normal-same-root-publication-source-carrier-r1'
+ CONTROL=ROOT/'control'
+ ORIGINAL=BASE/'normal-33cafa-full128-control-r2/launch_normal_33cafa_full128_r2.py'
+ ORIGINAL_SHA='c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e'
+-HEAD='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
+-TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
++HEAD='4e808d0ecb1bcded22870a7ec960dfb2491cf6ec'
++TREE='eba5e650bd080b8ad41ea52a2bc68867f541d255'
+ FILES=[
+  {
+-  "bytes": 23429893,
+-  "name": "canonical-df026-full.bundle",
+-  "path": "/home/qian-qi/heptabao-cold-h2-source-export-20261105-r1/canonical-df026-full.bundle",
+-  "sha256": "2f25963c59ecfd0918f786c98e6babcd7ba35daec02f00d899e987f19c28ad71",
++  "bytes": None,
++  "name": "canonical-4e808-full.bundle",
++  "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/canonical-4e808-full.bundle",
++  "sha256": None,
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": "66306:28491499:23429893:1793854798728349517:1793854798731349506"
++  "version": None
+  },
+  {
+-  "bytes": 38783,
++  "bytes": None,
+   "name": "source-export.result.public.json",
+-  "path": "/home/qian-qi/heptabao-cold-h2-source-export-20261105-r1/result.public.json",
+-  "sha256": "34816ca251e2cf420ed63db97bd56c10e0c1a725e16470f28f9eedf70dd21bb4",
++  "path": "/home/qian-qi/heptabao-same-root-publication-source-export-20261105-r1/result.public.json",
++  "sha256": None,
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": "66306:28491536:38783:1793854798988258235:1793854798988258235"
++  "version": None
+  }
+ ]
+-HELPERS={"sender.py":"51cb936aabb86ae7845da30477ded90f9bd85513f93725c5cc4083e1b11f37ca","receiver.py":"833baaaff2dfad1f245b8b41a77e4b05bb3f0c652ddc40f5cd40765ad29e0417"}
++HELPERS={
++ "sender.py": "f22631fde5db9125b7986f37eea161d5f5809ec972bc95a1b6be3fc6766cf1e2",
++ "receiver.py": "a6035826290eb23afce0e42dc3ebcf3bf4c7773111efbb7108dbbe241c46e903"
++}
+ SSH=['/usr/bin/ssh','-T','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes',
+      '-o','ConnectTimeout=10','-o','ConnectionAttempts=1',
+      '-o','ClearAllForwardings=yes','-o','ForwardAgent=no','-o','UpdateHostKeys=no',
+      '-o','ControlMaster=no','-o','ControlPath=none']
+ START=time.monotonic();UNTIL=START+300
+ children=[];commands=[];handles=[];protected=0;pending_signal=None;created=False;remote_endpoints_verified=False
+-result={'schema':'heptabao.df026.public-source-carrier-relay.v1','status':'failed',
++result={'schema':'heptabao.same-root-publication-4e808.public-source-carrier-relay.v1','status':'failed',
+  'overall_seconds':300,'ssh_child_seconds':90,'endpoint_seconds':90,
+  'source_alias':'rog-ts','destination_host':'desktop',
+  'destination_root':str(ROOT),'source_commit':HEAD,'source_tree':TREE,'files':FILES,

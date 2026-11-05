@@ -1,0 +1,4 @@
+{
+  "status": "failed_before_candidate_store_or_publication",
+  "reason": "Expected one prior inert schema spelling, actual exact source uses a different schema name; occurrence assertion rejected. No code or host changed."
+}
