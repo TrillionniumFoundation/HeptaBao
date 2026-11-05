@@ -1,0 +1,60 @@
+{
+  "authbus_qualified": false,
+  "formal_dr25_executions": 0,
+  "formal_kv2_qualified": false,
+  "missing_originals_or_terminal_observations": [
+    {
+      "missing": "full original Cargo stdout",
+      "sha256": "29b3a9c6ed8c4fa1b0b49ec1a23f559d447d065d2fdf2801260d1c670e30f3d0",
+      "stage": "R6 normal release"
+    },
+    {
+      "missing": "full original Cargo stdout",
+      "sha256": "9012fc1a4dffcbc19b54d81a9fb8b79b54e01818efdd099cedfdcff02d437837",
+      "stage": "R8 normal release"
+    },
+    {
+      "missing": "full original Cargo stdout",
+      "sha256": "3d664fc4514c82465c5a515831d801f19864142ffc97897cf3881b2f43ba81f2",
+      "stage": "R9 normal release"
+    },
+    {
+      "missing": "full original Cargo stdout",
+      "sha256": "9b9779d43d675df3a3b9760cd80d71553c196aa349daff5c7f8c3a09976466d7",
+      "stage": "R9 normal server libtest"
+    },
+    {
+      "missing": "complete original 527-byte executor stdout; initial retrieval timed out",
+      "stage": "R9 Pocket source stage"
+    },
+    {
+      "missing": "terminal and result in this initial-observation checkpoint",
+      "stage": "R9 Pocket normal build"
+    },
+    {
+      "missing": "actual test terminal and result; recovered async read failed as a read operation",
+      "stage": "R7 current Mac response control42"
+    }
+  ],
+  "old_assets_deleted": false,
+  "physical_ha_qualified": false,
+  "production_changed": false,
+  "r10_build_or_test_qualification": false,
+  "r10_exact_change": "existing test initializer adds status: None; no assertion, production code or budget change",
+  "r10_parent_adapter": "DRAFT; unchanged function ASTs; actual new owner21 not submitted",
+  "r10_source_commit": "b33b8d0de9c7689ff89f8ed11cd2151726972f4f",
+  "r10_source_tree": "89a8af5b7bcb1d7472e1f12e1dec7adb7d2cf726",
+  "r5_matched27_original_worker_addendum": "actual old worker request and started files; does not change failed matched27 outcome",
+  "r5_original_strict_history_wire_recovered": true,
+  "r6_mac_build": "failed Cargo101, normal release",
+  "r7_async_read_failure_is_not_test_failure": true,
+  "r8_mac_build": "failed Cargo101, normal release",
+  "r9_mac_build": "failed overall: normal release Cargo0; server libtest Cargo101 E0063",
+  "r9_mac_normal_server_sha256": "50ecac89156c862e6111f1460ed8f73b4872c61a9ef7fd9a9e4bc640f5981b73",
+  "r9_mac_runtime_tests_started": false,
+  "r9_pocket_normal": "original running observation only; no terminal or qualification in this checkpoint",
+  "replacement_qualified": false,
+  "schema": "heptabao.actual-failure-and-source-checkpoint.v1",
+  "status": "verified_original_bytes_with_explicit_remaining_gaps",
+  "traffic_cutover": false
+}
