@@ -1,0 +1,136 @@
+{
+  "schema": "heptabao.regression-runtime-terminal-observations.v1",
+  "host": "mac",
+  "source_commit": "9208e0765f566f3bd7908e6567d2e39008156b9b",
+  "source_tree": "3a353adca3300eb46dbe8622c36eaa1f6d3fa7ce",
+  "observations": [
+    {
+      "name": "server",
+      "value": [
+        {
+          "at_unix_ms": 1793856917826,
+          "audit_recorded": true,
+          "automatic_retry": false,
+          "cancelled": false,
+          "exit_code": 1,
+          "job_id": "1a1aa2e11a8-fc05-3ebe",
+          "launch_nonce": "3ae25ca30c7bd9f359c9a002cacaf039",
+          "log_bytes": {
+            "stderr": {
+              "seen": 0,
+              "stored": 0
+            },
+            "stdout": {
+              "seen": 294,
+              "stored": 294
+            }
+          },
+          "log_errors": {
+            "stderr": null,
+            "stdout": null
+          },
+          "log_synced": {
+            "stderr": true,
+            "stdout": true
+          },
+          "log_truncated": {
+            "stderr": false,
+            "stdout": false
+          },
+          "output_complete": true,
+          "output_durable": true,
+          "state": "failed",
+          "terminal_publication_confirmed": true,
+          "terminal_publication_protocol": 1,
+          "timed_out": false
+        }
+      ]
+    },
+    {
+      "name": "ha",
+      "value": [
+        {
+          "at_unix_ms": 1793856983688,
+          "audit_recorded": true,
+          "automatic_retry": false,
+          "cancelled": false,
+          "exit_code": 0,
+          "job_id": "1a1aa34ea49-fc05-3f1e",
+          "launch_nonce": "f24b2d1557cefa161f1380475854ec4a",
+          "log_bytes": {
+            "stderr": {
+              "seen": 0,
+              "stored": 0
+            },
+            "stdout": {
+              "seen": 3159,
+              "stored": 3159
+            }
+          },
+          "log_errors": {
+            "stderr": null,
+            "stdout": null
+          },
+          "log_synced": {
+            "stderr": true,
+            "stdout": true
+          },
+          "log_truncated": {
+            "stderr": false,
+            "stdout": false
+          },
+          "output_complete": true,
+          "output_durable": true,
+          "state": "succeeded",
+          "terminal_publication_confirmed": true,
+          "terminal_publication_protocol": 1,
+          "timed_out": false
+        }
+      ]
+    },
+    {
+      "name": "aggregate",
+      "value": [
+        {
+          "at_unix_ms": 1793857026150,
+          "audit_recorded": true,
+          "automatic_retry": false,
+          "cancelled": false,
+          "exit_code": 1,
+          "job_id": "1a1aa35e85c-fc05-3f2c",
+          "launch_nonce": "7c16cf01b5e4d39fbe44ae5a3a55c917",
+          "log_bytes": {
+            "stderr": {
+              "seen": 0,
+              "stored": 0
+            },
+            "stdout": {
+              "seen": 287,
+              "stored": 287
+            }
+          },
+          "log_errors": {
+            "stderr": null,
+            "stdout": null
+          },
+          "log_synced": {
+            "stderr": true,
+            "stdout": true
+          },
+          "log_truncated": {
+            "stderr": false,
+            "stdout": false
+          },
+          "output_complete": true,
+          "output_durable": true,
+          "state": "failed",
+          "terminal_publication_confirmed": true,
+          "terminal_publication_protocol": 1,
+          "timed_out": false
+        }
+      ]
+    }
+  ],
+  "full_replacement_qualified": false,
+  "production_changed": false
+}
