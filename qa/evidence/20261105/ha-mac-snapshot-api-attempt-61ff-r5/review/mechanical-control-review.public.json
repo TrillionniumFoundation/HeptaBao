@@ -1,0 +1,26 @@
+{
+  "driver_bytes": 52001,
+  "packet_bytes": 61742,
+  "driver_sha256": "6e1ba63d18d6133c4912228b2c1bc5662465155b578017c3278c8a008834477c",
+  "packet_sha256": "8a4af1a4039a8884390568766fa6868b665dc1e93eb97c3b0a22beeeeaebaea4",
+  "bootstrap_sha256": "e6edd4661fecb837997142cffee297f10b7aab127a9b9da6ccd1130f63e7bbc1",
+  "helpers_unchanged": true,
+  "build_and_14test_tail_unchanged": true,
+  "critical_inventory_unchanged": true,
+  "product_patch_unchanged": true,
+  "closed_21_pins_unchanged": true,
+  "source_apply_paths": [
+    "crates/heptabao-server/src/http_formal_api_fixture.rs",
+    "crates/heptabao-server/src/service_snapshot_transfer.rs",
+    "crates/heptabao-server/src/http_snapshot_accept_tests.rs"
+  ],
+  "new_output": "normal-default-r5",
+  "new_control": "normal-attempt-r5",
+  "budget_seconds": 2400,
+  "syntax_not_yet_run": true,
+  "execute_not_run": true,
+  "diff_sha256": "ecfbddd13a0280b602a66150fcc3fe70bc1c2f7e34066c1d001c9da49d337cd3",
+  "diff_bytes": 15195,
+  "diff_reconstructs_driver_exactly": true,
+  "known_gap_v5_sync_precedence_explicit": true
+}

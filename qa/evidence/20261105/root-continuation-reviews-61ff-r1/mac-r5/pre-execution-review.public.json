@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.root.mac-r5-pre-execution-review.v1",
+  "source_candidate": "21a521e3e59af291dd2abc6721e8559e06338657",
+  "source_candidate_tree": "625b0a5d4e2bce62fe0b014edff9c18f96840a3c",
+  "controls_commit": "5d0197ab72e4cf7e52df6e481fba5f42f8042ab9",
+  "syntax_evidence_commit": "bc0ff9d481cbe4ad659d4e8413be9f855e51968c",
+  "driver_sha256": "6e1ba63d18d6133c4912228b2c1bc5662465155b578017c3278c8a008834477c",
+  "execute_request_sha256": "a0be07c3bed0fe95691e502342357da7ae44d3d0ebb5cefc7323758313f31993",
+  "independent_checks": {
+    "request_packet_sha": true,
+    "request_driver_sha": true,
+    "request_bootstrap_sha": true,
+    "patch_identity": true,
+    "exact_files": true,
+    "exact_changed_files": true,
+    "runner_unchanged": true,
+    "helpers_before_runner_unchanged": true,
+    "normal_compile_test_link_tail_unchanged": true,
+    "old_manifest_claims_separated": true,
+    "new_declared_budget": true
+  },
+  "source_reconstruction": [
+    {
+      "path": "crates/heptabao-server/src/http_formal_api_fixture.rs",
+      "bytes": 11432,
+      "sha256": "0380d128a33a915a433866abbf9ee541b979ab7da919bfc2734e1befee57fdc4",
+      "patch_reconstruction_exact": true
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "bytes": 64504,
+      "sha256": "ac2b39c922f62c0d5b616e12c574934617e8dd0ab55bfa7524007c7c2c08f8fe",
+      "patch_reconstruction_exact": true
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+      "bytes": 27709,
+      "sha256": "46857f23f2e3ddf57916b92fd71a48e10d7ac4214fd06be68ccb013b3f1e02d5",
+      "patch_reconstruction_exact": true
+    }
+  ],
+  "previous_actual": {
+    "job_id": "1a1a8324009-fc05-2dfa",
+    "result_sha256": "a90a6abf56405d3f006171554ebac16ffe89b8bf20240526a38dc7fc1f0ef508",
+    "tests": 14,
+    "passed": 5,
+    "failed": 9,
+    "commands": 38,
+    "all_known_and_stopped": true,
+    "source_after_failed_tests_not_rechecked": true,
+    "evidence_commit": "5f2b028c1581b630d7f6bc8972f97f8b9a5d4c22"
+  },
+  "independent_syntax_terminal": {
+    "job_id": "1a1a9082357-fc05-30a2",
+    "state": "succeeded",
+    "exit_code": 0,
+    "timed_out": false,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true
+  },
+  "decision": "eligible for the exact isolated synthetic-data Mac validation request; actual guards remain authoritative",
+  "scope": {
+    "fresh_main_budget_seconds": 2400,
+    "includes_preparation": true,
+    "exact_tests_once": 14,
+    "strict_clippy_before_compile": true,
+    "normal_link_only_after_all_tests_pass": true,
+    "production_service_start": false,
+    "real_credentials": false,
+    "physical_host_ha": false,
+    "full_workspace": false,
+    "expired_r4_execute_request_reused": false
+  },
+  "known_unqualified_behavior": "Moving native eligibility after sync can make a native-disabled V5 standby sync before redirect; a failed sync can return 503 instead of the former immediate 307. The fourteen cases do not qualify this branch.",
+  "automatic_review_rejection_policy": "Stop the rejected action; do not rephrase, reassign or route around the guard.",
+  "new_candidate_actual_result": null,
+  "full_replacement_qualified": false
+}

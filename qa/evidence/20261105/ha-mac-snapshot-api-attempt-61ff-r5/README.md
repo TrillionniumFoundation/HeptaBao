@@ -1,0 +1,11 @@
+# New Mac snapshot attempt r5
+
+This is a new, declared 2400-second attempt for the previously saved three-file candidate 21a521e3e59af291dd2abc6721e8559e06338657. It does not replay or extend the expired r3 window or the unexecuted r4 resume. The new unique request is not sent until its exact source, input and cleanup contract are reviewed.
+
+The existing Mac source must still be clean physical f06478d8f5451d3a4e5ab86f73bccd37612d378f / tree 5389e69cc0c9b36dcb48d7480ac109a811745bec. The driver checks the pinned prior result, all 38 command outcomes and cleanup, the exact ordered fourteen cases with five passes and nine failures, the prior frozen manifest, toolchain and Python, T5 identity, all 21 file pins and the full Git tree/clean state. Only the same three reviewed source files may be applied, and the resulting tree must equal 625b0a5d4e2bce62fe0b014edff9c18f96840a3c before formatting is recorded and frozen.
+
+Fresh control/normal-attempt-r5 and normal-default-r5 hold the input, per-command original streams and receipts. The existing private target is reused with its release build-directory lock during source application; no second cache clone is made. The existing OwnedRunner, unreaped child identity contract, fixed profile, fourteen exact tests and conditional production-link tail are unchanged. A known test failure stays failed while the remaining distinct cases run. Unknown cleanup or deadline failure stops the attempt. Any failed case blocks production linking.
+
+The candidate addresses actual Darwin accepted-socket blocking mode, snapshot eligibility checked before standby synchronization, and an old HTTP negative test whose actor had explicit snapshot permission. No success is presumed. Moving the whole transport check after sync also affects the error precedence of a native-disabled V5 standby: a failed V5 sync may yield 503 instead of the prior immediate 307. These fourteen cases do not qualify that branch.
+
+This package does not add ordinary KV clock transport or AuthBus work, use real credentials, start production services, cut traffic over, or retire OpenBao. Normal-binary HTTPS, full workspace, physical-host HA, large KV migration and full replacement remain separate unqualified gates.

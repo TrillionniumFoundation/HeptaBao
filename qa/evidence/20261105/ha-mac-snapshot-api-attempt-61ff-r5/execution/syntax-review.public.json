@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "job_id": "1a1a9082357-fc05-30a2",
+  "host": "mac",
+  "status": "succeeded",
+  "exit_code": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_publication_confirmed": true,
+  "timed_out": false,
+  "compiled": true,
+  "driver_executed": false,
+  "remote_source_preflight_executed": false,
+  "product_build_or_test_executed": false,
+  "driver_sha256": "6e1ba63d18d6133c4912228b2c1bc5662465155b578017c3278c8a008834477c",
+  "packet_sha256": "8a4af1a4039a8884390568766fa6868b665dc1e93eb97c3b0a22beeeeaebaea4",
+  "bootstrap_sha256": "e6edd4661fecb837997142cffee297f10b7aab127a9b9da6ccd1130f63e7bbc1",
+  "stdout_bytes": 231,
+  "stdout_sha256": "93982016c57433901da876966fbed9b1199551b43245c2d9e671e7bb4a198622",
+  "stderr_bytes": 0,
+  "full_replacement_qualified": false
+}

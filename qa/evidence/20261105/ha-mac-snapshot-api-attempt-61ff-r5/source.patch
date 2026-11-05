@@ -1,0 +1,65 @@
+--- a/crates/heptabao-server/src/http_formal_api_fixture.rs
++++ b/crates/heptabao-server/src/http_formal_api_fixture.rs
+@@ -128,6 +128,9 @@
+         if peer != client_address || !peer.ip().is_loopback() {
+             return Err("formal TLS listener accepted a different client".into());
+         }
++        // Darwin accept inherits O_NONBLOCK from the listener. The real TLS
++        // stream uses its existing absolute socket deadline and blocking I/O.
++        server_socket.set_nonblocking(false)?;
+         let close_client = client_socket.try_clone()?;
+         let close_server = server_socket.try_clone()?;
+         let server_tls = Arc::clone(&self.server_tls);
+--- a/crates/heptabao-server/src/service_snapshot_transfer.rs
++++ b/crates/heptabao-server/src/service_snapshot_transfer.rs
+@@ -611,8 +611,7 @@
+         &mut self,
+         request: &ServiceRequest<'_>,
+     ) -> Result<StandbySnapshotAdmission, Response> {
+-        if !self.native_ha_snapshot_transport_enabled()
+-            || crate::http::consistency::requires_active(
++        if crate::http::consistency::requires_active(
+                 request.method,
+                 request.path,
+                 request.namespace,
+@@ -634,7 +633,11 @@
+         // Actual synchronization and ReadIndex precede token inspection.
+         // A routing hint cannot select stale credentials or spend a use.
+         self.sync_from_ha_with_anchor(false)?;
+-        if !self.native_standby_snapshot_is_read_eligible() {
++        // A cold V5 standby must observe the actual committed activation before
++        // deciding whether its installed root supports this read-only path.
++        if !self.native_ha_snapshot_transport_enabled()
++            || !self.native_standby_snapshot_is_read_eligible()
++        {
+             return Ok(StandbySnapshotAdmission::Redirect);
+         }
+         let started = Instant::now();
+--- a/crates/heptabao-server/src/http_snapshot_accept_tests.rs
++++ b/crates/heptabao-server/src/http_snapshot_accept_tests.rs
+@@ -435,13 +435,13 @@
+             .status,
+         204
+     );
+-    assert_eq!(fixture.call("PUT", "sys/policies/acl/snapshot-read-sudo", &root,
+-        json!({"policy":"path \"sys/storage/raft/snapshot\" { capabilities=[\"read\",\"update\",\"sudo\"] }"}))?.status, 204);
++    assert_eq!(fixture.call("PUT", "sys/policies/acl/snapshot-no-access", &root,
++        json!({"policy":"path \"secret/data/history\" { capabilities=[\"read\"] }"}))?.status, 204);
+     let issued = fixture.call(
+         "POST",
+         "auth/token/create",
+         &root,
+-        json!({"policies":["snapshot-read-sudo"],"no_default_policy":true,"ttl":"1h"}),
++        json!({"policies":["snapshot-no-access"],"no_default_policy":true,"ttl":"1h"}),
+     )?;
+     assert_eq!(issued.status, 200);
+     let actor = Zeroizing::new(
+@@ -710,7 +710,7 @@
+             ("POST", b"not-an-archive".as_slice()),
+         ] {
+             let rejected = fixture.snapshot(method, token, "", body)?;
+-            assert_eq!(rejected.status, 403, "typed snapshot remains root-owned");
++            assert_eq!(rejected.status, 403, "the original actor has no snapshot ACL");
+             assert!(rejected.json()?.get("data").is_none());
+         }
+     }
