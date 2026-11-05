@@ -1,0 +1,16 @@
+{
+  "idempotency_key": "heptabao-phaseb-import-cdecc828-core-20261105-r1",
+  "operation": {
+    "tool": "read_multiple_files",
+    "arguments": {
+      "host": "desktop",
+      "paths": [
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-import-r1/control/result.public.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-import-r1/control/intent.public.json",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-import-r1/control/importer.py"
+      ],
+      "max_file_bytes": 65536,
+      "max_response_bytes": 262144
+    }
+  }
+}

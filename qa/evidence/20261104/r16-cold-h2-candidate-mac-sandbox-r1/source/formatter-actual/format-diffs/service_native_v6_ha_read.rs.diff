@@ -1,0 +1,43 @@
+--- before/service_native_v6_ha_read.rs
++++ formatted/service_native_v6_ha_read.rs
+@@ -348,12 +348,11 @@
+         result.inspect_err(|_| cold_stage_failed("replica_install"))?;
+         #[cfg(feature = "private-ha-forward-diagnostic")]
+         phase.finish(true);
+-        selected = observe_cold_native_ha(
+-            ColdNativeHaPhase::InstalledLocalSelection,
+-            deadline,
+-            || LocalSelection::read(durable, &committed),
+-        )
+-        .inspect_err(|_| cold_stage_failed("installed_local_selection"))?;
++        selected =
++            observe_cold_native_ha(ColdNativeHaPhase::InstalledLocalSelection, deadline, || {
++                LocalSelection::read(durable, &committed)
++            })
++            .inspect_err(|_| cold_stage_failed("installed_local_selection"))?;
+     }
+     let root = observe_cold_native_ha(ColdNativeHaPhase::CurrentCursor, deadline, || {
+         let root = selected.native.as_ref().ok_or_else(unavailable)?;
+@@ -418,10 +417,8 @@
+                 committed.published().intent().object_count,
+                 committed.published().intent().ciphertext_bytes,
+             );
+-            let materialized = observe_cold_native_ha(
+-                ColdNativeHaPhase::MaterializeAfterRepair,
+-                deadline,
+-                || {
++            let materialized =
++                observe_cold_native_ha(ColdNativeHaPhase::MaterializeAfterRepair, deadline, || {
+                     materialize_local_with_payload_validation(
+                         durable,
+                         root,
+@@ -429,8 +426,7 @@
+                         &mut gate,
+                         Some(&payload_validation),
+                     )
+-                },
+-            );
++                });
+             #[cfg(feature = "private-ha-forward-diagnostic")]
+             phase.finish(materialized.is_ok());
+             materialized.inspect_err(|_| cold_stage_failed("materialize_after_repair"))?

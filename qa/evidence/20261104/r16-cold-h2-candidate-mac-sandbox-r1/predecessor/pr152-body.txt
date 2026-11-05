@@ -1,0 +1,43 @@
+## Why this draft exists
+
+HeptaBao still has release and migration gaps that prevent complete OpenBao 2.7.1 replacement. This draft tracks implementation changes against immutable runtime evidence. Complete compatibility, current client and backup migration, production cutover and removal of old installations remain unqualified.
+
+## What this source change does
+
+The current head is `6304a898192bfdf7eabec3c4ea40f7166e59a137`. It retains the private `LocalRedirect` boxing and the two layout regressions from `e5de554f`, and corrects the 18 test-only Clippy diagnostics observed on both CI lanes. Exactly eight test modules change; the production prefix of the namespace module and all other 3,903 tracked blobs are unchanged.
+
+The corrections preserve exact I/O error kinds, actual revocation status 204, unwind cleanup, HTTP method/target inputs and every original resource budget. There are no new lint suppressions, product logic edits or workflow relaxations. The pinned Rust 1.98 rustfmt job ran eight stdin-only children in a new owned directory; all exited zero, were reaped, and their full outputs were independently read back.
+
+Run `41937740513` on the parent completed formatting and both entire locked workspace suites, then failed strict Clippy with the same 18 test diagnostics. Later gates were skipped. Complete terminal logs preserve this result; earlier partial snapshots do not establish a hang. On the new head, run `41955523659` has passed formatting in both head/merge lanes and was still running complete workspace tests at **2026-11-05 02:47:18 UTC**. Fresh strict Clippy, documentation and the later runtime qualification gates remain pending.
+
+## Current immutable evidence checkpoint
+
+[R15 report](https://github.com/TrillionniumFoundation/HeptaBao/blob/4b0a2812b1eef6bb50340bc31a899a9567095d8a/docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md) · [current state](https://github.com/TrillionniumFoundation/HeptaBao/blob/4b0a2812b1eef6bb50340bc31a899a9567095d8a/qa/evidence/20261104/r15-cold-diagnostics-phaseb-mac-ci-r1/root-review/current-state.public.json) · [complete evidence manifest](https://github.com/TrillionniumFoundation/HeptaBao/blob/4b0a2812b1eef6bb50340bc31a899a9567095d8a/qa/evidence/20261104/r15-cold-diagnostics-phaseb-mac-ci-r1/root-review/packet-manifest.public.json)
+
+R15 is frozen as of **2026-11-05 02:53:56 UTC**. It mounts 23 reviewed packets, 903 packet file entries / 20,944,737 bytes, and 26 root records. All packet whole bytes, blob identities and 126 packet Merkle directories were verified. The full tree has 8,988 blob leaves and 1,128 verified trees. All 8,057 prior non-document blobs are unchanged, and the previous index is exactly reconstructable except for its top timestamp and the appended R15 field. R14 and every earlier original remain available.
+
+| Gate | New actual evidence | Remaining blocker |
+|---|---|---|
+| Formal KV2 and migration | Existing X230 31/31 on `49503322` remains separate. Normal `3cb87391` passed original 44 plus separate 7; its desktop stage and read-only prepare now actually passed with exact source/artifact bindings. | Fresh official CLI B01 returned exit 2 and no archive. Its server completion boundary remains UNKNOWN. B02–B05, cold restore and current production/off-host backup migration did not run. |
+| Physical Mac/ROG/Pocket4 HA | B2 preserves actual 91/98, Pocket4-to-empty-Mac recovery, 17 large versions, 338 referenced leaves / 35,742,423 bytes. All 49 original HTTP pairs are now fully archived with known transport outcomes. | Node2 cold unseal is still known 503. Seven original checks and all separate 12 post-recovery checks are missing. New passive timing narrows the observed path but does not yet establish a unique inner cause. |
+| AuthBus without J3160 | Forty public code aliases and 43 parents were observed. Two exact public parent bindings and the read-cap/file-identity comparison have a narrowly reviewed source correction. | R4 append stopped at the first QA membership guard, before any write or private input. A new finite metadata observation found all original 18 members unchanged plus two extra old public-receipt-sized files. The complete preserve set must be corrected before the real five-agent credential cycle. |
+| Per-host cutover | All HA, Phase B and Mac jobs in this checkpoint have authoritative terminal results and verified owned-resource cleanup. Existing finite host observations remain preserved. | Current credentials, read/write, restart, rollback, service wrappers and all backup paths are incomplete across the host set. Production cutover remains false. |
+| Cleanup | Historical evidence, failures and exact current source/build identities remain retained. | Client and backup migration prerequisites are unmet. No old OpenBao or HeptaBao service/binary deletion. |
+
+### What the retained logs actually show
+
+The B2 stopped node2 log stayed exactly 37,545 bytes with the original whole SHA256 and ten identity fields. One passive projection added 99 normal timing records while preserving the six earlier markers; all six descriptors closed inside the original 15-second budget. Line 177 reports unseal 503 with state/barrier/root/activation false. Adjacent line 178 reports ordinary 503 with ReadIndex 31,924 microseconds, changed-root recovery 9,369,972 microseconds, completed final-witness/scope and 4,580,997,890 ns of original time remaining. Ordinary class and adjacency do not supply request ID/route correlation, and absent failed buckets do not establish full local-load success.
+
+The new Phase B live run made only B01. The official CLI exited 2 in about 232 ms; one node1 audit request/response pair 61/62 reported 503, but the observer did not authenticate the audit MAC or observe CLI HTTP framing. All 84 owned child identities were reaped, all 19 inputs remained exact, and no archive, cold restart or replay occurred. The 69 pre-CLI HTTP pairs contain 66 fixed-length responses, two correct no-body 204 responses, and one known preconnect/no-request failure.
+
+A separate passive projection of the same 4,577-byte stopped node1 log observed `fresh_ingress_same_root_closure / fresh_ingress_read_refused`, with a 7-microsecond step and nearly 15 seconds remaining. Prior permission/runtime/storage/ReadIndex/enrollment phases advanced. Its reason digest exactly matches only `HaError::InvalidCluster` among the 20 canonical fixed public Display strings. R15 does not yet qualify a unique internal guard or correlate the ordinary marker to B01; the original UNKNOWN classification is retained.
+
+Mac R4 appended zero files and opened zero private inputs. The subsequent bounded metadata observation completed with 20 members, all original 18 members and 162 identity strings unchanged, stable directory identity, and false count/set against the original 18-member list. Forty-four explicit metadata calls, all six directory descriptors and the iterator closed; no file bodies, child, network or writes were used. This observation does not reconstruct which subpredicate failed during the prior compound refusal.
+
+## Scope and next work
+
+`49503322` is the scoped LAN KV/HA/Pocket frontier, `3cb87391` is the separate normal observer frontier, and `6304a898` is this PR head. Qualification is not transferred. The prior independent HA 128 and 98/98 runs are not added to failed B2. Native V6 archives are not a claim of OpenBao state-archive interoperability.
+
+The historical 59-surface ledger targets OpenBao 2.6.2; the official 2.7.1 corpus has 69 bounded checks across 13 families. Neither supplies the complete 2.7.1 route × operation × configuration × lifecycle denominator. Source registry counts are not runtime coverage.
+
+Next: correct the complete Mac public-receipt preserve set and execute its real current-credential/restart/inverse cycle; identify the cold-loader failure through fixed normal observations; trace and repair the fresh-ingress InvalidCluster execution boundary; complete the current CI and then the per-host client/backup/cutover gates. No J3160/provider/model/refresh/quota request, production initialization/unseal/load, unknown replay, budget increase or legacy deletion was introduced. This PR remains draft, open and unmerged.

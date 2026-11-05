@@ -1,0 +1,63 @@
+{
+  "schema": "heptabao.mac-current-qa20-inert-source-review.r5",
+  "status": "SOURCE_ONLY_PENDING_ROOT_EXECUTION_ADMISSION",
+  "predecessor_source": {
+    "bytes": 21483,
+    "sha256": "aece8bec79b525bfb1e0331fdfa8016d9d0ff58380df97161f1ccecb3f42f894",
+    "git_blob": "7a602befb4032ad1b42c8b3bca24256220c956f6",
+    "actual_failure_tree": "c38c255174149a4b67180171772eb9d8afca3e03",
+    "failure": "exact_qa_members_no_unlisted_entries before any append"
+  },
+  "after_source": {
+    "path": "source/mac_current_source_append_inert_r5.py",
+    "mode": "100644",
+    "type": "blob",
+    "sha": "7ccda6b1e3eb145d0dfbf11435bbaa1ee6028851",
+    "bytes": 22592,
+    "sha256": "1a229cc5049169f23a353188109ffd3a61be37234d7d162d1f610dbe63989120"
+  },
+  "strict_diff_hunks": 9,
+  "changes": [
+    "Add exactly two existing public candidate receipts to fixed document pins and full nine-field identity preservation; derive their exact historical content bytes from archived raw tokens and require a fresh held-FD body check before and after any new append.",
+    "Require exact QA member sets 20 before and 22 after; original 18 source members are retained. No subset match, wildcard, ignored unknown member, deletion or overwrite.",
+    "For the comparison across our own two new QA source publications, match dev/ino/uid/gid/mode using the established HeldT5 object_identity contract. Each individual qa_members observation still requires the same complete nine fields before and after its enumeration.",
+    "Update inert generation, public payload bytes/hash, and one new stable idempotency key. Runtime R4 source/candidate/request and all business limits remain unchanged."
+  ],
+  "invariants": {
+    "source_payloads_identical": 20,
+    "runtime_sources_identical": 18,
+    "original_root_documents_identical": 3,
+    "original_source_identities_preserved": 18,
+    "original_root_document_identities_preserved": 3,
+    "newly_bound_existing_qa_receipts": 2,
+    "total_old_files": 23,
+    "new_publications": 3,
+    "runtime_absence_paths": 9,
+    "old_top_level_helpers_byte_identical": 8,
+    "inner_seconds": 45,
+    "outer_seconds": 60,
+    "diskutil_seconds_clipped_to_original": 30,
+    "readonly_file_caps_unchanged": true,
+    "all_original_custody_and_close_logic_unchanged": true
+  },
+  "actual_qa_observation": {
+    "tree": "75ab1634c39c7b5b2ce3d0ded6291fe57a36f4d3",
+    "member_count": 20,
+    "st_nlink": "22",
+    "does_not_establish_body_hashes": true
+  },
+  "origin_recovery_tree": "817994732e929d80c0875fa613f5ff270d5e90aa",
+  "cross_append_reason": "Directory nlink/size/timestamps may change when the two authorized members are added. They are not used as the object's cross-append identity. This was a separate source finding, not the cause assigned to the earlier first membership guard failure.",
+  "validation": {
+    "whole_source_ast_compile_only": 2,
+    "selected_pure_components_passed": 8,
+    "candidate_modules_executed": 0,
+    "host_calls": 0,
+    "actual_candidate_filesystem_operations": 0,
+    "components_blob": "0211ff1ebd700e62434eed55c4f1d11d2840a780"
+  },
+  "exact_new_key": "heptabao-mac-current-inputs-r4-qa20-source-inert-c160d359-20261105-r2",
+  "runtime_go": false,
+  "host_submission_performed": false,
+  "retained_history": "Original R3 input-admission failure, R4 inert membership failure, all original receipts and source generations remain immutable."
+}

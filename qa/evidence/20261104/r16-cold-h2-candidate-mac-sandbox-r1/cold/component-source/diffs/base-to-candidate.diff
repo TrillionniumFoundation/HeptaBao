@@ -1,0 +1,394 @@
+--- a/crates/heptabao-server/src/service_native_v6_ha_read.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_read.rs
+@@ -10,6 +10,10 @@
+ mod archive_source;
+ pub(in crate::service) use archive_source::BorrowedArchiveRepairSource;
+ pub(crate) use archive_source::NativeHaArchiveRepairSource;
++
++#[cfg(test)]
++#[path = "service_native_v6_ha_cold_timing_tests.rs"]
++mod cold_timing_tests;
+ 
+ pub(crate) struct ColdNativeHaRead {
+     pub(in crate::service) metadata: State,
+@@ -86,10 +90,87 @@
+     let _ = phase;
+ }
+ 
++// Fixed normal-build timing labels only. This observer owns no cold owner,
++// source, witness or deadline authority and returns every original result.
++#[derive(Clone, Copy)]
++enum ColdNativeHaPhase {
++    Load,
++    CommittedRoot,
++    LocalSelection,
++    LocalRootBinding,
++    LocalRootIdentity,
++    OriginalColdOwner,
++    OriginalReadWitness,
++    OriginalDeadline,
++    ReplicaSource,
++    ReplicaInstall,
++    InstalledLocalSelection,
++    CurrentCursor,
++    MaterializeFull,
++    RepairSource,
++    PhysicalRepair,
++    MaterializeAfterRepair,
++    RootNamespace,
++    OwnerBytes,
++    FinalLocalGeneration,
++    FinalGate,
++}
++
++impl ColdNativeHaPhase {
++    fn label(self) -> &'static str {
++        match self {
++            Self::Load => "load",
++            Self::CommittedRoot => "committed_root",
++            Self::LocalSelection => "local_selection",
++            Self::LocalRootBinding => "local_root_binding",
++            Self::LocalRootIdentity => "local_root_identity",
++            Self::OriginalColdOwner => "original_cold_owner",
++            Self::OriginalReadWitness => "original_read_witness",
++            Self::OriginalDeadline => "original_deadline",
++            Self::ReplicaSource => "replica_source",
++            Self::ReplicaInstall => "replica_install",
++            Self::InstalledLocalSelection => "installed_local_selection",
++            Self::CurrentCursor => "current_cursor",
++            Self::MaterializeFull => "materialize_full",
++            Self::RepairSource => "repair_source",
++            Self::PhysicalRepair => "physical_repair",
++            Self::MaterializeAfterRepair => "materialize_after_repair",
++            Self::RootNamespace => "root_namespace",
++            Self::OwnerBytes => "owner_bytes",
++            Self::FinalLocalGeneration => "final_local_generation",
++            Self::FinalGate => "final_gate",
++        }
++    }
++}
++
++fn observe_cold_native_ha<T, E>(
++    phase: ColdNativeHaPhase,
++    deadline: OriginalDeadline,
++    operation: impl FnOnce() -> Result<T, E>,
++) -> Result<T, E> {
++    crate::ha::observe_native_v6_timing(
++        "cold_native_ha",
++        phase.label(),
++        Some(deadline.instant()),
++        operation,
++    )
++}
++
+ // Cold unseal has an actual provided local barrier key, but it intentionally
+ // has not installed that key or State into Service yet. This cannot be used by
+ // a warm request, and its result must go through the existing HA sync/audit gate.
+ pub(crate) fn load_cold_native_ha(
++    service: &Service,
++    durable: &mut DurableService<AeadBarrier>,
++    key: &[u8; 32],
++    deadline: OriginalDeadline,
++) -> Result<Option<ColdNativeHaRead>, Response> {
++    observe_cold_native_ha(ColdNativeHaPhase::Load, deadline, || {
++        load_cold_native_ha_inner(service, durable, key, deadline)
++    })
++}
++
++fn load_cold_native_ha_inner(
+     service: &Service,
+     durable: &mut DurableService<AeadBarrier>,
+     key: &[u8; 32],
+@@ -160,19 +241,21 @@
+         0,
+         0,
+     );
+-    let committed = process
+-        .native_v6_committed_read(deadline)
+-        .map_err(|error| {
+-            #[cfg(feature = "private-ha-forward-diagnostic")]
+-            eprintln!("HBHA-PRIVATE-COLD-NATIVE phase=committed_read reason={error:?}");
+-            #[cfg(not(feature = "private-ha-forward-diagnostic"))]
+-            let _ = error;
+-            unavailable()
+-        })?
+-        .ok_or_else(|| {
+-            cold_stage_failed("committed_root_absent");
+-            unavailable()
+-        })?;
++    let committed = observe_cold_native_ha(ColdNativeHaPhase::CommittedRoot, deadline, || {
++        process
++            .native_v6_committed_read(deadline)
++            .map_err(|error| {
++                #[cfg(feature = "private-ha-forward-diagnostic")]
++                eprintln!("HBHA-PRIVATE-COLD-NATIVE phase=committed_read reason={error:?}");
++                #[cfg(not(feature = "private-ha-forward-diagnostic"))]
++                let _ = error;
++                unavailable()
++            })?
++            .ok_or_else(|| {
++                cold_stage_failed("committed_root_absent");
++                unavailable()
++            })
++    })?;
+     #[cfg(feature = "private-ha-forward-diagnostic")]
+     phase.finish(true);
+     #[cfg(feature = "private-ha-forward-diagnostic")]
+@@ -183,30 +266,46 @@
+         committed.published().intent().object_count,
+         committed.published().intent().ciphertext_bytes,
+     );
+-    let mut selected = LocalSelection::read(durable, &committed)
+-        .inspect_err(|_| cold_stage_failed("local_selection"))?;
+-    let root = selected.native.as_ref().ok_or_else(unavailable)?;
+-    if root.cluster_id != process.cluster_id()
+-        || root.replay_epoch != durable.replay_epoch()
+-        || root.reader_floor.native_kv2_format != 2
+-    {
+-        cold_stage_failed("local_root_binding");
+-        return Err(unavailable());
+-    }
++    let mut selected = observe_cold_native_ha(ColdNativeHaPhase::LocalSelection, deadline, || {
++        LocalSelection::read(durable, &committed)
++    })
++    .inspect_err(|_| cold_stage_failed("local_selection"))?;
++    let root = observe_cold_native_ha(ColdNativeHaPhase::LocalRootBinding, deadline, || {
++        let root = selected.native.as_ref().ok_or_else(unavailable)?;
++        if root.cluster_id != process.cluster_id()
++            || root.replay_epoch != durable.replay_epoch()
++            || root.reader_floor.native_kv2_format != 2
++        {
++            cold_stage_failed("local_root_binding");
++            return Err(unavailable());
++        }
++        Ok::<_, Response>(root)
++    })?;
+     #[cfg(feature = "private-ha-forward-diagnostic")]
+     phase.finish(true);
+     let mut gate = || {
+-        environment
+-            .check_cold(service, key)
+-            .inspect_err(|_| cold_stage_failed("original_cold_owner"))
+-            .map_err(|_| ServiceError::BarrierFailure)?;
+-        process
+-            .verify_native_v6_committed_read(&committed)
+-            .inspect_err(|_| cold_stage_failed("original_read_witness"))
+-            .map_err(|_| ServiceError::BarrierFailure)?;
+-        deadline.check().map_err(|_| ServiceError::BarrierFailure)
++        observe_cold_native_ha(ColdNativeHaPhase::OriginalColdOwner, deadline, || {
++            environment.check_cold(service, key)
++        })
++        .inspect_err(|_| cold_stage_failed("original_cold_owner"))
++        .map_err(|_| ServiceError::BarrierFailure)?;
++        observe_cold_native_ha(ColdNativeHaPhase::OriginalReadWitness, deadline, || {
++            process.verify_native_v6_committed_read(&committed)
++        })
++        .inspect_err(|_| cold_stage_failed("original_read_witness"))
++        .map_err(|_| ServiceError::BarrierFailure)?;
++        observe_cold_native_ha(ColdNativeHaPhase::OriginalDeadline, deadline, || {
++            deadline.check()
++        })
++        .map_err(|_| ServiceError::BarrierFailure)
+     };
+-    if root.identity().map_err(|_| unavailable())?.digest() != committed.published().root_digest() {
++    if observe_cold_native_ha(ColdNativeHaPhase::LocalRootIdentity, deadline, || {
++        root.identity()
++    })
++    .map_err(|_| unavailable())?
++    .digest()
++        != committed.published().root_digest()
++    {
+         // The local HA cursor proves which prior root this real barrier owner
+         // selected. A cold catch-up installs the actual current closure without
+         // needing readable obsolete payloads or a fabricated warm State.
+@@ -219,24 +318,27 @@
+             committed.published().intent().object_count,
+             committed.published().intent().ciphertext_bytes,
+         );
+-        let result = process
+-            .with_native_v6_source(&committed, |codec, store| {
+-                service.install_native_v6_replica_inner_with_payload_validation(
+-                    durable,
+-                    &selected,
+-                    &committed,
+-                    LocalInstallSource {
+-                        storage: NativeV6ObjectStorage { codec, store },
+-                        payload_validation: &payload_validation,
+-                    },
+-                    &mut gate,
+-                    &published,
+-                )
++        let result = observe_cold_native_ha(ColdNativeHaPhase::ReplicaSource, deadline, || {
++            process.with_native_v6_source(&committed, |codec, store| {
++                observe_cold_native_ha(ColdNativeHaPhase::ReplicaInstall, deadline, || {
++                    service.install_native_v6_replica_inner_with_payload_validation(
++                        durable,
++                        &selected,
++                        &committed,
++                        LocalInstallSource {
++                            storage: NativeV6ObjectStorage { codec, store },
++                            payload_validation: &payload_validation,
++                        },
++                        &mut gate,
++                        &published,
++                    )
++                })
+             })
+-            .map_err(|_| {
+-                cold_stage_failed("replica_source");
+-                unavailable()
+-            })?;
++        })
++        .map_err(|_| {
++            cold_stage_failed("replica_source");
++            unavailable()
++        })?;
+         if result.is_err() && (published.get() || durable.recovery_required()) {
+             return Err(Response::error(
+                 503,
+@@ -246,13 +348,20 @@
+         result.inspect_err(|_| cold_stage_failed("replica_install"))?;
+         #[cfg(feature = "private-ha-forward-diagnostic")]
+         phase.finish(true);
+-        selected = LocalSelection::read(durable, &committed)
+-            .inspect_err(|_| cold_stage_failed("installed_local_selection"))?;
+-    }
+-    let root = selected.native.as_ref().ok_or_else(unavailable)?;
+-    NativeHaCursor::decode(selected.ha_bytes.as_ref().ok_or_else(unavailable)?.expose())?
+-        .matches_current(&committed)
+-        .inspect_err(|_| cold_stage_failed("current_cursor"))?;
++        selected = observe_cold_native_ha(
++            ColdNativeHaPhase::InstalledLocalSelection,
++            deadline,
++            || LocalSelection::read(durable, &committed),
++        )
++        .inspect_err(|_| cold_stage_failed("installed_local_selection"))?;
++    }
++    let root = observe_cold_native_ha(ColdNativeHaPhase::CurrentCursor, deadline, || {
++        let root = selected.native.as_ref().ok_or_else(unavailable)?;
++        NativeHaCursor::decode(selected.ha_bytes.as_ref().ok_or_else(unavailable)?.expose())?
++            .matches_current(&committed)
++            .inspect_err(|_| cold_stage_failed("current_cursor"))?;
++        Ok::<_, Response>(root)
++    })?;
+     #[cfg(feature = "private-ha-forward-diagnostic")]
+     let phase = NativeHaPhaseTimer::start(
+         "cold_materialize_full",
+@@ -261,13 +370,15 @@
+         committed.published().intent().object_count,
+         committed.published().intent().ciphertext_bytes,
+     );
+-    let materialized = materialize_local_with_payload_validation(
+-        durable,
+-        root,
+-        deadline,
+-        &mut gate,
+-        Some(&payload_validation),
+-    );
++    let materialized = observe_cold_native_ha(ColdNativeHaPhase::MaterializeFull, deadline, || {
++        materialize_local_with_payload_validation(
++            durable,
++            root,
++            deadline,
++            &mut gate,
++            Some(&payload_validation),
++        )
++    });
+     #[cfg(feature = "private-ha-forward-diagnostic")]
+     phase.finish(materialized.is_ok());
+     let (metadata, native) = match materialized {
+@@ -283,17 +394,20 @@
+                 committed.published().intent().object_count,
+                 committed.published().intent().ciphertext_bytes,
+             );
+-            process
+-                .with_native_v6_source(&committed, |codec, store| {
+-                    repair_current_local_objects(
+-                        durable, &selected, &committed, codec, store, &mut gate,
+-                    )
++            observe_cold_native_ha(ColdNativeHaPhase::RepairSource, deadline, || {
++                process.with_native_v6_source(&committed, |codec, store| {
++                    observe_cold_native_ha(ColdNativeHaPhase::PhysicalRepair, deadline, || {
++                        repair_current_local_objects(
++                            durable, &selected, &committed, codec, store, &mut gate,
++                        )
++                    })
+                 })
+-                .map_err(|_| {
+-                    cold_stage_failed("repair_source");
+-                    unavailable()
+-                })?
+-                .inspect_err(|_| cold_stage_failed("physical_repair"))?;
++            })
++            .map_err(|_| {
++                cold_stage_failed("repair_source");
++                unavailable()
++            })?
++            .inspect_err(|_| cold_stage_failed("physical_repair"))?;
+             #[cfg(feature = "private-ha-forward-diagnostic")]
+             phase.finish(true);
+             #[cfg(feature = "private-ha-forward-diagnostic")]
+@@ -304,12 +418,18 @@
+                 committed.published().intent().object_count,
+                 committed.published().intent().ciphertext_bytes,
+             );
+-            let materialized = materialize_local_with_payload_validation(
+-                durable,
+-                root,
++            let materialized = observe_cold_native_ha(
++                ColdNativeHaPhase::MaterializeAfterRepair,
+                 deadline,
+-                &mut gate,
+-                Some(&payload_validation),
++                || {
++                    materialize_local_with_payload_validation(
++                        durable,
++                        root,
++                        deadline,
++                        &mut gate,
++                        Some(&payload_validation),
++                    )
++                },
+             );
+             #[cfg(feature = "private-ha-forward-diagnostic")]
+             phase.finish(materialized.is_ok());
+@@ -324,23 +444,29 @@
+         committed.published().intent().object_count,
+         committed.published().intent().ciphertext_bytes,
+     );
+-    root_namespace_only(&metadata).inspect_err(|_| cold_stage_failed("root_namespace"))?;
+-    let owner_bytes = root
+-        .owners
+-        .iter()
+-        .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))
+-        .ok_or_else(unavailable)?;
++    observe_cold_native_ha(ColdNativeHaPhase::RootNamespace, deadline, || {
++        root_namespace_only(&metadata)
++    })
++    .inspect_err(|_| cold_stage_failed("root_namespace"))?;
++    let owner_bytes = observe_cold_native_ha(ColdNativeHaPhase::OwnerBytes, deadline, || {
++        root.owners
++            .iter()
++            .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))
++            .ok_or_else(unavailable)
++    })?;
+     if owner_bytes > service.opaque_owner_limit() as u64 {
+         return Err(Response::error(
+             507,
+             "native opaque owner capacity exhausted",
+         ));
+     }
+-    selected
+-        .check(durable, selected.initial_generation)
+-        .inspect_err(|_| cold_stage_failed("final_local_generation"))
++    observe_cold_native_ha(ColdNativeHaPhase::FinalLocalGeneration, deadline, || {
++        selected.check(durable, selected.initial_generation)
++    })
++    .inspect_err(|_| cold_stage_failed("final_local_generation"))
++    .map_err(storage_rejected)?;
++    observe_cold_native_ha(ColdNativeHaPhase::FinalGate, deadline, &mut gate)
+         .map_err(storage_rejected)?;
+-    gate().map_err(storage_rejected)?;
+     #[cfg(feature = "private-ha-forward-diagnostic")]
+     phase.finish(true);
+     #[cfg(feature = "private-ha-forward-diagnostic")]

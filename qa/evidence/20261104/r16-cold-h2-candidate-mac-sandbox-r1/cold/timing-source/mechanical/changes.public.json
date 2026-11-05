@@ -1,0 +1,82 @@
+[
+  {
+    "id": "closed_enum_and_exact_once_wrapper",
+    "before": "// Cold unseal has an actual provided local barrier key,",
+    "after": "// Fixed normal-build timing labels only. This observer owns no cold owner,\n// source, witness or deadline authority and returns every original result.\n#[derive(Clone, Copy)]\nenum ColdNativeHaPhase {\n    Load,\n    CommittedRoot,\n    LocalSelection,\n    LocalRootBinding,\n    LocalRootIdentity,\n    OriginalColdOwner,\n    OriginalReadWitness,\n    OriginalDeadline,\n    ReplicaSource,\n    ReplicaInstall,\n    InstalledLocalSelection,\n    CurrentCursor,\n    MaterializeFull,\n    RepairSource,\n    PhysicalRepair,\n    MaterializeAfterRepair,\n    RootNamespace,\n    OwnerBytes,\n    FinalLocalGeneration,\n    FinalGate,\n}\n\nimpl ColdNativeHaPhase {\n    fn label(self) -> &'static str {\n        match self {\n            Self::Load => \"load\",\n            Self::CommittedRoot => \"committed_root\",\n            Self::LocalSelection => \"local_selection\",\n            Self::LocalRootBinding => \"local_root_binding\",\n            Self::LocalRootIdentity => \"local_root_identity\",\n            Self::OriginalColdOwner => \"original_cold_owner\",\n            Self::OriginalReadWitness => \"original_read_witness\",\n            Self::OriginalDeadline => \"original_deadline\",\n            Self::ReplicaSource => \"replica_source\",\n            Self::ReplicaInstall => \"replica_install\",\n            Self::InstalledLocalSelection => \"installed_local_selection\",\n            Self::CurrentCursor => \"current_cursor\",\n            Self::MaterializeFull => \"materialize_full\",\n            Self::RepairSource => \"repair_source\",\n            Self::PhysicalRepair => \"physical_repair\",\n            Self::MaterializeAfterRepair => \"materialize_after_repair\",\n            Self::RootNamespace => \"root_namespace\",\n            Self::OwnerBytes => \"owner_bytes\",\n            Self::FinalLocalGeneration => \"final_local_generation\",\n            Self::FinalGate => \"final_gate\",\n        }\n    }\n}\n\nfn observe_cold_native_ha<T, E>(\n    phase: ColdNativeHaPhase,\n    deadline: OriginalDeadline,\n    operation: impl FnOnce() -> Result<T, E>,\n) -> Result<T, E> {\n    crate::ha::observe_native_v6_timing(\n        \"cold_native_ha\",\n        phase.label(),\n        Some(deadline.instant()),\n        operation,\n    )\n}\n\n// Cold unseal has an actual provided local barrier key,"
+  },
+  {
+    "id": "whole_cold_result",
+    "before": "pub(crate) fn load_cold_native_ha(\n    service: &Service,\n    durable: &mut DurableService<AeadBarrier>,\n    key: &[u8; 32],\n    deadline: OriginalDeadline,\n) -> Result<Option<ColdNativeHaRead>, Response> {",
+    "after": "pub(crate) fn load_cold_native_ha(\n    service: &Service,\n    durable: &mut DurableService<AeadBarrier>,\n    key: &[u8; 32],\n    deadline: OriginalDeadline,\n) -> Result<Option<ColdNativeHaRead>, Response> {\n    observe_cold_native_ha(ColdNativeHaPhase::Load, deadline, || {\n        load_cold_native_ha_inner(service, durable, key, deadline)\n    })\n}\n\nfn load_cold_native_ha_inner(\n    service: &Service,\n    durable: &mut DurableService<AeadBarrier>,\n    key: &[u8; 32],\n    deadline: OriginalDeadline,\n) -> Result<Option<ColdNativeHaRead>, Response> {"
+  },
+  {
+    "id": "committed_root_result",
+    "before": "    let committed = process\n        .native_v6_committed_read(deadline)\n        .map_err(|error| {\n            #[cfg(feature = \"private-ha-forward-diagnostic\")]\n            eprintln!(\"HBHA-PRIVATE-COLD-NATIVE phase=committed_read reason={error:?}\");\n            #[cfg(not(feature = \"private-ha-forward-diagnostic\"))]\n            let _ = error;\n            unavailable()\n        })?\n        .ok_or_else(|| {\n            cold_stage_failed(\"committed_root_absent\");\n            unavailable()\n        })?;",
+    "after": "    let committed = observe_cold_native_ha(ColdNativeHaPhase::CommittedRoot, deadline, || {\n        process\n            .native_v6_committed_read(deadline)\n            .map_err(|error| {\n                #[cfg(feature = \"private-ha-forward-diagnostic\")]\n                eprintln!(\"HBHA-PRIVATE-COLD-NATIVE phase=committed_read reason={error:?}\");\n                #[cfg(not(feature = \"private-ha-forward-diagnostic\"))]\n                let _ = error;\n                unavailable()\n            })?\n            .ok_or_else(|| {\n                cold_stage_failed(\"committed_root_absent\");\n                unavailable()\n            })\n    })?;"
+  },
+  {
+    "id": "initial_local_selection",
+    "before": "    let mut selected = LocalSelection::read(durable, &committed)\n        .inspect_err(|_| cold_stage_failed(\"local_selection\"))?;",
+    "after": "    let mut selected = observe_cold_native_ha(ColdNativeHaPhase::LocalSelection, deadline, || {\n        LocalSelection::read(durable, &committed)\n    })\n    .inspect_err(|_| cold_stage_failed(\"local_selection\"))?;"
+  },
+  {
+    "id": "local_root_binding",
+    "before": "    let root = selected.native.as_ref().ok_or_else(unavailable)?;\n    if root.cluster_id != process.cluster_id()\n        || root.replay_epoch != durable.replay_epoch()\n        || root.reader_floor.native_kv2_format != 2\n    {\n        cold_stage_failed(\"local_root_binding\");\n        return Err(unavailable());\n    }",
+    "after": "    let root = observe_cold_native_ha(ColdNativeHaPhase::LocalRootBinding, deadline, || {\n        let root = selected.native.as_ref().ok_or_else(unavailable)?;\n        if root.cluster_id != process.cluster_id()\n            || root.replay_epoch != durable.replay_epoch()\n            || root.reader_floor.native_kv2_format != 2\n        {\n            cold_stage_failed(\"local_root_binding\");\n            return Err(unavailable());\n        }\n        Ok::<_, Response>(root)\n    })?;"
+  },
+  {
+    "id": "original_gate_arms",
+    "before": "    let mut gate = || {\n        environment\n            .check_cold(service, key)\n            .inspect_err(|_| cold_stage_failed(\"original_cold_owner\"))\n            .map_err(|_| ServiceError::BarrierFailure)?;\n        process\n            .verify_native_v6_committed_read(&committed)\n            .inspect_err(|_| cold_stage_failed(\"original_read_witness\"))\n            .map_err(|_| ServiceError::BarrierFailure)?;\n        deadline.check().map_err(|_| ServiceError::BarrierFailure)\n    };",
+    "after": "    let mut gate = || {\n        observe_cold_native_ha(ColdNativeHaPhase::OriginalColdOwner, deadline, || {\n            environment.check_cold(service, key)\n        })\n        .inspect_err(|_| cold_stage_failed(\"original_cold_owner\"))\n        .map_err(|_| ServiceError::BarrierFailure)?;\n        observe_cold_native_ha(ColdNativeHaPhase::OriginalReadWitness, deadline, || {\n            process.verify_native_v6_committed_read(&committed)\n        })\n        .inspect_err(|_| cold_stage_failed(\"original_read_witness\"))\n        .map_err(|_| ServiceError::BarrierFailure)?;\n        observe_cold_native_ha(ColdNativeHaPhase::OriginalDeadline, deadline, || {\n            deadline.check()\n        })\n        .map_err(|_| ServiceError::BarrierFailure)\n    };"
+  },
+  {
+    "id": "root_identity",
+    "before": "    if root.identity().map_err(|_| unavailable())?.digest() != committed.published().root_digest() {",
+    "after": "    if observe_cold_native_ha(ColdNativeHaPhase::LocalRootIdentity, deadline, || {\n        root.identity()\n    })\n    .map_err(|_| unavailable())?\n    .digest()\n        != committed.published().root_digest()\n    {"
+  },
+  {
+    "id": "replica_outer_source_and_inner_result",
+    "before": "        let result = process\n            .with_native_v6_source(&committed, |codec, store| {\n                service.install_native_v6_replica_inner_with_payload_validation(\n                    durable,\n                    &selected,\n                    &committed,\n                    LocalInstallSource {\n                        storage: NativeV6ObjectStorage { codec, store },\n                        payload_validation: &payload_validation,\n                    },\n                    &mut gate,\n                    &published,\n                )\n            })\n            .map_err(|_| {\n                cold_stage_failed(\"replica_source\");\n                unavailable()\n            })?;",
+    "after": "        let result = observe_cold_native_ha(ColdNativeHaPhase::ReplicaSource, deadline, || {\n            process.with_native_v6_source(&committed, |codec, store| {\n                observe_cold_native_ha(ColdNativeHaPhase::ReplicaInstall, deadline, || {\n                    service.install_native_v6_replica_inner_with_payload_validation(\n                        durable,\n                        &selected,\n                        &committed,\n                        LocalInstallSource {\n                            storage: NativeV6ObjectStorage { codec, store },\n                            payload_validation: &payload_validation,\n                        },\n                        &mut gate,\n                        &published,\n                    )\n                })\n            })\n        })\n        .map_err(|_| {\n            cold_stage_failed(\"replica_source\");\n            unavailable()\n        })?;"
+  },
+  {
+    "id": "installed_local_selection",
+    "before": "        selected = LocalSelection::read(durable, &committed)\n            .inspect_err(|_| cold_stage_failed(\"installed_local_selection\"))?;",
+    "after": "        selected = observe_cold_native_ha(\n            ColdNativeHaPhase::InstalledLocalSelection,\n            deadline,\n            || LocalSelection::read(durable, &committed),\n        )\n        .inspect_err(|_| cold_stage_failed(\"installed_local_selection\"))?;"
+  },
+  {
+    "id": "current_root_cursor",
+    "before": "    let root = selected.native.as_ref().ok_or_else(unavailable)?;\n    NativeHaCursor::decode(selected.ha_bytes.as_ref().ok_or_else(unavailable)?.expose())?\n        .matches_current(&committed)\n        .inspect_err(|_| cold_stage_failed(\"current_cursor\"))?;",
+    "after": "    let root = observe_cold_native_ha(ColdNativeHaPhase::CurrentCursor, deadline, || {\n        let root = selected.native.as_ref().ok_or_else(unavailable)?;\n        NativeHaCursor::decode(selected.ha_bytes.as_ref().ok_or_else(unavailable)?.expose())?\n            .matches_current(&committed)\n            .inspect_err(|_| cold_stage_failed(\"current_cursor\"))?;\n        Ok::<_, Response>(root)\n    })?;"
+  },
+  {
+    "id": "first_materialization_retains_result_without_question_mark",
+    "before": "    let materialized = materialize_local_with_payload_validation(\n        durable,\n        root,\n        deadline,\n        &mut gate,\n        Some(&payload_validation),\n    );",
+    "after": "    let materialized = observe_cold_native_ha(ColdNativeHaPhase::MaterializeFull, deadline, || {\n        materialize_local_with_payload_validation(\n            durable,\n            root,\n            deadline,\n            &mut gate,\n            Some(&payload_validation),\n        )\n    });"
+  },
+  {
+    "id": "repair_outer_source_and_inner_result",
+    "before": "            process\n                .with_native_v6_source(&committed, |codec, store| {\n                    repair_current_local_objects(\n                        durable, &selected, &committed, codec, store, &mut gate,\n                    )\n                })\n                .map_err(|_| {\n                    cold_stage_failed(\"repair_source\");\n                    unavailable()\n                })?\n                .inspect_err(|_| cold_stage_failed(\"physical_repair\"))?;",
+    "after": "            observe_cold_native_ha(ColdNativeHaPhase::RepairSource, deadline, || {\n                process.with_native_v6_source(&committed, |codec, store| {\n                    observe_cold_native_ha(ColdNativeHaPhase::PhysicalRepair, deadline, || {\n                        repair_current_local_objects(\n                            durable, &selected, &committed, codec, store, &mut gate,\n                        )\n                    })\n                })\n            })\n            .map_err(|_| {\n                cold_stage_failed(\"repair_source\");\n                unavailable()\n            })?\n            .inspect_err(|_| cold_stage_failed(\"physical_repair\"))?;"
+  },
+  {
+    "id": "second_materialization",
+    "before": "            let materialized = materialize_local_with_payload_validation(\n                durable,\n                root,\n                deadline,\n                &mut gate,\n                Some(&payload_validation),\n            );",
+    "after": "            let materialized = observe_cold_native_ha(\n                ColdNativeHaPhase::MaterializeAfterRepair,\n                deadline,\n                || {\n                    materialize_local_with_payload_validation(\n                        durable,\n                        root,\n                        deadline,\n                        &mut gate,\n                        Some(&payload_validation),\n                    )\n                },\n            );"
+  },
+  {
+    "id": "root_namespace",
+    "before": "    root_namespace_only(&metadata).inspect_err(|_| cold_stage_failed(\"root_namespace\"))?;",
+    "after": "    observe_cold_native_ha(ColdNativeHaPhase::RootNamespace, deadline, || {\n        root_namespace_only(&metadata)\n    })\n    .inspect_err(|_| cold_stage_failed(\"root_namespace\"))?;"
+  },
+  {
+    "id": "owner_byte_sum",
+    "before": "    let owner_bytes = root\n        .owners\n        .iter()\n        .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))\n        .ok_or_else(unavailable)?;",
+    "after": "    let owner_bytes = observe_cold_native_ha(ColdNativeHaPhase::OwnerBytes, deadline, || {\n        root.owners\n            .iter()\n            .try_fold(0u64, |sum, owner| sum.checked_add(owner.owner.total_bytes))\n            .ok_or_else(unavailable)\n    })?;"
+  },
+  {
+    "id": "final_local_selection_and_original_gate",
+    "before": "    selected\n        .check(durable, selected.initial_generation)\n        .inspect_err(|_| cold_stage_failed(\"final_local_generation\"))\n        .map_err(storage_rejected)?;\n    gate().map_err(storage_rejected)?;",
+    "after": "    observe_cold_native_ha(ColdNativeHaPhase::FinalLocalGeneration, deadline, || {\n        selected.check(durable, selected.initial_generation)\n    })\n    .inspect_err(|_| cold_stage_failed(\"final_local_generation\"))\n    .map_err(storage_rejected)?;\n    observe_cold_native_ha(ColdNativeHaPhase::FinalGate, deadline, &mut gate)\n        .map_err(storage_rejected)?;"
+  }
+]

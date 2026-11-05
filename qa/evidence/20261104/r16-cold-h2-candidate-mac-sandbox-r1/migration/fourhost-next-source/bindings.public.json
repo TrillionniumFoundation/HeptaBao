@@ -1,0 +1,819 @@
+{
+  "schema": "heptabao.current-four-host-service-backup-next-actions.source-only.r1",
+  "source_only": true,
+  "host_actions_authorized_by_this_document": false,
+  "new_host_observations": 0,
+  "evidence": [
+    {
+      "name": "old_mac_rog_plan",
+      "blob": "f8845497197f7c46af23bff0c66cd3e1d21e13c9",
+      "bytes": 9095,
+      "sha256": "d211187aec0f5555fc6cbfb852c7eede6692f2a7040c9a1cf1dee750a0186a36"
+    },
+    {
+      "name": "old_mac_rog_plan_md",
+      "blob": "d14e537c5f79a0f2d5a6ff3d6334e9991ca45328",
+      "bytes": 19937,
+      "sha256": "a1be08b3c11aaa428c16909dd96fb4cb495b79b97d0ec9479d70279eb90178cd"
+    },
+    {
+      "name": "finite_registration",
+      "blob": "e2b3ad87420facc83b31f7bdc50b0d9564b0b924",
+      "bytes": 18231,
+      "sha256": "f458db4ebda522c3054c48eca917b8d7aaafcef33c13892a846c53441b49aa64"
+    },
+    {
+      "name": "offhost_matrix",
+      "blob": "16a6217e0163265b27a2e79f9aeffb26431b47ca",
+      "bytes": 96796,
+      "sha256": "aa23dcf2c01b9ea0372a67942510b6e9d8b49a1d3e823b2e62344748fdb92cf0"
+    },
+    {
+      "name": "current_rog_review",
+      "blob": "74fc53bab49fb4eaf20d440f9c3384e03aad99d4",
+      "bytes": 4192,
+      "sha256": "4376cf85ed5e547eaaab6daaa9d55176cf54cff674eb1ec73eb78df42a0add94"
+    },
+    {
+      "name": "current_x230_stdout",
+      "blob": "197ff767f16fbda8eb20aac80418a02915291925",
+      "bytes": 23439,
+      "sha256": "63f198cd17e100f9ce8e9e7329d2c1e711a46afe223878afd6cd74900e80feb5"
+    },
+    {
+      "name": "finite_backup_denominator",
+      "blob": "2baf8b350b1ea14423bc39e1e90a116d3c62a2bf",
+      "bytes": 17392,
+      "sha256": "7e99ba5dfc6a8515d327bbe6e8dce18195fca68424cc1e40d0ce785d978b91a8"
+    },
+    {
+      "name": "current_rog_stdout",
+      "blob": "f44ea5f57b3db01bbe04a4bf24629997ae480bb7",
+      "bytes": 46630,
+      "sha256": "aee43560000aa4878be8c2175a3ab13e056ce0442e2bba1a9606ae0ffadd5531"
+    },
+    {
+      "name": "backup_chain_readset",
+      "blob": "e0e7ac9b0a59083555d24acb239a4432d68b0ff9",
+      "bytes": 3807,
+      "sha256": "d8b2cb2551094454723d6d9ae3e42668d74f3dea5ca0de867e694a00dfbc5db4"
+    },
+    {
+      "name": "current_mac_stdout",
+      "blob": "53996b7f5c59b2cb18fe6979efded3d6138ad67c",
+      "bytes": 46277,
+      "sha256": "001d9d3384f1b8c00fa3cba8af7f3020bedc54f26678611ab3cd3a524ce23902"
+    },
+    {
+      "name": "current_mac_authority",
+      "blob": "07fbd0e5c2b216b79497386ae71d5087124afc81",
+      "bytes": 730,
+      "sha256": "969e0c4808a2e319d61673714a4e432b2b526a271efd0c037d2e91f8675e93fc"
+    },
+    {
+      "name": "mac_canonical_crontab_stdout",
+      "blob": "62350066cecf7a534c5a7370a7e9ac59a5f02545",
+      "bytes": 1274,
+      "sha256": "8e4397c745b22bf834e52fd352f3fdb98985c792b1506f34c1c024da3f303ab1"
+    },
+    {
+      "name": "mac_canonical_crontab_authority",
+      "blob": "9454b605a61cbc1c4ae205443aefaf655fa3b638",
+      "bytes": 731,
+      "sha256": "e4cf840f6aa14ad57cc676bf4deb17286282c47c910619d48a1f2f0198f7d5bd"
+    }
+  ],
+  "immediate_mac_step": {
+    "state": "QA20 inert actual success self-verified; unchanged fixed runtime request awaits root admission",
+    "inert_actual_tree": "af34c400aae7e14d41f3b2accc5e89844177554a",
+    "runtime_request_git_blob": "e2cad02e26a8e0b656f2475c17ced6c47ca52c1d",
+    "runtime_key": "heptabao-mac-current-five-agent-launchd-r4-6da29c3d-20261105-r1",
+    "candidate_sha256": "83110fe480350b5add320039b8776ece0e18f65c948faf0f859a6560e8213825",
+    "purpose": "Only current five-agent isolated fixture, four original credential origins, owned launchd generations, exact native ownership, initial/cold/inverse phases. It does not operate the registered production gateway."
+  },
+  "mac": {
+    "config": {
+      "path": "/Users/qianqi/.openclaw/openclaw.json",
+      "bytes": 34851,
+      "sha256": "ca2dd7d7879fa901dfb24e00837b56a4e0fd230600d7ed1e3086eda194187d4d",
+      "agents": [
+        {
+          "id": "main",
+          "model_primary": "openai/gpt-5.6-sol"
+        },
+        {
+          "id": "trnm",
+          "model_primary": "openai/gpt-5.6-sol"
+        },
+        {
+          "id": "hepta-ui",
+          "model_primary": "openai/gpt-5.6-sol"
+        },
+        {
+          "id": "hepta",
+          "model_primary": "openai/gpt-5.6-sol"
+        },
+        {
+          "id": "hepta-backend",
+          "model_primary": "openai/gpt-5.6-sol"
+        }
+      ],
+      "authbus_enabled": true,
+      "flags": {
+        "enforceRefreshLeases": {
+          "present": false,
+          "value": null
+        },
+        "leader": {
+          "present": true,
+          "value": false
+        },
+        "manageOrder": {
+          "present": true,
+          "value": true
+        },
+        "maxRefreshesPerCycle": {
+          "present": true,
+          "value": 1
+        },
+        "pollIntervalMs": {
+          "present": true,
+          "value": 15000
+        },
+        "publishNew": {
+          "present": true,
+          "value": true
+        },
+        "refreshMarginMs": {
+          "present": true,
+          "value": 900000
+        },
+        "releaseGeneration": {
+          "present": true,
+          "value": 200
+        },
+        "schedulerReportIntervalMs": {
+          "present": false,
+          "value": null
+        }
+      }
+    },
+    "registered_service_observation": [
+      {
+        "fields": [
+          {
+            "key": "path",
+            "value": {
+              "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.bridge.plist"
+            }
+          },
+          {
+            "key": "state",
+            "value": "running"
+          },
+          {
+            "key": "program",
+            "value": {
+              "path": "/Users/qianqi/.openclaw/authbus-relay/bin/authbus-relay-bridge"
+            }
+          },
+          {
+            "key": "working directory",
+            "value": {
+              "path": "/Users/qianqi/.openclaw/authbus-relay"
+            }
+          },
+          {
+            "key": "stdout path",
+            "value": {
+              "path": "/Users/qianqi/.openclaw/authbus-relay/logs/bridge.out.log"
+            }
+          },
+          {
+            "key": "stderr path",
+            "value": {
+              "path": "/Users/qianqi/.openclaw/authbus-relay/logs/bridge.err.log"
+            }
+          },
+          {
+            "key": "pid",
+            "value": 983
+          },
+          {
+            "key": "state",
+            "value": "active"
+          },
+          {
+            "key": "state",
+            "value": "active"
+          }
+        ],
+        "raw_sha256": "6f1255f7d6f1b32bdb808e9655786fd22106e8d9b53aec4ed8de131effc4b3e5",
+        "unit": "ai.openclaw.authbus-relay.bridge"
+      },
+      {
+        "fields": [
+          {
+            "key": "path",
+            "value": {
+              "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.egressguard.plist"
+            }
+          },
+          {
+            "key": "state",
+            "value": "running"
+          },
+          {
+            "key": "program",
+            "value": {
+              "path": "/Users/qianqi/.openclaw/authbus-relay/bin/egressguard"
+            }
+          },
+          {
+            "key": "working directory",
+            "value": {
+              "path": "/Users/qianqi/.openclaw/authbus-relay"
+            }
+          },
+          {
+            "key": "stdout path",
+            "value": {
+              "path": "/Users/qianqi/.openclaw/authbus-relay/logs/egressguard.out.log"
+            }
+          },
+          {
+            "key": "stderr path",
+            "value": {
+              "path": "/Users/qianqi/.openclaw/authbus-relay/logs/egressguard.err.log"
+            }
+          },
+          {
+            "key": "pid",
+            "value": 987
+          },
+          {
+            "key": "state",
+            "value": "active"
+          },
+          {
+            "key": "state",
+            "value": "active"
+          }
+        ],
+        "raw_sha256": "b8162b2234b316120e2dca31a614cf52572f86502ab0f5325e42ce6aac94062e",
+        "unit": "ai.openclaw.authbus-relay.egressguard"
+      },
+      {
+        "fields": [
+          {
+            "key": "path",
+            "value": {
+              "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.front.plist"
+            }
+          },
+          {
+            "key": "state",
+            "value": "running"
+          },
+          {
+            "key": "program",
+            "value": {
+              "path": "/Users/qianqi/.openclaw/authbus-relay/bin/relayfront"
+            }
+          },
+          {
+            "key": "working directory",
+            "value": {
+              "path": "/Users/qianqi/.openclaw/authbus-relay"
+            }
+          },
+          {
+            "key": "stdout path",
+            "value": {
+              "path": "/Users/qianqi/.openclaw/authbus-relay/logs/front.out.log"
+            }
+          },
+          {
+            "key": "stderr path",
+            "value": {
+              "path": "/Users/qianqi/.openclaw/authbus-relay/logs/front.err.log"
+            }
+          },
+          {
+            "key": "pid",
+            "value": 989
+          },
+          {
+            "key": "state",
+            "value": "active"
+          },
+          {
+            "key": "state",
+            "value": "active"
+          }
+        ],
+        "raw_sha256": "968d6b41c97b5e9649405c21b5065047775dcb1a68945fc8082abb7ac4c94532",
+        "unit": "ai.openclaw.authbus-relay.front"
+      },
+      {
+        "fields": [
+          {
+            "key": "path",
+            "value": {
+              "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.authbus-relay.proxy.plist"
+            }
+          },
+          {
+            "key": "state",
+            "value": "running"
+          },
+          {
+            "key": "program",
+            "value": {
+              "path": "/Users/qianqi/.openclaw/authbus-relay/bin/cli-proxy-api"
+            }
+          },
+          {
+            "key": "working directory",
+            "value": {
+              "path": "/Users/qianqi/.openclaw/authbus-relay"
+            }
+          },
+          {
+            "key": "stdout path",
+            "value": {
+              "path": "/Users/qianqi/.openclaw/authbus-relay/logs/proxy.out.log"
+            }
+          },
+          {
+            "key": "stderr path",
+            "value": {
+              "path": "/Users/qianqi/.openclaw/authbus-relay/logs/proxy.err.log"
+            }
+          },
+          {
+            "key": "pid",
+            "value": 964
+          },
+          {
+            "key": "state",
+            "value": "active"
+          },
+          {
+            "key": "state",
+            "value": "active"
+          }
+        ],
+        "raw_sha256": "01afa2d84384abdb13e49ec14df86cb60327cea25a8de5b8cf624bded20d7393",
+        "unit": "ai.openclaw.authbus-relay.proxy"
+      },
+      {
+        "fields": [
+          {
+            "key": "path",
+            "value": {
+              "path": "/Users/qianqi/Library/LaunchAgents/ai.openclaw.gateway.plist"
+            }
+          },
+          {
+            "key": "state",
+            "value": "running"
+          },
+          {
+            "key": "program",
+            "value": {
+              "path": "/bin/sh"
+            }
+          },
+          {
+            "key": "working directory",
+            "value": {
+              "path": "/Users/qianqi/.openclaw"
+            }
+          },
+          {
+            "key": "stdout path",
+            "value": {
+              "path": "/Users/qianqi/Library/Logs/openclaw/gateway.log"
+            }
+          },
+          {
+            "key": "stderr path",
+            "value": {
+              "path": "/dev/null"
+            }
+          },
+          {
+            "key": "pid",
+            "value": 18437
+          },
+          {
+            "key": "state",
+            "value": "active"
+          },
+          {
+            "key": "state",
+            "value": "active"
+          }
+        ],
+        "raw_sha256": "18b0f02996fab04f0dc9afd23fd9d8126b002cd5a1a0f35dbfae2c5255463b7d",
+        "unit": "ai.openclaw.gateway"
+      }
+    ],
+    "timestamp_limit": "Finite sequential observation, not current process-birth authority or an atomic service snapshot.",
+    "original_incomplete_inventory_preserved": true,
+    "canonical_crontab_separate_observation": "/etc alias and /private/etc/crontab double ENOENT closure are separate; do not relabel original inventory exit1 as exit0.",
+    "next_finite_service_binding": {
+      "paths": [
+        "/Users/qianqi/.openclaw/openclaw.json",
+        "/Users/qianqi/Library/LaunchAgents/ai.openclaw.gateway.plist",
+        "/Users/qianqi/.openclaw/service-env/ai.openclaw.gateway.env"
+      ],
+      "exact_labels": [
+        "ai.openclaw.authbus-relay.bridge",
+        "ai.openclaw.authbus-relay.egressguard",
+        "ai.openclaw.authbus-relay.front",
+        "ai.openclaw.authbus-relay.proxy",
+        "ai.openclaw.gateway"
+      ],
+      "observed_relation_limit": "Executable, label, registered paths and flags are known; all non-executable argv remains hashed/unresolved in the finite projection. Complete wrapper arguments and relay retirement dependencies are not qualified.",
+      "behavior": "An eventual reviewed projection must bind the exact live label/birth and actual declared input paths without publishing credential values. Follow only concrete newly observed references; no wildcard directory scan, guessed script or arbitrary path from a slash-prefixed argument.",
+      "no_service_change_in_this_plan": true
+    },
+    "backup_scope": "No confirmed Bao/AuthBus backup/restore registration among the selected local launchd entries or owner crontab. All seven selected local plists have no StartInterval/StartCalendarInterval/WatchPaths/QueueDirectories; RunAtLoad is true. Loaded Apple SecureBackupDaemon is recorded as a system label outside the local registration scope, not classified as Bao.",
+    "backup_gap": "The Nov2/Nov3 X230 encrypted restore chain is not a current Mac backup. Newly active Mac backup destinations enter the migration denominator only if found in a concrete current registered producer/restore reference."
+  },
+  "rog": {
+    "config": {
+      "path": "/home/qian-qi/.openclaw/openclaw.json",
+      "bytes": 21229,
+      "sha256": "6e3659907327039243c60a10b2925edb51e83e4c73f0925c60279ae6a8169819",
+      "expected_prior_sha256": "a042bc7fba4ac1295e323e0112598972a2872a040c5464af9614e4c2e600bd15",
+      "prior_sha_matches": false,
+      "authbus_enabled": false,
+      "agents": [
+        {
+          "id": "main",
+          "model_primary": "codex/gpt-6.1-sol"
+        },
+        {
+          "id": "azi2",
+          "model_primary": "codex/gpt-6.1-sol"
+        },
+        {
+          "id": "azi3",
+          "model_primary": "codex/gpt-6.1-sol"
+        },
+        {
+          "id": "azi4",
+          "model_primary": "codex/gpt-6.1-sol"
+        },
+        {
+          "id": "azi5",
+          "model_primary": "codex/gpt-6.1-sol"
+        },
+        {
+          "id": "zbj-llm-runtime",
+          "model_primary": "codex/gpt-6.1-sol"
+        }
+      ],
+      "flags": {
+        "enforceRefreshLeases": {
+          "present": false,
+          "value": null
+        },
+        "leader": {
+          "present": true,
+          "value": false
+        },
+        "manageOrder": {
+          "present": true,
+          "value": true
+        },
+        "maxRefreshesPerCycle": {
+          "present": true,
+          "value": 1
+        },
+        "pollIntervalMs": {
+          "present": true,
+          "value": 15000
+        },
+        "publishNew": {
+          "present": true,
+          "value": true
+        },
+        "refreshMarginMs": {
+          "present": true,
+          "value": 900000
+        },
+        "releaseGeneration": {
+          "present": true,
+          "value": 203
+        },
+        "schedulerReportIntervalMs": {
+          "present": false,
+          "value": null
+        }
+      }
+    },
+    "service_observation": [
+      {
+        "ActiveState": "inactive",
+        "ConditionResult": "yes",
+        "ControlPID": 0,
+        "DropInPaths": [
+          {
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/10-telegram-dns-verbatim.conf"
+          },
+          {
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/20-drain-timeout.conf"
+          },
+          {
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service.d/30-telegram-spooled-handler-timeout.conf"
+          }
+        ],
+        "FragmentPath": [
+          {
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-gateway.service"
+          }
+        ],
+        "Id": "openclaw-gateway.service",
+        "KillMode": "control-group",
+        "KillSignal": "15",
+        "LoadState": "loaded",
+        "MainPID": 0,
+        "SubState": "dead",
+        "TimeoutStopUSec": "6min",
+        "TriggeredBy": "",
+        "Triggers": "",
+        "UnitFileState": "enabled"
+      },
+      {
+        "ActiveState": "inactive",
+        "ConditionResult": "no",
+        "ControlPID": 0,
+        "DropInPaths": [
+          {
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-accept-after-restart.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf"
+          }
+        ],
+        "FragmentPath": [
+          {
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-accept-after-restart.service"
+          }
+        ],
+        "Id": "openclaw-authbus-accept-after-restart.service",
+        "KillMode": "control-group",
+        "KillSignal": "15",
+        "LoadState": "loaded",
+        "MainPID": 0,
+        "SubState": "dead",
+        "TimeoutStopUSec": "1min 30s",
+        "TriggeredBy": "",
+        "Triggers": "",
+        "UnitFileState": "static"
+      },
+      {
+        "ActiveState": "inactive",
+        "ConditionResult": "no",
+        "ControlPID": 0,
+        "DropInPaths": [
+          {
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf"
+          }
+        ],
+        "FragmentPath": [
+          {
+            "path": "/home/qian-qi/.config/systemd/user/openclaw-authbus-restart-when-idle.service"
+          }
+        ],
+        "Id": "openclaw-authbus-restart-when-idle.service",
+        "KillMode": "control-group",
+        "KillSignal": "15",
+        "LoadState": "loaded",
+        "MainPID": 0,
+        "SubState": "dead",
+        "TimeoutStopUSec": "1min 30s",
+        "TriggeredBy": "",
+        "Triggers": "",
+        "UnitFileState": "static"
+      }
+    ],
+    "old_plan_superseded_in_this_scope": "The old a042 config and running PID2436 are historical; current observed config is 6e365990 and gateway inactive/MainPID0. Do not restore the old file, enable AuthBus, or start the gateway to satisfy the old expectation.",
+    "next": "Prepare an isolated ROG consumer binding using the newly observed config/model set and all six real agents. Do not carry Mac five-agent or Pocket qualifications to ROG. Preserve actual disabled state and existing helper holds until an independently reviewed transition is concrete.",
+    "backup_scope": "No confirmed Bao/AuthBus backup/restore timer or owner/system crontab entry in the finite registration scope. Generic OS font/audio restore and dpkg backup labels are recorded separately; uninstantiated PostgreSQL templates have no observed instance."
+  },
+  "pocket4": {
+    "evidence_scope": "Root-accepted actual R10 isolated consumer cycle covers the original two agents and local/native/cache preservation; it does not qualify current production gateway operation, all accounts or provider traffic.",
+    "current_registration_reference": "finite_registration f458 historical observation, plus exact R10 consumer raw receipts retained in parent evidence chain",
+    "exact_hold": {
+      "dropins": [
+        {
+          "bytes": 218,
+          "comment_path_references": [],
+          "directives": [
+            {
+              "key": "ConditionPathExists",
+              "line": 3,
+              "section": "Unit",
+              "value": "!/home/alex/heptabao-authbus-persistent-guard-hb3-r1/hold-0dcbd843db6bbaf3fb0fdab97ae4775029d63660a7365b8da5b498385917c5e5.json"
+            }
+          ],
+          "path": "/home/alex/.config/systemd/user/openclaw-gateway.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+          "sha256": "3e46cac521594bbc6bab2133f55ce9cdaf26d8f30f8b6a0e60ba0a41214db1f0"
+        },
+        {
+          "bytes": 218,
+          "comment_path_references": [],
+          "directives": [
+            {
+              "key": "ConditionPathExists",
+              "line": 3,
+              "section": "Unit",
+              "value": "!/home/alex/heptabao-authbus-persistent-guard-hb3-r1/hold-89902581f0d98cb21706f6dfdb9e879d2d6dffc7b8f4f3f4a9c654645f9624a1.json"
+            }
+          ],
+          "path": "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+          "sha256": "d9d6ef9c576e9a8de9311bc87d3521b887c59b7726523f5942b0e1675491b0a9"
+        }
+      ],
+      "markers": [
+        {
+          "automatic_release_permitted": false,
+          "dropin_path": "/home/alex/.config/systemd/user/openclaw-gateway.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+          "marker_exists": true,
+          "marker_path": "/home/alex/heptabao-authbus-persistent-guard-hb3-r1/hold-0dcbd843db6bbaf3fb0fdab97ae4775029d63660a7365b8da5b498385917c5e5.json",
+          "marker_sha256": "0fccbd0c976d259d01b359c3fd7e82552d182a656eb0af44faac89a863ceef9d",
+          "original_observation_sha256": "1c298dfb9158905b80f2327791f9074b4e4aa9f48bfd7f7793eab5619fff0d8f",
+          "provider_grant_admitted": false,
+          "source_map_sha256": "749d63b4590fe5a2ea51444f6cff6fc453ffd7a8948b98c7203c1282c8bd381c",
+          "unit_sha256": "0dcbd843db6bbaf3fb0fdab97ae4775029d63660a7365b8da5b498385917c5e5"
+        },
+        {
+          "automatic_release_permitted": false,
+          "dropin_path": "/home/alex/.config/systemd/user/openclaw-authbus-restart-when-idle.service.d/zzzz-heptabao-authbus-held-cohort-hb3-r1.conf",
+          "marker_exists": true,
+          "marker_path": "/home/alex/heptabao-authbus-persistent-guard-hb3-r1/hold-89902581f0d98cb21706f6dfdb9e879d2d6dffc7b8f4f3f4a9c654645f9624a1.json",
+          "marker_sha256": "370fc76cad249542b4b73763909fb546624071a4febd437501aa3a3b543cabc4",
+          "original_observation_sha256": "1c298dfb9158905b80f2327791f9074b4e4aa9f48bfd7f7793eab5619fff0d8f",
+          "provider_grant_admitted": false,
+          "source_map_sha256": "749d63b4590fe5a2ea51444f6cff6fc453ffd7a8948b98c7203c1282c8bd381c",
+          "unit_sha256": "89902581f0d98cb21706f6dfdb9e879d2d6dffc7b8f4f3f4a9c654645f9624a1"
+        }
+      ]
+    },
+    "next": "Preserve both marker/drop-in pairs. Any later real service transition must bind the actual current unit/source state and the existing readiness transition; no automatic hold release from the isolated PASS.",
+    "backup_scope": "No confirmed Bao/AuthBus backup/restore registration in selected systemd/cron scope; generic OS font/audio/dpkg entries are kept outside Bao cleanup."
+  },
+  "x230": {
+    "finite_scope": "18 observed entries and six fixed queries; no whole-host absence claim.",
+    "service_observation": [
+      {
+        "ActiveState": "inactive",
+        "ConditionResult": "no",
+        "ControlPID": 0,
+        "DropInPaths": [],
+        "FragmentPath": [
+          {
+            "path": "/etc/systemd/system/openclaw-authbus-x230-openbao-proxy.service"
+          }
+        ],
+        "Id": "openclaw-authbus-x230-openbao-proxy.service",
+        "KillMode": "control-group",
+        "KillSignal": "15",
+        "LoadState": "loaded",
+        "MainPID": 0,
+        "SubState": "dead",
+        "TimeoutStopUSec": "1min 30s",
+        "TriggeredBy": "",
+        "Triggers": "",
+        "UnitFileState": "disabled"
+      },
+      {
+        "ActiveState": "failed",
+        "ConditionResult": "yes",
+        "ControlPID": 0,
+        "DropInPaths": [],
+        "FragmentPath": [
+          {
+            "path": "/run/user/1000/systemd/transient/hepta-native-history-restore-v58-a2.service"
+          }
+        ],
+        "Id": "hepta-native-history-restore-v58-a2.service",
+        "KillMode": "control-group",
+        "KillSignal": "15",
+        "LoadState": "loaded",
+        "MainPID": 0,
+        "SubState": "failed",
+        "TimeoutStopUSec": "5s",
+        "TriggeredBy": "",
+        "Triggers": "",
+        "UnitFileState": "transient"
+      },
+      {
+        "ActiveState": "failed",
+        "ConditionResult": "yes",
+        "ControlPID": 0,
+        "DropInPaths": [],
+        "FragmentPath": [
+          {
+            "path": "/run/user/1000/systemd/transient/hepta-native-restore-compiler-v45-20261020.service"
+          }
+        ],
+        "Id": "hepta-native-restore-compiler-v45-20261020.service",
+        "KillMode": "control-group",
+        "KillSignal": "15",
+        "LoadState": "loaded",
+        "MainPID": 0,
+        "SubState": "failed",
+        "TimeoutStopUSec": "1min 30s",
+        "TriggeredBy": "",
+        "Triggers": "",
+        "UnitFileState": "transient"
+      },
+      {
+        "ActiveState": "failed",
+        "ConditionResult": "yes",
+        "ControlPID": 0,
+        "DropInPaths": [],
+        "FragmentPath": [
+          {
+            "path": "/run/user/1000/systemd/transient/hepta-native-restore-compiler-v45-a2-20261020.service"
+          }
+        ],
+        "Id": "hepta-native-restore-compiler-v45-a2-20261020.service",
+        "KillMode": "control-group",
+        "KillSignal": "15",
+        "LoadState": "loaded",
+        "MainPID": 0,
+        "SubState": "failed",
+        "TimeoutStopUSec": "1min 30s",
+        "TriggeredBy": "",
+        "Triggers": "",
+        "UnitFileState": "transient"
+      }
+    ],
+    "container_observation": [
+      {
+        "ExitCode": 0,
+        "FinishedAt": "0001-01-01T00:00:00Z",
+        "Id": "f67985499a16bc15917152d8083b9aa985edcbea868e3f15bdcef3aea6ab0bb9",
+        "Image": "ghcr.io/openbao/openbao:2.7.1",
+        "Name": "/heptabao-openbao271-oracle-r46",
+        "NetworkMode": "none",
+        "Paused": false,
+        "Pid": 2031520,
+        "Restarting": false,
+        "Running": true,
+        "StartedAt": "2026-10-10T17:14:55.727875418Z",
+        "StateStatus": "running",
+        "mounts": [],
+        "no_disposable_or_deletion_inference": true,
+        "port_bindings": {},
+        "restart_policy_sha256": "d404b4000ecf4446757d677fdda5761dbf5875035c3c79c9f1851044156d6510"
+      }
+    ],
+    "next": "No installed OpenClaw consumer is invented from absent standard entry paths. Preserve proxy/failed transient units and official oracle unless an actual, separately reviewed consumer or backup reference supplies a transition target.",
+    "destructive_action_allowed": false,
+    "backup_scope": "No confirmed Bao/AuthBus producer or scheduled restore in selected systemd/cron scope. Three failed transient hepta-runtime-native-dev restore/history/compiler-cache units have MainPID 0, no Triggers/TriggeredBy and explicit separate source scripts; not current Bao backup services."
+  },
+  "actual_backup_denominator": {
+    "evidence_git_blob": "2baf8b350b1ea14423bc39e1e90a116d3c62a2bf",
+    "scope": "One Nov2 capture followed by Nov3 transport/restoration, 23 files, seven databases and six auth stores; nine public chain receipts are one capture/recovery chain.",
+    "current_mac_backup_qualified": false,
+    "all_current_hosts_qualified": false,
+    "nine_new_backup_gates_inferred": false,
+    "historical_main_host_not_reassigned": true,
+    "raw_and_stamp_stability_limits_retained": true,
+    "registration_hold_records_distinct_from_recovery_chain_records": true
+  },
+  "eventual_real_transition_contract": {
+    "old_production_plan_status": "prepared_not_executable_target_unbound",
+    "missing_target_fields": [
+      "apiAddress",
+      "apiPort",
+      "clusterIdentity",
+      "nodeIdentity",
+      "caFile",
+      "caSha256",
+      "leafSha256",
+      "roleIdFile",
+      "roleIdentitySha256",
+      "secretIdFile",
+      "secretIdIssuanceReceipt",
+      "policySha256",
+      "serverSupervisorReceipt"
+    ],
+    "target_from_fixture_port_allowed": false,
+    "only_previously_proposed_configuration_paths": [
+      "plugins.entries.openclaw-authbus.config.address",
+      "plugins.entries.openclaw-authbus.config.caFile",
+      "plugins.entries.openclaw-authbus.config.roleIdFile",
+      "plugins.entries.openclaw-authbus.config.secretIdFile"
+    ],
+    "preserve": "Actual current flags, agents, model, order, usage, native/local fallback, publishNew proposals and coordinator grant separation.",
+    "rollback": "Bind real stopped baseline and exact compare-and-swap on persistent local/raw state; recompute effective state with actual SDK only after all dependent local state is restored; restore caches last. Never write inherited profiles into an empty trnm local primary. Unknown or incomplete ownership stops the graph without replay.",
+    "source_or_provider_actions_not_added": true,
+    "production_cutover_authorized": false
+  }
+}

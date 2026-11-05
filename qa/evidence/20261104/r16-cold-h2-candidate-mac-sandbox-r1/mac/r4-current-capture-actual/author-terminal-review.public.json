@@ -1,0 +1,134 @@
+{
+  "schema": "heptabao.mac-current-five-agent-runtime-author-terminal-review.r4",
+  "verdict": "KNOWN_FAIL_SANDBOX_CAPTURE_CHILD_BEFORE_DATABASE_CAPTURE",
+  "job_id": "1a1a9af7832-fc05-36bb",
+  "root_admission": "f4d88a35ce0c2c3407c983607a6e2ebbd3137dd9",
+  "request_blob": "e2cad02e26a8e0b656f2475c17ced6c47ca52c1d",
+  "idempotency_key": "heptabao-mac-current-five-agent-launchd-r4-6da29c3d-20261105-r1",
+  "authority": {
+    "exit_code": 1,
+    "complete": true,
+    "durable": true,
+    "timed_out": false,
+    "automatic_retry": false
+  },
+  "stdout": {
+    "bytes": 42596,
+    "sha256": "fde010c0b999bcf10d6cff6cd68bae4d6d2cb3f35d053d3cec92b34d7dc92b6b",
+    "sdk_page_count": 3,
+    "original_text_hex_and_contiguous_eof_match": true,
+    "stderr_bytes": 0
+  },
+  "outer": {
+    "ok": false,
+    "outcomeUnknown": false,
+    "errorType": "Refused",
+    "errorCode": "actual_sandbox_capture_child_terminal",
+    "errorFrames": [
+      {
+        "file": "mac_current_outer_r4.py",
+        "line": 803
+      },
+      {
+        "file": "mac_current_outer_r4.py",
+        "line": 560
+      },
+      {
+        "file": "mac_current_outer_r4.py",
+        "line": 141
+      }
+    ],
+    "elapsedSeconds": 0.6800107080489397,
+    "ownedPhaseCount": 0,
+    "successfulCaptureReportCount": 0,
+    "commands": [
+      {
+        "label": "outer-t5-volume",
+        "exitCode": 0,
+        "completeBeforeDeadline": true,
+        "directChildReaped": true,
+        "ownedLiveGroupEmptyBeforeReap": true,
+        "allGroupRowsEmptyAfterReap": true,
+        "postReapSignalSent": false,
+        "streamsClosed": true
+      },
+      {
+        "label": "current-capture-before",
+        "exitCode": 1,
+        "completeBeforeDeadline": true,
+        "directChildReaped": true,
+        "ownedLiveGroupEmptyBeforeReap": true,
+        "allGroupRowsEmptyAfterReap": true,
+        "postReapSignalSent": false,
+        "streamsClosed": true
+      }
+    ],
+    "outerReadDescriptorCount": 24,
+    "allOwnedInputsClosed": true,
+    "allT5DescriptorsClosed": true,
+    "allOwnedRegistrationsLineagesHelpersClosed": true,
+    "originalDeadlineMet": true
+  },
+  "input_scope": {
+    "selectedPublicCodeCount": 40,
+    "readOnlySourceRecordCount": 48,
+    "privateFrozenInputsAttempted": true,
+    "projectionAttemptedOnce": true,
+    "currentProductionDatabasesOpened": false,
+    "productionCaptureAttempted": true,
+    "warning": "The outer did read frozen credential-origin inputs and form a private projection. The child refused before opening current production databases. This result does not mean zero private input reads."
+  },
+  "capture_child": {
+    "bytes": 1299,
+    "sha256": "40261a24a49390ba21d3225ac01b16394cbf4cda54b6f3808cd5f47e2d2c3161",
+    "version": "16777244:72552946:1299:1793848215407197626:1793848215407205709",
+    "file_info_and_whole_version_pinned_read_match": true,
+    "ok": false,
+    "outcomeUnknown": false,
+    "errorType": "PermissionError",
+    "errorCode": null,
+    "elapsedSeconds": 0.016214875038713217,
+    "productionReadAttempted": false,
+    "captureLibraryReturned": false,
+    "ownedCommandCount": 0,
+    "heldT5Assigned": true,
+    "lastAnchorCheckPassed": true,
+    "volumeUUIDVerified": false,
+    "allOwnedDescriptorsClosed": true,
+    "originalDeadlineMet": true
+  },
+  "classification": {
+    "consumerStarted": false,
+    "managerStarted": false,
+    "productionServiceOperationDispatched": false,
+    "providerRequested": false,
+    "j3160Contacted": false,
+    "productionChangedByController": false,
+    "fullReplacementQualified": false,
+    "automaticBusinessReplay": false
+  },
+  "limits": {
+    "controller": 900,
+    "manager": 600,
+    "phase": 120,
+    "capture": 45,
+    "native": [
+      15,
+      8,
+      3
+    ],
+    "cleanup": 60,
+    "supervisor": 1080
+  },
+  "static_followup": {
+    "concrete_policy_gap": "capture_profile permits /dev/null file-write* but omits file-read*; Commands.run uses Popen(stdin=DEVNULL) before registering a command row.",
+    "causality_limit": "PermissionError public receipt lacks errno or stage detail. The omitted /dev/null read is a concrete source gap, not yet uniquely proven cause of the actual refusal.",
+    "next_step": "Source review of a one-literal read rule and a fresh owned sandbox probe. Never replay R4 or reuse captures/before.",
+    "private_body_or_stderr_followup_read": false
+  },
+  "artifact_semantics": {
+    "native_results": "Exact available native response text retained verbatim.",
+    "cached_mcp_snapshots": "JSON serialization of available returned MCP objects; not transport wire bytes.",
+    "unsafe_integer_handling": "Original native text and child bytes preserved; no original receipt reconstructed through parsed numeric reserialization."
+  }
+}

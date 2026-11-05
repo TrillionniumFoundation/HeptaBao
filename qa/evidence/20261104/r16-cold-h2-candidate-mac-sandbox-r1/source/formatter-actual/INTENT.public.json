@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.cold-h2-format-once-submit-intent.r1",
+  "stage": "before_single_submit",
+  "host": "rog",
+  "idempotency_key": "heptabao-cold-h2-inputs-rustfmt-20261105-r1-94554877",
+  "request_blob": "85f6684c3a2039fb1f3dc6889ad69b9bc31d7681",
+  "request_bytes": 68646,
+  "request_sha256": "68ddcd0c37d8344aba57a9984550cfb9a1d0437ddc1660772a37996e1ca98c16",
+  "root_admission_blob": "c894aa8718cd998146f7408fb9e43a72759b667e",
+  "source_tree": "6590500fe878fd54c349da6eb38b88ed9f1ea5fc",
+  "controller": {
+    "bytes": 6470,
+    "sha256": "945548771b7d78e2c30a72eb0acc30333a7d79e6e7e1b7a4c72d815642da006a",
+    "blob": "bba0c4f8f65dfcac3835326c161a62b84e84b27c"
+  },
+  "stdin": {
+    "bytes": 59546,
+    "sha256": "b15d536c5b28e2a359fcb9e04d8dc0773d9ece508fb04f0e9f707924de941ca7",
+    "blob": "f3e9ad0e5d4e9045f52614ba5aefa2d6b7ca252b"
+  },
+  "internal_seconds": 50,
+  "child_seconds": 10,
+  "supervisor_seconds": 60,
+  "fresh_root": "/home/qian-qi/heptabao-cold-h2-normal-format-20261105-r1",
+  "product": false,
+  "cargo": false,
+  "original_repository_read_or_written": false,
+  "retry_permitted": false,
+  "created_utc": "2026-11-05T03:15:55.281Z"
+}

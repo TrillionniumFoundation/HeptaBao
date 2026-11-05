@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-phaseb-import-cdecc828-treechunk0-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-import-r1/control/011-materialized-tree.stdout",
+      "expected_version": "2050:4646364:450094:1793842462954145279:1793842462954145279",
+      "offset": 0,
+      "limit": 65536
+    }
+  }
+}

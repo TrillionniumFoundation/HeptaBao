@@ -1,0 +1,30 @@
+--- before/format.py
++++ candidate/format.py
+@@ -1,11 +1,11 @@
+ import hashlib,json,os,signal,stat,subprocess,sys,time
+ from pathlib import Path
+ START=time.monotonic(); LIMIT=50.0
+-ROOT=Path('/home/qian-qi/heptabao-ci-e5-test-lints-format-20261105-r1')
++ROOT=Path('/home/qian-qi/heptabao-cold-h2-normal-format-20261105-r1')
+ SRC=ROOT
+ FMT=Path('/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt')
+ FMT_SHA='5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877'
+-EXPECTED={"kv2_native_lossless_prefetch_tests.rs":["9c7700293bdc2612135c29b1d0b7fb241106265f5996cb7cc57a94b0a82daefc","facd804e100291afb607055960e14516607a85c81a2f865fa0e995c99a47ad26"],"http_no_forward_tests.rs":["5e55cb9ddcceff2938cd50b7b36ea774a0ef455391a0b97bef656eeef588ab6f","69a74c24eddc924de3be8ecc926dc9634b6057879c2dde5ded4d760ed1a47801"],"http_snapshot_redirect_tests.rs":["8889ae597c0a8eecc61fcb061ac79f7e25dc27caf8ec4793961d9d7c66a96c22","f6488f385368f6cff35e89f058c8ee553fc997a96aa6e07aa89f4e641fd93681"],"http_response_coalescing_tests.rs":["514ac35ade150dce1f666e94b63f91529bb2ba7b49bfc4f6540b513b13d92c59","872051d35cb9b912908821cef854e9412a00beaf12719946e30a9a8426282221"],"service_native_plain_namespace.rs":["e88de0bcf6e9788046ba91aa2d7cfd26b9962626e8cc0b6a823aadbb69ec6c30","ad7ab5248140bc365587229d5cdb69b3e77737a874544c8a21171262db7c2d43"],"service_native_ssh_tests.rs":["55574d4f306d8a99011523cd2382d6edf8c93d716700c008a80b6a0c799595f8","a3918836011f112113af4308351ff46c073be4259661d500ee9949cc943064c0"],"service_native_kv1_signed_lease_tests.rs":["e39a674e7c29548f0df03f8ba6eca6747bdfba0e6ed5659b1000bb0624fa4f9e","e206b68a63cb2c098b141a2141a03e6f78865f0774ff0f209903a9bf88c5e6cb"],"service_no_forwarding_ha_tests.rs":["3c5e9b2e8f306786e1c5ce1ef1a02b5442bb1dc12e9de08bfed78e0dfcec808f","e9109b92a98bdf5742b7e32b16fc640f1d2bd8b3c161352798fc0db6d720cac8"]}
++EXPECTED={"service_native_v6_ha_read.rs":["b94711b478147a6879125764c491f6a59bd1215e76a36d2a61230a016d2793c9","b82eb6715e48e53382330a79e620f0b1ddd97cc503d73a6a6c9ea7a3a71bdc8d"],"service_native_v6_ha_cold_timing_tests.rs":[None,"ebf0ea27bfb06371f830005f80d5cf934d0ba4f10363f3681cfa8bb08c87b4e9"],"http_h2.rs":["f24ccfc27aabf1b938eb34b8fa07e8a41f1f243b7d47eab9c9a452c3fac7262f","4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1"],"http_h2_sync_worker_tests.rs":[None,"34002654f653d7b2a1ee5a49dccc8b9c97a0497bb96df27764959cbd877567e0"]}
+ os.umask(0o077)
+ def remain():
+  r=LIMIT-(time.monotonic()-START)
+@@ -41,9 +41,10 @@
+  fd=os.open(p,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+  try: os.fsync(fd)
+  finally: os.close(fd)
+-report={'schema':'heptabao.ci-e5-test-lints-rustfmt.v1','status':'failed','productExecuted':False,
+- 'compileExecuted':False,'productionChanged':False,'sourceCommit':'e5de554f5dfe99f0de30012122fe3e248fb60532',
+- 'sourceTree':'46b1276c237aaadd8cc3185e8228d8a791c68214','edition':'2024',
++report={'schema':'heptabao.cold-h2-normal-input-rustfmt.v1','status':'failed','productExecuted':False,
++ 'compileExecuted':False,'productionChanged':False,'sourceCommit':'3cb873919170cc77101b27f6a3ab9e98f41f8d93',
++ 'sourceTree':'7f4d48a647a81ca96e8a24a0a057c2c829459060','sourceIdentityIsBaseOnly':True,
++ 'uncommittedCandidateInputs':True,'edition':'2024',
+  'internalSeconds':50,'newRemoteSupervisorSeconds':60,'files':[],'children':[]}
+ created=False;tool_before=None
+ try:

@@ -1,0 +1,120 @@
+{
+  "schema": "heptabao.phaseb-3cb-native-ingress-reason-source-analysis.v1",
+  "source_only": true,
+  "product_patch": false,
+  "product_replay": false,
+  "canonical": {
+    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060"
+  },
+  "observation": {
+    "packet_tree": "52dbf5d681903711b38f673fc0bdc72be67195d8",
+    "projection": {
+      "path": "actual/projection.original.json",
+      "bytes": 12843,
+      "sha256": "040942f92f10b8332b88afdaaf907117547a86ac43bb4c0631ac5ea21c628703",
+      "blob": "242a6303ef87b317eb9f6fe72ca9b16ae682d378"
+    },
+    "marker_line": 9,
+    "step": "fresh_ingress_same_root_closure",
+    "reason_sha": "392f52cb2031a180c22d20184a7237a9def3cf925148ba9f0eebf68f1bb25aed",
+    "original_deadline_expired": false,
+    "remaining_ns": "14993533703"
+  },
+  "display": {
+    "source": {
+      "path": "canonical/crates/heptabao-ha-service/src/lib.rs",
+      "bytes": 84895,
+      "sha256": "f7eac8103954260134e244a1d5d5bf0045ed74f0d7123a01ac5f0b6b7089e7b8",
+      "blob": "6e8947315c14e50c2424de90b11c99888e7bd0a5"
+    },
+    "line_start": 1318,
+    "line_end": 1343,
+    "matched": {
+      "variant": "InvalidCluster",
+      "literal": "HA cluster configuration is invalid",
+      "sha256": "392f52cb2031a180c22d20184a7237a9def3cf925148ba9f0eebf68f1bb25aed"
+    },
+    "all_public_variants_checked": 20,
+    "private_value_guesses": 0
+  },
+  "finite_error_paths": [
+    {
+      "site": "v6_ingress_reselection.rs:141",
+      "operation": "require_blocking_worker()?",
+      "possible_error": [
+        "InvalidCluster"
+      ],
+      "producer": "v6_closure_quorum.rs:64-70; Handle::try_current().is_ok()"
+    },
+    {
+      "site": "v6_ingress_reselection.rs:142-146,174-182,187-195,246-250,258-262",
+      "operation": "original deadline checks",
+      "possible_error": [
+        "OutcomeUnknown"
+      ],
+      "producer": "v6_closure_quorum.rs:53-61; closure checks can instead set Refusal::Other, then map to OutcomeUnknown"
+    },
+    {
+      "site": "v6_ingress_reselection.rs:147-153",
+      "operation": "enrollment membership and distinct routes",
+      "possible_error": [
+        "InvalidMembership"
+      ]
+    },
+    {
+      "site": "v6_ingress_reselection.rs:154-156",
+      "operation": "storage.begin_native_operation",
+      "possible_error": [
+        "Transport"
+      ],
+      "producer": "explicit map_err"
+    },
+    {
+      "site": "v6_ingress_reselection.rs:216-232",
+      "operation": "historical reopen and gate",
+      "possible_error": [
+        "OutcomeUnknown",
+        "InvalidFrame"
+      ],
+      "non_error_alternative": "NeedsOriginalRepair(selected)"
+    },
+    {
+      "site": "v6_ingress_reselection.rs:219; v6_closure_quorum_wire.rs:346-380,273-284",
+      "operation": "wire::exact_manifest, including validate_reference",
+      "possible_error": [
+        "InvalidFrame"
+      ]
+    },
+    {
+      "site": "v6_ingress_reselection.rs:236-256",
+      "operation": "successor selection and witness",
+      "possible_error": [
+        "OutcomeUnknown"
+      ],
+      "non_error_alternative": [
+        "Complete(fresh)",
+        "Superseded(...)"
+      ]
+    }
+  ],
+  "exact_conclusion": "For the observed fresh-ingress scope, this error is the first require_blocking_worker guard. Its predicate observed an available Tokio runtime Handle on the calling thread. This conclusion uses the exact public Display hash and the complete finite Err propagation, not the 7 microsecond duration.",
+  "normal_path": [
+    "ha_native_v6_runtime.rs:717-725 sets the step then converts the lower HaError Display to String",
+    "v6_ingress_reselection.rs:96-112 forwards directly to inner",
+    "v6_ingress_reselection.rs:141 is the only reachable InvalidCluster source; all other propagated errors are listed above"
+  ],
+  "http_context": {
+    "http1": "http.rs:881-907 creates a std::thread; an HTTP/1 connection continues only after h2_transport::negotiate returns Some. Its local Tokio runtime has returned/dropped.",
+    "http2": "http_h2.rs:25-36 constructs the TLS runtime; lines37-45 select h2 vs HTTP/1. Lines252-278 dispatch the synchronous process_parsed_request inside tokio::task::spawn_blocking. http.rs:1115-1117,1168-1179 then invokes http_snapshot::execute; its lines345-348 enter snapshot admission under the Service writer.",
+    "actual_alpn_observed": false,
+    "actual_request_id_observed": false,
+    "actual_cli_start_log_offset_recorded": false,
+    "limits": "The observed guard does not by itself prove the CLI negotiated h2 or provide request identity. The H2 synchronous dispatcher is a concrete source-level context boundary to validate; do not reclassify B01 UNKNOWN."
+  },
+  "not_done": [
+    "No original private log or CLI stderr body was retrieved by this analysis",
+    "No product source, runtime, thread guard or budget was changed",
+    "No new network/API/snapshot/restore/CLI request was issued"
+  ]
+}

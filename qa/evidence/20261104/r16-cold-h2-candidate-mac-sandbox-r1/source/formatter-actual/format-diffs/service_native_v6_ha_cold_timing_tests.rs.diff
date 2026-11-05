@@ -1,0 +1,13 @@
+--- before/service_native_v6_ha_cold_timing_tests.rs
++++ formatted/service_native_v6_ha_cold_timing_tests.rs
+@@ -41,7 +41,9 @@
+             calls.set(calls.get() + 1);
+             Err(error)
+         });
+-    let returned = result.err().ok_or("original recoverable error became success")?;
++    let returned = result
++        .err()
++        .ok_or("original recoverable error became success")?;
+     assert_eq!(std::ptr::from_ref(returned.0.as_ref()), error_identity);
+     assert_eq!(calls.get(), 2);
+     assert_eq!(deadline.instant(), until);

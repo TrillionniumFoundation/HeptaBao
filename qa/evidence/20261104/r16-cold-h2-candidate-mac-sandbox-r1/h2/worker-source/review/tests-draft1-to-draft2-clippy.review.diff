@@ -1,0 +1,121 @@
+--- draft1/crates/heptabao-server/src/http_h2_sync_worker_tests.rs
++++ draft2/crates/heptabao-server/src/http_h2_sync_worker_tests.rs
+@@ -17,11 +17,11 @@
+ }
+ 
+ #[test]
+-fn h2_sync_worker_is_unentered_and_retains_outer_context() {
++fn h2_sync_worker_is_unentered_and_retains_outer_context() -> Result<(), &'static str> {
+     let runtime = tokio::runtime::Builder::new_current_thread()
+         .enable_all()
+         .build()
+-        .expect("owned test runtime");
++        .map_err(|_| "owned test runtime")?;
+     runtime.block_on(async {
+         tokio::task::spawn_blocking(|| {
+             assert!(tokio::runtime::Handle::try_current().is_ok());
+@@ -38,9 +38,10 @@
+             assert!(tokio::runtime::Handle::try_current().is_ok());
+         })
+         .await
+-        .expect("owned blocking parent");
+-    });
++        .map_err(|_| "owned blocking parent")
++    })?;
+     assert!(tokio::runtime::Handle::try_current().is_err());
++    Ok(())
+ }
+ 
+ #[test]
+@@ -75,7 +76,7 @@
+         Instant::now() + Duration::from_secs(2),
+         move || {
+             let _capture = capture;
+-            panic!("fixed owned worker component");
++            std::panic::resume_unwind(Box::new("fixed owned worker component"));
+         },
+     );
+     assert_eq!(result, Err(()));
+@@ -87,29 +88,30 @@
+ fn h2_sync_worker_does_not_authorize_nested_runtime_context() {
+     let result = run_unentered_service_worker(
+         Instant::now() + Duration::from_secs(2),
+-        || {
++        || -> Result<(), &'static str> {
+             assert!(tokio::runtime::Handle::try_current().is_err());
+             let nested = tokio::runtime::Builder::new_current_thread()
+                 .enable_all()
+                 .build()
+-                .expect("owned nested runtime");
++                .map_err(|_| "owned nested runtime")?;
+             nested.block_on(async {
+                 // This is precisely the unchanged guard's refusal predicate.
+                 assert!(tokio::runtime::Handle::try_current().is_ok());
+             });
+             assert!(tokio::runtime::Handle::try_current().is_err());
++            Ok(())
+         },
+     );
+-    assert_eq!(result, Ok(()));
++    assert_eq!(result, Ok(Ok(())));
+ }
+ 
+ #[test]
+-fn h2_sync_worker_cancelled_waiter_retains_blocking_capacity() {
++fn h2_sync_worker_cancelled_waiter_retains_blocking_capacity() -> Result<(), &'static str> {
+     let runtime = tokio::runtime::Builder::new_current_thread()
+         .enable_all()
+         .max_blocking_threads(1)
+         .build()
+-        .expect("owned single-slot runtime");
++        .map_err(|_| "owned single-slot runtime")?;
+     let parent_drops = Arc::new(AtomicUsize::new(0));
+     let completed = Arc::new(AtomicUsize::new(0));
+     let probe_completed = Arc::new(AtomicUsize::new(0));
+@@ -123,20 +125,24 @@
+                 let _parent = DropCount(held_drops);
+                 run_unentered_service_worker(
+                     Instant::now() + Duration::from_secs(2),
+-                    move || {
+-                        started_sender.send(()).expect("owned start observer");
++                    move || -> Result<(), &'static str> {
++                        started_sender.send(()).map_err(|_| "owned start observer")?;
+                         release_receiver
+                             .recv_timeout(Duration::from_secs(1))
+-                            .expect("bounded component release");
++                            .map_err(|_| "bounded component release")?;
+                         held_completed.fetch_add(1, Ordering::SeqCst);
++                        Ok(())
+                     },
+                 )
+             })
+             .await
+         });
+-        started_receiver.await.expect("actual child started");
++        started_receiver.await.map_err(|_| "actual child started")?;
+         waiter.abort();
+-        assert!(waiter.await.expect_err("waiter cancelled").is_cancelled());
++        match waiter.await {
++            Err(error) => assert!(error.is_cancelled()),
++            Ok(_) => return Err("waiter was not cancelled"),
++        }
+         assert_eq!(parent_drops.load(Ordering::SeqCst), 0);
+         assert_eq!(completed.load(Ordering::SeqCst), 0);
+         let observed_completed = Arc::clone(&completed);
+@@ -146,11 +152,13 @@
+             observed_probe.fetch_add(1, Ordering::SeqCst);
+         });
+         assert_eq!(probe_completed.load(Ordering::SeqCst), 0);
+-        release_sender.send(()).expect("release actual worker");
+-        probe.await.expect("single capacity slot resumed");
+-    });
++        release_sender.send(()).map_err(|_| "release actual worker")?;
++        probe.await.map_err(|_| "single capacity slot resumed")?;
++        Ok::<(), &'static str>(())
++    })?;
+     drop(runtime);
+     assert_eq!(completed.load(Ordering::SeqCst), 1);
+     assert_eq!(parent_drops.load(Ordering::SeqCst), 1);
+     assert_eq!(probe_completed.load(Ordering::SeqCst), 1);
++    Ok(())
+ }

@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.phaseb.h2-worker.final-source-verification.v1",
+  "scope": "Pure V8 string/byte validation. No Rust, product, child, network or file mutation was invoked by this verification function.",
+  "status": "PASS_SOURCE_ONLY",
+  "checks": [
+    {
+      "label": "production",
+      "hunks": 2,
+      "strict_context_apply_whole_equal": true
+    },
+    {
+      "label": "test_draft1_to_final",
+      "hunks": 6,
+      "strict_context_apply_whole_equal": true
+    },
+    {
+      "label": "new_test_file_final",
+      "hunks": 1,
+      "strict_context_apply_whole_equal": true
+    }
+  ],
+  "inverse_original_h2_whole_equal": true,
+  "final_production": {
+    "path": "candidate/crates/heptabao-server/src/http_h2.rs",
+    "bytes": 14691,
+    "sha256": "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1",
+    "blob": "70db7e9c37f057ddb7a1a146e57d1697928d33ce"
+  },
+  "final_test": {
+    "path": "candidate/crates/heptabao-server/src/http_h2_sync_worker_tests.rs",
+    "bytes": 6126,
+    "sha256": "34002654f653d7b2a1ee5a49dccc8b9c97a0497bb96df27764959cbd877567e0",
+    "blob": "56b385b942e31f448cc46c65b1e91829add8330b"
+  },
+  "six_test_names": [
+    "h2_sync_worker_is_unentered_and_retains_outer_context",
+    "h2_sync_worker_expired_deadline_never_calls_work",
+    "h2_sync_worker_preserves_inner_result",
+    "h2_sync_worker_joins_panicked_work_and_drops_capture",
+    "h2_sync_worker_does_not_authorize_nested_runtime_context",
+    "h2_sync_worker_cancelled_waiter_retains_blocking_capacity"
+  ],
+  "forbidden_expect_unwrap_panic_macro_absent": true,
+  "production_source_modified_for_test_revision": false,
+  "rust_compile": false,
+  "rust_execution": false,
+  "product_execution": false
+}

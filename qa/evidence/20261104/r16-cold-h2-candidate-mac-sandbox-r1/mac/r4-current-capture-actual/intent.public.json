@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.mac-current-five-agent-runtime-single-intent.r4",
+  "root_admission_git_blob": "f4d88a35ce0c2c3407c983607a6e2ebbd3137dd9",
+  "exact_request_git_blob": "e2cad02e26a8e0b656f2475c17ced6c47ca52c1d",
+  "exact_request_bytes": 4667,
+  "exact_request_sha256": "a6ba251c51e1d572b4731401967ca0f21162c8a499dd71029dd116d43cbc09cf",
+  "idempotency_key": "heptabao-mac-current-five-agent-launchd-r4-6da29c3d-20261105-r1",
+  "source_outer_sha256": "6da29c3dab80e3373638621026f293ddd050a2e4e99f3bc3314ca42bc0005b4f",
+  "source_inputs_sha256": "c160d3593bd6ddce8e9eaea2acd96991af29b43c55713056ff996e9ffa2d2603",
+  "candidate_sha256": "83110fe480350b5add320039b8776ece0e18f65c948faf0f859a6560e8213825",
+  "qa_pins_sha256": "1998543d5668f0ef42a71da0b473f831c34f3c3bb0068ddfcabe2b12f51d66b8",
+  "actual_inert_tree": "af34c400aae7e14d41f3b2accc5e89844177554a",
+  "limits": {
+    "controller": 900,
+    "manager": 600,
+    "phase": 120,
+    "capture": 45,
+    "native": [
+      15,
+      8,
+      3
+    ],
+    "cleanup": 60,
+    "supervisor": 1080
+  },
+  "scope": "One owned current five-agent fixture and QA launchd flow. No production modification, provider, J3160, cutover or deletion.",
+  "created_unix_ms": 1793848197726,
+  "automatic_replay": false
+}

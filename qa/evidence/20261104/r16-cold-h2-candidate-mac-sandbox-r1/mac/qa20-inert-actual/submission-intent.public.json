@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.mac-qa20-inert-single-submission-intent.r5",
+  "root_admission_git_blob": "4b6276147eaa63e257038dee6e269ed3db3c641e",
+  "exact_request_git_blob": "32b609a33c3215c5b62485c01b2dbbf72f03348a",
+  "exact_request_sha256": "f7255d60031d481b4fa2c2d7ac3dfdd87fafb830e1e09a8e1ba7f4deba6f64bd",
+  "request_bytes": 670117,
+  "source_git_blob": "7ccda6b1e3eb145d0dfbf11435bbaa1ee6028851",
+  "source_sha256": "1a229cc5049169f23a353188109ffd3a61be37234d7d162d1f610dbe63989120",
+  "idempotency_key": "heptabao-mac-current-inputs-r4-qa20-source-inert-c160d359-20261105-r2",
+  "scope": "One append-only inert; 23 existing files unchanged, exact QA20 to22, only three new publications. No runtime permission.",
+  "original_inner_seconds": 45,
+  "outer_seconds": 60,
+  "diskutil_clipped_seconds": 30,
+  "created_unix_ms": 1793847675893,
+  "automatic_retry": false
+}

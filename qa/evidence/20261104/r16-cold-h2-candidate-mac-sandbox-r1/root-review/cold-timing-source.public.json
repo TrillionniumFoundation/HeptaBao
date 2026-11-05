@@ -1,0 +1,86 @@
+{
+  "schema": "heptabao.root-cold-normal-timing-source-review.v1",
+  "packet_tree": "fa8372f2c54e416b30daa9ec5130cfd6a196e90b",
+  "files": 20,
+  "bytes": 1171530,
+  "merkle_trees": 13,
+  "original_blob": "a1de3065d7883b4b1943d794756e182f1a2ce708",
+  "candidate_blob": "721fa102aaee4c382bdbecba7c6a922dc5983d0f",
+  "changes": 16,
+  "strict_hunks": 9,
+  "testmodule_hunks": 1,
+  "combined_hunks": 10,
+  "forward_reverse_exact": true,
+  "canonical495_and3cb_exact": true,
+  "pre_cold_helpers_and_all_warm_read_proof_bytes_unchanged": true,
+  "original_cold_business_call_counts_equal": {
+    "native_v6_committed_read": [
+      1,
+      1
+    ],
+    "LocalSelection::read": [
+      2,
+      2
+    ],
+    "check_cold": [
+      1,
+      1
+    ],
+    "verify_native_v6_committed_read": [
+      1,
+      1
+    ],
+    "with_native_v6_source": [
+      2,
+      2
+    ],
+    "install_native_v6_replica_inner_with_payload_validation": [
+      1,
+      1
+    ],
+    "NativeHaCursor::decode": [
+      1,
+      1
+    ],
+    "matches_current": [
+      1,
+      1
+    ],
+    "materialize_local_with_payload_validation": [
+      2,
+      2
+    ],
+    "repair_current_local_objects": [
+      1,
+      1
+    ],
+    "root_namespace_only": [
+      1,
+      1
+    ],
+    "checked_add": [
+      1,
+      1
+    ]
+  },
+  "phase_count": 20,
+  "normal_backend": "Existing observe_native_v6_timing with closed enum static labels, same OriginalDeadline and FnOnce Result returned unchanged.",
+  "semantics_reviewed": [
+    "First materialize Err retains existing repair branch; second error remains terminal.",
+    "Outer source Err and outer Ok(inner Err) remain distinct; no question-mark flattening.",
+    "No new call or check of an original owner, witness, ReadIndex, storage or deadline; observations wrap the existing once callsites.",
+    "Same 503 and 507 mappings and original cold result; no extra retry or gate.",
+    "Original 64-bucket cap unchanged; no keys, data, error text, IDs or private reason output."
+  ],
+  "rust_component_source_tree": "7235e8ef82bad30b39e8b618965ba8ed1d532aa6",
+  "new_rust_helpers": 2,
+  "unchanged_actual_cold_repair_case": 1,
+  "actual_cold_test_blob": "45e7121f8d8b567f9ac80b33f8090aceacf8e5ff",
+  "new_test_source_revision_required": "Remove newly introduced unwrap/expect/expect_err before formatting to satisfy observed strict Clippy without lint suppression.",
+  "root_check_correction": "Two initial local substring-count checks rejected: one included the whole file, both matched native_v6_committed_read inside verify_native_v6_committed_read. Exact identifier boundaries in the cold function range recover all 12 original counts. No source, host operation, budget or assertion changed.",
+  "rust_formatted": false,
+  "rust_compiled": false,
+  "rust_executed": false,
+  "original44_and_extra7_qualification_transfer": false,
+  "decision": "SOURCE_SEMANTICS_ACCEPTED_PENDING_NEW_TEST_LINT_REVISION_AND_PINNED_FORMAT_COMPILE_ACTUAL_SELECTED_VALIDATION"
+}

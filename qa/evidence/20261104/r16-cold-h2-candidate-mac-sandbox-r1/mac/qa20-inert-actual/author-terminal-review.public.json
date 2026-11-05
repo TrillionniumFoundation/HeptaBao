@@ -1,0 +1,150 @@
+{
+  "schema": "heptabao.mac-current-qa20-inert-author-terminal-review.r5",
+  "verdict": "PASS_APPEND_ONLY_INERT_SCOPE",
+  "job_id": "1a1a9a7cdcb-fc05-368f",
+  "key": "heptabao-mac-current-inputs-r4-qa20-source-inert-c160d359-20261105-r2",
+  "root_admission_git_blob": "4b6276147eaa63e257038dee6e269ed3db3c641e",
+  "exact_request_git_blob": "32b609a33c3215c5b62485c01b2dbbf72f03348a",
+  "source_git_blob": "7ccda6b1e3eb145d0dfbf11435bbaa1ee6028851",
+  "authority": {
+    "exit_code": 0,
+    "state": "succeeded",
+    "output_complete": true,
+    "output_durable": true,
+    "timed_out": false,
+    "terminal_publication_confirmed": true
+  },
+  "original_stdout": {
+    "bytes": 19061,
+    "sha256": "d37f042b9e73e1aa54c9f9f53a1f05d8fb88e08c028022421d7328e5e2cfa2a5",
+    "git_blob": "e0fa510b29251c509febc6500e73e116344f0ed5",
+    "exact_reconstruction_from_sdk_hex_and_text": true,
+    "pages": 2,
+    "complete_eof": true,
+    "stderr_bytes": 0
+  },
+  "closure": {
+    "all_owned_commands_stopped": true,
+    "owned_commands": 1,
+    "only_command": "/usr/sbin/diskutil info -plist /Volumes/T5",
+    "actual_command_exit": 0,
+    "direct_child_reaped": true,
+    "owned_group_empty_before_and_after_reap": true,
+    "post_reap_signal": false,
+    "stdout_stderr_streams_closed": true,
+    "all_t5_descriptors_closed": true,
+    "anchor_fields_exact": 27,
+    "volume_uuid_verified": true,
+    "original_deadline_after_closure": true,
+    "elapsed_seconds": 0.25340291671454906,
+    "unknown": false
+  },
+  "preservation": {
+    "source_count": 18,
+    "document_count": 5,
+    "total": 23,
+    "original_complete_nine_fields_before_after_exact": true,
+    "original_complete_bytes_sha256_before_after_exact": true,
+    "original_two_qa_receipts_freshly_read_and_equal_historical_tokens": true,
+    "original_root_documents": 3
+  },
+  "qa": {
+    "before_count": 20,
+    "after_count": 22,
+    "exact_before_and_after_member_sets": true,
+    "inside_each_enumeration_full_nine_field_identity_check_enforced": true,
+    "cross_append_object_identity_first_five_equal": true,
+    "actual_nlink_before": "22",
+    "actual_nlink_after": "24",
+    "reason_scope": "Allowed changes across these two controlled member additions only. This is not the earlier failure diagnosis."
+  },
+  "runtime_paths": {
+    "count": 9,
+    "twice_absent_before": true,
+    "twice_absent_after": true,
+    "paths": [
+      "outer-r3",
+      "outer-r4",
+      "captures",
+      "launchd",
+      "server",
+      "credentials-consumer",
+      "installed-plugin-copy",
+      "initial",
+      "cold-new-process"
+    ]
+  },
+  "new_files": [
+    {
+      "bytes": 59462,
+      "identity": [
+        "16777244",
+        "72552921",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "59462",
+        "1793847709593021070",
+        "1793847709593031404"
+      ],
+      "path": "qa/mac_current_outer_r4.py",
+      "sha256": "6da29c3dab80e3373638621026f293ddd050a2e4e99f3bc3314ca42bc0005b4f",
+      "wholeReadbackVerified": true
+    },
+    {
+      "bytes": 27059,
+      "identity": [
+        "16777244",
+        "72552922",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "27059",
+        "1793847709593598787",
+        "1793847709593604621"
+      ],
+      "path": "qa/mac_current_outer_inputs_r2.py",
+      "sha256": "c160d3593bd6ddce8e9eaea2acd96991af29b43c55713056ff996e9ffa2d2603",
+      "wholeReadbackVerified": true
+    },
+    {
+      "bytes": 3442,
+      "identity": [
+        "16777244",
+        "72552923",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "3442",
+        "1793847709594071503",
+        "1793847709594076795"
+      ],
+      "path": "candidate-current-manager-r4.public.json",
+      "sha256": "83110fe480350b5add320039b8776ece0e18f65c948faf0f859a6560e8213825",
+      "wholeReadbackVerified": true
+    }
+  ],
+  "candidate_r4_sha256": "83110fe480350b5add320039b8776ece0e18f65c948faf0f859a6560e8213825",
+  "side_effects": {
+    "production_private_inputs_read": false,
+    "sqlite_executed": false,
+    "consumer_executed": false,
+    "service_started": false,
+    "git_started": false,
+    "cargo_started": false,
+    "input_entrypoints_executed": false,
+    "existing_source_overwritten": false
+  },
+  "runtime_authorized": false,
+  "runtime_submitted": false,
+  "production_qualified": false,
+  "retained_history": {
+    "r3_input_admission_failure": true,
+    "r4_initial_inert_membership_failure": true,
+    "all_original_public_receipts_unchanged": true
+  },
+  "original_record_handling": "Native JSON/stdout are original strings; cached MCP snapshots serialize the available tool objects and are not claimed transport wire bytes."
+}

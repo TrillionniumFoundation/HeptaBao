@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.phaseb.h2-unentered-worker.components.v1",
+  "status": "SOURCE_ONLY_NOT_RUN",
+  "test_source": {
+    "path": "candidate/crates/heptabao-server/src/http_h2_sync_worker_tests.rs",
+    "bytes": 6126,
+    "sha256": "34002654f653d7b2a1ee5a49dccc8b9c97a0497bb96df27764959cbd877567e0",
+    "blob": "56b385b942e31f448cc46c65b1e91829add8330b"
+  },
+  "production_source": {
+    "path": "candidate/crates/heptabao-server/src/http_h2.rs",
+    "bytes": 14691,
+    "sha256": "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1",
+    "blob": "70db7e9c37f057ddb7a1a146e57d1697928d33ce"
+  },
+  "listing_required_before_execution": true,
+  "expected_tests": [
+    {
+      "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context",
+      "purpose": "Actual Tokio blocking parent has a current Handle; the scoped child has none and a different thread identity; parent retains its original context after join."
+    },
+    {
+      "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work",
+      "purpose": "An already-expired absolute deadline invokes no work and drops the captured affine owner once."
+    },
+    {
+      "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result",
+      "purpose": "A callback's inner Err value remains Ok(Err) at the helper boundary, not flattened into helper success or failure."
+    },
+    {
+      "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture",
+      "purpose": "A fixed synthetic unwind is joined and mapped to helper Err; owned capture is dropped exactly once."
+    },
+    {
+      "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
+      "purpose": "Entering a nested runtime inside the otherwise unentered child recreates the exact unchanged guard's refusal predicate. This component tests the predicate, not a fabricated native admission."
+    },
+    {
+      "name": "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity",
+      "purpose": "Cancelling the async waiter cannot free an occupied single blocking-pool slot; a queued probe only runs after the actual scoped child completes and its parent drops."
+    }
+  ],
+  "limitations": [
+    "No component starts a product server, CLI, provider, network, native store, or original B01 fixture.",
+    "Nested context component checks the unchanged guard predicate; no claim that it directly calls the private HA-service guard.",
+    "OS thread-creation failure branch is statically before callback invocation; no artificial OS exhaustion or new production injection API is proposed.",
+    "New Rust source has not been formatted, compiled, linted or executed."
+  ],
+  "original_groups": {
+    "count": 44,
+    "blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f",
+    "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+    "unchanged": true
+  },
+  "original_additional_ingress_group": {
+    "count": 7,
+    "runner_blob": "7fd97c088c538c7b4d1968964b8d8eaa67826885",
+    "unchanged": true,
+    "shared_seconds": 600
+  },
+  "proposed_separate_increment": {
+    "h2_new_components": 6,
+    "cold_new_helper_components": 2,
+    "existing_real_cold_repair_regression": 1,
+    "shared_new_seconds": 600,
+    "execution_owner": "ha_validation prepares the unified controller; root reviews exact inputs and gives execution GO"
+  },
+  "original_build_caps_seconds": {
+    "release": 1800,
+    "libtest_compile": 3600,
+    "listing": 30,
+    "each_of_six_original_groups": 600,
+    "extra_seven_shared": 600,
+    "cleanup_term": 5,
+    "cleanup_kill": 5
+  },
+  "actual_h1_h2_tls_and_cli_gate": {
+    "status": "REQUIRES_FRESH_FIXTURE_BINDING_AND_SEPARATE_EXECUTION_GO",
+    "preserve": "Normal entry, original Phase B B01-B05 native archive and API/cold semantics; CLI/HTTP 15 seconds; action 300 seconds; readiness 45; election 60; forward 8; peer 1.5; TERM 5 and KILL 5; no replay of either old B01 UNKNOWN.",
+    "h1": "Retain original HTTP/1 entry and verify actual strict-TLS requests on the new normal artifact under the original budget.",
+    "h2": "Verify actual TLS ALPN h2 and actual H2 request dispatch; a current-thread runtime unit test alone is insufficient.",
+    "official_cli": "Run the exact official 2.7.1 CLI against fresh normal native fixture with legal archive A/B and API plus cold verification; exit zero is not restore qualification.",
+    "alpn_observation": "The old CLI fixture did not capture negotiated ALPN. A concrete passive, bounded, secret-safe ALPN observation must be reviewed before claiming that the fresh official CLI used H2. Until then, TLS CLI and separate actual-H2 evidence must stay distinct.",
+    "existing_alpn_test_available": "http::api_alpn_tests::api_tls_alpn_negotiates_supported_protocols_and_rejects_wrong_hostname",
+    "existing_alpn_test_scope": "Real Rustls TLS 1.2/1.3 handshake and application delivery over a bounded record pump; it explicitly does not prove HTTP/2 Service dispatch or official CLI ALPN. It is not silently added to the proposed nine-test group."
+  }
+}

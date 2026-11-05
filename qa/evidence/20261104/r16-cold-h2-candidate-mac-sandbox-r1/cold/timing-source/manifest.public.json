@@ -1,0 +1,98 @@
+{
+  "schema": "heptabao.cold-normal-timing-source-packet.v1",
+  "source_only": true,
+  "files": {
+    "candidate/crates/heptabao-server/src/service_native_v6_ha_read.rs": {
+      "bytes": 31430,
+      "sha256": "2ba7754aab0420aa12b0961f10b28905e2f73f58cece623f56853e8d20063560",
+      "blob": "721fa102aaee4c382bdbecba7c6a922dc5983d0f"
+    },
+    "diffs/cold-normal-timing-r1.review.diff": {
+      "bytes": 15928,
+      "sha256": "c67d9d077c73cbcd9d661d256377abd11a0d8747d45ea8760fc9fdd2352faab1",
+      "blob": "767946880812d44338c07c1db9c02387c135d8fc"
+    },
+    "PHASE_AND_CALL_ORDER.public.json": {
+      "bytes": 15273,
+      "sha256": "5a1cd364825a94d7e40dca6522b143c45ad05f91fa65bfc2b4875c255e7d80c4",
+      "blob": "f07192c9f2e87fd29737d00249b20d4fc13e4cf3"
+    },
+    "VALIDATION_PLAN.public.json": {
+      "bytes": 2649,
+      "sha256": "2c6c3c734e64aff78095c1b7bb98613fd574948486f2af8dc257deb26ee3e99d",
+      "blob": "59b566472df06b04982b316758c0f9828d1bf658"
+    },
+    "mechanical/changes.public.json": {
+      "bytes": 14804,
+      "sha256": "830f276aef8c1aaa51e9d3f4fec565aae29b2a1e6cc21642335940a1a7399584",
+      "blob": "a6f69b7937680f1e3bf55e84329ce218d6cf985e"
+    },
+    "components/source_preservation.py": {
+      "bytes": 82801,
+      "sha256": "ef565c97ad793b5348fb59330d224505abd64a4401ad3c6b41f764646d7a2526",
+      "blob": "c470bc319f75da516c94fa6b84c5298ea427c8bc"
+    },
+    "components/source_preservation.executor.json": {
+      "bytes": 2200,
+      "sha256": "03f69743a990b9a3c5aee5d6503aa57ebc3b5d510a58586f749ea0a9acdbb583",
+      "blob": "a5cc2d16947b112e7c59624083aeb111f70df286"
+    },
+    "components/source_preservation.public.json": {
+      "bytes": 2442,
+      "sha256": "9ab0bdad7e899609aad0b528591f7705cf7a18b3b656ecf73ce019b1b9ed0652",
+      "blob": "01b9741f44dabf438c30f71e38ca3ba39c6c608d"
+    },
+    "components/preserved_failed_harness.py": {
+      "bytes": 82735,
+      "sha256": "33d3dae6b17c53333207dd6609b88d5f75a95790d602a2944eeaa499e703242f",
+      "blob": "ceacefec33a0fa3e4f4d28141a9249103d4a0553"
+    },
+    "components/preserved_failed_harness.executor.json": {
+      "bytes": 310,
+      "sha256": "387043d810a55a2eb941f8e2760f7fe087e80ab52bf20436f6aa3c22ea86c749",
+      "blob": "e7381895a470521dbbfd723ac4ed53fb9c5c7ace"
+    },
+    "components/intermediate_exit0_truncated_output.executor.json": {
+      "bytes": 2354,
+      "sha256": "1450725555b88218da9d47a864ea0a074222213d64d94a13b627a659760ecc63",
+      "blob": "4a5253e0d8474c079ba7a4804fafb603a5a87949"
+    },
+    "README.md": {
+      "bytes": 1632,
+      "sha256": "9b0ff44730f07183f19c1b0640f13c837e2f4502fea3da82699502223022a867",
+      "blob": "b9da30dbfd38d2b7227f1d903e6ddc1183903039"
+    }
+  },
+  "reused_git_blobs": [
+    {
+      "path": "original/crates/heptabao-server/src/service_native_v6_ha_read.rs",
+      "blob": "a1de3065d7883b4b1943d794756e182f1a2ce708"
+    },
+    {
+      "path": "references/ha.rs",
+      "blob": "95533302d0a7afa31078b712624c1701f5edb9c8"
+    },
+    {
+      "path": "references/ha_native_v6_runtime.rs",
+      "blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000"
+    },
+    {
+      "path": "references/service_native_v6_ha_install.rs",
+      "blob": "d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9"
+    },
+    {
+      "path": "references/service.rs",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08"
+    },
+    {
+      "path": "references/timing_projection_actual.public.json",
+      "blob": "52633c5c0cfad1c34216a898e355207177ef19c5"
+    },
+    {
+      "path": "references/timing_projection_authority.public.json",
+      "blob": "eea7a06cc1c84d82b0ee485283ff9f82ee89904e"
+    }
+  ],
+  "source_changed_count": 1,
+  "format_build_runtime_done": false
+}

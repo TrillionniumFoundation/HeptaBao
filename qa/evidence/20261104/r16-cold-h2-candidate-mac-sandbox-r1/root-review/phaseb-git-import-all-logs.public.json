@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.root-standalone3cb-import-complete-original-log-review.v1",
+  "packet_tree": "da6d13dc4d6b02a73dfbab59bf5d411afe86472d",
+  "files": 288,
+  "bytes": 6064900,
+  "packet_merkle_trees": 8,
+  "source_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "source_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "original_job": "1a1a9579588-fc05-346f",
+  "original_commands": 21,
+  "whole_original_logs": 63,
+  "expected_exit0": 19,
+  "expected_exit1": 2,
+  "all_original_commands_reaped_with_empty_group": true,
+  "original_sdk_payloads": 26,
+  "immutable_sdk_pages": 103,
+  "exact_embedded_whole_files": 64,
+  "new_log_archive_operation_ids": 22,
+  "total_version_pinned_chunks": 14,
+  "large_originals": [
+    {
+      "blob": "4a06b193010c16b487ab44e21be89b85a96ba5d9",
+      "bytes": 450094,
+      "sha256": "604f32e51684437f26cfaf0f9a06333ae3078bbf15a4610fee6f2f2bf4f9b156"
+    },
+    {
+      "blob": "1b6e116b5b79963ad96489ba801c22087394aff5",
+      "bytes": 438361,
+      "sha256": "9b0c0799e3cee9d728c00bda221f277ccdbb7ba08117e4734a469aa9b29d8529"
+    }
+  ],
+  "exact_NUL_tree_index_records": 3911,
+  "tree_equals_index_and_canonical": true,
+  "reconstructed_merkle": {
+    "root_sha": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+    "trees_verified": 358
+  },
+  "full_fsck_passed": true,
+  "canonical_commit_count": 3755,
+  "old_source_opened": false,
+  "new_host_reads_for_root_review": 0,
+  "git_command_replayed": false,
+  "product_operation_replayed": false,
+  "qualification_scope": "Completes original source-import log archive and source provenance only. No runtime/product qualification is added.",
+  "original_unsafe_integer_tokens_retained": true
+}

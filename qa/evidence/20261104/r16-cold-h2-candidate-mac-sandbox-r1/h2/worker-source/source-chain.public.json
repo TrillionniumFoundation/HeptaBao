@@ -1,0 +1,206 @@
+{
+  "schema": "heptabao.phaseb.h2-unentered-worker.source-chain.v1",
+  "status": "SOURCE_ONLY_NOT_EXECUTED",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "base_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "base_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "canonical_sources": [
+    {
+      "path": "crates/heptabao-ha-service/src/v6_closure_quorum.rs",
+      "bytes": 41985,
+      "sha256": "b978a20df6252c8bcfc26ba224c4faf5c4a703777118c4e739bdfa34acecf421",
+      "blob": "21d186c7aaae63f95a9099a6d4981f502c70c5e4"
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "bytes": 61623,
+      "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a",
+      "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/lib.rs",
+      "bytes": 84895,
+      "sha256": "f7eac8103954260134e244a1d5d5bf0045ed74f0d7123a01ac5f0b6b7089e7b8",
+      "blob": "6e8947315c14e50c2424de90b11c99888e7bd0a5"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/v6_closure_quorum_wire.rs",
+      "bytes": 13491,
+      "sha256": "09020727903f9b4642a1cf466b1488423994ac9f259d6233c5f18e8506c42fbf",
+      "blob": "bea82d4c683414bedd7a8a3e5e48c3d48b12fd57"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/v6_committed_root_pull.rs",
+      "bytes": 56561,
+      "sha256": "ef4ed22ac9b851d7472b031b0120414b6cf4436b50d1f25674c774100beac019",
+      "blob": "7c865163609728bb46342df9ac1e8bcc43c5821b"
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/v6_ingress_reselection.rs",
+      "bytes": 9898,
+      "sha256": "90352982a7ec464405447a1174b5e0df22c7d98dffc682c6447ca5aa1c6928bd",
+      "blob": "d3789a93c8bc3a4678e831c886315527ec086902"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_h2.rs",
+      "bytes": 13613,
+      "sha256": "f24ccfc27aabf1b938eb34b8fa07e8a41f1f243b7d47eab9c9a452c3fac7262f",
+      "blob": "b15a68b5ba882c7f00d3f6b5b347ad807d500d3d"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot.rs",
+      "bytes": 35170,
+      "sha256": "1cc98a78d6a037a47456b7c6b93dc13647a261e8217f12a6a4edff3d91fe41e2",
+      "blob": "4a5743d757b79493400b712bf57a5fa552b50bda"
+    },
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "bytes": 231923,
+      "sha256": "6d90383db0dabca25b6f6806e2b5923352976f4c4a69b2cce9a0a2dde7d727eb",
+      "blob": "58706d8d92e5e4a3c38a0b5843ead700ab2c4825"
+    },
+    {
+      "path": "crates/heptabao-server/src/main.rs",
+      "bytes": 5598,
+      "sha256": "cd13c9ede516a0f6fb03c785e077df472bfa046cb63f9a8748eadb3d7bccc349",
+      "blob": "ee6c82d4d7f22fb2e7f5f20d87b4a560c5bbd939"
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "bytes": 50683,
+      "sha256": "022be62ccaf26a335103dc106be432d7b8896768cace056e649b65ca920e97b9",
+      "blob": "6b94e34c223fac25858c1e7f82fb18c07abf0ef3"
+    },
+    {
+      "bytes": 518245,
+      "sha256": "2545e0951051b76b6278c2678c893b98756d3164855939a811db6b22dfc31cf2",
+      "blob": "baf0a89b7ed2a2dec6c89d2464ef6605faaffa08",
+      "path": "crates/heptabao-server/src/service.rs"
+    },
+    {
+      "path": "Cargo.lock",
+      "bytes": 101193,
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5",
+      "blob": "f3b5394e274d5da977e7e1ec89940b0d0e9f55ff"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_api_alpn_tests.rs",
+      "bytes": 9276,
+      "sha256": "a69638571064e583690e7f33ca7f58e9e832e58993a07d5b455687aeddae3d8e",
+      "blob": "693e2c26895eef457ec3518cba81fb601e7b8423"
+    }
+  ],
+  "prior_complete_source_diagnosis_tree": "830dadc68bc5facb9694564f415d32b225e058cf",
+  "prior_root_source_review_blob": "2256dc9f3932002fad81d898dba825e4d42e0ae8",
+  "observed_projection_tree": "52dbf5d681903711b38f673fc0bdc72be67195d8",
+  "observed_reason_sha256": "392f52cb2031a180c22d20184a7237a9def3cf925148ba9f0eebf68f1bb25aed",
+  "exact_public_display": "HA cluster configuration is invalid",
+  "interpretation": "Within the observed fresh_ingress_same_root_closure scope, the complete canonical error chain has only the unchanged require_blocking_worker path producing this InvalidCluster Display. No request identity or observed ALPN was captured; this does not relabel the B01 UNKNOWN.",
+  "anchors": [
+    {
+      "path": "crates/heptabao-ha-service/src/v6_closure_quorum.rs",
+      "kind": "unchanged strict guard",
+      "first_line": 64,
+      "last_line": 71,
+      "sha256": "9996191bb0bd776f9b127c8d0efb3f41364c5cd00288ccff29c5b18c92478228",
+      "text": "fn require_blocking_worker() -> Result<(), HaError> {\n    // Handle::block_on from an asynchronous runtime worker can panic or stall\n    // the consensus tasks needed by follower ReadIndex. Fail before any I/O.\n    if Handle::try_current().is_ok() {\n        return Err(HaError::InvalidCluster);\n    }\n    Ok(())\n}\n"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_h2.rs",
+      "kind": "per-connection runtime, ALPN dispatch, owned runtime drop",
+      "first_line": 25,
+      "last_line": 70,
+      "sha256": "5164d14c1d4780786de3dbd6d0e56a8feb580a32c33118b53689342757f3bb23",
+      "text": "    let runtime = tokio::runtime::Builder::new_current_thread()\n        .enable_all()\n        .max_blocking_threads(MAX_STREAMS as usize)\n        .build()\n        .ok()?;\n    let accepted = runtime.block_on(async {\n        let transport = tokio::net::TcpStream::from_std(stream).ok()?;\n        tokio::time::timeout_at(deadline.into(), TlsAcceptor::from(tls).accept(transport))\n            .await\n            .ok()?\n            .ok()\n    })?;\n    if accepted.get_ref().1.alpn_protocol() != Some(b\"h2\") {\n        let (transport, connection) = accepted.into_inner();\n        let stream = transport.into_std().ok()?;\n        stream.set_nonblocking(false).ok()?;\n        return Some(StreamOwned::new(\n            connection,\n            DeadlineStream { stream, deadline },\n        ));\n    }\n    let certificates = accepted\n        .get_ref()\n        .1\n        .peer_certificates()\n        .map(|certificates| {\n            certificates\n                .iter()\n                .map(|certificate| certificate.as_ref().to_vec())\n                .collect()\n        });\n    let context = Arc::new(Context {\n        service,\n        limiter,\n        peer,\n        consistency,\n        ui_assets,\n        certificates,\n    });\n    runtime.block_on(async {\n        let _ = serve(accepted, context, deadline, timeout, first_rate_limited).await;\n    });\n    // Runtime drop waits for the owned synchronous Service effects. Cancelling\n    // a stream never refunds admission or abandons a started durable effect.\n    drop(runtime);\n    None\n"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_h2.rs",
+      "kind": "stream admission and same deadline",
+      "first_line": 90,
+      "last_line": 141,
+      "sha256": "811752bc0c40bd76bd55d8d1b8aeaa850a413a8701a74285b867c1fe04a622d7",
+      "text": "    builder\n        .max_concurrent_streams(MAX_STREAMS)\n        .max_header_list_size(MAX_HEADERS as u32)\n        .max_send_buffer_size(64 * 1024)\n        .initial_window_size(64 * 1024)\n        .initial_connection_window_size(1024 * 1024);\n    let mut connection = builder\n        .handshake::<_, Bytes>(transport)\n        .await\n        .map_err(|_| ())?;\n    let mut first = true;\n    loop {\n        // Bound idle connections while giving each subsequent HEADERS admission\n        // one new request budget. Body, writer, provider and audit share it.\n        let accept_deadline = if first {\n            first_deadline\n        } else {\n            Instant::now() + timeout\n        };\n        let Some(accepted) = tokio::time::timeout_at(accept_deadline.into(), connection.accept())\n            .await\n            .map_err(|_| ())?\n        else {\n            break;\n        };\n        let (request, sender) = accepted.map_err(|_| ())?;\n        let deadline = if first {\n            first_deadline\n        } else {\n            Instant::now() + timeout\n        };\n        let limited = if first {\n            first_rate_limited\n        } else {\n            context\n                .limiter\n                .lock()\n                .map_or(true, |mut limiter| !limiter.allow(context.peer))\n        };\n        first = false;\n        let context = Arc::clone(&context);\n        let _task = tokio::spawn(async move {\n            let _ = tokio::time::timeout_at(\n                deadline.into(),\n                exchange(request, sender, context, deadline, limited),\n            )\n            .await;\n        });\n    }\n    Ok(())\n}\n\n"
+    },
+    {
+      "path": "crates/heptabao-server/src/http_h2.rs",
+      "kind": "original normal Service dispatch",
+      "first_line": 251,
+      "last_line": 280,
+      "sha256": "a1f03a8571bd2c9d5a41acc7941744bd0cac715b9021d2a916042a9d096f98a7",
+      "text": "    let wire = request_wire(&parts, &payload);\n    let reply = tokio::task::spawn_blocking(move || {\n        let (wire, rejection) = match wire {\n            Ok(wire) => (wire, None),\n            Err(error) => (Zeroizing::new(Vec::new()), Some(error)),\n        };\n        let mut source = io::Cursor::new(wire);\n        let parsed = match rejection {\n            Some(error) => Err(error),\n            None => read_request_with_ui(\n                &mut source,\n                deadline.saturating_duration_since(Instant::now()),\n                true,\n                context.ui_assets.is_some(),\n            ),\n        };\n        process_parsed_request(\n            &context.service,\n            context.ui_assets.as_deref(),\n            parsed,\n            &mut source,\n            context.certificates.clone(),\n            context.peer,\n            &attempt,\n            context.consistency,\n            deadline,\n        )\n    })\n    .await\n    .map_err(|_| ())?;\n"
+    },
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "kind": "configured global connection maximum",
+      "first_line": 434,
+      "last_line": 436,
+      "sha256": "2865da989178b86579347ff2a9f6a290759c9e35a57b3e145dd5c5e3e10315ec",
+      "text": "    }\n    if !(1..=128).contains(&config.max_connections) || !(1..=60).contains(&config.timeout_seconds) {\n        return Err(\"invalid bounded connection policy\".into());\n"
+    },
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "kind": "original connection ownership through H2 runtime",
+      "first_line": 836,
+      "last_line": 907,
+      "sha256": "ea74ba85c07e567eb41663d3053e062213ecd1686be4fac1d5c6f600b95e92fa",
+      "text": "        let timeout = Duration::from_secs(config.timeout_seconds);\n        // One budget from accept, including worker scheduling, TLS/body reads,\n        // service lock waiting, forwarding, provider work, and response writes.\n        let accepted_at = Instant::now();\n        let deadline = accepted_at + timeout;\n        if connections\n            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |value| {\n                (value < config.max_connections).then_some(value + 1)\n            })\n            .is_err()\n        {\n            drop(stream);\n            continue;\n        }\n        let guard = ConnectionGuard(Arc::clone(&connections));\n        let peer = match stream.peer_addr() {\n            Ok(peer) => peer.ip(),\n            Err(_) => {\n                drop(guard);\n                drop(stream);\n                #[cfg(target_os = \"linux\")]\n                if let Some(control) = local_control.as_ref() {\n                    drop(listener);\n                    return control.shutdown(\n                        &service,\n                        &connections,\n                        Some(\"cannot identify accepted peer\".into()),\n                        || {\n                            drop(_namespace_deletion);\n                            drop(_lifecycle);\n                            drop(_mfa_janitor);\n                            drop(_ha_activation);\n                        },\n                    );\n                }\n                return Err(\"cannot identify accepted peer\".into());\n            }\n        };\n        let rate_limited = limiter\n            .lock()\n            .map_or(true, |mut limiter| !limiter.allow(peer));\n        let request_service = Arc::clone(&service);\n        let rate_limiter = Arc::clone(&limiter);\n        let tls = Arc::clone(&tls);\n        let request_ui_assets = ui_assets.clone();\n        let spawn = std::thread::Builder::new()\n            .name(\"heptabao-request\".into())\n            .spawn(move || {\n                let service = request_service;\n                let _guard = guard;\n                let mutation_profile =\n                    mutation_profile::Scope::begin(mutation_profile_enabled, accepted_at);\n                if stream.set_read_timeout(Some(timeout)).is_err()\n                    || stream.set_write_timeout(Some(timeout)).is_err()\n                {\n                    return;\n                }\n                mutation_profile.point(mutation_profile::Point::TlsStart);\n                let Some(mut stream) = h2_transport::negotiate(\n                    stream,\n                    tls,\n                    deadline,\n                    timeout,\n                    Arc::clone(&service),\n                    rate_limiter,\n                    peer,\n                    consistency_settings,\n                    request_ui_assets.clone(),\n                    rate_limited,\n                ) else {\n                    return;\n                };\n"
+    },
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "kind": "unchanged audited wire rejection wrapper",
+      "first_line": 1343,
+      "last_line": 1356,
+      "sha256": "7458487842387c1984ecd4e3e91d63fd0511d7c288315771ab23df73859e3bea",
+      "text": "fn audited_wire_rejection(\n    service: &Arc<Mutex<Service>>,\n    attempt_id: &[u8; 16],\n    rejection: WireRejection,\n    status: u16,\n    message: &'static str,\n    deadline: Instant,\n) -> Response {\n    match lock_until(service, deadline) {\n        Ok(mut service) => service.handle_wire_rejection(attempt_id, rejection, status, message),\n        Err(LockWaitError::Busy) => Response::error(503, \"service state lock deadline exceeded\"),\n        Err(LockWaitError::Poisoned) => Response::error(503, \"service state is unavailable\"),\n    }\n}\n"
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "kind": "wire rejection does not enter logical request admission",
+      "first_line": 2086,
+      "last_line": 2124,
+      "sha256": "960cb9a11ab51f587b9ac8eebdb72bde7f5fd562df8f3e72899027efaa2da8ee",
+      "text": "    pub(crate) fn handle_wire_rejection(\n        &mut self,\n        attempt_id: &[u8; 16],\n        rejection: WireRejection,\n        status: u16,\n        message: &'static str,\n    ) -> Response {\n        let now = SystemTime::now()\n            .duration_since(UNIX_EPOCH)\n            .map_or(0, |duration| duration.as_secs());\n        let fingerprint = self.wire_rejection_fingerprint(attempt_id, rejection, status);\n        if self\n            .audit_event(\"wire-rejection\", &fingerprint, now, None)\n            .is_err()\n        {\n            return Response::error(503, \"wire rejection audit unavailable\");\n        }\n        let mut response = Response::error(status, message);\n        // Retry-After belongs to the admission decision, not to the numeric\n        // status. A quota refusal with response headers disabled, or a standby\n        // health response, must not acquire the listener's one-second hint.\n        if matches!(rejection, WireRejection::RateLimited) && status == 429 {\n            response.response_headers = ResponseHeaders::from_sdk(\n                Some(&json!({\"Retry-After\":[\"1\"]})),\n                &[\"Retry-After\".into()],\n            )\n            .unwrap_or_default();\n        }\n        if self\n            .audit_event(\"wire-response\", &fingerprint, now, Some(status))\n            .is_err()\n        {\n            crate::service::openbao_wrapper::fence(&self.openbao_wrapper_owner);\n            self.recovery_required = true;\n            self.ha_activation = None;\n            return Response::error(503, \"wire rejection response audit unavailable\");\n        }\n        response\n    }\n"
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "kind": "wire fingerprint only",
+      "first_line": 11240,
+      "last_line": 11254,
+      "sha256": "d5b18d4b63aafd0ea35f8fc69f4254700c40df3d468ae7fe6b9eae10b2990842",
+      "text": "    fn wire_rejection_fingerprint(\n        &self,\n        attempt_id: &[u8; 16],\n        rejection: WireRejection,\n        status: u16,\n    ) -> String {\n        let mut context = hmac::Context::with_key(&self.audit_key);\n        context.update(b\"heptabao.audit.wire-rejection.v1\");\n        context.update(&(rejection.code().len() as u64).to_le_bytes());\n        context.update(rejection.code());\n        context.update(&status.to_le_bytes());\n        context.update(attempt_id);\n        STANDARD.encode(context.sign().as_ref())\n    }\n\n"
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "kind": "audit-only sink path",
+      "first_line": 11271,
+      "last_line": 11364,
+      "sha256": "ae437c26dbd0d98ea24aa2295f1bd396a44e216ac7da1518ed5ab16f67dcbb21",
+      "text": "    fn audit_event(\n        &mut self,\n        kind: &str,\n        fingerprint: &str,\n        now: u64,\n        status: Option<u16>,\n    ) -> Result<(), std::io::Error> {\n        if self.audit_failed {\n            return Err(std::io::Error::other(\"audit requires offline recovery\"));\n        }\n        let sequence = self\n            .audit_sequence\n            .checked_add(1)\n            .ok_or_else(|| std::io::Error::other(\"audit sequence exhausted\"))?;\n        let unsigned = AuditUnsigned {\n            schema: 2,\n            sequence,\n            previous: STANDARD.encode(self.audit_previous),\n            time: now,\n            kind: kind.to_owned(),\n            path_digest: fingerprint.to_owned(),\n            status,\n        };\n        let payload = serde_json::to_vec(&unsigned)?;\n        let tag = hmac::sign(&self.audit_key, &payload);\n        let record = AuditRecord {\n            event: unsigned,\n            mac: STANDARD.encode(tag.as_ref()),\n        };\n        let mut bytes = serde_json::to_vec(&record)?;\n        bytes.push(b'\\n');\n        // Preserve the existing test-only I/O budget injection. Production\n        // capacity is per segment and rotates without skipping either audit event.\n        #[cfg(test)]\n        if self\n            .audit\n            .metadata()?\n            .len()\n            .checked_add(bytes.len() as u64)\n            .is_none_or(|n| n > self.audit_capacity)\n        {\n            return Err(std::io::Error::other(\"injected audit capacity exhausted\"));\n        }\n        if let Err(error) = self.audit_rotation.before_append(\n            &mut self.audit,\n            &self.audit_key,\n            bytes.len(),\n            self.audit_sequence,\n            self.audit_previous,\n        ) {\n            self.audit_failed = true;\n            self.ha_activation = None;\n            return Err(error);\n        }\n        if let Err(error) = self\n            .audit\n            .write_all(&bytes)\n            .and_then(|()| self.audit.sync_all())\n        {\n            self.audit_failed = true;\n            self.ha_activation = None;\n            return Err(error);\n        }\n        if let Some(url) = self.audit_http_url.as_deref() {\n            let value = serde_json::to_value(&record)?;\n            if self.outbound.post_audit_json(url, &value).is_err() {\n                self.audit_failed = true;\n                self.ha_activation = None;\n                return Err(std::io::Error::other(\n                    \"mandatory HTTP audit collector unavailable\",\n                ));\n            }\n        }\n        if let Some(config) = self.audit_socket\n            && write_audit_socket(config, &bytes).is_err()\n        {\n            self.audit_socket_failures = self.audit_socket_failures.saturating_add(1);\n        }\n        if let Some(config) = self.audit_syslog.as_ref()\n            && write_audit_syslog(config, &bytes).is_err()\n        {\n            self.audit_syslog_failures = self.audit_syslog_failures.saturating_add(1);\n        }\n        self.audit_sequence = sequence;\n        self.audit_previous.copy_from_slice(tag.as_ref());\n        Ok(())\n    }\n}\nfn write_audit_socket(config: AuditSocketConfig, bytes: &[u8]) -> io::Result<()> {\n    let timeout = Duration::from_millis(config.write_timeout_ms);\n    let mut stream = TcpStream::connect_timeout(&config.address, timeout)?;\n    stream.set_write_timeout(Some(timeout))?;\n    stream.write_all(bytes)?;\n    stream.flush()\n"
+    }
+  ],
+  "upstream_tokio_reference": {
+    "url": "https://api.github.com/repos/tokio-rs/tokio/contents/tokio/src/runtime/blocking/pool.rs?ref=tokio-1.53.1",
+    "fetched_bytes": 19230,
+    "fetched_sha256": "6e1f4f3c1e6f7974a8ccab4dab8b8784f447097990f763fc5703202e4d278a65",
+    "cargo_lock_version": "1.53.1",
+    "cargo_registry_checksum": "202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed",
+    "scope": "Primary version-tag source reference, not a new verification of the deployed registry source bytes.",
+    "observation": "Spawner::spawn_thread enters the runtime on the blocking worker before running queued jobs.",
+    "first_line": 456,
+    "last_line": 477,
+    "sha256": "93558b32c4a036898c59ba894296d2841c86790cf8a39c6f5847fe50cbe87b16",
+    "text": "\n    fn spawn_thread(\n        &self,\n        shutdown_tx: shutdown::Sender,\n        rt: &Handle,\n        id: usize,\n    ) -> io::Result<thread::JoinHandle<()>> {\n        let mut builder = thread::Builder::new().name((self.inner.thread_name)());\n\n        if let Some(stack_size) = self.inner.stack_size {\n            builder = builder.stack_size(stack_size);\n        }\n\n        let rt = rt.clone();\n\n        builder.spawn(move || {\n            // Only the reference should be moved into the closure\n            let _enter = rt.enter();\n            rt.inner.blocking_spawner().inner.run(id);\n            drop(shutdown_tx);\n        })\n    }\n"
+  },
+  "audited_wire_rejection_conclusion": {
+    "unchanged_h2_branches": [
+      "rate-limited 429",
+      "unsupported native-large transport 501",
+      "payload limit 413"
+    ],
+    "service_path": "lock_until -> Service::handle_wire_rejection -> wire_rejection_fingerprint and audit_event",
+    "enters_logical_begin_request": false,
+    "enters_native_ingress_permission_or_readindex": false,
+    "calls_fresh_ingress_closure_or_require_blocking_worker": false,
+    "limitations": "This is a source reachability conclusion for the requested fresh-ingress guard. It does not claim new runtime coverage of configured audit sinks or unrelated paths."
+  }
+}

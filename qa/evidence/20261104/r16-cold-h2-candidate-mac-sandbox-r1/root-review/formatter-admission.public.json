@@ -1,0 +1,55 @@
+{
+  "schema": "heptabao.root-cold-h2-pure-formatter-admission.v1",
+  "decision": "GO_ONCE_EXACT_FOUR_INPUT_PURE_FORMATTER",
+  "source_tree": "6590500fe878fd54c349da6eb38b88ed9f1ea5fc",
+  "files": 20,
+  "bytes": 414994,
+  "merkle_trees": 5,
+  "strict_controller_diff_hunks": 2,
+  "unchanged_helper_block": true,
+  "source_fully_read": true,
+  "request_blob": "85f6684c3a2039fb1f3dc6889ad69b9bc31d7681",
+  "request_bytes": 68646,
+  "request_sha256": "68ddcd0c37d8344aba57a9984550cfb9a1d0437ddc1660772a37996e1ca98c16",
+  "controller_blob": "bba0c4f8f65dfcac3835326c161a62b84e84b27c",
+  "controller_sha256": "945548771b7d78e2c30a72eb0acc30333a7d79e6e7e1b7a4c72d815642da006a",
+  "stdin_blob": "f3e9ad0e5d4e9045f52614ba5aefa2d6b7ca252b",
+  "input_pins": {
+    "service_native_v6_ha_read.rs": {
+      "bytes": 31521,
+      "sha256": "b82eb6715e48e53382330a79e620f0b1ddd97cc503d73a6a6c9ea7a3a71bdc8d",
+      "blob": "0a1602ae8eea712409c6de6019be58dd683b972c"
+    },
+    "service_native_v6_ha_cold_timing_tests.rs": {
+      "bytes": 5207,
+      "sha256": "ebf0ea27bfb06371f830005f80d5cf934d0ba4f10363f3681cfa8bb08c87b4e9",
+      "blob": "fa6f9395b486511f127f94544ccb56ef7f5ab9dd"
+    },
+    "http_h2.rs": {
+      "bytes": 14691,
+      "sha256": "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1",
+      "blob": "70db7e9c37f057ddb7a1a146e57d1697928d33ce"
+    },
+    "http_h2_sync_worker_tests.rs": {
+      "bytes": 6126,
+      "sha256": "34002654f653d7b2a1ee5a49dccc8b9c97a0497bb96df27764959cbd877567e0",
+      "blob": "56b385b942e31f448cc46c65b1e91829add8330b"
+    }
+  },
+  "fixed_key": "heptabao-cold-h2-inputs-rustfmt-20261105-r1-94554877",
+  "host": "rog",
+  "fresh_root": "/home/qian-qi/heptabao-cold-h2-normal-format-20261105-r1",
+  "tool_sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877",
+  "original_budgets": {
+    "internal": 50,
+    "child": 10,
+    "supervisor": 60
+  },
+  "only_changes": "Fresh root, four literal input pins, schema and explicit base-only provenance.",
+  "original_repo_read_or_write": false,
+  "cargo": false,
+  "product": false,
+  "network": false,
+  "no_compilation_or_functional_success_claim": true,
+  "required_actual": "Authoritative complete terminal exit0, four children reaped, pinned rustfmt unchanged, all five outputs whole readback, within original50; unknown stops with no replay."
+}

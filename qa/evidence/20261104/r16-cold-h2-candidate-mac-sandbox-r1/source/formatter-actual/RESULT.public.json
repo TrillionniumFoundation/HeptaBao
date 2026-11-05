@@ -1,0 +1,181 @@
+{
+  "allOwnedStopped": true,
+  "children": [
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-cold-h2-normal-format-20261105-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 857799,
+      "pid": 857807,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 857799,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-cold-h2-normal-format-20261105-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 857799,
+      "pid": 857818,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 857799,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-cold-h2-normal-format-20261105-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 857799,
+      "pid": 857825,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 857799,
+      "timeoutSeconds": 10
+    },
+    {
+      "argv": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+        "--edition",
+        "2024",
+        "--emit",
+        "stdout"
+      ],
+      "cwd": "/home/qian-qi/heptabao-cold-h2-normal-format-20261105-r1",
+      "exitCode": 0,
+      "newProcessGroupCreated": false,
+      "pgid": 857799,
+      "pid": 857834,
+      "reaped": true,
+      "stopped": true,
+      "supervisorGroup": 857799,
+      "timeoutSeconds": 10
+    }
+  ],
+  "compileExecuted": false,
+  "edition": "2024",
+  "elapsedSeconds": 0.11176179797621444,
+  "files": [
+    {
+      "afterBytes": 31475,
+      "afterSha256": "298824c635fdbf759adc46583271438e856f395571668f1f7e9f324e7b55d951",
+      "beforeBytes": 31521,
+      "beforeSha256": "b82eb6715e48e53382330a79e620f0b1ddd97cc503d73a6a6c9ea7a3a71bdc8d",
+      "name": "service_native_v6_ha_read.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 5225,
+      "afterSha256": "5b21ae81267e3063767ca63038816767af4d0919e229c7d97ecf0060400f3538",
+      "beforeBytes": 5207,
+      "beforeSha256": "ebf0ea27bfb06371f830005f80d5cf934d0ba4f10363f3681cfa8bb08c87b4e9",
+      "name": "service_native_v6_ha_cold_timing_tests.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 14691,
+      "afterSha256": "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1",
+      "beforeBytes": 14691,
+      "beforeSha256": "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1",
+      "name": "http_h2.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "afterBytes": 6157,
+      "afterSha256": "d84bd0249f9c388e1555e4a6d9095b5f9e4a43cbf0519dbdf881d170f91c57ba",
+      "beforeBytes": 6126,
+      "beforeSha256": "34002654f653d7b2a1ee5a49dccc8b9c97a0497bb96df27764959cbd877567e0",
+      "name": "http_h2_sync_worker_tests.rs",
+      "stderrBytes": 0,
+      "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "inputCarrierSha256": "b15d536c5b28e2a359fcb9e04d8dc0773d9ece508fb04f0e9f707924de941ca7",
+  "inputOriginalAndCandidatePins": {
+    "http_h2.rs": [
+      "f24ccfc27aabf1b938eb34b8fa07e8a41f1f243b7d47eab9c9a452c3fac7262f",
+      "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1"
+    ],
+    "http_h2_sync_worker_tests.rs": [
+      null,
+      "34002654f653d7b2a1ee5a49dccc8b9c97a0497bb96df27764959cbd877567e0"
+    ],
+    "service_native_v6_ha_cold_timing_tests.rs": [
+      null,
+      "ebf0ea27bfb06371f830005f80d5cf934d0ba4f10363f3681cfa8bb08c87b4e9"
+    ],
+    "service_native_v6_ha_read.rs": [
+      "b94711b478147a6879125764c491f6a59bd1215e76a36d2a61230a016d2793c9",
+      "b82eb6715e48e53382330a79e620f0b1ddd97cc503d73a6a6c9ea7a3a71bdc8d"
+    ]
+  },
+  "internalSeconds": 50,
+  "newRemoteSupervisorSeconds": 60,
+  "originalSourceProvenance": "Immutable Git blobs supplied by the root; original host repository is not read or written",
+  "productExecuted": false,
+  "productionChanged": false,
+  "rustfmtAfter": {
+    "bytes": 5255144,
+    "identity": [
+      66306,
+      28970682,
+      5255144,
+      1791677524979153708,
+      1791677525080580886,
+      33261,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  },
+  "rustfmtBefore": {
+    "bytes": 5255144,
+    "identity": [
+      66306,
+      28970682,
+      5255144,
+      1791677524979153708,
+      1791677525080580886,
+      33261,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  },
+  "schema": "heptabao.cold-h2-normal-input-rustfmt.v1",
+  "sourceCommit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "sourceIdentityIsBaseOnly": true,
+  "sourceTree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "status": "passed",
+  "uncommittedCandidateInputs": true,
+  "withinDeadline": true
+}

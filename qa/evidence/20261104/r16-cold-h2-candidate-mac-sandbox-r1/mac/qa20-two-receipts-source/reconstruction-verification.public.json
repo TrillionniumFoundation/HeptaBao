@@ -1,0 +1,108 @@
+{
+  "schema": "heptabao.mac-owned-qa-historical-receipt-origin.r1",
+  "status": "EXACT_PUBLIC_ORIGIN_AND_HISTORICAL_CONTENT_HASH_RECOVERED",
+  "method": "Retain original raw top-level JSON value tokens, remove only fields assigned after candidate write, replace top-level ok:true with original initialized ok:false, and retain trailing LF. The resulting whole byte hash must equal the historical authoritative stdout candidateReceiptSha256.",
+  "numeric_values_parsed_and_reserialized": false,
+  "expected_names_match_current_metadata_name_hashes": true,
+  "expected_sizes_match_current_metadata_sizes": true,
+  "actual_metadata_stdout_git_blob": "a825f743d886ed463f318b764107e275d387464e",
+  "actual_metadata_tree": "75ab1634c39c7b5b2ce3d0ded6291fe57a36f4d3",
+  "rows": [
+    {
+      "generation": "r1",
+      "name": "inert-candidate.public.json",
+      "name_sha256": "84e8004701d3e5c723ff17831779e4b5774acad00fee7c7fbaa3b16b854545d7",
+      "bytes": 3405,
+      "sha256": "875f58f36bdd5ac7eb9af892c75b8afd22a3a46309347f115338a88ed736b0eb",
+      "metadata_identity": [
+        "16777244",
+        "72546533",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "3405",
+        "1793835363127778611",
+        "1793835363127784028"
+      ],
+      "original_job": "1a1a8eb69a3-fc05-3007",
+      "original_candidate_sha_field": "875f58f36bdd5ac7eb9af892c75b8afd22a3a46309347f115338a88ed736b0eb",
+      "original_status": 0,
+      "reconstructed_git_blob": "14307c85891fea1a94ecfd756b79470e9a04a52c",
+      "original_request": {
+        "bytes": 104078,
+        "sha256": "7c82ef716af8783f11a8fc260e6021046db25df45d693e08706ee6be16375f2c",
+        "git_blob": "ac224509705484b7a1a8a4c190f533d43e8ab52c"
+      },
+      "original_stdout": {
+        "bytes": 5428,
+        "sha256": "50634805f355be396ac19d2feb5e058891647258de5404976433be64eb2adb3e",
+        "git_blob": "cad3d4ecd0b33bcb3e21f9e9b4accb52cc2ed4de"
+      },
+      "original_ack": {
+        "bytes": 9457,
+        "sha256": "093f02b528d5eae2231871ae7a10babe69dfea21cdab566e43782a64bbe22e6a",
+        "git_blob": "67458169b5ae2d12e1cb450ac7a6754843b24252"
+      },
+      "original_authority": {
+        "bytes": 731,
+        "sha256": "b31ed143bb007dad34c1e796f8250072b5c348ef470d4990896ed87b93c91d6d",
+        "git_blob": "5da4e3a7bc22e30abcb269aac0ef5d7287a5e91b"
+      },
+      "original_source_bytes": 8157,
+      "original_source_sha256": "2c84ab57eb141e908e2a547536e5102a6d247e963cc2e054c7a4ab6afccaaa8c",
+      "original_fixed_key": "heptabao-mac-capture-owned-prereq-inert-606b5df5-20261104-r1",
+      "write_statement": "guard.write_new(QA/\"inert-candidate.public.json\",encode(report))"
+    },
+    {
+      "generation": "r2",
+      "name": "inert-synthetic-r2-candidate.public.json",
+      "name_sha256": "1a6a19d097d587641b77579b62487d9131e64bd3ee59c17a9c8f6573a3ee843e",
+      "bytes": 4691,
+      "sha256": "f6984df60a230a365c96604350000d6ccec7e72969d68ebd263d80359cd46016",
+      "metadata_identity": [
+        "16777244",
+        "72548953",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "4691",
+        "1793838192077754207",
+        "1793838192077762290"
+      ],
+      "original_job": "1a1a916944c-fc05-3131",
+      "original_candidate_sha_field": "f6984df60a230a365c96604350000d6ccec7e72969d68ebd263d80359cd46016",
+      "original_status": 0,
+      "reconstructed_git_blob": "87514a527861544642923fb11d564ba92373ce1c",
+      "original_request": {
+        "bytes": 129399,
+        "sha256": "57f1dd0d7fd155e61d3b0172ef3dd39122e66c823ddabfb76064ab857d6f6f32",
+        "git_blob": "bcf5419d13fcbe9a2f6252e8f5c593b38386f62f"
+      },
+      "original_stdout": {
+        "bytes": 6723,
+        "sha256": "26bda20f283879acc659f7f44999e580e785fec6105c98612e9d164237f642e7",
+        "git_blob": "c989d18cd054b9938c9818fc4522b6b07ed26ee7"
+      },
+      "original_ack": {
+        "bytes": 12111,
+        "sha256": "df1d0a3390b884b41d1182f94e0e35638b8bff18c1c4670880b58f5c29e18e32",
+        "git_blob": "113799354c32e60689c686ad461aa9d67a68d379"
+      },
+      "original_authority": {
+        "bytes": 731,
+        "sha256": "6c17deb3992e5435fe38e57438ccb8f4d1e7d3ec7d755e46c1be73f30883abb3",
+        "git_blob": "73364704d46b2b28c9243fa011566a7309835689"
+      },
+      "original_source_bytes": 10622,
+      "original_source_sha256": "255bbabe28601cf53d5ea53ff047b8f27b47ac23205043eb14cc132a36b54391",
+      "original_fixed_key": "heptabao-mac-capture-synthetic-r2-source-inert-f3c6bb33-20261105-r2",
+      "write_statement": "guard.write_new(QA/\"inert-synthetic-r2-candidate.public.json\",encode(report))"
+    }
+  ],
+  "distinction": "Current observation supplied only name hashes, file types and nine identity strings. It did not re-read either member body. A future admitted inert stage must read each exact public receipt through held parent/file descriptors and check historical bytes/hash plus the new nine-field identity both before and after; these recovered bodies do not waive that gate.",
+  "prior_r4_inert_failure_preserved": true,
+  "runtime_authorized": false,
+  "host_calls_in_this_reconstruction": 0
+}

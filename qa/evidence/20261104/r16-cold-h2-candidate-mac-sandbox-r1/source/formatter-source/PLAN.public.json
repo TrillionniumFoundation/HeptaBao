@@ -1,0 +1,250 @@
+{
+  "schema": "heptabao.cold-h2-normal-format-and-selected-build-plan.r1",
+  "status": "FROZEN_SOURCE_ONLY",
+  "source_base": {
+    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060"
+  },
+  "candidate_commit": null,
+  "candidate_tree": null,
+  "formatter_submit_authorized": false,
+  "normal_build_submit_authorized": false,
+  "formatter": {
+    "controller": {
+      "bytes": 6470,
+      "sha256": "945548771b7d78e2c30a72eb0acc30333a7d79e6e7e1b7a4c72d815642da006a",
+      "blob": "bba0c4f8f65dfcac3835326c161a62b84e84b27c"
+    },
+    "request": {
+      "bytes": 68646,
+      "sha256": "68ddcd0c37d8344aba57a9984550cfb9a1d0437ddc1660772a37996e1ca98c16",
+      "blob": "85f6684c3a2039fb1f3dc6889ad69b9bc31d7681"
+    },
+    "stdin": {
+      "bytes": 59546,
+      "sha256": "b15d536c5b28e2a359fcb9e04d8dc0773d9ece508fb04f0e9f707924de941ca7",
+      "blob": "f3e9ad0e5d4e9045f52614ba5aefa2d6b7ca252b"
+    },
+    "fixed_key": "heptabao-cold-h2-inputs-rustfmt-20261105-r1-94554877",
+    "fresh_root": "/home/qian-qi/heptabao-cold-h2-normal-format-20261105-r1",
+    "freshness_not_yet_observed": true,
+    "internal_seconds": 50,
+    "per_child_seconds": 10,
+    "supervisor_seconds": 60,
+    "executable": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "tool_bytes": 5255144,
+    "tool_sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877",
+    "original_controller_blob": "a895672dc3624b4e6dd3c8fc8db45b5638dcf818",
+    "original_executed_request_blob": "98a6f375288b22dce859a99c5899ee229745c62b",
+    "exact_child_argv_suffix": [
+      "--edition",
+      "2024",
+      "--emit",
+      "stdout"
+    ],
+    "input_public_source_pins": {
+      "service_native_v6_ha_read.rs": {
+        "bytes": 31521,
+        "sha256": "b82eb6715e48e53382330a79e620f0b1ddd97cc503d73a6a6c9ea7a3a71bdc8d",
+        "blob": "0a1602ae8eea712409c6de6019be58dd683b972c"
+      },
+      "service_native_v6_ha_cold_timing_tests.rs": {
+        "bytes": 5207,
+        "sha256": "ebf0ea27bfb06371f830005f80d5cf934d0ba4f10363f3681cfa8bb08c87b4e9",
+        "blob": "fa6f9395b486511f127f94544ccb56ef7f5ab9dd"
+      },
+      "http_h2.rs": {
+        "bytes": 14691,
+        "sha256": "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1",
+        "blob": "70db7e9c37f057ddb7a1a146e57d1697928d33ce"
+      },
+      "http_h2_sync_worker_tests.rs": {
+        "bytes": 6126,
+        "sha256": "34002654f653d7b2a1ee5a49dccc8b9c97a0497bb96df27764959cbd877567e0",
+        "blob": "56b385b942e31f448cc46c65b1e91829add8330b"
+      }
+    },
+    "original_source_files_not_read_or_written": true,
+    "cargo": false,
+    "product": false,
+    "output_contract": "Actual terminal receipt plus authoritative exit 0, exact whole stdout/stderr/readback, all four children reaped, same pinned rustfmt before/after, and publication within the original 50 seconds. A reported passed field alone is insufficient."
+  },
+  "source_verification": {
+    "strict_diff": {
+      "hunks": 2,
+      "exact": true
+    },
+    "actual_local_python_report": {
+      "actual_formatter_children": 0,
+      "candidate_imported_or_executed": false,
+      "checks": [
+        {
+          "case": "two_whole_python_sources_ast_compile_only",
+          "passed": true
+        },
+        {
+          "case": "unique_literal_1",
+          "passed": true
+        },
+        {
+          "case": "unique_literal_2",
+          "passed": true
+        },
+        {
+          "case": "unique_literal_3",
+          "passed": true
+        },
+        {
+          "case": "unique_literal_4",
+          "passed": true
+        },
+        {
+          "case": "unique_literal_5",
+          "passed": true
+        },
+        {
+          "case": "five_unique_replacements_reconstruct_candidate",
+          "passed": true
+        },
+        {
+          "case": "reverse_unique_7",
+          "passed": true
+        },
+        {
+          "case": "reverse_unique_8",
+          "passed": true
+        },
+        {
+          "case": "reverse_unique_9",
+          "passed": true
+        },
+        {
+          "case": "reverse_unique_10",
+          "passed": true
+        },
+        {
+          "case": "reverse_unique_11",
+          "passed": true
+        },
+        {
+          "case": "reverse_reconstructs_complete_original",
+          "passed": true
+        },
+        {
+          "case": "all_five_helpers_whole_source_unchanged",
+          "passed": true
+        },
+        {
+          "case": "exact_request_schema",
+          "passed": true
+        },
+        {
+          "case": "request_binds_exact_candidate_without_execution",
+          "passed": true
+        },
+        {
+          "case": "exact_four_public_input_names",
+          "passed": true
+        },
+        {
+          "case": "input_exact_service_native_v6_ha_read.rs",
+          "passed": true
+        },
+        {
+          "case": "input_exact_service_native_v6_ha_cold_timing_tests.rs",
+          "passed": true
+        },
+        {
+          "case": "input_exact_http_h2.rs",
+          "passed": true
+        },
+        {
+          "case": "input_exact_http_h2_sync_worker_tests.rs",
+          "passed": true
+        },
+        {
+          "case": "stdin_under_original_256kib_bound",
+          "passed": true
+        },
+        {
+          "case": "same_rustfmt_argv_and_50_10_60_caps",
+          "passed": true
+        }
+      ],
+      "host_calls": 0,
+      "passed": 23,
+      "rust_compiled_or_executed": false,
+      "schema": "heptabao.cold-h2-format-carrier-source-checks.r1",
+      "source_only": true,
+      "status": "passed"
+    },
+    "original_five_helpers_byte_identical": true,
+    "changed_only": "new root; 4 fixed input pins; schema and base provenance; explicit uncommitted/base-only flags"
+  },
+  "future_normal_build": {
+    "prior_executed_launcher": {
+      "bytes": 28425,
+      "sha256": "230597bdf2e67f617428355fd0cae4c4b587c397409e02e0395ee96c8e4cee03",
+      "blob": "8909a7add36d43e3be7a5175adb4f184e72f7fed"
+    },
+    "prior_executed_runner": {
+      "bytes": 20791,
+      "sha256": "5ba3e0152b1b84510ef7740b1e5d863e1464e4eaee04a4b772747a4db86dcb2b",
+      "blob": "7fd97c088c538c7b4d1968964b8d8eaa67826885"
+    },
+    "original_44_groups": {
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f"
+    },
+    "source_must_be_new_independent_checkout": true,
+    "old_3cb_source_immutable": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/source",
+    "unbound_new_root": null,
+    "unbound_commit": null,
+    "unbound_tree": null,
+    "retained_original_44_names_and_six_groups": true,
+    "retained_original_7_names_and_shared_cap_seconds": 600,
+    "proposed_new_incremental_group": {
+      "count": 9,
+      "shared_seconds": 600,
+      "exact_tests": [
+        "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity",
+        "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results",
+        "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file",
+        "http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context",
+        "http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work",
+        "http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result",
+        "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture",
+        "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
+        "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity"
+      ],
+      "individual_listing_cap_seconds": 30,
+      "listing_and_runtime_clamped_to_same_group_deadline": true
+    },
+    "original_budgets": {
+      "normal_release_seconds": 1800,
+      "normal_libtest_seconds": 3600,
+      "each_original_listing_seconds": 30,
+      "each_original_group_seconds": 600,
+      "original_additional7_total_seconds": 600,
+      "term_seconds": 5,
+      "kill_seconds": 5,
+      "supervisor_seconds": 12000
+    },
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "private_diagnostic_feature": false,
+    "locked": true,
+    "offline": true,
+    "exact_listing_required": true,
+    "prior_success_not_candidate_qualification": true
+  },
+  "prohibitions": [
+    "No original failed fixture is restarted or replayed.",
+    "No production, provider, J3160 or LAN product operation is part of this formatter.",
+    "No Cargo/normal build request exists in this packet; fresh canonical source and exact build carrier require separate root review."
+  ]
+}

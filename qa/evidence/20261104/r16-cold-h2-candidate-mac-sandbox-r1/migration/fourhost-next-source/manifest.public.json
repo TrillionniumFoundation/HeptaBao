@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.current-service-backup-next-actions-packet.r1",
+  "source_only": true,
+  "host_calls": 0,
+  "entries": [
+    {
+      "path": "NEXT_ACTIONS.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7e37d3c9deafe1c3eeeb4bac7a00a7d648656d40",
+      "bytes": 5371,
+      "sha256": "f06231aefa4268e29efd7a15498f00c9bfafb819f312f0d49f2e6d2bf48f913e"
+    },
+    {
+      "path": "bindings.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9c1af7cea239a87435cc6c88e3c8654fb88b8367",
+      "bytes": 29348,
+      "sha256": "3c3551fcea2b6f6aa190cf3451912f31b3f570ca1c7b32b57ac08415eca31ed1"
+    }
+  ]
+}

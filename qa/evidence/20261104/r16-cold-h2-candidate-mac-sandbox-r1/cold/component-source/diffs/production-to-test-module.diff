@@ -1,0 +1,13 @@
+--- a/crates/heptabao-server/src/service_native_v6_ha_read.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_read.rs
+@@ -10,6 +10,10 @@
+ mod archive_source;
+ pub(in crate::service) use archive_source::BorrowedArchiveRepairSource;
+ pub(crate) use archive_source::NativeHaArchiveRepairSource;
++
++#[cfg(test)]
++#[path = "service_native_v6_ha_cold_timing_tests.rs"]
++mod cold_timing_tests;
+ 
+ pub(crate) struct ColdNativeHaRead {
+     pub(in crate::service) metadata: State,

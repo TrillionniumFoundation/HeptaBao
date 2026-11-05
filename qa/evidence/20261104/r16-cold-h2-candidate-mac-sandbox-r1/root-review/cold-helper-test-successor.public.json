@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.root-cold-helper-test-lint-successor.v1",
+  "source_tree": "92887952ff79a914f6c39174593cc7064f1fc0bb",
+  "files": 17,
+  "bytes": 241853,
+  "merkle_trees": 14,
+  "after_blob": "fa6f9395b486511f127f94544ccb56ef7f5ab9dd",
+  "after_bytes": 5207,
+  "after_sha256": "ebf0ea27bfb06371f830005f80d5cf934d0ba4f10363f3681cfa8bb08c87b4e9",
+  "strict_diff_hunks": 7,
+  "strict_forward_exact": true,
+  "rust_source_read_fully": true,
+  "critical_assertions": "Original moved Box pointer identity, call counts/order, exact original deadline and nested Result distinction retained; missing expected success or error still fails.",
+  "no_new_unwrap_expect_or_allow": true,
+  "capture_error_conversion": "OriginalDeadline::capture returns CustodyError with std::error::Error, canonical source f722abf2dfe02dd682a41be93d61aa87e50c7d11.",
+  "production_source_unchanged_blob": "0a1602ae8eea712409c6de6019be58dd683b972c",
+  "existing_actual_cold_repair_unchanged_blob": "45e7121f8d8b567f9ac80b33f8090aceacf8e5ff",
+  "decision": "ACCEPT_TEST_SOURCE_FOR_PINNED_FORMATTING_AND_NORMAL_BUILD",
+  "actual_format_or_rust_compile_or_execution": false
+}

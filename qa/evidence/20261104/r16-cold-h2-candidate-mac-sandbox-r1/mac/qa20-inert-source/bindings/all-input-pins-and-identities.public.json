@@ -1,0 +1,503 @@
+{
+  "schema": "heptabao.mac-current-qa20-preservation-bindings.r5",
+  "public_distribution_sources": [
+    {
+      "name": "mac_current_outer_r3.py",
+      "bytes": 59477,
+      "sha256": "5ecc57805f1fb2b162c38d28d28debe5e035ca3135db6b1b7df55daa6227df50",
+      "git_blob": "0948e1dd5b7e49fffb13f7ebb23c0ae00c4de252",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72549039",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "59477",
+        "1793842695709399765",
+        "1793842695709409932"
+      ]
+    },
+    {
+      "name": "mac_current_outer_inputs_r1.py",
+      "bytes": 24973,
+      "sha256": "be5da65ce3bd98586d36b11edba6a4619600b74fbabb93050a3325e89e9ed254",
+      "git_blob": "9c4cdc5816ec67d3822ebb6551982349523beb9b",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72549040",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "24973",
+        "1793842695710161221",
+        "1793842695710168888"
+      ]
+    },
+    {
+      "name": "mac_current_fixture_materializer_r1.py",
+      "bytes": 23643,
+      "sha256": "f766ba33f22230d78e635477b35e527e7815452e591e7bc7a03fa2ae6c902b7f",
+      "git_blob": "c22afefd15d026017e99ea47a47c0138ed6b469d",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72549041",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "23643",
+        "1793842695710631595",
+        "1793842695710636928"
+      ]
+    },
+    {
+      "name": "mac_current_capture_entry_r1.py",
+      "bytes": 19011,
+      "sha256": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024",
+      "git_blob": "d972159225b1d7478746c9296eb9bb69eb99844c",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72549042",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "19011",
+        "1793842695711298385",
+        "1793842695711305676"
+      ]
+    },
+    {
+      "name": "mac_owned_launchd_r3.py",
+      "bytes": 35532,
+      "sha256": "1c18be9069b4f7219a793c88e08a648841bcab992b8947a9064d55712539c09c",
+      "git_blob": "5ee5950421c69f0aedfaf457a3b75666a902cc57",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72549043",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "35532",
+        "1793842695711757925",
+        "1793842695711763008"
+      ]
+    },
+    {
+      "name": "mac_current_server_owner_r1.py",
+      "bytes": 13210,
+      "sha256": "3932ddada69310b700b7b6aafd325202c1deda84c2f12d711e27d022111bdfb6",
+      "git_blob": "01b5bfc49138aac54b0e4da5b01fe0d8544f9bc0",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72549044",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "13210",
+        "1793842695713241629",
+        "1793842695713248588"
+      ]
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py",
+      "bytes": 24971,
+      "sha256": "bbf3636f4323e3e990204c8ea04c986f8740b3f34fa966a937f947b767ee15c4",
+      "git_blob": "3aeb6ea8cf638f7915fd268140ad834ce395aad9",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72549045",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "24971",
+        "1793842695713712461",
+        "1793842695713717336"
+      ]
+    },
+    {
+      "name": "mac_native_process_observer_r1.py",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+      "git_blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72549046",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "13423",
+        "1793842695714172168",
+        "1793842695714177335"
+      ]
+    },
+    {
+      "name": "mac_guarded_current_capture_r3.py",
+      "bytes": 23578,
+      "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+      "git_blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72546528",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "23578",
+        "1793835363123696870",
+        "1793835363123706328"
+      ]
+    },
+    {
+      "name": "mac_owned_commands_r1.py",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+      "git_blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72546530",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "5965",
+        "1793835363126339808",
+        "1793835363126345391"
+      ]
+    },
+    {
+      "name": "mac_t5_volume_guard_r1.py",
+      "bytes": 13387,
+      "sha256": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99",
+      "git_blob": "938fd5e5663e004f9f6553548537ab3a931c50d0",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72546531",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "13387",
+        "1793835363126785478",
+        "1793835363126791353"
+      ]
+    },
+    {
+      "name": "mac_owned_unreaped_r1.py",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+      "git_blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72546532",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "10990",
+        "1793835363127259607",
+        "1793835363127265315"
+      ]
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r1.py",
+      "bytes": 16476,
+      "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+      "git_blob": "992fa2b52760e5f3d0b192837053728011e11500",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72546529",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "16476",
+        "1793835363125849429",
+        "1793835363125857554"
+      ]
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r2.py",
+      "bytes": 16915,
+      "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+      "git_blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72548952",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "16915",
+        "1793838192075174831",
+        "1793838192075185998"
+      ]
+    },
+    {
+      "name": "mac_current_cycle_r2.mjs",
+      "bytes": 24007,
+      "sha256": "2b982383ce66028159ae84845bf5a0d3515e0308bab6916944bd7195bb948177",
+      "git_blob": "89b173c3f82b35ffc592a7756cd8058a6d1f6769",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72549047",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "24007",
+        "1793842695714620250",
+        "1793842695714625000"
+      ]
+    },
+    {
+      "name": "mac_single_native_r2.mjs",
+      "bytes": 28527,
+      "sha256": "f90bbb2e9a1fa679d04fbef4328f3a1b9fc512d2b809dacd7eafce67f9cfd93c",
+      "git_blob": "9408a7d0248ca2658a5c3a3578b9a907f659d680",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72549048",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "28527",
+        "1793842695715067624",
+        "1793842695715072582"
+      ]
+    },
+    {
+      "name": "mac_auth_rows_cas_r1.mjs",
+      "bytes": 3103,
+      "sha256": "0021fa7539f4fb36e2ac907315da1c9d9e407c9ccac606d1908e0b7a3f7042dd",
+      "git_blob": "50cf42a76cd313fb4de889e954bb9abe2e716530",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72549049",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "3103",
+        "1793842695716528287",
+        "1793842695716535287"
+      ]
+    },
+    {
+      "name": "mac_authbus_cache_cas_r1.mjs",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+      "git_blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72549050",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "6846",
+        "1793842695717560534",
+        "1793842695717567409"
+      ]
+    },
+    {
+      "name": "mac_current_outer_inputs_r2.py",
+      "bytes": 27059,
+      "sha256": "c160d3593bd6ddce8e9eaea2acd96991af29b43c55713056ff996e9ffa2d2603",
+      "git_blob": "80a5fc810df942412c1e2d56162b2286de75667a",
+      "new_publication": true,
+      "preserved_identity": null
+    },
+    {
+      "name": "mac_current_outer_r4.py",
+      "bytes": 59462,
+      "sha256": "6da29c3dab80e3373638621026f293ddd050a2e4e99f3bc3314ca42bc0005b4f",
+      "git_blob": "98f3b0d1e2bcfc136134a1662f888c0fdc0abea1",
+      "new_publication": true,
+      "preserved_identity": null
+    }
+  ],
+  "public_documents": [
+    {
+      "name": "proofs/synthetic-r2.stdout.public.json",
+      "bytes": 16228,
+      "sha256": "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5",
+      "git_blob": "781d085d4fdc52ada91ea796572099137c87cd55",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72549052",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "16228",
+        "1793842695718112907",
+        "1793842695718117782"
+      ]
+    },
+    {
+      "name": "proofs/synthetic-r2.authority.public.json",
+      "bytes": 733,
+      "sha256": "1b33a9144712ac2bc3d16d87bb2a9ea1c2e4c0be236dfd08d8b599f7518942dd",
+      "git_blob": "0673ffaf642cd44775ecc910e9320ff43989952e",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72549053",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "733",
+        "1793842695718558239",
+        "1793842695718563198"
+      ]
+    },
+    {
+      "name": "candidate-current-manager-r3.public.json",
+      "bytes": 3442,
+      "sha256": "d52eda7e781aae0e5af5aa4edb324271c8b3e4340a38a5a840e60e9dafc62e92",
+      "git_blob": "d51a674c9643d349acd81ac043e1cccabb66fdf8",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72549054",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "3442",
+        "1793842695718977613",
+        "1793842695718982405"
+      ]
+    },
+    {
+      "name": "candidate-current-manager-r4.public.json",
+      "bytes": 3442,
+      "sha256": "83110fe480350b5add320039b8776ece0e18f65c948faf0f859a6560e8213825",
+      "git_blob": "f907235064899ae026027d089b2ec1984ac5d753",
+      "new_publication": true,
+      "preserved_identity": null
+    },
+    {
+      "name": "qa/inert-candidate.public.json",
+      "bytes": 3405,
+      "sha256": "875f58f36bdd5ac7eb9af892c75b8afd22a3a46309347f115338a88ed736b0eb",
+      "git_blob": "14307c85891fea1a94ecfd756b79470e9a04a52c",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72546533",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "3405",
+        "1793835363127778611",
+        "1793835363127784028"
+      ]
+    },
+    {
+      "name": "qa/inert-synthetic-r2-candidate.public.json",
+      "bytes": 4691,
+      "sha256": "f6984df60a230a365c96604350000d6ccec7e72969d68ebd263d80359cd46016",
+      "git_blob": "87514a527861544642923fb11d564ba92373ce1c",
+      "new_publication": false,
+      "preserved_identity": [
+        "16777244",
+        "72548953",
+        "501",
+        "20",
+        "33152",
+        "1",
+        "4691",
+        "1793838192077754207",
+        "1793838192077762290"
+      ]
+    }
+  ],
+  "current_runtime_sources": 18,
+  "current_runtime_original_raw_request_git_blob": "e2cad02e26a8e0b656f2475c17ced6c47ca52c1d",
+  "current_runtime_request_changed": false,
+  "public_candidate_r4_changed": false,
+  "anchor": {
+    "bytes": 967,
+    "sha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+    "git_blob": "837f7d23be8380144cc7ed1212e5fc646cf56a43"
+  },
+  "expected_qa_before": [
+    "inert-candidate.public.json",
+    "inert-synthetic-r2-candidate.public.json",
+    "mac_auth_rows_cas_r1.mjs",
+    "mac_authbus_cache_cas_r1.mjs",
+    "mac_capture_sqlite_synthetic_r1.py",
+    "mac_capture_sqlite_synthetic_r2.py",
+    "mac_current_capture_entry_r1.py",
+    "mac_current_cycle_r2.mjs",
+    "mac_current_fixture_materializer_r1.py",
+    "mac_current_outer_inputs_r1.py",
+    "mac_current_outer_r3.py",
+    "mac_current_phase_owner_r2.py",
+    "mac_current_server_owner_r1.py",
+    "mac_guarded_current_capture_r3.py",
+    "mac_native_process_observer_r1.py",
+    "mac_owned_commands_r1.py",
+    "mac_owned_launchd_r3.py",
+    "mac_owned_unreaped_r1.py",
+    "mac_single_native_r2.mjs",
+    "mac_t5_volume_guard_r1.py"
+  ],
+  "expected_qa_after": [
+    "inert-candidate.public.json",
+    "inert-synthetic-r2-candidate.public.json",
+    "mac_auth_rows_cas_r1.mjs",
+    "mac_authbus_cache_cas_r1.mjs",
+    "mac_capture_sqlite_synthetic_r1.py",
+    "mac_capture_sqlite_synthetic_r2.py",
+    "mac_current_capture_entry_r1.py",
+    "mac_current_cycle_r2.mjs",
+    "mac_current_fixture_materializer_r1.py",
+    "mac_current_outer_inputs_r1.py",
+    "mac_current_outer_inputs_r2.py",
+    "mac_current_outer_r3.py",
+    "mac_current_outer_r4.py",
+    "mac_current_phase_owner_r2.py",
+    "mac_current_server_owner_r1.py",
+    "mac_guarded_current_capture_r3.py",
+    "mac_native_process_observer_r1.py",
+    "mac_owned_commands_r1.py",
+    "mac_owned_launchd_r3.py",
+    "mac_owned_unreaped_r1.py",
+    "mac_single_native_r2.mjs",
+    "mac_t5_volume_guard_r1.py"
+  ],
+  "new_qa_sources": 2,
+  "new_root_documents": 1,
+  "old_total_files_preserved_by_full_identity_and_bytes": 23
+}

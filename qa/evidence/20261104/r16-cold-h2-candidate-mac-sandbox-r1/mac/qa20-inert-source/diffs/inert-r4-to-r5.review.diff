@@ -1,0 +1,132 @@
+diff --git a/mac_current_source_append_inert.py b/mac_current_source_append_inert.py
+--- a/mac_current_source_append_inert.py
++++ b/mac_current_source_append_inert.py
+@@ -314,6 +314,14 @@
+     "candidate-current-manager-r4.public.json": [
+         3442,
+         "83110fe480350b5add320039b8776ece0e18f65c948faf0f859a6560e8213825"
++    ],
++    "qa/inert-candidate.public.json": [
++        3405,
++        "875f58f36bdd5ac7eb9af892c75b8afd22a3a46309347f115338a88ed736b0eb"
++    ],
++    "qa/inert-synthetic-r2-candidate.public.json": [
++        4691,
++        "f6984df60a230a365c96604350000d6ccec7e72969d68ebd263d80359cd46016"
+     ]
+ }
+ PRESERVED_DOCUMENTS={
+@@ -349,13 +357,36 @@
+         "3442",
+         "1793842695718977613",
+         "1793842695718982405"
++    ],
++    "qa/inert-candidate.public.json": [
++        "16777244",
++        "72546533",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "3405",
++        "1793835363127778611",
++        "1793835363127784028"
++    ],
++    "qa/inert-synthetic-r2-candidate.public.json": [
++        "16777244",
++        "72548953",
++        "501",
++        "20",
++        "33152",
++        "1",
++        "4691",
++        "1793838192077754207",
++        "1793838192077762290"
+     ]
+ }
++PRESERVED_QA_RECEIPTS=('inert-candidate.public.json','inert-synthetic-r2-candidate.public.json')
+ NEW_DOCUMENTS=('candidate-current-manager-r4.public.json',)
+ RUNTIME_ABSENT=('outer-r3','outer-r4','captures','launchd','server','credentials-consumer',
+                 'installed-plugin-copy','initial','cold-new-process')
+-PAYLOAD_BYTES=635018
+-PAYLOAD_SHA='e8fe5f984ddab5fc7d8ab0758c8e2b3ba8ded25dfea6e62e04694147c8bb1b68'
++PAYLOAD_BYTES=645911
++PAYLOAD_SHA='85043cc9b07032663700860cc953182a444d4e0052b9cdeeb02c2b6ee7b656b6'
+ ANCHOR_SHA='dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8'
+ protected=0;pending=None
+ class Refused(RuntimeError):pass
+@@ -400,7 +431,7 @@
+ def main():
+     os.umask(0o077)
+     for signum in (signal.SIGTERM,signal.SIGINT):signal.signal(signum,on_signal)
+-    report={'schema':'heptabao.mac-current-complete-source-append-inert.r4','ok':False,'files':[],
++    report={'schema':'heptabao.mac-current-complete-source-append-inert.r5','ok':False,'files':[],
+         'currentPrivateInputsOpened':False,'productionSqliteOpened':False,'sqliteExecuted':False,
+         'consumerExecuted':False,'serviceStarted':False,'gitStarted':False,'cargoStarted':False,
+         'fixedLibraryDefinitionsLoadedOnly':True,'newOriginalInertSeconds':45}
+@@ -409,7 +440,7 @@
+         need(sys.platform=='darwin' and os.getuid()==501,'exact_mac_inert_owner')
+         raw=stdin_once();payload=json.loads(raw)
+         need(set(payload)=={'schema','files','documents','anchorBase64'}
+-            and payload['schema']=='heptabao.mac-current-complete-source-append-public-inputs.r4',
++            and payload['schema']=='heptabao.mac-current-complete-source-append-public-inputs.r5',
+             'exact_public_payload_schema')
+         need(isinstance(payload['files'],dict) and set(payload['files'])==set(PINS),'exact_twenty_distribution_sources_runtime_uses_eighteen')
+         decoded={}
+@@ -419,7 +450,7 @@
+             if name.endswith('.py'):compile(ast.parse(content,filename=name),name,'exec')
+             decoded[name]=content
+         need(isinstance(payload['documents'],dict) and set(payload['documents'])==set(DOCUMENTS),
+-             'exact_three_preserved_and_one_new_public_documents')
++             'exact_five_preserved_and_one_new_public_documents')
+         document_bytes={}
+         for name,(size,pin) in DOCUMENTS.items():
+             content=base64.b64decode(payload['documents'][name],validate=True)
+@@ -452,8 +483,11 @@
+         need(len(NEW_NAMES)==2 and len(set(NEW_NAMES))==2
+              and set(PRESERVED)==set(PINS)-set(NEW_NAMES) and len(PRESERVED)==18
+              and set(PRESERVED_DOCUMENTS)==set(DOCUMENTS)-set(NEW_DOCUMENTS)
+-             and len(PRESERVED_DOCUMENTS)==3 and len(NEW_DOCUMENTS)==1,
+-             'preserved_eighteen_plus_three_and_new_two_plus_one_contract')
++             and len(PRESERVED_DOCUMENTS)==5 and len(NEW_DOCUMENTS)==1
++             and len(PRESERVED_QA_RECEIPTS)==2
++             and {'qa/'+name for name in PRESERVED_QA_RECEIPTS}
++                 =={name for name in PRESERVED_DOCUMENTS if name.startswith('qa/')},
++             'preserved_eighteen_sources_plus_five_documents_and_new_two_plus_one_contract')
+         def qa_members(expected):
+             remaining()
+             with guard.parent(QA/'mac_current_outer_r3.py') as (parent,_):
+@@ -501,7 +535,7 @@
+                     values.append({'name':name,'bytes':len(observed),'sha256':sha(observed),
+                                    'identity':list(final)})
+             return values
+-        report['qaBefore']=qa_members(PRESERVED)
++        report['qaBefore']=qa_members(tuple(PRESERVED)+PRESERVED_QA_RECEIPTS)
+         report['runtimeAbsenceBefore']=absent(RUNTIME_ABSENT)
+         report['newDocumentAbsenceBefore']=absent(NEW_DOCUMENTS)
+         report['preservedSourcesBefore']=preserve_sources()
+@@ -523,12 +557,12 @@
+             if name=='candidate-current-manager-r4.public.json':candidate=written
+         report['preservedSourcesAfter']=preserve_sources()
+         report['preservedDocumentsAfter']=preserve_documents()
+-        report['qaAfter']=qa_members(PINS)
++        report['qaAfter']=qa_members(tuple(PINS)+PRESERVED_QA_RECEIPTS)
+         report['runtimeAbsenceAfter']=absent(RUNTIME_ABSENT)
+         need(report['preservedSourcesBefore']==report['preservedSourcesAfter']
+              and report['preservedDocumentsBefore']==report['preservedDocumentsAfter'],
+-             'all_original_eighteen_sources_and_three_documents_unchanged')
+-        need(report['qaBefore']['identity'][:6]==report['qaAfter']['identity'][:6]
++             'all_original_eighteen_sources_and_five_documents_unchanged')
++        need(report['qaBefore']['identity'][:5]==report['qaAfter']['identity'][:5]
+              and report['runtimeAbsenceBefore']==report['runtimeAbsenceAfter'],
+              'same_qa_directory_inode_and_runtime_paths_still_absent')
+         report['createdRoot']=False;report['createdQa']=False
+@@ -557,7 +591,7 @@
+         report['authoritativeExitZeroRequired']=True
+         report['ok']=bool(prepared and candidate is not None and len(report['files'])==3
+             and len(report.get('preservedSourcesAfter',[]))==18
+-            and len(report.get('preservedDocumentsAfter',[]))==3
++            and len(report.get('preservedDocumentsAfter',[]))==5
+             and stopped and closed and final_anchor and not report['outcomeUnknown'] and completed<UNTIL)
+         out=encode(report);need(len(out)<=65536,'public_result_bound')
+         sys.stdout.buffer.write(out);sys.stdout.buffer.flush()

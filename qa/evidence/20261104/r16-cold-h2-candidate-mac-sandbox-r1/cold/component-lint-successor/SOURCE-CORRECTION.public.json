@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.cold-selected-rust-test-lint-source-correction.r1",
+  "status": "SOURCE_ONLY_NOT_COMPILED",
+  "parent_review_finding": "New tests must obey existing strict Clippy lint threshold; remove unwrap/expect/expect_err without adding allow attributes.",
+  "before": {
+    "bytes": 5089,
+    "sha256": "9591d4b101c0e1ca0a26877da8e409baf2927ba95030c1cefb2f79f21e9d147a",
+    "blob": "8fe767c8837d71c999a9e2e99853f8de3b6264e6"
+  },
+  "after": {
+    "bytes": 5207,
+    "sha256": "ebf0ea27bfb06371f830005f80d5cf934d0ba4f10363f3681cfa8bb08c87b4e9",
+    "blob": "fa6f9395b486511f127f94544ccb56ef7f5ab9dd"
+  },
+  "diff": {
+    "bytes": 3878,
+    "sha256": "894c0f47af2ecb370f88bed1aaea3865da08ffbefe570f05fc1f84191022940c",
+    "blob": "dad39bc2e27f7a020478a4c9fb4517995c14d18f"
+  },
+  "strict_hunks": 7,
+  "strict_forward_whole_equal": true,
+  "exact_reverse_reconstructs_before": true,
+  "production_read_source_unchanged": {
+    "bytes": 31521,
+    "sha256": "b82eb6715e48e53382330a79e620f0b1ddd97cc503d73a6a6c9ea7a3a71bdc8d",
+    "blob": "0a1602ae8eea712409c6de6019be58dd683b972c"
+  },
+  "existing_actual_repair_test_unchanged_blob": "45e7121f8d8b567f9ac80b33f8090aceacf8e5ff",
+  "test_names_unchanged": true,
+  "assertions_unchanged": true,
+  "closed_error_mapping_only": true,
+  "panic_methods_removed": true,
+  "new_lint_suppressions": 0,
+  "rust_format_compile_or_execute": false,
+  "host_actions": 0
+}

@@ -1,0 +1,176 @@
+{
+  "schema": "heptabao.mac-current-five-agent-runtime-actual-packet.r4",
+  "job_id": "1a1a9af7832-fc05-36bb",
+  "verdict": "KNOWN_FAIL_SANDBOX_CAPTURE_CHILD_BEFORE_DATABASE_CAPTURE",
+  "append_only": true,
+  "source_generation": "R4",
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "request_blob": "e2cad02e26a8e0b656f2475c17ced6c47ca52c1d",
+  "root_admission_blob": "f4d88a35ce0c2c3407c983607a6e2ebbd3137dd9",
+  "prior_inert_actual_tree": "af34c400aae7e14d41f3b2accc5e89844177554a",
+  "native_originals_preserved": true,
+  "cached_mcp_snapshot_is_not_wire_bytes": true,
+  "automatic_replay": false,
+  "files": [
+    {
+      "path": "request.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e2cad02e26a8e0b656f2475c17ced6c47ca52c1d",
+      "bytes": 4667,
+      "sha256": "a6ba251c51e1d572b4731401967ca0f21162c8a499dd71029dd116d43cbc09cf"
+    },
+    {
+      "path": "intent.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4925e84f82c964dad260a8d78049e6b55b187265",
+      "bytes": 1259,
+      "sha256": "b573a3efc53d871d4d733d89291ff01bf2e717b3f2a435839af710a6370aab68"
+    },
+    {
+      "path": "ack.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bfae23a34aaf38c640be85485aa1bad8683d9922",
+      "bytes": 5537,
+      "sha256": "e57817d3b18bc6c7884ac37d626ee700fd115fd4dbc5f0dc5b433cf128898ab2"
+    },
+    {
+      "path": "authority.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "43deb0c5d2c06afd2f9cec770e33a8e16d8fc9a2",
+      "bytes": 730,
+      "sha256": "549865d2c2568605e94283a688c047d7845e59122de255f68cc1620f736f226d"
+    },
+    {
+      "path": "stdout.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3f4abf4c42497da38c486a623e4330314bef5471",
+      "bytes": 42596,
+      "sha256": "fde010c0b999bcf10d6cff6cd68bae4d6d2cb3f35d053d3cec92b34d7dc92b6b"
+    },
+    {
+      "path": "stderr.original.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "capture-before.stdout.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bd6fdb84fefc995a8c579d7dd299b1e66af014e6",
+      "bytes": 1299,
+      "sha256": "40261a24a49390ba21d3225ac01b16394cbf4cda54b6f3808cd5f47e2d2c3161"
+    },
+    {
+      "path": "capture-before.file-info.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1cd79510027a2a64526d6a3dd2910daff667c7f3",
+      "bytes": 499,
+      "sha256": "8e035df4be541c4f22f2fae06112cf5ea2afe8391fa6686f424c6c42e953d8ff"
+    },
+    {
+      "path": "capture-before.binary-read.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ba2699dcbbdd4d03827c4ef9a21cf7a4e005f0a8",
+      "bytes": 2082,
+      "sha256": "8733395ac79a6ea929ab402ba5f85b0a6242965563b6bd4d4393d436c82ae819"
+    },
+    {
+      "path": "author-terminal-review.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2bd83a54c5c62b7a7a2cb8066f607934a1582aaf",
+      "bytes": 4763,
+      "sha256": "25edcd1076947e456e0f20189d053d08a86a8db0618925d88ad43d4012d029f9"
+    },
+    {
+      "path": "sdk-native/read-00.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d5ca631408c4708c6c8b5f8ce77fa67851c5ee56",
+      "bytes": 50831,
+      "sha256": "7b1ab5cd362d9e3b605bf2f3f70bc9cef940b6a005a50ef7dac499c3e6720b0f"
+    },
+    {
+      "path": "available-mcp/read-00.snapshot.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "40363e5e9b23d0a66473573e3e8aef41a168215e",
+      "bytes": 53721,
+      "sha256": "4636a9e4ae04330559c259307a475b806537978d57f4db5dd36871e16673f2d8"
+    },
+    {
+      "path": "sdk-native/read-01.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b13caf1841ab13631232655f2a84703a928896c3",
+      "bytes": 51118,
+      "sha256": "2feeae940b6807ea8a15bb96f503696dfce783e9027152744d26e7f635e3cfa7"
+    },
+    {
+      "path": "available-mcp/read-01.snapshot.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "595a645fa043652a677fcb8cace79a38f8766fb6",
+      "bytes": 54574,
+      "sha256": "868ddb90c7fd889eaeea5d469b071c04df27ae8cbcc00e0e79786b7eb11153ef"
+    },
+    {
+      "path": "sdk-native/read-02.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d392c99ba432c6e85bacb70b7330002c94deff01",
+      "bytes": 30419,
+      "sha256": "99f2de94c56fcbee06d582bcf1e08f12acaa81f7b1b08731da8fc7b8c52ca5d9"
+    },
+    {
+      "path": "available-mcp/read-02.snapshot.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0c8468dd505bc213aa37a1efaa4ebda0b86389bd",
+      "bytes": 31814,
+      "sha256": "c9798b8f5b61dbf867be5f66ae89e6663fbbc22684c8525ba58045525d1c5da4"
+    },
+    {
+      "path": "available-mcp/start.snapshot.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ca0b075f38e692f730aa919c9dd59d938b88ad4b",
+      "bytes": 5821,
+      "sha256": "9283ea0b17043d72f60407720152425d5ae21f9f0985631972505bf1709d7cb7"
+    },
+    {
+      "path": "available-mcp/status.snapshot.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ea8df782d4a1d74b03ead06b553a233540215fb8",
+      "bytes": 953,
+      "sha256": "2285478568c35a4029ac9befc75f17518c777977c349680bbde736efd48f7fc4"
+    },
+    {
+      "path": "available-mcp/capture-file-info.snapshot.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "78ea6785bb487ad9987f4bafb7a145774183d596",
+      "bytes": 660,
+      "sha256": "f02b59453f807fc97e7ff41b1235f0bd25348f6651c77ca05aec83d67405fa06"
+    },
+    {
+      "path": "available-mcp/capture-binary-read.snapshot.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7e715a4bdb3dd6b86cb82d18c090bb06a66b082f",
+      "bytes": 2229,
+      "sha256": "8c40583f0b6da8f4bdb72d740f19d6ff1008d0a51e54b37e2a0bf74f748e6e89"
+    }
+  ]
+}

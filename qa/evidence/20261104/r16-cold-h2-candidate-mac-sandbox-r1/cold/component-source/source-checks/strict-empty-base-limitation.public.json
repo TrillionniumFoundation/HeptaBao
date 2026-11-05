@@ -1,0 +1,7 @@
+{
+  "status": "known_pure_harness_limitation",
+  "candidate_changed": false,
+  "host_operations": 0,
+  "rust_execution": false,
+  "error": "Original strict-diff helper requires a final newline and refuses an empty before file. Existing-file hunks are checked with that helper; the /dev/null new-file hunk is checked by exact 0-line-before/count/full-content reconstruction below."
+}

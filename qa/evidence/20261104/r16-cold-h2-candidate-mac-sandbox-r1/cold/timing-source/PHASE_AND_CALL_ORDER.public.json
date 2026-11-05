@@ -1,0 +1,409 @@
+{
+  "schema": "heptabao.cold-native-normal-timing-proposal.v1",
+  "source_only": true,
+  "base_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "base_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "changed_file": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+  "before": {
+    "bytes": 26803,
+    "sha256": "b94711b478147a6879125764c491f6a59bd1215e76a36d2a61230a016d2793c9",
+    "blob": "a1de3065d7883b4b1943d794756e182f1a2ce708"
+  },
+  "after": {
+    "bytes": 31430,
+    "sha256": "2ba7754aab0420aa12b0961f10b28905e2f73f58cece623f56853e8d20063560",
+    "blob": "721fa102aaee4c382bdbecba7c6a922dc5983d0f"
+  },
+  "diff": {
+    "bytes": 15928,
+    "sha256": "c67d9d077c73cbcd9d661d256377abd11a0d8747d45ea8760fc9fdd2352faab1",
+    "blob": "767946880812d44338c07c1db9c02387c135d8fc",
+    "strict_hunks": 9
+  },
+  "normal_timing_backend": {
+    "path": "crates/heptabao-server/src/ha.rs",
+    "blob": "95533302d0a7afa31078b712624c1701f5edb9c8",
+    "lines": "64-82",
+    "semantics": "operation FnOnce evaluated once; timing finish reads Result.is_ok; original Result returned by value unchanged"
+  },
+  "normal_timing_state": {
+    "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+    "blob": "e9f804f749c6e335c430e6246b9e1a74f76b0000",
+    "lines": "217-327",
+    "bucket_limit": 64,
+    "limit_unchanged": true,
+    "deadline": "observes minimum of existing original/scoped/request deadlines; does not enter a scope or change operation deadline"
+  },
+  "labels": [
+    {
+      "variant": "Load",
+      "scope": "cold_native_ha",
+      "label": "load"
+    },
+    {
+      "variant": "CommittedRoot",
+      "scope": "cold_native_ha",
+      "label": "committed_root"
+    },
+    {
+      "variant": "LocalSelection",
+      "scope": "cold_native_ha",
+      "label": "local_selection"
+    },
+    {
+      "variant": "LocalRootBinding",
+      "scope": "cold_native_ha",
+      "label": "local_root_binding"
+    },
+    {
+      "variant": "LocalRootIdentity",
+      "scope": "cold_native_ha",
+      "label": "local_root_identity"
+    },
+    {
+      "variant": "OriginalColdOwner",
+      "scope": "cold_native_ha",
+      "label": "original_cold_owner"
+    },
+    {
+      "variant": "OriginalReadWitness",
+      "scope": "cold_native_ha",
+      "label": "original_read_witness"
+    },
+    {
+      "variant": "OriginalDeadline",
+      "scope": "cold_native_ha",
+      "label": "original_deadline"
+    },
+    {
+      "variant": "ReplicaSource",
+      "scope": "cold_native_ha",
+      "label": "replica_source"
+    },
+    {
+      "variant": "ReplicaInstall",
+      "scope": "cold_native_ha",
+      "label": "replica_install"
+    },
+    {
+      "variant": "InstalledLocalSelection",
+      "scope": "cold_native_ha",
+      "label": "installed_local_selection"
+    },
+    {
+      "variant": "CurrentCursor",
+      "scope": "cold_native_ha",
+      "label": "current_cursor"
+    },
+    {
+      "variant": "MaterializeFull",
+      "scope": "cold_native_ha",
+      "label": "materialize_full"
+    },
+    {
+      "variant": "RepairSource",
+      "scope": "cold_native_ha",
+      "label": "repair_source"
+    },
+    {
+      "variant": "PhysicalRepair",
+      "scope": "cold_native_ha",
+      "label": "physical_repair"
+    },
+    {
+      "variant": "MaterializeAfterRepair",
+      "scope": "cold_native_ha",
+      "label": "materialize_after_repair"
+    },
+    {
+      "variant": "RootNamespace",
+      "scope": "cold_native_ha",
+      "label": "root_namespace"
+    },
+    {
+      "variant": "OwnerBytes",
+      "scope": "cold_native_ha",
+      "label": "owner_bytes"
+    },
+    {
+      "variant": "FinalLocalGeneration",
+      "scope": "cold_native_ha",
+      "label": "final_local_generation"
+    },
+    {
+      "variant": "FinalGate",
+      "scope": "cold_native_ha",
+      "label": "final_gate"
+    }
+  ],
+  "call_order": [
+    {
+      "phase": "load",
+      "original_lines": "92-355",
+      "call": "load_cold_native_ha_inner",
+      "effect": "One outer Result observation, including early Err and original Ok(None). It does not install Service state or authorize delivery."
+    },
+    {
+      "phase": "committed_root",
+      "original_lines": "163-175",
+      "call": "native_v6_committed_read plus original optional-root conversion",
+      "effect": "The original Err mapping and absent-root Err remain; it distinguishes a failed cold selection from the completed inner runtime scope."
+    },
+    {
+      "phase": "local_selection",
+      "original_lines": "186-187",
+      "call": "LocalSelection::read",
+      "effect": "Original local owner/four-resource/cursor checks run once; no extra resource reads. This one phase does not distinguish all internals of LocalSelection."
+    },
+    {
+      "phase": "local_root_binding",
+      "original_lines": "188-195",
+      "call": "original native-root presence, cluster, epoch and reader-floor checks",
+      "effect": "Same boolean conditions/order and original unavailable response; borrowed root returned with explicit Response type."
+    },
+    {
+      "phase": "local_root_identity",
+      "original_lines": "209",
+      "call": "root.identity",
+      "effect": "Original identity computation once; the original digest comparison still chooses whether installation is needed."
+    },
+    {
+      "phase": "replica_source",
+      "original_lines": "222-239",
+      "call": "with_native_v6_source",
+      "effect": "Only on original changed-root branch. Outer Result is observed separately; Ok(inner Err) is not flattened or mistaken for inner success."
+    },
+    {
+      "phase": "replica_install",
+      "original_lines": "224-234",
+      "call": "install_native_v6_replica_inner_with_payload_validation",
+      "effect": "One original inner call. The original published/recovery-required reconciliation condition remains outside and unchanged."
+    },
+    {
+      "phase": "installed_local_selection",
+      "original_lines": "249-250",
+      "call": "LocalSelection::read",
+      "effect": "Only after the original successful install; no repeat or new owner admission."
+    },
+    {
+      "phase": "current_cursor",
+      "original_lines": "252-255",
+      "call": "original root/HA-cursor presence, decode and matches_current",
+      "effect": "Same checks once; no new cursor construction or modification."
+    },
+    {
+      "phase": "materialize_full",
+      "original_lines": "264-275",
+      "call": "materialize_local_with_payload_validation",
+      "effect": "Keeps the Result without a new question mark. Err still selects the existing repair branch; a failed bucket alone is not a terminal failure."
+    },
+    {
+      "phase": "repair_source",
+      "original_lines": "286-295",
+      "call": "with_native_v6_source",
+      "effect": "Original fallback only; observes outer source Result separately."
+    },
+    {
+      "phase": "physical_repair",
+      "original_lines": "288-296",
+      "call": "repair_current_local_objects",
+      "effect": "Original inner repair once; errors and original private diagnostic inspection are preserved."
+    },
+    {
+      "phase": "materialize_after_repair",
+      "original_lines": "307-316",
+      "call": "materialize_local_with_payload_validation",
+      "effect": "Second call only after successful original repair. Its original error is returned, separate from the recoverable first failure."
+    },
+    {
+      "phase": "root_namespace",
+      "original_lines": "327",
+      "call": "root_namespace_only",
+      "effect": "One original catalog/profile check."
+    },
+    {
+      "phase": "owner_bytes",
+      "original_lines": "328-332",
+      "call": "checked owner-byte sum",
+      "effect": "No second traversal or additional reads. Original owner-capacity comparison and distinct507 branch remain unchanged immediately afterwards."
+    },
+    {
+      "phase": "final_local_generation",
+      "original_lines": "339-342",
+      "call": "selected.check",
+      "effect": "Original live ownership/generation/epoch/resource equality checks once; storage_rejected remains unchanged."
+    },
+    {
+      "phase": "final_gate",
+      "original_lines": "343",
+      "call": "original mutable gate",
+      "effect": "The same FnMut is passed as FnOnce via &mut gate. No added gate call."
+    },
+    {
+      "phase": "original_cold_owner",
+      "original_lines": "199-202",
+      "call": "environment.check_cold",
+      "effect": "Observed within each existing gate invocation only; same key/owner/seal/deadline conditions and BarrierFailure mapping."
+    },
+    {
+      "phase": "original_read_witness",
+      "original_lines": "203-206",
+      "call": "verify_native_v6_committed_read",
+      "effect": "Observed within each existing gate invocation only; no fresh ReadIndex, proof or retry is introduced."
+    },
+    {
+      "phase": "original_deadline",
+      "original_lines": "207",
+      "call": "deadline.check",
+      "effect": "Same original absolute deadline check; no new capture/reset/extension and no additional check count."
+    }
+  ],
+  "branches_preserved": [
+    "Non-V6 storage-format remains Ok(None); early checks, local environment, process lock/native enable checks and existing error conversion remain in the original inner body.",
+    "Root digest decides the original installation branch; source Result and inner Result remain nested, with the same publication/recovery-required reconciliation response.",
+    "First materialization Err selects the existing repair then rematerialization. No new retry, gate or repair call.",
+    "Original owner-capacity507, storage error mappings, cursor/owner/witness checks, cold handoff and Service.state publication are not changed."
+  ],
+  "actual_evidence": {
+    "tree": "48f9ea7eee98ce0f363e80f17edaad1195e6a613",
+    "result_blob": "52633c5c0cfad1c34216a898e355207177ef19c5",
+    "result_sha256": "1a1cf352b213f4f58e505c736a329b743eb679ad4ef51c182aea20c05589216c",
+    "line178": {
+      "class": "ordinary",
+      "status": 503,
+      "request_id_present": false,
+      "elapsed_us": "9414388",
+      "exit_remaining_ns": "4580997890",
+      "committed_scope_complete": true,
+      "changed_root_advanced": true
+    },
+    "original_run": "FAILED91/98, postcold0/12; no replay"
+  },
+  "conditional_source_deduction": [
+    "Within the recorded committed_read_entry context, completed final_witness and scope_total match runtime1208-1212 Ok(Some(read)); Ok(None) leaves at1136-1139 before final_witness.",
+    "That source deduction does not correlate line178 with ledger seq49. Line177 adjacency/duration similarity does not supply a request ID.",
+    "If the failed cold call had this read result, any subsequent unobserved original local selection/root/cursor/materialization/repair/catalog/final gate branch can still reject before Service.state is assigned at service.rs9234.",
+    "No failed bucket and positive remaining time at that recorded exit do not show every later operation succeeded or establish the unseal's root cause."
+  ],
+  "observation_gaps_retained": [
+    "LocalSelection is grouped without new subresource reads; an error in that phase alone does not identify its internal private reason.",
+    "Caller validation between returning ColdNativeHaRead and Service.state assignment remains outside this single-file patch. A completed cold load followed by response failure would require a separately reviewed caller observation.",
+    "No new request ID, route string, key, payload, root digest, locator, error text, token or credential is emitted. The original private-feature logging source is left untouched.",
+    "Timing aggregation is still bounded64; if saturated, existing bucket_bound_reached is the evidence limit. No enlarged cap or claim of complete per-call trace.",
+    "The observer adds bounded measurement overhead within existing absolute deadlines; no performance or runtime PASS is claimed."
+  ],
+  "mechanical_components": {
+    "report": {
+      "schema": "heptabao.cold-timing-observation-source-preservation.v1",
+      "status": "passed",
+      "passed": 8,
+      "failed": 0,
+      "checks": [
+        {
+          "case": "sixteen_unique_changes_forward_and_reverse_reconstruct_whole_bytes",
+          "passed": true
+        },
+        {
+          "case": "all_original_preceding_helpers_and_every_warm_read_proof_byte_unchanged",
+          "passed": true
+        },
+        {
+          "case": "twenty_closed_labels_have_unique_single_syntactic_callsite",
+          "passed": true
+        },
+        {
+          "case": "typed_helper_forwards_once_to_exact_original_result_preserving_backend",
+          "passed": true
+        },
+        {
+          "case": "original_business_operation_syntactic_counts_are_unchanged",
+          "passed": true
+        },
+        {
+          "case": "first_materialization_error_keeps_existing_repair_branch_and_second_remains_terminal",
+          "passed": true
+        },
+        {
+          "case": "original_error_literals_important_branches_and_deadline_checks_remain",
+          "passed": true
+        },
+        {
+          "case": "outer_source_and_inner_result_have_distinct_nested_observers_without_flattening",
+          "passed": true
+        }
+      ],
+      "call_counts": {
+        "native_v6_committed_read": [
+          1,
+          1
+        ],
+        "LocalSelection::read": [
+          2,
+          2
+        ],
+        "check_cold": [
+          1,
+          1
+        ],
+        "verify_native_v6_committed_read": [
+          1,
+          1
+        ],
+        "with_native_v6_source": [
+          2,
+          2
+        ],
+        "install_native_v6_replica_inner_with_payload_validation": [
+          1,
+          1
+        ],
+        "NativeHaCursor::decode": [
+          1,
+          1
+        ],
+        "matches_current": [
+          1,
+          1
+        ],
+        "materialize_local_with_payload_validation": [
+          2,
+          2
+        ],
+        "repair_current_local_objects": [
+          1,
+          1
+        ],
+        "root_namespace_only": [
+          1,
+          1
+        ],
+        "checked_add": [
+          1,
+          1
+        ]
+      },
+      "before_sha256": "b94711b478147a6879125764c491f6a59bd1215e76a36d2a61230a016d2793c9",
+      "candidate_sha256": "2ba7754aab0420aa12b0961f10b28905e2f73f58cece623f56853e8d20063560",
+      "before_bytes": 26803,
+      "candidate_bytes": 31430,
+      "phase_count": 20,
+      "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+      "source_text_component_only": true,
+      "rust_compiled": false,
+      "rust_executed": false,
+      "product_calls": 0,
+      "host_calls": 0,
+      "file_writes": 0,
+      "limit": "Exact mechanical preservation and fixed callsites, not a Rust type/borrow check or runtime qualification."
+    },
+    "harness_note": "The first source-text harness incorrectly asserted one occurrence of native_v6_enabled although exact original file has two (cold and warm). Preserved failure corrected to before/after equality; candidate bytes unchanged. An intermediate exit0 output was tool-truncated; final report-only stdout is complete."
+  },
+  "current_qualification": {
+    "rustfmt": false,
+    "rust_typecheck": false,
+    "rust_runtime": false,
+    "product_branch_update": false,
+    "host_dispatch": false,
+    "existing_ci_inherited": false
+  }
+}

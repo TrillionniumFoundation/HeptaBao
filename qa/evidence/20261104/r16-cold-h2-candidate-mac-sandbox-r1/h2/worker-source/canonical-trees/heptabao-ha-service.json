@@ -1,0 +1,29 @@
+{
+  "sha": "2f8f5b8175eb8674b19b0426db003a8896e126a4",
+  "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/2f8f5b8175eb8674b19b0426db003a8896e126a4",
+  "tree": [
+    {
+      "path": "Cargo.toml",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ac165f2f59b9320b00ca1b3bfe5993b47e3fe461",
+      "size": 1660,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/ac165f2f59b9320b00ca1b3bfe5993b47e3fe461"
+    },
+    {
+      "path": "examples",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "ea5aeb172d79957c7ca7a01e539dde4c1d996f77",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/ea5aeb172d79957c7ca7a01e539dde4c1d996f77"
+    },
+    {
+      "path": "src",
+      "mode": "040000",
+      "type": "tree",
+      "sha": "0bba13379c5594a4356b432e2bd5d3116c39cd34",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/0bba13379c5594a4356b432e2bd5d3116c39cd34"
+    }
+  ],
+  "truncated": false
+}

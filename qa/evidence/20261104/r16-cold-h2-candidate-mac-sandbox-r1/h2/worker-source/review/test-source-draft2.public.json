@@ -1,0 +1,17 @@
+{
+  "names": [
+    "h2_sync_worker_is_unentered_and_retains_outer_context",
+    "h2_sync_worker_expired_deadline_never_calls_work",
+    "h2_sync_worker_preserves_inner_result",
+    "h2_sync_worker_joins_panicked_work_and_drops_capture",
+    "h2_sync_worker_does_not_authorize_nested_runtime_context",
+    "h2_sync_worker_cancelled_waiter_retains_blocking_capacity"
+  ],
+  "old_bytes": 5740,
+  "new_bytes": 6126,
+  "shorthand_tokens_absent": true,
+  "fixed_resume_unwind_present": true,
+  "expired_and_inner_result_functions_byte_equal": true,
+  "source_only": true,
+  "rust_compile_executed": false
+}

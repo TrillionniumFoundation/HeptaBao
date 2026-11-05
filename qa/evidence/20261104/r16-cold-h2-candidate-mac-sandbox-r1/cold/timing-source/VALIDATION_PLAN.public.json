@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.cold-timing-validation-plan.v1",
+  "status": "PROPOSED_NOT_DISPATCHED",
+  "executed_pure_source": "Eight local Python source-text checks only: exact forward/inverse16 replacements, unchanged warm tail,20 closed labels/single callsites, exact original FnOnce backend, call counts, fallback Result handling, original branches/mappings/deadline checks, nested Result distinction.",
+  "selected_rust_proposals": [
+    "Compile the extracted exact typed enum/helper with the exact existing observe_native_v6_timing implementation and a minimal timing sink. Check one call for Ok and Err, moved opaque value/error identity returned unchanged, original Instant unchanged, and disabled/no-context behavior. Treat this only as selected-helper qualification.",
+    "Exercise actual existing bounded request observation with nested outer Ok(inner Err), outer Err and successful inner Result; assert separate replica_source/replica_install outcomes,64 cap unchanged, and no raw payload in emitted JSON. Add as a separate explicitly inventoried focused group if root approves.",
+    "Check first materialize Err followed by repair success/second materialize success retains overall success, while second Err propagates unchanged. Use existing source-selected pure operation stubs only; do not claim a storage recovery run."
+  ],
+  "review_then_compile": [
+    "Root reviews this exact base/diff and helper call order. Preserve both the source-text harness failure and this unformatted draft.",
+    "Use pinned Rust1.98 rustfmt on only this public source via the already owned source-format mechanism; freeze any formatting-only successor/diff before build. No host format request is included here.",
+    "Materialize a fresh exact candidate commit/tree from the approved integration base after confirming its read.rs equals the supplied495 base; do not overwrite any original495/3cb artifacts or failed fixture.",
+    "Run a normal default-feature build/check and retained libtest under the existing approved build runner/budgets; no private diagnostic feature, all-features or lint suppression. Existing44 and any independently selected observer7 retain their names and denominators; added focused cases remain separately listed.",
+    "Only after independent normal-build qualification and a separately approved fresh fixture/observer binding may a new product run occur. No retry of old seq49 or old roots is part of this proposal."
+  ],
+  "ci_scope": "No inherited6304,44,7,98 or12 PASS from other source identities. No workflow, test denominator, request budget or response assertion change.",
+  "product_runtime_submitted": false
+}

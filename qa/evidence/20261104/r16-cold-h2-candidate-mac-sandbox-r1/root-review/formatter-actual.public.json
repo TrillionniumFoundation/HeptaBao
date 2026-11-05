@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.root-cold-h2-four-file-format-actual.v1",
+  "tree": "e97ec2f9b232ad4aa8062a360b314c65f80ef7f2",
+  "files": 36,
+  "bytes": 307954,
+  "merkle_trees": 5,
+  "job": "1a1a9b4f704-fc05-36e5",
+  "exactly_one_ack_reused_false": true,
+  "authoritative_exit0_complete_durable": true,
+  "unchanged_pinned_rustfmt": true,
+  "all_four_children_exit0_reaped_same_supervisor_group": true,
+  "original_budgets": {
+    "inner": 50,
+    "child": 10,
+    "outer": 60
+  },
+  "actual_inner_seconds": 0.11176179797621444,
+  "full_terminal_stdout_bytes": 1636,
+  "full_terminal_stderr_bytes": 0,
+  "version_pinned_full_output_readbacks": 5,
+  "formatted_files": [
+    {
+      "path": "formatted/service_native_v6_ha_read.rs",
+      "blob": "b09e57362d53ce207b255d713d7aa7c126215691",
+      "bytes": 31475,
+      "sha256": "298824c635fdbf759adc46583271438e856f395571668f1f7e9f324e7b55d951",
+      "mode": "100644",
+      "format_hunks": 3
+    },
+    {
+      "path": "formatted/service_native_v6_ha_cold_timing_tests.rs",
+      "blob": "a8d9a60bad3424c038e7144028a4561daa14a130",
+      "bytes": 5225,
+      "sha256": "5b21ae81267e3063767ca63038816767af4d0919e229c7d97ecf0060400f3538",
+      "mode": "100644",
+      "format_hunks": 1
+    },
+    {
+      "path": "formatted/http_h2.rs",
+      "blob": "70db7e9c37f057ddb7a1a146e57d1697928d33ce",
+      "bytes": 14691,
+      "sha256": "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1",
+      "mode": "100644",
+      "format_hunks": 0
+    },
+    {
+      "path": "formatted/http_h2_sync_worker_tests.rs",
+      "blob": "7e69476f7a09b19fdb62c0022494ccc23e2c7f69",
+      "bytes": 6157,
+      "sha256": "d84bd0249f9c388e1555e4a6d9095b5f9e4a43cbf0519dbdf881d170f91c57ba",
+      "mode": "100644",
+      "format_hunks": 5
+    }
+  ],
+  "format_deltas_reviewed": "Only line layout, optional closure blocks and trailing comma normalization; H2 production file unchanged.",
+  "rust_compiled_or_tests_executed": false,
+  "decision": "ACCEPT_EXACT_FOUR_OUTPUTS_FOR_NEW_UNQUALIFIED_CANONICAL_CANDIDATE"
+}

@@ -1,0 +1,103 @@
+{
+  "schema": "heptabao.cold-timing-observation-source-preservation.v1",
+  "status": "passed",
+  "passed": 8,
+  "failed": 0,
+  "checks": [
+    {
+      "case": "sixteen_unique_changes_forward_and_reverse_reconstruct_whole_bytes",
+      "passed": true
+    },
+    {
+      "case": "all_original_preceding_helpers_and_every_warm_read_proof_byte_unchanged",
+      "passed": true
+    },
+    {
+      "case": "twenty_closed_labels_have_unique_single_syntactic_callsite",
+      "passed": true
+    },
+    {
+      "case": "typed_helper_forwards_once_to_exact_original_result_preserving_backend",
+      "passed": true
+    },
+    {
+      "case": "original_business_operation_syntactic_counts_are_unchanged",
+      "passed": true
+    },
+    {
+      "case": "first_materialization_error_keeps_existing_repair_branch_and_second_remains_terminal",
+      "passed": true
+    },
+    {
+      "case": "original_error_literals_important_branches_and_deadline_checks_remain",
+      "passed": true
+    },
+    {
+      "case": "outer_source_and_inner_result_have_distinct_nested_observers_without_flattening",
+      "passed": true
+    }
+  ],
+  "call_counts": {
+    "native_v6_committed_read": [
+      1,
+      1
+    ],
+    "LocalSelection::read": [
+      2,
+      2
+    ],
+    "check_cold": [
+      1,
+      1
+    ],
+    "verify_native_v6_committed_read": [
+      1,
+      1
+    ],
+    "with_native_v6_source": [
+      2,
+      2
+    ],
+    "install_native_v6_replica_inner_with_payload_validation": [
+      1,
+      1
+    ],
+    "NativeHaCursor::decode": [
+      1,
+      1
+    ],
+    "matches_current": [
+      1,
+      1
+    ],
+    "materialize_local_with_payload_validation": [
+      2,
+      2
+    ],
+    "repair_current_local_objects": [
+      1,
+      1
+    ],
+    "root_namespace_only": [
+      1,
+      1
+    ],
+    "checked_add": [
+      1,
+      1
+    ]
+  },
+  "before_sha256": "b94711b478147a6879125764c491f6a59bd1215e76a36d2a61230a016d2793c9",
+  "candidate_sha256": "2ba7754aab0420aa12b0961f10b28905e2f73f58cece623f56853e8d20063560",
+  "before_bytes": 26803,
+  "candidate_bytes": 31430,
+  "phase_count": 20,
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "source_text_component_only": true,
+  "rust_compiled": false,
+  "rust_executed": false,
+  "product_calls": 0,
+  "host_calls": 0,
+  "file_writes": 0,
+  "limit": "Exact mechanical preservation and fixed callsites, not a Rust type/borrow check or runtime qualification."
+}

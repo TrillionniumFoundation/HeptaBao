@@ -1,0 +1,73 @@
+--- before/http_h2_sync_worker_tests.rs
++++ formatted/http_h2_sync_worker_tests.rs
+@@ -26,14 +26,12 @@
+         tokio::task::spawn_blocking(|| {
+             assert!(tokio::runtime::Handle::try_current().is_ok());
+             let parent = std::thread::current().id();
+-            let result = run_unentered_service_worker(
+-                Instant::now() + Duration::from_secs(2),
+-                move || {
++            let result =
++                run_unentered_service_worker(Instant::now() + Duration::from_secs(2), move || {
+                     assert_ne!(std::thread::current().id(), parent);
+                     assert!(tokio::runtime::Handle::try_current().is_err());
+                     17_u8
+-                },
+-            );
++                });
+             assert_eq!(result, Ok(17));
+             assert!(tokio::runtime::Handle::try_current().is_ok());
+         })
+@@ -61,10 +59,9 @@
+ 
+ #[test]
+ fn h2_sync_worker_preserves_inner_result() {
+-    let result = run_unentered_service_worker(
+-        Instant::now() + Duration::from_secs(2),
+-        || Err::<(), u8>(19),
+-    );
++    let result = run_unentered_service_worker(Instant::now() + Duration::from_secs(2), || {
++        Err::<(), u8>(19)
++    });
+     assert_eq!(result, Ok(Err(19)));
+ }
+ 
+@@ -72,13 +69,11 @@
+ fn h2_sync_worker_joins_panicked_work_and_drops_capture() {
+     let drops = Arc::new(AtomicUsize::new(0));
+     let capture = DropCount(Arc::clone(&drops));
+-    let result: Result<(), ()> = run_unentered_service_worker(
+-        Instant::now() + Duration::from_secs(2),
+-        move || {
++    let result: Result<(), ()> =
++        run_unentered_service_worker(Instant::now() + Duration::from_secs(2), move || {
+             let _capture = capture;
+             std::panic::resume_unwind(Box::new("fixed owned worker component"));
+-        },
+-    );
++        });
+     assert_eq!(result, Err(()));
+     assert_eq!(drops.load(Ordering::SeqCst), 1);
+     assert!(tokio::runtime::Handle::try_current().is_err());
+@@ -126,7 +121,9 @@
+                 run_unentered_service_worker(
+                     Instant::now() + Duration::from_secs(2),
+                     move || -> Result<(), &'static str> {
+-                        started_sender.send(()).map_err(|_| "owned start observer")?;
++                        started_sender
++                            .send(())
++                            .map_err(|_| "owned start observer")?;
+                         release_receiver
+                             .recv_timeout(Duration::from_secs(1))
+                             .map_err(|_| "bounded component release")?;
+@@ -152,7 +149,9 @@
+             observed_probe.fetch_add(1, Ordering::SeqCst);
+         });
+         assert_eq!(probe_completed.load(Ordering::SeqCst), 0);
+-        release_sender.send(()).map_err(|_| "release actual worker")?;
++        release_sender
++            .send(())
++            .map_err(|_| "release actual worker")?;
+         probe.await.map_err(|_| "single capacity slot resumed")?;
+         Ok::<(), &'static str>(())
+     })?;

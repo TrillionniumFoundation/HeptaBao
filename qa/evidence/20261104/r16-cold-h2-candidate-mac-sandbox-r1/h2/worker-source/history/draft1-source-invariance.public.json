@@ -1,0 +1,38 @@
+{
+  "status": "source_only_inverse_and_strict_diff_verified",
+  "before_bytes": 13613,
+  "after_bytes": 14691,
+  "new_test_bytes": 5740,
+  "original_body_bytes": 825,
+  "original_body_only_indented": true,
+  "original_dispatch_bytes": 987,
+  "helper_exact_occurrences": 1,
+  "inverse_transformations": [
+    "replace entire new dispatch with entire original dispatch, including trailing newline and await Result punctuation",
+    "remove exactly one new helper and test module declaration block"
+  ],
+  "inverse_whole_equal": true,
+  "strict_apply_production_equal": true,
+  "strict_apply_new_test_equal": true,
+  "unchanged_original_functions": {
+    "negotiate": true,
+    "serve": true,
+    "request_wire": true,
+    "send_reply": true,
+    "response_frames": true
+  },
+  "diff_sha256": "7be43eac97fbedfd6e0d04d57ad32d6b7645370451d9d86d640ee3c257d4ec0b",
+  "new_test_diff_sha256": "f3bcb6a22ae24e3d16e30b143b8f656d9cef424f02d9d60fa5e54ed1e6840537",
+  "verification_harness_history": {
+    "failed_attempts": 3,
+    "failures": [
+      "Inverse used inner-body boundary for entire dispatch.",
+      "Correction still used inner-body boundary.",
+      "Entire-dispatch inverse omitted its trailing newline."
+    ],
+    "source_candidate_modified": false,
+    "product_executed": false
+  },
+  "rust_compile_executed": false,
+  "product_executed": false
+}

@@ -1,0 +1,104 @@
+{
+  "actual_formatter_children": 0,
+  "candidate_imported_or_executed": false,
+  "checks": [
+    {
+      "case": "two_whole_python_sources_ast_compile_only",
+      "passed": true
+    },
+    {
+      "case": "unique_literal_1",
+      "passed": true
+    },
+    {
+      "case": "unique_literal_2",
+      "passed": true
+    },
+    {
+      "case": "unique_literal_3",
+      "passed": true
+    },
+    {
+      "case": "unique_literal_4",
+      "passed": true
+    },
+    {
+      "case": "unique_literal_5",
+      "passed": true
+    },
+    {
+      "case": "five_unique_replacements_reconstruct_candidate",
+      "passed": true
+    },
+    {
+      "case": "reverse_unique_7",
+      "passed": true
+    },
+    {
+      "case": "reverse_unique_8",
+      "passed": true
+    },
+    {
+      "case": "reverse_unique_9",
+      "passed": true
+    },
+    {
+      "case": "reverse_unique_10",
+      "passed": true
+    },
+    {
+      "case": "reverse_unique_11",
+      "passed": true
+    },
+    {
+      "case": "reverse_reconstructs_complete_original",
+      "passed": true
+    },
+    {
+      "case": "all_five_helpers_whole_source_unchanged",
+      "passed": true
+    },
+    {
+      "case": "exact_request_schema",
+      "passed": true
+    },
+    {
+      "case": "request_binds_exact_candidate_without_execution",
+      "passed": true
+    },
+    {
+      "case": "exact_four_public_input_names",
+      "passed": true
+    },
+    {
+      "case": "input_exact_service_native_v6_ha_read.rs",
+      "passed": true
+    },
+    {
+      "case": "input_exact_service_native_v6_ha_cold_timing_tests.rs",
+      "passed": true
+    },
+    {
+      "case": "input_exact_http_h2.rs",
+      "passed": true
+    },
+    {
+      "case": "input_exact_http_h2_sync_worker_tests.rs",
+      "passed": true
+    },
+    {
+      "case": "stdin_under_original_256kib_bound",
+      "passed": true
+    },
+    {
+      "case": "same_rustfmt_argv_and_50_10_60_caps",
+      "passed": true
+    }
+  ],
+  "host_calls": 0,
+  "passed": 23,
+  "rust_compiled_or_executed": false,
+  "schema": "heptabao.cold-h2-format-carrier-source-checks.r1",
+  "source_only": true,
+  "status": "passed"
+}

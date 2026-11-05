@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.r15.root-prepublication-tree-review.v1",
+  "as_of_utc": "2026-11-05T02:53:56Z",
+  "expected_parent": "3a6b62142a9c632006c99364b2a987a30dca46e9",
+  "candidate_tree": "88c4fed431c12fbcf2ac1c14fc7b448c0cc9dea6",
+  "prior_blob_leaves": 8059,
+  "all_prior_non_document_blobs_unchanged": 8057,
+  "new_evidence_blob_leaves": 929,
+  "total_blob_leaves": 8988,
+  "tree_merkle": {
+    "root_sha": "88c4fed431c12fbcf2ac1c14fc7b448c0cc9dea6",
+    "trees_verified": 1128
+  },
+  "packet_count": 23,
+  "packet_file_entries": 903,
+  "packet_bytes": 20944737,
+  "root_leaf_count": 26,
+  "summary_document_edits": 2,
+  "all76_prior_index_fields_except_top_asof_preserved": true,
+  "prior_index_raw_bytes_reconstructed_exactly": true,
+  "all_historical_report_bytes_retained": true,
+  "all_new_evidence_members_mode_size_sha_exact": true,
+  "current_source_head": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+  "pr152_draft_open_unmerged": true,
+  "all_required_false_gates_retained": true
+}

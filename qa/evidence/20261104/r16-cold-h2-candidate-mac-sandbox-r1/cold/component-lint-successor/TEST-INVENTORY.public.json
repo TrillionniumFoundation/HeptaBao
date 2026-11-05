@@ -1,0 +1,198 @@
+{
+  "schema": "heptabao.cold-normal-observation-selected-rust-plan.r2",
+  "status": "SOURCE_ONLY_NOT_EXECUTED",
+  "base_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "base_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "original_44_groups_unchanged": true,
+  "original_7_additional_tests_unchanged": true,
+  "additional_tests": [
+    {
+      "name": "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity",
+      "source_path": "crates/heptabao-server/src/service_native_v6_ha_cold_timing_tests.rs",
+      "source_pin": {
+        "bytes": 5207,
+        "sha256": "ebf0ea27bfb06371f830005f80d5cf934d0ba4f10363f3681cfa8bb08c87b4e9",
+        "blob": "fa6f9395b486511f127f94544ccb56ef7f5ab9dd"
+      },
+      "new_test": true,
+      "listing_argv_suffix": [
+        "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity",
+        "--exact",
+        "--list"
+      ],
+      "runtime_argv_suffix": [
+        "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "original_test_request_budget_seconds": null,
+      "selected_check_scope": "Production helper: non-Clone/non-Copy moved success without a request observer; exact error identity with a real request observer; once counts and unchanged deadline."
+    },
+    {
+      "name": "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results",
+      "source_path": "crates/heptabao-server/src/service_native_v6_ha_cold_timing_tests.rs",
+      "source_pin": {
+        "bytes": 5207,
+        "sha256": "ebf0ea27bfb06371f830005f80d5cf934d0ba4f10363f3681cfa8bb08c87b4e9",
+        "blob": "fa6f9395b486511f127f94544ccb56ef7f5ab9dd"
+      },
+      "new_test": true,
+      "listing_argv_suffix": [
+        "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results",
+        "--exact",
+        "--list"
+      ],
+      "runtime_argv_suffix": [
+        "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "original_test_request_budget_seconds": null,
+      "selected_check_scope": "Production helper: outer Ok(inner Err), outer Err and nested Ok keep original owned result identity, call order and deadline."
+    },
+    {
+      "name": "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file",
+      "source_path": "crates/heptabao-server/src/service_native_v6_ha_install_tests.rs",
+      "source_pin": {
+        "bytes": 46783,
+        "sha256": "4ae685a3799dabca64c1866e778649480bc5fb2f9dc6afa37622807333e38c1c",
+        "blob": "45e7121f8d8b567f9ac80b33f8090aceacf8e5ff"
+      },
+      "new_test": false,
+      "listing_argv_suffix": [
+        "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file",
+        "--exact",
+        "--list"
+      ],
+      "runtime_argv_suffix": [
+        "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "original_test_request_budget_seconds": 15,
+      "selected_check_scope": "Unchanged real Service/three durable Raft selections. Actual absent ciphertext repaired via production cold loader without advancing root or journal; altered registered marker and existing corrupt ciphertext remain refused. This fixture uses explicit ciphertext copies, not full mTLS/HTTP delivery."
+    }
+  ],
+  "additional_count": 3,
+  "combined_h2_additional_count_proposed": 6,
+  "new_combined_incremental_group_cap_seconds_proposed": 600,
+  "existing_runner": {
+    "packet_tree": "cc9bf4ebfa811284520b76d93fba9759692b5637",
+    "launcher": {
+      "bytes": 28425,
+      "sha256": "230597bdf2e67f617428355fd0cae4c4b587c397409e02e0395ee96c8e4cee03",
+      "blob": "8909a7add36d43e3be7a5175adb4f184e72f7fed"
+    },
+    "runner": {
+      "bytes": 20791,
+      "sha256": "5ba3e0152b1b84510ef7740b1e5d863e1464e4eaee04a4b772747a4db86dcb2b",
+      "blob": "7fd97c088c538c7b4d1968964b8d8eaa67826885"
+    },
+    "groups": {
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f"
+    },
+    "root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3",
+    "source": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/source",
+    "output": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1",
+    "toolchain": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin",
+    "cargo_home": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+    "target": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target",
+    "release_seconds": 1800,
+    "libtest_seconds": 3600,
+    "each_listing_seconds": 30,
+    "each_original_group_seconds": 600,
+    "original_extra_7_shared_seconds": 600,
+    "term_seconds": 5,
+    "kill_seconds": 5,
+    "previous_supervisor_seconds": 12000,
+    "current_compile_or_runtime_authorization": false
+  },
+  "preservation": {
+    "production_patch": {
+      "bytes": 31430,
+      "sha256": "2ba7754aab0420aa12b0961f10b28905e2f73f58cece623f56853e8d20063560",
+      "blob": "721fa102aaee4c382bdbecba7c6a922dc5983d0f"
+    },
+    "production_patch_tree": "fa8372f2c54e416b30daa9ec5130cfd6a196e90b",
+    "only_post_review_source_addition": "A cfg(test) module declaration plus a new separate Rust test file; removing the declaration recovers the reviewed production candidate byte-for-byte.",
+    "strict_diff": [
+      {
+        "name": "production_to_test_module",
+        "hunks": 1,
+        "exact": true
+      },
+      {
+        "name": "exact_base_to_candidate",
+        "hunks": 10,
+        "exact": true
+      },
+      {
+        "name": "new_test_file",
+        "hunks": 1,
+        "exact": true,
+        "before_lines": 0,
+        "after_lines": 117
+      }
+    ],
+    "membership": [
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a1de3065d7883b4b1943d794756e182f1a2ce708",
+        "size": 26803,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/a1de3065d7883b4b1943d794756e182f1a2ce708"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_install_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "45e7121f8d8b567f9ac80b33f8090aceacf8e5ff",
+        "size": 46783,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/45e7121f8d8b567f9ac80b33f8090aceacf8e5ff"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9",
+        "size": 86397,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/d9b45d137838fff7f9e84938c7e1aacc0e2e7dd9"
+      },
+      {
+        "path": "crates/heptabao-server/src/ha.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "95533302d0a7afa31078b712624c1701f5edb9c8",
+        "size": 169489,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/95533302d0a7afa31078b712624c1701f5edb9c8"
+      },
+      {
+        "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3",
+        "size": 61623,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_cold_timing_tests.rs",
+        "absent": true
+      }
+    ]
+  },
+  "limits": [
+    "No Rust formatting, parsing, compilation or tests have run for these two new Rust cases.",
+    "The new tests do not claim actual Service authorization, Raft/election or physical recovery. The unchanged selected actual recovery test is the separate third case.",
+    "The two new tests do not expose a private timing-report accessor or assert an emitted report; the unchanged original seven normal timing/ingress tests retain backend report/bucket coverage.",
+    "The shared additional 600-second group is a proposal for the combined nine cases, distinct from and subsequent to the original 44+7.",
+    "Candidate source commit/tree, fresh output and final build dispatch remain to be frozen by root after source formatting/combination. Original 495/3cb test passes do not qualify this candidate.",
+    "No host job, Cargo, product operation or ref update is authorized by this source package."
+  ],
+  "revised_prior_tree": "7235e8ef82bad30b39e8b618965ba8ed1d532aa6"
+}

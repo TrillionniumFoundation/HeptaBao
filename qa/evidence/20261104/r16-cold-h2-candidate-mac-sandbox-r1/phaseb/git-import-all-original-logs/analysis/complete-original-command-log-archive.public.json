@@ -1,0 +1,546 @@
+{
+  "schema": "heptabao.phaseb.standalone-import-complete-log-archive.v1",
+  "status": "COMPLETE_ARCHIVE_SOURCE_ONLY",
+  "original_job": "1a1a9579588-fc05-346f",
+  "prior_core_tree": "c6b7d64757ce56a133a1adfdffcf427ba149b310",
+  "total_original_logs": 63,
+  "commands": [
+    {
+      "label": "000-standalone-clone",
+      "pid": 193582,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "001-bundle-verify",
+      "pid": 193682,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "002-bundle-heads",
+      "pid": 193689,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "003-canonical-checkout",
+      "pid": 193691,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "004-remove-local-origin",
+      "pid": 193704,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "005-canonical-kind",
+      "pid": 193707,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "006-canonical-tree",
+      "pid": 193709,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "007-canonical-parents",
+      "pid": 193715,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "008-canonical-count",
+      "pid": 193759,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "009-canonical-roots",
+      "pid": 193762,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "010-canonical-full-fsck",
+      "pid": 193768,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "011-materialized-tree",
+      "pid": 193991,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "012-materialized-index",
+      "pid": 193998,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "013-no-sparse-config",
+      "pid": 194007,
+      "exit_code": 1,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "014-source-after-head",
+      "pid": 195285,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "015-source-after-tree",
+      "pid": 195287,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "016-source-after-status",
+      "pid": 195290,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "017-source-after-git-dir",
+      "pid": 195308,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "018-source-after-common-dir",
+      "pid": 195310,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "019-source-after-shallow",
+      "pid": 195312,
+      "exit_code": 0,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    },
+    {
+      "label": "020-source-after-partial-config",
+      "pid": 195314,
+      "exit_code": 1,
+      "timed_out": false,
+      "direct_child_reaped": true,
+      "remaining": [],
+      "record_matches_core": true,
+      "stdout_whole_matches": true,
+      "stderr_whole_matches": true
+    }
+  ],
+  "large_streams": [
+    {
+      "name": "tree",
+      "expected": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-import-r1/control/011-materialized-tree.stdout",
+        "sha256": "604f32e51684437f26cfaf0f9a06333ae3078bbf15a4610fee6f2f2bf4f9b156",
+        "size": 450094,
+        "version": "2050:4646364:450094:1793842462954145279:1793842462954145279"
+      },
+      "observed": {
+        "path": "actual/git/011-materialized-tree.stdout",
+        "bytes": 450094,
+        "sha256": "604f32e51684437f26cfaf0f9a06333ae3078bbf15a4610fee6f2f2bf4f9b156",
+        "blob": "4a06b193010c16b487ab44e21be89b85a96ba5d9"
+      },
+      "version_bound": true,
+      "contiguous_chunks": [
+        {
+          "label": "treechunk0",
+          "offset": 0,
+          "bytes": 65536,
+          "sha256": "8efcefd70806afee481d1ba20e5ebe1bea1311b2670856ab37c06b2c2711ab06",
+          "eof": false
+        },
+        {
+          "label": "treechunk1",
+          "offset": 65536,
+          "bytes": 65536,
+          "sha256": "bbe6d95e2eec7abea6235e251050844fc57e618d684df6c721e92a872df650dd",
+          "eof": false
+        },
+        {
+          "label": "treechunk2",
+          "offset": 131072,
+          "bytes": 65536,
+          "sha256": "8f97056956e7a9c5af5113836f99f5d7c2d0ea5b1d72813c4a4b358e5b2382a0",
+          "eof": false
+        },
+        {
+          "label": "treechunk3",
+          "offset": 196608,
+          "bytes": 65536,
+          "sha256": "cddc4ee3c06f4acb6a7c6ae7f50cbcc353cb88360bea6479dfdb0d2b06a0a9c0",
+          "eof": false
+        },
+        {
+          "label": "treechunk4",
+          "offset": 262144,
+          "bytes": 65536,
+          "sha256": "d74bb381ee7c3e980bc09c7233bc6727fded6bf24326164835a5ca42477f9d71",
+          "eof": false
+        },
+        {
+          "label": "treechunk5",
+          "offset": 327680,
+          "bytes": 65536,
+          "sha256": "b79595cba2e79d05559302d6cb3e1ed49da55b7631a37589b3d5e0446fc9449c",
+          "eof": false
+        },
+        {
+          "label": "treechunk6",
+          "offset": 393216,
+          "bytes": 56878,
+          "sha256": "013c3f7e39943f2cec6a5d8110a425b7bce4a08d113fff91cf8a6949e3d7ec5e",
+          "eof": true
+        }
+      ],
+      "whole_equal": true,
+      "utf8_roundtrip_byte_equal": true,
+      "nul_terminators": 3911
+    },
+    {
+      "name": "index",
+      "expected": {
+        "metadata": {
+          "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "gid": 1000,
+          "link_count": 1,
+          "metadata_platform": "linux",
+          "mode": 384,
+          "uid": 1000,
+          "xattr_names": [],
+          "xattr_sha256": {}
+        },
+        "mode": 384,
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-import-r1/control/012-materialized-index.stdout",
+        "sha256": "9b0c0799e3cee9d728c00bda221f277ccdbb7ba08117e4734a469aa9b29d8529",
+        "size": 438361,
+        "version": "2050:4646367:438361:1793842463032586630:1793842463032586630"
+      },
+      "observed": {
+        "path": "actual/git/012-materialized-index.stdout",
+        "bytes": 438361,
+        "sha256": "9b0c0799e3cee9d728c00bda221f277ccdbb7ba08117e4734a469aa9b29d8529",
+        "blob": "1b6e116b5b79963ad96489ba801c22087394aff5"
+      },
+      "version_bound": true,
+      "contiguous_chunks": [
+        {
+          "label": "indexchunk0",
+          "offset": 0,
+          "bytes": 65536,
+          "sha256": "43df2f119b199998f2581536d8ae79eb7fb82d55b38d376416a3f12901cf4099",
+          "eof": false
+        },
+        {
+          "label": "indexchunk1",
+          "offset": 65536,
+          "bytes": 65536,
+          "sha256": "7a65c2f69c7263ac2a50be86aae441dd25a3714c9b707880f4759621e26f9937",
+          "eof": false
+        },
+        {
+          "label": "indexchunk2",
+          "offset": 131072,
+          "bytes": 65536,
+          "sha256": "35e10715fefa3ced341235477cf18eee42e0a0e54e4f1c917a99f86eb57f1a89",
+          "eof": false
+        },
+        {
+          "label": "indexchunk3",
+          "offset": 196608,
+          "bytes": 65536,
+          "sha256": "319c5d302725dd352788a137f6f8349c38159b246a7d99f7310463be104ea66d",
+          "eof": false
+        },
+        {
+          "label": "indexchunk4",
+          "offset": 262144,
+          "bytes": 65536,
+          "sha256": "995cd5d5d91334e779107023c1b5801da3aa40a4eb7e7ea989a7e02ddf68ee7e",
+          "eof": false
+        },
+        {
+          "label": "indexchunk5",
+          "offset": 327680,
+          "bytes": 65536,
+          "sha256": "20883d20ea40aaa28e95535bfddcad95df916812509ee91c39f1437d61f08838",
+          "eof": false
+        },
+        {
+          "label": "indexchunk6",
+          "offset": 393216,
+          "bytes": 45145,
+          "sha256": "1fdb1002e120c5f95435e08b93bf97f3993f681e237ae2d88e0bb228e02eeb67",
+          "eof": true
+        }
+      ],
+      "whole_equal": true,
+      "utf8_roundtrip_byte_equal": true,
+      "nul_terminators": 3911
+    }
+  ],
+  "canonical_nul_record_count": 3911,
+  "tree_index_equal": true,
+  "derived_full_git_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "all_operation_reads_complete": true,
+  "operation_ids": [
+    {
+      "label": "logs0",
+      "operation_id": "602d0258d889597d36b8182cbfb677507976c726caec65c6ce0ece331e146ea0",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "logs1",
+      "operation_id": "e48b151f3196fb22d876dc56b6217c41bd317f74eed1e41d050bbb5bac2430d5",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "logs2",
+      "operation_id": "cd4ffc143da3d8247af7851cc4c9f95445b8884ee23b303620010ab9b1f84bd2",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "logs3",
+      "operation_id": "7e02b2f963f883d01c806fcb8c810256dd203fc6bb30154ba0c2948eb287e00c",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "treeinfo0",
+      "operation_id": "a6b2504b69fb5f4bad76af011071bc94b53bfd13164a67a26d3847248eb8dde0",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "treeinfo1",
+      "operation_id": "7ba7de27ef32a3d70a709a62d77fb8e794956de9d97910e3dd063a4458a01f97",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "indexinfo0",
+      "operation_id": "dd11b33b46a479bb28e619d5b8d13cf48fc236500aa41824435e3b1d40f673f4",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "indexinfo1",
+      "operation_id": "124f3b7dd3039a55d1f5106b807a5b20481339a15faaea967686c7526056de08",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "treechunk0",
+      "operation_id": "d7bc2802aebe26b52c812b84929f08f6f13566d566b8cfe595833471d6d7f773",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "treechunk1",
+      "operation_id": "7a31c99645b07a231ceba3bf1ec6b3b16ebc545db893d69110b0450fcab966f3",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "treechunk2",
+      "operation_id": "fd3e849122f2a4f0d358f29b96c8548b326b83ad20cf592438ac7c02b5f75764",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "treechunk3",
+      "operation_id": "3b95c41b205e2165d362dd25002b30a4795498c3ae1d94bbb23de712d9570b4c",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "treechunk4",
+      "operation_id": "f11cfab8826ae64bbecfaa5b9f1284d7ccc17842e17886f44cc20ab96d64bfaf",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "treechunk5",
+      "operation_id": "8843ea8e507f1c8572831ca308cba9b0894345e8c1223b5853c06b250c5797af",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "treechunk6",
+      "operation_id": "7f754c73f960e3f10c11753515f6e75ba0e927acfd47043050690f9d2f03c9fd",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "indexchunk0",
+      "operation_id": "d46c36fdb597532c50f366ffbb74b970d2ab053d5623c1c3ca7d95a22d5810a4",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "indexchunk1",
+      "operation_id": "6adfa8ea18a8bec76149075362c8b79534d6a50dfed501787aa00304eef71e1b",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "indexchunk2",
+      "operation_id": "bad67a8976d4beee376bb66854fd2eb07780e808b82964b7aca78bd3311c25a7",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "indexchunk3",
+      "operation_id": "b9e64e7b5cbbb2f8fe6ed62116ed70af49a714565d4e723f2365bf983745064a",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "indexchunk4",
+      "operation_id": "752b9a42e5d629e8ded51188a7d1e80477f748669abbb00f66993dafd4675dbe",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "indexchunk5",
+      "operation_id": "744bec96c43f33541e65719bbc54abe7937c2d544cb58ee6ab27b4641a7f5011",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    },
+    {
+      "label": "indexchunk6",
+      "operation_id": "82613883a6481fb72a08589a6fbd5d46531e2785083241c3f5e412411fca8af8",
+      "all_required_bytes_already_archived": true,
+      "pending": false
+    }
+  ],
+  "no_new_host_read_for_assembly": true,
+  "no_git_command_replayed": true,
+  "no_product_replayed": true,
+  "verification_note": "An initial cache verifier passed a typed array to an array-only SHA helper and stopped before any persistence; conversion to Array fixed the verifier. Original bytes and read operations were unchanged."
+}

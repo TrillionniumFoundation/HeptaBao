@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.root-h2-owned-sync-worker-source-review.v1",
+  "source_tree": "8ad10dbf21d1bf4321df75d506db11512773956f",
+  "files": 28,
+  "bytes": 457582,
+  "merkle_trees": 12,
+  "production_diff_hunks": 2,
+  "test_successor_diff_hunks": 6,
+  "strict_whole_reconstruction": true,
+  "original_service_callback_body_identical_except_indentation": true,
+  "canonical_source_members_verified": 14,
+  "exact_source_anchors_verified": 10,
+  "guard_unchanged_blob": "21d186c7aaae63f95a9099a6d4981f502c70c5e4",
+  "base_old_files_identical_on_6304": true,
+  "accepted_semantics": [
+    "Existing Tokio blocking parent retains capacity until scoped OS worker actually joins.",
+    "Same absolute Instant before spawn, in child, original callback and send_reply; no retry, replacement deadline or detached child.",
+    "Spawn failure and expired scheduling do not enter Service; callback panic joins and preserves existing poisoning/recovery state.",
+    "Only new helper Result is unwrapped; callback nested Result remains its original value.",
+    "Three audited rejections do not reach fresh-ingress/ReadIndex and remain unchanged.",
+    "Native permission, actor, enrollment, root, audit and strict Handle guard remain unchanged; nested Tokio entry is not authorized."
+  ],
+  "cost": "One extra OS thread per running normal H2 Service callback, <=32 per connection runtime and <=32*configured max_connections (1..128) as a loose bound; original reset/cancellation does not release started blocking work.",
+  "new_components": 6,
+  "new_lint_suppressions": 0,
+  "actual_Rust_runtime_qualification": false,
+  "actual_tls_h2_native_dispatch_qualification": false,
+  "prior_B01_UNKNOWN_retained": true,
+  "decision": "SOURCE_ACCEPTED_FOR_SAME_CANDIDATE_NORMAL_BUILD_AND_SEPARATE_REAL_TLS_NATIVE_SNAPSHOT_VALIDATION",
+  "candidate_base_decision": "Use parent6304 with its reviewed CI fixes, restore exact3cb fresh-runtime observation blob3289 and add the four formatted cold/H2 inputs; no prior qualification transfer."
+}

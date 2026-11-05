@@ -1,0 +1,94 @@
+--- a/crates/heptabao-server/src/service_native_v6_ha_cold_timing_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_cold_timing_tests.rs
+@@ -8,14 +8,16 @@
+ use std::cell::{Cell, RefCell};
+ use std::time::{Duration, Instant};
+ 
++type TestResult = Result<(), Box<dyn std::error::Error>>;
++
+ #[derive(Debug)]
+ struct OwnedMarker(Box<u64>);
+ 
+ #[test]
+-fn cold_native_ha_timing_preserves_once_and_owned_result_identity() {
++fn cold_native_ha_timing_preserves_once_and_owned_result_identity() -> TestResult {
+     let until = Instant::now() + Duration::from_secs(8);
+     let _scope = RequestDeadlineScope::enter(until);
+-    let deadline = OriginalDeadline::capture().unwrap();
++    let deadline = OriginalDeadline::capture()?;
+     let calls = Cell::new(0);
+ 
+     // The marker deliberately has no Clone or Copy implementation.
+@@ -26,7 +28,7 @@
+             calls.set(calls.get() + 1);
+             Ok(value)
+         });
+-    let returned = result.expect("original success remains success without a request observer");
++    let returned = result.map_err(|_| "original success changed without a request observer")?;
+     assert_eq!(std::ptr::from_ref(returned.0.as_ref()), value_identity);
+     assert_eq!(calls.get(), 1);
+     assert_eq!(crate::request_deadline::current(), Some(until));
+@@ -39,19 +41,20 @@
+             calls.set(calls.get() + 1);
+             Err(error)
+         });
+-    let returned = result.expect_err("the observer must retain the original recoverable error");
++    let returned = result.err().ok_or("original recoverable error became success")?;
+     assert_eq!(std::ptr::from_ref(returned.0.as_ref()), error_identity);
+     assert_eq!(calls.get(), 2);
+     assert_eq!(deadline.instant(), until);
+     assert_eq!(crate::request_deadline::current(), Some(until));
+     observation.finish(None);
++    Ok(())
+ }
+ 
+ #[test]
+-fn cold_native_ha_timing_preserves_nested_source_and_inner_results() {
++fn cold_native_ha_timing_preserves_nested_source_and_inner_results() -> TestResult {
+     let until = Instant::now() + Duration::from_secs(8);
+     let _scope = RequestDeadlineScope::enter(until);
+-    let deadline = OriginalDeadline::capture().unwrap();
++    let deadline = OriginalDeadline::capture()?;
+     let observation = NativeV6RequestObservation::start(until, "ordinary", false);
+     let calls = RefCell::new(Vec::new());
+ 
+@@ -70,8 +73,9 @@
+             ))
+         });
+     let returned = result
+-        .expect("outer source success must not become its inner error")
+-        .expect_err("inner installation error must not become success");
++        .map_err(|_| "outer source success became an outer error")?
++        .err()
++        .ok_or("inner installation error became success")?;
+     assert_eq!(std::ptr::from_ref(returned.0.as_ref()), error_identity);
+     assert_eq!(*calls.borrow(), ["source", "inner"]);
+ 
+@@ -82,7 +86,9 @@
+             calls.borrow_mut().push("source_error");
+             Err(source_error)
+         });
+-    let returned = result.expect_err("source acquisition failure remains the outer error");
++    let returned = result
++        .err()
++        .ok_or("source acquisition failure became outer success")?;
+     assert_eq!(
+         std::ptr::from_ref(returned.0.as_ref()),
+         source_error_identity
+@@ -104,8 +110,8 @@
+             ))
+         });
+     let returned = result
+-        .expect("source success remains success")
+-        .expect("inner success remains success");
++        .map_err(|_| "source success became an outer error")?
++        .map_err(|_| "inner success became an inner error")?;
+     assert_eq!(std::ptr::from_ref(returned.0.as_ref()), value_identity);
+     assert_eq!(
+         *calls.borrow(),
+@@ -114,4 +120,5 @@
+     assert_eq!(deadline.instant(), until);
+     assert_eq!(crate::request_deadline::current(), Some(until));
+     observation.finish(None);
++    Ok(())
+ }

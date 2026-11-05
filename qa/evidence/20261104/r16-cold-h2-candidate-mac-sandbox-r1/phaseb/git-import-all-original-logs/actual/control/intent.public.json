@@ -1,0 +1,137 @@
+{
+  "automatic_retry": false,
+  "binary_execution_allowed": false,
+  "bundle_header": {
+    "header_bytes": 63,
+    "header_sha256": "dd9a61096daf9b2537b616dc91af47dfc57f1726244908c62badec1f07d16bc6",
+    "heads": [
+      [
+        "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+        "HEAD"
+      ]
+    ],
+    "prerequisites": [],
+    "version": 2
+  },
+  "clone_seconds": 90,
+  "compiler_started": false,
+  "controller": {
+    "bytes": 33102,
+    "sha256": "cdecc828fd13e6fe2509741515c23cab2913931b430ffb1823630975634bafc3"
+  },
+  "existing_source_used": false,
+  "expected_full_commit_count": 3755,
+  "expected_prerequisites": [],
+  "export_receipt_verified": true,
+  "files": [
+    {
+      "bytes": 23335023,
+      "mode": 256,
+      "name": "canonical-3cb-full.bundle",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/canonical-3cb-full.bundle",
+      "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
+      "version": "2050:4330514:23335023:1793841653430023604:1793841653430023604"
+    },
+    {
+      "bytes": 39965,
+      "mode": 256,
+      "name": "source-export.result.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/source-export.result.public.json",
+      "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
+      "version": "2050:4330516:39965:1793841653590018909:1793841653591018879"
+    }
+  ],
+  "git_command_seconds": 60,
+  "input_files_before": [
+    {
+      "identity": [
+        2050,
+        4330514,
+        1000,
+        1000,
+        33024,
+        1,
+        23335023,
+        1793841653430023604,
+        1793841653430023604
+      ],
+      "mode": 256,
+      "name": "canonical-3cb-full.bundle",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/canonical-3cb-full.bundle",
+      "same_fd_readback": {
+        "bytes": 23335023,
+        "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b"
+      },
+      "version": "2050:4330514:23335023:1793841653430023604:1793841653430023604"
+    },
+    {
+      "identity": [
+        2050,
+        4330516,
+        1000,
+        1000,
+        33024,
+        1,
+        39965,
+        1793841653590018909,
+        1793841653591018879
+      ],
+      "mode": 256,
+      "name": "source-export.result.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/source-export.result.public.json",
+      "same_fd_readback": {
+        "bytes": 39965,
+        "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448"
+      },
+      "version": "2050:4330516:39965:1793841653590018909:1793841653591018879"
+    },
+    {
+      "identity": [
+        2050,
+        4330518,
+        1000,
+        1000,
+        33152,
+        1,
+        11951,
+        1793841653775473547,
+        1793841653775473547
+      ],
+      "mode": 384,
+      "name": "source-carrier.result.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/control/result.public.json",
+      "same_fd_readback": {
+        "bytes": 11951,
+        "sha256": "b2bf06c9bc6c38f31cc365d49d23a4af381eae955fceb058737d96953a71c066"
+      },
+      "version": "2050:4330518:11951:1793841653775473547:1793841653775473547"
+    }
+  ],
+  "input_transport_performed": false,
+  "maximum_bundle_bytes": 67108864,
+  "network_git_protocols_enabled": false,
+  "old_source_opened": false,
+  "overall_seconds": 300,
+  "partial_root_retained_on_failure": true,
+  "product_tests_executed": 0,
+  "production_changed": false,
+  "raw_input_receipts_unchanged": true,
+  "receipt": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-import-r1/control/result.public.json",
+  "runtime_qualification": false,
+  "schema": "heptabao.phaseb3cb.desktop-standalone-source-import.v1",
+  "server_started": false,
+  "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-r1",
+  "source_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "source_imported": false,
+  "source_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "status": "failed",
+  "transport_receipt": {
+    "bytes": 11951,
+    "mode": 384,
+    "name": "source-carrier.result.public.json",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/control/result.public.json",
+    "sha256": "b2bf06c9bc6c38f31cc365d49d23a4af381eae955fceb058737d96953a71c066",
+    "version": "2050:4330518:11951:1793841653775473547:1793841653775473547"
+  },
+  "transport_receipt_verified": true
+}
