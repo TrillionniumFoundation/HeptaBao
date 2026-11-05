@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.current4e808.desktop-source-import.smallbatch3-reconciliation-intent.v1",
+  "root_GO": {
+    "blob": "8854ac7521bd01af93fda983e84e933d6d56c118",
+    "bytes": 3617,
+    "sha256": "d6196120c97cfd478be71a3d0ba26f4519e51150bda35c9938c98a2488484622"
+  },
+  "original_read_intent_tree": "c57c7c23b5deb28379482c41d66182a404abcec6",
+  "original_admission_error_tree": "693dd4af532d1a41e2ad263a0a2d2331adabdf67",
+  "original_process_job": "desktop/1a1acd0d62d-fc05-571a",
+  "original_65_plan": "bc3ac1786389aa597cdd980d2fd5bff5b7ef66e8",
+  "request": {
+    "idempotency_key": "ha-4e808-source-import-commandlogs-03-r1-20261105",
+    "operation": {
+      "tool": "read_multiple_files",
+      "arguments": {
+        "host": "desktop",
+        "paths": [
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/009-canonical-roots.stdout",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/009-canonical-roots.stderr",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/010-canonical-full-fsck.public.json",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/010-canonical-full-fsck.stdout",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/010-canonical-full-fsck.stderr",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/011-materialized-tree.public.json",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/011-materialized-tree.stderr",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/012-materialized-index.public.json",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/012-materialized-index.stderr",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/013-no-sparse-config.public.json",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/013-no-sparse-config.stdout",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/013-no-sparse-config.stderr",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/014-source-after-head.public.json",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/014-source-after-head.stdout",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/014-source-after-head.stderr"
+        ],
+        "max_file_bytes": 65536,
+        "max_response_bytes": 131072
+      }
+    }
+  },
+  "maximum_new_submissions": 1,
+  "original_unknown_preserved": true,
+  "reused_false_does_not_close_original_future": true,
+  "SDK_external_before_isError_or_parse": true,
+  "only_returned_operation_status_and_immutable_pages": true,
+  "on_error": "STOP; no loop or new admission",
+  "process_start": false,
+  "product_replay": false
+}

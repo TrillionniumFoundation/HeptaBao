@@ -1,0 +1,6 @@
+{
+  "printed_small_remaining": 48,
+  "actual_small_remaining_at_reuse_packet": 33,
+  "reason": "A stale count in direct tool summary only; original CONTENT-DELTA and other packet files did not contain this count and are unchanged.",
+  "source_modified": false
+}

@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.root-importer-smallbatch3-original-read-reconciliation.r31.v1",
+  "status": "GO_ONE_EXACT_READ_ONLY_RECONCILIATION",
+  "lane": "A",
+  "owner": "/root/ha_validation",
+  "original_error_packet": "693dd4af532d1a41e2ad263a0a2d2331adabdf67",
+  "original_65_plan": "bc3ac1786389aa597cdd980d2fd5bff5b7ef66e8",
+  "original_process_job": "desktop/1a1acd0d62d-fc05-571a",
+  "exact_original_request": {
+    "idempotency_key": "ha-4e808-source-import-commandlogs-03-r1-20261105",
+    "operation": {
+      "tool": "read_multiple_files",
+      "arguments": {
+        "host": "desktop",
+        "paths": [
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/009-canonical-roots.stdout",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/009-canonical-roots.stderr",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/010-canonical-full-fsck.public.json",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/010-canonical-full-fsck.stdout",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/010-canonical-full-fsck.stderr",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/011-materialized-tree.public.json",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/011-materialized-tree.stderr",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/012-materialized-index.public.json",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/012-materialized-index.stderr",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/013-no-sparse-config.public.json",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/013-no-sparse-config.stdout",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/013-no-sparse-config.stderr",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/014-source-after-head.public.json",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/014-source-after-head.stdout",
+          "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/014-source-after-head.stderr"
+        ],
+        "max_file_bytes": 65536,
+        "max_response_bytes": 131072
+      }
+    }
+  },
+  "original_lost_ACK_future": "UNKNOWN_PRESERVED",
+  "protocol": {
+    "external_completed_intent_before_one_submission": true,
+    "same_typed_request_and_key_only": true,
+    "SDK_whole_before_parse": true,
+    "check_isError_first": true,
+    "no_new_process_or_business_replay": true,
+    "no_path_key_or_cap_change": true,
+    "returned_ID_only_for_status_immutable_pages": true,
+    "reused_false_does_not_close_first_unknown": true,
+    "error_or_missing_ACK_stops_without_loop": true
+  },
+  "after_closure": "Continue only remaining original smallbatch4/5; current two NUL content reuse remains exactly f7eda3. Preserve every original error/UNKNOWN and proof provenance. No LAN prepare or product action yet.",
+  "root_Runtime_calls": 0
+}

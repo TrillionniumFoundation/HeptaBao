@@ -1,0 +1,12 @@
+function(treeBinary,indexBinary,expectedTree,expectedCount){
+ const sha1=eval("("+load("ha_helper_reconstructed_r1_sha1")+")"),u=eval("("+load("ha_helper_reconstructed_r1_utf8")+")");
+ const decode=b=>decodeURIComponent([...b].map(c=>"%"+c.charCodeAt(0).toString(16).padStart(2,"0")).join(""));
+ const parse=(b,index)=>{if(!b.endsWith("\0"))throw Error("full terminal NUL required");const out=new Map();for(const row of b.slice(0,-1).split("\0")){const split=row.indexOf("\t");if(split<0)throw Error("row delimiter");const meta=row.slice(0,split).split(" "),rawPath=row.slice(split+1),path=decode(rawPath);if(meta.length!==3||!["100644","100755"].includes(meta[0])||(!index&&meta[1]!=="blob")||(index&&meta[2]!=="0"))throw Error("mode/kind/stage");const oid=meta[index?1:2];if(!/^[0-9a-f]{40}$/.test(oid)||path.startsWith("/")||path.split("/").some(x=>!x||x==="."||x==="..")||out.has(path)||u(path)!==rawPath)throw Error("path/oid/duplicate");out.set(path,{mode:meta[0],oid,rawPath});}return out;};
+ const tree=parse(treeBinary,false),idx=parse(indexBinary,true);
+ if(tree.size!==expectedCount||idx.size!==expectedCount)throw Error("tracked count");
+ for(const [path,a]of tree){const b=idx.get(path);if(!b||a.mode!==b.mode||a.oid!==b.oid||a.rawPath!==b.rawPath)throw Error("tree/index mismatch");}
+ const root=new Map();for(const [path,row]of tree){const parts=path.split("/");let node=root;for(const part of parts.slice(0,-1)){if(!node.has(part))node.set(part,new Map());const next=node.get(part);if(!(next instanceof Map))throw Error("dir collision");node=next;}const leaf=parts.at(-1);if(node.has(leaf))throw Error("leaf collision");node.set(leaf,row);}
+ let merkleTrees=0;const hashTree=node=>{const entries=[];for(const [name,row]of node){const dir=row instanceof Map;entries.push({rawName:u(name),sortName:u(name)+(dir?"/":""),mode:dir?"40000":row.mode,oid:dir?hashTree(row):row.oid});}entries.sort((a,b)=>a.sortName<b.sortName?-1:a.sortName>b.sortName?1:0);let bytes="";for(const row of entries)bytes+=row.mode+" "+row.rawName+"\0"+row.oid.replace(/../g,x=>String.fromCharCode(parseInt(x,16)));merkleTrees++;return sha1("tree "+bytes.length+"\0"+bytes);};
+ const rebuilt=hashTree(root);if(rebuilt!==expectedTree)throw Error("canonical root mismatch");
+ return{tracked_files:tree.size,index_files:idx.size,all_index_stage_zero:true,tree_equals_index:true,rebuilt_tree:rebuilt,expected_tree:expectedTree,merkle_trees:merkleTrees,passed:true};
+}

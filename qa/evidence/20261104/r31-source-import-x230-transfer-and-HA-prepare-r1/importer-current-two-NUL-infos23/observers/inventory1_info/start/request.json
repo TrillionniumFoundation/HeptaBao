@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "ha-4e808-source-import-inventory1-info-r1-20261105",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/012-materialized-index.stdout"
+    }
+  }
+}

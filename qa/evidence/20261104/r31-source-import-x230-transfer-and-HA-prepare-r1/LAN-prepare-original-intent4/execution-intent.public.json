@@ -1,0 +1,78 @@
+{
+  "schema": "heptabao.current4e808.LAN98plus12.prepare-external-intent.v1",
+  "root_GO": {
+    "blob": "8378661df80442329b793a4dd73b1661a53dd80f",
+    "bytes": 10779,
+    "sha256": "e34f7e0075b0b0edbccc8afa7c37ccf5843cf4a9190c2a9c7f12d451dc1b6ab4"
+  },
+  "source_import_qualification": {
+    "name": "r31-desktop-current-source-import-complete-root-qualification.public.json",
+    "blob": "3859911145a8bd8b947935bc038d501e143a5d63",
+    "bytes": 4874,
+    "sha256": "ce161e3fd35ec1c6548a1f6a9d84fbc391eb333de7fa8ea0b2ce05b0cbebfe0a"
+  },
+  "qualified_import_core": {
+    "blob": "575f3ef51bb6e859ee28b0cf268966ce2b6a7513",
+    "bytes": 36163,
+    "sha256": "484ebbd31e94213c526bbde8664a516658fbab48a273bace01396a6ca10adb72",
+    "version": "2050:7401916:36163:1793900780972649325:1793900780972649325",
+    "full9_decimal": [
+      "2050",
+      "7401916",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "36163",
+      "1793900780972649325",
+      "1793900780972649325"
+    ]
+  },
+  "existing_nine_source_readback_packet": "6a8b6b46d8f68826bce01782b649512eb03374e9",
+  "exact_request": {
+    "blob": "483231efe2016a8bd72b8aa205fb589b13513f6e",
+    "bytes": 480,
+    "sha256": "4a1aa367dca92a9b4438c690b4db971e0ac8efe71af9d3dd4847ae34a4ea7baa"
+  },
+  "request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py",
+      "--prepare-only"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-4e808-postcold-prepare-r1-57cb2b31-7ee5ee82"
+  },
+  "binding": {
+    "canonical_json": "{\"args\":[\"-I\",\"-S\",\"-B\",\"/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_same_root_publication_pocket_postrecovery_cold_r1.py\",\"--prepare-only\"],\"cpu_quota_percent\":null,\"cwd\":\"/home/qian-qi/heptabao-ha-closure-20261103-r1\",\"env\":{},\"executable\":\"/usr/bin/python3\",\"host\":\"desktop\",\"memory_max_bytes\":null,\"nice\":null,\"stdin\":null,\"timeout_seconds\":360}",
+    "request_digest": "da7f3e7686a98e37b8d0aad6ac917c53d1e3cc2f7022d25c3cb3940ed206ed82",
+    "request_fingerprint_decimal": "15744371501096865335"
+  },
+  "execution_submissions_authorized": 1,
+  "prepare_only": true,
+  "live_authorized": false,
+  "output_paths": [
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/linux-native-build.public.json",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/linux-normal-release-result.public.json",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/mac-native-build.public.json",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/mac-normal-release-result.public.json",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-pocket3-mac1-postrecovery-cold-control-r1/prepared.public.json"
+  ],
+  "read_protocol": {
+    "single_native_future": true,
+    "immutable_result_page_limit": 8192,
+    "independent_file_info_each": true,
+    "body_plan_frozen_from_actual_sizes_and_versions": true,
+    "maximum_body_chunk_bytes": 65536
+  },
+  "historical_import_tail_lost_ACK": "UNKNOWN_PRESERVED",
+  "no_new_control_layer": true,
+  "launcher_changes": false,
+  "missing_ACK": "UNKNOWN; stop new admission, no process replay or new key",
+  "SDK_saved_whole_before_parse": true
+}

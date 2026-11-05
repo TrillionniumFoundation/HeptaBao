@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.current4e808.importer-original-tail-read-reconciliation.intent.v1",
+  "root_GO": "86c17bb7cab6fbf5e45ec1475759fb283e86d204",
+  "original_timeout_tree": "e013e8ed1854f76b35084a4aa9df7e07aaec05ac",
+  "original_partial_tree": "9c56aee3c866244b0644a336d8be22c81584e0bc",
+  "request": {
+    "idempotency_key": "ha-4e808-source-import-streams1-r1-20261105",
+    "operation": {
+      "tool": "process_read",
+      "arguments": {
+        "host": "desktop",
+        "job_id": "1a1acd0d62d-fc05-571a",
+        "limit": 16384,
+        "stdout_offset": 0,
+        "stderr_offset": 16384
+      }
+    }
+  },
+  "original_future": "UNKNOWN",
+  "reconciliation_submissions_before_intent": 0,
+  "process_start": false,
+  "offset_key_or_deadline_change": false,
+  "reused_false_rule": "Retain first lost-ACK future UNKNOWN; a fresh read-only operation is not proof the previous native future terminated. Finish only the one returned operation and report this limitation.",
+  "on_error": "Preserve original second SDK whole, stop new admissions, and return exact evidence; no retry loop."
+}

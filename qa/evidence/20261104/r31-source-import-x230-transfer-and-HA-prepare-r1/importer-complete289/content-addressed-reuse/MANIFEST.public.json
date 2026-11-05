@@ -1,0 +1,58 @@
+{
+  "entries": [
+    {
+      "path": "root-reuse-GO.public.json",
+      "blob": "f7eda3b5696e478342b58999871788d009fef97a",
+      "bytes": 4442,
+      "sha256": "b917a032223d2df14e51af65bd337820205446e40e94bf72acfdf547529ee4ea"
+    },
+    {
+      "path": "original-65-file-plan.public.json",
+      "blob": "593b26c016e9410c09e2622665f0dc34765e4353",
+      "bytes": 62424,
+      "sha256": "6766f34c76e43725147e2d7f410c102c5a2e0dc5629ff1ef51295205fd1c84a4"
+    },
+    {
+      "path": "CONTENT-DELTA.public.json",
+      "blob": "152e6b2a9daeae1e846c53ad197c45913efcf339",
+      "bytes": 3166,
+      "sha256": "e41f48d878cfe74e6ad5ec9a2876c52df17c543d94248118445b396355ee1ab2"
+    },
+    {
+      "path": "origin/canonical-reconstruction-proof.public.json",
+      "blob": "6bbd49ea5f0bc42d97d3c40649ad33efb1745fd9",
+      "bytes": 6663,
+      "sha256": "27d6f03cb4c7c05bbe77909d83f7ce327d5238030484a0c49705b5bba55b9c30"
+    },
+    {
+      "path": "origin/independent-NUL-root-check.public.json",
+      "blob": "35392dafd4f93aac0198483e7deac68dad755329",
+      "bytes": 278,
+      "sha256": "022e21d7dca6b32ddb81a2a560f2b9ca162287f737bf7f55058bcc7f8a994c32"
+    },
+    {
+      "path": "actual-info/inventory0.json",
+      "blob": "4eb15ed38e151fe0174cea593fea369e9f72f486",
+      "bytes": 516,
+      "sha256": "9ce261b2910e1047c044e6075b0cfb8bb3e66bd6f31e902b57aaedc6efb5fc40"
+    },
+    {
+      "path": "actual-info/inventory1.json",
+      "blob": "74eed9205e387b39f2d2aa01d4e5024c6005c6e4",
+      "bytes": 517,
+      "sha256": "39bfb1dabc464aa6097efac4faf5427700f778b47347ef87e09d37231e801966"
+    },
+    {
+      "path": "canonical-content/011-materialized-tree.stdout",
+      "blob": "6c1558f24909344f06eda9c9106ed51ef832b3d2",
+      "bytes": 450459,
+      "sha256": "d7d6a445b6f66b8c9e07bc138c048a257d11a5bf343f83eed11a71afcd2f3548"
+    },
+    {
+      "path": "canonical-content/012-materialized-index.stdout",
+      "blob": "36c857b0ad549e5783774e77d0fd357850afc9aa",
+      "bytes": 438717,
+      "sha256": "a762e59dfaa7b4a2b1e3120fb83161f14578d9da5ef038573c98540f1083574e"
+    }
+  ]
+}

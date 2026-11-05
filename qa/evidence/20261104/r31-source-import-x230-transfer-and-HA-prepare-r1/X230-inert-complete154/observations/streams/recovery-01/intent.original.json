@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.current4e808.x230-inert-streams-same-id-recovery-intent.v1",
+  "recorded_utc": "2026-11-05T18:12:02.423Z",
+  "root_go": {
+    "blob": "45520f0274ef96844ab797dc01ca5227393d3bdd",
+    "bytes": 1719,
+    "sha256": "58c269c4574db4daa8070ea27b732e806f0884c36183f8b62a52e6debc18afec"
+  },
+  "status": "INTENT_DURABLE_BEFORE_ONE_SAME_ID_STATUS",
+  "request": {
+    "path": "observations/streams/status.exact-request.json",
+    "bytes": 89,
+    "sha256": "9f8ca0a0030a94e885cd09ecd5facb6d9405fc4b508ecb8599ddeb3ff5044b36",
+    "blob": "a7bdaeee66363bb756d59a901272f2fa0c40447e",
+    "carrier_tree": "dd6519867e39660649a0e4ad4922faedabcc8fdc"
+  },
+  "operation_id": "113c6a9a6a98f1c5cf7947554549338d2f7fcc67c45a34f52624dc7a02364c59",
+  "prior_error": {
+    "path": "observations/streams/status.original.sdk.json",
+    "bytes": 248,
+    "sha256": "b85d625e0a8999ce34020675f0a2f8ba093e807dc725c16053a63c92fbbc9c70",
+    "blob": "0cede4881f37869cfd279b69b738c87eb62b4889",
+    "carrier_tree": "93d8e5c2f045808cb9628eae0dea6453b04116b7"
+  },
+  "prior_error_preserved": true,
+  "operation_start_allowed": false,
+  "process_read_allowed": false,
+  "process_start_allowed": false,
+  "only_if_completed_stored_inactive": "Read original immutable result pages of the same operation ID, stopping on any error.",
+  "current_tool_calls_in_flight": 0
+}

@@ -1,0 +1,202 @@
+{
+  "schema": "heptabao.current4e808.importer-current-NUL-file-metadata.v1",
+  "job_id": "1a1acd0d62d-fc05-571a",
+  "original_core": {
+    "blob": "575f3ef51bb6e859ee28b0cf268966ce2b6a7513",
+    "bytes": 36163,
+    "sha256": "484ebbd31e94213c526bbde8664a516658fbab48a273bace01396a6ca10adb72"
+  },
+  "original_plan_tree": "bc3ac1786389aa597cdd980d2fd5bff5b7ef66e8",
+  "files": [
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/011-materialized-tree.stdout",
+      "size": 450459,
+      "sha256": "d7d6a445b6f66b8c9e07bc138c048a257d11a5bf343f83eed11a71afcd2f3548",
+      "version": "2050:7401886:450459:1793900742465844347:1793900742465844347",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "full9_decimal": [
+        "2050",
+        "7401886",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "450459",
+        "1793900742465844347",
+        "1793900742465844347"
+      ],
+      "full9_origin": "device/inode/size/mtime_ns/ctime_ns from version; uid/gid/permissions/nlink from original metadata; regular type from file_info contract",
+      "checks": {
+        "closed": true,
+        "path": true,
+        "bytes": true,
+        "whole_sha": true,
+        "owner": true,
+        "permission_mode": true,
+        "single_link": true,
+        "version": true
+      },
+      "canonical_reconstruction_matches": true,
+      "root_reuse_GO": false,
+      "planned_body_requests_submitted": 0
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/012-materialized-index.stdout",
+      "size": 438717,
+      "sha256": "a762e59dfaa7b4a2b1e3120fb83161f14578d9da5ef038573c98540f1083574e",
+      "version": "2050:7401889:438717:1793900742558386941:1793900742558386941",
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 1000,
+        "link_count": 1,
+        "metadata_platform": "linux",
+        "mode": 384,
+        "uid": 1000,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "full9_decimal": [
+        "2050",
+        "7401889",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "438717",
+        "1793900742558386941",
+        "1793900742558386941"
+      ],
+      "full9_origin": "device/inode/size/mtime_ns/ctime_ns from version; uid/gid/permissions/nlink from original metadata; regular type from file_info contract",
+      "checks": {
+        "closed": true,
+        "path": true,
+        "bytes": true,
+        "whole_sha": true,
+        "owner": true,
+        "permission_mode": true,
+        "single_link": true,
+        "version": true
+      },
+      "canonical_reconstruction_matches": true,
+      "root_reuse_GO": false,
+      "planned_body_requests_submitted": 0
+    }
+  ],
+  "original_observers": [
+    {
+      "operation_id": "7e7714738a054f7f865c13ac7a1d08dee0caf68ce376f41ef877f499401ca3ef",
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "7e7714738a054f7f865c13ac7a1d08dee0caf68ce376f41ef877f499401ca3ef",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "file_info"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 633,
+          "external_tree": "6a1cecf52680b20de1a721758c2e3bd84243f8d9"
+        }
+      ]
+    },
+    {
+      "operation_id": "f6fa294073f9b140d3b69001ae8d6c6949f67a8f8a3803178d71ebd6c0dda3e3",
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "f6fa294073f9b140d3b69001ae8d6c6949f67a8f8a3803178d71ebd6c0dda3e3",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "file_info"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 634,
+          "external_tree": "46067b7eae3cfffb8711305c69ec3c25bc2ff480"
+        }
+      ]
+    }
+  ],
+  "canonical_reconstruction_proposal": {
+    "tree": "30707c64ebc10009785c51283bbf91d65463c846",
+    "proof": {
+      "blob": "6bbd49ea5f0bc42d97d3c40649ad33efb1745fd9",
+      "bytes": 6663,
+      "sha256": "27d6f03cb4c7c05bbe77909d83f7ce327d5238030484a0c49705b5bba55b9c30"
+    },
+    "tree_content": {
+      "blob": "6c1558f24909344f06eda9c9106ed51ef832b3d2",
+      "bytes": 450459,
+      "sha256": "d7d6a445b6f66b8c9e07bc138c048a257d11a5bf343f83eed11a71afcd2f3548"
+    },
+    "index_content": {
+      "blob": "36c857b0ad549e5783774e77d0fd357850afc9aa",
+      "bytes": 438717,
+      "sha256": "a762e59dfaa7b4a2b1e3120fb83161f14578d9da5ef038573c98540f1083574e"
+    },
+    "independent_data_check": {
+      "tracked_files": 3914,
+      "index_files": 3914,
+      "all_index_stage_zero": true,
+      "tree_equals_index": true,
+      "rebuilt_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+      "expected_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+      "merkle_trees": 358,
+      "passed": true
+    }
+  },
+  "current_metadata_both_size_SHA_match": true,
+  "current_host_body_RPC_count": 0,
+  "original_planned_14_body_RPCs_submitted": 0,
+  "root_reuse_GO": false,
+  "original_first_tail_lost_ACK_future_unknown": true,
+  "body_representation_qualification": "PENDING_ROOT_REUSE_DECISION",
+  "smallbatch1": {
+    "files": 15,
+    "bytes": 44123,
+    "checks": 77,
+    "full": true
+  },
+  "remaining_small_files": 48,
+  "new_product_or_LAN": false
+}

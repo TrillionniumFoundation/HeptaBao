@@ -1,0 +1,252 @@
+{
+  "schema": "heptabao.current4e808.desktop-source-import.actual-partial.v1",
+  "status": "IMPORT_AUTHORITY_ZERO_READONLY_TAIL_ADMISSION_UNKNOWN",
+  "job_id": "1a1acd0d62d-fc05-571a",
+  "root_GO": {
+    "blob": "f1fcb91c33a38ba8074281c300f8f3c7b8f1534e",
+    "bytes": 7994,
+    "sha256": "17eee1e5be097d785ec50b2e6837f0f04b997cf666319444f13d55f3f124bd5b"
+  },
+  "exact_request": {
+    "blob": "ad2972fce00ad6db96ef7eb8653921c37ef0cc80",
+    "bytes": 34190,
+    "sha256": "adbb76fb07834eb05faf893f4635f244594f22f55ec5acc83b18949e845c710d"
+  },
+  "request_digest": "d9b3e1ad9fa0b4ff96149b8eb26ccb122e83a66c5a537038d0a9ea26316ec4f8",
+  "request_fingerprint_decimal": "15687130062885270783",
+  "execution_submissions": 1,
+  "execution_ACK_external": {
+    "tree": "a37a3a1a50f414abe04fde5e797be3f5fcca6a9b",
+    "files": 2,
+    "bytes": 70236,
+    "merkle_trees": 1,
+    "whole_readback": true
+  },
+  "execution_intent_external": {
+    "tree": "2507d77fe689e5a54ef7c191f2e57433f7b78864",
+    "files": 6,
+    "bytes": 116299,
+    "merkle_trees": 2,
+    "whole_readback": true
+  },
+  "authoritative_terminal": {
+    "at_unix_ms": 1793900781029,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1acd0d62d-fc05-571a",
+    "launch_nonce": "d854e54f3358716f3c094d8232194a23",
+    "log_bytes": {
+      "stderr": {
+        "seen": 28576,
+        "stored": 28576
+      },
+      "stdout": {
+        "seen": 0,
+        "stored": 0
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "authority_pin": {
+    "bytes": 733,
+    "sha256": "d373fd0bf0c4e6d354237172c16e3e0bf85ed112173c11abc563b330d022848f",
+    "blob": "516a362e7a0973f2976c3dbe19ef8cc4da584fd5"
+  },
+  "streams": {
+    "stdout": {
+      "whole": true,
+      "bytes": 0
+    },
+    "stderr": {
+      "whole": false,
+      "seen_total": 28576,
+      "collected_bytes": 16384,
+      "remaining_bytes": 12192,
+      "prefix_sha256": "476c3632802a327168324c41382a5c43f048b1a60aef9cd509247697be810bfc"
+    }
+  },
+  "observers": [
+    {
+      "name": "authority0",
+      "request": {
+        "idempotency_key": "ha-4e808-source-import-authority-r1-20261105",
+        "operation": {
+          "tool": "process_status",
+          "arguments": {
+            "host": "desktop",
+            "job_id": "1a1acd0d62d-fc05-571a"
+          }
+        }
+      },
+      "operation_id": "adee2e6e109ac8658551ba16f477242c00fa709eb0a7412907348d26345a88df",
+      "complete": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "adee2e6e109ac8658551ba16f477242c00fa709eb0a7412907348d26345a88df",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "process_status"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 912,
+          "external_tree": "31f854c6d08adb0effa0cb5e654deae092e86203"
+        }
+      ],
+      "admission_error": false,
+      "start_external_tree": "c0ed1b13c2867153799d3fb241c0c84b20a32991"
+    },
+    {
+      "name": "streams0",
+      "request": {
+        "idempotency_key": "ha-4e808-source-import-streams0-r1-20261105",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "desktop",
+            "job_id": "1a1acd0d62d-fc05-571a",
+            "limit": 16384,
+            "stdout_offset": 0,
+            "stderr_offset": 0
+          }
+        }
+      },
+      "operation_id": "793502535d8d0dff84266579ca85bf8714604824ee8d88edfd353ffbdc4fad3c",
+      "complete": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "793502535d8d0dff84266579ca85bf8714604824ee8d88edfd353ffbdc4fad3c",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "process_read"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 8192,
+          "external_tree": "ece844af84d2264a653b3448d993b25c35061edc"
+        },
+        {
+          "offset": 8192,
+          "bytes": 8192,
+          "external_tree": "ab769766e7451b5a498322b4d2934cf8e8db7509"
+        },
+        {
+          "offset": 16384,
+          "bytes": 8192,
+          "external_tree": "efe7e7a9bdad1d9dc3fe8ca7bd34d2f844276fe8"
+        },
+        {
+          "offset": 24576,
+          "bytes": 8192,
+          "external_tree": "3e036f73179dce9d15236c39e34a761d72f4058a"
+        },
+        {
+          "offset": 32768,
+          "bytes": 8192,
+          "external_tree": "254a223e6a54da01025573b35acc912833144e1f"
+        },
+        {
+          "offset": 40960,
+          "bytes": 8192,
+          "external_tree": "0ff19896f2b32c3ec0fe97ca1f8f4b0b888b5d19"
+        },
+        {
+          "offset": 49152,
+          "bytes": 4585,
+          "external_tree": "c9648904d290777902143d5ccf14241c3fe64f26"
+        }
+      ],
+      "admission_error": false,
+      "start_external_tree": "2cc58962f925e65d1c3dc5fc63e813bd1ee39f43"
+    },
+    {
+      "name": "streams1",
+      "request": {
+        "idempotency_key": "ha-4e808-source-import-streams1-r1-20261105",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "desktop",
+            "job_id": "1a1acd0d62d-fc05-571a",
+            "limit": 16384,
+            "stdout_offset": 0,
+            "stderr_offset": 16384
+          }
+        }
+      },
+      "operation_id": null,
+      "complete": false,
+      "closed_status": null,
+      "pages": [],
+      "admission_error": true,
+      "start_external_tree": "e013e8ed1854f76b35084a4aa9df7e07aaec05ac"
+    }
+  ],
+  "readonly_tail": {
+    "key": "ha-4e808-source-import-streams1-r1-20261105",
+    "operation_id": null,
+    "admission_observation": "MCP -32603 timeout; no ACK",
+    "native_future_closure": "UNKNOWN",
+    "same_key_reconciliation_submitted": false
+  },
+  "core_file_info_submitted": false,
+  "core_body_submitted": false,
+  "command_logs_submitted": false,
+  "tool_calls_inflight": 0,
+  "unknown_future_preserved": true,
+  "new_admissions_stopped": true,
+  "source_import_complete_qualification": false,
+  "LAN_prepare_or_live_submitted": false,
+  "X230_submitted": false
+}

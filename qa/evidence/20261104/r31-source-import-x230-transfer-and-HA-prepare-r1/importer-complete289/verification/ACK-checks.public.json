@@ -1,0 +1,15 @@
+{
+  "host": true,
+  "argv": true,
+  "executable": true,
+  "cwd": true,
+  "key": true,
+  "env_empty": true,
+  "digest": true,
+  "fingerprint": true,
+  "launched": true,
+  "reused_false": true,
+  "audit_recorded": true,
+  "local_record_pending_false": true,
+  "job_id": true
+}

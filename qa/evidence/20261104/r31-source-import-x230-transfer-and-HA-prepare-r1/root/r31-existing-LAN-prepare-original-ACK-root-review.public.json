@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.root-LAN-existing-prepare-original-ACK-scope.r31.v1",
+  "status": "PASS_ACK_SCOPE_ONLY",
+  "checks_passed": 7,
+  "checks": [
+    "original-whole-ACK-SDK-before-native-parse",
+    "unchanged-original480B-request",
+    "exact-GO-and-complete-import-prerequisite",
+    "one-returned-desktop-systemd-job",
+    "lossless-original-digest-fingerprint-key",
+    "original5argv-and-executable-cwd-env",
+    "prepare-only-original-history-no-replay"
+  ],
+  "job": "desktop/1a1ad1383c9-fc05-5863",
+  "external_intent_packet": "2eebd739e5dc865f1fb18eafcf05dc8555a85f6b",
+  "ACK_packet": "91d23c8075543ca43fe1dfbbea5742e65f7744e6",
+  "authority_and_original5_output_full_qualification_pending": true,
+  "live_authorized": false,
+  "root_Runtime_calls": 0
+}

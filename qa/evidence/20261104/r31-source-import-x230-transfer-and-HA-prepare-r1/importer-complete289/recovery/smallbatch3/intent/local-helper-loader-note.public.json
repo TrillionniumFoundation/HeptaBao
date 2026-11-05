@@ -1,0 +1,7 @@
+{
+  "error": "TypeError: eval(...) is not a function",
+  "scope": "local cached helper loader only",
+  "reason": "function declaration was evaluated without expression parentheses",
+  "fixed": "parenthesized function expression; unchanged GO bytes/pins/request; no Runtime submitted",
+  "candidate_changed": false
+}

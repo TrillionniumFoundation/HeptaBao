@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.checkpoint-pre-publication-tree-proof.r30.v1",
+  "expected_root": "221e858b27ba57d0521e620876fac151e2f93949",
+  "base_root": "1c5de99c488986f6326d3d5a05730d284c746ba1",
+  "base_leaves": 21130,
+  "prior_non_document_leaves_preserved": 21128,
+  "new_packet_leaves": 482,
+  "new_root_leaves": 61,
+  "new_leaves": 543,
+  "updated_documents": 2,
+  "deleted_leaves": 0,
+  "total_leaves": 21673,
+  "tree_elements": 83,
+  "full_merkle": {
+    "root_sha": "221e858b27ba57d0521e620876fac151e2f93949",
+    "trees_verified": 4028
+  },
+  "frozen_at": "2026-11-05T18:15:55Z"
+}

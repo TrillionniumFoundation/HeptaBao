@@ -1,0 +1,83 @@
+{
+  "schema": "heptabao.root-importer-original-chain-peer-intake.r31.v1",
+  "status": "ACCEPT_INDEPENDENT_ORIGINAL_CHAIN_PEER_WITH_EXACT_INPUTS",
+  "checks_passed": 8,
+  "checks": [
+    "same-115-whole-inputs",
+    "all115-peer-input-pins-root-whole-equal",
+    "actual-saved-pure-verifier-and-result",
+    "five-returned-original-observers-20pages",
+    "terminal-actual0-full-durable28576",
+    "same-root91-core",
+    "original-lost-future-not-erased",
+    "peer-scope-not-expanded"
+  ],
+  "peer_packet": "40a9b5abdf9dbfc3766d92ff23bfa668f17bc905",
+  "peer_review": {
+    "blob": "c6173c35723e35e455487123cbc97dcfb288d4a9",
+    "verifier": {
+      "blob": "164dd8f0f6aee353fb9e75c22f77aa630aaebf7f",
+      "bytes": 23469,
+      "sha256": "05b365ce2b593830f5ab66c647d0aa107fc201f613c0e2b4fdb1c24e2a83f419"
+    },
+    "actual_result": {
+      "blob": "641955a9ec8cd980691cb78cd69b4b1c0bac09ac",
+      "bytes": 42569,
+      "sha256": "1964a6cbfc06b884adf1884306fd4250d5129b4fe872663e7fdc3a6182ee3454"
+    }
+  },
+  "peer_predicate_evaluations": 2186,
+  "predicate_evaluations_are_not_product_cases": true,
+  "root_did_not_repeat_same_pure_verifier": true,
+  "returned_observers": [
+    {
+      "name": "authority0",
+      "operation_id": "adee2e6e109ac8658551ba16f477242c00fa709eb0a7412907348d26345a88df",
+      "pages": 1,
+      "payload_bytes": 912,
+      "completed": true,
+      "owned_future_active": false
+    },
+    {
+      "name": "streams0",
+      "operation_id": "793502535d8d0dff84266579ca85bf8714604824ee8d88edfd353ffbdc4fad3c",
+      "pages": 7,
+      "payload_bytes": 53737,
+      "completed": true,
+      "owned_future_active": false
+    },
+    {
+      "name": "streams1",
+      "operation_id": "ed8afb5cbe8a29243c22d730bd5604d7c9afb4604f30c70b2a0fcfeb00411219",
+      "pages": 5,
+      "payload_bytes": 39570,
+      "completed": true,
+      "owned_future_active": false
+    },
+    {
+      "name": "core_info",
+      "operation_id": "5719c5c5558070442139cb6a27b02a09cdfcf5ec756cb42d19662d65baa6bfa6",
+      "pages": 1,
+      "payload_bytes": 621,
+      "completed": true,
+      "owned_future_active": false
+    },
+    {
+      "name": "core_body",
+      "operation_id": "0b71e3745aeb0241f5130932c001bf8bc820eab18d43fd95c048baae00f9f438",
+      "pages": 6,
+      "payload_bytes": 48677,
+      "completed": true,
+      "owned_future_active": false
+    }
+  ],
+  "root_core_semantic_review": {
+    "name": "r31-importer-core-semantic-root-review.public.json",
+    "blob": "ed8f5f239cd371abe3f3648785da081cadb5da0f",
+    "bytes": 6939,
+    "sha256": "b73561e7f038f89c2ed052887acf2c73bed1c4b9638203f48f6d49ea4a8ea964"
+  },
+  "core_semantic_checks": 91,
+  "remaining": "Original65-file content archive with explicit2NUL representation delta; full source import and LAN prepare remain unqualified.",
+  "root_Runtime_calls": 0
+}

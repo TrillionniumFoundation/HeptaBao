@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.root-importer-original-streams1-read-reconciliation-go.r30.v1",
+  "status": "GO_ONE_EXACT_READ_ONLY_RECONCILIATION",
+  "lane": "A",
+  "owner": "/root/ha_validation",
+  "root_Runtime_calls": 0,
+  "original_product_job": {
+    "host": "desktop",
+    "job_id": "1a1acd0d62d-fc05-571a",
+    "authority": "exit0/full/durable; original full source qualification pending"
+  },
+  "original_timeout": {
+    "packet": "e013e8ed1854f76b35084a4aa9df7e07aaec05ac",
+    "SDK_error_preserved": true,
+    "operation_id": null,
+    "native_future": "UNKNOWN; no claim of cancellation or termination"
+  },
+  "exact_original_request": {
+    "idempotency_key": "ha-4e808-source-import-streams1-r1-20261105",
+    "operation": {
+      "tool": "process_read",
+      "arguments": {
+        "host": "desktop",
+        "job_id": "1a1acd0d62d-fc05-571a",
+        "limit": 16384,
+        "stdout_offset": 0,
+        "stderr_offset": 16384
+      }
+    }
+  },
+  "authorization": {
+    "same_typed_operation_start_once": true,
+    "same_idempotency_key": true,
+    "external_completed_intent_before_submission": true,
+    "external_whole_original_SDK_before_parse": true,
+    "SDK_isError_before_payload": true,
+    "returned_operation_id_only_for_status_pages": true,
+    "no_change_to_original_offsets_or_limit": true,
+    "no_process_start_or_business_replay": true,
+    "no_new_key_or_root": true,
+    "no_deadline_reset_or_widening": true,
+    "no_parallel_observer": true
+  },
+  "interpretation": {
+    "reused_true": "Retain original ACK/reconciliation outcome and finish returned original operation immutable result.",
+    "reused_false": "Retain first lost-ACK future UNKNOWN; a fresh read-only operation is not proof the previous native future terminated. Finish only the one returned operation and report this limitation.",
+    "error_or_missing_ack": "Preserve original second SDK whole, stop new admissions, and return exact evidence; no retry loop."
+  },
+  "remaining_work_after_closure": "Existing fixed original importer core/commands read plan only after this operation closes and lane has no known active call/future; report any unresolved previous future, do not label full import qualified until independent core and all original evidence verified.",
+  "production_cutover_authorized": false
+}

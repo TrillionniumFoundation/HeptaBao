@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.root-local-verifier-preexecution-projection-correction.r31.v1",
+  "original": {
+    "name": "r31-importer-final65-semantic-root-verifier.js",
+    "blob": "6c24565140396e3d3dc5216aa8b611aa19302b82",
+    "bytes": 7690,
+    "sha256": "edc301589381eba3b7fe9d6fddb65a5cf97a39f2858194e6f8e0e1d0ffe37321"
+  },
+  "corrected": {
+    "name": "r31-importer-final65-semantic-root-verifier-corrected.js",
+    "blob": "89a520304b0c670d963636444fdc44afc8627405",
+    "bytes": 7707,
+    "sha256": "6d4683123bbcf9577ecd782c9fb2495cc51b2c35a4fe02436e48c85d5e2c6e46"
+  },
+  "before": "intent.source===core.source_after.path",
+  "after": "intent.source+\"/.git\"===core.source_after.git_directory",
+  "reason": "Observed original source_after schema has git_directory and no path member. Fix local pure comparison to the existing observed field before first verifier execution.",
+  "original_verifier_executed": false,
+  "Runtime_calls": 0,
+  "source_or_evidence_changed": false
+}

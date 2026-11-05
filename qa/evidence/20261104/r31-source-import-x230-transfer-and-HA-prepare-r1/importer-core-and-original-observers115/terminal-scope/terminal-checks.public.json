@@ -1,0 +1,22 @@
+{
+  "authority": true,
+  "stream_full": true,
+  "status": true,
+  "canonical": true,
+  "bundle": true,
+  "fullfsck": true,
+  "materialized": true,
+  "clean_source": true,
+  "inputs_before_after": true,
+  "original_caps": true,
+  "no_forbidden_action": true,
+  "within_deadline": true,
+  "exact_command_count": true,
+  "unique_commands": true,
+  "expected_exit_codes": true,
+  "command_closure": true,
+  "caps_per_command": true,
+  "allowned": true,
+  "input_closure": true,
+  "controller": true
+}

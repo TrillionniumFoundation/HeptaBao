@@ -1,0 +1,7 @@
+{
+  "status": "failed",
+  "reason": "strict two-hunk whole assertion",
+  "Runtime_submitted": false,
+  "source_modified": false,
+  "reason_detail": "The existing strict diff helper returns {text,hunks}; the first caller compared this object directly to source text. Corrected caller reads .text and .hunks. Both exact directions now match. No candidate, request, GO, host or module execution changed."
+}

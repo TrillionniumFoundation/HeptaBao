@@ -1,0 +1,168 @@
+{
+  "schema": "heptabao.current4e808.x230-inert-observers.v1",
+  "observers": [
+    {
+      "label": "authority",
+      "operation_id": "3da25bbdc8d13174dc8fe3883a3f8fc1845d9b77a189ea609be154ba7e5c439e",
+      "request": "observations/authority/request.original.json",
+      "admission": "observations/authority/admission.original",
+      "status": "observations/authority/status.original",
+      "pages": [
+        "observations/authority/pages/000000.original"
+      ],
+      "original_payload": "observations/authority/payload.original.json",
+      "native": "observations/authority/native.original.json",
+      "completed": true,
+      "owned_future_active": false,
+      "result_state": "stored_observed"
+    },
+    {
+      "label": "streams",
+      "operation_id": "113c6a9a6a98f1c5cf7947554549338d2f7fcc67c45a34f52624dc7a02364c59",
+      "request": "observations/streams/request.original.json",
+      "admission": "observations/streams/admission.original",
+      "status": "observations/streams/recovery-01/status.original",
+      "pages": [
+        "observations/streams/pages/000000.original"
+      ],
+      "original_payload": "observations/streams/payload.original.json",
+      "native": "observations/streams/native.original.json",
+      "completed": true,
+      "owned_future_active": false,
+      "result_state": "stored_observed"
+    },
+    {
+      "label": "info-sender",
+      "operation_id": "c1d72d057f817184d8dfc056d44587a33c445639dffcc7b915a4daec38feafcf",
+      "request": "observations/info-sender/request.original.json",
+      "admission": "observations/info-sender/admission.original",
+      "status": "observations/info-sender/status.original",
+      "pages": [
+        "observations/info-sender/pages/000000.original"
+      ],
+      "original_payload": "observations/info-sender/payload.original.json",
+      "native": "observations/info-sender/native.original.json",
+      "completed": true,
+      "owned_future_active": false,
+      "result_state": "stored_observed"
+    },
+    {
+      "label": "info-receiver",
+      "operation_id": "706f0edf1332bd2f6d1d0fa2609941dadc255b34023727a3b042fe33ebf5555c",
+      "request": "observations/info-receiver/request.original.json",
+      "admission": "observations/info-receiver/admission.original",
+      "status": "observations/info-receiver/status.original",
+      "pages": [
+        "observations/info-receiver/pages/000000.original"
+      ],
+      "original_payload": "observations/info-receiver/payload.original.json",
+      "native": "observations/info-receiver/native.original.json",
+      "completed": true,
+      "owned_future_active": false,
+      "result_state": "stored_observed"
+    },
+    {
+      "label": "info-relay",
+      "operation_id": "855153f1c89290ea7f17ca4c2764502acc4e241fa6c0a12f524598c453a5b42d",
+      "request": "observations/info-relay/request.original.json",
+      "admission": "observations/info-relay/admission.original",
+      "status": "observations/info-relay/status.original",
+      "pages": [
+        "observations/info-relay/pages/000000.original"
+      ],
+      "original_payload": "observations/info-relay/payload.original.json",
+      "native": "observations/info-relay/native.original.json",
+      "completed": true,
+      "owned_future_active": false,
+      "result_state": "stored_observed"
+    },
+    {
+      "label": "info-receipt",
+      "operation_id": "de7812609c9d2bfdd27ad60f12609282b5692aefac9933af6235392ef019755b",
+      "request": "observations/info-receipt/request.original.json",
+      "admission": "observations/info-receipt/admission.original",
+      "status": "observations/info-receipt/status.original",
+      "pages": [
+        "observations/info-receipt/pages/000000.original"
+      ],
+      "original_payload": "observations/info-receipt/payload.original.json",
+      "native": "observations/info-receipt/native.original.json",
+      "completed": true,
+      "owned_future_active": false,
+      "result_state": "stored_observed"
+    },
+    {
+      "label": "body-sender",
+      "operation_id": "0417e0c90a5dc2b3b41baec29d10284eef6e5510bc05b79cf8cfac1fc2542bc2",
+      "request": "observations/body-sender/request.original.json",
+      "admission": "observations/body-sender/admission.original",
+      "status": "observations/body-sender/status.original",
+      "pages": [
+        "observations/body-sender/pages/000000.original"
+      ],
+      "original_payload": "observations/body-sender/payload.original.json",
+      "native": "observations/body-sender/native.original.json",
+      "completed": true,
+      "owned_future_active": false,
+      "result_state": "stored_observed"
+    },
+    {
+      "label": "body-receiver",
+      "operation_id": "36c7a44be91e0133fbea1b00a85096ddf7ea0da58ca8a8baebc0688b8a319b9c",
+      "request": "observations/body-receiver/request.original.json",
+      "admission": "observations/body-receiver/admission.original",
+      "status": "observations/body-receiver/status.original",
+      "pages": [
+        "observations/body-receiver/pages/000000.original",
+        "observations/body-receiver/pages/016384.original",
+        "observations/body-receiver/pages/032768.original"
+      ],
+      "original_payload": "observations/body-receiver/payload.original.json",
+      "native": "observations/body-receiver/native.original.json",
+      "completed": true,
+      "owned_future_active": false,
+      "result_state": "stored_observed"
+    },
+    {
+      "label": "body-relay",
+      "operation_id": "7f7db9c4b9d496ebdfa147f59bb76de841ef7189572bed1e32714517c6474f3b",
+      "request": "observations/body-relay/request.original.json",
+      "admission": "observations/body-relay/admission.original",
+      "status": "observations/body-relay/status.original",
+      "pages": [
+        "observations/body-relay/pages/000000.original",
+        "observations/body-relay/pages/016384.original",
+        "observations/body-relay/pages/032768.original"
+      ],
+      "original_payload": "observations/body-relay/payload.original.json",
+      "native": "observations/body-relay/native.original.json",
+      "completed": true,
+      "owned_future_active": false,
+      "result_state": "stored_observed"
+    },
+    {
+      "label": "body-receipt",
+      "operation_id": "e828f08160c7c5e3d8aacab580d429ed82e056535e2e72f815f7de54195c20b0",
+      "request": "observations/body-receipt/request.original.json",
+      "admission": "observations/body-receipt/admission.original",
+      "status": "observations/body-receipt/status.original",
+      "pages": [
+        "observations/body-receipt/pages/000000.original"
+      ],
+      "original_payload": "observations/body-receipt/payload.original.json",
+      "native": "observations/body-receipt/native.original.json",
+      "completed": true,
+      "owned_future_active": false,
+      "result_state": "stored_observed"
+    }
+  ],
+  "observer_count": 10,
+  "immutable_page_count": 14,
+  "historical_errors_preserved": [
+    "observations/streams/status.original.sdk.json"
+  ],
+  "recovery": "observations/streams/recovery-01/status.original",
+  "all_original_payloads_complete": true,
+  "current_tool_calls_in_flight": 0,
+  "current_known_owned_futures_active": 0
+}

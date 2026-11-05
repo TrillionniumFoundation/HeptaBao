@@ -1,0 +1,86 @@
+{
+  "schema": "heptabao.current4e808.x230-seven-file-relay-execution-intent.v1",
+  "status": "DURABLE_BEFORE_SINGLE_EXACT_PROCESS_START",
+  "recorded_utc": "2026-11-05T18:48:08.130Z",
+  "lane": "B",
+  "owner": "/root/compatibility_audit",
+  "root_go": {
+    "blob": "0de9e52cff21d0827a584387e178559c73d93a04",
+    "bytes": 13197,
+    "sha256": "cf5a34ffe4bbe5280b934892945f23747a6ce67a1021eb53daf5bcc945bdc293"
+  },
+  "inert_qualification": {
+    "blob": "e4253d4b9ac873a810107b201ef4cf9eb05c8152",
+    "bytes": 6503,
+    "sha256": "539cb90bc785b00944be9d3858184491e1a36f4bf013a031c05f21e8f57e971c"
+  },
+  "inert_actual_packet": "6b7781609be0345b5730aabb1b4394652d4d74be",
+  "request": {
+    "blob": "9241a86d71e9703259aed6e3d6f711c7568bcf39",
+    "bytes": 386,
+    "sha256": "4a3e6ae8791bfb96e7fe97d93072ddaa048c5fe79b676082feccc1f8230d46d3"
+  },
+  "exact_request": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/relay.py"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "executable": "/usr/bin/python3",
+    "host": "desktop",
+    "idempotency_key": "heptabao-4e808-x230-source-artifacts-relay-r1-cc5a9ed3",
+    "timeout_seconds": 360
+  },
+  "request_digest": "8a40eb0744827fbc9a290b8c541be147c062539004cf7990412cc465549d3a9b",
+  "request_fingerprint_decimal": "9962220792190238652",
+  "typed_request_reference": "fc559bec715e95fee000b65c54c083f4fdd43450 RequestBinding; reference only, not deployed-version equivalence",
+  "previous_process_start_submissions": 0,
+  "prior_known_calls_in_flight": 0,
+  "prior_known_native_futures_active": 0,
+  "total_artifact_bytes": 132647913,
+  "destination_root": "/home/qian/heptabao-same-root-publication-normal-20261105-r1",
+  "destination_source": "/home/qian/heptabao-same-root-publication-normal-20261105-r1/source",
+  "canonical": {
+    "commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+    "tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "sole_parent": "1c66541993662f92cf717154e33717abedb2ea74",
+    "root_commit": "67d79b3b5442ed033d38929eab2010403463e56d",
+    "history_commits": 3763,
+    "tracked_files": 3914
+  },
+  "unchanged_limits": {
+    "native_outer_seconds": 360,
+    "relay_overall_seconds": 300,
+    "sender_seconds": 90,
+    "receiver_seconds": 300,
+    "ssh_config_seconds": 90,
+    "clone_seconds": 90,
+    "git_seconds": 60,
+    "TERM_seconds": 5,
+    "KILL_seconds": 5,
+    "max_bundle_bytes": 67108864,
+    "no_reset_or_widening": true
+  },
+  "old_relay_state": "UNKNOWN preserved",
+  "fence": "Original three held descriptors, before-root/before-endpoint/after-cleanup checks and once-close ledger unchanged; marker does not establish old relay termination.",
+  "scope": "Only seven fixed public artifacts and fresh receiver source import/materialization. No product/compiler/HTTP/credential/provider/production operation.",
+  "on_missing_ack_or_error": "Retain original response and stop new admissions. Never replay process_start or change key/root/budget.",
+  "finite_observation_plan": {
+    "original_job_authority_and_entire_stdout_stderr": true,
+    "require_exit0_full_durable_confirmed_no_timeout_no_cancel": true,
+    "independent_desktop_core_info_and_whole_version_bound_body": true,
+    "independent_seven_fixed_X230_artifact_infos": true,
+    "independent_X230_receiver_receipt_info_and_whole_body": true,
+    "seven_destinations_must_equal_source_size_sha_mode_and_receiver_full9": true,
+    "original_sender_and_receiver_receipts_and_commands_required": true,
+    "freeze_only_actual_control_command_record_and_saved_stream_paths_before_reading": true,
+    "no_directory_or_credential_search": true,
+    "native_read_and_page_limits_unchanged": true,
+    "all_local_and_remote_owned_children_FDs_and_groups_positive_closure_required": true,
+    "original_fence_after_cleanup_and_close_ledger_required": true,
+    "full_source_history_and3914_materialized_source_proof_required": true,
+    "all_original_observers_pages_errors_provenance_whole": true
+  }
+}

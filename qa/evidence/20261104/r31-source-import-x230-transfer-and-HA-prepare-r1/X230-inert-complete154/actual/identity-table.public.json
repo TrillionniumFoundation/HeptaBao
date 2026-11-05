@@ -1,0 +1,86 @@
+{
+  "schema": "heptabao.current4e808.x230-inert-identities.v1",
+  "integer_encoding": "full9 uses original decimal strings; no JS Number serialization for inode/time values",
+  "files": [
+    {
+      "role": "sender",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/sender.py",
+      "bytes": 8960,
+      "sha256": "aac98a6512ccdfc525de9dd5cf544f474220d3415631ea39537672b21ca4b663",
+      "version": "2050:7532609:8960:1793901767144422082:1793901767153777890",
+      "full9_decimal": [
+        "2050",
+        "7532609",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "8960",
+        "1793901767144422082",
+        "1793901767153777890"
+      ],
+      "info_blob": "03c71956533f7dd28123a9e16b577b2125cf5ff2",
+      "body_blob": "1a28125a74ba9fd7f59679bf8339da0cc43759f9"
+    },
+    {
+      "role": "receiver",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/receiver.py",
+      "bytes": 30791,
+      "sha256": "8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471",
+      "version": "2050:7532610:30791:1793901767197502850:1793901767206425051",
+      "full9_decimal": [
+        "2050",
+        "7532610",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "30791",
+        "1793901767197502850",
+        "1793901767206425051"
+      ],
+      "info_blob": "17dbd5385d474dc01200d042a557d366a73d52c3",
+      "body_blob": "a6477df3b5c0a241e1675e99ca0d6410aa43c88e"
+    },
+    {
+      "role": "relay",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/relay.py",
+      "bytes": 25713,
+      "sha256": "cc5a9ed329bda9d1b51cf42343b3a9898516c1136b035fc63abb688982a9612f",
+      "version": "2050:7532611:25713:1793901767238166039:1793901767249302558",
+      "full9_decimal": [
+        "2050",
+        "7532611",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "25713",
+        "1793901767238166039",
+        "1793901767249302558"
+      ],
+      "info_blob": "f5d27d38f37a3855332c24801173cdf802c76450",
+      "body_blob": "782f6def95fb551f167a7bcddcfb9ab0c0942784"
+    },
+    {
+      "role": "receipt",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/inert-stage.result.public.json",
+      "bytes": 1924,
+      "sha256": "22bb50e3e627fe07f5b344711790802f45ccb079115c1bcbff70d1bdc889b0ca",
+      "version": "2050:7532612:1924:1793901767259034616:1793901767292502914",
+      "full9_decimal": [
+        "2050",
+        "7532612",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "1924",
+        "1793901767259034616",
+        "1793901767292502914"
+      ],
+      "info_blob": "97babcd9955080c9e7411615db99b2af13ebdbcd",
+      "body_blob": "ac4e5e11243b1ed7808e29609972532b38255940"
+    }
+  ]
+}

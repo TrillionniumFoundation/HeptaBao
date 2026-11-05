@@ -1,0 +1,43 @@
+{
+  "schema": "heptabao.root-X230-relay-ACK-and-authority-scope.r31.v1",
+  "status": "PASS_ACK_AND_AUTHORITATIVE_TERMINAL_SCOPE_ONLY",
+  "checks_passed": 8,
+  "checks": [
+    "whole-SDK-before-parse-and-native-text-byte-exact",
+    "unique-returned-desktop-systemd-job",
+    "exact-intent-source-and-inert-qualification-binding",
+    "original4argv-key-cwd-executable-env",
+    "lossless-full-digest-and-unsigned-fingerprint",
+    "original-authoritative-terminal0-full-durable-confirmed",
+    "original-logs-full368-and0",
+    "one-business-submission-seven-files-and-old-UNKNOWN-boundary"
+  ],
+  "original_job": "desktop/1a1ad0a9524-fc05-5839",
+  "originals": {
+    "intent": {
+      "blob": "3101506b954a8326b8b93192d281af079b6a8b1b",
+      "bytes": 4090,
+      "sha256": "7cfa373a48afb764afe0fac1c47cdd9510622fa93e405e13e56e00db7028f01e"
+    },
+    "ACK_SDK": {
+      "blob": "6d33209e0b75ba65c78b7246121508dbaac25c48",
+      "bytes": 1398,
+      "sha256": "c2fec811685e73af11ac9a54349a8ca6bcf88a3b2c81edb306651448419ebb94"
+    },
+    "ACK_native": {
+      "blob": "313a588e821c23f8f748e868bb29691e2dc94e4d",
+      "bytes": 1155,
+      "sha256": "40670168b82537339faf62920694f815285312f7cbfee7750960022e2a4a28f3"
+    },
+    "authority": {
+      "blob": "094c1fb53c2b59aad284423fc65d2ce519f9f6e9",
+      "bytes": 729,
+      "sha256": "98cbbd93055188f8f33aabd1b30fa1c66415b634ef400f261137ed9b42618de2"
+    }
+  },
+  "root_Runtime_calls": 0,
+  "full_core_destination_command_and_observer_qualification_pending": true,
+  "source_import_qualified": false,
+  "product_qualification": false,
+  "old_relay_UNKNOWN_preserved": true
+}

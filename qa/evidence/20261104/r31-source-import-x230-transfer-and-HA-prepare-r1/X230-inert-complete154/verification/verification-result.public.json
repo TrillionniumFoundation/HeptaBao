@@ -1,0 +1,2155 @@
+{
+  "actual_files": [
+    {
+      "body_blob": "1a28125a74ba9fd7f59679bf8339da0cc43759f9",
+      "bytes": 8960,
+      "full9_decimal": [
+        "2050",
+        "7532609",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "8960",
+        "1793901767144422082",
+        "1793901767153777890"
+      ],
+      "info_blob": "03c71956533f7dd28123a9e16b577b2125cf5ff2",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/sender.py",
+      "role": "sender",
+      "sha256": "aac98a6512ccdfc525de9dd5cf544f474220d3415631ea39537672b21ca4b663",
+      "version": "2050:7532609:8960:1793901767144422082:1793901767153777890"
+    },
+    {
+      "body_blob": "a6477df3b5c0a241e1675e99ca0d6410aa43c88e",
+      "bytes": 30791,
+      "full9_decimal": [
+        "2050",
+        "7532610",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "30791",
+        "1793901767197502850",
+        "1793901767206425051"
+      ],
+      "info_blob": "17dbd5385d474dc01200d042a557d366a73d52c3",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/receiver.py",
+      "role": "receiver",
+      "sha256": "8aa027334ad2a99603b0c54bcbe80ff67c194104aea0b5cbf44b68eb82447471",
+      "version": "2050:7532610:30791:1793901767197502850:1793901767206425051"
+    },
+    {
+      "body_blob": "782f6def95fb551f167a7bcddcfb9ab0c0942784",
+      "bytes": 25713,
+      "full9_decimal": [
+        "2050",
+        "7532611",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "25713",
+        "1793901767238166039",
+        "1793901767249302558"
+      ],
+      "info_blob": "f5d27d38f37a3855332c24801173cdf802c76450",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/relay.py",
+      "role": "relay",
+      "sha256": "cc5a9ed329bda9d1b51cf42343b3a9898516c1136b035fc63abb688982a9612f",
+      "version": "2050:7532611:25713:1793901767238166039:1793901767249302558"
+    },
+    {
+      "body_blob": "ac4e5e11243b1ed7808e29609972532b38255940",
+      "bytes": 1924,
+      "full9_decimal": [
+        "2050",
+        "7532612",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "1924",
+        "1793901767259034616",
+        "1793901767292502914"
+      ],
+      "info_blob": "97babcd9955080c9e7411615db99b2af13ebdbcd",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-x230-transfer-controls-r1/inert-stage.result.public.json",
+      "role": "receipt",
+      "sha256": "22bb50e3e627fe07f5b344711790802f45ccb079115c1bcbff70d1bdc889b0ca",
+      "version": "2050:7532612:1924:1793901767259034616:1793901767292502914"
+    }
+  ],
+  "all_original_observers_closed": true,
+  "check_count": 513,
+  "checks": [
+    {
+      "name": "bootstrap root is owned scratch",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact reference/go.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact reference/handoff.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact reference/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact execution/intent.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact execution/start.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact execution/start.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact verification/typed-request-canonical.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact reference/recovery-go.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/streams/recovery-01/intent.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/authority/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/authority/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/authority/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/authority/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/authority/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/authority/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/authority/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/authority/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/authority/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/authority/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/authority/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/streams/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/streams/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/streams/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/streams/recovery-01/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/streams/recovery-01/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/streams/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/streams/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/streams/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/streams/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/streams/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/streams/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-sender/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-sender/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-sender/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-sender/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-sender/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-sender/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-sender/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-sender/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-sender/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-sender/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-sender/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receiver/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receiver/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receiver/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receiver/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receiver/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receiver/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receiver/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receiver/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receiver/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receiver/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receiver/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-relay/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-relay/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-relay/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-relay/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-relay/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-relay/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-relay/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-relay/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-relay/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-relay/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-relay/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receipt/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receipt/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receipt/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receipt/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receipt/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receipt/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receipt/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receipt/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receipt/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receipt/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/info-receipt/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-sender/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-sender/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-sender/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-sender/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-sender/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-sender/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-sender/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-sender/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-sender/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-sender/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-sender/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/pages/016384.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/pages/016384.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/pages/016384.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/pages/032768.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/pages/032768.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/pages/032768.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receiver/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/pages/016384.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/pages/016384.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/pages/016384.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/pages/032768.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/pages/032768.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/pages/032768.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-relay/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receipt/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receipt/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receipt/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receipt/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receipt/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receipt/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receipt/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receipt/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receipt/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receipt/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/body-receipt/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/streams/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/streams/status.error.original.txt",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact historical/PARTIAL_AFTER_STREAM_STATUS_ERROR.public.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact actual/stdout.original.txt",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact actual/stderr.original.txt",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact actual/sender.py",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact actual/receiver.py",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact actual/relay.py",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact actual/inert-stage.result.public.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact reference/sender.candidate.py",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact reference/receiver.candidate.py",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact reference/relay.candidate.py",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact reference/publisher.py",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact reference/stdin.original.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact observations/index.public.json",
+      "passed": true
+    },
+    {
+      "name": "safe relative artifact actual/identity-table.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git reference/go.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git reference/handoff.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git reference/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git execution/intent.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git execution/start.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git execution/start.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git verification/typed-request-canonical.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git reference/recovery-go.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/streams/recovery-01/intent.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/authority/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/authority/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/authority/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/authority/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/authority/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/authority/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/authority/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/authority/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/authority/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/authority/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/authority/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/streams/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/streams/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/streams/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/streams/recovery-01/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/streams/recovery-01/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/streams/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/streams/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/streams/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/streams/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/streams/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/streams/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-sender/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-sender/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-sender/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-sender/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-sender/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-sender/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-sender/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-sender/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-sender/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-sender/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-sender/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receiver/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receiver/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receiver/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receiver/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receiver/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receiver/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receiver/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receiver/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receiver/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receiver/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receiver/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-relay/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-relay/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-relay/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-relay/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-relay/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-relay/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-relay/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-relay/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-relay/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-relay/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-relay/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receipt/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receipt/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receipt/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receipt/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receipt/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receipt/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receipt/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receipt/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receipt/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receipt/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/info-receipt/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-sender/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-sender/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-sender/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-sender/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-sender/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-sender/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-sender/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-sender/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-sender/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-sender/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-sender/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/pages/016384.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/pages/016384.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/pages/016384.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/pages/032768.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/pages/032768.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/pages/032768.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receiver/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/pages/016384.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/pages/016384.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/pages/016384.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/pages/032768.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/pages/032768.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/pages/032768.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-relay/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receipt/request.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receipt/admission.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receipt/admission.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receipt/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receipt/status.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receipt/payload.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receipt/native.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receipt/pages/000000.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receipt/pages/000000.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receipt/pages/000000.original.request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/body-receipt/status.exact-request.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/streams/status.original.sdk.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/streams/status.error.original.txt",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git historical/PARTIAL_AFTER_STREAM_STATUS_ERROR.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git actual/stdout.original.txt",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git actual/stderr.original.txt",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git actual/sender.py",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git actual/receiver.py",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git actual/relay.py",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git actual/inert-stage.result.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git reference/sender.candidate.py",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git reference/receiver.candidate.py",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git reference/relay.candidate.py",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git reference/publisher.py",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git reference/stdin.original.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git observations/index.public.json",
+      "passed": true
+    },
+    {
+      "name": "whole bytes/SHA/Git actual/identity-table.public.json",
+      "passed": true
+    },
+    {
+      "name": "exact process host/executable/cwd/outer",
+      "passed": true
+    },
+    {
+      "name": "exact inline publisher, no added argv",
+      "passed": true
+    },
+    {
+      "name": "exact carried stdin",
+      "passed": true
+    },
+    {
+      "name": "typed request canonical exact",
+      "passed": true
+    },
+    {
+      "name": "typed request digest",
+      "passed": true
+    },
+    {
+      "name": "lossless fingerprint",
+      "passed": true
+    },
+    {
+      "name": "execution/start.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "execution/start.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "ACK exact request binding",
+      "passed": true
+    },
+    {
+      "name": "ACK exact digest and original u64 fingerprint",
+      "passed": true
+    },
+    {
+      "name": "unique launch known accepted",
+      "passed": true
+    },
+    {
+      "name": "original job identity",
+      "passed": true
+    },
+    {
+      "name": "exact ten read observers",
+      "passed": true
+    },
+    {
+      "name": "declared finite closed read set",
+      "passed": true
+    },
+    {
+      "name": "observations/authority/admission.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/authority/admission.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "observations/authority/status.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/authority/status.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "authority native admission exact",
+      "passed": true
+    },
+    {
+      "name": "authority original observer closed",
+      "passed": true
+    },
+    {
+      "name": "authority status same ID",
+      "passed": true
+    },
+    {
+      "name": "observations/authority/pages/000000.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/authority/pages/000000.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "authority immutable page request 0",
+      "passed": true
+    },
+    {
+      "name": "authority immutable page contract 0",
+      "passed": true
+    },
+    {
+      "name": "authority whole original native SDK payload",
+      "passed": true
+    },
+    {
+      "name": "authority original handler success",
+      "passed": true
+    },
+    {
+      "name": "authority original content exact",
+      "passed": true
+    },
+    {
+      "name": "observations/streams/admission.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/streams/admission.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "observations/streams/recovery-01/status.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/streams/recovery-01/status.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "streams native admission exact",
+      "passed": true
+    },
+    {
+      "name": "streams original observer closed",
+      "passed": true
+    },
+    {
+      "name": "streams status same ID",
+      "passed": true
+    },
+    {
+      "name": "observations/streams/pages/000000.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/streams/pages/000000.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "streams immutable page request 0",
+      "passed": true
+    },
+    {
+      "name": "streams immutable page contract 0",
+      "passed": true
+    },
+    {
+      "name": "streams whole original native SDK payload",
+      "passed": true
+    },
+    {
+      "name": "streams original handler success",
+      "passed": true
+    },
+    {
+      "name": "streams original content exact",
+      "passed": true
+    },
+    {
+      "name": "observations/info-sender/admission.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/info-sender/admission.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "observations/info-sender/status.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/info-sender/status.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "info-sender native admission exact",
+      "passed": true
+    },
+    {
+      "name": "info-sender original observer closed",
+      "passed": true
+    },
+    {
+      "name": "info-sender status same ID",
+      "passed": true
+    },
+    {
+      "name": "observations/info-sender/pages/000000.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/info-sender/pages/000000.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "info-sender immutable page request 0",
+      "passed": true
+    },
+    {
+      "name": "info-sender immutable page contract 0",
+      "passed": true
+    },
+    {
+      "name": "info-sender whole original native SDK payload",
+      "passed": true
+    },
+    {
+      "name": "info-sender original handler success",
+      "passed": true
+    },
+    {
+      "name": "info-sender original content exact",
+      "passed": true
+    },
+    {
+      "name": "observations/info-receiver/admission.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/info-receiver/admission.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "observations/info-receiver/status.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/info-receiver/status.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "info-receiver native admission exact",
+      "passed": true
+    },
+    {
+      "name": "info-receiver original observer closed",
+      "passed": true
+    },
+    {
+      "name": "info-receiver status same ID",
+      "passed": true
+    },
+    {
+      "name": "observations/info-receiver/pages/000000.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/info-receiver/pages/000000.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "info-receiver immutable page request 0",
+      "passed": true
+    },
+    {
+      "name": "info-receiver immutable page contract 0",
+      "passed": true
+    },
+    {
+      "name": "info-receiver whole original native SDK payload",
+      "passed": true
+    },
+    {
+      "name": "info-receiver original handler success",
+      "passed": true
+    },
+    {
+      "name": "info-receiver original content exact",
+      "passed": true
+    },
+    {
+      "name": "observations/info-relay/admission.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/info-relay/admission.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "observations/info-relay/status.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/info-relay/status.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "info-relay native admission exact",
+      "passed": true
+    },
+    {
+      "name": "info-relay original observer closed",
+      "passed": true
+    },
+    {
+      "name": "info-relay status same ID",
+      "passed": true
+    },
+    {
+      "name": "observations/info-relay/pages/000000.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/info-relay/pages/000000.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "info-relay immutable page request 0",
+      "passed": true
+    },
+    {
+      "name": "info-relay immutable page contract 0",
+      "passed": true
+    },
+    {
+      "name": "info-relay whole original native SDK payload",
+      "passed": true
+    },
+    {
+      "name": "info-relay original handler success",
+      "passed": true
+    },
+    {
+      "name": "info-relay original content exact",
+      "passed": true
+    },
+    {
+      "name": "observations/info-receipt/admission.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/info-receipt/admission.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "observations/info-receipt/status.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/info-receipt/status.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "info-receipt native admission exact",
+      "passed": true
+    },
+    {
+      "name": "info-receipt original observer closed",
+      "passed": true
+    },
+    {
+      "name": "info-receipt status same ID",
+      "passed": true
+    },
+    {
+      "name": "observations/info-receipt/pages/000000.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/info-receipt/pages/000000.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "info-receipt immutable page request 0",
+      "passed": true
+    },
+    {
+      "name": "info-receipt immutable page contract 0",
+      "passed": true
+    },
+    {
+      "name": "info-receipt whole original native SDK payload",
+      "passed": true
+    },
+    {
+      "name": "info-receipt original handler success",
+      "passed": true
+    },
+    {
+      "name": "info-receipt original content exact",
+      "passed": true
+    },
+    {
+      "name": "observations/body-sender/admission.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/body-sender/admission.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "observations/body-sender/status.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/body-sender/status.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "body-sender native admission exact",
+      "passed": true
+    },
+    {
+      "name": "body-sender original observer closed",
+      "passed": true
+    },
+    {
+      "name": "body-sender status same ID",
+      "passed": true
+    },
+    {
+      "name": "observations/body-sender/pages/000000.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/body-sender/pages/000000.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "body-sender immutable page request 0",
+      "passed": true
+    },
+    {
+      "name": "body-sender immutable page contract 0",
+      "passed": true
+    },
+    {
+      "name": "body-sender whole original native SDK payload",
+      "passed": true
+    },
+    {
+      "name": "body-sender original handler success",
+      "passed": true
+    },
+    {
+      "name": "body-sender original content exact",
+      "passed": true
+    },
+    {
+      "name": "observations/body-receiver/admission.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/body-receiver/admission.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "observations/body-receiver/status.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/body-receiver/status.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "body-receiver native admission exact",
+      "passed": true
+    },
+    {
+      "name": "body-receiver original observer closed",
+      "passed": true
+    },
+    {
+      "name": "body-receiver status same ID",
+      "passed": true
+    },
+    {
+      "name": "observations/body-receiver/pages/000000.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/body-receiver/pages/000000.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "body-receiver immutable page request 0",
+      "passed": true
+    },
+    {
+      "name": "body-receiver immutable page contract 0",
+      "passed": true
+    },
+    {
+      "name": "observations/body-receiver/pages/016384.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/body-receiver/pages/016384.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "body-receiver immutable page request 1",
+      "passed": true
+    },
+    {
+      "name": "body-receiver immutable page contract 1",
+      "passed": true
+    },
+    {
+      "name": "observations/body-receiver/pages/032768.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/body-receiver/pages/032768.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "body-receiver immutable page request 2",
+      "passed": true
+    },
+    {
+      "name": "body-receiver immutable page contract 2",
+      "passed": true
+    },
+    {
+      "name": "body-receiver whole original native SDK payload",
+      "passed": true
+    },
+    {
+      "name": "body-receiver original handler success",
+      "passed": true
+    },
+    {
+      "name": "body-receiver original content exact",
+      "passed": true
+    },
+    {
+      "name": "observations/body-relay/admission.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/body-relay/admission.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "observations/body-relay/status.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/body-relay/status.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "body-relay native admission exact",
+      "passed": true
+    },
+    {
+      "name": "body-relay original observer closed",
+      "passed": true
+    },
+    {
+      "name": "body-relay status same ID",
+      "passed": true
+    },
+    {
+      "name": "observations/body-relay/pages/000000.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/body-relay/pages/000000.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "body-relay immutable page request 0",
+      "passed": true
+    },
+    {
+      "name": "body-relay immutable page contract 0",
+      "passed": true
+    },
+    {
+      "name": "observations/body-relay/pages/016384.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/body-relay/pages/016384.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "body-relay immutable page request 1",
+      "passed": true
+    },
+    {
+      "name": "body-relay immutable page contract 1",
+      "passed": true
+    },
+    {
+      "name": "observations/body-relay/pages/032768.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/body-relay/pages/032768.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "body-relay immutable page request 2",
+      "passed": true
+    },
+    {
+      "name": "body-relay immutable page contract 2",
+      "passed": true
+    },
+    {
+      "name": "body-relay whole original native SDK payload",
+      "passed": true
+    },
+    {
+      "name": "body-relay original handler success",
+      "passed": true
+    },
+    {
+      "name": "body-relay original content exact",
+      "passed": true
+    },
+    {
+      "name": "observations/body-receipt/admission.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/body-receipt/admission.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "observations/body-receipt/status.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/body-receipt/status.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "body-receipt native admission exact",
+      "passed": true
+    },
+    {
+      "name": "body-receipt original observer closed",
+      "passed": true
+    },
+    {
+      "name": "body-receipt status same ID",
+      "passed": true
+    },
+    {
+      "name": "observations/body-receipt/pages/000000.original SDK success",
+      "passed": true
+    },
+    {
+      "name": "observations/body-receipt/pages/000000.original exact SDK/native",
+      "passed": true
+    },
+    {
+      "name": "body-receipt immutable page request 0",
+      "passed": true
+    },
+    {
+      "name": "body-receipt immutable page contract 0",
+      "passed": true
+    },
+    {
+      "name": "body-receipt whole original native SDK payload",
+      "passed": true
+    },
+    {
+      "name": "body-receipt original handler success",
+      "passed": true
+    },
+    {
+      "name": "body-receipt original content exact",
+      "passed": true
+    },
+    {
+      "name": "unique ten native observations, no business retry",
+      "passed": true
+    },
+    {
+      "name": "authority exact original job",
+      "passed": true
+    },
+    {
+      "name": "streams exact original job and ranges",
+      "passed": true
+    },
+    {
+      "name": "original status transport error preserved",
+      "passed": true
+    },
+    {
+      "name": "recovery only same operation identity",
+      "passed": true
+    },
+    {
+      "name": "earlier partial UNKNOWN retained without rewrite",
+      "passed": true
+    },
+    {
+      "name": "original process success terminal",
+      "passed": true
+    },
+    {
+      "name": "streams original job",
+      "passed": true
+    },
+    {
+      "name": "stdout complete bytes/hex/text/EOF",
+      "passed": true
+    },
+    {
+      "name": "stdout authority complete durable log",
+      "passed": true
+    },
+    {
+      "name": "stderr complete bytes/hex/text/EOF",
+      "passed": true
+    },
+    {
+      "name": "stderr authority complete durable log",
+      "passed": true
+    },
+    {
+      "name": "lossless stdout and independent disk receipt equal",
+      "passed": true
+    },
+    {
+      "name": "original publisher exact disk JSON serialization",
+      "passed": true
+    },
+    {
+      "name": "original publisher exact stdout serialization",
+      "passed": true
+    },
+    {
+      "name": "closed receipt fields",
+      "passed": true
+    },
+    {
+      "name": "only inert publication and Python compile",
+      "passed": true
+    },
+    {
+      "name": "original integer clock interval within outer60",
+      "passed": true
+    },
+    {
+      "name": "actual exact stdin proof",
+      "passed": true
+    },
+    {
+      "name": "exact carried source names",
+      "passed": true
+    },
+    {
+      "name": "exact three source and four identity records",
+      "passed": true
+    },
+    {
+      "name": "sender exact authorized independent info",
+      "passed": true
+    },
+    {
+      "name": "sender independent file pin and ownership",
+      "passed": true
+    },
+    {
+      "name": "sender lossless original full9/version",
+      "passed": true
+    },
+    {
+      "name": "sender exact version-bound body request",
+      "passed": true
+    },
+    {
+      "name": "sender whole body bound to independent metadata",
+      "passed": true
+    },
+    {
+      "name": "sender actual/candidate/carrier whole equality",
+      "passed": true
+    },
+    {
+      "name": "sender lossless publisher identity exact",
+      "passed": true
+    },
+    {
+      "name": "receiver exact authorized independent info",
+      "passed": true
+    },
+    {
+      "name": "receiver independent file pin and ownership",
+      "passed": true
+    },
+    {
+      "name": "receiver lossless original full9/version",
+      "passed": true
+    },
+    {
+      "name": "receiver exact version-bound body request",
+      "passed": true
+    },
+    {
+      "name": "receiver whole body bound to independent metadata",
+      "passed": true
+    },
+    {
+      "name": "receiver actual/candidate/carrier whole equality",
+      "passed": true
+    },
+    {
+      "name": "receiver lossless publisher identity exact",
+      "passed": true
+    },
+    {
+      "name": "relay exact authorized independent info",
+      "passed": true
+    },
+    {
+      "name": "relay independent file pin and ownership",
+      "passed": true
+    },
+    {
+      "name": "relay lossless original full9/version",
+      "passed": true
+    },
+    {
+      "name": "relay exact version-bound body request",
+      "passed": true
+    },
+    {
+      "name": "relay whole body bound to independent metadata",
+      "passed": true
+    },
+    {
+      "name": "relay actual/candidate/carrier whole equality",
+      "passed": true
+    },
+    {
+      "name": "relay lossless publisher identity exact",
+      "passed": true
+    },
+    {
+      "name": "receipt exact authorized independent info",
+      "passed": true
+    },
+    {
+      "name": "receipt independent file pin and ownership",
+      "passed": true
+    },
+    {
+      "name": "receipt lossless original full9/version",
+      "passed": true
+    },
+    {
+      "name": "receipt exact version-bound body request",
+      "passed": true
+    },
+    {
+      "name": "receipt whole body bound to independent metadata",
+      "passed": true
+    },
+    {
+      "name": "fixed four-body byte ceilings",
+      "passed": true
+    }
+  ],
+  "current_tool_calls_in_flight": 0,
+  "effect_fence_scope": "Retained future relay precondition. Inert did not execute relay or newly observe the fence.",
+  "immutable_page_count": 14,
+  "job_id": "1a1ace08ffa-fc05-576b",
+  "native_read_operation_count": 10,
+  "old_relay_state": "UNKNOWN preserved",
+  "original_status_RPC_error_count": 1,
+  "original_status_same_ID_recovery_count": 1,
+  "process_start_count": 1,
+  "publisher_elapsed_ns_decimal": "156215242",
+  "qualification": "Only exact create-only publication and Python compilation of three public control sources. No seven-file transfer, X230 source import, service, full34, comparison69, or production qualification.",
+  "relay_executed": false,
+  "schema": "heptabao.current4e808.x230-inert-offline-actual-verification.v1",
+  "status": "PASS_INERT_ONLY",
+  "verification_execution": "Offline Python only; no candidate source/functions, network, subprocess, or host operations."
+}

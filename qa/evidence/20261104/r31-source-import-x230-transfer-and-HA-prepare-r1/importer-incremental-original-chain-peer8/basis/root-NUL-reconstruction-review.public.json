@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.root-canonical-NUL-reconstruction-cross-review.r31.v1",
+  "status": "PASS_BYTES_ONLY_CURRENT_INDEPENDENT_FILE_INFO_PENDING",
+  "canonical_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "canonical_previously_whole_Merkle_trees": 358,
+  "canonical_leaves": 3914,
+  "independent_root_reconstruction": true,
+  "author_packet": "30707c64ebc10009785c51283bbf91d65463c846",
+  "author_proof": "6bbd49ea5f0bc42d97d3c40649ad33efb1745fd9",
+  "matches": [
+    {
+      "label": "011-materialized-tree",
+      "bytes": 450459,
+      "sha256": "d7d6a445b6f66b8c9e07bc138c048a257d11a5bf343f83eed11a71afcd2f3548",
+      "blob": "6c1558f24909344f06eda9c9106ed51ef832b3d2",
+      "records": 3914,
+      "current_core_original_command_match": true,
+      "current_original_file_info_verified": false,
+      "current_native_body_read": false,
+      "path": "generated/011-materialized-tree.stdout"
+    },
+    {
+      "label": "012-materialized-index",
+      "bytes": 438717,
+      "sha256": "a762e59dfaa7b4a2b1e3120fb83161f14578d9da5ef038573c98540f1083574e",
+      "blob": "36c857b0ad549e5783774e77d0fd357850afc9aa",
+      "records": 3914,
+      "current_core_original_command_match": true,
+      "current_original_file_info_verified": false,
+      "current_native_body_read": false,
+      "path": "generated/012-materialized-index.stdout"
+    }
+  ],
+  "total_bytes": 889176,
+  "original_core_command_SHA_equal": true,
+  "original_current_file_info_verified": false,
+  "current_host_body_read": false,
+  "original_14_body_plan_changed": false,
+  "reuse_authorized": false,
+  "source_import_qualified": false,
+  "root_Runtime_calls": 0
+}

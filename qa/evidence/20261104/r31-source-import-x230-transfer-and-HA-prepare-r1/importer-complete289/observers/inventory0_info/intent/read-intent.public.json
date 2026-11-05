@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.current4e808.desktop-source-import.fixed-observation-intent.v1",
+  "root_GO": {
+    "blob": "f1fcb91c33a38ba8074281c300f8f3c7b8f1534e",
+    "bytes": 7994,
+    "sha256": "17eee1e5be097d785ec50b2e6837f0f04b997cf666319444f13d55f3f124bd5b"
+  },
+  "execution_intent_tree": "2507d77fe689e5a54ef7c191f2e57433f7b78864",
+  "ACK_tree": "a37a3a1a50f414abe04fde5e797be3f5fcca6a9b",
+  "job_id": "1a1acd0d62d-fc05-571a",
+  "observation": "inventory0_info",
+  "request": {
+    "idempotency_key": "ha-4e808-source-import-inventory0-info-r1-20261105",
+    "operation": {
+      "tool": "file_info",
+      "arguments": {
+        "host": "desktop",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/011-materialized-tree.stdout"
+      }
+    }
+  },
+  "one_native_future": true,
+  "on_error": "Stop new admissions; preserve original SDK; reconcile original operation_id only.",
+  "product_replay": false
+}

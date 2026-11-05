@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.root-original-importer-core-info-result-page-recovery.r30.v1",
+  "status": "GO_ONCE_SAME_IMMUTABLE_RESULT_PAGE",
+  "lane": "A",
+  "owner": "/root/ha_validation",
+  "original_error_packet": "f245856be1cba4966b3026d923eec8a250753cdd",
+  "original_operation_reported_closed": {
+    "operation_id": "5719c5c5558070442139cb6a27b02a09cdfcf5ec756cb42d19662d65baa6bfa6",
+    "state": "completed/stored_observed/inactive/payload_available",
+    "status_whole_provenance": "Agent has original status; include it unchanged in next complete packet."
+  },
+  "exact_operation_result_request": {
+    "operation_id": "5719c5c5558070442139cb6a27b02a09cdfcf5ec756cb42d19662d65baa6bfa6",
+    "offset": 0,
+    "limit": 8192
+  },
+  "protocol": {
+    "external_completed_intent_before_one_same_page_read": true,
+    "raw_SDK_whole_before_parse": true,
+    "check_isError_first": true,
+    "same_original_result_digest_and_total_bytes": true,
+    "no_operation_start_or_new_file_info": true,
+    "no_process_start_or_business_replay": true,
+    "no_new_key_or_path": true,
+    "no_native_deadline_change": true,
+    "no_retry_loop_on_repeat_error": true
+  },
+  "after_success": "Finish only the original info operation's immutable payload. Then continue the already authorized fixed version-bound core and finite original-command read plan; original tail lost-ACK future remains UNKNOWN and must stay recorded.",
+  "root_Runtime_calls": 0,
+  "source_import_qualified": false
+}

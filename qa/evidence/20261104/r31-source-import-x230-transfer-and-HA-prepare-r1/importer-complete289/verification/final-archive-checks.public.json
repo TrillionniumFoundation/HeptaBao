@@ -1,0 +1,1246 @@
+[
+  {
+    "name": "original plan 65 = 21 records + 42 streams + 2 source controls",
+    "pass": true
+  },
+  {
+    "name": "commandlogs1 actual native closed/full/verified",
+    "pass": true
+  },
+  {
+    "name": "commandlogs2 actual native closed/full/verified",
+    "pass": true
+  },
+  {
+    "name": "commandlogs3 actual native closed/full/verified",
+    "pass": true
+  },
+  {
+    "name": "commandlogs4 actual native closed/full/verified",
+    "pass": true
+  },
+  {
+    "name": "commandlogs5 actual native closed/full/verified",
+    "pass": true
+  },
+  {
+    "name": "exact 63 native paths; no unlisted read",
+    "pass": true
+  },
+  {
+    "name": "two content-addressed representations only",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/importer.py",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version importer.py",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed importer.py",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/intent.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version intent.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed intent.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/000-standalone-clone.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 000-standalone-clone.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 000-standalone-clone.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/000-standalone-clone.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 000-standalone-clone.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 000-standalone-clone.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/000-standalone-clone.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 000-standalone-clone.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 000-standalone-clone.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/001-bundle-verify.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 001-bundle-verify.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 001-bundle-verify.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/001-bundle-verify.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 001-bundle-verify.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 001-bundle-verify.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/001-bundle-verify.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 001-bundle-verify.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 001-bundle-verify.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/002-bundle-heads.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 002-bundle-heads.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 002-bundle-heads.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/002-bundle-heads.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 002-bundle-heads.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 002-bundle-heads.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/002-bundle-heads.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 002-bundle-heads.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 002-bundle-heads.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/003-canonical-checkout.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 003-canonical-checkout.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 003-canonical-checkout.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/003-canonical-checkout.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 003-canonical-checkout.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 003-canonical-checkout.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/003-canonical-checkout.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 003-canonical-checkout.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 003-canonical-checkout.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/004-remove-local-origin.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 004-remove-local-origin.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 004-remove-local-origin.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/004-remove-local-origin.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 004-remove-local-origin.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 004-remove-local-origin.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/004-remove-local-origin.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 004-remove-local-origin.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 004-remove-local-origin.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/005-canonical-kind.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 005-canonical-kind.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 005-canonical-kind.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/005-canonical-kind.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 005-canonical-kind.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 005-canonical-kind.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/005-canonical-kind.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 005-canonical-kind.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 005-canonical-kind.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/006-canonical-tree.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 006-canonical-tree.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 006-canonical-tree.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/006-canonical-tree.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 006-canonical-tree.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 006-canonical-tree.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/006-canonical-tree.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 006-canonical-tree.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 006-canonical-tree.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/007-canonical-parents.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 007-canonical-parents.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 007-canonical-parents.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/007-canonical-parents.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 007-canonical-parents.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 007-canonical-parents.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/007-canonical-parents.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 007-canonical-parents.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 007-canonical-parents.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/008-canonical-count.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 008-canonical-count.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 008-canonical-count.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/008-canonical-count.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 008-canonical-count.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 008-canonical-count.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/008-canonical-count.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 008-canonical-count.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 008-canonical-count.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/009-canonical-roots.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 009-canonical-roots.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 009-canonical-roots.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/009-canonical-roots.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 009-canonical-roots.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 009-canonical-roots.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/009-canonical-roots.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 009-canonical-roots.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 009-canonical-roots.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/010-canonical-full-fsck.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 010-canonical-full-fsck.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 010-canonical-full-fsck.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/010-canonical-full-fsck.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 010-canonical-full-fsck.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 010-canonical-full-fsck.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/010-canonical-full-fsck.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 010-canonical-full-fsck.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 010-canonical-full-fsck.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/011-materialized-tree.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 011-materialized-tree.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 011-materialized-tree.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/011-materialized-tree.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 011-materialized-tree.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 011-materialized-tree.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/012-materialized-index.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 012-materialized-index.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 012-materialized-index.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/012-materialized-index.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 012-materialized-index.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 012-materialized-index.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/013-no-sparse-config.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 013-no-sparse-config.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 013-no-sparse-config.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/013-no-sparse-config.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 013-no-sparse-config.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 013-no-sparse-config.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/013-no-sparse-config.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 013-no-sparse-config.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 013-no-sparse-config.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/014-source-after-head.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 014-source-after-head.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 014-source-after-head.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/014-source-after-head.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 014-source-after-head.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 014-source-after-head.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/014-source-after-head.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 014-source-after-head.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 014-source-after-head.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/015-source-after-tree.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 015-source-after-tree.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 015-source-after-tree.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/015-source-after-tree.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 015-source-after-tree.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 015-source-after-tree.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/015-source-after-tree.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 015-source-after-tree.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 015-source-after-tree.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/016-source-after-status.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 016-source-after-status.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 016-source-after-status.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/016-source-after-status.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 016-source-after-status.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 016-source-after-status.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/016-source-after-status.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 016-source-after-status.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 016-source-after-status.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/017-source-after-git-dir.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 017-source-after-git-dir.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 017-source-after-git-dir.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/017-source-after-git-dir.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 017-source-after-git-dir.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 017-source-after-git-dir.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/017-source-after-git-dir.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 017-source-after-git-dir.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 017-source-after-git-dir.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/018-source-after-common-dir.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 018-source-after-common-dir.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 018-source-after-common-dir.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/018-source-after-common-dir.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 018-source-after-common-dir.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 018-source-after-common-dir.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/018-source-after-common-dir.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 018-source-after-common-dir.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 018-source-after-common-dir.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/019-source-after-shallow.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 019-source-after-shallow.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 019-source-after-shallow.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/019-source-after-shallow.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 019-source-after-shallow.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 019-source-after-shallow.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/019-source-after-shallow.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 019-source-after-shallow.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 019-source-after-shallow.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/020-source-after-partial-config.public.json",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 020-source-after-partial-config.public.json",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 020-source-after-partial-config.public.json",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/020-source-after-partial-config.stdout",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 020-source-after-partial-config.stdout",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 020-source-after-partial-config.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/020-source-after-partial-config.stderr",
+    "pass": true
+  },
+  {
+    "name": "actual native bytes/SHA/version 020-source-after-partial-config.stderr",
+    "pass": true
+  },
+  {
+    "name": "native source observation closed 020-source-after-partial-config.stderr",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/011-materialized-tree.stdout",
+    "pass": true
+  },
+  {
+    "name": "canonical content matches current independent native whole hash 011-materialized-tree.stdout",
+    "pass": true
+  },
+  {
+    "name": "current NUL info native closed 011-materialized-tree.stdout",
+    "pass": true
+  },
+  {
+    "name": "direct fixed control path /home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/012-materialized-index.stdout",
+    "pass": true
+  },
+  {
+    "name": "canonical content matches current independent native whole hash 012-materialized-index.stdout",
+    "pass": true
+  },
+  {
+    "name": "current NUL info native closed 012-materialized-index.stdout",
+    "pass": true
+  },
+  {
+    "name": "all 65 representations unique",
+    "pass": true
+  },
+  {
+    "name": "21 actual original commands",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 000-standalone-clone",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 000-standalone-clone",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 000-standalone-clone.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 000-standalone-clone.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 001-bundle-verify",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 001-bundle-verify",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 001-bundle-verify.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 001-bundle-verify.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 002-bundle-heads",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 002-bundle-heads",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 002-bundle-heads.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 002-bundle-heads.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 003-canonical-checkout",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 003-canonical-checkout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 003-canonical-checkout.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 003-canonical-checkout.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 004-remove-local-origin",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 004-remove-local-origin",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 004-remove-local-origin.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 004-remove-local-origin.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 005-canonical-kind",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 005-canonical-kind",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 005-canonical-kind.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 005-canonical-kind.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 006-canonical-tree",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 006-canonical-tree",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 006-canonical-tree.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 006-canonical-tree.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 007-canonical-parents",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 007-canonical-parents",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 007-canonical-parents.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 007-canonical-parents.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 008-canonical-count",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 008-canonical-count",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 008-canonical-count.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 008-canonical-count.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 009-canonical-roots",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 009-canonical-roots",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 009-canonical-roots.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 009-canonical-roots.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 010-canonical-full-fsck",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 010-canonical-full-fsck",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 010-canonical-full-fsck.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 010-canonical-full-fsck.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 011-materialized-tree",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 011-materialized-tree",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 011-materialized-tree.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 011-materialized-tree.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 012-materialized-index",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 012-materialized-index",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 012-materialized-index.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 012-materialized-index.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 013-no-sparse-config",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 013-no-sparse-config",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 013-no-sparse-config.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 013-no-sparse-config.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 014-source-after-head",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 014-source-after-head",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 014-source-after-head.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 014-source-after-head.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 015-source-after-tree",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 015-source-after-tree",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 015-source-after-tree.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 015-source-after-tree.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 016-source-after-status",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 016-source-after-status",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 016-source-after-status.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 016-source-after-status.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 017-source-after-git-dir",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 017-source-after-git-dir",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 017-source-after-git-dir.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 017-source-after-git-dir.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 018-source-after-common-dir",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 018-source-after-common-dir",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 018-source-after-common-dir.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 018-source-after-common-dir.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 019-source-after-shallow",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 019-source-after-shallow",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 019-source-after-shallow.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 019-source-after-shallow.stderr",
+    "pass": true
+  },
+  {
+    "name": "command record equals actual controller core 020-source-after-partial-config",
+    "pass": true
+  },
+  {
+    "name": "original bounded command and ownership 020-source-after-partial-config",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 020-source-after-partial-config.stdout",
+    "pass": true
+  },
+  {
+    "name": "saved original stream whole bytes/SHA 020-source-after-partial-config.stderr",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 002-bundle-heads.stdout",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 005-canonical-kind.stdout",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 006-canonical-tree.stdout",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 007-canonical-parents.stdout",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 008-canonical-count.stdout",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 009-canonical-roots.stdout",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 010-canonical-full-fsck.stdout",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 010-canonical-full-fsck.stderr",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 013-no-sparse-config.stdout",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 013-no-sparse-config.stderr",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 014-source-after-head.stdout",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 015-source-after-tree.stdout",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 016-source-after-status.stdout",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 017-source-after-git-dir.stdout",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 018-source-after-common-dir.stdout",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 019-source-after-shallow.stdout",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 020-source-after-partial-config.stdout",
+    "pass": true
+  },
+  {
+    "name": "original Git output semantic 020-source-after-partial-config.stderr",
+    "pass": true
+  },
+  {
+    "name": "bundle original standalone full-history output",
+    "pass": true
+  },
+  {
+    "name": "saved exact admitted controller",
+    "pass": true
+  },
+  {
+    "name": "canonical content independently rebuilds current tree/index",
+    "pass": true
+  },
+  {
+    "name": "original unique importer authority and full core already closed",
+    "pass": true
+  }
+]

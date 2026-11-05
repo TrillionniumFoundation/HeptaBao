@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-4e808-x230-inert-observe-streams-r1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1ace08ffa-fc05-576b",
+      "limit": 16384,
+      "stdout_offset": 0,
+      "stderr_offset": 0
+    }
+  }
+}

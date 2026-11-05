@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.authbus.incremental-peer.verifier-local-initial-failure.v1",
+  "status": "LOCAL_CHECKER_FAILURE",
+  "error": "Error: verification_failed:commandlogs1.file_digest:/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/intent.public.json",
+  "source": {
+    "blob": "1ae410b29db2595d3ce3bfd79d2693e85c0f9372",
+    "bytes": 27409,
+    "sha256": "dbda3797d468509b50e0137b192aca7cd692327f64fa1d58e08301613ccf4571"
+  },
+  "archive_helper_initial_error": "ReferenceError: sha is not defined; before any Git call; lexical hash callbacks supplied on next archive call",
+  "Runtime_calls": 0,
+  "original_packet_changed": false
+}

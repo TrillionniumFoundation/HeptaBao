@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.x230-inert154-original-observer-peer.r1",
+  "verdict": "PASS_REQUEST_AND_ORIGINAL_READ_CHAIN_ONLY_NO_NEW_BLOCKER",
+  "reviewer": "/root/authbus_migration",
+  "original_packet": "6b7781609be0345b5730aabb1b4394652d4d74be",
+  "ready_source_tree": "4fdb7848257d917b8efdd4dd1bed296ae5c40dd2",
+  "verifier": {
+    "blob": "63708805a6a442528861525d8bf40a56ad000188",
+    "bytes": 23281,
+    "sha256": "2ccb86ce216e9ba1702ee4c845b0038340c8d939f83d3ed295b11fc829f31882"
+  },
+  "actual_result": {
+    "blob": "a95202578041793de634a4d388ef5e68273b3a25",
+    "bytes": 58271,
+    "sha256": "3cf66f2fdeeec98546dbf67288456935a6dc10e725aa946fcb06d9b84d156634"
+  },
+  "interface": {
+    "function": "verifyX230OriginalObservers(files, tree, readyTree, sha1, sha256)",
+    "files": "Map of all 154 exact original packet UTF-8 strings; successful SDKs and errors remain unnormalized.",
+    "tree": "Complete recursive JSON for original_packet.",
+    "readyTree": "Complete recursive JSON for ready_source_tree.",
+    "hashes": "Pure lowercase-hex SHA-1/SHA-256 functions over binary byte strings.",
+    "output": "Throws on a failed predicate; successful output contains each observer/page original path and all 154 path/bytes/SHA256/Git-ID records.",
+    "execution": "Saved verifier evaluated once in V8 against these originals; 0 Runtime, shell, filesystem, SDK import or candidate execution."
+  },
+  "reuse": {
+    "base_verifier": "164dd8f0f6aee353fb9e75c22f77aa630aaebf7f",
+    "functions": [
+      "oneText",
+      "sdk",
+      "timeout",
+      "fromHex",
+      "base64"
+    ],
+    "shared_bytes": 1804,
+    "shared_sha256": "c500762869a5c5d0f0f5d224034bba1d8fcdf4c4fe1c920951cbb919386c6b01",
+    "byte_exact_in_both_sources": true,
+    "note": "The same SDK-isError-first and strict Base64/hex primitives are reused; the packet layout, request binding and known recovery path are explicitly specialized."
+  },
+  "findings": [],
+  "confirmed": [
+    "154 original whole blobs / 1139834 bytes / 28 Merkle verified, plus ready34's 6 Merkle. Six reference copies bind exact ready request, stdin, publisher and three candidate sources.",
+    "Original desktop job1a1ace08ffa-fc05-576b ACK matches request af6bcaaf, publisher5043, stdin87425, typed request digest and lossless decimal fingerprint. Original60-second request is unchanged.",
+    "All10 exact original typed request objects bind successful ACK IDs and same-ID completed/stored_observed/inactive status. Raw SDK text equals saved admission/status/page projections.",
+    "All14 immutable pages have exact ID/offset/limit/total/digest/Base64/EOF continuity. Each reconstructed original-payload and embedded native text is byte-exact to its saved original.",
+    "Original authority reports exit0/full/durable/confirmed. Native stdout hex/text yields the exact1514-byte saved stdout; stderr is empty. Publisher receipt content and four-file semantics are not inferred from this."
+  ],
+  "preserved_error": {
+    "original_sdk": "observations/streams/status.original.sdk.json",
+    "blob": "0cede4881f37869cfd279b69b738c87eb62b4889",
+    "bytes": 248,
+    "error_text": "observations/streams/status.error.original.txt",
+    "historical_partial": "historical/PARTIAL_AFTER_STREAM_STATUS_ERROR.public.json",
+    "recovery_GO": "45520f0274ef96844ab797dc01ca5227393d3bdd",
+    "recovery_intent": "observations/streams/recovery-01/intent.original.json",
+    "exact_status_request": "observations/streams/status.exact-request.json",
+    "operation_id": "113c6a9a6a98f1c5cf7947554549338d2f7fcc67c45a34f52624dc7a02364c59",
+    "later_status_sdk": "observations/streams/recovery-01/status.original.sdk.json",
+    "same_original_operation_now_observed_closed": true,
+    "new_operation_start": false,
+    "historical_error_and_partial_unchanged": true,
+    "old_X230_relay_UNKNOWN_preserved": true
+  },
+  "limits": [
+    "2250 predicate evaluations include repeated format and byte-integrity checks; neither this count nor author513 is a product-test denominator. Author verifier513 was not executed.",
+    "The parent owns four infos/full9, four decoded body semantics,1514 stdout versus1924 receipt, publisher FD/custody and later exact relay GO.",
+    "Per-observer durable exact request objects are present. Separate global execution and recovery intents are checked; Git object IDs alone do not prove persistence-before-call wall-clock order.",
+    "No source/import/full34/product qualification or new Runtime permission is granted."
+  ]
+}

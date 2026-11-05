@@ -1,0 +1,68 @@
+{
+  "schema": "heptabao.current4e808.x230-inert-observation-partial.v1",
+  "status": "INERT_KNOWN_SUCCESS_STREAM_READ_OBSERVER_UNKNOWN",
+  "recorded_utc": "2026-11-05T18:10:37.034Z",
+  "job_id": "1a1ace08ffa-fc05-576b",
+  "start_sdk": {
+    "path": "execution/start.original.sdk.json",
+    "bytes": 6642,
+    "sha256": "2822115f08aafd4c6ddeb41322cb4071c5e4e7347b28176cc71029e4cdac67e2",
+    "blob": "9bda739a72b8e2cc8ae3445d3b1b3616b635ff40",
+    "carrier_tree": "d2d5222177c50c7981b45e8e6dd846eaab44429b"
+  },
+  "start_native": {
+    "path": "execution/start.original.json",
+    "bytes": 6235,
+    "sha256": "20fad4a213da7a7f34d806e057f0e2bb78d73e2be531a312549375874778b8a7",
+    "blob": "f45e032149b73fd3d1d8cd73971134e8453441ff",
+    "carrier_tree": "372b5d7579d42e403a24ec09b2a8bc0120f7ffbf"
+  },
+  "authority": {
+    "path": "observations/authority/native.original.json",
+    "bytes": 731,
+    "sha256": "af7a2f04c5f45a7775f9df3608af16ce0c0e18ca8eedb3b60df53e10888a0a99",
+    "blob": "0a23cc88cd30e96854ccd3f3e1516213e2f17394",
+    "carrier_tree": "b07366d106c50c4c6d0d311c8debc4eeda833e20"
+  },
+  "authority_operation_id": "3da25bbdc8d13174dc8fe3883a3f8fc1845d9b77a189ea609be154ba7e5c439e",
+  "authority_operation_closed": true,
+  "authority_original_payload_complete": true,
+  "authority_output": {
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "stdout_bytes": 1514,
+    "stderr_bytes": 0
+  },
+  "stream_operation_id": "113c6a9a6a98f1c5cf7947554549338d2f7fcc67c45a34f52624dc7a02364c59",
+  "stream_admission": {
+    "path": "observations/streams/admission.original.json",
+    "bytes": 546,
+    "sha256": "667e2bad39d8a7e9b4df652983f904282b628a91c4baf6d2c68491fdfd02acc4",
+    "blob": "36d2b15c0376fdf1f1e1855a4d8a6ad8d2ba4d48",
+    "carrier_tree": "cfe44275c38185267bb33a2e5283e04d312cb0b4"
+  },
+  "stream_status_error_sdk": {
+    "path": "observations/streams/status.original.sdk.json",
+    "bytes": 248,
+    "sha256": "b85d625e0a8999ce34020675f0a2f8ba093e807dc725c16053a63c92fbbc9c70",
+    "blob": "0cede4881f37869cfd279b69b738c87eb62b4889",
+    "carrier_tree": "93d8e5c2f045808cb9628eae0dea6453b04116b7"
+  },
+  "stream_status_error_text": {
+    "path": "observations/streams/status.error.original.txt",
+    "bytes": 152,
+    "sha256": "2395b66a6a6b772851af42e65f4f859c26c316cf1824099405ab805caf337478",
+    "blob": "b9e4761d70f7a3086ee8d571cfba3cea9fbdf487",
+    "carrier_tree": "6422c636bb1aa655ea9873aaf7501f18c623d8a0"
+  },
+  "stream_original_payload_bytes_received": 0,
+  "stream_future_state": "UNKNOWN_after_status_RPC_error",
+  "current_tool_calls_in_flight": 0,
+  "new_admissions_stopped": true,
+  "fixed_file_infos_submitted": 0,
+  "fixed_body_reads_submitted": 0,
+  "relay_submitted": false,
+  "old_X230_relay": "UNKNOWN preserved",
+  "semantic_limit": "A status RPC error is not operation completion or timeout. Zero received payload bytes does not imply zero remote I/O."
+}

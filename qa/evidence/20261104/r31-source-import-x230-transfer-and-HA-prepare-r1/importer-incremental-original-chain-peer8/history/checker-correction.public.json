@@ -1,0 +1,22 @@
+{
+  "initial_error": "Error: verification_failed:commandlogs1.file_digest:/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/intent.public.json",
+  "scope": "Verifier-only plan schema correction; no original evidence changed, no Runtime.",
+  "reason": "Original plan pre-pins bytes/SHA for controller and saved streams; original-controller-intent and command-record rows intentionally have only fixed path/kind/cap or expected_command, not a predeclared bytes/SHA. Every returned text still must match its actual native size/SHA, saved artifact, extraction mapping, version and exact planned path. Command semantics stay with root.",
+  "before": "sha256(bytes)===file.sha256&&file.size===declared.bytes&&file.sha256===declared.sha256",
+  "after": "sha256(bytes)===file.sha256&&(!Object.hasOwn(declared,\"bytes\")||file.size===declared.bytes)&&(!Object.hasOwn(declared,\"sha256\")||file.sha256===declared.sha256)",
+  "before_source": {
+    "blob": "1ae410b29db2595d3ce3bfd79d2693e85c0f9372",
+    "bytes": 27409,
+    "sha256": "dbda3797d468509b50e0137b192aca7cd692327f64fa1d58e08301613ccf4571"
+  },
+  "after_source": {
+    "blob": "060990ecdac70164e1cb9527629ab694e45ccc3f",
+    "bytes": 27482,
+    "sha256": "f3b6696e33720e803f8e45082cb999f34de2e94c90c0b4e2beb4ac66b1154838"
+  },
+  "after_result": {
+    "blob": "8fb9e0fb28e2109f091ce9d7b94d6d2453f306aa",
+    "bytes": 77286,
+    "sha256": "f3a72caad92e27a37beb12d42d4f804555d44d362fdb4c706b721c889be8a58b"
+  }
+}

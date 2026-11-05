@@ -1,0 +1,76 @@
+{
+  "schema": "heptabao.current4e808.importer-NUL-content-representation-delta.v1",
+  "root_GO": "f7eda3b5696e478342b58999871788d009fef97a",
+  "original_65_file_plan_tree": "bc3ac1786389aa597cdd980d2fd5bff5b7ef66e8",
+  "original_65_plan_unchanged": true,
+  "metadata_packet": "415f01281d989ab35c1108c888b15afcff70db29",
+  "canonical_proposal_tree": "30707c64ebc10009785c51283bbf91d65463c846",
+  "records": [
+    {
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/011-materialized-tree.stdout",
+      "label": "011-materialized-tree",
+      "bytes": 450459,
+      "sha256": "d7d6a445b6f66b8c9e07bc138c048a257d11a5bf343f83eed11a71afcd2f3548",
+      "version": "2050:7401886:450459:1793900742465844347:1793900742465844347",
+      "full9_decimal": [
+        "2050",
+        "7401886",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "450459",
+        "1793900742465844347",
+        "1793900742465844347"
+      ],
+      "actual_info_operation": "7e7714738a054f7f865c13ac7a1d08dee0caf68ce376f41ef877f499401ca3ef",
+      "actual_info_blob": "4eb15ed38e151fe0174cea593fea369e9f72f486",
+      "content_blob": "6c1558f24909344f06eda9c9106ed51ef832b3d2",
+      "content_origin": "CANONICAL_GIT_TREE_RECONSTRUCTION_BOUND_TO_CURRENT_NATIVE_FULL_FILE_SHA",
+      "current_host_body_RPC_count": 0,
+      "original_planned_body_RPCs_submitted": 0,
+      "replaced_planned_unsubmitted_body_slots": 7
+    },
+    {
+      "original_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/012-materialized-index.stdout",
+      "label": "012-materialized-index",
+      "bytes": 438717,
+      "sha256": "a762e59dfaa7b4a2b1e3120fb83161f14578d9da5ef038573c98540f1083574e",
+      "version": "2050:7401889:438717:1793900742558386941:1793900742558386941",
+      "full9_decimal": [
+        "2050",
+        "7401889",
+        "1000",
+        "1000",
+        "33152",
+        "1",
+        "438717",
+        "1793900742558386941",
+        "1793900742558386941"
+      ],
+      "actual_info_operation": "f6fa294073f9b140d3b69001ae8d6c6949f67a8f8a3803178d71ebd6c0dda3e3",
+      "actual_info_blob": "74eed9205e387b39f2d2aa01d4e5024c6005c6e4",
+      "content_blob": "36c857b0ad549e5783774e77d0fd357850afc9aa",
+      "content_origin": "CANONICAL_GIT_TREE_RECONSTRUCTION_BOUND_TO_CURRENT_NATIVE_FULL_FILE_SHA",
+      "current_host_body_RPC_count": 0,
+      "original_planned_body_RPCs_submitted": 0,
+      "replaced_planned_unsubmitted_body_slots": 7
+    }
+  ],
+  "canonical_root_verification": {
+    "tracked_files": 3914,
+    "index_files": 3914,
+    "all_index_stage_zero": true,
+    "tree_equals_index": true,
+    "rebuilt_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "expected_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+    "merkle_trees": 358,
+    "passed": true
+  },
+  "replaced_planned_body_slots": 14,
+  "body_RPCs_submitted": 0,
+  "other_63_small_files_still_require_native_whole_reads": true,
+  "source_import_full_qualification": false,
+  "LAN_prepare_or_live_authorized": false,
+  "old_errors_and_UNKNOWNs_unchanged": true
+}

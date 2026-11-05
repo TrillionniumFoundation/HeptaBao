@@ -1,0 +1,138 @@
+{
+  "schema": "heptabao.root-current4e808-standalone-source-import-qualified.r31.v1",
+  "status": "PASS_COMPLETE_SOURCE_IMPORT_ONLY",
+  "source_import_qualified": true,
+  "canonical_commit": "4e808d0ecb1bcded22870a7ec960dfb2491cf6ec",
+  "canonical_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "source_directory": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-validation-source-r1",
+  "original_job": "desktop/1a1acd0d62d-fc05-571a",
+  "execution_submissions": 1,
+  "original_terminal": "exit0/full/durable/confirmed",
+  "core": {
+    "blob": "575f3ef51bb6e859ee28b0cf268966ce2b6a7513",
+    "bytes": 36163,
+    "sha256": "484ebbd31e94213c526bbde8664a516658fbab48a273bace01396a6ca10adb72",
+    "version": "2050:7401916:36163:1793900780972649325:1793900780972649325",
+    "full9_decimal": [
+      "2050",
+      "7401916",
+      "1000",
+      "1000",
+      "33152",
+      "1",
+      "36163",
+      "1793900780972649325",
+      "1793900780972649325"
+    ]
+  },
+  "packet": {
+    "tree": "52f3258ff47319da11db9c6f586687ab31b1fc99",
+    "files": 289,
+    "bytes": 2556370,
+    "Merkle_trees": 110
+  },
+  "root_core_semantic_review": {
+    "name": "r31-importer-core-semantic-root-review.public.json",
+    "blob": "ed8f5f239cd371abe3f3648785da081cadb5da0f",
+    "bytes": 6939,
+    "sha256": "b73561e7f038f89c2ed052887acf2c73bed1c4b9638203f48f6d49ea4a8ea964"
+  },
+  "root_final65_semantic_review": {
+    "name": "r31-importer-final65-semantic-root-review.public.json",
+    "blob": "e5e60961327836e5c7ff96bf0410e76fb81e6732",
+    "bytes": 13804,
+    "sha256": "9d78b16d7cdd4e2d3ddfb9d449bbd9c52ab3a6f43c9d1da32ef9fbc1eb950058"
+  },
+  "root_current_NUL_info_review": {
+    "name": "r31-importer-current-NUL-info-content-root-review.public.json",
+    "blob": "f78b31c2d625c00256e92cfea22f923ab42aeb09",
+    "bytes": 4652,
+    "sha256": "3817cf9a2fe108484c638e1b022c808be33d0c67ecf70eda23126a833d26f4c2"
+  },
+  "first_five_original_chain_root_intake": {
+    "name": "r31-importer-original-chain-peer-root-intake.public.json",
+    "blob": "f9d72cdd6e54babeab372293440c8426432b0882",
+    "bytes": 2833,
+    "sha256": "499004c2bb2cab94ff518aca95b47e8a400d92ea3d0e945fe0fbbeb35887fe73"
+  },
+  "incremental_original_chain_peer": {
+    "tree": "c71bce5d75f628ca7cde5c177ce7eda086c6dafe",
+    "review": {
+      "path": "PEER.public.json",
+      "blob": "1c2a2f559675bf92627e110e91e645d1b5190626",
+      "bytes": 6522,
+      "sha256": "1aad37456d351f42be0cac80c7875df1957fbcdd83d2e97b753c4ca1d9f5fb2d",
+      "mode": "100644"
+    },
+    "actual_verifier": {
+      "blob": "060990ecdac70164e1cb9527629ab694e45ccc3f",
+      "bytes": 27482,
+      "sha256": "f3b6696e33720e803f8e45082cb999f34de2e94c90c0b4e2beb4ac66b1154838"
+    },
+    "actual_result": {
+      "blob": "8fb9e0fb28e2109f091ce9d7b94d6d2453f306aa",
+      "bytes": 77286,
+      "sha256": "f3a72caad92e27a37beb12d42d4f804555d44d362fdb4c706b721c889be8a58b"
+    },
+    "pure_predicate_evaluations": 4957,
+    "product_test_cases": 0
+  },
+  "intake_checks_passed": 8,
+  "intake_checks": [
+    "incremental-peer-exact-root-whole289-subject",
+    "all289-input-paths-exact-root-audit-tree",
+    "actual-pure-verifier-and-result-identity",
+    "prior-five-chain-and-root-two-NUL-bases-exact",
+    "incremental63-bodies-and12-observer36-page-closure",
+    "distinct-error-history-and-NUL-origin-retained",
+    "peer-local-checker-error-and-limited-correction-preserved",
+    "independent-root-core-content-and-current-NUL-semantics-passed"
+  ],
+  "root_did_not_rerun_identical_peer_verifier": true,
+  "canonical": {
+    "history": 3763,
+    "leaves": 3914,
+    "full_fsck_passed": true,
+    "clean_independent_source": true
+  },
+  "all21_original_commands_and42_streams_and2_controls_closed": true,
+  "commands": {
+    "total": 21,
+    "exit0": 19,
+    "expected_config_absent_exit1": 2,
+    "all_reaped": true,
+    "all_groups_empty": true
+  },
+  "inputs_before_after_same_full9_and_whole_SHA": true,
+  "FDs": {
+    "input_files": 3,
+    "input_directories": 4,
+    "created_source_directory": 1,
+    "all_positive_closed": true
+  },
+  "content_provenance": {
+    "native_small": 63,
+    "native_bytes": 61389,
+    "canonical_NUL": 2,
+    "NUL_bytes": 889176,
+    "current_host_NUL_body_RPC": 0,
+    "explicit_reuse_GO": "f7eda3b5696e478342b58999871788d009fef97a"
+  },
+  "observations": {
+    "returned": 12,
+    "pages": 36,
+    "all_known_closed": true,
+    "original_tail_lost_ACK": "UNKNOWN_PRESERVED",
+    "tail_reconciliation_reused": false,
+    "smallbatch3_reconciliation_reused": true,
+    "smallbatch3_original_ID_closed": true
+  },
+  "elapsed_seconds": 48.63311454304494,
+  "original_seconds": 300,
+  "product_tests_executed": 0,
+  "LAN_prepare_submitted": false,
+  "LAN_live_qualified": false,
+  "full_OpenBao271_replacement": false,
+  "production_changed": false,
+  "root_Runtime_calls": 0
+}

@@ -1,0 +1,871 @@
+{
+  "schema": "heptabao.current4e808.desktop-source-import.actual-complete.v1",
+  "stage": "complete",
+  "job_id": "1a1acd0d62d-fc05-571a",
+  "request": {
+    "blob": "ad2972fce00ad6db96ef7eb8653921c37ef0cc80",
+    "bytes": 34190,
+    "sha256": "adbb76fb07834eb05faf893f4635f244594f22f55ec5acc83b18949e845c710d"
+  },
+  "root_GO": {
+    "blob": "f1fcb91c33a38ba8074281c300f8f3c7b8f1534e",
+    "bytes": 7994,
+    "sha256": "17eee1e5be097d785ec50b2e6837f0f04b997cf666319444f13d55f3f124bd5b"
+  },
+  "execution_submissions": 1,
+  "authority": {
+    "at_unix_ms": 1793900781029,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1acd0d62d-fc05-571a",
+    "launch_nonce": "d854e54f3358716f3c094d8232194a23",
+    "log_bytes": {
+      "stderr": {
+        "seen": 28576,
+        "stored": 28576
+      },
+      "stdout": {
+        "seen": 0,
+        "stored": 0
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "terminal_full": true,
+  "terminal_checks": {
+    "authority": true,
+    "stream_full": true,
+    "status": true,
+    "canonical": true,
+    "bundle": true,
+    "fullfsck": true,
+    "materialized": true,
+    "clean_source": true,
+    "inputs_before_after": true,
+    "original_caps": true,
+    "no_forbidden_action": true,
+    "within_deadline": true,
+    "exact_command_count": true,
+    "unique_commands": true,
+    "expected_exit_codes": true,
+    "command_closure": true,
+    "caps_per_command": true,
+    "allowned": true,
+    "input_closure": true,
+    "controller": true
+  },
+  "core": {
+    "blob": "575f3ef51bb6e859ee28b0cf268966ce2b6a7513",
+    "bytes": 36163,
+    "sha256": "484ebbd31e94213c526bbde8664a516658fbab48a273bace01396a6ca10adb72"
+  },
+  "core_metadata_checks": {
+    "same_path": true,
+    "same_bytes": true,
+    "same_sha": true,
+    "regular_singleton": true,
+    "owner": true,
+    "mode": true,
+    "version_shape": true,
+    "version_size": true
+  },
+  "core_lossless_terminal_equal": true,
+  "observers": [
+    {
+      "name": "authority0",
+      "request": {
+        "idempotency_key": "ha-4e808-source-import-authority-r1-20261105",
+        "operation": {
+          "tool": "process_status",
+          "arguments": {
+            "host": "desktop",
+            "job_id": "1a1acd0d62d-fc05-571a"
+          }
+        }
+      },
+      "operation_id": "adee2e6e109ac8658551ba16f477242c00fa709eb0a7412907348d26345a88df",
+      "complete": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "adee2e6e109ac8658551ba16f477242c00fa709eb0a7412907348d26345a88df",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "process_status"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 912,
+          "external_tree": "31f854c6d08adb0effa0cb5e654deae092e86203"
+        }
+      ],
+      "original_admission_error": false
+    },
+    {
+      "name": "streams0",
+      "request": {
+        "idempotency_key": "ha-4e808-source-import-streams0-r1-20261105",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "desktop",
+            "job_id": "1a1acd0d62d-fc05-571a",
+            "limit": 16384,
+            "stdout_offset": 0,
+            "stderr_offset": 0
+          }
+        }
+      },
+      "operation_id": "793502535d8d0dff84266579ca85bf8714604824ee8d88edfd353ffbdc4fad3c",
+      "complete": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "793502535d8d0dff84266579ca85bf8714604824ee8d88edfd353ffbdc4fad3c",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "process_read"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 8192,
+          "external_tree": "ece844af84d2264a653b3448d993b25c35061edc"
+        },
+        {
+          "offset": 8192,
+          "bytes": 8192,
+          "external_tree": "ab769766e7451b5a498322b4d2934cf8e8db7509"
+        },
+        {
+          "offset": 16384,
+          "bytes": 8192,
+          "external_tree": "efe7e7a9bdad1d9dc3fe8ca7bd34d2f844276fe8"
+        },
+        {
+          "offset": 24576,
+          "bytes": 8192,
+          "external_tree": "3e036f73179dce9d15236c39e34a761d72f4058a"
+        },
+        {
+          "offset": 32768,
+          "bytes": 8192,
+          "external_tree": "254a223e6a54da01025573b35acc912833144e1f"
+        },
+        {
+          "offset": 40960,
+          "bytes": 8192,
+          "external_tree": "0ff19896f2b32c3ec0fe97ca1f8f4b0b888b5d19"
+        },
+        {
+          "offset": 49152,
+          "bytes": 4585,
+          "external_tree": "c9648904d290777902143d5ccf14241c3fe64f26"
+        }
+      ],
+      "original_admission_error": false
+    },
+    {
+      "name": "core_info",
+      "request": {
+        "idempotency_key": "ha-4e808-source-import-core-info-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/result.public.json"
+          }
+        }
+      },
+      "operation_id": "5719c5c5558070442139cb6a27b02a09cdfcf5ec756cb42d19662d65baa6bfa6",
+      "complete": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "5719c5c5558070442139cb6a27b02a09cdfcf5ec756cb42d19662d65baa6bfa6",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "file_info"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 621,
+          "external_tree": "8735c7b3ec17f881664f2f653f087195e5e1e807",
+          "recovery_observation": true
+        }
+      ],
+      "original_admission_error": false
+    },
+    {
+      "name": "streams1",
+      "request": {
+        "idempotency_key": "ha-4e808-source-import-streams1-r1-20261105",
+        "operation": {
+          "tool": "process_read",
+          "arguments": {
+            "host": "desktop",
+            "job_id": "1a1acd0d62d-fc05-571a",
+            "limit": 16384,
+            "stdout_offset": 0,
+            "stderr_offset": 16384
+          }
+        }
+      },
+      "operation_id": "ed8afb5cbe8a29243c22d730bd5604d7c9afb4604f30c70b2a0fcfeb00411219",
+      "complete": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "ed8afb5cbe8a29243c22d730bd5604d7c9afb4604f30c70b2a0fcfeb00411219",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "process_read"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 8192,
+          "external_tree": "355a585c1bf960c34dba7561354037600f8fba3e"
+        },
+        {
+          "offset": 8192,
+          "bytes": 8192,
+          "external_tree": "44472d3872354df06ad7138d345ba14b80d9c3f4"
+        },
+        {
+          "offset": 16384,
+          "bytes": 8192,
+          "external_tree": "2562833ae88282535d0a0be5bd4fc799ede2c260"
+        },
+        {
+          "offset": 24576,
+          "bytes": 8192,
+          "external_tree": "4c13c6fb8316a44f95c3cbe589955c4e2c97796a"
+        },
+        {
+          "offset": 32768,
+          "bytes": 6802,
+          "external_tree": "73d2b59d56f00a752b5770ff9e867d12d6f48929"
+        }
+      ],
+      "original_admission_error": true
+    },
+    {
+      "name": "core_body",
+      "request": {
+        "idempotency_key": "ha-4e808-source-import-core-body-r1-20261105",
+        "operation": {
+          "tool": "binary_read",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/result.public.json",
+            "offset": 0,
+            "limit": 65536,
+            "expected_version": "2050:7401916:36163:1793900780972649325:1793900780972649325"
+          }
+        }
+      },
+      "operation_id": "0b71e3745aeb0241f5130932c001bf8bc820eab18d43fd95c048baae00f9f438",
+      "complete": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "0b71e3745aeb0241f5130932c001bf8bc820eab18d43fd95c048baae00f9f438",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "binary_read"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 8192,
+          "external_tree": "e78589c63a6e7b633f0b75aaa9edddb7eda2096c"
+        },
+        {
+          "offset": 8192,
+          "bytes": 8192,
+          "external_tree": "0b0f21a9f3e890af2d1f02f3e96edab872e50ffc"
+        },
+        {
+          "offset": 16384,
+          "bytes": 8192,
+          "external_tree": "cc5790c380a35cb5871253300ec3482a3727e97f"
+        },
+        {
+          "offset": 24576,
+          "bytes": 8192,
+          "external_tree": "5ea39bed1cf302b1a11d51d826147e8f76a8983d"
+        },
+        {
+          "offset": 32768,
+          "bytes": 8192,
+          "external_tree": "010ee50dc25f750ba1288e10105fa2f3b5ec31b2"
+        },
+        {
+          "offset": 40960,
+          "bytes": 7717,
+          "external_tree": "e5b20ea6d2ce994cec245fd1715859cda123bad1"
+        }
+      ],
+      "original_admission_error": false
+    },
+    {
+      "name": "commandlogs1",
+      "request": {
+        "idempotency_key": "ha-4e808-source-import-commandlogs-01-r1-20261105",
+        "operation": {
+          "tool": "read_multiple_files",
+          "arguments": {
+            "host": "desktop",
+            "paths": [
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/importer.py",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/intent.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/000-standalone-clone.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/000-standalone-clone.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/000-standalone-clone.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/001-bundle-verify.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/001-bundle-verify.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/001-bundle-verify.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/002-bundle-heads.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/002-bundle-heads.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/002-bundle-heads.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/003-canonical-checkout.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/003-canonical-checkout.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/003-canonical-checkout.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/004-remove-local-origin.public.json"
+            ],
+            "max_file_bytes": 65536,
+            "max_response_bytes": 131072
+          }
+        }
+      },
+      "operation_id": "920f6a80051c19da978c785219e0ea603f41e3b2f15411e707e44156d7019859",
+      "complete": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "920f6a80051c19da978c785219e0ea603f41e3b2f15411e707e44156d7019859",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "read_multiple_files"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 8192,
+          "external_tree": "6b7510935afcf6cdde3c9a256c817ef29d3a9422"
+        },
+        {
+          "offset": 8192,
+          "bytes": 8192,
+          "external_tree": "90a2bebd149a681b5a569b63605cd53cad2fd87a"
+        },
+        {
+          "offset": 16384,
+          "bytes": 8192,
+          "external_tree": "310c08b4c7d0de69317403a3643817102cc637ef"
+        },
+        {
+          "offset": 24576,
+          "bytes": 8192,
+          "external_tree": "c021db54082c353751d1cb3e891c757c6327dcd2"
+        },
+        {
+          "offset": 32768,
+          "bytes": 8192,
+          "external_tree": "4678832ba2b8cf5f23acdbffa46f48a5a5e95489"
+        },
+        {
+          "offset": 40960,
+          "bytes": 8192,
+          "external_tree": "b4ae22b1cf6b630eec7f29f62c86c711a62aa8e8"
+        },
+        {
+          "offset": 49152,
+          "bytes": 4295,
+          "external_tree": "213aa150fd7275a088554da3a14d3a1864eeaf20"
+        }
+      ],
+      "original_admission_error": false
+    },
+    {
+      "name": "commandlogs2",
+      "request": {
+        "idempotency_key": "ha-4e808-source-import-commandlogs-02-r1-20261105",
+        "operation": {
+          "tool": "read_multiple_files",
+          "arguments": {
+            "host": "desktop",
+            "paths": [
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/004-remove-local-origin.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/004-remove-local-origin.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/005-canonical-kind.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/005-canonical-kind.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/005-canonical-kind.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/006-canonical-tree.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/006-canonical-tree.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/006-canonical-tree.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/007-canonical-parents.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/007-canonical-parents.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/007-canonical-parents.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/008-canonical-count.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/008-canonical-count.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/008-canonical-count.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/009-canonical-roots.public.json"
+            ],
+            "max_file_bytes": 65536,
+            "max_response_bytes": 131072
+          }
+        }
+      },
+      "operation_id": "03c5b38ed78e5f813bc7a19d400c0192ec7bda138be682ee2e822722d70c13c0",
+      "complete": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "03c5b38ed78e5f813bc7a19d400c0192ec7bda138be682ee2e822722d70c13c0",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "read_multiple_files"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 8192,
+          "external_tree": "31c3d719f19ef4533e358f522634c12bfc52f192"
+        },
+        {
+          "offset": 8192,
+          "bytes": 3958,
+          "external_tree": "b2e0750a4127129bc8ec3b668c5ddd3a1871bf62"
+        }
+      ],
+      "original_admission_error": false
+    },
+    {
+      "name": "commandlogs3",
+      "request": {
+        "idempotency_key": "ha-4e808-source-import-commandlogs-03-r1-20261105",
+        "operation": {
+          "tool": "read_multiple_files",
+          "arguments": {
+            "host": "desktop",
+            "paths": [
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/009-canonical-roots.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/009-canonical-roots.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/010-canonical-full-fsck.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/010-canonical-full-fsck.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/010-canonical-full-fsck.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/011-materialized-tree.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/011-materialized-tree.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/012-materialized-index.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/012-materialized-index.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/013-no-sparse-config.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/013-no-sparse-config.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/013-no-sparse-config.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/014-source-after-head.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/014-source-after-head.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/014-source-after-head.stderr"
+            ],
+            "max_file_bytes": 65536,
+            "max_response_bytes": 131072
+          }
+        }
+      },
+      "operation_id": "73b13cbbe33cf212fe58efb35a0c7e84e5155518c01d3b3793bb7aea5384d08f",
+      "complete": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "73b13cbbe33cf212fe58efb35a0c7e84e5155518c01d3b3793bb7aea5384d08f",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "read_multiple_files"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 8192,
+          "external_tree": "7e7e1eca8365942fc9aac47580791260b0aaeec8"
+        },
+        {
+          "offset": 8192,
+          "bytes": 4068,
+          "external_tree": "6578fd2db81f55307c01f6143aebabd49f2fe7be"
+        }
+      ],
+      "original_admission_error": true
+    },
+    {
+      "name": "commandlogs4",
+      "request": {
+        "idempotency_key": "ha-4e808-source-import-commandlogs-04-r1-20261105",
+        "operation": {
+          "tool": "read_multiple_files",
+          "arguments": {
+            "host": "desktop",
+            "paths": [
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/015-source-after-tree.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/015-source-after-tree.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/015-source-after-tree.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/016-source-after-status.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/016-source-after-status.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/016-source-after-status.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/017-source-after-git-dir.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/017-source-after-git-dir.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/017-source-after-git-dir.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/018-source-after-common-dir.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/018-source-after-common-dir.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/018-source-after-common-dir.stderr",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/019-source-after-shallow.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/019-source-after-shallow.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/019-source-after-shallow.stderr"
+            ],
+            "max_file_bytes": 65536,
+            "max_response_bytes": 131072
+          }
+        }
+      },
+      "operation_id": "9af4422fa6f71fa03e6ce3bffb73910c23d09f4ac6bd2f00a79e515a038fac5d",
+      "complete": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "9af4422fa6f71fa03e6ce3bffb73910c23d09f4ac6bd2f00a79e515a038fac5d",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "read_multiple_files"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 8192,
+          "external_tree": "75a8c5b29ddf1f5e7564ed34cb5a3226b0e3d367"
+        },
+        {
+          "offset": 8192,
+          "bytes": 3907,
+          "external_tree": "cc3b7249a527e84620939bc2c235c2f6556a152e"
+        }
+      ],
+      "original_admission_error": false
+    },
+    {
+      "name": "commandlogs5",
+      "request": {
+        "idempotency_key": "ha-4e808-source-import-commandlogs-05-r1-20261105",
+        "operation": {
+          "tool": "read_multiple_files",
+          "arguments": {
+            "host": "desktop",
+            "paths": [
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/020-source-after-partial-config.public.json",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/020-source-after-partial-config.stdout",
+              "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/020-source-after-partial-config.stderr"
+            ],
+            "max_file_bytes": 65536,
+            "max_response_bytes": 131072
+          }
+        }
+      },
+      "operation_id": "e089f4ebc2efeb150f7fd80efaefe8af43701be8a0ba28c78785b17fb9eb6fd8",
+      "complete": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "e089f4ebc2efeb150f7fd80efaefe8af43701be8a0ba28c78785b17fb9eb6fd8",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "read_multiple_files"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 2686,
+          "external_tree": "32cbc9c80968d29fefa6d9b042ebf7d2de48d8c7"
+        }
+      ],
+      "original_admission_error": false
+    },
+    {
+      "name": "inventory0_info",
+      "request": {
+        "idempotency_key": "ha-4e808-source-import-inventory0-info-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/011-materialized-tree.stdout"
+          }
+        }
+      },
+      "operation_id": "7e7714738a054f7f865c13ac7a1d08dee0caf68ce376f41ef877f499401ca3ef",
+      "complete": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "7e7714738a054f7f865c13ac7a1d08dee0caf68ce376f41ef877f499401ca3ef",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "file_info"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 633,
+          "external_tree": "6a1cecf52680b20de1a721758c2e3bd84243f8d9"
+        }
+      ],
+      "original_admission_error": false
+    },
+    {
+      "name": "inventory1_info",
+      "request": {
+        "idempotency_key": "ha-4e808-source-import-inventory1-info-r1-20261105",
+        "operation": {
+          "tool": "file_info",
+          "arguments": {
+            "host": "desktop",
+            "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/012-materialized-index.stdout"
+          }
+        }
+      },
+      "operation_id": "f6fa294073f9b140d3b69001ae8d6c6949f67a8f8a3803178d71ebd6c0dda3e3",
+      "complete": true,
+      "closed_status": {
+        "async_state": "completed",
+        "audit_metadata_available": true,
+        "authenticated_chatgpt_caller_isolation": false,
+        "automatic_retry": false,
+        "cancellation_does_not_prove_remote_effect_stopped": true,
+        "credential_metadata_resume": true,
+        "cross_session_resume": true,
+        "delivery_proven": false,
+        "early_return_async_start_supported": true,
+        "execution_resume_after_restart": false,
+        "operation_id": "f6fa294073f9b140d3b69001ae8d6c6949f67a8f8a3803178d71ebd6c0dda3e3",
+        "original_payload_is_not_transport_delivery_proof": true,
+        "owned_future_active": false,
+        "ownership_scope": "authenticated_private_operator_credential",
+        "payload_available": true,
+        "remote_termination_confirmed": false,
+        "result_state": "stored_observed",
+        "retention_max_original_bytes": 1048576,
+        "session_scope": "authenticated_private_operator_credential",
+        "tool_name": "file_info"
+      },
+      "pages": [
+        {
+          "offset": 0,
+          "bytes": 634,
+          "external_tree": "46067b7eae3cfffb8711305c69ec3c25bc2ff480"
+        }
+      ],
+      "original_admission_error": false
+    }
+  ],
+  "returned_observer_count": 12,
+  "returned_observers_closed_full": true,
+  "first_tail_admission_without_ACK": "UNKNOWN_PRESERVED",
+  "reconciliation_reused": false,
+  "first_core_info_immutable_page_timeout": "PRESERVED; same ID/page explicitly recovered",
+  "original_command_evidence_complete": true,
+  "all_65_content_representations_complete": true,
+  "full_source_import_qualification": false,
+  "source_import_evidence_ready_for_root": true,
+  "native_small_file_reads_complete": 63,
+  "large_content_addressed_reuse": true,
+  "current_host_large_body_RPC_count": 0,
+  "first_smallbatch3_admission_without_ACK": "ORIGINAL_LOST_ACK_ERROR_PRESERVED",
+  "smallbatch3_reconciliation": {
+    "root_GO": {
+      "blob": "8854ac7521bd01af93fda983e84e933d6d56c118",
+      "bytes": 3617,
+      "sha256": "d6196120c97cfd478be71a3d0ba26f4519e51150bda35c9938c98a2488484622"
+    },
+    "reused": true,
+    "returned_operation_id": "73b13cbbe33cf212fe58efb35a0c7e84e5155518c01d3b3793bb7aea5384d08f",
+    "returned_ID_closed_full": true,
+    "prior_SDK_error_unchanged": true,
+    "no_inference_from_missing_ACK": true
+  },
+  "root_actual_review_pending": true,
+  "LAN_prepare_live_submitted": false,
+  "X230_submitted": false,
+  "tool_calls_inflight": 0
+}

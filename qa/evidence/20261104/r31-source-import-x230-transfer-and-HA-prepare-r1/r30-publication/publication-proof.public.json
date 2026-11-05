@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.checkpoint-publication-proof.r30.v1",
+  "status": "PUBLISHED_VERIFIED",
+  "commit": "cd57cb6709f6185295b1ea154415aab50d8c7a2f",
+  "tree": "221e858b27ba57d0521e620876fac151e2f93949",
+  "sole_parent": "5e401a44c1a2fee2a513a0f61d0c8c4386fac32c",
+  "branch": "codex/heptabao-validation-20261104",
+  "freeze": "2026-11-05T18:15:55Z",
+  "new_leaves": 543,
+  "prior_nondocument_leaves_preserved": 21128,
+  "updated_documents": 2,
+  "deleted_leaves": 0,
+  "total_leaves": 21673,
+  "packet_count": 20,
+  "packet_files": 482,
+  "packet_bytes": 3390530,
+  "packet_merkle_trees": 151,
+  "root_files_including_state_manifest": 61,
+  "conditional_CAS_expected_parent": true,
+  "forced": false,
+  "root_read_26_entries_exact": true,
+  "commit_graph_verified": true,
+  "branch_reread_exact": true,
+  "documents": [
+    {
+      "name": "r30-checkpoint.md",
+      "blob": "d27e5de2bb4065b1680b4407c85809bc7539f90d",
+      "bytes": 295573,
+      "sha256": "4970c1375af762017956263d2b1d1bc930670a5fa1db41d982cf7df9c5bbb492",
+      "path": "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+      "mode": "100644",
+      "previous_blob": "ca3f5bfada83716a8d3f3c133bdee551f7af5c90"
+    },
+    {
+      "name": "r30-checkpoint-index.public.json",
+      "blob": "ba23a377a930ea9867f39cbeee6f43ad7698fed4",
+      "bytes": 753968,
+      "sha256": "0878eef8e0616971be1a45e531df1b2984430a8e988da7b96c56db21f3239360",
+      "path": "qa/evidence/20261104/36076-checkpoint.public.json",
+      "mode": "100644",
+      "previous_blob": "bc2d9f6362cee738bd93d3e72a2ffd72f3440888"
+    }
+  ],
+  "root_Runtime_calls": 0,
+  "full_replacement_qualified": false,
+  "production_cutover": false,
+  "legacy_deleted": false
+}

@@ -1,3 +1,56 @@
+# R31：独立源码导入完整验收；X230 控制文件闭合；三机 HA 准备已启动
+
+冻结时间：**2026-11-05T19:02:41Z**。本节是当前结论；下方保留 R30 及更早全文。前一检查点为 [R30 `cd57cb6709f6185295b1ea154415aab50d8c7a2f`](https://github.com/TrillionniumFoundation/HeptaBao/commit/cd57cb6709f6185295b1ea154415aab50d8c7a2f)。
+
+**全量替代 OpenBao 2.7.1、生产切换、旧服务/二进制/资产清理、全部客户端和备份迁移，仍全部为 false。** 本轮关闭的是源码、控制文件和原始证据门槛，尚未把准备任务或传输任务算成产品运行资格。
+
+## 当前门槛
+
+| 门槛 | 已有完整证据 | 尚未完成 |
+|---|---|---|
+| KV2 正式迁移与恢复 | R29 已完成 Mac 当前 `4e808` 官方 2.7.1 full34 原 31 项：17×2MiB、19 版本、单次导出/导入、冷重启、HTTP 快照/恢复、删除/销毁/CAS及所有权进程停止 | 当前 X230 full34；多机和实际生产迁移 |
+| 当前源码供给 | Desktop 独立导入完整验收，3,763 提交、3,914 叶文件、完整 fsck、干净独立 Git 目录、原21命令和全部保存流 | X230 接收端的七文件独立身份、接收回执及原始命令闭合 |
+| HA | 已有9份现机源文件完整取证；本轮已唯一启动既有 prepare | 实际5输出及 prepared 全文资格；随后 Mac、ROG、Pocket4 原98项和分列12项真实断主/自然选主/ReadIndex/持久化/冷重启 |
+| AuthBus | 既有有限 catalog 与3个公共源正文闭合 | 既定3个依赖 metadata 尚未提交；实际同实例 owner/配置/隔离门槛及 AppRole、TLS、KV、Policy、续期、撤销 |
+| 客户端、备份、清理 | 既有历史记录继续保留 | 每台真实凭证读写、重启、回滚和所有备份路径完整迁移；没有清理授权 |
+
+## Desktop 独立源码导入已完整验收
+
+唯一任务仍为 `desktop/1a1acd0d62d-fc05-571a`，权威终态 **exit0/full/durable/confirmed**。实际耗时 **48.63311454304494 秒**，原总体300秒、clone90秒及 Git60秒均未变。独立回执完整 SHA-256 为 `484ebbd31e94213c526bbde8664a516658fbab48a273bace01396a6ca10adb72`。
+
+规范身份为 commit `4e808d0ecb1bcded22870a7ec960dfb2491cf6ec`、tree `eba5e650bd080b8ad41ea52a2bc68867f541d255`、唯一父 `1c66541993662f92cf717154e33717abedb2ea74`。3,763 次历史和3,914个实际 Git blob/index 项一致，源目录干净、无 shallow/partial/alternates。原21条命令均已回收且进程组为空；19条 exit0，另2条“配置不存在”探针依原合同 exit1。三个输入文件、四个输入目录和创建的源码目录均有正向 FD 关闭证明。
+
+[完整资格](../../qa/evidence/20261104/r31-source-import-x230-transfer-and-HA-prepare-r1/root/r31-desktop-current-source-import-complete-root-qualification.public.json)与[原始289文件包](../../qa/evidence/20261104/r31-source-import-x230-transfer-and-HA-prepare-r1/importer-complete289/STATE.public.json)按同一不可变回执绑定。最终65项内容中，**63项/61,389 B** 来自实际原生完整正文读取；两份 **889,176 B NUL清单**依据明确授权，从已核规范树完整重建，并绑定当前独立 file_info 的完整文件SHA、版本与九字段身份。两份大正文的 **current-host body RPC=0**；没有声称取回了现机正文。原14个大正文请求未提交，其他63项没有被替代。
+
+原始证据共 **12个已返回观察ID、36页**，全部 completed/stored/inactive。原core115中112个非汇总路径保持字节不变，3个汇总文件为后继版本，旧blob保留。Root独立 core91项、最终内容211项及 NUL metadata34项与独立原始链复核按分工合并；这些数据谓词均不是产品测试数量，也没有重复运行同一 peer verifier 来制造额外测试数。
+
+## X230：控制文件已验收；七文件 relay 只具备当前部分证据
+
+原 inert 任务 `desktop/1a1ace08ffa-fc05-576b` 的3份控制程序和回执均已完整取回，与已审源字节相等。10个原始观察ID、14页已闭合，root35项内容/身份语义与独立链复核通过。[完整 inert 资格](../../qa/evidence/20261104/r31-source-import-x230-transfer-and-HA-prepare-r1/root/r31-X230-inert-complete-root-qualification.public.json)只证明隔离发布和编译检查。
+
+随后按[原386B请求的 exact GO](../../qa/evidence/20261104/r31-source-import-x230-transfer-and-HA-prepare-r1/root/r31-X230-exact-seven-file-relay-GO.public.json)仅启动一次 `desktop/1a1ad0a9524-fc05-5839`。原ACK的 digest 和无损十进制 fingerprint 均吻合，权威结果 **exit0/full/durable/confirmed**，stdout368B、stderr0。计划仍是7份公共资产/132,647,913 B，加固定 X230 根目录内独立 Git 导入；没有产品、凭证、HTTP、编译或生产动作。
+
+本冻结只包含[ACK/权威终态有限复核](../../qa/evidence/20261104/r31-source-import-x230-transfer-and-HA-prepare-r1/root/r31-X230-relay-original-ACK-authority-root-review.public.json)及原件。接收端七项独立 metadata、接收回执完整正文、原命令保存流和完整观察链仍在闭合，**X230 源码导入资格和产品资格均未宣告完成**。旧 relay `desktop/1a1aa57458d-fc05-4156` 仍是 UNKNOWN；原三 held-FD fence 的有限稳定命名空间条件不等于连续原子保留或旧远端终止证明。
+
+## 三机 HA：仅启动既有 prepare
+
+Desktop 导入验收后，[exact prepare GO](../../qa/evidence/20261104/r31-source-import-x230-transfer-and-HA-prepare-r1/root/r31-existing-LAN-prepare-exact-GO.public.json)开放原请求 `483231efe2016a8bd72b8aa205fb589b13513f6e`。唯一返回任务为 `desktop/1a1ad1383c9-fc05-5863`，原5argv/key/360秒和原始无损请求身份一致；[ACK有限复核](../../qa/evidence/20261104/r31-source-import-x230-transfer-and-HA-prepare-r1/root/r31-existing-LAN-prepare-original-ACK-root-review.public.json)已封存。
+
+没有新增 launcher、控制层、路径或超时。既有 ROG/Mac 构建路径、10个产物哈希、5个QA源、36个旧证据 fence 和真实自然选主合同保持。冻结时5个实际输出/ prepared 完整SHA尚未独立验收，**live未提交、没有 live GO**。后续实际结果归入 R32，需在实际 prepared 全文闭合后使用原有 live 请求。
+
+## 原错误、范围及后续
+
+- Desktop 首次尾部观察失去ACK，获准同键对账返回 reused=false；首次观察的历史 UNKNOWN 保留。
+- 第3批小文件首次 START 错误保留；其同键获准对账实际 reused=true，对应原ID已完整关闭。它与前一事件使用相同通用错误文本，不代表同一个操作。
+- core-info 原结果页错误以及 X230 inert 原streams status错误、各自同ID恢复原件全部保留。
+- 新增纯 checker 的本地 schema修正和原版/失败记录保留。Root最终65 verifier 的 source_after字段投影在首次执行前按实际schema改正，未执行旧版，也未更改候选或原证据。
+- Auth下一步仍仅限源码中真实import指向的3条metadata；没有猜Google manifest、过滤候选、改模型/provider/refresh/quota或触碰J3160。
+- 完成准备/传输后继续原产品验证，再处理逐客户端凭证、重启、回滚和备份迁移；旧 OpenBao/HeptaBao 均未删除。
+
+本轮归档 **12 个完整包、609 个文件、5901788 B、221 个包内 Merkle对象**，另有 33 个根级原件/复核及 state/manifest。每个包和引用对象已 whole-byte、SHA-256、Git blob/Merkle核对；前一检查点全部非文档叶节点原样保留。仅2个历史总文档追加当前状态。原始64位整数从未通过浮点重序列化。
+
+---
+
 # HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
 
 ## 当前 R30：源码跨机运送已闭合；桌面导入与 X230 发布继续收证

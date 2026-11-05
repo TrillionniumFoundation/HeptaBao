@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.current4e808.importer-core-info.original-immutable-page-recovery.intent.v1",
+  "root_GO": "c5c343caee651e0025c1317fd81c6b615eac241d",
+  "request": {
+    "operation_id": "5719c5c5558070442139cb6a27b02a09cdfcf5ec756cb42d19662d65baa6bfa6",
+    "offset": 0,
+    "limit": 8192
+  },
+  "original_error_tree": "f245856be1cba4966b3026d923eec8a250753cdd",
+  "original_closed_status_tree": "7ec45530bdf45f36556807cb1a4a1a74830a5c64",
+  "once_only": true,
+  "new_operation_start": false,
+  "new_file_info": false,
+  "product_replay": false,
+  "previous_tail_lost_ACK_future": "UNKNOWN_PRESERVED"
+}

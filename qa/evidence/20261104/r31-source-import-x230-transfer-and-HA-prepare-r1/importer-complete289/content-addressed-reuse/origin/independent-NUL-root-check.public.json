@@ -1,0 +1,10 @@
+{
+  "tracked_files": 3914,
+  "index_files": 3914,
+  "all_index_stage_zero": true,
+  "tree_equals_index": true,
+  "rebuilt_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "expected_tree": "eba5e650bd080b8ad41ea52a2bc68867f541d255",
+  "merkle_trees": 358,
+  "passed": true
+}

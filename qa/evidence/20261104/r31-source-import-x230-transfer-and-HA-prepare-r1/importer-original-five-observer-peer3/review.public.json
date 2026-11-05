@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.importer-core115-original-observer-peer.r1",
+  "reviewer": "/root/authbus_migration",
+  "verdict": "PASS_ORIGINAL_OBSERVATION_CHAIN_ONLY_NO_NEW_BLOCKER",
+  "input_packet": "4c144a705c7278f1b3b0d364e3be9d6b30b546e2",
+  "input_scope": {
+    "files": 115,
+    "bytes": 886981,
+    "git_tree_objects": 58,
+    "returned_observers": 5,
+    "successful_immutable_pages": 20
+  },
+  "verifier": {
+    "blob": "164dd8f0f6aee353fb9e75c22f77aa630aaebf7f",
+    "bytes": 23469,
+    "sha256": "05b365ce2b593830f5ab66c647d0aa107fc201f613c0e2b4fdb1c24e2a83f419"
+  },
+  "actual_result": {
+    "blob": "641955a9ec8cd980691cb78cd69b4b1c0bac09ac",
+    "bytes": 42569,
+    "sha256": "1964a6cbfc06b884adf1884306fd4250d5129b4fe872663e7fdc3a6182ee3454"
+  },
+  "interface": {
+    "function": "verifyImporterOriginalObservers(files, tree, sha1, sha256)",
+    "files": "Plain map from every original packet path to its exact UTF-8 text, including preserved error SDKs; no normalized JSON may replace the original text.",
+    "tree": "Untruncated recursive Git tree JSON for the exact input_packet above.",
+    "sha1": "Pure function of a binary byte string, returning lowercase 40-hex SHA-1.",
+    "sha256": "Pure function of a binary byte string, returning lowercase 64-hex SHA-256.",
+    "output": "Throws on a failed predicate; otherwise returns the full finite check result, exact observer/page paths and 115 original input path/bytes/SHA256/Git-ID records.",
+    "execution": "The exact saved function was evaluated once against the 115 fetched original strings and recursive tree in V8. It made no tool or filesystem calls.",
+    "predicate_count_note": "2186 successful predicate evaluations include repeated path, JSON, Base64 and byte-integrity checks. This is not 2186 independent test cases or product tests."
+  },
+  "findings": [],
+  "verified": [
+    "All 115 original files match their Git IDs and sizes; the 114-entry manifest and all 58 Merkle trees are reconstructed exactly.",
+    "The original execution intent/request and ACK identify desktop job 1a1acd0d62d-fc05-571a. The request fingerprint is compared as an original decimal token, not a rounded JavaScript Number.",
+    "Each returned observer has its exact saved intent/request, successful raw SDK ACK, matching operation ID, completed/stored_observed status and owned_future_active=false. SDK isError is checked before parsing successful payload text.",
+    "The 20 successful immutable pages are contiguous with exact offsets/limits, consistent total/result SHA, strict Base64, next_offset and EOF. Each assembled byte string equals its saved original-payload, and its content text equals the saved native result exactly.",
+    "Native stdout is empty in both stream observations. Stderr hex and UTF-8 text agree; offsets 0→16384→28576 yield the complete saved 28576-byte terminal stderr. Original authority reports exit 0, full and durable output, no timeout/truncation/log error.",
+    "The independently observed core-info path/size/SHA/owner/mode/link count and raw version bind the exact binary_read request. Its complete 36163 bytes equal saved core575f3ef5 and SHA484ebbd3.",
+    "Terminal versus core is compared without rounding JSON number tokens: all core top-level values match after removing only insignificant JSON whitespace; terminal has exactly the two additional publication fields receipt and publication_within_original_deadline. Their path/size/SHA binding is checked."
+  ],
+  "preserved_errors": {
+    "streams1_original_start": {
+      "path": "observers/streams1/start/original-sdk.json",
+      "blob": "f181c1e93e7b64c402b332fd29b23d0141762082",
+      "bytes": 247,
+      "root_reconciliation_GO": "86c17bb7cab6fbf5e45ec1475759fb283e86d204",
+      "returned_reconciliation_reused": false,
+      "returned_operation_id": "ed8afb5cbe8a29243c22d730bd5604d7c9afb4604f30c70b2a0fcfeb00411219",
+      "returned_operation_closed_full": true,
+      "first_lost_ACK_future": "UNKNOWN_PRESERVED"
+    },
+    "core_info_original_page0": {
+      "path": "observers/core_info/result-0/original-sdk.json",
+      "blob": "923d6b0480a7a2c63d80ec91ffbc84d0dc6a4011",
+      "bytes": 248,
+      "root_page_recovery_GO": "c5c343caee651e0025c1317fd81c6b615eac241d",
+      "same_original_id": "5719c5c5558070442139cb6a27b02a09cdfcf5ec756cb42d19662d65baa6bfa6",
+      "same_offset": 0,
+      "same_limit": 8192,
+      "new_file_info": false,
+      "new_operation_start": false
+    }
+  },
+  "limits": [
+    "The 5 returned observers are closed; the first streams1 admission without an ACK remains a separate UNKNOWN future. No old future is declared terminated.",
+    "Stored exact intents and request/ACK linkage are verified. Git object existence alone has no wall-clock timestamp and cannot independently prove historical persistence-before-call ordering.",
+    "The full 21-command raw archive, core execution semantics, input-file custody and FD/cleanup qualification are the parent's separate review; this peer does not assert full source-import qualification.",
+    "No Runtime request, SDK import, fixture, product test, candidate execution, original-file mutation or business replay occurred."
+  ]
+}

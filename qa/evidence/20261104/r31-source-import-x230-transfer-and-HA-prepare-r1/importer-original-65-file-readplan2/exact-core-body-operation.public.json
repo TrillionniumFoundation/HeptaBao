@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "ha-4e808-source-import-core-body-r1-20261105",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-same-root-publication-source-import-r1/control/result.public.json",
+      "offset": 0,
+      "limit": 65536,
+      "expected_version": "2050:7401916:36163:1793900780972649325:1793900780972649325"
+    }
+  }
+}

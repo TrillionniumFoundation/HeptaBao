@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.authbus.peer.importer-full289.incremental-review.v1",
+  "status": "PASS_FINITE_ORIGINAL_CHAIN_INCREMENT",
+  "scope": "Pure Git/V8 review of five added smallbatch observation chains and their 63 content extractions, joined to previously verified core115 and root-verified two NUL metadata observations. No importer command semantics or product qualification.",
+  "subject": {
+    "tree": "52f3258ff47319da11db9c6f586687ab31b1fc99",
+    "files": 289,
+    "bytes": 2556370,
+    "Merkle_trees": 110,
+    "all_whole_readback": true
+  },
+  "execution": {
+    "verifier": {
+      "blob": "060990ecdac70164e1cb9527629ab694e45ccc3f",
+      "bytes": 27482,
+      "sha256": "f3b6696e33720e803f8e45082cb999f34de2e94c90c0b4e2beb4ac66b1154838"
+    },
+    "result": {
+      "blob": "8fb9e0fb28e2109f091ce9d7b94d6d2453f306aa",
+      "bytes": 77286,
+      "sha256": "f3a72caad92e27a37beb12d42d4f804555d44d362fdb4c706b721c889be8a58b"
+    },
+    "actual_pure_predicate_evaluations": 4957,
+    "failed": 0,
+    "product_test_cases": 0,
+    "Runtime_calls": 0,
+    "SDK_executions": 0,
+    "candidate_executions": 0,
+    "host_reads": 0
+  },
+  "interface": {
+    "function": "verifyImporterIncrement(files, tree, oldTree, oldResultRaw, currentNulInfoReviewRaw, nulReconstructionReviewRaw, sha1, sha256)",
+    "files": "Map of all 289 exact repository-relative paths to original raw UTF-8 strings from subject tree; never JSON-reserialize raw SDK or payload files.",
+    "tree": "Complete recursive Git tree JSON for 52f3258ff47319da11db9c6f586687ab31b1fc99, truncated=false.",
+    "oldTree": "Complete recursive Git tree JSON for 4c144a705c7278f1b3b0d364e3be9d6b30b546e2, truncated=false.",
+    "oldResultRaw": {
+      "blob": "641955a9ec8cd980691cb78cd69b4b1c0bac09ac",
+      "bytes": 42569,
+      "sha256": "1964a6cbfc06b884adf1884306fd4250d5129b4fe872663e7fdc3a6182ee3454"
+    },
+    "currentNulInfoReviewRaw": {
+      "blob": "f78b31c2d625c00256e92cfea22f923ab42aeb09",
+      "bytes": 4652,
+      "sha256": "3817cf9a2fe108484c638e1b022c808be33d0c67ecf70eda23126a833d26f4c2"
+    },
+    "nulReconstructionReviewRaw": {
+      "blob": "9bfb8c03027d17a8b87838a5b7c4fffba3df65bf",
+      "bytes": 1646,
+      "sha256": "38d75597f4ca4a0d7e1c36a66e83c45d20fc3712e5695b4f8e65f0b1dcfdde1e"
+    },
+    "hashes": "sha1(binaryByteString) and sha256(binaryByteString) return lowercase hex. Verifier has no tool, filesystem, network, module import or process access.",
+    "original_paths": "Every used original path is listed in result.original_paths_used; five new chains additionally enumerate exact request/intent/ACK/status/page/payload/native paths and 63 artifact-source links.",
+    "reused_helpers": "oneText, sdk, timeout, fromHex, base64 and Git Merkle verifier are byte-identical to the prior X230 raw-chain verifier 63708805a6a442528861525d8bf40a56ad000188."
+  },
+  "conclusions": [
+    "Full subject tree independently reconstructed: 289 leaves, 2,556,370 bytes and 110 Merkle objects. All 288 manifest entries match whole bytes, SHA256 and Git blob identity.",
+    "Old core115 contains 112 unchanged original same-path blobs. MANIFEST.public.json, STATE.public.json and README.md are aggregate successors; their old blobs remain in immutable core115. No claim that all 115 paths stayed byte-identical.",
+    "Each of five new read_multiple_files requests exactly matches its original plan/intent and fixed key; batches are 15/15/15/15/3. ACK, same-ID completed/stored/inactive status and all 14 immutable pages reconstruct the original SDK payload and exact native text.",
+    "All 63 returned file texts, totaling 61,389 bytes, match native EOF/size/SHA/version, planned ordered path, saved artifact and extraction-map provenance. The snapshots are independent files, not one atomic snapshot. Command-record meaning is outside this review.",
+    "smallbatch3 retains the initial operation_start timeout. Root 8854ac7521bd01af93fda983e84e933d6d56c118 authorized the same typed key/request; recovered ACK reused=true identifies 73b13cbbe33cf212fe58efb35a0c7e84e5155518c01d3b3793bb7aea5384d08f, which is subsequently closed/full. It is distinct from the old streams1 reused=false reconciliation whose initial lost-ACK future remains UNKNOWN.",
+    "Two NUL representations remain canonical Git reconstruction bytes, explicitly authorized by f7eda3b5696e478342b58999871788d009fef97a after root's two current metadata chains. Current host large-body RPC count is 0. They are not counted among the 63 actual native body reads.",
+    "Five previously verified core chains/20 pages + five new chains/14 pages + two root-verified info chains/2 pages = 12 unique returned observers/36 complete immutable pages. Prior error SDKs are unchanged.",
+    "Full importer source/21-command/FD/current-input qualification remains root's independent scope. This peer grants no Runtime, business replay or product qualification."
+  ],
+  "limits": [
+    "Reuse of prior five-chain result and root's 34 NUL metadata checks is explicit; those checks were not re-executed here.",
+    "Stored intents and SDK linkage do not independently prove wall-clock save-before-call chronology.",
+    "A shared generic timeout blob is not event identity: smallbatch3 and old streams1 are distinguished by their exact typed requests, keys and paths.",
+    "The inherited core-info page timeout and same-ID recovery remain unchanged; no old UNKNOWN was converted into a known terminal by this review."
+  ],
+  "preserved_checker_history": {
+    "initial_verifier": {
+      "blob": "1ae410b29db2595d3ce3bfd79d2693e85c0f9372",
+      "bytes": 27409,
+      "sha256": "dbda3797d468509b50e0137b192aca7cd692327f64fa1d58e08301613ccf4571"
+    },
+    "initial_failure": {
+      "blob": "5da50ffa9594adc3081bd4d0d60de336507b45ee",
+      "bytes": 689,
+      "sha256": "271152644177381d55bef6b411df73294b62757f1ee285813f5703466809cead"
+    },
+    "correction": {
+      "blob": "69bb451c69f6ba5c31eb3d9a605ff2c91839d8a6",
+      "bytes": 1511,
+      "sha256": "b3ffb12056132ef4ed86956cdf8b7fdf4752c8c8161d2272ba0bcda03caf532d"
+    },
+    "explanation": "Initial checker incorrectly required plan-predeclared size/SHA on intent and command-record rows. The original plan does not contain those fields on such rows. Correction only makes comparison to those optional pre-pins conditional; actual returned text/hash/size/version/extraction checks remain mandatory. Initial source/error and exact correction are preserved. No original evidence or candidate changed."
+  }
+}
