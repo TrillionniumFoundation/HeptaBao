@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.cold-h2-normal-full-evidence-assessment.v1",
+  "host": "rog",
+  "job_id": "1a1a9f65382-fc05-3a6c",
+  "canonical_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "canonical_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "status": "PASS_NORMAL_RELEASE_AND_SELECTED_44_PLUS_7_PLUS_9",
+  "authority": {
+    "exit_code": 0,
+    "complete": true,
+    "durable": true,
+    "timed_out": false
+  },
+  "original_44": 44,
+  "extra_ingress_observer": 7,
+  "extra_cold_h2": 9,
+  "total_actual_unique": 60,
+  "failed": 0,
+  "ignored": 0,
+  "measured": 0,
+  "actual_runtime_stdout_groups": 22,
+  "actual_listing_stdout_groups": 22,
+  "command_records": 46,
+  "raw_streams": 92,
+  "all_record_and_stream_whole_hashes_verified": true,
+  "all_command_records_match_cleanup_pid_and_label": true,
+  "all_owned_reaped_and_groups_empty": true,
+  "cargo_json_events": {
+    "normal_release": 445,
+    "libtest": 443
+  },
+  "large_streams": {
+    "count": 2,
+    "version_pinned_chunks": 12,
+    "whole_sha_verified": true
+  },
+  "original_outer_seconds": 12000,
+  "release_seconds": 1333.7623211960017,
+  "release_cap_seconds": 1800,
+  "libtest_seconds": 1154.9300525260041,
+  "libtest_cap_seconds": 3600,
+  "extra_ingress_elapsed_seconds": 0.6218825379910413,
+  "extra_cold_h2_elapsed_seconds": 1.0611601200071163,
+  "extra_caps_seconds": 600,
+  "source_and_artifacts_unchanged": true,
+  "cache_condition": "fresh isolated target-normal-r3; prior missing-cache early failure preserved, no inherited cache-performance qualification",
+  "production_changed": false,
+  "lan_or_consumer_qualification": false,
+  "workspace_or_ci_qualification": false,
+  "scope": "Normal default-feature native Linux artifacts and these exact 60 selected libtests only. No substitution by later c133/e69 source; no old fixture replay.",
+  "source_evidence_tree": "c0b2060ef92f22fb3f7f5fda70c04bcf715dc440"
+}

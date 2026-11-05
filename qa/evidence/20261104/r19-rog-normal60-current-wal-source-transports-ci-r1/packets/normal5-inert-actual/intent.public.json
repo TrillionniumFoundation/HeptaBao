@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.df026-normal5-inert-once-intent.v1",
+  "request_blob": "6a7eb9d90d77d32e3c53e7b28044101b33ff1d2f",
+  "request_bytes": 49878,
+  "request_sha256": "e5800f9a8f9c124f70843d48877dc55dc69dad0cde96ea284e7b86ed54aeb7f0",
+  "root_admission_blob": "ac495164ca1a0849375f3d8d3f84359d0e3a4092",
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "idempotency_key": "heptabao-df026-normal5-controls-inert-r1-adc1bd36",
+  "timeout_seconds": 60,
+  "source_sha256": "adc1bd362b326378f1dc8d8804c846744108f3507c0811beef38753fe50e846a",
+  "stdin_sha256": "a6e0bac04282bc7a12a6df733606b0c3b8845309d459e058ebab094e9cc8bb94",
+  "effect": "Create-only three public normal5 transport controls, compile syntax only; no SSH/artifact relay/Cargo/service.",
+  "relay_authorized": false,
+  "unknown_no_replay": true
+}

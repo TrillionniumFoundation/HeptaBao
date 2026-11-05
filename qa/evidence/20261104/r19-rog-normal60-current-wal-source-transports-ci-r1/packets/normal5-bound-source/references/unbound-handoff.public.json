@@ -1,0 +1,168 @@
+{
+  "schema": "heptabao.df026.normal-five-unbound-handoff.v1",
+  "source_only": true,
+  "owner": "ha_validation",
+  "actual_input_versions": false,
+  "no_admission": true,
+  "files": [
+    {
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server",
+      "name": "heptabao-server",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 320,
+      "target_mode": 320,
+      "version": null
+    },
+    {
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/native-build.public.json",
+      "name": "native-build.public.json",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/normal-release-result.public.json",
+      "name": "normal-release-result.public.json",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json",
+      "name": "normal-release-tests-result.public.json",
+      "bytes": null,
+      "sha256": null,
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    },
+    {
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/normal-test-groups.public.json",
+      "name": "groups.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": null
+    }
+  ],
+  "source_metas": [
+    {
+      "path": "candidate/sender.py",
+      "bytes": 6990,
+      "sha256": "0523130a335562cd1401752a7480134bd64ea1602026c657277888fe0f41cdca",
+      "blob": "3b59c5413a6b79d59cadb6af01c00beb5b145627"
+    },
+    {
+      "path": "candidate/receiver.py",
+      "bytes": 8512,
+      "sha256": "f87bd71c1303fd7a9a43e34f3cd601816ef57e5bc1d55c26238f7b01656e099e",
+      "blob": "db66cdb16cc347e7f5396b4b6c432d44d596e2a2"
+    },
+    {
+      "path": "candidate/relay.py",
+      "bytes": 16079,
+      "sha256": "68117ad6a27fff80cba4af2895fa64b2ae7dc5117ba9254df2e4d50552ccdf53",
+      "blob": "4c01b8ed4479da712f094adef75c4b16787f6418"
+    }
+  ],
+  "notes": [
+    "The scripts reject ready=false before opening target files.",
+    "All bytes/SHA/version fields except inherited groups public pins remain unresolved; bind from exact actual normal60/file_info, not summary.",
+    "The receiver preserves original three-product provenance checks; extra raw combined/groups are byte-carried. Full 44+7+9 gates remain independent.",
+    "Source modes are proposed 0500 executable/0600 raw files, must agree with actual read-only observations; target 0500/0400."
+  ],
+  "edits": {
+    "sender": [
+      [
+        "os.umask(0o077)",
+        "ACTUAL_INPUTS_READY=False\nif not ACTUAL_INPUTS_READY:\n raise RuntimeError('unresolved exact normal artifact transport input metadata')\nos.umask(0o077)"
+      ],
+      [
+        "HEAD='3cb873919170cc77101b27f6a3ab9e98f41f8d93'",
+        "HEAD='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'"
+      ],
+      [
+        "TREE='7f4d48a647a81ca96e8a24a0a057c2c829459060'",
+        "TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'"
+      ],
+      [
+        "FILES=[\n {\n  \"path\": \"/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-server\",\n  \"name\": \"heptabao-server\",\n  \"bytes\": 109074848,\n  \"sha256\": \"437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0\",\n  \"source_mode\": 320,\n  \"target_mode\": 320,\n  \"version\": \"66306:28096634:109074848:1793832489924040522:1793832490062039381\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/native-build.public.json\",\n  \"name\": \"native-build.public.json\",\n  \"bytes\": 794,\n  \"sha256\": \"51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:28096637:794:1793832490491671044:1793832490491671044\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/normal-release-result.public.json\",\n  \"name\": \"normal-release-result.public.json\",\n  \"bytes\": 3200,\n  \"sha256\": \"6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:28096636:3200:1793832490490761645:1793832490490761645\"\n }\n]",
+        "FILES=[\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server\",\n  \"name\": \"heptabao-server\",\n  \"bytes\": None,\n  \"sha256\": None,\n  \"source_mode\": 320,\n  \"target_mode\": 320,\n  \"version\": None\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/native-build.public.json\",\n  \"name\": \"native-build.public.json\",\n  \"bytes\": None,\n  \"sha256\": None,\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/normal-release-result.public.json\",\n  \"name\": \"normal-release-result.public.json\",\n  \"bytes\": None,\n  \"sha256\": None,\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json\",\n  \"name\": \"normal-release-tests-result.public.json\",\n  \"bytes\": None,\n  \"sha256\": None,\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/normal-test-groups.public.json\",\n  \"name\": \"groups.json\",\n  \"bytes\": 6249,\n  \"sha256\": \"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n }\n]"
+      ],
+      [
+        "heptabao.phaseb3cb.fixed-public-artifacts-endpoint.v1",
+        "heptabao.df026.fixed-public-normal-endpoint.v1"
+      ]
+    ],
+    "receiver": [
+      [
+        "os.umask(0o077)",
+        "ACTUAL_INPUTS_READY=False\nif not ACTUAL_INPUTS_READY:\n raise RuntimeError('unresolved exact normal artifact transport input metadata')\nos.umask(0o077)"
+      ],
+      [
+        "HEAD='3cb873919170cc77101b27f6a3ab9e98f41f8d93'",
+        "HEAD='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'"
+      ],
+      [
+        "TREE='7f4d48a647a81ca96e8a24a0a057c2c829459060'",
+        "TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'"
+      ],
+      [
+        "FILES=[\n {\n  \"path\": \"/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-server\",\n  \"name\": \"heptabao-server\",\n  \"bytes\": 109074848,\n  \"sha256\": \"437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0\",\n  \"source_mode\": 320,\n  \"target_mode\": 320,\n  \"version\": \"66306:28096634:109074848:1793832489924040522:1793832490062039381\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/native-build.public.json\",\n  \"name\": \"native-build.public.json\",\n  \"bytes\": 794,\n  \"sha256\": \"51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:28096637:794:1793832490491671044:1793832490491671044\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/normal-release-result.public.json\",\n  \"name\": \"normal-release-result.public.json\",\n  \"bytes\": 3200,\n  \"sha256\": \"6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:28096636:3200:1793832490490761645:1793832490490761645\"\n }\n]",
+        "FILES=[\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server\",\n  \"name\": \"heptabao-server\",\n  \"bytes\": None,\n  \"sha256\": None,\n  \"source_mode\": 320,\n  \"target_mode\": 320,\n  \"version\": None\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/native-build.public.json\",\n  \"name\": \"native-build.public.json\",\n  \"bytes\": None,\n  \"sha256\": None,\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/normal-release-result.public.json\",\n  \"name\": \"normal-release-result.public.json\",\n  \"bytes\": None,\n  \"sha256\": None,\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json\",\n  \"name\": \"normal-release-tests-result.public.json\",\n  \"bytes\": None,\n  \"sha256\": None,\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/normal-test-groups.public.json\",\n  \"name\": \"groups.json\",\n  \"bytes\": 6249,\n  \"sha256\": \"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n }\n]"
+      ],
+      [
+        "heptabao.phaseb3cb.fixed-public-artifacts-endpoint.v1",
+        "heptabao.df026.fixed-public-normal-endpoint.v1"
+      ],
+      [
+        "normal-phaseb-ingress-observer-shared-artifacts-r1",
+        "normal-cold-h2-shared-artifacts-r1"
+      ]
+    ],
+    "relay": [
+      [
+        "three fixed public 3cb ingress-observer build artifacts",
+        "five fixed public df026 normal-build artifacts"
+      ],
+      [
+        "os.umask(0o077)",
+        "ACTUAL_INPUTS_READY=False\nif not ACTUAL_INPUTS_READY:\n raise RuntimeError('unresolved exact normal artifact transport input metadata')\nos.umask(0o077)"
+      ],
+      [
+        "normal-phaseb-ingress-observer-shared-artifact-controls-r1",
+        "normal-cold-h2-shared-artifact-controls-r1"
+      ],
+      [
+        "normal-phaseb-ingress-observer-shared-artifacts-r1",
+        "normal-cold-h2-shared-artifacts-r1"
+      ],
+      [
+        "HEAD='3cb873919170cc77101b27f6a3ab9e98f41f8d93'",
+        "HEAD='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'"
+      ],
+      [
+        "TREE='7f4d48a647a81ca96e8a24a0a057c2c829459060'",
+        "TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'"
+      ],
+      [
+        "FILES=[\n {\n  \"path\": \"/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-server\",\n  \"name\": \"heptabao-server\",\n  \"bytes\": 109074848,\n  \"sha256\": \"437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0\",\n  \"source_mode\": 320,\n  \"target_mode\": 320,\n  \"version\": \"66306:28096634:109074848:1793832489924040522:1793832490062039381\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/native-build.public.json\",\n  \"name\": \"native-build.public.json\",\n  \"bytes\": 794,\n  \"sha256\": \"51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:28096637:794:1793832490491671044:1793832490491671044\"\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/normal-release-result.public.json\",\n  \"name\": \"normal-release-result.public.json\",\n  \"bytes\": 3200,\n  \"sha256\": \"6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": \"66306:28096636:3200:1793832490490761645:1793832490490761645\"\n }\n]",
+        "FILES=[\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server\",\n  \"name\": \"heptabao-server\",\n  \"bytes\": None,\n  \"sha256\": None,\n  \"source_mode\": 320,\n  \"target_mode\": 320,\n  \"version\": None\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/native-build.public.json\",\n  \"name\": \"native-build.public.json\",\n  \"bytes\": None,\n  \"sha256\": None,\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/normal-release-result.public.json\",\n  \"name\": \"normal-release-result.public.json\",\n  \"bytes\": None,\n  \"sha256\": None,\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json\",\n  \"name\": \"normal-release-tests-result.public.json\",\n  \"bytes\": None,\n  \"sha256\": None,\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n },\n {\n  \"path\": \"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/normal-test-groups.public.json\",\n  \"name\": \"groups.json\",\n  \"bytes\": 6249,\n  \"sha256\": \"0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1\",\n  \"source_mode\": 384,\n  \"target_mode\": 256,\n  \"version\": None\n }\n]"
+      ],
+      [
+        "HELPERS={\"sender.py\":\"e57040a017a44d9d2a9b4396200325eb8499bf503e9c52be58448fa71fdf5835\",\"receiver.py\":\"dd2209577430e4d9b17918f9688453cb3b68ef725032abb6e3f59b6654a34e31\"}",
+        "HELPERS={\"sender.py\":\"0523130a335562cd1401752a7480134bd64ea1602026c657277888fe0f41cdca\",\"receiver.py\":\"f87bd71c1303fd7a9a43e34f3cd601816ef57e5bc1d55c26238f7b01656e099e\"}"
+      ],
+      [
+        "heptabao.phaseb3cb.shared-public-artifacts-relay.v1",
+        "heptabao.df026.shared-public-normal-artifacts-relay.v1"
+      ]
+    ]
+  }
+}

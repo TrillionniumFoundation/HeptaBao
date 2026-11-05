@@ -1,0 +1,20 @@
+{
+  "schema": "heptabao.df026.source-export.review-local-delivery.v1",
+  "failures": [
+    {
+      "scope": "local evidence capsule delivery",
+      "error": "Argument list too long (os error 7)",
+      "process_created": false,
+      "host_operation": false,
+      "candidate_changed": false
+    },
+    {
+      "scope": "V8 read-only inspection",
+      "error": "Cannot read properties of undefined (reading '0')",
+      "cause": "inspection used owned_cleanup rather than the actual cleanup field",
+      "source_or_originals_changed": false
+    }
+  ],
+  "successor": "file input with Python exact integers",
+  "remote_replay": false
+}

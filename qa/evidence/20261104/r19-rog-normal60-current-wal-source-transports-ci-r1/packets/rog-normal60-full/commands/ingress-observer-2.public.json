@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/retained-heptabao-server-libtest",
+    "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",
+    "--exact",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.07783948897849768,
+  "exit_code": 0,
+  "label": "ingress-observer-2",
+  "outer_cap_seconds": 599.8827571519942,
+  "owned_pgid": 1645014,
+  "remaining": [],
+  "stderr_sha256": "8573b48cdcee2002a970efc5fc438989eb23f8ccb6486622b7bdff3db41c60a6",
+  "stdout_sha256": "5b0bc0db44521ae06c111994aa91a0a9dffd3888c855842d16ae7bf4ff854ced",
+  "timed_out": false
+}

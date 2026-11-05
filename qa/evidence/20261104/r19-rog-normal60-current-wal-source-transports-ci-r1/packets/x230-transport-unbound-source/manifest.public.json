@@ -1,0 +1,102 @@
+{
+  "schema": "heptabao.x230-transport-source-manifest.r1",
+  "self_excluded": true,
+  "files": [
+    {
+      "path": "source/receiver.py",
+      "blob": "693d0abbe27a92872f47ae43be75d4179874e658",
+      "bytes": 29062,
+      "sha256": "8366ef1a1f055f84de8ed50b3298cd740ad95c799fd9d8c369186d0cb08c0223"
+    },
+    {
+      "path": "diffs/receiver.diff",
+      "blob": "8e82fa4bd7c6c43a405b0dda98fa81054673022a",
+      "bytes": 10869,
+      "sha256": "db14280b636728a7a51f3f0c6c00e891a197f55849f27bab78cdc8fee8395869"
+    },
+    {
+      "path": "verification/receiver.exec.original.json",
+      "blob": "17e24533966b87b363d55bb05da28e3737127dc2",
+      "bytes": 12346,
+      "sha256": "d4c6c27a723f7cb835cc0b89ec0f0ee4753ca21452f88d47aebc71f8bf788753"
+    },
+    {
+      "path": "source/sender.py",
+      "blob": "2aa87f531ff6cb78d9f866fc3a0e8227cae52272",
+      "bytes": 8024,
+      "sha256": "e7a18f3091fcd7d40d9419e8aff53a3e2e008c85c3c391b4b88e5e3f058fa41b"
+    },
+    {
+      "path": "diffs/sender.diff",
+      "blob": "9d218ebe9f5643af3d801dcead3a34f8af2348b7",
+      "bytes": 5409,
+      "sha256": "f562f9a8dcedf301ad4b280027d28b55d39120126b6c608c8909572d4ad530f4"
+    },
+    {
+      "path": "verification/sender.exec.original.json",
+      "blob": "a6df552112fab55ec2ffc72a315ee2fdb97df354",
+      "bytes": 6641,
+      "sha256": "62341721d742af339cae7cb6b5c0190180b4c19f0c553380a80a84f83a234a4a"
+    },
+    {
+      "path": "source/relay.py",
+      "blob": "d7163507d1dc6966658ed08ed983ee019102b5c0",
+      "bytes": 20123,
+      "sha256": "09cbddf04a617959c1c777f577b348f6d7d2a7e29c964731683d97efeea70999"
+    },
+    {
+      "path": "diffs/relay.diff",
+      "blob": "4e366ed755b532232e084ff50a2b70444a348423",
+      "bytes": 9615,
+      "sha256": "5763923253ac192239541ed78e90e08807ad49eacf964e576828cc0ad1e17eaa"
+    },
+    {
+      "path": "verification/relay.exec.original.json",
+      "blob": "0148ef62ad609189d0e8e15996cf2156ecd13e8d",
+      "bytes": 10967,
+      "sha256": "d6248b3cf304bbbdf24569796c6eb6b1a0e8ab08e3895a59eed74b58b6023a81"
+    },
+    {
+      "path": "reference/receiver.py",
+      "blob": "1e406faf1eaec0dfd14b5d04311c257005bd013c",
+      "bytes": 24595,
+      "sha256": "5de344fdae21c1852513f21b891121246cff649b2fff001c2791c026ebb70521"
+    },
+    {
+      "path": "reference/sender.py",
+      "blob": "db3ff2edb773dab2c8336a6a1881f20b3987217d",
+      "bytes": 7518,
+      "sha256": "bf11cc174afea339c5f199e7d7251464afb249c7a36333564361e4884e03ab5b"
+    },
+    {
+      "path": "reference/relay.py",
+      "blob": "0ccb5a2388286693772dee3785e3f88fc6d2f2a5",
+      "bytes": 19562,
+      "sha256": "46c77941e647e0a3b2b12c2dc5ebc8b6c7158f829d8935232b93d02ee92b09c8"
+    },
+    {
+      "path": "reference/linux-normal60-producer.py",
+      "blob": "23fb2b80070879f6a00fe3dfbb9ed7d1ee069555",
+      "bytes": 26659,
+      "sha256": "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40"
+    },
+    {
+      "path": "reference/full34-unbound.py",
+      "blob": "cdd5cbfc7294aedcc234b9cc130f387da7cabc1a",
+      "bytes": 9068,
+      "sha256": "caa24f0c921b933c04ce18fbf021910d273c8a76e9b1dc1fdac09a730fb6b0d8"
+    },
+    {
+      "path": "reference/comparison69-unbound.py",
+      "blob": "725d252eef945f989e28f623adbcc46048d55bc0",
+      "bytes": 10642,
+      "sha256": "66bd0c444f408068a14e37085725167e90b1cd2118516c5ed57f5203382ed6ed"
+    },
+    {
+      "path": "PLAN.public.json",
+      "blob": "6a3bd56cafcee3fa5df353dc0f6ab9ba677ddf5c",
+      "bytes": 5545,
+      "sha256": "57f8ea3320eab8568db94564f5fbf31a20ee59c0129a87b4d923a103bd07717d"
+    }
+  ]
+}

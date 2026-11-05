@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.root-df026-source-carrier-inert-actual-transfer-go.r1",
+  "reviewed_at": "2026-11-05 05:26:18 UTC",
+  "status": "PASS_ACTUAL_INERT_GO_ONE_PUBLIC_SOURCE_TRANSFER",
+  "tree": "7d1fc4f2e1e8845a83f2e613af62282e79de4664",
+  "files": 36,
+  "bytes": 421993,
+  "merkle_trees": 9,
+  "job_id": "1a1aa27fc38-fc05-3e58",
+  "exit0_full_durable": true,
+  "read_operations": 3,
+  "immutable_pages": 5,
+  "actual_whole_files": 4,
+  "exact_9_field_source_versions": true,
+  "independent_checks": 56,
+  "source_review": "2e7131a034655564b6753bda47484d209764af5d",
+  "export_root_review": "ec240fd9b97c6b75582a271981498f19276922d7",
+  "next_request": {
+    "blob": "0c8ab77ae1d39ce3f908f13a0403e84a115347af",
+    "sha256": "cb5991e3e3572e242043bf683bf85b2d5eac841e2948c22215060fa324c3a599",
+    "bytes": 369,
+    "key": "heptabao-df026-source-carrier-8317dc3e-20261105-r1",
+    "timeout_seconds": 360
+  },
+  "scope": "Exact public standalone bundle and export receipt ROG-to-desktop only. Original strict rog-ts trust, 300relay/90endpoints/10connect/5+5 cleanup, version pins, whole bytes and EOF. No Git/compiler/server/product; no Mac access; independent of Mac fixture's private runtime. Actual transfer full endpoint/closure/file metadata required before importer binding and separate GO.",
+  "review_correction": "Initial reviewer assumed immutable pages had an outer content wrapper; actual packet saves bare native page objects. Local parse failed before any host action. Corrected parser accepts the actual shape and still verifies original SDK bytes by full page reconstruction.",
+  "production_cutover": false,
+  "full_replacement": false
+}

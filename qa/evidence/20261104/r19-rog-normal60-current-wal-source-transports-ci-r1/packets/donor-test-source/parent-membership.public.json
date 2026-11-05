@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.donor-window-exact-parent-membership.v1",
+  "tested_merge": "ae18cbdd8b29dbf612588ea81aa22cbbf6a33952",
+  "running_host_candidate": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "proposal_parent": "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+  "entries": [
+    {
+      "name": "v6_committed_root_pull.rs",
+      "path": "crates/heptabao-ha-service/src/v6_committed_root_pull.rs",
+      "sha": "7c865163609728bb46342df9ac1e8bcc43c5821b",
+      "size": 56561
+    },
+    {
+      "name": "v6_committed_root_pull_donor_window_tests.rs",
+      "path": "crates/heptabao-ha-service/src/v6_committed_root_pull_donor_window_tests.rs",
+      "sha": "7ac84a19d97cf0d782f744a768e37cf78c1c1c22",
+      "size": 13169
+    }
+  ],
+  "exact_same_blob_members_in_all_three": true,
+  "source": "Complete GitHub contents API directory responses for each exact commit are preserved in references.",
+  "full_repository_merkle_audit_claimed": false
+}

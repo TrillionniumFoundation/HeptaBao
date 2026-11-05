@@ -1,0 +1,100 @@
+{
+  "schema": "heptabao.final-cold-gate-clippy.root-source-and-draft-pr-review.r1",
+  "as_of_utc": "2026-11-05 05:55:01 UTC",
+  "status": "SOURCE_REVIEWED_DRAFT_PR_CI_QUEUED",
+  "candidate_commit": "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+  "candidate_tree": "73ba0c7fdf333b41d3944c5ee58b477026ff2d82",
+  "sole_parent": "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+  "full_tree": {
+    "tree": "73ba0c7fdf333b41d3944c5ee58b477026ff2d82",
+    "merkle": {
+      "root_sha": "73ba0c7fdf333b41d3944c5ee58b477026ff2d82",
+      "trees_verified": 358
+    },
+    "files": 3913,
+    "unchanged": 3912,
+    "changed": [
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f991d6a25979ea350d60b2621b80ae2dcab760e0",
+        "size": 31461,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/f991d6a25979ea350d60b2621b80ae2dcab760e0"
+      }
+    ]
+  },
+  "proposal_tree": "151137838e167cb31baf559b060c6286b08d5967",
+  "independent_peer": {
+    "blob": "d4c0ecfed23146ea1c3d23baffdbd8cfdc492961",
+    "bytes": 3339,
+    "sha256": "c687cca34fc7f9ff8da9b4df54956b17bf03273a7e7fe854c46c5ae0b4e0eb06"
+  },
+  "change": {
+    "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+    "hunks": 1,
+    "bytes_delta": -14,
+    "only_semantic_change": "pass final-use closure by value to existing impl FnOnce instead of needless &mut borrow",
+    "original_owner_witness_deadline_error_mapping_unchanged": true,
+    "no_lint_suppression_or_test_change": true
+  },
+  "pr": {
+    "number": 156,
+    "url": "https://github.com/TrillionniumFoundation/HeptaBao/pull/156",
+    "draft": true,
+    "unmerged": true,
+    "head": "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+    "base": "7b4a59bdd72218c1e779eb32754a682cf465af7a",
+    "merge": "f03d524a83968adb88e5d3713dd584e6a1743deb",
+    "merge_tree_equals_head": true,
+    "merge_two_parents_exact": true,
+    "branch_creation_followed_exact404_absence": true
+  },
+  "ci": {
+    "observed_at": "2026-11-05T05:53:31Z",
+    "qualification_run": 41976736304,
+    "trust_boundary_run": 41976736244,
+    "status": "queued",
+    "no_compilation_or_test_success_inferred": true
+  },
+  "proof_pins": [
+    {
+      "name": "r19_gate_clippy_branch_absence",
+      "blob": "84784f593c13c570bd1372874060fdad39f0b61e",
+      "bytes": 537,
+      "sha256": "235189cb51badabba1a59d31c96dc97e01f3591b2fe1a95f448142af49d1d1cb"
+    },
+    {
+      "name": "r19_gate_clippy_pr_created",
+      "blob": "e460cd870dae338c0d2efe4a416281d2596dd27b",
+      "bytes": 3151,
+      "sha256": "017aa1ddff3324bfed106927aa1b31211a1380452643bf9cfb1a52d2c7560792"
+    },
+    {
+      "name": "r19_gate_clippy_pr_verified",
+      "blob": "408d6bab418248f391b8dae61373c682257e1fa7",
+      "bytes": 41907,
+      "sha256": "8607d98e1118f5de207ad7a738607fc9c4bac5a65006d01943edb6a7b854b62c"
+    },
+    {
+      "name": "r19_gate_clippy_ci_queued",
+      "blob": "3ef76e420b921ec752db6edf7009991fccba1670",
+      "bytes": 817,
+      "sha256": "eb9ae688e7a692e0315d3ff68c78368b0675c33253d9864d141bd2dbf6796b52"
+    },
+    {
+      "name": "r19_gate_clippy_commit_verified",
+      "blob": "6c3eb93e0019650a41d36b619c399d57d454b8fb",
+      "bytes": 1403,
+      "sha256": "2814a666483734661926b92d077bce7987a3f23248cf202d62854c8a35175bdb"
+    },
+    {
+      "name": "r19_gate_clippy_merge_verified",
+      "blob": "32c00e2e929364b2dfb06a86dd7c790939554b05",
+      "bytes": 2758,
+      "sha256": "e75ffe40912ebcaf65f8ab2ff65779a6eb9b16e9bc3244fa1e0da1da2b464141"
+    }
+  ],
+  "actual_host_qualifications_remain_original_df026": true,
+  "full_replacement_qualified": false
+}

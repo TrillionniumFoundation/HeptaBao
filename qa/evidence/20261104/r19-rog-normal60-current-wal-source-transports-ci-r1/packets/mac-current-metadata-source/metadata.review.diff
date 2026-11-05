@@ -1,0 +1,474 @@
+diff --git a/mac_current_capture_size_metadata_r1.py b/mac_current_capture_size_metadata_r1.py
+--- a/mac_current_capture_size_metadata_r1.py
++++ b/mac_current_capture_size_metadata_r1.py
+@@ -1,109 +1,104 @@
+ #!/usr/bin/env python3
+-"""Fixed owned QA metadata only; no regular-file body or runtime action."""
+-import hashlib, json, os, signal, stat, sys, time
++"""Fixed 46 current Mac leaf metadata observations; no file-body reads or SQL.
++
++This new observation cannot identify which leaf triggered an earlier size
++refusal. The original capture limits and UNKNOWN result remain unchanged.
++"""
++import json, os, signal, stat, sys, time
+ from contextlib import contextmanager
+ from pathlib import Path
+ START=time.monotonic();UNTIL=START+5.0
+-TARGET=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/qa')
+-ANCHORS=[
+-  {
+-    "path": "/",
+-    "identity": [
+-      "16777233",
+-      "2",
+-      "0",
+-      "0",
+-      "16877",
+-      "22",
+-      "704",
+-      "1786589515000000000",
+-      "1786589515000000000"
+-    ]
+-  },
+-  {
+-    "path": "/Volumes",
+-    "identity": [
+-      "16777233",
+-      "18336",
+-      "0",
+-      "0",
+-      "16877",
+-      "5",
+-      "160",
+-      "1793100597756515591",
+-      "1793100597756515591"
+-    ]
+-  },
+-  {
+-    "path": "/Volumes/T5",
+-    "identity": [
+-      "16777244",
+-      "2",
+-      "0",
+-      "0",
+-      "16893",
+-      "12",
+-      "384",
+-      "1793152973144260495",
+-      "1793152973144260495"
+-    ]
+-  }
+-]
+-OLD_NAMES=[
+-  "mac_current_outer_r3.py",
+-  "mac_current_outer_inputs_r1.py",
+-  "mac_current_fixture_materializer_r1.py",
+-  "mac_current_capture_entry_r1.py",
+-  "mac_owned_launchd_r3.py",
+-  "mac_current_server_owner_r1.py",
+-  "mac_current_phase_owner_r2.py",
+-  "mac_native_process_observer_r1.py",
+-  "mac_guarded_current_capture_r3.py",
+-  "mac_owned_commands_r1.py",
+-  "mac_t5_volume_guard_r1.py",
+-  "mac_owned_unreaped_r1.py",
+-  "mac_capture_sqlite_synthetic_r1.py",
+-  "mac_capture_sqlite_synthetic_r2.py",
+-  "mac_current_cycle_r2.mjs",
+-  "mac_single_native_r2.mjs",
+-  "mac_auth_rows_cas_r1.mjs",
+-  "mac_authbus_cache_cas_r1.mjs"
++LIVE=Path('/Users/qianqi/.openclaw')
++TARGETS=[
++    {"label": "config", "path": "/Users/qianqi/.openclaw/openclaw.json", "role": "small_read", "maximum": 1048576, "optional": False, "privateMode": True},
++    {"label": "auth_main", "path": "/Users/qianqi/.openclaw/agents/main/agent/openclaw-agent.sqlite", "role": "database_main", "maximum": None, "optional": False, "privateMode": True},
++    {"label": "auth_main_wal", "path": "/Users/qianqi/.openclaw/agents/main/agent/openclaw-agent.sqlite-wal", "role": "database_wal", "maximum": 0, "optional": True, "privateMode": True},
++    {"label": "auth_main_shm", "path": "/Users/qianqi/.openclaw/agents/main/agent/openclaw-agent.sqlite-shm", "role": "database_shm", "maximum": 8388608, "optional": True, "privateMode": True},
++    {"label": "auth_main_journal", "path": "/Users/qianqi/.openclaw/agents/main/agent/openclaw-agent.sqlite-journal", "role": "database_journal", "maximum": 0, "optional": True, "privateMode": True},
++    {"label": "auth_trnm", "path": "/Users/qianqi/.openclaw/agents/trnm/agent/openclaw-agent.sqlite", "role": "database_main", "maximum": None, "optional": False, "privateMode": True},
++    {"label": "auth_trnm_wal", "path": "/Users/qianqi/.openclaw/agents/trnm/agent/openclaw-agent.sqlite-wal", "role": "database_wal", "maximum": 0, "optional": True, "privateMode": True},
++    {"label": "auth_trnm_shm", "path": "/Users/qianqi/.openclaw/agents/trnm/agent/openclaw-agent.sqlite-shm", "role": "database_shm", "maximum": 8388608, "optional": True, "privateMode": True},
++    {"label": "auth_trnm_journal", "path": "/Users/qianqi/.openclaw/agents/trnm/agent/openclaw-agent.sqlite-journal", "role": "database_journal", "maximum": 0, "optional": True, "privateMode": True},
++    {"label": "auth_hepta-ui", "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/openclaw-agent.sqlite", "role": "database_main", "maximum": None, "optional": False, "privateMode": True},
++    {"label": "auth_hepta-ui_wal", "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/openclaw-agent.sqlite-wal", "role": "database_wal", "maximum": 0, "optional": True, "privateMode": True},
++    {"label": "auth_hepta-ui_shm", "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/openclaw-agent.sqlite-shm", "role": "database_shm", "maximum": 8388608, "optional": True, "privateMode": True},
++    {"label": "auth_hepta-ui_journal", "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/openclaw-agent.sqlite-journal", "role": "database_journal", "maximum": 0, "optional": True, "privateMode": True},
++    {"label": "auth_hepta", "path": "/Users/qianqi/.openclaw/agents/hepta/agent/openclaw-agent.sqlite", "role": "database_main", "maximum": None, "optional": False, "privateMode": True},
++    {"label": "auth_hepta_wal", "path": "/Users/qianqi/.openclaw/agents/hepta/agent/openclaw-agent.sqlite-wal", "role": "database_wal", "maximum": 0, "optional": True, "privateMode": True},
++    {"label": "auth_hepta_shm", "path": "/Users/qianqi/.openclaw/agents/hepta/agent/openclaw-agent.sqlite-shm", "role": "database_shm", "maximum": 8388608, "optional": True, "privateMode": True},
++    {"label": "auth_hepta_journal", "path": "/Users/qianqi/.openclaw/agents/hepta/agent/openclaw-agent.sqlite-journal", "role": "database_journal", "maximum": 0, "optional": True, "privateMode": True},
++    {"label": "auth_hepta-backend", "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/openclaw-agent.sqlite", "role": "database_main", "maximum": None, "optional": False, "privateMode": True},
++    {"label": "auth_hepta-backend_wal", "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/openclaw-agent.sqlite-wal", "role": "database_wal", "maximum": 0, "optional": True, "privateMode": True},
++    {"label": "auth_hepta-backend_shm", "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/openclaw-agent.sqlite-shm", "role": "database_shm", "maximum": 8388608, "optional": True, "privateMode": True},
++    {"label": "auth_hepta-backend_journal", "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/openclaw-agent.sqlite-journal", "role": "database_journal", "maximum": 0, "optional": True, "privateMode": True},
++    {"label": "cache_applied-profiles.json", "path": "/Users/qianqi/.openclaw/authbus/applied-profiles.json", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": True},
++    {"label": "cache_publish-baseline.json", "path": "/Users/qianqi/.openclaw/authbus/publish-baseline.json", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": True},
++    {"label": "cache_bad-refresh-quarantine.json", "path": "/Users/qianqi/.openclaw/authbus/bad-refresh-quarantine.json", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": True},
++    {"label": "cache_refresh-backoff.json", "path": "/Users/qianqi/.openclaw/authbus/refresh-backoff.json", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": True},
++    {"label": "cache_lease-epochs.json", "path": "/Users/qianqi/.openclaw/authbus/lease-epochs.json", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": True},
++    {"label": "cache_status.json", "path": "/Users/qianqi/.openclaw/authbus/status.json", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": True},
++    {"label": "native_main_config.toml", "path": "/Users/qianqi/.openclaw/agents/main/agent/codex-home/config.toml", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": False},
++    {"label": "native_main_requirements.toml", "path": "/Users/qianqi/.openclaw/agents/main/agent/codex-home/requirements.toml", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": False},
++    {"label": "native_main_auth.json", "path": "/Users/qianqi/.openclaw/agents/main/agent/codex-home/auth.json", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": True},
++    {"label": "native_trnm_config.toml", "path": "/Users/qianqi/.openclaw/agents/trnm/agent/codex-home/config.toml", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": False},
++    {"label": "native_trnm_requirements.toml", "path": "/Users/qianqi/.openclaw/agents/trnm/agent/codex-home/requirements.toml", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": False},
++    {"label": "native_trnm_auth.json", "path": "/Users/qianqi/.openclaw/agents/trnm/agent/codex-home/auth.json", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": True},
++    {"label": "native_hepta-ui_config.toml", "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/codex-home/config.toml", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": False},
++    {"label": "native_hepta-ui_requirements.toml", "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/codex-home/requirements.toml", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": False},
++    {"label": "native_hepta-ui_auth.json", "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/codex-home/auth.json", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": True},
++    {"label": "native_hepta_config.toml", "path": "/Users/qianqi/.openclaw/agents/hepta/agent/codex-home/config.toml", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": False},
++    {"label": "native_hepta_requirements.toml", "path": "/Users/qianqi/.openclaw/agents/hepta/agent/codex-home/requirements.toml", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": False},
++    {"label": "native_hepta_auth.json", "path": "/Users/qianqi/.openclaw/agents/hepta/agent/codex-home/auth.json", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": True},
++    {"label": "native_hepta-backend_config.toml", "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/codex-home/config.toml", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": False},
++    {"label": "native_hepta-backend_requirements.toml", "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/codex-home/requirements.toml", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": False},
++    {"label": "native_hepta-backend_auth.json", "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/codex-home/auth.json", "role": "small_read", "maximum": 1048576, "optional": True, "privateMode": True},
++    {"label": "installed_registry", "path": "/Users/qianqi/.openclaw/state/openclaw.sqlite", "role": "database_main", "maximum": None, "optional": False, "privateMode": True},
++    {"label": "installed_registry_wal", "path": "/Users/qianqi/.openclaw/state/openclaw.sqlite-wal", "role": "database_wal", "maximum": 0, "optional": True, "privateMode": True},
++    {"label": "installed_registry_shm", "path": "/Users/qianqi/.openclaw/state/openclaw.sqlite-shm", "role": "database_shm", "maximum": 8388608, "optional": True, "privateMode": True},
++    {"label": "installed_registry_journal", "path": "/Users/qianqi/.openclaw/state/openclaw.sqlite-journal", "role": "database_journal", "maximum": 0, "optional": True, "privateMode": True}
+ ]
+-KNOWN_NAMES=[
+-  "mac_current_outer_r3.py",
+-  "mac_current_outer_inputs_r1.py",
+-  "mac_current_fixture_materializer_r1.py",
+-  "mac_current_capture_entry_r1.py",
+-  "mac_owned_launchd_r3.py",
+-  "mac_current_server_owner_r1.py",
+-  "mac_current_phase_owner_r2.py",
+-  "mac_native_process_observer_r1.py",
+-  "mac_guarded_current_capture_r3.py",
+-  "mac_owned_commands_r1.py",
+-  "mac_t5_volume_guard_r1.py",
+-  "mac_owned_unreaped_r1.py",
+-  "mac_capture_sqlite_synthetic_r1.py",
+-  "mac_capture_sqlite_synthetic_r2.py",
+-  "mac_current_cycle_r2.mjs",
+-  "mac_single_native_r2.mjs",
+-  "mac_auth_rows_cas_r1.mjs",
+-  "mac_authbus_cache_cas_r1.mjs",
+-  "mac_current_outer_inputs_r2.py",
+-  "mac_current_outer_r4.py"
++PARENTS=[
++    "/",
++    "/Users",
++    "/Users/qianqi",
++    "/Users/qianqi/.openclaw",
++    "/Users/qianqi/.openclaw/agents",
++    "/Users/qianqi/.openclaw/authbus",
++    "/Users/qianqi/.openclaw/state",
++    "/Users/qianqi/.openclaw/agents/hepta",
++    "/Users/qianqi/.openclaw/agents/hepta-backend",
++    "/Users/qianqi/.openclaw/agents/hepta-ui",
++    "/Users/qianqi/.openclaw/agents/main",
++    "/Users/qianqi/.openclaw/agents/trnm",
++    "/Users/qianqi/.openclaw/agents/hepta-backend/agent",
++    "/Users/qianqi/.openclaw/agents/hepta-ui/agent",
++    "/Users/qianqi/.openclaw/agents/hepta/agent",
++    "/Users/qianqi/.openclaw/agents/main/agent",
++    "/Users/qianqi/.openclaw/agents/trnm/agent",
++    "/Users/qianqi/.openclaw/agents/hepta-backend/agent/codex-home",
++    "/Users/qianqi/.openclaw/agents/hepta-ui/agent/codex-home",
++    "/Users/qianqi/.openclaw/agents/hepta/agent/codex-home",
++    "/Users/qianqi/.openclaw/agents/main/agent/codex-home",
++    "/Users/qianqi/.openclaw/agents/trnm/agent/codex-home"
+ ]
+-MAX_MEMBERS=32
+-MAX_METADATA=64
++MAX_METADATA=22*8+46*6
++MAX_REGISTERED_FDS=22+46
++MAX_LIVE_FDS=22+1
+ metadata=0;protected=0;pending=None
+-rows=[];iterator=None;iterator_close_attempted=False;iterator_close_returned=False
+-report={'schema':'heptabao.mac-owned-qa-members-metadata.r1','status':'failed',
+- 'target':str(TARGET),'inner_seconds':5,'outer_seconds':60,
+- 'prior_refused_job':'1a1a98ec7b8-fc05-35fb',
+- 'scope':'new finite metadata observation, not reconstruction of the prior failed predicate',
+- 'max_members':MAX_MEMBERS,'max_metadata_calls':MAX_METADATA,
+- 'regular_file_bodies_opened_by_probe':False,'files_written':False,
+- 'private_inputs_read':False,'children_started':False,'network_used':False,
+- 'permissions_changed':False,'guard_changed':False,'business_replayed':False,
+- 'uuid_requeried':False,'source_or_runtime_qualified':False}
++rows=[];directories={}
++report={'schema':'heptabao.mac-current-capture-size-metadata.r1','status':'failed',
++ 'innerSeconds':5,'outerSeconds':60,'originalFailedJob':'1a1aa2ac597-fc05-3e8f',
++ 'originalFailedLibrarySha256':'606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693',
++ 'originalFailureCode':'current_input_size_bound','originalOutcomeUnknownRetained':True,
++ 'scope':'sequential current metadata, not a reconstruction or atomic snapshot',
++ 'expectedLeafCount':46,'expectedDirectoryCount':22,'maxMetadataCalls':MAX_METADATA,
++ 'maxRegisteredFds':MAX_REGISTERED_FDS,'maxLiveFds':MAX_LIVE_FDS,
++ 'fileBodyBytesRead':0,'regularFileBodiesRead':False,'fileBodiesHashed':False,
++ 'metadataOnlyFileDescriptors':True,'sqlExecuted':False,'filesWritten':False,
++ 'childrenStarted':False,'networkUsed':False,'serviceOperationDispatched':False,
++ 'captureGuardChanged':False,'sizeCapsChanged':False,'businessReplayed':False,
++ 'priorExactFailedLeafIdentified':False,'captureOrConsumerQualified':False,
++ 'directories':[],'leaves':[]}
+ class Refused(RuntimeError):pass
+ def need(value,code):
+     if not value:raise Refused(code)
+@@ -132,105 +127,175 @@
+         row['close_attempted']=True
+         try:os.close(row['fd']);row['closed']=True
+         except BaseException as error:row['close_error_type']=type(error).__name__
+-def close_iterator():
+-    global iterator_close_attempted,iterator_close_returned
+-    if iterator is None or iterator_close_attempted:return
++def named(parent,name):
++    count()
++    return os.lstat('/') if parent is None else os.stat(
++        name,dir_fd=parent['fd'],follow_symlinks=False)
++def held(row):
++    count();return os.fstat(row['fd'])
++def open_row(parent,name,path,kind):
++    remaining()
++    need(len(rows)<MAX_REGISTERED_FDS
++         and sum(not r['closed'] for r in rows)<MAX_LIVE_FDS,'finite_descriptor_bound')
++    flags=os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK
++    if kind=='directory':flags|=os.O_DIRECTORY
+     with critical():
+-        iterator_close_attempted=True
+-        try:iterator.close();iterator_close_returned=True
+-        except BaseException as error:report['iterator_close_error_type']=type(error).__name__
++        fd=os.open(name,flags,**({} if parent is None else {'dir_fd':parent['fd']}))
++        row={'fd':fd,'path':path,'kind':kind,'parent':parent,'name':name,
++             'close_attempted':False,'closed':False}
++        rows.append(row)
++    return row
++def observe_directory(path):
++    global stage
++    stage='directory:'+path
++    current=Path(path);parent=None if path=='/' else directories.get(str(current.parent))
++    public={'path':path,'status':'unobserved','fdOpened':False}
++    report['directories'].append(public)
++    if path!='/' and (parent is None or parent['status']!='held'):
++        need(parent is not None and parent['status'] in ('absent','parent_absent'),'fixed_parent_chain_unavailable')
++        public['status']='parent_absent'
++        directories[path]={'status':'parent_absent','public':public}
++        return
++    parent_before=None if parent is None else ident(held(parent))
++    name='/' if parent is None else current.name
++    try:before=named(parent,name)
++    except FileNotFoundError:
++        need(parent is not None,'root_directory_required')
++        try:named(parent,name)
++        except FileNotFoundError:pass
++        else:raise Refused('directory_absence_changed')
++        after_parent=ident(held(parent))
++        need(parent_before==after_parent,'directory_absence_parent_changed')
++        public.update(status='absent',twoEnoent=True,heldParentIdentity=parent_before)
++        directories[path]={'status':'absent','parent':parent,'name':name,'public':public}
++        return
++    public['identityBefore']=ident(before)
++    need(stat.S_ISDIR(before.st_mode) and before.st_uid in (0,501)
++         and not stat.S_IMODE(before.st_mode)&0o022,'fixed_directory_custody')
++    row=open_row(parent,name,path,'directory')
++    public['fdOpened']=True
++    observed=ident(held(row));public['heldIdentity']=observed
++    need(observed==ident(before),'directory_named_fd_identity')
++    parent_after=None if parent is None else ident(held(parent))
++    need(parent_before==parent_after,'directory_parent_changed')
++    row.update(status='held',identity=observed,public=public)
++    directories[path]=row;public['status']='held'
++    remaining()
++def observe_leaf(item):
++    global stage
++    stage='leaf:'+item['label']
++    path=Path(item['path']);parent=directories[str(path.parent)]
++    public={'label':item['label'],'path':str(path),'role':item['role'],
++        'originalMaximumBytes':item['maximum'],'originalOptional':item['optional'],
++        'originalPrivateModeRule':item['privateMode'],'status':'unobserved','fdOpened':False}
++    report['leaves'].append(public)
++    if parent['status']!='held':
++        need(parent['status'] in ('absent','parent_absent'),'leaf_parent_unavailable')
++        public.update(status='parent_absent',directLeafStatPerformed=False)
++        return
++    parent_before=ident(held(parent))
++    try:before=named(parent,path.name)
++    except FileNotFoundError:
++        try:named(parent,path.name)
++        except FileNotFoundError:pass
++        else:raise Refused('leaf_absence_changed')
++        parent_after=ident(held(parent))
++        need(parent_before==parent_after,'leaf_absence_parent_changed')
++        public.update(status='absent',twoEnoent=True,directLeafStatPerformed=True,
++                      heldParentIdentity=parent_before)
++        return
++    first=ident(before);public.update(identityBefore=first,directLeafStatPerformed=True)
++    kind=('regular' if stat.S_ISREG(before.st_mode) else
++          'symlink' if stat.S_ISLNK(before.st_mode) else
++          'directory' if stat.S_ISDIR(before.st_mode) else 'other')
++    public['type']=kind
++    if kind!='regular':
++        last=ident(named(parent,path.name));parent_after=ident(held(parent))
++        public.update(identityAfter=last,status='nonregular_not_opened')
++        need(first==last and parent_before==parent_after,'nonregular_metadata_changed')
++        remaining();return
++    row=None
++    try:
++        row=open_row(parent,path.name,str(path),'regular_metadata_only');public['fdOpened']=True
++        observed=ident(held(row));public['heldIdentity']=observed
++        need(first==observed,'leaf_named_fd_identity')
++        last=ident(named(parent,path.name));last_fd=ident(held(row))
++        parent_after=ident(held(parent))
++        public.update(identityAfter=last,heldIdentityAfter=last_fd,
++                      parentFullIdentityStable=parent_before==parent_after)
++        need(first==observed==last==last_fd and parent_before==parent_after,
++             'leaf_full_identity_changed')
++        private_mode_ok=(stat.S_IMODE(before.st_mode)==0o600 if item['privateMode']
++                         else not stat.S_IMODE(before.st_mode)&0o022)
++        public.update(status='stable_regular_metadata',
++            sizeBytes=str(before.st_size),modeOctal=oct(stat.S_IMODE(before.st_mode)),
++            ownerUid=str(before.st_uid),ownerGid=str(before.st_gid),linkCount=str(before.st_nlink),
++            originalCaptureCustodyMatches=bool(before.st_uid==501 and before.st_nlink==1
++                                               and before.st_size>=0 and private_mode_ok),
++            sizeWithinOriginalMaximum=(None if item['maximum'] is None
++                                       else before.st_size<=item['maximum']),
++            originalDatabaseMinimum512Met=(None if item['role']!='database_main'
++                                          else before.st_size>=512),
++            presentJournalForbiddenByOriginalContract=item['role']=='database_journal')
++    finally:
++        if row is not None:
++            close_row(row);public['metadataFdClosed']=row['closed']
++    need(row is not None and row['closed'],'leaf_metadata_fd_close_unconfirmed')
++    remaining()
++def final_directories():
++    for path in PARENTS:
++        remaining();row=directories.get(path)
++        if row is None:continue
++        if row['status']=='parent_absent':continue
++        if row['status']=='absent':
++            before=ident(held(row['parent']))
++            for _ in range(2):
++                try:named(row['parent'],row['name'])
++                except FileNotFoundError:pass
++                else:raise Refused('final_directory_absence_changed')
++            after=ident(held(row['parent']))
++            need(before==after,'final_absence_parent_changed')
++            row['public']['finalTwoEnoent']=True
++            continue
++        now=ident(named(row['parent'],row['name']));actual=ident(held(row))
++        row['public'].update(identityAfter=now,heldIdentityAfter=actual)
++        need(now==actual==row['identity'],'final_directory_identity_changed')
++    remaining()
++stage='preflight'
+ try:
+-    need(sys.platform=='darwin' and os.getuid()==501,'fixed_mac_owner')
+-    need(len(OLD_NAMES)==18 and len(set(OLD_NAMES))==18
+-         and len(KNOWN_NAMES)==20 and set(OLD_NAMES)<set(KNOWN_NAMES),'fixed_public_names')
++    need(sys.platform=='darwin' and os.getuid()==501 and os.getgid()==20,'fixed_mac_owner')
++    need(len(TARGETS)==46 and len({t['path'] for t in TARGETS})==46
++         and len({t['label'] for t in TARGETS})==46 and len(PARENTS)==22
++         and len(set(PARENTS))==22,'fixed_finite_denominator')
++    need(all(Path(t['path']).is_relative_to(LIVE)
++         and str(Path(t['path']))==t['path'] for t in TARGETS),'fixed_leaf_scope')
+     for signum in (signal.SIGTERM,signal.SIGINT):signal.signal(signum,on_signal)
+-    parts=TARGET.parts;current=Path('/');parent=None
+-    expected={item['path']:item['identity'] for item in ANCHORS}
+-    for index,component in enumerate(parts):
+-        remaining();current=Path('/') if index==0 else current/component
+-        count()
+-        named=os.lstat('/') if parent is None else os.stat(
+-            component,dir_fd=parent['fd'],follow_symlinks=False)
+-        value=ident(named)
+-        need(stat.S_ISDIR(named.st_mode),'fixed_chain_directory_not_symlink')
+-        if str(current) in expected:need(value==expected[str(current)],'fixed_t5_anchor_identity')
+-        else:need(named.st_uid==501 and named.st_dev==int(ANCHORS[2]['identity'][0])
+-                  and not (stat.S_IMODE(named.st_mode)&0o022),'owned_qa_chain_custody')
+-        with critical():
+-            fd=os.open('/' if parent is None else component,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,
+-                       **({} if parent is None else {'dir_fd':parent['fd']}))
+-            row={'fd':fd,'path':str(current),'component':component,'parent':parent,
+-                 'identity':value,'close_attempted':False,'closed':False}
+-            rows.append(row)
+-        count();need(ident(os.fstat(fd))==value,'held_chain_fd_full_identity')
+-        parent=row
+-    report['chain_before']=[{'path':r['path'],'identity':r['identity']} for r in rows]
+-    report['qa_identity_before']=list(rows[-1]['identity'])
+-    remaining()
+-    with critical():iterator=os.scandir(rows[-1]['fd'])
+-    members=[];actual_names=set();eof=False
+-    while len(members)<MAX_MEMBERS:
+-        remaining()
+-        try:entry=next(iterator)
+-        except StopIteration:eof=True;break
+-        name=entry.name
+-        need(name not in ('.','..') and '/' not in name and '\0' not in name,'directory_member_name')
+-        need(name not in actual_names,'duplicate_directory_member')
+-        actual_names.add(name)
+-        count();info=os.stat(name,dir_fd=rows[-1]['fd'],follow_symlinks=False)
+-        kind=('regular' if stat.S_ISREG(info.st_mode) else 'directory' if stat.S_ISDIR(info.st_mode)
+-              else 'symlink' if stat.S_ISLNK(info.st_mode) else 'other')
+-        item={'name_sha256':hashlib.sha256(os.fsencode(name)).hexdigest(),
+-              'type':kind,'identity':ident(info),'known_public_name':name in KNOWN_NAMES}
+-        if name in KNOWN_NAMES:item['name']=name
+-        members.append(item)
+-    close_iterator()
+-    need(iterator_close_returned,'iterator_close_unconfirmed')
+-    report['members']=members;report['members_enumeration_eof']=eof
+-    report['observed_member_count']=len(members)
+-    report['expected_member_count']=len(OLD_NAMES)
+-    report['member_count_matches_expected']=len(members)==len(OLD_NAMES)
+-    report['member_set_matches_expected']=actual_names==set(OLD_NAMES) and eof
+-    report['missing_expected_public_names']=sorted(set(OLD_NAMES)-actual_names)
+-    report['unexpected_known_public_names']=sorted((actual_names-set(OLD_NAMES))&set(KNOWN_NAMES))
+-    report['unknown_member_name_sha256']=[x['name_sha256'] for x in members if not x['known_public_name']]
+-    need(eof,'member_bound_reached_before_eof')
+-    after=[]
+-    for row in rows:
+-        count();named=os.lstat('/') if row['parent'] is None else os.stat(
+-            row['component'],dir_fd=row['parent']['fd'],follow_symlinks=False)
+-        count();held=os.fstat(row['fd'])
+-        after.append({'path':row['path'],'identity':ident(named),'held_identity':ident(held)})
+-    report['chain_after']=after
+-    report['qa_identity_after']=after[-1]['identity']
+-    report['qa_full_identity_stable']=report['qa_identity_before']==report['qa_identity_after']==after[-1]['held_identity']
+-    report['all_chain_named_fd_identity_stable']=all(
+-        row['identity']==observed['identity']==observed['held_identity']
+-        for row,observed in zip(rows,after))
+-    report['original_membership_guard_would_pass_on_this_observation']=bool(
+-        report['qa_full_identity_stable'] and report['member_count_matches_expected']
+-        and report['member_set_matches_expected'])
+-    need(report['all_chain_named_fd_identity_stable'],'observed_chain_identity_drift')
++    for path in PARENTS:observe_directory(path)
++    for item in TARGETS:observe_leaf(item)
++    final_directories()
++    need(len(report['leaves'])==46,'complete_finite_leaf_denominator')
+     remaining();report['status']='complete_finite_metadata_observation'
+ except BaseException as error:
+-    report['error_type']=type(error).__name__
+-    report['error_code']=str(error) if type(error) is Refused else None
++    report['errorType']=type(error).__name__
++    report['errorCode']=str(error) if type(error) is Refused else None
++    error_errno=getattr(error,'errno',None) if isinstance(error,OSError) else None
++    report['errorErrno']=error_errno if type(error_errno) is int and 0<error_errno<=4095 else None
++    report['errorStage']=stage
+ finally:
+     signal.signal(signal.SIGTERM,signal.SIG_IGN);signal.signal(signal.SIGINT,signal.SIG_IGN)
+-    close_iterator()
+     for row in reversed(rows):close_row(row)
+-    report['explicit_directory_fd_closure']=[{'path':r['path'],'attempted':r['close_attempted'],
+-       'closed':r['closed'],'error_type':r.get('close_error_type')} for r in rows]
+-    report['all_explicit_directory_fds_closed']=all(r['closed'] for r in rows)
+-    report['iterator_close_attempted']=iterator_close_attempted
+-    report['iterator_close_returned']=iterator_close_returned
+-    report['metadata_calls']=metadata
+-    completed=time.monotonic();report['elapsed_seconds']=completed-START
+-    report['original_deadline_after_closure']=completed<UNTIL
+-    report['outcome_unknown']=bool(pending is not None or not report['all_explicit_directory_fds_closed']
+-       or (iterator is not None and not iterator_close_returned))
+-    if report['outcome_unknown'] or completed>=UNTIL:report['status']='failed'
++    report['descriptorClosure']=[{'path':r['path'],'kind':r['kind'],
++        'attempted':r['close_attempted'],'closed':r['closed'],
++        'errorType':r.get('close_error_type')} for r in rows]
++    report['allOwnedDescriptorsClosed']=all(r['closed'] for r in rows)
++    report['registeredDescriptors']=len(rows);report['metadataCalls']=metadata
++    report['observedLeafCount']=len(report['leaves'])
++    report['observedDirectoryCount']=len(report['directories'])
++    completed=time.monotonic();report['elapsedSeconds']=completed-START
++    report['originalDeadlineAfterClosure']=completed<UNTIL
++    report['outcomeUnknown']=bool(pending is not None or not report['allOwnedDescriptorsClosed'])
++    if report['outcomeUnknown'] or completed>=UNTIL:report['status']='failed'
+     raw=(json.dumps(report,sort_keys=True,separators=(',',':'))+'\n').encode()
+-    need(len(raw)<=32768,'bounded_public_report')
++    need(len(raw)<=98304,'bounded_public_metadata_report')
+     sys.stdout.buffer.write(raw);sys.stdout.buffer.flush()
+ raise SystemExit(0 if report['status']=='complete_finite_metadata_observation' and time.monotonic()<UNTIL else 1)

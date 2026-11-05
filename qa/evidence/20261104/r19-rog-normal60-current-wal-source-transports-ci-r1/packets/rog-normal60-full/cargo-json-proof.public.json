@@ -1,0 +1,146 @@
+{
+  "schema": "heptabao.normal-cargo-json-proof.v1",
+  "streams": {
+    "normal-release-build.stdout": {
+      "events": 445,
+      "reasons": {
+        "compiler-artifact": 399,
+        "build-script-executed": 45,
+        "build-finished": 1
+      },
+      "build_finished": {
+        "reason": "build-finished",
+        "success": true
+      },
+      "artifacts": [
+        {
+          "reason": "compiler-artifact",
+          "package_id": "path+file:///home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source/crates/heptabao-server#0.1.0",
+          "manifest_path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source/crates/heptabao-server/Cargo.toml",
+          "target": {
+            "kind": [
+              "bin"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "heptabao-server",
+            "src_path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source/crates/heptabao-server/src/main.rs",
+            "edition": "2024",
+            "doc": true,
+            "doctest": false,
+            "test": true
+          },
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": true,
+            "overflow_checks": true,
+            "test": false
+          },
+          "features": [
+            "default",
+            "native-v6-ha",
+            "native-v6-storage"
+          ],
+          "filenames": [
+            "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-server"
+          ],
+          "executable": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-server",
+          "fresh": false
+        },
+        {
+          "reason": "compiler-artifact",
+          "package_id": "path+file:///home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source/crates/heptabao-server#0.1.0",
+          "manifest_path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source/crates/heptabao-server/Cargo.toml",
+          "target": {
+            "kind": [
+              "bin"
+            ],
+            "crate_types": [
+              "bin"
+            ],
+            "name": "heptabao-seed",
+            "src_path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source/crates/heptabao-server/src/bin/heptabao-seed.rs",
+            "edition": "2024",
+            "required-features": [
+              "native-v6-storage"
+            ],
+            "doc": true,
+            "doctest": false,
+            "test": true
+          },
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": true,
+            "overflow_checks": true,
+            "test": false
+          },
+          "features": [
+            "default",
+            "native-v6-ha",
+            "native-v6-storage"
+          ],
+          "filenames": [
+            "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-seed"
+          ],
+          "executable": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-seed",
+          "fresh": false
+        }
+      ]
+    },
+    "build.stdout": {
+      "events": 443,
+      "reasons": {
+        "compiler-artifact": 397,
+        "build-script-executed": 45,
+        "build-finished": 1
+      },
+      "build_finished": {
+        "reason": "build-finished",
+        "success": true
+      },
+      "artifacts": [
+        {
+          "reason": "compiler-artifact",
+          "package_id": "path+file:///home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source/crates/heptabao-server#0.1.0",
+          "manifest_path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source/crates/heptabao-server/Cargo.toml",
+          "target": {
+            "kind": [
+              "lib"
+            ],
+            "crate_types": [
+              "lib"
+            ],
+            "name": "heptabao_server",
+            "src_path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source/crates/heptabao-server/src/lib.rs",
+            "edition": "2024",
+            "doc": true,
+            "doctest": true,
+            "test": true
+          },
+          "profile": {
+            "opt_level": "3",
+            "debuginfo": 0,
+            "debug_assertions": true,
+            "overflow_checks": true,
+            "test": true
+          },
+          "features": [
+            "default",
+            "native-v6-ha",
+            "native-v6-storage"
+          ],
+          "filenames": [
+            "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/deps/heptabao_server-46a8765afad8ea76"
+          ],
+          "executable": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/deps/heptabao_server-46a8765afad8ea76",
+          "fresh": false
+        }
+      ]
+    }
+  },
+  "release_receipts_and_actual_compiler_artifacts_exact": true,
+  "libtest_actual_compiler_executable_and_profile_exact": true
+}

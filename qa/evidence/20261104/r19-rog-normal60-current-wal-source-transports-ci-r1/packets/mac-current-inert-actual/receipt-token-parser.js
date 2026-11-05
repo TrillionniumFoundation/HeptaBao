@@ -1,0 +1,6 @@
+function topLevelTokens(raw){
+ let i=0;const ws=()=>{while(/\s/.test(raw[i]||"")&&i<raw.length)i++;};
+ function strEnd(at){let j=at+1;for(;j<raw.length;j++){if(raw[j]==="\\"){j++;continue;}if(raw[j]==='"')return j+1;}throw Error("string not closed");}
+ function end(at){if(raw[at]==='"')return strEnd(at);if(raw[at]==="{"||raw[at]==="["){const stack=[raw[at]];let j=at+1;for(;j<raw.length;j++){if(raw[j]==='"'){j=strEnd(j)-1;continue;}if(raw[j]==="{"||raw[j]==="[")stack.push(raw[j]);if(raw[j]==="}"||raw[j]==="]"){const a=stack.pop();if((a==="{"&&raw[j]!=="}")||(a==="["&&raw[j]!=="]"))throw Error("shape");if(!stack.length)return j+1;}}throw Error("structure");}let j=at;while(j<raw.length&&!/[,}\]\s]/.test(raw[j]))j++;return j;}
+ ws();if(raw[i++]!=="{")throw Error("not object");const result={};while(true){ws();if(raw[i]==="}"){i++;break;}if(raw[i]!=='"')throw Error("key");const ke=strEnd(i),key=JSON.parse(raw.slice(i,ke));i=ke;ws();if(raw[i++]!==":")throw Error("colon");ws();const start=i,stop=end(i);if(Object.prototype.hasOwnProperty.call(result,key))throw Error("duplicate");result[key]={raw:raw.slice(start,stop),start,end:stop};i=stop;ws();if(raw[i]===","){i++;continue;}if(raw[i]==="}"){i++;break;}throw Error("delimiter");}ws();if(i!==raw.length)throw Error("tail");return result;
+}

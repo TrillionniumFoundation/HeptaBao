@@ -1,0 +1,101 @@
+{
+  "carrier_and_all_derived_pins_exact": true,
+  "carrier_readiness": "concrete source for root admission; not dispatched",
+  "exact_actual_export_versions": true,
+  "host_operations": 0,
+  "importer_readiness": false,
+  "original_deadlines_preserved": {
+    "cleanup_each": 5,
+    "endpoints": 90,
+    "import": 300,
+    "import_clone": 90,
+    "import_git": 60,
+    "import_outer": 330,
+    "relay": 300,
+    "ssh_connect": 10,
+    "transfer_outer": 360
+  },
+  "remaining_importer_slots": [
+    "received_bundle_version",
+    "received_export_receipt_version",
+    "transfer_receipt_bytes",
+    "transfer_receipt_sha256",
+    "transfer_receipt_version"
+  ],
+  "schema": "heptabao.df026-source-carrier.source-review.v1",
+  "scope": "No runtime or new import/transfer qualification",
+  "selected_pure_receiver_receipt_assertions": 19,
+  "source_rows": [
+    {
+      "after_bytes": 6257,
+      "after_sha256": "51cb936aabb86ae7845da30477ded90f9bd85513f93725c5cc4083e1b11f37ca",
+      "before_bytes": 6289,
+      "before_sha256": "8681201f587a3c5d2da07f01404e4b74e1db2e3ada2614f3482915c6543fb650",
+      "changed_definitions": [],
+      "definitions": 10,
+      "literal_edits": 7,
+      "name": "sender",
+      "parsed_and_compiled_not_executed": true,
+      "reverse_whole_equal": true,
+      "unchanged_definitions": 10
+    },
+    {
+      "after_bytes": 8656,
+      "after_sha256": "833baaaff2dfad1f245b8b41a77e4b05bb3f0c652ddc40f5cd40765ad29e0417",
+      "before_bytes": 8701,
+      "before_sha256": "2280d96c79b5e8fe8a0b3a9b601196cc61dbc43c11f4ded31780617f0533a6e5",
+      "changed_definitions": [
+        "receive"
+      ],
+      "definitions": 10,
+      "literal_edits": 14,
+      "name": "receiver",
+      "parsed_and_compiled_not_executed": true,
+      "reverse_whole_equal": true,
+      "unchanged_definitions": 9
+    },
+    {
+      "after_bytes": 15333,
+      "after_sha256": "8317dc3e0722ce319c2af57f63dc394c560b5b30cc7534e26cc44cf4bb68005b",
+      "before_bytes": 15395,
+      "before_sha256": "f98ef18f25583506e7ff6072b8f383115ea826a399286f22bff1517b6eeb4432",
+      "changed_definitions": [],
+      "definitions": 17,
+      "literal_edits": 12,
+      "name": "relay",
+      "parsed_and_compiled_not_executed": true,
+      "reverse_whole_equal": true,
+      "unchanged_definitions": 17
+    },
+    {
+      "after_bytes": 5025,
+      "after_sha256": "5aa790e86d4695236abeb1c5e57b5394ea26c3e3b4eb400a610be40412cbea5f",
+      "before_bytes": 5049,
+      "before_sha256": "46d1d644882fc064ff34f3141d036e8580126b9b0d7c479dc3659b115492eaa2",
+      "changed_definitions": [],
+      "definitions": 5,
+      "literal_edits": 4,
+      "name": "inert",
+      "parsed_and_compiled_not_executed": true,
+      "reverse_whole_equal": true,
+      "unchanged_definitions": 5
+    },
+    {
+      "after_bytes": 32690,
+      "after_sha256": "ac00c5980fae949b0b4397a06954a73b54e5ce9277f606685a91e8296efa85e1",
+      "before_bytes": 32869,
+      "before_sha256": "65ddf987a13a1360dfc706c649c5aa752de3b9b0dd0dd6e82b4175410fc97bb2",
+      "changed_definitions": [
+        "verify_receipts"
+      ],
+      "definitions": 30,
+      "literal_edits": 28,
+      "name": "importer",
+      "parsed_and_compiled_not_executed": true,
+      "reverse_whole_equal": true,
+      "unchanged_definitions": 29
+    }
+  ],
+  "status": "passed_source_only",
+  "target_modules_executed": false
+}

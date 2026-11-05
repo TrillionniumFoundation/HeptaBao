@@ -1,0 +1,98 @@
+--- before/relay.py
++++ candidate/relay.py
+@@ -1,55 +1,76 @@
+ #!/usr/bin/env python3
+-"""Create-only shared desktop copy of three fixed public 3cb ingress-observer build artifacts.
++"""Create-only shared desktop copy of five fixed public df026 normal-build artifacts.
+ Uses the prior reviewed rog-ts transport. No Git, compiler, server or HTTP starts.
+ """
+ from pathlib import Path
+ import hashlib,json,os,shlex,signal,stat,subprocess,sys,time
++ACTUAL_INPUTS_READY=True
++if not ACTUAL_INPUTS_READY:
++ raise RuntimeError('unresolved exact normal artifact transport input metadata')
+ os.umask(0o077)
+ BASE=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-SOURCES=BASE/'normal-phaseb-ingress-observer-shared-artifact-controls-r1'
+-ROOT=BASE/'normal-phaseb-ingress-observer-shared-artifacts-r1'
++SOURCES=BASE/'normal-cold-h2-shared-artifact-controls-r1'
++ROOT=BASE/'normal-cold-h2-shared-artifacts-r1'
+ CONTROL=ROOT/'control'
+ ORIGINAL=BASE/'normal-33cafa-full128-control-r2/launch_normal_33cafa_full128_r2.py'
+ ORIGINAL_SHA='c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e'
+-HEAD='3cb873919170cc77101b27f6a3ab9e98f41f8d93'
+-TREE='7f4d48a647a81ca96e8a24a0a057c2c829459060'
++HEAD='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
++TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
+ FILES=[
+  {
+-  "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-server",
++  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server",
+   "name": "heptabao-server",
+-  "bytes": 109074848,
+-  "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0",
++  "bytes": 110339520,
++  "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2",
+   "source_mode": 320,
+   "target_mode": 320,
+-  "version": "66306:28096634:109074848:1793832489924040522:1793832490062039381"
++  "version": "66306:31618600:110339520:1793854196517721681:1793854196660721163"
+  },
+  {
+-  "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/native-build.public.json",
++  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/native-build.public.json",
+   "name": "native-build.public.json",
+-  "bytes": 794,
+-  "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce",
++  "bytes": 772,
++  "sha256": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": "66306:28096637:794:1793832490491671044:1793832490491671044"
++  "version": "66306:31618604:772:1793854197085814600:1793854197085814600"
+  },
+  {
+-  "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/normal-release-result.public.json",
++  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/normal-release-result.public.json",
+   "name": "normal-release-result.public.json",
+-  "bytes": 3200,
+-  "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f",
++  "bytes": 3137,
++  "sha256": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d",
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": "66306:28096636:3200:1793832490490761645:1793832490490761645"
++  "version": "66306:31618602:3137:1793854197085005556:1793854197085005556"
++ },
++ {
++  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json",
++  "name": "normal-release-tests-result.public.json",
++  "bytes": 48188,
++  "sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:31618802:48188:1793855417596045434:1793855417596045434"
++ },
++ {
++  "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/normal-test-groups.public.json",
++  "name": "groups.json",
++  "bytes": 6249,
++  "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:27299399:6249:1793850441629209928:1793850441629209928"
+  }
+ ]
+-HELPERS={"sender.py":"e57040a017a44d9d2a9b4396200325eb8499bf503e9c52be58448fa71fdf5835","receiver.py":"dd2209577430e4d9b17918f9688453cb3b68ef725032abb6e3f59b6654a34e31"}
++HELPERS={"sender.py":"bdd3164c3140f45375b2c543f87d87e5e978a5d02cbbe9237c6a9dee3f1becd4","receiver.py":"96506bb62ea514f58b995e0202a78c29219290ce0b2977a5204e2cb4c540a465"}
+ SSH=['/usr/bin/ssh','-T','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes',
+      '-o','ConnectTimeout=10','-o','ConnectionAttempts=1',
+      '-o','ClearAllForwardings=yes','-o','ForwardAgent=no','-o','UpdateHostKeys=no',
+      '-o','ControlMaster=no','-o','ControlPath=none']
+ START=time.monotonic();UNTIL=START+300
+ children=[];commands=[];handles=[];protected=0;pending_signal=None;created=False;remote_endpoints_verified=False
+-result={'schema':'heptabao.phaseb3cb.shared-public-artifacts-relay.v1','status':'failed',
++result={'schema':'heptabao.df026.shared-public-normal-artifacts-relay.v1','status':'failed',
+  'overall_seconds':300,'ssh_child_seconds':90,'endpoint_seconds':90,
+  'source_alias':'rog-ts','destination_host':'desktop',
+  'destination_root':str(ROOT),'source_commit':HEAD,'source_tree':TREE,'files':FILES,

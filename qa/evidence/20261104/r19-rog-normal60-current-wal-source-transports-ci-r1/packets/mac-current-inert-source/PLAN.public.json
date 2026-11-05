@@ -1,0 +1,113 @@
+{
+  "schema": "heptabao.mac-current-native-df026-inert-plan.r1",
+  "status": "SOURCE_ONLY_NOT_SUBMITTED",
+  "sourcePacketTree": "20ac9d5b0d79577e107b1d202dced02ead300721",
+  "sourceRootReviewBlob": "725783e8df43dc9e59a2ff14a7debdbdf5e40d6e",
+  "runtimeRequestUnsubmitted": {
+    "blob": "5c79feea035cab451eb734174d6497a0237c84e9",
+    "sha256": "f7b968aeed09a21b57ca18336ebe575a07199e0456026c300e3678a6b123d6ab",
+    "permission": "Separate actual inert terminal review and root GO required"
+  },
+  "newRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-native-custody-r1",
+  "carrier": {
+    "bytes": 15101,
+    "sha256": "397a7e69cecafae5cd4f7f99b093030916a7ccd9e4c4fc90c72e87fd81523e33",
+    "git_blob": "a83cca8dac981476e268fd4236d055279a1527b3"
+  },
+  "payload": {
+    "bytes": 625538,
+    "sha256": "738df828f078fffb9610c6b98d6ba9a709446642a5a7ed3a43e62d19f2d9c800",
+    "git_blob": "d00636c3330432e1264229c2ff23cb873c95d347"
+  },
+  "request": {
+    "bytes": 641503,
+    "sha256": "67851222dd58558144d0570209423b0c2c4f1f7e0f03ba79475cd1f84bd36fff",
+    "git_blob": "37c26582c54ffc186b527083f470fe0e3373c9b3"
+  },
+  "requestSummary": {
+    "host": "mac",
+    "executable": "/opt/homebrew/bin/python3",
+    "argsPrefix": [
+      "-I",
+      "-S",
+      "-B",
+      "-c"
+    ],
+    "cwd": "/Users/qianqi",
+    "outerSeconds": 60,
+    "idempotencyKey": "heptabao-mac-current-native-df026-inert-397a7e69-20261105-r1"
+  },
+  "deadlines": {
+    "sharedInertSeconds": 45,
+    "diskutilCapSeconds": 30,
+    "outerSeconds": 60,
+    "reset": false
+  },
+  "publicTransfer": {
+    "previousCapBytes": 131072,
+    "exactNewBytes": 625538,
+    "wholeSha256": "738df828f078fffb9610c6b98d6ba9a709446642a5a7ed3a43e62d19f2d9c800",
+    "reason": "21 fixed public sources and six fixed public documents; no credential/capture budget change"
+  },
+  "beforeWrites": [
+    "Decode and whole-pin exact 21 sources and six public documents",
+    "AST/compile 17 Python sources only; four MJS files byte verification only",
+    "Load only three existing pinned definition libraries",
+    "Held 27-string T5 anchor and fixed owned diskutil UUID under original deadline",
+    "Two exact ROOT ENOENT observations under held stable parent"
+  ],
+  "newDirectories": [
+    "ROOT",
+    "ROOT/qa",
+    "ROOT/proofs"
+  ],
+  "sourceCount": 21,
+  "publicProofCount": 5,
+  "publicCandidateCount": 1,
+  "publicationsBeforeInertReceipt": 27,
+  "inertReceipt": "ROOT/inert-native-df026-result.public.json",
+  "modes": {
+    "directories": "0700",
+    "files": "0600",
+    "uid": 501,
+    "singleLink": true
+  },
+  "writeProtocol": "O_EXCL write FD plus fchmod/fsync/parent fsync, then separate held read FD whole-byte comparison and full nine-field named identity match",
+  "candidateReceiptAloneQualifies": false,
+  "successConjunction": [
+    "Authority exit 0/full/durable/no timeout",
+    "Exact final raw stdout and bounded valid report",
+    "27 input publications and separately bound receipt",
+    "All original T5 anchors and last check true",
+    "All owned command groups reaped/empty/streams closed",
+    "All held descriptors closed and no cancellation/unknown",
+    "Original 45 second deadline after closure and after stdout"
+  ],
+  "prohibited": [
+    "production DB/current credential reads",
+    "SQLite/consumer/native or service entrypoint execution",
+    "launchd/server or provider/J3160 activity",
+    "Git/Cargo/build",
+    "overwrite or reuse old roots",
+    "automatic retry after unknown or failure"
+  ],
+  "sourceChanges": {
+    "originalDefinitionByteEqual": 8,
+    "newHelpers": 2,
+    "changedOriginalDefinitions": [
+      "stdin_once",
+      "main"
+    ],
+    "strictDiffHunks": 6
+  },
+  "localVerification": {
+    "kind": "AST/compile and public exact-byte checks only",
+    "executorChunk": "311010",
+    "exitCode": 0,
+    "elapsedSeconds": 0.172688396,
+    "hostCalls": 0,
+    "candidateExecution": false,
+    "componentMatrixExpanded": false
+  },
+  "authoringCorrection": "Unsubmitted author draft 15081 B failed local compile-only: walrus inside a comprehension iterable is forbidden. Both fstat assignments were moved immediately before the tuple construction. No host/candidate execution occurred; final source and request have new hashes/key. Original draft and exact executor response are preserved."
+}

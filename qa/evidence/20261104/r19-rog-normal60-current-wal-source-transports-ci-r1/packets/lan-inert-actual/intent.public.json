@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.df026-lan-inert-once-intent.v1",
+  "request_blob": "642468e6697635904c7c514aea38cb4de28a74dd",
+  "request_sha256": "8083e413799a037d3cbf86c6c4198ddace8c7cf44b86f0b919e0cda98027ade1",
+  "request_bytes": 482907,
+  "root_admission_blob": "d3c073c31db10d45a9a80380f915581806282f45",
+  "host": "desktop",
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "executable": "/usr/bin/python3",
+  "idempotency_key": "heptabao-df026-postcold-inert-r1-664df513-83046e6f",
+  "timeout_seconds": 60,
+  "effect": "Create-only nine fixed public control sources; no source import/prepare/HA/product operation.",
+  "unknown_no_replay": true
+}

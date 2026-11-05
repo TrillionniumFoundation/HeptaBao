@@ -1,0 +1,82 @@
+{
+  "artifacts": {
+    "heptabao-seed": {
+      "bytes": 102260520,
+      "compiler_executable": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-seed",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-seed",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "846a00f5f6fb6ee12f91c151d202ac3059aff1878a254b89bb093313911ec21f"
+    },
+    "heptabao-server": {
+      "bytes": 110339520,
+      "compiler_executable": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-server",
+      "features": [
+        "default",
+        "native-v6-ha",
+        "native-v6-storage"
+      ],
+      "fresh": false,
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server",
+      "profile": {
+        "debug_assertions": true,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": true,
+        "test": false
+      },
+      "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2"
+    }
+  },
+  "build_driver_path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/normal_cold_h2_build.py",
+  "build_driver_sha256": "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+  "build_exit_code": 0,
+  "build_finished_success": true,
+  "cargo_events_sha256": "8919415e0f8093f85a8712dbae341ae3bb4c457e3e6c641ea195b8f7fb3ad331",
+  "cargo_stderr_sha256": "43fe874123310f0bae61b013328907d101694a9a044f9a7866cdf18e89aee497",
+  "command": [
+    "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "build",
+    "--release",
+    "--locked",
+    "--offline",
+    "-p",
+    "heptabao-server",
+    "--bin",
+    "heptabao-server",
+    "--bin",
+    "heptabao-seed",
+    "--message-format=json-render-diagnostics"
+  ],
+  "elapsed_seconds": 1333.7623211960017,
+  "formal_qualification": false,
+  "native_abi": "x86_64-unknown-linux-gnu",
+  "normal_default_candidate": true,
+  "owned_group_survivors_after_wait": false,
+  "requested_release_profile": {
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_PANIC": "unwind"
+  },
+  "rustc_vv": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.0\nLLVM version: 22.1.8\n",
+  "schema": "heptabao.native-default-build-result.v1",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_freeze_verified": true,
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "timed_out": false
+}

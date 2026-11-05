@@ -1,0 +1,49 @@
+{
+  "childProcesses": 0,
+  "directoryMetadataMaximumPerPath": 8,
+  "fdPeakBound": 23,
+  "fdRegisteredBound": 68,
+  "fixedLeaves": 46,
+  "fixedParents": 22,
+  "fixedPathsMatchOriginalCaptureLibrary": true,
+  "hostCalls": 0,
+  "innerSeconds": 5,
+  "leafMetadataMaximumPerPath": 6,
+  "metadataBound": 452,
+  "mode": "AST_compile_and_fixed_public_scope_only",
+  "noFileBodyOrSqlOrProcessOrNetworkApis": true,
+  "notOriginalFailurePathDiagnosis": true,
+  "ok": true,
+  "originalDefinitionByteEqual": [
+    "Refused",
+    "need",
+    "remaining",
+    "count",
+    "ident",
+    "on_signal",
+    "critical",
+    "close_row"
+  ],
+  "originalMaximumsUnchanged": true,
+  "outerSeconds": 60,
+  "privateBodiesRead": 0,
+  "request": {
+    "bytes": 23540,
+    "git_blob": "01ae5b6b39862bc54100a8de81c7c8d44f26e05a",
+    "sha256": "558b0686a9c07235e9d9ff134e7c9ee7247d61cf10f1dfd4e116b39e2e186447"
+  },
+  "roles": {
+    "database_journal": 6,
+    "database_main": 6,
+    "database_shm": 6,
+    "database_wal": 6,
+    "small_read": 22
+  },
+  "schema": "heptabao.mac-capture-size-metadata-static.r1",
+  "source": {
+    "bytes": 22077,
+    "git_blob": "6928d05186ffbf92d51659b2553b06050dc73af1",
+    "sha256": "3ba165eb8073c87217d2e5f076fb8dcb65c2ccec4f2fb7637926d36960295fd4"
+  },
+  "sourceExecuted": false
+}

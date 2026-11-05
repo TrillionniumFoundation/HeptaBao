@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.root-r18-complete-tree-review.v1",
+  "tree": "4cfad028fef8d4aceb0f7f606972d2e3077996a2",
+  "parent_tree": "4bc6dee55ca67aeb8e101a0e69bd0b2cc598281c",
+  "merkle": {
+    "root_sha": "4cfad028fef8d4aceb0f7f606972d2e3077996a2",
+    "trees_verified": 1461
+  },
+  "before_blobs": 10077,
+  "after_blobs": 10813,
+  "prior_non_document_leaves_whole_unchanged": 10075,
+  "prior_files_deleted": 0,
+  "document_files_updated": 2,
+  "new_files": 736,
+  "all_new_paths_modes_blob_ids_sizes_equal_verified_originals": true,
+  "all_packet_merkle_roots_exact": true,
+  "original_index_raw_tokens_except_top_asof_preserved": true,
+  "prior_document_body_preserved_exact": true,
+  "full_replacement_qualified": false,
+  "production_changed": false,
+  "old_assets_deleted": false
+}

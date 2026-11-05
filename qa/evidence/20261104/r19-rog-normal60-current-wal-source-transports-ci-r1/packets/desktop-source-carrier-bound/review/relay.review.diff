@@ -1,0 +1,65 @@
+--- reference/relay.py
++++ candidate/relay.py
+@@ -1,46 +1,46 @@
+ #!/usr/bin/env python3
+-"""Create-only shared desktop copy of two fixed public 3cb standalone source files.
++"""Create-only shared desktop copy of two fixed public df026 standalone source files.
+ Uses the prior reviewed rog-ts transport. No Git, compiler, server or HTTP starts.
+ """
+ from pathlib import Path
+ import hashlib,json,os,shlex,signal,stat,subprocess,sys,time
+ os.umask(0o077)
+ BASE=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-SOURCES=BASE/'normal-phaseb-ingress-observer-source-carrier-controls-r1'
+-ROOT=BASE/'normal-phaseb-ingress-observer-source-carrier-r1'
++SOURCES=BASE/'normal-cold-h2-source-carrier-controls-r1'
++ROOT=BASE/'normal-cold-h2-source-carrier-r1'
+ CONTROL=ROOT/'control'
+ ORIGINAL=BASE/'normal-33cafa-full128-control-r2/launch_normal_33cafa_full128_r2.py'
+ ORIGINAL_SHA='c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e'
+-HEAD='3cb873919170cc77101b27f6a3ab9e98f41f8d93'
+-TREE='7f4d48a647a81ca96e8a24a0a057c2c829459060'
++HEAD='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
++TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
+ FILES=[
+  {
+-  "bytes": 23335023,
+-  "name": "canonical-3cb-full.bundle",
+-  "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/canonical-3cb-full.bundle",
+-  "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
++  "bytes": 23429893,
++  "name": "canonical-df026-full.bundle",
++  "path": "/home/qian-qi/heptabao-cold-h2-source-export-20261105-r1/canonical-df026-full.bundle",
++  "sha256": "2f25963c59ecfd0918f786c98e6babcd7ba35daec02f00d899e987f19c28ad71",
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": "66306:28324895:23335023:1793839385060504547:1793839385063504533"
++  "version": "66306:28491499:23429893:1793854798728349517:1793854798731349506"
+  },
+  {
+-  "bytes": 39965,
++  "bytes": 38783,
+   "name": "source-export.result.public.json",
+-  "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/result.public.json",
+-  "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
++  "path": "/home/qian-qi/heptabao-cold-h2-source-export-20261105-r1/result.public.json",
++  "sha256": "34816ca251e2cf420ed63db97bd56c10e0c1a725e16470f28f9eedf70dd21bb4",
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": "66306:28324969:39965:1793839385327147652:1793839385327147652"
++  "version": "66306:28491536:38783:1793854798988258235:1793854798988258235"
+  }
+ ]
+-HELPERS={"sender.py":"8681201f587a3c5d2da07f01404e4b74e1db2e3ada2614f3482915c6543fb650","receiver.py":"2280d96c79b5e8fe8a0b3a9b601196cc61dbc43c11f4ded31780617f0533a6e5"}
++HELPERS={"sender.py":"51cb936aabb86ae7845da30477ded90f9bd85513f93725c5cc4083e1b11f37ca","receiver.py":"833baaaff2dfad1f245b8b41a77e4b05bb3f0c652ddc40f5cd40765ad29e0417"}
+ SSH=['/usr/bin/ssh','-T','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes',
+      '-o','ConnectTimeout=10','-o','ConnectionAttempts=1',
+      '-o','ClearAllForwardings=yes','-o','ForwardAgent=no','-o','UpdateHostKeys=no',
+      '-o','ControlMaster=no','-o','ControlPath=none']
+ START=time.monotonic();UNTIL=START+300
+ children=[];commands=[];handles=[];protected=0;pending_signal=None;created=False;remote_endpoints_verified=False
+-result={'schema':'heptabao.phaseb3cb.public-source-carrier-relay.v1','status':'failed',
++result={'schema':'heptabao.df026.public-source-carrier-relay.v1','status':'failed',
+  'overall_seconds':300,'ssh_child_seconds':90,'endpoint_seconds':90,
+  'source_alias':'rog-ts','destination_host':'desktop',
+  'destination_root':str(ROOT),'source_commit':HEAD,'source_tree':TREE,'files':FILES,

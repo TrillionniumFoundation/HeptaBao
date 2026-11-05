@@ -1,0 +1,119 @@
+{
+  "schema": "heptabao.mac-current-native-df026-inert-author-terminal-review.r1",
+  "verdict": "PASS_INERT_ONLY",
+  "jobId": "1a1aa25e8d1-fc05-3e27",
+  "key": "heptabao-mac-current-native-df026-inert-397a7e69-20261105-r1",
+  "submissionInvocations": 1,
+  "request": {
+    "bytes": 641503,
+    "sha256": "67851222dd58558144d0570209423b0c2c4f1f7e0f03ba79475cd1f84bd36fff",
+    "git_blob": "37c26582c54ffc186b527083f470fe0e3373c9b3"
+  },
+  "admission": {
+    "bytes": 2361,
+    "sha256": "62410cdf01533c33d405059138062dce356103a0af6a9b017f9ac48ad5013aca",
+    "git_blob": "c8efee06d679a49bee03731d2ddc6077f69d6d6e"
+  },
+  "sourcePacketTree": "f1182cd744d8fe18ad0c16f92038cce1c3731b82",
+  "fullRuntimeSourcePacketTree": "20ac9d5b0d79577e107b1d202dced02ead300721",
+  "authority": {
+    "bytes": 733,
+    "sha256": "ac5a9cf4d55aacc28b275c3189a4257f2b01bba9ea8c3e89f4b16608c265e1b4",
+    "git_blob": "0049b95093d682ebf25b402bc9fb8e585f343afe"
+  },
+  "stdout": {
+    "bytes": 14370,
+    "sha256": "07edd8fbef8f1ba19b01d41dd1dbe70517693f46ddd7d246a462f377a4ca326a",
+    "git_blob": "d522895df6ab058b3f157d605e5b6db470263a3b"
+  },
+  "actualReceipt": {
+    "bytes": 11974,
+    "sha256": "90e849ca41a5a99c49cb43efd1271ac7adde40775d6002be516992a2a3514729",
+    "git_blob": "52b49196857ebd8dce7fd76ef4f72ba9ddaff397"
+  },
+  "authorityExit": 0,
+  "complete": true,
+  "durable": true,
+  "knownTerminal": true,
+  "timedOut": false,
+  "automaticRetry": false,
+  "elapsedSeconds": 0.28005333291366696,
+  "originalInert45Met": true,
+  "diskutil30ClippedByOriginal45": true,
+  "supervisorSeconds": 60,
+  "publicInputs": {
+    "sources": 21,
+    "pythonCompiledOnly": 17,
+    "javascriptWholeByteOnly": 4,
+    "proofs": 5,
+    "candidate": 1,
+    "all27ExactBytesShaModeOwnerLinkAnd9FieldIdentityVerified": true,
+    "filesMode": "0600",
+    "owner": "501:20",
+    "nlink": 1,
+    "payload": {
+      "bytes": 625538,
+      "sha256": "738df828f078fffb9610c6b98d6ba9a709446642a5a7ed3a43e62d19f2d9c800",
+      "git_blob": "d00636c3330432e1264229c2ff23cb873c95d347"
+    }
+  },
+  "rootCreation": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-native-custody-r1",
+    "twoEnoent": true,
+    "qa": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-native-custody-r1/qa",
+    "proofs": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-native-custody-r1/proofs",
+    "createOnly": true
+  },
+  "t5": {
+    "original27IdentityStringsExact": true,
+    "actualUuidVerified": true,
+    "originalDevice": "16777244",
+    "finalAnchorCheck": true,
+    "allDescriptorsClosed": true
+  },
+  "command": {
+    "count": 1,
+    "label": "inert-t5-volume",
+    "pid": 87649,
+    "argv": [
+      "/usr/sbin/diskutil",
+      "info",
+      "-plist",
+      "/Volumes/T5"
+    ],
+    "exitCode": 0,
+    "retainedWnowait": true,
+    "naturalExit": true,
+    "directChildReaped": true,
+    "liveGroupEmptyBeforeReap": true,
+    "allGroupRowsEmptyAfterReap": true,
+    "streamsClosed": true,
+    "signals": [],
+    "postReapSignalSent": false,
+    "unknownCount": 0
+  },
+  "receiptConjunction": {
+    "receiptAloneQualifies": false,
+    "tokenReconstructedWithoutNumberReserialization": true,
+    "wholeHashMatchesActualHeldReadback": true,
+    "requiresFinalAuthorityAndClosure": true
+  },
+  "sideEffects": {
+    "currentPrivateInputsOpened": false,
+    "productionSqliteOpened": false,
+    "sqliteExecuted": false,
+    "consumerExecuted": false,
+    "serviceStarted": false,
+    "gitStarted": false,
+    "cargoStarted": false,
+    "entrypointsExecuted": false
+  },
+  "runtime": {
+    "requestBlob": "5c79feea035cab451eb734174d6497a0237c84e9",
+    "submitted": false,
+    "authorization": "separate root actual-inert review and runtime GO required",
+    "productCommit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c"
+  },
+  "scope": "Actual public source publication and import-safe guard only. This result does not qualify capture, credentials, consumers, launchd service behavior or production migration.",
+  "authorVerifierCorrection": "Initial in-memory author assertion compared complete anchor objects using JSON.stringify, so differing object member order (identity/path vs path/identity) rejected equal fields. No host gate/result changed; subsequent check compares each path and all nine identity strings explicitly."
+}

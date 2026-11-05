@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/retained-heptabao-server-libtest",
+    "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
+    "--exact",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.01586916999076493,
+  "exit_code": 0,
+  "label": "cold-h2-8",
+  "outer_cap_seconds": 599.1817061959882,
+  "owned_pgid": 1645773,
+  "remaining": [],
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "c758cceb75dd7cbc0f940cb9054b93f1ce22fd619f649ad2a307bbe499597b14",
+  "timed_out": false
+}

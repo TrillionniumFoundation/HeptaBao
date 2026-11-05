@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.root-df026-normal5-inert-source-go.r1",
+  "reviewed_at": "2026-11-05 05:33:13 UTC",
+  "status": "GO_ONE_CREATE_ONLY_INERT",
+  "tree": "6f8e545a00a4564d4cb0bcdcab6b70375ce712da",
+  "files": 39,
+  "bytes": 497042,
+  "merkle_trees": 8,
+  "strict_original_diffs": [
+    {
+      "name": "inert",
+      "hunks": 3
+    },
+    {
+      "name": "sender",
+      "hunks": 1
+    },
+    {
+      "name": "receiver",
+      "hunks": 2
+    },
+    {
+      "name": "relay",
+      "hunks": 1
+    }
+  ],
+  "changes": "Fixed five public files, exact df026 identities, fresh roots and schema labels. Readiness guard is true only after all source sizes/hashes/modes/uid/gid/nlink/version match actual file_info. All original function bodies and original90/300/10/5+5 bounds unchanged.",
+  "actual_public_files": [
+    {
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server",
+      "name": "heptabao-server",
+      "bytes": 110339520,
+      "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2",
+      "source_mode": 320,
+      "target_mode": 320,
+      "version": "66306:31618600:110339520:1793854196517721681:1793854196660721163"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/native-build.public.json",
+      "name": "native-build.public.json",
+      "bytes": 772,
+      "sha256": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:31618604:772:1793854197085814600:1793854197085814600"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/normal-release-result.public.json",
+      "name": "normal-release-result.public.json",
+      "bytes": 3137,
+      "sha256": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:31618602:3137:1793854197085005556:1793854197085005556"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json",
+      "name": "normal-release-tests-result.public.json",
+      "bytes": 48188,
+      "sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:31618802:48188:1793855417596045434:1793855417596045434"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/normal-test-groups.public.json",
+      "name": "groups.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:27299399:6249:1793850441629209928:1793850441629209928"
+    }
+  ],
+  "root_normal60": "5b2c80fe4c476a8481e47a09dd5d0dd4dc5328e5",
+  "request": {
+    "blob": "6a7eb9d90d77d32e3c53e7b28044101b33ff1d2f",
+    "bytes": 49878,
+    "sha256": "e5800f9a8f9c124f70843d48877dc55dc69dad0cde96ea284e7b86ed54aeb7f0",
+    "key": "heptabao-df026-normal5-controls-inert-r1-adc1bd36",
+    "timeout_seconds": 60
+  },
+  "all_three_payload_sources_whole_exact": true,
+  "next": "Collect actual three source readbacks, inert receipt and authoritative terminal/full streams. Only then admit exact relay80e5220a813d4ad0b0e3a5f2662330d5c8e222a7. Transport carries existing normal60 evidence and creates no new product qualification.",
+  "production_changed": false,
+  "full_replacement": false
+}

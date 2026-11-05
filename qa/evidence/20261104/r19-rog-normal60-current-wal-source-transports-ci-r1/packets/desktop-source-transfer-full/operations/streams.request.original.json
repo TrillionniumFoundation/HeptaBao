@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "compat-df026-source-transfer-r1-1a1aa2cac47-fc05-3ead-streams",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1aa2cac47-fc05-3ead",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

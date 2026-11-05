@@ -1,0 +1,135 @@
+{
+  "schema": "heptabao.x230-df026-transport.independent-text-review.v1",
+  "source_tree": "7d8b1103fcc8122a2baaa8d02e2fea6faf4866be",
+  "strict_deltas": {
+    "receiver": {
+      "hunks": 6,
+      "bytes": 29062
+    },
+    "relay": {
+      "hunks": 4,
+      "bytes": 20123
+    },
+    "sender": {
+      "hunks": 2,
+      "bytes": 8024
+    }
+  },
+  "functions": {
+    "receiver": {
+      "unchanged_count": 23,
+      "unchanged": [
+        "on_signal",
+        "digest",
+        "identity",
+        "remaining",
+        "stable",
+        "fsync_dir",
+        "create",
+        "public",
+        "process_snapshot",
+        "group_members",
+        "stop_active",
+        "stop_owned",
+        "persist_command",
+        "owned_argv",
+        "owned",
+        "git",
+        "freeze",
+        "read_file",
+        "receive_files",
+        "bundle_header",
+        "prove_canonical",
+        "verify_materialized_and_fsync",
+        "recheck_artifacts"
+      ],
+      "changed": [
+        "verify_receipts"
+      ],
+      "added": [
+        "binding_ready",
+        "need",
+        "verify_normal60"
+      ],
+      "expected_single_line_addition_verified": true
+    },
+    "sender": {
+      "unchanged_count": 8,
+      "unchanged": [
+        "handler",
+        "remaining",
+        "identity",
+        "stop_active",
+        "snapshot",
+        "read_file",
+        "dir_fsync",
+        "run_and_report"
+      ],
+      "changed": [
+        "send"
+      ],
+      "added": [
+        "binding_ready"
+      ],
+      "expected_single_line_addition_verified": true
+    },
+    "relay": {
+      "unchanged_count": 16,
+      "unchanged": [
+        "signal_handler",
+        "remaining",
+        "identity",
+        "stable",
+        "fsync_dir",
+        "create",
+        "public",
+        "snapshot",
+        "stop_active",
+        "log_file",
+        "start_child",
+        "wait_child",
+        "read_log",
+        "known_hosts_state",
+        "inspect_config",
+        "remote_command"
+      ],
+      "changed": [],
+      "added": [
+        "binding_ready"
+      ],
+      "expected_single_line_addition_verified": false
+    }
+  },
+  "candidate_executed": false,
+  "host_requests": 0,
+  "seven_ordered_bindings_exact_across_three_sources_and_plan": true,
+  "files_unbound_and_false_gate": true,
+  "ingress_observer_regression": {
+    "exact_ordered_names": [
+      "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
+      "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",
+      "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result",
+      "ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata",
+      "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates",
+      "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results",
+      "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success"
+    ],
+    "count": 7
+  },
+  "cold_h2_regression": {
+    "exact_ordered_names": [
+      "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity",
+      "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results",
+      "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file",
+      "http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context",
+      "http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work",
+      "http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result",
+      "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture",
+      "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
+      "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity"
+    ],
+    "count": 9
+  },
+  "producer_whole_sha_matches_fixed_receiver_gate": true,
+  "original_ssh_prefix_and_trust_pins_byte_equal": true
+}

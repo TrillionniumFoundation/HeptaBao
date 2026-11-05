@@ -1,0 +1,7 @@
+{
+  "chunk_id": "6a03c5",
+  "wall_time_seconds": 0.000030816,
+  "exit_code": 0,
+  "original_token_count": 73,
+  "output": "{\"corrected_result\": {\"body_exact\": true, \"passed\": true}, \"executed_full_importer\": false, \"old_result\": {\"line\": 519, \"passed\": false}, \"only_changes\": [\"append_exact_self_SHA_argument\", \"fresh_r2_idempotency_key\"], \"selected_exact_lines\": [519, 520, 521, 522, 523], \"status\": \"passed\"}\n"
+}

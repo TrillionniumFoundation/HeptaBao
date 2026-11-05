@@ -1,0 +1,99 @@
+{
+  "schema": "heptabao.ci-donor-dispatch-tail-independent-source-review.v1",
+  "proposal_tree": "0ae2f263ec14091c8bfa3e4fcb27be24c55b9f4b",
+  "declared_parent": "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+  "status": "pass_source_only",
+  "blocking_findings": [],
+  "inputs": {
+    "pull_before": {
+      "bytes": 56561,
+      "sha256": "ef4ed22ac9b851d7472b031b0120414b6cf4436b50d1f25674c774100beac019",
+      "git_blob": "7c865163609728bb46342df9ac1e8bcc43c5821b"
+    },
+    "pull_after": {
+      "bytes": 57147,
+      "sha256": "f4b75f1bb8536160ded90f6e11fdc61de42ddd244fddb7112472aa2d69298846",
+      "git_blob": "d7f77ccf47be5a3d77b0707b7bc30013b33003cd"
+    },
+    "test_before": {
+      "bytes": 13169,
+      "sha256": "0d2b3d457bac05c5535803e5848b4ae72c2b15b44c8776259973ae46cf328d31",
+      "git_blob": "7ac84a19d97cf0d782f744a768e37cf78c1c1c22"
+    },
+    "test_after": {
+      "bytes": 13856,
+      "sha256": "38e49846d5056312543504966eee54872111e6329699fa842c0d3215c2324958",
+      "git_blob": "1c1b165e3db6092e456c7577106f9fe437f96fef"
+    },
+    "pull_diff": {
+      "bytes": 1460,
+      "sha256": "ac7ed5c6343ffc2c702536f9fdd9b36f229cc99da729781db758ccaf23c7a8cd",
+      "git_blob": "ce157bb0ec44fbb34aafab8a657fdde7d141eba9"
+    },
+    "test_diff": {
+      "bytes": 1317,
+      "sha256": "e1f2af52ac26f3eae02015f21fc58cad051f1cfc287a9801324e267c6dc83984",
+      "git_blob": "3c136454f93a120542dfc95b545723bed55f2dcc"
+    }
+  },
+  "strict_apply": {
+    "pull": {
+      "hunks": 3,
+      "whole_equal": true
+    },
+    "test": {
+      "hunks": 1,
+      "whole_equal": true
+    }
+  },
+  "independently_matched_df026_members": [
+    {
+      "path": "crates/heptabao-ha-service/src/v6_committed_root_pull.rs",
+      "blob": "7c865163609728bb46342df9ac1e8bcc43c5821b",
+      "bytes": 56561
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/v6_committed_root_pull_donor_window_tests.rs",
+      "blob": "7ac84a19d97cf0d782f744a768e37cf78c1c1c22",
+      "bytes": 13169
+    }
+  ],
+  "scope": {
+    "full_before_after_sources_read": true,
+    "diff_and_callsite_review": true,
+    "source_tooling_only": true,
+    "host_calls": 0,
+    "rust_compile_or_execution": false,
+    "source_refs_modified": false,
+    "historical_CI_failure_reclassified": false,
+    "current_df026_runtime_binding_changed": false
+  },
+  "findings": [
+    {
+      "area": "observer placement",
+      "conclusion": "The new vector and spawned signature are inside the existing cfg(test) observation module; the callsite remains one cfg(test) block after runtime.spawn returns and before pending_pull returns. The sole synchronous controller cannot make its next assignment before recording this one. This is submitted-task order, not authenticated remote-handler arrival order."
+    },
+    {
+      "area": "exact object identity",
+      "conclusion": "PullStep::Object(index) was already resolved through references.get(index).ok_or(InvalidFrame)? before task construction. The later immutable lookup records that exact reference ID and donor; manifests retain the original spawned counter without adding an object tuple. No request, route, capacity, authentication, deadline or fsync input changes."
+    },
+    {
+      "area": "parallel test isolation and cleanup",
+      "conclusion": "The observation remains a thread_local CURRENT with per-observation Arc<Mutex<...>>, restored by the existing RAII Restore on normal return or unwind. Child frame accounting and all joins use that same owned observation; no new process-wide state or Drop implementation is added. A poisoned observer cannot fabricate enough records: existing count/cleanup errors or the new exact count/set assertions fail."
+    },
+    {
+      "area": "assertion sufficiency",
+      "conclusion": "The actual wire assertions still require four silent requests, 24 unique healthy requests and the complete exact leaf set. The new dispatcher observation independently requires exactly 24 healthy submissions and the same exact set, then applies the original last-four membership check against the silent source's first actual wire IDs. The first-window disjointness, recovered bytes/root/ReadIndex, source stop/join, eight-global/four-per-donor bounds and original 14-second bound are unchanged."
+    },
+    {
+      "area": "production projection",
+      "conclusion": "All implementation diff changes are within the existing cfg(test) module or the existing cfg(test) callsite. The whole three-hunk patch strictly reconstructs the candidate; the test diff strictly reconstructs its candidate in one hunk. Production scheduling and transport bytes outside those test-only regions are unchanged."
+    }
+  ],
+  "limits": [
+    "Source review does not prove the new Rust code compiles, passes strict Clippy or produces an actual test pass.",
+    "No historical per-request trace was independently retrieved here; a particular interleaving in the old CI failure is not asserted.",
+    "The successor intentionally does not require final-four order at four concurrent remote TLS handlers. It tests dispatcher tail priority together with unchanged real wire population and completion.",
+    "Any later c133-based test-only source has separate execution qualification; the running df026 normal/H2/PhaseB bindings remain unchanged."
+  ]
+}

@@ -1,0 +1,39 @@
+--- before/v6_committed_root_pull.rs
++++ candidate/v6_committed_root_pull.rs
+@@ -574,6 +574,7 @@
+         pub(crate) active_frames: usize,
+         pub(crate) peak_frames: usize,
+         pub(crate) per_donor_peak_frames: BTreeMap<u64, usize>,
++        pub(crate) object_submissions: Vec<(u64, [u8; 32])>,
+         per_donor_active_frames: BTreeMap<u64, usize>,
+     }
+ 
+@@ -586,9 +587,12 @@
+         CURRENT.with(|value| value.borrow().clone())
+     }
+     impl Observation {
+-        pub(super) fn spawned(&self) {
++        pub(super) fn spawned(&self, target: u64, object: Option<[u8; 32]>) {
+             if let Ok(mut counts) = self.0.lock() {
+                 counts.spawned += 1;
++                if let Some(id) = object {
++                    counts.object_submissions.push((target, id));
++                }
+             }
+         }
+         pub(super) fn joined(&self) {
+@@ -845,7 +849,13 @@
+     });
+     #[cfg(test)]
+     if let Some(observation) = &context.observation {
+-        observation.spawned();
++        // The sole controller records actual task submission before returning to
++        // its next assignment. Concurrent TLS handlers may observe another order.
++        let object = match step {
++            PullStep::Manifest(_) => None,
++            PullStep::Object(index) => references.get(index).map(|reference| reference.id),
++        };
++        observation.spawned(target, object);
+     }
+     Ok(PendingPull {
+         target,

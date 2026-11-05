@@ -1,0 +1,486 @@
+{
+  "schema": "heptabao.mac-current-capture-size-metadata-source-plan.r1",
+  "status": "SOURCE_ONLY_UNSUBMITTED",
+  "purpose": "Observe only current metadata of the original 46 fixed capture leaves. It cannot identify the prior failed path retroactively.",
+  "priorActualPacketTree": "304926750268d0718d695146742de6d9c576df70",
+  "priorJob": "1a1aa2ac597-fc05-3e8f",
+  "priorOutcomeUnknownRetained": true,
+  "priorCaptureSourceSha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+  "source": {
+    "bytes": 22077,
+    "sha256": "3ba165eb8073c87217d2e5f076fb8dcb65c2ccec4f2fb7637926d36960295fd4",
+    "git_blob": "6928d05186ffbf92d51659b2553b06050dc73af1"
+  },
+  "request": {
+    "bytes": 23540,
+    "sha256": "558b0686a9c07235e9d9ff134e7c9ee7247d61cf10f1dfd4e116b39e2e186447",
+    "git_blob": "01ae5b6b39862bc54100a8de81c7c8d44f26e05a"
+  },
+  "host": "mac",
+  "executable": "/opt/homebrew/bin/python3",
+  "argsPrefix": [
+    "-I",
+    "-S",
+    "-B",
+    "-c"
+  ],
+  "cwd": "/Users/qianqi",
+  "stdinBytes": 0,
+  "idempotencyKey": "heptabao-mac-current-capture-size-metadata-3ba165eb-20261105-r1",
+  "sharedInnerSeconds": 5,
+  "supervisorSeconds": 60,
+  "oneAbsoluteDeadline": true,
+  "denominator": {
+    "config": 1,
+    "agentDatabaseFamilies": 20,
+    "authbusCaches": 6,
+    "nativeFiles": 15,
+    "registryFamily": 4,
+    "totalLeaves": 46,
+    "fixedAncestors": 22
+  },
+  "bounds": {
+    "metadataCalls": 452,
+    "proof": "22 directories x at most 8 named/fstat observations plus 46 leaves x at most 6",
+    "registeredDescriptors": 68,
+    "peakDescriptors": 23,
+    "publicOutputBytes": 98304
+  },
+  "parents": [
+    "/",
+    "/Users",
+    "/Users/qianqi",
+    "/Users/qianqi/.openclaw",
+    "/Users/qianqi/.openclaw/agents",
+    "/Users/qianqi/.openclaw/authbus",
+    "/Users/qianqi/.openclaw/state",
+    "/Users/qianqi/.openclaw/agents/hepta",
+    "/Users/qianqi/.openclaw/agents/hepta-backend",
+    "/Users/qianqi/.openclaw/agents/hepta-ui",
+    "/Users/qianqi/.openclaw/agents/main",
+    "/Users/qianqi/.openclaw/agents/trnm",
+    "/Users/qianqi/.openclaw/agents/hepta-backend/agent",
+    "/Users/qianqi/.openclaw/agents/hepta-ui/agent",
+    "/Users/qianqi/.openclaw/agents/hepta/agent",
+    "/Users/qianqi/.openclaw/agents/main/agent",
+    "/Users/qianqi/.openclaw/agents/trnm/agent",
+    "/Users/qianqi/.openclaw/agents/hepta-backend/agent/codex-home",
+    "/Users/qianqi/.openclaw/agents/hepta-ui/agent/codex-home",
+    "/Users/qianqi/.openclaw/agents/hepta/agent/codex-home",
+    "/Users/qianqi/.openclaw/agents/main/agent/codex-home",
+    "/Users/qianqi/.openclaw/agents/trnm/agent/codex-home"
+  ],
+  "targets": [
+    {
+      "label": "config",
+      "path": "/Users/qianqi/.openclaw/openclaw.json",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": false,
+      "privateMode": true
+    },
+    {
+      "label": "auth_main",
+      "path": "/Users/qianqi/.openclaw/agents/main/agent/openclaw-agent.sqlite",
+      "role": "database_main",
+      "maximum": null,
+      "optional": false,
+      "privateMode": true
+    },
+    {
+      "label": "auth_main_wal",
+      "path": "/Users/qianqi/.openclaw/agents/main/agent/openclaw-agent.sqlite-wal",
+      "role": "database_wal",
+      "maximum": 0,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "auth_main_shm",
+      "path": "/Users/qianqi/.openclaw/agents/main/agent/openclaw-agent.sqlite-shm",
+      "role": "database_shm",
+      "maximum": 8388608,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "auth_main_journal",
+      "path": "/Users/qianqi/.openclaw/agents/main/agent/openclaw-agent.sqlite-journal",
+      "role": "database_journal",
+      "maximum": 0,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "auth_trnm",
+      "path": "/Users/qianqi/.openclaw/agents/trnm/agent/openclaw-agent.sqlite",
+      "role": "database_main",
+      "maximum": null,
+      "optional": false,
+      "privateMode": true
+    },
+    {
+      "label": "auth_trnm_wal",
+      "path": "/Users/qianqi/.openclaw/agents/trnm/agent/openclaw-agent.sqlite-wal",
+      "role": "database_wal",
+      "maximum": 0,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "auth_trnm_shm",
+      "path": "/Users/qianqi/.openclaw/agents/trnm/agent/openclaw-agent.sqlite-shm",
+      "role": "database_shm",
+      "maximum": 8388608,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "auth_trnm_journal",
+      "path": "/Users/qianqi/.openclaw/agents/trnm/agent/openclaw-agent.sqlite-journal",
+      "role": "database_journal",
+      "maximum": 0,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "auth_hepta-ui",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/openclaw-agent.sqlite",
+      "role": "database_main",
+      "maximum": null,
+      "optional": false,
+      "privateMode": true
+    },
+    {
+      "label": "auth_hepta-ui_wal",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/openclaw-agent.sqlite-wal",
+      "role": "database_wal",
+      "maximum": 0,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "auth_hepta-ui_shm",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/openclaw-agent.sqlite-shm",
+      "role": "database_shm",
+      "maximum": 8388608,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "auth_hepta-ui_journal",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/openclaw-agent.sqlite-journal",
+      "role": "database_journal",
+      "maximum": 0,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "auth_hepta",
+      "path": "/Users/qianqi/.openclaw/agents/hepta/agent/openclaw-agent.sqlite",
+      "role": "database_main",
+      "maximum": null,
+      "optional": false,
+      "privateMode": true
+    },
+    {
+      "label": "auth_hepta_wal",
+      "path": "/Users/qianqi/.openclaw/agents/hepta/agent/openclaw-agent.sqlite-wal",
+      "role": "database_wal",
+      "maximum": 0,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "auth_hepta_shm",
+      "path": "/Users/qianqi/.openclaw/agents/hepta/agent/openclaw-agent.sqlite-shm",
+      "role": "database_shm",
+      "maximum": 8388608,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "auth_hepta_journal",
+      "path": "/Users/qianqi/.openclaw/agents/hepta/agent/openclaw-agent.sqlite-journal",
+      "role": "database_journal",
+      "maximum": 0,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "auth_hepta-backend",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/openclaw-agent.sqlite",
+      "role": "database_main",
+      "maximum": null,
+      "optional": false,
+      "privateMode": true
+    },
+    {
+      "label": "auth_hepta-backend_wal",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/openclaw-agent.sqlite-wal",
+      "role": "database_wal",
+      "maximum": 0,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "auth_hepta-backend_shm",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/openclaw-agent.sqlite-shm",
+      "role": "database_shm",
+      "maximum": 8388608,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "auth_hepta-backend_journal",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/openclaw-agent.sqlite-journal",
+      "role": "database_journal",
+      "maximum": 0,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "cache_applied-profiles.json",
+      "path": "/Users/qianqi/.openclaw/authbus/applied-profiles.json",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "cache_publish-baseline.json",
+      "path": "/Users/qianqi/.openclaw/authbus/publish-baseline.json",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "cache_bad-refresh-quarantine.json",
+      "path": "/Users/qianqi/.openclaw/authbus/bad-refresh-quarantine.json",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "cache_refresh-backoff.json",
+      "path": "/Users/qianqi/.openclaw/authbus/refresh-backoff.json",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "cache_lease-epochs.json",
+      "path": "/Users/qianqi/.openclaw/authbus/lease-epochs.json",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "cache_status.json",
+      "path": "/Users/qianqi/.openclaw/authbus/status.json",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "native_main_config.toml",
+      "path": "/Users/qianqi/.openclaw/agents/main/agent/codex-home/config.toml",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": false
+    },
+    {
+      "label": "native_main_requirements.toml",
+      "path": "/Users/qianqi/.openclaw/agents/main/agent/codex-home/requirements.toml",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": false
+    },
+    {
+      "label": "native_main_auth.json",
+      "path": "/Users/qianqi/.openclaw/agents/main/agent/codex-home/auth.json",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "native_trnm_config.toml",
+      "path": "/Users/qianqi/.openclaw/agents/trnm/agent/codex-home/config.toml",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": false
+    },
+    {
+      "label": "native_trnm_requirements.toml",
+      "path": "/Users/qianqi/.openclaw/agents/trnm/agent/codex-home/requirements.toml",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": false
+    },
+    {
+      "label": "native_trnm_auth.json",
+      "path": "/Users/qianqi/.openclaw/agents/trnm/agent/codex-home/auth.json",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "native_hepta-ui_config.toml",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/codex-home/config.toml",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": false
+    },
+    {
+      "label": "native_hepta-ui_requirements.toml",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/codex-home/requirements.toml",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": false
+    },
+    {
+      "label": "native_hepta-ui_auth.json",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/codex-home/auth.json",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "native_hepta_config.toml",
+      "path": "/Users/qianqi/.openclaw/agents/hepta/agent/codex-home/config.toml",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": false
+    },
+    {
+      "label": "native_hepta_requirements.toml",
+      "path": "/Users/qianqi/.openclaw/agents/hepta/agent/codex-home/requirements.toml",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": false
+    },
+    {
+      "label": "native_hepta_auth.json",
+      "path": "/Users/qianqi/.openclaw/agents/hepta/agent/codex-home/auth.json",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "native_hepta-backend_config.toml",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/codex-home/config.toml",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": false
+    },
+    {
+      "label": "native_hepta-backend_requirements.toml",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/codex-home/requirements.toml",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": false
+    },
+    {
+      "label": "native_hepta-backend_auth.json",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-backend/agent/codex-home/auth.json",
+      "role": "small_read",
+      "maximum": 1048576,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "installed_registry",
+      "path": "/Users/qianqi/.openclaw/state/openclaw.sqlite",
+      "role": "database_main",
+      "maximum": null,
+      "optional": false,
+      "privateMode": true
+    },
+    {
+      "label": "installed_registry_wal",
+      "path": "/Users/qianqi/.openclaw/state/openclaw.sqlite-wal",
+      "role": "database_wal",
+      "maximum": 0,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "installed_registry_shm",
+      "path": "/Users/qianqi/.openclaw/state/openclaw.sqlite-shm",
+      "role": "database_shm",
+      "maximum": 8388608,
+      "optional": true,
+      "privateMode": true
+    },
+    {
+      "label": "installed_registry_journal",
+      "path": "/Users/qianqi/.openclaw/state/openclaw.sqlite-journal",
+      "role": "database_journal",
+      "maximum": 0,
+      "optional": true,
+      "privateMode": true
+    }
+  ],
+  "permittedOperations": [
+    "fixed path named metadata with no symlink following",
+    "read-only O_NOFOLLOW directory/file descriptors only for fstat identity",
+    "named/fd nine-field before/after checks",
+    "two ENOENT observations under stable held parent for direct absence",
+    "once descriptor close and bounded public numeric/string identity report"
+  ],
+  "forbiddenOperations": [
+    "regular file body reads",
+    "file-body hashing",
+    "SQLite import/queries/connections",
+    "directory enumeration or path discovery",
+    "subprocesses",
+    "network or provider/J3160",
+    "writes/chmod/chown",
+    "service or consumer operations",
+    "business replay or capture guard/cap changes"
+  ],
+  "privateDescriptorDisclosure": "The probe may open fixed private regular-file descriptors O_RDONLY for fstat. It invokes no file-body read API; metadata is deliberately observed.",
+  "absentAncestorSemantics": "A leaf beneath an observed absent fixed ancestor is reported parent_absent and directLeafStatPerformed=false; it is not falsely reported as a direct leaf ENOENT.",
+  "completionSemantics": "complete_finite_metadata_observation means this bounded diagnostic completed. Nonregular/absent/over-limit leaves may be reported; it never qualifies capture or consumers. Original current-input failure remains UNKNOWN.",
+  "limitsUnchanged": {
+    "captureAggregateBytes": 8388608,
+    "primaryRowBytes": 1048576,
+    "captureSeconds": 45,
+    "querySeconds": 3,
+    "smallFileMaximumBytes": 1048576,
+    "walMaximumBytes": 0,
+    "journalMaximumBytes": 0,
+    "shmMaximumBytes": 8388608,
+    "mainDatabaseMaximum": null
+  },
+  "staticVerification": {
+    "exitCode": 0,
+    "chunk": "6ddf31",
+    "mode": "AST/compile and exact fixed scope only",
+    "candidateSourceExecuted": false,
+    "hostCalls": 0,
+    "privateBodiesRead": 0,
+    "unchangedDefinitions": 8,
+    "strictDiffHunks": 2
+  },
+  "verifierCorrection": "Initial local verifier had invalid ==not syntax. Parenthesizing the unary not corrected only the verifier; the metadata candidate source/request were unchanged. Initial verifier parse failed before any candidate AST compile or execution; no host action."
+}

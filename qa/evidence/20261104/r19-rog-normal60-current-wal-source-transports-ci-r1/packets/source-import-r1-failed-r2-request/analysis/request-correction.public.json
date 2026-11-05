@@ -1,0 +1,97 @@
+{
+  "schema": "heptabao.df026.importer-failed-request-and-correction.r2",
+  "status": "known_admission_failure_sealed__corrected_request_source_only",
+  "failed_job": "1a1aa39910d-fc05-3f68",
+  "old_request_blob": "33ee17df22f1e2ce377a434f9848fd4bd48c6171",
+  "original_source_blob": "7019ca391f5832cb04a7703ddcb4365558661f81",
+  "original_source_bytes": 32923,
+  "original_source_sha256": "fbbb2f85dc18876218ce013f8ca75412aa09dfff164263f84dbd884dbfa62331",
+  "actual_failure": {
+    "authority_blob": "3a7a468bdc36f50dbf3cc02b5a8b295d27940754",
+    "stderr_blob": "41f9eff11bdc8af7018bb3b25fdd0977d85d25d4",
+    "exit_code": 1,
+    "output_complete": true,
+    "output_durable": true,
+    "error_type": "AssertionError",
+    "first_failed_line": 519,
+    "commands": 0,
+    "input_fds": 0,
+    "owned_remaining": 0,
+    "source_imported": false,
+    "root_creation_attempted": false,
+    "core_file_read_error_preserved": true
+  },
+  "responsibility": "The author constructed the request without the required trailing self SHA. Author and root reviews verified the frozen bytes but did not exercise the source-derived argv admission contract before dispatch.",
+  "source_main_contract": [
+    {
+      "line": 519,
+      "requirement": "sys.argv is ['-c', SELF_SHA256], with exactly two entries and 64 lowercase hexadecimal SHA characters."
+    },
+    {
+      "line": 520,
+      "requirement": "sys.orig_argv[:5] is exactly ['/usr/bin/python3','-I','-S','-B','-c']."
+    },
+    {
+      "line": 521,
+      "requirement": "sys.orig_argv has exactly seven entries; entry 6 equals sys.argv[1]."
+    },
+    {
+      "line": 522,
+      "requirement": "Controller bytes are sys.orig_argv[5].encode('utf-8'), exactly the inline source argument."
+    },
+    {
+      "line": 523,
+      "requirement": "SHA256 of those exact UTF-8 bytes equals the trailing self SHA."
+    },
+    {
+      "line": 524,
+      "requirement": "ACTUAL_INPUTS_READY remains True; no guard is relaxed."
+    },
+    {
+      "lines": [
+        525,
+        526,
+        527,
+        528,
+        529
+      ],
+      "requirement": "Fixed three inputs retain complete byte/SHA/version shape and byte ceilings."
+    },
+    {
+      "lines": [
+        530,
+        531,
+        532,
+        533,
+        534
+      ],
+      "requirement": "Actual Linux x86_64 UID1000/BASE custody and ROOT/SOURCE absence are checked again before hold_fixed_inputs. This failure stopped before any of these filesystem predicates."
+    }
+  ],
+  "scope_of_no_effect_proof": "Actual first-guard traceback plus the unchanged top-level/finally control flow and zero opened/closed FD/child fields prove this attempt did not create/open an input/root. No independent current lstat of ROOT or SOURCE was performed; the generic failed batch read is not treated as a directory-absence proof.",
+  "corrected_request": {
+    "add_only_argument_at_args_5": "fbbb2f85dc18876218ce013f8ca75412aa09dfff164263f84dbd884dbfa62331",
+    "new_key": "heptabao-df026-standalone-import-fbbb2f85-20261105-r2",
+    "source_unchanged": true,
+    "roots_unchanged": true,
+    "budgets_unchanged": true,
+    "host": "desktop",
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "outer_seconds": 330,
+    "internal_seconds": 300,
+    "git_seconds": 60,
+    "clone_seconds": 90,
+    "cleanup_term_seconds": 5,
+    "cleanup_kill_seconds": 5,
+    "not_executed": true
+  },
+  "offline_actual_ast_guard_checks": {
+    "count": 19,
+    "old_fails_exact_line": 519,
+    "corrected_passes": true,
+    "no_importer_main_executed": true,
+    "no_candidate_host_access": true
+  },
+  "runtime_qualification": false,
+  "full_replacement": false
+}

@@ -1,0 +1,151 @@
+{
+  "schema": "heptabao.mac-capture-metadata.independent-terminal-review.v1",
+  "status": "PASS_FINITE_METADATA_OBSERVATION_ONLY",
+  "job": "1a1aa3a3d6c-fc05-3f7d",
+  "source_tree": "4267fd57a9771fb8217c15b2e236da9888706b90",
+  "source": {
+    "bytes": 22077,
+    "sha256": "3ba165eb8073c87217d2e5f076fb8dcb65c2ccec4f2fb7637926d36960295fd4",
+    "git_blob": "6928d05186ffbf92d51659b2553b06050dc73af1"
+  },
+  "request": {
+    "bytes": 23540,
+    "sha256": "558b0686a9c07235e9d9ff134e7c9ee7247d61cf10f1dfd4e116b39e2e186447",
+    "git_blob": "01ae5b6b39862bc54100a8de81c7c8d44f26e05a"
+  },
+  "root_admission": {
+    "bytes": 2905,
+    "sha256": "60f5b3b3a6249596375306ca3e1595f3b314d4eb75f2d0bea17109568a30d67a",
+    "git_blob": "82f6612a6b670357d0cd29dc93cdb34b34c75557"
+  },
+  "source_peer": {
+    "blob": "0292ba3dfe2ac886e82217b8d751cef65090dbe4",
+    "bytes": 2899,
+    "sha256": "b471122cb39a6789dcdb56ae268ffda7cb9a23915e94b571d613c0438281b30c",
+    "scope": "source count/FD/closure only; not runtime"
+  },
+  "actual_core": {
+    "authority": {
+      "bytes": 733,
+      "sha256": "a29ca530bb3697051c513518a3e6c63ca57c562067cfdbdc0ca4851f48ad04c3",
+      "git_blob": "faebb41ea02962847edfcdebed88ac62761adb6d"
+    },
+    "stdout": {
+      "bytes": 54451,
+      "sha256": "eb7a7d87ed65c2c7377a5410e0f7074d15ae64b7ca2d87f70559f0ebe580047d",
+      "git_blob": "be19181c81f081d935a601460c76d305c31ebadf"
+    },
+    "stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    }
+  },
+  "complete_authority": true,
+  "single_submission": true,
+  "original_fixed_request": true,
+  "raw_stdout_hex_text_eof_verified": true,
+  "stdout_pages": [
+    {
+      "offset": 0,
+      "next_offset": 16384,
+      "bytes": 16384,
+      "sha256": "d49dc69bfc9f2516345f6a8a2568e8951b70bd792719f90a87382d3e6a637c62",
+      "hex_text_exact": true,
+      "eof": false
+    },
+    {
+      "offset": 16384,
+      "next_offset": 32768,
+      "bytes": 16384,
+      "sha256": "529a70c4bd4289e0af9ef056db17b621f8a37d6bb3b15a8977e8fc8f3fa03512",
+      "hex_text_exact": true,
+      "eof": false
+    },
+    {
+      "offset": 32768,
+      "next_offset": 49152,
+      "bytes": 16384,
+      "sha256": "381211583929da58d5fc0fa40467f8987b565fd833adb024f664204d9c31ece5",
+      "hex_text_exact": true,
+      "eof": false
+    },
+    {
+      "offset": 49152,
+      "next_offset": 54451,
+      "bytes": 5299,
+      "sha256": "b591ff4ddd5a66c52ade65ce7e57e8cea2d3161c61f33bcbd953e18c3e2c3c61",
+      "hex_text_exact": true,
+      "eof": true
+    }
+  ],
+  "observed_leaf_order_matches_fixed_46": true,
+  "observed_parent_order_matches_fixed_22": true,
+  "all_held_named_identity_nine_strings_equal": true,
+  "descriptor_registry_order_exact": true,
+  "all_46_registered_descriptors_attempted_once_closed": true,
+  "metadata_arithmetic": {
+    "held_directories": 21,
+    "absent_directories": 1,
+    "regular_leaves": 25,
+    "direct_absent_leaves": 18,
+    "parent_absent_leaves": 3,
+    "exact_metadata_calls": 354,
+    "maximum": 452
+  },
+  "limits": {
+    "inner_shared_seconds": 5,
+    "outer_seconds": 60,
+    "max_registered": 68,
+    "max_live": 23,
+    "public_bytes_max": 98304
+  },
+  "elapsed_seconds": 0.0027581253089010715,
+  "deadline_after_closure": true,
+  "production_body_bytes_read": 0,
+  "sql_executed": false,
+  "children_started": false,
+  "network_used": false,
+  "files_written": false,
+  "observed_size_exceedances": [
+    {
+      "label": "installed_registry_wal",
+      "role": "database_wal",
+      "status": "stable_regular_metadata",
+      "bytes": "5969912",
+      "mode": "0o600",
+      "custody": true,
+      "size_within": false,
+      "minimum512": null
+    }
+  ],
+  "no_other_size_exceedance_observed": true,
+  "no_regular_custody_mismatch_observed": true,
+  "no_present_journal_observed": true,
+  "absent_parent_paths": [
+    "/Users/qianqi/.openclaw/agents/hepta-ui/agent/codex-home"
+  ],
+  "leaves_not_directly_statted": [
+    {
+      "label": "native_hepta-ui_config.toml",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/codex-home/config.toml"
+    },
+    {
+      "label": "native_hepta-ui_requirements.toml",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/codex-home/requirements.toml"
+    },
+    {
+      "label": "native_hepta-ui_auth.json",
+      "path": "/Users/qianqi/.openclaw/agents/hepta-ui/agent/codex-home/auth.json"
+    }
+  ],
+  "current_observation_is_sequential_not_atomic": true,
+  "original_failed_job": "1a1aa2ac597-fc05-3e8f",
+  "original_capture_observation": "UNKNOWN",
+  "original_failed_leaf_not_identified": true,
+  "original_library_failure_close_ledger_unavailable": true,
+  "caps_unchanged": true,
+  "zero_wal_guard_not_removed": true,
+  "no_capture_retry_or_current_consumer_qualification": true,
+  "limitation": "Current metadata does not retrospectively identify the earlier failed leaf or demonstrate a SQLite transaction/backup snapshot. A future read-only WAL observer needs independent source review and owned synthetic qualification; this result authorizes no new production access."
+}

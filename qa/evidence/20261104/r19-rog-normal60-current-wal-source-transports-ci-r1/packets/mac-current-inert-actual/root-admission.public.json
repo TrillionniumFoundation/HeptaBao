@@ -1,0 +1,51 @@
+{
+  "schema": "heptabao.root-mac-current-native-inert-source-go.r1",
+  "as_of": "2026-11-05 05:18:22 UTC",
+  "status": "GO_SINGLE_CREATE_ONLY_INERT_REQUEST",
+  "request": {
+    "blob": "37c26582c54ffc186b527083f470fe0e3373c9b3",
+    "bytes": 641503,
+    "sha256": "67851222dd58558144d0570209423b0c2c4f1f7e0f03ba79475cd1f84bd36fff",
+    "idempotency_key": "heptabao-mac-current-native-df026-inert-397a7e69-20261105-r1"
+  },
+  "carrier": {
+    "blob": "a83cca8dac981476e268fd4236d055279a1527b3",
+    "bytes": 15101,
+    "sha256": "397a7e69cecafae5cd4f7f99b093030916a7ccd9e4c4fc90c72e87fd81523e33"
+  },
+  "base": {
+    "blob": "3cc4133672f83e0b3afdf608a187336d1944664b",
+    "bytes": 8157,
+    "sha256": "2c84ab57eb141e908e2a547536e5102a6d247e963cc2e054c7a4ab6afccaaa8c"
+  },
+  "review": {
+    "whole_carrier_and_six_hunk_diff_read": true,
+    "strict_original_plus_diff_equals_candidate": true,
+    "independent_ast_compile_exit0": true,
+    "candidate_module_executed": false,
+    "source_21_all_whole_bytes_equal_root_reviewed_packet": true,
+    "public_documents_6_all_whole_original_bytes": true,
+    "public_anchor_whole_original_bytes": true,
+    "request_argv_and_stdin_exact": true,
+    "public_input_limit_explicitly625538_not_private_budget_change": true,
+    "create_only_root_two_ENOENT_then_mkdir_new": true,
+    "descriptor_relative_O_EXCL_writes": true,
+    "separate_held_readback_and_nine_field_identity": true,
+    "import_safe_three_libraries_only": true,
+    "original_total45_diskutil30_supervisor60": true,
+    "authoritative_terminal_and_streams_required": true,
+    "source_go_does_not_qualify_current_credentials": true
+  },
+  "source_review": "725783e8df43dc9e59a2ff14a7debdbdf5e40d6e",
+  "next_requirement": "Fetch all actual 27 public files and candidate receipt with full native SDK originals; terminal exit0/full/durable/closed custody before exact runtime request is separately admitted.",
+  "qualification": {
+    "current_credential_runtime": false,
+    "production_cutover": false,
+    "old_cleanup": false,
+    "full_OpenBao_2_7_1_replacement": false
+  },
+  "local_review_corrections": [
+    "One helper lookup used the wrong JavaScript symbol name and failed before any host operation; rerun used the existing unb64 helper."
+  ],
+  "supersedes_non_authoritative_manual_asof_draft": "799cdfdfb6977eaa885ee24762001b30ec1a14d0"
+}

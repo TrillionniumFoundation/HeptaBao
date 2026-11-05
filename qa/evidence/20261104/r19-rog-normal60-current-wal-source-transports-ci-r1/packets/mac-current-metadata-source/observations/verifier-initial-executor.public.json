@@ -1,0 +1,7 @@
+{
+  "chunk_id": "f24add",
+  "wall_time_seconds": 0.000029875,
+  "exit_code": 1,
+  "original_token_count": 60,
+  "output": "  File \"/tmp/mac-capture-size-metadata-r1.1_mmm11m/verify_static.py\", line 47\n    assert item['privateMode']==not item['path'].endswith(('config.toml','requirements.toml'))\n                                ^^^\nSyntaxError: invalid syntax\n"
+}

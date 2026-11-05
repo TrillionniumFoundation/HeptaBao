@@ -1,0 +1,24 @@
+--- before/v6_committed_root_pull_donor_window_tests.rs
++++ candidate/v6_committed_root_pull_donor_window_tests.rs
+@@ -326,8 +326,20 @@
+                 "the healthy source fetches every leaf exactly once"
+             );
+             assert_eq!(healthy.iter().copied().collect::<BTreeSet<_>>(), expected);
++            // Tail priority belongs to the dispatcher's assignment order. The
++            // four authenticated TLS handlers may receive those tasks out of order.
++            // Keep the real wire population checks above and bind both observations
++            // to the same exact set of object IDs, without delaying any handler.
++            let submitted: Vec<_> = tasks
++                .object_submissions
++                .iter()
++                .filter(|(donor, _)| *donor == 2)
++                .map(|(_, id)| *id)
++                .collect();
++            assert_eq!(submitted.len(), OBJECTS);
++            assert_eq!(submitted.iter().copied().collect::<BTreeSet<_>>(), expected);
+             assert!(
+-                healthy[healthy.len() - WORKERS_PER_DONOR..]
++                submitted[submitted.len() - WORKERS_PER_DONOR..]
+                     .iter()
+                     .all(|id| first.contains(id)),
+                 "the healthy donor takes over the silent source's unresolved tail"

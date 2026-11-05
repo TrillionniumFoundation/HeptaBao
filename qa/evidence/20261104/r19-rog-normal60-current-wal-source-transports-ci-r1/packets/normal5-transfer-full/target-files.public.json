@@ -1,0 +1,147 @@
+[
+  {
+    "name": "heptabao-server",
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 320,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 320,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/heptabao-server",
+    "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2",
+    "size": 110339520,
+    "version": "2050:5019547:110339520:1793857530819632046:1793857530819632046",
+    "receipt_identity": [
+      2050,
+      5019547,
+      1000,
+      1000,
+      33088,
+      1,
+      110339520,
+      "1793857530819632046",
+      "1793857530819632046"
+    ]
+  },
+  {
+    "name": "native-build.public.json",
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 256,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 256,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/native-build.public.json",
+    "sha256": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
+    "size": 772,
+    "version": "2050:5019549:772:1793857533118564089:1793857533118564089",
+    "receipt_identity": [
+      2050,
+      5019549,
+      1000,
+      1000,
+      33024,
+      1,
+      772,
+      "1793857533118564089",
+      "1793857533118564089"
+    ]
+  },
+  {
+    "name": "normal-release-result.public.json",
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 256,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 256,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/normal-release-result.public.json",
+    "sha256": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d",
+    "size": 3137,
+    "version": "2050:5019550:3137:1793857533123563941:1793857533123563941",
+    "receipt_identity": [
+      2050,
+      5019550,
+      1000,
+      1000,
+      33024,
+      1,
+      3137,
+      "1793857533123563941",
+      "1793857533123563941"
+    ]
+  },
+  {
+    "name": "normal-release-tests-result.public.json",
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 256,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 256,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
+    "sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
+    "size": 48188,
+    "version": "2050:5019551:48188:1793857533128563794:1793857533128563794",
+    "receipt_identity": [
+      2050,
+      5019551,
+      1000,
+      1000,
+      33024,
+      1,
+      48188,
+      "1793857533128563794",
+      "1793857533128563794"
+    ]
+  },
+  {
+    "name": "groups.json",
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 256,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 256,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/groups.json",
+    "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+    "size": 6249,
+    "version": "2050:5019552:6249:1793857533133563646:1793857533133563646",
+    "receipt_identity": [
+      2050,
+      5019552,
+      1000,
+      1000,
+      33024,
+      1,
+      6249,
+      "1793857533133563646",
+      "1793857533133563646"
+    ]
+  }
+]

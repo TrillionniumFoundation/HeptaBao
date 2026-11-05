@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/retained-heptabao-server-libtest",
+    "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file",
+    "--exact",
+    "--list"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 0.013379569019889459,
+  "exit_code": 0,
+  "label": "cold-h2-3-list",
+  "outer_cap_seconds": 30.0,
+  "owned_pgid": 1645183,
+  "remaining": [],
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout_sha256": "34604500c993a3f2009f4a01b51ae9d3e7ad774329210e7537be453ae422d152",
+  "timed_out": false
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.root-mac-current-native-inert-actual-runtime-go.r1",
+  "reviewed_at": "2026-11-05 05:23:56 UTC",
+  "status": "PASS_INERT_ACTUAL_GO_ONE_FRESH_CURRENT_RUNTIME",
+  "actual_tree": "14e9f3157b7fc6054dd400ac2573c73c6c66c11b",
+  "files": 18,
+  "bytes": 1460555,
+  "merkle_trees": 1,
+  "root_source_review": "725783e8df43dc9e59a2ff14a7debdbdf5e40d6e",
+  "inert_source_go": "c8efee06d679a49bee03731d2ddc6077f69d6d6e",
+  "inert_job_id": "1a1aa25e8d1-fc05-3e27",
+  "original_exit0_complete_durable": true,
+  "original_elapsed": 0.28005333291366696,
+  "independent_checks": 89,
+  "actual_public_source_files": 21,
+  "actual_public_proofs": 5,
+  "actual_candidate_documents": 1,
+  "readback": "Reviewed inert worker performed separate held whole-byte reads and nine-field exact metadata checks for every published file; final raw terminal plus authoritative exit0/closure observed. Candidate pre-closure receipt reconstructed from original lexemes, hash exactly matches worker's actual held readback. No independent additional read_multiple_files claimed.",
+  "all_owned_children_and_descriptors_closed": true,
+  "runtime_request": {
+    "blob": "5c79feea035cab451eb734174d6497a0237c84e9",
+    "bytes": 5135,
+    "sha256": "f7b968aeed09a21b57ca18336ebe575a07199e0456026c300e3678a6b123d6ab",
+    "idempotency_key": "heptabao-mac-current-five-agent-native-df026-64d7a772-20261105-r1",
+    "timeout_seconds": 1080
+  },
+  "runtime_scope": "Run only the reviewed fresh native current five-agent fixture. Original outer900/manager600/capture45/phase120 and all source, native kernel, SQLite, expiry, independent initial/cold baseline and two inverse requirements remain. Outer revalidates complete source/proofs and candidate before current capture. No provider, J3160, refresh, quota, model/flag edits, production service or cutover. Preserve original failures and unknown PID11754; never replay uncertain business results.",
+  "qualification": {
+    "current_runtime": false,
+    "production_cutover": false,
+    "old_cleanup": false,
+    "full_replacement": false
+  }
+}

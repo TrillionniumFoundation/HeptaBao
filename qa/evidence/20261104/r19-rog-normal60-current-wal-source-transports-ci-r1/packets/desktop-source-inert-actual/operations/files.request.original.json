@@ -1,0 +1,17 @@
+{
+  "idempotency_key": "compat-df026-source-inert-r1-1a1aa27fc38-fc05-3e58-files",
+  "operation": {
+    "tool": "read_multiple_files",
+    "arguments": {
+      "host": "desktop",
+      "paths": [
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-controls-r1/sender.py",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-controls-r1/receiver.py",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-controls-r1/relay.py",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-controls-r1/inert-stage.result.public.json"
+      ],
+      "max_file_bytes": 32768,
+      "max_response_bytes": 262144
+    }
+  }
+}

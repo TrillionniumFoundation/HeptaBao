@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.df026.normal5-fixed-readonly-metadata-intent.v1",
+  "authorization": "root requested exact normal5 original file_info after completed normal60",
+  "host": "rog",
+  "paths": [
+    "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server",
+    "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/native-build.public.json",
+    "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/normal-release-result.public.json",
+    "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json",
+    "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/normal-test-groups.public.json"
+  ],
+  "operations": 5,
+  "process_start": false,
+  "write": false,
+  "network_session_created": false,
+  "product_action": false
+}

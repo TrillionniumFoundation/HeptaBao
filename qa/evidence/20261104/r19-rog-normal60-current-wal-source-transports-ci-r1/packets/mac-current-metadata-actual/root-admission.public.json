@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.mac-current-capture-metadata.root-source-go.r1",
+  "as_of_utc": "2026-11-05 05:40:38 UTC",
+  "status": "source_review_passed__single_metadata_observation_go",
+  "source_packet": {
+    "tree": "4267fd57a9771fb8217c15b2e236da9888706b90",
+    "files": 16,
+    "bytes": 254137,
+    "merkle_trees": 3
+  },
+  "source": {
+    "blob": "6928d05186ffbf92d51659b2553b06050dc73af1",
+    "bytes": 22077,
+    "sha256": "3ba165eb8073c87217d2e5f076fb8dcb65c2ccec4f2fb7637926d36960295fd4"
+  },
+  "root_review": {
+    "whole_source_read": true,
+    "static_verifier": {
+      "name": "r19_mac_metadata_root_static_verifier.py",
+      "blob": "26aefe63b788fdb6c68423e4e4fc2d9ab8445fb1",
+      "bytes": 3789,
+      "sha256": "91b9f2e8077416acf007fb3fc4910756952bbf011ed2d0a076aafaaf4c136fea"
+    },
+    "static_execution": {
+      "name": "r19_mac_metadata_root_static_exec",
+      "blob": "ac4ca3c55d267d6e9c2d048c63b568f364b17166",
+      "bytes": 2063,
+      "sha256": "73b8922ead777d561841cac35701db6c00e603820d606ddd6c9c469638f778df"
+    },
+    "checks_passed": 32,
+    "candidate_not_executed": true,
+    "fixed_leaf_order_matches_606b": true,
+    "metadata_only_open_fd": true,
+    "no_file_body_read_or_hash": true,
+    "no_sql_child_network_service_or_write": true,
+    "original_caps_preserved": {
+      "small_read": 1048576,
+      "main_database_maximum": null,
+      "wal": 0,
+      "shm": 8388608,
+      "journal": 0
+    },
+    "fixed_parents": 22,
+    "fixed_leaves": 46,
+    "max_stat_calls": 452,
+    "max_registered_fds": 68,
+    "max_live_fds": 23,
+    "no_symlink_open": true,
+    "exact_named_held_nine_fields": true,
+    "close_attempted_once_per_registered_fd": true,
+    "absent_parent_not_reported_as_direct_leaf_enoent": true,
+    "deadline": {
+      "shared_seconds": 5,
+      "outer_seconds": 60,
+      "limitation": "monotonic checks around synchronous metadata syscalls, not separately preemptible per syscall"
+    }
+  },
+  "original_failure": {
+    "job": "1a1aa2ac597-fc05-3e8f",
+    "status": "FAILED",
+    "capture_observation": "UNKNOWN",
+    "failure_code": "current_input_size_bound",
+    "exact_old_failed_leaf": "unobserved",
+    "library_internal_close_ledger_on_failure": "unavailable",
+    "new_metadata_cannot_reconstruct_or_clear_original_unknown": true
+  },
+  "go": {
+    "request_blob": "01ae5b6b39862bc54100a8de81c7c8d44f26e05a",
+    "request_bytes": 23540,
+    "request_sha256": "558b0686a9c07235e9d9ff134e7c9ee7247d61cf10f1dfd4e116b39e2e186447",
+    "idempotency_key": "heptabao-mac-current-capture-size-metadata-3ba165eb-20261105-r1",
+    "host": "mac",
+    "timeout_seconds": 60,
+    "scope": "single finite sequential metadata observation only",
+    "requires_authoritative_terminal_full_streams_and_actual_ledger": true
+  },
+  "capture_retry_authorized": false,
+  "capture_guard_changes_authorized": false,
+  "production_change_authorized": false
+}

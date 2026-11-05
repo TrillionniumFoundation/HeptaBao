@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.root-df026-source-carrier-inert-go.r1",
+  "reviewed_at": "2026-11-05 05:21:13 UTC",
+  "status": "GO_SINGLE_INERT_ONLY",
+  "tree": "525d55e4bd7011f7eeda82c561ae1e1a81e74c8d",
+  "files": 29,
+  "all_whole_merkle_verified": true,
+  "base_changes": "Only frozen public source identity/path/schema/provenance bindings; all five complete diffs applied against whole base exactly. Sender/receiver/relay original streaming, custody, deadlines and strict rog-ts SSH are unchanged.",
+  "independent_compile": {
+    "inert": true,
+    "sender": true,
+    "receiver": true,
+    "relay": true,
+    "module_executed": false
+  },
+  "request": {
+    "blob": "67a3aa407e985101370e878f0e710eb5162eb41d",
+    "bytes": 45930,
+    "sha256": "a784604c16b7b71a891893978d1c8907a4cf6db134d79331aeaa62c0c1dc819c",
+    "key": "heptabao-df026-source-carrier-inert-5aa790e8-20261105-r1",
+    "timeout_seconds": 60
+  },
+  "public_input": {
+    "exact_candidate_three_sources": true,
+    "exact_argv": true,
+    "stdin_matches_whole_packet": true
+  },
+  "source_actual_review": "ec240fd9b97c6b75582a271981498f19276922d7",
+  "next": "Collect authoritative terminal/full streams and all three actual source files plus inert receipt. Only after root closes staging may transfer request0c8ab77ae1d39ce3f908f13a0403e84a115347af run. Importer still ACTUAL_INPUTS_READY=False and five target/transfer metadata slots unresolved.",
+  "production_changed": false,
+  "source_carrier_qualified": false,
+  "full_OpenBao_2_7_1_replacement": false
+}

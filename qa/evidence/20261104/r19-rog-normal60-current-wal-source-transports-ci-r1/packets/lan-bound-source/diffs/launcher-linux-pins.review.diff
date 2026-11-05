@@ -1,0 +1,19 @@
+--- before/launch_normal_cold_h2_pocket_postrecovery_cold_r1.py
++++ candidate/launch_normal_cold_h2_pocket_postrecovery_cold_r1.py
+@@ -68,11 +68,11 @@
+         "cargo": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+         "build_driver_sha256": "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+         "files": {
+-            "artifacts/heptabao-seed": None,
+-            "artifacts/heptabao-server": None,
+-            "normal-release-build.stdout": None,
+-            "native-build.public.json": None,
+-            "normal-release-result.public.json": None
++            "artifacts/heptabao-seed": "846a00f5f6fb6ee12f91c151d202ac3059aff1878a254b89bb093313911ec21f",
++            "artifacts/heptabao-server": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2",
++            "normal-release-build.stdout": "8919415e0f8093f85a8712dbae341ae3bb4c457e3e6c641ea195b8f7fb3ad331",
++            "native-build.public.json": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
++            "normal-release-result.public.json": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d"
+         }
+     },
+     "mac": {

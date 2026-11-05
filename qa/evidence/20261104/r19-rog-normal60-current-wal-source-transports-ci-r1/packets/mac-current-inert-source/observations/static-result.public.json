@@ -1,0 +1,77 @@
+{
+  "allCandidateEntryExecutionForbidden": true,
+  "candidateInertExecuted": false,
+  "candidateModulesImported": false,
+  "changedOriginalDefinitions": [
+    "stdin_once",
+    "main"
+  ],
+  "childProcesses": 0,
+  "compiledPythonSources": [
+    "mac_current_fixture_materializer_r1.py",
+    "mac_current_capture_entry_native_r1.py",
+    "mac_owned_launchd_r3.py",
+    "mac_current_server_owner_r1.py",
+    "mac_current_phase_owner_r2.py",
+    "mac_native_process_observer_r1.py",
+    "mac_guarded_current_capture_r3.py",
+    "mac_owned_commands_r1.py",
+    "mac_t5_volume_guard_r1.py",
+    "mac_owned_unreaped_r1.py",
+    "mac_capture_sqlite_synthetic_r1.py",
+    "mac_capture_sqlite_synthetic_r2.py",
+    "mac_current_outer_inputs_r2.py",
+    "mac_current_outer_native_r1.py",
+    "mac_darwin_owned_projection_r1.py",
+    "mac_native_owned_unreaped_r1.py",
+    "mac_native_owned_commands_r1.py"
+  ],
+  "hostCalls": 0,
+  "javascriptWholeByteOnly": [
+    "mac_current_cycle_r2.mjs",
+    "mac_single_native_r2.mjs",
+    "mac_auth_rows_cas_r1.mjs",
+    "mac_authbus_cache_cas_r1.mjs"
+  ],
+  "mode": "AST_compile_and_exact_public_bytes_only",
+  "newDefinitions": [
+    "fresh_root_absent",
+    "publish_public"
+  ],
+  "ok": true,
+  "originalDiskutilCapSeconds": 30,
+  "originalInertSeconds": 45,
+  "outerSeconds": 60,
+  "payload": {
+    "bytes": 625538,
+    "git_blob": "d00636c3330432e1264229c2ff23cb873c95d347",
+    "sha256": "738df828f078fffb9610c6b98d6ba9a709446642a5a7ed3a43e62d19f2d9c800"
+  },
+  "privateReads": 0,
+  "publicDocumentCount": 6,
+  "publicTransportCapExactBytes": 625538,
+  "rawProofBytesNotReserialized": true,
+  "request": {
+    "bytes": 641503,
+    "git_blob": "37c26582c54ffc186b527083f470fe0e3373c9b3",
+    "sha256": "67851222dd58558144d0570209423b0c2c4f1f7e0f03ba79475cd1f84bd36fff"
+  },
+  "schema": "heptabao.mac-native-current-inert-static-review.r1",
+  "source": {
+    "bytes": 15101,
+    "git_blob": "a83cca8dac981476e268fd4236d055279a1527b3",
+    "sha256": "397a7e69cecafae5cd4f7f99b093030916a7ccd9e4c4fc90c72e87fd81523e33"
+  },
+  "sourceAndDocumentPayloadMatchesPriorFrozenPins": true,
+  "sourceCount": 21,
+  "unchangedOriginalDefinitions": [
+    "Refused",
+    "need",
+    "sha",
+    "encode",
+    "remaining",
+    "on_signal",
+    "critical",
+    "load_definition_module"
+  ]
+}

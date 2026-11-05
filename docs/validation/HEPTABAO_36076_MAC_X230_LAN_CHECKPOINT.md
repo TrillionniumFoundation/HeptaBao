@@ -1,5 +1,39 @@
 # HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
 
+## 当前 R19 检查点：ROG 正常 60 项闭合；Mac 当前采集保留失败与未知；正式源码及产物运输推进
+
+更新于 2026-11-05T05:57:12Z。**全量替代 OpenBao 2.7.1 仍未达标，尚未正式切流，也没有清理旧版。** 主机验证继续严格绑定 `df026fe323dd7cf0f0ec57d7d2d9c5a79897053c`／树 `424463ccd2310ddc1e7b2bbcd7b7af29ae58c825`。Mac 与 ROG 的正常默认特性构建均已通过原 44 项、既有 7 项和新增 9 项，共 60 项。这个范围不替代真实多机 HA、当前凭证、正式迁移、官方 CLI 或完整 2.7.1 验证。
+
+[本轮完整状态](../../qa/evidence/20261104/r19-rog-normal60-current-wal-source-transports-ci-r1/root-review/current-state.public.json)与[全部证据清单](../../qa/evidence/20261104/r19-rog-normal60-current-wal-source-transports-ci-r1/root-review/packet-manifest.public.json)固定截止时点。26 个完整包包含 919 个文件条目、18,571,429 字节、128 个包内 Merkle 目录；独立根审查和原始失败、未知、请求修正及 CI 完整日志一并保留。R18 及更早正文与原索引大整数文本保持原样。
+
+| 工作线 | 本轮实际结果 | 仍需取得的证据 |
+|---|---|---|
+| ROG 正常构建 | 唯一作业 `1a1a9f65382-fc05-3a6c` exit0、完整持久输出；22 组 listing 与22组运行同60个名称；46 owned child 全部 reaped／空组；182件全包根审完成。 | 当前候选的 X230 34MiB、官方 CLI、真实 LAN 与 H2 协议层验证。 |
+| Mac 当前五代理采集 | `1a1aa2ac597-fc05-3e8f` 明确 exit1；child 为 `current_input_size_bound`，已尝试生产只读访问，但没有返回 capsule。三实际子进程均自然结束并收口，四项内核拒绝检查通过。 | **采集观察仍 UNKNOWN**；异常未返回库内 FD／SQLite connection 关闭账本，不能用外层关闭声明补足。五代理消费者与 launchd 阶段未开始。 |
+| Mac 有限元数据 | 唯一 `1a1aa3a3d6c-fc05-3f7d` exit0；46叶／22父目录，354次元数据操作，46登记FD全部once-close；没有文件正文读取或 SQL。 | 当前只有 registry WAL 的5,969,912字节不满足原0上限。这不定位旧失败的确切叶，也不清除 UNKNOWN。须先证明新的只读 WAL 路径与失败账本。 |
+| 正式源码导出／运输 | 23,429,893字节独立 bundle，零前置依赖，3,757提交及完整fsck；ROG导出166件、desktop运输57件均根审闭合。 | 新源码实际导入的全部原始命令日志与末流根审尚未完成。 |
+| desktop 导入 | R1 因启动请求漏self SHA，在实际第519行第一条guard退出；0输入FD、0子命令。R2只补该参数并使用新key，源、目录、预算、guard不变；已收到exit0及完整core。 | R2尚处于完整原始日志根审阶段，不以core报告直接授予LAN资格。generic批量读取失败也不等于目录不存在。 |
+| 五份正式产物运输 | `1a1aa3d9c57-fc05-3fc0`；110,397,866字节、4.216759545秒完成publication；5独立目标file_info和4份原始receipt全字对应；3owned child收口，42件全包根审通过。 | X230的7文件实际绑定、传输与正式34MiB／69比较候选执行。旧495的结果不能重标为df026。 |
+| Mac／ROG／Pocket4 LAN | 9份实际绑定控制源码已惰性发布并完整回读；原98项、独列12项与32个历史围栏保持。 | 等待正式source import闭合后prepare，再执行真实断主、自然重选、ReadIndex、持久化、重启及额外冷恢复。尚未prepare/live。 |
+| H2 QA／官方CLI | H2源码及6项固定只读元数据请求已审；ROG normal60先决条件完成。Phase B源码保持原B01–B05。 | 实际QA构建与6组件用例、单连接TLS/ALPN/H2流结束证明及官方CLI运行尚未完成；旧两次B01 UNKNOWN仍在。 |
+| CI | PR153合并候选完整Rust workspace步骤通过，随后因finalgate冗余借用被strict Clippy拒绝；后续步骤skipped。 | PR154／155在05:38:40快照仍运行workspace。新PR156在05:53:31快照queued，尚无编译或执行资格。 |
+
+### 源码与 CI 后继的范围
+
+仅测试代码的 `c133d7e7b8a1df5f0be8f4337893f234c6ccede2` 修正两项既有 Clippy；`e69e52f28c653d28c5ae36dbbf6eb51b844536bc` 将并发 donor tail 的次序断言绑定实际 dispatch 提交顺序，并保留原 wire 集合、完整数据／根／ReadIndex、容量、14秒期限和清理断言。旧失败没有改记成功，也没有凭旧日志推断唯一历史调度次序。
+
+新候选 `19ba09ab5c494f25a3531749b0b99fc5c651d56c` 是 e69 的单父后继，树 `73ba0c7fdf333b41d3944c5ee58b477026ff2d82`。只有一个生产源码 hunk、14字节减少：最后一次调用把 `gate` 按值传给既有 `FnOnce` 参数。原冷持有者、提交ReadIndex见证、期限检查、此前所有可变借用、timing phase及错误映射不变，未加lint抑制。3913文件中3912逐项不变，358个Merkle树已独立复算；作者与独立peer只授源码范围。
+
+[草稿 PR156](https://github.com/TrillionniumFoundation/HeptaBao/pull/156) 的 head 为19ba、base为 `7b4a59bdd72218c1e779eb32754a682cf465af7a`，prospective merge `f03d524a83968adb88e5d3713dd584e6a1743deb` 的树等于head且双父已核。完整资格run为41976736304、trust run为41976736244，当前快照均queued。任何后继都不能继承本轮df026主机执行资格。
+
+### 仍不能省略的总门槛
+
+2.7.1 admission manifest 实际有 **15项安全、11项功能／正确性、11项必要gate**；其验证器只检查声明结构，不能证明全集。现有 complete-surface corpus 仍标2.6.2、59 surfaces、472 fixture cases，exact-current独立执行数为0。须补足2.7.1的 route × operation × configuration × lifecycle证据，不能由60个单测或69项有限比较推出全量替代。
+
+每台仍须完成真实可信凭证、TLS/AppRole/KV/Policy、续期撤销、重启与回滚，再绑定真实生产目标并切流。所有客户端和备份路径完成迁移之前，旧OpenBao、旧HeptaBao服务／二进制及中间资产均不进入删除步骤。本检查点没有J3160调用、provider请求、强制选举、未知业务重放、预算放宽、生产切换或旧版删除。
+
+---
+
 ## 当前 R18 检查点：Mac 正常 60 项与公共原生沙箱探针闭合；Linux 正式构建完成，后续回归继续
 
 更新于 2026-11-05T05:03:04Z。**全量替代 OpenBao 2.7.1 仍未达标。** 本轮主机候选保持 `df026fe323dd7cf0f0ec57d7d2d9c5a79897053c`、树 `424463ccd2310ddc1e7b2bbcd7b7af29ae58c825`。Mac 已完成正常默认特性构建及原 44 项、既有 7 项、新增 9 项共 60 项验证；ROG 正式发布构建完成，完整测试仍在原唯一作业内运行。仅测试代码的后继 `c133d7e7b8a1df5f0be8f4337893f234c6ccede2` 已建立独立草稿 PR154；没有把 df026 的主机结果改记为后继版本执行结果。

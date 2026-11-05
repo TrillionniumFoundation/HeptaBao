@@ -1,0 +1,83 @@
+{
+  "schema": "heptabao.mac-current-manager-candidate.native-r1",
+  "sourceCommit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "sourceTree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "sourcePins": {
+    "mac_current_fixture_materializer_r1.py": "9a5a4a5ca7954cf3a46327126ccfd8ea07d1ebcfbb3919723913d3e88b0d49b1",
+    "mac_current_capture_entry_native_r1.py": "bd2dba90647769e8fb6302b76a70631ec2a9a272da42e653007344a27528daac",
+    "mac_owned_launchd_r3.py": "4144c7046b666de7f739255527411ea808de26262b91c988ccaa877058dc59fd",
+    "mac_current_server_owner_r1.py": "0cd83910200ecc212e94ca8213ebef0f89e7d9ea5c12d5e283626595bb9b23d4",
+    "mac_current_phase_owner_r2.py": "8cee6359b6a8d49409f300fb1c32a8b59e953c9c6c53150c4cf423d6625cf53a",
+    "mac_native_process_observer_r1.py": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+    "mac_guarded_current_capture_r3.py": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+    "mac_owned_commands_r1.py": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+    "mac_t5_volume_guard_r1.py": "08365bb592d5691e49a20fa655a2bfa1a55eb1df03f833d5f24098f8b84b4927",
+    "mac_owned_unreaped_r1.py": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+    "mac_capture_sqlite_synthetic_r1.py": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+    "mac_capture_sqlite_synthetic_r2.py": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+    "mac_current_cycle_r2.mjs": "90d291d8f7bfb2f485f69dada794165d8dd74fda895a7ed8bd49f8f03155e055",
+    "mac_single_native_r2.mjs": "12aa3d4d56b1ad1208a8ae030758f9c5883860a22f50c4fd83b7ee099a06fbca",
+    "mac_auth_rows_cas_r1.mjs": "58a9431768e895a0e024819474bc9d10394cc44125532026d7efdcb742e5bc51",
+    "mac_authbus_cache_cas_r1.mjs": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+    "mac_current_outer_inputs_r2.py": "3bc95dacdf551522fec32a60f635236ff8bd1867e1c440642d03e2a0654cac85",
+    "mac_current_outer_native_r1.py": "64d7a772f5b273d33d66a49c7c175310a0953953290351ea14ec61919265f883",
+    "mac_darwin_owned_projection_r1.py": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740",
+    "mac_native_owned_unreaped_r1.py": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c",
+    "mac_native_owned_commands_r1.py": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+  },
+  "syntheticBinding": {
+    "schema": "heptabao.mac-capture-synthetic-input-binding.r1",
+    "jobId": "1a1a918c6cf-fc05-3143",
+    "stdoutSha256": "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5",
+    "stdoutBytes": 16228,
+    "authoritySha256": "1b33a9144712ac2bc3d16d87bb2a9ea1c2e4c0be236dfd08d8b599f7518942dd",
+    "authorityBytes": 733,
+    "controllerSha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+  },
+  "publicVolumeAnchorSha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+  "utilityPins": {
+    "/usr/bin/openssl": "f81b4fcec5048ea1eceb40fc08f4e06f1668181f0b5bacfa8be27d0da181dcb7",
+    "/usr/bin/sandbox-exec": "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a",
+    "/bin/launchctl": "b4dbf509754d8e1117f7851baa93ede75bc75218c48d6ddf19fbb1505d261be7",
+    "/usr/sbin/diskutil": "624a8601b97ddfaa4b18dd2854c299e084cd45eb18fc152011c97615c3b9da1f",
+    "/bin/ps": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c",
+    "/sbin/mount": "e0368cc89f48770e30dcbc639ae4d99d3ee478516b0186baf3e030ce9828e5dd"
+  },
+  "budgets": {
+    "outer": 900,
+    "manager": 600,
+    "managerFailureCleanup": 60,
+    "phase": 120,
+    "native": [
+      15,
+      8,
+      3
+    ],
+    "http": 10,
+    "capture": 45,
+    "listenerReady": 30,
+    "tlsCommand": 30
+  },
+  "nativeBinding": {
+    "schema": "heptabao.mac-native-proc-input-binding.r1",
+    "jobId": "1a1aa0eabee-fc05-3c36",
+    "stdoutBytes": 24032,
+    "stdoutSha256": "7a1b715e595a2badf18e4f01506cca2ee7c4c0a760c5ef3c86708a435ace9c4f",
+    "authorityBytes": 733,
+    "authoritySha256": "411ea26371219c49547abc014464585551ba4a69b70bb906b92561a8d5bddf23",
+    "childStdoutBytes": 11066,
+    "childStdoutSha256": "bb5717753866c0d7e647e4fd5c18a3342db0f530016cc7d92cb508c955ff8644",
+    "controllerSha256": "4dc7cc28869ff4cd78bd4d442619e79a44d82b0ae46c5040dcd9b59e0e17921d",
+    "modulePins": {
+      "mac_darwin_owned_projection_r1.py": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740",
+      "mac_native_owned_unreaped_r1.py": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c",
+      "mac_native_owned_commands_r1.py": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+    },
+    "probeProfileSha256": {
+      "original": "d31751dc8da537121b3f1ccce832a666cc6499bdef4d956ab3208dec86daf35e",
+      "patched": "58a8f52a66b0e6136b786857cb72e3f775837907bf382850320673342750c6bd"
+    },
+    "additionalReadOnlyDirectoryLiteral": "/Volumes/T5/hepta-vnext-recovery-20261013",
+    "additionalReadRuleSha256": "f591502879fc5b1f579d5d8ced77ce375b37269725c5dd3531f650e4c46676ef"
+  }
+}

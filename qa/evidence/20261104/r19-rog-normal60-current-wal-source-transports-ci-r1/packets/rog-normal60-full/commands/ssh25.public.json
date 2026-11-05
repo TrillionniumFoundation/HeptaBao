@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/retained-heptabao-server-libtest",
+    "native_ssh_",
+    "--nocapture",
+    "--test-threads=1"
+  ],
+  "direct_child_reaped": true,
+  "elapsed_seconds": 43.369095912988996,
+  "exit_code": 0,
+  "label": "ssh25",
+  "outer_cap_seconds": 600,
+  "owned_pgid": 1639278,
+  "remaining": [],
+  "stderr_sha256": "a906689d6ddb977e58e2f9ba74c72262a77be0362e5c44f6e11e28731e3af691",
+  "stdout_sha256": "332b5911b4c24a3f72de9678dbf406570d4851fbcdf3d4f675d5fb6b734b2e84",
+  "timed_out": false
+}

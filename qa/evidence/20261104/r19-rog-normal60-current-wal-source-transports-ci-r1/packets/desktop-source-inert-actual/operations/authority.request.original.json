@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "compat-df026-source-inert-r1-1a1aa27fc38-fc05-3e58-authority",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1aa27fc38-fc05-3e58"
+    }
+  }
+}

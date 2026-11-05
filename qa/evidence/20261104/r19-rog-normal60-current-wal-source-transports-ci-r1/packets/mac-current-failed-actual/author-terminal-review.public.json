@@ -1,0 +1,169 @@
+{
+  "schema": "heptabao.mac-current-native-df026-runtime-author-terminal-review.r1",
+  "verdict": "FAILED_CAPTURE_INPUT_GUARD_OBSERVATION_UNKNOWN",
+  "jobId": "1a1aa2ac597-fc05-3e8f",
+  "idempotencyKey": "heptabao-mac-current-five-agent-native-df026-64d7a772-20261105-r1",
+  "submissionInvocations": 1,
+  "sourcePacketTree": "20ac9d5b0d79577e107b1d202dced02ead300721",
+  "sourceRootReviewBlob": "725783e8df43dc9e59a2ff14a7debdbdf5e40d6e",
+  "actualInertTree": "14e9f3157b7fc6054dd400ac2573c73c6c66c11b",
+  "request": {
+    "bytes": 5135,
+    "sha256": "f7b968aeed09a21b57ca18336ebe575a07199e0456026c300e3678a6b123d6ab",
+    "git_blob": "5c79feea035cab451eb734174d6497a0237c84e9"
+  },
+  "rootAdmission": {
+    "bytes": 2078,
+    "sha256": "0017dc68806c775e77494fdc35aef65415df179638b0a3f2f2b382b89921f4cf",
+    "git_blob": "5f0db681fac7c7952796c70d3061da1e603b7493"
+  },
+  "authority": {
+    "bytes": 730,
+    "sha256": "9d57c7fe435618341654a1b082b8629770e4aa434281b5e66640799b137ecab4",
+    "git_blob": "e080c3b18e4f2e85d8f150889e0ad936fea858c0"
+  },
+  "stdout": {
+    "bytes": 47062,
+    "sha256": "18218e64bda6b7b297c3a0329d68d65d10d3874fa4e042a6ce52b416135bf870",
+    "git_blob": "eee026252edca4c284e1775215c9e63a75285f4a"
+  },
+  "childStdout": {
+    "bytes": 6317,
+    "sha256": "933cf5a871ff797052fdd8b758b57fa081129ef78bb08aa688680a1f397b946d",
+    "git_blob": "bd936371eecb3efad531864cdc0a33578b986ead"
+  },
+  "processTerminal": {
+    "exitCode": 1,
+    "state": "failed",
+    "complete": true,
+    "durable": true,
+    "terminalPublicationConfirmed": true,
+    "timedOut": false,
+    "cancelled": false,
+    "automaticRetry": false,
+    "stderrBytes": 0,
+    "knownProcessExit": true
+  },
+  "operation": {
+    "outcomeUnknown": true,
+    "outerErrorCode": "actual_sandbox_capture_child_terminal",
+    "outerErrorFrames": [
+      {
+        "file": "mac_current_outer_native_r1.py",
+        "line": 846
+      },
+      {
+        "file": "mac_current_outer_native_r1.py",
+        "line": 587
+      },
+      {
+        "file": "mac_current_outer_native_r1.py",
+        "line": 165
+      }
+    ],
+    "childErrorType": "CaptureRefused",
+    "childErrorCode": "current_input_size_bound",
+    "stage": "before",
+    "captureLibraryReturned": false,
+    "productionReadAttempted": true,
+    "productionWriteAttempted": false,
+    "sourceUnknownClassificationPreserved": true
+  },
+  "elapsed": {
+    "outerSeconds": 0.8332585422322154,
+    "childSeconds": 0.14560054196044803,
+    "originalOuterDeadlineMet": true,
+    "originalCaptureDeadlineMet": true,
+    "controller900": true,
+    "supervisor1080": true,
+    "capture45": true
+  },
+  "positiveLimitedObservations": {
+    "actualNativeRuntimeCompatible": true,
+    "nativeSelfQualified": true,
+    "actualAbi136": true,
+    "kernelFourDenials": true,
+    "allFourErrno1": true,
+    "publicNativeProofSha256": "7a1b715e595a2badf18e4f01506cca2ee7c4c0a760c5ef3c86708a435ace9c4f",
+    "publicNativeAuthoritySha256": "411ea26371219c49547abc014464585551ba4a69b70bb906b92561a8d5bddf23",
+    "publicNativeChildSha256": "bb5717753866c0d7e647e4fd5c18a3342db0f530016cc7d92cb508c955ff8644",
+    "theseDoNotQualifyCurrentCapture": true
+  },
+  "ownedProcessClosure": [
+    {
+      "label": "outer-t5-volume",
+      "pid": 92091,
+      "exitCode": 0,
+      "deadlineMet": true,
+      "streamsClosed": true,
+      "custodySchema": "original_ps_numeric",
+      "directChildReaped": true,
+      "emptyBeforeReap": true,
+      "emptyAfterReap": true,
+      "signals": [],
+      "outcomeUnknown": false
+    },
+    {
+      "label": "current-capture-before",
+      "pid": 92100,
+      "exitCode": 1,
+      "deadlineMet": true,
+      "streamsClosed": true,
+      "custodySchema": "original_ps_numeric",
+      "directChildReaped": true,
+      "emptyBeforeReap": true,
+      "emptyAfterReap": true,
+      "signals": [],
+      "outcomeUnknown": false
+    },
+    {
+      "label": "capture-t5-volume",
+      "pid": 92102,
+      "exitCode": 0,
+      "deadlineMet": true,
+      "streamsClosed": true,
+      "custodySchema": "heptabao.darwin-proc-bsdinfo-numeric.r1",
+      "directChildReaped": true,
+      "emptyBeforeReap": true,
+      "emptyAfterReap": true,
+      "signals": [],
+      "outcomeUnknown": false
+    }
+  ],
+  "explicitDescriptorEvidence": {
+    "outerReadDescriptorCount": 27,
+    "outerReadDescriptorsClosed": true,
+    "outerInputsDescriptorsClosed": true,
+    "outerAndChildT5Closed": true,
+    "sourceLibraryFailureLedgerReturned": false,
+    "limitation": "capture_current finally calls inputs.close, but on this exception its observation/connection/close ledger is not returned. Entry cap=None and its allOwnedDescriptorsClosed field do not establish every library-local close attempt/result. Actual descendant process exits/groups are separately known; the original outcomeUnknown=true remains."
+  },
+  "beforeConsumers": {
+    "ownedPhases": [],
+    "captureReports": [],
+    "serviceOperationDispatched": false,
+    "providerRequested": false,
+    "j3160Contacted": false,
+    "productionCutover": false,
+    "privateBodyOrStderrFetched": false
+  },
+  "inputGuardStaticScope": {
+    "source": "mac_guarded_current_capture_r3.py",
+    "sourceSha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+    "function": "FixedInputs.hold",
+    "line": 122,
+    "predicate": "maximum is not None and named.st_size <= maximum",
+    "possibleCallLimits": {
+      "fixedSmallRead": 1048576,
+      "wal": 0,
+      "rollbackJournal": 0,
+      "sharedMemory": 8388608
+    },
+    "mainDatabaseMaximum": null,
+    "exactFailedPathNotObserved": true,
+    "noCapChange": true,
+    "noRetry": true
+  },
+  "nextScope": "Only a separately reviewed finite metadata source/request may observe current 46 fixed files. Such observations cannot retroactively identify this failed path. No additional host operation or current-runtime replay is included.",
+  "historicalUnknown11754Unchanged": true
+}

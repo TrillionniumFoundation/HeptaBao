@@ -1,0 +1,19 @@
+diff --git a/mac_current_server_owner_r1.py b/mac_current_server_owner_r1.py
+--- a/mac_current_server_owner_r1.py
++++ b/mac_current_server_owner_r1.py
+@@ -10,11 +10,11 @@
+ from contextlib import contextmanager
+ from pathlib import Path
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-native-custody-r1')
+ QA=ROOT/'qa'
+-BINARY=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/normal-release-tests-r1/artifacts/heptabao-server')
+-BINARY_SHA='bc1fc6b8ded5a43a60ab4c562cd5e092e63ae9df77afd654c9af8c096c128c98'
+-BINARY_BYTES=93038816
++BINARY=Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/normal-release-tests-r1/artifacts/heptabao-server')
++BINARY_SHA='ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0'
++BINARY_BYTES=92408592
+ GENERATIONS=('server-initial','server-cold-new-process')
+ PUBLIC_MODULES=('mac_owned_unreaped_r1.py','mac_owned_commands_r1.py',
+                 'mac_t5_volume_guard_r1.py','mac_native_process_observer_r1.py')

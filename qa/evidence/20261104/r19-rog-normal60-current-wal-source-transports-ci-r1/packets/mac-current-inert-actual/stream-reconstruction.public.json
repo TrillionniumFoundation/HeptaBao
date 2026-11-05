@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.mac-native-current-inert-stream-reconstruction.r1",
+  "jobId": "1a1aa25e8d1-fc05-3e27",
+  "singleRead": {
+    "stdoutOffset": 0,
+    "nextOffset": 14370,
+    "size": 14370,
+    "eof": true,
+    "stderrOffset": 0,
+    "nextStderrOffset": 0,
+    "stderrSize": 0,
+    "stderrEof": true
+  },
+  "hexDecodedBytes": 14370,
+  "textUtf8Bytes": 14370,
+  "hexEqualsTextExact": true,
+  "authorityStoredSeenBytesMatch": true,
+  "stdout": {
+    "bytes": 14370,
+    "sha256": "07edd8fbef8f1ba19b01d41dd1dbe70517693f46ddd7d246a462f377a4ca326a",
+    "git_blob": "d522895df6ab058b3f157d605e5b6db470263a3b"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "sdkPairs": [
+    {
+      "kind": "start",
+      "snapshot": {
+        "bytes": 17440,
+        "sha256": "e3eca2b819833d696ed812af19a5160373cc0288870f4d2f09e95df465723290",
+        "git_blob": "fc19d792d07b54c7f4eb1a91f468455bb52eed9d"
+      },
+      "native": {
+        "bytes": 16645,
+        "sha256": "fbab88cf094df2d83f95fa03b0a9b516e2fc3d7066a5d0190d952850fd8f9df4",
+        "git_blob": "b4a254673fbf84752d7287fddd9704354fc26339"
+      },
+      "contentTextExact": true
+    },
+    {
+      "kind": "authority",
+      "snapshot": {
+        "bytes": 956,
+        "sha256": "8d8864fb12c897a92788ff82990f015fc01893890c64e33e9c5a1ef855652d85",
+        "git_blob": "c3fcbe713514f97f02da260f8631e745be9855ed"
+      },
+      "native": {
+        "bytes": 733,
+        "sha256": "ac5a9cf4d55aacc28b275c3189a4257f2b01bba9ea8c3e89f4b16608c265e1b4",
+        "git_blob": "0049b95093d682ebf25b402bc9fb8e585f343afe"
+      },
+      "contentTextExact": true
+    },
+    {
+      "kind": "read0",
+      "snapshot": {
+        "bytes": 48271,
+        "sha256": "28861c8f7d10e819846790ec608a2c5daa30f61d5a9833ab1a49ca544a086362",
+        "git_blob": "43ef805e11634372c696cc72e75f4008e5a7e4a8"
+      },
+      "native": {
+        "bytes": 44986,
+        "sha256": "71d12d302c5dd7cb65259f3e802b5bb879c46053630a0c3967c2da3d53a56faa",
+        "git_blob": "ecb3ff599809a95d8e611c8c7eda73c8f8b248f0"
+      },
+      "contentTextExact": true
+    }
+  ],
+  "ackRequestFingerprintOriginalIntegerToken": "969880931691313594",
+  "unsafeIntegersReserialized": false,
+  "mcpSnapshotMeaning": "JSON serialization of returned structured MCP object; native bytes are the exact content[0].text strings; not claimed as transport wire bytes."
+}

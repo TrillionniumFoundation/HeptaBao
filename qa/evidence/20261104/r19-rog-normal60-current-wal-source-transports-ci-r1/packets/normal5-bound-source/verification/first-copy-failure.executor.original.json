@@ -1,0 +1,7 @@
+{
+  "chunk_id": "7466e3",
+  "wall_time_seconds": 0.000020421,
+  "exit_code": 1,
+  "original_token_count": 57,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/heptabao-df026-normal5-source-udgb_g33/verify.py\", line 46, in <module>\n    assert texts['relay'][1]['HELPERS'] == {\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n"
+}

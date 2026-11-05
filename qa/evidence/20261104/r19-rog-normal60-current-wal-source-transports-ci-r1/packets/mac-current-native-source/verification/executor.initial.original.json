@@ -1,0 +1,7 @@
+{
+  "chunk_id": "73441b",
+  "wall_time_seconds": 0.957952392,
+  "exit_code": 1,
+  "original_token_count": 212,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/mac-current-native-df026-source-r1.T3zowD/verify_static.py\", line 50, in <module>\n    need(changed==changed_expected.get(oldname,set()),'only_named_definitions_changed:'+oldname+':'+str(changed))\n  File \"/tmp/mac-current-native-df026-source-r1.T3zowD/verify_static.py\", line 10, in <lambda>\n    need=lambda condition,code: None if condition else (_ for _ in ()).throw(AssertionError(code))\n                                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/mac-current-native-df026-source-r1.T3zowD/verify_static.py\", line 10, in <genexpr>\n    need=lambda condition,code: None if condition else (_ for _ in ()).throw(AssertionError(code))\nAssertionError: only_named_definitions_changed:mac_current_outer_r4.py:{'capture_once', 'main', 'bootstrap_api'}\n"
+}

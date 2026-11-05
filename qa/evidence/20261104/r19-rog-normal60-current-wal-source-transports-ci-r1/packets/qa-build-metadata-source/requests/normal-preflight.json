@@ -1,0 +1,15 @@
+{
+  "idempotency_key": "heptabao-df026-h2-qa-binding-normal-preflight-20261105-r1",
+  "operation": {
+    "tool": "read_multiple_files",
+    "arguments": {
+      "host": "rog",
+      "paths": [
+        "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/build-control-r3/launch-preflight.public.json",
+        "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json"
+      ],
+      "max_file_bytes": 65536,
+      "max_response_bytes": 262144
+    }
+  }
+}

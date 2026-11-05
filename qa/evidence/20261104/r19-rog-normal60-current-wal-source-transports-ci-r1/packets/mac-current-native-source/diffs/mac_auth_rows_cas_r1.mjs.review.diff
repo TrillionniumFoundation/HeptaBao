@@ -1,0 +1,12 @@
+diff --git a/mac_auth_rows_cas_r1.mjs b/mac_auth_rows_cas_r1.mjs
+--- a/mac_auth_rows_cas_r1.mjs
++++ b/mac_auth_rows_cas_r1.mjs
+@@ -12,7 +12,7 @@
+   if (!['main','trnm','hepta-ui','hepta','hepta-backend'].includes(agentId)) throw new Error('auth_rows_agent_not_allowlisted');
+   const root = path.resolve(stateRoot);
+   if (!['initial','cold-new-process'].some(phase => root ===
+-    '/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/'+phase+'/state'))
++    '/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-native-custody-r1/'+phase+'/state'))
+     throw new Error('auth_rows_not_new_owned_state');
+   const file=path.join(root,'agents',agentId,'agent','openclaw-agent.sqlite');
+   if(fs.realpathSync(root)!==root||fs.realpathSync(path.dirname(file))!==path.dirname(file)

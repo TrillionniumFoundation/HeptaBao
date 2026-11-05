@@ -1,0 +1,271 @@
+diff --git a/mac_current_capture_entry_native_r1.py b/mac_current_capture_entry_native_r1.py
+--- a/mac_current_capture_entry_native_r1.py
++++ b/mac_current_capture_entry_native_r1.py
+@@ -11,16 +11,39 @@
+ from contextlib import contextmanager
+ from pathlib import Path
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-native-custody-r1')
+ QA=ROOT/'qa'
+ LIVE=Path('/Users/qianqi/.openclaw')
+ AGENTS=('main','trnm','hepta-ui','hepta','hepta-backend')
+ CACHE_NAMES=('applied-profiles.json','publish-baseline.json','bad-refresh-quarantine.json',
+              'refresh-backoff.json','lease-epochs.json','status.json')
+-NAMES=('mac_current_capture_entry_r1.py','mac_guarded_current_capture_r3.py',
+-       'mac_t5_volume_guard_r1.py','mac_owned_commands_r1.py','mac_owned_unreaped_r1.py')
++NAMES=('mac_current_capture_entry_native_r1.py','mac_guarded_current_capture_r3.py',
++       'mac_t5_volume_guard_r1.py','mac_darwin_owned_projection_r1.py',
++       'mac_native_owned_commands_r1.py','mac_native_owned_unreaped_r1.py')
+ SYNTHETIC_SOURCE_SHA='f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2'
+ CAPTURE_SOURCE_SHA='606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693'
++NATIVE_BINDING={
++  "schema": "heptabao.mac-native-proc-input-binding.r1",
++  "jobId": "1a1aa0eabee-fc05-3c36",
++  "stdoutBytes": 24032,
++  "stdoutSha256": "7a1b715e595a2badf18e4f01506cca2ee7c4c0a760c5ef3c86708a435ace9c4f",
++  "authorityBytes": 733,
++  "authoritySha256": "411ea26371219c49547abc014464585551ba4a69b70bb906b92561a8d5bddf23",
++  "childStdoutBytes": 11066,
++  "childStdoutSha256": "bb5717753866c0d7e647e4fd5c18a3342db0f530016cc7d92cb508c955ff8644",
++  "controllerSha256": "4dc7cc28869ff4cd78bd4d442619e79a44d82b0ae46c5040dcd9b59e0e17921d",
++  "modulePins": {
++    "mac_darwin_owned_projection_r1.py": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740",
++    "mac_native_owned_unreaped_r1.py": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c",
++    "mac_native_owned_commands_r1.py": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
++  },
++  "probeProfileSha256": {
++    "original": "d31751dc8da537121b3f1ccce832a666cc6499bdef4d956ab3208dec86daf35e",
++    "patched": "58a8f52a66b0e6136b786857cb72e3f775837907bf382850320673342750c6bd"
++  },
++  "additionalReadOnlyDirectoryLiteral": "/Volumes/T5/hepta-vnext-recovery-20261013",
++  "additionalReadRuleSha256": "f591502879fc5b1f579d5d8ced77ce375b37269725c5dd3531f650e4c46676ef"
++}
+ PROBE_CONTENT=b'owned capture kernel-write fence r1\n'
+ START=time.monotonic()
+ until=None
+@@ -83,7 +106,7 @@
+ 
+ def capture_profile(stage):
+     need(stage in ('before','after'),'fixed_capture_stage')
+-    read_paths={Path('/'),Path('/Volumes'),Path('/Volumes/T5'),ROOT,QA,ROOT/'proofs',
++    read_paths={Path('/'),Path('/Volumes'),Path('/Volumes/T5'),ROOT.parent,ROOT,QA,ROOT/'proofs',
+                 ROOT/'captures',ROOT/'captures'/stage}
+     files={LIVE/'openclaw.json'}
+     for database in [LIVE/'state/openclaw.sqlite',*[
+@@ -106,7 +129,8 @@
+         lines.append('(allow file-read* (subpath '+q(path)+'))')
+     for path in sorted(read_paths,key=str):
+         lines.append('(allow file-read* (literal '+q(path)+'))')
+-    lines.extend(['(allow file-read* (literal "/dev/urandom"))',
++    lines.extend(['(allow file-read* (literal "/dev/null"))',
++        '(allow file-read* (literal "/dev/urandom"))',
+         '(allow file-read* (literal "/dev/random"))',
+         '(allow file-write* (subpath '+q(ROOT/'captures'/stage/'output')+'))',
+         '(allow file-write* (literal "/dev/null"))'])
+@@ -166,6 +190,113 @@
+          and owned.get('unknownCommandCount')==0,'synthetic_complete_owned_closure')
+     return raw,proof
+ 
++def admitted_native(guard,binding):
++    """Admit three exact original public records; never accept a template."""
++    need(type(binding) is dict and binding==NATIVE_BINDING,'exact_actual_native_binding')
++    originals={}
++    for role,name,size_key,sha_key in (
++        ('stdout','native-proc-r2.stdout.public.json','stdoutBytes','stdoutSha256'),
++        ('authority','native-proc-r2.authority.public.json','authorityBytes','authoritySha256'),
++        ('child','native-proc-r2.child-stdout.public.json','childStdoutBytes','childStdoutSha256')):
++        raw=guard.read(ROOT/'proofs'/name,65536)
++        need(len(raw)==binding[size_key] and sha(raw)==binding[sha_key],
++             'whole_original_native_'+role)
++        originals[role]=raw
++    authority=json.loads(originals['authority'])
++    proof=json.loads(originals['stdout']);child=json.loads(originals['child'])
++    need(type(authority) is dict and authority.get('job_id')==binding['jobId']
++         and type(authority.get('exit_code')) is int and authority['exit_code']==0
++         and authority.get('state')=='succeeded'
++         and all(authority.get(k) is True for k in
++             ('output_complete','output_durable','terminal_publication_confirmed'))
++         and all(authority.get(k) is False for k in ('timed_out','cancelled','automatic_retry')),
++         'successful_authoritative_native_terminal')
++    for stream,size in (('stdout',binding['stdoutBytes']),('stderr',0)):
++        need(authority.get('log_bytes',{}).get(stream)=={'seen':size,'stored':size}
++             and authority.get('log_errors',{}).get(stream) is None
++             and authority.get('log_synced',{}).get(stream) is True
++             and authority.get('log_truncated',{}).get(stream) is False,
++             'complete_original_native_log_'+stream)
++    need(type(proof) is dict and proof.get('schema')=='heptabao.mac-native-proc-sandbox-probe.r2'
++         and type(child) is dict and child.get('schema')=='heptabao.mac-native-proc-sandbox-child.r2',
++         'exact_public_native_report_schemas')
++    cases=proof.get('cases')
++    need(type(cases) is list and len(cases)==1 and type(cases[0]) is dict
++         and cases[0].get('variant')=='native' and type(cases[0].get('exitCode')) is int
++         and cases[0]['exitCode']==0 and cases[0].get('report')==child
++         and cases[0].get('stdoutBytes')==binding['childStdoutBytes']
++         and cases[0].get('stdoutSha256')==binding['childStdoutSha256']
++         and cases[0].get('stderrBytes')==0
++         and cases[0].get('stderrSha256')==sha(b''),'exact_original_native_child_terminal')
++    for value,count in ((proof,2),(child,1)):
++        need(value.get('ok') is True and value.get('outcomeUnknown') is False
++             and value.get('sourceSha256')==binding['controllerSha256']
++             and value.get('originalCaptureSeconds')==45
++             and value.get('originalDeadlineMetAfterClosure') is True
++             and type(value.get('elapsedSeconds')) in (int,float)
++             and math.isfinite(value['elapsedSeconds']) and 0<=value['elapsedSeconds']<45,
++             'successful_original_native_report')
++        need(all(value.get(k) is False for k in (
++            'productionReadAttempted','productionWriteAttempted','sqliteImported',
++            'consumerStarted','providerRequested','j3160Contacted','businessReplay',
++            'failedCaptureBeforePathUsed','systemUtilitiesCopiedOrChanged')),
++             'public_native_probe_scope_only')
++        held=value.get('heldT5Final',{});owned=value.get('ownedCommands',{})
++        need(value.get('allOwnedDescriptorsClosed') is True
++             and held.get('allDescriptorsClosed') is True
++             and held.get('lastAnchorCheckPassed') is True
++             and held.get('volumeUUIDVerified') is True and held.get('closeErrors')==[]
++             and owned.get('allOwnedCommandsStopped') is True and owned.get('unknownCommandCount')==0
++             and type(owned.get('commands')) is list and len(owned['commands'])==count,
++             'complete_public_native_fd_and_owned_closure')
++        for row in owned['commands']:
++            need(type(row) is dict and type(row.get('exitCode')) is int and row['exitCode']==0
++                 and row.get('completeBeforeDeadline') is True and row.get('outcomeUnknown') is False
++                 and row.get('streamsClosed') is True,'public_native_command_known_complete')
++            closed=row.get('cleanup',{})
++            need(closed.get('ok') is True and closed.get('outcomeUnknown') is False
++                 and closed.get('directChildReaped') is True
++                 and closed.get('ownedLiveGroupEmptyBeforeReap') is True
++                 and closed.get('allGroupRowsEmptyAfterReap') is True
++                 and closed.get('remainingGroupRows')==[] and closed.get('signals')==[]
++                 and closed.get('postReapSignalSent') is False,
++                 'public_native_retained_custody_terminal')
++        modules=value.get('nativeModulesBefore')
++        need(type(modules) is dict and set(modules)==set(binding['modulePins'])
++             and modules==value.get('nativeModulesAfter')
++             and all(type(modules[name]) is dict and modules[name].get('sha256')==pin
++                     for name,pin in binding['modulePins'].items()),
++             'public_native_three_module_whole_pins')
++        need(type(value.get('sourceBefore')) is dict and len(value['sourceBefore'])==4
++             and value['sourceBefore']==value.get('sourceAfter'),
++             'public_native_old_sources_unchanged')
++        need(value.get('profileSha256')==binding['probeProfileSha256']
++             and value.get('policyPermissionsAddedBeyondDevnull') is True
++             and value.get('additionalReadOnlyDirectoryLiteral')==binding['additionalReadOnlyDirectoryLiteral']
++             and value.get('additionalReadRuleSha256')==binding['additionalReadRuleSha256'],
++             'explicit_public_native_policy_delta')
++    need(type(proof.get('utilityBefore')) is dict and len(proof['utilityBefore'])==3
++         and proof['utilityBefore']==proof.get('utilityAfter'),'public_native_utilities_unchanged')
++    kernel=child.get('kernelSandboxProof',{});checks=kernel.get('checks')
++    need(kernel.get('allFourDenied') is True and type(checks) is list and len(checks)==4
++         and [row.get('case') for row in checks]==[
++             'main_write_open','sidecar_create','sidecar_create','loopback_connect']
++         and all(row.get('denied') is True and row.get('errno') in (errno.EACCES,errno.EPERM)
++                 for row in checks),'all_four_original_native_kernel_refusals')
++    projection=child.get('nativeProjection',{})
++    need(projection.get('selfQualified') is True and type(projection.get('identity')) is dict
++         and projection.get('allHostEnumerationUsed') is False
++         and projection.get('commandNamesOrPathsProjected') is False
++         and projection.get('pidListNullBufferUsed') is False
++         and projection.get('maxGroupMembers')==64 and projection.get('querySeconds')==4,
++         'public_native_bounded_projection_qualified')
++    need(child.get('nativeSelfBefore')==child.get('nativeSelfAfter')
++         and type(child.get('nativeSelfBefore')) is dict
++         and child['nativeSelfBefore'].get('pidUidPpidPgidMatchedIndependentOsApis') is True,
++         'public_native_same_self_birth_qualified')
++    guard.check()
++    return originals['stdout'],child
++
+ def kernel_refusals(guard,stage):
+     directory=ROOT/'captures'/stage/'probe';main=directory/'writable-owned-main'
+     need(guard.read(main,4096)==PROBE_CONTENT,'owned_probe_exact_initial_bytes')
+@@ -226,19 +357,21 @@
+     parser.add_argument('--source-pins-sha256',required=True)
+     parser.add_argument('--synthetic-binding-base64',required=True)
+     parser.add_argument('--synthetic-binding-sha256',required=True)
++    parser.add_argument('--native-binding-base64',required=True)
++    parser.add_argument('--native-binding-sha256',required=True)
+     parser.add_argument('--sandbox-profile-sha256',required=True)
+     args=parser.parse_args();os.umask(0o077)
+     need(math.isfinite(args.absolute_until) and START<args.absolute_until<=START+45,
+          'one_original_capture_deadline')
+     until=args.absolute_until
+     for sig in (signal.SIGTERM,signal.SIGINT):signal.signal(sig,interrupted)
+-    report={'schema':'heptabao.mac-guarded-current-capture-entry.r1','stage':args.stage,
++    report={'schema':'heptabao.mac-guarded-current-capture-entry.native-r1','stage':args.stage,
+         'ok':False,'outcomeUnknown':False,'productionReadAttempted':False,
+         'productionWriteAttempted':False,'captureLibraryReturned':False,
+         'providerRequestSent':False,'j3160Contacted':False,
+         'wholeDatabaseBackupQualified':False,'crossAgentAtomicSnapshotClaimed':False,
+         'originalCaptureSeconds':45}
+-    guard=None;commands=None;cap=None;complete=False;capsule=None
++    guard=None;commands=None;cap=None;complete=False;capsule=None;native_api=None
+     try:
+         need(sys.platform=='darwin' and os.getuid()==501,'actual_mac_capture_owner')
+         pins_raw=base64.b64decode(args.source_pins_base64,validate=True)
+@@ -248,18 +381,28 @@
+              and all(isinstance(v,str) and len(v)==64 and all(c in '0123456789abcdef' for c in v)
+                      for v in pins.values()) and pins['mac_guarded_current_capture_r3.py']==CAPTURE_SOURCE_SHA,
+              'fixed_public_capture_modules')
++        need(all(pins.get(name)==pin for name,pin in NATIVE_BINDING['modulePins'].items()),
++             'exact_qualified_native_capture_modules')
+         source_ids={}
+         for name,pin in pins.items():
+             raw,source_ids[name]=source_bytes(QA/name);need(sha(raw)==pin,'capture_public_source_pin')
+         sys.path.insert(0,str(QA))
+         from mac_t5_volume_guard_r1 import HeldT5
+-        from mac_owned_commands_r1 import Commands
++        need(all(name[:-3] not in sys.modules for name in NATIVE_BINDING['modulePins']),
++             'new_native_capture_modules_not_preloaded')
++        from mac_darwin_owned_projection_r1 import NativeProjection
++        from mac_native_owned_unreaped_r1 import bind_projection
++        from mac_native_owned_commands_r1 import Commands
+         import mac_guarded_current_capture_r3 as capture
+         cap=capture
+         class SignalState:
+             @property
+             def pending(self):return pending
+             def critical(self):return critical()
++        remaining()
++        native_api=NativeProjection(until=until)
++        report['nativeSelfBefore']=native_api.qualify_self(until=until)
++        bind_projection(native_api)
+         commands=Commands(SignalState())
+         anchor=base64.b64decode(args.public_volume_anchor_base64,validate=True)
+         guard=HeldT5(anchor,args.public_volume_anchor_sha256,remaining,critical)
+@@ -269,6 +412,17 @@
+         need(row['exitCode']==0 and not row['outcomeUnknown'] and row['completeBeforeDeadline'],
+              'capture_volume_probe_complete')
+         guard.accept_diskutil(out)
++        native_raw=base64.b64decode(args.native_binding_base64,validate=True)
++        need(len(native_raw)<=8192 and sha(native_raw)==args.native_binding_sha256,
++             'actual_native_public_binding')
++        _,native_proof=admitted_native(guard,json.loads(native_raw))
++        need(native_api.public()['identity']==native_proof['nativeProjection']['identity'],
++             'same_actual_native_abi_os_and_loaded_image_observations')
++        report['nativePublicProofSha256']=NATIVE_BINDING['stdoutSha256']
++        report['nativePublicAuthoritySha256']=NATIVE_BINDING['authoritySha256']
++        report['nativePublicChildSha256']=NATIVE_BINDING['childStdoutSha256']
++        report['actualNativeRuntimeCompatible']=True
++        remaining()
+         binding_raw=base64.b64decode(args.synthetic_binding_base64,validate=True)
+         need(len(binding_raw)<=8192 and sha(binding_raw)==args.synthetic_binding_sha256,
+              'actual_synthetic_public_binding')
+@@ -295,6 +449,11 @@
+         for name,pin in pins.items():
+             raw,observed=source_bytes(QA/name)
+             need(sha(raw)==pin and observed==source_ids[name],'capture_sources_after')
++        report['nativeSelfAfter']=native_api.qualify_self(until=until)
++        before_self=report['nativeSelfBefore']['first'];after_self=report['nativeSelfAfter']['last']
++        need(all(before_self[key]==after_self[key] for key in
++             ('pid','ppid','pgid','uid','birthSeconds','birthMicroseconds')),
++             'same_current_capture_native_self_birth')
+         guard.check();remaining();complete=True
+     except BaseException as error:
+         report['errorType']=type(error).__name__
+@@ -312,6 +471,7 @@
+                     try:row['socket'].close();row['closed']=True
+                     except BaseException as error:row['closeErrorType']=type(error).__name__
+         if commands is not None:report['ownedCommands']=commands.public()
++        if native_api is not None:report['nativeProjection']=native_api.public()
+         if guard is not None:
+             guard.close();report['heldT5Final']=guard.public_state()
+         closed=(all(row['closed'] for row in fds) and all(row['closed'] for row in sockets)

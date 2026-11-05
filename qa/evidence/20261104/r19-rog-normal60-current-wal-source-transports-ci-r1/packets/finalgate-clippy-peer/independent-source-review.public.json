@@ -1,0 +1,57 @@
+{
+  "schema": "heptabao.final-cold-gate-clippy.independent-source-peer.r1",
+  "status": "PASS_SOURCE_ONLY_SCOPED",
+  "reviewer": "ha_validation",
+  "proposal_tree": "151137838e167cb31baf559b060c6286b08d5967",
+  "proposal_blob": "7582c65f4fcf6af6796cfb8539ddb5b5c8bafd48",
+  "declared_parent": "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+  "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+  "before": {
+    "bytes": 31475,
+    "sha256": "298824c635fdbf759adc46583271438e856f395571668f1f7e9f324e7b55d951",
+    "blob": "b09e57362d53ce207b255d713d7aa7c126215691"
+  },
+  "after": {
+    "bytes": 31461,
+    "sha256": "52ad58f830e16dbbf2145accc3e615adc177e561219ea24c797973cf1965de26",
+    "blob": "f991d6a25979ea350d60b2621b80ae2dcab760e0"
+  },
+  "diff": {
+    "bytes": 607,
+    "sha256": "883faf7971ada2c487998a99f4acd67b164190e089a6f17e12fbabee233679d0",
+    "blob": "9d4391adcaaa2b978fe473f267c684a220be6cb1"
+  },
+  "strict_hunks": 1,
+  "exact_proof": {
+    "unique_literal_block": true,
+    "forward_exact": true,
+    "reverse_exact": true,
+    "final_call_last_gate_use": true,
+    "unmodified_observer_signature_fn_once": true,
+    "unmodified_gate_body": true,
+    "unmodified_earlier_mutable_uses": true,
+    "unmodified_function_tail": true,
+    "line_length": 100
+  },
+  "review_findings": [
+    "The full 31,475-byte before and 31,461-byte after and exact 607-byte diff were fetched by immutable Git blob, whole SHA256/Git verified, and confirmed as members of the supplied proposal tree.",
+    "Strict application of the one hunk reproduces every candidate byte. Unique literal replacement also reverses to every original byte; no other guard, limit, mapping, test or function body changes.",
+    "observe_cold_native_ha accepts operation: impl FnOnce() -> Result<T,E> and passes that same operation to the existing bounded timing wrapper. The changed site is the last gate use in load_cold_native_ha_inner.",
+    "All preceding &mut gate uses remain exact. The closure body still checks original cold owner, committed read witness and original deadline in the same order, with the same error conversion.",
+    "Passing gate by value at its final use consumes the closure object instead of making a needless final mutable reborrow. This closure uses the existing borrowed environment/process/committed owners and request references; it does not create or move an owner capability out of those owners.",
+    "FinalGate timing phase, deadline, storage_rejected mapping, error propagation, diagnostic finishes and returned ColdNativeHaRead remain exact. The replacement call chain is exactly 100 columns."
+  ],
+  "no_source_blocker_found": true,
+  "executed_rust": false,
+  "executed_clippy": false,
+  "executed_tests": false,
+  "host_operations": 0,
+  "limits_changed": false,
+  "lint_suppression_added": false,
+  "scope_limits": [
+    "This is a narrow source semantics review; no compile or CI result is inferred.",
+    "The cited actual Clippy trigger is recorded by the root proposal; its 2,889,750-byte log was not independently re-downloaded for this review.",
+    "Parent commit membership beyond the supplied proposal tree is the root's separate audit.",
+    "All existing Mac/ROG artifacts and live bindings remain exact df026; this source successor is not substituted or granted their qualification."
+  ]
+}

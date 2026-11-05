@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.root-df026-phaseb-lan-unbound-source-review.r1",
+  "reviewed_at": "2026-11-05 05:24:42 UTC",
+  "status": "PASS_SOURCE_ONLY_NO_DISPATCH",
+  "candidate": {
+    "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825"
+  },
+  "phase_b": {
+    "tree": "f3f268581b6efe14d7f8e8e6981ff4e1498802c4",
+    "files": 18,
+    "bytes": 404354,
+    "binder": "f60dbb093d69641bc8cd4a367320ec6fc5bdc0fd",
+    "strict_diff_hunks": 6,
+    "all_seven_product_paths_exact_canonical": true,
+    "original_controller_and_three_helpers_retained": true,
+    "reviewed": "Complete 6-hunk binding diff and unchanged surrounding gates; only source/tree/fresh namespace/product pin changes and added original9/runner qualification. All44/7/9 names, default profile, receipt/source hashes and owned cleanup remain. All declared new metadata slots unresolved; no runtime gate is deemed passed."
+  },
+  "lan": {
+    "tree": "6592b2f14dd7c9102c498d33ad428fd6bab85a3d",
+    "files": 39,
+    "bytes": 1248523,
+    "strict_diffs": [
+      {
+        "role": "launcher",
+        "hunks": 9,
+        "candidate": "ccfc410d6f6e21ac53843a0ccaa1ce2cd0492feb"
+      },
+      {
+        "role": "runner",
+        "hunks": 5,
+        "candidate": "916081f5d1ebec6f4bad6e25b49adebc2e9fe177"
+      },
+      {
+        "role": "numeric",
+        "hunks": 1,
+        "candidate": "844f08d06356da8fdbd50ca15a3313c95a833e02"
+      },
+      {
+        "role": "cipher",
+        "hunks": 1,
+        "candidate": "d1176cceefa907a4b975994e98af0386706704d5"
+      },
+      {
+        "role": "carrier",
+        "hunks": 2,
+        "candidate": "20bacb6004a765c1c252b9c25af107ff91a9b4eb"
+      }
+    ],
+    "reviewed": "Read all five diffs, source README and frozen scope: fresh roots and df026 bindings, exact Mac release pins, Linux five digests unbound, prior B2 four fences added to unchanged28. Runner constructor/schema/prior-failure literal only; original98 + separate12, witness CAS0+same-key metadata deletion, natural elections, dynamic cipher reference and stopped readers unchanged. Original2400/300/60/15/8 and narrower original cleanup remain.",
+    "bind_requirement": "Five Linux exact actual digests now eligible from root-reviewed normal60 proof5b2c80fe4c476a8481e47a09dd5d0dd4dc5328e5. Regenerate launcher/carrier/stdin pins and submit exact inert source successor; then actual stage and prepare before separate live."
+  },
+  "shared_requirements": [
+    "Standalone desktop canonical source import and full source identity must complete.",
+    "All target binary/receipt metadata must be observed, not copied from planned source versions.",
+    "Original UNKNOWN and known failures preserved; fresh fixture only.",
+    "Exclusive three-host live window after Mac current fixture finishes or proves its processes/ports disjoint."
+  ],
+  "scope": {
+    "source_only": true,
+    "host_dispatched": false,
+    "product_request": false,
+    "production_cutover": false,
+    "full_replacement": false
+  }
+}

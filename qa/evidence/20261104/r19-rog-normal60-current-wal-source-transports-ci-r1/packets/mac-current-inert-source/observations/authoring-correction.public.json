@@ -1,0 +1,15 @@
+{
+  "schema": "heptabao.inert-authoring-correction.r1",
+  "note": "Unsubmitted author draft 15081 B failed local compile-only: walrus inside a comprehension iterable is forbidden. Both fstat assignments were moved immediately before the tuple construction. No host/candidate execution occurred; final source and request have new hashes/key. Original draft and exact executor response are preserved.",
+  "rejectedSource": {
+    "bytes": 15081,
+    "sha256": "014acd95d806b000e8643c45774ddb9739a0a9c7ae6321dfa9014b0b47293e04",
+    "git_blob": "ed9fafb8a41ca8a96784a3bdc03dd99841469486"
+  },
+  "finalSource": {
+    "bytes": 15101,
+    "sha256": "397a7e69cecafae5cd4f7f99b093030916a7ccd9e4c4fc90c72e87fd81523e33",
+    "git_blob": "a83cca8dac981476e268fd4236d055279a1527b3"
+  },
+  "hostSubmitted": false
+}

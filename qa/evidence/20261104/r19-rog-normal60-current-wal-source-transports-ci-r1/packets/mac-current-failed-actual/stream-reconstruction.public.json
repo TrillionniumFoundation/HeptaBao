@@ -1,0 +1,172 @@
+{
+  "schema": "heptabao.mac-native-current-runtime-stream-reconstruction.r1",
+  "jobId": "1a1aa2ac597-fc05-3e8f",
+  "pages": [
+    {
+      "offset": 0,
+      "next_offset": 16384,
+      "size": 47062,
+      "eof": false,
+      "bytes": 16384
+    },
+    {
+      "offset": 16384,
+      "next_offset": 32768,
+      "size": 47062,
+      "eof": false,
+      "bytes": 16384
+    },
+    {
+      "offset": 32768,
+      "next_offset": 47062,
+      "size": 47062,
+      "eof": true,
+      "bytes": 14294
+    }
+  ],
+  "stdout": {
+    "bytes": 47062,
+    "sha256": "18218e64bda6b7b297c3a0329d68d65d10d3874fa4e042a6ce52b416135bf870",
+    "git_blob": "eee026252edca4c284e1775215c9e63a75285f4a"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "hexTextExact": true,
+  "contiguous": true,
+  "finalEof": true,
+  "authoritySizesExact": true,
+  "child": {
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-native-custody-r1/captures/before/stdout.public.json",
+    "metadata": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 20,
+        "link_count": 1,
+        "metadata_platform": "darwin",
+        "mode": 384,
+        "uid": 501,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 384,
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-native-custody-r1/captures/before/stdout.public.json",
+      "sha256": "933cf5a871ff797052fdd8b758b57fa081129ef78bb08aa688680a1f397b946d",
+      "size": 6317,
+      "version": "16777244:72568777:6317:1793856293314777384:1793856293314786842"
+    },
+    "binaryReadVersion": "16777244:72568777:6317:1793856293314777384:1793856293314786842",
+    "bytes": 6317,
+    "sha256": "933cf5a871ff797052fdd8b758b57fa081129ef78bb08aa688680a1f397b946d",
+    "gitBlob": "bd936371eecb3efad531864cdc0a33578b986ead",
+    "offset": 0,
+    "nextOffset": 6317,
+    "eof": true,
+    "parentCommandShaMatches": true
+  },
+  "sdkPairs": [
+    {
+      "kind": "ack",
+      "snapshot": {
+        "bytes": 6290,
+        "sha256": "0a32902132bc5d28f7cd83e4183580941bad4f02194dc12f22e1421f60f32df0",
+        "git_blob": "eaba8ce01607b71a253a715a8fc0dd8705548865"
+      },
+      "native": {
+        "bytes": 6006,
+        "sha256": "ddcad4ba65a42a5efc0ff3c1c53efffd30a59d52ccf96ecdcec4028eefe553ed",
+        "git_blob": "600f77f889eb0bed1ea586fde5049312d6f6989c"
+      },
+      "contentTextExact": true
+    },
+    {
+      "kind": "authority",
+      "snapshot": {
+        "bytes": 953,
+        "sha256": "77da5e7f7745ca0a45cbb2831e7d72d73a3c0323737b63a0713c9e8968981dc2",
+        "git_blob": "e5c39122b2d7901e4de0146a1b2f260ac0c9c49e"
+      },
+      "native": {
+        "bytes": 730,
+        "sha256": "9d57c7fe435618341654a1b082b8629770e4aa434281b5e66640799b137ecab4",
+        "git_blob": "e080c3b18e4f2e85d8f150889e0ad936fea858c0"
+      },
+      "contentTextExact": true
+    },
+    {
+      "kind": "read0",
+      "snapshot": {
+        "bytes": 53721,
+        "sha256": "7813934bc480c9f2cdd79a50025708c0b5c1443fe10ef8adc61f1a243ecce2b3",
+        "git_blob": "a3682d87f037e118adee28706420aef1bedb4a61"
+      },
+      "native": {
+        "bytes": 50831,
+        "sha256": "637b0e66af6b005e1f3186cad956bc80d66f45e4049196bccc402becc6f063e8",
+        "git_blob": "1bd0d6e5c7a4bb4fd9ce7442340d4733c2ee0c02"
+      },
+      "contentTextExact": true
+    },
+    {
+      "kind": "read16384",
+      "snapshot": {
+        "bytes": 54574,
+        "sha256": "20ce51104150bdf04f466fcee9466341acf334cb7b915896f4a6f24de9c976ab",
+        "git_blob": "8b6f5b3de85ff76b769166019022d2c466c4d23b"
+      },
+      "native": {
+        "bytes": 51118,
+        "sha256": "91ffac1a011b7f3b452a2d3477b8faa91ddf1f6fd4a5960377d1bb36b7f17473",
+        "git_blob": "241ec6fa71316f9eee496a54db870227d356a5cc"
+      },
+      "contentTextExact": true
+    },
+    {
+      "kind": "read32768",
+      "snapshot": {
+        "bytes": 45908,
+        "sha256": "f0ffaf20bb5efc262a117562b25a264b2fd083cf3bf655af7808cfe1732a08ef",
+        "git_blob": "34ae60e7b13d1e46e09170f22fde3db5fa2c0f77"
+      },
+      "native": {
+        "bytes": 44049,
+        "sha256": "7988908d8e76e84907160cf5f7a5510192bfa2efc8db8beae7d764a48a3a3732",
+        "git_blob": "e9b7ce305000392425005aa11c57715f9ec7d64f"
+      },
+      "contentTextExact": true
+    },
+    {
+      "kind": "child-info",
+      "snapshot": {
+        "bytes": 666,
+        "sha256": "cbea363b8c98c34aa80075b5138a7c8320e89738c125b82842c0e7382a51b0d0",
+        "git_blob": "48faa9716ad11b5774f2735fdaaf94a2547ce8a5"
+      },
+      "native": {
+        "bytes": 505,
+        "sha256": "16c4b07a9dbae69692f18423443d69bc25b261995896d7127d6057a110423aa7",
+        "git_blob": "93b5895c78467cb049515c57736d83f72a535588"
+      },
+      "contentTextExact": true
+    },
+    {
+      "kind": "child-read",
+      "snapshot": {
+        "bytes": 8927,
+        "sha256": "d641971ea1243e06c39c466f39a83a108dcfbb143b6acc7fd1cb70d6fece1a88",
+        "git_blob": "e18cc323af065e50000b18cba35161c05aab312a"
+      },
+      "native": {
+        "bytes": 8780,
+        "sha256": "2b2659277b64d5ecc3bf60ae6676e3d09bf77d2964a8d52ecde68efb66487c8b",
+        "git_blob": "85a878d93783dd98f6052297b4bbf681a8cf39cd"
+      },
+      "contentTextExact": true
+    }
+  ],
+  "ackRequestFingerprintIntegerToken": "5795520278328100929",
+  "unsafeIntegerReserialization": false,
+  "mcpSnapshotMeaning": "Structured MCP result JSON; original native payload is exact content[0].text, not claimed network wire."
+}

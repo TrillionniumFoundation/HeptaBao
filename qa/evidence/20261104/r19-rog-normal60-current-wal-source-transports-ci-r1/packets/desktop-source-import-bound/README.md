@@ -1,0 +1,9 @@
+# df026 standalone desktop importer: actual transport binding
+
+This successor changes exactly five previously unresolved metadata fields and ACTUAL_INPUTS_READY from false to true. The actual source transfer is in tree 5602bd95365a2c551d818e306fc6bfe0192af455; original job 1a1aa2cac47-fc05-3ead was authoritative exit 0, both endpoints complete and all three owned groups reaped/empty. Exact raw transfer/core/file_info evidence is included. No importer job has been started.
+
+The two new input versions are taken directly from independent target file_info strings. The transfer result's 11,847-byte size, SHA256 f20889c9b1e1e4a7df18498b58376dbd7295b5caef85ab308c19cb36589ef58f and version are likewise actual observations. No rounded numeric reserialization is used to construct these fields. The upstream bundle remains the 23,429,893-byte df026 standalone full history with 3,757 commits, no prerequisites, and original canonical SHA/tree proof.
+
+The complete 32,923-byte source and the exact executable/argv/cwd/stable-key/330-second dispatch are frozen. All thirty function/class definitions, including the full typed receipt checks, held/named directory and file guards, clone/history/full-fsck/index-tree checks, deadlines and cleanup, are byte-identical to the root-reviewed 32,690-byte unresolved source. The source-only AST/compile and strict full forward/inverse test passed; no target source was imported or executed during that check.
+
+Root authorization is required for this one new import. It creates only BASE/normal-cold-h2-source-import-r1 and BASE/normal-cold-h2-validation-source-r1, uses the existing received public files, and preserves original total 300 / Git 60 / clone 90 / TERM 5 / KILL 5, with external 330. It does not reopen any previous source/fixture, invoke Cargo/server/HTTP/provider, move refs, or claim normal/QA/runtime qualification. Unknown outcomes cannot be replayed under a new key.

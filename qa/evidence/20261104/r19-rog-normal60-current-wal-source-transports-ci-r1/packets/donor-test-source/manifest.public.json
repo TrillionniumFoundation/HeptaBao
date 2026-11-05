@@ -1,0 +1,102 @@
+{
+  "schema": "heptabao.donor-window-source-proposal-manifest.v1",
+  "status": "SOURCE_ONLY_NOT_FORMATTED_NOT_COMPILED_NOT_RUN",
+  "files": [
+    {
+      "path": "before/v6_committed_root_pull.rs",
+      "bytes": 56561,
+      "sha256": "ef4ed22ac9b851d7472b031b0120414b6cf4436b50d1f25674c774100beac019",
+      "blob": "7c865163609728bb46342df9ac1e8bcc43c5821b"
+    },
+    {
+      "path": "before/v6_committed_root_pull_donor_window_tests.rs",
+      "bytes": 13169,
+      "sha256": "0d2b3d457bac05c5535803e5848b4ae72c2b15b44c8776259973ae46cf328d31",
+      "blob": "7ac84a19d97cf0d782f744a768e37cf78c1c1c22"
+    },
+    {
+      "path": "candidate/crates/heptabao-ha-service/src/v6_committed_root_pull.rs",
+      "bytes": 57147,
+      "sha256": "f4b75f1bb8536160ded90f6e11fdc61de42ddd244fddb7112472aa2d69298846",
+      "blob": "d7f77ccf47be5a3d77b0707b7bc30013b33003cd"
+    },
+    {
+      "path": "candidate/crates/heptabao-ha-service/src/v6_committed_root_pull_donor_window_tests.rs",
+      "bytes": 13856,
+      "sha256": "38e49846d5056312543504966eee54872111e6329699fa842c0d3215c2324958",
+      "blob": "1c1b165e3db6092e456c7577106f9fe437f96fef"
+    },
+    {
+      "path": "diffs/v6_committed_root_pull.review.diff",
+      "bytes": 1460,
+      "sha256": "ac7ed5c6343ffc2c702536f9fdd9b36f229cc99da729781db758ccaf23c7a8cd",
+      "blob": "ce157bb0ec44fbb34aafab8a657fdde7d141eba9"
+    },
+    {
+      "path": "diffs/v6_committed_root_pull_donor_window_tests.review.diff",
+      "bytes": 1317,
+      "sha256": "e1f2af52ac26f3eae02015f21fc58cad051f1cfc287a9801324e267c6dc83984",
+      "blob": "3c136454f93a120542dfc95b545723bed55f2dcc"
+    },
+    {
+      "path": "DESIGN.md",
+      "bytes": 3761,
+      "sha256": "2df5f45a2d8127c1f922e24c88eaa4901daea2868210ddc88cb2d422de29a183",
+      "blob": "8f652edd52536d691198e54c9578e5c6b50bff31"
+    },
+    {
+      "path": "parent-membership.public.json",
+      "bytes": 949,
+      "sha256": "b8661419db91e90dd31c1523e4fb5985a3373d6f20685d9d60f26d25cdfc8c77",
+      "blob": "ca5a13cf57061e7d676784c71a3eaf4bb4fda0ce"
+    },
+    {
+      "path": "verification/verify_scope.py",
+      "bytes": 6481,
+      "sha256": "2a7b8539921eac7854f02310431cd2e663e3ee71d9fb145a9ff2b4637813433a",
+      "blob": "cbb5a8a4053640d986fcea0cc4732d93adc47eb4"
+    },
+    {
+      "path": "verification/executor.public.json",
+      "bytes": 3948,
+      "sha256": "d95c72bf25a0dcbf5201f2edfb09ed7596b4657480d88ed52c38c31cb725b53e",
+      "blob": "79f1589b9d78935e3ec83a07c43e66de825dd613"
+    },
+    {
+      "path": "verification/stdout.txt",
+      "bytes": 3698,
+      "sha256": "be9bf6cc81f70f86dc5c7430e069aa0d418370a29108e8df8b8d98a5620b666d",
+      "blob": "900b9816eab2831b92dfc0f5366c5053c610c4a4"
+    },
+    {
+      "path": "verification/scope-proof.public.json",
+      "bytes": 779,
+      "sha256": "bd1db6315c35437be33e7a7a4f1fdbf2c4f4daf0b5fd1700a961174dad77ba00",
+      "blob": "0a0e16f2d996a54652b68cef65c56d1dad3b4bd2"
+    },
+    {
+      "path": "verification/exact-changes.public.json",
+      "bytes": 2754,
+      "sha256": "3233ea40c1e401a13a4ac63cdb8e46e6706d8c78ae9f33308f0797bbc8f5ad99",
+      "blob": "40dd79ea4025dc48307ede36b9dafc7dea76abec"
+    },
+    {
+      "path": "references/merge-ha-service-directory.json",
+      "bytes": 41258,
+      "sha256": "ffd2542aca616506e4ead0db05cc5a8172f32147d7460dbb3cb3b197b88063dc",
+      "blob": "3b4f7f80bac17b92eaa6cc4d0cfd33750d20479e"
+    },
+    {
+      "path": "references/df026-ha-service-directory.json",
+      "bytes": 41258,
+      "sha256": "4bb9cea861cfcb1dd4b24a3232e4646a9793c87dbd016922aeb2f3374bb1e75c",
+      "blob": "d74b1ef43144b67b8191786da37f4aa9e6659091"
+    },
+    {
+      "path": "references/c133-ha-service-directory.json",
+      "bytes": 41258,
+      "sha256": "164933049732bbb5f27b1098b71e7db96037db684be94cae6aecb96bb9309422",
+      "blob": "0bc6d480bb5ceb169f75ed6034ac9aa4a2ae84c5"
+    }
+  ]
+}

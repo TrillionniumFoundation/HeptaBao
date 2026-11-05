@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.mac-current-metadata46-independent-source-review.v1",
+  "reviewer": "ha_validation",
+  "status": "NO_NEW_SOURCE_BLOCKER_IN_NARROW_SCOPE",
+  "source": {
+    "blob": "6928d05186ffbf92d51659b2553b06050dc73af1",
+    "bytes": 22077,
+    "sha256": "3ba165eb8073c87217d2e5f076fb8dcb65c2ccec4f2fb7637926d36960295fd4",
+    "tree": "4267fd57a9771fb8217c15b2e236da9888706b90"
+  },
+  "reviewed_entire_source": true,
+  "scope": [
+    "452 finite stat/fstat observations",
+    "68 registered descriptors and 23 live descriptors",
+    "once-close ledger and exception paths",
+    "single original 5-second deadline and post-flush authority requirement",
+    "fixed metadata-only reads, no bodies or SQLite"
+  ],
+  "findings": [],
+  "reasoning": {
+    "metadata": "For a held regular leaf: parent fstat, named lstat, held leaf fstat, final named lstat, final held leaf fstat, parent fstat = 6. Each absent directory uses four observations initially and four in final revalidation; 22*8 + 46*6 = 452 bounds all branches. Held directory paths use fewer. A count rejection precedes its disallowed syscall.",
+    "descriptors": "At most 22 parent directories remain held. At most one leaf is open because observe_leaf closes it in finally and requires closed before proceeding. Total registrations <=22+46=68; live cap <=22+1=23. Open and ledger append occur in the same protected section.",
+    "close": "close_attempted is set inside critical before os.close; closed is set only after success. Errors retain closed=false and are not retried. Final closure rejects any unresolved descriptor. Pending cancellation and deadline expiry cannot remain successful.",
+    "deadline": "One START/UNTIL=START+5 scope is shared by every count/open and final phase. Cleanup is followed by a deadline check; final exit also checks the same deadline after stdout flush. Receipt fields alone cannot substitute authoritative exit0.",
+    "io": "Regular leaves are opened O_RDONLY|O_NOFOLLOW|O_NONBLOCK only for fstat and immediate close. No os.read, file read helper, hashing, SQLite, network, subprocess, or output-file write occurs. Final parent named/held identities remain bound."
+  },
+  "limitations": [
+    "No host request, module execution, AST/component run or filesystem probe was performed by this review.",
+    "The exact 46 literal paths were read, but this review does not independently establish their membership against the full 606b capture library.",
+    "The output describes sequential current metadata, not an atomic snapshot or the unique leaf that caused the earlier failure.",
+    "Current metadata completion does not qualify capture, current consumers, or recovery; original UNKNOWN remains retained.",
+    "The final publication requires authoritative exit0/full/durable, because post-flush time may exceed a previously recorded deadline flag."
+  ],
+  "runtime_authorized": false
+}

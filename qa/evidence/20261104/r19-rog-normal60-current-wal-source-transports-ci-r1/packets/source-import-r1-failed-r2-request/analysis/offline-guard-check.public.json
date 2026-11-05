@@ -1,0 +1,38 @@
+{
+  "check_count": 19,
+  "checks": [
+    "exact_reviewed_source",
+    "old_request_missing_self_sha",
+    "new_request_adds_only_self_sha_argument",
+    "all_other_request_fields_exact",
+    "new_distinct_reviewable_request_key",
+    "actual_first_five_source_nodes",
+    "actual_guard_source_locations",
+    "old_actual_guard_known_failure",
+    "new_actual_guard_accepts_exact_self_sha",
+    "stdout_whole_original_hex_text_eof",
+    "stdout_authority_exact_bytes",
+    "stderr_whole_original_hex_text_eof",
+    "stderr_authority_exact_bytes",
+    "original_stream_counts",
+    "actual_authoritative_known_terminal_failure",
+    "actual_failure_matches_first_guard",
+    "no_git_children_and_no_outstanding_owned_process",
+    "no_input_fd_or_created_source_directory",
+    "no_product_or_import_effects"
+  ],
+  "new_request_guard": {
+    "passed": true
+  },
+  "old_request_guard": {
+    "line": 519,
+    "passed": false
+  },
+  "product_or_host_execution": false,
+  "runtime_source_import_qualification": false,
+  "schema": "heptabao.df026.import-request-self-sha-correction.r2",
+  "scope": "exact AST-selected admission guard only; importer main, Git, host filesystem and new request were not executed",
+  "source_sha256": "fbbb2f85dc18876218ce013f8ca75412aa09dfff164263f84dbd884dbfa62331",
+  "source_unchanged": true,
+  "status": "passed_offline_guard_check_only"
+}

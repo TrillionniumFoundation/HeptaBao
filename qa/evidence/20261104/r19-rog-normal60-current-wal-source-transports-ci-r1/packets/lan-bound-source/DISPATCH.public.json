@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.cold-h2-lan98-postcold12-artifact-bound.r1",
+  "status": "SOURCE_ONLY_ARTIFACT_BOUND_NOT_SUBMITTED",
+  "actual_build_pins_complete": true,
+  "source_stage_complete": false,
+  "all_stages_authorized": false,
+  "product_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "product_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "inert": {
+    "request_path": "requests/inert.bound.json",
+    "bytes": 482907,
+    "sha256": "8083e413799a037d3cbf86c6c4198ddace8c7cf44b86f0b919e0cda98027ade1",
+    "blob": "642468e6697635904c7c514aea38cb4de28a74dd"
+  },
+  "prepare": {
+    "request_path": "requests/prepare.proposed.json",
+    "bytes": 452,
+    "sha256": "9283382f0dffa619cf96959748848b551a4c12c24807c510c6973e6d3cd23cbc",
+    "blob": "43509c69abd176551395e86800d24a584196d042"
+  },
+  "live_template": {
+    "request_path": "requests/live.template.json",
+    "bytes": 510,
+    "sha256": "490543b6d20b3de8897a105cb81a59cd1c474b33ae888471d290469b575e11fd",
+    "blob": "be83791f5eeb05b9c864169db36dca16c76da60a"
+  },
+  "original_98_and_extra12_separate": true,
+  "comparison_fences": 32,
+  "original_controller_seconds": 2400,
+  "postcold_seconds": 300,
+  "role_preparation_seconds": 60,
+  "http_seconds": 15,
+  "admission_seconds": 8,
+  "source_template_tree": "6592b2f14dd7c9102c498d33ad428fd6bab85a3d"
+}

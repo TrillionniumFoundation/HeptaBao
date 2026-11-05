@@ -1,0 +1,139 @@
+--- reference/sender.py
++++ candidate/sender.py
+@@ -3,59 +3,78 @@
+ os.umask(0o077)
+ START=time.monotonic()
+ UNTIL=START+90
+-HEAD='49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
+-TREE='1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
++HEAD='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
++TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
++BINDING_READY=False
+ FILES=[
+   {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1/incoming/heptabao-server",
++    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/heptabao-server",
+     "name": "heptabao-server",
+-    "bytes": 109091112,
+-    "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
++    "bytes": None,
++    "sha256": None,
+     "source_mode": 320,
+     "target_mode": 320,
+-    "version": "2050:58120239:109091112:1793819286714153802:1793819286714153802"
+-  },
+-  {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1/incoming/native-build.public.json",
++    "version": None
++  },
++  {
++    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/native-build.public.json",
+     "name": "native-build.public.json",
+-    "bytes": 801,
+-    "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+-    "source_mode": 256,
+-    "target_mode": 256,
+-    "version": "2050:58120241:801:1793819287399134926:1793819287399134926"
+-  },
+-  {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1/incoming/normal-release-result.public.json",
++    "bytes": None,
++    "sha256": None,
++    "source_mode": 256,
++    "target_mode": 256,
++    "version": None
++  },
++  {
++    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/normal-release-result.public.json",
+     "name": "result.public.json",
+-    "bytes": 3227,
+-    "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+-    "source_mode": 256,
+-    "target_mode": 256,
+-    "version": "2050:58120242:3227:1793819287404134788:1793819287404134788"
+-  },
+-  {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-x230-source-export-r1/canonical-r10-full.bundle",
+-    "name": "canonical-r10-full.bundle",
+-    "bytes": 20091909,
+-    "sha256": "6fb2b73c52a880475ce8c45c67a4179575834313ee24ed761af94ea3faaaa858",
+-    "source_mode": 384,
+-    "target_mode": 256,
+-    "version": "2050:58372900:20091909:1793819761984976492:1793819761988976381"
+-  },
+-  {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-x230-source-export-r1/result.public.json",
++    "bytes": None,
++    "sha256": None,
++    "source_mode": 256,
++    "target_mode": 256,
++    "version": None
++  },
++  {
++    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1/incoming/canonical-df026-full.bundle",
++    "name": "canonical-df026-full.bundle",
++    "bytes": None,
++    "sha256": None,
++    "source_mode": 256,
++    "target_mode": 256,
++    "version": None
++  },
++  {
++    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1/incoming/source-export.result.public.json",
+     "name": "source-export.result.public.json",
+-    "bytes": 40100,
+-    "sha256": "6342a59b3a953c5e701887cceac8cc7274850f76f65b718b427485bd5b29951e",
+-    "source_mode": 384,
+-    "target_mode": 256,
+-    "version": "2050:58372937:40100:1793819763173944963:1793819763173944963"
++    "bytes": None,
++    "sha256": None,
++    "source_mode": 256,
++    "target_mode": 256,
++    "version": None
++  },
++  {
++    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/normal-release-tests-result.public.json",
++    "name": "normal60-result.public.json",
++    "bytes": None,
++    "sha256": None,
++    "source_mode": 256,
++    "target_mode": 256,
++    "version": None
++  },
++  {
++    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming/groups.json",
++    "name": "groups.json",
++    "bytes": None,
++    "sha256": None,
++    "source_mode": 256,
++    "target_mode": 256,
++    "version": None
+   }
+ ]
+ protected=0
+ pending_signal=None
+ children=[]
+-result={'schema':'heptabao.r10.x230-public-artifacts-sender.v1','status':'failed',
++result={'schema':'heptabao.df026.x230-public-artifacts-sender.v1','status':'failed',
+         'request_seconds':90,'git_operations':0,'server_started':False,'compiler_started':False}
+ class Cancelled(BaseException):pass
+ def handler(sig,_frame):
+@@ -131,7 +150,17 @@
+   sys.stderr.write(json.dumps(result,sort_keys=True)+'\n');sys.stderr.flush()
+  sys.exit(0 if result['status']=='complete' and time.monotonic()<UNTIL else 1)
+ 
++def binding_ready():
++ assert BINDING_READY is True,'actual_normal60_export_and_transport_file_bindings_unresolved'
++ assert len(FILES)==7 and len({x['name'] for x in FILES})==7
++ for item in FILES:
++  assert type(item['bytes']) is int and item['bytes']>0
++  assert isinstance(item['sha256'],str) and len(item['sha256'])==64
++  assert all(c in '0123456789abcdef' for c in item['sha256'])
++  assert isinstance(item['version'],str) and len(item['version'].split(':'))==5
++
+ def send():
++ binding_ready()
+  assert (platform.system(),platform.machine(),os.getuid())==('Linux','x86_64',1000)
+  handles=[];fences=[]
+  try:

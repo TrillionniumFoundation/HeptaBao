@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifact-controls-r1/relay.py"
+    ],
+    "created_unix_ms": 1793857526871,
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1aa3d9c57-fc05-3fc0",
+    "idempotency_key": "heptabao-df026-normal5-artifact-relay-r1-cd610740",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1aa3d9c57-fc05-3fc0",
+    "request_digest": "7f35c281000cb7306ad8d117ce638e7c1cc867545f1292c0c129fcad1a85c6af",
+    "request_fingerprint": 9166446475889915696,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1aa3d9c57-fc05-3fc0"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1aa3d9c57-fc05-3fc0"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

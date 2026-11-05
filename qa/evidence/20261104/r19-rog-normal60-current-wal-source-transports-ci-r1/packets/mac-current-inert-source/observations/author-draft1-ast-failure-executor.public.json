@@ -1,0 +1,7 @@
+{
+  "chunk_id": "728f10",
+  "wall_time_seconds": 0.000033541,
+  "exit_code": 1,
+  "original_token_count": 76,
+  "output": "Traceback (most recent call last):\n  File \"/tmp/mac-native-current-inert-r1.t1d2_zy0/verify_static.py\", line 15, in <module>\n    compile(new_ast,'candidate-inert.py','exec')\n  File \"candidate-inert.py\", line 172\nSyntaxError: assignment expression cannot be used in a comprehension iterable expression\n"
+}

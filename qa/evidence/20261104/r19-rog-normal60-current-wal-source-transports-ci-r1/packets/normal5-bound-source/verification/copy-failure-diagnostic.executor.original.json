@@ -1,0 +1,7 @@
+{
+  "chunk_id": "d815dc",
+  "wall_time_seconds": 0.000023385,
+  "exit_code": 0,
+  "original_token_count": 104,
+  "output": "{\"sender\": {\"bytes\": 7533, \"sha256\": \"69922e7473de5133b3a840e12ee0ffc6bf7ef0981dab80ee9d3d1ac1b42b494a\", \"tail_hex\": \"2873656e64290a0a\"}, \"receiver\": {\"bytes\": 9055, \"sha256\": \"291ddd1d38a1dfb06a62e4bd60ba83d0aeba1c0ff5efcae479fa43983aae0390\", \"tail_hex\": \"6365697665290a0a\"}, \"relay\": {\"bytes\": 16622, \"sha256\": \"1cc893c8b33889ae3c327234406fb7628724a108f227c9b8efbb5aea83e3a8bb\", \"tail_hex\": \"6c73652031290a0a\"}}\n"
+}

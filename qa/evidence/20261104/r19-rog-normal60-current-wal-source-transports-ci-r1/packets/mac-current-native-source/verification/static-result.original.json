@@ -1,0 +1,635 @@
+{
+  "baseline_python_sources_compiled_without_execution": 14,
+  "candidate_modules_executed": 0,
+  "entry_import_closure": [
+    "mac_current_capture_entry_native_r1.py",
+    "mac_guarded_current_capture_r3.py",
+    "mac_t5_volume_guard_r1.py",
+    "mac_darwin_owned_projection_r1.py",
+    "mac_native_owned_commands_r1.py",
+    "mac_native_owned_unreaped_r1.py"
+  ],
+  "exact_original_sources": [
+    "mac_native_process_observer_r1.py",
+    "mac_guarded_current_capture_r3.py",
+    "mac_owned_commands_r1.py",
+    "mac_owned_unreaped_r1.py",
+    "mac_capture_sqlite_synthetic_r1.py",
+    "mac_capture_sqlite_synthetic_r2.py",
+    "mac_authbus_cache_cas_r1.mjs"
+  ],
+  "host_requests": 0,
+  "native_pins": {
+    "mac_darwin_owned_projection_r1.py": {
+      "bytes": 12858,
+      "git_blob": "a7b6f61d0ccabc4c29b4d0891663ad2d24ba25bb",
+      "sha256": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740"
+    },
+    "mac_native_owned_commands_r1.py": {
+      "bytes": 5972,
+      "git_blob": "3cf86925b936062de7453193548b8ed32e2c4e45",
+      "sha256": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd"
+    },
+    "mac_native_owned_unreaped_r1.py": {
+      "bytes": 10761,
+      "git_blob": "5a90c395dc7c88335eb7e06f7984a013b280af02",
+      "sha256": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c"
+    }
+  },
+  "native_three_modules_whole_exact": true,
+  "network_calls": 0,
+  "original_definitions_whole_bytes_unchanged": 263,
+  "per_source": [
+    {
+      "added_definitions": [],
+      "after": {
+        "bytes": 23649,
+        "git_blob": "006df4be9fad5607622e69d88201750e8e3122b6",
+        "sha256": "9a5a4a5ca7954cf3a46327126ccfd8ea07d1ebcfbb3919723913d3e88b0d49b1"
+      },
+      "after_name": "mac_current_fixture_materializer_r1.py",
+      "before": {
+        "bytes": 23643,
+        "git_blob": "c22afefd15d026017e99ea47a47c0138ed6b469d",
+        "sha256": "f766ba33f22230d78e635477b35e527e7815452e591e7bc7a03fa2ae6c902b7f"
+      },
+      "before_name": "mac_current_fixture_materializer_r1.py",
+      "changed_definitions": [],
+      "unchanged_definitions": [
+        "Materializer",
+        "Materializer.__init__",
+        "Materializer.auth_database",
+        "Materializer.close",
+        "Materializer.close_connection",
+        "Materializer.close_fd",
+        "Materializer.materialize",
+        "Materializer.mkdir",
+        "Materializer.owned_database",
+        "Materializer.public",
+        "Materializer.registry_database",
+        "Materializer.remaining",
+        "Materializer.validate_capsule",
+        "Materializer.write",
+        "Refused",
+        "consumer_profile",
+        "digest",
+        "encoded",
+        "ident",
+        "need",
+        "no_nonfinite",
+        "sha"
+      ]
+    },
+    {
+      "added_definitions": [
+        "admitted_native"
+      ],
+      "after": {
+        "bytes": 29748,
+        "git_blob": "9d54f362148942fb34d71b21cfbfbe20810e352a",
+        "sha256": "bd2dba90647769e8fb6302b76a70631ec2a9a272da42e653007344a27528daac"
+      },
+      "after_name": "mac_current_capture_entry_native_r1.py",
+      "before": {
+        "bytes": 19011,
+        "git_blob": "d972159225b1d7478746c9296eb9bb69eb99844c",
+        "sha256": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024"
+      },
+      "before_name": "mac_current_capture_entry_r1.py",
+      "changed_definitions": [
+        "capture_profile",
+        "main"
+      ],
+      "unchanged_definitions": [
+        "Refused",
+        "admitted_synthetic",
+        "close_fd",
+        "critical",
+        "encoded",
+        "ident",
+        "interrupted",
+        "kernel_refusals",
+        "need",
+        "remaining",
+        "sha",
+        "source_bytes"
+      ]
+    },
+    {
+      "added_definitions": [],
+      "after": {
+        "bytes": 35554,
+        "git_blob": "09cfaebd91d510ead2e47545c510d10a3263954d",
+        "sha256": "4144c7046b666de7f739255527411ea808de26262b91c988ccaa877058dc59fd"
+      },
+      "after_name": "mac_owned_launchd_r3.py",
+      "before": {
+        "bytes": 35532,
+        "git_blob": "5ee5950421c69f0aedfaf457a3b75666a902cc57",
+        "sha256": "1c18be9069b4f7219a793c88e08a648841bcab992b8947a9064d55712539c09c"
+      },
+      "before_name": "mac_owned_launchd_r3.py",
+      "changed_definitions": [],
+      "unchanged_definitions": [
+        "ManagerRefused",
+        "OwnedLaunchd",
+        "OwnedLaunchd.__init__",
+        "OwnedLaunchd._advance",
+        "OwnedLaunchd._args",
+        "OwnedLaunchd._bootout",
+        "OwnedLaunchd._call",
+        "OwnedLaunchd._check_registration_files",
+        "OwnedLaunchd._dispatch_once",
+        "OwnedLaunchd._expect_action",
+        "OwnedLaunchd._new_entry",
+        "OwnedLaunchd._plan",
+        "OwnedLaunchd._query",
+        "OwnedLaunchd._ready",
+        "OwnedLaunchd._record",
+        "OwnedLaunchd._remaining",
+        "OwnedLaunchd._rows",
+        "OwnedLaunchd._server_stdout_prefix",
+        "OwnedLaunchd.abort_cleanup_once",
+        "OwnedLaunchd.finish",
+        "OwnedLaunchd.kill_server_for_cold_or_inverse",
+        "OwnedLaunchd.public",
+        "OwnedLaunchd.run_phase",
+        "OwnedLaunchd.start_server",
+        "encoded",
+        "file_identity",
+        "missing_service",
+        "need",
+        "parse_print",
+        "sha"
+      ]
+    },
+    {
+      "added_definitions": [],
+      "after": {
+        "bytes": 13218,
+        "git_blob": "72d2f7891e9bd362b8200107d2ac52cbbe10dad2",
+        "sha256": "0cd83910200ecc212e94ca8213ebef0f89e7d9ea5c12d5e283626595bb9b23d4"
+      },
+      "after_name": "mac_current_server_owner_r1.py",
+      "before": {
+        "bytes": 13210,
+        "git_blob": "01b5bfc49138aac54b0e4da5b01fe0d8544f9bc0",
+        "sha256": "3932ddada69310b700b7b6aafd325202c1deda84c2f12d711e27d022111bdfb6"
+      },
+      "before_name": "mac_current_server_owner_r1.py",
+      "changed_definitions": [],
+      "unchanged_definitions": [
+        "Refused",
+        "binary_pin",
+        "critical",
+        "encoded",
+        "identity",
+        "interrupted",
+        "main",
+        "need",
+        "remaining",
+        "sha",
+        "stable_public"
+      ]
+    },
+    {
+      "added_definitions": [],
+      "after": {
+        "bytes": 24977,
+        "git_blob": "c424cfb4fd75e5366d8d59893769722255b5c980",
+        "sha256": "8cee6359b6a8d49409f300fb1c32a8b59e953c9c6c53150c4cf423d6625cf53a"
+      },
+      "after_name": "mac_current_phase_owner_r2.py",
+      "before": {
+        "bytes": 24971,
+        "git_blob": "3aeb6ea8cf638f7915fd268140ad834ce395aad9",
+        "sha256": "bbf3636f4323e3e990204c8ea04c986f8740b3f34fa966a937f947b767ee15c4"
+      },
+      "before_name": "mac_current_phase_owner_r2.py",
+      "changed_definitions": [],
+      "unchanged_definitions": [
+        "Cancelled",
+        "Refused",
+        "close_observer_once",
+        "critical",
+        "decode_worker_report",
+        "encoded",
+        "file_sha",
+        "identity",
+        "interrupt",
+        "main",
+        "need",
+        "private_read",
+        "put",
+        "remaining",
+        "run_owned_capture",
+        "sha",
+        "volume_before_private_state"
+      ]
+    },
+    {
+      "added_definitions": [],
+      "after": {
+        "bytes": 13423,
+        "git_blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+      },
+      "after_name": "mac_native_process_observer_r1.py",
+      "before": {
+        "bytes": 13423,
+        "git_blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+      },
+      "before_name": "mac_native_process_observer_r1.py",
+      "changed_definitions": [],
+      "unchanged_definitions": [
+        "BsdInfo",
+        "ObservationRefused",
+        "OwnedNativeObserver",
+        "OwnedNativeObserver.__init__",
+        "OwnedNativeObserver.close",
+        "OwnedNativeObserver.close_fd_once",
+        "OwnedNativeObserver.parent_after_spawn",
+        "OwnedNativeObserver.poll",
+        "OwnedNativeObserver.verify_chain",
+        "ProcessReader",
+        "ProcessReader.__init__",
+        "ProcessReader.children",
+        "ProcessReader.read",
+        "require",
+        "stable_identity"
+      ]
+    },
+    {
+      "added_definitions": [],
+      "after": {
+        "bytes": 23578,
+        "git_blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+      },
+      "after_name": "mac_guarded_current_capture_r3.py",
+      "before": {
+        "bytes": 23578,
+        "git_blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+      },
+      "before_name": "mac_guarded_current_capture_r3.py",
+      "changed_definitions": [],
+      "unchanged_definitions": [
+        "CaptureRefused",
+        "FixedInputs",
+        "FixedInputs.__init__",
+        "FixedInputs._open_fd",
+        "FixedInputs.account",
+        "FixedInputs.close",
+        "FixedInputs.database",
+        "FixedInputs.directory",
+        "FixedInputs.hold",
+        "FixedInputs.parent",
+        "FixedInputs.public",
+        "FixedInputs.read",
+        "FixedInputs.remaining",
+        "FixedInputs.verify",
+        "auth_rows",
+        "capture_current",
+        "current_models",
+        "encoded",
+        "identity",
+        "immutable_query",
+        "installed_registry",
+        "need",
+        "parent_identity",
+        "public_code_pin",
+        "runtime_identity",
+        "sha",
+        "validate_synthetic_proof"
+      ]
+    },
+    {
+      "added_definitions": [],
+      "after": {
+        "bytes": 5965,
+        "git_blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+      },
+      "after_name": "mac_owned_commands_r1.py",
+      "before": {
+        "bytes": 5965,
+        "git_blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+      },
+      "before_name": "mac_owned_commands_r1.py",
+      "changed_definitions": [],
+      "unchanged_definitions": [
+        "CommandRefused",
+        "Commands",
+        "Commands.__init__",
+        "Commands.public",
+        "Commands.run",
+        "Signals",
+        "Signals.__init__",
+        "Signals.critical",
+        "Signals.install",
+        "Signals.receive",
+        "need",
+        "sha"
+      ]
+    },
+    {
+      "added_definitions": [],
+      "after": {
+        "bytes": 13393,
+        "git_blob": "02939e78a6bebe4290daecbbeb6793997fe3ae21",
+        "sha256": "08365bb592d5691e49a20fa655a2bfa1a55eb1df03f833d5f24098f8b84b4927"
+      },
+      "after_name": "mac_t5_volume_guard_r1.py",
+      "before": {
+        "bytes": 13387,
+        "git_blob": "938fd5e5663e004f9f6553548537ab3a931c50d0",
+        "sha256": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99"
+      },
+      "before_name": "mac_t5_volume_guard_r1.py",
+      "changed_definitions": [],
+      "unchanged_definitions": [
+        "HeldT5",
+        "HeldT5.__init__",
+        "HeldT5._admit",
+        "HeldT5._close_row",
+        "HeldT5.accept_diskutil",
+        "HeldT5.capture_sink",
+        "HeldT5.check",
+        "HeldT5.close",
+        "HeldT5.mkdir_new",
+        "HeldT5.parent",
+        "HeldT5.public_state",
+        "HeldT5.read",
+        "HeldT5.write_new",
+        "VolumeRefused",
+        "identity",
+        "inode_identity",
+        "require"
+      ]
+    },
+    {
+      "added_definitions": [],
+      "after": {
+        "bytes": 10990,
+        "git_blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      },
+      "after_name": "mac_owned_unreaped_r1.py",
+      "before": {
+        "bytes": 10990,
+        "git_blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+      },
+      "before_name": "mac_owned_unreaped_r1.py",
+      "changed_definitions": [],
+      "unchanged_definitions": [
+        "Refusal",
+        "capture_child",
+        "exit_observation",
+        "live_group",
+        "need",
+        "observed_returncode",
+        "ps_rows",
+        "require_waitid",
+        "stable",
+        "stop_once_unreaped",
+        "verify_unreaped"
+      ]
+    },
+    {
+      "added_definitions": [],
+      "after": {
+        "bytes": 16476,
+        "git_blob": "992fa2b52760e5f3d0b192837053728011e11500",
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+      },
+      "after_name": "mac_capture_sqlite_synthetic_r1.py",
+      "before": {
+        "bytes": 16476,
+        "git_blob": "992fa2b52760e5f3d0b192837053728011e11500",
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+      },
+      "before_name": "mac_capture_sqlite_synthetic_r1.py",
+      "changed_definitions": [],
+      "unchanged_definitions": [
+        "Refused",
+        "code_bytes",
+        "critical",
+        "encoded",
+        "identity",
+        "main",
+        "need",
+        "on_signal",
+        "remaining",
+        "sha"
+      ]
+    },
+    {
+      "added_definitions": [],
+      "after": {
+        "bytes": 16915,
+        "git_blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+      },
+      "after_name": "mac_capture_sqlite_synthetic_r2.py",
+      "before": {
+        "bytes": 16915,
+        "git_blob": "92930e43caa1b87bc857c642fd545b5b0147226d",
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+      },
+      "before_name": "mac_capture_sqlite_synthetic_r2.py",
+      "changed_definitions": [],
+      "unchanged_definitions": [
+        "Refused",
+        "code_bytes",
+        "critical",
+        "encoded",
+        "identity",
+        "main",
+        "need",
+        "on_signal",
+        "remaining",
+        "sha"
+      ]
+    },
+    {
+      "after": {
+        "bytes": 24013,
+        "git_blob": "4357c963f39ecabb1c6cfd2cf8695df42aaa1e3a",
+        "sha256": "90d291d8f7bfb2f485f69dada794165d8dd74fda895a7ed8bd49f8f03155e055"
+      },
+      "after_name": "mac_current_cycle_r2.mjs",
+      "before": {
+        "bytes": 24007,
+        "git_blob": "89b173c3f82b35ffc592a7756cd8058a6d1f6769",
+        "sha256": "2b982383ce66028159ae84845bf5a0d3515e0308bab6916944bd7195bb948177"
+      },
+      "before_name": "mac_current_cycle_r2.mjs",
+      "only_root_literal_or_whole_unchanged": true
+    },
+    {
+      "after": {
+        "bytes": 28533,
+        "git_blob": "916d8f72864ac6f7c94c8ba76fa9806e44504f3d",
+        "sha256": "12aa3d4d56b1ad1208a8ae030758f9c5883860a22f50c4fd83b7ee099a06fbca"
+      },
+      "after_name": "mac_single_native_r2.mjs",
+      "before": {
+        "bytes": 28527,
+        "git_blob": "9408a7d0248ca2658a5c3a3578b9a907f659d680",
+        "sha256": "f90bbb2e9a1fa679d04fbef4328f3a1b9fc512d2b809dacd7eafce67f9cfd93c"
+      },
+      "before_name": "mac_single_native_r2.mjs",
+      "only_root_literal_or_whole_unchanged": true
+    },
+    {
+      "after": {
+        "bytes": 3109,
+        "git_blob": "cb41de3e06635b226ef2299a9d1f54f270067dd2",
+        "sha256": "58a9431768e895a0e024819474bc9d10394cc44125532026d7efdcb742e5bc51"
+      },
+      "after_name": "mac_auth_rows_cas_r1.mjs",
+      "before": {
+        "bytes": 3103,
+        "git_blob": "50cf42a76cd313fb4de889e954bb9abe2e716530",
+        "sha256": "0021fa7539f4fb36e2ac907315da1c9d9e407c9ccac606d1908e0b7a3f7042dd"
+      },
+      "before_name": "mac_auth_rows_cas_r1.mjs",
+      "only_root_literal_or_whole_unchanged": true
+    },
+    {
+      "after": {
+        "bytes": 6846,
+        "git_blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+      },
+      "after_name": "mac_authbus_cache_cas_r1.mjs",
+      "before": {
+        "bytes": 6846,
+        "git_blob": "a318e427095b6c9273f03208620296b57ab59bc0",
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+      },
+      "before_name": "mac_authbus_cache_cas_r1.mjs",
+      "only_root_literal_or_whole_unchanged": true
+    },
+    {
+      "added_definitions": [],
+      "after": {
+        "bytes": 27067,
+        "git_blob": "1b215db40983e3bb845b49f8108292d2acf1c9a2",
+        "sha256": "3bc95dacdf551522fec32a60f635236ff8bd1867e1c440642d03e2a0654cac85"
+      },
+      "after_name": "mac_current_outer_inputs_r2.py",
+      "before": {
+        "bytes": 27059,
+        "git_blob": "80a5fc810df942412c1e2d56162b2286de75667a",
+        "sha256": "c160d3593bd6ddce8e9eaea2acd96991af29b43c55713056ff996e9ffa2d2603"
+      },
+      "before_name": "mac_current_outer_inputs_r2.py",
+      "changed_definitions": [],
+      "unchanged_definitions": [
+        "InputRefused",
+        "Inputs",
+        "Inputs.__init__",
+        "Inputs._admit_code",
+        "Inputs._close",
+        "Inputs._file",
+        "Inputs.admit_actual_harnesses",
+        "Inputs.admit_utilities",
+        "Inputs.close",
+        "Inputs.normal_and_base_sources",
+        "Inputs.parents",
+        "Inputs.pin_code",
+        "Inputs.project_frozen",
+        "Inputs.public",
+        "Inputs.public_pins",
+        "Inputs.read_private",
+        "Inputs.read_public",
+        "Inputs.remaining",
+        "Inputs.verify",
+        "digest",
+        "encoded",
+        "exact_json",
+        "identity",
+        "inode",
+        "need",
+        "parent_custody_identity",
+        "same_recorded_input",
+        "sha",
+        "valid_pin"
+      ]
+    },
+    {
+      "added_definitions": [],
+      "after": {
+        "bytes": 62213,
+        "git_blob": "bc17400ae4bc1fcc1b62a5f4181b54913a340587",
+        "sha256": "64d7a772f5b273d33d66a49c7c175310a0953953290351ea14ec61919265f883"
+      },
+      "after_name": "mac_current_outer_native_r1.py",
+      "before": {
+        "bytes": 59462,
+        "git_blob": "98f3b0d1e2bcfc136134a1662f888c0fdc0abea1",
+        "sha256": "6da29c3dab80e3373638621026f293ddd050a2e4e99f3bc3314ca42bc0005b4f"
+      },
+      "before_name": "mac_current_outer_r4.py",
+      "changed_definitions": [
+        "bootstrap_api",
+        "capture_once",
+        "main"
+      ],
+      "unchanged_definitions": [
+        "Context",
+        "Context.__init__",
+        "Context.close",
+        "Context.close_all",
+        "Context.critical",
+        "Context.fd",
+        "Context.public",
+        "Context.remaining",
+        "LoopbackHTTP",
+        "LoopbackHTTP.__init__",
+        "LoopbackHTTP.call",
+        "LoopbackHTTP.close",
+        "LoopbackHTTP.close_all",
+        "LoopbackHTTP.left",
+        "LoopbackHTTP.public",
+        "LoopbackHTTP.ready",
+        "LoopbackHTTP.recv",
+        "LoopbackHTTP.response",
+        "LoopbackHTTP.send",
+        "LoopbackHTTP.wait",
+        "Refused",
+        "add_secrets",
+        "canonical",
+        "canonical_and_inbox",
+        "digest",
+        "encoded",
+        "exact_data",
+        "exact_json",
+        "generated_read_fsync",
+        "ident",
+        "need",
+        "read_public_source",
+        "read_system_tool",
+        "reserve_port",
+        "scan_owned_plaintext",
+        "seed_documents",
+        "sha",
+        "tls_material",
+        "token_lifecycle",
+        "valid_pin"
+      ]
+    }
+  ],
+  "python_sources_compiled_without_execution": 17,
+  "same_original_budgets_and_utilities": true,
+  "schema": "heptabao.mac-native-current-source-static-review.v1",
+  "source_count": 21,
+  "sqlite_or_private_reads": 0,
+  "status": "PASS_STATIC_SOURCE_CLOSURE_AND_INVARIANCE",
+  "subprocesses_started": 0
+}

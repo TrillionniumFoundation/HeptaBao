@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.root-mac-current-native-runtime-failure-review.r1",
+  "reviewed_at": "2026-11-05 05:31:35 UTC",
+  "status": "KNOWN_PROCESS_EXIT1_CURRENT_CAPTURE_OBSERVATION_UNKNOWN",
+  "tree": "304926750268d0718d695146742de6d9c576df70",
+  "files": 23,
+  "bytes": 416076,
+  "merkle_trees": 1,
+  "job_id": "1a1aa2ac597-fc05-3e8f",
+  "request_blob": "5c79feea035cab451eb734174d6497a0237c84e9",
+  "single_fresh_job": true,
+  "terminal_exit_code": 1,
+  "full_durable": true,
+  "stdout_bytes": 47062,
+  "stdout_sha256": "18218e64bda6b7b297c3a0329d68d65d10d3874fa4e042a6ce52b416135bf870",
+  "child_bytes": 6317,
+  "child_sha256": "933cf5a871ff797052fdd8b758b57fa081129ef78bb08aa688680a1f397b946d",
+  "child_file_version": "16777244:72568777:6317:1793856293314777384:1793856293314786842",
+  "whole_SDK_native_pairs": 7,
+  "independent_checks": 33,
+  "error": {
+    "outer": "actual_sandbox_capture_child_terminal",
+    "child": "current_input_size_bound",
+    "child_type": "CaptureRefused",
+    "stage": "before",
+    "productionReadAttempted": true,
+    "captureLibraryReturned": false,
+    "outcomeUnknown": true
+  },
+  "actual_positive_scope": {
+    "native_self_abi_and_original_proof": true,
+    "kernel_all_four_denied_errno1": true,
+    "three_owned_children_known_exit_reaped_empty": true,
+    "outer_inputs_descriptors_and_both_T5_closed": true
+  },
+  "limitations": [
+    "The capture library invoked its finally-close path, but its local close-attempt/connection ledger was not returned on failure. Child entry's descriptor flag covers its own ledger and cannot attest the missing library ledger.",
+    "The single size predicate is shared by fixed small reads (1MiB), WAL/journal zero-size guards, and SHM8MiB. Main databases have no maximum-size guard here. Exact failed input path was not reported; do not infer it from timing or a later metadata observation.",
+    "No current capsule returned, five-agent client phases did not execute, no production service/provider/J3160 action, no full replacement. Old PID11754 and other UNKNOWN states remain unchanged."
+  ],
+  "next": "Review finite 46-file metadata-only observer and exact request. Do not raise caps or replay current fixture. Any capture successor needs reviewed data source semantics, failed-library closure evidence, fresh isolation and actual synthetic proof before current capture.",
+  "production_cutover": false,
+  "old_cleanup": false,
+  "full_replacement": false
+}

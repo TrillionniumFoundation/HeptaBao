@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.root-mac-current-native-df026-source-review.r1",
+  "asof": "2026-11-05 05:12:54 UTC",
+  "verdict": "PASS_SOURCE_ONLY_AWAIT_EXACT_INERT_CARRIER_AND_ACTUAL_STAGING",
+  "source_packet": "20ac9d5b0d79577e107b1d202dced02ead300721",
+  "files": 78,
+  "bytes": 1854893,
+  "merkle_trees": 7,
+  "checks": {
+    "sourceCount": 21,
+    "beforeCount": 18,
+    "staticInputWholeTiedTo78Packet": true,
+    "strictModifiedDiffs": [
+      {
+        "name": "mac_auth_rows_cas_r1.mjs",
+        "hunks": 1
+      },
+      {
+        "name": "mac_current_capture_entry_native_r1.py",
+        "hunks": 9
+      },
+      {
+        "name": "mac_current_cycle_r2.mjs",
+        "hunks": 1
+      },
+      {
+        "name": "mac_current_fixture_materializer_r1.py",
+        "hunks": 1
+      },
+      {
+        "name": "mac_current_outer_inputs_r2.py",
+        "hunks": 2
+      },
+      {
+        "name": "mac_current_outer_native_r1.py",
+        "hunks": 11
+      },
+      {
+        "name": "mac_current_phase_owner_r2.py",
+        "hunks": 1
+      },
+      {
+        "name": "mac_current_server_owner_r1.py",
+        "hunks": 1
+      },
+      {
+        "name": "mac_owned_launchd_r3.py",
+        "hunks": 1
+      },
+      {
+        "name": "mac_single_native_r2.mjs",
+        "hunks": 1
+      },
+      {
+        "name": "mac_t5_volume_guard_r1.py",
+        "hunks": 1
+      }
+    ],
+    "threeNativeWholeEqual": true,
+    "candidate21PinsExact": true,
+    "requestPayloadPinsExact": true
+  },
+  "independent_peer": "b2d87442c4bb863d47b853a22c9c0eb5302f2030",
+  "reviewed_changed_code": [
+    "Complete 9-hunk entry delta including all new admitted_native checks.",
+    "Complete 11-hunk outer delta and actual private-read boundary, proof/candidate protocol and bootstrap output-path change.",
+    "All nine other original diffs, including HeldT5's exact fresh ROOT binding.",
+    "Static verifier source and its whole actual input-to-source relationship.",
+    "Full candidate and runtime proposal's exact 21-source pin payload and T5 anchor."
+  ],
+  "bindings": {
+    "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "mac_binary_bytes": 92408592,
+    "mac_binary_sha256": "ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0",
+    "normal60_root_review": "1d9d9d72e687c68a7424af786d9ed0d960e3c697",
+    "native_r2_root_review": "994f79e2b74e92c123eddfddc2b32a8c8406dd2b"
+  },
+  "source_conclusions": [
+    "Seven old sources and three qualified native modules are whole-byte unchanged. Remaining changes are exact root/product/label bindings or the two reviewed integration sites.",
+    "Only the sandboxed capture child uses native Commands/retained custody. Outer/launchd/phase PS ownership APIs remain unchanged.",
+    "The original 606b SQLite capture library and successful seven-case proof are retained. Actual current native identity, original four kernel refusals and all source gates precede capture_current.",
+    "Exactly two previously qualified read permissions are added: /dev/null and fixed ROOT.parent directory. No additional private-file/write/network grant.",
+    "21-source whole pins, new sibling ROOT, isolated labels, fixed actual normal binary and original 900/600/120/45/15/8/3/10/30/1080 bounds are retained."
+  ],
+  "runtime_request": {
+    "blob": "5c79feea035cab451eb734174d6497a0237c84e9",
+    "submitted": false,
+    "timeout_seconds": 1080,
+    "key": "heptabao-mac-current-five-agent-native-df026-64d7a772-20261105-r1"
+  },
+  "scope": "This source review does not execute the private capture or fixture. First independently inspect the exact create-only inert publisher, then accept its complete actual staged files and authoritative terminal before the one runtime request.",
+  "historical_failures_and_PID11754_unknown_unchanged": true,
+  "production_cutover": false,
+  "provider_or_j3160_requested": false
+}

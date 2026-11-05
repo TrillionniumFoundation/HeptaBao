@@ -1,0 +1,7 @@
+{
+  "chunk_id": "6ddf31",
+  "wall_time_seconds": 0.290601831,
+  "exit_code": 0,
+  "original_token_count": 323,
+  "output": "{\n  \"childProcesses\": 0,\n  \"directoryMetadataMaximumPerPath\": 8,\n  \"fdPeakBound\": 23,\n  \"fdRegisteredBound\": 68,\n  \"fixedLeaves\": 46,\n  \"fixedParents\": 22,\n  \"fixedPathsMatchOriginalCaptureLibrary\": true,\n  \"hostCalls\": 0,\n  \"innerSeconds\": 5,\n  \"leafMetadataMaximumPerPath\": 6,\n  \"metadataBound\": 452,\n  \"mode\": \"AST_compile_and_fixed_public_scope_only\",\n  \"noFileBodyOrSqlOrProcessOrNetworkApis\": true,\n  \"notOriginalFailurePathDiagnosis\": true,\n  \"ok\": true,\n  \"originalDefinitionByteEqual\": [\n    \"Refused\",\n    \"need\",\n    \"remaining\",\n    \"count\",\n    \"ident\",\n    \"on_signal\",\n    \"critical\",\n    \"close_row\"\n  ],\n  \"originalMaximumsUnchanged\": true,\n  \"outerSeconds\": 60,\n  \"privateBodiesRead\": 0,\n  \"request\": {\n    \"bytes\": 23540,\n    \"git_blob\": \"01ae5b6b39862bc54100a8de81c7c8d44f26e05a\",\n    \"sha256\": \"558b0686a9c07235e9d9ff134e7c9ee7247d61cf10f1dfd4e116b39e2e186447\"\n  },\n  \"roles\": {\n    \"database_journal\": 6,\n    \"database_main\": 6,\n    \"database_shm\": 6,\n    \"database_wal\": 6,\n    \"small_read\": 22\n  },\n  \"schema\": \"heptabao.mac-capture-size-metadata-static.r1\",\n  \"source\": {\n    \"bytes\": 22077,\n    \"git_blob\": \"6928d05186ffbf92d51659b2553b06050dc73af1\",\n    \"sha256\": \"3ba165eb8073c87217d2e5f076fb8dcb65c2ccec4f2fb7637926d36960295fd4\"\n  },\n  \"sourceExecuted\": false\n}\n"
+}

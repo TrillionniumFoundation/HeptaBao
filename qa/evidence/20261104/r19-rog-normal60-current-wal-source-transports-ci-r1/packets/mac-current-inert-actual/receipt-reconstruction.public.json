@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.original-token-candidate-reconstruction.r1",
+  "method": "Select exact original top-level value lexemes from terminal stdout for the 28 source-proven pre-closure report fields; restore the source literal ok=false; preserve original float/integer/string tokens; emit original sorted compact encoding plus LF.",
+  "originStdout": {
+    "bytes": 14370,
+    "sha256": "07edd8fbef8f1ba19b01d41dd1dbe70517693f46ddd7d246a462f377a4ca326a",
+    "git_blob": "d522895df6ab058b3f157d605e5b6db470263a3b"
+  },
+  "expectedActualReadback": {
+    "bytes": 11974,
+    "identity": [
+      "16777244",
+      "72567766",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "11974",
+      "1793855976558261084",
+      "1793855976558267543"
+    ],
+    "kind": "inert_candidate_receipt",
+    "name": "inert-native-df026-result.public.json",
+    "readbackUsesSeparateHeldFd": true,
+    "sha256": "90e849ca41a5a99c49cb43efd1271ac7adde40775d6002be516992a2a3514729",
+    "wholeReadbackVerified": true
+  },
+  "keys": [
+    "schema",
+    "ok",
+    "files",
+    "currentPrivateInputsOpened",
+    "productionSqliteOpened",
+    "sqliteExecuted",
+    "consumerExecuted",
+    "serviceStarted",
+    "gitStarted",
+    "cargoStarted",
+    "fixedLibraryDefinitionsLoadedOnly",
+    "newOriginalInertSeconds",
+    "sourceCount",
+    "publicDocumentCount",
+    "compiledPythonCountExpected",
+    "candidateFileAloneIsNotQualification",
+    "inputSha256",
+    "inputBytes",
+    "compiledSources",
+    "byteVerifiedJavascriptSources",
+    "inputEntrypointsExecuted",
+    "loadedLibraryDefinitions",
+    "volumeProbe",
+    "freshRootAbsence",
+    "createdRoot",
+    "createdQa",
+    "createdProofs",
+    "preparedCandidate"
+  ],
+  "overrides": {
+    "ok": "false"
+  },
+  "actual": {
+    "bytes": 11974,
+    "sha256": "90e849ca41a5a99c49cb43efd1271ac7adde40775d6002be516992a2a3514729",
+    "git_blob": "52b49196857ebd8dce7fd76ef4f72ba9ddaff397"
+  },
+  "parseReserializeUnsafeNumbers": false,
+  "requiresAuthoritativeFinalClosure": true,
+  "additionalHostReads": 0
+}

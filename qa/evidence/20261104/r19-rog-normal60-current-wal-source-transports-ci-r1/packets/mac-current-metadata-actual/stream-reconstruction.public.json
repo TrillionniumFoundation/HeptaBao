@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.metadata-stream-reconstruction.v1",
+  "job": "1a1aa3a3d6c-fc05-3f7d",
+  "stdout": {
+    "bytes": 54451,
+    "sha256": "eb7a7d87ed65c2c7377a5410e0f7074d15ae64b7ca2d87f70559f0ebe580047d",
+    "git_blob": "be19181c81f081d935a601460c76d305c31ebadf"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "pages": [
+    {
+      "offset": 0,
+      "next_offset": 16384,
+      "bytes": 16384,
+      "sha256": "d49dc69bfc9f2516345f6a8a2568e8951b70bd792719f90a87382d3e6a637c62",
+      "hex_text_exact": true,
+      "eof": false
+    },
+    {
+      "offset": 16384,
+      "next_offset": 32768,
+      "bytes": 16384,
+      "sha256": "529a70c4bd4289e0af9ef056db17b621f8a37d6bb3b15a8977e8fc8f3fa03512",
+      "hex_text_exact": true,
+      "eof": false
+    },
+    {
+      "offset": 32768,
+      "next_offset": 49152,
+      "bytes": 16384,
+      "sha256": "381211583929da58d5fc0fa40467f8987b565fd833adb024f664204d9c31ece5",
+      "hex_text_exact": true,
+      "eof": false
+    },
+    {
+      "offset": 49152,
+      "next_offset": 54451,
+      "bytes": 5299,
+      "sha256": "b591ff4ddd5a66c52ade65ce7e57e8cea2d3161c61f33bcbd953e18c3e2c3c61",
+      "hex_text_exact": true,
+      "eof": true
+    }
+  ],
+  "all_native_hex_equals_text": true,
+  "complete_eof": true,
+  "native_raw_preserved_without_number_reserialization": true,
+  "mcp_snapshot_scope": "JSON rendering of returned tool-result object, not a wire transcript"
+}

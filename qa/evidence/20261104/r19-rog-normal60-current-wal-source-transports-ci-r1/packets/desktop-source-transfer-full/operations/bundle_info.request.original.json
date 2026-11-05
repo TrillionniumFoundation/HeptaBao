@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "compat-df026-source-transfer-r1-1a1aa2cac47-fc05-3ead-bundle_info",
+  "operation": {
+    "tool": "file_info",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1/incoming/canonical-df026-full.bundle"
+    }
+  }
+}

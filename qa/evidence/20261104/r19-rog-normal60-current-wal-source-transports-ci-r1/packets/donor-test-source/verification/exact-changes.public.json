@@ -1,0 +1,22 @@
+[
+  {
+    "label": "cfg_test_observation_field",
+    "before": "        pub(crate) per_donor_peak_frames: BTreeMap<u64, usize>,\n        per_donor_active_frames: BTreeMap<u64, usize>,",
+    "after": "        pub(crate) per_donor_peak_frames: BTreeMap<u64, usize>,\n        pub(crate) object_submissions: Vec<(u64, [u8; 32])>,\n        per_donor_active_frames: BTreeMap<u64, usize>,"
+  },
+  {
+    "label": "cfg_test_observation_method",
+    "before": "        pub(super) fn spawned(&self) {\n            if let Ok(mut counts) = self.0.lock() {\n                counts.spawned += 1;\n            }\n        }",
+    "after": "        pub(super) fn spawned(&self, target: u64, object: Option<[u8; 32]>) {\n            if let Ok(mut counts) = self.0.lock() {\n                counts.spawned += 1;\n                if let Some(id) = object {\n                    counts.object_submissions.push((target, id));\n                }\n            }\n        }"
+  },
+  {
+    "label": "cfg_test_actual_submission_hook",
+    "before": "    #[cfg(test)]\n    if let Some(observation) = &context.observation {\n        observation.spawned();\n    }",
+    "after": "    #[cfg(test)]\n    if let Some(observation) = &context.observation {\n        // The sole controller records actual task submission before returning to\n        // its next assignment. Concurrent TLS handlers may observe another order.\n        let object = match step {\n            PullStep::Manifest(_) => None,\n            PullStep::Object(index) => references.get(index).map(|reference| reference.id),\n        };\n        observation.spawned(target, object);\n    }"
+  },
+  {
+    "label": "actual_dispatch_tail_assertion",
+    "before": "            assert_eq!(healthy.iter().copied().collect::<BTreeSet<_>>(), expected);\n            assert!(\n                healthy[healthy.len() - WORKERS_PER_DONOR..]",
+    "after": "            assert_eq!(healthy.iter().copied().collect::<BTreeSet<_>>(), expected);\n            // Tail priority belongs to the dispatcher's assignment order. The\n            // four authenticated TLS handlers may receive those tasks out of order.\n            // Keep the real wire population checks above and bind both observations\n            // to the same exact set of object IDs, without delaying any handler.\n            let submitted: Vec<_> = tasks\n                .object_submissions\n                .iter()\n                .filter(|(donor, _)| *donor == 2)\n                .map(|(_, id)| *id)\n                .collect();\n            assert_eq!(submitted.len(), OBJECTS);\n            assert_eq!(submitted.iter().copied().collect::<BTreeSet<_>>(), expected);\n            assert!(\n                submitted[submitted.len() - WORKERS_PER_DONOR..]"
+  }
+]

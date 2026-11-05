@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.df026.normal5-relay-once-intent.r1",
+  "intent_created_utc": "2026-11-05T05:45:00.023Z",
+  "request_blob": "80e5220a813d4ad0b0e3a5f2662330d5c8e222a7",
+  "request_sha256": "3eb492dc5a9e6e00f10981024a662e3a15e6a98f72c16dc610d98ee14756b4ca",
+  "root_go_blob": "8f042ad7786b8aea258706ee711f4f74819b0327",
+  "root_go_sha256": "5d0ce388542e3fca7168bb693fc7a84e3b2fc407d2fb7b2218ca6291c45cfb63",
+  "inert_actual_tree": "5fb59cb69481bbe38779f588f7175e9bc5368090",
+  "expected_five_total_bytes": 110397866,
+  "request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifact-controls-r1/relay.py"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-df026-normal5-artifact-relay-r1-cd610740"
+  },
+  "scope": "one fixed public normal5 transport; no product/Git/Cargo",
+  "no_unknown_replay": true
+}

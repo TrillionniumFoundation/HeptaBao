@@ -1,0 +1,97 @@
+{
+  "schema": "heptabao.root-donor-tail-test-successor-review.r1",
+  "asof": "2026-11-05 05:10:25 UTC",
+  "status": "SOURCE_REVIEW_AND_IMMUTABLE_CANDIDATE_PUBLISHED_RUNTIME_PENDING",
+  "source_packet": "0ae2f263ec14091c8bfa3e4fcb27be24c55b9f4b",
+  "source_files": 17,
+  "source_bytes": 293548,
+  "packet_merkle_trees": 9,
+  "parent": "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+  "commit": "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+  "tree": "132ec30c42775568ee7e531183e8adcb65c54ca3",
+  "canonical_merkle": {
+    "root_sha": "132ec30c42775568ee7e531183e8adcb65c54ca3",
+    "trees_verified": 358
+  },
+  "canonical_blobs": 3913,
+  "unchanged_parent_blobs": 3911,
+  "changed": [
+    {
+      "path": "crates/heptabao-ha-service/src/v6_committed_root_pull.rs",
+      "before": {
+        "path": "crates/heptabao-ha-service/src/v6_committed_root_pull.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7c865163609728bb46342df9ac1e8bcc43c5821b",
+        "size": 56561,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/7c865163609728bb46342df9ac1e8bcc43c5821b"
+      },
+      "after": {
+        "path": "crates/heptabao-ha-service/src/v6_committed_root_pull.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d7f77ccf47be5a3d77b0707b7bc30013b33003cd",
+        "size": 57147,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/d7f77ccf47be5a3d77b0707b7bc30013b33003cd"
+      }
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/v6_committed_root_pull_donor_window_tests.rs",
+      "before": {
+        "path": "crates/heptabao-ha-service/src/v6_committed_root_pull_donor_window_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7ac84a19d97cf0d782f744a768e37cf78c1c1c22",
+        "size": 13169,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/7ac84a19d97cf0d782f744a768e37cf78c1c1c22"
+      },
+      "after": {
+        "path": "crates/heptabao-ha-service/src/v6_committed_root_pull_donor_window_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1c1b165e3db6092e456c7577106f9fe437f96fef",
+        "size": 13856,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/blobs/1c1b165e3db6092e456c7577106f9fe437f96fef"
+      }
+    }
+  ],
+  "strict_hunks": [
+    3,
+    1
+  ],
+  "root_reviewed": [
+    "All changed source regions and complete diffs with strict whole reconstruction.",
+    "Existing cfg(test) module, thread-local observation and RAII restoration.",
+    "Actual runtime.spawn callsite, exact validated RecordObjectRef ID and Copy PullStep.",
+    "Single controller fill_object_window ordering, pending insertion and cancellation/join behavior.",
+    "Complete recovery test from actual ReadIndex through wire population, recovered bytes/root, capacity, 14-second bound, source joins and tail assertion."
+  ],
+  "peer": "19ae3eaee4fe0cdb8e82b4236fbb3d5a4c718980",
+  "production_projection_changed": false,
+  "extra_requests_sleeps_or_retry": false,
+  "original_budgets_and_wire_assertions_preserved": true,
+  "historical_failure": {
+    "job": 127009390540,
+    "merge_commit": "ae18cbdd8b29dbf612588ea81aa22cbbf6a33952",
+    "log_blob": "a02bfea997bb0f4abb7fc3769f2cae6f0b7b9150",
+    "kept_failed": true,
+    "unique_historical_interleaving_claimed": false
+  },
+  "review_conclusion": "Dispatcher submission order establishes the assignment priority under test. Concurrent authenticated TLS receive order is not that order. Independent exact count/set validation links both observations while all actual recovery/ownership bounds remain.",
+  "branch": "codex/heptabao-donor-e69e52-20261105-r1",
+  "branch_absence_proven_before_creation": true,
+  "branch_and_commit_readback_verified": true,
+  "pr": {
+    "number": 155,
+    "url": "https://github.com/TrillionniumFoundation/HeptaBao/pull/155",
+    "head": "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+    "base": "7b4a59bdd72218c1e779eb32754a682cf465af7a",
+    "merge": "50195dc567a6d157d078d86ad4a8ca7b3cb5c210",
+    "draft": true,
+    "merged": false
+  },
+  "ci_run": 41971995724,
+  "rust_format_compile_clippy_runtime": "PENDING_INDEPENDENT_CI",
+  "df026_host_qualification_relabelled": false,
+  "production_qualification": false
+}

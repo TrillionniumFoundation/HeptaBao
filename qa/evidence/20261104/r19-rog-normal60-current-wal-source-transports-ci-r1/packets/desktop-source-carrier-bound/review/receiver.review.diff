@@ -1,0 +1,81 @@
+--- reference/receiver.py
++++ candidate/receiver.py
+@@ -3,32 +3,32 @@
+ os.umask(0o077)
+ START=time.monotonic()
+ UNTIL=START+90
+-HEAD='3cb873919170cc77101b27f6a3ab9e98f41f8d93'
+-TREE='7f4d48a647a81ca96e8a24a0a057c2c829459060'
++HEAD='df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
++TREE='424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
+ FILES=[
+  {
+-  "bytes": 23335023,
+-  "name": "canonical-3cb-full.bundle",
+-  "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/canonical-3cb-full.bundle",
+-  "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
++  "bytes": 23429893,
++  "name": "canonical-df026-full.bundle",
++  "path": "/home/qian-qi/heptabao-cold-h2-source-export-20261105-r1/canonical-df026-full.bundle",
++  "sha256": "2f25963c59ecfd0918f786c98e6babcd7ba35daec02f00d899e987f19c28ad71",
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": "66306:28324895:23335023:1793839385060504547:1793839385063504533"
++  "version": "66306:28491499:23429893:1793854798728349517:1793854798731349506"
+  },
+  {
+-  "bytes": 39965,
++  "bytes": 38783,
+   "name": "source-export.result.public.json",
+-  "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/result.public.json",
+-  "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
++  "path": "/home/qian-qi/heptabao-cold-h2-source-export-20261105-r1/result.public.json",
++  "sha256": "34816ca251e2cf420ed63db97bd56c10e0c1a725e16470f28f9eedf70dd21bb4",
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": "66306:28324969:39965:1793839385327147652:1793839385327147652"
++  "version": "66306:28491536:38783:1793854798988258235:1793854798988258235"
+  }
+ ]
+ protected=0
+ pending_signal=None
+ children=[]
+-result={'schema':'heptabao.phaseb3cb.fixed-public-source-endpoint.v1','status':'failed',
++result={'schema':'heptabao.df026.fixed-public-source-endpoint.v1','status':'failed',
+         'request_seconds':90,'git_operations':0,'server_started':False,'compiler_started':False}
+ class Cancelled(BaseException):pass
+ def handler(sig,_frame):
+@@ -104,7 +104,7 @@
+   sys.stderr.write(json.dumps(result,sort_keys=True)+'\n');sys.stderr.flush()
+  sys.exit(0 if result['status']=='complete' and time.monotonic()<UNTIL else 1)
+ 
+-ROOT=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1')
++ROOT=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1')
+ DESTINATION=ROOT/'incoming'
+ def receive():
+  assert (platform.system(),platform.machine(),os.getuid())==('Linux','x86_64',1000)
+@@ -142,18 +142,18 @@
+  assert select.select([0],[],[],remaining())[0]
+  assert os.read(0,1)==b'','unexpected artifact stream trailer'
+  exported=json.loads(json_bytes['source-export.result.public.json'])
+- assert exported['schema']=="heptabao.phaseb.rog-3cb-standalone-source-export.v1"
++ assert exported['schema']=="heptabao.cold-h2.rog-df026-standalone-source-export.v1"
+  assert exported['status']=='exported' and exported['all_owned_stopped']
+  assert exported['canonical_commit']==HEAD and exported['canonical_tree']==TREE
+  assert exported['canonical_proof']=={'commit':HEAD,'tree':TREE,
+-      'parents':['bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'],
+-      'root':'67d79b3b5442ed033d38929eab2010403463e56d','commit_count':3755,'full_fsck_passed':True}
+- assert exported['expected_prerequisites']==[] and exported['expected_full_commit_count']==3755
++      'parents':['6304a898192bfdf7eabec3c4ea40f7166e59a137'],
++      'root':'67d79b3b5442ed033d38929eab2010403463e56d','commit_count':3757,'full_fsck_passed':True}
++ assert exported['expected_prerequisites']==[] and exported['expected_full_commit_count']==3757
+  assert exported['source_before']==exported['source_after']
+  assert exported['source_before']['head']==HEAD and exported['source_before']['tree']==TREE
+  assert exported['source_before']['clean'] and exported['source_before']['independent_git_directory']
+- assert exported['controller']['bytes']==15352
+- assert exported['controller']['sha256']=='7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a'
++ assert exported['controller']['bytes']==15324
++ assert exported['controller']['sha256']=='a9b3ea4263481153c4546bd984f6a0dc496c7e459abb037eed1c78fdcdeafeaa'
+  assert exported['bundle']['path']==FILES[0]['path']
+  assert exported['bundle']['bytes']==FILES[0]['bytes'] and exported['bundle']['sha256']==FILES[0]['sha256']
+  assert exported['bundle']['header']['prerequisites']==[]

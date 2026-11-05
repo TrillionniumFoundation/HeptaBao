@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.native-h2-qa.df026.fixed-metadata.root-go.r1",
+  "as_of_utc": "2026-11-05 05:49:54 UTC",
+  "status": "six_fixed_readonly_operations_go",
+  "source_tree": "5cdec9d4097ec4cd70567084ca066b7f9c0d9fa5",
+  "files": 9,
+  "bytes": 10565,
+  "merkle_trees": 3,
+  "normal60_root_review": "5b2c80fe4c476a8481e47a09dd5d0dd4dc5328e5",
+  "requests": [
+    {
+      "path": "requests/cargo.json",
+      "blob": "31e9750f1763b7a9832979462b11b14ca38115d1",
+      "bytes": 258,
+      "sha256": "774f9468b9d922574c5bdad04eb6e4b6c5041cb307edca3ad3b51463cf8d5853",
+      "idempotency_key": "heptabao-df026-h2-qa-binding-cargo-20261105-r1"
+    },
+    {
+      "path": "requests/git.json",
+      "blob": "bc23f94afb0dbe1d85fc32a4987297b206f824b9",
+      "bytes": 194,
+      "sha256": "44c0fc28b0446caa478838e54da256ae31df64a9b8ffa38bfc5a3c2e4be315a6",
+      "idempotency_key": "heptabao-df026-h2-qa-binding-git-20261105-r1"
+    },
+    {
+      "path": "requests/machine-id.json",
+      "blob": "077d21829b3c7f498a9e573d0c6c4a95e14ec88e",
+      "bytes": 204,
+      "sha256": "ce26831a110d7c7520c226ab8154252ea95e518e89aa62dee51d64e5d794754d",
+      "idempotency_key": "heptabao-df026-h2-qa-binding-machine-id-20261105-r1"
+    },
+    {
+      "path": "requests/normal-preflight.json",
+      "blob": "f9cd5f3c70834f66f1df738928a98a4ad1579386",
+      "bytes": 490,
+      "sha256": "a645bb8f95f98490d8f8a4c9d3b13839cde76adb70b296bb1d9d28c514007b95",
+      "idempotency_key": "heptabao-df026-h2-qa-binding-normal-preflight-20261105-r1"
+    },
+    {
+      "path": "requests/python.json",
+      "blob": "0d7487eb6cefd53d0d1b1e2c5d4d96b1d512670c",
+      "bytes": 204,
+      "sha256": "e02bce00aa51bc488e2f502d2e25e4178a3561778f33ef5bdc82bbc1dd7d5c9f",
+      "idempotency_key": "heptabao-df026-h2-qa-binding-python-20261105-r1"
+    },
+    {
+      "path": "requests/rustc.json",
+      "blob": "991c081d6b2b097cb730839b910ccf3a36b2f6be",
+      "bytes": 258,
+      "sha256": "73312e089379b9834fa23f4714a58d7016c97971c44b3c09caedf9032c6becc6",
+      "idempotency_key": "heptabao-df026-h2-qa-binding-rustc-20261105-r1"
+    }
+  ],
+  "scope": {
+    "host": "rog",
+    "five_file_infos": true,
+    "one_two_file_full_read": true,
+    "maximum_concurrency": 3,
+    "normal_result_must_equal_root_qualified_whole_48188": true,
+    "target_identity_source": "historical actual launch-preflight fresh_target_preparation.target_identity_after; exact integers; builder must verify current state before Cargo",
+    "no_current_directory_stat_claim_from_historical_receipt": true,
+    "machine_id_body_output": false,
+    "file_info_hashes_whole_file": true,
+    "no_execute_no_compiler_no_http_no_service": true,
+    "no_additional_timeout_or_budget_claim": true,
+    "on_unexpected_path_schema_or_error": "retain original and report; no inferred replacement"
+  },
+  "binding_ready_stays_false_until_actual_verified": true,
+  "qa_build_authorized": false
+}

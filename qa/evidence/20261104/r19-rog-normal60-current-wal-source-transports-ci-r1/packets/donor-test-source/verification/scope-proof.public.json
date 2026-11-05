@@ -1,0 +1,17 @@
+{
+  "actual_source_handler_and_server_workers_bytes_equal": true,
+  "all_original_wire_population_capacity_deadline_byte_cleanup_assertions_preserved": true,
+  "changed_order_assertion_sensor": "actual sequential controller submission, rather than concurrent TLS server arrival",
+  "forward_and_reverse_whole_exact": true,
+  "host_io": false,
+  "non_test_projection_bytes_equal": true,
+  "original_two_test_entries_bytes_equal": true,
+  "parent_commit": "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+  "product_runtime": false,
+  "rust_format_or_compile": false,
+  "rust_test_execution": false,
+  "schema": "heptabao.donor-window-dispatch-observation-source-proof.v1",
+  "status": "passed_source_mechanics",
+  "submission_count_and_set_checks_added": true,
+  "unique_changes": 4
+}

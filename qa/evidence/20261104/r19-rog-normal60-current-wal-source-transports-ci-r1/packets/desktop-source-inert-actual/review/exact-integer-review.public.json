@@ -1,0 +1,22 @@
+{
+  "actual_3_sources_exact": true,
+  "all_four_original_versions": {
+    "inert-stage.result.public.json": "2050:5019488:1877:1793856114199414654:1793856114207239266",
+    "receiver.py": "2050:5019486:8656:1793856114162997907:1793856114171928793",
+    "relay.py": "2050:5019487:15333:1793856114181306359:1793856114189888706",
+    "sender.py": "2050:5019479:6257:1793856114090462291:1793856114096356607"
+  },
+  "authority_exit_zero": true,
+  "complete_durable_stdout": true,
+  "core_sha256": "2ec0660e2c7b71e12918e199b61049f1659e87c53df7f1bd036dbbd652f53138",
+  "elapsed_ns": "131125112",
+  "immutable_pages": 5,
+  "job_id": "1a1aa27fc38-fc05-3e58",
+  "original_60_second_supervisor": true,
+  "read_operations": 3,
+  "schema": "heptabao.df026.source-carrier-inert.offline-review.v1",
+  "status": "passed",
+  "target_source_executed": false,
+  "transport_or_git_or_product_started": false,
+  "unsafe_ns_identity_exact": true
+}

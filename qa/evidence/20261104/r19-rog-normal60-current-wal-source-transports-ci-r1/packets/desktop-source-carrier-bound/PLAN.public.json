@@ -1,0 +1,79 @@
+{
+  "schema": "heptabao.df026.desktop-source-carrier-and-import-plan.v1",
+  "source_only": true,
+  "host_dispatch_performed": false,
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "actual_export_evidence_tree": "7c617428645a23e18e6ffb3854708e0b210fc676",
+  "actual_export_job": "1a1aa13e7fd-fc05-3c99",
+  "source_inputs": [
+    {
+      "bytes": 23429893,
+      "name": "canonical-df026-full.bundle",
+      "path": "/home/qian-qi/heptabao-cold-h2-source-export-20261105-r1/canonical-df026-full.bundle",
+      "sha256": "2f25963c59ecfd0918f786c98e6babcd7ba35daec02f00d899e987f19c28ad71",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28491499:23429893:1793854798728349517:1793854798731349506"
+    },
+    {
+      "bytes": 38783,
+      "name": "source-export.result.public.json",
+      "path": "/home/qian-qi/heptabao-cold-h2-source-export-20261105-r1/result.public.json",
+      "sha256": "34816ca251e2cf420ed63db97bd56c10e0c1a725e16470f28f9eedf70dd21bb4",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28491536:38783:1793854798988258235:1793854798988258235"
+    }
+  ],
+  "desktop_paths": {
+    "controls": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-controls-r1",
+    "transport": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-carrier-r1",
+    "import_control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-import-r1",
+    "canonical_source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-validation-source-r1"
+  },
+  "gates": [
+    {
+      "stage": "inert",
+      "dispatch": "dispatch/inert.request.json",
+      "go_required": true,
+      "source_imported": false,
+      "source_executed": false
+    },
+    {
+      "stage": "source carrier",
+      "dispatch": "dispatch/transfer.request.json",
+      "go_required": true,
+      "requires": "root accepted exact inert authority/source readback",
+      "git": false,
+      "product": false
+    },
+    {
+      "stage": "standalone source import",
+      "dispatch": "dispatch/import-unresolved.request.template.json",
+      "go_required": true,
+      "ready": false,
+      "requires": "root accepted actual transport result/authority/endpoints/groups and exact 5 input metadata slots; then bind ACTUAL_INPUTS_READY=true as a new reviewed successor"
+    }
+  ],
+  "budgets": {
+    "inert_outer": 60,
+    "transfer_outer": 360,
+    "relay": 300,
+    "endpoints": 90,
+    "ssh_connect": 10,
+    "term": 5,
+    "kill": 5,
+    "import_outer": 330,
+    "import": 300,
+    "import_git": 60,
+    "import_clone": 90
+  },
+  "original_behavior": "No retry, existing strict rog-ts trust pins and exact version checking, create-only fixed target paths, EOF/whole SHA/same FD/fsync, endpoint completion plus actual empty owned groups",
+  "qualification_exclusions": [
+    "No normal60 or QA build qualification",
+    "No TLS/H2/archive/official CLI request",
+    "No existing or production source modification",
+    "No source import until actual transfer metadata successor is accepted"
+  ]
+}

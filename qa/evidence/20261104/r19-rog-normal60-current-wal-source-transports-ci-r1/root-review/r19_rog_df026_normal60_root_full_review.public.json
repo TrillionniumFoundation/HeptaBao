@@ -1,0 +1,66 @@
+{
+  "schema": "heptabao.root-rog-df026-normal60-full-review.r1",
+  "status": "PASS_SCOPED_NORMAL60_ALL_ORIGINALS_CLOSED",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "evidence_tree": "b37af5b9eaf430a78267facfd29c403bfdf68a09",
+  "evidence_files": 182,
+  "evidence_bytes": 2365325,
+  "merkle_trees": 4,
+  "job_id": "1a1a9f65382-fc05-3a6c",
+  "authoritative_exit0_full_durable": true,
+  "actual_unique_tests": 60,
+  "original44": 44,
+  "additional7": 7,
+  "additional9": 9,
+  "failed": 0,
+  "ignored": 0,
+  "measured": 0,
+  "listing_groups": 22,
+  "runtime_groups": 22,
+  "owned_children": 46,
+  "raw_streams": 92,
+  "native_text_file_rows": 141,
+  "unique_native_read_files": 141,
+  "version_pinned_cargo_chunks": 12,
+  "cargo": [
+    {
+      "name": "normal-release-build",
+      "events": 445,
+      "executableArtifacts": 2
+    },
+    {
+      "name": "build",
+      "events": 443,
+      "executableArtifacts": 1
+    }
+  ],
+  "source_binary_artifacts_unchanged": true,
+  "original_caps_unchanged": true,
+  "independent_checks": 672,
+  "normal60_result_sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
+  "normal_receipt_sha256": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d",
+  "native_receipt_sha256": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
+  "server": {
+    "bytes": 110339520,
+    "compiler_executable": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3/release/heptabao-server",
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "fresh": false,
+    "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/artifacts/heptabao-server",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": false
+    },
+    "sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2"
+  },
+  "scope": "Exact df026 normal default-feature production build and the same 60 selected Mac/Linux tests. Not whole-workspace/CI, H2 client, real LAN, current consumer, cutover or full replacement.",
+  "full_replacement": false,
+  "reviewed_at": "2026-11-05 05:22:29 UTC"
+}

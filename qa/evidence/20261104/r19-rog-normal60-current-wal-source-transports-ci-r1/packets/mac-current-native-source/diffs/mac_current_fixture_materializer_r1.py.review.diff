@@ -1,0 +1,12 @@
+diff --git a/mac_current_fixture_materializer_r1.py b/mac_current_fixture_materializer_r1.py
+--- a/mac_current_fixture_materializer_r1.py
++++ b/mac_current_fixture_materializer_r1.py
+@@ -9,7 +9,7 @@
+ import base64, copy, hashlib, json, math, os, re, sqlite3, stat, time
+ from pathlib import Path
+ 
+-ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1')
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-native-custody-r1')
+ LIVE=Path('/Users/qianqi/.openclaw')
+ SDK=Path('/opt/homebrew/lib/node_modules/openclaw')
+ CODEX=LIVE/'npm/projects/openclaw-codex-8902d781d4__openclaw-generation__g-49fd4dbfde2c5057/node_modules/@openclaw/codex'

@@ -1,0 +1,76 @@
+{
+  "schema": "heptabao.df026.normal5-transport-source-plan.v1",
+  "owner": "ha_validation",
+  "source_only": true,
+  "host_reads_completed": "Five fixed original regular-file file_info requests on ROG; original raw responses preserved; no child or product execution.",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "normal60_full_tree": "b37af5b9eaf430a78267facfd29c403bfdf68a09",
+  "root_normal60_review": "5b2c80fe4c476a8481e47a09dd5d0dd4dc5328e5",
+  "source_artifact_count": 5,
+  "total_bytes": 110397866,
+  "destination_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1",
+  "destination_incoming": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifacts-r1/incoming",
+  "controls": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-shared-artifact-controls-r1",
+  "destination_modes": {
+    "root": "0700",
+    "control": "0700",
+    "incoming_after_success": "0500",
+    "server": "0500",
+    "four_raw_receipts": "0400"
+  },
+  "stages": [
+    {
+      "name": "inert",
+      "request": "requests/inert.json",
+      "pin": {
+        "bytes": 49878,
+        "sha256": "e5800f9a8f9c124f70843d48877dc55dc69dad0cde96ea284e7b86ed54aeb7f0",
+        "blob": "6a7eb9d90d77d32e3c53e7b28044101b33ff1d2f"
+      },
+      "outer_seconds": 60,
+      "source_execution": false,
+      "artifact_transfer": false
+    },
+    {
+      "name": "relay",
+      "request": "requests/relay.json",
+      "pin": {
+        "bytes": 369,
+        "sha256": "3eb492dc5a9e6e00f10981024a662e3a15e6a98f72c16dc610d98ee14756b4ca",
+        "blob": "80e5220a813d4ad0b0e3a5f2662330d5c8e222a7"
+      },
+      "outer_seconds": 360,
+      "inner_seconds": 300,
+      "per_endpoint_and_child_seconds": 90,
+      "ssh_connect_seconds": 10,
+      "cleanup_term_seconds": 5,
+      "cleanup_kill_seconds": 5,
+      "automatic_retry": false
+    }
+  ],
+  "source_prefix": "Prior actual 3cb sender303de2f/receiver4ecee801/relay942ea040; full before files and exact 1/2/1 hunk deltas preserve all 10/10/17 definitions.",
+  "inert_prefix": "Prior actual requestda1e7dd2 embeds carrierb247e251; only base path, schema, and three public source size/SHA literals change; five functions unchanged.",
+  "ssh_alias": "rog-ts",
+  "ssh_hostname": "192.168.0.10",
+  "ssh_user": "qian-qi",
+  "ssh_port": 22,
+  "hostkeyalias": "hepta-node-rog",
+  "fixed_trust": {
+    "config_sha256": "e7b887aad30f6642876c09744c317387b143e4a4b21ddc4879df2b558379ccf4",
+    "known_hosts_sha256": "1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034"
+  },
+  "actual_readonly_inputs_bound": true,
+  "source_ready": true,
+  "execution_authorized": false,
+  "inert_submitted": false,
+  "relay_submitted": false,
+  "standalone_source_import_owner": "compatibility_audit",
+  "source_import_performed_here": false,
+  "receiver_contract": "Original three-artifact normal-release provenance predicates remain byte-identical. The extra normal60 combined receipt and groups are carried with exact raw whole hashes; normal60 qualification is established by the separate root-reviewed originals, not newly claimed by receiver.",
+  "old_roots_untouched": true,
+  "production_changed": false,
+  "git_operations": 0,
+  "compiler_started": false,
+  "server_started": false
+}

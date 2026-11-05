@@ -1,0 +1,102 @@
+{
+  "schema": "heptabao.mac-current-native-df026-caller-independent-source-review.v1",
+  "status": "PASS_NARROW_SOURCE_ONLY",
+  "reviewer": "ha_validation",
+  "inputs": {
+    "entry_new": {
+      "bytes": 29748,
+      "sha256": "bd2dba90647769e8fb6302b76a70631ec2a9a272da42e653007344a27528daac",
+      "blob": "9d54f362148942fb34d71b21cfbfbe20810e352a"
+    },
+    "entry_old": {
+      "bytes": 19011,
+      "sha256": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024",
+      "blob": "d972159225b1d7478746c9296eb9bb69eb99844c"
+    },
+    "entry_diff": {
+      "bytes": 17180,
+      "sha256": "a4aeefff749399a24c3764282fd784243c1481281c46f875ea278be917fe2da2",
+      "blob": "ab52abc05f66f269a390685cd89f0b00f71adb47"
+    },
+    "outer_new": {
+      "bytes": 62213,
+      "sha256": "64d7a772f5b273d33d66a49c7c175310a0953953290351ea14ec61919265f883",
+      "blob": "bc17400ae4bc1fcc1b62a5f4181b54913a340587"
+    },
+    "outer_old": {
+      "bytes": 59462,
+      "sha256": "6da29c3dab80e3373638621026f293ddd050a2e4e99f3bc3314ca42bc0005b4f",
+      "blob": "98f3b0d1e2bcfc136134a1662f888c0fdc0abea1"
+    },
+    "outer_diff": {
+      "bytes": 16281,
+      "sha256": "d778f128a4972717b78320e4fb69ba97cd534cd72faeb5f1d1b01979270c0d93",
+      "blob": "3956b7cfc6b9b2de1091ea52b656e4dba1385752"
+    },
+    "held_new": {
+      "bytes": 13393,
+      "sha256": "08365bb592d5691e49a20fa655a2bfa1a55eb1df03f833d5f24098f8b84b4927",
+      "blob": "02939e78a6bebe4290daecbbeb6793997fe3ae21"
+    },
+    "held_old": {
+      "bytes": 13387,
+      "sha256": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99",
+      "blob": "938fd5e5663e004f9f6553548537ab3a931c50d0"
+    },
+    "held_diff": {
+      "bytes": 478,
+      "sha256": "6cda4a1571626624c83386b59dfeaf54c9f13ec04edc2596a1795ee28d7b9dcd",
+      "blob": "b2a8f9605edaebda7c417bb5e547b673d144e354"
+    },
+    "stdout": {
+      "bytes": 24032,
+      "sha256": "7a1b715e595a2badf18e4f01506cca2ee7c4c0a760c5ef3c86708a435ace9c4f",
+      "blob": "08056cb82289a44037c771b0ea03982ea11064be"
+    },
+    "authority": {
+      "bytes": 733,
+      "sha256": "411ea26371219c49547abc014464585551ba4a69b70bb906b92561a8d5bddf23",
+      "blob": "da54efb279857250790f0ed946c55aaad405d505"
+    },
+    "child": {
+      "bytes": 11066,
+      "sha256": "bb5717753866c0d7e647e4fd5c18a3342db0f530016cc7d92cb508c955ff8644",
+      "blob": "b5277782c948051b4483afe62c9951a1aa80096b"
+    }
+  },
+  "strict_diff": {
+    "entry_hunks": 9,
+    "outer_hunks": 11,
+    "held_t5_hunks": 1,
+    "whole_exact": true
+  },
+  "blocking_findings": [],
+  "scope": [
+    "Complete entry and outer deltas plus their affected current main/capture_once call paths; exact HeldT5 single ROOT replacement.",
+    "The new native proof admission is bound to three exact original public records and the same constants in entry and outer. Whole bytes independently match the actual public probe stdout, authority and nested-child records.",
+    "admitted_native checks authoritative successful completion, complete durable logs, one exact nested report, source/module before-after equality, both outer commands and nested retained-custody cleanup, four original kernel denials, bounded projection and qualified self identity.",
+    "The sandbox child loads the exact three admitted native modules, creates and qualifies its current NativeProjection, binds that instance to native Commands, then admits old public proof and compares current ABI/kernel/OS/symbol-image identity before capture_current. The current process is independently requalified and its own birth identity matched after capture.",
+    "The NativeProjection identity deliberately excludes process PID/birth and ASLR addresses; current self checks are separate. This is actual observed ABI/OS/symbol provenance, not a whole installed dylib hash guarantee.",
+    "The native Commands substitution is limited to capture child. Outer and phase ownership retain their existing helpers. Original capture45, diskutil30-clamped, projection4, outer900 and manager600/cleanup60 declarations remain unchanged.",
+    "The outer binary/source literals exactly match independently root-accepted Mac df026 server 92408592 / ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0."
+  ],
+  "local_public_record_component": {
+    "exit_code": 0,
+    "selected_actual_function": "admitted_native",
+    "actual_public_records": 3,
+    "guard_calls": {
+      "read": 3,
+      "check": 1
+    },
+    "whole_module_import_or_execution": false,
+    "darwin_native_api_calls": 0,
+    "remote_host_or_private_input_calls": 0,
+    "note": "Only the selected function used an in-memory Guard; zero filesystem-read claims in its stdout describe that selected admission path, not Python interpreter startup."
+  },
+  "limits": [
+    "This review does not cover the not-yet-received full 21-source relocation and staged-file package; that broader integration and actual payload are separate root gates.",
+    "The public probe PASS does not itself qualify private capture, five-agent current credentials, launchd manager runtime, provider access or deployment.",
+    "The actual new current process must pass its own native identity, source, kernel sandbox, private-input and closure checks within the original deadlines; source review does not substitute for those observations.",
+    "The old nested PID11754 historical custody/exit remains unknown and is not reclassified by this successor. No host job, source ref, sandbox rule on a host or production input was changed in this review."
+  ]
+}

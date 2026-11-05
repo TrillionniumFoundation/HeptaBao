@@ -1,0 +1,30 @@
+{
+  "schema": "heptabao.root-df026-lan-bound-inert-go.r1",
+  "reviewed_at": "2026-11-05 05:25:18 UTC",
+  "status": "GO_ONE_CREATE_ONLY_INERT",
+  "source_tree": "86d2dd3a3d7e8473ba8cdf67b26243e12fb9097f",
+  "files": 32,
+  "bytes": 1496088,
+  "merkle_trees": 10,
+  "previous_source_review": "8c1d4f0499d76cfc50fb6989933af52738d9dc3c",
+  "normal60_root_review": "5b2c80fe4c476a8481e47a09dd5d0dd4dc5328e5",
+  "changes": "Exactly five Linux digest literals and launcher pin cascade, one strict hunk in launcher plus one in inert carrier. Remaining eight candidate sources byte-identical. Every public stdin source decoded whole against packet.",
+  "actualLinuxPins": {
+    "artifacts/heptabao-seed": "846a00f5f6fb6ee12f91c151d202ac3059aff1878a254b89bb093313911ec21f",
+    "artifacts/heptabao-server": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2",
+    "normal-release-build.stdout": "8919415e0f8093f85a8712dbae341ae3bb4c457e3e6c641ea195b8f7fb3ad331",
+    "native-build.public.json": "ebef4cd1143ea4d6cc197916072de4978520a0f67d1a175adc7bb2faae7fd69e",
+    "normal-release-result.public.json": "6691ddb0f927a068bd3b7b4da1f190399bf58558ab1efb754fa57b4233597f1d"
+  },
+  "request": {
+    "blob": "642468e6697635904c7c514aea38cb4de28a74dd",
+    "bytes": 482907,
+    "sha256": "8083e413799a037d3cbf86c6c4198ddace8c7cf44b86f0b919e0cda98027ade1",
+    "key": "heptabao-df026-postcold-inert-r1-664df513-83046e6f",
+    "timeout_seconds": 60
+  },
+  "scope": "Only create fresh desktop control directory and publish reviewed nine QA source files with compile check. No source import, prepare, product process, API/SSH business request, LAN qualification or production change. Actual complete inert authority+readback required before prepare; live awaits complete canonical import, accepted prepare and separate window.",
+  "unknown_results_unchanged": true,
+  "production_cutover": false,
+  "full_replacement": false
+}

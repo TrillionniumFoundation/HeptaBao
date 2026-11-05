@@ -1,0 +1,88 @@
+{
+  "schema": "heptabao.cold-h2-lan-actual-pin-binding-proof.v1",
+  "source_template_tree": "6592b2f14dd7c9102c498d33ad428fd6bab85a3d",
+  "source_template_unchanged": true,
+  "changed_candidate_files": [
+    "launch_normal_cold_h2_pocket_postrecovery_cold_r1.py"
+  ],
+  "launcher_delta": "Only five Linux BUILDS file None values are replaced by their exact completed df026 artifact/receipt hashes.",
+  "launcher_diff_hunks": 1,
+  "carrier_diff_hunks": 1,
+  "unchanged_candidate_files": [
+    {
+      "path": "read_stopped_postrecovery_frontier_cold_h2_r1.py",
+      "bytes": 16282,
+      "sha256": "ba821a7b0323e8fa18cca88251ad84159ae018cb9ae970df8cf89af8786ae24b",
+      "blob": "844f08d06356da8fdbd50ca15a3313c95a833e02"
+    },
+    {
+      "path": "read_stopped_recovered_cipher_cold_h2_r1.py",
+      "bytes": 13211,
+      "sha256": "961d72ec1be63bb1a48d6844909c0998d0e0a401c2ec168af5a1e9defe2203f2",
+      "blob": "d1176cceefa907a4b975994e98af0386706704d5"
+    },
+    {
+      "path": "native_v6_pocket_source_postrecovery_cold_df026_r1.py",
+      "bytes": 72697,
+      "sha256": "83046e6f486c0b62d979623f6a2feed540acd3b2bd8955dbfc084312134359c4",
+      "blob": "916081f5d1ebec6f4bad6e25b49adebc2e9fe177"
+    },
+    {
+      "path": "deadline_qa/ha_multihost_live.py",
+      "bytes": 79776,
+      "sha256": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460",
+      "blob": "1cb1da88b239d46e9cae7666249e0f7f97338c97"
+    },
+    {
+      "path": "deadline_qa/native_ha_foreground_watchdog.py",
+      "bytes": 41618,
+      "sha256": "04189572097f5f7ac1f4ea3eaf53afaa3bf9854043cec9e190b9fd96d628ef89",
+      "blob": "eb37adcc3eb4d3fdd726c922163c4fda603b212b"
+    },
+    {
+      "path": "deadline_qa/native_v6_ha_direct_lan_live.py",
+      "bytes": 14046,
+      "sha256": "bc99f154d89dfbe8a82babb8c50bcda3accaf8c486c51750db48bfc4003932ea",
+      "blob": "bb07666bde008d18697e0979200b20058a609a7a"
+    },
+    {
+      "path": "deadline_qa/native_v6_ha_multihost_live.py",
+      "bytes": 87254,
+      "sha256": "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429",
+      "blob": "74fa468a13b4a77e1a38b0b816e57fdfb1decc8a"
+    },
+    {
+      "path": "probe_normal_build_r10_r1.py",
+      "bytes": 6445,
+      "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee",
+      "blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a"
+    }
+  ],
+  "payload_file_count": 9,
+  "payload_all_decoded_bytes_exact": true,
+  "top_level_self_basename_guard_unchanged": true,
+  "original_methods_and_controller_body_unchanged": true,
+  "original_98_checks_and_extra12_separate": true,
+  "original_32_fences_unchanged": true,
+  "original_budgets": {
+    "controller": 2400,
+    "extra": 300,
+    "role": 60,
+    "http": 15,
+    "admission": 8,
+    "outer": 3000
+  },
+  "all_platform_actual_normal60_root_reviewed": true,
+  "desktop_source_ready": false,
+  "inert_submitted": false,
+  "prepare_submitted": false,
+  "live_submitted": false,
+  "observed_b2_failure_preserved": {
+    "passed": 91,
+    "missing": 7,
+    "postcold_seen": 0,
+    "postcold_required": 12,
+    "node2_unseal_http_status": 503
+  },
+  "new_component_or_module_execution": false
+}

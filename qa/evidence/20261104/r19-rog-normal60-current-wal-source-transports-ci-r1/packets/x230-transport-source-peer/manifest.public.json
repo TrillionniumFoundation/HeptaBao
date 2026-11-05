@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.independent-source-review-packet.v1",
+  "input_tree": "7d8b1103fcc8122a2baaa8d02e2fea6faf4866be",
+  "status": "PASS_SOURCE_REVIEW_UNBOUND",
+  "files": [
+    {
+      "path": "review.public.json",
+      "bytes": 5283,
+      "sha256": "ef8732e6491d9ca008d1bb8e194051ac377a7c5597e6e887788802abb05c7bcf",
+      "git_blob": "3e41e88ee3e3490799b2c519e6a03904638d2ab9"
+    },
+    {
+      "path": "independent-static.public.json",
+      "bytes": 4469,
+      "sha256": "51fbbb861229035ba04afc37dd0996e5062a2b6ad33cd509082200262af918e0",
+      "git_blob": "aab3ec65e48b68cbe1f6b856639bf3d74b74395a"
+    }
+  ]
+}

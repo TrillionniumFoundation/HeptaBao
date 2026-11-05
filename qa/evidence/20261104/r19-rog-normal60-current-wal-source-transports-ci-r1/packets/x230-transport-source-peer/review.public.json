@@ -1,0 +1,88 @@
+{
+  "schema": "heptabao.df026-x230-transport.independent-source-review.r1",
+  "reviewer": "authbus_migration",
+  "status": "PASS_SOURCE_REVIEW_UNBOUND",
+  "input_tree": "7d8b1103fcc8122a2baaa8d02e2fea6faf4866be",
+  "whole_input_blobs_verified": 17,
+  "input_bytes": 220231,
+  "root_merkle_independently_verified": true,
+  "read_scope": [
+    "source/receiver.py full",
+    "source/sender.py full",
+    "source/relay.py full",
+    "all three complete diffs",
+    "PLAN.public.json",
+    "exact Linux normal60 producer and its produced fields"
+  ],
+  "source_pins": {
+    "source/receiver.py": {
+      "bytes": 29062,
+      "sha256": "8366ef1a1f055f84de8ed50b3298cd740ad95c799fd9d8c369186d0cb08c0223",
+      "git_blob": "693d0abbe27a92872f47ae43be75d4179874e658"
+    },
+    "source/sender.py": {
+      "bytes": 8024,
+      "sha256": "e7a18f3091fcd7d40d9419e8aff53a3e2e008c85c3c391b4b88e5e3f058fa41b",
+      "git_blob": "2aa87f531ff6cb78d9f866fc3a0e8227cae52272"
+    },
+    "source/relay.py": {
+      "bytes": 20123,
+      "sha256": "09cbddf04a617959c1c777f577b348f6d7d2a7e29c964731683d97efeea70999",
+      "git_blob": "d7163507d1dc6966658ed08ed983ee019102b5c0"
+    },
+    "reference/linux-normal60-producer.py": {
+      "bytes": 26659,
+      "sha256": "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+      "git_blob": "23fb2b80070879f6a00fe3dfbb9ed7d1ee069555"
+    }
+  },
+  "strict_full_reconstructions": {
+    "receiver": {
+      "hunks": 6,
+      "bytes": 29062
+    },
+    "relay": {
+      "hunks": 4,
+      "bytes": 20123
+    },
+    "sender": {
+      "hunks": 2,
+      "bytes": 8024
+    }
+  },
+  "original_function_invariance": {
+    "body_slices_are_exact_source_not_semantic_normalization": true,
+    "unchanged_body_counts": {
+      "receiver": 23,
+      "sender": 8,
+      "relay": 16
+    },
+    "changed_shared_functions": {
+      "receiver": "verify_receipts adds only verify_normal60(raw)",
+      "sender": "send adds only binding_ready()",
+      "relay": []
+    },
+    "all_other_original_function_bodies_byte_identical": true,
+    "original_ssh_prefix_and_trust_literals_byte_identical": true
+  },
+  "findings": [],
+  "conclusions": [
+    "The three ordered seven-file tables and PLAN are identical. All actual bytes/SHA/version fields remain null, BINDING_READY is False, and relay helper pins remain null. Each main path rejects unresolved binding before owned writes or endpoint transfer.",
+    "The receiver's fixed normal60 controller SHA equals the complete supplied Linux producer bytes. Schema, canonical source, 44+7+9 status/counts, immutable original44 groups whole pin, native receipt hash, exact ordered 7 and 9 names, original outer12000 and extra group600 fields match that producer.",
+    "The original receive_files loop is generic over FILES and retains both new JSON inputs, hashes each fixed stream segment, requires final EOF and exact artifact directory membership, fchmod/fsyncs each same FD, rereads the full bytes on that FD and checks named/full-nine identity.",
+    "verify_receipts still links native release to server hash/size, source/tree, ABI/features and full normal result SHA. The exported standalone bundle proof still requires zero prerequisites, HEAD-only v2 header, exact3757 ancestry/soleparent/root/tree, full fsck, independent .git and actual3913 tree/index/materialized blobs.",
+    "The parent verifies both authoritative endpoint exits and complete reports, all seven file identities, normal60 qualification flag, canonical/full-materialization proof and all remote command/cleanup rows before marking remote_endpoints_verified. Lost or incomplete endpoint evidence remains remote_cleanup_unknown.",
+    "Sender90, receiver300, relay300, clone90, Git60 and existing TERM5/KILL5 cleanup implementations are unchanged. Their existing final publication/actual exit deadline gates remain required; this review does not turn synchronous filesystem operations into individually preemptible syscalls.",
+    "The fixed strict x230-ts trust, one connection attempt, file-only Git, create-only new roots, no use of an old X230 repository, and no compiler/server/HTTP execution are retained."
+  ],
+  "limitations": [
+    "This is an unbound source review, not authorization to stage or run any transport or X230 product. No actual FILES/helper pins were supplied or inferred by this review.",
+    "Future bindings must come from accepted complete Linux normal60 and exporter authority/raw evidence plus actual desktop receiver/file_info versions. The normal60 predicate consumes those whole pinned originals; it is not a standalone verifier of arbitrary fabricated JSON.",
+    "This review does not claim the referenced full34/comparison69 controllers are executable or runtime-qualified, and does not reuse historical R10 PASS as df026 qualification.",
+    "The original non-reaped-child stop policy and remaining-group failure reporting are unchanged; no post-reap numeric PGID signaling or wider cleanup ownership is introduced.",
+    "No host calls, compiler, product process, candidate module import/execution, private read, credential operation or runtime test was performed by this peer."
+  ],
+  "actual_host_requests": 0,
+  "candidate_executed": false,
+  "mechanical_review": "independent-static.public.json"
+}

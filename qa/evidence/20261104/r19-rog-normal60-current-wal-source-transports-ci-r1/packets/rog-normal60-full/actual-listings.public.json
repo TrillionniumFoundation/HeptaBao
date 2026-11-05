@@ -1,0 +1,241 @@
+{
+  "schema": "heptabao.normal-actual-listing-proof.v1",
+  "groups": [
+    {
+      "label": "ssh25",
+      "actual_test_names": [
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_does_not_upgrade_ordinary_suffix_or_shrink_large_json",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_refuses_missing_ingress_nonce_or_wrong_root_get",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_rejects_wire_downgrade_and_missing_or_unknown_metadata",
+        "ha_forward::native_ssh_tests::native_ssh_reply_profile_retains_original_ingress_nonce_and_custom_route",
+        "service::native_auth::ssh_tests::archive::native_ssh_actual_archive_restore_preserves_otp_consumption_ca_and_observed_issuer_floor",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_cannot_refresh_original_deadline_or_repeat_signature",
+        "service::native_auth::ssh_tests::native_ssh_actual_audit_io_failure_never_returns_the_signed_private_reply",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_otp_retains_original_precise_issuer_expiry",
+        "service::native_auth::ssh_tests::native_ssh_actual_audited_reply_cannot_follow_recreated_mount_incarnation",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_actor_revocation_never_delivers_otp",
+        "service::native_auth::ssh_tests::native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign",
+        "service::native_auth::ssh_tests::native_ssh_and_pki_original_idle_retire_both_without_touching_ca_or_kv",
+        "service::native_auth::ssh_tests::native_ssh_child_and_response_wrap_ownership_remain_explicitly_closed",
+        "service::native_auth::ssh_tests::native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit",
+        "service::native_auth::ssh_tests::native_ssh_formal_acl_nonrenewable_revoke_and_segment_prefix",
+        "service::native_auth::ssh_tests::native_ssh_formal_batch_expiry_is_clipped_persistent_and_not_revivable",
+        "service::native_auth::ssh_tests::native_ssh_formal_ca_real_signature_cold_typed_public_transport",
+        "service::native_auth::ssh_tests::native_ssh_formal_disabled_login_identity_stays_retired_after_reenable_and_cold",
+        "service::native_auth::ssh_tests::native_ssh_formal_otp_promotion_cold_verify_and_replay",
+        "service::native_auth::ssh_tests::native_ssh_formal_registry_tune_retire_and_recreate_preserves_other_graphs",
+        "service::native_auth::ssh_tests::native_ssh_public_reply_cannot_lose_affine_transport_after_audit",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_actual_ca_signature_and_raw_public_cold_readindex",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_custom_public_reply_transport_keeps_kv_json",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_forwarded_otp_election_cold_consume_and_replay",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::ssh_tests::formal_native_ssh_ha_lost_quorum_cannot_issue_sign_or_disclose_public_key"
+      ],
+      "test_count": 25,
+      "benchmarks": 0,
+      "stdout_sha256": "f675cd34ff05ce3e637e042a8242f190c5aec495a233bb7039d719bb6190b1fe"
+    },
+    {
+      "label": "mount1",
+      "actual_test_names": [
+        "service::native_auth::mount_tests::native_kv2_mount_acl_cas_and_backend_refusals_keep_registry_and_graphs"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "01d0722a71101e62dc5cfa0a794ee3e82459b4a6a42300391419e46717a30a62"
+    },
+    {
+      "label": "redirect5",
+      "actual_test_names": [
+        "http::snapshot::redirect_tests::native_http_redirect_complete_head_preserves_short_writes_and_transport_errors",
+        "http::snapshot::redirect_tests::native_http_redirect_has_exact_safe_location_and_no_upload_read_or_response_body",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_first_record_is_complete_with_unread_upload",
+        "http::snapshot::redirect_tests::native_http_redirect_tcp_tls_flush_retains_original_deadline_failure",
+        "http::snapshot::redirect_tests::native_redirect_target_keeps_existing_query_validation_and_rejects_header_injection"
+      ],
+      "test_count": 5,
+      "benchmarks": 0,
+      "stdout_sha256": "65e069da7f2e516bec71051cd8a4c2e1d51788605eb489d246ffff3233479cfc"
+    },
+    {
+      "label": "actor2",
+      "actual_test_names": [
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_keeps_shorter_original_scope_after_actual_aead",
+        "service::snapshot_transfer::lossless_export::tests::parallel_boundaries::lossless_export_parallel_worker_rechecks_original_actor_after_actual_aead"
+      ],
+      "test_count": 2,
+      "benchmarks": 0,
+      "stdout_sha256": "2a564a6c351891dde3ec8bfef7fca4e3933ef9579b6aff43d31260d702c5f412"
+    },
+    {
+      "label": "ordinary5",
+      "actual_test_names": [
+        "http::response_coalescing_tests::ordinary_http_complete_small_prefix_keeps_body_and_bounded_metadata",
+        "http::response_coalescing_tests::ordinary_http_original_head_no_body_chunked_and_large_raw_framing_remain",
+        "http::response_coalescing_tests::ordinary_http_prefix_keeps_partial_writes_and_original_io_failures",
+        "http::response_coalescing_tests::ordinary_http_tcp_tls_first_record_contains_full_small_response_with_unread_upload",
+        "http::response_coalescing_tests::ordinary_http_tcp_tls_response_preserves_original_expired_deadline"
+      ],
+      "test_count": 5,
+      "benchmarks": 0,
+      "stdout_sha256": "5a30379da031523f57ae35dc132964fc541727708a431d208f5301ad51848530"
+    },
+    {
+      "label": "no_forward6",
+      "actual_test_names": [
+        "http::no_forward_tests::no_forward271_binding_and_wire_metadata_cannot_replay_original_ingress",
+        "http::no_forward_tests::no_forward271_header_uses_first_value_and_preserves_original_target",
+        "service::legacy_immutable_kv::tests::no_forward271_keeps_actual_legacy_local_readindex_get",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor",
+        "service::native_v6_ha_pipeline_tests::native_pki_tests::no_forwarding_tests::no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_location",
+        "service::request_redirect_tests::no_forward271_capsule_keeps_origin_codec_audit_and_original_deadline"
+      ],
+      "test_count": 6,
+      "benchmarks": 0,
+      "stdout_sha256": "f01d6389794270b21392033a9980b69b49891785a6100b265f9f6e49d64c715f"
+    },
+    {
+      "label": "ingress-observer-1",
+      "actual_test_names": [
+        "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "866cc4ad41624f4a139d8dfe391c723ae74d06d96e9241201f676f9222ec2968"
+    },
+    {
+      "label": "ingress-observer-2",
+      "actual_test_names": [
+        "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "64afc54c3cb6d207ad25f921d0df74c94c6a950df80a8574c275ca74ad3e358f"
+    },
+    {
+      "label": "ingress-observer-3",
+      "actual_test_names": [
+        "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "e5c629ce62caa8b375ec1640ff03977507d3401ed6432f65a9622c3dfd347cc2"
+    },
+    {
+      "label": "ingress-observer-4",
+      "actual_test_names": [
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "2e6dcfdb635ff0817ce4b6db3da3fdbed6e54c4336c48da2ebb7d7f3c5fcccef"
+    },
+    {
+      "label": "ingress-observer-5",
+      "actual_test_names": [
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "028f1cfd7c04aa7aa28c591ef6825350623a2f236d682bfd8709a622d608a91a"
+    },
+    {
+      "label": "ingress-observer-6",
+      "actual_test_names": [
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "df09b6af40a9430517a89a24bb1cd1995dad66841d9e03f94fc17cc4bacface5"
+    },
+    {
+      "label": "ingress-observer-7",
+      "actual_test_names": [
+        "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "7eef2602a8315ff0f88a8b6cf7f0d4668ebdf6598cb162fe8a3e612e9267c806"
+    },
+    {
+      "label": "cold-h2-1",
+      "actual_test_names": [
+        "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "72575a81711a5aa63a83c50314a57baefd618ea49cb3e0dbad059f67b235410b"
+    },
+    {
+      "label": "cold-h2-2",
+      "actual_test_names": [
+        "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "bcdc7fdff381469ccd687035ce7db0fdc143549b8d35277755e0be08d95aaeb3"
+    },
+    {
+      "label": "cold-h2-3",
+      "actual_test_names": [
+        "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "34604500c993a3f2009f4a01b51ae9d3e7ad774329210e7537be453ae422d152"
+    },
+    {
+      "label": "cold-h2-4",
+      "actual_test_names": [
+        "http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "92144def1b1dd8e2a6935286ccad3f838ff900fd9b51a89a773e91ee5efc1273"
+    },
+    {
+      "label": "cold-h2-5",
+      "actual_test_names": [
+        "http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "b3d79df1c4755baaa2fe0c18d8674ffba195b0655e0d9a43505eb9009c092eee"
+    },
+    {
+      "label": "cold-h2-6",
+      "actual_test_names": [
+        "http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "d66160b92e2cacca15defa3aa45612a2c2a43c3eca7e80bd711510afa11ffc1a"
+    },
+    {
+      "label": "cold-h2-7",
+      "actual_test_names": [
+        "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "4d677c9b49550ddd0fd5140578aa19f71ef6cb04846b7876da9991a9f390b34b"
+    },
+    {
+      "label": "cold-h2-8",
+      "actual_test_names": [
+        "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "5aa8cba62109530b61a26ddd52954ee1d2084460e08607c590ae9ecc9d86346f"
+    },
+    {
+      "label": "cold-h2-9",
+      "actual_test_names": [
+        "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity"
+      ],
+      "test_count": 1,
+      "benchmarks": 0,
+      "stdout_sha256": "2c7ef86e5cd5887ab1a8a945cead2210652e8a8f717c2401fa14f491d5f0a9d7"
+    }
+  ]
+}
