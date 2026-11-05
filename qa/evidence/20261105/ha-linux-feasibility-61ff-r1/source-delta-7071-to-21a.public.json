@@ -1,0 +1,511 @@
+{
+  "schema": "heptabao.immutable-git-full-tree-delta.v1",
+  "base_commit": "c71b405970544682e7b9b25c91214f66351a767b",
+  "physical_base_commit": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "candidate_commit": "21a521e3e59af291dd2abc6721e8559e06338657",
+  "base_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "candidate_tree": "625b0a5d4e2bce62fe0b014edff9c18f96840a3c",
+  "complete": true,
+  "method": "Recursively compare immutable Git tree entries; equal subtree SHA prunes traversal; every fetched tree reported truncated=false; includes modes and all differing leaf paths.",
+  "tree_reads": [
+    {
+      "path": "crates",
+      "side": "base",
+      "tree": "20b43ffd6b64caa9552a32ae2aaa2bd97cb76751",
+      "entry_count": 49,
+      "truncated": false
+    },
+    {
+      "path": "crates",
+      "side": "target",
+      "tree": "8df1836d900e3116926946f6ecfa4781266ce6d5",
+      "entry_count": 49,
+      "truncated": false
+    },
+    {
+      "path": "qa",
+      "side": "base",
+      "tree": "957b153fe7d81fd014df78fdea679b060240aaf6",
+      "entry_count": 2,
+      "truncated": false
+    },
+    {
+      "path": "qa",
+      "side": "target",
+      "tree": "ecebd2bdde0c9a6b88f4fc2ed8ea453a0dedf63b",
+      "entry_count": 3,
+      "truncated": false
+    },
+    {
+      "path": "tools",
+      "side": "base",
+      "tree": "b753567bcbcaeb99a41d07b8a9f5808bed1b057d",
+      "entry_count": 7,
+      "truncated": false
+    },
+    {
+      "path": "tools",
+      "side": "target",
+      "tree": "edd591fff1dff1ac5f8b9dc6269c94822b3dd20a",
+      "entry_count": 7,
+      "truncated": false
+    },
+    {
+      "path": "crates/heptabao-server",
+      "side": "base",
+      "tree": "fc43c899f96cdcfc557553b3628f5cc3ad7fab2d",
+      "entry_count": 8,
+      "truncated": false
+    },
+    {
+      "path": "crates/heptabao-server",
+      "side": "target",
+      "tree": "0db7e5a922c79e4fb8816dcbe27e96d37a52f145",
+      "entry_count": 8,
+      "truncated": false
+    },
+    {
+      "path": "qa/evidence",
+      "side": "target",
+      "tree": "13f609bc304bce151a45cc3b3c1bb710f4cdbe8e",
+      "entry_count": 1,
+      "truncated": false
+    },
+    {
+      "path": "qa/openbao-acceptance",
+      "side": "base",
+      "tree": "910b1184042d7528a1abb3cf3de57b2529928719",
+      "entry_count": 381,
+      "truncated": false
+    },
+    {
+      "path": "qa/openbao-acceptance",
+      "side": "target",
+      "tree": "ef5a247bdf14cf997b4a0f0f1b3f774bb9a68314",
+      "entry_count": 381,
+      "truncated": false
+    },
+    {
+      "path": "tools/migration",
+      "side": "base",
+      "tree": "33a6d07685bbd5fbd10660f175374fa666f08249",
+      "entry_count": 7,
+      "truncated": false
+    },
+    {
+      "path": "tools/migration",
+      "side": "target",
+      "tree": "059cf520664f2466d54df5681507112c44438dbd",
+      "entry_count": 7,
+      "truncated": false
+    },
+    {
+      "path": "crates/heptabao-server/src",
+      "side": "base",
+      "tree": "3e5bb801a2ffd3039524d5f9f018ecaf17c80f48",
+      "entry_count": 774,
+      "truncated": false
+    },
+    {
+      "path": "crates/heptabao-server/src",
+      "side": "target",
+      "tree": "b0de3573377e58e85d286f05e7ee3966552bbfcc",
+      "entry_count": 778,
+      "truncated": false
+    },
+    {
+      "path": "qa/evidence/20261104",
+      "side": "target",
+      "tree": "a9872688d3719cb71dbb579ca3e2b2d29e078c36",
+      "entry_count": 1,
+      "truncated": false
+    },
+    {
+      "path": "qa/evidence/20261104/ha-snapshot-acl-denial-61ff-r1",
+      "side": "target",
+      "tree": "a55420bcdb314d1e1a400169c6b65a139b3f7c5b",
+      "entry_count": 5,
+      "truncated": false
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "87db25eab1258c8a2d7f9047e2009b62404b6259",
+        "bytes": 49393
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "def438a011a389920e824b3ab29f853a4db862ed",
+        "bytes": 49483
+      }
+    },
+    {
+      "path": "tools/migration/openbao271_kv2_native_large_migrate.py",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "6778b602c3a02d56874249fcf873f241846a346f",
+        "bytes": 16505
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "6f1e114e545c1f292c696f4cd881a982db95114b",
+        "bytes": 16591
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/ha_snapshot_clock.rs",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "0a188b04716d7c69696acdabcc047f36a8e7b00c",
+        "bytes": 32387
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "07e5587d47632a9a693bbbfad1d16d5bcdfbd2af",
+        "bytes": 38808
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/http.rs",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "7c401cb1bd161f507fc8d0722770aa3bf364007c",
+        "bytes": 231097
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "3801150b71e68d75afb46136e31dce05841fe081",
+        "bytes": 231872
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/http_consistency.rs",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "e6d243427873b61b1a69f1a0ac63ddad27c4d0cd",
+        "bytes": 14970
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "ed64b70e48cb8d549597e0102cf9003e0c1e606f",
+        "bytes": 16843
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/http_formal_api_fixture.rs",
+      "status": "added",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "cc8105bb10dbac9827b5135db1182b7a94fb1bec",
+        "bytes": 11432
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/http_snapshot_accept_tests.rs",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "b1e2ecea4c3edc3d6094e0166fe58eb78799fbcb",
+        "bytes": 27730
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "703a7183185a4fee775a95109e7b084c1aa315f6",
+        "bytes": 27709
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service.rs",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "166665836a0ac82c10f4fd95d1d8f88cc7e0c280",
+        "bytes": 519749
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "965df43d4bd0b43f15160d8d7387aa49c2432250",
+        "bytes": 520380
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_storage_tests.rs",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "7fa470d3fb30be4958b008166fe775fd577fcb81",
+        "bytes": 25521
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "4953a421615ea06980284819f53be0ef603c8d88",
+        "bytes": 26293
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_cold_restore_tests.rs",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "6695870075eac9ec5d6183828b4e168db6264f0e",
+        "bytes": 33721
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "6a2c2940afe460843738fe938ced2a26a409182f",
+        "bytes": 34048
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_formal_api_pipeline_tests.rs",
+      "status": "added",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "e5b89de07763968c517665152b1f3744c06e85cf",
+        "bytes": 7773
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_pipeline_tests.rs",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "db5e59da68aa0a829967ed1a4fa234de3608eaa0",
+        "bytes": 70664
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "ea282af1c03e61961c91b9b127a73accd1936f77",
+        "bytes": 72052
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs",
+      "status": "added",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "fbf227834e90f0bfa6b0e289e2ee971fa5500c8a",
+        "bytes": 18963
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_native_v6_ha_standby_http_tests.rs",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "eaa7c7ad9a7db00cc911d69349dea8130ae71ff9",
+        "bytes": 15520
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "3f3d70ced4c9e137b7ff61a1b4668822e737ac59",
+        "bytes": 18430
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_clock.rs",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "b21252f6e07066c54e1454b3c208937d3d314ea5",
+        "bytes": 10466
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "ed85659b2480759ba88301dede9fe9028cd61751",
+        "bytes": 14207
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_denial.rs",
+      "status": "added",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "d19daa78b09a443fa1fcb55447e256b8372ba41f",
+        "bytes": 14526
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_transfer.rs",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "56f983ba633e12ac180fcc0a20e45c9bf7204b72",
+        "bytes": 60342
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "74e822d9ae06eef1d5c308c4865b8e5fa8dca7cc",
+        "bytes": 64504
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6.rs",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "f27834a54ebed4aacc47b16d40899ce81ae9720d",
+        "bytes": 27769
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "a33a8cb8466d9b5b6769583f393f05d55360c36f",
+        "bytes": 27950
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha.rs",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "2055d5255dccf242520bab7cb5634ca72aaf388f",
+        "bytes": 21767
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "5c4b8a99208ddfed8585067ebdbbd9b374c22804",
+        "bytes": 22940
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/service_snapshot_v6_ha_restore.rs",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "0a94044292493853c7770cb36aa69544c1488aca",
+        "bytes": 43899
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "ebb045e333f78144e5a9a035d74ce789f5c36a76",
+        "bytes": 44113
+      }
+    },
+    {
+      "path": "crates/heptabao-server/src/snapshot_file.rs",
+      "status": "modified",
+      "before": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "8d9c19f65828db5d9e68b8dbf808617b63f93386",
+        "bytes": 16467
+      },
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "af44a032d401e0269809aedd07cb9429ea151af9",
+        "bytes": 16786
+      }
+    },
+    {
+      "path": "qa/evidence/20261104/ha-snapshot-acl-denial-61ff-r1/README.md",
+      "status": "added",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "6916c5f14af6d8cd63492b5ce78a9771406ad24d",
+        "bytes": 5995
+      }
+    },
+    {
+      "path": "qa/evidence/20261104/ha-snapshot-acl-denial-61ff-r1/candidate-manifest.public.json",
+      "status": "added",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "a122052cdc93eb964bd64c4fe33e5bfd2e03b6ba",
+        "bytes": 11995
+      }
+    },
+    {
+      "path": "qa/evidence/20261104/ha-snapshot-acl-denial-61ff-r1/product.patch",
+      "status": "added",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "e2205286e8072a61f0bdb3c27393f9d96d90fb47",
+        "bytes": 84576
+      }
+    },
+    {
+      "path": "qa/evidence/20261104/ha-snapshot-acl-denial-61ff-r1/revision2-review-and-tests.public.json",
+      "status": "added",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "700f865b63687d2d838d5a9a23dbbbb90ff68bf2",
+        "bytes": 1454
+      }
+    },
+    {
+      "path": "qa/evidence/20261104/ha-snapshot-acl-denial-61ff-r1/revision3-routing.patch",
+      "status": "added",
+      "before": null,
+      "after": {
+        "mode": "100644",
+        "type": "blob",
+        "git_blob": "599717d3677579c2294bf00bc8886f674d1930e1",
+        "bytes": 9952
+      }
+    }
+  ],
+  "denominator": {
+    "all_changed_leaves": 26,
+    "rust_files": 19,
+    "python_control_files": 2,
+    "evidence_files": 5
+  },
+  "no_runtime_execution": true
+}
