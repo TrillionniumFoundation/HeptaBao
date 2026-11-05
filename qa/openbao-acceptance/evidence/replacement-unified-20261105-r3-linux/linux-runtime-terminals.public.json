@@ -1,0 +1,216 @@
+{
+  "schema": "heptabao.r3-linux-independent-runtime-terminals.v1",
+  "server": {
+    "at_unix_ms": 1793864616463,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1aaa75193-fc05-45ad",
+    "launch_nonce": "2a7e15f881c21abf48ef503bcc552d4d",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 276,
+        "stored": 276
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "ha": {
+    "at_unix_ms": 1793865057467,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1aab059ea-fc05-4619",
+    "launch_nonce": "28d33c6f64b726742836cc47103315ed",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 267,
+        "stored": 267
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "aggregate": {
+    "at_unix_ms": 1793865234312,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1aab33244-fc05-4645",
+    "launch_nonce": "89e4b08f281e08898f851ce0f661111b",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 628,
+        "stored": 628
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "archive_packaging": {
+    "at_unix_ms": 1793870461570,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1ab02efb3-fc05-496b",
+    "launch_nonce": "9868c02799803c303e56221ad8da185e",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 2025,
+        "stored": 2025
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "independent_mac_readback": {
+    "at_unix_ms": 1793870690391,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1ab0675cb-fc05-4996",
+    "launch_nonce": "fbca7d0243392fde08e4807d7da06e45",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 707252,
+        "stored": 707252
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "observation_scope": "Independent root authoritative API observations; three product-test sequence terminals, archive packaging and cross-machine archive verification. Other original executor records remain inside the archive.",
+  "output_range_observation_failures": [
+    {
+      "offset": 589824,
+      "error": "Error: offset shape 589824"
+    },
+    {
+      "offset": 606208,
+      "error": "Error: offset shape 606208"
+    },
+    {
+      "offset": 622592,
+      "error": "Error: offset shape 622592"
+    },
+    {
+      "offset": 638976,
+      "error": "Error: offset shape 638976"
+    }
+  ],
+  "same_completed_job_offsets_reconciled": [
+    589824,
+    606208,
+    622592,
+    638976
+  ],
+  "regressions_reexecuted_for_export": false,
+  "full_replacement_qualified": false,
+  "production_changed": false
+}
