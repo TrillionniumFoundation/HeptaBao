@@ -1,0 +1,10 @@
+test_actual_local_system_elf_loader_observation_is_not_product_execution (test_native_linux_artifact_run.ArtifactCustodyRegression.test_actual_local_system_elf_loader_observation_is_not_product_execution) ... ok
+test_compile_artifact_requires_one_exact_absolute_target_path (test_native_linux_artifact_run.ArtifactCustodyRegression.test_compile_artifact_requires_one_exact_absolute_target_path) ... ok
+test_duplicate_missing_or_wrong_selector_name_counts_refuse (test_native_linux_artifact_run.ArtifactCustodyRegression.test_duplicate_missing_or_wrong_selector_name_counts_refuse) ... ok
+test_original_log_identity_and_selector_list_cannot_be_substituted (test_native_linux_artifact_run.ArtifactCustodyRegression.test_original_log_identity_and_selector_list_cannot_be_substituted) ... ok
+test_streamed_copy_preserves_bytes_and_rejects_links_or_overwrite (test_native_linux_artifact_run.ArtifactCustodyRegression.test_streamed_copy_preserves_bytes_and_rejects_links_or_overwrite) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.054s
+
+OK

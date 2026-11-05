@@ -16,6 +16,7 @@ use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use zeroize::Zeroize;
 
+use heptabao_filesystem_guard::{DirectoryGuardError, normalize_root_owned_system_alias};
 use heptabao_protocol::{
     AuditEvent, AuditPhase, CommitDisposition, MonotonicTick, Operation, ProtocolError,
     RequestEnvelope, RequestId, SecretBytes,
@@ -107,6 +108,19 @@ impl fmt::Debug for FileAuditSink {
     }
 }
 
+fn map_directory_guard_error(error: DirectoryGuardError) -> AuditError {
+    match error {
+        DirectoryGuardError::RootMustBeAbsolute => AuditError::PathMustBeAbsolute,
+        DirectoryGuardError::Io(error) => AuditError::Io(error),
+        DirectoryGuardError::UnsupportedPlatform
+        | DirectoryGuardError::UnsafeRoot
+        | DirectoryGuardError::RootIdentityChanged
+        | DirectoryGuardError::DescriptorPathUnavailable
+        | DirectoryGuardError::WriterBusy
+        | DirectoryGuardError::InvalidLeafName => AuditError::UnsafePath,
+    }
+}
+
 fn ensure_directory_chain_is_safe(path: &Path) -> Result<(), AuditError> {
     let mut current = PathBuf::new();
     for component in path.components() {
@@ -128,9 +142,11 @@ impl FileAuditSink {
         if !path.is_absolute() {
             return Err(AuditError::PathMustBeAbsolute);
         }
-        let parent = path.parent().ok_or(AuditError::InvalidPath)?;
+        let normalized =
+            normalize_root_owned_system_alias(path).map_err(map_directory_guard_error)?;
+        let parent = normalized.parent().ok_or(AuditError::InvalidPath)?;
         ensure_directory_chain_is_safe(parent)?;
-        match fs::symlink_metadata(path) {
+        match fs::symlink_metadata(&normalized) {
             Ok(_) => return Err(AuditError::PathAlreadyExists),
             Err(error) if error.kind() == io::ErrorKind::NotFound => {}
             Err(error) => return Err(AuditError::Io(error)),
@@ -138,7 +154,7 @@ impl FileAuditSink {
         let file = OpenOptions::new()
             .write(true)
             .create_new(true)
-            .open(path)
+            .open(&normalized)
             .map_err(AuditError::Io)?;
         let metadata = file.metadata().map_err(AuditError::Io)?;
         if !metadata.is_file() {

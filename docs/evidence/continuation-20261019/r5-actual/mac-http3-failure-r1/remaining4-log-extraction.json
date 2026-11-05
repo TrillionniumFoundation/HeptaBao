@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.exact-additional-raw-log-extraction.v1",
+  "retrieval_file_sha256": "b0e6eaf7405139e6384d6a6ae22eac80c4b82b2869f279c9dcb1acb739a73b03",
+  "files": [
+    {
+      "local_file": "snapshot-json-accept-history-list.log",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-http3-b24c6de-mac-r1/snapshot-json-accept-history-list.log",
+      "bytes": 136,
+      "sha256": "26a2a6b1eb6c154111c3c7b662e15dac9bc6e5e026074f3226775ca3b698ea07",
+      "eof": true,
+      "version": "16777244:66385622:136:1792399402654628302:1792399402654628302"
+    },
+    {
+      "local_file": "snapshot-json-accept-refusals-list.log",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-http3-b24c6de-mac-r1/snapshot-json-accept-refusals-list.log",
+      "bytes": 139,
+      "sha256": "d59a549eb0740630f7b36ab1b291f8428a13bd6a3b937e23b48918ef9432c5ae",
+      "eof": true,
+      "version": "16777244:66385751:139:1792399404296708882:1792399404296708882"
+    },
+    {
+      "local_file": "snapshot-json-accept-framing-list.log",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-http3-b24c6de-mac-r1/snapshot-json-accept-framing-list.log",
+      "bytes": 122,
+      "sha256": "d69ecf50948fa6eecb9b1dd91550834c61088baf4363c1d3a430859914be9da0",
+      "eof": true,
+      "version": "16777244:66385915:122:1792399406146659698:1792399406146659698"
+    },
+    {
+      "local_file": "snapshot-json-accept-framing.log",
+      "source_path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/native-http3-b24c6de-mac-r1/snapshot-json-accept-framing.log",
+      "bytes": 221,
+      "sha256": "7eb9c1820e2d262df12137cb40fe01a93ff9b2519c8dee27d16c52d4c31fc82c",
+      "eof": true,
+      "version": "16777244:66385920:221:1792399406222902938:1792399406222902938"
+    }
+  ],
+  "original_summary_sha256": "38b5ff9949b53bc2c21755ea71f3d5378e0a5956115e0f8a11df4f517e041026",
+  "all_6_raw_logs_present": true
+}

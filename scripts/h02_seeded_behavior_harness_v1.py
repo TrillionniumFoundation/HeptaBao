@@ -388,7 +388,7 @@ def build_evidence(domain: str, seed: int, source_commit: str, source_tree: str,
     return {
         "schema":"heptabao.h02-seeded-behavior-evidence.v1","plan_id":PLAN_ID,"revision":REVISION,
         "harness_version":HARNESS_VERSION,"execution_kind":"REFERENCE_MODEL","profile_id":PROFILES[domain],
-        "domain":domain.upper(),"source":{"repository":"ProfHepta/HeptaBao","commit_sha":source_commit,
+        "domain":domain.upper(),"source":{"repository":"TrillionniumFoundation/HeptaBao","commit_sha":source_commit,
         "tree_sha":source_tree,"branch":branch,"clean_tree":clean_tree},
         "environment":{"environment_id":environment_id,"executor_kind":executor_kind,"runner_id":runner_id,
         "runner_name":runner_name,"os":platform.system() or os.name,"architecture":platform.machine() or "unknown",

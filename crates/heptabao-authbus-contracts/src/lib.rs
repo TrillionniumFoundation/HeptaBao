@@ -453,6 +453,18 @@ impl Error for AuthbusError {}
 mod tests {
     use super::*;
     use heptabao_protocol::RequestId;
+    use std::sync::atomic::{AtomicU64, Ordering};
+
+    fn nonce() -> [u8; 16] {
+        static SEQUENCE: AtomicU64 = AtomicU64::new(1);
+        let sequence = SEQUENCE.fetch_add(1, Ordering::Relaxed).to_le_bytes();
+        let process = std::process::id().to_le_bytes();
+        core::array::from_fn(|index| {
+            sequence[index % sequence.len()]
+                ^ process[index % process.len()]
+                ^ u8::try_from(index).unwrap_or_default()
+        })
+    }
 
     #[derive(Debug)]
     struct TestDigest;
@@ -525,7 +537,7 @@ mod tests {
             issued_at: UnixTimeSeconds(10),
             expires_at: UnixTimeSeconds(30),
             request_digest,
-            nonce: [7; 16],
+            nonce: nonce(),
             signature: b"valid".to_vec(),
         }
     }
@@ -583,9 +595,10 @@ mod tests {
         if let Ok(request_id) = request_id {
             let request = binding(&request_id);
             let assertion = assertion(&request);
+            let nonce = format!("{:?}", assertion.nonce);
             let rendered = format!("{assertion:?}");
             assert!(!rendered.contains("user:alice"));
-            assert!(!rendered.contains("[7, 7"));
+            assert!(!rendered.contains(&nonce));
             assert!(!rendered.contains("valid"));
         }
     }
@@ -654,7 +667,7 @@ mod tests {
                 cache
                     .check_and_record(
                         "authbus.dev",
-                        [1; 16],
+                        nonce(),
                         UnixTimeSeconds(10),
                         UnixTimeSeconds(20),
                     )
@@ -663,7 +676,7 @@ mod tests {
             assert_eq!(
                 cache.check_and_record(
                     "authbus.dev",
-                    [2; 16],
+                    nonce(),
                     UnixTimeSeconds(10),
                     UnixTimeSeconds(20),
                 ),
@@ -730,7 +743,7 @@ mod tests {
                 cache
                     .check_and_record(
                         "authbus.dev",
-                        [9; 16],
+                        nonce(),
                         UnixTimeSeconds(10),
                         UnixTimeSeconds(11),
                     )
@@ -740,7 +753,7 @@ mod tests {
                 cache
                     .check_and_record(
                         "authbus.dev",
-                        [8; 16],
+                        nonce(),
                         UnixTimeSeconds(11),
                         UnixTimeSeconds(12),
                     )

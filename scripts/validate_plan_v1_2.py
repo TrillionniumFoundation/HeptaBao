@@ -157,7 +157,7 @@ def validate_canonical_state(document: dict[str, Any] | None = None) -> dict[str
     binding = state["binding"]
     if binding != {
         "mode": "SELF_RESOLVED_AT_VERIFICATION",
-        "repository": "ProfHepta/HeptaBao",
+        "repository": "TrillionniumFoundation/HeptaBao",
         "ref": "SELF",
         "commit": "SELF",
         "tree": "SELF",
@@ -430,7 +430,11 @@ def validate_docs() -> None:
             if token.lower() not in text.lower():
                 fail(f"{path}: required concept missing: {token}")
     readme = (ROOT / "README.md").read_text(encoding="utf-8").lower()
-    if "current plan: **v1.2**" not in readme and "current plan: **v1.3**" not in readme:
+    if (
+        "current plan: **v1.2**" not in readme
+        and "current plan: **v1.3**" not in readme
+        and "current source of truth is the **v2.1" not in readme
+    ):
         fail("README.md: current plan marker is missing")
     deployability = (
         "not yet a deployable secrets server",

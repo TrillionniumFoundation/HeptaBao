@@ -1,0 +1,187 @@
+{
+  "cases": [
+    {
+      "case": "native-ha-capacity",
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--features",
+        "experimental-native-v6-ha",
+        "saturated_forwarding_preserves_native_quorum_read_index_and_reserved_consensus",
+        "--",
+        "--test-threads=1",
+        "--nocapture"
+      ],
+      "elapsed_seconds": 147.167,
+      "exit_code": 0,
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8j-server-native-ha-capacity.log",
+      "log_sha256": "514dc9f0779d74c65386109f3f827fc6de038652f73b4f3fcbe4373551212e26",
+      "summaries": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2702 filtered out; finished in 0.88s"
+      ]
+    },
+    {
+      "case": "native-ha-service-pipeline",
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_ha_pipeline_service_activation_kv_auth_mtls_and_cold_leader_rejoin",
+        "--",
+        "--test-threads=1",
+        "--nocapture"
+      ],
+      "elapsed_seconds": 51.19,
+      "exit_code": 0,
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8j-server-native-ha-service-pipeline.log",
+      "log_sha256": "13145d32952eaf65040abb407f3946840abc6e27baf7c35d4f7d71be4b8d60fd",
+      "summaries": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2702 filtered out; finished in 50.64s"
+      ]
+    },
+    {
+      "case": "native-ha-forward-precise",
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_forward_projection_real_precise_clock_auth_and_kv2_owner_boundaries",
+        "--",
+        "--test-threads=1",
+        "--nocapture"
+      ],
+      "elapsed_seconds": 21.715,
+      "exit_code": 0,
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8j-server-native-ha-forward-precise.log",
+      "log_sha256": "13a392670709c672bbfc421793a75dbe98221c82a26f9ee017b0a7ecb3cd2061",
+      "summaries": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2702 filtered out; finished in 21.53s"
+      ]
+    },
+    {
+      "case": "native-ha-service-install",
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_ha_install_",
+        "--",
+        "--test-threads=1",
+        "--nocapture"
+      ],
+      "elapsed_seconds": 43.139,
+      "exit_code": 0,
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8j-server-native-ha-service-install.log",
+      "log_sha256": "521810f0f88ec1e85cc68fa915ad9e83f186707e964238bdf307e9f705782d64",
+      "summaries": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 2699 filtered out; finished in 42.99s"
+      ]
+    },
+    {
+      "case": "native-auth",
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_auth::",
+        "--",
+        "--test-threads=1",
+        "--nocapture"
+      ],
+      "elapsed_seconds": 55.449,
+      "exit_code": 0,
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8j-server-native-auth.log",
+      "log_sha256": "8e73410389aa7c9ccf595380772d7632a72a8aa7fd73a3beb2c3caaec64fc7c4",
+      "summaries": [
+        "test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 2685 filtered out; finished in 55.29s"
+      ]
+    },
+    {
+      "case": "native-ha-objects-and-tls",
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_v6_ha_objects::",
+        "--",
+        "--test-threads=1",
+        "--nocapture"
+      ],
+      "elapsed_seconds": 62.613,
+      "exit_code": 0,
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8j-server-native-ha-objects-and-tls.log",
+      "log_sha256": "89fd85eadb16c21fec6e81d48432494df2fc5444ee27b9511084a272303ea4e3",
+      "summaries": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 2700 filtered out; finished in 62.44s"
+      ]
+    },
+    {
+      "case": "native-migration-recovery",
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_v6_writer::migration_tests::",
+        "--",
+        "--test-threads=1",
+        "--nocapture"
+      ],
+      "elapsed_seconds": 14.172,
+      "exit_code": 0,
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8j-server-native-migration-recovery.log",
+      "log_sha256": "b5ccf30806b494b5656ce0ba5d33e4692dc81134950ec8b2d459566761fee769",
+      "summaries": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 2701 filtered out; finished in 13.98s"
+      ]
+    }
+  ],
+  "host_abi": "aarch64-apple-darwin",
+  "ok": true,
+  "production_cutover": false,
+  "schema": "heptabao.r8j-native-service-matrix.v1",
+  "source_commit": "4f0bacd59be21d204783d69b500d2a19ef6af55a",
+  "source_files": 2582,
+  "source_tree": "9514b66b8cda559938e135d6c7c5b9606296fd4a",
+  "source_unchanged_after_tests": true
+}

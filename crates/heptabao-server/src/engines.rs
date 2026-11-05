@@ -1,22 +1,181 @@
-//! Single-node secret engines. State is secret-bearing and must only be persisted
-//! through the server's authenticated encryption boundary; Debug redacts it.
+//! Single-node secret engines and core logical surfaces. State is secret-bearing
+//! and must only be persisted through the server's authenticated encryption boundary;
+//! Debug redacts it.
 //!
 //! Namespace, mount and resource identifiers are separate map dimensions. No
 //! delimiter-concatenated value is ever used as a storage identity.
 
+use crate::auth::ResolvedLeaseOwner;
+use heptabao_domain::SecretValue;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
-use std::collections::{BTreeMap, BTreeSet};
+use std::{
+    collections::{BTreeMap, BTreeSet},
+    ops::{Deref, DerefMut},
+    sync::Arc,
+};
 use zeroize::Zeroize;
 
+#[path = "engine_external_keys.rs"]
+mod external_keys;
+mod identity;
+pub(crate) use totp::{mfa_totp_enrollment, rfc6238_code};
+#[path = "engine_identity_api.rs"]
+mod identity_api_runtime;
+#[path = "engine_identity.rs"]
+mod identity_projection;
+pub(crate) use identity_projection::IdentityNamespace;
+use identity_projection::IdentityProjection;
+#[path = "engine_query_owner.rs"]
+mod query_owner;
+pub(crate) use query_owner::{MountQueryOwner, QueryKind};
+#[path = "engine_help.rs"]
+mod help;
+pub(crate) mod kubernetes;
+pub(crate) mod kubernetes_artifact;
 mod kv;
+pub use kv::native_records as kv2_native_records;
+#[path = "engine_kv2_import.rs"]
+mod kv2_import;
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_kv2_native_import.rs"]
+mod kv2_native_import;
+
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_kv2_mount.rs"]
+mod native_kv2_mount;
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_remount.rs"]
+mod native_remount;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_kv2_mount::NativeKv2MountOwner;
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_kv1.rs"]
+mod native_kv1;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_kv1::NativeKv1Owner;
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_transit.rs"]
+mod native_transit;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_transit::NativeTransitOwner;
+
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_totp.rs"]
+mod native_totp;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_totp::NativeTotpOwner;
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_pki.rs"]
+mod native_pki;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_pki::NativePkiEngineOwner;
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_ssh.rs"]
+mod native_ssh;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use native_ssh::NativeSshEngineOwner;
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_kv2_lossless_export.rs"]
+mod native_kv2_lossless_export;
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_kv2_storage_witness.rs"]
+mod native_kv2_storage_witness;
+#[cfg(test)]
+pub(crate) use kv::lossless::decode_lossless_json;
+pub(crate) use kv::lossless::deserialize_secret_json as deserialize_lossless_json;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use kv::lossless::native_large as kv2_native_large;
+#[cfg(feature = "native-v6-storage")]
+pub(crate) use kv::native_records::lossless_export as kv2_lossless_export;
+mod kv1_records;
+#[path = "engine_kv_mount_config.rs"]
+mod kv_mount_config;
+#[path = "engine_kv_versioning.rs"]
+mod kv_versioning;
+#[path = "engine_leases.rs"]
+mod leases;
+#[cfg(any(feature = "native-v6-storage", feature = "native-v6-ha"))]
+#[path = "engine_native_snapshot_clocks.rs"]
+mod native_snapshot_clocks;
+#[path = "engine_pki_revocation.rs"]
+mod pki_revocation;
+pub(crate) use leases::{PkiNoEffectBinding, PkiRequestContext};
+#[path = "engine_namespace_assets.rs"]
+pub(crate) mod namespace_assets;
+#[path = "engine_sdk.rs"]
+pub(crate) mod sdk;
+#[path = "engine_sdk_history.rs"]
+pub(crate) mod sdk_history;
+#[path = "engine_sdk_lease.rs"]
+pub(crate) mod sdk_lease;
+#[path = "engine_sdk_registration.rs"]
+pub(crate) mod sdk_registration;
+
+#[path = "engine_namespace_record_cells.rs"]
+mod namespace_record_cells;
+pub(crate) mod openldap;
+mod pki;
+pub(crate) use pki::PkiWrappedTransport;
+pub(crate) use pki::acme_engine::{
+    AcmeBinding, AcmeExternalDelivery, AcmeExternalEffect, AcmeParsedJws, AcmeView,
+};
+pub(crate) use pki::acme_orders::Challenge as AcmeChallenge;
+pub(crate) use pki::acme_revoke::Request as AcmeRevocationRequest;
+pub(crate) use pki::local_ocsp::raw_response as raw_ocsp_response;
+pub(crate) use pki::{ExternalPkiMaterial, ExternalPkiPublicKey, ExternalPkiTemplate};
+mod ssh;
+mod ssh_ca;
+pub(crate) use ssh_ca::SshPublicKeyTransport;
+mod ssh_ca_crypto;
+#[path = "engines/ssh_ca_legacy.rs"]
+mod ssh_ca_legacy;
+mod ssh_ca_policy;
+#[path = "engine_ssh_templates.rs"]
+mod ssh_templates;
 mod totp;
 mod transit;
 
+#[derive(Clone, PartialEq, Eq)]
+pub(crate) struct TransitCacheReloadMount {
+    pub(crate) owner: MountQueryOwner,
+    pub(crate) configured_size: Option<u64>,
+}
+
 #[derive(Clone, Serialize, Deserialize, Default)]
 pub struct EngineState {
-    namespaces: BTreeMap<String, NamespaceState>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    transit_cache_format: Option<u32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    kv2_lossless_format: Option<u32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    ssh_ca_format: Option<u32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    acme_clock: Option<crate::auth::Timestamp>,
+    #[serde(default, skip_serializing_if = "lease_clock_is_zero")]
+    acme_revision: u64,
+    #[serde(default, skip_serializing_if = "sdk::Catalog::is_empty")]
+    sdk_catalog: sdk::Catalog,
+    #[serde(skip)]
+    records: Option<kv1_records::Runtime>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    namespace_record_owners: BTreeMap<String, namespace_record_cells::Owner>,
+    #[serde(default, skip_serializing_if = "lease_clock_is_zero")]
+    lease_clock: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    kubernetes_artifact_clock: Option<crate::auth::Timestamp>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_lease_clock: Option<crate::auth::Timestamp>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    sdk_retired_logical: Option<CowValue<sdk_history::Registry>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pki_revocation_clock: Option<crate::auth::Timestamp>,
+    namespaces: BTreeMap<String, CowNamespace>,
 }
+
+#[cfg(feature = "native-v6-storage")]
+#[path = "engines/native_empty_namespace.rs"]
+mod native_empty_namespace;
 
 impl std::fmt::Debug for EngineState {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -26,11 +185,177 @@ impl std::fmt::Debug for EngineState {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize)]
-struct NamespaceState {
-    mounts: BTreeMap<String, Mount>,
+#[cfg(feature = "native-v6-storage")]
+impl EngineState {
+    /// The configured V6 root profile must not strand a previously enabled
+    /// engine behind its deliberately bounded request dispatcher. This checks
+    /// live owners only; KV data remains authenticated by the normal graph.
+    pub(crate) fn supports_native_v6_root_storage(&self) -> bool {
+        self.sdk_catalog.is_empty()
+            && self.sdk_retired_logical.is_none()
+            && self.namespace_record_owners.is_empty()
+            && self.namespaces.iter().all(|(name, owner)| {
+                name.is_empty()
+                    && owner.sdk_owners.is_empty()
+                    && owner.sdk_leases.is_empty()
+                    && owner.external_keys.is_empty()
+                    && owner.mounts.values().all(|mount| match &mount.backend {
+                        Backend::Kv1(_)
+                        | Backend::Kv1Records
+                        | Backend::Kv2(_)
+                        | Backend::Kv2Native(_) => true,
+                        Backend::Transit(engine) => !engine.has_external_state(),
+                        Backend::Totp(_) | Backend::Ssh(_) => true,
+                        Backend::Pki(engine) => engine.native_local_profile(),
+                        _ => false,
+                    })
+            })
+    }
 }
 
+fn lease_clock_is_zero(value: &u64) -> bool {
+    *value == 0
+}
+
+// Internal transaction sharing only: serde retains the pre-COW representation.
+// In particular, a rejected candidate must never mutate a retained snapshot.
+struct CowValue<T>(Arc<T>);
+
+impl<T> Clone for CowValue<T> {
+    fn clone(&self) -> Self {
+        Self(Arc::clone(&self.0))
+    }
+}
+
+impl<T> From<T> for CowValue<T> {
+    fn from(value: T) -> Self {
+        Self(Arc::new(value))
+    }
+}
+
+impl<T> Deref for CowValue<T> {
+    type Target = T;
+    fn deref(&self) -> &Self::Target {
+        self.0.as_ref()
+    }
+}
+
+impl<T: Clone> DerefMut for CowValue<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        Arc::make_mut(&mut self.0)
+    }
+}
+
+impl<T: Serialize> Serialize for CowValue<T> {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.0.as_ref().serialize(serializer)
+    }
+}
+
+impl<'de, T: Deserialize<'de>> Deserialize<'de> for CowValue<T> {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        T::deserialize(deserializer).map(Self::from)
+    }
+}
+
+const fn mount_revision_one() -> u64 {
+    1
+}
+
+struct CowNamespace(Arc<NamespaceState>);
+
+impl Clone for CowNamespace {
+    fn clone(&self) -> Self {
+        Self(Arc::clone(&self.0))
+    }
+}
+
+impl Default for CowNamespace {
+    fn default() -> Self {
+        Self(Arc::new(NamespaceState::default()))
+    }
+}
+
+impl Deref for CowNamespace {
+    type Target = NamespaceState;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for CowNamespace {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        Arc::make_mut(&mut self.0)
+    }
+}
+
+impl Serialize for CowNamespace {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.0.as_ref().serialize(serializer)
+    }
+}
+
+impl<'de> Deserialize<'de> for CowNamespace {
+    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        NamespaceState::deserialize(deserializer).map(|value| Self(Arc::new(value)))
+    }
+}
+
+#[derive(Clone, Serialize, Deserialize)]
+struct NamespaceState {
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    sdk_owners: BTreeMap<String, sdk::MountOwner>,
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    sdk_leases: BTreeMap<String, sdk_lease::Lease>,
+    mounts: BTreeMap<String, Mount>,
+    /// Next path incarnation after disable/recreate. The active Mount carries
+    /// its own incarnation; this tombstone map prevents stale path identity
+    /// from being resurrected after deletion.
+    #[serde(default, skip_serializing_if = "BTreeMap::is_empty")]
+    mount_epochs: BTreeMap<String, u64>,
+    #[serde(default)]
+    identity: identity::IdentityState,
+    #[serde(default, skip_serializing_if = "external_keys::Registry::is_empty")]
+    external_keys: external_keys::Registry,
+}
+
+impl NamespaceState {
+    fn initialized_empty() -> Self {
+        Self {
+            mounts: BTreeMap::new(),
+            sdk_owners: BTreeMap::new(),
+            sdk_leases: BTreeMap::new(),
+            mount_epochs: BTreeMap::new(),
+            identity: identity::IdentityState::default(),
+            external_keys: external_keys::Registry::default(),
+        }
+    }
+
+    fn is_pristine(&self) -> bool {
+        self.mounts.is_empty()
+            && self.sdk_owners.is_empty()
+            && self.sdk_leases.is_empty()
+            && self.mount_epochs.is_empty()
+            && self.identity.is_pristine()
+            && self.external_keys.is_empty()
+    }
+}
+
+// Persisted pre-existing graphs may omit a namespace entry. Their historical
+// implicit mounts remain readable. New initialization uses explicit empty entries.
 impl Default for NamespaceState {
     fn default() -> Self {
         Self {
@@ -47,30 +372,101 @@ impl Default for NamespaceState {
                     ),
                 ),
             ]),
+            sdk_owners: BTreeMap::new(),
+            sdk_leases: BTreeMap::new(),
+            mount_epochs: BTreeMap::new(),
+            identity: identity::IdentityState::default(),
+            external_keys: external_keys::Registry::default(),
         }
     }
 }
 
+type Mount = CowValue<MountState>;
+
+// Only the Service's actual successful lease publication captures this
+// process-local receipt. Mount identity and private lease snapshot survive audit.
+pub(crate) struct KubernetesDeliveryReceipt {
+    namespace: String,
+    mount: String,
+    incarnation: u64,
+    revision: u64,
+    lease: kubernetes::LeaseDeliveryReceipt,
+}
+
+impl KubernetesDeliveryReceipt {
+    pub(crate) fn expires_at(&self) -> u64 {
+        self.lease.expires_at()
+    }
+    pub(crate) fn response_lease_duration(&self, now: u64) -> u64 {
+        self.lease.response_lease_duration(now)
+    }
+}
+
+/// Typed local native catalog identity. No secret payload or remote grant.
+#[derive(Eq, PartialEq)]
+pub(crate) struct NativeRemountOwner {
+    revision: u64,
+    incarnation: u64,
+    kind: &'static str,
+    description: String,
+    destination_epoch: Option<u64>,
+}
+
 #[derive(Clone, Serialize, Deserialize)]
-struct Mount {
+struct MountState {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    kv_configuration: Option<kv_mount_config::Configuration>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    listing_visibility: Option<crate::mount_listing_visibility::ListingVisibility>,
+    #[serde(default = "mount_revision_one")]
+    revision: u64,
+    #[serde(default = "mount_revision_one")]
+    incarnation: u64,
     description: String,
     backend: Backend,
 }
 
 #[derive(Clone, Serialize, Deserialize)]
 enum Backend {
-    Kv1(BTreeMap<String, Value>),
+    // Runtime provider state and effects belong to the audited Service writer.
+    Database,
+    /// RabbitMQ reuses the single Service-owned external credential/lease state
+    /// machine while preserving its own OpenBao-compatible mount type and route.
+    RabbitMq,
+    /// External Kubernetes TokenRequest provider state is owned by Service.
+    Kubernetes(kubernetes::Kubernetes),
+    /// Durable binding to a deployment-enrolled read-only secret plugin.
+    PluginSecret(String),
+    /// Bounded OpenLDAP dynamic credential state; network effects are Service-owned.
+    OpenLdap(openldap::OpenLdap),
+    Kv1(BTreeMap<String, SharedJson>),
+    /// V5 data belongs to the separate authenticated record root.
+    Kv1Records,
     Kv2(kv::Kv2),
+    /// Live V6 owner; never serializable as inline fallback data.
+    Kv2Native(kv::native_records::NativeReadView),
     Transit(transit::Transit),
+    Pki(Box<pki::Pki>),
+    Ssh(ssh::SshOtp),
     Totp(totp::Totp),
+}
+
+impl Backend {
+    fn kv2_has_lossless_import_state(&self) -> bool {
+        match self {
+            Self::Kv2(engine) => engine.has_lossless_import_state(),
+            Self::Kv2Native(view) => view.has_lossless_state(),
+            _ => false,
+        }
+    }
 }
 
 impl Drop for Backend {
     fn drop(&mut self) {
         if let Self::Kv1(entries) = self {
-            for (mut path, mut value) in std::mem::take(entries) {
+            for (mut path, value) in std::mem::take(entries) {
                 path.zeroize();
-                wipe_json(&mut value);
+                drop(value);
             }
         }
     }
@@ -91,7 +487,14 @@ fn wipe_json(value: &mut Value) {
     *value = Value::Null;
 }
 
+#[derive(Clone, Serialize)]
+#[serde(transparent)]
 struct SecretJson(Value);
+impl<'de> Deserialize<'de> for SecretJson {
+    fn deserialize<D: serde::Deserializer<'de>>(decoder: D) -> std::result::Result<Self, D::Error> {
+        kv::lossless::deserialize_secret_json(decoder).map(Self)
+    }
+}
 impl std::ops::Deref for SecretJson {
     type Target = Value;
     fn deref(&self) -> &Self::Target {
@@ -109,24 +512,76 @@ impl Drop for SecretJson {
     }
 }
 
+// Payloads are immutable after publication. The final owning reference runs
+// SecretJson::drop; dropping a failed candidate cannot wipe an older snapshot.
+type SharedJson = CowValue<SecretJson>;
+
+impl SharedJson {
+    fn expose(&self) -> &Value {
+        &self.0.as_ref().0
+    }
+}
+
 impl Mount {
     fn new(backend: Backend, description: &str) -> Self {
-        Self {
+        Self::with_incarnation(backend, description, 1)
+    }
+
+    fn with_incarnation(backend: Backend, description: &str, incarnation: u64) -> Self {
+        Self::from(MountState {
+            kv_configuration: None,
+            listing_visibility: None,
+            revision: 1,
+            incarnation: incarnation.max(1),
             description: description.into(),
             backend,
+        })
+    }
+
+    // Native V6 tune CAS compares only descriptor metadata. This is not a
+    // persistence/export encoder; all live native serialization still rejects.
+    fn encode_tune_state(&self) -> Result<zeroize::Zeroizing<Vec<u8>>> {
+        if matches!(self.backend, Backend::Kv2Native(_)) {
+            let mut metadata = self.clone();
+            metadata.backend = Backend::Kv2(kv::Kv2::default());
+            crate::secret_serde::to_vec(&metadata, crate::MAX_APPLICATION_STATE_BYTES)
+                .map_err(|_| error(507, "mount metadata exceeds serialization capacity"))
+        } else {
+            crate::secret_serde::to_vec(self, crate::MAX_APPLICATION_STATE_BYTES)
+                .map_err(|_| error(507, "mount state exceeds serialization capacity"))
         }
     }
 
     fn descriptor(&self) -> Value {
-        let (kind, options) = match self.backend {
-            Backend::Kv1(_) => ("kv", json!({"version":"1"})),
-            Backend::Kv2(_) => ("kv", json!({"version":"2"})),
+        let (kind, options) = match &self.backend {
+            Backend::Database => ("database", json!({})),
+            Backend::RabbitMq => ("rabbitmq", json!({})),
+            Backend::Kubernetes(_) => ("kubernetes", json!({})),
+            Backend::PluginSecret(plugin_id) => ("plugin", json!({"plugin_id":plugin_id})),
+            Backend::OpenLdap(_) => ("ldap", json!({"schema":"openldap"})),
+            Backend::Kv1(_) | Backend::Kv1Records => ("kv", json!({"version":"1"})),
+            Backend::Kv2(_) | Backend::Kv2Native(_) => ("kv", json!({"version":"2"})),
             Backend::Transit(_) => ("transit", json!({})),
+            Backend::Pki(_) => ("pki", json!({})),
+            Backend::Ssh(_) => ("ssh", json!({})),
             Backend::Totp(_) => ("totp", json!({})),
         };
-        json!({"type":kind,"description":self.description,"options":options,
+        let (default_ttl, max_ttl) = match &self.backend {
+            Backend::Ssh(engine) => (engine.default_ttl, engine.max_ttl),
+            Backend::Pki(engine) => (engine.default_ttl, engine.max_ttl),
+            _ => (0, 0),
+        };
+        let mut descriptor = json!({"type":kind,"description":self.description,"options":options,
+            "revision":self.revision,"incarnation":self.incarnation,
             "local":false,"seal_wrap":false,"external_entropy_access":false,
-            "config":{"default_lease_ttl":0,"max_lease_ttl":0,"force_no_cache":false}})
+            "config":{"default_lease_ttl":default_ttl,"max_lease_ttl":max_ttl,"force_no_cache":false}});
+        if let Some(configuration) = &self.kv_configuration {
+            configuration.project_descriptor(&mut descriptor);
+        }
+        if let Some(visibility) = self.listing_visibility {
+            descriptor["config"]["listing_visibility"] = json!(visibility.name());
+        }
+        descriptor
     }
 }
 
@@ -151,6 +606,53 @@ impl std::fmt::Debug for EngineResponse {
             .field("body", &"[REDACTED]")
             .finish()
     }
+}
+
+pub(crate) fn external_key_verification_route(method: &str, path: &str) -> bool {
+    let path = path
+        .split_once('?')
+        .map_or(path, |(path, _)| path)
+        .trim_start_matches('/');
+    external_keys::verification_path(path) && matches!(method, "POST" | "PUT" | "PATCH")
+}
+
+pub(crate) struct ExternalParameterRead {
+    pub(crate) plugin_id: String,
+    pub(crate) config: bool,
+    pub(crate) values: SecretValue,
+}
+
+pub(crate) struct ExternalTransitRequest {
+    pub(crate) genuine_provider: Option<String>,
+    pub(crate) request: SecretValue,
+    pub(crate) operation: &'static str,
+    pub(crate) local_version: u64,
+    pub(crate) mount: String,
+    pub(crate) mount_incarnation: u64,
+}
+
+pub(crate) struct ExternalPkiRelatedRequest {
+    pub(crate) genuine_provider: Option<String>,
+    pub(crate) request: SecretValue,
+    pub(crate) template: ExternalPkiTemplate,
+}
+
+pub(crate) struct ExternalPkiRequest {
+    pub(crate) genuine_provider: Option<String>,
+    pub(crate) request: SecretValue,
+    pub(crate) template: ExternalPkiTemplate,
+    pub(crate) related: Vec<ExternalPkiRelatedRequest>,
+    pub(crate) mount: String,
+    pub(crate) mount_incarnation: u64,
+}
+
+pub(crate) struct ExternalKeyVerification {
+    pub(crate) candidate: EngineState,
+    pub(crate) plugin_id: String,
+    pub(crate) action: &'static str,
+    pub(crate) config_name: String,
+    pub(crate) key_name: Option<String>,
+    pub(crate) request: SecretValue,
 }
 
 #[derive(Clone, Debug)]
@@ -197,6 +699,26 @@ fn empty(mutated: bool) -> EngineResponse {
         mutated,
     }
 }
+// Use one logical operation for Service ACL, canonical roots and KV dispatch.
+pub(crate) fn kv_request_method<'a>(method: &'a str, body: &Value) -> &'a str {
+    if method != "GET" {
+        return method;
+    }
+    if body
+        .get("list")
+        .is_some_and(|value| value == true || value == "true")
+    {
+        "LIST"
+    } else if body
+        .get("scan")
+        .is_some_and(|value| value == true || value == "true")
+    {
+        "SCAN"
+    } else {
+        method
+    }
+}
+
 fn write_method(method: &str) -> bool {
     matches!(method, "POST" | "PUT")
 }
@@ -287,8 +809,2399 @@ fn list_keys<'a>(
 }
 
 impl EngineState {
+    /// New installations have no implicitly enabled secret engines. Keeping the
+    /// root entry explicit also prevents legacy readers from adding their defaults.
+    pub(crate) fn initialized_empty() -> Self {
+        let mut engines = Self::default();
+        engines.ensure_empty_namespace("");
+        engines
+    }
+
+    /// Only a newly registered namespace calls this; existing owners are retained.
+    #[cfg(test)]
+    pub(crate) fn install_canonical_pki_serial_fixture(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        now: u64,
+    ) -> Result<()> {
+        let mounted = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|n| n.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(engine) = &mut mounted.backend else {
+            return Err(bad("fixture mount is not PKI"));
+        };
+        **engine = pki::Pki::canonical_serial_http_fixture(now)?;
+        self.lease_clock = self.lease_clock.max(now);
+        Ok(())
+    }
+
+    #[cfg(test)]
+    pub(crate) fn remove_root_url_capture_for_test(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+    ) -> Result<()> {
+        let mounted = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|n| n.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(engine) = &mut mounted.backend else {
+            return Err(bad("URL fixture mount is not PKI"));
+        };
+        engine.remove_root_url_capture_for_test()
+    }
+
+    pub(crate) fn ensure_empty_namespace(&mut self, namespace: &str) {
+        self.namespaces
+            .entry(namespace.into())
+            .or_insert_with(|| CowNamespace(Arc::new(NamespaceState::initialized_empty())));
+    }
+
+    /// Remove a pristine explicit entry together with its namespace catalog owner.
+    /// Mount/identity frontiers and registry configuration are never discarded.
+    pub(crate) fn remove_empty_namespace(&mut self, namespace: &str) -> Result<()> {
+        if namespace.is_empty() || !self.namespace_is_empty(namespace) {
+            return Err(error(409, "namespace contains engine ownership"));
+        }
+        self.namespaces.remove(namespace);
+        Ok(())
+    }
+
+    pub(crate) fn has_transit_byok_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_byok_state()))
+        })
+    }
+
+    pub(crate) fn has_mldsa_import_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Transit(engine) if engine.has_mldsa_import_state())
+            })
+        })
+    }
+
+    pub(crate) fn has_symmetric_backup_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_symmetric_backup_state())))
+    }
+
+    pub(crate) fn has_transit_cache_state(&self) -> bool {
+        self.transit_cache_format.is_some() || self.namespaces.values().any(|state|
+            state.mounts.values().any(|mount|
+                matches!(&mount.backend, Backend::Transit(engine) if engine.has_policy_cache_state())))
+    }
+
+    pub(crate) fn validate_transit_cache_state(&self, previous: Option<&Self>) -> Result<()> {
+        if self.transit_cache_format.is_some_and(|format| format != 1)
+            || self.has_transit_cache_state() && self.transit_cache_format != Some(1)
+            || previous.is_some_and(Self::has_transit_cache_state)
+                && self.transit_cache_format != Some(1)
+        {
+            return Err(error(503, "invalid or erased transit cache owner format"));
+        }
+        for (namespace_name, namespace) in &self.namespaces {
+            for (mount_name, mount) in &namespace.mounts {
+                if let Backend::Transit(engine) = &mount.backend {
+                    let prior = previous
+                        .and_then(|old| old.namespaces.get(namespace_name))
+                        .and_then(|old| old.mounts.get(mount_name))
+                        .filter(|old| old.incarnation == mount.incarnation)
+                        .and_then(|old| {
+                            if let Backend::Transit(engine) = &old.backend {
+                                Some(engine)
+                            } else {
+                                None
+                            }
+                        });
+                    engine.validate_policy_cache_state(prior)?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    /// Called only against the genuine installed Service state, before cloning
+    /// a transaction candidate. This method installs no persistent state.
+    pub(crate) fn synchronize_transit_policy_caches(
+        &self,
+        generation: Option<u64>,
+        namespace_incarnation: impl Fn(&str) -> Option<u64>,
+    ) -> Result<()> {
+        self.validate_transit_cache_state(None)?;
+        for (namespace, state) in &self.namespaces {
+            for (mount_name, mount) in &state.mounts {
+                if let Backend::Transit(engine) = &mount.backend {
+                    match (generation, namespace_incarnation(namespace)) {
+                        (Some(generation), Some(incarnation)) => {
+                            engine.synchronize_policy_cache(
+                                namespace,
+                                incarnation,
+                                mount_name,
+                                mount.incarnation,
+                                generation,
+                            )?;
+                        }
+                        _ => engine.invalidate_unowned_policy_cache()?,
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
+    #[cfg(test)]
+    pub(crate) fn transit_cache_observation(
+        &self,
+        namespace: &str,
+        mount: &str,
+    ) -> Result<Option<(u64, usize)>> {
+        self.namespaces
+            .get(namespace)
+            .and_then(|state| state.mounts.get(mount))
+            .and_then(|mount| {
+                if let Backend::Transit(engine) = &mount.backend {
+                    Some(engine)
+                } else {
+                    None
+                }
+            })
+            .map(|engine| engine.policy_cache_observation())
+            .transpose()
+    }
+
+    #[cfg(test)]
+    pub(crate) fn transit_cache_entry_observation(
+        &self,
+        namespace: &str,
+        mount: &str,
+        name: &str,
+    ) -> Result<Option<(u64, std::sync::Weak<dyn std::any::Any + Send + Sync>)>> {
+        match self
+            .namespaces
+            .get(namespace)
+            .and_then(|state| state.mounts.get(mount))
+            .and_then(|mount| {
+                if let Backend::Transit(engine) = &mount.backend {
+                    Some(engine)
+                } else {
+                    None
+                }
+            }) {
+            Some(engine) => engine.policy_cache_entry_observation(name),
+            None => Ok(None),
+        }
+    }
+
+    pub(crate) fn transit_cache_reload_targets(
+        &self,
+        namespace: &str,
+        paths: Option<&[String]>,
+    ) -> Result<Vec<TransitCacheReloadMount>> {
+        let state = self.namespaces.get(namespace).ok_or_else(not_found)?;
+        let selected = match paths {
+            Some(paths) => paths.to_vec(),
+            None => state
+                .mounts
+                .iter()
+                .filter(|(_, mount)| matches!(mount.backend, Backend::Transit(_)))
+                .map(|(path, _)| path.clone())
+                .collect(),
+        };
+        if selected.is_empty() {
+            return Err(not_found());
+        }
+        let mut seen = BTreeSet::new();
+        let mut targets = Vec::with_capacity(selected.len());
+        for path in selected {
+            if !seen.insert(path.clone()) {
+                return Err(bad("duplicate reload mount"));
+            }
+            let mount = state.mounts.get(&path).ok_or_else(not_found)?;
+            let Backend::Transit(engine) = &mount.backend else {
+                return Err(error(
+                    501,
+                    "reload consumer is not implemented for this backend",
+                ));
+            };
+            targets.push(TransitCacheReloadMount {
+                owner: MountQueryOwner {
+                    path,
+                    incarnation: mount.incarnation,
+                    kind: QueryKind::Transit,
+                },
+                configured_size: engine.policy_cache_config_identity(),
+            });
+        }
+        targets.sort_by(|a, b| a.owner.path.cmp(&b.owner.path));
+        Ok(targets)
+    }
+
+    /// This is a runtime-only effect on the genuine installed State. Calling
+    /// it with an uncommitted candidate is prohibited by the affine Service
+    /// delivery owner; all mount/configuration checks precede cache mutation.
+    pub(crate) fn reload_accepted_transit_policy_caches(
+        &self,
+        namespace: &str,
+        namespace_incarnation: u64,
+        generation: u64,
+        targets: &[TransitCacheReloadMount],
+    ) -> Result<()> {
+        let paths = targets
+            .iter()
+            .map(|target| target.owner.path.clone())
+            .collect::<Vec<_>>();
+        let actual = self
+            .transit_cache_reload_targets(namespace, Some(&paths))
+            .map_err(|_| error(503, "transit reload accepted mount is unavailable"))?;
+        if actual.as_slice() != targets {
+            return Err(error(
+                503,
+                "transit reload accepted mount or configuration changed",
+            ));
+        }
+        let state = self.namespaces.get(namespace).ok_or_else(not_found)?;
+        let mut engines = Vec::with_capacity(targets.len());
+        for target in targets {
+            let mount = state.mounts.get(&target.owner.path).ok_or_else(not_found)?;
+            let Backend::Transit(engine) = &mount.backend else {
+                return Err(error(503, "transit reload backend changed"));
+            };
+            engines.push((engine, target.owner.path.as_str(), mount.incarnation));
+        }
+        transit::Transit::reload_policy_cache_batch(
+            namespace,
+            namespace_incarnation,
+            generation,
+            &engines,
+        )
+    }
+
+    pub(crate) fn has_transit_derived_ed_state(&self) -> bool {
+        self.namespaces.values().any(|state| {
+            state.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_derived_ed_state()))
+        })
+    }
+
+    pub(crate) fn validate_transit_derived_ed_state(&self, previous: Option<&Self>) -> Result<()> {
+        for (namespace_name, namespace) in &self.namespaces {
+            for (mount_name, mount) in &namespace.mounts {
+                if let Backend::Transit(engine) = &mount.backend {
+                    let prior = previous
+                        .and_then(|old| old.namespaces.get(namespace_name))
+                        .and_then(|old| old.mounts.get(mount_name))
+                        .filter(|old| old.incarnation == mount.incarnation)
+                        .and_then(|old| {
+                            if let Backend::Transit(engine) = &old.backend {
+                                Some(engine)
+                            } else {
+                                None
+                            }
+                        });
+                    engine.validate_derived_ed_state(prior)?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn has_transit_rotation_precision_state(&self) -> bool {
+        self.namespaces.values().any(|state| state.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_rotation_precision_state())))
+    }
+
+    pub(crate) fn validate_transit_rotation_precision_state(
+        &self,
+        previous: Option<&Self>,
+    ) -> Result<()> {
+        for (namespace_name, namespace) in &self.namespaces {
+            for (mount_name, mount) in &namespace.mounts {
+                if let Backend::Transit(engine) = &mount.backend {
+                    let prior = previous
+                        .and_then(|old| old.namespaces.get(namespace_name))
+                        .and_then(|old| old.mounts.get(mount_name))
+                        .filter(|old| old.incarnation == mount.incarnation)
+                        .and_then(|old| {
+                            if let Backend::Transit(engine) = &old.backend {
+                                Some(engine)
+                            } else {
+                                None
+                            }
+                        });
+                    engine.validate_rotation_precision_state(prior)?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn has_standard_asymmetric_import_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_standard_asymmetric_import_state())))
+    }
+
+    pub(crate) fn validate_transit_byok_state(&self) -> Result<()> {
+        for namespace in self.namespaces.values() {
+            for mount in namespace.mounts.values() {
+                if let Backend::Transit(engine) = &mount.backend {
+                    engine.validate_byok_state()?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn has_aad_bound_convergent_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_aad_bound_convergent_state())))
+    }
+
+    pub(crate) fn validate_aad_bound_convergent_state(&self) -> Result<()> {
+        for namespace in self.namespaces.values() {
+            for mount in namespace.mounts.values() {
+                if let Backend::Transit(engine) = &mount.backend {
+                    engine.validate_aad_bound_convergent_state()?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn validate_aad_bound_convergent_restore(&self, target: &Self) -> Result<()> {
+        for (namespace_name, namespace) in &self.namespaces {
+            for (mount_name, mount) in &namespace.mounts {
+                if let Backend::Transit(current) = &mount.backend {
+                    if !current.has_aad_bound_convergent_state() {
+                        continue;
+                    }
+                    let restored = target
+                        .namespaces
+                        .get(namespace_name)
+                        .and_then(|namespace| namespace.mounts.get(mount_name))
+                        .and_then(|mount| match &mount.backend {
+                            Backend::Transit(engine) => Some(engine),
+                            _ => None,
+                        });
+                    current.validate_aad_bound_convergent_restore(restored)?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn has_external_pki_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Pki(engine) if engine.has_external_state()))
+        })
+    }
+
+    pub(crate) fn has_typed_external_pki_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Pki(engine) if engine.has_typed_external_pki_state()))
+        })
+    }
+
+    pub(crate) fn has_pki_batch_lease_state(&self) -> bool {
+        self.namespaces.values().any(|state| {
+            state.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_batch_lease_state())
+            })
+        })
+    }
+
+    pub(crate) fn has_local_typed_pki_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Pki(engine) if engine.has_local_typed_key_state()))
+        })
+    }
+
+    #[cfg(test)]
+    pub(crate) fn fixture_insert_historical_pki_role(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        name: &str,
+        value: &Value,
+    ) -> Result<()> {
+        let mounted = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|state| state.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(pki) = &mut mounted.backend else {
+            return Err(bad("historical role fixture requires actual PKI mount"));
+        };
+        pki.fixture_insert_historical_role(name, value)
+    }
+
+    #[cfg(test)]
+    pub(crate) fn fixture_insert_pre_names_pki_profile_role(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        name: &str,
+        value: &Value,
+    ) -> Result<()> {
+        let mounted = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|state| state.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(pki) = &mut mounted.backend else {
+            return Err(bad("pre-name profile fixture requires an actual PKI mount"));
+        };
+        pki.fixture_insert_pre_names_profile_role(name, value)
+    }
+
+    #[cfg(test)]
+    pub(crate) fn fixture_promote_historical_pki_role_to85(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        name: &str,
+    ) -> Result<()> {
+        let mounted = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|state| state.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(pki) = &mut mounted.backend else {
+            return Err(bad("schema85 role fixture requires actual PKI mount"));
+        };
+        pki.fixture_promote_historical_role_to85(name)
+    }
+
+    #[cfg(test)]
+    pub(crate) fn fixture_prepare_historical_pki_root(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+    ) -> Result<()> {
+        let mounted = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|state| state.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(pki) = &mut mounted.backend else {
+            return Err(bad("historical root fixture requires actual PKI mount"));
+        };
+        pki.fixture_prepare_historical_local_root()
+    }
+
+    #[cfg(test)]
+    pub(crate) fn fixture_issue_historical_pki_leaf(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        body: &Value,
+        owner: &crate::auth::LeaseOwner,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        owner
+            .validate_scope(namespace, crate::auth::ServiceOwnerProfile::DigestAlphabet)
+            .map_err(|_| bad("historical leaf fixture requires scoped original owner"))?;
+        let mounted = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|state| state.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(pki) = &mut mounted.backend else {
+            return Err(bad("historical leaf fixture requires actual PKI mount"));
+        };
+        pki.fixture_issue_historical_local_leaf(mount, body, owner, now)
+    }
+
+    pub(crate) fn has_pki_url_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(
+                |mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_url_state()),
+            )
+        })
+    }
+
+    #[cfg(test)]
+    pub(crate) fn alter_external_crl_issuer_for_test(
+        &mut self,
+        mount: &str,
+        replacement: Option<Vec<u8>>,
+    ) -> Result<()> {
+        let mounted = self
+            .namespaces
+            .get_mut("")
+            .and_then(|state| state.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Pki(pki) = &mut mounted.backend else {
+            return Err(bad("actual PKI fixture mount required"));
+        };
+        pki.alter_external_crl_issuer_for_test(replacement)
+    }
+    pub(crate) fn has_full_dn_crl_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_full_dn_crl_state())))
+    }
+    pub(crate) fn has_external_pki_signer_history(&self) -> bool {
+        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_external_signer_history())))
+    }
+
+    pub(crate) fn has_pki_rsa8192_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Pki(engine) if engine.has_rsa8192_state()))
+        })
+    }
+
+    pub(crate) fn has_pki_key_policy_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_key_policy_state())))
+    }
+
+    pub(crate) fn has_pki_role_names_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_role_names_state())))
+    }
+
+    pub(crate) fn has_pki_signed_role_time_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Pki(engine) if engine.has_signed_role_time_state())))
+    }
+
+    pub(crate) fn has_pki_role_time_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_role_time_state())
+            })
+        })
+    }
+
+    pub(crate) fn has_pki_role_leaf_profile_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_role_leaf_profile_state())
+            })
+        })
+    }
+
+    pub(crate) fn has_pki_role_wildcard_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_role_wildcard_state())
+            })
+        })
+    }
+
+    pub(crate) fn has_pki_role_bare_domain_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_role_bare_domain_state())
+            })
+        })
+    }
+
+    pub(crate) fn has_pki_role_any_name_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_role_any_name_state())
+            })
+        })
+    }
+
+    pub(crate) fn has_local_pki_identifier_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_local_identifier_state())
+            })
+        })
+    }
+
+    pub(crate) fn has_local_pki_multi_issuer_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_local_multi_issuer_state())
+            })
+        })
+    }
+
+    pub(crate) fn has_local_pki_intermediate_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_local_intermediate_state())
+            })
+        })
+    }
+
+    pub(crate) fn has_local_pki_crl_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_local_crl_state())
+            })
+        })
+    }
+
+    pub(crate) fn maintain_local_pki_crl(&mut self, now: u64) -> Result<bool> {
+        let now = now.max(self.lease_clock);
+        let mut changed = false;
+        for namespace in self.namespaces.values_mut() {
+            for mount in namespace.mounts.values_mut() {
+                if let Backend::Pki(engine) = &mut mount.backend {
+                    changed |= engine.maintain_local_crl(now)?;
+                }
+            }
+        }
+        if changed {
+            self.lease_clock = now;
+        }
+        Ok(changed)
+    }
+
+    pub(crate) fn has_local_pki_root_fields_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_local_root_fields_state())
+            })
+        })
+    }
+
+    pub(crate) fn has_issuer_path_pki_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.iter().any(|(path, mount)| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_issuer_path_state(path))
+            })
+        })
+    }
+
+    pub(crate) fn has_asymmetric_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_asymmetric_state()))
+        })
+    }
+
+    pub(crate) fn is_pki_role_write(&self, namespace: &str, method: &str, path: &str) -> bool {
+        if !matches!(method, "POST" | "PUT" | "PATCH") {
+            return false;
+        }
+        self.namespaces.get(namespace).is_some_and(|state| {
+            state.mounts.iter().any(|(prefix, mount)| {
+                matches!(&mount.backend, Backend::Pki(_))
+                    && path
+                        .strip_prefix(prefix.as_str())
+                        .and_then(|relative| relative.strip_prefix("roles/"))
+                        .is_some_and(|name| !name.is_empty() && !name.contains('/'))
+            })
+        })
+    }
+
+    pub(crate) fn external_pki_handles(&self, namespace: &str, path: &str) -> bool {
+        let path = path
+            .split('?')
+            .next()
+            .unwrap_or(path)
+            .trim_start_matches('/');
+        self.namespaces.get(namespace).is_some_and(|state| {
+            state.mounts.iter().any(|(mount_path, mount)| {
+                path.strip_prefix(mount_path.as_str()).is_some_and(|relative|
+                matches!(&mount.backend, Backend::Pki(engine) if engine.external_handles(relative)))
+            })
+        })
+    }
+
+    pub(crate) fn external_pki_mount_current(
+        &self,
+        namespace: &str,
+        path: &str,
+        incarnation: u64,
+    ) -> bool {
+        self.namespaces
+            .get(namespace)
+            .and_then(|state| state.mounts.get(path))
+            .is_some_and(|mount| {
+                mount.incarnation == incarnation && matches!(&mount.backend, Backend::Pki(_))
+            })
+    }
+
+    pub(crate) fn prepare_external_pki(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        context: PkiRequestContext<'_>,
+    ) -> Result<Option<ExternalPkiRequest>> {
+        self.prepare_external_pki_with_providers(
+            namespace,
+            method,
+            path,
+            body,
+            context,
+            &BTreeSet::new(),
+        )
+    }
+
+    pub(crate) fn prepare_external_pki_with_providers(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        context: PkiRequestContext<'_>,
+        providers: &BTreeSet<String>,
+    ) -> Result<Option<ExternalPkiRequest>> {
+        let context = self.with_pki_revocation_floor(context)?;
+        let time = context.observed_time(self.lease_clock)?;
+        let now = time.seconds();
+        let owner = context.owner;
+        if path.contains('?') {
+            return Err(bad("external PKI query parameters are not implemented"));
+        }
+        let Some(state) = self.namespaces.get(namespace) else {
+            return Ok(None);
+        };
+        let Some((mount_path, mount)) = state
+            .mounts
+            .iter()
+            .find(|(mount_path, _)| path.starts_with(mount_path.as_str()))
+        else {
+            return Ok(None);
+        };
+        let Backend::Pki(engine) = &mount.backend else {
+            return Ok(None);
+        };
+        if let Some(owner) = owner {
+            owner
+                .owner
+                .validate_scope(namespace, crate::auth::ServiceOwnerProfile::DigestAlphabet)
+                .map_err(|_| error(403, "credential owner scope mismatch"))?;
+        }
+        let relative = &path[mount_path.len()..];
+        if matches!(method, "POST" | "PUT")
+            && matches!(
+                relative,
+                "root/generate/kms"
+                    | "intermediate/generate/kms"
+                    | "intermediate/generate/kms-remote"
+            )
+            && (body.get("key_type").is_some() || body.get("key_bits").is_some())
+            && let Some(reference) = body.get("external_key_ref").and_then(Value::as_str)
+            && providers.contains(state.external_keys.consumer_plugin(reference, mount_path)?)
+        {
+            return Err(bad(
+                "key_type and key_bits cannot be supplied for an external key",
+            ));
+        }
+        let template = engine
+            .prepare_external(method, relative, body, now)?
+            .or(engine.prepare_external_consumption(
+                method,
+                relative,
+                body,
+                mount_path,
+                PkiRequestContext { time, ..context },
+            )?);
+        let Some(template) = template else {
+            return Ok(None);
+        };
+        // Each signer is chosen from the actual stored reference and mount
+        // grant. Only operator-installed providers can select the genuine lane.
+        let request_for = |template: &ExternalPkiTemplate| -> Result<_> {
+            let plugin = state.external_keys.consumer_plugin_for_operation(
+                &template.reference,
+                mount_path,
+                "sign",
+            )?;
+            if providers.contains(plugin) {
+                Ok((
+                    Some(plugin.to_owned()),
+                    state
+                        .external_keys
+                        .genuine_pki_request(&template.reference, mount_path)?,
+                ))
+            } else {
+                Ok((
+                    None,
+                    state.external_keys.transit_consumer_request(
+                        &template.reference,
+                        mount_path,
+                        "sign",
+                        SecretJson(
+                            json!({"input":"","prehashed":false,"signature_algorithm":"pkcs1v15"}),
+                        ),
+                    )?,
+                ))
+            }
+        };
+        let (genuine_provider, request) = request_for(&template).map_err(|cause| {
+            if cause.status == 500 && !template.is_consumption() {
+                error(400, "external PKI reference or grant is unavailable")
+            } else {
+                cause
+            }
+        })?;
+        // The pinned genuine kms/existing API rejects either supplied parameter.
+        // The legacy native-only compatibility branch retains its original contract.
+        if genuine_provider.is_some()
+            && !template.is_consumption()
+            && (body.get("key_type").is_some() || body.get("key_bits").is_some())
+        {
+            return Err(bad(
+                "key_type and key_bits cannot be supplied for an external key",
+            ));
+        }
+        let related = engine
+            .prepare_related_external_crls(
+                &template,
+                mount_path,
+                PkiRequestContext { time, ..context },
+            )?
+            .into_iter()
+            .map(|template| {
+                let (genuine_provider, request) = request_for(&template)?;
+                Ok(ExternalPkiRelatedRequest {
+                    genuine_provider,
+                    request,
+                    template,
+                })
+            })
+            .collect::<Result<Vec<_>>>()?;
+        Ok(Some(ExternalPkiRequest {
+            genuine_provider,
+            request,
+            template,
+            related,
+            mount: mount_path.clone(),
+            mount_incarnation: mount.incarnation,
+        }))
+    }
+
+    pub(crate) fn publish_external_pki(
+        &mut self,
+        namespace: &str,
+        mount_path: &str,
+        incarnation: u64,
+        material: ExternalPkiMaterial,
+        signatures: &[zeroize::Zeroizing<Vec<u8>>],
+        now: u64,
+    ) -> Result<EngineResponse> {
+        let mount = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|state| state.mounts.get_mut(mount_path))
+            .ok_or_else(|| error(503, "external PKI mount disappeared"))?;
+        if mount.incarnation != incarnation {
+            return Err(error(503, "external PKI mount changed"));
+        }
+        let Backend::Pki(engine) = &mut mount.backend else {
+            return Err(error(503, "external PKI mount type changed"));
+        };
+        let response = engine.publish_external(material, signatures, now.max(self.lease_clock))?;
+        // A remote administrative revocation advances the exact protocol time.
+        // Publish that actual frontier with its CRL and retained actor owner.
+        let acme_at = engine.acme_protocol.as_ref().map(|protocol| protocol.clock);
+        if let Some(at) = engine.ordinary_revocation_floor() {
+            self.pki_revocation_clock =
+                Some(self.pki_revocation_clock.map_or(at, |old| old.max(at)));
+            self.lease_clock = self.lease_clock.max(at.seconds());
+        }
+        self.lease_clock = self.lease_clock.max(now);
+        if response.mutated
+            && let Some(at) = acme_at
+        {
+            self.acme_observe_publication(at)?;
+        }
+        Ok(response)
+    }
+
+    pub(crate) fn lease_clock(&self) -> u64 {
+        self.lease_clock
+    }
+
+    pub(crate) fn has_external_transit_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_external_state()))
+        })
+    }
+
+    pub(crate) fn validate_external_transit_state(&self) -> Result<()> {
+        for namespace in self.namespaces.values() {
+            for mount in namespace.mounts.values() {
+                if let Backend::Transit(engine) = &mount.backend {
+                    engine.validate_external_state()?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn external_transit_handles(&self, namespace: &str, path: &str) -> bool {
+        let path = path
+            .split('?')
+            .next()
+            .unwrap_or(path)
+            .trim_start_matches('/');
+        self.namespaces.get(namespace).is_some_and(|state| {
+            state.mounts.iter().any(|(mount_path, mount)| {
+                path.strip_prefix(mount_path.as_str())
+                    .is_some_and(|relative| {
+                        matches!(&mount.backend,
+                    Backend::Transit(engine) if engine.external_handles(relative))
+                    })
+            })
+        })
+    }
+
+    pub(crate) fn external_transit_mount_current(
+        &self,
+        namespace: &str,
+        path: &str,
+        incarnation: u64,
+    ) -> bool {
+        self.namespaces
+            .get(namespace)
+            .and_then(|state| state.mounts.get(path))
+            .is_some_and(|mount| {
+                mount.incarnation == incarnation && matches!(mount.backend, Backend::Transit(_))
+            })
+    }
+
+    pub(crate) fn external_parameter_read(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+    ) -> Result<Option<ExternalParameterRead>> {
+        match self.namespaces.get(namespace) {
+            Some(state) => state.external_keys.parameter_read(method, path),
+            None => Ok(None),
+        }
+    }
+    pub(crate) fn prepare_external_transit_with_providers(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        admitted: &BTreeSet<String>,
+    ) -> Result<Option<ExternalTransitRequest>> {
+        let path = path.trim_start_matches('/');
+        if path.contains('?') {
+            return Err(bad("external Transit query parameters are not implemented"));
+        }
+        let Some(state) = self.namespaces.get(namespace) else {
+            return Ok(None);
+        };
+        let Some((mount_path, mount)) = state
+            .mounts
+            .iter()
+            .find(|(mount_path, _)| path.starts_with(mount_path.as_str()))
+        else {
+            return Ok(None);
+        };
+        let Backend::Transit(engine) = &mount.backend else {
+            return Ok(None);
+        };
+        let Some(plan) = engine.prepare_external_with_provider(
+            method,
+            &path[mount_path.len()..],
+            body,
+            !admitted.is_empty(),
+        )?
+        else {
+            return Ok(None);
+        };
+        let provider = state.external_keys.consumer_plugin_for_operation(
+            &plan.reference,
+            mount_path,
+            plan.operation,
+        )?;
+        let genuine_provider = admitted.contains(provider).then(|| provider.to_owned());
+        let plan = if genuine_provider.is_none() {
+            engine
+                .prepare_external(method, &path[mount_path.len()..], body)?
+                .ok_or_else(not_found)?
+        } else {
+            plan
+        };
+        let request = if genuine_provider.is_some() {
+            state.external_keys.genuine_consumer_request(
+                &plan.reference,
+                mount_path,
+                plan.operation,
+                plan.body,
+            )?
+        } else {
+            state.external_keys.transit_consumer_request(
+                &plan.reference,
+                mount_path,
+                plan.operation,
+                plan.body,
+            )?
+        };
+        Ok(Some(ExternalTransitRequest {
+            genuine_provider,
+            request,
+            operation: plan.operation,
+            local_version: plan.local_version,
+            mount: mount_path.clone(),
+            mount_incarnation: mount.incarnation,
+        }))
+    }
+
+    pub(crate) fn has_external_key_state(&self) -> bool {
+        self.namespaces
+            .values()
+            .any(|namespace| !namespace.external_keys.is_empty())
+    }
+
+    pub(crate) fn validate_external_key_state(&self) -> Result<()> {
+        for namespace in self.namespaces.values() {
+            namespace.external_keys.validate()?;
+        }
+        Ok(())
+    }
+    pub(crate) fn prepare_external_key_verification(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+    ) -> Result<Option<ExternalKeyVerification>> {
+        let (path, query) = path.split_once('?').unwrap_or((path, ""));
+        let path = path.trim_start_matches('/');
+        if !external_keys::verification_path(path) || !matches!(method, "POST" | "PUT" | "PATCH") {
+            return Ok(None);
+        }
+        let mut params = SecretJson(body.clone());
+        if params.is_null() {
+            *params = json!({});
+        }
+        let map = params
+            .as_object_mut()
+            .ok_or_else(|| bad("request body must be an object"))?;
+        for pair in query.split('&').filter(|pair| !pair.is_empty()) {
+            let (key, value) = pair
+                .split_once('=')
+                .ok_or_else(|| bad("invalid query parameter"))?;
+            if map.contains_key(key) {
+                return Err(bad("duplicate request parameter"));
+            }
+            map.insert(key.into(), Value::String(value.into()));
+        }
+        if !external_keys::verify_requested(&params)? {
+            return Ok(None);
+        }
+        let current = self
+            .namespaces
+            .get(namespace)
+            .map(|state| state.external_keys.clone())
+            .unwrap_or_default();
+        let mut registry = current;
+        params
+            .as_object_mut()
+            .ok_or_else(|| bad("request body must be an object"))?
+            .insert("verify".into(), Value::Bool(false));
+        let response = registry.handle(method, path, &params)?;
+        if !response.mutated || response.status != 204 {
+            return Err(error(
+                503,
+                "external key verification candidate was not a mutation",
+            ));
+        }
+        let provider = registry.provider_verification(namespace, path)?;
+        let mut candidate = self.clone();
+        candidate
+            .namespaces
+            .entry(namespace.into())
+            .or_default()
+            .external_keys = registry;
+        Ok(Some(ExternalKeyVerification {
+            candidate,
+            plugin_id: provider.plugin_id,
+            action: provider.action,
+            config_name: provider.config_name,
+            key_name: provider.key_name,
+            request: provider.request,
+        }))
+    }
+
+    pub(crate) fn known_namespaces(&self) -> BTreeSet<String> {
+        self.namespaces
+            .keys()
+            .filter(|namespace| !namespace.is_empty())
+            .cloned()
+            .collect()
+    }
+
+    /// Newly registered explicit empty namespaces are deletable. Any materialized
+    /// owner, including mount incarnations or an allocated identity frontier,
+    /// remains protected even after its visible objects have been removed.
+    pub(crate) fn namespace_is_empty(&self, namespace: &str) -> bool {
+        self.namespaces
+            .get(namespace)
+            .is_none_or(|state| state.is_pristine())
+    }
+
     /// The caller must authorize this capability under the same service lock used
     /// by `handle`. `None` means this module does not own the supplied route.
+    pub(crate) fn database_mount(&self, namespace: &str, path: &str) -> Option<&str> {
+        self.database_mount_binding(namespace, path)
+            .map(|(mount, _)| mount)
+    }
+
+    /// Retain owner identity while provider configuration is checked without
+    /// the Service writer. An identical mount at a new incarnation is not it.
+    pub(crate) fn database_mount_binding(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<(&str, u64)> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .max_by_key(|(mount, _)| mount.len())
+            .and_then(|(mount, value)| {
+                matches!(value.backend, Backend::Database | Backend::RabbitMq)
+                    .then_some((mount.as_str(), value.incarnation))
+            })
+    }
+
+    pub(crate) fn plugin_secret_mount(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<(String, String)> {
+        self.plugin_secret_mount_binding(namespace, path)
+            .map(|(mount, plugin, _)| (mount, plugin))
+    }
+
+    /// The incarnation fences a slow plugin reply across disable/recreate,
+    /// including reuse of the same path and deployment plugin identifier.
+    pub(crate) fn plugin_secret_mount_binding(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<(String, String, u64)> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .filter_map(|(mount, value)| match &value.backend {
+                Backend::PluginSecret(plugin_id) => {
+                    Some((mount.clone(), plugin_id.clone(), value.incarnation))
+                }
+                _ => None,
+            })
+            .max_by_key(|(mount, _, _)| mount.len())
+    }
+
+    pub(crate) fn kubernetes_mount(&self, namespace: &str, path: &str) -> Option<String> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .filter_map(|(mount, value)| {
+                matches!(value.backend, Backend::Kubernetes(_)).then_some(mount.clone())
+            })
+            .max_by_key(String::len)
+    }
+
+    pub(crate) fn kubernetes_mount_binding(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<(u64, u64)> {
+        let mount = self.kubernetes_mount(namespace, path)?;
+        let state = self.namespaces.get(namespace)?.mounts.get(&mount)?;
+        Some((state.incarnation, state.revision))
+    }
+
+    pub(crate) fn capture_kubernetes_delivery_receipt(
+        &self,
+        plan: &kubernetes::TokenRequestPlan,
+    ) -> Result<Option<KubernetesDeliveryReceipt>> {
+        let state = self
+            .namespaces
+            .get(&plan.namespace)
+            .and_then(|namespace| namespace.mounts.get(&plan.mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &state.backend else {
+            return Err(error(503, "Kubernetes delivery mount changed"));
+        };
+        engine.capture_delivery_receipt(plan).map(|receipt| {
+            receipt.map(|lease| KubernetesDeliveryReceipt {
+                namespace: plan.namespace.clone(),
+                mount: plan.mount.clone(),
+                incarnation: state.incarnation,
+                revision: state.revision,
+                lease,
+            })
+        })
+    }
+
+    pub(crate) fn validate_kubernetes_delivery_receipt_observed(
+        &self,
+        plan: &kubernetes::TokenRequestPlan,
+        path: &str,
+        admitted_binding: (u64, u64),
+        receipt: &KubernetesDeliveryReceipt,
+        time: crate::auth::AuthorityTime,
+    ) -> Result<u64> {
+        if plan.artifact_contract.is_none() {
+            return self.validate_kubernetes_delivery_receipt(
+                plan,
+                path,
+                admitted_binding,
+                receipt,
+                time.seconds(),
+            );
+        }
+        if receipt.namespace != plan.namespace
+            || receipt.mount != plan.mount
+            || self.kubernetes_mount(&plan.namespace, path).as_deref() != Some(plan.mount.as_str())
+            || self.kubernetes_mount_binding(&plan.namespace, path) != Some(admitted_binding)
+            || admitted_binding != (receipt.incarnation, receipt.revision)
+        {
+            return Err(error(503, "Kubernetes delivery mount owner changed"));
+        }
+        let state = self
+            .namespaces
+            .get(&plan.namespace)
+            .and_then(|namespace| namespace.mounts.get(&plan.mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &state.backend else {
+            return Err(error(503, "Kubernetes delivery mount changed"));
+        };
+        let time = self.kubernetes_artifact_time(time)?;
+        engine.validate_delivery_receipt_observed(plan, &receipt.lease, time)?;
+        Ok(receipt.response_lease_duration(time.seconds()))
+    }
+
+    pub(crate) fn validate_kubernetes_delivery_receipt(
+        &self,
+        plan: &kubernetes::TokenRequestPlan,
+        path: &str,
+        admitted_binding: (u64, u64),
+        receipt: &KubernetesDeliveryReceipt,
+        now: u64,
+    ) -> Result<u64> {
+        if receipt.namespace != plan.namespace
+            || receipt.mount != plan.mount
+            || self.kubernetes_mount(&plan.namespace, path).as_deref() != Some(plan.mount.as_str())
+            || self.kubernetes_mount_binding(&plan.namespace, path) != Some(admitted_binding)
+            || admitted_binding != (receipt.incarnation, receipt.revision)
+        {
+            return Err(error(503, "Kubernetes delivery mount owner changed"));
+        }
+        let state = self
+            .namespaces
+            .get(&plan.namespace)
+            .and_then(|namespace| namespace.mounts.get(&plan.mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &state.backend else {
+            return Err(error(503, "Kubernetes delivery mount changed"));
+        };
+        engine.validate_delivery_receipt(plan, &receipt.lease, now)?;
+        Ok(receipt.response_lease_duration(now))
+    }
+
+    pub(crate) fn has_kubernetes_mount(&self) -> bool {
+        self.namespaces.values().any(|ns| {
+            ns.mounts
+                .values()
+                .any(|mount| matches!(mount.backend, Backend::Kubernetes(_)))
+        })
+    }
+
+    pub(crate) fn kubernetes_dispatch_observed(
+        &mut self,
+        namespace: &str,
+        path: &str,
+        method: &str,
+        body: &Value,
+        admitted_clock: (u64, crate::auth::AuthorityTime),
+        issuer: Option<&ResolvedLeaseOwner>,
+    ) -> Result<Option<kubernetes::Dispatch>> {
+        let (admitted_now, time) = admitted_clock;
+        if !self.has_kubernetes_opaque_artifact_state() {
+            return self.kubernetes_dispatch(namespace, path, method, body, admitted_now, issuer);
+        }
+        let time = self.kubernetes_artifact_time(time)?;
+        let changed = self.observe_kubernetes_artifact_time(time)?;
+        let Some(mount) = self.kubernetes_mount(namespace, path) else {
+            return Ok(None);
+        };
+        let relative = path
+            .strip_prefix(&mount)
+            .ok_or_else(|| bad("invalid Kubernetes mount routing"))?;
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(&mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &mut state.backend else {
+            return Ok(None);
+        };
+        let mut response = engine.dispatch_observed(
+            (namespace, &mount),
+            method,
+            relative,
+            body,
+            (admitted_now, time),
+            issuer,
+        )?;
+        if let kubernetes::Dispatch::Immediate(value) = &mut response {
+            value.mutated |= changed;
+        }
+        Ok(Some(response))
+    }
+
+    pub(crate) fn kubernetes_dispatch(
+        &mut self,
+        namespace: &str,
+        path: &str,
+        method: &str,
+        body: &Value,
+        now: u64,
+        issuer: Option<&crate::auth::ResolvedLeaseOwner>,
+    ) -> Result<Option<kubernetes::Dispatch>> {
+        let mount = self.kubernetes_mount(namespace, path);
+        let Some(mount_path) = mount else {
+            return Ok(None);
+        };
+        let relative = path
+            .strip_prefix(&mount_path)
+            .ok_or_else(|| bad("invalid Kubernetes mount routing"))?;
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(&mount_path))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &mut state.backend else {
+            return Ok(None);
+        };
+        engine
+            .dispatch(namespace, &mount_path, method, relative, body, now, issuer)
+            .map(Some)
+    }
+
+    pub(crate) fn kubernetes_finalize_observed(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        plan: &kubernetes::TokenRequestPlan,
+        metadata: kubernetes::TokenMetadata,
+        time: crate::auth::AuthorityTime,
+        owner_live: bool,
+    ) -> Result<EngineResponse> {
+        if plan.artifact_contract.is_none() {
+            return self.kubernetes_finalize(
+                namespace,
+                mount,
+                plan,
+                metadata,
+                time.seconds(),
+                owner_live,
+            );
+        }
+        self.observe_kubernetes_artifact_time(time)?;
+        let time = self.kubernetes_artifact_time(time)?;
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &mut state.backend else {
+            return Err(error(503, "Kubernetes mount changed after provider entry"));
+        };
+        engine.finalize_observed(plan, metadata, time, owner_live)
+    }
+
+    pub(crate) fn kubernetes_finalize(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        plan: &kubernetes::TokenRequestPlan,
+        metadata: kubernetes::TokenMetadata,
+        now: u64,
+        owner_live: bool,
+    ) -> Result<EngineResponse> {
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &mut state.backend else {
+            return Err(error(503, "Kubernetes mount changed after provider entry"));
+        };
+        engine.finalize(plan, metadata, now, owner_live)
+    }
+
+    pub(crate) fn kubernetes_artifact_time(
+        &self,
+        time: crate::auth::AuthorityTime,
+    ) -> Result<crate::auth::AuthorityTime> {
+        if !self.has_kubernetes_opaque_artifact_state() {
+            return Ok(time);
+        }
+        let at = time
+            .exact()
+            .ok_or_else(|| error(503, "trusted opaque artifact clock is required"))?;
+        Ok(crate::auth::AuthorityTime::Precise(
+            self.kubernetes_artifact_clock
+                .map_or(at, |floor| at.max(floor)),
+        ))
+    }
+
+    pub(crate) fn observe_kubernetes_artifact_time(
+        &mut self,
+        time: crate::auth::AuthorityTime,
+    ) -> Result<bool> {
+        if !self.has_kubernetes_opaque_artifact_state() {
+            return Ok(false);
+        }
+        let time = self.kubernetes_artifact_time(time)?;
+        let at = time
+            .exact()
+            .ok_or_else(|| error(503, "trusted opaque artifact clock is required"))?;
+        let changed = self.kubernetes_artifact_clock != Some(at);
+        self.kubernetes_artifact_clock = Some(at);
+        Ok(changed)
+    }
+
+    pub(crate) fn validate_kubernetes_artifact_clock(&self, previous: Option<&Self>) -> Result<()> {
+        if let Some(previous) = previous {
+            self.validate_kubernetes_artifact_publication(previous)?;
+        }
+        if previous
+            .and_then(|p| p.kubernetes_artifact_clock)
+            .is_some_and(|floor| self.kubernetes_artifact_clock.is_none_or(|at| at < floor))
+        {
+            return Err(error(
+                503,
+                "opaque Kubernetes artifact clock floor was lost or downgraded",
+            ));
+        }
+        Ok(())
+    }
+
+    fn validate_kubernetes_artifact_publication(&self, previous: &Self) -> Result<()> {
+        if !previous.has_kubernetes_opaque_artifact_state()
+            && !self.has_kubernetes_opaque_artifact_state()
+        {
+            return Ok(());
+        }
+        for (scope, before_namespace) in &previous.namespaces {
+            let has_opaque_mount = before_namespace.mounts.values().any(|mount| matches!(&mount.backend, Backend::Kubernetes(engine) if engine.has_opaque_artifact_state()));
+            if before_namespace.mount_epochs.is_empty() && !has_opaque_mount {
+                continue;
+            }
+            let after_namespace = self.namespaces.get(scope).ok_or_else(|| {
+                error(503, "opaque Kubernetes retirement namespace was discarded")
+            })?;
+            // Retained epochs fence old snapshots even after the last mount was
+            // deleted. Namespace81 retirement needs its protected-view adapter;
+            // this isolated reader has not admitted that schema.
+            for (path, epoch) in &before_namespace.mount_epochs {
+                if after_namespace.mount_epochs.get(path).copied().unwrap_or(0) < *epoch {
+                    return Err(error(
+                        503,
+                        "opaque Kubernetes mount retirement epoch was lost or downgraded",
+                    ));
+                }
+            }
+            for (path, before_mount) in &before_namespace.mounts {
+                let Backend::Kubernetes(before) = &before_mount.backend else {
+                    continue;
+                };
+                if !before.has_opaque_artifact_state() {
+                    continue;
+                }
+                let after_mount = after_namespace.mounts.get(path);
+                if let Some(after_mount) = after_mount
+                    && after_mount.incarnation == before_mount.incarnation
+                    && let Backend::Kubernetes(after) = &after_mount.backend
+                {
+                    after.validate_opaque_publication(before, scope)?;
+                    continue;
+                }
+                if before.has_unresolved()
+                    || after_namespace.mount_epochs.get(path).copied().unwrap_or(0)
+                        <= before_mount.incarnation
+                    || after_mount
+                        .is_some_and(|mount| mount.incarnation <= before_mount.incarnation)
+                {
+                    return Err(error(
+                        503,
+                        "opaque Kubernetes mount owner was discarded before committed retirement",
+                    ));
+                }
+            }
+        }
+        // A new mount/first typed lease cannot resurrect a removed observation.
+        // Pending intents remain admissible; new registered rows need an actual
+        // earlier durable intent in the same mount incarnation.
+        for (scope, namespace) in &self.namespaces {
+            for (path, mount) in &namespace.mounts {
+                let Backend::Kubernetes(after) = &mount.backend else {
+                    continue;
+                };
+                if !after.has_opaque_artifact_state() {
+                    continue;
+                }
+                let before = previous
+                    .namespaces
+                    .get(scope)
+                    .and_then(|ns| ns.mounts.get(path))
+                    .filter(|before| before.incarnation == mount.incarnation)
+                    .and_then(|before| match &before.backend {
+                        Backend::Kubernetes(before) => Some(before),
+                        _ => None,
+                    });
+                if before.is_some_and(kubernetes::Kubernetes::has_opaque_artifact_state) {
+                    continue;
+                }
+                after.validate_opaque_publication(
+                    before.unwrap_or(&kubernetes::Kubernetes::default()),
+                    scope,
+                )?;
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn validate_kubernetes_state(&self) -> Result<()> {
+        for (scope, namespace) in &self.namespaces {
+            for mount in namespace.mounts.values() {
+                if let Backend::Kubernetes(engine) = &mount.backend {
+                    engine.validate_scope(scope)?;
+                    engine.validate_artifact_clock(self.kubernetes_artifact_clock)?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn has_kubernetes_opaque_artifact_state(&self) -> bool {
+        self.kubernetes_artifact_clock.is_some()
+            || self.namespaces.values().any(|namespace| namespace.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Kubernetes(engine) if engine.has_opaque_artifact_state())))
+    }
+
+    pub(crate) fn bind_kubernetes_opaque_artifact_intent(
+        &mut self,
+        plan: &mut kubernetes::TokenRequestPlan,
+        defaults: (u64, u64),
+    ) -> Result<()> {
+        let state = self
+            .namespaces
+            .get_mut(&plan.namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(&plan.mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &mut state.backend else {
+            return Err(error(503, "Kubernetes admitted artifact mount changed"));
+        };
+        engine.bind_opaque_artifact_intent(plan, defaults.0, defaults.1)
+    }
+
+    pub(crate) fn has_kubernetes_typed_lease_owners(&self) -> bool {
+        self.namespaces.values().any(|ns| {
+            ns.mounts.values().any(|mount|
+            matches!(&mount.backend, Backend::Kubernetes(engine) if engine.has_typed_owners()))
+        })
+    }
+
+    pub(crate) fn kubernetes_retire_lease(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        id: &str,
+    ) -> Result<bool> {
+        let current = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|ns| ns.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::Kubernetes(engine) = &mut current.backend else {
+            return Err(not_found());
+        };
+        Ok(engine.retire_lease(id))
+    }
+
+    pub(crate) fn openldap_mount(&self, namespace: &str, path: &str) -> Option<String> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .filter_map(|(mount, value)| {
+                matches!(value.backend, Backend::OpenLdap(_)).then_some(mount.clone())
+            })
+            .max_by_key(String::len)
+    }
+
+    pub(crate) fn has_openldap_mount(&self) -> bool {
+        self.namespaces.values().any(|state| {
+            state
+                .mounts
+                .values()
+                .any(|mount| matches!(mount.backend, Backend::OpenLdap(_)))
+        })
+    }
+
+    pub(crate) fn openldap_lease_mount(&self, namespace: &str, lease_id: &str) -> Option<String> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .find_map(|(mount, value)| match &value.backend {
+                Backend::OpenLdap(engine) if engine.contains_lease(lease_id) => Some(mount.clone()),
+                _ => None,
+            })
+    }
+
+    pub(crate) fn openldap_dispatch(
+        &mut self,
+        namespace: &str,
+        path: &str,
+        method: &str,
+        body: &Value,
+        now: u64,
+        issuer: Option<&crate::auth::ResolvedLeaseOwner>,
+    ) -> Result<Option<openldap::Dispatch>> {
+        let Some(mount_path) = self.openldap_mount(namespace, path) else {
+            return Ok(None);
+        };
+        let relative = path
+            .strip_prefix(&mount_path)
+            .ok_or_else(|| bad("invalid OpenLDAP mount routing"))?;
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(&mount_path))
+            .ok_or_else(not_found)?;
+        let Backend::OpenLdap(engine) = &mut state.backend else {
+            return Ok(None);
+        };
+        engine
+            .dispatch(namespace, &mount_path, method, relative, body, now, issuer)
+            .map(Some)
+    }
+
+    pub(crate) fn openldap_stage_revoke(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        lease_id: &str,
+    ) -> Result<openldap::EffectPlan> {
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::OpenLdap(engine) = &mut state.backend else {
+            return Err(error(503, "OpenLDAP mount changed before revoke"));
+        };
+        engine.stage_revoke(namespace, mount, lease_id)
+    }
+
+    pub(crate) fn retire_namespace_pending_delivery(&mut self, namespace: &str) {
+        if let Some(owner) = self.namespaces.get_mut(namespace) {
+            for mount in owner.mounts.values_mut() {
+                if let Backend::OpenLdap(engine) = &mut mount.backend {
+                    engine.retire_pending_delivery();
+                }
+            }
+        }
+    }
+
+    pub(crate) fn openldap_lease_authority(
+        &self,
+        namespace: &str,
+        mount: &str,
+        lease_id: &str,
+    ) -> Option<(&crate::auth::LeaseOwner, u64)> {
+        let Backend::OpenLdap(engine) = &self.namespaces.get(namespace)?.mounts.get(mount)?.backend
+        else {
+            return None;
+        };
+        engine.lease_authority(lease_id)
+    }
+
+    pub(crate) fn openldap_renew(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        lease_id: &str,
+        issuer: &crate::auth::ResolvedLeaseOwner,
+        increment: u64,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::OpenLdap(engine) = &mut state.backend else {
+            return Err(error(503, "OpenLDAP mount changed before renewal"));
+        };
+        engine.validate_scope(namespace)?;
+        issuer
+            .owner
+            .validate_scope(namespace, crate::auth::ServiceOwnerProfile::Graphic)
+            .map_err(|_| error(403, "OpenLDAP issuer scope mismatch"))?;
+        engine.renew(lease_id, issuer, increment, now)
+    }
+
+    pub(crate) fn openldap_effect_authority(
+        &self,
+        namespace: &str,
+        mount: &str,
+        plan: &openldap::EffectPlan,
+    ) -> Result<(&crate::auth::LeaseOwner, u64)> {
+        let backend = &self
+            .namespaces
+            .get(namespace)
+            .and_then(|namespace| namespace.mounts.get(mount))
+            .ok_or_else(not_found)?
+            .backend;
+        let Backend::OpenLdap(engine) = backend else {
+            return Err(error(503, "OpenLDAP mount changed after provider entry"));
+        };
+        engine.validate_scope(namespace)?;
+        engine.effect_authority(plan)
+    }
+
+    pub(crate) fn openldap_finalize(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        plan: &openldap::EffectPlan,
+    ) -> Result<EngineResponse> {
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::OpenLdap(engine) = &mut state.backend else {
+            return Err(error(503, "OpenLDAP mount changed after provider entry"));
+        };
+        engine.finalize(plan)
+    }
+
+    pub(crate) fn openldap_reconcile_candidates(
+        &self,
+        now: u64,
+        live: &BTreeSet<(String, crate::auth::LeaseOwner)>,
+    ) -> Vec<(String, String, String, bool)> {
+        let mut candidates = Vec::new();
+        for (namespace, state) in &self.namespaces {
+            for (mount, value) in &state.mounts {
+                if let Backend::OpenLdap(engine) = &value.backend {
+                    let owners = engine
+                        .lease_owners()
+                        .filter(|owner| live.contains(&(namespace.clone(), (*owner).to_owned())))
+                        .cloned()
+                        .collect();
+                    candidates.extend(
+                        engine
+                            .reconcile_candidates(now, &owners)
+                            .into_iter()
+                            .map(|(id, revoke)| (namespace.clone(), mount.clone(), id, revoke)),
+                    );
+                }
+            }
+        }
+        candidates
+    }
+
+    pub(crate) fn openldap_prepare_effect(
+        &mut self,
+        namespace: &str,
+        mount: &str,
+        lease_id: &str,
+        now: u64,
+        force_revoke: bool,
+    ) -> Result<openldap::EffectPlan> {
+        let state = self
+            .namespaces
+            .get_mut(namespace)
+            .and_then(|namespace| namespace.mounts.get_mut(mount))
+            .ok_or_else(not_found)?;
+        let Backend::OpenLdap(engine) = &mut state.backend else {
+            return Err(error(503, "OpenLDAP mount changed before reconciliation"));
+        };
+        engine.prepare_effect(namespace, mount, lease_id, now, force_revoke)
+    }
+
+    pub(crate) fn has_metadata_cas_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| match &mount.backend {
+                Backend::Kv2(engine) => engine.has_metadata_cas_state(),
+                Backend::Kv2Native(view) => view.has_metadata_cas_state(),
+                _ => false,
+            })
+        })
+    }
+
+    pub(crate) fn validate_openldap_state(&self) -> Result<()> {
+        for namespace in self.namespaces.values() {
+            for mount in namespace.mounts.values() {
+                if let Backend::OpenLdap(engine) = &mount.backend {
+                    engine.validate()?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    /// Select the longest registered mount across every backend in this namespace.
+    /// Ordinary nested mounts block parent PKI/KV/Transit query interpretation.
+    pub(crate) fn query_owner(&self, namespace: &str, path: &str) -> Option<MountQueryOwner> {
+        let (name, mount) = self
+            .namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(name, _)| path.starts_with(name.as_str()))
+            .max_by_key(|(name, _)| name.len())?;
+        Some(MountQueryOwner {
+            path: name.clone(),
+            incarnation: mount.incarnation,
+            kind: QueryKind::from_backend(&mount.backend),
+        })
+    }
+
+    /// Enumeration of a bare mount is exact, never a longest-prefix fallback.
+    pub(crate) fn exact_kv_root_owner(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<MountQueryOwner> {
+        if path.ends_with('/') {
+            return None;
+        }
+        let name = format!("{path}/");
+        let mount = self.namespaces.get(namespace)?.mounts.get(&name)?;
+        let kind = QueryKind::from_backend(&mount.backend);
+        (kind == QueryKind::Kv).then(|| MountQueryOwner {
+            path: name,
+            incarnation: mount.incarnation,
+            kind,
+        })
+    }
+
+    /// Normalize only an exact, registered KV mount root for enumeration.
+    /// Other handlers have their own route syntax; do not append separators
+    /// globally or infer mounts from a first path component.
+    pub(crate) fn canonical_kv_enumeration_root(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+    ) -> Option<String> {
+        self.exact_kv_root_owner(namespace, path)?
+            .kv_root(method, path)
+    }
+
+    pub(crate) fn is_immutable_kv_read(&self, namespace: &str, method: &str, path: &str) -> bool {
+        if !matches!(method, "GET" | "LIST" | "SCAN") {
+            return false;
+        }
+        self.namespaces
+            .get(namespace)
+            .and_then(|state| {
+                state
+                    .mounts
+                    .iter()
+                    .find(|(mount, _)| path.starts_with(mount.as_str()))
+            })
+            .is_some_and(|(_, mount)| {
+                matches!(
+                    mount.backend,
+                    Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_) | Backend::Kv2Native(_)
+                )
+            })
+    }
+
+    fn public_pki_mount<'a, 'b>(
+        &'a self,
+        namespace: &str,
+        path: &'b str,
+    ) -> Option<(&'a pki::Pki, &'b str)> {
+        if path.contains('?') || path.starts_with('/') {
+            return None;
+        }
+        let state = self.namespaces.get(namespace)?;
+        let (mount_path, mount) = state
+            .mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .max_by_key(|(mount, _)| mount.len())?;
+        let Backend::Pki(engine) = &mount.backend else {
+            return None;
+        };
+        Some((engine, &path[mount_path.len()..]))
+    }
+
+    /// Capture classification follows the longest actual PKI owner and its
+    /// closed route enum, never an untrusted reply key or request media header.
+    pub(crate) fn wrapping_uses_raw_pki_transport(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+    ) -> bool {
+        self.public_pki_mount(namespace, path)
+            .is_some_and(|(pki, relative)| pki.wrapping_uses_raw_public_transport(method, relative))
+    }
+    /// Only the actual longest PKI mount can construct this sealed producer proof.
+    pub(crate) fn wrapping_raw_pki_reply(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        status: u16,
+        body: &Value,
+    ) -> Option<PkiWrappedTransport> {
+        let (pki, relative) = self.public_pki_mount(namespace, path)?;
+        pki.wrapping_public_transport(method, relative, status, body)
+    }
+
+    pub(crate) fn is_actual_pki_ocsp(&self, namespace: &str, path: &str) -> bool {
+        self.query_owner(namespace, path)
+            .is_some_and(|owner| owner.is_ocsp(path))
+    }
+
+    /// Bind a delivery to the longest actual KV mount and its durable path
+    /// incarnation and configuration revision. Disable/recreate or a KV
+    /// version upgrade cannot deliver a response under an earlier binding.
+    pub(crate) fn ordinary_kv_mount_binding(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<(&str, u64, u64)> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .max_by_key(|(mount, _)| mount.len())
+            .and_then(|(path, mount)| {
+                matches!(
+                    mount.backend,
+                    Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_) | Backend::Kv2Native(_)
+                )
+                .then_some((path.as_str(), mount.incarnation, mount.revision))
+            })
+    }
+
+    #[cfg(feature = "native-v6-storage")]
+    pub(crate) fn native_cg_kv2_scoped_data_binding(
+        &self,
+        namespace: &str,
+        path: &str,
+    ) -> Option<(&str, u64, u64)> {
+        self.namespaces
+            .get(namespace)?
+            .mounts
+            .iter()
+            .filter(|(mount, _)| path.starts_with(mount.as_str()))
+            .max_by_key(|(mount, _)| mount.len())
+            .and_then(|(path_prefix, mount)| {
+                let relative = path
+                    .strip_prefix(path_prefix.as_str())?
+                    .strip_prefix("data/")?;
+                (!relative.is_empty()
+                    && !relative.contains('?')
+                    && matches!(mount.backend, Backend::Kv2(_) | Backend::Kv2Native(_)))
+                .then_some((path_prefix.as_str(), mount.incarnation, mount.revision))
+            })
+    }
+
+    pub(crate) fn is_actual_pki_ocsp_path(&self, namespace: &str, path: &str) -> bool {
+        self.query_owner(namespace, path)
+            .is_some_and(|owner| owner.is_pki_path(path))
+    }
+
+    pub(crate) fn is_public_pki_read(&self, namespace: &str, method: &str, path: &str) -> bool {
+        self.public_pki_mount(namespace, path)
+            .is_some_and(|(engine, relative)| engine.public_read_route(method, relative).is_some())
+    }
+
+    /// This receiver cannot allocate a namespace or mutate a PKI mount. Only
+    /// closed public projections can reach it, including the existing cache
+    /// expiry and revoked-owner fences; it never enters a remote effect.
+    pub(crate) fn handle_public_pki_read(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<Option<EngineResponse>> {
+        let Some((engine, relative)) = self.public_pki_mount(namespace, path) else {
+            return Ok(None);
+        };
+        let Some(route) = engine.public_read_route(method, relative) else {
+            return Ok(None);
+        };
+        let params = SecretJson(if body.is_null() {
+            json!({})
+        } else {
+            body.clone()
+        });
+        engine
+            .handle_public_read(route, &params, now.max(self.lease_clock))
+            .map(Some)
+    }
+
+    /// Classify an actual admitted KV1 value read, including the record owner.
+    /// Route text or a user data field alone cannot select a secret lease.
+    pub(crate) fn is_kv1_value_read(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+    ) -> bool {
+        kv_request_method(method, body) == "GET"
+            && self.namespaces.get(namespace).is_some_and(|state| {
+                state
+                    .mounts
+                    .iter()
+                    .find(|(mount, _)| path.starts_with(mount.as_str()))
+                    .is_some_and(|(_, mount)| {
+                        matches!(mount.backend, Backend::Kv1(_) | Backend::Kv1Records)
+                    })
+            })
+    }
+
+    /// Requires live Service authorization. The immutable receiver makes this
+    /// path unable to allocate a namespace, consume a token or modify an engine.
+    pub(crate) fn handle_immutable_kv_read(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<EngineResponse> {
+        let at = crate::auth::Timestamp::whole(now)
+            .map_err(|_| error(503, "KV2 accepted request clock is unavailable"))?;
+        self.handle_immutable_kv_read_precise(namespace, method, path, body, at)
+    }
+
+    pub(crate) fn handle_immutable_kv_read_precise(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+        body: &Value,
+        at: crate::auth::Timestamp,
+    ) -> Result<EngineResponse> {
+        let state = self.namespaces.get(namespace).ok_or_else(not_found)?;
+        let (mount_path, mount) = state
+            .mounts
+            .iter()
+            .find(|(mount, _)| path.starts_with(mount.as_str()))
+            .ok_or_else(not_found)?;
+        let params = SecretJson(if body.is_null() {
+            json!({})
+        } else {
+            body.clone()
+        });
+        if !params.is_object() {
+            return Err(bad("request body must be an object"));
+        }
+        let method = kv_request_method(method, &params);
+        let relative = &path[mount_path.len()..];
+        match &mount.backend {
+            Backend::Kv1(entries) => kv::read_v1(entries, method, relative, &params),
+            Backend::Kv1Records => {
+                self.read_record_kv1(namespace, mount_path, mount.incarnation, method, relative)
+            }
+            Backend::Kv2(engine) if at.duration_since_epoch().subsec_nanos() == 0 => {
+                engine.handle_read(method, relative, &params, at.seconds())
+            }
+            Backend::Kv2(engine) => engine.handle_read_precise(method, relative, &params, at),
+            Backend::Kv2Native(view) => view.read(method, relative, &params, at),
+            _ => Err(unsupported()),
+        }
+    }
+
+    /// Atomically relocate one registered secret-engine mount inside the
+    /// caller's namespace. The backend moves as one value, so old route lookup
+    /// cannot observe it after publication. A revision CAS fences stale
+    /// operators and path-incarnation tombstones prevent disable/recreate ABA.
+    /// Only local native backends can enter the bounded asynchronous task.
+    pub(crate) fn remount_source_absent(&self, namespace: &str, mount: &str) -> bool {
+        self.namespaces
+            .get(namespace)
+            .is_none_or(|state| !state.mounts.contains_key(mount))
+    }
+    pub(crate) fn native_remount_owner(
+        &self,
+        namespace: &str,
+        from: &str,
+        to: &str,
+    ) -> Result<Option<NativeRemountOwner>> {
+        let from = format!("{}/", canonical_secret_mount(from)?);
+        let to = format!("{}/", canonical_secret_mount(to)?);
+        let Some(state) = self.namespaces.get(namespace) else {
+            return Ok(None);
+        };
+        if state.sdk_owners.contains_key(&from) {
+            return Ok(None);
+        }
+        let Some(mount) = state.mounts.get(&from) else {
+            return Ok(None);
+        };
+        let kind = match &mount.backend {
+            Backend::Kv1(_) | Backend::Kv1Records => "kv1",
+            Backend::Kv2(_) => "kv2",
+            Backend::Kv2Native(_) => "kv2-native",
+            Backend::Transit(_) => "transit",
+            Backend::Pki(_) => "pki",
+            Backend::Ssh(_) => "ssh",
+            Backend::Totp(_) => "totp",
+            _ => return Ok(None),
+        };
+        let pending_cleanup = match &mount.backend {
+            Backend::Pki(engine) => engine.has_live_leases(self.lease_clock),
+            Backend::Ssh(engine) => !engine.leases.is_empty(),
+            _ => false,
+        };
+        if pending_cleanup {
+            return Err(error(
+                409,
+                "native remount source requires completed dynamic cleanup owners",
+            ));
+        }
+        Ok(Some(NativeRemountOwner {
+            revision: mount.revision,
+            incarnation: mount.incarnation,
+            kind,
+            description: mount.description.clone(),
+            destination_epoch: state.mount_epochs.get(&to).copied(),
+        }))
+    }
+
+    pub(crate) fn remount_native_accepted(
+        &mut self,
+        namespace: &str,
+        from: &str,
+        to: &str,
+        cas_revision: Option<u64>,
+        owner: &NativeRemountOwner,
+    ) -> Result<EngineResponse> {
+        // This internal entry consumes the task's exact native source owner.
+        // SDK/provider moves keep the existing callback fence in remount().
+        if self.native_remount_owner(namespace, from, to)?.as_ref() != Some(owner) {
+            return Err(error(503, "native remount original source owner changed"));
+        }
+        self.remount_inner(namespace, from, to, cas_revision, true)
+    }
+
+    pub(crate) fn remount(
+        &mut self,
+        namespace: &str,
+        from: &str,
+        to: &str,
+        cas_revision: Option<u64>,
+    ) -> Result<EngineResponse> {
+        self.remount_inner(namespace, from, to, cas_revision, false)
+    }
+
+    fn remount_inner(
+        &mut self,
+        namespace: &str,
+        from: &str,
+        to: &str,
+        cas_revision: Option<u64>,
+        native_accepted: bool,
+    ) -> Result<EngineResponse> {
+        let from = canonical_secret_mount(from)?;
+        let to = canonical_secret_mount(to)?;
+        if from == to {
+            return Err(bad("remount source and destination must differ"));
+        }
+        if !native_accepted && self.has_live_leases() {
+            return Err(error(
+                409,
+                "secret-engine remount is fenced while dynamic leases are live",
+            ));
+        }
+        let mut candidate = self.namespaces.get(namespace).cloned().unwrap_or_default();
+        let from_name = format!("{from}/");
+        let to_name = format!("{to}/");
+        let current = candidate
+            .mounts
+            .get(&from_name)
+            .cloned()
+            .ok_or_else(not_found)?;
+        // An ordinary catalog move cannot rebind a keyed native graph. Only
+        // the checked source reader and affine staged-object entry below may
+        // install its freshly addressed destination view.
+        if matches!(current.backend, Backend::Kv2Native(_)) {
+            return Err(error(
+                503,
+                "native KV2 remount requires checked graph custody",
+            ));
+        }
+        require_mount_revision(cas_revision, current.revision)?;
+        let sdk_owner = candidate.sdk_owners.get(&from_name).cloned();
+        if sdk_owner.is_some() {
+            self.validate_sdk_state()?;
+        }
+        if candidate.mounts.keys().any(|existing| {
+            existing != &from_name
+                && (existing.starts_with(&to_name) || to_name.starts_with(existing))
+        }) {
+            return Err(bad("remount destination conflicts with an existing mount"));
+        }
+        let mut moved = candidate.mounts.remove(&from_name).ok_or_else(not_found)?;
+        moved.revision = next_mount_revision(moved.revision)?;
+        let destination_floor = candidate
+            .mount_epochs
+            .get(&to_name)
+            .copied()
+            .unwrap_or(moved.incarnation);
+        moved.incarnation = moved.incarnation.max(destination_floor).max(1);
+        let old_next = moved
+            .incarnation
+            .checked_add(1)
+            .ok_or_else(|| error(507, "mount incarnation exhausted"))?;
+        candidate.mount_epochs.insert(from_name, old_next);
+        let revision = moved.revision;
+        let incarnation = moved.incarnation;
+        if matches!(current.backend, Backend::Kv1Records) || sdk_owner.is_some() {
+            self.remount_record_kv1(
+                namespace,
+                &format!("{from}/"),
+                current.incarnation,
+                &to_name,
+                incarnation,
+            )?;
+        }
+        if let Some(mut owner) = sdk_owner {
+            owner.mount_incarnation = incarnation;
+            candidate.sdk_owners.remove(&format!("{from}/"));
+            candidate.sdk_owners.insert(to_name.clone(), owner);
+        }
+        candidate.mounts.insert(to_name, moved);
+        self.namespaces.insert(namespace.into(), candidate);
+        Ok(ok(
+            json!({"from":format!("{from}/"),"to":format!("{to}/"),
+                "revision":revision,"incarnation":incarnation}),
+            true,
+        ))
+    }
+
+    pub(crate) fn has_pki_extension_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Pki(engine) if engine.has_extension_state())
+            })
+        })
+    }
+
+    pub(crate) fn has_database_mount(&self) -> bool {
+        self.namespaces.values().any(|ns| {
+            ns.mounts
+                .values()
+                .any(|m| matches!(m.backend, Backend::Database | Backend::RabbitMq))
+        })
+    }
+
+    pub(crate) fn has_mldsa_state(&self) -> bool {
+        self.namespaces.values().any(|namespace| {
+            namespace.mounts.values().any(|mount| {
+            matches!(&mount.backend, Backend::Transit(engine) if engine.has_mldsa_state())
+        })
+        })
+    }
+
+    pub(crate) fn validate_mldsa_state(&self) -> Result<()> {
+        for namespace in self.namespaces.values() {
+            for mount in namespace.mounts.values() {
+                if let Backend::Transit(engine) = &mount.backend {
+                    engine.validate_mldsa_state()?;
+                }
+            }
+        }
+        Ok(())
+    }
+
+    pub(crate) fn has_auto_rotate_keys(&self) -> bool {
+        self.namespaces.values().any(|state| {
+            state.mounts.values().any(|mount| {
+                matches!(&mount.backend, Backend::Transit(engine) if engine.has_auto_rotate_keys())
+            })
+        })
+    }
+
+    pub(crate) fn maintain_auto_rotation(&mut self, now: u64) -> Result<bool> {
+        let mut changed = false;
+        for state in self.namespaces.values_mut() {
+            for mount in state.mounts.values_mut() {
+                if let Backend::Transit(engine) = &mut mount.backend {
+                    changed |= engine.maintain_auto_rotation(now)?;
+                }
+            }
+        }
+        Ok(changed)
+    }
+
+    pub(crate) fn maintain_auto_rotation_precise(
+        &mut self,
+        at: crate::auth::Timestamp,
+    ) -> Result<bool> {
+        if at.duration_since_epoch().subsec_nanos() == 0 {
+            return self.maintain_auto_rotation(at.seconds());
+        }
+        let mut changed = false;
+        for state in self.namespaces.values_mut() {
+            for mount in state.mounts.values_mut() {
+                if let Backend::Transit(engine) = &mut mount.backend {
+                    changed |= engine.maintain_auto_rotation_precise(at)?;
+                }
+            }
+        }
+        Ok(changed)
+    }
+
+    pub(crate) fn has_mount_listing_visibility_state(&self) -> bool {
+        self.namespaces.values().any(|state| {
+            state
+                .mounts
+                .values()
+                .any(|mount| mount.listing_visibility.is_some())
+        })
+    }
+
+    pub(crate) fn ui_secret_mounts(&self, namespace: &str) -> BTreeMap<String, Value> {
+        let fallback = CowNamespace::default();
+        let state = self.namespaces.get(namespace).unwrap_or(&fallback);
+        let mut mounts: BTreeMap<String, Value> = state
+            .mounts
+            .iter()
+            .map(|(name, mount)| (name.clone(), mount.descriptor()))
+            .collect();
+        let mut cubbyhole = cubbyhole_descriptor();
+        cubbyhole["options"] = Value::Null;
+        mounts.insert("cubbyhole/".into(), cubbyhole);
+        add_virtual_control_mounts(&mut mounts);
+        mounts
+    }
+
     pub fn required_capability(
         &self,
         namespace: &str,
@@ -300,7 +3213,17 @@ impl EngineState {
             .next()
             .unwrap_or(path)
             .trim_start_matches('/');
-        let fallback = NamespaceState::default();
+        if identity::owns(path) || external_keys::owns(path) {
+            return Some(match method {
+                "GET" | "HEAD" => "read",
+                "LIST" => "list",
+                "SCAN" => "scan",
+                "DELETE" => "delete",
+                "PATCH" => "patch",
+                _ => "update",
+            });
+        }
+        let fallback = CowNamespace::default();
         let state = self.namespaces.get(namespace).unwrap_or(&fallback);
         let (mount_path, mount) = state
             .mounts
@@ -310,11 +3233,24 @@ impl EngineState {
         if write_method(method) {
             let exists = match &mount.backend {
                 Backend::Kv1(entries) => Some(entries.contains_key(relative)),
+                Backend::Kv1Records => {
+                    self.record_kv1_exists(namespace, mount_path, mount.incarnation, relative)
+                }
                 Backend::Kv2(engine) => relative.strip_prefix("data/").map(|p| engine.contains(p)),
+                Backend::Kv2Native(view) => {
+                    relative.strip_prefix("data/").map(|p| view.contains(p))
+                }
                 Backend::Totp(engine) => relative
                     .strip_prefix("keys/")
                     .filter(|name| !name.contains('/'))
                     .map(|name| engine.contains(name)),
+                Backend::Database
+                | Backend::RabbitMq
+                | Backend::Kubernetes(_)
+                | Backend::PluginSecret(_)
+                | Backend::OpenLdap(_)
+                | Backend::Pki(_)
+                | Backend::Ssh(_) => None,
                 Backend::Transit(engine) => relative
                     .strip_prefix("encrypt/")
                     .or_else(|| relative.strip_prefix("keys/"))
@@ -327,15 +3263,18 @@ impl EngineState {
         }
         Some(match method {
             "GET" | "HEAD" => "read",
-            "LIST" | "SCAN" => "list",
+            "LIST" => "list",
+            "SCAN" => "scan",
             "DELETE" => "delete",
             "PATCH" => "patch",
             _ => "update",
         })
     }
 
-    /// All successful state changes are atomic even for a direct caller: the
-    /// namespace candidate replaces live state only after complete validation.
+    /// Successful state changes remain atomic for a direct caller, but ordinary
+    /// engine requests clone only their target mount instead of the complete
+    /// namespace. This keeps rollback-by-replacement semantics without making an
+    /// unrelated large KV/PKI/Transit mount part of every request's memory cost.
     pub fn handle(
         &mut self,
         namespace: &str,
@@ -344,6 +3283,85 @@ impl EngineState {
         body: &Value,
         now: u64,
     ) -> Result<Option<EngineResponse>> {
+        self.handle_in_identity_namespace(
+            IdentityNamespace {
+                path: namespace,
+                id: None,
+            },
+            method,
+            path,
+            body,
+            now,
+        )
+    }
+
+    pub(crate) fn handle_in_identity_namespace(
+        &mut self,
+        scope: IdentityNamespace<'_>,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+    ) -> Result<Option<EngineResponse>> {
+        self.handle_in_identity_namespace_with_ssh_display(scope, method, path, body, now, "")
+    }
+
+    pub(crate) fn has_ssh_ca_state(&self) -> bool {
+        self.ssh_ca_format.is_some()
+    }
+    pub(crate) fn validate_ssh_ca_format(&self) -> Result<()> {
+        let present = self.namespaces.values().any(|ns| {
+            ns.mounts.values().any(
+                |mount| matches!(&mount.backend, Backend::Ssh(engine) if engine.has_ca_state()),
+            )
+        });
+        if self.ssh_ca_format.is_some_and(|format| format != 115)
+            || present && self.ssh_ca_format != Some(115)
+        {
+            return Err(bad("invalid SSH CA format custody"));
+        }
+        Ok(())
+    }
+
+    pub(crate) fn handle_in_identity_namespace_with_ssh_display(
+        &mut self,
+        scope: IdentityNamespace<'_>,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+        display_name: &str,
+    ) -> Result<Option<EngineResponse>> {
+        let at = crate::auth::Timestamp::whole(now)
+            .map_err(|_| error(503, "KV2 accepted request clock is unavailable"))?;
+        self.handle_in_identity_namespace_with_ssh_principal_precise(
+            scope,
+            method,
+            path,
+            body,
+            now,
+            display_name,
+            None,
+            at,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) fn handle_in_identity_namespace_with_ssh_principal_precise(
+        &mut self,
+        scope: IdentityNamespace<'_>,
+        method: &str,
+        path: &str,
+        body: &Value,
+        now: u64,
+        display_name: &str,
+        ssh_principal: Option<&crate::auth::Principal>,
+        at: crate::auth::Timestamp,
+    ) -> Result<Option<EngineResponse>> {
+        if at.seconds() < now {
+            return Err(error(503, "KV2 accepted request clock precedes its floor"));
+        }
+        let namespace = scope.path;
         let (path, query) = path.split_once('?').unwrap_or((path, ""));
         let path = path.trim_start_matches('/');
         let mut params = SecretJson(body.clone());
@@ -362,57 +3380,263 @@ impl EngineState {
             }
             map.insert(key.into(), Value::String(value.into()));
         }
-        let method =
-            if method == "GET" && params.get("list").is_some_and(|v| v == "true" || v == true) {
-                "LIST"
-            } else {
-                method
-            };
-        let mut candidate = self.namespaces.get(namespace).cloned().unwrap_or_default();
-        let response = if path == "sys/mounts" || path == "sys/mounts/" {
+        let method = kv_request_method(method, &params);
+
+        if external_keys::owns(path) {
+            let mut candidate = self
+                .namespaces
+                .get(namespace)
+                .map(|state| state.external_keys.clone())
+                .unwrap_or_default();
+            let response = candidate.handle(method, path, &params)?;
+            if response.mutated {
+                self.namespaces
+                    .entry(namespace.into())
+                    .or_default()
+                    .external_keys = candidate;
+            }
+            return Ok(Some(response));
+        }
+
+        if identity::owns(path) {
+            let mut candidate = self
+                .namespaces
+                .get(namespace)
+                .map(|state| state.identity.clone())
+                .unwrap_or_default();
+            candidate.set_uuid_namespace(scope.id)?;
+            let response = identity::handle(&mut candidate, method, path, &params, now)?;
+            candidate.set_uuid_namespace(None)?;
+            if response.mutated {
+                self.namespaces
+                    .entry(namespace.into())
+                    .or_default()
+                    .identity = candidate;
+            }
+            return Ok(Some(response));
+        }
+
+        if path == "sys/mounts" || path == "sys/mounts/" {
             if method != "GET" {
                 return Err(unsupported());
             }
-            ok(
-                Value::Object(
-                    candidate
-                        .mounts
-                        .iter()
-                        .map(|(name, mount)| (name.clone(), mount.descriptor()))
-                        .collect(),
-                ),
-                false,
-            )
-        } else if let Some(mount_path) = path.strip_prefix("sys/mounts/") {
-            handle_mounts(&mut candidate, method, mount_path, &params)?
-        } else {
-            let Some(mount_path) = candidate
+            let fallback = CowNamespace::default();
+            let state = self.namespaces.get(namespace).unwrap_or(&fallback);
+            let mut mounts: BTreeMap<String, Value> = state
                 .mounts
-                .keys()
-                .find(|m| path.starts_with(m.as_str()))
-                .cloned()
-            else {
-                return Ok(None);
-            };
-            let relative = &path[mount_path.len()..];
-            let mount = candidate
-                .mounts
-                .get_mut(&mount_path)
-                .ok_or_else(not_found)?;
-            match &mut mount.backend {
-                Backend::Kv1(entries) => kv::handle_v1(entries, method, relative, &params)?,
-                Backend::Kv2(engine) => engine.handle(method, relative, &params, now)?,
-                Backend::Totp(engine) => engine.handle(method, relative, &params, now)?,
-                Backend::Transit(engine) => {
-                    engine.handle(namespace, &mount_path, method, relative, &params, now)?
+                .iter()
+                .map(|(name, mount)| (name.clone(), mount.descriptor()))
+                .collect();
+            mounts.insert("cubbyhole/".into(), cubbyhole_descriptor());
+            add_virtual_control_mounts(&mut mounts);
+            return Ok(Some(ok(Value::Object(mounts.into_iter().collect()), false)));
+        }
+
+        if let Some(mount_path) = path.strip_prefix("sys/mounts/") {
+            // Registry operations can affect overlap/incarnation state across
+            // mounts, so they deliberately retain namespace-level transactionality.
+            let mut candidate = self.namespaces.get(namespace).cloned().unwrap_or_default();
+            let response = handle_mounts(
+                &mut candidate,
+                method,
+                mount_path,
+                &params,
+                |name, mount| self.upgrade_kv_mount(namespace, name, mount, now),
+            )?;
+            if response.mutated {
+                self.update_record_registry(namespace, &mut candidate)?;
+                if candidate
+                    .mounts
+                    .values()
+                    .any(|mount| mount.backend.kv2_has_lossless_import_state())
+                {
+                    self.kv2_lossless_format = Some(1);
                 }
+                self.namespaces.insert(namespace.into(), candidate);
             }
+            return Ok(Some(response));
+        }
+
+        let fallback = CowNamespace::default();
+        let state = self.namespaces.get(namespace).unwrap_or(&fallback);
+        let Some(mount_path) = state
+            .mounts
+            .keys()
+            .find(|mount| path.starts_with(mount.as_str()))
+            .cloned()
+        else {
+            return Ok(None);
+        };
+        let relative = &path[mount_path.len()..];
+        let mut mount = state
+            .mounts
+            .get(&mount_path)
+            .cloned()
+            .ok_or_else(not_found)?;
+        if matches!(mount.backend, Backend::Kv1Records) {
+            return self
+                .handle_record_kv1(
+                    namespace,
+                    &mount_path,
+                    mount.incarnation,
+                    method,
+                    relative,
+                    &params,
+                )
+                .map(Some);
+        }
+        if let Backend::Transit(engine) = &mount.backend
+            && let Some(reference) =
+                engine.requested_external_reference(method, relative, &params)?
+        {
+            state
+                .external_keys
+                .consumer_plugin(reference, &mount_path)?;
+        }
+        let ssh_identity = match (&mount.backend, ssh_principal) {
+            (Backend::Ssh(engine), Some(principal)) => engine
+                .authenticated_ca_sources(method, relative, &params)?
+                .map(|sources| self.ssh_request_identity(namespace, principal, &sources))
+                .transpose()?,
+            _ => None,
+        };
+        let pki_request = matches!(mount.backend, Backend::Pki(_));
+        let response = match &mut mount.backend {
+            Backend::Database | Backend::RabbitMq => {
+                return Err(error(
+                    501,
+                    "external credential operations require the audited external-effect dispatcher",
+                ));
+            }
+            Backend::Kubernetes(_) => {
+                return Err(error(
+                    501,
+                    "Kubernetes operations require the audited external-effect dispatcher",
+                ));
+            }
+            Backend::PluginSecret(_) => {
+                return Err(error(
+                    501,
+                    "plugin operations require the audited external-effect dispatcher",
+                ));
+            }
+            Backend::OpenLdap(_) => {
+                return Err(error(
+                    501,
+                    "OpenLDAP operations require the audited external-effect dispatcher",
+                ));
+            }
+            Backend::Kv1(entries) => kv::handle_v1(entries, method, relative, &params)?,
+            Backend::Kv1Records => return Err(error(503, "KV1 record dispatcher mismatch")),
+            Backend::Kv2(engine) if at.duration_since_epoch().subsec_nanos() == 0 => {
+                engine.handle(method, relative, &params, at.seconds())?
+            }
+            Backend::Kv2(engine) => engine.handle_precise(method, relative, &params, at)?,
+            Backend::Kv2Native(view) => view.mutate(method, relative, &params, at)?,
+            Backend::Totp(engine) => engine.handle(method, relative, &params, now)?,
+            Backend::Transit(engine) if at.duration_since_epoch().subsec_nanos() == 0 => {
+                engine.handle(namespace, &mount_path, method, relative, &params, now)?
+            }
+            Backend::Transit(engine) => {
+                engine.handle_precise(namespace, &mount_path, method, relative, &params, at)?
+            }
+            Backend::Pki(engine) => {
+                engine.handle_admin(method, relative, &params, now.max(self.lease_clock))?
+            }
+            Backend::Ssh(engine) => match &ssh_identity {
+                Some(identity) => engine.handle_role_authenticated(
+                    method,
+                    relative,
+                    &params,
+                    now,
+                    display_name,
+                    identity,
+                )?,
+                None => engine.handle_role(method, relative, &params, now, display_name)?,
+            },
         };
         if response.mutated {
-            self.namespaces.insert(namespace.into(), candidate);
+            if matches!(&mount.backend, Backend::Transit(engine) if engine.has_policy_cache_state())
+            {
+                self.transit_cache_format = Some(1);
+            }
+            if mount.backend.kv2_has_lossless_import_state() {
+                self.kv2_lossless_format = Some(1);
+            }
+            if matches!(&mount.backend, Backend::Ssh(engine) if engine.has_ca_state()) {
+                self.ssh_ca_format = Some(115);
+            }
+            if pki_request {
+                self.lease_clock = self.lease_clock.max(now);
+            }
+            self.namespaces
+                .entry(namespace.into())
+                .or_default()
+                .mounts
+                .insert(mount_path, mount);
         }
         Ok(Some(response))
     }
+}
+
+fn add_virtual_control_mounts(mounts: &mut BTreeMap<String, Value>) {
+    for (path, kind, description) in [
+        (
+            "sys/",
+            "system",
+            "system endpoints used for control, policy and debugging",
+        ),
+        ("identity/", "identity", "identity store"),
+    ] {
+        mounts.insert(
+            path.into(),
+            json!({"type":kind,"description":description,
+        "options":Value::Null,"local":false,"seal_wrap":false,"external_entropy_access":false,
+        "config":{"default_lease_ttl":0,"max_lease_ttl":0,"force_no_cache":false}}),
+        );
+    }
+}
+
+fn cubbyhole_descriptor() -> Value {
+    json!({"type":"cubbyhole","description":"per-token private secret storage",
+        "options":{},"local":true,"seal_wrap":false,"external_entropy_access":false,
+        "config":{"default_lease_ttl":0,"max_lease_ttl":0,"force_no_cache":false}})
+}
+
+fn canonical_secret_mount(value: &str) -> Result<String> {
+    let value = value.trim_end_matches('/');
+    valid_path(value)?;
+    if matches!(
+        value.split('/').next(),
+        Some("sys" | "auth" | "identity" | "cubbyhole")
+    ) {
+        return Err(bad("reserved mount path"));
+    }
+    Ok(value.to_owned())
+}
+
+fn require_mount_revision(expected: Option<u64>, current: u64) -> Result<()> {
+    if expected.is_some_and(|value| value != current) {
+        return Err(error(409, "stale mount revision; no state was changed"));
+    }
+    Ok(())
+}
+
+fn require_absent_mount_revision(expected: Option<u64>) -> Result<()> {
+    if expected.is_some_and(|value| value != 0) {
+        return Err(error(
+            409,
+            "mount is absent; cas_revision must be zero for creation",
+        ));
+    }
+    Ok(())
+}
+
+fn next_mount_revision(current: u64) -> Result<u64> {
+    current
+        .max(1)
+        .checked_add(1)
+        .ok_or_else(|| error(507, "mount revision exhausted"))
 }
 
 fn handle_mounts(
@@ -420,54 +3644,139 @@ fn handle_mounts(
     method: &str,
     requested: &str,
     body: &Value,
+    upgrade: impl Fn(&str, &MountState) -> Result<kv::Kv2>,
 ) -> Result<EngineResponse> {
     let requested = requested.trim_end_matches('/');
     if let Some(mount_path) = requested.strip_suffix("/tune") {
-        let mount = state
-            .mounts
-            .get_mut(&format!("{mount_path}/"))
-            .ok_or_else(not_found)?;
+        let name = format!("{mount_path}/");
+        let mount = state.mounts.get_mut(&name).ok_or_else(not_found)?;
         if method == "GET" {
-            return Ok(ok(
-                json!({"description":mount.description,"options":mount.descriptor()["options"],"default_lease_ttl":0,"max_lease_ttl":0}),
-                false,
-            ));
+            let mut data = json!({"description":mount.description,"options":mount.descriptor()["options"],
+                    "default_lease_ttl":mount.descriptor()["config"]["default_lease_ttl"],
+                    "max_lease_ttl":mount.descriptor()["config"]["max_lease_ttl"],
+                    "revision":mount.revision,"incarnation":mount.incarnation});
+            data["force_no_cache"] = mount.descriptor()["config"]["force_no_cache"].clone();
+            if let Some(visibility) = mount.listing_visibility {
+                data["listing_visibility"] = json!(visibility.name());
+            }
+            return Ok(ok(data, false));
         }
         if !write_method(method) {
             return Err(unsupported());
         }
-        reject_unknown(body, &["description", "options"])?;
-        if let Some(description) = body.get("description") {
+        let visibility = body
+            .get("listing_visibility")
+            .map(crate::mount_listing_visibility::ListingVisibility::parse)
+            .transpose()
+            .map_err(bad)?;
+        let mut sanitized_body = body.clone();
+        sanitized_body
+            .as_object_mut()
+            .ok_or_else(|| bad("request body must be an object"))?
+            .remove("listing_visibility");
+        let body = &sanitized_body;
+        let expected = optional_u64(body, "cas_revision")?;
+        require_mount_revision(expected, mount.revision)?;
+        let before = mount.encode_tune_state()?;
+        let mut converted = false;
+        let mut tune = body.clone();
+        tune.as_object_mut()
+            .ok_or_else(|| bad("request body must be an object"))?
+            .remove("cas_revision");
+        if let Backend::Ssh(engine) = &mut mount.backend {
+            reject_unknown(
+                body,
+                &[
+                    "description",
+                    "default_lease_ttl",
+                    "max_lease_ttl",
+                    "cas_revision",
+                ],
+            )?;
+            engine.tune(&tune)?;
+        } else if let Backend::Pki(engine) = &mut mount.backend {
+            reject_unknown(
+                body,
+                &[
+                    "description",
+                    "default_lease_ttl",
+                    "max_lease_ttl",
+                    "cas_revision",
+                    "allowed_response_headers",
+                ],
+            )?;
+            engine.tune(&tune)?;
+        } else if matches!(
+            mount.backend,
+            Backend::Kv1(_) | Backend::Kv1Records | Backend::Kv2(_) | Backend::Kv2Native(_)
+        ) {
+            reject_unknown(
+                body,
+                &[
+                    "description",
+                    "options",
+                    "cas_revision",
+                    "default_lease_ttl",
+                    "max_lease_ttl",
+                    "force_no_cache",
+                ],
+            )?;
+            mount.kv_configuration =
+                kv_mount_config::Configuration::tune(mount.kv_configuration.as_ref(), body)?;
+        } else {
+            reject_unknown(body, &["description", "options", "cas_revision"])?;
+        }
+        if let Some(description) = tune.get("description") {
             mount.description = description
                 .as_str()
                 .ok_or_else(|| bad("description must be a string"))?
                 .into();
         }
-        if let Some(options) = body.get("options") {
+        if let Some(options) = tune.get("options") {
             reject_unknown(options, &["version"])?;
             let version = options
                 .get("version")
                 .and_then(Value::as_str)
                 .ok_or_else(|| bad("KV version must be a string"))?;
             match (&mount.backend, version) {
-                (Backend::Kv1(_), "1") | (Backend::Kv2(_), "2") => {}
-                _ => {
-                    return Err(error(
-                        501,
-                        "online KV format conversion is not implemented; migrate through explicit API export/import",
-                    ));
+                (Backend::Kv1(_) | Backend::Kv1Records, "1")
+                | (Backend::Kv2(_) | Backend::Kv2Native(_), "2") => {}
+                (Backend::Kv1(_) | Backend::Kv1Records, "2") => {
+                    mount.backend = Backend::Kv2(upgrade(&name, mount)?);
+                    converted = true;
                 }
+                (Backend::Kv2(_) | Backend::Kv2Native(_), "1") => {
+                    return Err(bad("KV version cannot be downgraded"));
+                }
+                _ => return Err(bad("KV version must be 1 or 2 on a KV mount")),
             }
         }
-        return Ok(empty(true));
+        if let Some(visibility) = visibility {
+            mount.listing_visibility = visibility;
+        }
+        let after = mount.encode_tune_state()?;
+        if before == after {
+            return Ok(empty(false));
+        }
+        mount.revision = next_mount_revision(mount.revision)?;
+        return Ok(if converted {
+            EngineResponse {
+                status: 200,
+                body: json!({"request_id":"", "lease_id":"", "renewable":false, "lease_duration":0,
+                    "data":null, "wrap_info":null, "warnings":["KV v1 data was upgraded to KV v2."], "auth":null}),
+                mutated: true,
+            }
+        } else {
+            empty(true)
+        });
     }
-    valid_path(requested)?;
-    if matches!(
-        requested.split('/').next(),
-        Some("sys" | "auth" | "identity" | "cubbyhole")
-    ) {
+    if requested == "cubbyhole" {
+        if method == "GET" {
+            return Ok(ok(cubbyhole_descriptor(), false));
+        }
         return Err(bad("reserved mount path"));
     }
+    let requested = canonical_secret_mount(requested)?;
     let name = format!("{requested}/");
     if method == "GET" {
         return state
@@ -477,11 +3786,51 @@ fn handle_mounts(
             .ok_or_else(not_found);
     }
     if method == "DELETE" {
-        return Ok(empty(state.mounts.remove(&name).is_some()));
+        reject_unknown(body, &["cas_revision"])?;
+        let Some(current) = state.mounts.get(&name) else {
+            return Ok(empty(false));
+        };
+        require_mount_revision(optional_u64(body, "cas_revision")?, current.revision)?;
+        if matches!(&current.backend, Backend::Kubernetes(engine) if engine.has_unresolved()) {
+            return Err(error(
+                409,
+                "Kubernetes mount is fenced while token intents or leases exist",
+            ));
+        }
+        if matches!(&current.backend, Backend::OpenLdap(engine) if engine.has_unresolved()) {
+            return Err(error(
+                409,
+                "OpenLDAP mount is fenced while credential intents or leases exist",
+            ));
+        }
+        let incarnation = current.incarnation.max(1);
+        state.mounts.remove(&name);
+        state.mount_epochs.insert(
+            name,
+            incarnation
+                .checked_add(1)
+                .ok_or_else(|| error(507, "mount incarnation exhausted"))?,
+        );
+        return Ok(empty(true));
     }
     if !write_method(method) {
         return Err(unsupported());
     }
+    let listing_visibility = body
+        .get("config")
+        .and_then(|config| config.get("listing_visibility"))
+        .map(crate::mount_listing_visibility::ListingVisibility::parse)
+        .transpose()
+        .map_err(bad)?
+        .flatten();
+    let mut sanitized_body = body.clone();
+    if let Some(config) = sanitized_body
+        .get_mut("config")
+        .and_then(Value::as_object_mut)
+    {
+        config.remove("listing_visibility");
+    }
+    let body = &sanitized_body;
     reject_unknown(
         body,
         &[
@@ -492,8 +3841,10 @@ fn handle_mounts(
             "local",
             "seal_wrap",
             "external_entropy_access",
+            "cas_revision",
         ],
     )?;
+    require_absent_mount_revision(optional_u64(body, "cas_revision")?)?;
     if state
         .mounts
         .keys()
@@ -506,10 +3857,26 @@ fn handle_mounts(
             return Err(error(501, "requested mount option is not implemented"));
         }
     }
-    if body
-        .get("config")
-        .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
-    {
+    let mount_kind = body.get("type").and_then(Value::as_str);
+    if !matches!(
+        mount_kind,
+        Some("ssh" | "pki" | "plugin" | "kv" | "kv-v1" | "kv-v2")
+    ) && body.get("config").is_some_and(|value| {
+        value.as_object().is_none_or(|config| {
+            !config.is_empty()
+                && !(matches!(
+                    mount_kind,
+                    Some("kv" | "kv-v1" | "kv-v2" | "transit" | "totp")
+                ) && config.iter().all(|(key, value)| match key.as_str() {
+                    // These exact defaults are serialized by the official
+                    // Go MountInput without requesting lease/cache changes.
+                    "options" => value.is_null(),
+                    "default_lease_ttl" | "max_lease_ttl" => value.as_str() == Some(""),
+                    "force_no_cache" => value.as_bool() == Some(false),
+                    _ => false,
+                }))
+        })
+    }) {
         return Err(error(
             501,
             "nondefault mount lease configuration is not implemented",
@@ -534,6 +3901,63 @@ fn handle_mounts(
                 _ => return Err(bad("KV version must be 1 or 2")),
             }
         }
+        "database" | "rabbitmq" => {
+            if body
+                .get("options")
+                .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
+            {
+                return Err(bad("external credential mount options are not supported"));
+            }
+            if kind == "rabbitmq" {
+                Backend::RabbitMq
+            } else {
+                Backend::Database
+            }
+        }
+        "ldap" => {
+            if body
+                .get("options")
+                .is_some_and(|value| value.as_object().is_none_or(|map| !map.is_empty()))
+                || body
+                    .get("config")
+                    .is_some_and(|value| value.as_object().is_none_or(|map| !map.is_empty()))
+            {
+                return Err(bad(
+                    "OpenLDAP mount options are configured through the engine config endpoint",
+                ));
+            }
+            Backend::OpenLdap(openldap::OpenLdap::default())
+        }
+        "kubernetes" => {
+            if body
+                .get("options")
+                .is_some_and(|value| value.as_object().is_none_or(|map| !map.is_empty()))
+                || body
+                    .get("config")
+                    .is_some_and(|value| value.as_object().is_none_or(|map| !map.is_empty()))
+            {
+                return Err(bad(
+                    "Kubernetes mount options are configured through the engine config endpoint",
+                ));
+            }
+            Backend::Kubernetes(kubernetes::Kubernetes::default())
+        }
+        "plugin" => {
+            if body
+                .get("options")
+                .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
+            {
+                return Err(bad("plugin mount options are not supported"));
+            }
+            let config = body
+                .get("config")
+                .ok_or_else(|| bad("plugin mount requires config.plugin_id"))?;
+            reject_unknown(config, &["plugin_id"])?;
+            let plugin_id = string(config, "plugin_id")?;
+            heptabao_domain::Id::parse(plugin_id.to_owned())
+                .map_err(|_| bad("invalid plugin identifier"))?;
+            Backend::PluginSecret(plugin_id.to_owned())
+        }
         "transit" => {
             if body
                 .get("options")
@@ -552,6 +3976,34 @@ fn handle_mounts(
             }
             Backend::Totp(totp::Totp::default())
         }
+        "pki" => {
+            if body
+                .get("options")
+                .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
+            {
+                return Err(bad("PKI mount options are not supported"));
+            }
+            let mut engine = pki::Pki::default();
+            if let Some(config) = body.get("config") {
+                reject_unknown(config, &["default_lease_ttl", "max_lease_ttl"])?;
+                engine.tune(config)?;
+            }
+            Backend::Pki(Box::new(engine))
+        }
+        "ssh" => {
+            if body
+                .get("options")
+                .is_some_and(|v| v.as_object().is_none_or(|m| !m.is_empty()))
+            {
+                return Err(bad("SSH mount options are not supported"));
+            }
+            let mut engine = ssh::SshOtp::default();
+            if let Some(config) = body.get("config") {
+                reject_unknown(config, &["default_lease_ttl", "max_lease_ttl"])?;
+                engine.tune(config)?;
+            }
+            Backend::Ssh(engine)
+        }
         _ => return Err(error(501, "secret engine type is not implemented")),
     };
     let description = body
@@ -562,12 +4014,18 @@ fn handle_mounts(
         })
         .transpose()?
         .unwrap_or("");
-    state.mounts.insert(name, Mount::new(backend, description));
+    let incarnation = state.mount_epochs.get(&name).copied().unwrap_or(1).max(1);
+    let mut mount = Mount::with_incarnation(backend, description, incarnation);
+    if matches!(mount.backend, Backend::Kv1(_) | Backend::Kv2(_)) {
+        mount.kv_configuration = kv_mount_config::Configuration::enable(body.get("config"))?;
+    }
+    mount.listing_visibility = listing_visibility;
+    state.mounts.insert(name, mount);
     Ok(empty(true))
 }
 
 /// RFC 3339 UTC, second resolution, for persisted Unix timestamps.
-fn timestamp(seconds: u64) -> String {
+pub(crate) fn timestamp(seconds: u64) -> String {
     let seconds = seconds.min(253402300799); // last second of year 9999
     let days = (seconds / 86400) as i64;
     let z = days + 719468;
@@ -627,3 +4085,130 @@ fn duration_seconds(value: &Value) -> Result<u64> {
 #[cfg(test)]
 #[path = "engine_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "engine_cow_tests.rs"]
+mod cow_tests;
+
+fn listing(keys: Vec<String>) -> Result<EngineResponse> {
+    if keys.is_empty() {
+        Err(not_found())
+    } else {
+        Ok(ok(json!({"keys":keys}), false))
+    }
+}
+
+#[cfg(test)]
+#[path = "engine_batch_lease_tests.rs"]
+mod batch_lease_tests;
+
+impl EngineState {
+    /// Inline JSON owners and this candidate's actual KV1 record writes.
+    /// Opaque records not loaded into this owner are not scanned or claimed.
+    #[cfg(test)]
+    pub(crate) fn has_lossless_json_state(&self) -> bool {
+        self.records
+            .as_ref()
+            .is_some_and(|runtime| runtime.observed_lossless_json)
+            || self
+                .sdk_retired_logical
+                .as_ref()
+                .is_some_and(|history| history.has_lossless_json_state())
+            || self.namespaces.values().any(|namespace| {
+                namespace
+                    .sdk_leases
+                    .values()
+                    .any(sdk_lease::Lease::has_lossless_json_state)
+                    || namespace.mounts.values().any(|mount| match &mount.backend {
+                        Backend::Kv1(entries) => entries.values().any(|data| {
+                            heptabao_domain::json::requires_lossless_format(data.expose())
+                        }),
+                        Backend::Kv2(engine) => engine.has_lossless_json_state(),
+                        Backend::Kv2Native(view) => view.has_lossless_json_state(),
+                        _ => false,
+                    })
+            })
+    }
+
+    pub(crate) fn has_non_kv2_lossless_json_state(&self) -> bool {
+        self.records
+            .as_ref()
+            .is_some_and(|runtime| runtime.observed_lossless_json)
+            || self
+                .sdk_retired_logical
+                .as_ref()
+                .is_some_and(|history| history.has_lossless_json_state())
+            || self.namespaces.values().any(|namespace| {
+                namespace
+                    .sdk_leases
+                    .values()
+                    .any(sdk_lease::Lease::has_lossless_json_state)
+                    || namespace.mounts.values().any(|mount| match &mount.backend {
+                        Backend::Kv1(entries) => entries.values().any(|data| {
+                            heptabao_domain::json::requires_lossless_format(data.expose())
+                        }),
+                        Backend::Kv2(_) => false,
+                        _ => false,
+                    })
+            })
+    }
+}
+
+#[cfg(test)]
+#[path = "engine_lossless_json_tests.rs"]
+mod lossless_json_tests;
+
+#[cfg(feature = "native-v6-storage")]
+#[path = "engine_native_paged_dispatch.rs"]
+mod native_paged_dispatch;
+
+#[cfg(feature = "native-v6-storage")]
+impl EngineState {
+    /// Select only an absent ordinary mount in the requested namespace.
+    /// Its closed Service owner must separately retain a real namespace scope.
+    /// Every backend in the actual catalog counts, including backends that have
+    /// no native owner. A known mount or its routing ancestry is never admitted
+    /// by this predicate; system/auth/Identity/cubbyhole keep their own owners.
+    pub(crate) fn native_missing_mount_read(
+        &self,
+        namespace: &str,
+        method: &str,
+        path: &str,
+    ) -> bool {
+        let base = path.trim_end_matches('/');
+        // Match the original Service ingress path contract, not the smaller
+        // mount-name limit. An absent but valid long resource path is still an
+        // original dispatcher 404; malformed paths never select this owner.
+        let canonical = path.len() <= 4096
+            && !path.contains("//")
+            && !path.starts_with('/')
+            && base.split('/').all(|part| {
+                !part.is_empty()
+                    && !matches!(part, "." | "..")
+                    && part.chars().all(|c| {
+                        c.is_alphanumeric() || matches!(c, '-' | '_' | '.' | ':' | '+' | '*')
+                    })
+            });
+        if !matches!(method, "GET" | "HEAD" | "LIST")
+            || !canonical
+            || matches!(
+                base.split('/').next(),
+                Some("sys" | "auth" | "identity" | "cubbyhole")
+            )
+            || external_keys::owns(base)
+            || identity::owns(base)
+        {
+            return false;
+        }
+        self.namespaces.get(namespace).is_none_or(|state| {
+            state.mounts.keys().all(|mount| {
+                let known = mount.trim_end_matches('/');
+                base != known
+                    && !path.starts_with(mount.as_str())
+                    && !known
+                        .strip_prefix(base)
+                        .is_some_and(|suffix| suffix.starts_with('/'))
+            })
+        })
+    }
+}

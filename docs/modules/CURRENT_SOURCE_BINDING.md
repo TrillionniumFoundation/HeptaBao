@@ -1,12 +1,14 @@
 # Current module source binding
 
-The active plan remains `HEPTABAO-PLAN-2026-09-07-V2.1`. Current source facts for
-all workspace packages are bound by
-`planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json`, checked through
-`python scripts/current_source_inventory.py --check` and the ordinary V2
-repository validator. A package's guide, manifest, full Rust source paths/bytes,
-lexical declarations, discovered tests and path dependencies participate in this
-binding. The expanded workspace and the guide set must match exactly.
+The active plan remains `HEPTABAO-PLAN-2026-09-07-V2.1`. The authoritative
+current source identity is the exact Git commit and tree exercised by CI. The
+reproducible lexical projection remains available through
+`scripts/current_source_inventory.py`; the committed
+`planning/HEPTABAO_CURRENT_SOURCE_INVENTORY_V2.json` is a compact diagnostic
+snapshot rather than a second source authority. A package's guide, manifest, full
+Rust source paths/bytes, lexical declarations, discovered tests and path
+dependencies participate in the recomputed diagnostic. The expanded workspace and
+the guide set must still match exactly.
 
 ## Historical and current evidence
 
@@ -25,7 +27,9 @@ python scripts/current_source_inventory.py --details
 
 The detailed output includes file paths and digests, declaration names and
 source lines, discovered test names/attribute lines, and dependency scopes.
-Each package's compact committed entry binds these complete details by digest.
+The recomputed diagnostic digest summarizes these complete details. It is useful
+for review and evidence comparison, but exact Git tree identity already binds the
+actual bytes.
 `pub const fn` is classified as a function and parameterized `tokio::test`
 attributes are recognized. Lexical discovery is not Rust type/visibility
 analysis, branch coverage, test execution, or semantic API compatibility.
@@ -33,17 +37,17 @@ analysis, branch coverage, test execution, or semantic API compatibility.
 ## Change procedure
 
 Update the implementing source, its module-specific narrative and tests in one
-candidate. Recompute only the V2 snapshot with
-`python scripts/current_source_inventory.py --write`. Review the source/guide
-changes and generated digest delta together, then run the read-only check and
-complete repository/security/Rust gates. A generated digest alone does not
-prove the narrative's correctness or an executable test pass.
+candidate, then run `python scripts/current_source_inventory.py --check` together
+with the ordinary repository/security/Rust gates. The check recomputes the current
+inventory and validates workspace/guide/history invariants, but deliberately does
+not require a second commit whose only purpose is to refresh a duplicate content
+hash. Use `--details` for review output or `--write` only when a reviewer wants
+to refresh the retained diagnostic snapshot.
 
-The snapshot binds source inputs by content rather than embedding its own Git
-commit ID, which would be self-referential. CI must separately record the actual
-commit, tree, snapshot digest, binary digest, commands, exit statuses and test
-results. Exact-head and prospective-main-merge receipts are separate. Any
-candidate movement invalidates the old current-head qualification claim.
+CI records the actual Git commit/tree, binary digest, commands, exit statuses and
+test results. Those exact-head and prospective-main identities are authoritative;
+a generated inventory digest is supplemental evidence only. Any candidate movement
+still invalidates an older test or qualification receipt.
 
 ## Present product boundary
 

@@ -1,0 +1,100 @@
+{
+  "actual_sdk_qualified": false,
+  "artifacts": {
+    "contract.public.txt": {
+      "bytes": 5832,
+      "sha256": "b328f1806d1f972b7a4f09c2374c77cc6d4508233494eb84b6b650b76099ddda"
+    },
+    "failed-60s-cycle.public.json": {
+      "bytes": 5001,
+      "sha256": "bfd3aff25486a4a5a87260e01beaa6828c11312bdcab9496191f59885eec6d46"
+    },
+    "failed-initial-activation.public.json": {
+      "bytes": 1307,
+      "sha256": "b516f94f3b048fcf7a891ebb00de5b4ce8873855b36e75a0b3ef1d9fa6e3c629"
+    },
+    "live-continuation.public.json": {
+      "bytes": 20244,
+      "sha256": "3d7eaac69d6e271276b8731a39eef9e82b22a2c54c136ed77e477c1e42bc2535"
+    },
+    "runtime-status.public.json": {
+      "bytes": 2229,
+      "sha256": "50010a9150ce9c880decdbb0b93398672f8e77c9793e578010b4eb24bab62d04"
+    }
+  },
+  "binary_sha256": "187bcc477f3620c32d9ba549dc71e6c560417868a97faa8800d9fb14ffab1055",
+  "binary_source_commit": "4e2a6d7e5931eb72577f9bbd428fce5bb705027e",
+  "bounded_work_qualified": true,
+  "contract": {
+    "command": "python3 qa/openbao-acceptance/authbus_coordinator_contract_test.py",
+    "exit_code": 0,
+    "job_id": "1a1a0e52985-96a-6b38",
+    "passed": 38,
+    "tests": 38,
+    "transport": "synthetic; real private fsync state files"
+  },
+  "coordinator_sha256": "cc46822439dfd33c86d1068c886941a92c5581871474cef846d2aee14ce80fe0",
+  "full_replacement_qualified": false,
+  "host": "x230",
+  "isolated_fixture": "/home/qian/heptabao-authbus-inbox-20261103-r1-live-r2",
+  "j3160_contacted": false,
+  "limits": [
+    "No throughput or uninterrupted 900 second qualification; original timeouts remain failed.",
+    "Retained immutable inbox/receipt storage still grows; no garbage collection or delete privilege was added.",
+    "Legacy coordinator uses local single-owner locking and needs independent supervisor/fencing qualification.",
+    "No real provider credential refresh, all-client inventory, production traffic migration or old-service cleanup was performed by this fixture."
+  ],
+  "live": {
+    "actual_new_coordinator_process_each_cycle": true,
+    "additional_report_receipts": 503,
+    "checks": 94,
+    "continuation_cycle_count": 20,
+    "continuation_runtime_timeout_seconds": 1800,
+    "elapsed_seconds": 1182.211,
+    "exit_code": 0,
+    "final_original_server_wait_exit_code": -9,
+    "inbox_deletions": 0,
+    "job_id": "1a1a0fcadbb-96a-6c04",
+    "max_scanned_events_per_cycle": 32,
+    "observation_timeout_seconds_per_cycle": 300,
+    "passed": 94,
+    "real_lease_expiry_waited": false,
+    "renewal_due_clock_forced": true,
+    "retained_prior_receipt_identities": 555,
+    "storage": "formal native_v6_file activated through sys/storage/native-v6/activate",
+    "total_report_receipts": 1058,
+    "wire": "actual loopback TLS, AppRole, KV2, Policy, renewal, revoke and cold service restart"
+  },
+  "original_uninterrupted_budget_passed": false,
+  "prior_failures": [
+    {
+      "artifact": "failed-initial-activation.public.json",
+      "reason": "Harness initially selected storage config without the required formal activation call; assertion failed before inbox seeding. Harness fixed to use formal activation."
+    },
+    {
+      "exit_code": 124,
+      "job_id": "1a1a0e98e00-96a-6b56",
+      "reason": "Large actual fixture did not finish within the original 900 second budget. Same retained fixture used for continuation.",
+      "runtime_status_key": "initial_live_900s",
+      "runtime_timeout_seconds": 900,
+      "timed_out": true
+    },
+    {
+      "artifact": "failed-60s-cycle.public.json",
+      "error": "TimeoutExpired",
+      "exit_code": 1,
+      "job_id": "1a1a0f7bfe9-96a-6bd3",
+      "per_cycle_observer_seconds": 60,
+      "reason": "The aggregate cycle observation limit expired. Original cursor/receipt identity state retained, then resumed with 300 second observation budget; client RPC budgets were unchanged."
+    }
+  ],
+  "production_changed": false,
+  "production_cutover": false,
+  "provider_called": false,
+  "real_provider_credentials": false,
+  "schema": "heptabao.authbus-inbox-pagination-evidence.v1",
+  "single_owner_distributed_fencing_qualified": false,
+  "source_base_commit": "ee851bd11e1a9d261be1acbd291d1599ffbf8f88",
+  "source_commit": "abdb586943137cd7dc5b6406437689c15e9087b4",
+  "total_retained_storage_bounded": false
+}

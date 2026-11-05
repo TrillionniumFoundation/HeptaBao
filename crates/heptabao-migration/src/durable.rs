@@ -855,6 +855,33 @@ impl DurableMigrationJournal {
         self.record.objects.get(object_id)
     }
 
+    /// Return every object whose durable copy outcome still needs an
+    /// authoritative readback after a restart or lost response.
+    ///
+    /// `IntentPersisted` means the intent was published but the adapter may
+    /// have entered the target before the process lost its response.  It must
+    /// be read back before the controller resumes or marks it unknown.
+    /// `OutcomeUnknownAfterEntry` is already in that readback-only state.
+    /// Object identifiers are returned in canonical (lexicographic) order.
+    pub fn objects_requiring_reconciliation(&self) -> Vec<&str> {
+        self.record
+            .objects
+            .iter()
+            .filter_map(|(identifier, state)| {
+                matches!(
+                    state,
+                    MigrationObjectState::IntentPersisted { .. }
+                        | MigrationObjectState::OutcomeUnknownAfterEntry { .. }
+                )
+                .then_some(identifier.as_str())
+            })
+            .collect()
+    }
+
+    /// Return only objects explicitly marked as having an unknown provider
+    /// outcome.  A surviving `IntentPersisted` is intentionally not included;
+    /// callers must use [`Self::objects_requiring_reconciliation`] to discover
+    /// intents that also need authoritative readback after restart.
     pub fn pending_reconciliation(&self) -> Vec<&str> {
         self.record
             .objects
@@ -872,6 +899,25 @@ impl DurableMigrationJournal {
         receipt: &WriterFenceReceipt,
     ) -> Result<(), MigrationJournalError> {
         receipt.validate()?;
+        // A caller may retry a fence after observing a transport timeout or a
+        // process restart.  Once the same receipt is durably recorded, the
+        // operation is a safe no-op in every post-fence phase.  A different
+        // receipt is still rejected so an operator cannot silently replace
+        // the source fencing authority.
+        if matches!(
+            self.record.phase,
+            DurableMigrationPhase::SourceFenced
+                | DurableMigrationPhase::Copying
+                | DurableMigrationPhase::CutoverReady
+                | DurableMigrationPhase::TargetActive
+                | DurableMigrationPhase::TargetFenced
+        ) && self.record.source_fence_sha256.as_deref() == Some(receipt.sha256.as_str())
+            && self.record.source_fence_generation == Some(receipt.generation)
+            && receipt.endpoint_id == self.record.source_id
+            && !receipt.writer_enabled
+        {
+            return Ok(());
+        }
         if self.record.phase != DurableMigrationPhase::Planned
             || receipt.endpoint_id != self.record.source_id
             || receipt.writer_enabled
@@ -951,6 +997,59 @@ impl DurableMigrationJournal {
         })
     }
 
+    /// Re-obtain an intent that was durably persisted before a caller lost
+    /// its response.  This is deliberately limited to `IntentPersisted`:
+    /// `OutcomeUnknownAfterEntry` still requires authoritative reconciliation
+    /// before another provider write is attempted.
+    pub fn resume_object(
+        &self,
+        object_id: &str,
+        operation_id: &str,
+    ) -> Result<CopyIntent, MigrationJournalError> {
+        if self.record.phase != DurableMigrationPhase::Copying
+            || self.record.source_writer
+            || self.record.target_writer
+        {
+            return Err(MigrationJournalError::InvalidTransition);
+        }
+        validate_id(operation_id, "operation_id")?;
+        let object = self
+            .inventory
+            .objects
+            .iter()
+            .find(|object| object.object_id == object_id)
+            .ok_or(MigrationJournalError::UnknownObject)?;
+        let (observed, attempt) = match self.record.objects.get(object_id) {
+            Some(MigrationObjectState::IntentPersisted {
+                operation_id: observed,
+                attempt,
+            }) => (observed, *attempt),
+            Some(MigrationObjectState::OutcomeUnknownAfterEntry { .. }) => {
+                return Err(MigrationJournalError::ReconciliationRequired);
+            }
+            Some(MigrationObjectState::Verified { .. }) => {
+                return Err(MigrationJournalError::InvalidTransition);
+            }
+            Some(MigrationObjectState::Pending { .. }) => {
+                return Err(MigrationJournalError::InvalidTransition);
+            }
+            Some(MigrationObjectState::FailedClosed { .. }) => {
+                return Err(MigrationJournalError::FailedClosed);
+            }
+            None => return Err(MigrationJournalError::UnknownObject),
+        };
+        if observed != operation_id {
+            return Err(MigrationJournalError::ReconciliationRequired);
+        }
+        Ok(CopyIntent {
+            object_id: object.object_id.clone(),
+            operation_id: operation_id.to_owned(),
+            attempt,
+            source_sha256: object.source_sha256.clone(),
+            expected_target_sha256: object.expected_target_sha256.clone(),
+        })
+    }
+
     pub fn mark_outcome_unknown(
         &mut self,
         object_id: &str,
@@ -998,6 +1097,16 @@ impl DurableMigrationJournal {
             .ok_or(MigrationJournalError::UnknownObject)?;
         if object.expected_target_sha256 != target_sha256 {
             return Err(MigrationJournalError::TargetDigestMismatch);
+        }
+        if let Some(MigrationObjectState::Verified {
+            operation_id: observed,
+            target_sha256: recorded,
+            ..
+        }) = self.record.objects.get(object_id)
+            && observed == operation_id
+            && recorded == target_sha256
+        {
+            return Ok(());
         }
         let attempt = active_attempt(self.record.objects.get(object_id), operation_id)?;
         let mut candidate = self.record.clone();
@@ -1083,6 +1192,15 @@ impl DurableMigrationJournal {
     }
 
     pub fn verify_copy(&mut self) -> Result<(), MigrationJournalError> {
+        if self.record.phase == DurableMigrationPhase::CutoverReady
+            && self
+                .record
+                .objects
+                .values()
+                .all(|state| matches!(state, MigrationObjectState::Verified { .. }))
+        {
+            return Ok(());
+        }
         if self.record.phase != DurableMigrationPhase::Copying
             || self.record.source_writer
             || self.record.target_writer
@@ -1106,6 +1224,15 @@ impl DurableMigrationJournal {
     ) -> Result<(), MigrationJournalError> {
         receipt.validate()?;
         validate_sha256(anchor_sha256)?;
+        if self.record.phase == DurableMigrationPhase::TargetActive
+            && self.record.target_activation_sha256.as_deref() == Some(receipt.sha256.as_str())
+            && self.record.target_activation_generation == Some(receipt.generation)
+            && self.record.cutover_anchor_sha256.as_deref() == Some(anchor_sha256)
+            && receipt.endpoint_id == self.record.target_id
+            && receipt.writer_enabled
+        {
+            return Ok(());
+        }
         if self.record.phase != DurableMigrationPhase::CutoverReady
             || self.record.source_writer
             || self.record.target_writer
@@ -1128,6 +1255,14 @@ impl DurableMigrationJournal {
         receipt: &WriterFenceReceipt,
     ) -> Result<(), MigrationJournalError> {
         receipt.validate()?;
+        if self.record.phase == DurableMigrationPhase::TargetFenced
+            && self.record.target_fence_sha256.as_deref() == Some(receipt.sha256.as_str())
+            && self.record.target_fence_generation == Some(receipt.generation)
+            && receipt.endpoint_id == self.record.target_id
+            && !receipt.writer_enabled
+        {
+            return Ok(());
+        }
         if self.record.phase != DurableMigrationPhase::TargetActive
             || receipt.endpoint_id != self.record.target_id
             || receipt.writer_enabled
@@ -1153,6 +1288,15 @@ impl DurableMigrationJournal {
     ) -> Result<(), MigrationJournalError> {
         receipt.validate()?;
         validate_sha256(anchor_sha256)?;
+        if self.record.phase == DurableMigrationPhase::RolledBack
+            && self.record.source_reactivation_sha256.as_deref() == Some(receipt.sha256.as_str())
+            && self.record.source_reactivation_generation == Some(receipt.generation)
+            && self.record.rollback_anchor_sha256.as_deref() == Some(anchor_sha256)
+            && receipt.endpoint_id == self.record.source_id
+            && receipt.writer_enabled
+        {
+            return Ok(());
+        }
         if !matches!(
             self.record.phase,
             DurableMigrationPhase::SourceFenced
@@ -1737,6 +1881,80 @@ mod tests {
 
     #[cfg(target_os = "linux")]
     #[test]
+    fn persisted_intent_is_visible_to_restart_reconciliation() -> Result<(), Box<dyn Error>> {
+        let directory = TestDirectory::new()?;
+        let inventory = inventory()?;
+        let expected = binding(&inventory)?;
+        let mut journal = DurableMigrationJournal::create_new(
+            &directory.path,
+            expected.clone(),
+            inventory.clone(),
+        )?;
+        journal.fence_source(&source_fence()?)?;
+        journal.begin_object("policy-root", "copy-policy-1")?;
+        assert_eq!(
+            vec!["policy-root"],
+            journal.objects_requiring_reconciliation()
+        );
+        assert!(journal.pending_reconciliation().is_empty());
+        drop(journal);
+
+        let mut reopened =
+            DurableMigrationJournal::open(&directory.path, &expected, inventory.clone())?;
+        assert_eq!(
+            vec!["policy-root"],
+            reopened.objects_requiring_reconciliation()
+        );
+        let intent = reopened.resume_object("policy-root", "copy-policy-1")?;
+        assert_eq!(1, intent.attempt);
+        reopened.confirm_committed("policy-root", "copy-policy-1", &digest('b'))?;
+        assert!(reopened.objects_requiring_reconciliation().is_empty());
+        assert!(reopened.pending_reconciliation().is_empty());
+        Ok(())
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn persisted_intent_and_cutover_receipts_are_idempotent() -> Result<(), Box<dyn Error>> {
+        let directory = TestDirectory::new()?;
+        let inventory = inventory()?;
+        let expected = binding(&inventory)?;
+        let mut journal =
+            DurableMigrationJournal::create_new(&directory.path, expected, inventory)?;
+        let fence = source_fence()?;
+        journal.fence_source(&fence)?;
+        let generation = journal.generation();
+        journal.fence_source(&fence)?;
+        assert_eq!(generation, journal.generation());
+
+        let intent = journal.begin_object("policy-root", "copy-policy-1")?;
+        let resumed = journal.resume_object("policy-root", "copy-policy-1")?;
+        assert_eq!(intent, resumed);
+        assert!(matches!(
+            journal.resume_object("policy-root", "copy-policy-2"),
+            Err(MigrationJournalError::ReconciliationRequired)
+        ));
+        journal.confirm_committed("policy-root", "copy-policy-1", &digest('b'))?;
+        // Replaying the provider acknowledgement must not create another
+        // generation or operation record.
+        let generation = journal.generation();
+        journal.confirm_committed("policy-root", "copy-policy-1", &digest('b'))?;
+        assert_eq!(generation, journal.generation());
+        journal.begin_object("mount-kv", "copy-mount-1")?;
+        journal.confirm_committed("mount-kv", "copy-mount-1", &digest('d'))?;
+        journal.verify_copy()?;
+        journal.verify_copy()?;
+        let target = WriterFenceReceipt::new("heptabao-target", true, 8, digest('5'))?;
+        journal.activate_target(&target, &digest('1'))?;
+        journal.activate_target(&target, &digest('1'))?;
+        let target_fence = WriterFenceReceipt::new("heptabao-target", false, 9, digest('6'))?;
+        journal.fence_target(&target_fence)?;
+        journal.fence_target(&target_fence)?;
+        Ok(())
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
     fn cutover_requires_every_digest_and_never_overlaps_writers() -> Result<(), Box<dyn Error>> {
         let directory = TestDirectory::new()?;
         let inventory = inventory()?;
@@ -1776,12 +1994,15 @@ mod tests {
             9,
             digest('3'),
         )?)?;
-        journal.rollback(
-            &WriterFenceReceipt::new("openbao-source", true, 10, digest('6'))?,
-            &digest('4'),
-        )?;
+        let rollback_receipt = WriterFenceReceipt::new("openbao-source", true, 10, digest('6'))?;
+        journal.rollback(&rollback_receipt, &digest('4'))?;
+        journal.rollback(&rollback_receipt, &digest('4'))?;
         assert!(journal.source_writer_enabled());
         assert!(!journal.target_writer_enabled());
+        assert!(matches!(
+            journal.fence_source(&source_fence()?),
+            Err(MigrationJournalError::InvalidTransition)
+        ));
         Ok(())
     }
 

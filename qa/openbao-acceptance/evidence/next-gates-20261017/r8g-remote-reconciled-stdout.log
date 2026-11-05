@@ -1,0 +1,72 @@
+{"phase": "source_verified", "source_commit": "67d82d6dd65ff418bd0e2ad0c8820a6c2674b94f", "source_tree": "b3dc2ac31bb8a601292e49590d59394e45e07317", "source_files": 2534, "root": "/home/qian-qi/heptabao-next-gates-20261017/source-r8g"}
+overlay_transfer_verified
+{"phase": "mac_matrix_finished", "exit_code": 1, "elapsed_seconds": 32.306, "log_path": "/home/qian-qi/heptabao-next-gates-20261017/r8g-mac-server-matrix.log", "log_sha256": "8f8727a8c6fb105b439af7a7ec9a3a2a190f18780bfc3a1bca2507a137bf2463"}
+{"phase": "source_verified", "source_commit": "67d82d6dd65ff418bd0e2ad0c8820a6c2674b94f", "source_tree": "b3dc2ac31bb8a601292e49590d59394e45e07317", "source_files": 2534, "root": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8g"}
+{"phase": "test_started", "case": "native-ha-service-install", "filter": "native_ha_install_"}
+{"case": "native-ha-service-install", "exit_code": 101, "elapsed_seconds": 31.403, "command": ["cargo", "test", "--lib", "--locked", "--offline", "-p", "heptabao-server", "--features", "experimental-native-v6-ha", "native_ha_install_", "--", "--test-threads=1", "--nocapture"], "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8g-server-native-ha-service-install.log", "log_sha256": "b768cb8f78bdcfd4ac12015af43db4b5061727c2b1c1a8f059259d2edf7b876a", "summaries": []}
+   Compiling heptabao-filesystem-guard v0.1.0 (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8g/crates/heptabao-filesystem-guard)
+   Compiling heptabao-domain v0.1.0 (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8g/crates/heptabao-domain)
+   Compiling heptabao-linux-parent-death v0.1.0 (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8g/crates/heptabao-linux-parent-death)
+   Compiling heptabao-workflow-template v0.6.1 (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8g/third_party/workflow-gotmpl)
+   Compiling bcrypt v0.19.3 (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8g/vendor/bcrypt-0.19.3)
+   Compiling heptabao-openbao-grpc v0.1.0 (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8g/crates/heptabao-openbao-grpc)
+   Compiling qrcode v0.14.1 (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8g/vendor/qrcode-0.14.1)
+   Compiling heptabao-plugin-contracts v0.1.0 (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8g/crates/heptabao-plugin-contracts)
+   Compiling heptabao-kms-contracts v0.1.0 (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8g/crates/heptabao-kms-contracts)
+   Compiling heptabao-raft-runtime v0.1.0 (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8g/crates/heptabao-raft-runtime)
+   Compiling heptabao-durable-service v0.1.0 (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8g/crates/heptabao-durable-service)
+   Compiling heptabao-plugin-host v0.1.0 (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8g/crates/heptabao-plugin-host)
+   Compiling heptabao-ha-service v0.1.0 (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8g/crates/heptabao-ha-service)
+   Compiling heptabao-server v0.1.0 (/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8g/crates/heptabao-server)
+warning: unused import: `NativeHaRecoveryReference`
+  --> crates/heptabao-server/src/ha.rs:58:54
+   |
+58 |     CommittedNativeV6Read, NativeHaPublicationError, NativeHaRecoveryReference,
+   |                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+
+error[E0277]: `?` couldn't convert the error: `state_record_root::RootError: StdError` is not satisfied
+   --> crates/heptabao-server/src/service_native_v6_ha_install_tests.rs:394:52
+    |
+387 | ) -> TestResult<Service> {
+    |      ------------------- required `state_record_root::RootError: StdError` because of this
+...
+394 |     cold.state_digest = Some(loaded.root.identity()?.digest());
+    |                                          ----------^ the trait `StdError` is not implemented for `state_record_root::RootError`
+    |                                          |
+    |                                          this has type `Result<_, state_record_root::RootError>`
+    |
+note: `state_record_root::RootError` needs to implement `StdError`
+   --> crates/heptabao-server/src/state_record_root.rs:83:1
+    |
+ 83 | pub(crate) enum RootError {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = note: required for `Box<dyn StdError>` to implement `From<state_record_root::RootError>`
+
+error[E0277]: `?` couldn't convert the error: `state_record_root::RootError: StdError` is not satisfied
+   --> crates/heptabao-server/src/service_native_v6_ha_install_tests.rs:657:38
+    |
+568 | fn native_ha_install_original_actor_stale_read_and_cold_catchup_to_later_root() -> TestResult {
+    |                                                                                    ---------- required `state_record_root::RootError: StdError` because of this
+...
+657 |     assert_eq!(loaded.root.identity()?.digest(), second.root_digest());
+    |                            ----------^ the trait `StdError` is not implemented for `state_record_root::RootError`
+    |                            |
+    |                            this has type `Result<_, state_record_root::RootError>`
+    |
+note: `state_record_root::RootError` needs to implement `StdError`
+   --> crates/heptabao-server/src/state_record_root.rs:83:1
+    |
+ 83 | pub(crate) enum RootError {
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^
+    = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+    = note: required for `Box<dyn StdError>` to implement `From<state_record_root::RootError>`
+
+For more information about this error, try `rustc --explain E0277`.
+warning: `heptabao-server` (lib test) generated 1 warning
+error: could not compile `heptabao-server` (lib test) due to 2 previous errors; 1 warning emitted
+
+{"cases": [{"case": "native-ha-service-install", "command": ["cargo", "test", "--lib", "--locked", "--offline", "-p", "heptabao-server", "--features", "experimental-native-v6-ha", "native_ha_install_", "--", "--test-threads=1", "--nocapture"], "elapsed_seconds": 31.403, "exit_code": 101, "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8g-server-native-ha-service-install.log", "log_sha256": "b768cb8f78bdcfd4ac12015af43db4b5061727c2b1c1a8f059259d2edf7b876a", "summaries": []}], "host_abi": "aarch64-apple-darwin", "ok": false, "production_cutover": false, "schema": "heptabao.r8g-native-service-matrix.v1", "source_commit": "67d82d6dd65ff418bd0e2ad0c8820a6c2674b94f", "source_files": 2534, "source_tree": "b3dc2ac31bb8a601292e49590d59394e45e07317", "source_unchanged_after_tests": true}
+

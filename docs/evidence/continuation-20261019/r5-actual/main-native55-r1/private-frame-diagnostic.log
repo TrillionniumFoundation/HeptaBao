@@ -1,0 +1,15 @@
+{"argv": ["/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo", "test", "--locked", "--offline", "-p", "heptabao-ha-service", "--lib", "--features", "experimental-v6-peer-ingress,private-forward-stage-diagnostic", "private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes", "--", "--nocapture", "--test-threads=1", "--color=never"]}
+    Finished `test` profile [optimized + debuginfo] target(s) in 0.21s
+     Running unittests src/lib.rs (/home/qian-qi/heptabao-next-gates-20261017/native55-target-20261019/debug/deps/heptabao_ha_service-20c29c2340ce0577)
+
+running 1 test
+test tests::private_frame_diagnostics_preserve_io_order_errors_and_wire_bytes ... HBHA-PRIVATE-STAGE phase=frame_write_length category=Transport io_kind=BrokenPipe
+HBHA-PRIVATE-STAGE phase=frame_write_payload category=Transport io_kind=BrokenPipe
+HBHA-PRIVATE-STAGE phase=frame_flush category=Transport io_kind=TimedOut
+HBHA-PRIVATE-STAGE phase=frame_read_length category=Transport io_kind=UnexpectedEof
+HBHA-PRIVATE-STAGE phase=frame_read_payload category=Transport io_kind=UnexpectedEof
+HBHA-PRIVATE-STAGE phase=frame_read_length_invalid category=InvalidFrame
+ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 28 filtered out; finished in 0.00s
+

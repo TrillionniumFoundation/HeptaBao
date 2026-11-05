@@ -1,0 +1,559 @@
+{
+  "binary_identical_on_all_hosts": false,
+  "binary_sha256": "cc7e7a1de7deb6e184b1559b60d292072826384ef23fabe55265360a8f5e6c8f",
+  "candidate_payload_bytes": 151072164,
+  "candidate_payload_sha256": "230a57a714df7c8d6ab508d30302ad24ce3a91e3e0f4e2fb359792d88606b9c6",
+  "checks": [
+    {
+      "case": "node_1_native_build_receipt",
+      "native_abi": "aarch64-apple-darwin",
+      "passed": true,
+      "receipt_sha256": "59e1b306d3021816fcc382d4d0aa7dff1afa8042d68642baf30220fb865d6934"
+    },
+    {
+      "case": "node_2_native_build_receipt",
+      "native_abi": "x86_64-unknown-linux-gnu",
+      "passed": true,
+      "receipt_sha256": "032a9165f459693eac7bf273bed0982dd1c495edf2b5f7979a4ccac2c7475478"
+    },
+    {
+      "case": "node_3_native_build_receipt",
+      "native_abi": "x86_64-unknown-linux-gnu",
+      "passed": true,
+      "receipt_sha256": "032a9165f459693eac7bf273bed0982dd1c495edf2b5f7979a4ccac2c7475478"
+    },
+    {
+      "case": "candidate_binary_digest",
+      "passed": true
+    },
+    {
+      "case": "node_1_private_root_and_ports",
+      "passed": true
+    },
+    {
+      "case": "node_1_binary_digest",
+      "passed": true,
+      "sha256": "52d2b0c75fa87cfc7a18f5bb02518e4ebc7efad0f0555f35d9626dd10e3c0baa"
+    },
+    {
+      "case": "node_2_private_root_and_ports",
+      "passed": true
+    },
+    {
+      "case": "node_2_binary_digest",
+      "passed": true,
+      "sha256": "cc7e7a1de7deb6e184b1559b60d292072826384ef23fabe55265360a8f5e6c8f"
+    },
+    {
+      "case": "node_3_private_root_and_ports",
+      "passed": true
+    },
+    {
+      "case": "node_3_binary_digest",
+      "passed": true,
+      "sha256": "cc7e7a1de7deb6e184b1559b60d292072826384ef23fabe55265360a8f5e6c8f"
+    },
+    {
+      "case": "complete_loopback_raft_mesh_started",
+      "passed": true
+    },
+    {
+      "case": "seed_fresh_uninitialized",
+      "passed": true
+    },
+    {
+      "case": "seed_initialized_once",
+      "passed": true
+    },
+    {
+      "case": "seed_unsealed",
+      "passed": true
+    },
+    {
+      "case": "seed_cluster_identity",
+      "passed": true
+    },
+    {
+      "case": "seed_data_archive_nonempty",
+      "passed": true
+    },
+    {
+      "case": "node_2_cold_clone_installed",
+      "passed": true
+    },
+    {
+      "case": "node_3_cold_clone_installed",
+      "passed": true
+    },
+    {
+      "case": "three_host_raft_elected_before_unseal",
+      "passed": true
+    },
+    {
+      "case": "node_1_unsealed",
+      "passed": true
+    },
+    {
+      "case": "node_2_unsealed",
+      "passed": true
+    },
+    {
+      "case": "node_3_unsealed",
+      "passed": true
+    },
+    {
+      "case": "three_distinct_remote_hosts",
+      "hostnames": {
+        "1": "192.168.0.7",
+        "2": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+        "3": "alex-G1628-04"
+      },
+      "passed": true
+    },
+    {
+      "case": "baseline_write_read_on_all_hosts",
+      "passed": true
+    },
+    {
+      "case": "remote_standby_write_forwarded",
+      "passed": true
+    },
+    {
+      "case": "leader_snapshot_trigger",
+      "passed": true
+    },
+    {
+      "case": "offline_follower_restarted_and_unsealed",
+      "passed": true
+    },
+    {
+      "case": "remote_snapshot_catchup",
+      "local_applied_index": 33,
+      "local_committed_index": 33,
+      "passed": true,
+      "required_index": 33
+    },
+    {
+      "case": "leader_changed_after_remote_sigkill",
+      "passed": true
+    },
+    {
+      "case": "post_failover_write_on_survivors",
+      "passed": true
+    },
+    {
+      "case": "old_leader_restarted_and_unsealed",
+      "passed": true
+    },
+    {
+      "case": "old_leader_caught_up",
+      "local_applied_index": 37,
+      "local_committed_index": 37,
+      "passed": true,
+      "required_index": 37
+    },
+    {
+      "case": "explicit_step_down_accepted_once",
+      "passed": true
+    },
+    {
+      "case": "three_leadership_epochs_preserve_data",
+      "leader_epochs": [
+        1,
+        2,
+        1
+      ],
+      "passed": true
+    },
+    {
+      "case": "single_survivor_loses_authority",
+      "passed": true
+    },
+    {
+      "case": "quorum_loss_write_denied_without_data",
+      "passed": true
+    },
+    {
+      "case": "quorum_peer_restarted",
+      "passed": true
+    },
+    {
+      "case": "denied_quorum_write_has_no_effect",
+      "passed": true
+    },
+    {
+      "case": "final_peer_restarted",
+      "passed": true
+    },
+    {
+      "case": "all_hosts_rejoined_after_quorum_recovery",
+      "passed": true
+    },
+    {
+      "case": "all_voters_restarted_from_persisted_state",
+      "passed": true
+    },
+    {
+      "acknowledged_values": 14,
+      "case": "full_restart_readindex_preserves_acknowledged_data",
+      "passed": true,
+      "required_index": 43
+    },
+    {
+      "case": "full_restart_new_write_replicated",
+      "passed": true
+    },
+    {
+      "case": "cleanup_baseline",
+      "passed": true
+    },
+    {
+      "case": "cleanup_forwarded",
+      "passed": true
+    },
+    {
+      "case": "cleanup_snapshot-0",
+      "passed": true
+    },
+    {
+      "case": "cleanup_snapshot-1",
+      "passed": true
+    },
+    {
+      "case": "cleanup_snapshot-2",
+      "passed": true
+    },
+    {
+      "case": "cleanup_snapshot-3",
+      "passed": true
+    },
+    {
+      "case": "cleanup_snapshot-4",
+      "passed": true
+    },
+    {
+      "case": "cleanup_snapshot-5",
+      "passed": true
+    },
+    {
+      "case": "cleanup_snapshot-6",
+      "passed": true
+    },
+    {
+      "case": "cleanup_snapshot-7",
+      "passed": true
+    },
+    {
+      "case": "cleanup_after-snapshot",
+      "passed": true
+    },
+    {
+      "case": "cleanup_after-failover",
+      "passed": true
+    },
+    {
+      "case": "cleanup_after-stepdown",
+      "passed": true
+    },
+    {
+      "case": "cleanup_quorum-recovered",
+      "passed": true
+    },
+    {
+      "case": "cleanup_after-full-restart",
+      "passed": true
+    },
+    {
+      "case": "synthetic_application_data_cleaned",
+      "passed": true
+    },
+    {
+      "case": "source_and_binary_unchanged",
+      "passed": true
+    },
+    {
+      "case": "report_excludes_runtime_secrets",
+      "passed": true
+    },
+    {
+      "case": "multihost.complete",
+      "passed": true
+    }
+  ],
+  "cluster_id_sha256": "1e3a50c9571f7eae9799d9e2430a27c9356ef7339aa939be68bb396c4d23164e",
+  "direct_lan_qualification": false,
+  "events": [
+    {
+      "event": "loopback_mesh_ssh_started",
+      "node": 1,
+      "pid": 1790183,
+      "time": 1792235046.2851799
+    },
+    {
+      "event": "loopback_mesh_ssh_started",
+      "node": 2,
+      "pid": 1790218,
+      "time": 1792235047.3018613
+    },
+    {
+      "event": "loopback_mesh_ssh_started",
+      "node": 3,
+      "pid": 1790239,
+      "time": 1792235048.3059125
+    },
+    {
+      "event": "seed_started",
+      "node": 1,
+      "pid": 55897,
+      "time": 1792235049.18146
+    },
+    {
+      "event": "seed_stopped_for_cold_clone",
+      "node": 1,
+      "time": 1792235050.4870105
+    },
+    {
+      "event": "ha_node_started",
+      "node": 2,
+      "pid": 2685716,
+      "time": 1792235058.3168252
+    },
+    {
+      "event": "ha_node_started",
+      "node": 3,
+      "pid": 2011632,
+      "time": 1792235059.1869621
+    },
+    {
+      "event": "ha_node_started",
+      "node": 1,
+      "pid": 55980,
+      "time": 1792235060.054698
+    },
+    {
+      "event": "initial_leader",
+      "node": 1,
+      "time": 1792235063.2302742
+    },
+    {
+      "event": "standby_stopped_for_snapshot_catchup",
+      "node": 3,
+      "pid": 2011632,
+      "time": 1792235066.643374
+    },
+    {
+      "event": "snapshot_majority_ready",
+      "node": 1,
+      "time": 1792235070.9619837
+    },
+    {
+      "event": "snapshot_catchup_frontier",
+      "required_index": 33,
+      "source": 1,
+      "target": 3,
+      "time": 1792235073.2258663
+    },
+    {
+      "event": "snapshot_rejoin_leader_ready",
+      "node": 1,
+      "time": 1792235076.7902741
+    },
+    {
+      "event": "leader_sigkill",
+      "node": 1,
+      "pid": 55980,
+      "time": 1792235077.7967355
+    },
+    {
+      "applied_index": 34,
+      "committed_index": 34,
+      "event": "post_kill_passive_leader_observation",
+      "is_self": true,
+      "node": 2,
+      "status": 200,
+      "time": 1792235083.8484251
+    },
+    {
+      "applied_index": 34,
+      "committed_index": 34,
+      "event": "post_kill_passive_leader_observation",
+      "is_self": false,
+      "node": 3,
+      "status": 200,
+      "time": 1792235083.8870637
+    },
+    {
+      "event": "old_leader_catchup_frontier",
+      "required_index": 37,
+      "source": 2,
+      "target": 1,
+      "time": 1792235087.4563951
+    },
+    {
+      "event": "leadership_transfer_frontier",
+      "required_index": 37,
+      "source": 2,
+      "time": 1792235091.8134315
+    },
+    {
+      "event": "peer_stopped_for_quorum_loss",
+      "node": 2,
+      "pid": 2685716,
+      "time": 1792235098.5078485
+    },
+    {
+      "event": "peer_stopped_for_quorum_loss",
+      "node": 3,
+      "pid": 2012858,
+      "time": 1792235098.9245043
+    },
+    {
+      "event": "full_restart_voter_stopped",
+      "node": 1,
+      "pid": 56032,
+      "time": 1792235119.9310262
+    },
+    {
+      "event": "full_restart_voter_stopped",
+      "node": 2,
+      "pid": 2686785,
+      "time": 1792235120.2927988
+    },
+    {
+      "event": "full_restart_voter_stopped",
+      "node": 3,
+      "pid": 2014396,
+      "time": 1792235120.7221189
+    },
+    {
+      "event": "full_restart_voter_started",
+      "node": 2,
+      "pid": 2687187,
+      "time": 1792235121.4790957
+    },
+    {
+      "event": "full_restart_voter_started",
+      "node": 3,
+      "pid": 2014850,
+      "time": 1792235122.372881
+    },
+    {
+      "event": "full_restart_voter_started",
+      "node": 1,
+      "pid": 56170,
+      "time": 1792235123.2339852
+    },
+    {
+      "event": "final_process_stop",
+      "node": 3,
+      "pid": 2014850,
+      "time": 1792235161.651523
+    },
+    {
+      "event": "final_process_stop",
+      "node": 2,
+      "pid": 2687187,
+      "time": 1792235162.0070908
+    },
+    {
+      "event": "final_process_stop",
+      "node": 1,
+      "pid": 56170,
+      "time": 1792235162.4654078
+    },
+    {
+      "event": "loopback_mesh_ssh_stopped",
+      "exited": true,
+      "node": 3,
+      "pid": 1790239,
+      "time": 1792235162.473032
+    },
+    {
+      "event": "loopback_mesh_ssh_stopped",
+      "exited": true,
+      "node": 2,
+      "pid": 1790218,
+      "time": 1792235162.480336
+    },
+    {
+      "event": "loopback_mesh_ssh_stopped",
+      "exited": true,
+      "node": 1,
+      "pid": 1790183,
+      "time": 1792235162.4876773
+    }
+  ],
+  "expected_node_binary_sha256": {
+    "1": "52d2b0c75fa87cfc7a18f5bb02518e4ebc7efad0f0555f35d9626dd10e3c0baa",
+    "2": "cc7e7a1de7deb6e184b1559b60d292072826384ef23fabe55265360a8f5e6c8f",
+    "3": "cc7e7a1de7deb6e184b1559b60d292072826384ef23fabe55265360a8f5e6c8f"
+  },
+  "final_leader": 1,
+  "fixture_mount_setup": {
+    "automatic_retry": false,
+    "http_status": 204,
+    "inventory_confirmed": true,
+    "mount": "secret",
+    "mutations_submitted": 1
+  },
+  "full_cluster_restart_requested": true,
+  "full_openbao_compatibility": false,
+  "host_count": 3,
+  "independent_qualification": false,
+  "leader_epochs": [
+    1,
+    2,
+    1
+  ],
+  "mesh_runner_sha256": "77ceaf2a851ae17bc7cd83b6c2b60e66ed37cd33177e615acdfa56c6b3ed12cf",
+  "mutating_requests_retried": false,
+  "native_binary_bound_on_all_hosts": true,
+  "native_build_abis": {
+    "macbook-pro": "aarch64-apple-darwin",
+    "pocket4": "x86_64-unknown-linux-gnu",
+    "rog": "x86_64-unknown-linux-gnu"
+  },
+  "native_build_check_count": 3,
+  "native_build_receipts_verified": true,
+  "owned_mesh_cleanup": true,
+  "process_identity_scope": "Linux start ticks and pidfd signal or macOS BSD ps; macOS PID check is non-atomic",
+  "production_authority": false,
+  "qualification": false,
+  "remote_binary_sha256": {
+    "1": "52d2b0c75fa87cfc7a18f5bb02518e4ebc7efad0f0555f35d9626dd10e3c0baa",
+    "2": "cc7e7a1de7deb6e184b1559b60d292072826384ef23fabe55265360a8f5e6c8f",
+    "3": "cc7e7a1de7deb6e184b1559b60d292072826384ef23fabe55265360a8f5e6c8f"
+  },
+  "remote_hosts": {
+    "1": "192.168.0.7",
+    "2": "qian-qi-ROG-Flow-Z13-GZ302EA-GZ302EA",
+    "3": "alex-G1628-04"
+  },
+  "remote_platforms": {
+    "1": "Darwin",
+    "2": "Linux",
+    "3": "Linux"
+  },
+  "required_check_count": 62,
+  "root_locations": {
+    "1": "/Volumes/T5/hepta-vnext-recovery-20261013/next-gates-loopback-20261017-r1-node1",
+    "2": "/home/qian-qi/heptabao-next-gates-loopback-20261017-r1-node2",
+    "3": "/home/alex/heptabao-next-gates-loopback-20261017-r1-node3"
+  },
+  "runner_sha256": "7857f62b1e9e46b7d718eb401e6ed75bb48dc9db385327a5cb86bda30c587858",
+  "schema": "heptabao.multihost-ha.v1",
+  "source_and_binary_unchanged": true,
+  "source_binding": "all native artifacts bound to the exact source commit and tree",
+  "source_commit": "193fd379e96220f02b957ae2727ef3b9aede8f63",
+  "source_tree": "880e23750e627b6804723793cbb2571bc3abe546",
+  "status": "passed",
+  "synthetic_cleanup": true,
+  "transport": "coordinator-mediated-ssh-with-end-to-end-mtls",
+  "uncovered": [
+    "physical_power_loss",
+    "disk_full",
+    "WAN_faults",
+    "long_horizon_linearizability",
+    "production_custody"
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "contract": {
+    "at_unix_ms": 1793700737017,
+    "audit_recorded": true,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a0e52985-96a-6b38",
+    "log_bytes": {
+      "stderr": {
+        "seen": 5832,
+        "stored": 5832
+      },
+      "stdout": {
+        "seen": 0,
+        "stored": 0
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "state": "succeeded",
+    "timed_out": false
+  },
+  "initial_live_900s": {
+    "at_unix_ms": 1793701924092,
+    "audit_recorded": true,
+    "cancelled": false,
+    "exit_code": 124,
+    "job_id": "1a1a0e98e00-96a-6b56",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 141,
+        "stored": 141
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "state": "timed_out",
+    "timed_out": true
+  },
+  "continuation_60s_cycle": {
+    "at_unix_ms": 1793702148862,
+    "audit_recorded": true,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1a0f7bfe9-96a-6bd3",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 55,
+        "stored": 55
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "state": "failed",
+    "timed_out": false
+  },
+  "continuation_300s_cycle": {
+    "at_unix_ms": 1793703461322,
+    "audit_recorded": true,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1a0fcadbb-96a-6c04",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 42,
+        "stored": 42
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "state": "succeeded",
+    "timed_out": false
+  }
+}

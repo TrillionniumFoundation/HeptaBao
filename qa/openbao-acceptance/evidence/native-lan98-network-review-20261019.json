@@ -1,0 +1,78 @@
+{
+  "cause_proven": false,
+  "endpoints": {
+    "1": {
+      "address": "192.168.0.7:46231",
+      "api_address": "https://192.168.0.7:46230",
+      "certificate_sha256": "0bf58211ef794795e2a72c6ccf60a04fb3cb647cd32b8e33b8a038ba4b0f75bb",
+      "node_name": "node-1",
+      "server_name": "node-1.heptabao.synthetic"
+    },
+    "2": {
+      "address": "192.168.0.10:46231",
+      "api_address": "https://192.168.0.10:46230",
+      "certificate_sha256": "d5f693aa83ea227e5ee300c9b2dfe4b07750cb352564a8310dd16ce7e55eedec",
+      "node_name": "node-2",
+      "server_name": "node-2.heptabao.synthetic"
+    },
+    "3": {
+      "address": "192.168.0.9:46231",
+      "api_address": "https://192.168.0.9:46230",
+      "certificate_sha256": "e4ac45dd203089a37c71bda6c145d92923e4d4643ccbf60a81e107a86892d894",
+      "node_name": "node-3",
+      "server_name": "node-3.heptabao.synthetic"
+    }
+  },
+  "evidence_scope": "original actual run, read-only independent local review",
+  "nodes": {
+    "macbook-pro": {
+      "forward_timeout_ms": 8000,
+      "local_listen": "192.168.0.7:46231",
+      "log_bytes": 23715,
+      "log_sha256": "741d163212a3805b16c888cb4b019709c6e0538595b92eaabe649298467c27d4",
+      "node_id": 1,
+      "peer_timeout_ms": 1500,
+      "stage_counts": {
+        "client_frame_write_tls_state": 2,
+        "frame_read_length/Transport/UnexpectedEof": 2,
+        "frame_write_length/Transport/WouldBlock": 2,
+        "receiver_frame_read/Transport": 2,
+        "receiver_handler_result/OutcomeUnknown": 1,
+        "tcp_connect/Transport/HostUnreachable": 269,
+        "tls_frame_write/Transport": 2
+      }
+    },
+    "pocket4": {
+      "forward_timeout_ms": 8000,
+      "local_listen": "192.168.0.9:46231",
+      "log_bytes": 848,
+      "log_sha256": "f5ade33f9992bd8e4cb823769cd4cb9aea130618ebb74907d774ad9cb20829d3",
+      "node_id": 3,
+      "peer_timeout_ms": 1500,
+      "stage_counts": {
+        "frame_read_length/Transport/UnexpectedEof": 2,
+        "receiver_frame_read/Transport": 2,
+        "receiver_tls_handshake/PeerAuthenticationFailed/UnexpectedEof": 2
+      }
+    },
+    "rog": {
+      "forward_timeout_ms": 8000,
+      "local_listen": "192.168.0.10:46231",
+      "log_bytes": 2384,
+      "log_sha256": "bb15b5419417b63d6958547282ba59e7c4484d29e1c1ab47bb7d86101de783cd",
+      "node_id": 2,
+      "peer_timeout_ms": 1500,
+      "stage_counts": {
+        "frame_read_length/Transport/UnexpectedEof": 3,
+        "receiver_frame_read/Transport": 2,
+        "tcp_connect/Transport/ConnectionRefused": 19
+      }
+    }
+  },
+  "original_passed": 36,
+  "original_required": 98,
+  "peer_maps_exactly_equal": true,
+  "schema": "heptabao.native-lan98-0f1c-network-review.v1",
+  "tcc_or_policy_denial_observed": false,
+  "transport_error_message_sha256": "79443b4c6187639e258aa6399b6f4db4f57410e1c207611c5221cacb8addef16"
+}

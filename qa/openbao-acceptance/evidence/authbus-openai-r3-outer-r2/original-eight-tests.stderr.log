@@ -1,0 +1,13 @@
+test_all_sdk_input_classes_bound_and_metadata_change_rejected (__main__.CustodyTests.test_all_sdk_input_classes_bound_and_metadata_change_rejected) ... ok
+test_changed_packet_fails_before_materialization (__main__.CustodyTests.test_changed_packet_fails_before_materialization) ... ok
+test_exact_packet_and_staged_closed_tree (__main__.CustodyTests.test_exact_packet_and_staged_closed_tree) ... ok
+test_exited_leader_does_not_hide_live_descendant (__main__.CustodyTests.test_exited_leader_does_not_hide_live_descendant) ... ok
+test_extra_source_file_is_not_ignored (__main__.CustodyTests.test_extra_source_file_is_not_ignored) ... ok
+test_normal_original_handle_is_waited_exactly_once (__main__.CustodyTests.test_normal_original_handle_is_waited_exactly_once) ... ok
+test_symlink_and_empty_nonlog_input_are_refused (__main__.CustodyTests.test_symlink_and_empty_nonlog_input_are_refused) ... ok
+test_timeout_kills_owned_new_pgid_and_never_extends_pass_deadline (__main__.CustodyTests.test_timeout_kills_owned_new_pgid_and_never_extends_pass_deadline) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 5.596s
+
+OK

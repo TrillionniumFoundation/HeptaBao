@@ -1,0 +1,47 @@
+{
+  "actual_host_pass_claim": false,
+  "base_commit": "07a3dda57c2996787825ced49e630bb0bf7a30b9",
+  "base_tree": "8c2b23cd1c66ac16b466f16ea97c201e852125aa",
+  "diagnostic_only_not_performance_fix": true,
+  "feature": "private-ha-forward-diagnostic",
+  "files": [
+    {
+      "base_git_blob": "2dfa91471d8a79c9856badbe7c6f7c44c461c0b1",
+      "base_sha256": "b7d5d496a02f2de7607f304e41d15da87a1a60b0cc33598954bddec0260afd6b",
+      "insertions": 7,
+      "original_text_restored_exactly_by_removing_only_new_instrumentation": true,
+      "path": "crates/heptabao-server/src/service_native_v6_ha_writer.rs",
+      "sha": "7299a23ce1cbb1dac9aa7b1cbc5db8a1b99a0da7",
+      "sha256": "958d973e0db3e707258840a62a68092e5f74a043a93088afd076bc8b5550fcfe",
+      "size": 14770,
+      "source_path": "/workspace/scratch/915e5e680008/continuation-20261019/ha-history-scaling-r1/phase-timing-r1/work/crates/heptabao-server/src/service_native_v6_ha_writer.rs"
+    },
+    {
+      "base_git_blob": "77820c87455030f9dc554a58e09870f0e6f5a0c6",
+      "base_sha256": "d38c74415f8d4ade25fc4f42b5bf93c67435ec38a28ed51862d0dce34ee63994",
+      "insertions": 14,
+      "original_text_restored_exactly_by_removing_only_new_instrumentation": true,
+      "path": "crates/heptabao-server/src/ha_native_v6_publication.rs",
+      "sha": "5930c7e6335d4baf5317a2c91f20f572c839bbff",
+      "sha256": "67e2064b81046ca3314a63a45de78d8d4b347527ed79a2ba3e49acf3cec96a42",
+      "size": 26879,
+      "source_path": "/workspace/scratch/915e5e680008/continuation-20261019/ha-history-scaling-r1/phase-timing-r1/work/crates/heptabao-server/src/ha_native_v6_publication.rs"
+    },
+    {
+      "base_git_blob": "745de97f5415bacde24703b770ab7bede95db1af",
+      "base_sha256": "4e27c0f2392032feb0904ec83bf86e2aa886025deffe238b9563eb0ceed4a140",
+      "insertions": 12,
+      "original_text_restored_exactly_by_removing_only_new_instrumentation": true,
+      "path": "crates/heptabao-server/src/service_native_v6_ha_install.rs",
+      "sha": "32e9d73f17b2775b2e0fd566e96b8f4d36443061",
+      "sha256": "f070942826d005dbb088db711abca18c1ec529104e122b4ed48906ead901c3b9",
+      "size": 53999,
+      "source_path": "/workspace/scratch/915e5e680008/continuation-20261019/ha-history-scaling-r1/phase-timing-r1/work/crates/heptabao-server/src/service_native_v6_ha_install.rs"
+    }
+  ],
+  "new_authentication_or_time_budget": false,
+  "original_guards_calls_control_flow_and_deadlines_unchanged": true,
+  "raw_payload_credentials_or_keys_logged": false,
+  "remote_compilation_or_execution": false,
+  "schema": "heptabao.native-ha-phase-timing-preparation.v1"
+}

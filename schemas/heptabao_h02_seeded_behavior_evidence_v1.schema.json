@@ -335,7 +335,7 @@
           "$ref": "#/$defs/sha40"
         },
         "repository": {
-          "const": "ProfHepta/HeptaBao"
+          "const": "TrillionniumFoundation/HeptaBao"
         },
         "tree_sha": {
           "$ref": "#/$defs/sha40"

@@ -1,0 +1,609 @@
+{
+  "read_only": true,
+  "results": [
+    {
+      "diagnostic": {
+        "credential_or_body_values_emitted": false,
+        "files": {
+          "audit.jsonl": {
+            "bytes": 17834,
+            "event_counts": {
+              "ordinary-kv-delivery-veto:503": 1,
+              "request:None": 34,
+              "response:200": 28,
+              "response:204": 5
+            },
+            "last_events": [
+              {
+                "kind": "response",
+                "path_group": 8,
+                "sequence": 40,
+                "status": 200,
+                "time": 1792290422
+              },
+              {
+                "kind": "request",
+                "path_group": 4,
+                "sequence": 41,
+                "status": null,
+                "time": 1792290422
+              },
+              {
+                "kind": "response",
+                "path_group": 4,
+                "sequence": 42,
+                "status": 204,
+                "time": 1792290422
+              },
+              {
+                "kind": "request",
+                "path_group": 8,
+                "sequence": 43,
+                "status": null,
+                "time": 1792290423
+              },
+              {
+                "kind": "response",
+                "path_group": 8,
+                "sequence": 44,
+                "status": 200,
+                "time": 1792290423
+              },
+              {
+                "kind": "request",
+                "path_group": 8,
+                "sequence": 45,
+                "status": null,
+                "time": 1792290423
+              },
+              {
+                "kind": "response",
+                "path_group": 8,
+                "sequence": 46,
+                "status": 200,
+                "time": 1792290423
+              },
+              {
+                "kind": "request",
+                "path_group": 10,
+                "sequence": 47,
+                "status": null,
+                "time": 1792290424
+              },
+              {
+                "kind": "response",
+                "path_group": 10,
+                "sequence": 48,
+                "status": 204,
+                "time": 1792290424
+              },
+              {
+                "kind": "request",
+                "path_group": 8,
+                "sequence": 49,
+                "status": null,
+                "time": 1792290425
+              },
+              {
+                "kind": "response",
+                "path_group": 8,
+                "sequence": 50,
+                "status": 200,
+                "time": 1792290425
+              },
+              {
+                "kind": "request",
+                "path_group": 5,
+                "sequence": 51,
+                "status": null,
+                "time": 1792290425
+              },
+              {
+                "kind": "response",
+                "path_group": 5,
+                "sequence": 52,
+                "status": 200,
+                "time": 1792290425
+              },
+              {
+                "kind": "request",
+                "path_group": 11,
+                "sequence": 53,
+                "status": null,
+                "time": 1792290430
+              },
+              {
+                "kind": "response",
+                "path_group": 11,
+                "sequence": 54,
+                "status": 200,
+                "time": 1792290430
+              },
+              {
+                "kind": "request",
+                "path_group": 5,
+                "sequence": 55,
+                "status": null,
+                "time": 1792290431
+              },
+              {
+                "kind": "response",
+                "path_group": 5,
+                "sequence": 56,
+                "status": 200,
+                "time": 1792290431
+              },
+              {
+                "kind": "request",
+                "path_group": 12,
+                "sequence": 57,
+                "status": null,
+                "time": 1792290438
+              },
+              {
+                "kind": "response",
+                "path_group": 12,
+                "sequence": 58,
+                "status": 200,
+                "time": 1792290438
+              },
+              {
+                "kind": "request",
+                "path_group": 5,
+                "sequence": 59,
+                "status": null,
+                "time": 1792290440
+              },
+              {
+                "kind": "response",
+                "path_group": 5,
+                "sequence": 60,
+                "status": 200,
+                "time": 1792290440
+              },
+              {
+                "kind": "request",
+                "path_group": 13,
+                "sequence": 61,
+                "status": null,
+                "time": 1792290448
+              },
+              {
+                "kind": "response",
+                "path_group": 13,
+                "sequence": 62,
+                "status": 200,
+                "time": 1792290448
+              },
+              {
+                "kind": "request",
+                "path_group": 5,
+                "sequence": 63,
+                "status": null,
+                "time": 1792290450
+              },
+              {
+                "kind": "response",
+                "path_group": 5,
+                "sequence": 64,
+                "status": 200,
+                "time": 1792290450
+              },
+              {
+                "kind": "request",
+                "path_group": 14,
+                "sequence": 65,
+                "status": null,
+                "time": 1792290461
+              },
+              {
+                "kind": "response",
+                "path_group": 14,
+                "sequence": 66,
+                "status": 200,
+                "time": 1792290461
+              },
+              {
+                "kind": "request",
+                "path_group": 5,
+                "sequence": 67,
+                "status": null,
+                "time": 1792290465
+              },
+              {
+                "kind": "response",
+                "path_group": 5,
+                "sequence": 68,
+                "status": 200,
+                "time": 1792290465
+              },
+              {
+                "kind": "ordinary-kv-delivery-veto",
+                "path_group": 5,
+                "sequence": 69,
+                "status": 503,
+                "time": 1792290478
+              }
+            ],
+            "link_count": 1,
+            "mode": "0o600",
+            "parse_failures": 0,
+            "sha256": "bace57b6749e9e05f932607838219c19e06add8e6b32108fd99db30cf8d74f4a",
+            "uid": 501,
+            "unselected_events": 1
+          },
+          "ha.json": {
+            "bytes": 1348,
+            "link_count": 1,
+            "mode": "0o600",
+            "numeric_configuration": [
+              {
+                "field": "bootstrap",
+                "value": true
+              },
+              {
+                "field": "forward_timeout_ms",
+                "value": 8000
+              },
+              {
+                "field": "max_inflight",
+                "value": 32
+              },
+              {
+                "field": "node_id",
+                "value": 1
+              },
+              {
+                "field": "peer_timeout_ms",
+                "value": 1500
+              },
+              {
+                "field": "peers_count",
+                "value": 3
+              }
+            ],
+            "sha256": "d28eb02c25f96474fbefe363255533c9e10ff7624e64c6b0e49df28ef76f4005",
+            "uid": 501
+          },
+          "process.log": {
+            "bytes": 1219,
+            "fixed_prefix_counts": {
+              "HBHA-DIAG-TERMINAL-FLOOR": 0,
+              "HBHA-MIXED-FWD-R4": 0,
+              "HBHA-R74-BEFORE-RECORD": 0,
+              "HBHTTP-RESPONSE-WRITE-FAILURE": 0,
+              "R910_OWNER_GUARD": 0,
+              "R910_RECEIPT_GUARD": 0,
+              "heptabao-forward-diagnostic:": 0,
+              "heptabao-r72-sync:": 5
+            },
+            "http_write_projections": [],
+            "link_count": 1,
+            "mode": "0o644",
+            "sha256": "cfb5110006757fb6dce1e7622d64ac419f00e186bcb6f28cd36a6a45de275ccf",
+            "sync_error_projections": [
+              {
+                "loaded": "true",
+                "record_root": "false",
+                "recovery": "false",
+                "status": "503"
+              },
+              {
+                "loaded": "true",
+                "record_root": "false",
+                "recovery": "false",
+                "status": "503"
+              },
+              {
+                "loaded": "true",
+                "record_root": "false",
+                "recovery": "false",
+                "status": "503"
+              },
+              {
+                "loaded": "true",
+                "record_root": "false",
+                "recovery": "false",
+                "status": "503"
+              },
+              {
+                "loaded": "true",
+                "record_root": "false",
+                "recovery": "false",
+                "status": "503"
+              }
+            ],
+            "terminal_floor_projections": [],
+            "uid": 501
+          },
+          "server.json": {
+            "bytes": 568,
+            "link_count": 1,
+            "mode": "0o600",
+            "numeric_configuration": [
+              {
+                "field": "lifecycle_interval_seconds",
+                "value": 1
+              },
+              {
+                "field": "max_connections",
+                "value": 64
+              },
+              {
+                "field": "timeout_seconds",
+                "value": 15
+              }
+            ],
+            "sha256": "1365ddffcd62c5bff61f10005ee23b6e42244dbfd40ad50b7baad7cf89314fde",
+            "uid": 501
+          }
+        },
+        "node_id": 1,
+        "read_only": true,
+        "root_owner_verified": true,
+        "run_id": "502a57f5a2a2b5f76f677513d514b2ae",
+        "schema": "heptabao.native-physical02-public-diagnostic.v1"
+      },
+      "exit_code": 0,
+      "host": "macbook-pro"
+    },
+    {
+      "diagnostic": {
+        "credential_or_body_values_emitted": false,
+        "files": {
+          "audit.jsonl": {
+            "bytes": 1542,
+            "event_counts": {
+              "request:None": 3,
+              "response:200": 3
+            },
+            "last_events": [
+              {
+                "kind": "request",
+                "path_group": 0,
+                "sequence": 1,
+                "status": null,
+                "time": 1792290410
+              },
+              {
+                "kind": "response",
+                "path_group": 0,
+                "sequence": 2,
+                "status": 200,
+                "time": 1792290410
+              },
+              {
+                "kind": "request",
+                "path_group": 1,
+                "sequence": 3,
+                "status": null,
+                "time": 1792290415
+              },
+              {
+                "kind": "response",
+                "path_group": 1,
+                "sequence": 4,
+                "status": 200,
+                "time": 1792290415
+              },
+              {
+                "kind": "request",
+                "path_group": 2,
+                "sequence": 5,
+                "status": null,
+                "time": 1792290417
+              },
+              {
+                "kind": "response",
+                "path_group": 2,
+                "sequence": 6,
+                "status": 200,
+                "time": 1792290417
+              }
+            ],
+            "link_count": 1,
+            "mode": "0o600",
+            "parse_failures": 0,
+            "sha256": "4d94281d99118d2aaff61257c8cc53ff682dff6a115f9fb77f39fece11b7f63c",
+            "uid": 1000,
+            "unselected_events": 0
+          },
+          "ha.json": {
+            "bytes": 1254,
+            "link_count": 1,
+            "mode": "0o600",
+            "numeric_configuration": [
+              {
+                "field": "bootstrap",
+                "value": false
+              },
+              {
+                "field": "forward_timeout_ms",
+                "value": 8000
+              },
+              {
+                "field": "max_inflight",
+                "value": 32
+              },
+              {
+                "field": "node_id",
+                "value": 2
+              },
+              {
+                "field": "peer_timeout_ms",
+                "value": 1500
+              },
+              {
+                "field": "peers_count",
+                "value": 3
+              }
+            ],
+            "sha256": "9c9c481676b4d4071452f8fc1764ebdeb6b6a012ae4f2293065c7a972d579402",
+            "uid": 1000
+          },
+          "process.log": {
+            "error_class": "AssertionError"
+          },
+          "server.json": {
+            "bytes": 492,
+            "link_count": 1,
+            "mode": "0o600",
+            "numeric_configuration": [
+              {
+                "field": "lifecycle_interval_seconds",
+                "value": 1
+              },
+              {
+                "field": "max_connections",
+                "value": 64
+              },
+              {
+                "field": "timeout_seconds",
+                "value": 15
+              }
+            ],
+            "sha256": "84ba181fde4f309804b00965913184de3fc6ab861a7269b60b679bdd90a853be",
+            "uid": 1000
+          }
+        },
+        "node_id": 2,
+        "read_only": true,
+        "root_owner_verified": true,
+        "run_id": "502a57f5a2a2b5f76f677513d514b2ae",
+        "schema": "heptabao.native-physical02-public-diagnostic.v1"
+      },
+      "exit_code": 0,
+      "host": "rog"
+    },
+    {
+      "diagnostic": {
+        "credential_or_body_values_emitted": false,
+        "files": {
+          "audit.jsonl": {
+            "bytes": 1542,
+            "event_counts": {
+              "request:None": 3,
+              "response:200": 3
+            },
+            "last_events": [
+              {
+                "kind": "request",
+                "path_group": 0,
+                "sequence": 1,
+                "status": null,
+                "time": 1792290410
+              },
+              {
+                "kind": "response",
+                "path_group": 0,
+                "sequence": 2,
+                "status": 200,
+                "time": 1792290410
+              },
+              {
+                "kind": "request",
+                "path_group": 1,
+                "sequence": 3,
+                "status": null,
+                "time": 1792290418
+              },
+              {
+                "kind": "response",
+                "path_group": 1,
+                "sequence": 4,
+                "status": 200,
+                "time": 1792290418
+              },
+              {
+                "kind": "request",
+                "path_group": 2,
+                "sequence": 5,
+                "status": null,
+                "time": 1792290421
+              },
+              {
+                "kind": "response",
+                "path_group": 2,
+                "sequence": 6,
+                "status": 200,
+                "time": 1792290421
+              }
+            ],
+            "link_count": 1,
+            "mode": "0o600",
+            "parse_failures": 0,
+            "sha256": "2bbe8e9fdbca0fdd13302b391cdb9b517314eec722461362b970b87c9de51503",
+            "uid": 1000,
+            "unselected_events": 0
+          },
+          "ha.json": {
+            "bytes": 1239,
+            "link_count": 1,
+            "mode": "0o600",
+            "numeric_configuration": [
+              {
+                "field": "bootstrap",
+                "value": false
+              },
+              {
+                "field": "forward_timeout_ms",
+                "value": 8000
+              },
+              {
+                "field": "max_inflight",
+                "value": 32
+              },
+              {
+                "field": "node_id",
+                "value": 3
+              },
+              {
+                "field": "peer_timeout_ms",
+                "value": 1500
+              },
+              {
+                "field": "peers_count",
+                "value": 3
+              }
+            ],
+            "sha256": "70bc7af11e32e3a6e7c175864c851362fc1cc7c78880a5dc0c9cee8bb87e6211",
+            "uid": 1000
+          },
+          "process.log": {
+            "error_class": "AssertionError"
+          },
+          "server.json": {
+            "bytes": 480,
+            "link_count": 1,
+            "mode": "0o600",
+            "numeric_configuration": [
+              {
+                "field": "lifecycle_interval_seconds",
+                "value": 1
+              },
+              {
+                "field": "max_connections",
+                "value": 64
+              },
+              {
+                "field": "timeout_seconds",
+                "value": 15
+              }
+            ],
+            "sha256": "96d7a9e424f85e7f5a019c52acd48cc0ddb2314cf7539184f4060f0b067f8ffa",
+            "uid": 1000
+          }
+        },
+        "node_id": 3,
+        "read_only": true,
+        "root_owner_verified": true,
+        "run_id": "502a57f5a2a2b5f76f677513d514b2ae",
+        "schema": "heptabao.native-physical02-public-diagnostic.v1"
+      },
+      "exit_code": 0,
+      "host": "pocket4"
+    }
+  ],
+  "root_cas_outcome_not_inferred": true,
+  "schema": "heptabao.native-physical02-public-diagnostic-controller.v1"
+}

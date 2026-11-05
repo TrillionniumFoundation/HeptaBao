@@ -1,0 +1,450 @@
+{
+  "base_root": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8n-capacity-01",
+  "base_unchanged": true,
+  "candidate_unchanged": true,
+  "change": {
+    "after_sha256": "a6ed8ee1a0928fbe8a834577beec2b0fea5530f2c764125559a0118be2e9dee5",
+    "before_sha256": "8245f74446604bc804a75dddb830c9270c5ba5a3a38135cbf25277e59aeb130b",
+    "path": "crates/heptabao-server/src/engines/kv2_native_install_projection_tests.rs",
+    "reason": "Close the final aggregate projection test function; no production-source change"
+  },
+  "elapsed_seconds": 546.384,
+  "expected_tests": 111,
+  "groups": [
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha",
+        "engines::kv::native_records::install::projection_tests::",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 331.708,
+      "exit_code": 0,
+      "expected_tests": 6,
+      "group": "native-projection",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8o-capacity-mac-verify-01/native-projection.log",
+      "log_sha256": "3d3a28ea9f3f0c01931707c7258d5c266f88e80d5e5bf5567b8045f1f3ebeefa",
+      "ok": true,
+      "running_counts": [
+        "6"
+      ],
+      "summaries": [
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 2707 filtered out; finished in 0.03s"
+      ]
+    },
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-durable-service",
+        "--lib",
+        "immutable_reuse_",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 1.795,
+      "exit_code": 0,
+      "expected_tests": 20,
+      "group": "durable-reuse",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8o-capacity-mac-verify-01/durable-reuse.log",
+      "log_sha256": "25f384d76eb8a2b143c13a6c815dea4e2206a1b1fe775d32dd29ef638e1fecfc",
+      "ok": true,
+      "running_counts": [
+        "20"
+      ],
+      "summaries": [
+        "test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 149 filtered out; finished in 1.44s"
+      ]
+    },
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-durable-service",
+        "--lib",
+        "immutable_source_session::tests::",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 0.887,
+      "exit_code": 0,
+      "expected_tests": 13,
+      "group": "durable-source-session",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8o-capacity-mac-verify-01/durable-source-session.log",
+      "log_sha256": "9ecb7ec728d7b5184406aeb54d79d1d4ef6985351c71fdd907846595cc7ecc41",
+      "ok": true,
+      "running_counts": [
+        "13"
+      ],
+      "summaries": [
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 156 filtered out; finished in 0.74s"
+      ]
+    },
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-durable-service",
+        "--lib",
+        "backend::immutable_cipher_store::tests::immutable_",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 1.525,
+      "exit_code": 0,
+      "expected_tests": 16,
+      "group": "durable-cipher-store",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8o-capacity-mac-verify-01/durable-cipher-store.log",
+      "log_sha256": "bac70c6c66c1173d4e9c021f13303cbf1b947a2ddedc144556c38e955c7f2d0a",
+      "ok": true,
+      "running_counts": [
+        "16"
+      ],
+      "summaries": [
+        "test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 153 filtered out; finished in 1.40s"
+      ]
+    },
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-raft-runtime",
+        "--lib",
+        "--features",
+        "experimental-v6-raft-objects",
+        "v6_replica_blobs::checked",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 1.106,
+      "exit_code": 0,
+      "expected_tests": 13,
+      "group": "raft-checked-existing",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8o-capacity-mac-verify-01/raft-checked-existing.log",
+      "log_sha256": "697680e14eb8d47dfe0c78a574d3fd91949d3484d2704cf058bfb8769dba42b2",
+      "ok": true,
+      "running_counts": [
+        "13"
+      ],
+      "summaries": [
+        "test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 124 filtered out; finished in 0.81s"
+      ]
+    },
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha",
+        "ordinary_kv_delivery::tests::",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 4.436,
+      "exit_code": 0,
+      "expected_tests": 9,
+      "group": "ordinary-kv-delivery",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8o-capacity-mac-verify-01/ordinary-kv-delivery.log",
+      "log_sha256": "c28e0df299c2274c82c99971e44517704f283592f19e9160b5b3aee93f29e312",
+      "ok": true,
+      "running_counts": [
+        "9"
+      ],
+      "summaries": [
+        "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 2704 filtered out; finished in 4.07s"
+      ]
+    },
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha",
+        "saturated_forwarding_preserves_native_quorum_read_index_and_reserved_consensus",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 0.999,
+      "exit_code": 0,
+      "expected_tests": 1,
+      "group": "native-ha-capacity",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8o-capacity-mac-verify-01/native-ha-capacity.log",
+      "log_sha256": "0b8a2fcaac1e9bec799e31e2a97f7b52a79be8e514c5dffa53077e9b68dd059b",
+      "ok": true,
+      "running_counts": [
+        "1"
+      ],
+      "summaries": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2712 filtered out; finished in 0.76s"
+      ]
+    },
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_ha_pipeline_service_activation_kv_auth_mtls_and_cold_leader_rejoin",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 16.657,
+      "exit_code": 0,
+      "expected_tests": 1,
+      "group": "native-ha-service-pipeline",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8o-capacity-mac-verify-01/native-ha-service-pipeline.log",
+      "log_sha256": "8bf4120bf5a3a18da6164e2f16c348ec7f0e3a24ead18812faba3caaa3ae4dc3",
+      "ok": true,
+      "running_counts": [
+        "1"
+      ],
+      "summaries": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2712 filtered out; finished in 16.45s"
+      ]
+    },
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_forward_projection_real_precise_clock_auth_and_kv2_owner_boundaries",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 8.358,
+      "exit_code": 0,
+      "expected_tests": 1,
+      "group": "native-ha-forward-precise",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8o-capacity-mac-verify-01/native-ha-forward-precise.log",
+      "log_sha256": "cf83b659cf55ac4635ec2c2ffad342dd81cf6c9d8caeef542185510479d0e521",
+      "ok": true,
+      "running_counts": [
+        "1"
+      ],
+      "summaries": [
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2712 filtered out; finished in 8.21s"
+      ]
+    },
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_ha_install_",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 20.535,
+      "exit_code": 0,
+      "expected_tests": 4,
+      "group": "native-ha-service-install",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8o-capacity-mac-verify-01/native-ha-service-install.log",
+      "log_sha256": "5c73eaf832f2ff7679765a11542a4f63f286a3ec2a5002db774e765b3ebde0d0",
+      "ok": true,
+      "running_counts": [
+        "4"
+      ],
+      "summaries": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 2709 filtered out; finished in 20.37s"
+      ]
+    },
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_auth::",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 54.798,
+      "exit_code": 0,
+      "expected_tests": 18,
+      "group": "native-auth",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8o-capacity-mac-verify-01/native-auth.log",
+      "log_sha256": "8129576802cfa7a4ee7e944f93c660ed940b5c6551486206ade1d9a1e5a71aac",
+      "ok": true,
+      "running_counts": [
+        "18"
+      ],
+      "summaries": [
+        "test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 2695 filtered out; finished in 54.64s"
+      ]
+    },
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_v6_ha_objects::",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 72.439,
+      "exit_code": 0,
+      "expected_tests": 4,
+      "group": "native-ha-objects-and-tls",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8o-capacity-mac-verify-01/native-ha-objects-and-tls.log",
+      "log_sha256": "2ea263f56bd557b68008ab385a50369faa4ee5a5523ce3118904fdc0b0f75a9d",
+      "ok": true,
+      "running_counts": [
+        "4"
+      ],
+      "summaries": [
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 2709 filtered out; finished in 72.25s"
+      ]
+    },
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_v6_writer::migration_tests::",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 12.451,
+      "exit_code": 0,
+      "expected_tests": 2,
+      "group": "native-migration-recovery",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8o-capacity-mac-verify-01/native-migration-recovery.log",
+      "log_sha256": "44aa6c62a9f59cc7639b4f30b7ef188a87fbecdb28bb6faf5e06bc96f1e98964",
+      "ok": true,
+      "running_counts": [
+        "2"
+      ],
+      "summaries": [
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 2711 filtered out; finished in 12.28s"
+      ]
+    },
+    {
+      "command": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--features",
+        "experimental-native-v6-ha",
+        "native_ha_archive_repair_",
+        "--",
+        "--nocapture",
+        "--test-threads=1",
+        "--color=never"
+      ],
+      "elapsed_seconds": 17.344,
+      "exit_code": 0,
+      "expected_tests": 3,
+      "group": "native-ha-archive-repair",
+      "log_path": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/r8o-capacity-mac-verify-01/native-ha-archive-repair.log",
+      "log_sha256": "2085904b82c245a623c218b94faaaf7822da5fa941137426ea5d5e22d6ed1156",
+      "ok": true,
+      "running_counts": [
+        "3"
+      ],
+      "summaries": [
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 2710 filtered out; finished in 17.18s"
+      ]
+    }
+  ],
+  "host": "MacBook-Pro.local",
+  "machine": "arm64",
+  "ok": true,
+  "source_manifest_sha256": "8b4ea1a907a2ff681df23ffddf76fd25a67567b345763162b680c8d54fa665b8",
+  "source_root": "/Volumes/T5/hepta-vnext-recovery-20261013/v6-next-gates-20261017/source-r8o-capacity-01",
+  "started_unix": 1792321776.2096791,
+  "status": "passed"
+}

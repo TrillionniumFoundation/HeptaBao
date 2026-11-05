@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.authbus-openai-r4-outer-pin-only-validation.v1",
+  "changedAssignmentsOnly": {
+    "PACKET_BYTES": 66601,
+    "PACKET_SHA": "90a6f58ba2a7905a3c34ce3893667d7859bab8390429fa834332fc16adec2cd6",
+    "MANIFEST_BYTES": 13605,
+    "MANIFEST_SHA": "9c37af8a0a2d5fb930bc14d47c5616bdd44e13c1a49df3365668dca14e46ed02",
+    "OVERLAY_SHA": "81f7341abed6032d6d754afcf8b4c5311ef3e400d28aa6b2b069f9bc7bf25c98"
+  },
+  "allOtherAstNodesIdentical": true,
+  "originalBudgetSeconds": 180,
+  "exactPacketMembersDecoded": 16,
+  "exactSdkInputManifestUnchanged": true,
+  "rejectedInputs": {
+    "old_r3_packet": "exact_frozen_packet_required",
+    "changed_packet": "exact_frozen_packet_required",
+    "old_partial_27_case_result": "public_original_child_binding_required"
+  },
+  "newActualSdkExecution": false,
+  "originalControllerSourceSha256": "ab57d4826c6d7b66b2c28f061df766d39bc21a7f2df1df9f90e3b0b8f81342d5"
+}

@@ -6,7 +6,7 @@
 //! Every committed record is an immutable file. A separately synchronized
 //! `TAIL` pointer publishes the contiguous authenticated prefix. One exact next
 //! orphan may be reconciled explicitly after a crash between entry persistence
-//! and tail publication. The Linux development profile holds an exclusive
+//! and tail publication. The Unix development profile holds an exclusive
 //! directory writer fence and resolves every journal object through the opened
 //! directory descriptor. It is not a production audit device or rollback
 //! anchor.
@@ -14,15 +14,16 @@
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
-use std::fs::{self, File, OpenOptions};
+#[cfg(test)]
+use std::fs;
 use std::io::{self, Read, Write};
-#[cfg(unix)]
-use std::os::unix::fs::OpenOptionsExt;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+#[cfg(test)]
+use std::path::PathBuf;
 use std::sync::atomic::{AtomicU64, Ordering};
 use zeroize::Zeroize;
 
-use heptabao_filesystem_guard::{DirectoryGuardError, ExclusiveDirectory};
+use heptabao_filesystem_guard::{DirectoryGuardError, ExclusiveDirectory, FileAccess};
 use heptabao_journal_api::{
     AppendReceipt, AuthenticatorId, DurableJournal, JournalAuthenticator, JournalContractError,
     JournalDomain, JournalOpenMode, JournalPayload, JournalRecord, JournalSequence, JournalTag,
@@ -68,7 +69,7 @@ impl<A: JournalAuthenticator> FileDurableJournal<A> {
         authenticator: A,
     ) -> Result<Self, FileJournalError<A::Error>> {
         let root = ExclusiveDirectory::open(root).map_err(map_directory_guard_error)?;
-        if !directory_is_empty(root.access_path())? {
+        if !directory_is_empty(&root)? {
             return Err(FileJournalError::DirectoryNotEmpty);
         }
         let mut marker = encode_marker(&domain, authenticator.authenticator_id())?;
@@ -154,20 +155,8 @@ impl<A: JournalAuthenticator> FileDurableJournal<A> {
         })
     }
 
-    fn marker_path(&self) -> PathBuf {
-        self.root.access_path().join(MARKER_NAME)
-    }
-
-    fn tail_path(&self) -> PathBuf {
-        self.root.access_path().join(TAIL_NAME)
-    }
-
-    fn entry_path(&self, sequence: JournalSequence) -> PathBuf {
-        self.root.access_path().join(entry_file_name(sequence))
-    }
-
     fn validate_marker(&self) -> Result<(), FileJournalError<A::Error>> {
-        let bytes = read_regular_file(&self.marker_path(), MAX_CONTROL_FILE_BYTES)
+        let bytes = read_regular_file(&self.root, MARKER_NAME, MAX_CONTROL_FILE_BYTES)
             .map_err(map_marker_error)?;
         let marker = decode_marker(&bytes).map_err(|_| FileJournalError::MarkerMismatch)?;
         if marker.domain != self.domain.as_str()
@@ -179,40 +168,35 @@ impl<A: JournalAuthenticator> FileDurableJournal<A> {
     }
 
     fn read_optional_tail(&self) -> Result<Option<JournalTail>, FileJournalError<A::Error>> {
-        match fs::symlink_metadata(self.tail_path()) {
-            Ok(_) => {
-                let bytes = read_regular_file(&self.tail_path(), MAX_CONTROL_FILE_BYTES)?;
-                decode_tail(&bytes)
-                    .map(Some)
-                    .map_err(|_| FileJournalError::CorruptJournal)
-            }
-            Err(error) if error.kind() == io::ErrorKind::NotFound => Ok(None),
-            Err(error) => Err(FileJournalError::Io(error)),
+        match read_regular_file(&self.root, TAIL_NAME, MAX_CONTROL_FILE_BYTES) {
+            Ok(bytes) => decode_tail(&bytes)
+                .map(Some)
+                .map_err(|_| FileJournalError::CorruptJournal),
+            Err(FileJournalError::Io(error)) if error.kind() == io::ErrorKind::NotFound => Ok(None),
+            Err(error) => Err(error),
         }
     }
 
     fn validate_layout(&self) -> Result<Option<JournalSequence>, FileJournalError<A::Error>> {
         let mut sequences = BTreeSet::new();
-        for entry in fs::read_dir(self.root.access_path()).map_err(FileJournalError::Io)? {
-            let entry = entry.map_err(FileJournalError::Io)?;
-            let file_type = entry.file_type().map_err(FileJournalError::Io)?;
-            let name = entry.file_name();
+        for entry in self.root.entries().map_err(FileJournalError::Io)? {
+            let name = entry.map_err(FileJournalError::Io)?;
             let name = name.to_str().ok_or(FileJournalError::UnexpectedEntry)?;
             if name.contains(".tmp-") {
                 return Err(FileJournalError::UnresolvedTemporaryArtifact);
             }
             if name == MARKER_NAME || name == TAIL_NAME {
-                if file_type.is_symlink() || !file_type.is_file() {
-                    return Err(FileJournalError::UnsafeFileType);
-                }
+                self.root
+                    .open_file(name, FileAccess::Read)
+                    .map_err(map_guarded_open_error)?;
                 continue;
             }
             let sequence = parse_entry_file_name(name)
                 .map_err(|_| FileJournalError::CorruptJournal)?
                 .ok_or(FileJournalError::UnexpectedEntry)?;
-            if file_type.is_symlink() || !file_type.is_file() {
-                return Err(FileJournalError::UnsafeFileType);
-            }
+            self.root
+                .open_file(name, FileAccess::Read)
+                .map_err(map_guarded_open_error)?;
             if !sequences.insert(sequence) {
                 return Err(FileJournalError::CorruptJournal);
             }
@@ -266,7 +250,8 @@ impl<A: JournalAuthenticator> FileDurableJournal<A> {
         let maximum = MAX_JOURNAL_PAYLOAD_BYTES
             .checked_add(ENTRY_OVERHEAD_BOUND)
             .ok_or(FileJournalError::CorruptJournal)?;
-        let bytes = read_regular_file(&self.entry_path(sequence), maximum)?;
+        let entry_name = entry_file_name(sequence);
+        let bytes = read_regular_file(&self.root, &entry_name, maximum)?;
         let record = decode_entry(&bytes).map_err(|_| FileJournalError::CorruptJournal)?;
         if record.sequence != sequence || record.previous_tag != expected_previous_tag {
             return Err(FileJournalError::ChainMismatch);
@@ -577,11 +562,11 @@ where
     }
 }
 
-fn directory_is_empty<E>(root: &Path) -> Result<bool, FileJournalError<E>>
+fn directory_is_empty<E>(root: &ExclusiveDirectory) -> Result<bool, FileJournalError<E>>
 where
     E: Error + Send + Sync + 'static,
 {
-    let mut entries = fs::read_dir(root).map_err(FileJournalError::Io)?;
+    let mut entries = root.entries().map_err(FileJournalError::Io)?;
     match entries.next() {
         None => Ok(true),
         Some(Ok(_)) => Ok(false),
@@ -601,19 +586,31 @@ where
     }
 }
 
-fn read_regular_file<E>(path: &Path, maximum: usize) -> Result<Vec<u8>, FileJournalError<E>>
+fn map_guarded_open_error<E>(error: io::Error) -> FileJournalError<E>
 where
     E: Error + Send + Sync + 'static,
 {
-    let mut options = OpenOptions::new();
-    options.read(true);
-    #[cfg(target_os = "linux")]
-    options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
-    let file = options.open(path).map_err(FileJournalError::Io)?;
-    let metadata = file.metadata().map_err(FileJournalError::Io)?;
-    if !metadata.is_file() {
-        return Err(FileJournalError::UnsafeFileType);
+    if error.kind() == io::ErrorKind::Other
+        || matches!(error.raw_os_error(), Some(code) if code == libc::ELOOP || code == libc::EISDIR)
+    {
+        FileJournalError::UnsafeFileType
+    } else {
+        FileJournalError::Io(error)
     }
+}
+
+fn read_regular_file<E>(
+    root: &ExclusiveDirectory,
+    leaf_name: &str,
+    maximum: usize,
+) -> Result<Vec<u8>, FileJournalError<E>>
+where
+    E: Error + Send + Sync + 'static,
+{
+    let file = root
+        .open_file(leaf_name, FileAccess::Read)
+        .map_err(map_guarded_open_error)?;
+    let metadata = file.metadata().map_err(FileJournalError::Io)?;
     let maximum_u64 = u64::try_from(maximum).map_err(|_| FileJournalError::CorruptJournal)?;
     if metadata.len() > maximum_u64 {
         return Err(FileJournalError::CorruptJournal);
@@ -633,24 +630,13 @@ where
     Ok(bytes)
 }
 
-fn secure_create_new(path: &Path) -> io::Result<File> {
-    let mut options = OpenOptions::new();
-    options.write(true).create_new(true);
-    #[cfg(unix)]
-    options.mode(0o600);
-    #[cfg(target_os = "linux")]
-    options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
-    options.open(path)
-}
-
 fn write_new_file_and_sync_parent(
     root: &ExclusiveDirectory,
     leaf_name: &str,
     bytes: &[u8],
 ) -> io::Result<()> {
     root.verify().map_err(io::Error::other)?;
-    let path = root.leaf_path(leaf_name).map_err(io::Error::other)?;
-    let mut file = secure_create_new(&path)?;
+    let mut file = root.open_file(leaf_name, FileAccess::CreateNew)?;
     file.write_all(bytes)?;
     file.flush()?;
     file.sync_all()?;
@@ -670,39 +656,21 @@ fn atomic_replace(
     }
     let sequence = TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed);
     let temporary_name = format!(".{target_name}.tmp-{}-{sequence:016x}", std::process::id());
-    let temporary_path = match root.leaf_path(&temporary_name) {
-        Ok(path) => path,
-        Err(error) => {
-            return Err(AtomicReplaceError {
-                source: io::Error::other(error),
-                published: false,
-            });
-        }
-    };
-    let target_path = match root.leaf_path(target_name) {
-        Ok(path) => path,
-        Err(error) => {
-            return Err(AtomicReplaceError {
-                source: io::Error::other(error),
-                published: false,
-            });
-        }
-    };
     let write_result = (|| -> io::Result<()> {
-        let mut file = secure_create_new(&temporary_path)?;
+        let mut file = root.open_file(&temporary_name, FileAccess::CreateNew)?;
         file.write_all(bytes)?;
         file.flush()?;
         file.sync_all()
     })();
     if let Err(source) = write_result {
-        let _ = fs::remove_file(&temporary_path);
+        let _ = root.remove_file(&temporary_name);
         return Err(AtomicReplaceError {
             source,
             published: false,
         });
     }
-    if let Err(source) = fs::rename(&temporary_path, &target_path) {
-        let _ = fs::remove_file(&temporary_path);
+    if let Err(source) = root.rename(&temporary_name, target_name) {
+        let _ = root.remove_file(&temporary_name);
         return Err(AtomicReplaceError {
             source,
             published: false,
@@ -1011,7 +979,7 @@ mod tests {
                 .duration_since(UNIX_EPOCH)
                 .map_err(io::Error::other)?
                 .as_nanos();
-            let path = std::env::temp_dir().join(format!(
+            let path = std::env::temp_dir().canonicalize()?.join(format!(
                 "heptabao-single-node-journal-{}-{sequence:016x}-{nanos:x}",
                 std::process::id()
             ));

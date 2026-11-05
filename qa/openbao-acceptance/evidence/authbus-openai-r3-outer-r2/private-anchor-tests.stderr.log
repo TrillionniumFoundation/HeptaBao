@@ -1,0 +1,15 @@
+test_a_different_file_uid_is_rejected_without_chown_or_permission_changes (__main__.PrivateSdkInputChecks.test_a_different_file_uid_is_rejected_without_chown_or_permission_changes) ... ok
+test_a_nonprivate_anchor_is_rejected_before_reading_any_input_bytes (__main__.PrivateSdkInputChecks.test_a_nonprivate_anchor_is_rejected_before_reading_any_input_bytes) ... ok
+test_actual_group_write_modes_are_accepted_only_beneath_private_anchor (__main__.PrivateSdkInputChecks.test_actual_group_write_modes_are_accepted_only_beneath_private_anchor) ... ok
+test_each_opened_descriptor_is_closed_after_a_failed_hash_check (__main__.PrivateSdkInputChecks.test_each_opened_descriptor_is_closed_after_a_failed_hash_check) ... ok
+test_generic_input_and_directory_rules_keep_rejecting_group_write (__main__.PrivateSdkInputChecks.test_generic_input_and_directory_rules_keep_rejecting_group_write) ... ok
+test_hardlinks_and_world_writable_input_or_directory_remain_forbidden (__main__.PrivateSdkInputChecks.test_hardlinks_and_world_writable_input_or_directory_remain_forbidden) ... ok
+test_missing_hash_wrong_hash_and_expired_original_deadline_are_rejected (__main__.PrivateSdkInputChecks.test_missing_hash_wrong_hash_and_expired_original_deadline_are_rejected) ... ok
+test_private_ancestor_permission_change_during_read_is_not_ignored (__main__.PrivateSdkInputChecks.test_private_ancestor_permission_change_during_read_is_not_ignored) ... ok
+test_symlink_components_and_a_symlink_final_input_are_rejected (__main__.PrivateSdkInputChecks.test_symlink_components_and_a_symlink_final_input_are_rejected) ... ok
+test_the_private_rule_cannot_be_applied_to_a_sibling_outside_the_sdk (__main__.PrivateSdkInputChecks.test_the_private_rule_cannot_be_applied_to_a_sibling_outside_the_sdk) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.013s
+
+OK
