@@ -1,0 +1,18 @@
+{
+  "schema": "heptabao.evidence-publication-readback.v1",
+  "branch": "codex/heptabao-replacement-evidence-20261105-r1",
+  "parent_commit": "da4d7a0af5bd398ed2945cf9e48bcd95a5f77fbc",
+  "commit": "f42abe91eb84ce0af73e18708bc5f9edfa33ebb6",
+  "tree": "eab7423f6160901c52af0abca112068b848fa80f",
+  "archive_git_blob": "b6e36826efc628e66b349f7b9313f91b53bad733",
+  "archive_sha256": "80e2dd62f55845be5abdb968dda2aa641f23250e28d8d953c1d505292aa82501",
+  "archive_bytes": 63531,
+  "actual_branch_head_readback_matches": true,
+  "remote_file_base64_readback_exact_original_bytes": true,
+  "rejected_read_methods": [
+    "github_fetch rejected binary as non-UTF8",
+    "github_fetch_blob rejected binary decoding"
+  ],
+  "successful_read_method": "github_fetch_file explicit base64 at exact new commit",
+  "replacement_qualified": false
+}

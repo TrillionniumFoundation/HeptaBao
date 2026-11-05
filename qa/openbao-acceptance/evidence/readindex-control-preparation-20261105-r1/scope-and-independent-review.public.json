@@ -1,0 +1,107 @@
+{
+  "actual_current_mac_control35_and11_started": false,
+  "actual_current_mac_control42_original_job_id": "1a1abbfc587-fc05-504c",
+  "actual_current_mac_control42_terminal_retrieved": false,
+  "actual_local_control_cohorts": [
+    {
+      "local_directory": "control-qa-r4",
+      "passed": 42,
+      "physical_product_evidence": false,
+      "required": 42,
+      "result_sha256": "6dc8a47e9d65da2e3870f61c55ecd737758a6e22084db559e9b65140022d204e"
+    },
+    {
+      "local_directory": "log-control-qa-r2",
+      "passed": 35,
+      "physical_product_evidence": false,
+      "required": 35,
+      "result_sha256": "86f79c6a2eaf66952fa85d24858371d15e7ae829d57ce6f9b7c31d61affaae65"
+    },
+    {
+      "local_directory": "wire-control-qa-local-r2",
+      "passed": 11,
+      "physical_product_evidence": false,
+      "required": 11,
+      "result_sha256": "c52fc39024016d5e42bc4037d70bf9254ee1121413804bb990d88a199ce0178a"
+    },
+    {
+      "local_directory": "history-extension-control-r3",
+      "passed": 13,
+      "physical_product_evidence": false,
+      "required": 13,
+      "result_sha256": "3c912059fd91d32fbc8f721dd654e2a46accdca8f4905961a017643f304b4e35"
+    }
+  ],
+  "candidate_source_commit": "fa37c0fc6f28317d5f432bbbc2bbae062c4be064",
+  "candidate_source_is_not_test_qualification": true,
+  "candidate_source_tree": "b1911f24c0b5c2c2ca67590b4e52c7d47dbf43af",
+  "closed_entries": [
+    {
+      "DRAFT_ONLY": true,
+      "filename": "native_read_index_wire.py",
+      "sha256": "509389e7e18f7ff8b5c04f684ff9d73abe3acaec2292f805d0af9827539a566e"
+    },
+    {
+      "DRAFT_ONLY": true,
+      "filename": "native_read_index_history_extension.py",
+      "sha256": "5330fd6d730f0fe2bfe071678c4e71e6bcca37bc48532ccbdc07bb2c7bda35bf"
+    },
+    {
+      "DRAFT_ONLY": true,
+      "filename": "native_v6_ha_allhosts_owned_live.py",
+      "sha256": "3feaaf0389f540adcceaea3163f082033489a7f4ac34a7774702226097b1db9c"
+    },
+    {
+      "DRAFT_ONLY": true,
+      "filename": "native_v6_ha_official_history_live.py",
+      "sha256": "00676bf477e4c4f3780013a9d74b694d0b0ee84d06f02b3e6c4a01f729f465e2"
+    }
+  ],
+  "current_history_control_additions": "Both sequence-gap and contiguous-model missing-terminal refusals, twenty historical owners, one standalone OFF profile, strict owner binding, final fsync deadline, original request and stop ordering.",
+  "earlier_history_control_9_of_10_failure_retained": true,
+  "earlier_history_control_failure_reason": "Removed model terminal was rejected first by the existing sequence-gap check; the test expected a later missing-terminal refusal.",
+  "executed_minority_readindex_failure_proven": false,
+  "full_process_lifetime_completeness_proven": false,
+  "github_history_wire_sha256_is_not_that_runtime_file": "15355994054c75d293a98f906b8762751b6edd59376a896267a9546ae8ceb080",
+  "launch_count_basis": {
+    "first_leader_rejoin": 1,
+    "full_cold_restart": 3,
+    "initial_native": 3,
+    "missing_cipher_healthy_source": 1,
+    "missing_cipher_pair": 2,
+    "missing_cipher_per_node_cold": 3,
+    "official_all_node_cold_restart": 3,
+    "official_leader_rejoin": 1,
+    "quorum_peers_rejoin": 2,
+    "standalone_seed": 1
+  },
+  "native128_product_runs": 0,
+  "new_actual_owner21_runs": 0,
+  "new_pool_covers": "All twenty original closed-log reads, local original-body/hash checks, correlations and final report fsync.",
+  "new_pool_fixed_before_first_product_run": true,
+  "new_post_cleanup_evidence_pool_seconds": 360,
+  "original_budget_credit": false,
+  "original_budgets_unchanged_seconds": {
+    "cleanup": 45,
+    "http": 15,
+    "live_stop": 5,
+    "outer_fixture": 1800
+  },
+  "original_history_wire_runtime_bytes_still_pending": true,
+  "original_history_wire_runtime_sha256_required": "71a81748c07f22a2584993239b28e2e02babe97e5de8fc1f6911d7353fa3bc22",
+  "original_product_denominators": {
+    "direct": 98,
+    "official_history": 30,
+    "owner_checks": 6
+  },
+  "original_success_path_launches": 20,
+  "per_closed_log_read_seconds": 15,
+  "physical_ha_qualified": false,
+  "production_changed": false,
+  "production_credentials_tested": false,
+  "replacement_qualified": false,
+  "schema": "heptabao.readindex-control-checkpoint.v1",
+  "status": "draft_live_entry_closed_actual_local_controls_only",
+  "synthetic_tls_private_keys_and_generated_model_artifacts_included": false,
+  "traffic_cutover": false
+}
