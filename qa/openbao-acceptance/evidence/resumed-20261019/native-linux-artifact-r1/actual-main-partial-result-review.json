@@ -1,0 +1,31 @@
+{
+  "schema": "heptabao.local-read-of-actual-main-libtest-metadata.v1",
+  "actual_main_summary_sha256": "088dbedff2505c26e82f4e85e49d2d1b144b7ca6733c0acf991f428252bd80f9",
+  "source_commit": "0f1c996136aae94e99c2b709a5797ffea479f6cd",
+  "source_tree": "8befd5cedfb7ccafee5f707e5985d49eeb78fb60",
+  "actual_producer_runner_sha256": "38024bcb83884da1b8b1b8aa4865c9c545fd0bb30f4d235c7a34e0d5d07815bc",
+  "local_review_only": true,
+  "actual_executor_test_runs_by_review": 0,
+  "partial_failure_counts_retained": {
+    "native-kv2-import": {
+      "actual_original_log_sha256": "717eeac8daf07134621e75a1dd519c03e7e81eee60a405e5e9384290b991a45a",
+      "actual_original_exit_code": 101,
+      "observed_result": {
+        "status": "FAILED",
+        "passed": 7,
+        "failed": 1,
+        "ignored": 0
+      }
+    },
+    "native-kv2-storage-witness": {
+      "actual_original_log_sha256": "554004dd3098c05d0032a95e62a6d6fd9cd9a7e4386477a531c507eb6f6abb23",
+      "actual_original_exit_code": 101,
+      "observed_result": {
+        "status": "FAILED",
+        "passed": 4,
+        "failed": 1,
+        "ignored": 0
+      }
+    }
+  }
+}

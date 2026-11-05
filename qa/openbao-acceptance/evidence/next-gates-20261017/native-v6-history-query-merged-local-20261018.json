@@ -1,0 +1,28 @@
+{
+  "actual_running_summary": true,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "test_native_v6_ha_multihost_live.NativeHistoryHttpTests",
+    "-v"
+  ],
+  "elapsed_seconds": 0.987,
+  "exit_code": 0,
+  "expected_tests": 1,
+  "harness_sha256": "ca909ec0d8c70954a369ff2d6875094d1e4b8bf0d06d1bb589114b5c56203727",
+  "log": {
+    "bytes": 292,
+    "path": "native-v6-history-query-merged-local-20261018.log",
+    "sha256": "d35507f0322d74245ba04fae4d43bcdf0cbab1c6ef143d64173962e48ca23061"
+  },
+  "passed": true,
+  "prior_sandbox_attempt": {
+    "error": "PermissionError creating AF_INET socket; test body not reached",
+    "exit_code": 1
+  },
+  "recorded_at": "2026-10-18T02:58:48.615556+00:00",
+  "schema": "heptabao.native-history-merged-local.v1",
+  "scope": "real loopback HTTP query selection only; no HA/TLS qualification",
+  "test_sha256": "95feb1f2e09a8421f1a320ddda89b2e62a33bd696a2e24d755de4fdbdd6635d7"
+}

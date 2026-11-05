@@ -1,0 +1,20 @@
+{
+  "operation": "populate_locked_dependency_cache",
+  "argv": [
+    "/home/qian/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+    "fetch",
+    "--locked",
+    "--manifest-path",
+    "/home/qian/heptabao-continuation-20261019/source-ee5/Cargo.toml",
+    "--target",
+    "x86_64-unknown-linux-gnu"
+  ],
+  "started_unix": 1792380676.033776,
+  "original_fetch_budget_seconds": 360,
+  "production_changed": false,
+  "pid": 844390,
+  "return_code": 0,
+  "lock_unchanged": true,
+  "finished_unix": 1792380684.8777463,
+  "log_sha256": "6fe7f48416215585c50be68c4e85d8d5abe2d7d25567dce0193f0e2d1d319179"
+}

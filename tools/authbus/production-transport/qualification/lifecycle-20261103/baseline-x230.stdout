@@ -1,0 +1,164 @@
+TAP version 13
+# (node:1864857) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: expired persisted active lease performs one fresh AppRole login and a real TLS KV read
+not ok 1 - expired persisted active lease performs one fresh AppRole login and a real TLS KV read
+  ---
+  duration_ms: 81.923205
+  type: 'test'
+  location: '/home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/tests/lifecycle.test.mjs:139:1'
+  failureType: 'testCodeFailure'
+  error: 'active_bearer_expired'
+  code: 'active_bearer_expired'
+  name: 'BaoError'
+  stack: |-
+    requireValue (file:///home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/plugin/strict-bao-client.js:45:64)
+    #active (file:///home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/plugin/strict-bao-client.js:232:5)
+    #ensureActive (file:///home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/plugin/strict-bao-client.js:251:24)
+    file:///home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/plugin/strict-bao-client.js:447:46
+    file:///home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/plugin/strict-bao-client.js:194:94
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+  ...
+# Subtest: production read restarts an expired bearer before actual control and KV reads
+not ok 2 - production read restarts an expired bearer before actual control and KV reads
+  ---
+  duration_ms: 40.24327
+  type: 'test'
+  location: '/home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/tests/lifecycle.test.mjs:191:1'
+  failureType: 'testCodeFailure'
+  error: 'active_bearer_expired'
+  code: 'active_bearer_expired'
+  name: 'BaoError'
+  stack: |-
+    requireValue (file:///home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/plugin/strict-bao-client.js:45:64)
+    #active (file:///home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/plugin/strict-bao-client.js:232:5)
+    file:///home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/plugin/strict-bao-client.js:476:34
+    file:///home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/plugin/strict-bao-client.js:194:94
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+  ...
+# Subtest: expired caller deadline dispatches no renewal, reauthentication, read, or publication
+not ok 3 - expired caller deadline dispatches no renewal, reauthentication, read, or publication
+  ---
+  duration_ms: 136.866957
+  type: 'test'
+  location: '/home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/tests/lifecycle.test.mjs:201:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/tests/lifecycle.test.mjs:205:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: renewal reply beyond the caller deadline leaves one unresolved attempt and performs no later reads
+not ok 4 - renewal reply beyond the caller deadline leaves one unresolved attempt and performs no later reads
+  ---
+  duration_ms: 2099.890712
+  type: 'test'
+  location: '/home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/tests/lifecycle.test.mjs:213:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The validation function is expected to return "true". Received false
+    
+    Caught error:
+    
+    OutboxError: outbox_operation_deadline
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  stack: |-
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async TestContext.<anonymous> (file:///home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/tests/lifecycle.test.mjs:216:3)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: renewal and expiry recovery receive the exact original absolute deadline
+not ok 5 - renewal and expiry recovery receive the exact original absolute deadline
+  ---
+  duration_ms: 5.678248
+  type: 'test'
+  location: '/home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/tests/lifecycle.test.mjs:225:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly deep-equal:
+    + actual - expected
+    
+      [
+        [
+          'renew',
+    +     undefined
+    -     {
+    -       deadlineMs: 1793701134066
+    -     }
+        ]
+      ]
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+    0:
+      0: 'renew'
+      1:
+        deadlineMs: 1793701134066
+  actual:
+    0:
+      0: 'renew'
+  operator: 'deepStrictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/tests/lifecycle.test.mjs:231:10)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: fixed-slot outbox rejects the caller deadline before taking an operation lock
+not ok 6 - fixed-slot outbox rejects the caller deadline before taking an operation lock
+  ---
+  duration_ms: 2.074579
+  type: 'test'
+  location: '/home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/tests/lifecycle.test.mjs:237:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /outbox_operation_deadline/. Input:
+    
+    'Error: unexpected_lock'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual:
+  error: 'unexpected_lock'
+  stack: |-
+    Object.withLock (file:///home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/tests/lifecycle.test.mjs:240:70)
+    BoundedOutbox.publish (file:///home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/plugin/bounded-outbox.js:185:24)
+    TestContext.<anonymous> (file:///home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/tests/lifecycle.test.mjs:244:31)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  operator: 'rejects'
+  stack: |-
+    process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    async TestContext.<anonymous> (file:///home/qian/heptabao-authbus-lifecycle-20261103-r1/evidence/baseline-regression/tests/lifecycle.test.mjs:244:3)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 0
+# fail 6
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3549.859467

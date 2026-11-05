@@ -37,19 +37,18 @@ Each node owns one log store and one state-machine store. The formats use strict
 
 The qualification router can isolate and pause a node, then heal the topology. The package proves an isolated former leader cannot advance its committed index. The store suite covers truncation, corruption, interrupted replacement, stale predecessor cleanup, unexpected directory occupants and replacement attacks. Cross-process power loss, disk-full, network TLS, Byzantine peers and correlated-host failure remain separate gates.
 
-## Activation gap
+## Repository implementation closure and external admission
 
-Production activation still requires:
+The repository-controlled product path now contains pinned mTLS peer identity, bounded
+same-CA leaf overlap rotation with old-pin retirement, authorized membership
+transitions, bounded peer framing/backpressure, server leader forwarding, ReadIndex
+reads, three independent local operating-system processes, snapshot catch-up,
+quorum/partition faults and exact-base-to-candidate rolling upgrade fixtures. Those
+fixtures are mandatory exact-source gates; they are scoped evidence, not production
+authority.
 
-```text
-mTLS peer identity and certificate rotation
-+ authorized join/promote/remove protocols
-+ bounded network framing and backpressure
-+ server leader forwarding and redirect semantics
-+ three independent operating-system processes/hosts
-+ rolling upgrade and snapshot transfer
-+ destructive partition/quorum/power-loss qualification
-+ independent linearizability observation
-```
-
-Until those gates pass, `HB-V2-REP-013` remains `IMPLEMENTATION_IN_PROGRESS` even though the repository-owned consensus core is implemented and reviewable.
+HB-V2-REP-013 is therefore implementation-complete and review-required. Production
+admission still requires independently controlled multi-host execution, CA/trust-root
+rotation and revocation, HSM/KMS custody, real power-loss/disk-full campaigns,
+longitudinal concurrent-history observation and independent reproduction. Repository
+CI must not convert those external facts into self-issued qualification.

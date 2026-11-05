@@ -20,7 +20,9 @@
     "claims"
   ],
   "properties": {
-    "schema_id": {"const": "HEPTABAO_EXTERNAL_EVIDENCE_V2_5"},
+    "schema_id": {
+      "const": "HEPTABAO_EXTERNAL_EVIDENCE_V2_5"
+    },
     "gate_id": {
       "enum": [
         "HB-BLK-CTRL-001",
@@ -30,29 +32,60 @@
         "HB-BLK-EXT-004",
         "HB-BLK-EXT-005",
         "HB-BLK-EXT-006",
-        "HB-BLK-EXT-007"
+        "HB-BLK-EXT-007",
+        "HB-BLK-EXT-008"
       ]
     },
     "subject": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["repository", "commit", "tree", "profile"],
+      "required": [
+        "repository",
+        "commit",
+        "tree",
+        "profile"
+      ],
       "properties": {
-        "repository": {"type": "string", "minLength": 1, "maxLength": 192},
-        "commit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
-        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
-        "profile": {"$ref": "#/$defs/token"}
+        "repository": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 192
+        },
+        "commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "tree": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "profile": {
+          "$ref": "#/$defs/token"
+        }
       }
     },
     "issuer": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["actor_id", "role", "organization", "public_key_id"],
+      "required": [
+        "actor_id",
+        "role",
+        "organization",
+        "public_key_id"
+      ],
       "properties": {
-        "actor_id": {"$ref": "#/$defs/token"},
-        "role": {"$ref": "#/$defs/token"},
-        "organization": {"$ref": "#/$defs/token"},
-        "public_key_id": {"$ref": "#/$defs/token"}
+        "actor_id": {
+          "$ref": "#/$defs/token"
+        },
+        "role": {
+          "$ref": "#/$defs/token"
+        },
+        "organization": {
+          "$ref": "#/$defs/token"
+        },
+        "public_key_id": {
+          "$ref": "#/$defs/token"
+        }
       }
     },
     "separation": {
@@ -71,12 +104,22 @@
           "minItems": 1,
           "maxItems": 128,
           "uniqueItems": true,
-          "items": {"$ref": "#/$defs/token"}
+          "items": {
+            "$ref": "#/$defs/token"
+          }
         },
-        "implementation_control_root": {"$ref": "#/$defs/token"},
-        "evidence_control_root": {"$ref": "#/$defs/token"},
-        "runner_control_root": {"$ref": "#/$defs/token"},
-        "signing_control_root": {"$ref": "#/$defs/token"}
+        "implementation_control_root": {
+          "$ref": "#/$defs/token"
+        },
+        "evidence_control_root": {
+          "$ref": "#/$defs/token"
+        },
+        "runner_control_root": {
+          "$ref": "#/$defs/token"
+        },
+        "signing_control_root": {
+          "$ref": "#/$defs/token"
+        }
       }
     },
     "artifacts": {
@@ -86,7 +129,12 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["path", "sha256", "bytes", "media_type"],
+        "required": [
+          "path",
+          "sha256",
+          "bytes",
+          "media_type"
+        ],
         "properties": {
           "path": {
             "type": "string",
@@ -94,9 +142,17 @@
             "maxLength": 512,
             "pattern": "^(?!/)(?!~)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"
           },
-          "sha256": {"$ref": "#/$defs/sha256"},
-          "bytes": {"type": "integer", "minimum": 1, "maximum": 1099511627776},
-          "media_type": {"$ref": "#/$defs/token"}
+          "sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "bytes": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1099511627776
+          },
+          "media_type": {
+            "$ref": "#/$defs/token"
+          }
         }
       }
     },
@@ -107,12 +163,26 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "status", "artifact_sha256", "observed_at"],
+        "required": [
+          "id",
+          "status",
+          "artifact_sha256",
+          "observed_at"
+        ],
         "properties": {
-          "id": {"$ref": "#/$defs/token"},
-          "status": {"const": "PASS"},
-          "artifact_sha256": {"$ref": "#/$defs/sha256"},
-          "observed_at": {"type": "string", "format": "date-time"}
+          "id": {
+            "$ref": "#/$defs/token"
+          },
+          "status": {
+            "const": "PASS"
+          },
+          "artifact_sha256": {
+            "$ref": "#/$defs/sha256"
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       }
     },
@@ -133,19 +203,47 @@
           "payload_sha256"
         ],
         "properties": {
-          "signer_actor_id": {"$ref": "#/$defs/token"},
-          "role": {"$ref": "#/$defs/token"},
-          "public_key_id": {"$ref": "#/$defs/token"},
-          "signed_at": {"type": "string", "format": "date-time"},
-          "algorithm": {"enum": ["ed25519", "ecdsa-p256-sha256"]},
-          "signature": {"type": "string", "minLength": 32, "maxLength": 8192},
-          "payload_sha256": {"$ref": "#/$defs/sha256"}
+          "signer_actor_id": {
+            "$ref": "#/$defs/token"
+          },
+          "role": {
+            "$ref": "#/$defs/token"
+          },
+          "public_key_id": {
+            "$ref": "#/$defs/token"
+          },
+          "signed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "algorithm": {
+            "enum": [
+              "ed25519",
+              "ecdsa-p256-sha256"
+            ]
+          },
+          "signature": {
+            "type": "string",
+            "minLength": 32,
+            "maxLength": 8192
+          },
+          "payload_sha256": {
+            "$ref": "#/$defs/sha256"
+          }
         }
       }
     },
-    "created_at": {"type": "string", "format": "date-time"},
-    "expires_at": {"type": "string", "format": "date-time"},
-    "authority_effect": {"const": "NONE"},
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "authority_effect": {
+      "const": "NONE"
+    },
     "claims": {
       "type": "object",
       "additionalProperties": false,
@@ -157,11 +255,21 @@
         "release_authority"
       ],
       "properties": {
-        "qualification": {"const": false},
-        "compatibility_claim": {"const": false},
-        "production_authority": {"const": false},
-        "migration_authority": {"const": false},
-        "release_authority": {"const": false}
+        "qualification": {
+          "const": false
+        },
+        "compatibility_claim": {
+          "const": false
+        },
+        "production_authority": {
+          "const": false
+        },
+        "migration_authority": {
+          "const": false
+        },
+        "release_authority": {
+          "const": false
+        }
       }
     }
   },
@@ -172,6 +280,9 @@
       "maxLength": 192,
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:/@+\\-]{0,191}$"
     },
-    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    "sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
   }
 }

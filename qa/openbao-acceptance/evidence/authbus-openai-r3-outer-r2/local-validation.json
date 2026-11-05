@@ -1,0 +1,77 @@
+{
+  "schema": "heptabao.authbus-openai-r3-outer-r2-local.v1",
+  "base_controller": {
+    "bytes": 32590,
+    "sha256": "6f5bc0e4ae9e6e59e34b263b32bc55b052fba94c85697631e7e8c587046ec9ad",
+    "git_blob_sha": "0930f316bc59b855f5f9f41a919038774a40747d"
+  },
+  "candidate_controller": {
+    "bytes": 37776,
+    "sha256": "ab57d4826c6d7b66b2c28f061df766d39bc21a7f2df1df9f90e3b0b8f81342d5",
+    "git_blob_sha": "ba8626f1b14a177db0f9127d82c367b6e97ac9f6"
+  },
+  "source_scope": {
+    "candidate_sha256": "ab57d4826c6d7b66b2c28f061df766d39bc21a7f2df1df9f90e3b0b8f81342d5",
+    "changed_existing_functions": [
+      "verify_sdk"
+    ],
+    "new_functions": [
+      "read_pinned_sdk_input"
+    ],
+    "all_other_functions_ast_unchanged": true,
+    "top_level_constants_ast_unchanged": true,
+    "original180_budget_unchanged": true,
+    "packet_and_manifest_pins_unchanged": true,
+    "generic_read_and_directory_policies_unchanged": true,
+    "native4_and_r3_15_runtime_sources_changed": false
+  },
+  "tests": {
+    "original_controller_count": 8,
+    "private_anchor_count": 10,
+    "all_passed": true,
+    "installed_sdk_executed": false,
+    "remote_calls": 0,
+    "native_backend_executed": false,
+    "real_provider_contacted": false
+  },
+  "original_actual_failure_evidence": [
+    {
+      "path": "authbus-r5-openai-r3-controller-r1-20261019/actual-main-r1/controller.json",
+      "bytes": 1713,
+      "sha256": "f7a1d42f5387b7371e85719eb088cd50ab1dd1d5cdf31bd143d4760272ec5588",
+      "git_blob_sha": "f86de797b5dfaa5a865fd3053621f34aba55014a"
+    },
+    {
+      "path": "authbus-r5-openai-r3-controller-r1-20261019/actual-main-r1/sdk-input-custody-diagnostic.json",
+      "bytes": 25240,
+      "sha256": "ec4330492896fead3a74885a1fff4aeb634bb9d002d7049f5ef068f63e3dab90",
+      "git_blob_sha": "ea9a50692181c1fcb0733b0ae3f650467d6026de"
+    }
+  ],
+  "local_logs": [
+    {
+      "path": "analysis/original-eight-tests.stderr.log",
+      "bytes": 1154,
+      "sha256": "a94eba259bf1838f9d50047aab98196c98b98f09e920a3fa5eeec60d637cbd26",
+      "git_blob_sha": "cb0fe6e972b6d65a48b69ed48d439eb57bde2798"
+    },
+    {
+      "path": "analysis/original-eight-tests.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "analysis/private-anchor-tests.stderr.log",
+      "bytes": 1867,
+      "sha256": "9533bec37718a6aafe67848f5d3dcbb2d08a15be69185a365d4ee517b43bac5c",
+      "git_blob_sha": "5f6a9025158426b580dcb72b1a88054b72546f39"
+    },
+    {
+      "path": "analysis/private-anchor-tests.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    }
+  ]
+}

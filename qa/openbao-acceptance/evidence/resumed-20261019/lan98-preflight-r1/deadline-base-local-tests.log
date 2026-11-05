@@ -1,0 +1,72 @@
+test_fixed_sixty_second_sealed_trace_rejects_boundary_and_late_response (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_fixed_sixty_second_sealed_trace_rejects_boundary_and_late_response) ... 
+  test_fixed_sixty_second_sealed_trace_rejects_boundary_and_late_response (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_fixed_sixty_second_sealed_trace_rejects_boundary_and_late_response) (terminal=60.0) ... FAIL
+  test_fixed_sixty_second_sealed_trace_rejects_boundary_and_late_response (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_fixed_sixty_second_sealed_trace_rejects_boundary_and_late_response) (terminal=60.01) ... FAIL
+test_fixed_thirtyfive_second_quorum_trace_rejects_before_denied_mutation (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_fixed_thirtyfive_second_quorum_trace_rejects_before_denied_mutation) ... 
+  test_fixed_thirtyfive_second_quorum_trace_rejects_before_denied_mutation (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_fixed_thirtyfive_second_quorum_trace_rejects_before_denied_mutation) (terminal=35.0) ... ERROR
+  test_fixed_thirtyfive_second_quorum_trace_rejects_before_denied_mutation (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_fixed_thirtyfive_second_quorum_trace_rejects_before_denied_mutation) (terminal=35.01) ... ERROR
+test_leader_rejects_late_stable_complete_https_observation (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_leader_rejects_late_stable_complete_https_observation) ... FAIL
+test_listener_accepts_complete_https_response_inside_same_deadline (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_listener_accepts_complete_https_response_inside_same_deadline) ... ok
+test_listener_rejects_late_complete_https_response_without_retry (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_listener_rejects_late_complete_https_response_without_retry) ... FAIL
+
+======================================================================
+ERROR: test_fixed_thirtyfive_second_quorum_trace_rejects_before_denied_mutation (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_fixed_thirtyfive_second_quorum_trace_rejects_before_denied_mutation) (terminal=35.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/915e5e680008/continuation-20261019/lan98-preflight-review-r1/work/qa/openbao-acceptance/tests/test_native_lan_original_deadlines.py", line 190, in test_fixed_thirtyfive_second_quorum_trace_rejects_before_denied_mutation
+    native.NativeRun.failover_and_quorum(run, nodes[0])
+  File "/workspace/scratch/915e5e680008/continuation-20261019/lan98-preflight-review-r1/base/qa/openbao-acceptance/native_v6_ha_multihost_live.py", line 1025, in failover_and_quorum
+    status, body = self.request(survivor, "POST", "secret/data/" + denied_path,
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: OriginalDeadlineRegression.test_fixed_thirtyfive_second_quorum_trace_rejects_before_denied_mutation.<locals>.request() takes 3 positional arguments but 4 were given
+
+======================================================================
+ERROR: test_fixed_thirtyfive_second_quorum_trace_rejects_before_denied_mutation (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_fixed_thirtyfive_second_quorum_trace_rejects_before_denied_mutation) (terminal=35.01)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/915e5e680008/continuation-20261019/lan98-preflight-review-r1/work/qa/openbao-acceptance/tests/test_native_lan_original_deadlines.py", line 190, in test_fixed_thirtyfive_second_quorum_trace_rejects_before_denied_mutation
+    native.NativeRun.failover_and_quorum(run, nodes[0])
+  File "/workspace/scratch/915e5e680008/continuation-20261019/lan98-preflight-review-r1/base/qa/openbao-acceptance/native_v6_ha_multihost_live.py", line 1025, in failover_and_quorum
+    status, body = self.request(survivor, "POST", "secret/data/" + denied_path,
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: OriginalDeadlineRegression.test_fixed_thirtyfive_second_quorum_trace_rejects_before_denied_mutation.<locals>.request() takes 3 positional arguments but 4 were given
+
+======================================================================
+FAIL: test_fixed_sixty_second_sealed_trace_rejects_boundary_and_late_response (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_fixed_sixty_second_sealed_trace_rejects_boundary_and_late_response) (terminal=60.0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/915e5e680008/continuation-20261019/lan98-preflight-review-r1/work/qa/openbao-acceptance/tests/test_native_lan_original_deadlines.py", line 157, in test_fixed_sixty_second_sealed_trace_rejects_boundary_and_late_response
+    with self.assertRaisesRegex(base.FixtureError, "sealed_native_leader_timeout"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: FixtureError not raised
+
+======================================================================
+FAIL: test_fixed_sixty_second_sealed_trace_rejects_boundary_and_late_response (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_fixed_sixty_second_sealed_trace_rejects_boundary_and_late_response) (terminal=60.01)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/915e5e680008/continuation-20261019/lan98-preflight-review-r1/work/qa/openbao-acceptance/tests/test_native_lan_original_deadlines.py", line 157, in test_fixed_sixty_second_sealed_trace_rejects_boundary_and_late_response
+    with self.assertRaisesRegex(base.FixtureError, "sealed_native_leader_timeout"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: FixtureError not raised
+
+======================================================================
+FAIL: test_leader_rejects_late_stable_complete_https_observation (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_leader_rejects_late_stable_complete_https_observation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/915e5e680008/continuation-20261019/lan98-preflight-review-r1/work/qa/openbao-acceptance/tests/test_native_lan_original_deadlines.py", line 135, in test_leader_rejects_late_stable_complete_https_observation
+    with self.assertRaisesRegex(base.FixtureError, "stable_leader_timeout"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: FixtureError not raised
+
+======================================================================
+FAIL: test_listener_rejects_late_complete_https_response_without_retry (test_native_lan_original_deadlines.OriginalDeadlineRegression.test_listener_rejects_late_complete_https_response_without_retry)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/915e5e680008/continuation-20261019/lan98-preflight-review-r1/work/qa/openbao-acceptance/tests/test_native_lan_original_deadlines.py", line 111, in test_listener_rejects_late_complete_https_response_without_retry
+    with self.assertRaisesRegex(base.FixtureError, "node_1_listener_timeout"):
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: FixtureError not raised
+
+----------------------------------------------------------------------
+Ran 5 tests in 2.966s
+
+FAILED (failures=4, errors=2)

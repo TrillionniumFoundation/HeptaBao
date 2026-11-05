@@ -1,0 +1,182 @@
+{
+  "schema": "heptabao.native-only-darwin-controller-r2-local.v1",
+  "base": {
+    "bytes": 19720,
+    "sha256": "f2ff71ec7f7088b0bbc7282bbad2aded47a518c0a0fa4298ad834857299597ea",
+    "git_blob_sha": "0841f8be93807259bc724db995c055ae82b4a29d"
+  },
+  "candidate": {
+    "bytes": 24181,
+    "sha256": "e7f74cab6110333c00517e993ad8157eaa3886c1a704b8738261d2cee646c7ec",
+    "git_blob_sha": "d3314d1a5b88510fae4ff17d5926dea948fd4399"
+  },
+  "changed_existing_functions": [
+    "process_rows",
+    "owned_group",
+    "run_logged"
+  ],
+  "new_function": "darwin_owned_group",
+  "main_ast_unchanged": true,
+  "top_level_constants_unchanged": true,
+  "original_six_test_source": {
+    "bytes": 5986,
+    "sha256": "3802c4a52c9d5afba0e32699afa298e3ec354a18ae71cdfc15b55583d27e6bef",
+    "git_blob_sha": "2855260eb3873a9693dabaabc73ccfbd1920f951"
+  },
+  "original_local_tests": {
+    "schema": "heptabao.native-only-controller-local-checks.v1",
+    "controller_sha256": "e7f74cab6110333c00517e993ad8157eaa3886c1a704b8738261d2cee646c7ec",
+    "tests_run": 6,
+    "failures": 0,
+    "errors": 0,
+    "status": "passed_local_controller_checks",
+    "rust_compilation_performed": false,
+    "rust_tests_executed": 0,
+    "remote_execution_performed": false,
+    "server_started": false,
+    "scope": "Local real synthetic process and target-lock controller boundaries only"
+  },
+  "mocked_darwin_tests": {
+    "schema": "heptabao.native-only-darwin-custody-checks.v1",
+    "status": "passed",
+    "controller_sha256": "e7f74cab6110333c00517e993ad8157eaa3886c1a704b8738261d2cee646c7ec",
+    "tests_run": 10,
+    "failures": 0,
+    "errors": 0,
+    "platform": "linux",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "actual_mac_processes_tested": false,
+    "mocked_darwin_identity_boundaries": true,
+    "rust_compilation_performed": false,
+    "rust_tests_executed": 0,
+    "server_started": false,
+    "production_mutation": false
+  },
+  "actual_mac_tests_run": false,
+  "rust_compilation_performed": false,
+  "production_mutation": false,
+  "prior_actual_evidence": [
+    {
+      "path": "continuation-20261019/native-service-only-9770-mac-r1-actual/summary.json",
+      "bytes": 3368,
+      "sha256": "a36e01281b79e893965ecf8888f09f6a9bd96f429ada8d39306e6982683d6a5e",
+      "git_blob_sha": "ee1cb9ea5104a19219018fa1075ac1d826d2b032"
+    },
+    {
+      "path": "continuation-20261019/native-service-only-9770-mac-r1-actual/controller-error.txt",
+      "bytes": 726,
+      "sha256": "351da310787a153c4f1505b6b5070c589cf06c4215ee2bed2023708a7fbe040e",
+      "git_blob_sha": "3f6df099d38b1a4e95b96291129ce8c260662135"
+    },
+    {
+      "path": "continuation-20261019/darwin-zombie-identity-r1/summary.json",
+      "bytes": 1279,
+      "sha256": "729eb65f68264bcef089263017340a53c64edd2d62f586e309c9ae1b06c96bc6",
+      "git_blob_sha": "ef16578cf5a46f3d134fb83bd42e97d3c4de1210"
+    }
+  ],
+  "local_evidence": [
+    {
+      "path": "analysis/darwin-mocked-checks.stderr.log",
+      "bytes": 1667,
+      "sha256": "2cc8347e75c3da997044e31b947b17964d10f198c72dadef4029f2b0640f266a",
+      "git_blob_sha": "58927338db0b7212bc23980bbea1a856b508238e"
+    },
+    {
+      "path": "analysis/darwin-mocked-checks.stdout.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "git_blob_sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "analysis/darwin-mocked-r1/summary.json",
+      "bytes": 531,
+      "sha256": "42f6027b1602677769fdd2b5a668791a1175d4d9b167d4495804dfc6fe022fcc",
+      "git_blob_sha": "cf8fb44c76fab52d792775e84ffeb48ca6487d13"
+    },
+    {
+      "path": "analysis/native-only-darwin-r2.diff",
+      "bytes": 6681,
+      "sha256": "410597d3f936a7125ecaad42b22ffcd0bfbc7727ed4bf1125fc7cc968ba1aa36",
+      "git_blob_sha": "5a9447cf002d5fd0862950c47f468e5fb1a983f1"
+    },
+    {
+      "path": "analysis/original-six-adopted-cleanup.json",
+      "bytes": 113,
+      "sha256": "bb91dac1f32a4280cf81d6b320d38064ed9b70fa67c0fcecf21416186a85d8cc",
+      "git_blob_sha": "a09a84aa51b46858c246bcf07d3f02f1a7e926dd"
+    },
+    {
+      "path": "analysis/original-six-checks.stderr.log",
+      "bytes": 1116,
+      "sha256": "d9c4feb5784836d41d95873e103ff9dfb87385836d34b1c7ab4b15b3b5d0c164",
+      "git_blob_sha": "b7ee8f91830093a93801156689c10068bf15f25f"
+    },
+    {
+      "path": "analysis/original-six-checks.stdout.log",
+      "bytes": 199,
+      "sha256": "3106878018894c6e953db9f4e32398091e02413b50992a1fac54c27bc012fc94",
+      "git_blob_sha": "3a98ff8fa3754893d4c6f9f07006d172250e7384"
+    },
+    {
+      "path": "analysis/original-six-r1/summary.json",
+      "bytes": 472,
+      "sha256": "2a422cf1e09e8acb069614e85438bd72ce203e2d247fcf1c7ba4cb212d98f5a8",
+      "git_blob_sha": "7fd5e2b81eaa4e183adf58583c6d629ebef49f35"
+    },
+    {
+      "path": "analysis/original-six-r1/test_active_cfg_is_not_confused_with_check_cfg_feature_catalog/cargo-argv.log",
+      "bytes": 250,
+      "sha256": "ca6cc6db1c6851031fae9ce943c956e4725d556093cba5908242ff1cb036122e",
+      "git_blob_sha": "8f1dec13b4b7cb9a59694915936dd05f56acc58d"
+    },
+    {
+      "path": "analysis/original-six-r1/test_busy_lock_preserves_the_original_owner_and_starts_nothing/heptabao-owned-candidate-run.lock",
+      "bytes": 49,
+      "sha256": "780bd57e77a8eedaa2840e1222c8ed7199a8e97e8f63df56edcf399e83fdc2ae",
+      "git_blob_sha": "32c8877a71f708f9e6a2b3e0e968eac24fe8bd34"
+    },
+    {
+      "path": "analysis/original-six-r1/test_changed_manifest_is_rejected_before_loading_any_runner/manifest.json",
+      "bytes": 24,
+      "sha256": "39403da31d55f5eaf9ccefa4c79f2ddee731dc9339a7e228801da9a98e2040f2",
+      "git_blob_sha": "554d6dc6d8cbbc3f65177f32f371052be4492eef"
+    },
+    {
+      "path": "analysis/original-six-r1/test_real_child_exit_preserves_raw_stdout_exit_code_and_reaps_leader/command-receipt.json",
+      "bytes": 1369,
+      "sha256": "448525911448378119c89fbcc947b5f73b83074f9591e67f3fd2e999c0492b85",
+      "git_blob_sha": "fc91632ddd4eede960cfcb26704dcbb002519f30"
+    },
+    {
+      "path": "analysis/original-six-r1/test_real_child_exit_preserves_raw_stdout_exit_code_and_reaps_leader/synthetic-python.log",
+      "bytes": 23,
+      "sha256": "e936ea04be161a94af14e00e518bfc5acac72c7eb2d9d770566ac25e222266ec",
+      "git_blob_sha": "22f82370716f789be57dfef6fff424aebd7a941f"
+    },
+    {
+      "path": "analysis/original-six-r1/test_real_exited_leader_does_not_hide_a_live_same_group_child/command-receipt.json",
+      "bytes": 1728,
+      "sha256": "25fc62a41b3abaf7782801fba770609ffdc4c94019228b04d4599b5cceef2267",
+      "git_blob_sha": "7f7f8c5f59d206328f594d7a935ff05d32fc07f5"
+    },
+    {
+      "path": "analysis/original-six-r1/test_real_exited_leader_does_not_hide_a_live_same_group_child/synthetic-python.log",
+      "bytes": 13,
+      "sha256": "e5507e8e513c4caa11530838266d6cbe3e3aeac5d59ea0566d31e25ff0630579",
+      "git_blob_sha": "b929fff3c1be69c7b8b369b3c9ee0c3d4db76335"
+    },
+    {
+      "path": "analysis/original-six-r1/test_real_timeout_keeps_the_leader_owned_through_term_and_kill/command-receipt.json",
+      "bytes": 1514,
+      "sha256": "6bd55ac333c2803a7f6290f8ee765676070b5e90aaeb8e1eb348b69d9e5f6986",
+      "git_blob_sha": "4accf894d8c41b10334cbbb51a6483a6ef128f1e"
+    },
+    {
+      "path": "analysis/original-six-r1/test_real_timeout_keeps_the_leader_owned_through_term_and_kill/synthetic-python.log",
+      "bytes": 32,
+      "sha256": "e70a9fd4844d858c26453e85880d0682de254be49d50a303d5cfff3a8bd4affa",
+      "git_blob_sha": "e2c8f6e511618b7cdc45d8394b2387efcc8607a7"
+    }
+  ]
+}

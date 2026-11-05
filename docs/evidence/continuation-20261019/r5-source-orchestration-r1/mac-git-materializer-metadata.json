@@ -1,0 +1,21 @@
+{
+  "base_script": "/workspace/scratch/915e5e680008/continuation-20261019/native-snapshot-r4-candidate/materialize_mac_git_r1.py",
+  "base_script_sha256": "c9c9d7717e9abf1255d0fe82e7bb315c75d141b69769e22809961a975c1717f7",
+  "commit_bytes": 618,
+  "commit_sha256": "734853bc528c877c93e6bded9065c3071b6598e103101bf8e6fe73f3a5e63d2e",
+  "manifest_sha256": "739ffe3589e8b8c6ddca5efe56b4ef3d33a2633fce4451853413b14a6be6c3e1",
+  "native_git_execution": "not_run",
+  "new_target": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261018/source-b24c6de-object-git",
+  "old_checkout_touched": false,
+  "schema": "heptabao.exact-git-materializer-transfer.v1",
+  "script": "/workspace/scratch/915e5e680008/continuation-20261019/r5-source-orchestration-r1/materialize_mac_git_b24c6de_r1.py",
+  "script_bytes": 4843,
+  "script_sha256": "e2ea90824fe91cae80823d410ed55dbad22a507149d85e606590ef9b58a87544",
+  "source_commit": "b24c6de7831a7389e39ac069277a9e85e858ef98",
+  "source_tree": "3356f0a94616e9e1804f497239f33546e16db577",
+  "verified_local": [
+    "python_ast_parse",
+    "exact_raw_git_commit_sha",
+    "narrow_identity_substitution"
+  ]
+}

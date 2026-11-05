@@ -1,0 +1,828 @@
+{
+  "actual_cold_service_restart": true,
+  "actual_https_approle_kv2_policy_renewal_revocation": true,
+  "actual_new_coordinator_process_each_cycle": true,
+  "actual_sdk_qualified": false,
+  "additional_report_receipts": 503,
+  "binary_sha256": "187bcc477f3620c32d9ba549dc71e6c560417868a97faa8800d9fb14ffab1055",
+  "central_source_sha256": "cc46822439dfd33c86d1068c886941a92c5581871474cef846d2aee14ce80fe0",
+  "checks": [
+    {
+      "case": "same_server_certificate",
+      "passed": true
+    },
+    {
+      "case": "initial_sealed",
+      "expected": 503,
+      "passed": true,
+      "status": 503
+    },
+    {
+      "case": "initial_unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "formal_capacity",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "formal_native_v6",
+      "passed": true
+    },
+    {
+      "case": "original_inbox_retained",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "original_inbox_identity_set",
+      "passed": true
+    },
+    {
+      "case": "existing_receipt_identity_set",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "existing_receipt_identity_set.declared_identities",
+      "passed": true
+    },
+    {
+      "case": "page_0.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_0.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.0",
+      "passed": true
+    },
+    {
+      "case": "page_1.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_1.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.1",
+      "passed": true
+    },
+    {
+      "case": "page_2.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_2.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.2",
+      "passed": true
+    },
+    {
+      "case": "page_3.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_3.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.3",
+      "passed": true
+    },
+    {
+      "case": "page_4.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_4.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.4",
+      "passed": true
+    },
+    {
+      "case": "page_5.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_5.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.5",
+      "passed": true
+    },
+    {
+      "case": "page_6.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_6.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.6",
+      "passed": true
+    },
+    {
+      "case": "page_7.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_7.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.7",
+      "passed": true
+    },
+    {
+      "case": "page_8.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_8.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.8",
+      "passed": true
+    },
+    {
+      "case": "page_9.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_9.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.9",
+      "passed": true
+    },
+    {
+      "case": "page_10.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_10.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.10",
+      "passed": true
+    },
+    {
+      "case": "page_11.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_11.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.11",
+      "passed": true
+    },
+    {
+      "case": "page_12.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_12.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.12",
+      "passed": true
+    },
+    {
+      "case": "page_13.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_13.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.13",
+      "passed": true
+    },
+    {
+      "case": "page_14.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_14.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.14",
+      "passed": true
+    },
+    {
+      "case": "page_15.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_15.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.15",
+      "passed": true
+    },
+    {
+      "case": "page_16.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_16.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.16",
+      "passed": true
+    },
+    {
+      "case": "page_17.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_17.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.17",
+      "passed": true
+    },
+    {
+      "case": "page_18.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "page_18.bounded",
+      "passed": true
+    },
+    {
+      "case": "revoked_grant_not_published.18",
+      "passed": true
+    },
+    {
+      "case": "final_receipt_identity_set",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "final_receipt_identity_set.declared_identities",
+      "passed": true
+    },
+    {
+      "case": "all_report_identities_confirmed",
+      "passed": true
+    },
+    {
+      "case": "original_follower_event_immutable",
+      "passed": true
+    },
+    {
+      "case": "revoked_transition_still_not_published",
+      "passed": true
+    },
+    {
+      "case": "authorized_0.exit",
+      "exit_code": 0,
+      "passed": true
+    },
+    {
+      "case": "authorized_0.bounded",
+      "passed": true
+    },
+    {
+      "case": "deferred_transition_committed_once",
+      "passed": true
+    },
+    {
+      "case": "exact_canonical_digest",
+      "passed": true
+    },
+    {
+      "case": "original_receipt_binding",
+      "passed": true
+    },
+    {
+      "case": "real_renewal_same_bearer",
+      "passed": true
+    },
+    {
+      "case": "writer_valid_before_acl_denial",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "writer_cannot_delete_inbox",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "revoke_bearer",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "revoked_bearer_is_denial_not_empty_page",
+      "passed": true
+    },
+    {
+      "case": "retained_sid_lookup",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "revoke_retained_sid",
+      "expected": 204,
+      "passed": true,
+      "status": 204
+    },
+    {
+      "case": "revocation_cold_restart.original_wait",
+      "passed": true
+    },
+    {
+      "case": "revocation_cold_restart.sealed",
+      "expected": 503,
+      "passed": true,
+      "status": 503
+    },
+    {
+      "case": "revocation_cold_restart.unseal",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "bearer_revocation_persisted",
+      "expected": 403,
+      "passed": true,
+      "status": 403
+    },
+    {
+      "case": "sid_revocation_persisted",
+      "expected": 400,
+      "passed": true,
+      "status": 400
+    },
+    {
+      "case": "post_restart_receipt_identity_set",
+      "expected": 200,
+      "passed": true,
+      "status": 200
+    },
+    {
+      "case": "post_restart_receipt_identity_set.declared_identities",
+      "passed": true
+    },
+    {
+      "case": "reports_still_retained",
+      "passed": true
+    },
+    {
+      "case": "source_unchanged",
+      "passed": true
+    },
+    {
+      "case": "binary_unchanged",
+      "passed": true
+    },
+    {
+      "case": "diagnostics_no_credentials",
+      "passed": true
+    }
+  ],
+  "cycle_observation_timeout_seconds": 300,
+  "cycles": [
+    {
+      "already_recorded": 27,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 4,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 31,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 31,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 31,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 31,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 31,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 31,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 31,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 31,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 31,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 31,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 31,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 31,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 31,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 31,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 31,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 31,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 0,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 2,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 3,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 30,
+      "batch_bound_hit": true,
+      "committed": 0,
+      "deferred": 1,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 1,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    },
+    {
+      "already_recorded": 31,
+      "batch_bound_hit": true,
+      "committed": 1,
+      "deferred": 0,
+      "list_requests": 2,
+      "oauth_refreshed": false,
+      "observed_reports": 0,
+      "ok": true,
+      "owner_id": "c3733a88-d522-4e63-8a41-a837ea42b8b6",
+      "production_cutover": false,
+      "provider_called": false,
+      "provider_liveness_verified": false,
+      "recovered_pending": false,
+      "scanned": 32,
+      "scheduler_implemented": false,
+      "schema": "heptabao-authbus-coordinator-v1.cycle"
+    }
+  ],
+  "driver_sha256": "622350f7c7af3327a343dcc17daa2565c27b7f6d3f2a1de3de790113f51ec818",
+  "elapsed_seconds": 1182.211,
+  "final_server_exit_code": -9,
+  "full_replacement_qualified": false,
+  "inbox_deletions": 0,
+  "initial_cursor_used_as_commit_evidence": false,
+  "initial_receipt_identities": 555,
+  "j3160_contacted": false,
+  "max_events_per_cycle": 32,
+  "ok": true,
+  "original_fixture": "/home/qian/heptabao-authbus-inbox-20261103-r1-live-r2",
+  "original_uninterrupted_budget_passed": false,
+  "production_changed": false,
+  "production_cutover": false,
+  "provider_called": false,
+  "real_lease_expiry_waited": false,
+  "real_provider_credentials": false,
+  "renewal_due_clock_forced": true,
+  "schema": "heptabao.authbus-inbox-private-fixture-continuation.v1",
+  "server_restarts": [
+    {
+      "case": "revocation_cold_restart",
+      "exit_code": -9,
+      "original_pid": 1896171
+    }
+  ],
+  "total_report_receipts": 1058
+}

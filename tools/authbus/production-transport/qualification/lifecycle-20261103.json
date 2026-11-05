@@ -1,0 +1,141 @@
+{
+  "schema": "heptabao.authbus-lifecycle-cross-platform.v1",
+  "baselineCommit": "ee851bd11e1a9d261be1acbd291d1599ffbf8f88",
+  "changeScope": [
+    "Expired validated active bearer can perform one new AppRole login; unresolved and rejected intents remain unchanged.",
+    "One caller absolute deadline spans renewal, reauthentication, admission, read, publication and reconciliation."
+  ],
+  "evidenceScope": {
+    "realSqlite": true,
+    "realLoopbackTls": true,
+    "realProcessSigkill": true,
+    "syntheticCredentialsOnly": true,
+    "realHeptaBaoServer": false,
+    "externalProviderCalled": false,
+    "productionModified": false,
+    "fullReplacementQualified": false
+  },
+  "platforms": [
+    {
+      "schema": "heptabao.authbus-lifecycle-regression.v1",
+      "host": "x230",
+      "nodeVersion": "v22.23.3",
+      "baselineCommit": "ee851bd11e1a9d261be1acbd291d1599ffbf8f88",
+      "sourceFiles": {
+        "plugin/strict-bao-client.js": "3c226b335257ff67c4f6e23091468d99cba97399eea40b396bb89a8e691e5294",
+        "plugin/production-client.js": "0dc35bf575c1933272a4c3351bb07d37358748d7add968d1c577755477a97ea2",
+        "plugin/bounded-outbox.js": "77c86c49fca655d1c60112ce36ac9c3ef154f620b3e917f42ffa412307de9fa1",
+        "plugin/private-outbox-store.js": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d",
+        "tests/lifecycle.test.mjs": "92c40832dc60f9407c4fd9842115162702675773b175f11fe2665529ea382de6",
+        "tests/durability.test.mjs": "cc737cf86e87459040a5d71eb1fe30855e50f029bd4fb4887d09355a9699d5f4",
+        "tests/durability-child.mjs": "3ac44904b00dd4308c0998ac862b935a6e2a0f6694dda7a82b3d2322bc6459c6"
+      },
+      "results": [
+        {
+          "case": "baseline-regression-r2",
+          "command": [
+            "node",
+            "--test",
+            "--test-name-pattern=expired persisted|production read restarts|expired caller deadline|renewal reply beyond|renewal and expiry recovery|fixed-slot outbox rejects",
+            "tests/lifecycle.test.mjs"
+          ],
+          "exitCode": 1,
+          "elapsedSeconds": 3.645644426345825,
+          "stdoutSha256": "cf6f6d98991d1fec2c3fd791d0065c18d3164e81c996950cad8d7565f437e315",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "summary": [
+            "# tests 6",
+            "# pass 0",
+            "# fail 6",
+            "# cancelled 0",
+            "# skipped 0"
+          ]
+        },
+        {
+          "case": "candidate-r2",
+          "command": [
+            "node",
+            "--test",
+            "tests/durability.test.mjs",
+            "tests/lifecycle.test.mjs"
+          ],
+          "exitCode": 0,
+          "elapsedSeconds": 4.5190770626068115,
+          "stdoutSha256": "d7f21bda8efe728877b842c272ee381224c595471360f69d34e0e2a3c9c25808",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "summary": [
+            "# tests 21",
+            "# pass 21",
+            "# fail 0",
+            "# cancelled 0",
+            "# skipped 0"
+          ]
+        }
+      ],
+      "loopbackTls": true,
+      "realSqlite": true,
+      "syntheticCredentialsOnly": true,
+      "realHeptaBaoServer": false,
+      "externalProviderCalled": false,
+      "productionModified": false,
+      "fullReplacementQualified": false
+    },
+    {
+      "schema": "heptabao.authbus-lifecycle-regression.v1",
+      "host": "mac",
+      "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+      "nodeVersion": "v25.9.0",
+      "baselineCommit": "ee851bd11e1a9d261be1acbd291d1599ffbf8f88",
+      "sourceRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-lifecycle-20261103-r1/production-transport",
+      "temporaryDatabaseRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-lifecycle-20261103-r1/tmp",
+      "sourceAndTemporaryDeviceEqual": true,
+      "filesystem": [
+        "Filesystem   512-blocks      Used Available Capacity  Mounted on",
+        "/dev/disk7s1  976363488 264103512 711945848    28%    /Volumes/T5"
+      ],
+      "sourceFiles": {
+        "plugin/strict-bao-client.js": "3c226b335257ff67c4f6e23091468d99cba97399eea40b396bb89a8e691e5294",
+        "plugin/production-client.js": "0dc35bf575c1933272a4c3351bb07d37358748d7add968d1c577755477a97ea2",
+        "plugin/bounded-outbox.js": "77c86c49fca655d1c60112ce36ac9c3ef154f620b3e917f42ffa412307de9fa1",
+        "plugin/private-outbox-store.js": "e948edb2d461eedabd03e0acd83cc8b998553516e01ad41c16641360221c145d",
+        "tests/lifecycle.test.mjs": "92c40832dc60f9407c4fd9842115162702675773b175f11fe2665529ea382de6",
+        "tests/durability.test.mjs": "cc737cf86e87459040a5d71eb1fe30855e50f029bd4fb4887d09355a9699d5f4",
+        "tests/durability-child.mjs": "3ac44904b00dd4308c0998ac862b935a6e2a0f6694dda7a82b3d2322bc6459c6"
+      },
+      "results": [
+        {
+          "case": "candidate-mac-t5",
+          "command": [
+            "/opt/homebrew/bin/node",
+            "--test",
+            "tests/durability.test.mjs",
+            "tests/lifecycle.test.mjs"
+          ],
+          "exitCode": 0,
+          "elapsedSeconds": 1.489460582844913,
+          "stdoutSha256": "f7edea67a72ee65bc917715df990b080c3f169f777441b4727890f7b122479bb",
+          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "summary": [
+            "ℹ tests 21",
+            "ℹ pass 21",
+            "ℹ fail 0",
+            "ℹ cancelled 0",
+            "ℹ skipped 0"
+          ]
+        }
+      ],
+      "loopbackTls": true,
+      "realSqlite": true,
+      "syntheticCredentialsOnly": true,
+      "realHeptaBaoServer": false,
+      "externalProviderCalled": false,
+      "productionModified": false,
+      "fullReplacementQualified": false
+    }
+  ],
+  "rawLogs": {
+    "baseline-x230.stdout": "cf6f6d98991d1fec2c3fd791d0065c18d3164e81c996950cad8d7565f437e315",
+    "candidate-x230.stdout": "d7f21bda8efe728877b842c272ee381224c595471360f69d34e0e2a3c9c25808",
+    "candidate-mac-t5.stdout": "f7edea67a72ee65bc917715df990b080c3f169f777441b4727890f7b122479bb"
+  }
+}

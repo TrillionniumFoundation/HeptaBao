@@ -13,11 +13,51 @@
 mod cluster;
 mod network;
 mod process;
+mod records;
+mod replication_bounds;
+mod state_machine;
+#[cfg(feature = "native-v6-raft-objects")]
+mod v6_commit_intent;
+#[cfg(feature = "native-v6-raft-objects")]
+mod v6_epoch_restore;
+#[cfg(feature = "native-v6-raft-objects")]
+mod v6_replica_blobs;
+#[cfg(feature = "native-v6-raft-objects")]
+mod v6_retained_roots;
+#[cfg(feature = "native-v6-raft-objects")]
+mod v6_retention;
+#[cfg(feature = "native-v6-raft-objects")]
+pub use v6_retention::{NativeV6IntentRetirementRecovery, NativeV6IntentRetirementResolution};
+#[cfg(feature = "native-v6-raft-objects")]
+mod v6_root_publication;
+#[cfg(feature = "native-v6-raft-objects")]
+pub use v6_epoch_restore::NativeV6EpochTransition;
+
+pub use records::{
+    LegacyChunkRef, LegacyEnvelopeObservation, LegacyStatusIdentity, PublishedRecordRoot,
+    RecordObjectId, RecordObjectKind, RecordObjectRef, RecordRejection, RecordRootBase,
+    RecordUsage, SealedRecordObject,
+};
+pub use state_machine::{ApplicationRequest, ApplicationResponse, StateMachine, TypeConfig};
+#[cfg(feature = "native-v6-raft-objects")]
+pub use v6_commit_intent::NativeV6CommitIntent;
+#[cfg(feature = "native-v6-raft-objects")]
+pub use v6_replica_blobs::{
+    LocalV6BlobError, LocalV6BlobReceipt, LocalV6BlobStage, LocalV6ClosureReceipt,
+    NativeV6BlobOperation, NativeV6BlobQuiescence, NativeV6RetainedClosure,
+    NativeV6SharedRetirementError, NativeV6SharedRetirementOutcome, NativeV6SharedRetirementPlan,
+    NativeV6SharedRetirementReceipt, NativeV6SharedRetirementSelection,
+};
+#[cfg(feature = "native-v6-raft-objects")]
+pub use v6_root_publication::{NativeV6PeerEnrollment, NativeV6PublishedRoot};
 // Historical hostile store tests use `expect` for fixture construction only;
 // production store code remains under the workspace lint policy.
 #[allow(clippy::expect_used)]
 mod store;
+#[cfg(feature = "native-v6-raft-objects")]
+pub use store::{NativeV6RetainedRoot, NativeV6RetainedRootCatalog, NativeV6RetentionGuard};
 
+use base64::{Engine as _, engine::general_purpose::STANDARD_NO_PAD};
 use std::collections::BTreeMap;
 use std::error::Error;
 use std::fmt;
@@ -25,15 +65,24 @@ use std::path::Path;
 
 use cluster::DurableCluster;
 
+pub use process::with_read_index_deadline;
 pub use process::{
-    ProcessRaftNode, RaftPeerRpc, RaftRpcKind, RaftRpcService, RemoteNetworkFactory,
-    RemoteRaftError,
+    ApplicationReadWitness, CommittedApplicationPrefix, LocalLeaderObservation,
+    MembershipObservation, ProcessRaftNode, RaftPeerRpc, RaftRpcKind, RaftRpcService,
+    RemoteNetworkFactory, RemoteRaftError, SnapshotObservation,
+};
+#[cfg(feature = "native-v6-raft-objects")]
+pub use process::{
+    NativeV6ClosureAdmission, NativeV6CommittedRootRead, NativeV6EpochRestoreRead,
+    NativeV6IntentRetirementObservation, NativeV6IntentRetirementOutcome,
+    NativeV6PreparedIntentRetirement,
 };
 
 const MAX_OPERATION_ID_BYTES: usize = 128;
 const MAX_SEALED_ENVELOPE_BYTES: usize = 1024 * 1024;
 const ENVELOPE_V1_PREFIX: &str = "hbr1:";
 const ENVELOPE_V2_PREFIX: &str = "hbr2:";
+const ENVELOPE_V3_PREFIX: &str = "hbr3:";
 
 #[derive(Clone, Eq, PartialEq)]
 pub struct ReplicatedEnvelope {
@@ -83,6 +132,40 @@ impl ReplicatedEnvelope {
     /// operation identifier because V1 used `:` as both a legal identifier byte
     /// and a field delimiter. V1 remains readable only when it is unambiguous.
     pub fn decode_status(encoded: &str) -> Result<Self, RaftRuntimeError> {
+        if let Some(rest) = encoded.strip_prefix(ENVELOPE_V3_PREFIX) {
+            let (length, rest) = rest
+                .split_once(':')
+                .ok_or(RaftRuntimeError::InvalidEnvelope)?;
+            if length.is_empty() || !length.bytes().all(|byte| byte.is_ascii_digit()) {
+                return Err(RaftRuntimeError::InvalidEnvelope);
+            }
+            let operation_len = length
+                .parse::<usize>()
+                .map_err(|_| RaftRuntimeError::InvalidEnvelope)?;
+            if operation_len == 0
+                || operation_len > MAX_OPERATION_ID_BYTES
+                || rest.len() <= operation_len
+                || !rest.is_char_boundary(operation_len)
+            {
+                return Err(RaftRuntimeError::InvalidEnvelope);
+            }
+            let (operation_id, suffix) = rest.split_at(operation_len);
+            let suffix = suffix
+                .strip_prefix(':')
+                .ok_or(RaftRuntimeError::InvalidEnvelope)?;
+            let (digest, sealed) = suffix
+                .split_once(':')
+                .ok_or(RaftRuntimeError::InvalidEnvelope)?;
+            let digest = decode_hex_array::<32>(digest)?;
+            let sealed_bytes = STANDARD_NO_PAD
+                .decode(sealed)
+                .map_err(|_| RaftRuntimeError::InvalidEnvelope)?;
+            if STANDARD_NO_PAD.encode(&sealed_bytes) != sealed {
+                return Err(RaftRuntimeError::InvalidEnvelope);
+            }
+            return Self::new(operation_id.to_owned(), digest, sealed_bytes);
+        }
+
         if let Some(rest) = encoded.strip_prefix(ENVELOPE_V2_PREFIX) {
             let (length, rest) = rest
                 .split_once(':')
@@ -136,22 +219,23 @@ impl ReplicatedEnvelope {
 
     fn encoded_status(&self) -> String {
         let operation_len = self.operation_id.len().to_string();
+        let sealed = STANDARD_NO_PAD.encode(&self.sealed);
         let mut encoded = String::with_capacity(
-            ENVELOPE_V2_PREFIX.len()
+            ENVELOPE_V3_PREFIX.len()
                 + operation_len.len()
                 + 2
                 + self.operation_id.len()
                 + self.digest.len() * 2
-                + self.sealed.len() * 2,
+                + sealed.len(),
         );
-        encoded.push_str(ENVELOPE_V2_PREFIX);
+        encoded.push_str(ENVELOPE_V3_PREFIX);
         encoded.push_str(&operation_len);
         encoded.push(':');
         encoded.push_str(&self.operation_id);
         encoded.push(':');
         append_hex(&mut encoded, &self.digest);
         encoded.push(':');
-        append_hex(&mut encoded, &self.sealed);
+        encoded.push_str(&sealed);
         encoded
     }
 }
@@ -178,6 +262,7 @@ pub struct CommitReceipt {
 pub enum RaftRuntimeError {
     InvalidEnvelope,
     InvalidSerial,
+    RecordRejected(RecordRejection),
     Shutdown,
     Consensus(String),
 }
@@ -189,6 +274,9 @@ impl fmt::Display for RaftRuntimeError {
                 formatter.write_str("replicated envelope is invalid or unbounded")
             }
             Self::InvalidSerial => formatter.write_str("client serial must be nonzero"),
+            Self::RecordRejected(reason) => {
+                write!(formatter, "record operation rejected: {reason:?}")
+            }
             Self::Shutdown => formatter.write_str("Raft runtime is shut down"),
             Self::Consensus(message) => write!(formatter, "Raft consensus failed: {message}"),
         }
@@ -367,15 +455,26 @@ mod tests {
     }
 
     #[test]
-    fn envelope_status_v2_round_trip_and_v1_compatibility() -> Result<(), RaftRuntimeError> {
+    fn envelope_status_v3_round_trip_and_legacy_compatibility() -> Result<(), RaftRuntimeError> {
         let envelope = ReplicatedEnvelope::new(
             "node:operation-1",
             [7; 32],
             b"HBA1-synthetic-sealed-envelope".to_vec(),
         )?;
         let encoded = envelope.encoded_status();
-        assert!(encoded.starts_with("hbr2:"));
+        assert!(encoded.starts_with("hbr3:"));
         assert_eq!(ReplicatedEnvelope::decode_status(&encoded)?, envelope);
+
+        let v2 = format!(
+            "hbr2:{}:operation-1:{}:{}",
+            "operation-1".len(),
+            "07".repeat(32),
+            "aa".repeat(16)
+        );
+        let decoded = ReplicatedEnvelope::decode_status(&v2)?;
+        assert_eq!(decoded.operation_id(), "operation-1");
+        assert_eq!(decoded.digest(), [7; 32]);
+        assert_eq!(decoded.sealed(), &[0xaa; 16]);
 
         let v1 = format!("hbr1:operation-1:{}:{}", "07".repeat(32), "aa".repeat(16));
         let decoded = ReplicatedEnvelope::decode_status(&v1)?;
@@ -383,16 +482,18 @@ mod tests {
         assert_eq!(decoded.digest(), [7; 32]);
         assert_eq!(decoded.sealed(), &[0xaa; 16]);
         assert!(ReplicatedEnvelope::decode_status("hbr1:ambiguous:id:00:aa").is_err());
+        assert!(ReplicatedEnvelope::decode_status("hbr3:11:operation-1:07:***").is_err());
         Ok(())
     }
 
     #[test]
     fn malformed_unicode_status_is_rejected_without_panicking() {
         for encoded in [
+            "hbr3:1:é:x:y",
+            "hbr3:2:€:x:y",
+            "hbr3:3:😀:x:y",
+            "hbr3:2:é:x:y",
             "hbr2:1:é:x:y",
-            "hbr2:2:€:x:y",
-            "hbr2:3:😀:x:y",
-            "hbr2:2:é:x:y",
             "hbr1:é:00:aa",
         ] {
             assert!(matches!(
@@ -442,3 +543,7 @@ mod tests {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[allow(clippy::expect_used, clippy::unwrap_used)]
+mod records_tests;

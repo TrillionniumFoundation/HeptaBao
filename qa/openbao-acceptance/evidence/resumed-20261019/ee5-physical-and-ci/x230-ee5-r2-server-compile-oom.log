@@ -1,0 +1,395 @@
+{"argv": ["/home/qian/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo", "test", "--locked", "--offline", "-p", "heptabao-server", "--lib", "--features", "experimental-native-v6-ha,private-ha-forward-diagnostic", "--no-run"]}
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+   Compiling libc v0.2.189
+   Compiling zeroize v1.8.1
+   Compiling syn v2.0.119
+   Compiling syn v3.0.6
+   Compiling cfg-if v1.0.4
+   Compiling typenum v1.20.1
+   Compiling version_check v0.9.5
+   Compiling generic-array v0.14.7
+   Compiling autocfg v1.5.1
+   Compiling subtle v2.6.1
+   Compiling regex-syntax v0.8.11
+   Compiling crypto-common v0.1.7
+   Compiling jobserver v0.1.34
+   Compiling find-msvc-tools v0.1.12
+   Compiling shlex v2.0.1
+   Compiling cc v1.4.5
+   Compiling regex-automata v0.4.18
+   Compiling const-oid v0.9.6
+   Compiling memchr v2.8.3
+   Compiling regex v1.13.1
+   Compiling getrandom v0.2.17
+   Compiling pkg-config v0.3.34
+   Compiling bytes v1.12.1
+   Compiling pin-project-lite v0.2.17
+   Compiling cmake v0.1.58
+   Compiling block-buffer v0.10.4
+   Compiling fs_extra v1.3.0
+   Compiling dunce v1.0.5
+   Compiling libm v0.2.16
+   Compiling digest v0.10.7
+   Compiling num-traits v0.2.19
+   Compiling glob v0.3.4
+   Compiling clang-sys v1.9.1
+   Compiling futures-core v0.3.34
+   Compiling prettyplease v0.2.37
+   Compiling either v1.18.0
+   Compiling smallvec v1.16.0
+   Compiling itertools v0.13.0
+   Compiling synstructure v0.13.2
+   Compiling serde_core v1.0.229
+   Compiling futures-sink v0.3.34
+   Compiling minimal-lexical v0.2.1
+   Compiling libloading v0.8.8
+   Compiling tokio-macros v2.7.2
+   Compiling nom v7.1.3
+   Compiling socket2 v0.6.5
+   Compiling mio v1.2.3
+   Compiling once_cell v1.21.4
+   Compiling rand_core v0.10.1
+   Compiling tokio v1.53.1
+   Compiling cexpr v0.6.0
+   Compiling rand_core v0.6.4
+   Compiling itoa v1.0.18
+   Compiling bitflags v2.13.2
+   Compiling slab v0.4.12
+   Compiling shlex v1.3.0
+   Compiling rustc-hash v2.1.1
+   Compiling log v0.4.34
+   Compiling serde v1.0.229
+   Compiling cpufeatures v0.2.17
+   Compiling futures-channel v0.3.34
+   Compiling serde_derive v1.0.229
+   Compiling futures-macro v0.3.34
+   Compiling futures-io v0.3.34
+   Compiling futures-task v0.3.34
+   Compiling futures-util v0.3.34
+   Compiling siphasher v1.0.3
+   Compiling semver v1.0.28
+   Compiling phf_shared v0.11.3
+   Compiling tracing-core v0.1.36
+   Compiling aws-lc-sys v0.45.0
+   Compiling displaydoc v0.2.7
+   Compiling tracing-attributes v0.1.31
+   Compiling rand v0.8.8
+   Compiling tracing v0.1.44
+   Compiling sha2 v0.10.9
+   Compiling zerofrom-derive v0.1.6
+   Compiling der v0.7.10
+   Compiling cmov v0.5.4
+   Compiling thiserror v2.0.20
+   Compiling bindgen v0.72.1
+   Compiling ctutils v0.4.2
+   Compiling zerofrom v0.1.4
+   Compiling phf_generator v0.11.3
+   Compiling yoke-derive v0.7.5
+   Compiling thiserror-impl v2.0.20
+   Compiling stable_deref_trait v1.2.1
+   Compiling aws-lc-rs v1.18.1
+   Compiling getrandom v0.4.3
+   Compiling yoke v0.7.4
+   Compiling phf_codegen v0.11.3
+   Compiling hybrid-array v0.4.15
+   Compiling phf v0.11.3
+   Compiling parse-zoneinfo v0.3.1
+   Compiling ring v0.17.14
+   Compiling zerovec-derive v0.10.4
+   Compiling zmij v1.0.23
+   Compiling zerovec v0.10.4
+   Compiling chrono-tz-build v0.2.1
+   Compiling aws-lc-sys v0.41.0
+   Compiling utf8parse v0.2.2
+   Compiling serde_json v1.0.151
+   Compiling iana-time-zone v0.1.65
+   Compiling rustix v1.1.4
+   Compiling cpufeatures v0.3.1
+   Compiling chacha20 v0.10.2
+   Compiling chrono v0.4.45
+   Compiling anstyle-parse v1.0.0
+   Compiling chrono-tz v0.8.6
+   Compiling spki v0.7.3
+   Compiling http v1.5.0
+   Compiling signature v2.2.0
+   Compiling ff v0.13.1
+   Compiling rustls-pki-types v1.15.1
+   Compiling hashbrown v0.16.1
+   Compiling untrusted v0.9.0
+   Compiling anstyle-query v1.1.5
+   Compiling unicode-segmentation v1.13.3
+   Compiling equivalent v1.0.2
+   Compiling linux-raw-sys v0.12.1
+   Compiling base16ct v0.2.0
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling anyhow v1.0.100
+   Compiling vcpkg v0.2.15
+   Compiling colorchoice v1.0.5
+   Compiling anstyle v1.0.14
+   Compiling zerocopy v0.8.62
+   Compiling anstream v1.0.0
+   Compiling openssl-sys v0.9.117
+   Compiling sec1 v0.7.3
+   Compiling indexmap v2.11.4
+   Compiling convert_case v0.10.0
+   Compiling group v0.13.0
+   Compiling openraft-macros v0.10.0-alpha.34
+   Compiling rand v0.10.2
+   Compiling tinystr v0.7.6
+   Compiling crypto-common v0.2.2
+   Compiling crypto-bigint v0.5.5
+   Compiling tokio-util v0.7.11
+   Compiling num-integer v0.1.47
+   Compiling spin v0.9.9
+   Compiling httparse v1.10.1
+   Compiling litemap v0.7.3
+   Compiling icu_locid_transform_data v1.5.1
+   Compiling writeable v0.5.5
+   Compiling strsim v0.11.1
+   Compiling heck v0.5.0
+   Compiling unicode-xid v0.2.6
+   Compiling bindgen v0.71.1
+   Compiling clap_lex v1.1.0
+   Compiling clap_builder v4.6.6
+   Compiling derive_more-impl v2.1.1
+   Compiling clap_derive v4.6.4
+   Compiling icu_locid v1.5.0
+   Compiling lazy_static v1.5.0
+   Compiling elliptic-curve v0.13.8
+   Compiling openraft-rt v0.10.0-alpha.34
+   Compiling http-body v1.1.0
+   Compiling anyerror v0.1.13
+   Compiling hmac v0.12.1
+   Compiling icu_provider_macros v1.5.0
+   Compiling atomic-waker v1.1.2
+   Compiling rustls v0.23.44
+   Compiling fnv v1.0.7
+   Compiling num-conv v0.2.2
+   Compiling time-core v0.1.9
+   Compiling try-lock v0.2.5
+   Compiling icu_properties_data v1.5.1
+   Compiling want v0.3.1
+   Compiling time-macros v0.2.32
+   Compiling ppv-lite86 v0.2.21
+   Compiling h2 v0.4.19
+   Compiling itertools v0.15.0
+   Compiling icu_provider v1.5.0
+   Compiling rfc6979 v0.4.0
+   Compiling validit v0.2.6
+   Compiling display-more v0.2.6
+   Compiling openraft-rt-tokio v0.10.0-alpha.34
+   Compiling clap v4.6.6
+   Compiling derive_more v2.1.1
+   Compiling rustls-webpki v0.103.15
+   Compiling futures-executor v0.3.34
+   Compiling rustc_version v0.4.1
+   Compiling inout v0.1.4
+   Compiling lock_api v0.4.13
+   Compiling peel-off v0.1.1
+   Compiling crc32fast v1.5.2
+   Compiling parking_lot_core v0.9.11
+   Compiling maplit v1.0.2
+   Compiling parse-size v1.1.0
+   Compiling deranged v0.5.8
+   Compiling icu_normalizer_data v1.5.1
+   Compiling powerfmt v0.2.0
+   Compiling backoff-series v0.1.1
+   Compiling byteorder v1.5.0
+   Compiling base2histogram v0.2.3
+   Compiling tower-service v0.3.3
+   Compiling time v0.3.55
+   Compiling openraft v0.10.0-alpha.34
+   Compiling cipher v0.4.4
+   Compiling curve25519-dalek v4.1.3
+   Compiling futures v0.3.34
+   Compiling libgssapi-sys v0.3.4
+   Compiling icu_locid_transform v1.5.0
+   Compiling hyper v1.11.1
+   Compiling ecdsa v0.16.9
+   Compiling rand_chacha v0.3.1
+   Compiling primeorder v0.13.6
+   Compiling rusticata-macros v4.1.0
+   Compiling heptabao-filesystem-guard v0.1.0 (/home/qian/heptabao-continuation-20261019/source-ee5/crates/heptabao-filesystem-guard)
+   Compiling icu_collections v1.5.0
+   Compiling asn1-rs-derive v0.6.0
+   Compiling asn1-rs-impl v0.2.0
+   Compiling socket2 v0.5.10
+   Compiling num-bigint-dig v0.8.6
+   Compiling foreign-types-shared v0.1.1
+   Compiling scopeguard v1.2.0
+   Compiling base64ct v1.6.0
+   Compiling base64 v0.22.1
+   Compiling const-oid v0.10.2
+   Compiling openssl v0.10.81
+   Compiling pem-rfc7468 v0.7.0
+   Compiling foreign-types v0.3.2
+   Compiling hyper-util v0.1.20
+   Compiling der v0.8.2
+   Compiling asn1-rs v0.7.2
+   Compiling icu_properties v1.5.1
+   Compiling openraft-legacy v0.10.0-alpha.34
+   Compiling num-iter v0.1.46
+   Compiling digest v0.11.3
+   Compiling heptabao-domain v0.1.0 (/home/qian/heptabao-continuation-20261019/source-ee5/crates/heptabao-domain)
+   Compiling pkcs8 v0.10.2
+   Compiling inout v0.2.2
+   Compiling openssl-macros v0.1.1
+   Compiling curve25519-dalek-derive v0.1.1
+   Compiling pin-project-internal v1.1.10
+   Compiling sync_wrapper v1.0.2
+   Compiling tower-layer v0.3.3
+   Compiling bit-vec v0.8.0
+   Compiling write16 v1.0.0
+   Compiling tokio-openssl v0.6.5
+   Compiling utf16_iter v1.0.5
+   Compiling utf8_iter v1.0.4
+   Compiling oid-registry v0.8.1
+   Compiling thiserror v1.0.69
+   Compiling pin-project v1.1.10
+   Compiling icu_normalizer v1.5.0
+   Compiling bit-set v0.8.0
+   Compiling tower v0.5.3
+   Compiling cipher v0.5.2
+   Compiling pkcs1 v0.7.5
+   Compiling parking_lot v0.12.4
+   Compiling openraft-memstore v0.10.0-alpha.34
+   Compiling prost-derive v0.14.4
+   Compiling spki v0.8.0
+   Compiling hyper-timeout v0.5.2
+   Compiling ssh-encoding v0.2.0
+   Compiling tokio-rustls v0.26.6
+   Compiling murmur3 v0.4.1
+   Compiling http-body-util v0.1.5
+   Compiling num-bigint v0.4.8
+   Compiling ed25519 v2.2.3
+   Compiling tokio-stream v0.1.19
+   Compiling universal-hash v0.5.1
+   Compiling keccak v0.2.2
+   Compiling thiserror-impl v1.0.69
+   Compiling async-trait v0.1.89
+   Compiling typed-arena v2.0.2
+   Compiling simd-adler32 v0.3.10
+   Compiling uuid v1.20.0
+   Compiling opaque-debug v0.3.1
+   Compiling adler2 v2.0.1
+   Compiling percent-encoding v2.3.2
+   Compiling better_any v0.2.1
+   Compiling sponge-cursor v0.1.0
+   Compiling shake v0.1.0
+   Compiling antlr4rust v0.5.2
+   Compiling tonic v0.14.6
+   Compiling miniz_oxide v0.8.9
+   Compiling poly1305 v0.8.0
+   Compiling der-parser v10.0.0
+   Compiling ed25519-dalek v2.1.1
+   Compiling ssh-cipher v0.2.0
+   Compiling pkcs8 v0.11.0
+   Compiling prost v0.14.4
+   Compiling libgssapi v0.11.0
+   Compiling heptabao-raft-runtime v0.1.0 (/home/qian/heptabao-continuation-20261019/source-ee5/crates/heptabao-raft-runtime)
+   Compiling rsa v0.9.10
+   Compiling blowfish v0.10.0
+   Compiling idna_adapter v1.2.0
+   Compiling heptabao-plugin-contracts v0.1.0 (/home/qian/heptabao-continuation-20261019/source-ee5/crates/heptabao-plugin-contracts)
+   Compiling signature v3.0.0
+   Compiling heptabao-durable-service v0.1.0 (/home/qian/heptabao-continuation-20261019/source-ee5/crates/heptabao-durable-service)
+   Compiling p256 v0.13.2
+   Compiling p521 v0.13.3
+   Compiling p384 v0.13.1
+   Compiling chacha20 v0.9.1
+   Compiling heptabao-linux-parent-death v0.1.0 (/home/qian/heptabao-continuation-20261019/source-ee5/crates/heptabao-linux-parent-death)
+   Compiling module-lattice v0.2.3
+   Compiling aead v0.5.2
+   Compiling pastey v0.2.3
+   Compiling openssl-probe v0.1.6
+   Compiling base64 v0.23.1
+   Compiling smol_str v0.3.6
+   Compiling keccak v0.1.6
+   Compiling data-encoding v2.11.1
+   Compiling x509-parser v0.18.1
+   Compiling sha3 v0.10.9
+   Compiling heptabao-workflow-template v0.6.1 (/home/qian/heptabao-continuation-20261019/source-ee5/third_party/workflow-gotmpl)
+   Compiling bcrypt v0.19.3 (/home/qian/heptabao-continuation-20261019/source-ee5/vendor/bcrypt-0.19.3)
+   Compiling rustls-native-certs v0.8.2
+   Compiling cel v0.13.0
+   Compiling chacha20poly1305 v0.10.1
+   Compiling ml-dsa v0.1.1
+   Compiling heptabao-plugin-host v0.1.0 (/home/qian/heptabao-continuation-20261019/source-ee5/crates/heptabao-plugin-host)
+   Compiling ssh-key v0.6.7
+   Compiling heptabao-ha-service v0.1.0 (/home/qian/heptabao-continuation-20261019/source-ee5/crates/heptabao-ha-service)
+   Compiling idna v1.1.0
+   Compiling heptabao-openbao-grpc v0.1.0 (/home/qian/heptabao-continuation-20261019/source-ee5/crates/heptabao-openbao-grpc)
+   Compiling cross-krb5 v0.5.0
+   Compiling flate2 v1.1.8
+   Compiling heptabao-kms-contracts v0.1.0 (/home/qian/heptabao-continuation-20261019/source-ee5/crates/heptabao-kms-contracts)
+   Compiling rustls-pemfile v2.2.0
+   Compiling mime v0.3.17
+   Compiling qrcode v0.14.1 (/home/qian/heptabao-continuation-20261019/source-ee5/vendor/qrcode-0.14.1)
+   Compiling md5 v0.8.0
+   Compiling heptabao-server v0.1.0 (/home/qian/heptabao-continuation-20261019/source-ee5/crates/heptabao-server)
+warning: variable does not need to be mutable
+  --> crates/heptabao-server/src/service_native_kv2_import.rs:28:13
+   |
+28 |         let mut authority = |auth: &AuthState| -> Result<(), Response> {
+   |             ----^^^^^^^^^
+   |             |
+   |             help: remove this `mut`
+   |
+   = note: `#[warn(unused_mut)]` (part of `#[warn(unused)]`) on by default
+
+warning: method `root_attempted` is never used
+  --> crates/heptabao-server/src/ha_native_v6_publication.rs:73:19
+   |
+72 | impl NativeHaPublicationError {
+   | ----------------------------- method in this implementation
+73 |     pub(crate) fn root_attempted(&self) -> bool {
+   |                   ^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: fields `clients` and `servers` are never read
+  --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:46:16
+   |
+45 | pub(super) struct TlsFixture {
+   |                   ---------- fields in this struct
+46 |     pub(super) clients: BTreeMap<u64, Arc<ClientConfig>>,
+   |                ^^^^^^^
+47 |     pub(super) servers: BTreeMap<u64, Arc<ServerConfig>>,
+   |                ^^^^^^^
+
+warning: struct `LiveReceivers` is never constructed
+   --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:156:19
+    |
+156 | pub(super) struct LiveReceivers {
+    |                   ^^^^^^^^^^^^^
+
+warning: associated items `start`, `start_conditioned`, and `transport` are never used
+   --> crates/heptabao-server/src/service_native_v6_ha_mtls_fixture.rs:163:19
+    |
+162 | impl LiveReceivers {
+    | ------------------ associated items in this implementation
+163 |     pub(super) fn start(
+    |                   ^^^^^
+...
+173 |     fn start_conditioned(
+    |        ^^^^^^^^^^^^^^^^^
+...
+230 |     pub(super) fn transport(
+    |                   ^^^^^^^^^
+
+warning: method `root` is never used
+   --> crates/heptabao-server/src/service_native_v6_ha_objects.rs:295:19
+    |
+282 | impl NativeV6HaProposal {
+    | ----------------------- method in this implementation
+...
+295 |     pub(crate) fn root(&self) -> &RecordStateRootV6 {
+    |                   ^^^^
+
+warning: `heptabao-server` (lib test) generated 6 warnings (run `cargo fix --lib -p heptabao-server --tests` to apply 1 suggestion)
+error: could not compile `heptabao-server` (lib test); 6 warnings emitted
+
+Caused by:
+  process didn't exit successfully: `/home/qian/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc --crate-name heptabao_server --edition=2024 crates/heptabao-server/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --emit=dep-info,link -C opt-level=1 -C embed-bitcode=no -C debuginfo=2 '--warn=clippy::all' '--deny=clippy::unwrap_used' --deny=unused_must_use --forbid=unsafe_code '--deny=clippy::panic' '--deny=clippy::expect_used' -C debug-assertions=on --test --cfg 'feature="default"' --cfg 'feature="experimental-native-v6-ha"' --cfg 'feature="fixture-native-v6-service"' --cfg 'feature="private-ha-forward-diagnostic"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("default", "experimental-native-v6-ha", "fixture-capacity-limit", "fixture-native-restore-faults", "fixture-native-v6-service", "private-ha-forward-diagnostic"))' -C metadata=16673a9bb7cda915 -C extra-filename=-c2b13f8f8869a962 --out-dir /home/qian/heptabao-continuation-20261019/target/debug/deps -C incremental=/home/qian/heptabao-continuation-20261019/target/debug/incremental -L dependency=/home/qian/heptabao-continuation-20261019/target/debug/deps --extern aws_lc_rs=/home/qian/heptabao-continuation-20261019/target/debug/deps/libaws_lc_rs-95d17dcd4ec28d54.rlib --extern base64=/home/qian/heptabao-continuation-20261019/target/debug/deps/libbase64-6b1535989b8eb8a9.rlib --extern bcrypt=/home/qian/heptabao-continuation-20261019/target/debug/deps/libbcrypt-5a92264b7f9babbd.rlib --extern blowfish=/home/qian/heptabao-continuation-20261019/target/debug/deps/libblowfish-d7e44933f128bd4c.rlib --extern bytes=/home/qian/heptabao-continuation-20261019/target/debug/deps/libbytes-0891401771b23eb6.rlib --extern cel=/home/qian/heptabao-continuation-20261019/target/debug/deps/libcel-e28fc8ef297c8b06.rlib --extern chacha20poly1305=/home/qian/heptabao-continuation-20261019/target/debug/deps/libchacha20poly1305-bca21a955a2ad418.rlib --extern chrono=/home/qian/heptabao-continuation-20261019/target/debug/deps/libchrono-d2610261180f0c99.rlib --extern cross_krb5=/home/qian/heptabao-continuation-20261019/target/debug/deps/libcross_krb5-1bf9c2c8e885e0e2.rlib --extern flate2=/home/qian/heptabao-continuation-20261019/target/debug/deps/libflate2-f10af41ace58ace8.rlib --extern futures=/home/qian/heptabao-continuation-20261019/target/debug/deps/libfutures-ee8a354fcb00d28c.rlib --extern getrandom=/home/qian/heptabao-continuation-20261019/target/debug/deps/libgetrandom-f9b1504b8884848d.rlib --extern h2=/home/qian/heptabao-continuation-20261019/target/debug/deps/libh2-04adc162b23188d5.rlib --extern heptabao_domain=/home/qian/heptabao-continuation-20261019/target/debug/deps/libheptabao_domain-f312e64449e235c4.rlib --extern heptabao_durable_service=/home/qian/heptabao-continuation-20261019/target/debug/deps/libheptabao_durable_service-5348a221ddcec0f0.rlib --extern heptabao_filesystem_guard=/home/qian/heptabao-continuation-20261019/target/debug/deps/libheptabao_filesystem_guard-9a1d6cc940bae76b.rlib --extern heptabao_ha_service=/home/qian/heptabao-continuation-20261019/target/debug/deps/libheptabao_ha_service-e09b49f62e242120.rlib --extern heptabao_kms_contracts=/home/qian/heptabao-continuation-20261019/target/debug/deps/libheptabao_kms_contracts-e9c9207c15179837.rlib --extern heptabao_linux_parent_death=/home/qian/heptabao-continuation-20261019/target/debug/deps/libheptabao_linux_parent_death-4dff625f1f76cbcc.rlib --extern heptabao_openbao_grpc=/home/qian/heptabao-continuation-20261019/target/debug/deps/libheptabao_openbao_grpc-b630741beb83c6b5.rlib --extern heptabao_plugin_contracts=/home/qian/heptabao-continuation-20261019/target/debug/deps/libheptabao_plugin_contracts-438af11b38084d29.rlib --extern heptabao_plugin_host=/home/qian/heptabao-continuation-20261019/target/debug/deps/libheptabao_plugin_host-2a031bc64c57c95a.rlib --extern heptabao_raft_runtime=/home/qian/heptabao-continuation-20261019/target/debug/deps/libheptabao_raft_runtime-6b0ac931e3d4634e.rlib --extern gotmpl=/home/qian/heptabao-continuation-20261019/target/debug/deps/libgotmpl-bd8b598ea743f855.rlib --extern hmac=/home/qian/heptabao-continuation-20261019/target/debug/deps/libhmac-51dffbef6e5ae057.rlib --extern http=/home/qian/heptabao-continuation-20261019/target/debug/deps/libhttp-717551881a681020.rlib --extern idna=/home/qian/heptabao-continuation-20261019/target/debug/deps/libidna-510840be3a90f9b2.rlib --extern libc=/home/qian/heptabao-continuation-20261019/target/debug/deps/liblibc-453573c23fc2c9be.rlib --extern md5=/home/qian/heptabao-continuation-20261019/target/debug/deps/libmd5-0ba64ad7c1116add.rlib --extern mime=/home/qian/heptabao-continuation-20261019/target/debug/deps/libmime-03267b18ed1b106f.rlib --extern ml_dsa=/home/qian/heptabao-continuation-20261019/target/debug/deps/libml_dsa-7cea60fce5ed02b2.rlib --extern openssl=/home/qian/heptabao-continuation-20261019/target/debug/deps/libopenssl-c0cb0983342fe15d.rlib --extern qrcode=/home/qian/heptabao-continuation-20261019/target/debug/deps/libqrcode-8f97838a4e4361d2.rlib --extern ring=/home/qian/heptabao-continuation-20261019/target/debug/deps/libring-45a24762d733273d.rlib --extern rustix=/home/qian/heptabao-continuation-20261019/target/debug/deps/librustix-068b5196d97789cb.rlib --extern rustls=/home/qian/heptabao-continuation-20261019/target/debug/deps/librustls-534f559ade713ccf.rlib --extern rustls_native_certs=/home/qian/heptabao-continuation-20261019/target/debug/deps/librustls_native_certs-e9ff5864c5d923f7.rlib --extern rustls_pemfile=/home/qian/heptabao-continuation-20261019/target/debug/deps/librustls_pemfile-92c505eab1d9af55.rlib --extern serde=/home/qian/heptabao-continuation-20261019/target/debug/deps/libserde-956f8af6631eaa68.rlib --extern serde_json=/home/qian/heptabao-continuation-20261019/target/debug/deps/libserde_json-d7024d41e39a1440.rlib --extern sha2=/home/qian/heptabao-continuation-20261019/target/debug/deps/libsha2-83c4272be0a27410.rlib --extern sha3=/home/qian/heptabao-continuation-20261019/target/debug/deps/libsha3-602e8035dbf257d6.rlib --extern signature=/home/qian/heptabao-continuation-20261019/target/debug/deps/libsignature-9f92aa62cc4a8198.rlib --extern ssh_key=/home/qian/heptabao-continuation-20261019/target/debug/deps/libssh_key-559d2548626cd05c.rlib --extern subtle=/home/qian/heptabao-continuation-20261019/target/debug/deps/libsubtle-47ab0f2a8faf39ad.rlib --extern tokio=/home/qian/heptabao-continuation-20261019/target/debug/deps/libtokio-a2ae859fe58d3e75.rlib --extern tokio_rustls=/home/qian/heptabao-continuation-20261019/target/debug/deps/libtokio_rustls-54e74377de86c204.rlib --extern x509_parser=/home/qian/heptabao-continuation-20261019/target/debug/deps/libx509_parser-9529c46d83e45617.rlib --extern zeroize=/home/qian/heptabao-continuation-20261019/target/debug/deps/libzeroize-307975554300d470.rlib -L native=/home/qian/heptabao-continuation-20261019/target/debug/build/aws-lc-sys-71971ccca075b84e/out -L native=/home/qian/heptabao-continuation-20261019/target/debug/build/ring-83df57a9e6e379cd/out -L native=/home/qian/heptabao-continuation-20261019/target/debug/build/aws-lc-sys-c079a635dfbf240a/out/build/artifacts -L native=/usr/lib/x86_64-linux-gnu/mit-krb5` (signal: 9, SIGKILL: kill)

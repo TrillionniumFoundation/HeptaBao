@@ -1,0 +1,55 @@
+{
+  "schema": "heptabao.local-witness-contract-review.v1",
+  "reviewed_controller_path": "/workspace/scratch/915e5e680008/kv2-oracle-split-20261019/work/qa/openbao-acceptance/kv2_271_lossless_native_live.py",
+  "reviewed_controller_sha256": "376fa19f6aeac5f9f10bcaaafaf3bb8fa06f801973097f79230ab3dcee6ecb57",
+  "product_overlay_sha256": "3b23947373f85b07d6dffe31bad0805cefe8ff10e532fa2a787a817685d2b94e",
+  "rust_execution": false,
+  "network_requests": 0,
+  "pure_python_checks_executed": {
+    "canonical_vector": {
+      "bytes": 134,
+      "sha256": "8f55c32f8c1f2f2a8d0e5cc14f08b7007ae6ca496782cdc2ae84143879b40395"
+    },
+    "native_small_version_1": {
+      "bytes": 1206,
+      "sha256": "57849f81a4a072309b25c0d6a9a760e011573edef8330a7104f8d61cb5753da7"
+    },
+    "native_small_version_3": {
+      "bytes": 4278,
+      "sha256": "5ae4f8f3c47c234b88807b253fb22d5f1d9e5234fb405f5c5f1c083f6350b8ca"
+    },
+    "native_small_version_4": {
+      "bytes": 4278,
+      "sha256": "78e193e684a4f66c2bde608b632afe1807de409842add99eb845aaed64b5f0e4"
+    }
+  },
+  "matched_contract": [
+    "POST sys/internal/storage/kv2-version-witness",
+    "required-only mount/path/version body",
+    "schema and canonical_profile",
+    "exact version and mount/path",
+    "created_time, deletion_time and destroyed",
+    "soft-deleted actual retained value expected",
+    "destroyed absent payload, null hash and zero bytes",
+    "original full precision source fixture, independent of API oracle",
+    "import/cold/snapshot three actual target stages required before qualification"
+  ],
+  "finding": {
+    "issue": "Response source identity fields are neither validated nor retained by the reviewed controller.",
+    "fields": [
+      "mount_incarnation",
+      "source_root_sha256",
+      "source_publication_generation"
+    ],
+    "requested_owner": "/root/host_evidence",
+    "suggested_narrow_delta": [
+      "positive u64 mount_incarnation, not bool",
+      "64 lowercase hex source_root_sha256",
+      "nonnegative u64 source_publication_generation, not bool",
+      "retain all three in each version receipt",
+      "reject plaintext data/payload fields",
+      "never demand identical state roots across independent requests or legitimate terminal clock-floor writes"
+    ],
+    "state": "Reported to root and controller owner; this review makes no controller edit."
+  }
+}
