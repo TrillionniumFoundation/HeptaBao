@@ -1,0 +1,132 @@
+{
+  "all_owned_groups_empty": true,
+  "artifact_unchanged": true,
+  "cleanup": [
+    {
+      "direct_child_reaped": true,
+      "exit_code": 101,
+      "label": "test-0000",
+      "pid": 5918,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "inventory",
+      "pid": 5858,
+      "remaining": []
+    },
+    {
+      "direct_child_reaped": true,
+      "exit_code": 0,
+      "label": "normal-libtest-build",
+      "pid": 593,
+      "remaining": []
+    }
+  ],
+  "controller_sha256": "949376a1dca146f04327b584066d7e6d54a90017b42b93138870a2ddd45b0a11",
+  "diagnostic_only": true,
+  "expected_unique_tests": 1,
+  "full_replacement_qualified": false,
+  "libtest_artifact": {
+    "bytes": 153745728,
+    "compiler_executable": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/deps/heptabao_server-46a463ff9369a255",
+    "features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "fresh": false,
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/replacement-unified-20261105-r4-diagnostic/diagnostic-publications-r1/retained-heptabao-server-libtest",
+    "profile": {
+      "debug_assertions": true,
+      "debuginfo": 0,
+      "opt_level": "3",
+      "overflow_checks": true,
+      "test": true
+    },
+    "sha256": "5baeaf3472f394944de29816cc56e9199094802fc00ce484e80a4fc0a9052b53"
+  },
+  "libtest_build": {
+    "argv": [
+      "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+      "test",
+      "--release",
+      "--locked",
+      "--offline",
+      "-p",
+      "heptabao-server",
+      "--lib",
+      "--no-run",
+      "--message-format=json-render-diagnostics"
+    ],
+    "children_system_cpu_seconds": 8.596276999999999,
+    "children_user_cpu_seconds": 854.9281910000001,
+    "cumulative_children_peak_rss_bytes": 12133875712,
+    "direct_child_reaped": true,
+    "elapsed_seconds": 474.8415161659941,
+    "exit_code": 0,
+    "label": "normal-libtest-build",
+    "outer_cap_seconds": 1800,
+    "owned_pgid": 593,
+    "remaining": [],
+    "rss_scope": "Darwin RUSAGE_CHILDREN high-water mark since this controller began",
+    "stderr_sha256": "577ca9d965c43c6109444f3e7075a72268fada82fbbd6dacef8778437c25d8af",
+    "stdout_sha256": "8052a61faf4027840ca98a08b42529151cc6b0a97f7847138c4869059b48d62f",
+    "timed_out": false
+  },
+  "original_application_deadlines_unchanged": true,
+  "passed": 0,
+  "production_changed": false,
+  "profile": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_HOME": "/Volumes/T5/hepta-vnext-recovery-20261013/r13-full-native-cargo-home-r1",
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_PANIC": "unwind",
+    "CARGO_TARGET_DIR": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2",
+    "CARGO_TERM_COLOR": "never",
+    "PATH": "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin:/opt/homebrew/bin:/usr/bin:/bin",
+    "RUSTFLAGS": ""
+  },
+  "rustc_vv": "rustc 1.98.0 (88d9e12ae 2026-08-18)\nbinary: rustc\ncommit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea\ncommit-date: 2026-08-18\nhost: aarch64-apple-darwin\nrelease: 1.98.0\nLLVM version: 22.1.8\n",
+  "schema": "heptabao.formal-pending-restore-clock-diagnostic.v1",
+  "source_commit": "d784a7cb75643bde9d9224d90427dbcddda60a4b",
+  "source_result_sha256": "9d4e88f43015655ed849573182e19a813045591a3c2653c888009b94bd4cafdd",
+  "source_tree": "c5a4df63dd04c0fa0b39e07f73014796affce752",
+  "source_unchanged": true,
+  "started_ns": 1793864161712052000,
+  "status": "failed",
+  "terminal_ns": 1793864653776483000,
+  "tests": [
+    {
+      "argv": [
+        "/Volumes/T5/hepta-vnext-recovery-20261013/replacement-unified-20261105-r4-diagnostic/diagnostic-publications-r1/retained-heptabao-server-libtest",
+        "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update_actor",
+        "--exact",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "children_system_cpu_seconds": 6.654045,
+      "children_user_cpu_seconds": 5.560644000000025,
+      "cumulative_children_peak_rss_bytes": 12133875712,
+      "direct_child_reaped": true,
+      "elapsed_seconds": 13.615955541841686,
+      "exit_code": 101,
+      "label": "test-0000",
+      "name": "service::native_v6_ha_pipeline_tests::historical_restore_tests::cold_dr_tests::standby_http_tests::acl_denial_tests::formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update_actor",
+      "outer_cap_seconds": 120,
+      "owned_pgid": 5918,
+      "remaining": [],
+      "rss_scope": "Darwin RUSAGE_CHILDREN high-water mark since this controller began",
+      "status": "failed",
+      "stderr_sha256": "de5fa55d0a8866e49082e6738bb6c8178ecc8a12807e1b1a2e7a10bc9fab382c",
+      "stdout_sha256": "ca13ec444f9830def9531f8327e72a342376a58e9033712b46ff95d57bf2093b",
+      "timed_out": false
+    }
+  ]
+}

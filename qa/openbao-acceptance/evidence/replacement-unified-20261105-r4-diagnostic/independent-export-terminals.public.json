@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.r4-independent-export-terminals.v1",
+  "packaging": {
+    "at_unix_ms": 1793866566642,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1aac78a1a-fc05-472b",
+    "launch_nonce": "673decb8665957fb76af36a3b7d7364b",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 837,
+        "stored": 837
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "independent_export": {
+    "at_unix_ms": 1793866642575,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1aac8a275-fc05-4737",
+    "launch_nonce": "a0556e684eb1d39b569c72c5904a8297",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 182985,
+        "stored": 182985
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "independent_readback": {
+    "archive_members": 19,
+    "evidence_entries": 18,
+    "all_member_hashes_matched": true,
+    "source_commit": "d784a7cb75643bde9d9224d90427dbcddda60a4b",
+    "source_tree": "c5a4df63dd04c0fa0b39e07f73014796affce752",
+    "status": "failed",
+    "passed": 0,
+    "required": 1,
+    "production_changed": false
+  },
+  "production_changed": false,
+  "full_replacement_qualified": false
+}

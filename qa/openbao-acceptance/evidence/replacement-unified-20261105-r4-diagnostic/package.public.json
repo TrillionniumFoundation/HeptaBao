@@ -1,0 +1,19 @@
+{
+  "all_member_readback_matched": true,
+  "archive_bytes": 129580,
+  "archive_members": 19,
+  "archive_path": "/Volumes/T5/hepta-vnext-recovery-20261013/replacement-unified-20261105-r4-diagnostic/public-evidence-r1/r4-publication-diagnostic-evidence.tar.gz",
+  "archive_sha256": "719fbbab68292b81cd70cf53a1aecdc517fb058cbfc128e8504d057436bdcd54",
+  "deterministic_repeat_matched": true,
+  "diagnostic_status": "failed",
+  "evidence_entries": 18,
+  "full_replacement_qualified": false,
+  "manifest_sha256": "e49ade1c3b09df59bc4cf6047be21d477ed375a6aa7949bbe63ec73ed4ca6efa",
+  "package_controller_sha256": "e90827ce5513de2031eca7d417cf90ad6e7813ed6bdfb2fb052882713ce0301d",
+  "passed": 0,
+  "production_changed": false,
+  "required": 1,
+  "schema": "heptabao.r4-publication-diagnostic-package.v1",
+  "source_and_original_evidence_unchanged": true,
+  "status": "packaged"
+}

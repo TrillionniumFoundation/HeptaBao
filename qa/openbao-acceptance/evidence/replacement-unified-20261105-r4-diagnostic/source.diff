@@ -1,0 +1,45 @@
+diff --git a/crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs b/crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs
+index 229f05ce..5690901f 100644
+--- a/crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs
++++ b/crates/heptabao-server/src/service_native_v6_ha_snapshot_acl_tests.rs
+@@ -186,7 +186,20 @@ fn formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update
+     assert!(!restored.headers.contains_key("transfer-encoding"));
+     let installed = selection(&pipeline, leader, migration_source)?;
+     assert_eq!(installed.0, 1);
++    let publication_probe = |stage: &str| -> TestResult {
++        let selected = selection(&pipeline, leader, migration_source)?;
++        eprintln!(
++            "HBFORMAL-RESTORE-PUBLICATION stage={stage} epoch={} generation={} log_index={} auth_clock_floor={:?}",
++            selected.0,
++            selected.1.generation(),
++            selected.1.publication_log_id().index,
++            floor(&pipeline, leader)?
++        );
++        Ok(())
++    };
++    publication_probe("installed")?;
+     pipeline.assert_history(leader, &[(1, "seed-v5")])?;
++    publication_probe("history_v1_read")?;
+     expect(
+         pipeline.call(
+             leader,
+@@ -198,6 +211,7 @@ fn formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update
+         404,
+         "actual-nonroot-restore-removes-later-version",
+     )?;
++    publication_probe("history_v2_absent_read")?;
+     // These also use External SnapshotTransfer on the public POST/PUT route,
+     // but their typed PendingRestore observation must retain the 200 JSON
+     // reconciliation result. Read the actual committed ID, never replay upload.
+@@ -244,6 +258,11 @@ fn formal_native_nonroot_snapshot_acl_and_historical_restore_use_original_update
+         if method == "PUT" {
+             assert_eq!(body["data"]["recovery_reference"], reference);
+         }
++        publication_probe(if method == "POST" {
++            "after_pending_inspect"
++        } else {
++            "after_pending_cancel"
++        })?;
+         assert_eq!(selection(&pipeline, leader, migration_source)?, installed);
+         assert!(observed_pending_reference(&pipeline, leader)?.is_none());
+     }
