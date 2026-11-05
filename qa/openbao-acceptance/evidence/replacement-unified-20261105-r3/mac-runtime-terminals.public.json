@@ -1,0 +1,204 @@
+{
+  "schema": "heptabao-r3-mac-independent-runtime-terminals-v1",
+  "scope": "Authoritative runtime terminal observations independently collected by the primary reviewer; a successful export is not a successful product regression.",
+  "source_commit": "6b16a9292d046bbc42aec65045fa105aaa1ac5de",
+  "source_tree": "0de9c516e94a47cb89e2e0f5ac2146e60913cfef",
+  "build": {
+    "at_unix_ms": 1793862469032,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1aa7d25bc-fc05-439e",
+    "launch_nonce": "d79a2663aed3ea06cec702d9656391a4",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 418,
+        "stored": 418
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "server_regression": {
+    "at_unix_ms": 1793863026707,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1aa8c30a4-fc05-443d",
+    "launch_nonce": "dee6f5efc503505ff3022fd8f53b7c96",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 522,
+        "stored": 522
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "ha_regression": {
+    "at_unix_ms": 1793863237404,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1aa944888-fc05-44a6",
+    "launch_nonce": "47ae29ad128bcf190ca64437302b7b85",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 285,
+        "stored": 285
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "aggregate": {
+    "at_unix_ms": 1793863347571,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 1,
+    "job_id": "1a1aa9663b8-fc05-44cc",
+    "launch_nonce": "834746df2b1abb56405a0093075c129d",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 315,
+        "stored": 315
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "failed",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "independent_archive_export": {
+    "at_unix_ms": 1793864898184,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1aaae1513-fc05-45fd",
+    "launch_nonce": "9dd03a195d5555c06ab1627c77d7d8da",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 789807,
+        "stored": 789807
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "independent_readback": {
+    "archive_members": 799,
+    "evidence_entries": 798,
+    "all_member_sha256_matched": true,
+    "source_commit": "6b16a9292d046bbc42aec65045fa105aaa1ac5de",
+    "source_tree": "0de9c516e94a47cb89e2e0f5ac2146e60913cfef",
+    "status": "failed",
+    "passed": 180,
+    "required": 181,
+    "production_changed": false
+  },
+  "production_changed": false,
+  "full_replacement_qualified": false
+}
