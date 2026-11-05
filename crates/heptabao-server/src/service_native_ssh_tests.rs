@@ -524,9 +524,11 @@ fn native_ssh_after_actual_audit_actor_revocation_never_delivers_otp() -> TestRe
             "POST",
             "auth/token/revoke",
             json!({"token":revoke_actor.as_str()}),
-        )
-        .expect("actual token revocation");
-        status(&revoked, 204);
+        );
+        assert!(
+            matches!(revoked, Ok(ref reply) if reply.status == 204),
+            "actual token revocation"
+        );
     })?;
     let response = f.actor(&actor, "POST", "ssh/creds/test", json!({"ip":"127.0.0.1"}))?;
     assert!(response.status >= 400);
@@ -549,9 +551,7 @@ fn native_ssh_after_actual_audit_changed_status_does_not_bypass_or_resign() -> T
             service
                 .state
                 .as_ref()
-                .expect("state")
-                .engines
-                .native_ssh_signature_count("ssh/"),
+                .and_then(|state| state.engines.native_ssh_signature_count("ssh/")),
             Some(1)
         );
         response.status = 503;
@@ -701,17 +701,17 @@ fn native_ssh_consumed_verify_rechecks_original_issuer_after_actual_audit() -> T
     let mut hook_now = f.now + 1;
     let _hook = after_audit(move |service, response| {
         assert!(response.status == 200 && response.body["data"]["username"].is_string());
-        status(
-            &call(
-                service,
-                &mut hook_now,
-                &revoke_root,
-                "POST",
-                "auth/token/revoke",
-                json!({"token":revoke_actor.as_str()}),
-            )
-            .expect("actual issuer revoke"),
-            204,
+        let revoked = call(
+            service,
+            &mut hook_now,
+            &revoke_root,
+            "POST",
+            "auth/token/revoke",
+            json!({"token":revoke_actor.as_str()}),
+        );
+        assert!(
+            matches!(revoked, Ok(ref reply) if reply.status == 204),
+            "actual issuer revoke"
         );
     })?;
     let response = f.actor("", "POST", "ssh/verify", json!({"otp":otp.as_str()}))?;

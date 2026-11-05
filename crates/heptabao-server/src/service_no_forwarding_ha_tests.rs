@@ -116,13 +116,13 @@ fn finite_actor(
 fn http(
     pipeline: &PkiPipeline,
     node: usize,
-    method: &str,
-    target: &str,
+    request_line: (&str, &str),
     actor: &str,
     fields: &str,
     body: Value,
     attempt: u8,
 ) -> TestResult<Wire> {
+    let (method, target) = request_line;
     let until = Instant::now() + REQUEST_BUDGET;
     let raw = request(method, target, actor, fields, &body);
     let service = pipeline.services[node]
@@ -172,8 +172,7 @@ fn no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor() -> Te
         let response = http(
             &pipeline,
             follower,
-            "GET",
-            target,
+            ("GET", target),
             &actor,
             fields,
             json!({}),
@@ -194,8 +193,7 @@ fn no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor() -> Te
     let response = http(
         &pipeline,
         follower,
-        "POST",
-        write_target,
+        ("POST", write_target),
         &actor,
         "X-Vault-No-Request-Forwarding: 1\r\n",
         json!({"options":{"cas":0},"data":{"value":"must-not-be-written"}}),
@@ -222,8 +220,7 @@ fn no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor() -> Te
     let health = http(
         &pipeline,
         follower,
-        "GET",
-        "/v1/sys/health?standbyok=true",
+        ("GET", "/v1/sys/health?standbyok=true"),
         "",
         "X-Vault-No-Request-Forwarding: 1\r\n",
         json!({}),
@@ -286,8 +283,7 @@ fn no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor() -> Te
         let response = http(
             &pipeline,
             follower,
-            "POST",
-            &format!("/v1/{path}"),
+            ("POST", &format!("/v1/{path}")),
             pipeline.admin(),
             fields,
             json!({"options":{"cas":0},"data":{"value":"exact-once"}}),
@@ -326,8 +322,7 @@ fn no_forward271_normal_ha_keeps_local_routes_and_does_not_consume_actor() -> Te
     let response = http(
         &pipeline,
         leader,
-        "POST",
-        "/v1/secret/data/no-forward-leader",
+        ("POST", "/v1/secret/data/no-forward-leader"),
         pipeline.admin(),
         "X-Vault-No-Request-Forwarding: false\r\n",
         json!({"options":{"cas":0},"data":{"value":"leader-once"}}),
@@ -372,8 +367,7 @@ fn no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_lo
     let positive = http(
         &pipeline,
         follower,
-        "GET",
-        target,
+        ("GET", target),
         &actor,
         fields,
         json!({}),
@@ -419,8 +413,7 @@ fn no_forward271_normal_ha_original_deadline_and_real_response_audit_withhold_lo
     let refused = http(
         &pipeline,
         follower,
-        "GET",
-        target,
+        ("GET", target),
         &actor,
         fields,
         json!({}),

@@ -101,7 +101,7 @@ pub(crate) fn request(
     headers: &str,
     body: &Value,
 ) -> Vec<u8> {
-    let body = serde_json::to_vec(body).expect("synthetic JSON object");
+    let body = body.to_string().into_bytes();
     let mut bytes = format!("{method} {target} HTTP/1.1\r\nHost: attacker.invalid\r\nX-Forwarded-Host: attacker.invalid\r\nX-Forwarded-Proto: http\r\nX-Vault-Token: {token}\r\n{headers}Content-Type: application/json\r\nContent-Length: {}\r\n\r\n", body.len()).into_bytes();
     bytes.extend_from_slice(&body);
     bytes

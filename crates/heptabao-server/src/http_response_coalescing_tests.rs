@@ -218,7 +218,8 @@ fn ordinary_http_prefix_keeps_partial_writes_and_original_io_failures() -> TestR
     };
     assert_eq!(
         write_response(&mut zero, Response::error(501, REJECTION), false)
-            .unwrap_err()
+            .err()
+            .ok_or("expected original I/O failure")?
             .kind(),
         io::ErrorKind::WriteZero
     );
@@ -230,7 +231,8 @@ fn ordinary_http_prefix_keeps_partial_writes_and_original_io_failures() -> TestR
     };
     assert_eq!(
         write_response(&mut broken, Response::error(501, REJECTION), false)
-            .unwrap_err()
+            .err()
+            .ok_or("expected original I/O failure")?
             .kind(),
         io::ErrorKind::BrokenPipe
     );
@@ -244,7 +246,8 @@ fn ordinary_http_prefix_keeps_partial_writes_and_original_io_failures() -> TestR
     };
     assert_eq!(
         write_response(&mut flush, Response::error(501, REJECTION), false)
-            .unwrap_err()
+            .err()
+            .ok_or("expected original I/O failure")?
             .kind(),
         io::ErrorKind::BrokenPipe
     );
@@ -258,7 +261,8 @@ fn ordinary_http_prefix_keeps_partial_writes_and_original_io_failures() -> TestR
             false,
             "invalid\r\nnamespace"
         )
-        .unwrap_err()
+        .err()
+        .ok_or("expected original I/O failure")?
         .kind(),
         io::ErrorKind::InvalidInput
     );

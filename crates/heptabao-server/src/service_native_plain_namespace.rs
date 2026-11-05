@@ -226,7 +226,14 @@ mod tests {
         assert!(scope.check(&poisoned).is_err());
         let mut poisoned = state.clone();
         poisoned.namespaces.entries.remove("scoped");
-        assert_eq!(scope.check(&poisoned).unwrap_err().status, 503);
+        assert_eq!(
+            scope
+                .check(&poisoned)
+                .err()
+                .ok_or("absent namespace admitted")?
+                .status,
+            503
+        );
         // A typed negative fixture binds the previously selected namespace.
         // It is never queued, persisted, or authorized as a control-group grant.
         let retained = crate::auth::control_groups::DeferredRequest {
@@ -278,7 +285,8 @@ mod tests {
         assert_eq!(initial.status, 404);
         assert_eq!(
             validate_control_group_scope(&poisoned, &retained)
-                .unwrap_err()
+                .err()
+                .ok_or("absent retained namespace admitted")?
                 .status,
             503
         );

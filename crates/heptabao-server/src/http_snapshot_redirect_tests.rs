@@ -253,7 +253,11 @@ fn native_http_redirect_complete_head_preserves_short_writes_and_transport_error
         ..Default::default()
     };
     assert_eq!(
-        reply()?.write(&mut zero, false).unwrap_err().kind(),
+        reply()?
+            .write(&mut zero, false)
+            .err()
+            .ok_or("expected original I/O failure")?
+            .kind(),
         io::ErrorKind::WriteZero
     );
     assert_eq!((zero.writes, zero.flushes), (1, 0));
@@ -262,7 +266,11 @@ fn native_http_redirect_complete_head_preserves_short_writes_and_transport_error
         ..Default::default()
     };
     assert_eq!(
-        reply()?.write(&mut flush, false).unwrap_err().kind(),
+        reply()?
+            .write(&mut flush, false)
+            .err()
+            .ok_or("expected original I/O failure")?
+            .kind(),
         io::ErrorKind::BrokenPipe
     );
     assert_eq!((flush.writes, flush.flushes), (1, 1));
@@ -270,7 +278,8 @@ fn native_http_redirect_complete_head_preserves_short_writes_and_transport_error
     assert_eq!(
         reply()?
             .write_with_namespace(&mut invalid, false, "invalid\r\nnamespace")
-            .unwrap_err()
+            .err()
+            .ok_or("expected original I/O failure")?
             .kind(),
         io::ErrorKind::InvalidInput,
     );

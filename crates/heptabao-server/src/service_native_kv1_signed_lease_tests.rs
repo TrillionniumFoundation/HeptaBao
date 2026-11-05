@@ -46,15 +46,14 @@ fn wire_request(
     wire_response(response, &namespace, &path, attempt)
 }
 
-fn signed_fixture() -> Result<
-    (
-        crate::service::tests::Root,
-        Service,
-        Zeroizing<String>,
-        Zeroizing<String>,
-    ),
-    Box<dyn std::error::Error>,
-> {
+type SignedFixture = (
+    crate::service::tests::Root,
+    Service,
+    Zeroizing<String>,
+    Zeroizing<String>,
+);
+
+fn signed_fixture() -> Result<SignedFixture, Box<dyn std::error::Error>> {
     let root = crate::service::tests::Root::new();
     let mut service = root.service()?;
     service.configure_native_v6_storage(NativeStorageProfile::File)?;
