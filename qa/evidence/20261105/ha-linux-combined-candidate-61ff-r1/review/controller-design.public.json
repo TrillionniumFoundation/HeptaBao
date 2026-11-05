@@ -1,0 +1,154 @@
+{
+  "base_tree": "ef0ae63704a06b7dda1038e02abcc3233a2a438f",
+  "budget": {
+    "actual_deadline": null,
+    "currently_started": false,
+    "includes_preflight_prep": true,
+    "new_shared_seconds": 3600,
+    "old_budget_reused": false,
+    "outer_service_test_scope_seconds_unchanged": 30,
+    "per_request_http_seconds_unchanged": 15,
+    "supervisor_seconds": 3900
+  },
+  "changed_files": 33,
+  "cleanup": {
+    "foreign_signal": false,
+    "no_automatic_resume_or_new_budget": true,
+    "no_known_request_replay": true,
+    "original_unreaped_child_anchor": true,
+    "reap_after_group_cleanup": true,
+    "signal_after_reap": false
+  },
+  "compiled": false,
+  "execution_enabled": false,
+  "frozen_catalog_union": 84,
+  "full_replacement_qualified": false,
+  "guard": {
+    "disk_free_min_bytes": 34359738368,
+    "invocation_time_only": true,
+    "load_1m_max_cpu_fraction": 0.5,
+    "memory_available_min_bytes": 34359738368,
+    "new_owned_boundary_observation_required": true,
+    "no_argv_or_env_read": true,
+    "ordinary_product_process_is_not_in_original_active_filter": true,
+    "original_exact_foreign_compile_only_exception_unchanged": true,
+    "original_fragment_sha256": "b00ff78b2a341a752d489c3a677f7a912f0f79b39c42601cfb030a29bea45b59",
+    "original_fragment_unchanged": true,
+    "original_prior_file_identity": "108ea3a050eb5f1596b8c6cab3aeffbce8a220e91ae1b15ac70b3b6176c097cb",
+    "persistent_host_reservation_claimed": false,
+    "timed_stage_any_external_compiler_or_unit_test_refused": true,
+    "uid": 1000,
+    "unknown_external_builder_refused": true
+  },
+  "normal_profile": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+    "CARGO_PROFILE_RELEASE_DEBUG": "0",
+    "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+    "CARGO_PROFILE_RELEASE_LTO": "false",
+    "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+    "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+    "CARGO_PROFILE_RELEASE_PANIC": "unwind"
+  },
+  "paths": {
+    "new_attempt_relative": "linux-snapshot-61ff-20261105-r1",
+    "new_branch": "codex/heptabao-linux-snapshot-61ff-20261105-r1",
+    "root": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1",
+    "source": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/source",
+    "target": "/home/qian-qi/heptabao-bao-acceptance-unified-61ff-20261104-r1/cargo-target-normal"
+  },
+  "phases": [
+    {
+      "phase": "input_and_current_admission",
+      "required": "authoritative terminal resolution of 3335, complete actual stdout and current tool/source/resource/ownership review; unresolved/null refuses before mutation"
+    },
+    {
+      "phase": "owned_source_stage",
+      "required": "7071/ef0 clean full tree and 62 pins; fresh output/branch; read-only existing target flock during source staging; full 33 files produce exact 667 tree; release lock before Cargo"
+    },
+    {
+      "phase": "format_and_freeze",
+      "required": "same normal toolchain; only 22 reviewed Rust paths may change; actual diff and physical commit/tree plus all84 pins retained"
+    },
+    {
+      "args": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--exclude",
+        "qrcode",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "phase": "strict"
+    },
+    {
+      "args": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--lib",
+        "--no-run",
+        "--message-format=json-render-diagnostics"
+      ],
+      "phase": "libtest_compile",
+      "required": "actual unique current SOURCE/lib.rs artifact, exact default/native-v6-ha/native-v6-storage features, opt3/debug assertions/overflow true/test true; independent retained bytes"
+    },
+    {
+      "claims": "strict+libtest compile only; zero components and no normal server/seed link",
+      "condition": "explicit reviewed mode compile_only",
+      "phase": "compile_only_terminal"
+    },
+    {
+      "condition": "explicit separate current ROG fixture review plus original timed/resource guards and no product process conflict",
+      "phase": "timed_components",
+      "required": "actual --list19 eachonce; each --exact name --nocapture --test-threads=1 once; private TMPDIR; known failure retained, unknown/deadline/cleanup abort"
+    },
+    {
+      "args": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--bin",
+        "heptabao-server",
+        "--bin",
+        "heptabao-seed",
+        "--message-format=json-render-diagnostics"
+      ],
+      "condition": "all19 actual passes, no unknown, clean owned groups, original absolute deadline",
+      "phase": "conditional_normal_link"
+    },
+    {
+      "phase": "final_receipt",
+      "required": "same frozen source/tree/all84pins, binary hashes and actual Cargo profile/ABI, source and artifact ownership, command exits and cleanup; qualification scopes stay separate"
+    }
+  ],
+  "physical_base": "70714605c39014bea93545f7f6aa4217d2a23544",
+  "remote_actions_submitted_by_this_agent": false,
+  "schema": "heptabao.linux.candidate-controller-design.v1",
+  "source_commit": "f80d2d54800ba7e932d91572c084f930af3e5714",
+  "source_tree": "667ae96b264c5e7f4b9290933612125d883b9e69",
+  "status": "offline_draft_execution_disabled",
+  "test_count": 19,
+  "unresolved": {
+    "authoritative_terminal": null,
+    "current_resource_floor": null,
+    "current_rog_fixture_ownership": null,
+    "current_toolchain_pins": null,
+    "preflight_job": "1a1a93e525e-fc05-3335",
+    "process_request": null
+  }
+}
