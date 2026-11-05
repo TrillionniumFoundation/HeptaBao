@@ -1,4 +1,5 @@
 #![forbid(unsafe_code)]
+#![recursion_limit = "256"]
 //! A bounded TLS secrets service. All mutations, including login and finite-use
 //! token consumption, commit encrypted state before any result is delivered.
 //! Unsupported OpenBao operations remain explicit errors.

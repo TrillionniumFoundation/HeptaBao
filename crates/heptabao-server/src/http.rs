@@ -3231,7 +3231,7 @@ fn write_response_with_namespace(
     } else {
         admitted_http_status
     };
-    read_index_observation::bind_final_wire_payload(response,status,head,
+    read_index_observation::bind_final_wire_payload(&response,status,head,
         fixed_raw_body || content_type!="application/json",&bytes);
     // Use Go HTTP status text, including its custom health-code fallback.
     let reason = match status {
