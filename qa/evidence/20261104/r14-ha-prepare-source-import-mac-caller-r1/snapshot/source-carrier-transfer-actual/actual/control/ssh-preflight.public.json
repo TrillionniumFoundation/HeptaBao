@@ -1,0 +1,38 @@
+{
+  "rog-ts": {
+    "effective_config_sha256": "9228489a625661b16e643d1bde2d4b81bb95c2d23798b92024f700309400cf08",
+    "known_hosts_before": {
+      "/home/qian-qi/.ssh/hepta-transport/known_hosts": {
+        "bytes": 5391,
+        "identity": [
+          2050,
+          52599357,
+          1000,
+          1000,
+          33152,
+          1,
+          5391,
+          1793703653819681345,
+          1793703653854741609
+        ],
+        "sha256": "1463442349bbb6b56e9ffbb66acce3c4abcceefe1c141c7b7f1ea9bb0dedf034"
+      }
+    },
+    "projection": {
+      "batchmode": "yes",
+      "clearallforwardings": "yes",
+      "connectionattempts": "1",
+      "connecttimeout": "10",
+      "controlmaster": "false",
+      "controlpath": null,
+      "forwardagent": "no",
+      "host": "rog-ts",
+      "hostkeyalias": "hepta-node-rog",
+      "hostname": "192.168.0.10",
+      "port": "22",
+      "stricthostkeychecking": "true",
+      "updatehostkeys": "false",
+      "user": "qian-qi"
+    }
+  }
+}

@@ -1,0 +1,313 @@
+{
+  "schema": "heptabao.postcold-r2-prepare-independent-assessment.v1",
+  "status": "PASS_PREPARATION_ONLY",
+  "job_id": "1a1a95290cd-fc05-3440",
+  "request_pin": {
+    "bytes": 442,
+    "sha256": "cf0dbf314fab9c8a4f233df709422279091c4ffadd2cb73fed84c83023c8e4ea",
+    "blob": "31e995daffb6e8b6989d290ca873c57c058a41a6"
+  },
+  "source_tree": "423d3de5fa53aa525ee2ea27b8c80a3d0e404947",
+  "inert_evidence_tree": "bd2458b324fb63f6553e47eb028c896633cc05f0",
+  "prepared": {
+    "bytes": 42012,
+    "sha256": "9fb7bb1054a554357232c8847e36b1a20d2339455a4f6ea7a2c1f37885c1f5af",
+    "blob": "536d0532ebfa8709ecb92de11adce1a29fd334c7"
+  },
+  "authoritative_exit": 0,
+  "authoritative_output_complete": true,
+  "authoritative_output_durable": true,
+  "automatic_retry": false,
+  "terminal_stdout_hex_text_exact": true,
+  "independent_prepared_metadata_matches_read_version": true,
+  "read_scope": "Five independent complete immutable file reads; not an atomic snapshot across files.",
+  "builds": [
+    {
+      "host": "linux",
+      "abi": "x86_64-unknown-linux-gnu",
+      "source": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source",
+      "files": {
+        "artifacts/heptabao-seed": {
+          "bytes": 101159496,
+          "identity": [
+            66306,
+            32420768,
+            101159496,
+            1000,
+            320,
+            "1793816931616388413",
+            "1793816931738387743",
+            1
+          ],
+          "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/artifacts/heptabao-seed",
+          "sha256": "6befec74076fb891e12a9dd3a1b2563c995ec7f7f1c7df18dc787d1163e0e018"
+        },
+        "artifacts/heptabao-server": {
+          "bytes": 109091112,
+          "identity": [
+            66306,
+            32420767,
+            109091112,
+            1000,
+            320,
+            "1793816931326390006",
+            "1793816931458389281",
+            1
+          ],
+          "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/artifacts/heptabao-server",
+          "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113"
+        },
+        "native-build.public.json": {
+          "bytes": 801,
+          "identity": [
+            66306,
+            32420770,
+            801,
+            1000,
+            384,
+            "1793816931839994753",
+            "1793816931839994753",
+            1
+          ],
+          "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/native-build.public.json",
+          "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77"
+        },
+        "normal-release-build.stdout": {
+          "bytes": 387434,
+          "identity": [
+            66306,
+            32420750,
+            387434,
+            1000,
+            384,
+            "1793816931176390830",
+            "1793816931176390830",
+            1
+          ],
+          "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/normal-release-build.stdout",
+          "sha256": "47694694edb5ef1e5c10aec8d24d12de44f5537c18488ec2c879f6031f2fbe0f"
+        },
+        "normal-release-result.public.json": {
+          "bytes": 3227,
+          "identity": [
+            66306,
+            32420769,
+            3227,
+            1000,
+            384,
+            "1793816931839107644",
+            "1793816931839107644",
+            1
+          ],
+          "path": "/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1/normal-release-result.public.json",
+          "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee"
+        }
+      },
+      "normal_and_native_originals": {
+        "native": {
+          "bytes": 801,
+          "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+          "blob": "8b70873f6ee251a7cc403d781e70a9e505b91f95"
+        },
+        "normal": {
+          "bytes": 3227,
+          "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+          "blob": "849d45f07a53007f6e927530900783e23197999b"
+        }
+      },
+      "embedded_raw_exact": true,
+      "cargo": [
+        "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--bin",
+        "heptabao-server",
+        "--bin",
+        "heptabao-seed",
+        "--message-format=json-render-diagnostics"
+      ],
+      "release_profile": {
+        "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+        "CARGO_PROFILE_RELEASE_DEBUG": "0",
+        "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+        "CARGO_PROFILE_RELEASE_LTO": "false",
+        "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+        "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+        "CARGO_PROFILE_RELEASE_PANIC": "unwind"
+      },
+      "build_source_and_features_exact": true
+    },
+    {
+      "host": "mac",
+      "abi": "aarch64-apple-darwin",
+      "source": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/source",
+      "files": {
+        "artifacts/heptabao-seed": {
+          "bytes": 87336944,
+          "identity": [
+            16777244,
+            72498081,
+            87336944,
+            501,
+            320,
+            "1793817615812836325",
+            "1793817615835909143",
+            1
+          ],
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/normal-release-tests-r1/artifacts/heptabao-seed",
+          "sha256": "cbfbb57a63a971ce35701a5629d07f2e54e461c7774e4b27d56c8a34a0d26cf4"
+        },
+        "artifacts/heptabao-server": {
+          "bytes": 93038816,
+          "identity": [
+            16777244,
+            72498079,
+            93038816,
+            501,
+            320,
+            "1793817615336023791",
+            "1793817615360087123",
+            1
+          ],
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/normal-release-tests-r1/artifacts/heptabao-server",
+          "sha256": "bc1fc6b8ded5a43a60ab4c562cd5e092e63ae9df77afd654c9af8c096c128c98"
+        },
+        "native-build.public.json": {
+          "bytes": 798,
+          "identity": [
+            16777244,
+            72498084,
+            798,
+            501,
+            384,
+            "1793817615951238275",
+            "1793817615951238275",
+            1
+          ],
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/normal-release-tests-r1/native-build.public.json",
+          "sha256": "16fa488ed8d7a9a46541b5aea5007e27b538e5c37f9246c14de0e5fe24b05ad1"
+        },
+        "normal-release-build.stdout": {
+          "bytes": 439718,
+          "identity": [
+            16777244,
+            72492816,
+            439718,
+            501,
+            384,
+            "1793817614847562180",
+            "1793817614847562180",
+            1
+          ],
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/normal-release-tests-r1/normal-release-build.stdout",
+          "sha256": "8eefe497192295e5e8016ba3a1938ac534e4bf3746853164e9616c37b0eb6442"
+        },
+        "normal-release-result.public.json": {
+          "bytes": 3326,
+          "identity": [
+            16777244,
+            72498083,
+            3326,
+            501,
+            384,
+            "1793817615949795755",
+            "1793817615949795755",
+            1
+          ],
+          "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/normal-release-tests-r1/normal-release-result.public.json",
+          "sha256": "f5746eaf7fd79c8001ac927c9738922297d6e5e575cbd12bc092aafa2c13f544"
+        }
+      },
+      "normal_and_native_originals": {
+        "native": {
+          "bytes": 798,
+          "sha256": "16fa488ed8d7a9a46541b5aea5007e27b538e5c37f9246c14de0e5fe24b05ad1",
+          "blob": "3daa9c7e0537b066502606430b9289b39a249712"
+        },
+        "normal": {
+          "bytes": 3326,
+          "sha256": "f5746eaf7fd79c8001ac927c9738922297d6e5e575cbd12bc092aafa2c13f544",
+          "blob": "5d0f6fd01dfd4415610e6f30afe4b2ea203a4297"
+        }
+      },
+      "embedded_raw_exact": true,
+      "cargo": [
+        "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin/cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "heptabao-server",
+        "--bin",
+        "heptabao-server",
+        "--bin",
+        "heptabao-seed",
+        "--message-format=json-render-diagnostics"
+      ],
+      "release_profile": {
+        "CARGO_PROFILE_RELEASE_CODEGEN_UNITS": "16",
+        "CARGO_PROFILE_RELEASE_DEBUG": "0",
+        "CARGO_PROFILE_RELEASE_DEBUG_ASSERTIONS": "true",
+        "CARGO_PROFILE_RELEASE_LTO": "false",
+        "CARGO_PROFILE_RELEASE_OPT_LEVEL": "3",
+        "CARGO_PROFILE_RELEASE_OVERFLOW_CHECKS": "true",
+        "CARGO_PROFILE_RELEASE_PANIC": "unwind"
+      },
+      "build_source_and_features_exact": true
+    }
+  ],
+  "source_literal_and_pure_argv_fields_exact": [
+    "source_commit",
+    "source_tree",
+    "qa_pins",
+    "build_pins",
+    "comparison_pins",
+    "deadline_qa_pins",
+    "required_extra_checks",
+    "runner_sha256",
+    "numeric_helper_sha256",
+    "cipher_helper_sha256",
+    "argv"
+  ],
+  "literal_verification": "Offline AST literal extraction and selected pure path/args function only; no complete module imported, no host call.",
+  "checks": {
+    "original": 98,
+    "separate_extra": 12,
+    "fences": 28,
+    "comparison_pins_exact_frozen": true,
+    "all_four_embedded_build_raws_equal_independent_files": true,
+    "build_file_pins": 10,
+    "actual_cargo_paths": 2,
+    "new_witness_mutation_limit": 2,
+    "once_CAS0_then_same_key_metadata_delete": true,
+    "original_higher_term_guard_preserved": true,
+    "same_leader_exact_old_log_vote_branch": true
+  },
+  "budgets": {
+    "prepare_outer_seconds": 360,
+    "original_controller_seconds": 2400,
+    "new_shared_postcold_seconds": 300,
+    "role_prepare_seconds": 60,
+    "original_sealed_election_seconds": 60,
+    "HTTP_seconds": 15,
+    "admission_seconds": 8,
+    "numeric_read_seconds": 15,
+    "numeric_ssh_seconds": 45
+  },
+  "qualification": {
+    "fixture_started": false,
+    "live_started": false,
+    "formal_runtime_qualification": false,
+    "cargo_started": false,
+    "production_changed": false,
+    "private_diagnostic_feature_enabled": false,
+    "only_synchronous_probe_and_contract_child_completion_observed": true,
+    "independent_remote_process_group_survey_claimed": false,
+    "live_requires_new_root_go_and_exclusive_window": true
+  }
+}

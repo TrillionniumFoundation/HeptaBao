@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-controls-r1/relay.py"
+    ],
+    "created_unix_ms": 1793841650146,
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "env_keys": [],
+    "executable": "/usr/bin/python3",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1a94b59e2-fc05-33df",
+    "idempotency_key": "heptabao-phaseb-3cb-source-carrier-f98ef18f-20261105-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1a94b59e2-fc05-33df",
+    "request_digest": "a3bf550eaec06205a9103846c71f4a1f12c0e7b7564f06907a7acf128ad8fc90",
+    "request_fingerprint": 11799243070283735557,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1a94b59e2-fc05-33df"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1a94b59e2-fc05-33df"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

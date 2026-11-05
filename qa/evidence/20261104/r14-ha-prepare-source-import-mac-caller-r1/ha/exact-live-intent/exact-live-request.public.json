@@ -1,0 +1,16 @@
+{
+  "host": "desktop",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r2/launch_normal_r10_pocket_postrecovery_cold_r2.py",
+    "--run-once",
+    "--prepared-sha256",
+    "9fb7bb1054a554357232c8847e36b1a20d2339455a4f6ea7a2c1f37885c1f5af"
+  ],
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "timeout_seconds": 3000,
+  "idempotency_key": "heptabao-r10-postcold-live-r2-515bc76f-2ad254a1"
+}

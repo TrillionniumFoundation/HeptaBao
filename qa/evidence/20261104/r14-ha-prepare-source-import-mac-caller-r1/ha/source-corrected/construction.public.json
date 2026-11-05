@@ -1,0 +1,34 @@
+{
+  "allStillSourceOnly": true,
+  "carrier": {
+    "blob": "99b1cfd5fdc01188648e9fc3043d388e830344f0",
+    "bytes": 6858,
+    "sha256": "0ab98eabbbae83e43775e6ff936084f5fa3a8e49273232cc95a725ecab35301c"
+  },
+  "dispatch": {
+    "blob": "c9d562bed9254e57b5d254b8b63fbb9b0c326ebb",
+    "bytes": 5498,
+    "sha256": "3a9524dcc82ff001d577ab521b5f25d1cfe1c999cbbbe73a9d79c62ae0eb139d"
+  },
+  "newLauncher": {
+    "blob": "6883c794805eb012a21e292a5833fe5a9e39e4c6",
+    "bytes": 24051,
+    "sha256": "515bc76f5c626dc1940cde2c75315b8347c70a97613e3310dad873a401f614a0"
+  },
+  "oldLauncher": {
+    "blob": "285f96d09168cb288fdac5dd522aac66e93e8854",
+    "bytes": 24051,
+    "sha256": "d673b257d0d5180d5bda8d402cdac3c9294ad236ff3840298555af19b4c3df86"
+  },
+  "oldStdin": {
+    "blob": "c0547a35c9b9af66d1553c7e6f34c00aeb38ac39",
+    "bytes": 474292,
+    "sha256": "01888908fb3458ad5337613f799f611f9d14da659af0dd81259985c3dd65e521"
+  },
+  "originalTree": "25525f6aa7ea8c6de5b09a82433053f6d90101d3",
+  "stdin": {
+    "blob": "6aee1b83a7233373ca4e31731369710dbeba1277",
+    "bytes": 474292,
+    "sha256": "7477a53dfdd0d160c2bb7b1ed7400845f122f47ac4e5aaf87964fa3414f7124a"
+  }
+}

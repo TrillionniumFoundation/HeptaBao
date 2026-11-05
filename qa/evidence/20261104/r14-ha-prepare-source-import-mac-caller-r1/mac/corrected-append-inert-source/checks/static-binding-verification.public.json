@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.mac-corrected-complete-append-static-bindings.v1",
+  "sourceOnly": true,
+  "hostActions": 0,
+  "carrierEntryPointExecuted": false,
+  "carrierFullInverseEqual": true,
+  "callableSuffixByteEqual": true,
+  "originalTimeBudgetsUnchanged": true,
+  "sourceCount": 18,
+  "changedSourceNames": [
+    "mac_current_outer_r3.py",
+    "mac_current_phase_owner_r2.py",
+    "mac_current_fixture_materializer_r1.py"
+  ],
+  "unchangedSourceCount": 15,
+  "preservedActualSourceCount": 6,
+  "preservedActualIdentityStrings": 54,
+  "newQaFiles": 12,
+  "newPublicDocuments": 3,
+  "newTotalFiles": 15,
+  "payloadWholeAllSourcesMatch": true,
+  "syntheticTwoOriginalRawBytesUnchanged": true,
+  "publicAnchorRawBytesUnchanged": true,
+  "pythonCompileAtFutureInertCount": 14,
+  "javascriptHashOnlyCount": 4,
+  "oldLocalAstCheckHistoricalOnly": true,
+  "source": {
+    "bytes": 14892,
+    "sha256": "7e830ba2a0e85c6ba5e2ff7fdf398d18ef7f8964d2aaf706fac57dd9a7487e0c",
+    "blob": "0c7b7656c4abe0885e0f0ec70ce0729f130a6e13"
+  },
+  "payload": {
+    "bytes": 514784,
+    "sha256": "1b0f91901d2ca1176429dfdfa3ad5c804aca9ca00efadccf96f41233d98b5556"
+  }
+}

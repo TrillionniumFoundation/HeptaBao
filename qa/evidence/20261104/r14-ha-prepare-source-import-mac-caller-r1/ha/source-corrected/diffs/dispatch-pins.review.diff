@@ -1,0 +1,55 @@
+--- blocked/dispatch-pins.review.diff
++++ corrected/dispatch-pins.review.diff
+@@ -11,10 +11,10 @@
+     "expected_control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r2",
+     "expected_files": [
+       {
+-        "blob": "285f96d09168cb288fdac5dd522aac66e93e8854",
++        "blob": "6883c794805eb012a21e292a5833fe5a9e39e4c6",
+         "bytes": 24051,
+         "path": "launch_normal_r10_pocket_postrecovery_cold_r2.py",
+-        "sha256": "d673b257d0d5180d5bda8d402cdac3c9294ad236ff3840298555af19b4c3df86"
++        "sha256": "515bc76f5c626dc1940cde2c75315b8347c70a97613e3310dad873a401f614a0"
+       },
+       {
+         "blob": "9406b7268f9eb07538e5d09ba5c0af23c06b5730",
+@@ -66,16 +66,16 @@
+       }
+     ],
+     "host": "desktop",
+-    "idempotency_key": "heptabao-r10-postcold-inert-r2-d673b257-2ad254a1",
++    "idempotency_key": "heptabao-r10-postcold-inert-r2-515bc76f-2ad254a1",
+     "source": {
+-      "blob": "def340c46ac689a9736303f374456a6df7acd643",
++      "blob": "99b1cfd5fdc01188648e9fc3043d388e830344f0",
+       "bytes": 6858,
+-      "sha256": "39b8d4c9aadb96db4ce43ad0c067ef505ec210a4f11c901b1176b3e5bfca49bc"
++      "sha256": "0ab98eabbbae83e43775e6ff936084f5fa3a8e49273232cc95a725ecab35301c"
+     },
+     "stdin": {
+-      "blob": "c0547a35c9b9af66d1553c7e6f34c00aeb38ac39",
++      "blob": "6aee1b83a7233373ca4e31731369710dbeba1277",
+       "bytes": 474292,
+-      "sha256": "01888908fb3458ad5337613f799f611f9d14da659af0dd81259985c3dd65e521"
++      "sha256": "7477a53dfdd0d160c2bb7b1ed7400845f122f47ac4e5aaf87964fa3414f7124a"
+     },
+     "timeout_seconds": 60
+   },
+@@ -94,7 +94,7 @@
+     "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+     "executable": "/usr/bin/python3",
+     "host": "desktop",
+-    "idempotency_key_template": "heptabao-r10-postcold-live-r2-d673b257-2ad254a1",
++    "idempotency_key_template": "heptabao-r10-postcold-live-r2-515bc76f-2ad254a1",
+     "inner_seconds": 2400,
+     "new_phase_seconds": 300,
+     "original_admission_seconds": 8,
+@@ -119,7 +119,7 @@
+     "effect": "Original normal build/source/QA and all original24 plus failed-B4 fences; source-only contract includes once-CAS0/delete witness. No fixture.",
+     "executable": "/usr/bin/python3",
+     "host": "desktop",
+-    "idempotency_key": "heptabao-r10-postcold-prepare-r2-d673b257-2ad254a1",
++    "idempotency_key": "heptabao-r10-postcold-prepare-r2-515bc76f-2ad254a1",
+     "timeout_seconds": 360
+   },
+   "prior_failure_root_review_blob": "220bc755ce81649b58b7cdb4d961d6ea485348e0",

@@ -1,0 +1,21 @@
+{
+  "bundle": {
+    "bytes": 23335023,
+    "name": "canonical-3cb-full.bundle",
+    "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/canonical-3cb-full.bundle",
+    "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
+    "source_mode": 384,
+    "target_mode": 256,
+    "version": "66306:28324895:23335023:1793839385060504547:1793839385063504533"
+  },
+  "identity_integer_preservation": "parsed original JSON with Python integer semantics",
+  "receipt": {
+    "bytes": 39965,
+    "name": "source-export.result.public.json",
+    "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/result.public.json",
+    "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
+    "source_mode": 384,
+    "target_mode": 256,
+    "version": "66306:28324969:39965:1793839385327147652:1793839385327147652"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.mac-complete-corrected-outer-root-source-review.v1",
+  "source_tree": "9ed171e68bd0586dcf59830eb1d69448aaf43d80",
+  "files": 62,
+  "bytes": 722158,
+  "merkle": {
+    "root_sha": "9ed171e68bd0586dcf59830eb1d69448aaf43d80",
+    "trees_verified": 8
+  },
+  "previous_blocked_tree": "0aca624b5d051ed55a62943a06b638c9b3090129",
+  "previous_root_review": "c50500d341eb34d8ee60c7a92be3fb1112eef8d2",
+  "three_exact_diffs": [
+    {
+      "file": "mac_current_outer_r3.py",
+      "hunks": 4,
+      "before_blob": "0c19930f4a114ece9bb46cbeb62f26c6806b5f26",
+      "after_blob": "0948e1dd5b7e49fffb13f7ebb23c0ae00c4de252",
+      "sha256": "5ecc57805f1fb2b162c38d28d28debe5e035ca3135db6b1b7df55daa6227df50"
+    },
+    {
+      "file": "mac_current_fixture_materializer_r1.py",
+      "hunks": 1,
+      "before_blob": "628c3f0af5dc8caccf9a93ed9424fcda89255aeb",
+      "after_blob": "c22afefd15d026017e99ea47a47c0138ed6b469d",
+      "sha256": "f766ba33f22230d78e635477b35e527e7815452e591e7bc7a03fa2ae6c902b7f"
+    },
+    {
+      "file": "mac_current_phase_owner_r2.py",
+      "hunks": 1,
+      "before_blob": "5dcda7880ec4526da5d5bc607debc47cbacffe92",
+      "after_blob": "3aeb6ea8cf638f7915fd268140ad834ce395aad9",
+      "sha256": "bbf3636f4323e3e990204c8ea04c986f8740b3f34fa966a937f947b767ee15c4"
+    }
+  ],
+  "remaining15_sources_byte_identical": true,
+  "all18_full_hashes_equal_candidate_qa_contract_and_dispatch": true,
+  "public_anchor_exact": true,
+  "candidate_non_source_fields_unchanged": true,
+  "source_blockers_closed": [
+    "unused_missing_QA_name",
+    "model_hash_LF_consumer_contract",
+    "temporary_socket_close_once_unknown_aggregate"
+  ],
+  "capture_library_actual_7of7_source_unchanged": true,
+  "phase_other8_source_guards_retained": true,
+  "model_global_digest_unchanged": true,
+  "old_known_failures_preserved": true,
+  "selected_socket_actual13_pass": true,
+  "independent_cross_module36_retained": true,
+  "generation_openssl_root_review": "803093d32e2319e26da2e182863c234e57eb079b",
+  "runtime_request_blob": "86badd8bae49adb9951af40a8d9d074965b87492",
+  "candidate_sha256": "d52eda7e781aae0e5af5aa4edb324271c8b3e4340a38a5a840e60e9dafc62e92",
+  "source_review_passed": true,
+  "actual_runtime_qualified": false,
+  "inert_requires_own_complete_source_review": true,
+  "runtime_requires_actual_inert_and_exclusive_admission": true,
+  "new_host_actions_by_review": 0
+}

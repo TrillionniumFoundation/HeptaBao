@@ -1,0 +1,70 @@
+--- before/launch_normal_r10_pocket_postrecovery_cold_r1.py
++++ candidate/launch_normal_r10_pocket_postrecovery_cold_r2.py
+@@ -15,20 +15,20 @@
+ os.umask(0o077)
+ sys.dont_write_bytecode = True
+ ROOT = Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-CONTROL = ROOT / 'normal-r10-pocket3-mac1-postrecovery-cold-control-r1'
+-WORK = ROOT / 'formal-r10-pocket3-mac1-postrecovery-cold-r1'
++CONTROL = ROOT / 'normal-r10-pocket3-mac1-postrecovery-cold-control-r2'
++WORK = ROOT / 'formal-r10-pocket3-mac1-postrecovery-cold-r2'
+ SOURCE = ROOT / 'normal-r10-validation-source-r1'
+ COMMIT = '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
+ TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
+ MAC = '/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/normal-release-tests-r1'
+ LINUX = '/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/normal-release-tests-r1'
+ PROBE = CONTROL / 'probe_normal_build_r10_r1.py'
+-RUNNER = CONTROL / 'native_v6_pocket_source_postrecovery_cold_r10_r1.py'
+-RUNNER_SHA256 = '06acd60952d5804dd8bd7b67f399216f26df8e04a24d58e2bea7e82383c9ac47'
+-NUMERIC_HELPER = CONTROL / 'read_stopped_postrecovery_frontier_r1.py'
+-NUMERIC_HELPER_SHA256 = 'e951cca69fdc9e85dfd68b4af46b2a0cb01f7caae9ba24b9f0d16c985d476f43'
+-CIPHER_HELPER = CONTROL / 'read_stopped_recovered_cipher_r1.py'
+-CIPHER_HELPER_SHA256 = '096792825beee8577a9cbd33fe039e08a284a2186ce485131ac6b74ee56cc956'
++RUNNER = CONTROL / 'native_v6_pocket_source_postrecovery_cold_r10_r2.py'
++RUNNER_SHA256 = '2ad254a115c7463a35b5766fab0673931434d8f0b065f45318b07b646ddf2571'
++NUMERIC_HELPER = CONTROL / 'read_stopped_postrecovery_frontier_r2.py'
++NUMERIC_HELPER_SHA256 = '5515c6319ab577bed00260caa3bdec9ec730a0c057fb2fdfbfe9debd0afa8d77'
++CIPHER_HELPER = CONTROL / 'read_stopped_recovered_cipher_r2.py'
++CIPHER_HELPER_SHA256 = 'a0b9685bd28512cefc62e09d2d61717b4a11229ab2e1e1ddc1d9cf7be3a87d64'
+ DEADLINE_QA = CONTROL / 'deadline_qa'
+ DEADLINE_QA_PINS = {
+     "ha_multihost_live.py": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460",
+@@ -94,6 +94,10 @@
+     }
+ }
+ COMPARISON_PINS = {
++    "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r1/summary.json": "ab2819fdcf4deed633fa2b2413a0de0990fa258ef2f1fffcdd8de0f4dc38fc5a",
++    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r1/exit.public.json": "fc1d9c3458717386a6e5b6e9d4ec4317ecca1bb351d18c3d15c644b5a76978a6",
++    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_r10_pocket_postrecovery_cold_r1.py": "5c4cd9276a1ddc012547a1106f310f94af409d8d66599ba69369f9861a302b01",
++    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r1/prepared.public.json": "95162142c09439603c1cc8564f43080b10944696aebe45b31ecdf2ad66263578",
+     "/home/qian-qi/heptabao-ha-closure-20261103-r1/combined-blocker-closure-build-control-r1/import-failure-boundary.public.json": "352d797c58371547ccfd125d4ceed7ca54baf5f756ebf81a2dd81224951e5a90",
+     "/home/qian-qi/heptabao-ha-closure-20261103-r1/e171-private-cold-phase-full128-live-r1/summary.json": "53a17ce7169e412e30099b7232dd3e2ba3b064a6bd39d47fc58753883476c91e",
+     "/home/qian-qi/heptabao-ha-closure-20261103-r1/e171-private-cold-phase-full128-live-r2/summary.json": "f928c1d74bd1f8b4bad8530b6f2ad9d96ea8ff8020ac5f4384a136c833241d1d",
+@@ -191,9 +195,9 @@
+         '--source-commit', COMMIT, '--source-tree', TREE]
+     for alias, platform in [('mac-ts', 'mac'), ('rog-ts', 'linux'), ('pocket4-ts', 'linux')]:
+         v += ['--native-build-receipt', alias + ',local:' + str(CONTROL / (platform + '-native-build.public.json')) + ',' + BUILDS[platform]['files']['native-build.public.json']]
+-    v += ['--node', 'mac-ts,192.168.0.8,/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-postrecovery-cold-node1-r1',
+-          '--node', 'rog-ts,192.168.0.10,/home/qian-qi/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-postrecovery-cold-node2-r1',
+-          '--node', 'pocket4-ts,192.168.0.9,/home/alex/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-postrecovery-cold-node3-r1',
++    v += ['--node', 'mac-ts,192.168.0.8,/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261103-ha-closure-r1/r10-pocket3-mac1-postrecovery-cold-node1-r2',
++          '--node', 'rog-ts,192.168.0.10,/home/qian-qi/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-postrecovery-cold-node2-r2',
++          '--node', 'pocket4-ts,192.168.0.9,/home/alex/heptabao-ha-closure-20261103-r1/r10-pocket3-mac1-postrecovery-cold-node3-r2',
+           '--api-port', '46230', '--raft-port', '46231', '--allow-private-lan', '--work-root', str(WORK),
+           '--darwin-watchdog-python', '/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14',
+           '--darwin-watchdog-python-sha256', 'cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13']
+@@ -251,6 +255,14 @@
+     assert contract['numeric_helper_sha256'] == NUMERIC_HELPER_SHA256
+     assert contract['controlled_stop_order'] == [2, 1, 3] and contract['original_stop_count_preserved'] == 3
+     assert contract['new_role_prepare_seconds'] == 60 and contract['original_sealed_election_seconds'] == 60
++    assert contract['role_prepare_clipped_to_original_controller'] is True
++    assert contract['witness_additional_mutation_limit'] == 2 and contract['witness_write_cas'] == 0
++    assert contract['witness_cleanup'] == 'same-key-metadata-delete'
++    assert contract['witness_requires_mac_exact_read_and_absence'] is True
++    assert contract['witness_excluded_from_history_acknowledged_and_check_denominators'] is True
++    assert contract['original_higher_term_guard_unchanged'] is True
++    assert contract['same_leader_requires_old_last_committed_vote_exact'] is True
++    assert contract['full_log_id_order'] == ['term', 'node_id', 'index']
+     assert contract['new_numeric_read_seconds'] == 15 and contract['new_numeric_ssh_seconds'] == 45
+     assert contract['canonical128_summary_sha256'] == COMPARISON_PINS[
+         str(ROOT / 'formal-r10-normal-full128-r2/summary.json')]

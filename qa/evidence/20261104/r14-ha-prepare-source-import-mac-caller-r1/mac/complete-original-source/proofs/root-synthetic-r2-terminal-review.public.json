@@ -1,0 +1,130 @@
+{
+  "schema": "heptabao.root.mac-owned-sqlite-r2-actual-review.r1",
+  "reviewed_at_utc": "2026-11-05T00:36:06.626Z",
+  "packet_whole_byte_and_merkle_verified": {
+    "inert": {
+      "files": 8,
+      "bytes": 173242,
+      "tree": "3ba99bbf5c87c0217d28d5dac1f154c4ed13726f"
+    },
+    "synthetic": {
+      "files": 8,
+      "bytes": 78345,
+      "tree": "ace9c028fb4bf84a2881adfb2bf6146fff95b2de"
+    }
+  },
+  "verified_jobs": [
+    {
+      "kind": "inert",
+      "tree": "3ba99bbf5c87c0217d28d5dac1f154c4ed13726f",
+      "job": "1a1a916944c-fc05-3131",
+      "authoritative_exit": 0,
+      "stdout_bytes": 6723,
+      "stdout_sha256": "26bda20f283879acc659f7f44999e580e785fec6105c98612e9d164237f642e7",
+      "sdk_hex_text_exact": true,
+      "complete_double_eof": true,
+      "exact_request_binding": true,
+      "elapsed_seconds": 0.19535262510180473
+    },
+    {
+      "kind": "synthetic",
+      "tree": "ace9c028fb4bf84a2881adfb2bf6146fff95b2de",
+      "job": "1a1a918c6cf-fc05-3143",
+      "authoritative_exit": 0,
+      "stdout_bytes": 16228,
+      "stdout_sha256": "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5",
+      "sdk_hex_text_exact": true,
+      "complete_double_eof": true,
+      "exact_request_binding": true,
+      "elapsed_seconds": 0.23113099997863173
+    }
+  ],
+  "seven_cases": [
+    {
+      "case": "absent_sidecars_stay_absent",
+      "passed": true,
+      "connections_opened": 1,
+      "connections_closed": 1,
+      "refusal_code": null
+    },
+    {
+      "case": "empty_wal_and_shm_unchanged",
+      "passed": true,
+      "connections_opened": 1,
+      "connections_closed": 1,
+      "refusal_code": null
+    },
+    {
+      "case": "nonempty_wal_refused_before_connection",
+      "passed": true,
+      "connections_opened": 0,
+      "connections_closed": 0,
+      "refusal_code": "current_input_size_bound"
+    },
+    {
+      "case": "journal_refused_before_connection",
+      "passed": true,
+      "connections_opened": 0,
+      "connections_closed": 0,
+      "refusal_code": "rollback_journal_refused_before_immutable"
+    },
+    {
+      "case": "oversize_fixed_primary_row_refused",
+      "passed": true,
+      "connections_opened": 1,
+      "connections_closed": 1,
+      "refusal_code": "auth_primary_payload_cap"
+    },
+    {
+      "case": "held_inode_drift_refused_before_connection",
+      "passed": true,
+      "connections_opened": 0,
+      "connections_closed": 0,
+      "refusal_code": "current_input_fd_name_or_metadata_changed"
+    },
+    {
+      "case": "actual_immutable_connection_rejects_write",
+      "passed": true,
+      "connections_opened": 1,
+      "connections_closed": 1,
+      "refusal_code": null
+    }
+  ],
+  "old_five_source_bytes_and_45_identity_strings_equal_original_actual": true,
+  "six_exact_source_pins": true,
+  "all_27_t5_anchor_strings_equal_original_actual": true,
+  "source_and_runtime_final_checks_reached": true,
+  "all_owned_commands_reaped_empty_and_descriptors_closed": true,
+  "raw_original_bytes_preserved": true,
+  "runtime_scope": {
+    "pythonExecutable": {
+      "bytes": 34640,
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    },
+    "pythonVersion": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "sqliteExtension": {
+      "bytes": 165632,
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/lib-dynload/_sqlite3.cpython-314-darwin.so",
+      "sha256": "8b751990131722185775f5d532c89d4588285c88b23112d2758a4594721aa3ac"
+    },
+    "sqliteVersion": "3.53.4",
+    "sqliteVersionInfo": [
+      3,
+      53,
+      4
+    ]
+  },
+  "not_qualified": [
+    "current production credential capture",
+    "five actual consumers",
+    "launchd manager or restart/rollback",
+    "whole database backup",
+    "cross-agent atomic snapshot",
+    "SQLite page IO byte bound",
+    "all dynamically loaded libraries",
+    "full OpenBao 2.7.1 replacement"
+  ],
+  "decision": "Seven-case synthetic gate passed. Separate complete current-capture caller, sandbox, outer lifecycle and authority review still required.",
+  "reviewer_correction": "An initial in-memory assertion used an underscore property for a dotted filename and failed; corrected to exact source pin filename and reran every listed verification. No physical action occurred in either review call."
+}

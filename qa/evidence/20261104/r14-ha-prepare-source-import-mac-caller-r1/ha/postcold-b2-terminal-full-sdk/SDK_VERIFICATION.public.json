@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.postcold-r2-final-sdk-verification.v1",
+  "summary": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/summary.json",
+    "sha256": "e56cf706615bbe93d9034e5a11373df5eae87ee846d6e2286f6a29ca8bdfa060",
+    "size": 71123,
+    "version": "2050:4755361:71123:1793843325753242624:1793843325753242624",
+    "whole": {
+      "bytes": 71123,
+      "sha256": "e56cf706615bbe93d9034e5a11373df5eae87ee846d6e2286f6a29ca8bdfa060",
+      "blob": "dc954e4441278b3bc050db6f77fd7ac7d996c3ee"
+    },
+    "chunk_offsets": [
+      0,
+      65536
+    ],
+    "chunk_bytes": [
+      65536,
+      5587
+    ],
+    "all_chunk_hashes_verified": true,
+    "all_versions_equal_file_info": true,
+    "bytes_reassembled_exact": true
+  },
+  "terminal": {
+    "stdout_hex_equals_exact_UTF8": true,
+    "stdout_bytes": 575,
+    "stderr_bytes": 0,
+    "exit_object_lossless_equal_file": true
+  },
+  "known_core_scope": {
+    "original91_missing7": true,
+    "extra0_of12": true,
+    "all_mutation_original_boundaries_pending_separate_archive": true
+  },
+  "all_large_metadata_ns_preserved_in_original_response_strings": true,
+  "no_atomic_cross_file_snapshot_claim": true
+}

@@ -1,0 +1,213 @@
+{
+  "actual_T5_SQLite_TLS_launchd_consumer_runtime_qualified": false,
+  "capture_library_unchanged": true,
+  "checks": [
+    {
+      "case": "actual_phase_requires_one_missing_frozen_inventory_member",
+      "missing": [
+        "authbus_native_login_custody.py"
+      ],
+      "passed": true
+    },
+    {
+      "case": "old_name_has_no_actual_import_and_retained_owner_is_imported",
+      "passed": true
+    },
+    {
+      "case": "proposed_removal_retains_all_other_eight_actual_guards",
+      "passed": true
+    },
+    {
+      "case": "proposed_consumer_change_is_only_one_hash_expression",
+      "passed": true
+    },
+    {
+      "case": "actual_capture_hash_contains_LF.string",
+      "passed": true
+    },
+    {
+      "capture_sha256": "fe83594bcd9752ff678f81abbd7c9e103360a130db1332e2981b20023d933fd7",
+      "case": "old_actual_model_boundary_rejects_equal_input.string.main",
+      "consumer_sha256": "f752e7e8c4f4557cd858dd8db6d25915baec468d3e69de28c944f90c04189ec7",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_accepts_equal_input.string.main",
+      "passed": true
+    },
+    {
+      "capture_sha256": "fe83594bcd9752ff678f81abbd7c9e103360a130db1332e2981b20023d933fd7",
+      "case": "old_actual_model_boundary_rejects_equal_input.string.trnm",
+      "consumer_sha256": "f752e7e8c4f4557cd858dd8db6d25915baec468d3e69de28c944f90c04189ec7",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_accepts_equal_input.string.trnm",
+      "passed": true
+    },
+    {
+      "capture_sha256": "fe83594bcd9752ff678f81abbd7c9e103360a130db1332e2981b20023d933fd7",
+      "case": "old_actual_model_boundary_rejects_equal_input.string.hepta-ui",
+      "consumer_sha256": "f752e7e8c4f4557cd858dd8db6d25915baec468d3e69de28c944f90c04189ec7",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_accepts_equal_input.string.hepta-ui",
+      "passed": true
+    },
+    {
+      "capture_sha256": "fe83594bcd9752ff678f81abbd7c9e103360a130db1332e2981b20023d933fd7",
+      "case": "old_actual_model_boundary_rejects_equal_input.string.hepta",
+      "consumer_sha256": "f752e7e8c4f4557cd858dd8db6d25915baec468d3e69de28c944f90c04189ec7",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_accepts_equal_input.string.hepta",
+      "passed": true
+    },
+    {
+      "capture_sha256": "fe83594bcd9752ff678f81abbd7c9e103360a130db1332e2981b20023d933fd7",
+      "case": "old_actual_model_boundary_rejects_equal_input.string.hepta-backend",
+      "consumer_sha256": "f752e7e8c4f4557cd858dd8db6d25915baec468d3e69de28c944f90c04189ec7",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_accepts_equal_input.string.hepta-backend",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_still_refuses_hash.string",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_still_refuses_source_config.string",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_still_refuses_provider.string",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_still_refuses_model.string",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_refuses_different_actual_declaration.string",
+      "passed": true
+    },
+    {
+      "case": "actual_capture_hash_contains_LF.object",
+      "passed": true
+    },
+    {
+      "capture_sha256": "b7ea0705cb6ae3b395a140721fcdfa957b587ef9307bc80d2f67ee24a7fa5885",
+      "case": "old_actual_model_boundary_rejects_equal_input.object.main",
+      "consumer_sha256": "453cc18c35765e63099a60a4a9c9c7bc4dc2e48811ff5fe165b6eb100fe131e9",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_accepts_equal_input.object.main",
+      "passed": true
+    },
+    {
+      "capture_sha256": "b7ea0705cb6ae3b395a140721fcdfa957b587ef9307bc80d2f67ee24a7fa5885",
+      "case": "old_actual_model_boundary_rejects_equal_input.object.trnm",
+      "consumer_sha256": "453cc18c35765e63099a60a4a9c9c7bc4dc2e48811ff5fe165b6eb100fe131e9",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_accepts_equal_input.object.trnm",
+      "passed": true
+    },
+    {
+      "capture_sha256": "b7ea0705cb6ae3b395a140721fcdfa957b587ef9307bc80d2f67ee24a7fa5885",
+      "case": "old_actual_model_boundary_rejects_equal_input.object.hepta-ui",
+      "consumer_sha256": "453cc18c35765e63099a60a4a9c9c7bc4dc2e48811ff5fe165b6eb100fe131e9",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_accepts_equal_input.object.hepta-ui",
+      "passed": true
+    },
+    {
+      "capture_sha256": "b7ea0705cb6ae3b395a140721fcdfa957b587ef9307bc80d2f67ee24a7fa5885",
+      "case": "old_actual_model_boundary_rejects_equal_input.object.hepta",
+      "consumer_sha256": "453cc18c35765e63099a60a4a9c9c7bc4dc2e48811ff5fe165b6eb100fe131e9",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_accepts_equal_input.object.hepta",
+      "passed": true
+    },
+    {
+      "capture_sha256": "b7ea0705cb6ae3b395a140721fcdfa957b587ef9307bc80d2f67ee24a7fa5885",
+      "case": "old_actual_model_boundary_rejects_equal_input.object.hepta-backend",
+      "consumer_sha256": "453cc18c35765e63099a60a4a9c9c7bc4dc2e48811ff5fe165b6eb100fe131e9",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_accepts_equal_input.object.hepta-backend",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_still_refuses_hash.object",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_still_refuses_source_config.object",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_still_refuses_provider.object",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_still_refuses_model.object",
+      "passed": true
+    },
+    {
+      "case": "proposed_LF_boundary_refuses_different_actual_declaration.object",
+      "passed": true
+    }
+  ],
+  "child_processes": 0,
+  "complete_modules_executed": false,
+  "component": {
+    "blob": "fb781241967345fa6e60fc7dfd8814f8bdf118da",
+    "bytes": 7912,
+    "sha256": "b431af3c75c62eb1ac04cb5628cf7ca2d3f1ba8232a2842854448e1fabcaf30a"
+  },
+  "host_calls": 0,
+  "materializer_global_digest_unchanged": true,
+  "network_calls": 0,
+  "passed_checks": 36,
+  "proposed_after_expression_only_not_author_candidate_qualification": true,
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "schema": "heptabao.mac-outer-0aca-cross-module-peer-components.v1",
+  "source_tree": "0aca624b5d051ed55a62943a06b638c9b3090129",
+  "sources": {
+    "mac_current_fixture_materializer_r1.py": {
+      "blob": "628c3f0af5dc8caccf9a93ed9424fcda89255aeb",
+      "bytes": 23631,
+      "sha256": "9ae14eccdec7742c31df92fede042acac68514b3713ef8cb751cb8f456fb1526"
+    },
+    "mac_current_outer_r3.py": {
+      "blob": "0c19930f4a114ece9bb46cbeb62f26c6806b5f26",
+      "bytes": 58586,
+      "sha256": "986194f0da2d278986589d5ec757fb50a040182db6f610addba9469ee97e1be5"
+    },
+    "mac_current_phase_owner_r2.py": {
+      "blob": "5dcda7880ec4526da5d5bc607debc47cbacffe92",
+      "bytes": 25005,
+      "sha256": "42520fe933e2c0106e6983a282421759b260a2bf48a08f86d0f404caa3f2eb86"
+    },
+    "mac_guarded_current_capture_r3.py": {
+      "blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+      "bytes": 23578,
+      "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+    }
+  },
+  "sqlite_connections": 0,
+  "status": "passed_expected_negatives_and_proposed_closure",
+  "total_checks": 36
+}

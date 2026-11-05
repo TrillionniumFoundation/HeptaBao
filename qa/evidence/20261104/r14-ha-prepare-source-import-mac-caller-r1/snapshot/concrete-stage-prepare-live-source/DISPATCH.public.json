@@ -1,0 +1,116 @@
+{
+  "schema": "heptabao.phaseb-3cb-launch-after-canonical-import.v1",
+  "executable_source_dispatch_only": true,
+  "host": "desktop",
+  "local_input_stage": {
+    "key": "heptabao-phaseb-3cb-local-inputs-4c9a4755-20261105-r1",
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "@exact source 6740aecbb9ecc53b4efe006d920664b50c8b25ab@",
+      "--external-controller-sha256",
+      "4c9a4755988d486d0adb80b03aecddf8297d884cabf1a52cd8053a82268e992c"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "exact_request": {
+      "bytes": 313547,
+      "sha256": "818033da4c08b635991335153fef5805b0dff98aac5a215d73e56309c5532c1a",
+      "blob": "43e60dd2875fcd7188b61dc6ec7efadbafc2281d"
+    },
+    "stdin": {
+      "bytes": 273490,
+      "sha256": "2f9f8acb45e66f49b42739e64eac6bf289f06a7d5bc840eab3b2c8ce87ce0fcd",
+      "blob": "9cc6997190418ab3eccd9446f2417706087d2aa2"
+    },
+    "inner_seconds": 300,
+    "outer_seconds": 330,
+    "preconditions": [
+      "Root accepts source import actual core and full authoritative terminal",
+      "Root accepts the actual three-artifact incoming transfer",
+      "Root reviews this exact retained stager/carrier and new exact request",
+      "Root grants one stable-key local-stage dispatch and an input I/O window"
+    ]
+  },
+  "prepare": {
+    "key": "heptabao-phaseb-3cb-prepare-10816-20261105-r1",
+    "host": "desktop",
+    "executable": "/usr/bin/python3.12",
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "args_template": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/qa/phaseb_controller_r3.py",
+      "--binding",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/binding.private.json",
+      "--binding-sha256",
+      "@actual concrete binding SHA256@",
+      "--prepare-only"
+    ],
+    "outer_seconds": 330,
+    "action_seconds": 300,
+    "fill_only_from": "Root-accepted actual stage binding.private.json whole SHA; executable must equal actual binding utilities.python.path"
+  },
+  "live": {
+    "key": "heptabao-phaseb-3cb-live-10816-20261105-r1",
+    "host": "desktop",
+    "executable": "/usr/bin/python3.12",
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "args_template": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/qa/phaseb_controller_r3.py",
+      "--binding",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/binding.private.json",
+      "--binding-sha256",
+      "@actual concrete binding SHA256@",
+      "--run",
+      "--prepare-result-sha256",
+      "@actual root-accepted prepare result SHA256@"
+    ],
+    "outer_seconds": 3000,
+    "outer_scope": "Retain the separately approved NEW aggregate outer envelope used by R3; it does not enlarge any original per-action or request limit",
+    "fill_only_from": "Same root-accepted actual binding SHA and the actual accepted prepare result SHA"
+  },
+  "unresolved_runtime_fields": [
+    "actual newly-created binding.private.json SHA256, determined by local stage",
+    "actual root-accepted prepare result SHA256, determined by readonly prepare"
+  ],
+  "no_admission_from_placeholders": true,
+  "source_and_product_execution_authorized_by_this_file": false,
+  "actual_inputs_observed": {
+    "source_import": {
+      "tree": "c6b7d64757ce56a133a1adfdffcf427ba149b310",
+      "core": "147fa49bb3013691b9612d98fc362d0543554265",
+      "authority": "1c9baa75203014afeddeea762bf42824eaf2cb34",
+      "terminal": "4ad16db14dc9fbc66811e62f7b9cf063f73de813",
+      "whole_git_history_verified": true,
+      "all_3911_blob_bytes_verified": true,
+      "all_21_git_owned_groups_stopped": true,
+      "fd_closure_complete": true,
+      "root_review": "314c5a9d4941d3ffcffc154d5ea34ecd4fe08f9e"
+    },
+    "product_artifact_transfer": {
+      "tree": "bd70028b078c7c009762e8aacd7cb184f2925235",
+      "core": "4cd77efe5119bfe03feb3cbe77e970f60b729c6f",
+      "authority": "49399e870ebc5d15b1b17ad9cc5e75d557df78e2",
+      "all_3_owned_groups_stopped": true
+    },
+    "normal_build": {
+      "tree": "cc9bf4ebfa811284520b76d93fba9759692b5637",
+      "root_review": "cff97c2f0e3c845d64c7f1c28277ba4ff748c1c2",
+      "original44_passed": true,
+      "separate7_passed": true
+    }
+  },
+  "execution_status": {
+    "local_stage_dispatched": false,
+    "prepare_dispatched": false,
+    "live_dispatched": false
+  }
+}

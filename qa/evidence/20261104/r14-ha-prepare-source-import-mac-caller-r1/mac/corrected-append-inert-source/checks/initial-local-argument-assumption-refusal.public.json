@@ -1,0 +1,8 @@
+{
+  "status": "refused_local_draft_assertion",
+  "reason": "Expected four args with source at index 3; actual frozen request has five args [-I,-S,-B,-c,source].",
+  "hostActions": 0,
+  "carrierExecuted": false,
+  "payloadPublished": false,
+  "correction": "Use the actual complete frozen argument shape and change only its final source bytes."
+}

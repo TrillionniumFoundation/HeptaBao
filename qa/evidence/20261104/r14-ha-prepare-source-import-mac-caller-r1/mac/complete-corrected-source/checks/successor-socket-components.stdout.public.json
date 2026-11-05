@@ -1,0 +1,160 @@
+{
+  "actual_descriptors": 0,
+  "actual_sockets": 0,
+  "checks": [
+    {
+      "case": "old_failure_reproduced",
+      "old_final_socket_aggregate": true,
+      "old_outcome_unknown": false,
+      "passed": true
+    },
+    {
+      "case": "new_success_actual_close",
+      "close_attempts": 1,
+      "passed": true
+    },
+    {
+      "case": "close-before-error",
+      "close_attempts": 1,
+      "final_socket_aggregate": false,
+      "outcome_unknown": true,
+      "passed": true
+    },
+    {
+      "case": "close-after-error",
+      "close_attempts": 1,
+      "final_socket_aggregate": false,
+      "outcome_unknown": true,
+      "passed": true
+    },
+    {
+      "case": "close-noop",
+      "close_attempts": 1,
+      "final_socket_aggregate": false,
+      "outcome_unknown": true,
+      "passed": true
+    },
+    {
+      "case": "fileno-error",
+      "close_attempts": 1,
+      "final_socket_aggregate": false,
+      "outcome_unknown": true,
+      "passed": true
+    },
+    {
+      "case": "close-interrupt",
+      "close_attempts": 1,
+      "final_socket_aggregate": false,
+      "outcome_unknown": true,
+      "passed": true
+    },
+    {
+      "case": "bind-fail",
+      "known_failure_with_socket_closed": true,
+      "passed": true,
+      "product_success": false
+    },
+    {
+      "case": "getname-fail",
+      "known_failure_with_socket_closed": true,
+      "passed": true,
+      "product_success": false
+    },
+    {
+      "case": "invalid-port",
+      "known_failure_with_socket_closed": true,
+      "passed": true,
+      "product_success": false
+    },
+    {
+      "case": "constructor-refusal-no-owned-socket",
+      "passed": true
+    },
+    {
+      "case": "no_second_reservation_normal",
+      "close_attempts": 1,
+      "factory_calls": 1,
+      "passed": true
+    },
+    {
+      "case": "no_second_reservation_close-before-error",
+      "close_attempts": 1,
+      "factory_calls": 1,
+      "passed": true
+    }
+  ],
+  "child_processes": 0,
+  "compiled_full_source_count": 6,
+  "executed_candidate_definitions": [
+    "Refused",
+    "need",
+    "Context",
+    "reserve_port"
+  ],
+  "failed": 0,
+  "full_candidate_modules_imported": 0,
+  "host_calls": 0,
+  "main_only_actual_socket_aggregate_changed": true,
+  "materializer_single_lf_comparison_change": true,
+  "model_contract_components": "Independently executed by ha_validation; not re-counted here",
+  "network_requests": 0,
+  "ok": true,
+  "outer_top_level_constants_unchanged": true,
+  "passed": 13,
+  "phase_single_unused_name_change": true,
+  "runtime_qualification": false,
+  "schema": "heptabao.mac-complete-outer-successor-source-components.v1",
+  "source_files": {
+    "materializer.after.py": {
+      "bytes": 23643,
+      "sha256": "f766ba33f22230d78e635477b35e527e7815452e591e7bc7a03fa2ae6c902b7f"
+    },
+    "materializer.before.py": {
+      "bytes": 23631,
+      "sha256": "9ae14eccdec7742c31df92fede042acac68514b3713ef8cb751cb8f456fb1526"
+    },
+    "outer.after.py": {
+      "bytes": 59477,
+      "sha256": "5ecc57805f1fb2b162c38d28d28debe5e035ca3135db6b1b7df55daa6227df50"
+    },
+    "outer.before.py": {
+      "bytes": 58586,
+      "sha256": "986194f0da2d278986589d5ec757fb50a040182db6f610addba9469ee97e1be5"
+    },
+    "phase.after.py": {
+      "bytes": 24971,
+      "sha256": "bbf3636f4323e3e990204c8ea04c986f8740b3f34fa966a937f947b767ee15c4"
+    },
+    "phase.before.py": {
+      "bytes": 25005,
+      "sha256": "42520fe933e2c0106e6983a282421759b260a2bf48a08f86d0f404caa3f2eb86"
+    }
+  },
+  "source_inputs": "Only six already-public source files in an owned local /tmp directory",
+  "sqlite_connections": 0,
+  "unchanged_outer_definition_count": 22,
+  "unchanged_outer_definitions": [
+    "Refused",
+    "need",
+    "sha",
+    "encoded",
+    "canonical",
+    "digest",
+    "ident",
+    "valid_pin",
+    "exact_json",
+    "read_public_source",
+    "read_system_tool",
+    "LoopbackHTTP",
+    "add_secrets",
+    "generated_read_fsync",
+    "tls_material",
+    "capture_once",
+    "seed_documents",
+    "exact_data",
+    "bootstrap_api",
+    "canonical_and_inbox",
+    "token_lifecycle",
+    "scan_owned_plaintext"
+  ]
+}

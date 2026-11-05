@@ -1,0 +1,25 @@
+{
+  "actual_provenance_assertions": 19,
+  "actual_raw_export_receipt_accepted": true,
+  "bundle_metadata_version_exact_raw_ns": true,
+  "child_processes": 0,
+  "complete_modules_executed": false,
+  "host_calls": 0,
+  "identical_definitions": [
+    "Cancelled",
+    "dir_fsync",
+    "handler",
+    "identity",
+    "read_file",
+    "remaining",
+    "run_and_report",
+    "snapshot",
+    "stop_active"
+  ],
+  "identical_definitions_count": 9,
+  "network_calls": 0,
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "receipt_original_sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
+  "schema": "heptabao.phaseb3cb.source-receiver-peer-pure-check.v1",
+  "status": "passed"
+}

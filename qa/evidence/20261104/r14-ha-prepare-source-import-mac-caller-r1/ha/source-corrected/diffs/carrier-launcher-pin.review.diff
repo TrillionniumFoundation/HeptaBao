@@ -1,0 +1,11 @@
+--- blocked/carrier-launcher-pin.review.diff
++++ corrected/carrier-launcher-pin.review.diff
+@@ -10,7 +10,7 @@
+ PINS = {
+     "launch_normal_r10_pocket_postrecovery_cold_r2.py": [
+         24051,
+-        "d673b257d0d5180d5bda8d402cdac3c9294ad236ff3840298555af19b4c3df86"
++        "515bc76f5c626dc1940cde2c75315b8347c70a97613e3310dad873a401f614a0"
+     ],
+     "native_v6_pocket_source_postrecovery_cold_r10_r2.py": [
+         72673,

@@ -1,0 +1,49 @@
+usage: req [-addext ext] [-asn1-kludge] [-batch] [-config file]
+    [-days n] [-extensions section] [-in file]
+    [-inform der | pem] [-key keyfile] [-keyform der | pem]
+    [-keyout file] [-md4 | -md5 | -sha1] [-modulus]
+    [-multivalue-rdn] [-nameopt option] [-new] [-newhdr]
+    [-newkey arg] [-no-asn1-kludge] [-nodes] [-noout]
+    [-out file] [-outform der | pem] [-passin arg]
+    [-passout arg] [-pkeyopt opt:value] [-pubkey]
+    [-reqexts section] [-reqopt option] [-set_serial n]
+    [-sigopt nm:v] [-subj arg] [-subject] [-text] [-utf8]
+    [-verbose] [-verify] [-x509]
+
+ -addext key=value  Additional certificate extension (may be repeated)
+ -batch             Operate in batch mode
+ -config file       Configuration file to use as request template
+ -days number       Number of days generated certificate is valid for
+ -extensions section
+                    Config section to use for certificate extensions
+ -in file           Input file (default stdin)
+ -inform format     Input format (DER or PEM (default))
+ -key file          Private key file
+ -keyform format    Private key format (DER or PEM (default))
+ -keyout file       Private key output file
+ -modulus           Print RSA modulus
+ -multivalue-rdn    Enable support for multivalued RDNs
+ -nameopt arg       Certificate name options
+ -new               New request
+ -newhdr            Include 'NEW' in header lines
+ -newkey param      Generate a new key using given parameters
+ -nodes             Do not encrypt output private key
+ -noout             Do not output request
+ -out file          Output file (default stdout)
+ -outform format    Output format (DER or PEM (default))
+ -passin source     Private key input password source
+ -passout source    Private key output password source
+ -pkeyopt opt:val   Set the public key algorithm option opt to val
+ -pubkey            Output the public key
+ -reqexts section   Config section to use for request extensions
+ -reqopt option     Request text options
+ -set_serial serial Serial number to use for generated certificate
+ -sigopt name:val   Signature options
+ -subj name         Set or modify the request subject
+ -subject           Output the subject of the request
+ -text              Print request in text form
+ -utf8              Input characters are in UTF-8 (default ASCII)
+ -verbose           Verbose
+ -verify            Verify signature on request
+ -x509              Output an X.509 structure instead of a certificate request
+

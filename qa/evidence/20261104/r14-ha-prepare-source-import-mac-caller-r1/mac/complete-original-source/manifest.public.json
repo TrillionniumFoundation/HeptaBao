@@ -1,0 +1,440 @@
+{
+  "schema": "heptabao.mac-current-five-agent-complete-source-packet.r3",
+  "status": "SOURCE_REVIEW_ONLY_NOT_RUNTIME_AUTHORIZED",
+  "repository": "TrillionniumFoundation/HeptaBao",
+  "sourceCommit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "sourceTree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "files": [
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "33974e40a69cbc00885b0a5ba218bd45774233e8",
+      "bytes": 9459,
+      "sha256": "759face383e4b4940b1b4907e8de74bcc47fccfbb317133ecb2f4d73c716a27e"
+    },
+    {
+      "path": "candidate-current-manager-r3.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "798379f0831efc6ed73659ec24b4f086ceb72442",
+      "bytes": 3442,
+      "sha256": "2a5da6b02650c2ecf2134f68de90c4698a48757988f3b021e6015e74cc6bff03"
+    },
+    {
+      "path": "checks/final-input-predicate-ast.exec.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1a06794396d49a9dd4542bb96777ec9c716c02ad",
+      "bytes": 457,
+      "sha256": "73541ff00f1a17a139f2dde693e6ec7579268b3b21e4f0109d8330b7f6901a81"
+    },
+    {
+      "path": "checks/final-input-predicate-ast.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6889a0932f94cd385453a2a30f834767f0b00e35",
+      "bytes": 33776,
+      "sha256": "8e9e93f4c85daf3ab65452f5257d9c2d0b1eb7a714a873ef9dbb4581c5486c38"
+    },
+    {
+      "path": "checks/outer-selected-components.exec.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "85851fb819619e0be37a353fd7bb30ba2d2d6312",
+      "bytes": 5020,
+      "sha256": "5f9cf8cf3590e4e816dbe94656d383c5c7062a03203044911191e9a1228f8126"
+    },
+    {
+      "path": "checks/outer-selected-components.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5f64e5df2d32962bdac102fa2ca33fec080e0e6c",
+      "bytes": 6644,
+      "sha256": "fc435db5f06f2a7ab923e0edbff02f7d4c69a659799e106899117b30d17a8c34"
+    },
+    {
+      "path": "checks/outer-selected-components.stdout.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e739a15bc2766b50992d45b64437dab6b90022e9",
+      "bytes": 4502,
+      "sha256": "894e5c5524a516aedea7e04a59be208a199aa1f135c7940972fdc722040f9a17"
+    },
+    {
+      "path": "diffs/input-original-private-mode.review.diff",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4501189d2194e776fbd5f9892b6a3e04225da5ae",
+      "bytes": 763,
+      "sha256": "2392799d588a2b207684930fcdf834dc5297de3702758dbada7f12faadef2964"
+    },
+    {
+      "path": "diffs/materializer-actual-harness-roots.review.diff",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a705ce976538d6dc5b9b33267dd220770def4168",
+      "bytes": 2262,
+      "sha256": "8591f21462c1b8a7271c6b0beb0aab56c3dbdd6a35fde9f48d365fb7832961d3"
+    },
+    {
+      "path": "integration-contract.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3b0a674a2bed5ff5b99b4549c038809e98610986",
+      "bytes": 4425,
+      "sha256": "8ffc0b49024090708bda04782e706d86c5dc773ac7d481acbce380c1778f930c"
+    },
+    {
+      "path": "proofs/root-synthetic-r2-terminal-review.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "db3b4ce7410eb95144c07365e4f978eb717d0604",
+      "bytes": 4497,
+      "sha256": "726610de3ce6ebc80596ced630fb73149acbfdb469c9840ecb480ade06d1a662"
+    },
+    {
+      "path": "proofs/synthetic-r2.authority.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0673ffaf642cd44775ecc910e9320ff43989952e",
+      "bytes": 733,
+      "sha256": "1b33a9144712ac2bc3d16d87bb2a9ea1c2e4c0be236dfd08d8b599f7518942dd"
+    },
+    {
+      "path": "proofs/synthetic-r2.stdout.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "781d085d4fdc52ada91ea796572099137c87cd55",
+      "bytes": 16228,
+      "sha256": "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5"
+    },
+    {
+      "path": "public-volume-anchor.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "837f7d23be8380144cc7ed1212e5fc646cf56a43",
+      "bytes": 967,
+      "sha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8"
+    },
+    {
+      "path": "qa-pins.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7774022404a44aebe7ac2b30fb5d9224e114e254",
+      "bytes": 1846,
+      "sha256": "7fd3ca28ce89084e90fdd53333c5d0f131dea16f49a1da6c1585eaf643d56965"
+    },
+    {
+      "path": "references/input-private-mode-before.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "25b5cde2cc4b2a2cc3d7c32712b49933c844c417",
+      "bytes": 24969,
+      "sha256": "4381639e3bc8789e6088692219e772462101cdce42b47599a2f4e78ebd41a24b"
+    },
+    {
+      "path": "references/mac-current-config-file-info.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4da54b20d58e844d2b75728dbf6eb6fd61f6a2af",
+      "bytes": 427,
+      "sha256": "f343aeddb3f9986adef15d0bcbbb431212542160deb33631500c0c1e5f4edc7c"
+    },
+    {
+      "path": "references/mac-native-build.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3daa9c7e0537b066502606430b9289b39a249712",
+      "bytes": 798,
+      "sha256": "16fa488ed8d7a9a46541b5aea5007e27b538e5c37f9246c14de0e5fe24b05ad1"
+    },
+    {
+      "path": "references/mac-normal-build.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5d0f6fd01dfd4415610e6f30afe4b2ea203a4297",
+      "bytes": 3326,
+      "sha256": "f5746eaf7fd79c8001ac927c9738922297d6e5e575cbd12bc092aafa2c13f544"
+    },
+    {
+      "path": "references/materializer-before-harness-roots.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "de57d5688462665a9266023de47c8f8ea17549d2",
+      "bytes": 23198,
+      "sha256": "a8bb44b302f330b32474491b1afd0eab531713718e84b67aad7c8e155ec9f8e3"
+    },
+    {
+      "path": "references/original-four-source-projector.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "98354f6550feeb5dbd6c07e1b873964f0ad5e41b",
+      "bytes": 9233,
+      "sha256": "a7b05f1729cb658fe036d75caaeb6376149ae08a717cbdd91b69042a9b7b8e43"
+    },
+    {
+      "path": "references/tools/0.file-info.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3194d65f17b64cf44b0eac8e5a4cccc5edac6601",
+      "bytes": 417,
+      "sha256": "71bfe1aa7ad284c118c60c0817113a2113d3d55770cd62c651b87b34c6c04fc6"
+    },
+    {
+      "path": "references/tools/1.file-info.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ee12eecb4ab68899d9d06edd61f8e5fed02683c7",
+      "bytes": 420,
+      "sha256": "cecf79df26ca6e184998e6a722c233031bffbeb8ad3ce5b633ac44dc5dfb306e"
+    },
+    {
+      "path": "references/tools/2.file-info.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ceb1fc7ffc1789de2c39357cade4b233cc830368",
+      "bytes": 413,
+      "sha256": "ce019a4f04960e0528b0ab5b63d575c7753f90840c15fb0943619caa805d26db"
+    },
+    {
+      "path": "references/tools/3.file-info.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ff634202ee1db74eee2e0bae24af10c652643353",
+      "bytes": 419,
+      "sha256": "9531c7ac6507ee7feb548a09ab6b0910bf30deb38ba54da9fea2bc913f258cc4"
+    },
+    {
+      "path": "references/tools/4.file-info.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b319eda6e9544c45381b34b3d7ea9085040ad797",
+      "bytes": 408,
+      "sha256": "725d9ffabbf61256ed2e1cb2d4989e14f25868d59d397efe5a27ad0f6468994d"
+    },
+    {
+      "path": "references/tools/5.file-info.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "af874d027b40aada7177d17c0e22a76995e0d23a",
+      "bytes": 410,
+      "sha256": "5ab824b15475b2d6c89bd86e23e81ce37bef94ea1684ecdbff7adc7c4b440b7b"
+    },
+    {
+      "path": "runtime-proposed-dispatch.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e23858dcbd08fe4502cdb9bddd9f8e46e60b5d02",
+      "bytes": 5051,
+      "sha256": "b98ee68e406e299b63644792a20c38444016b79b77a5f041a8e2f5ac61f92e6f"
+    },
+    {
+      "path": "source/mac_auth_rows_cas_r1.mjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "50cf42a76cd313fb4de889e954bb9abe2e716530",
+      "bytes": 3103,
+      "sha256": "0021fa7539f4fb36e2ac907315da1c9d9e407c9ccac606d1908e0b7a3f7042dd"
+    },
+    {
+      "path": "source/mac_authbus_cache_cas_r1.mjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "a318e427095b6c9273f03208620296b57ab59bc0",
+      "bytes": 6846,
+      "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+    },
+    {
+      "path": "source/mac_capture_sqlite_synthetic_r1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "992fa2b52760e5f3d0b192837053728011e11500",
+      "bytes": 16476,
+      "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c"
+    },
+    {
+      "path": "source/mac_capture_sqlite_synthetic_r2.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "92930e43caa1b87bc857c642fd545b5b0147226d",
+      "bytes": 16915,
+      "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2"
+    },
+    {
+      "path": "source/mac_current_capture_entry_r1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d972159225b1d7478746c9296eb9bb69eb99844c",
+      "bytes": 19011,
+      "sha256": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024"
+    },
+    {
+      "path": "source/mac_current_cycle_r2.mjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "89b173c3f82b35ffc592a7756cd8058a6d1f6769",
+      "bytes": 24007,
+      "sha256": "2b982383ce66028159ae84845bf5a0d3515e0308bab6916944bd7195bb948177"
+    },
+    {
+      "path": "source/mac_current_fixture_materializer_r1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "628c3f0af5dc8caccf9a93ed9424fcda89255aeb",
+      "bytes": 23631,
+      "sha256": "9ae14eccdec7742c31df92fede042acac68514b3713ef8cb751cb8f456fb1526"
+    },
+    {
+      "path": "source/mac_current_outer_inputs_r1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9c4cdc5816ec67d3822ebb6551982349523beb9b",
+      "bytes": 24973,
+      "sha256": "be5da65ce3bd98586d36b11edba6a4619600b74fbabb93050a3325e89e9ed254"
+    },
+    {
+      "path": "source/mac_current_outer_r3.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0c19930f4a114ece9bb46cbeb62f26c6806b5f26",
+      "bytes": 58586,
+      "sha256": "986194f0da2d278986589d5ec757fb50a040182db6f610addba9469ee97e1be5"
+    },
+    {
+      "path": "source/mac_current_phase_owner_r2.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5dcda7880ec4526da5d5bc607debc47cbacffe92",
+      "bytes": 25005,
+      "sha256": "42520fe933e2c0106e6983a282421759b260a2bf48a08f86d0f404caa3f2eb86"
+    },
+    {
+      "path": "source/mac_current_server_owner_r1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "01b5bfc49138aac54b0e4da5b01fe0d8544f9bc0",
+      "bytes": 13210,
+      "sha256": "3932ddada69310b700b7b6aafd325202c1deda84c2f12d711e27d022111bdfb6"
+    },
+    {
+      "path": "source/mac_guarded_current_capture_r3.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "244f98634ab07e96f70585179a1d155fdb34f34f",
+      "bytes": 23578,
+      "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+    },
+    {
+      "path": "source/mac_native_process_observer_r1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5",
+      "bytes": 13423,
+      "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b"
+    },
+    {
+      "path": "source/mac_owned_commands_r1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+    },
+    {
+      "path": "source/mac_owned_launchd_r3.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "5ee5950421c69f0aedfaf457a3b75666a902cc57",
+      "bytes": 35532,
+      "sha256": "1c18be9069b4f7219a793c88e08a648841bcab992b8947a9064d55712539c09c"
+    },
+    {
+      "path": "source/mac_owned_unreaped_r1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+    },
+    {
+      "path": "source/mac_single_native_r2.mjs",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9408a7d0248ca2658a5c3a3578b9a907f659d680",
+      "bytes": 28527,
+      "sha256": "f90bbb2e9a1fa679d04fbef4328f3a1b9fc512d2b809dacd7eafce67f9cfd93c"
+    },
+    {
+      "path": "source/mac_t5_volume_guard_r1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "938fd5e5663e004f9f6553548537ab3a931c50d0",
+      "bytes": 13387,
+      "sha256": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99"
+    }
+  ],
+  "fileCount": 46,
+  "totalBytes": 527675,
+  "sourceCount": 18,
+  "sourceBytes": 363165,
+  "sourceShaPins": {
+    "mac_current_outer_r3.py": "986194f0da2d278986589d5ec757fb50a040182db6f610addba9469ee97e1be5",
+    "mac_current_outer_inputs_r1.py": "be5da65ce3bd98586d36b11edba6a4619600b74fbabb93050a3325e89e9ed254",
+    "mac_current_fixture_materializer_r1.py": "9ae14eccdec7742c31df92fede042acac68514b3713ef8cb751cb8f456fb1526",
+    "mac_current_capture_entry_r1.py": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024",
+    "mac_owned_launchd_r3.py": "1c18be9069b4f7219a793c88e08a648841bcab992b8947a9064d55712539c09c",
+    "mac_current_server_owner_r1.py": "3932ddada69310b700b7b6aafd325202c1deda84c2f12d711e27d022111bdfb6",
+    "mac_current_phase_owner_r2.py": "42520fe933e2c0106e6983a282421759b260a2bf48a08f86d0f404caa3f2eb86",
+    "mac_native_process_observer_r1.py": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+    "mac_guarded_current_capture_r3.py": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+    "mac_owned_commands_r1.py": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+    "mac_t5_volume_guard_r1.py": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99",
+    "mac_owned_unreaped_r1.py": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+    "mac_capture_sqlite_synthetic_r1.py": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+    "mac_capture_sqlite_synthetic_r2.py": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+    "mac_current_cycle_r2.mjs": "2b982383ce66028159ae84845bf5a0d3515e0308bab6916944bd7195bb948177",
+    "mac_single_native_r2.mjs": "f90bbb2e9a1fa679d04fbef4328f3a1b9fc512d2b809dacd7eafce67f9cfd93c",
+    "mac_auth_rows_cas_r1.mjs": "0021fa7539f4fb36e2ac907315da1c9d9e407c9ccac606d1908e0b7a3f7042dd",
+    "mac_authbus_cache_cas_r1.mjs": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+  },
+  "offlineChecks": {
+    "completePythonAstCount": 14,
+    "selectedPureComponentRecords": 27,
+    "originalSelectedComponentInputBytes": 24969,
+    "finalInputBytes": 24973,
+    "finalInputSeparateAstCompile": true,
+    "completeModulesExecuted": false,
+    "actualSQLite": false,
+    "actualTLS": false,
+    "actualLaunchd": false,
+    "hostContacts": 0
+  },
+  "actualPrerequisite": {
+    "syntheticR2Tree": "ace9c028fb4bf84a2881adfb2bf6146fff95b2de",
+    "inertR2Tree": "3ba99bbf5c87c0217d28d5dac1f154c4ed13726f",
+    "rootReviewBlob": "db3b4ce7410eb95144c07365e4f978eb717d0604",
+    "ownedCasesPassed": 7,
+    "oldR1FailureTreePreserved": "0afe32c5bf0f96be1089cf5b976f529e80327ab5",
+    "qualification": "OWNED_SQLITE_SYNTHETIC_ONLY"
+  },
+  "remainingAdmission": [
+    "full source root and independent peer review",
+    "separate create-only inert append source review and actual acceptance",
+    "explicit current capture and owned launchd runtime GO",
+    "actual complete final stdout plus authority exit zero and closure"
+  ],
+  "runtimeQualified": false,
+  "currentCaptureExecutedByNewCaller": false,
+  "credentialsProjectedByNewCaller": false,
+  "consumerOrLaunchdExecutedByNewCaller": false,
+  "productionMutationAuthorized": false,
+  "sourcePackageIncludesCompleteCaller": true,
+  "notes": [
+    "No source commit/ref/PR mutation; this is an unreferenced source and review tree.",
+    "Proposed dispatch is included only for review and must not be submitted from this packet alone.",
+    "Early candidate result does not replace final stdout, closure or authority.",
+    "Launchctl label/birth checks are sequential observations, not atomic PID custody.",
+    "Actual current captures would be separate bounded observations, not a transaction, full database backup or cross-agent atomic snapshot."
+  ]
+}

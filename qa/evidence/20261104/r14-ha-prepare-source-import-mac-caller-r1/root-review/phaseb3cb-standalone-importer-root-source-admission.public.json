@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.phaseb3cb-standalone-importer-root-source-admission.v1",
+  "base_source_tree": "6472d08047524d4dc18cef192849920b5f845574",
+  "bound_source_tree": "068d3c45dfe1b938e1374c550fc8e4f840433f02",
+  "actual_transfer_tree": "1dcb7b7b44c2ead164eaa4fe11821f7d95dd0b49",
+  "candidate_blob": "06984b4d4911f8dc0f1cecf6888cb5a9801bfa8a",
+  "candidate_bytes": 33102,
+  "candidate_sha256": "cdecc828fd13e6fe2509741515c23cab2913931b430ffb1823630975634bafc3",
+  "complete_source_read": true,
+  "original_receiver_strict_diff": {
+    "hunks": 6,
+    "exact": true
+  },
+  "bound_diff_exact": {
+    "hunks": 3,
+    "replacements": 6,
+    "five_actual_metadata_fields_and_ready_only": true
+  },
+  "actual_slots_verified_against_raw_lossless_endpoints_and_read_result": true,
+  "all30_definitions_unchanged_by_final_binding": true,
+  "original22_definitions_retained_exact_in_draft": true,
+  "scope": {
+    "fixed_local_files": 3,
+    "held_input_directory_fds": 4,
+    "held_new_source_directory_fds": 1,
+    "exact_versions_and_whole_hashes_before_and_after": true,
+    "source_exclusive_mkdir_before_git": true,
+    "partial_source_retained_on_failure": true,
+    "git_protocol": "file-only",
+    "canonical_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "canonical_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+    "full_commits": 3755,
+    "tracked_files": 3911,
+    "no_alternates_partial_shallow_or_sparse": true,
+    "no_product_compiler_provider_or_production": true
+  },
+  "budgets": {
+    "outer_seconds": 330,
+    "original_controller_seconds": 300,
+    "git_seconds": 60,
+    "clone_seconds": 90,
+    "term_seconds": 5,
+    "kill_seconds": 5
+  },
+  "source_component_scope": "Original29 selected components plus8 source-directory components, 22 unchanged definitions, and actual-receipt shape predicates; these do not qualify host execution.",
+  "admitted_once": {
+    "request_blob": "ee85f819d784b1f19412811da2b6a70f867bde4e",
+    "host": "desktop",
+    "key": "heptabao-phaseb-3cb-standalone-import-cdecc828-20261105-r1",
+    "timeout_seconds": 330
+  },
+  "actual_import_qualified": false,
+  "requires_actual": "Complete durable authority exit0, source full proof, materialized 3911 bytes/modes, receipt and terminal deadline, all children reaped and all held descriptors closed."
+}

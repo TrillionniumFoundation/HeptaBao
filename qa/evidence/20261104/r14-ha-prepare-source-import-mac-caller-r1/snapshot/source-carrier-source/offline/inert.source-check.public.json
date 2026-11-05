@@ -1,0 +1,27 @@
+{
+  "bytes": 5049,
+  "candidate_top_level_executed": false,
+  "changed_definitions": [],
+  "checks": [
+    "same_definition_names",
+    "only_allowlisted_changed_definitions",
+    "inverse_present_2",
+    "inverse_present_3",
+    "inverse_present_4",
+    "inverse_present_5",
+    "inverse_whole_bytes_exact"
+  ],
+  "checks_passed": 7,
+  "compiled_not_executed": true,
+  "host_operations": 0,
+  "identical_definitions": [
+    "sha",
+    "ident",
+    "sync_dir",
+    "exact",
+    "publish"
+  ],
+  "name": "inert",
+  "schema": "heptabao.phaseb3cb.source-carrier-source-invariance.v1",
+  "sha256": "46d1d644882fc064ff34f3141d036e8580126b9b0d7c479dc3659b115492eaa2"
+}

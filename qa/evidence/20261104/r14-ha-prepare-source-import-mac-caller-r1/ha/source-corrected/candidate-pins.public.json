@@ -1,0 +1,47 @@
+{
+  "deadline_qa/ha_multihost_live.py": {
+    "blob": "1cb1da88b239d46e9cae7666249e0f7f97338c97",
+    "bytes": 79776,
+    "sha256": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460"
+  },
+  "deadline_qa/native_ha_foreground_watchdog.py": {
+    "blob": "eb37adcc3eb4d3fdd726c922163c4fda603b212b",
+    "bytes": 41618,
+    "sha256": "04189572097f5f7ac1f4ea3eaf53afaa3bf9854043cec9e190b9fd96d628ef89"
+  },
+  "deadline_qa/native_v6_ha_direct_lan_live.py": {
+    "blob": "bb07666bde008d18697e0979200b20058a609a7a",
+    "bytes": 14046,
+    "sha256": "bc99f154d89dfbe8a82babb8c50bcda3accaf8c486c51750db48bfc4003932ea"
+  },
+  "deadline_qa/native_v6_ha_multihost_live.py": {
+    "blob": "74fa468a13b4a77e1a38b0b816e57fdfb1decc8a",
+    "bytes": 87254,
+    "sha256": "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429"
+  },
+  "launch_normal_r10_pocket_postrecovery_cold_r2.py": {
+    "blob": "6883c794805eb012a21e292a5833fe5a9e39e4c6",
+    "bytes": 24051,
+    "sha256": "515bc76f5c626dc1940cde2c75315b8347c70a97613e3310dad873a401f614a0"
+  },
+  "native_v6_pocket_source_postrecovery_cold_r10_r2.py": {
+    "blob": "9406b7268f9eb07538e5d09ba5c0af23c06b5730",
+    "bytes": 72673,
+    "sha256": "2ad254a115c7463a35b5766fab0673931434d8f0b065f45318b07b646ddf2571"
+  },
+  "probe_normal_build_r10_r1.py": {
+    "blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a",
+    "bytes": 6445,
+    "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee"
+  },
+  "read_stopped_postrecovery_frontier_r2.py": {
+    "blob": "094fe60e5ed0cc5cedca84fc82efdb2aa2c8d8a5",
+    "bytes": 16274,
+    "sha256": "5515c6319ab577bed00260caa3bdec9ec730a0c057fb2fdfbfe9debd0afa8d77"
+  },
+  "read_stopped_recovered_cipher_r2.py": {
+    "blob": "96a98c572ec34de4f2cb4a582a62e6f5cf752b3f",
+    "bytes": 13207,
+    "sha256": "a0b9685bd28512cefc62e09d2d61717b4a11229ab2e1e1ddc1d9cf7be3a87d64"
+  }
+}

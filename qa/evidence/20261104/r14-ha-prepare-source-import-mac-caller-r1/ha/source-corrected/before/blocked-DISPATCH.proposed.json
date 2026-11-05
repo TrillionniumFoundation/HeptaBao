@@ -1,0 +1,130 @@
+{
+  "additional_mutation_limit": 2,
+  "all_stages_authorized": false,
+  "fixed_witness_key_suffix": "direction-prepare-witness",
+  "inert": {
+    "args_mode": "-I -S -B -c exact inert_carrier.py",
+    "authorized": false,
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "effect": "AST+compile-only all nine files before writes, then one new 0700 control and nested 0700 deadline_qa; exact 0600 file publications; no module execution, SSH, Git, service, or child.",
+    "executable": "/usr/bin/python3",
+    "expected_control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r2",
+    "expected_files": [
+      {
+        "blob": "285f96d09168cb288fdac5dd522aac66e93e8854",
+        "bytes": 24051,
+        "path": "launch_normal_r10_pocket_postrecovery_cold_r2.py",
+        "sha256": "d673b257d0d5180d5bda8d402cdac3c9294ad236ff3840298555af19b4c3df86"
+      },
+      {
+        "blob": "9406b7268f9eb07538e5d09ba5c0af23c06b5730",
+        "bytes": 72673,
+        "path": "native_v6_pocket_source_postrecovery_cold_r10_r2.py",
+        "sha256": "2ad254a115c7463a35b5766fab0673931434d8f0b065f45318b07b646ddf2571"
+      },
+      {
+        "blob": "094fe60e5ed0cc5cedca84fc82efdb2aa2c8d8a5",
+        "bytes": 16274,
+        "path": "read_stopped_postrecovery_frontier_r2.py",
+        "sha256": "5515c6319ab577bed00260caa3bdec9ec730a0c057fb2fdfbfe9debd0afa8d77"
+      },
+      {
+        "blob": "96a98c572ec34de4f2cb4a582a62e6f5cf752b3f",
+        "bytes": 13207,
+        "path": "read_stopped_recovered_cipher_r2.py",
+        "sha256": "a0b9685bd28512cefc62e09d2d61717b4a11229ab2e1e1ddc1d9cf7be3a87d64"
+      },
+      {
+        "blob": "7def0552a38dd57ec4e40f96972ccec8fa1d1a5a",
+        "bytes": 6445,
+        "path": "probe_normal_build_r10_r1.py",
+        "sha256": "4f556104c0a66fd7b7fa59811bfec1e5dcb701a42cd9231aa2812233a5a840ee"
+      },
+      {
+        "blob": "1cb1da88b239d46e9cae7666249e0f7f97338c97",
+        "bytes": 79776,
+        "path": "deadline_qa/ha_multihost_live.py",
+        "sha256": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460"
+      },
+      {
+        "blob": "74fa468a13b4a77e1a38b0b816e57fdfb1decc8a",
+        "bytes": 87254,
+        "path": "deadline_qa/native_v6_ha_multihost_live.py",
+        "sha256": "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429"
+      },
+      {
+        "blob": "bb07666bde008d18697e0979200b20058a609a7a",
+        "bytes": 14046,
+        "path": "deadline_qa/native_v6_ha_direct_lan_live.py",
+        "sha256": "bc99f154d89dfbe8a82babb8c50bcda3accaf8c486c51750db48bfc4003932ea"
+      },
+      {
+        "blob": "eb37adcc3eb4d3fdd726c922163c4fda603b212b",
+        "bytes": 41618,
+        "path": "deadline_qa/native_ha_foreground_watchdog.py",
+        "sha256": "04189572097f5f7ac1f4ea3eaf53afaa3bf9854043cec9e190b9fd96d628ef89"
+      }
+    ],
+    "host": "desktop",
+    "idempotency_key": "heptabao-r10-postcold-inert-r2-d673b257-2ad254a1",
+    "source": {
+      "blob": "def340c46ac689a9736303f374456a6df7acd643",
+      "bytes": 6858,
+      "sha256": "39b8d4c9aadb96db4ce43ad0c067ef505ec210a4f11c901b1176b3e5bfca49bc"
+    },
+    "stdin": {
+      "blob": "c0547a35c9b9af66d1553c7e6f34c00aeb38ac39",
+      "bytes": 474292,
+      "sha256": "01888908fb3458ad5337613f799f611f9d14da659af0dd81259985c3dd65e521"
+    },
+    "timeout_seconds": 60
+  },
+  "live": {
+    "additional_witness_mutation_limit": 2,
+    "args_template": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r2/launch_normal_r10_pocket_postrecovery_cold_r2.py",
+      "--run-once",
+      "--prepared-sha256",
+      "REQUIRES_ACTUAL_PREPARED_DIGEST"
+    ],
+    "authorized": false,
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "executable": "/usr/bin/python3",
+    "host": "desktop",
+    "idempotency_key_template": "heptabao-r10-postcold-live-r2-d673b257-2ad254a1",
+    "inner_seconds": 2400,
+    "new_phase_seconds": 300,
+    "original_admission_seconds": 8,
+    "original_http_seconds": 15,
+    "prepared_sha256": null,
+    "requires": "Whole source and pure-component review, one inert/prepare with original terminal and pins, and root's explicit new quiet window. Never submitted from this packet.",
+    "role_preparation_clipped_to_controller": true,
+    "role_preparation_seconds": 60,
+    "timeout_seconds": 3000
+  },
+  "old_R3_roots_touched": false,
+  "prepare": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r2/launch_normal_r10_pocket_postrecovery_cold_r2.py",
+      "--prepare-only"
+    ],
+    "authorized": false,
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "effect": "Original normal build/source/QA and all original24 plus failed-B4 fences; source-only contract includes once-CAS0/delete witness. No fixture.",
+    "executable": "/usr/bin/python3",
+    "host": "desktop",
+    "idempotency_key": "heptabao-r10-postcold-prepare-r2-d673b257-2ad254a1",
+    "timeout_seconds": 360
+  },
+  "prior_failure_root_review_blob": "220bc755ce81649b58b7cdb4d961d6ea485348e0",
+  "product_source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "schema": "heptabao.postrecovery-cold12-witness-r2.proposed-dispatch.v1",
+  "status": "source-only-not-submitted",
+  "upstream_semantics_root_review_blob": "3d6a2b3c8969fabf14d4ca722e71e4cddd48a09d"
+}

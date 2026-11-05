@@ -1,0 +1,420 @@
+{
+  "schema": "heptabao.phaseb-normal-ingress-observer-fresh-input-source-plan.v4",
+  "status": "source_only_actual_3cb_build_pinned_desktop_transport_and_local_stage_not_executed",
+  "candidate": {
+    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+    "sole_parent": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+    "production_code_change_scope": "One explicit Result error-type annotation on top of the already reviewed normal observer; no custody/admission/deadline behavior change",
+    "runtime_file": {
+      "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+      "bytes": 61623,
+      "sha256": "5291c584d8c91d6517cf4282fbbb66424dbdb184e070b9b23d11a4cbc564074a",
+      "blob": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3"
+    }
+  },
+  "retained_qa": {
+    "phaseb_controller_r3.py": {
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+      "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0",
+      "basis": "Exact previously reviewed and R10-executed QA bytes retained",
+      "product_candidate_inherited_from_r10": false
+    },
+    "phaseb_binding_r3.py": {
+      "bytes": 23664,
+      "sha256": "73736dbcfe951cf666f8413190958aff38d68e95457f1f969b0e47f8c0266c25",
+      "blob": "3565e0d507d8adcd9d249b75d9f97c24f7c4bf0a",
+      "basis": "Exact previously source-reviewed 3cb binding bytes retained, including separate original44/extra7 checks and JSON string-key observations",
+      "product_candidate_inherited_from_r10": false
+    },
+    "phaseb_evidence_r3.py": {
+      "bytes": 15201,
+      "sha256": "4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024",
+      "blob": "e507fef5b87305f4b8e8a0d729aecec6da284bed",
+      "basis": "Exact previously reviewed and R10-executed QA bytes retained",
+      "product_candidate_inherited_from_r10": false
+    },
+    "native_fixture_reference_r8.py": {
+      "bytes": 68149,
+      "sha256": "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416",
+      "blob": "7e465b3ea72814726ed2e01355ab91412190a747",
+      "basis": "Exact previously reviewed and R10-executed QA bytes retained",
+      "product_candidate_inherited_from_r10": false
+    },
+    "official_cli_reference_r4.py": {
+      "bytes": 46586,
+      "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9",
+      "blob": "4a4a60d1d52a0fd835b467f1e4687ee95314d1de",
+      "basis": "Exact previously reviewed and R10-executed QA bytes retained",
+      "product_candidate_inherited_from_r10": false
+    }
+  },
+  "old_input_identity": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "use": "Historical immutable fence only; never relabel old server/native/release/44 evidence as bf0 or its 3cb successor",
+    "old_phaseb_work": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r1",
+    "old_phaseb_result_sha256": "cd2d1d89271b0342755935f366cf41b25ad49e1cd560a1ab7a1eb7b698e9d184",
+    "old_unknown_preserved": true,
+    "old_final_input_fence_error_preserved": true
+  },
+  "new_layout": {
+    "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2",
+    "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-r1",
+    "work": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r2",
+    "prepare": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/prepare-r1"
+  },
+  "transfer_inputs": {
+    "public_only": true,
+    "source": "Full canonical 3cb/7f4d48 Git checkout; verify sole parent bf0, 3755 reachable commits, complete strict fsck, 3911 tracked leaf/index bindings (5cb27cb400dc0896da98a5d4c740f2d5c9a83b6c60eb59dbec4eb7acd1a6ce00) and retained old-source immutability before accepting desktop source",
+    "artifacts": {
+      "server": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/artifacts/heptabao-server",
+        "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0",
+        "bytes": 109074848,
+        "uid": 1000,
+        "mode": 320,
+        "actual_bytes_and_sha_unresolved": false,
+        "desktop_file_exists_or_identity_observed": false
+      },
+      "native_receipt": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/artifacts/native-build.public.json",
+        "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce",
+        "bytes": 794,
+        "uid": 1000,
+        "mode": 384,
+        "actual_bytes_and_sha_unresolved": false,
+        "desktop_file_exists_or_identity_observed": false
+      },
+      "release_receipt": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/artifacts/normal-release-result.public.json",
+        "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f",
+        "bytes": 3200,
+        "uid": 1000,
+        "mode": 384,
+        "actual_bytes_and_sha_unresolved": false,
+        "desktop_file_exists_or_identity_observed": false
+      },
+      "combined_tests": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/artifacts/normal-release-tests-result.public.json",
+        "sha256": "8899a7acc647505c230430b35771ae1eccaf48cc5aea27a034906d513fd0b0f7",
+        "bytes": 35178,
+        "uid": 1000,
+        "mode": 384,
+        "actual_bytes_and_sha_unresolved": false,
+        "desktop_file_exists_or_identity_observed": false
+      },
+      "test_groups": {
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/artifacts/groups.json",
+        "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+        "bytes": 6249,
+        "uid": 1000,
+        "mode": 384,
+        "actual_bytes_and_sha_unresolved": false,
+        "desktop_file_exists_or_identity_observed": false
+      }
+    },
+    "raw_receipts_preserved_without_rewriting": true,
+    "provenance": "Keep original ROG receipt paths/source/rustc/profile/artifact records as bytes; an independent transfer receipt binds original and local copies",
+    "private_input_transfer": false,
+    "old_archive_or_native_data_transfer": false,
+    "new_private_runtime_material": "The actual normal setup generates a new owned CA/leaf/replication/bootstrap/root-token generation inside the fresh live-r2 root only",
+    "shared_incoming": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-shared-artifacts-r1/incoming",
+    "actual_rog_sources": {
+      "server": {
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-server",
+        "bytes": 109074848,
+        "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0"
+      },
+      "native_receipt": {
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/native-build.public.json",
+        "bytes": 794,
+        "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce",
+        "blob": "db7838a99b3f98637dd5e257c427cdb02158a0ff"
+      },
+      "release_receipt": {
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/normal-release-result.public.json",
+        "bytes": 3200,
+        "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f",
+        "blob": "22a3dfca9dab25a1b15e8b520ae0b965d904ed66"
+      },
+      "combined_tests": {
+        "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/result.public.json",
+        "bytes": 35178,
+        "sha256": "8899a7acc647505c230430b35771ae1eccaf48cc5aea27a034906d513fd0b0f7",
+        "blob": "6532d79e69bcb4572b3dafb84b01c99b276cc4f3"
+      },
+      "test_groups": {
+        "git_blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f",
+        "bytes": 6249,
+        "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+      }
+    },
+    "seed_build_artifact_not_an_executed_phaseb_input": {
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-seed",
+      "bytes": 101143984,
+      "sha256": "bdbf53cfebc25d3932aaba3bf608e0459e3399c513bbdeafecde5659eb688689",
+      "transferred_by_this_local_stage": false,
+      "called_by_retained_main": false,
+      "reason": "The unchanged normal fixture performs its V5 seed setup using the server. This separate built seed is listed for provenance only; the five-artifact Binding contract is unchanged."
+    }
+  },
+  "acceptance_chain": [
+    "Root accepted the complete R3 normal release + exact original44 + separate extra7 + all28 owned cleanup from the243-file original-evidence tree. This qualifies only the new 3cb normal build, not a desktop transfer or Phase B runtime.",
+    "Root reviews and separately authorizes create-only source/artifact transport using the pinned actual3cb outputs; those desktop receipts are still absent and no transport is executed by this packet.",
+    "After root accepts the actual source and artifact transport terminals, separately authorize the retained-function local stager below; it captures actual desktop host/tool/source/file identities, copies only fixed public inputs into fresh control-r2 and emits binding.private.json. No product or target QA module is executed.",
+    "A separately authorized one-shot prepare-only uses the fixed61210 main and 73736dbc binding, exact concrete binding digest, original action300 and outer330. Current source must be 3cb/7f4d48 and all receipts must bind it; placeholders fail before preparation.",
+    "Only after root accepts the complete prepare authority/result/input fences and reserves the desktop fixture window may one fresh live-r2 start. Original CLI/HTTP15, action300, readiness45, election60, peer1.5/forward8, normal stop/final cleanup5+5 and prior NEW aggregate3000 are preserved."
+  ],
+  "proposed_dispatch": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3.12",
+    "local_stage_key": "heptabao-phaseb-ingress-observer-inputs-3cb8739-20261104-r2",
+    "prepare": {
+      "key": "heptabao-phaseb-r3-prepare-10816-3cb8739-20261104-r2",
+      "args_template": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/qa/phaseb_controller_r3.py",
+        "--binding",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/binding.private.json",
+        "--binding-sha256",
+        "@actual concrete binding SHA256@",
+        "--prepare-only"
+      ],
+      "outer_seconds": 330,
+      "action_seconds": 300
+    },
+    "live": {
+      "key": "heptabao-phaseb-r3-live-10816-3cb8739-20261104-r2",
+      "args_template": [
+        "-I",
+        "-S",
+        "-B",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/qa/phaseb_controller_r3.py",
+        "--binding",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/binding.private.json",
+        "--binding-sha256",
+        "@actual concrete binding SHA256@",
+        "--run",
+        "--prepare-result-sha256",
+        "@actual root-accepted prepare result SHA256@"
+      ],
+      "outer_seconds": 3000,
+      "outer_scope": "Retain the separately approved NEW aggregate outer envelope used by R3; it does not enlarge any original per-action or request limit"
+    },
+    "concrete_binding_file": {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/binding.private.json",
+      "mode": 384,
+      "custody_guard_unchanged": true
+    },
+    "local_stage": {
+      "key": "heptabao-phaseb-ingress-observer-inputs-3cb8739-20261104-r2",
+      "host": "desktop",
+      "executable": "/usr/bin/python3",
+      "args_template": [
+        "-I",
+        "-S",
+        "-B",
+        "-c",
+        "@exact source blob 6740aecbb9ecc53b4efe006d920664b50c8b25ab@",
+        "--external-controller-sha256",
+        "4c9a4755988d486d0adb80b03aecddf8297d884cabf1a52cd8053a82268e992c"
+      ],
+      "stdin": {
+        "blob": "9cc6997190418ab3eccd9446f2417706087d2aa2",
+        "bytes": 273490,
+        "sha256": "2f9f8acb45e66f49b42739e64eac6bf289f06a7d5bc840eab3b2c8ce87ce0fcd"
+      },
+      "inner_seconds": 300,
+      "outer_seconds": 330,
+      "preconditions": [
+        "Root accepted actual canonical3cb desktop source stage terminal",
+        "Root accepted actual public3artifact transport terminal",
+        "Root reviewed this exact local-stager/carrier source packet",
+        "Root grants one stable-key dispatch and a desktop input-I/O window"
+      ]
+    }
+  },
+  "representation_fix": {
+    "affected_return_fields": [
+      "api_ports",
+      "raft_ports"
+    ],
+    "rule": "Return str(node) keys, matching JSON persistence and reload",
+    "unchanged": "Runtime API_PORTS/RAFT_PORTS remain int keyed; helper equality and per-node indexing stay original; main final after == self.verified stays byte-identical",
+    "old_failure_not_rewritten": true
+  },
+  "operations": {
+    "case_count": 5,
+    "original_case_contracts_retained": true,
+    "positive_control_first": true,
+    "valid_native_archive_A_and_B_required": true,
+    "cli_exit_zero_is_not_restore_success": true,
+    "restore_requires_actual_API_versions_and_cold_regression": true,
+    "unknown_or_partial": "No new CLI, upload, mutation, retry or cold restart after unknown; only bounded owned cleanup and fixed public/private-safe evidence",
+    "original_reference_deadline_kill_wait5_plus_separate_once_final_5_plus_5_preserved": true
+  },
+  "isolation": {
+    "normal_startup": "Normal V5 seed then normal native_v6_raft/formal activation; original main setup checks actual config; no fixture feature enabled",
+    "host_count": 1,
+    "process_nodes": 3,
+    "loopback_api_ports": {
+      "1": 48630,
+      "2": 48632,
+      "3": 48634
+    },
+    "loopback_raft_ports": {
+      "1": 48631,
+      "2": 48633,
+      "3": 48635
+    },
+    "port_check_is_not_reservation": true,
+    "root_reserves_window": true,
+    "production_config_or_hold_changes": false,
+    "provider_or_refresh_requests": 0,
+    "j3160_requests": 0
+  },
+  "current_qualification": {
+    "ready_for_readonly_prepare": false,
+    "source_only": true,
+    "normal_3cb_original44_and_separate7_root_reviewed": true,
+    "new_desktop_source": false,
+    "new_desktop_artifacts": false,
+    "new_local_input_stage": false,
+    "new_prepare": false,
+    "new_live": false,
+    "full_openbao271_replacement": false,
+    "production_cutover": false
+  },
+  "revision_note": "This revision resolves only actual build/artifact byte pins and the local input carrier/stager. The previously reviewed 61210-byte main, 23664-byte 3cb binder and other three QA members remain exact. The original failed bf0 build, wrong-runner R2 source stage and old B01 unknown remain separate immutable history. Desktop source/transport/local-stage identities are not inferred from ROG evidence.",
+  "retained_prior_source_stage": {
+    "job_id": "1a1a87499fe-fc05-2ecd",
+    "source_root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/source",
+    "receipt_sha256": "bb2bd7b46974dc18bcb87325ea55c46383e17f2f8a521f2eaa77b1fc9fba8d2b",
+    "evidence_tree": "286b41f0d359087d4b393197cdf314da149e0572",
+    "root_review_pass": true,
+    "scope": "bf0 only; does not qualify 3cb source staging"
+  },
+  "prior_failed_build": {
+    "job_id": "1a1a87f578a-fc05-2ee0",
+    "actual_ack_sha256": "98a3a27e95f4216e7cbdda785682c940f05c328201e23535bf2113cf7b9813e1",
+    "source_commit": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+    "source_tree": "ac4027db88fec69381ea0c6bba953d9a99c4e82a",
+    "output_root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1/normal-release-tests-r1",
+    "normal_runner_sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273",
+    "normal_default_features": [
+      "default",
+      "native-v6-ha",
+      "native-v6-storage"
+    ],
+    "source_frozen": true,
+    "normal_release_terminal": "failed_exit101",
+    "combined_original44_terminal": "not_started",
+    "additional7_terminal": "not_started",
+    "all_owned_cleanup_terminal": "complete",
+    "authority_sha256": "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6",
+    "result_sha256": "2947b177c2b7ca145a499175567aec632c76d12641c8afa4276ae900dda3a122",
+    "evidence_tree": "94bc1904b020caebc231f14fa3a5992156f77a86"
+  },
+  "superseded_unexecuted_build_proposal": {
+    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+    "control_packet_tree": "27d6054bc3de026e0e58590498e53183f78b2342",
+    "root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r2",
+    "runner_sha256": "c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273",
+    "job_id": null,
+    "actual_stage": null,
+    "normal_release_terminal": null,
+    "combined_original44_terminal": null,
+    "additional7_terminal": null,
+    "all_owned_cleanup_terminal": null,
+    "status": "historical_wrong_runner_binding_not_admitted_to_build",
+    "replacement": "actual normal R3 below",
+    "preserved_reference_tree": "3d3cb2d88cf5f3dee64a31f65a4db3d76f360581"
+  },
+  "actual_source_and_build": {
+    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+    "root": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3",
+    "control_packet_tree": "7584cf0021ac5ea603b8652f65dfd7e0991803ff",
+    "runner": {
+      "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/control/normal_phaseb_observer_build.py",
+      "bytes": 20791,
+      "sha256": "5ba3e0152b1b84510ef7740b1e5d863e1464e4eaee04a4b772747a4db86dcb2b",
+      "blob": "7fd97c088c538c7b4d1968964b8d8eaa67826885"
+    },
+    "actual_stage": {
+      "sha256": "0abd8e0ae42eef1bacd4866f12f0ada94563369ecf2b66e7ca69ab4388433d7f",
+      "evidence_tree": "a93b2bbf182a4ae13ad3256adfef503a3d0029b0",
+      "tracked_leaves": 3911,
+      "reachable_commits": 3755,
+      "tracked_bytes": 62194197,
+      "leaf_index_sha256": "5cb27cb400dc0896da98a5d4c740f2d5c9a83b6c60eb59dbec4eb7acd1a6ce00"
+    },
+    "job_id": "1a1a8b55dda-fc05-2f85",
+    "normal_release_terminal": "passed",
+    "combined_original44_terminal": "44/44_passed",
+    "additional7_terminal": "7/7_passed_separate_denominator",
+    "all_owned_cleanup_terminal": "28/28_reaped_and_empty",
+    "authority": {
+      "bytes": 731,
+      "sha256": "e827a88cea74e3ea8a8e78a38f65eb5df775561da9b380f04288d75da934ea53",
+      "blob": "ecc12a1306f877f9c1208e17880004a5bc5081e5"
+    },
+    "combined": {
+      "bytes": 35178,
+      "sha256": "8899a7acc647505c230430b35771ae1eccaf48cc5aea27a034906d513fd0b0f7",
+      "blob": "6532d79e69bcb4572b3dafb84b01c99b276cc4f3"
+    },
+    "full_evidence_tree": "cc9bf4ebfa811284520b76d93fba9759692b5637",
+    "root_review": {
+      "bytes": 9781,
+      "sha256": "20fcd665668ba59b7ee8a80dbf207d446e67197be307251f3bfae09106791ba2",
+      "blob": "cff97c2f0e3c845d64c7f1c28277ba4ff748c1c2",
+      "scope": "complete original source/build/test/owned-child evidence; no PhaseB product execution"
+    }
+  },
+  "local_input_stage": {
+    "source": {
+      "bytes": 23279,
+      "sha256": "4c9a4755988d486d0adb80b03aecddf8297d884cabf1a52cd8053a82268e992c",
+      "blob": "6740aecbb9ecc53b4efe006d920664b50c8b25ab"
+    },
+    "source_reference": {
+      "blob": "80549c6b3a8aa05efaa2abf66e4177239e0b9134",
+      "bytes": 22935,
+      "sha256": "c8ecd9daf62a7f38fa3940cd6bb3a0400f3a6d6ad39ab206c1d007031da128ed"
+    },
+    "all_original_functions_and_terminal_deadline_code_exact": true,
+    "change_count": 14,
+    "changes": "New control/work/source/incoming and product/carrier/file pins; add exact observer source and old B01 whole-receipt fence. No function or budget changes.",
+    "stdin_carrier": {
+      "bytes": 273490,
+      "sha256": "2f9f8acb45e66f49b42739e64eac6bf289f06a7d5bc840eab3b2c8ce87ce0fcd",
+      "blob": "9cc6997190418ab3eccd9446f2417706087d2aa2"
+    },
+    "member_count": 8,
+    "main_execution": false,
+    "qa_module_execution": false,
+    "children": 0,
+    "network": 0,
+    "internal_seconds": 300,
+    "outer_seconds": 330,
+    "incoming_source_modes": {
+      "server": 320,
+      "receipts": 256
+    },
+    "destination_modes": {
+      "server": 320,
+      "receipts": 384,
+      "qa": 384,
+      "binding": 384
+    },
+    "incoming_directory_mode": 320,
+    "exact_input_and_output_binding_filename": "binding.private.json",
+    "concrete_binding_ready_only_after_actual_local_stage": true
+  }
+}

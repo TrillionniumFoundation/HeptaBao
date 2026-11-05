@@ -1,0 +1,137 @@
+{
+  "schema": "heptabao.phaseb3cb.actual-inputs-source-provenance.v1",
+  "candidate_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "candidate_tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+  "layout": {
+    "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2",
+    "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-r1",
+    "work": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r2",
+    "prepare": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/prepare-r1"
+  },
+  "source_import": {
+    "tree": "c6b7d64757ce56a133a1adfdffcf427ba149b310",
+    "core": "147fa49bb3013691b9612d98fc362d0543554265",
+    "authority": "1c9baa75203014afeddeea762bf42824eaf2cb34",
+    "terminal": "4ad16db14dc9fbc66811e62f7b9cf063f73de813",
+    "whole_git_history_verified": true,
+    "all_3911_blob_bytes_verified": true,
+    "all_21_git_owned_groups_stopped": true,
+    "fd_closure_complete": true,
+    "root_review": "314c5a9d4941d3ffcffc154d5ea34ecd4fe08f9e"
+  },
+  "product_artifact_transfer": {
+    "tree": "bd70028b078c7c009762e8aacd7cb184f2925235",
+    "core": "4cd77efe5119bfe03feb3cbe77e970f60b729c6f",
+    "authority": "49399e870ebc5d15b1b17ad9cc5e75d557df78e2",
+    "all_3_owned_groups_stopped": true
+  },
+  "normal_build": {
+    "tree": "cc9bf4ebfa811284520b76d93fba9759692b5637",
+    "root_review": "cff97c2f0e3c845d64c7f1c28277ba4ff748c1c2",
+    "original44_passed": true,
+    "separate7_passed": true
+  },
+  "retained_stager": {
+    "bytes": 23279,
+    "sha256": "4c9a4755988d486d0adb80b03aecddf8297d884cabf1a52cd8053a82268e992c",
+    "blob": "6740aecbb9ecc53b4efe006d920664b50c8b25ab"
+  },
+  "retained_carrier": {
+    "bytes": 273490,
+    "sha256": "2f9f8acb45e66f49b42739e64eac6bf289f06a7d5bc840eab3b2c8ce87ce0fcd",
+    "blob": "9cc6997190418ab3eccd9446f2417706087d2aa2"
+  },
+  "retained_partial_binding": {
+    "bytes": 6656,
+    "sha256": "26ffaf3fd669fcf83bf78af275fc38512b1f8b6b467693b371b8c61a0f53f69c",
+    "blob": "8907aba48b8df82a433b8436b7372316feaa2130"
+  },
+  "carrier_members": {
+    "phaseb_controller_r3.py": {
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+      "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0"
+    },
+    "phaseb_binding_r3.py": {
+      "bytes": 23664,
+      "sha256": "73736dbcfe951cf666f8413190958aff38d68e95457f1f969b0e47f8c0266c25",
+      "blob": "3565e0d507d8adcd9d249b75d9f97c24f7c4bf0a"
+    },
+    "phaseb_evidence_r3.py": {
+      "bytes": 15201,
+      "sha256": "4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024",
+      "blob": "e507fef5b87305f4b8e8a0d729aecec6da284bed"
+    },
+    "native_fixture_reference_r8.py": {
+      "bytes": 68149,
+      "sha256": "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416",
+      "blob": "7e465b3ea72814726ed2e01355ab91412190a747"
+    },
+    "official_cli_reference_r4.py": {
+      "bytes": 46586,
+      "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9",
+      "blob": "4a4a60d1d52a0fd835b467f1e4687ee95314d1de"
+    },
+    "normal-release-tests-result.public.json": {
+      "bytes": 35178,
+      "sha256": "8899a7acc647505c230430b35771ae1eccaf48cc5aea27a034906d513fd0b0f7",
+      "blob": "6532d79e69bcb4572b3dafb84b01c99b276cc4f3"
+    },
+    "groups.json": {
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f"
+    },
+    "binding.partially-resolved.json": {
+      "bytes": 6656,
+      "sha256": "26ffaf3fd669fcf83bf78af275fc38512b1f8b6b467693b371b8c61a0f53f69c",
+      "blob": "8907aba48b8df82a433b8436b7372316feaa2130"
+    }
+  },
+  "actual_shared_inputs": [
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-shared-artifacts-r1/incoming/heptabao-server",
+      "bytes": 109074848,
+      "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0",
+      "mode": 320,
+      "version": "2050:2272660:109074848:1793839632157743448:1793839632157743448"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-shared-artifacts-r1/incoming/native-build.public.json",
+      "bytes": 794,
+      "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce",
+      "mode": 256,
+      "version": "2050:2272662:794:1793839632789727284:1793839632789727284"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-shared-artifacts-r1/incoming/normal-release-result.public.json",
+      "bytes": 3200,
+      "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f",
+      "mode": 256,
+      "version": "2050:2272663:3200:1793839632807726824:1793839632807726824"
+    }
+  ],
+  "next_stage_required_rechecks": [
+    "fresh control/work absence by lstat, refusal on any existing entry",
+    "exact machine-id, fixed public source-file pins and old evidence fences",
+    "whole official 2.7.1 binary, actual fixed utility files and their identities",
+    "same-FD incoming artifact whole hashes and before/after identity",
+    "create-only exact QA/artifact outputs, fsync/readback/custody",
+    "post-closure and publication within original 300 seconds"
+  ],
+  "fresh_fixture_scope": {
+    "new_control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2",
+    "new_work": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r2",
+    "old_unknown_B01_preserved": true,
+    "old_unknown_B01_replay": false,
+    "new_synthetic_state_and_credentials": true,
+    "seed_invoked": false,
+    "provider_refresh": false,
+    "production_changes": false
+  },
+  "unresolved": [
+    "actual newly-created binding.private.json SHA256, determined by local stage",
+    "actual root-accepted prepare result SHA256, determined by readonly prepare"
+  ],
+  "current_whole_replacement_qualification": false
+}

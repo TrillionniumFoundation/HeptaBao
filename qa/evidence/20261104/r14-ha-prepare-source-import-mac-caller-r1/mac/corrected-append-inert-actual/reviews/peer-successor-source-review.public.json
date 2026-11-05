@@ -1,0 +1,123 @@
+{
+  "schema": "heptabao.mac-current-outer-successor-independent-delta-review.v1",
+  "status": "SOURCE_DELTA_PASS_SCOPED",
+  "reviewer": "ha_validation",
+  "old_tree": "0aca624b5d051ed55a62943a06b638c9b3090129",
+  "prior_peer_tree": "001b6206a2ebd0a07705f094824e33cc156a0c84",
+  "author_successor_tree_reference": "9ed171e68bd0586dcf59830eb1d69448aaf43d80",
+  "new_tree_independent_full_membership_claimed": false,
+  "deltas": [
+    {
+      "source": "mac_current_phase_owner_r2.py",
+      "hunks": 1,
+      "before_sha256": "42520fe933e2c0106e6983a282421759b260a2bf48a08f86d0f404caa3f2eb86",
+      "after": {
+        "blob": "3aeb6ea8cf638f7915fd268140ad834ce395aad9",
+        "bytes": 24971,
+        "sha256": "bbf3636f4323e3e990204c8ea04c986f8740b3f34fa966a937f947b767ee15c4"
+      },
+      "diff": {
+        "blob": "91b391f2412ce769139a11a6f69fd7cdfbefb0b0",
+        "bytes": 720,
+        "sha256": "f64d76535acd3e46eaf4b4ee198bab2ce162650baeb8c2b32f7ac9d173b84df9"
+      }
+    },
+    {
+      "source": "mac_current_fixture_materializer_r1.py",
+      "hunks": 1,
+      "before_sha256": "9ae14eccdec7742c31df92fede042acac68514b3713ef8cb751cb8f456fb1526",
+      "after": {
+        "blob": "c22afefd15d026017e99ea47a47c0138ed6b469d",
+        "bytes": 23643,
+        "sha256": "f766ba33f22230d78e635477b35e527e7815452e591e7bc7a03fa2ae6c902b7f"
+      },
+      "diff": {
+        "blob": "4e655779e7097829f35cbcc2b2bd5e8d82c935c6",
+        "bytes": 813,
+        "sha256": "5f84f26c6dec9fb33071e2e8302ed46f4308acccac73c58e6e112fd7d414d565"
+      }
+    },
+    {
+      "source": "mac_current_outer_r3.py",
+      "hunks": 4,
+      "before_sha256": "986194f0da2d278986589d5ec757fb50a040182db6f610addba9469ee97e1be5",
+      "after": {
+        "blob": "0948e1dd5b7e49fffb13f7ebb23c0ae00c4de252",
+        "bytes": 59477,
+        "sha256": "5ecc57805f1fb2b162c38d28d28debe5e035ca3135db6b1b7df55daa6227df50"
+      },
+      "diff": {
+        "blob": "b1ee0db153e9ec784e54e03a6d47648e539aa417",
+        "bytes": 3303,
+        "sha256": "690e28a9f91a68f10da5d091c70c4d37a6812dc261a5c52b6fc5498fa9488fa8"
+      }
+    }
+  ],
+  "strict_apply": {
+    "hunks": [
+      1,
+      1,
+      4
+    ],
+    "complete_after_bytes_equal": true
+  },
+  "conclusions": [
+    {
+      "finding": "MAC-OUTER-001",
+      "closed_in_exact_source": true,
+      "reason": "The only source change removes the obsolete unused mandatory name; all eight remaining helper checks, actual retained-owner imports, body and deadlines are byte-identical."
+    },
+    {
+      "finding": "MAC-OUTER-002",
+      "closed_in_exact_source": true,
+      "reason": "The only source change is exactly sha(encoded(selected)+b'\\n'), matching the previously executed 36-record boundary proof. The capture library and global digest remain unchanged."
+    },
+    {
+      "finding": "author temporary-socket closure classification",
+      "closed_in_exact_source": true,
+      "reason": "The single reservation records created/closeAttempted/closed under the existing critical region. Close or fileno failure sets unknown and leaves the final aggregate false. A second call is refused and closure is not retried; the final outer conjunction includes the reservation."
+    }
+  ],
+  "component_evidence": {
+    "prior_36_actual_peer_records": {
+      "script_blob": "fb781241967345fa6e60fc7dfd8814f8bdf118da",
+      "result_blob": "9d1e65a54271883235b3efd42e0d668c0ecc9f43",
+      "reexecuted": false,
+      "new_source_expression_equals_tested_proposal": true
+    },
+    "author_13_actual_selected_method_records": {
+      "script": {
+        "bytes": 9206,
+        "sha256": "70608b56647f972da7b7a5610d478d204a62b6a72dd74a07edf7a185c5c21ba7",
+        "blob": "a51694cf72b2064d8975163b0de6cee5961d920d"
+      },
+      "stdout": {
+        "bytes": 4112,
+        "sha256": "1bfd5bc604626e0508ed7a0934a3c84b97c4ec8f52974e543ae834d96fd729e0",
+        "blob": "8d7a84c736fd646650e853420bab2e45ba68de99"
+      },
+      "executor": {
+        "bytes": 4689,
+        "sha256": "94eec2ee103e6b86e0184bdece0d6d76185dc72973db080b45a1eada9aa20f48",
+        "blob": "3ee223866969c9a6ac6c5cd8974f7312c4544b4b"
+      },
+      "full_script_and_original_stdout_read": true,
+      "executor_stdout_exact": true,
+      "executor_exit": 0,
+      "passed": 13,
+      "actual_sockets": 0,
+      "actual_descriptors": 0,
+      "reexecuted_by_peer": false,
+      "interpretation": "The case name new_success_actual_close refers to the actual selected method with a fake socket; it is not a real socket/FD closure observation."
+    }
+  },
+  "scope": {
+    "source_only": true,
+    "new_blocker_found": false,
+    "root_generation_and_actual_openssl_review_independent": true,
+    "final_inert_pins_and_authorization_still_required": true,
+    "host_calls": 0,
+    "network_requests": 0,
+    "product_runtime_qualified": false
+  }
+}

@@ -1,0 +1,144 @@
+{
+  "schema": "heptabao.mac-complete-source-append-inert-plan.r3",
+  "status": "SOURCE_ONLY_NO_EXECUTION_GO",
+  "fullCallerTree": "9ed171e68bd0586dcf59830eb1d69448aaf43d80",
+  "existingActualR2InertTree": "3ba99bbf5c87c0217d28d5dac1f154c4ed13726f",
+  "root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1",
+  "source": {
+    "bytes": 14892,
+    "sha256": "7e830ba2a0e85c6ba5e2ff7fdf398d18ef7f8964d2aaf706fac57dd9a7487e0c",
+    "blob": "0c7b7656c4abe0885e0f0ec70ce0729f130a6e13"
+  },
+  "payload": {
+    "bytes": 514784,
+    "sha256": "1b0f91901d2ca1176429dfdfa3ad5c804aca9ca00efadccf96f41233d98b5556"
+  },
+  "sameOriginalInner45": true,
+  "sameOriginalOuter60": true,
+  "diskutil30ClippedBy45": true,
+  "fixedIdempotencyKey": "heptabao-mac-current-complete-source-inert-5ecc5780-20261105-r4",
+  "preservedSixIdentities": {
+    "mac_guarded_current_capture_r3.py": [
+      "16777244",
+      "72546528",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "23578",
+      "1793835363123696870",
+      "1793835363123706328"
+    ],
+    "mac_capture_sqlite_synthetic_r1.py": [
+      "16777244",
+      "72546529",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "16476",
+      "1793835363125849429",
+      "1793835363125857554"
+    ],
+    "mac_owned_commands_r1.py": [
+      "16777244",
+      "72546530",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "5965",
+      "1793835363126339808",
+      "1793835363126345391"
+    ],
+    "mac_t5_volume_guard_r1.py": [
+      "16777244",
+      "72546531",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "13387",
+      "1793835363126785478",
+      "1793835363126791353"
+    ],
+    "mac_owned_unreaped_r1.py": [
+      "16777244",
+      "72546532",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "10990",
+      "1793835363127259607",
+      "1793835363127265315"
+    ],
+    "mac_capture_sqlite_synthetic_r2.py": [
+      "16777244",
+      "72548952",
+      "501",
+      "20",
+      "33152",
+      "1",
+      "16915",
+      "1793838192075174831",
+      "1793838192075185998"
+    ]
+  },
+  "newSources": [
+    "mac_current_outer_r3.py",
+    "mac_current_outer_inputs_r1.py",
+    "mac_current_fixture_materializer_r1.py",
+    "mac_current_capture_entry_r1.py",
+    "mac_owned_launchd_r3.py",
+    "mac_current_server_owner_r1.py",
+    "mac_current_phase_owner_r2.py",
+    "mac_native_process_observer_r1.py",
+    "mac_current_cycle_r2.mjs",
+    "mac_single_native_r2.mjs",
+    "mac_auth_rows_cas_r1.mjs",
+    "mac_authbus_cache_cas_r1.mjs"
+  ],
+  "newPublicDocuments": {
+    "proofs/synthetic-r2.stdout.public.json": [
+      16228,
+      "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5"
+    ],
+    "proofs/synthetic-r2.authority.public.json": [
+      733,
+      "1b33a9144712ac2bc3d16d87bb2a9ea1c2e4c0be236dfd08d8b599f7518942dd"
+    ],
+    "candidate-current-manager-r3.public.json": [
+      3442,
+      "d52eda7e781aae0e5af5aa4edb324271c8b3e4340a38a5a840e60e9dafc62e92"
+    ]
+  },
+  "onlyNewDirectory": "proofs",
+  "exactFileCount": 15,
+  "pythonAstCompileOnlyCount": 14,
+  "javascriptWholeHashOnlyCount": 4,
+  "importedDefinitionsOnly": [
+    "mac_owned_unreaped_r1.py",
+    "mac_owned_commands_r1.py",
+    "mac_t5_volume_guard_r1.py"
+  ],
+  "entrypointsNotExecuted": true,
+  "sourceRefsFromImmutableCompletePacket": true,
+  "rawSyntheticProofsNotReserialized": true,
+  "guardChanges": [
+    "Only three reviewed source byte/hash tuples, derived candidate SHA and exact payload byte/hash constants change relative to the unexecuted 283148fd source package. All seven helper functions, Refused, main and protected/cleanup logic remain byte-identical.",
+    "The public stdin is now exactly 514784 bytes. This is solely the new frozen public source distribution size; original inner45/outer60/diskutil30 clipped and all product deadlines remain unchanged.",
+    "No old candidate or runtime fixture was submitted or is overwritten; existing six actually staged sources retain all nine identity strings. Unexpected existing destinations refuse create-only publication."
+  ],
+  "noCurrentCapture": true,
+  "noCredentials": true,
+  "noConsumer": true,
+  "noLaunchd": true,
+  "noServer": true,
+  "noProvider": true,
+  "noJ3160": true,
+  "qualification": "Inert distribution only, requiring actual final stdout plus authoritative exit zero within original deadline and all child/FD/T5 closure; never grants runtime.",
+  "predecessorUnexecutedInertTree": "283148fd536cb375ab8b80f122cd22d710ec3d02",
+  "wholeSuffixFromProtectedMarkerUnchanged": true,
+  "runtimeStillNotAuthorized": true
+}

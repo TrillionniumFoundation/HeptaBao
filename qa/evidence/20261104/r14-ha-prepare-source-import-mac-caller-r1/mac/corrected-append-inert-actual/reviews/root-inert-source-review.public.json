@@ -1,0 +1,58 @@
+{
+  "schema": "heptabao.mac-complete-append-inert-root-source-admission.v1",
+  "source_tree": "8f71f802396bcd835b7777fc0e2c2de183fbe3a7",
+  "source_files": 15,
+  "source_bytes": 1145007,
+  "merkle": {
+    "root_sha": "8f71f802396bcd835b7777fc0e2c2de183fbe3a7",
+    "trees_verified": 3
+  },
+  "corrected_complete_outer_tree": "9ed171e68bd0586dcf59830eb1d69448aaf43d80",
+  "corrected_complete_source_review": "b6ece7827f2b46fb394dbd2fd2eb4c01ba0cbfb7",
+  "inert_carrier_blob": "0c7b7656c4abe0885e0f0ec70ce0729f130a6e13",
+  "carrier_bytes": 14892,
+  "carrier_sha256": "7e830ba2a0e85c6ba5e2ff7fdf398d18ef7f8964d2aaf706fac57dd9a7487e0c",
+  "carrier_complete_control_flow_read": true,
+  "delta_from_unexecuted_carrier_exact": {
+    "hunks": 3,
+    "only_three_source_tuples_candidate_digest_payload_size_and_digest": true,
+    "body_from_protected_to_EOF_byte_identical": true
+  },
+  "all18_payload_whole_sources_exact_corrected_packet": true,
+  "three_documents_and_anchor_whole_raw_exact": true,
+  "old54_identity_strings_exact_actual_R2_inert": true,
+  "existing6_sources_not_rewritten": true,
+  "append_files": 15,
+  "new_directory": "proofs",
+  "python_AST_compile_only": 14,
+  "javascript_hash_only": 4,
+  "three_previously_reviewed_import_safe_custody_libraries_loaded": true,
+  "first_external_action": "exact diskutil info -plist /Volumes/T5 under original retained-child owner and deadline; held T5 anchor acceptance precedes all writes",
+  "budgets": {
+    "original_inert_seconds": 45,
+    "outer_seconds": 60,
+    "diskutil_clipped_seconds": 30
+  },
+  "payload": {
+    "bytes": 514784,
+    "sha256": "1b0f91901d2ca1176429dfdfa3ad5c804aca9ca00efadccf96f41233d98b5556"
+  },
+  "admitted_once": {
+    "request_blob": "18dcdede236f37830d1640461ad9e65aab82e5e8",
+    "host": "mac",
+    "executable": "/opt/homebrew/bin/python3",
+    "key": "heptabao-mac-current-complete-source-inert-5ecc5780-20261105-r4",
+    "timeout_seconds": 60
+  },
+  "not_admitted": [
+    "current_credentials_capture",
+    "production_SQLite",
+    "consumer",
+    "launchd",
+    "product_service",
+    "provider",
+    "J3160"
+  ],
+  "runtime_qualification": false,
+  "success_requires": "Full stdout and durable authoritative exit0, exact15 create-only publications, six original source identities unchanged, T5 final checks, retained-child and descriptor closure, original45 deadline."
+}

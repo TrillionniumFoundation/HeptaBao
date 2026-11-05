@@ -1,0 +1,41 @@
+--- unbound/import_standalone_phaseb_3cb_r1.py
++++ bound/import_standalone_phaseb_3cb_r1.py
+@@ -24,7 +24,7 @@
+ MAX_BUNDLE=64*1024*1024
+ UID=1000
+ SYSTEM=('Linux','x86_64')
+-ACTUAL_INPUTS_READY=False
++ACTUAL_INPUTS_READY=True
+ SOURCE_FILES=[
+   {
+     "bytes": 23335023,
+@@ -52,7 +52,7 @@
+     "bytes": 23335023,
+     "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
+     "mode": 256,
+-    "version": None
++    "version": "2050:4330514:23335023:1793841653430023604:1793841653430023604"
+   },
+   {
+     "name": "source-export.result.public.json",
+@@ -60,16 +60,16 @@
+     "bytes": 39965,
+     "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
+     "mode": 256,
+-    "version": None
++    "version": "2050:4330516:39965:1793841653590018909:1793841653591018879"
+   }
+ ]
+ TRANSFER={
+   "name": "source-carrier.result.public.json",
+   "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/control/result.public.json",
+-  "bytes": None,
+-  "sha256": None,
++  "bytes": 11951,
++  "sha256": "b2bf06c9bc6c38f31cc365d49d23a4af381eae955fceb058737d96953a71c066",
+   "mode": 384,
+-  "version": None
++  "version": "2050:4330518:11951:1793841653775473547:1793841653775473547"
+ }
+ 
+ START=time.monotonic()

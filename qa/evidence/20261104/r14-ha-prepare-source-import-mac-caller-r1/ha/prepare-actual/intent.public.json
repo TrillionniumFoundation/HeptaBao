@@ -1,0 +1,39 @@
+{
+  "schema": "heptabao.postcold-r2-prepare.single-submit-intent.v1",
+  "request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r2/launch_normal_r10_pocket_postrecovery_cold_r2.py",
+      "--prepare-only"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-r10-postcold-prepare-r2-515bc76f-2ad254a1"
+  },
+  "request_pin": {
+    "bytes": 442,
+    "sha256": "cf0dbf314fab9c8a4f233df709422279091c4ffadd2cb73fed84c83023c8e4ea",
+    "blob": "31e995daffb6e8b6989d290ca873c57c058a41a6"
+  },
+  "stage": "prepare-only",
+  "authorization": {
+    "root_review_blob": "e11aa3850e0ef173b1eebe32cb41b99e2e745ea7",
+    "explicit_prepare_only_go": true,
+    "live_authorized": false
+  },
+  "frozen_dispatch": {
+    "bytes": 5498,
+    "sha256": "3a9524dcc82ff001d577ab521b5f25d1cfe1c999cbbbe73a9d79c62ae0eb139d",
+    "blob": "c9d562bed9254e57b5d254b8b63fbb9b0c326ebb"
+  },
+  "inert_evidence_tree": "bd2458b324fb63f6553e47eb028c896633cc05f0",
+  "source_tree": "423d3de5fa53aa525ee2ea27b8c80a3d0e404947",
+  "original_28_fences_unchanged": true,
+  "product_source": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "no_fixture_or_cargo_or_production": true,
+  "unknown_response_policy": "Reconcile this exact operation/key; never start a replacement."
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.phaseb3cb.importer-component-inputs.v1",
+  "sourcecheck": {
+    "before": "reference/x230_standalone_receiver_r2.py",
+    "after": "draft/import_standalone_phaseb_3cb_r1.py"
+  },
+  "pure_components": {
+    "source": "offline/earlier-component-input-source.py",
+    "export": "offline/component-basis.actual-export.original.json",
+    "prior_transport": "offline/component-basis.prior-transport.original.json"
+  },
+  "source_directory": {
+    "before": "offline/earlier-component-input-source.py",
+    "after": "draft/import_standalone_phaseb_3cb_r1.py"
+  },
+  "candidate_top_level_executed": false
+}

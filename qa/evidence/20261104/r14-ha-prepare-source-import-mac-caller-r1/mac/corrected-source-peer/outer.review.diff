@@ -1,0 +1,63 @@
+diff --git a/mac_current_outer_r3.py b/mac_current_outer_r3.py
+--- a/mac_current_outer_r3.py
++++ b/mac_current_outer_r3.py
+@@ -162,6 +162,7 @@
+         self.until=START+NEW_OUTER_SECONDS
+         self.signals=None;self.cleanup_mode=False;self.cleanup_until=None
+         self.rows=[];self.close_errors=[];self.unknown=False
++        self.port_reservation=None
+     def remaining(self,until=None):
+         if self.cleanup_mode:
+             bound=self.cleanup_until
+@@ -185,8 +186,12 @@
+     def close_all(self):
+         for row in reversed(self.rows):self.close(row)
+     def public(self):
++        reservation=self.port_reservation
+         return {'allOuterReadDescriptorsClosed':all(x['closed'] for x in self.rows),
+             'descriptorCount':len(self.rows),'closeErrors':list(self.close_errors),
++            'portReservation':None if reservation is None else dict(reservation),
++            'allEphemeralPortReservationSocketsClosed':bool(reservation is None or not reservation['created']
++                or (reservation['closeAttempted'] and reservation['closed'])),
+             'newOuterSeconds':NEW_OUTER_SECONDS,'newFailureCleanupSeconds':NEW_OUTER_FAILURE_CLEANUP_SECONDS}
+ 
+ def read_public_source(ctx,path,pin):
+@@ -456,15 +461,24 @@
+         for item in value:add_secrets(values,item)
+ 
+ def reserve_port(ctx):
+-    row=None;sock=None
++    need(ctx.port_reservation is None,'one_owned_ephemeral_port_reservation')
++    row={'created':False,'closeAttempted':False,'closed':False};sock=None
++    ctx.port_reservation=row
+     try:
+-        with ctx.critical():sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
++        with ctx.critical():
++            sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM);row['created']=True
+         sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
+         need(1024<=port<=65535,'one_owned_ephemeral_port');ctx.remaining();return port
+     finally:
+         if sock is not None:
+-            with ctx.critical():sock.close()
+-            need(sock.fileno()==-1,'ephemeral_port_reservation_closed')
++            with ctx.critical():
++                row['closeAttempted']=True
++                try:
++                    sock.close();row['closed']=sock.fileno()==-1
++                except BaseException as error:
++                    row['closeErrorType']=type(error).__name__
++                if not row['closed']:ctx.unknown=True
++            need(row['closed'],'ephemeral_port_reservation_closed')
+ 
+ def generated_read_fsync(ctx,guard,path,maximum):
+     row=None
+@@ -913,7 +927,8 @@
+                        and not report['finiteInputClosure']['closeErrors']))
+         materializer_closed=(materializer is None or (report['materializerClosure']['allOwnedDescriptorsClosed']
+                              and not report['materializerClosure']['closeErrors']))
+-        socket_closed=(client is None or report['controlHttp']['allOwnedSocketsClosed'])
++        socket_closed=(ctx.public()['allEphemeralPortReservationSocketsClosed']
++            and (client is None or report['controlHttp']['allOwnedSocketsClosed']))
+         report['outcomeUnknown']=bool(report['outcomeUnknown'] or ctx.unknown
+             or not manager_closed or not helpers_closed or not input_closed
+             or not materializer_closed or not socket_closed

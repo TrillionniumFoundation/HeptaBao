@@ -1,0 +1,84 @@
+--- reference-actual-3cb/relay.py
++++ draft-source-carrier/relay.py
+@@ -1,13 +1,13 @@
+ #!/usr/bin/env python3
+-"""Create-only shared desktop copy of three fixed public 3cb ingress-observer build artifacts.
++"""Create-only shared desktop copy of two fixed public 3cb standalone source files.
+ Uses the prior reviewed rog-ts transport. No Git, compiler, server or HTTP starts.
+ """
+ from pathlib import Path
+ import hashlib,json,os,shlex,signal,stat,subprocess,sys,time
+ os.umask(0o077)
+ BASE=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
+-SOURCES=BASE/'normal-phaseb-ingress-observer-shared-artifact-controls-r1'
+-ROOT=BASE/'normal-phaseb-ingress-observer-shared-artifacts-r1'
++SOURCES=BASE/'normal-phaseb-ingress-observer-source-carrier-controls-r1'
++ROOT=BASE/'normal-phaseb-ingress-observer-source-carrier-r1'
+ CONTROL=ROOT/'control'
+ ORIGINAL=BASE/'normal-33cafa-full128-control-r2/launch_normal_33cafa_full128_r2.py'
+ ORIGINAL_SHA='c70892cb19601fa9769ae3f36810bb123f756f335654f284a4001bf2d69c796e'
+@@ -15,41 +15,32 @@
+ TREE='7f4d48a647a81ca96e8a24a0a057c2c829459060'
+ FILES=[
+  {
+-  "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-server",
+-  "name": "heptabao-server",
+-  "bytes": 109074848,
+-  "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0",
+-  "source_mode": 320,
+-  "target_mode": 320,
+-  "version": "66306:28096634:109074848:1793832489924040522:1793832490062039381"
++  "bytes": 23335023,
++  "name": "canonical-3cb-full.bundle",
++  "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/canonical-3cb-full.bundle",
++  "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:28324895:23335023:1793839385060504547:1793839385063504533"
+  },
+  {
+-  "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/native-build.public.json",
+-  "name": "native-build.public.json",
+-  "bytes": 794,
+-  "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce",
++  "bytes": 39965,
++  "name": "source-export.result.public.json",
++  "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/result.public.json",
++  "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": "66306:28096637:794:1793832490491671044:1793832490491671044"
+- },
+- {
+-  "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/normal-release-result.public.json",
+-  "name": "normal-release-result.public.json",
+-  "bytes": 3200,
+-  "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f",
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": "66306:28096636:3200:1793832490490761645:1793832490490761645"
++  "version": "66306:28324969:39965:1793839385327147652:1793839385327147652"
+  }
+ ]
+-HELPERS={"sender.py":"e57040a017a44d9d2a9b4396200325eb8499bf503e9c52be58448fa71fdf5835","receiver.py":"dd2209577430e4d9b17918f9688453cb3b68ef725032abb6e3f59b6654a34e31"}
++HELPERS={"sender.py":"8681201f587a3c5d2da07f01404e4b74e1db2e3ada2614f3482915c6543fb650","receiver.py":"2280d96c79b5e8fe8a0b3a9b601196cc61dbc43c11f4ded31780617f0533a6e5"}
+ SSH=['/usr/bin/ssh','-T','-o','BatchMode=yes','-o','StrictHostKeyChecking=yes',
+      '-o','ConnectTimeout=10','-o','ConnectionAttempts=1',
+      '-o','ClearAllForwardings=yes','-o','ForwardAgent=no','-o','UpdateHostKeys=no',
+      '-o','ControlMaster=no','-o','ControlPath=none']
+ START=time.monotonic();UNTIL=START+300
+ children=[];commands=[];handles=[];protected=0;pending_signal=None;created=False;remote_endpoints_verified=False
+-result={'schema':'heptabao.phaseb3cb.shared-public-artifacts-relay.v1','status':'failed',
++result={'schema':'heptabao.phaseb3cb.public-source-carrier-relay.v1','status':'failed',
+  'overall_seconds':300,'ssh_child_seconds':90,'endpoint_seconds':90,
+  'source_alias':'rog-ts','destination_host':'desktop',
+  'destination_root':str(ROOT),'source_commit':HEAD,'source_tree':TREE,'files':FILES,
+@@ -246,7 +237,7 @@
+   assert received['mode']==item['target_mode'] and received['create_only'] and received['fsynced']
+  assert receiver_result['destination_created_exclusive'] and receiver_result['destination_directory_mode']==0o500
+  assert receiver_result['destination_fsynced'] and receiver_result['raw_receipts_preserved']
+- assert receiver_result['normal_release_provenance_verified']
++ assert receiver_result['source_export_provenance_verified']
+  remote_endpoints_verified=True
+  for alias in ('rog-ts',):
+   assert known_hosts_state(configs[alias])==preflights[alias]['known_hosts_before']

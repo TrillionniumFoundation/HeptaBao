@@ -1,0 +1,28 @@
+{
+  "schema": "heptabao.r13.prepublication-root-review.v1",
+  "as_of_utc": "2026-11-05T01:07:56Z",
+  "base_commit": "6ea0f1b546e1f4198c98710f312dbfb22effd3f2",
+  "base_tree": "98aa17f42714b3a72471f65e6a50b45eae812fa4",
+  "new_tree": "57350f1fded0aa2222f5d833814d978a8680a6bd",
+  "prior_leaf_count": 6988,
+  "new_leaf_count": 7430,
+  "old_leaves_unchanged_except_two_documents": 6986,
+  "added_leaves": 442,
+  "packet_files": 423,
+  "new_root_files": 19,
+  "changed_existing_paths": [
+    "docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md",
+    "qa/evidence/20261104/36076-checkpoint.public.json"
+  ],
+  "tree_merkle": {
+    "root_sha": "57350f1fded0aa2222f5d833814d978a8680a6bd",
+    "trees_verified": 877
+  },
+  "prior_index_field_count": 75,
+  "prior_index_fields_except_as_of_preserved": 74,
+  "new_index_field_count": 76,
+  "old_report_body_preserved": true,
+  "full_replacement_qualified": false,
+  "production_changes": false,
+  "old_asset_deletion": false
+}

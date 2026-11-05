@@ -1,0 +1,151 @@
+{
+  "schema": "heptabao.postcold-r2-live-core-assessment.v1",
+  "status": "FAIL_ACTUAL_NODE2_UNSEAL",
+  "job_id": "1a1a95f8b98-fc05-34b1",
+  "run_id": "1d2269955b8e0cac332c40625057bb0f",
+  "authority": {
+    "bytes": 726,
+    "sha256": "13c114d5821cdcf9d17880178285b2152a7fd15c954f5765366f769b5346d0ec",
+    "blob": "1127b105cc54ea7986f28c713efc62497a3fc408"
+  },
+  "summary": {
+    "bytes": 71123,
+    "sha256": "e56cf706615bbe93d9034e5a11373df5eae87ee846d6e2286f6a29ca8bdfa060",
+    "blob": "dc954e4441278b3bc050db6f77fd7ac7d996c3ee"
+  },
+  "prepared_sha256": "9fb7bb1054a554357232c8847e36b1a20d2339455a4f6ea7a2c1f37885c1f5af",
+  "product_source": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "product_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "counts": {
+    "original_seen": 91,
+    "original_passed": 91,
+    "original_missing": 7,
+    "original_denominator": 98,
+    "original_seen_union_missing_exact_frozen98": true,
+    "extra_seen": 0,
+    "extra_denominator": 12
+  },
+  "failure": {
+    "code": "node_2_native_cold_unseal_failed",
+    "stage": "owned_missing_cipher_leader_recovery",
+    "type": "FixtureError",
+    "known_http_status": 503,
+    "event": {
+      "at": 1793843323.1677396,
+      "elapsed_ms": 9423.826,
+      "event": "mutation_attempted_once",
+      "method": "POST",
+      "node": 2,
+      "path_kind": [
+        "sys",
+        "unseal"
+      ],
+      "status": 503
+    },
+    "cause_not_yet_determined": true
+  },
+  "witness": {
+    "completed": true,
+    "known_mutations": 2,
+    "write_sequence": 46,
+    "write_status": 200,
+    "delete_sequence": 47,
+    "delete_status": 204,
+    "actual_leader_node": 3,
+    "mac_exact_read_and_data_metadata_absence": true,
+    "original_history_acknowledged_unchanged": true,
+    "frontier_branch": "original-higher-term",
+    "full_order_proof": {
+      "committed_vote_nondecreasing": true,
+      "does_not_predict_actual_election_result": true,
+      "exact_order": [
+        "term",
+        "node_id",
+        "index"
+      ],
+      "new_committed": [
+        3,
+        3,
+        66
+      ],
+      "new_committed_vote": [
+        3,
+        3
+      ],
+      "new_last": [
+        3,
+        3,
+        66
+      ],
+      "old_committed": [
+        2,
+        2,
+        61
+      ],
+      "old_committed_le_old_last_lt_new_committed_le_new_last": true,
+      "old_committed_vote": [
+        2,
+        2
+      ],
+      "old_last": [
+        2,
+        2,
+        61
+      ],
+      "stopped_rog_did_not_generate_the_new_log": true,
+      "witness_postdelete_frontier_retained": true
+    },
+    "preparation_elapsed_seconds": 19.7806607009843,
+    "same_leader_runtime_branch_covered": false
+  },
+  "restoration": {
+    "actual_source_node": 3,
+    "actual_empty_leader_node": 1,
+    "mac_unseal_and_retained_history_passed": true,
+    "restored_leaf_observation": {
+      "case": "missing_cipher_actual_leaves_rebuilt",
+      "every_restored_sha_and_size_match": true,
+      "inventory_sha256": "53a715a696a02679e72b11541fbabd597b9e2903f719a52aa451a6c89c05df56",
+      "passed": true,
+      "quarantined_count": 449,
+      "restored_bytes": 35742423,
+      "restored_count": 338,
+      "unreferenced_quarantined_count": 111
+    },
+    "remaining_nodes_unseal_failed": true,
+    "post_recovery_cold_not_entered": true,
+    "complete_direction98_qualified": false
+  },
+  "mutation_evidence": {
+    "intents": 49,
+    "responses": 49,
+    "recorded_unknown": 0,
+    "retried": false,
+    "all_98_boundary_original_files_yet_collected": false,
+    "public_events_not_substitute_for_wire_or_durable_commit": true
+  },
+  "cleanup": {
+    "all_16_started_server_identities_have_matching_stop_events": true,
+    "mac_foreground_sessions": 6,
+    "both_local_and_remote_leader_reaped_and_groups_empty": true,
+    "all_original_stop5_deadlines_satisfied": true,
+    "owned_processes_stopped_check": true,
+    "owned_mesh_stopped_check": true,
+    "tunnel_children": 0,
+    "no_extra_cleanup_launched": true
+  },
+  "fences": {
+    "controller_runner_deadlineqa_unchanged": true,
+    "both_build_source_files_unchanged": true,
+    "all_original28_receipts_unchanged": true
+  },
+  "qualification": {
+    "original98": false,
+    "new12": false,
+    "replay": false,
+    "retry": false,
+    "deadline_change": false,
+    "whole_OpenBao_compatibility": false
+  },
+  "followup": "Preserve this run. Collect the original 49 intent/outcome pairs and diagnose the final node2 known 503; no product restart or unseal replay."
+}

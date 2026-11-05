@@ -1,0 +1,223 @@
+{
+  "schema": "heptabao.phaseb3cb.standalone-source-carrier-source-packet.v1",
+  "status": "source_only",
+  "actual_transport_executed": false,
+  "files": [
+    {
+      "path": "diffs/inert.diff",
+      "bytes": 2167,
+      "sha256": "d32178af90d0f6a51dde2e2da1b7ccab26f8f9bfdfae82578e85959e81c414e0",
+      "blob": "74c9746e64d81938a95f54223732cef725490895"
+    },
+    {
+      "path": "diffs/receiver.diff",
+      "bytes": 6692,
+      "sha256": "8362181d536ec6422f8de6110e64426af0a7cdcdb50fc27aa65b7a95d06ebe6f",
+      "blob": "c55cbd0dabb57fba8743fd19889d11a8891ef163"
+    },
+    {
+      "path": "diffs/relay.diff",
+      "bytes": 4802,
+      "sha256": "9db3c705e3fd1ee090df69e8784dc585a108be23023cbf22e546b8ba58eb04b2",
+      "blob": "4d76082731d168797caaffffa92902573c55488b"
+    },
+    {
+      "path": "diffs/sender.diff",
+      "bytes": 2481,
+      "sha256": "1fb1a0c9515b0830713ff2cdd2c1d5ab3f27d5f9d26f9b6d80821cbd9bea5edc",
+      "blob": "713a0667844a174d19dce8c5bea43116321340e4"
+    },
+    {
+      "path": "dispatch/inert.process_start.json",
+      "bytes": 46188,
+      "sha256": "c172bd7b3167c678049d4b84ce37cd74549265a54b84817f7924df240a2c6601",
+      "blob": "05ed5ef187b73b5766038c10e400fe0ef2fd699e"
+    },
+    {
+      "path": "dispatch/transfer.process_start.json",
+      "bytes": 390,
+      "sha256": "54e67225f92d99f29b41995d4cda28b315a62d54fd3bfac1510bebeb5ec8ecef",
+      "blob": "c3767f62e2d3ecd3bfcc317a5cf9f137eebe20cc"
+    },
+    {
+      "path": "draft/controls.carrier.json",
+      "bytes": 40663,
+      "sha256": "35d33428b71abebb576e94aa767202a0e498204696b4fc7193b22694a69c2538",
+      "blob": "1fff5955bce5e9552dca3c096a318f89e29c12e3"
+    },
+    {
+      "path": "draft/inert.py",
+      "bytes": 5049,
+      "sha256": "46d1d644882fc064ff34f3141d036e8580126b9b0d7c479dc3659b115492eaa2",
+      "blob": "31297722805be956745f9f39507539f2719f8b13"
+    },
+    {
+      "path": "draft/receiver.py",
+      "bytes": 8701,
+      "sha256": "2280d96c79b5e8fe8a0b3a9b601196cc61dbc43c11f4ded31780617f0533a6e5",
+      "blob": "8d90094b396b50fa34eb91f2b5b75de59030a0b0"
+    },
+    {
+      "path": "draft/relay.py",
+      "bytes": 15395,
+      "sha256": "f98ef18f25583506e7ff6072b8f383115ea826a399286f22bff1517b6eeb4432",
+      "blob": "a794d2098e8986cdb73a3b0bf55988ffdf82a98d"
+    },
+    {
+      "path": "draft/sender.py",
+      "bytes": 6289,
+      "sha256": "8681201f587a3c5d2da07f01404e4b74e1db2e3ada2614f3482915c6543fb650",
+      "blob": "f195571246af15633b20ac84a8b1fc19864de11a"
+    },
+    {
+      "path": "evidence/source-export.authority.original.json",
+      "bytes": 729,
+      "sha256": "1407d78e6ee34ad5ded1adb59194d9ee25d8b1fa1c02de2457cf83e61b2ebd75",
+      "blob": "4951ca2ec364031b126040b1096db151530c83a0"
+    },
+    {
+      "path": "evidence/source-export.lossless-input-pins.public.json",
+      "bytes": 903,
+      "sha256": "e223e2600161e2410809d646a60b3c17236b1867ca68286f80b1b0f8748a9b2b",
+      "blob": "882e751dbf62535fd4c637d3e296adc23ef69389"
+    },
+    {
+      "path": "evidence/source-export.result.public.json",
+      "bytes": 39965,
+      "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
+      "blob": "312f6dc4e1148e0cb371c67c8413f1002061ec01"
+    },
+    {
+      "path": "offline/carrier_component.execution.json",
+      "bytes": 668,
+      "sha256": "06637e5d5363dafd617c98d77ad0316fd4044b88b78aa6d46ec0127afe92815e",
+      "blob": "ef6f12942e0d449db70f8ab5e13991e8a6b1d565"
+    },
+    {
+      "path": "offline/carrier_component.public.json",
+      "bytes": 589,
+      "sha256": "fa3ff6a7ae7020387a898f71335be1da95bbbb1b966976e84063a481e0cef3fd",
+      "blob": "9a5d507fc2abd2d7372dd41ce2bb9af68a5eb2fa"
+    },
+    {
+      "path": "offline/carrier_component.py",
+      "bytes": 877,
+      "sha256": "f9233a0ab73c72b62e87b76aa4344aaedaa48a35271c012c89fc477e47fe5ba7",
+      "blob": "055636ce737d83731f5d28ebb473c831aa3d54ac"
+    },
+    {
+      "path": "offline/export_contract_component.execution.json",
+      "bytes": 1132,
+      "sha256": "fbd44eb9c82a80a5a519c8b9b4ea055dda5446a8ee6db71ba0e53db489d42785",
+      "blob": "fa484a2074d71385f1d4d613c332b338eebfa699"
+    },
+    {
+      "path": "offline/export_contract_component.public.json",
+      "bytes": 1181,
+      "sha256": "ab46705edc5091339332309b2b35b78cc504215772b5a9dc4f4535d6c4527499",
+      "blob": "265b765ec4c21e1eb68775f9fc7c32d94347d7ca"
+    },
+    {
+      "path": "offline/export_contract_component.py",
+      "bytes": 2621,
+      "sha256": "26c9badbf03efc3cb80b0b8783f106d67a719431739001bfc961474aa38ccf38",
+      "blob": "7e8ec3ac75acd1d8377171600f29a44d980baf6f"
+    },
+    {
+      "path": "offline/inert.source-check.execution.json",
+      "bytes": 3099,
+      "sha256": "81c5996858fe9859c533f020ce1a08dd61f5e00573ac4b90ece0ab0c7674e887",
+      "blob": "ce09348e9245b0c2c7983bd7b6f21494b2b7f97e"
+    },
+    {
+      "path": "offline/inert.source-check.public.json",
+      "bytes": 663,
+      "sha256": "9adaac785b74894797763b2e68e12b9753ae5cf89d53b9de333a42f6a9f9004e",
+      "blob": "7251ac1f7378445e05ce63de7cdf2de15aa5bd3e"
+    },
+    {
+      "path": "offline/local-command-length-refusal.public.json",
+      "bytes": 148,
+      "sha256": "0590c5067ee7b17745efa70918664b56adb7766adda82f3233abcce4ac012e44",
+      "blob": "75c98f06c328d4c2ba32e1e1571eae5da890b157"
+    },
+    {
+      "path": "offline/receiver.source-check.execution.json",
+      "bytes": 8306,
+      "sha256": "7dd2da654ae94084c57432e581a8374651230f7a4d55adc1c5d51a0c294fd37e",
+      "blob": "bf1202b9b995090fa42f471e53ac16ac8b032ac3"
+    },
+    {
+      "path": "offline/receiver.source-check.public.json",
+      "bytes": 973,
+      "sha256": "f321ab0af1ee624fd33c8e6807d6919ad9ffc7b5a84de4f2054f44d70acfa1ab",
+      "blob": "71d0277e5b155a38083108185f9facb86979e5c7"
+    },
+    {
+      "path": "offline/relay.source-check.execution.json",
+      "bytes": 6519,
+      "sha256": "c574d5dbf890ce0893c1fc7b4ecca0c143dd2d677b50b73ecda40914078f6add",
+      "blob": "959aab363b0f7936d0eb673a371ccd26b96d5e62"
+    },
+    {
+      "path": "offline/relay.source-check.public.json",
+      "bytes": 1074,
+      "sha256": "235d2fa004b03fa08812010b8d5c88f27b2f67956fa7dbbf108b5511ea597115",
+      "blob": "a4ca820bd3cd8886fc5ca265f5fc3d630c8e6525"
+    },
+    {
+      "path": "offline/sender.source-check.execution.json",
+      "bytes": 3822,
+      "sha256": "efa251952920885913765c6aadf237b53c13ac8c65ef38b8b7cec3940397ddf8",
+      "blob": "e4f560e86c7ba05e67a048fd3ce567bd3886e8f8"
+    },
+    {
+      "path": "offline/sender.source-check.public.json",
+      "bytes": 812,
+      "sha256": "94e722661cf5018cda204a389b315173b048b450ea0438572e06c1939cb52715",
+      "blob": "f6d477348f89144d10b369460816d8d0167d1414"
+    },
+    {
+      "path": "offline/source_invariance.py",
+      "bytes": 2397,
+      "sha256": "da7190902b7aba71d5599f12ace568e442fcfd7f2f2c5f3d44509d3edadb8822",
+      "blob": "42686c3e3398567a38585d0eec53b7140a67a67e"
+    },
+    {
+      "path": "PLAN.public.json",
+      "bytes": 6648,
+      "sha256": "535f6da26f46b4fb3349588499c6f1d56f229676695d86ca32c2c17624a66fcd",
+      "blob": "5835645d11c8d5bd4da04982bc855dda0b8c5012"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3063,
+      "sha256": "a6774c37ca247697b5a33f3d453a6a81d200bb8b04dde3d6c6de2d679aebca1b",
+      "blob": "876ab2d70bd5c608cc218e149b1834244a6429d5"
+    },
+    {
+      "path": "reference-actual-3cb/inert.py",
+      "bytes": 5060,
+      "sha256": "b247e2516fc1216df1c041da385edc5b4d6fe8fe772582d4d8139fde60daeefe",
+      "blob": "9c395b137eacdd01f9523f4d0f36713d82f52219"
+    },
+    {
+      "path": "reference-actual-3cb/receiver.py",
+      "bytes": 8275,
+      "sha256": "dd2209577430e4d9b17918f9688453cb3b68ef725032abb6e3f59b6654a34e31",
+      "blob": "4ecee801d85bc7aa1eeef93fe45b443f0c9b372d"
+    },
+    {
+      "path": "reference-actual-3cb/relay.py",
+      "bytes": 15857,
+      "sha256": "5cb99ccf85533ad91f83f24e86c629395b545ebbf5c967dab36989805dd632da",
+      "blob": "942ea040fc67eebce7a96ac92c2a8d883d34a8f1"
+    },
+    {
+      "path": "reference-actual-3cb/sender.py",
+      "bytes": 6737,
+      "sha256": "e57040a017a44d9d2a9b4396200325eb8499bf503e9c52be58448fa71fdf5835",
+      "blob": "303de2f64027709294d38e578bc619435f3c6660"
+    }
+  ]
+}

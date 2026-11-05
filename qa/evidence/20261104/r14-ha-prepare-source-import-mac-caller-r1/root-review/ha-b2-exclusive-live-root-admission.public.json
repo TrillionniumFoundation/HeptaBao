@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.ha-b2-exclusive-live-root-admission.v1",
+  "prepared_root_review": "fa1f91cd0cf63efebd1524a4b40d19411ccc254d",
+  "exact_request_blob": "c7c1c53c035910371f54b029b22e73ea04b24a60",
+  "source_import_terminal_root_review": "314c5a9d4941d3ffcffc154d5ea34ecd4fe08f9e",
+  "mac_inert_terminal_root_review": "41ddd01d76e65490a036fc6e0d9353746524ab7d",
+  "exclusive_window": {
+    "hosts": [
+      "mac",
+      "rog",
+      "pocket4",
+      "desktop"
+    ],
+    "other_task_host_requests": 0,
+    "other_tasks_only_pure_source_and_git_archive_until_live_terminal": true
+  },
+  "one_exact_request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r2/launch_normal_r10_pocket_postrecovery_cold_r2.py",
+      "--run-once",
+      "--prepared-sha256",
+      "9fb7bb1054a554357232c8847e36b1a20d2339455a4f6ea7a2c1f37885c1f5af"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 3000,
+    "idempotency_key": "heptabao-r10-postcold-live-r2-515bc76f-2ad254a1"
+  },
+  "original98_and_separate12_required": true,
+  "all_original_budgets_and_guard_contracts_preserved": true,
+  "no_force_or_unknown_mutation_replay": true,
+  "production_actions_admitted": false,
+  "actual_runtime_qualification": false
+}

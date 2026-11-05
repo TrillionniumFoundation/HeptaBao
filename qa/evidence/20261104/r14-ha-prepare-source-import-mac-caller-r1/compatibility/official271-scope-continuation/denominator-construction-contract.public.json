@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.openbao271.full-denominator-construction-contract.v1",
+  "status": "REQUIRED_WORK_NOT_COMPLETED_DENOMINATOR",
+  "official_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "product_source_audited": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+  "existing_numbers_not_composable": {
+    "legacy59_target": "OpenBao 2.6.2",
+    "legacy59_whole_admissions": false,
+    "declared_delta": {
+      "security": 15,
+      "feature_correctness": 11,
+      "gates": 11,
+      "exhaustive": false
+    },
+    "bounded69": {
+      "candidate": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "cases": 69,
+      "whole_surface": false
+    },
+    "default_plugin_registry": {
+      "credential_names": 6,
+      "secret_names": 7,
+      "database_names": 9,
+      "not_total_api_surfaces": true
+    }
+  },
+  "required_row_key": [
+    "upstream_module",
+    "path_pattern_or_cli_command",
+    "operation_or_subcommand",
+    "required_config_or_backend",
+    "storage_and_ownership_profile",
+    "lifecycle_state_or_transition"
+  ],
+  "required_evidence_columns": [
+    "exact_upstream_source_anchor",
+    "registration_or_dispatch_reachability",
+    "default_or_conditional_or_external_scope",
+    "current_native_owner_and_cold_codec",
+    "known_refusal_and_no_effect_boundary",
+    "actual_test_case_ids_and_denominator",
+    "exact_candidate_commit_and_artifact",
+    "tested_persistence_restart_and_migration_scope",
+    "unresolved_behavior_and_next_implementation"
+  ],
+  "required_source_passes": [
+    "Enumerate actual SystemBackend, token, identity and cubbyhole registrations and operation callbacks, including conditional registrations.",
+    "Enumerate each exact default credential/secret/backend factory and database adapter; deduplicate alias names without deleting their observable config contracts.",
+    "Separate server API from official CLI/Agent/Proxy/UI/OpenAPI and physical storage/operator migrate behavior.",
+    "Apply exact v2.7.1 security/correctness deltas to concrete rows; do not substitute the structural 15/11 declarations.",
+    "Add explicitly configured external plugins and finite installed consumers as separately attributable scope; do not infer them from an SDK class name.",
+    "Map each required row to actual candidate-bound evidence or an explicit implementation/evidence gap; preserve unknown and unsupported state before widening native admission."
+  ],
+  "completion_rule": "No current whole-replacement admission until the exact required distribution/configuration scope is complete and every mandatory row has attributable implementation and actual evidence. Existing test counts remain separate bounded proofs.",
+  "non_goals": [
+    "No host/provider requests by this document",
+    "No unsupported profile allowlist widening",
+    "No retrospective PASS for old unknown B01",
+    "No automatic new mandatory backend inferred solely from a native 501"
+  ],
+  "current_whole_replacement": false
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.official271.partial-audit-update-source-check.v1",
+  "status": "passed_source_only",
+  "checks": [
+    "eight existing action rows retained",
+    "seven non-snapshot rows exact",
+    "snapshot change only runtime status boundary",
+    "all other original factual sections exact",
+    "exact same audited source",
+    "bounded69 retained on actual 495033",
+    "exact actual registry credential_plugin_names",
+    "exact actual registry database_plugin_names",
+    "exact actual registry secret_plugin_names",
+    "extension hook truly empty",
+    "three known family corrections only",
+    "no whole compatibility admitted",
+    "new PhaseB not claimed"
+  ],
+  "count": 13,
+  "host_operations": 0,
+  "product_tests": 0,
+  "exhaustive_denominator_complete": false,
+  "full_replacement": false
+}

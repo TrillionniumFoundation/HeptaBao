@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.phaseb3cb.bound-importer-component-inputs.v1",
+  "binding_check": {
+    "before": "reference/unbound_importer.py",
+    "after": "bound/import_standalone_phaseb_3cb_r1.py",
+    "actual": {
+      "files": [
+        {
+          "name": "canonical-3cb-full.bundle",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/canonical-3cb-full.bundle",
+          "bytes": 23335023,
+          "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
+          "mode": 256,
+          "version": "2050:4330514:23335023:1793841653430023604:1793841653430023604"
+        },
+        {
+          "name": "source-export.result.public.json",
+          "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/source-export.result.public.json",
+          "bytes": 39965,
+          "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
+          "mode": 256,
+          "version": "2050:4330516:39965:1793841653590018909:1793841653591018879"
+        }
+      ],
+      "transfer": {
+        "name": "source-carrier.result.public.json",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/control/result.public.json",
+        "bytes": 11951,
+        "sha256": "b2bf06c9bc6c38f31cc365d49d23a4af381eae955fceb058737d96953a71c066",
+        "mode": 384,
+        "version": "2050:4330518:11951:1793841653775473547:1793841653775473547"
+      }
+    },
+    "edits": [
+      {
+        "before": "ACTUAL_INPUTS_READY=False",
+        "after": "ACTUAL_INPUTS_READY=True"
+      },
+      {
+        "before": "FILES=[\n  {\n    \"name\": \"canonical-3cb-full.bundle\",\n    \"path\": \"/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/canonical-3cb-full.bundle\",\n    \"bytes\": 23335023,\n    \"sha256\": \"25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b\",\n    \"mode\": 256,\n    \"version\": None\n  },\n  {\n    \"name\": \"source-export.result.public.json\",\n    \"path\": \"/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/source-export.result.public.json\",\n    \"bytes\": 39965,\n    \"sha256\": \"3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448\",\n    \"mode\": 256,\n    \"version\": None\n  }\n]",
+        "after": "FILES=[\n  {\n    \"name\": \"canonical-3cb-full.bundle\",\n    \"path\": \"/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/canonical-3cb-full.bundle\",\n    \"bytes\": 23335023,\n    \"sha256\": \"25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b\",\n    \"mode\": 256,\n    \"version\": \"2050:4330514:23335023:1793841653430023604:1793841653430023604\"\n  },\n  {\n    \"name\": \"source-export.result.public.json\",\n    \"path\": \"/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/source-export.result.public.json\",\n    \"bytes\": 39965,\n    \"sha256\": \"3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448\",\n    \"mode\": 256,\n    \"version\": \"2050:4330516:39965:1793841653590018909:1793841653591018879\"\n  }\n]"
+      },
+      {
+        "before": "TRANSFER={\n  \"name\": \"source-carrier.result.public.json\",\n  \"path\": \"/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/control/result.public.json\",\n  \"bytes\": None,\n  \"sha256\": None,\n  \"mode\": 384,\n  \"version\": None\n}",
+        "after": "TRANSFER={\n  \"name\": \"source-carrier.result.public.json\",\n  \"path\": \"/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/control/result.public.json\",\n  \"bytes\": 11951,\n  \"sha256\": \"b2bf06c9bc6c38f31cc365d49d23a4af381eae955fceb058737d96953a71c066\",\n  \"mode\": 384,\n  \"version\": \"2050:4330518:11951:1793841653775473547:1793841653775473547\"\n}"
+      }
+    ]
+  },
+  "actual_predicate": {
+    "source": "bound/import_standalone_phaseb_3cb_r1.py",
+    "export": "evidence/source-export.result.original.json",
+    "carrier": "evidence/source-carrier.result.original.json"
+  }
+}

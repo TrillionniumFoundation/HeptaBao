@@ -1,0 +1,56 @@
+{
+  "schema": "heptabao.postcold-r2-live.frozen-intent.v1",
+  "status": "frozen_not_submitted",
+  "request_pin": {
+    "bytes": 533,
+    "sha256": "4d14f34a7e49dc47e09967a0a1f2890ab59b40e4b6267a06a95b4a7fbcc06309",
+    "blob": "c7c1c53c035910371f54b029b22e73ea04b24a60"
+  },
+  "request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r2/launch_normal_r10_pocket_postrecovery_cold_r2.py",
+      "--run-once",
+      "--prepared-sha256",
+      "9fb7bb1054a554357232c8847e36b1a20d2339455a4f6ea7a2c1f37885c1f5af"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 3000,
+    "idempotency_key": "heptabao-r10-postcold-live-r2-515bc76f-2ad254a1"
+  },
+  "source_tree": "423d3de5fa53aa525ee2ea27b8c80a3d0e404947",
+  "frozen_dispatch_blob": "c9d562bed9254e57b5d254b8b63fbb9b0c326ebb",
+  "actual_prepared": {
+    "bytes": 42012,
+    "sha256": "9fb7bb1054a554357232c8847e36b1a20d2339455a4f6ea7a2c1f37885c1f5af",
+    "blob": "536d0532ebfa8709ecb92de11adce1a29fd334c7"
+  },
+  "prepare_evidence_tree": "0735973265cd3184ceb9d9da77cafb55cc504e8d",
+  "prepare_root_review_blob": "fa1f91cd0cf63efebd1524a4b40d19411ccc254d",
+  "qualification": {
+    "original_checks": 98,
+    "separate_postcold_checks": 12,
+    "comparison_fences": 28,
+    "additional_witness_mutation_limit": 2,
+    "product_source": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "original_controller_seconds": 2400,
+    "new_postcold_shared_seconds": 300,
+    "role_prepare_shared_seconds": 60,
+    "HTTP_seconds": 15,
+    "admission_seconds": 8,
+    "outer_seconds": 3000,
+    "original_higher_term_branch_preserved": true
+  },
+  "current_permission": {
+    "freeze_request": true,
+    "submit": false,
+    "required_before_submit": "Root explicit exclusive-window live GO after importer and Mac inert completion."
+  },
+  "unknown_policy": "Single exact key; retain failure or unknown without replay, deadline extension or role forcing.",
+  "prior_roots_reused": false,
+  "production_state_touched": false
+}

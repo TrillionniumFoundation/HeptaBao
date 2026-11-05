@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-phaseb-source2-inert-1a1a943dbc6-fc05-337e-authority-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1a943dbc6-fc05-337e"
+    }
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "schema": "heptabao.postcold-r2-prepare-evidence-manifest.v1",
+  "files": {
+    "intent.public.json": {
+      "bytes": 1478,
+      "sha256": "12071fcfb1f2b9deddc46969475dbca0e82d195f474ead4699a6cf511e5ac180",
+      "blob": "29f11c4b19aa2fe6972d37bd03f32a8aa170d1ea"
+    },
+    "exact-start-request.public.json": {
+      "bytes": 442,
+      "sha256": "cf0dbf314fab9c8a4f233df709422279091c4ffadd2cb73fed84c83023c8e4ea",
+      "blob": "31e995daffb6e8b6989d290ca873c57c058a41a6"
+    },
+    "ack.public.json": {
+      "bytes": 1214,
+      "sha256": "93995e08d498b289e3e42da81ca64030d939ca3381a02e5a46675446fd77d1d2",
+      "blob": "322845b7361763ac21ba632be95701db86485e5f"
+    },
+    "authority.public.json": {
+      "bytes": 729,
+      "sha256": "4108f64742e3d0bd660ca6d9861376ef4d48b2e8e23e87fabdddb0153b71e0fd",
+      "blob": "9eafedd2d3df155f59dd58d449005f5349beba73"
+    },
+    "terminal.stdout": {
+      "bytes": 279,
+      "sha256": "d9f548aede1946fb6c3525b0f83df31be39f60715429a41ce161be693c181a49",
+      "blob": "fd763af8bac84fca8bf6aab74c4cfe3517aadd58"
+    },
+    "prepared.public.json": {
+      "bytes": 42012,
+      "sha256": "9fb7bb1054a554357232c8847e36b1a20d2339455a4f6ea7a2c1f37885c1f5af",
+      "blob": "536d0532ebfa8709ecb92de11adce1a29fd334c7"
+    },
+    "prepared-file-info.public.json": {
+      "bytes": 505,
+      "sha256": "51687829f1ca290082613004456dbeb1e3bb2220d98ba58c531f77224d62b829",
+      "blob": "184423b6d82265593f6b7ba076064036df6746a3"
+    },
+    "build-originals/linux-native-build.public.json": {
+      "bytes": 801,
+      "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+      "blob": "8b70873f6ee251a7cc403d781e70a9e505b91f95"
+    },
+    "build-originals/linux-normal-release-result.public.json": {
+      "bytes": 3227,
+      "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+      "blob": "849d45f07a53007f6e927530900783e23197999b"
+    },
+    "build-originals/mac-native-build.public.json": {
+      "bytes": 798,
+      "sha256": "16fa488ed8d7a9a46541b5aea5007e27b538e5c37f9246c14de0e5fe24b05ad1",
+      "blob": "3daa9c7e0537b066502606430b9289b39a249712"
+    },
+    "build-originals/mac-normal-release-result.public.json": {
+      "bytes": 3326,
+      "sha256": "f5746eaf7fd79c8001ac927c9738922297d6e5e575cbd12bc092aafa2c13f544",
+      "blob": "5d0f6fd01dfd4415610e6f30afe4b2ea203a4297"
+    },
+    "sdk/start-ack.original.json": {
+      "bytes": 1460,
+      "sha256": "7305b1835db82f8f59ed4413c8c560a8808f2814e0e73c251bb0db8fa4d8b10d",
+      "blob": "9c133146320aa5e3ee842de1b570b5df9adf58d9"
+    },
+    "sdk/authority.original.json": {
+      "bytes": 952,
+      "sha256": "152206925abba10bdf9a46cbda7a9efcb6e6e7b573271c22c5fc7bd48233eb17",
+      "blob": "e44065bc111582f20c55c2b374c397a301a1e6cb"
+    },
+    "sdk/terminal.original.json": {
+      "bytes": 1386,
+      "sha256": "5b431d16a85551f347c615586c972f632c3cb73c97d3bb909ff47a7c75cd3585",
+      "blob": "e2e2bc9232592c9db18d6f709c8359fe98ae6518"
+    },
+    "sdk/five-files.original.json": {
+      "bytes": 59261,
+      "sha256": "bbab72d6c34fe1458f1c21c9f2ddd79fb9f3585d1b0a1a38a3bb4200ccd7c745",
+      "blob": "6caad28ae7a6b4ec0833805bf9417ae3259c4f63"
+    },
+    "sdk/prepared-file-info.original.json": {
+      "bytes": 666,
+      "sha256": "4786b292b1cbca5abc109485e109d82c36b48dbdf332ad4d5d9c05e31b34dadd",
+      "blob": "969290cf152fc18e704f2e3cbd435d2c28fc12b6"
+    },
+    "assessment.public.json": {
+      "bytes": 10976,
+      "sha256": "f47681f727b41725077dbc123154635847590b7d60602c84d8fd2915c093cb13",
+      "blob": "e7c84d9f7a21b3fa5366f5cb5527cf7c3c07e82f"
+    },
+    "verification/extract_frozen_literals_and_argv.py": {
+      "bytes": 1129,
+      "sha256": "cd1f0dac3a9b1027c34fd4d97285d28d400ba400cbcc5b8c5fe2d96c4178ad9c",
+      "blob": "8363e370eaafe9e7359e26b17395b84d07a4b163"
+    },
+    "verification/executor-response.original.json": {
+      "bytes": 11938,
+      "sha256": "ffd9e3a6784bf56be70b9467ecd55f31f9f6ab031281d952386fd542c652b5ee",
+      "blob": "62ec684b048cb738c3ec409646cdf01653937c13"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "bytes": 8701,
+  "candidate_top_level_executed": false,
+  "changed_definitions": [
+    "receive"
+  ],
+  "checks": [
+    "same_definition_names",
+    "only_allowlisted_changed_definitions",
+    "inverse_present_2",
+    "inverse_present_3",
+    "inverse_present_4",
+    "inverse_present_5",
+    "inverse_present_6",
+    "inverse_whole_bytes_exact",
+    "receive_prefix_unchanged",
+    "receive_suffix_except_provenance_label",
+    "files_exact_actual_lossless_pins",
+    "canonical_commit_exact",
+    "canonical_tree_exact"
+  ],
+  "checks_passed": 13,
+  "compiled_not_executed": true,
+  "host_operations": 0,
+  "identical_definitions": [
+    "Cancelled",
+    "handler",
+    "remaining",
+    "identity",
+    "stop_active",
+    "snapshot",
+    "read_file",
+    "dir_fsync",
+    "run_and_report"
+  ],
+  "name": "receiver",
+  "schema": "heptabao.phaseb3cb.source-carrier-source-invariance.v1",
+  "sha256": "2280d96c79b5e8fe8a0b3a9b601196cc61dbc43c11f4ded31780617f0533a6e5"
+}

@@ -1,0 +1,70 @@
+{
+  "schema": "heptabao.ha-b2-prepare-root-actual-review.v1",
+  "actual_tree": "0735973265cd3184ceb9d9da77cafb55cc504e8d",
+  "files": 20,
+  "bytes": 146667,
+  "merkle": {
+    "root_sha": "0735973265cd3184ceb9d9da77cafb55cc504e8d",
+    "trees_verified": 4
+  },
+  "job_id": "1a1a95290cd-fc05-3440",
+  "exit_code": 0,
+  "complete_durable_terminal": true,
+  "exact_admitted_request_ack": true,
+  "full_sdk_wrappers": 5,
+  "independent_complete_file_reads": 5,
+  "atomic_multi_file_snapshot_claimed": false,
+  "four_embedded_build_raws_equal_actual_files": true,
+  "prepared": {
+    "blob": "536d0532ebfa8709ecb92de11adce1a29fd334c7",
+    "bytes": 42012,
+    "sha256": "9fb7bb1054a554357232c8847e36b1a20d2339455a4f6ea7a2c1f37885c1f5af",
+    "version": "2050:4332027:42012:1793842132997951539:1793842132997951539",
+    "mode": "0600"
+  },
+  "ten_build_file_pins_verified": true,
+  "normal_mac_and_linux_abi_verified": true,
+  "source_literal_and_pure_argv_fields_exact": [
+    "source_commit",
+    "source_tree",
+    "qa_pins",
+    "build_pins",
+    "comparison_pins",
+    "deadline_qa_pins",
+    "required_extra_checks",
+    "runner_sha256",
+    "numeric_helper_sha256",
+    "cipher_helper_sha256",
+    "argv"
+  ],
+  "original_checks": 98,
+  "separate_postcold_checks": 12,
+  "comparison_fences": 28,
+  "fixture_started": false,
+  "product_or_cargo_started": false,
+  "full_runtime_qualified": false,
+  "budgets": {
+    "prepare_outer": 360,
+    "original_controller": 2400,
+    "postcold": 300,
+    "role_preparation": 60,
+    "sealed_election": 60,
+    "http": 15,
+    "admission": 8,
+    "numeric_read": 15,
+    "numeric_ssh": 45
+  },
+  "witness": {
+    "cas": 0,
+    "max_additional_mutations": 2,
+    "delete_same_key_metadata_once": true,
+    "unknown_no_replay": true,
+    "same_leader_exact_old_log_and_committed_vote": true,
+    "original_higher_term_guard_retained": true,
+    "actual_Mac_leadership_guard_retained": true,
+    "no_forced_election": true
+  },
+  "process_scope": "Synchronous probes/contract children completed; not a new independent remote process-group survey.",
+  "live_requires_exclusive_window": true,
+  "live_admitted": false
+}

@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"atomic_snapshot\":false,\"encoding\":\"utf-8\",\"files\":[{\"eof\":true,\"path\":\"/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-pocket3-mac1-postrecovery-cold-control-r2/exit.public.json\",\"sha256\":\"f82c0a638a0493a9b5db9d28814a930cfc23a34e2862d2835c1ca37392e30cbf\",\"size\":615,\"text\":\"{\\n  \\\"controller_unchanged\\\": true,\\n  \\\"deadline_qa_unchanged\\\": true,\\n  \\\"exit_code\\\": 1,\\n  \\\"finished_unix\\\": 1793843327.023352,\\n  \\\"fresh_build_source_files_unchanged\\\": {\\n    \\\"linux\\\": true,\\n    \\\"mac\\\": true\\n  },\\n  \\\"new_shared_postrecovery_seconds\\\": 300,\\n  \\\"original_controller_seconds\\\": 2400,\\n  \\\"prior_receipts_unchanged\\\": true,\\n  \\\"private_diagnostic_feature_enabled\\\": false,\\n  \\\"required_extra_check_count\\\": 12,\\n  \\\"runner_unchanged\\\": true,\\n  \\\"schema\\\": \\\"heptabao.normal-r10-postrecovery-cold-exit.v1\\\",\\n  \\\"summary\\\": \\\"/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-r10-pocket3-mac1-postrecovery-cold-r2/summary.json\\\"\\n}\\n\",\"version\":\"2050:4380966:615:1793843327054706653:1793843327054706653\"}],\"snapshot_scope\":\"independent_file\",\"truncated\":false}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

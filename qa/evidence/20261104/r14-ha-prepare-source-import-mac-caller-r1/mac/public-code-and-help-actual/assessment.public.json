@@ -1,0 +1,134 @@
+{
+  "schema": "heptabao.mac.current-authbus-public-source-and-openssl-help-observation.v1",
+  "status": "complete_limited_observation",
+  "product_runtime_qualification": false,
+  "current_credentials_read": false,
+  "current_database_read": false,
+  "current_cache_bytes_read": false,
+  "provider_requests": 0,
+  "certificate_generation": false,
+  "launchd_changes": false,
+  "repository_candidate_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_candidate_tree_not_changed": "0aca624b5d051ed55a62943a06b638c9b3090129",
+  "scope": "Exactly the authorized historical public source receipt and two installed public JavaScript files, plus one fixed public executable help invocation. Independent observations are not an atomic snapshot.",
+  "installed_source_bindings": [
+    {
+      "name": "historical_sources",
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/authbus-profile2-selector-c138-20261104-r1/final360-native-codex-live-r5/result.public.json",
+      "version": "16777244:72395439:51466:1793780682484705229:1793780682484705229",
+      "bytes": 51466,
+      "sha256": "6caa9ebfc2a3bf3ae637676a8055022817ec0efa85b09c6ffc304ac854ca6236",
+      "blob": "79471a511eb665193c2dbc05607298e96ac6fa7d"
+    },
+    {
+      "name": "index",
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/index.js",
+      "version": "16777233:527753287:54455:1786452790844162483:1786452790844261399",
+      "bytes": 54455,
+      "sha256": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b",
+      "blob": "ae64a01b8e47d60421a73050cb0425552ed18d13"
+    },
+    {
+      "name": "order_policy",
+      "path": "/Users/qianqi/.openclaw/extensions/openclaw-authbus/order-policy.js",
+      "version": "16777233:527753283:7376:1786452790842751580:1786452790842859287",
+      "bytes": 7376,
+      "sha256": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301",
+      "blob": "bb6c68e405460541c91c9e16891644de3c3fc4f7"
+    }
+  ],
+  "historical_receipt_sha256": "6caa9ebfc2a3bf3ae637676a8055022817ec0efa85b09c6ffc304ac854ca6236",
+  "generation_review": {
+    "conclusion": "This exact installed importer does not compare manifest or order-policy generation against releaseGeneration or a cached generation to reject a lower number. Current per-profile digest, quarantine, and pending-refresh state can still skip imports.",
+    "qualification": "Source-level determination only; the installed plugin was not imported or run, and current caches or credentials were not opened.",
+    "lines": {
+      "index_config": [
+        827,
+        856
+      ],
+      "index_applied": [
+        1015,
+        1017
+      ],
+      "index_import": [
+        1025,
+        1063
+      ],
+      "index_order": [
+        1065,
+        1075
+      ],
+      "index_publish": [
+        1089,
+        1100
+      ],
+      "index_status": [
+        1219,
+        1253
+      ],
+      "order_policy_normalization": [
+        65,
+        103
+      ],
+      "order_policy_merge": [
+        156,
+        168
+      ]
+    },
+    "release_generation_role": "Normalized configuration and status field; no ordering comparison in the exact installed index.js.",
+    "manifest_generation_role": "Default and status reporting in the consumer; actual import admission uses valid profile identity, quarantine, pending refresh, applied digest, credential digest and identity verification.",
+    "order_generation_role": "Preserved by normalization and reported; managed order is calculated independently from the actual policy and existing order.",
+    "proposed_changes_to_current_caches_flags_order_expiry_or_installed_plugin": false,
+    "generation_one_alone_proves_success": false
+  },
+  "openssl_help": {
+    "intent": "raw/openssl-intent.public.json",
+    "job_id": "1a1a949cf36-fc05-33c3",
+    "authority": "raw/openssl-authority.public.json",
+    "sdk": "raw/openssl-process-read.public.json",
+    "executable": "/usr/bin/openssl",
+    "executable_before": {
+      "metadata": {
+        "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "gid": 0,
+        "link_count": 1,
+        "metadata_platform": "darwin",
+        "mode": 493,
+        "uid": 0,
+        "xattr_names": [],
+        "xattr_sha256": {}
+      },
+      "mode": 493,
+      "path": "/usr/bin/openssl",
+      "sha256": "f81b4fcec5048ea1eceb40fc08f4e06f1668181f0b5bacfa8be27d0da181dcb7",
+      "size": 1130832,
+      "version": "16777233:1152921500312572476:1130832:1786589515000000000:1786589515000000000"
+    },
+    "executable_after_raw": "raw/openssl-file-info-after.public.json",
+    "args": [
+      "req",
+      "-help"
+    ],
+    "timeout_seconds": 15,
+    "stdin_bytes": 0,
+    "actual_exit_code": 1,
+    "actual_supervisor_state": "failed",
+    "known_terminal": true,
+    "output_complete": true,
+    "output_durable": true,
+    "stderr_bytes": 2459,
+    "stdout_bytes": 0,
+    "option_line": " -addext key=value  Additional certificate extension (may be repeated)",
+    "option_advertised": true,
+    "help_only": true,
+    "tls_or_certificate_success": false,
+    "caveat": "The actual help text advertises repeated -addext. Exit 1 is preserved as the tool's help outcome. This does not execute or qualify the proposed four-extension certificate-generation commands."
+  },
+  "raw_integer_handling": "All raw provider JSON, including unsafe nanosecond/fingerprint integers, is saved byte-exact. JSON parsing was used only for finite logical checks; no raw source was reserialized.",
+  "unrelated_known_source_findings_preserved": [
+    "outer reserve_port socket close ledger",
+    "phase obsolete authbus_native_login_custody.py QA name",
+    "materializer model hash trailing-LF mismatch"
+  ],
+  "new_host_actions_after_observations_authorized": false
+}

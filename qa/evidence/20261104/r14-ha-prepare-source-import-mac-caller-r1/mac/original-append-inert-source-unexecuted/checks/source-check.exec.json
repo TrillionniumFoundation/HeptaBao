@@ -1,0 +1,7 @@
+{
+  "chunk_id": "90ba19",
+  "wall_time_seconds": 0.0000334,
+  "exit_code": 0,
+  "original_token_count": 143,
+  "output": "{\"hashOnlyJavascriptCount\": 4, \"hostContacted\": false, \"innerSeconds\": 45, \"newDirectories\": [\"proofs\"], \"newFiles\": 15, \"ok\": true, \"outerSecondsProposed\": 60, \"preservedDefinitionsExact\": [\"Refused\", \"need\", \"sha\", \"encode\", \"remaining\", \"on_signal\", \"critical\", \"load_definition_module\"], \"preservedSources\": 6, \"pythonAstOnly\": true, \"pythonSourceCount\": 14, \"schema\": \"heptabao.mac-complete-append-source-check.r1\", \"sourceBytes\": 14892, \"sourceCount\": 18, \"sourceExecuted\": false, \"sourceSha256\": \"76892da05562599972e52816becb5c39140ec64b38794f7b126611e162963732\"}\n"
+}

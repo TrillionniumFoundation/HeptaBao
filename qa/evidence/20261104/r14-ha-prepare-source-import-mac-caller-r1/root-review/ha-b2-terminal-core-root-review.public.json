@@ -1,0 +1,63 @@
+{
+  "schema": "heptabao.ha-postcold-b2-root-core-review.v1",
+  "as_of_utc": "2026-11-05 01:52:18 UTC",
+  "job_id": "1a1a95f8b98-fc05-34b1",
+  "tree": "93f718b1619991a0bdd50f581d867cc7e54f036a",
+  "summary_blob": "dc954e4441278b3bc050db6f77fd7ac7d996c3ee",
+  "authority_blob": "1127b105cc54ea7986f28c713efc62497a3fc408",
+  "result": "FAIL_ACTUAL_NODE2_COLD_UNSEAL_AFTER_SUCCESSFUL_MAC_RECOVERY",
+  "original_passed": 91,
+  "original_required": 98,
+  "missing": [
+    "missing_cipher_all_hosts_readindex",
+    "missing_cipher_remaining_nodes_unsealed",
+    "native.complete",
+    "report_excludes_runtime_secrets",
+    "source_and_binaries_unchanged",
+    "synthetic_metadata_absent",
+    "synthetic_metadata_cleanup_once"
+  ],
+  "extra_executed": 0,
+  "extra_required": 12,
+  "failure_code": "node_2_native_cold_unseal_failed",
+  "failure_stage": "owned_missing_cipher_leader_recovery",
+  "known_final_http_status": 503,
+  "final_http_elapsed_ms": 9423.826,
+  "retained_large_versions": 17,
+  "restored_referenced_leaves": 338,
+  "restored_referenced_bytes": 35742423,
+  "witness": {
+    "known_write": 200,
+    "known_delete": 204,
+    "mac_exact_and_absence": true,
+    "frontier_branch": "original-higher-term",
+    "same_leader_branch_actual_covered": false
+  },
+  "assertions": {
+    "pass": true,
+    "authorityExit1": true,
+    "original91of98": true,
+    "extra0of12": true,
+    "starts16Stops16": true,
+    "mac6ClosedWithin5": true,
+    "recordedMutationEvents49KnownHttpStatuses": true,
+    "raw98BoundaryFilesStillPending": true,
+    "cleanupCoreSufficientToReleaseHostWindow": true
+  },
+  "recorded_mutation_custody": {
+    "automatic_resume_or_retry": false,
+    "initialization_custody_saved": true,
+    "mutation_intents": 49,
+    "mutation_responses": 49,
+    "relative_root": "private-recovery",
+    "schema": "heptabao.synthetic-fixture-recovery-public.v1",
+    "secret_values_emitted": false,
+    "synthetic_only": true,
+    "unknown_transport_outcomes": 0
+  },
+  "host_window_released": true,
+  "raw_boundary_and_full_sdk_review_pending": true,
+  "mutation_replay_authorized": false,
+  "original_deadlines_unchanged": true,
+  "full_replacement": false
+}

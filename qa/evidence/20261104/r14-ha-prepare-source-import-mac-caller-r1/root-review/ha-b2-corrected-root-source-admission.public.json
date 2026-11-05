@@ -1,0 +1,87 @@
+{
+  "schema": "heptabao.ha-b2-corrected-root-source-admission.v1",
+  "source_tree": "423d3de5fa53aa525ee2ea27b8c80a3d0e404947",
+  "source_files": 28,
+  "source_bytes": 919761,
+  "merkle": {
+    "root_sha": "423d3de5fa53aa525ee2ea27b8c80a3d0e404947",
+    "trees_verified": 5
+  },
+  "blocked_source_tree": "25525f6aa7ea8c6de5b09a82433053f6d90101d3",
+  "source_rejection_blob": "686a2da94c8c1a93fd7b1f17433e56f1bd49901f",
+  "one_entry_basename_literal_corrected_guard_preserved": true,
+  "other_eight_candidate_sources_exact": true,
+  "four_correction_diffs_exact": true,
+  "nine_complete_payloads_and_dispatch_pins_exact": true,
+  "original_runner_strict_diffs": [
+    {
+      "after": "candidate/native_v6_pocket_source_postrecovery_cold_r10_r2.py",
+      "hunks": 9,
+      "exact": true
+    },
+    {
+      "after": "candidate/launch_normal_r10_pocket_postrecovery_cold_r2.py",
+      "hunks": 4,
+      "exact": true
+    },
+    {
+      "after": "candidate/read_stopped_postrecovery_frontier_r2.py",
+      "hunks": 1,
+      "exact": true
+    },
+    {
+      "after": "candidate/read_stopped_recovered_cipher_r2.py",
+      "hunks": 1,
+      "exact": true
+    },
+    {
+      "after": "inert_carrier_r2.py",
+      "hunks": 1,
+      "exact": true
+    }
+  ],
+  "reviewed_witness_contract": {
+    "additional_mutations": 2,
+    "cas": 0,
+    "write_and_metadata_delete_once": true,
+    "old_failure_not_replayed": true,
+    "original_higher_term_function_exact": true,
+    "narrow_same_committed_leader_only": true,
+    "complete_log_id_order": [
+      "term",
+      "node_id",
+      "index"
+    ],
+    "unknown_stops_without_compensation_mutation": true,
+    "all_actual_direction_guards_preserved": true,
+    "original98_unchanged": true,
+    "separate_postcold12_unchanged": true,
+    "original28_fences_retained": true,
+    "original2400_seconds": true,
+    "original60_prepare_clipped_to_controller": true,
+    "postcold300_seconds": true,
+    "http15_and_admission8_unchanged": true,
+    "forced_election": false
+  },
+  "original130_component_result_preserved": "0939df491b16efa8e35a445a6d86a9da2c70d8fc",
+  "new22_entry_component_result": "81e55f53f87f0404905abfbe583bcfc3f73de91a",
+  "inert_admitted_once": {
+    "key": "heptabao-r10-postcold-inert-r2-515bc76f-2ad254a1",
+    "host": "desktop",
+    "timeout_seconds": 60,
+    "source": {
+      "blob": "99b1cfd5fdc01188648e9fc3043d388e830344f0",
+      "bytes": 6858,
+      "sha256": "0ab98eabbbae83e43775e6ff936084f5fa3a8e49273232cc95a725ecab35301c"
+    },
+    "stdin": {
+      "blob": "6aee1b83a7233373ca4e31731369710dbeba1277",
+      "bytes": 474292,
+      "sha256": "7477a53dfdd0d160c2bb7b1ed7400845f122f47ac4e5aaf87964fa3414f7124a"
+    }
+  },
+  "prepare_requires_inert_actual_root_review": true,
+  "live_requires_actual_prepare_binding_and_exclusive_window": true,
+  "host_calls_by_review": 0,
+  "runtime_qualified": false
+}

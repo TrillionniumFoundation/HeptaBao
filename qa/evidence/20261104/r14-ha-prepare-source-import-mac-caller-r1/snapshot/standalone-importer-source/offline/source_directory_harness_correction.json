@@ -1,0 +1,6 @@
+{
+  "original_failure": "NameError UID missing in synthetic globals, before source directory assertion",
+  "patch": "synthetic globals g={\"stat\":stat} -> g={\"stat\":stat,\"UID\":1000}",
+  "candidate_source_changed": false,
+  "original_failure_retained": true
+}

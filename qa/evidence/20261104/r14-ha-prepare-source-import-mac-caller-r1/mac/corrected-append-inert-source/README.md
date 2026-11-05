@@ -1,0 +1,11 @@
+# Corrected complete caller inert append: source review only
+
+This immutable successor distributes the corrected complete caller in tree 9ed171e68bd0586dcf59830eb1d69448aaf43d80. The old source tree 0aca624b5d051ed55a62943a06b638c9b3090129 and never-submitted append tree 283148fd536cb375ab8b80f122cd22d710ec3d02 remain unchanged.
+
+The carrier differs from that append draft only in three source byte/hash tuples, the derived candidate SHA and the exact payload byte/hash. Its entire suffix from the protected-state declaration through all helpers, main and terminal publication is byte-identical. The original inner45, clipped diskutil30 and outer60 remain. The fixed new key is heptabao-mac-current-complete-source-inert-5ecc5780-20261105-r4. The public input is 514784 bytes / 1b0f91901d2ca1176429dfdfa3ad5c804aca9ca00efadccf96f41233d98b5556.
+
+The original six actual files and all 54 identity strings remain fixed; twelve QA sources and three public documents are still create-only, along with only the proofs directory. All eighteen source bytes, the two original synthetic raw proofs and captured anchor are checked. Fourteen Python files will be parsed/compiled without invoking their entrypoints, four JS files only hashed, and only the three already reviewed import-safe custody libraries load their definitions. No current credentials, production DB, current capture, TLS generation, launchd or consumer execution is authorized.
+
+Static binding verification rechecked exact eighteen source payloads, three documents, original raw proof and anchor bytes, full inverse reconstruction of the carrier, and unchanged callable suffix. The earlier R2-to-complete original local AST check is kept under references; it is historical, not a newly executed carrier. The three changed full Python files and their actual selected-function tests are in the separate corrected source tree.
+
+The old proposed source and candidate filenames remain because no complete-caller append was ever submitted. O_EXCL refuses an unexpected existing file or proof directory. No overwrite, fallback key, retry, or expanded business budget is introduced. This exact inert-start document is a proposal and cannot be submitted without root GO.

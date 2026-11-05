@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.ha-b2-root-source-preflight-rejection.v1",
+  "source_tree": "25525f6aa7ea8c6de5b09a82433053f6d90101d3",
+  "launcher_blob": "285f96d09168cb288fdac5dd522aac66e93e8854",
+  "status": "SOURCE_REJECTED_BEFORE_HOST_DISPATCH",
+  "reason": "Entry self-identity guard still names r1 while actual carrier and proposed dispatch name r2.",
+  "line_number": 214,
+  "exact_line": "assert Path(__file__).resolve(strict=True) == CONTROL / 'launch_normal_r10_pocket_postrecovery_cold_r1.py'",
+  "actual_candidate_basename": "launch_normal_r10_pocket_postrecovery_cold_r2.py",
+  "strict_diff_reconstructions": [
+    {
+      "after": "candidate/native_v6_pocket_source_postrecovery_cold_r10_r2.py",
+      "hunks": 9,
+      "exact": true
+    },
+    {
+      "after": "candidate/launch_normal_r10_pocket_postrecovery_cold_r2.py",
+      "hunks": 4,
+      "exact": true
+    },
+    {
+      "after": "candidate/read_stopped_postrecovery_frontier_r2.py",
+      "hunks": 1,
+      "exact": true
+    },
+    {
+      "after": "candidate/read_stopped_recovered_cipher_r2.py",
+      "hunks": 1,
+      "exact": true
+    },
+    {
+      "after": "inert_carrier_r2.py",
+      "hunks": 1,
+      "exact": true
+    }
+  ],
+  "required_change": "Only bind the existing self-identity assertion to the actual r2 basename; preserve the guard and regenerate dependent pins/carrier/dispatch. Retain this immutable source packet.",
+  "host_actions": 0,
+  "product_actions": 0,
+  "live_authorized": false
+}

@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-phaseb-source2-transfer-1a1a94b59e2-fc05-33df-streams-r1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1a94b59e2-fc05-33df",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.phaseb3cb-source-carrier-transfer-root-review.v1",
+  "actual_tree": "1dcb7b7b44c2ead164eaa4fe11821f7d95dd0b49",
+  "files": 41,
+  "bytes": 180896,
+  "merkle": {
+    "root_sha": "1dcb7b7b44c2ead164eaa4fe11821f7d95dd0b49",
+    "trees_verified": 6
+  },
+  "job_id": "1a1a94b59e2-fc05-33df",
+  "exit_code": 0,
+  "complete_durable_terminal": true,
+  "exact_original_request_ack": true,
+  "original_sdk": {
+    "paged_native_sdks": 3,
+    "immutable_pages": 5,
+    "file_texts": 11
+  },
+  "admission_wrappers_verified": 3,
+  "stdout_text_and_hex_exact": true,
+  "stdout_bytes": 365,
+  "stderr_bytes": 0,
+  "elapsed_seconds": 1.061374780954793,
+  "publication_seconds": 1.0726062939502299,
+  "original_controller_seconds": 300,
+  "original_endpoint_seconds": 90,
+  "all_three_owned_groups_reaped_with_empty_remaining": true,
+  "two_endpoint_raw_results_lossless_equal": true,
+  "source_whole_hash_and_before_after_same_fd_identity": true,
+  "receiver_create_only_same_fd_readback_fsync_and0400_files": true,
+  "immutable_0500_incoming_directory": true,
+  "trust_and_original_ha_controller_unchanged": true,
+  "three_helper_actual_inert_identities_unchanged": true,
+  "import_input_slots": {
+    "schema": "heptabao.phaseb3cb.actual-source-import-input-slots.v1",
+    "files": [
+      {
+        "bytes": 23335023,
+        "mode": 256,
+        "name": "canonical-3cb-full.bundle",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/canonical-3cb-full.bundle",
+        "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
+        "version": "2050:4330514:23335023:1793841653430023604:1793841653430023604"
+      },
+      {
+        "bytes": 39965,
+        "mode": 256,
+        "name": "source-export.result.public.json",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/source-export.result.public.json",
+        "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
+        "version": "2050:4330516:39965:1793841653590018909:1793841653591018879"
+      }
+    ],
+    "transfer": {
+      "bytes": 11951,
+      "mode": 384,
+      "name": "source-carrier.result.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/control/result.public.json",
+      "sha256": "b2bf06c9bc6c38f31cc365d49d23a4af381eae955fceb058737d96953a71c066",
+      "version": "2050:4330518:11951:1793841653775473547:1793841653775473547"
+    },
+    "provenance": {
+      "job_id": "1a1a94b59e2-fc05-33df",
+      "core_blob": "7edc643cbef45eb2020d24e2a0378575e742874c",
+      "authority_blob": "1c2da5a0d38ebbb6db6d853d821648f2b6000be2",
+      "same_fd_received_versions": true,
+      "independent_postrun_file_info": false,
+      "lossless_python_integer_parsing": true
+    },
+    "qualifies_import_execution": false
+  },
+  "metadata_scope": "Two received versions derived losslessly from receiver's original FD identities; carrier result version from immutable read_multiple_files payload. No independent postrun file_info is claimed.",
+  "source_import_performed": false,
+  "product_runtime_qualified": false
+}

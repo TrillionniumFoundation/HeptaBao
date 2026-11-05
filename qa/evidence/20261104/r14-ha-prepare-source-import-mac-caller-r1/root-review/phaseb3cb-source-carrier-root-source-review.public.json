@@ -1,0 +1,76 @@
+{
+  "schema": "heptabao.phaseb3cb-source-carrier-root-source-review.v1",
+  "as_of_utc": "2026-11-05 01:11:55 UTC",
+  "source_tree": "8fd8ece4a610263c4dc8e7f8e62e0895860ada6f",
+  "files": 37,
+  "bytes": 269184,
+  "merkle": {
+    "root_sha": "8fd8ece4a610263c4dc8e7f8e62e0895860ada6f",
+    "trees_verified": 7
+  },
+  "strict_diff_reconstructions": [
+    {
+      "name": "sender",
+      "hunks": 1,
+      "exact": true
+    },
+    {
+      "name": "receiver",
+      "hunks": 4,
+      "exact": true
+    },
+    {
+      "name": "relay",
+      "hunks": 3,
+      "exact": true
+    },
+    {
+      "name": "inert",
+      "hunks": 3,
+      "exact": true
+    }
+  ],
+  "all_three_carrier_payloads_and_dispatch_exact": true,
+  "actual_export_provenance_verified_lossless": true,
+  "source_bundle_and_receipt_exact_versions": {
+    "bundle": {
+      "bytes": 23335023,
+      "name": "canonical-3cb-full.bundle",
+      "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/canonical-3cb-full.bundle",
+      "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28324895:23335023:1793839385060504547:1793839385063504533"
+    },
+    "identity_integer_preservation": "parsed original JSON with Python integer semantics",
+    "receipt": {
+      "bytes": 39965,
+      "name": "source-export.result.public.json",
+      "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/result.public.json",
+      "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28324969:39965:1793839385327147652:1793839385327147652"
+    }
+  },
+  "receiver_change": "Fixed two inputs and exact completed canonical-export provenance block; original streaming/EOF/same-fd/owner/mode/cleanup/deadline logic retained.",
+  "budgets": {
+    "unchanged_parent_seconds": 300,
+    "unchanged_endpoint_seconds": 90,
+    "unchanged_child_seconds": 90,
+    "unchanged_ssh_connect_seconds": 10,
+    "unchanged_term_seconds": 5,
+    "unchanged_kill_seconds": 5,
+    "new_inert_outer_seconds": 60,
+    "new_transfer_outer_seconds": 360
+  },
+  "source_approved": true,
+  "inert_exact_request_blob": "05ed5ef187b73b5766038c10e400fe0ef2fd699e",
+  "inert_admitted_once": true,
+  "transfer_exact_request_blob": "c3767f62e2d3ecd3bfcc317a5cf9f137eebe20cc",
+  "transfer_not_yet_admitted": true,
+  "source_import_not_admitted": true,
+  "host_actions_by_this_review": 0,
+  "production_changes": false,
+  "all_prior_unknowns_preserved": true
+}

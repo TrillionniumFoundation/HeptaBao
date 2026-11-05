@@ -1,0 +1,173 @@
+{
+  "schema": "heptabao.mac.public-source-capability-evidence-manifest.v1",
+  "scope": "Authorized historical public receipt, two public installed JS files and one public openssl help invocation",
+  "remote_job_id": "1a1a949cf36-fc05-33c3",
+  "remote_job_exit_code": 1,
+  "help_text_observation_only": true,
+  "source_candidate_unchanged": "0aca624b5d051ed55a62943a06b638c9b3090129",
+  "private_current_input_reads": 0,
+  "product_runtime": false,
+  "files": [
+    {
+      "path": "raw/file-info-openssl.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3194d65f17b64cf44b0eac8e5a4cccc5edac6601",
+      "bytes": 417,
+      "sha256": "71bfe1aa7ad284c118c60c0817113a2113d3d55770cd62c651b87b34c6c04fc6"
+    },
+    {
+      "path": "raw/file-info-historical-sources.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "01ccaca8b76b01a78bc0b5631e52ffb8b7c3c5a6",
+      "bytes": 522,
+      "sha256": "dcc1dc860f081c8014546ba43dcea6bf35a2193a1fd6a01da44eb81fb0f77e6b"
+    },
+    {
+      "path": "raw/file-info-index.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3261f31c2b96f95d15643b13f9bf15b444ffb129",
+      "bytes": 450,
+      "sha256": "17fba896b4e39118e1b7a6a414029009d66715288f74b3df64698d9315ef72c9"
+    },
+    {
+      "path": "raw/file-info-order-policy.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7a0a1c6136c4052f2cdb4e3b0e101b5e17b275df",
+      "bytes": 455,
+      "sha256": "d193deaf35fa432b8f76d64214f655727f84620a080edcc0c43ac1c11ec29a88"
+    },
+    {
+      "path": "raw/binary-read-historical-sources.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d1c2bbd6d02433665f6fc2bb52f4886712b54f03",
+      "bytes": 68998,
+      "sha256": "ed3701bddcc14bcedf6da053862abf58bb9b99f82d184c5c9899447a94a70ad5"
+    },
+    {
+      "path": "raw/binary-read-index.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bd8acd7f6ec273a7f3cad6fd43fe0194068e0785",
+      "bytes": 72910,
+      "sha256": "d5df5ed3715b49c8e9c7899a8bcff85ce6f5075768b8d0285c94d03757f3e549"
+    },
+    {
+      "path": "raw/binary-read-order-policy.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7eba00b432c1f80ee0ea7caa11e5ce4438f75636",
+      "bytes": 10142,
+      "sha256": "7cd6b8cfc115d4cd9a6267b68f97438ae9355d23438a6f803dbdade05c1809f9"
+    },
+    {
+      "path": "public/historical-source-receipt.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "79471a511eb665193c2dbc05607298e96ac6fa7d",
+      "bytes": 51466,
+      "sha256": "6caa9ebfc2a3bf3ae637676a8055022817ec0efa85b09c6ffc304ac854ca6236"
+    },
+    {
+      "path": "installed/index.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "ae64a01b8e47d60421a73050cb0425552ed18d13",
+      "bytes": 54455,
+      "sha256": "b19b6a9e7c1d57ccef8d67994ed3421891788ac30a82ff6bad2eef2ef7e30f9b"
+    },
+    {
+      "path": "installed/order-policy.js",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "bb6c68e405460541c91c9e16891644de3c3fc4f7",
+      "bytes": 7376,
+      "sha256": "16bddaa7d18600f9f09dac7b5fb4999a141c86aab1fb15d3e9d6abc24e1cf301"
+    },
+    {
+      "path": "raw/openssl-intent.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "7cc970c43dbe748a780ef671da8e11f2880f3040",
+      "bytes": 237,
+      "sha256": "139b6e44e69868136eaf8d869c3fdcda74535b13ad3e7c9b4560b7d22fbdd395"
+    },
+    {
+      "path": "raw/openssl-start-ack.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dc07e939471ac9d183816d84923da99d9c5782de",
+      "bytes": 1068,
+      "sha256": "faf390818d56a83db250c8f510f2ab6662f03ffe173ae44b70d646bcce96c220"
+    },
+    {
+      "path": "raw/openssl-authority.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3d2433bb0cd254c8bfea0d061ccbce83e589296d",
+      "bytes": 728,
+      "sha256": "f1e1ff932673fd0410dcfee3263cf7d69a77bd2aa988532691ea2382e649cc6e"
+    },
+    {
+      "path": "raw/openssl-process-read.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "53e928f81e3ce78f4e5f8d16886a055f447f303f",
+      "bytes": 7749,
+      "sha256": "2103a1e0e1606f83709236ccba4d2d9c2325b99bdcaf86a5f2f29c26b4d6d6b1"
+    },
+    {
+      "path": "raw/openssl.stdout",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "raw/openssl.stderr",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "11fff53dfeca67690a3805eb5ea7db2e23e57465",
+      "bytes": 2459,
+      "sha256": "d1debd5d7739adf5504cef5d584440f8a17991893000ae1a59927bd2100e74b8"
+    },
+    {
+      "path": "raw/openssl-file-info-after.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3194d65f17b64cf44b0eac8e5a4cccc5edac6601",
+      "bytes": 417,
+      "sha256": "71bfe1aa7ad284c118c60c0817113a2113d3d55770cd62c651b87b34c6c04fc6"
+    },
+    {
+      "path": "assessment.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3c35618b768b7e06b42fa3489c4403709b4c13a1",
+      "bytes": 5777,
+      "sha256": "81ce77ef3c9dae69d9821b03857e2d7b14f49848209d613b05eb5f5a54da43e1"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "49c259e27378e31fdbb08edad3a4578990f0e638",
+      "bytes": 1583,
+      "sha256": "1a2f8cdafbd3eb2b531d0f633bdedde7c9f5db9e2367890f3a40c0eb1b16956b"
+    },
+    {
+      "path": "local-verification.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3f708b10758de4e9d306986afca94aa840c35bc4",
+      "bytes": 718,
+      "sha256": "59bb147a806848b796fb3dd33ba3cd5dd3c69b27d0fcc5b675ef0e6a7d15528a"
+    }
+  ],
+  "total_payload_bytes": 287927
+}

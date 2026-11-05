@@ -1,0 +1,369 @@
+--- before/native_v6_pocket_source_postrecovery_cold_r10_r1.py
++++ candidate/native_v6_pocket_source_postrecovery_cold_r10_r2.py
+@@ -3,7 +3,8 @@
+ 
+ All three stores complete the original real cold unseals before choosing
+ Pocket4 as the sole intact ciphertext source. The original three stop calls
+-are ordered2, then1/3 after a real two-voter committed-frontier observation.
++are ordered2, then1/3 after one owned CAS0 witness and its metadata deletion
++produce a real two-voter committed-frontier observation.
+ Both missing stores still form
+ the actual Raft election. If their actual leader is not Mac, this direction
+ is uncovered and this fresh fixture stops before the target unseal.
+@@ -34,10 +35,10 @@
+ pre.add_argument('--describe-contract', action='store_true')
+ options, remaining = pre.parse_known_args()
+ SOURCE = options.candidate_source.resolve(strict=True)
+-NUMERIC_HELPER = Path(__file__).resolve().with_name('read_stopped_postrecovery_frontier_r1.py')
+-NUMERIC_HELPER_SHA256 = 'e951cca69fdc9e85dfd68b4af46b2a0cb01f7caae9ba24b9f0d16c985d476f43'
+-CIPHER_HELPER = Path(__file__).resolve().with_name('read_stopped_recovered_cipher_r1.py')
+-CIPHER_HELPER_SHA256 = '096792825beee8577a9cbd33fe039e08a284a2186ce485131ac6b74ee56cc956'
++NUMERIC_HELPER = Path(__file__).resolve().with_name('read_stopped_postrecovery_frontier_r2.py')
++NUMERIC_HELPER_SHA256 = '5515c6319ab577bed00260caa3bdec9ec730a0c057fb2fdfbfe9debd0afa8d77'
++CIPHER_HELPER = Path(__file__).resolve().with_name('read_stopped_recovered_cipher_r2.py')
++CIPHER_HELPER_SHA256 = 'a0b9685bd28512cefc62e09d2d61717b4a11229ab2e1e1ddc1d9cf7be3a87d64'
+ DEADLINE_QA = Path(__file__).resolve().with_name('deadline_qa')
+ DEADLINE_QA_PINS = {
+     "ha_multihost_live.py": "e37e39459f290c8b9121039196038c9021607e86ed4112def8060d20b1233460",
+@@ -125,6 +126,7 @@
+         self.source_files[str(own)] = base.sha256_file(own)
+         self.source_files[str(NUMERIC_HELPER)] = NUMERIC_HELPER_SHA256
+         self.direction_numeric_dispatched = set()
++        self.direction_witness_attempted = False
+         if CONTROLLER_UNTIL is None:
+             raise base.FixtureError('postcold_original_controller_deadline_missing')
+         self.controller_until = CONTROLLER_UNTIL
+@@ -158,7 +160,10 @@
+             'leader_selection_forced': False,
+             'directional_numeric_reads': [],
+             'numeric_helper_sha256': NUMERIC_HELPER_SHA256,
+-            'new_readonly_preparation_seconds': 60,
++            'new_role_preparation_seconds': 60,
++            'role_preparation_additional_mutations': 2,
++            'witness_is_separate_from_original98_and_extra12': True,
++            'prior_postcold_failure_summary_sha256': 'ab2819fdcf4deed633fa2b2413a0de0990fa258ef2f1fffcdd8de0f4dc38fc5a',
+             'new_numeric_read_seconds': 15,
+             'new_numeric_ssh_seconds': 45,
+             'canonical_original_workflow_unchanged': False,
+@@ -239,6 +244,262 @@
+                    public_result_sha256=row["public_result_sha256"])
+         return projection
+ 
++    @staticmethod
++    def _direction_log_id_key(value):
++        if type(value) is not dict or set(value) != {"leader_id", "index"}:
++            raise base.FixtureError("direction_full_log_id_shape")
++        leader = value["leader_id"]
++        if type(leader) is not dict or set(leader) != {"term", "node_id"}:
++            raise base.FixtureError("direction_full_leader_id_shape")
++        numbers = (leader["term"], leader["node_id"], value["index"])
++        if any(type(number) is not int or not 0 <= number <= (1 << 64) - 1
++               for number in numbers):
++            raise base.FixtureError("direction_full_log_id_u64")
++        # Exact pinned OpenRaft advanced LeaderId and LogId derived Ord order.
++        return numbers
++
++    @classmethod
++    def _direction_committed_vote_key(cls, value):
++        if (type(value) is not dict or set(value) != {"leader_id", "committed"}
++                or value["committed"] is not True):
++            raise base.FixtureError("direction_committed_vote_shape")
++        return cls._direction_log_id_key({"leader_id": value["leader_id"], "index": 0})[:2]
++
++    def _direction_ledger_counts(self):
++        receipt = self.recovery.public_receipt
++        names = ("mutation_intents", "mutation_responses", "unknown_transport_outcomes")
++        if (any(type(receipt.get(name)) is not int or receipt[name] < 0 for name in names)
++                or type(self.recovery.sequence) is not int
++                or self.recovery.sequence != receipt["mutation_intents"]
++                or receipt["mutation_intents"] != receipt["mutation_responses"]
++                or receipt["unknown_transport_outcomes"] != 0):
++            raise base.FixtureError("direction_witness_requires_all_known_mutations")
++        return {"sequence": self.recovery.sequence, **{name: receipt[name] for name in names}}
++
++    def _direction_witness_mutations_known(self, before, count):
++        after = self._direction_ledger_counts()
++        if (after["sequence"] != before["sequence"] + count
++                or after["mutation_intents"] != before["mutation_intents"] + count
++                or after["mutation_responses"] != before["mutation_responses"] + count):
++            raise base.FixtureError("direction_witness_mutation_count_changed")
++        return after
++
++    def _direction_witness_get(self, node, path, until):
++        remaining = base.parent_remaining(until, 2.0)
++        status, body = self.request(node, "GET", path, authenticate=False,
++                                    timeout=remaining, parent_deadline=until)
++        base.parent_remaining(until, 2.0)
++        return status, body
++
++    def _direction_witness_actual_leader(self, nodes, until, report):
++        while True:
++            base.parent_remaining(until, 2.0)
++            rows = report["leader_observations"]
++            if len(rows) >= 512:
++                raise base.FixtureError("direction_witness_leader_observation_bound")
++            row = {"health": []}
++            rows.append(row)
++            active = []
++            for node in nodes:
++                # A transport exception propagates. There is no new read retry
++                # after an unobserved response, and never a mutation retry.
++                status, body = self._direction_witness_get(node, "sys/health", until)
++                row["health"].append({"node": node.node_id, "status": status})
++                if status == 200:
++                    if (body.get("ha_active") is not True
++                            or body.get("ha_application_ready") is not True
++                            or body.get("standby") is not False or body.get("sealed") is not False):
++                        raise base.FixtureError("direction_witness_health_not_ready_leader")
++                    active.append(node)
++            if len(active) > 1:
++                raise base.FixtureError("direction_witness_multiple_actual_leaders")
++            if len(active) == 1:
++                leader = active[0]
++                status, body = self._direction_witness_get(leader, "sys/leader", until)
++                frontier = base.parsed_local_frontier(body) if status == 200 else None
++                if body.get("is_self") is not True or frontier is None:
++                    raise base.FixtureError("direction_witness_actual_leader_not_confirmed")
++                row.update(leader_node=leader.node_id, frontier=list(frontier))
++                return leader, frontier
++            time.sleep(base.parent_remaining(until, 0.1))
++
++    def _direction_commit_witness(self, mac, healthy, stopped_rog, until):
++        if self.direction_witness_attempted:
++            raise base.FixtureError("direction_witness_would_be_repeated")
++        self.direction_witness_attempted = True
++        base.parent_remaining(until, 15.0)
++        if (mac.node_id != 1 or healthy.node_id != 3 or mac not in self.started
++                or healthy not in self.started or any(node.node_id == 2 for node in self.started)):
++            raise base.FixtureError("direction_witness_requires_live_one_three_quorum")
++        old_last = self._direction_log_id_key(stopped_rog.get("last_log_id"))
++        old_committed = self._direction_log_id_key(stopped_rog.get("committed_log_id"))
++        old_vote = self._direction_committed_vote_key(stopped_rog.get("final_vote"))
++        if old_committed > old_last or old_vote < old_last[:2]:
++            raise base.FixtureError("direction_witness_stopped_baseline_order")
++        if (not isinstance(self.run_id, str) or len(self.run_id) != 32
++                or any(char not in "0123456789abcdef" for char in self.run_id)):
++            raise base.FixtureError("direction_witness_fresh_run_id_shape")
++        prefix = "native-ha-" + self.run_id + "/"
++        path = prefix + "direction-prepare-witness"
++        if self.path != prefix + "history" or path in self.acknowledged:
++            raise base.FixtureError("direction_witness_must_not_alias_original_keys")
++        before_state = native.canonical({"path": self.path, "history": self.history,
++                                         "retired": self.retired, "acknowledged": self.acknowledged})
++        before = self._direction_ledger_counts()
++        row = {"schema": "heptabao.direction-owned-commit-witness.v1",
++               "fixture_run_id": self.run_id, "path": path, "once_attempt": True,
++               "synthetic_only": True, "production_authority": False,
++               "expected_cas": 0, "expected_version": 1, "body_bound_bytes": 1024,
++               "ledger_before": before, "leader_observations": [],
++               "write_request_called": False, "delete_request_called": False,
++               "write_returned": False, "delete_returned": False,
++               "mac_exact_read_confirmed": False, "mac_absence_confirmed": False,
++               "mac_metadata_absence_confirmed": False,
++               "same_scope_cleanup_confirmed": False, "completed": False,
++               "original_key_lists_sha256": hashlib.sha256(before_state).hexdigest(),
++               "witness_added_to_history_or_acknowledged": False,
++               "http_outcomes_alone_do_not_prove_durable_commit": True}
++        self.report["directional_role_preparation"]["committed_witness"] = row
++        self.event("direction_committed_witness_scope_intent", witness=row)
++        leader, before_frontier = self._direction_witness_actual_leader([mac, healthy], until, row)
++        row.update(actual_leader_node=leader.node_id, leader_frontier_before=list(before_frontier))
++        value = {"value": native.secrets.token_hex(24)}
++        body = {"options": {"cas": 0}, "data": value}
++        if len(native.canonical(body)) > 1024:
++            raise base.FixtureError("direction_witness_body_bound")
++        expected = native.data_digest(value)
++        row["data_sha256"] = expected
++        base.parent_remaining(until, 15.0)
++        row["write_request_called"] = True
++        status, response = self.request(leader, "POST", "secret/data/" + path, body,
++                                        timeout=15, parent_deadline=until)
++        row.update(write_returned=True, write_status=status,
++                   write_sequence=self.recovery.sequence)
++        self._direction_witness_mutations_known(before, 1)
++        data = response.get("data") if isinstance(response, dict) else None
++        if (status != 200 or not isinstance(data, dict)
++                or type(data.get("version")) is not int or data["version"] != 1):
++            raise base.FixtureError("direction_witness_cas0_not_acknowledged_once")
++        base.parent_remaining(until, 15.0)
++        self.exact_read(mac, path, expected, parent_deadline=until)
++        base.parent_remaining(until, 15.0)
++        row["mac_exact_read_confirmed"] = True
++        if native.canonical({"path": self.path, "history": self.history,
++                             "retired": self.retired, "acknowledged": self.acknowledged}) != before_state:
++            raise base.FixtureError("direction_witness_changed_original_key_lists")
++        # This is the only cleanup mutation; never call it in an exception or
++        # finally path and never delete the original history/acknowledged keys.
++        row["delete_request_called"] = True
++        status, _ = self.request(leader, "DELETE", "secret/metadata/" + path,
++                                 timeout=15, parent_deadline=until)
++        row.update(delete_returned=True, delete_status=status,
++                   delete_sequence=self.recovery.sequence)
++        self._direction_witness_mutations_known(before, 2)
++        if status != 204:
++            raise base.FixtureError("direction_witness_metadata_delete_not_acknowledged_once")
++        base.parent_remaining(until, 15.0)
++        self.absent(mac, path, parent_deadline=until)
++        base.parent_remaining(until, 15.0)
++        row["mac_absence_confirmed"] = True
++        metadata_status, metadata = self.request(mac, "GET", "secret/metadata/" + path,
++                                                  timeout=15, parent_deadline=until)
++        base.parent_remaining(until, 15.0)
++        if metadata_status != 404 or metadata.get("data") not in (None, {}):
++            raise base.FixtureError("direction_witness_mac_metadata_still_present")
++        row["mac_metadata_absence_confirmed"] = True
++        if leader != mac:
++            self.absent(leader, path, parent_deadline=until)
++            base.parent_remaining(until, 15.0)
++        row["same_scope_cleanup_confirmed"] = True
++        status, local = self._direction_witness_get(leader, "sys/leader", until)
++        leader_frontier = base.parsed_local_frontier(local) if status == 200 else None
++        if leader == mac:
++            mac_frontier = leader_frontier
++        else:
++            mac_status, mac_local = self._direction_witness_get(mac, "sys/leader", until)
++            mac_frontier = base.parsed_local_frontier(mac_local) if mac_status == 200 else None
++        if (local.get("is_self") is not True or leader_frontier is None or mac_frontier is None
++                or leader_frontier[0] != leader_frontier[1]
++                or leader_frontier[0] <= max(old_last[2], before_frontier[0])
++                or mac_frontier[0] != mac_frontier[1] or mac_frontier[1] < leader_frontier[0]):
++            raise base.FixtureError("direction_witness_postdelete_frontier_not_observed")
++        if native.canonical({"path": self.path, "history": self.history,
++                             "retired": self.retired, "acknowledged": self.acknowledged}) != before_state:
++            raise base.FixtureError("direction_witness_changed_original_key_lists")
++        after = self._direction_witness_mutations_known(before, 2)
++        row.update(ledger_after=after, known_mutations=2,
++                   leader_frontier_after_delete=list(leader_frontier),
++                   mac_frontier_after_delete=list(mac_frontier),
++                   original_key_lists_unchanged=True)
++        self.event("direction_committed_witness_known_and_deleted", witness=row)
++        completed = time.monotonic()
++        if completed >= until:
++            raise base.FixtureError("direction_witness_publication_after_prepare_deadline")
++        row.update(completed=True, within_shared_prepare_deadline=True)
++        return row
++
++    def _direction_verify_witness_frontier(self, rog, mac, frontier, pre_stop_rog, until):
++        base.parent_remaining(until, 15.0)
++        witness = self.report["directional_role_preparation"].get("committed_witness", {})
++        if (witness.get("completed") is not True or witness.get("known_mutations") != 2
++                or witness.get("mac_exact_read_confirmed") is not True
++                or witness.get("mac_absence_confirmed") is not True
++                or witness.get("mac_metadata_absence_confirmed") is not True
++                or witness.get("same_scope_cleanup_confirmed") is not True
++                or witness.get("original_key_lists_unchanged") is not True
++                or self._direction_witness_mutations_known(witness["ledger_before"], 2)
++                    != witness.get("ledger_after")):
++            raise base.FixtureError("direction_witness_terminal_not_proven")
++        old_last = self._direction_log_id_key(rog.get("last_log_id"))
++        old_committed = self._direction_log_id_key(rog.get("committed_log_id"))
++        new_last = self._direction_log_id_key(mac.get("last_log_id"))
++        new_committed = self._direction_log_id_key(mac.get("committed_log_id"))
++        old_vote = self._direction_committed_vote_key(rog.get("final_vote"))
++        new_vote = self._direction_committed_vote_key(mac.get("final_vote"))
++        if (not old_committed <= old_last < new_committed <= new_last
++                or old_vote < old_last[:2] or new_vote < old_vote
++                or new_vote != new_committed[:2] or new_last[:2] > new_vote
++                or new_committed[2] <= old_last[2]
++                or old_committed[2] < pre_stop_rog["committed_index"]
++                or old_committed[2] < pre_stop_rog["applied_index"]
++                or new_committed[2] != frontier["mac_applied_index"]
++                or new_committed[2] < witness["leader_frontier_after_delete"][0]
++                or frontier["leader_node"] != witness["actual_leader_node"]):
++            raise base.FixtureError("direction_full_log_or_committed_vote_regressed")
++        self.report["directional_role_preparation"]["full_order_proof"] = {
++            "exact_order": ["term", "node_id", "index"],
++            "old_committed": list(old_committed), "old_last": list(old_last),
++            "new_committed": list(new_committed), "new_last": list(new_last),
++            "old_committed_vote": list(old_vote), "new_committed_vote": list(new_vote),
++            "old_committed_le_old_last_lt_new_committed_le_new_last": True,
++            "committed_vote_nondecreasing": True,
++            "witness_postdelete_frontier_retained": True,
++            "stopped_rog_did_not_generate_the_new_log": True,
++            "does_not_predict_actual_election_result": True}
++        if new_committed[0] > max(old_last[0], old_vote[0]):
++            self.report["directional_role_preparation"]["frontier_branch"] = "original-higher-term"
++            return self._direction_verify_prepared_frontier(rog, mac, frontier, pre_stop_rog, until)
++        if not old_last[:2] == old_committed[:2] == old_vote == new_committed[:2] == new_vote:
++            raise base.FixtureError("direction_same_leader_branch_not_exact")
++        if (new_committed[1] != frontier["leader_node"] or new_committed[1] not in (1, 3)
++                or new_last[2] < new_committed[2]):
++            raise base.FixtureError("direction_same_leader_frontier_not_proven")
++        self.report["directional_role_preparation"]["frontier_branch"] = "same-committed-leader-witness"
++        proof = {"stopped_rog_last": rog["last_log_id"], "stopped_rog_committed": rog["committed_log_id"],
++                 "stopped_rog_vote": rog["final_vote"], "stopped_mac_last": mac["last_log_id"],
++                 "stopped_mac_committed": mac["committed_log_id"], "stopped_mac_vote": mac["final_vote"],
++                 "mac_passive_applied_index": frontier["mac_applied_index"],
++                 "numeric_preparation_proven": True,
++                 "same_committed_leader_exact": True,
++                 "this_does_not_assert_next_actual_leader": True}
++        self.report["directional_role_preparation"]["persisted_frontier_proof"] = proof
++        self.event("direction_preparation_complete", **proof)
++        completed = time.monotonic()
++        if completed >= until:
++            raise base.FixtureError("direction_preparation_completion_after_deadline")
++        proof["within_new_total_prepare_deadline"] = True
++        proof["new_total_prepare_elapsed_seconds"] = 60.0 - (until - completed)
++
+     def _direction_quorum_frontier(self, nodes, stopped_rog, until):
+         baseline = stopped_rog.get("last_log_id")
+         if not isinstance(baseline, dict) or type(baseline.get("index")) is not int:
+@@ -251,7 +512,7 @@
+             if remaining <= 0:
+                 raise base.FixtureError("direction_preparation_deadline_expired")
+             status, body = self.request(node, "GET", path, authenticate=False,
+-                                        timeout=min(2.0, remaining))
++                                        timeout=min(2.0, remaining), parent_deadline=until)
+             if time.monotonic() >= until:
+                 raise base.FixtureError("direction_preparation_reply_after_deadline")
+             return status, body
+@@ -302,7 +563,9 @@
+                 row["mac_frontier"] = list(mac_frontier) if mac_frontier else None
+                 eligible = (local.get("is_self") is True and leader_frontier is not None
+                             and mac_frontier is not None and mac_frontier[0] == mac_frontier[1]
+-                            and mac_frontier[1] >= leader_frontier[0] > baseline["index"])
++                            and mac_frontier[1] >= leader_frontier[0] > baseline["index"]
++                            and leader.node_id == self.report["directional_role_preparation"]["committed_witness"]["actual_leader_node"]
++                            and leader_frontier[0] >= self.report["directional_role_preparation"]["committed_witness"]["leader_frontier_after_delete"][0])
+                 now = time.monotonic()
+                 if eligible and now < until:
+                     if candidate == leader and now - since >= 2.2:
+@@ -388,18 +651,19 @@
+             "new_total_prepare_seconds": 60, "pre_stop_rog": pre_stop_rog,
+             "observations": [], "leader_selection_forced": False}
+         self.stop(rog)
+-        prepare_until = time.monotonic() + 60.0
++        prepare_until = min(time.monotonic() + 60.0, self.controller_until)
+         stopped_rog = self._direction_read_numeric(rog, until=prepare_until)
++        self._direction_commit_witness(mac, healthy, stopped_rog, prepare_until)
+         frontier = self._direction_quorum_frontier([mac, healthy], stopped_rog, prepare_until)
+-        self.stop(mac)
++        self.stop(mac, parent_deadline=prepare_until)
+         if time.monotonic() >= prepare_until:
+             raise base.FixtureError("direction_preparation_deadline_expired")
+-        self.stop(healthy)
++        self.stop(healthy, parent_deadline=prepare_until)
+         if time.monotonic() >= prepare_until:
+             raise base.FixtureError("direction_preparation_deadline_expired")
+         self.check("missing_cipher_targets_stopped", not self.started)
+         stopped_mac = self._direction_read_numeric(mac, until=prepare_until)
+-        self._direction_verify_prepared_frontier(stopped_rog, stopped_mac, frontier,
++        self._direction_verify_witness_frontier(stopped_rog, stopped_mac, frontier,
+                                                  pre_stop_rog, prepare_until)
+         missing = [node for node in self.nodes if node != healthy]
+         inventories = {node: cipher_inventory(node, self.run_id, "quarantine") for node in missing}
+@@ -863,6 +1127,14 @@
+         'controlled_stop_order': [2, 1, 3],
+         'original_stop_count_preserved': 3,
+         'new_role_prepare_seconds': 60,
++        'role_prepare_clipped_to_original_controller': True,
++        'witness_additional_mutation_limit': 2,
++        'witness_write_cas': 0, 'witness_cleanup': 'same-key-metadata-delete',
++        'witness_requires_mac_exact_read_and_absence': True,
++        'witness_excluded_from_history_acknowledged_and_check_denominators': True,
++        'original_higher_term_guard_unchanged': True,
++        'same_leader_requires_old_last_committed_vote_exact': True,
++        'full_log_id_order': ['term', 'node_id', 'index'],
+         'new_numeric_read_seconds': 15, 'new_numeric_ssh_seconds': 45,
+         'original_sealed_election_seconds': 60,
+         'real_new_committed_frontier_required_before_quarantine': True,

@@ -1,0 +1,50 @@
+diff --git a/mac_complete_source_append_inert_r3.py b/mac_complete_source_append_inert_r3.py
+--- a/mac_complete_source_append_inert_r3.py
++++ b/mac_complete_source_append_inert_r3.py
+@@ -28,16 +28,16 @@
+ ]
+ PINS={
+     "mac_current_outer_r3.py": [
+-        58586,
+-        "986194f0da2d278986589d5ec757fb50a040182db6f610addba9469ee97e1be5"
++        59477,
++        "5ecc57805f1fb2b162c38d28d28debe5e035ca3135db6b1b7df55daa6227df50"
+     ],
+     "mac_current_outer_inputs_r1.py": [
+         24973,
+         "be5da65ce3bd98586d36b11edba6a4619600b74fbabb93050a3325e89e9ed254"
+     ],
+     "mac_current_fixture_materializer_r1.py": [
+-        23631,
+-        "9ae14eccdec7742c31df92fede042acac68514b3713ef8cb751cb8f456fb1526"
++        23643,
++        "f766ba33f22230d78e635477b35e527e7815452e591e7bc7a03fa2ae6c902b7f"
+     ],
+     "mac_current_capture_entry_r1.py": [
+         19011,
+@@ -52,8 +52,8 @@
+         "3932ddada69310b700b7b6aafd325202c1deda84c2f12d711e27d022111bdfb6"
+     ],
+     "mac_current_phase_owner_r2.py": [
+-        25005,
+-        "42520fe933e2c0106e6983a282421759b260a2bf48a08f86d0f404caa3f2eb86"
++        24971,
++        "bbf3636f4323e3e990204c8ea04c986f8740b3f34fa966a937f947b767ee15c4"
+     ],
+     "mac_native_process_observer_r1.py": [
+         13423,
+@@ -179,11 +179,11 @@
+     ],
+     "candidate-current-manager-r3.public.json": [
+         3442,
+-        "2a5da6b02650c2ecf2134f68de90c4698a48757988f3b021e6015e74cc6bff03"
++        "d52eda7e781aae0e5af5aa4edb324271c8b3e4340a38a5a840e60e9dafc62e92"
+     ]
+ }
+-PAYLOAD_BYTES=513624
+-PAYLOAD_SHA='f819276fa24fc5f4d7136ccb7f382db3897bea82aea6ee25172d5edce0f7163a'
++PAYLOAD_BYTES=514784
++PAYLOAD_SHA='1b0f91901d2ca1176429dfdfa3ad5c804aca9ca00efadccf96f41233d98b5556'
+ ANCHOR_SHA='dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8'
+ protected=0;pending=None
+ class Refused(RuntimeError):pass

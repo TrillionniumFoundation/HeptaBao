@@ -1,0 +1,16 @@
+{
+  "exactNativePayloadSnapshots": [
+    "36a32120d2b1953c32c1fd1fcad63445b5e9f226",
+    "6e7e1b3f306d509c5ff6eef5756d9d9a37a0acb3",
+    "adeb7022a39092b1f5a0cf8f2f58c7f069d3bbc2"
+  ],
+  "originalRpcSerializationClaimed": false,
+  "runtimeIntentEqualsProposal": true,
+  "runtimeDispatched": false,
+  "ack_exact_to_request": true,
+  "ack_job": "1a1a968c3e6-fc05-3501",
+  "ack_reused": false,
+  "ack_blob": "0d8a573a5a02540a37cfd79d0b9913ab180e67ab",
+  "unsafe_fingerprint_preserved_as_original_text": true,
+  "ha_final_required98_exact_match": true
+}

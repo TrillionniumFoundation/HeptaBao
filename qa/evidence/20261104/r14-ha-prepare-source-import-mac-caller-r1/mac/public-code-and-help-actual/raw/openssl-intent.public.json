@@ -1,0 +1,12 @@
+{
+  "host": "mac",
+  "executable": "/usr/bin/openssl",
+  "args": [
+    "req",
+    "-help"
+  ],
+  "cwd": "/Users/qianqi",
+  "stdin": "",
+  "timeout_seconds": 15,
+  "idempotency_key": "heptabao-mac-openssl-req-help-f81b4fce-20261105-r1"
+}

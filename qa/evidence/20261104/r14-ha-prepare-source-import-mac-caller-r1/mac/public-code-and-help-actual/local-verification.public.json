@@ -1,0 +1,17 @@
+{
+  "schema": "heptabao.mac.public-source-observation-local-verification.v1",
+  "first_verifier_attempt": {
+    "status": "failed",
+    "reason": "Expected historical sourcePins[path] to be an object with sha256/bytes; actual frozen schema is a direct SHA256 string.",
+    "source_or_host_failure": false
+  },
+  "corrected_verification": {
+    "actual_schema_used": "sourcePins[absolutePath] = SHA256 string",
+    "three_whole_reads_match_full_binary_representation_and_exact_version": true,
+    "installed_two_sources_match_historical_sha256": true,
+    "source_sizes_bound_by_actual_file_info": true,
+    "openssl_before_after_raw_fileinfo_equal": true
+  },
+  "remote_retries": 0,
+  "raw_evidence_modified": false
+}

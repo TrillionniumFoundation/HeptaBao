@@ -1,0 +1,11 @@
+--- blocked/launcher-entry-assertion.review.diff
++++ corrected/launcher-entry-assertion.review.diff
+@@ -211,7 +211,7 @@
+ parser.add_argument('--prepared-sha256')
+ option = parser.parse_args()
+ require_bound_artifact_pins()
+-assert Path(__file__).resolve(strict=True) == CONTROL / 'launch_normal_r10_pocket_postrecovery_cold_r1.py'
++assert Path(__file__).resolve(strict=True) == CONTROL / 'launch_normal_r10_pocket_postrecovery_cold_r2.py'
+ assert CONTROL.resolve(strict=True) == CONTROL
+ assert CONTROL.stat().st_uid == os.getuid() and stat.S_IMODE(CONTROL.stat().st_mode) == 0o700
+ assert not WORK.exists() and not WORK.is_symlink()

@@ -1,0 +1,111 @@
+--- reference-actual-3cb/receiver.py
++++ draft-source-carrier/receiver.py
+@@ -7,37 +7,28 @@
+ TREE='7f4d48a647a81ca96e8a24a0a057c2c829459060'
+ FILES=[
+  {
+-  "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/artifacts/heptabao-server",
+-  "name": "heptabao-server",
+-  "bytes": 109074848,
+-  "sha256": "437723d26976b23628a5b5058b4b89e00923b8e0f1b9604045a47e8e34459da0",
+-  "source_mode": 320,
+-  "target_mode": 320,
+-  "version": "66306:28096634:109074848:1793832489924040522:1793832490062039381"
++  "bytes": 23335023,
++  "name": "canonical-3cb-full.bundle",
++  "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/canonical-3cb-full.bundle",
++  "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
++  "source_mode": 384,
++  "target_mode": 256,
++  "version": "66306:28324895:23335023:1793839385060504547:1793839385063504533"
+  },
+  {
+-  "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/native-build.public.json",
+-  "name": "native-build.public.json",
+-  "bytes": 794,
+-  "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce",
++  "bytes": 39965,
++  "name": "source-export.result.public.json",
++  "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/result.public.json",
++  "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
+   "source_mode": 384,
+   "target_mode": 256,
+-  "version": "66306:28096637:794:1793832490491671044:1793832490491671044"
+- },
+- {
+-  "path": "/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3/normal-release-tests-r1/normal-release-result.public.json",
+-  "name": "normal-release-result.public.json",
+-  "bytes": 3200,
+-  "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f",
+-  "source_mode": 384,
+-  "target_mode": 256,
+-  "version": "66306:28096636:3200:1793832490490761645:1793832490490761645"
++  "version": "66306:28324969:39965:1793839385327147652:1793839385327147652"
+  }
+ ]
+ protected=0
+ pending_signal=None
+ children=[]
+-result={'schema':'heptabao.phaseb3cb.fixed-public-artifacts-endpoint.v1','status':'failed',
++result={'schema':'heptabao.phaseb3cb.fixed-public-source-endpoint.v1','status':'failed',
+         'request_seconds':90,'git_operations':0,'server_started':False,'compiler_started':False}
+ class Cancelled(BaseException):pass
+ def handler(sig,_frame):
+@@ -113,7 +104,7 @@
+   sys.stderr.write(json.dumps(result,sort_keys=True)+'\n');sys.stderr.flush()
+  sys.exit(0 if result['status']=='complete' and time.monotonic()<UNTIL else 1)
+ 
+-ROOT=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-shared-artifacts-r1')
++ROOT=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1')
+ DESTINATION=ROOT/'incoming'
+ def receive():
+  assert (platform.system(),platform.machine(),os.getuid())==('Linux','x86_64',1000)
+@@ -150,19 +141,28 @@
+   finally:os.close(fd)
+  assert select.select([0],[],[],remaining())[0]
+  assert os.read(0,1)==b'','unexpected artifact stream trailer'
+- native=json.loads(json_bytes['native-build.public.json'])
+- build=json.loads(json_bytes['normal-release-result.public.json'])
+- assert native['source_commit']==build['source_commit']==HEAD
+- assert native['source_tree']==build['source_tree']==TREE
+- assert native['binary_sha256']==build['artifacts']['heptabao-server']['sha256']==FILES[0]['sha256']
+- assert build['artifacts']['heptabao-server']['bytes']==FILES[0]['bytes']
+- assert native['provenance']['result_sha256']==FILES[2]['sha256']
+- assert native['build_exit_code']==build['build_exit_code']==0
+- assert native['features']==build['artifacts']['heptabao-server']['features']==['default','native-v6-ha','native-v6-storage']
+- assert native['native_abi']==build['native_abi']=='x86_64-unknown-linux-gnu'
+- assert native['source_freeze_verified'] and build['source_freeze_verified']
+- assert build['normal_default_candidate'] and build['build_finished_success']
+- assert not build['timed_out'] and not build['owned_group_survivors_after_wait']
++ exported=json.loads(json_bytes['source-export.result.public.json'])
++ assert exported['schema']=="heptabao.phaseb.rog-3cb-standalone-source-export.v1"
++ assert exported['status']=='exported' and exported['all_owned_stopped']
++ assert exported['canonical_commit']==HEAD and exported['canonical_tree']==TREE
++ assert exported['canonical_proof']=={'commit':HEAD,'tree':TREE,
++      'parents':['bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'],
++      'root':'67d79b3b5442ed033d38929eab2010403463e56d','commit_count':3755,'full_fsck_passed':True}
++ assert exported['expected_prerequisites']==[] and exported['expected_full_commit_count']==3755
++ assert exported['source_before']==exported['source_after']
++ assert exported['source_before']['head']==HEAD and exported['source_before']['tree']==TREE
++ assert exported['source_before']['clean'] and exported['source_before']['independent_git_directory']
++ assert exported['controller']['bytes']==15352
++ assert exported['controller']['sha256']=='7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a'
++ assert exported['bundle']['path']==FILES[0]['path']
++ assert exported['bundle']['bytes']==FILES[0]['bytes'] and exported['bundle']['sha256']==FILES[0]['sha256']
++ assert exported['bundle']['header']['prerequisites']==[]
++ assert exported['bundle']['header']['heads']==[[HEAD,'HEAD']]
++ assert exported['deadline_before_receipt_passed'] and exported['overall_seconds']==300
++ assert exported['git_command_seconds']==90 and exported['elapsed_seconds']<300
++ assert len(exported['cleanup'])==27 and all(row['direct_child_reaped'] and row['remaining']==[] for row in exported['cleanup'])
++ assert not exported['network_git_protocols_enabled'] and not exported['server_started'] and not exported['compiler_started']
++ assert not exported['source_imported'] and not exported['runtime_qualification'] and exported['product_tests_executed']==0
+  assert sorted(os.listdir(DESTINATION))==sorted(x['name'] for x in FILES)
+  dirfd=os.open(DESTINATION,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
+  try:os.fchmod(dirfd,0o500);os.fsync(dirfd)
+@@ -170,5 +170,5 @@
+  dir_fsync(ROOT);remaining()
+  result.update(role='receiver',source_commit=HEAD,source_tree=TREE,files=results,
+       destination_created_exclusive=True,destination_directory_mode=0o500,
+-      destination_fsynced=True,raw_receipts_preserved=True,normal_release_provenance_verified=True)
++      destination_fsynced=True,raw_receipts_preserved=True,source_export_provenance_verified=True)
+ run_and_report(receive)

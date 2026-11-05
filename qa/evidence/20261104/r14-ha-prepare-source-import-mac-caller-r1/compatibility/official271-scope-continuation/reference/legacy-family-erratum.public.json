@@ -1,0 +1,76 @@
+{
+  "schema": "heptabao.official271-legacy59-family-erratum.v1",
+  "status": "SOURCE_ONLY_EXACT_INTERSECTION_CORRECTION",
+  "original_packet_tree": "53081eed42653db1b8f51b840b7eb4b89e3bf7cb",
+  "independent_review_tree": "33baf0adb4e9132864e98d5408dc01b8dace5b2c",
+  "original": {
+    "bytes": 46804,
+    "sha256": "dcfee224a9d41ce4d34f4c8a4b2374ba2cef2c1d70da124d58cc5bf012034a3b",
+    "blob": "c57450072b537aaefa8f797a4453d6c8ef3b0e86"
+  },
+  "corrected": {
+    "bytes": 46887,
+    "sha256": "4121176985ce93d79c462107cb99bceb6e6ff2a2d8627fccca413bbcaef81623",
+    "blob": "0073ca229eac1cfd21d85e93512805dce76961a4"
+  },
+  "diff": {
+    "bytes": 990,
+    "sha256": "4a9821a1f28b3f00df2bb3f8fa9f125040fd35a11ba729d811868137e5d49d3e",
+    "blob": "da23e547652e6c4a69ea7e4947dcdff7cb89c000",
+    "strict_apply_hunks": 3,
+    "whole_result_matches": true
+  },
+  "changes": [
+    {
+      "surface_id": "HB-SURFACE-MOUNT-REGISTRY",
+      "field": "bounded69_families",
+      "before": [],
+      "after": [
+        "kv",
+        "transit"
+      ],
+      "matching_actual_case_ids": [
+        "kv.mount",
+        "transit.mount"
+      ]
+    },
+    {
+      "surface_id": "HB-SURFACE-POLICY-ACL",
+      "field": "bounded69_families",
+      "before": [],
+      "after": [
+        "token"
+      ],
+      "matching_actual_case_ids": [
+        "token.policy",
+        "token.write_denied",
+        "token.denial_no_effect"
+      ]
+    },
+    {
+      "surface_id": "HB-SURFACE-LEASE-EXPIRATION",
+      "field": "bounded69_families",
+      "before": [],
+      "after": [
+        "pki"
+      ],
+      "matching_actual_case_ids": [
+        "pki.lease_expire_issue",
+        "pki.lease_expire_lookup"
+      ]
+    }
+  ],
+  "unchanged": {
+    "legacy_rows": 59,
+    "legacy_other_fields_exact": true,
+    "old_partial_statuses": true,
+    "all_current_whole_surface_qualification_false": true,
+    "bounded69_original_case_values": true,
+    "bounded69_source": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "security15_feature11_gates11_original_values": true,
+    "original13_file_packet_immutable": true
+  },
+  "qualification": "Family intersections do not add cases, prove whole-surface coverage, or transfer 495033 runtime qualification to diagnostic 3cb.",
+  "host_actions": 0,
+  "product_executions": 0
+}

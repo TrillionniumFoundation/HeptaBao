@@ -1,0 +1,1910 @@
+{
+  "schema": "heptabao-271-bounded69-actual-case-map-v1",
+  "source_receipt": {
+    "blob": "b5504a0a48e068f7366e9c354deb93974a1af5e6",
+    "sha256": "2b696bfbc041b72fe0f725cd32efaa0e66cf3a692f3a08857020ae1a3d8d332e"
+  },
+  "candidate_source": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "case_count": 69,
+  "counts": {
+    "approle": 3,
+    "core": 1,
+    "edge_tls": 1,
+    "identity": 6,
+    "kv": 18,
+    "operations": 1,
+    "pki": 12,
+    "system": 1,
+    "token": 10,
+    "totp": 2,
+    "transit": 10,
+    "userpass": 1,
+    "wrapping": 3
+  },
+  "case_rows": [
+    {
+      "id": "approle.invalid_secret_id_denied",
+      "candidate": {
+        "expected_http_status": [
+          400
+        ],
+        "http_status": 400,
+        "method": "POST",
+        "path_template": "/v1/auth/approle/login",
+        "result": "passed",
+        "semantics": {
+          "errors_present": true,
+          "no_auth": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          400
+        ],
+        "http_status": 400,
+        "method": "POST",
+        "path_template": "/v1/auth/approle/login",
+        "result": "passed",
+        "semantics": {
+          "errors_present": true,
+          "no_auth": true
+        }
+      }
+    },
+    {
+      "id": "approle.login",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/auth/approle/login",
+        "result": "passed",
+        "semantics": {
+          "default_policy": true,
+          "role_id_observed": true,
+          "secret_id_observed": true,
+          "token_issued": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/auth/approle/login",
+        "result": "passed",
+        "semantics": {
+          "default_policy": true,
+          "role_id_observed": true,
+          "secret_id_observed": true,
+          "token_issued": true
+        }
+      }
+    },
+    {
+      "id": "approle.secret_id_replay_denied",
+      "candidate": {
+        "expected_http_status": [
+          400
+        ],
+        "http_status": 400,
+        "method": "POST",
+        "path_template": "/v1/auth/approle/login",
+        "result": "passed",
+        "semantics": {
+          "errors_present": true,
+          "no_auth": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          400
+        ],
+        "http_status": 400,
+        "method": "POST",
+        "path_template": "/v1/auth/approle/login",
+        "result": "passed",
+        "semantics": {
+          "errors_present": true,
+          "no_auth": true
+        }
+      }
+    },
+    {
+      "id": "core.unknown_route_denied",
+      "candidate": {
+        "expected_http_status": [
+          404
+        ],
+        "http_status": 404,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-unsupported",
+        "result": "passed",
+        "semantics": {
+          "error_envelope": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          404
+        ],
+        "http_status": 404,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-unsupported",
+        "result": "passed",
+        "semantics": {
+          "error_envelope": true
+        }
+      }
+    },
+    {
+      "id": "edge_tls.health",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/sys/health",
+        "result": "passed",
+        "semantics": {
+          "initialized": true,
+          "unsealed": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/sys/health",
+        "result": "passed",
+        "semantics": {
+          "initialized": true,
+          "unsealed": true
+        }
+      }
+    },
+    {
+      "id": "identity.entity_create",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/identity/entity",
+        "result": "passed",
+        "semantics": {
+          "entity_created": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/identity/entity",
+        "result": "passed",
+        "semantics": {
+          "entity_created": true
+        }
+      }
+    },
+    {
+      "id": "identity.entity_delete",
+      "candidate": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "DELETE",
+        "path_template": "/v1/identity/entity/id/{entity_id}",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "DELETE",
+        "path_template": "/v1/identity/entity/id/{entity_id}",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "identity.entity_deleted",
+      "candidate": {
+        "expected_http_status": [
+          404
+        ],
+        "http_status": 404,
+        "method": "GET",
+        "path_template": "/v1/identity/entity/id/{entity_id}",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          404
+        ],
+        "http_status": 404,
+        "method": "GET",
+        "path_template": "/v1/identity/entity/id/{entity_id}",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "identity.entity_disable",
+      "candidate": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/identity/entity/id/{entity_id}",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/identity/entity/id/{entity_id}",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "identity.entity_disabled",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/identity/entity/id/{entity_id}",
+        "result": "passed",
+        "semantics": {
+          "disabled": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/identity/entity/id/{entity_id}",
+        "result": "passed",
+        "semantics": {
+          "disabled": true
+        }
+      }
+    },
+    {
+      "id": "identity.entity_read",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/identity/entity/id/{entity_id}",
+        "result": "passed",
+        "semantics": {
+          "exact_name": true,
+          "metadata": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/identity/entity/id/{entity_id}",
+        "result": "passed",
+        "semantics": {
+          "exact_name": true,
+          "metadata": true
+        }
+      }
+    },
+    {
+      "id": "kv.cas_no_effect",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "current_data_unchanged": true,
+          "version_unchanged": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "current_data_unchanged": true,
+          "version_unchanged": true
+        }
+      }
+    },
+    {
+      "id": "kv.cas_rejected",
+      "candidate": {
+        "expected_http_status": [
+          400
+        ],
+        "http_status": 400,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "errors_present": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          400
+        ],
+        "http_status": 400,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "errors_present": true
+        }
+      }
+    },
+    {
+      "id": "kv.deleted_metadata",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/item",
+        "result": "passed",
+        "semantics": {
+          "generation_preserved": true,
+          "not_destroyed": true,
+          "tombstone_present": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/item",
+        "result": "passed",
+        "semantics": {
+          "generation_preserved": true,
+          "not_destroyed": true,
+          "tombstone_present": true
+        }
+      }
+    },
+    {
+      "id": "kv.deleted_read",
+      "candidate": {
+        "expected_http_status": [
+          404
+        ],
+        "http_status": 404,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          404
+        ],
+        "http_status": 404,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "kv.destroy_v1",
+      "candidate": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/destroy/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/destroy/item",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "kv.destroyed_metadata",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/item",
+        "result": "passed",
+        "semantics": {
+          "destroyed": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/item",
+        "result": "passed",
+        "semantics": {
+          "destroyed": true
+        }
+      }
+    },
+    {
+      "id": "kv.destroyed_read",
+      "candidate": {
+        "expected_http_status": [
+          404
+        ],
+        "http_status": 404,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item?version=1",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          404
+        ],
+        "http_status": 404,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item?version=1",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "kv.list",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "LIST",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/",
+        "result": "passed",
+        "semantics": {
+          "exact_key_listing": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "LIST",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/",
+        "result": "passed",
+        "semantics": {
+          "exact_key_listing": true
+        }
+      }
+    },
+    {
+      "id": "kv.metadata_read",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/item",
+        "result": "passed",
+        "semantics": {
+          "cas_required": true,
+          "custom_metadata": true,
+          "max_versions": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/item",
+        "result": "passed",
+        "semantics": {
+          "cas_required": true,
+          "custom_metadata": true,
+          "max_versions": true
+        }
+      }
+    },
+    {
+      "id": "kv.metadata_write",
+      "candidate": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/metadata/item",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "kv.mount",
+      "candidate": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/mounts/hbqa-{run_id}-kv",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/mounts/hbqa-{run_id}-kv",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "kv.read_old_version",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item?version=1",
+        "result": "passed",
+        "semantics": {
+          "exact_old_data": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item?version=1",
+        "result": "passed",
+        "semantics": {
+          "exact_old_data": true
+        }
+      }
+    },
+    {
+      "id": "kv.read_v1",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "exact_data": true,
+          "version_is_one": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "exact_data": true,
+          "version_is_one": true
+        }
+      }
+    },
+    {
+      "id": "kv.restored_read",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "exact_restored_data": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "exact_restored_data": true
+        }
+      }
+    },
+    {
+      "id": "kv.soft_delete",
+      "candidate": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "DELETE",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "DELETE",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "kv.undelete",
+      "candidate": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/undelete/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/undelete/item",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "kv.write_v1",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "version_is_one": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "version_is_one": true
+        }
+      }
+    },
+    {
+      "id": "kv.write_v2",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "version_is_two": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "version_is_two": true
+        }
+      }
+    },
+    {
+      "id": "operations.seal_status",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/sys/seal-status",
+        "result": "passed",
+        "semantics": {
+          "initialized": true,
+          "unsealed": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/sys/seal-status",
+        "result": "passed",
+        "semantics": {
+          "initialized": true,
+          "unsealed": true
+        }
+      }
+    },
+    {
+      "id": "pki.cert_lookup",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/{pki}/cert/{serial}",
+        "result": "passed",
+        "semantics": {
+          "certificate": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/{pki}/cert/{serial}",
+        "result": "passed",
+        "semantics": {
+          "certificate": true
+        }
+      }
+    },
+    {
+      "id": "pki.crl_json",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-pki/cert/crl",
+        "result": "passed",
+        "semantics": {
+          "crl": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-pki/cert/crl",
+        "result": "passed",
+        "semantics": {
+          "crl": true
+        }
+      }
+    },
+    {
+      "id": "pki.issue",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-pki/issue/web",
+        "result": "passed",
+        "semantics": {
+          "certificate": true,
+          "issuing_ca": true,
+          "lease_duration": true,
+          "lease_id": true,
+          "private_key": true,
+          "private_key_type": true,
+          "renewable": true,
+          "serial": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-pki/issue/web",
+        "result": "passed",
+        "semantics": {
+          "certificate": true,
+          "issuing_ca": true,
+          "lease_duration": true,
+          "lease_id": true,
+          "private_key": true,
+          "private_key_type": true,
+          "renewable": true,
+          "serial": true
+        }
+      }
+    },
+    {
+      "id": "pki.lease_expire_issue",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-pki/issue/web",
+        "result": "passed",
+        "semantics": {
+          "bounded_ttl": true,
+          "lease_issued": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-pki/issue/web",
+        "result": "passed",
+        "semantics": {
+          "bounded_ttl": true,
+          "lease_issued": true
+        }
+      }
+    },
+    {
+      "id": "pki.lease_expire_lookup",
+      "candidate": {
+        "expected_http_status": [
+          400,
+          404
+        ],
+        "http_status": "rejected_after_ttl",
+        "method": "POST",
+        "path_template": "/v1/sys/leases/lookup",
+        "result": "passed",
+        "semantics": {
+          "errors_present": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          400,
+          404
+        ],
+        "http_status": "rejected_after_ttl",
+        "method": "POST",
+        "path_template": "/v1/sys/leases/lookup",
+        "result": "passed",
+        "semantics": {
+          "errors_present": true
+        }
+      }
+    },
+    {
+      "id": "pki.lease_lookup",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/sys/leases/lookup",
+        "result": "passed",
+        "semantics": {
+          "exact_id": true,
+          "renewable": true,
+          "ttl": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/sys/leases/lookup",
+        "result": "passed",
+        "semantics": {
+          "exact_id": true,
+          "renewable": true,
+          "ttl": true
+        }
+      }
+    },
+    {
+      "id": "pki.lease_revoke",
+      "candidate": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/leases/revoke",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/leases/revoke",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "pki.mount",
+      "candidate": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/mounts/hbqa-{run_id}-pki",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/mounts/hbqa-{run_id}-pki",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "pki.revoked_lease_absent",
+      "candidate": {
+        "expected_http_status": [
+          400,
+          404
+        ],
+        "http_status": "rejected_400_or_404",
+        "method": "POST",
+        "path_template": "/v1/sys/leases/lookup",
+        "result": "passed",
+        "semantics": {
+          "errors_present": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          400,
+          404
+        ],
+        "http_status": "rejected_400_or_404",
+        "method": "POST",
+        "path_template": "/v1/sys/leases/lookup",
+        "result": "passed",
+        "semantics": {
+          "errors_present": true
+        }
+      }
+    },
+    {
+      "id": "pki.role",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-pki/roles/web",
+        "result": "passed",
+        "semantics": {
+          "domains": true,
+          "generate_lease": true,
+          "key_type": true,
+          "max_ttl": true,
+          "subdomains": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-pki/roles/web",
+        "result": "passed",
+        "semantics": {
+          "domains": true,
+          "generate_lease": true,
+          "key_type": true,
+          "max_ttl": true,
+          "subdomains": true
+        }
+      }
+    },
+    {
+      "id": "pki.role_read",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-pki/roles/web",
+        "result": "passed",
+        "semantics": {
+          "domains": true,
+          "generate_lease": true,
+          "key_type": true,
+          "max_ttl": true,
+          "subdomains": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-pki/roles/web",
+        "result": "passed",
+        "semantics": {
+          "domains": true,
+          "generate_lease": true,
+          "key_type": true,
+          "max_ttl": true,
+          "subdomains": true
+        }
+      }
+    },
+    {
+      "id": "pki.root",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-pki/root/generate/internal",
+        "result": "passed",
+        "semantics": {
+          "certificate": true,
+          "expiration": true,
+          "issuing_ca": true,
+          "serial": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-pki/root/generate/internal",
+        "result": "passed",
+        "semantics": {
+          "certificate": true,
+          "expiration": true,
+          "issuing_ca": true,
+          "serial": true
+        }
+      }
+    },
+    {
+      "id": "system.init_status",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/sys/init",
+        "result": "passed",
+        "semantics": {
+          "initialized": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/sys/init",
+        "result": "passed",
+        "semantics": {
+          "initialized": true
+        }
+      }
+    },
+    {
+      "id": "token.create",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/auth/token/create",
+        "result": "passed",
+        "semantics": {
+          "no_root_policy": true,
+          "requested_policy": true,
+          "token_issued": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/auth/token/create",
+        "result": "passed",
+        "semantics": {
+          "no_root_policy": true,
+          "requested_policy": true,
+          "token_issued": true
+        }
+      }
+    },
+    {
+      "id": "token.create_expiring",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/auth/token/create",
+        "result": "passed",
+        "semantics": {
+          "bounded_ttl": true,
+          "token_issued": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/auth/token/create",
+        "result": "passed",
+        "semantics": {
+          "bounded_ttl": true,
+          "token_issued": true
+        }
+      }
+    },
+    {
+      "id": "token.denial_no_effect",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "data_unchanged": true,
+          "version_unchanged": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {
+          "data_unchanged": true,
+          "version_unchanged": true
+        }
+      }
+    },
+    {
+      "id": "token.expired_denied",
+      "candidate": {
+        "expected_http_status": [
+          403
+        ],
+        "http_status": 403,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          403
+        ],
+        "http_status": 403,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "token.invalid_denied",
+      "candidate": {
+        "expected_http_status": [
+          403
+        ],
+        "http_status": 403,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          403
+        ],
+        "http_status": 403,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "token.policy",
+      "candidate": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/policies/acl/hbqa-{run_id}-reader",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/policies/acl/hbqa-{run_id}-reader",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "token.read_allowed",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "token.revoke",
+      "candidate": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/auth/token/revoke",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/auth/token/revoke",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "token.revoked_denied",
+      "candidate": {
+        "expected_http_status": [
+          403
+        ],
+        "http_status": 403,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          403
+        ],
+        "http_status": 403,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "token.write_denied",
+      "candidate": {
+        "expected_http_status": [
+          403
+        ],
+        "http_status": 403,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          403
+        ],
+        "http_status": 403,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-kv/data/item",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "totp.mount",
+      "candidate": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/mounts/hbqa-{run_id}-totp",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/mounts/hbqa-{run_id}-totp",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "totp.roundtrip",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "MULTI",
+        "path_template": "/v1/hbqa-{run_id}-totp/{keys,code}/fixture",
+        "result": "passed",
+        "semantics": {
+          "code_generated": true,
+          "key_created": true,
+          "validation_true": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "MULTI",
+        "path_template": "/v1/hbqa-{run_id}-totp/{keys,code}/fixture",
+        "result": "passed",
+        "semantics": {
+          "code_generated": true,
+          "key_created": true,
+          "validation_true": true
+        }
+      }
+    },
+    {
+      "id": "transit.create_key",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/keys/item",
+        "result": "passed",
+        "semantics": {
+          "key_type": true,
+          "latest_version": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/keys/item",
+        "result": "passed",
+        "semantics": {
+          "key_type": true,
+          "latest_version": true
+        }
+      }
+    },
+    {
+      "id": "transit.decrypt_old_after_rotation",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/decrypt/item",
+        "result": "passed",
+        "semantics": {
+          "old_key_retained": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/decrypt/item",
+        "result": "passed",
+        "semantics": {
+          "old_key_retained": true
+        }
+      }
+    },
+    {
+      "id": "transit.decrypt_v1",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/decrypt/item",
+        "result": "passed",
+        "semantics": {
+          "exact_roundtrip": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/decrypt/item",
+        "result": "passed",
+        "semantics": {
+          "exact_roundtrip": true
+        }
+      }
+    },
+    {
+      "id": "transit.decrypt_v2",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/decrypt/item",
+        "result": "passed",
+        "semantics": {
+          "exact_roundtrip": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/decrypt/item",
+        "result": "passed",
+        "semantics": {
+          "exact_roundtrip": true
+        }
+      }
+    },
+    {
+      "id": "transit.encrypt_v1",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/encrypt/item",
+        "result": "passed",
+        "semantics": {
+          "versioned_ciphertext": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/encrypt/item",
+        "result": "passed",
+        "semantics": {
+          "versioned_ciphertext": true
+        }
+      }
+    },
+    {
+      "id": "transit.encrypt_v2",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/encrypt/item",
+        "result": "passed",
+        "semantics": {
+          "versioned_ciphertext": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/encrypt/item",
+        "result": "passed",
+        "semantics": {
+          "versioned_ciphertext": true
+        }
+      }
+    },
+    {
+      "id": "transit.mount",
+      "candidate": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/mounts/hbqa-{run_id}-transit",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          204
+        ],
+        "http_status": 204,
+        "method": "POST",
+        "path_template": "/v1/sys/mounts/hbqa-{run_id}-transit",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "transit.read_key",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-transit/keys/item",
+        "result": "passed",
+        "semantics": {
+          "key_type": true,
+          "latest_version": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-transit/keys/item",
+        "result": "passed",
+        "semantics": {
+          "key_type": true,
+          "latest_version": true
+        }
+      }
+    },
+    {
+      "id": "transit.read_rotated_key",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-transit/keys/item",
+        "result": "passed",
+        "semantics": {
+          "latest_version": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "GET",
+        "path_template": "/v1/hbqa-{run_id}-transit/keys/item",
+        "result": "passed",
+        "semantics": {
+          "latest_version": true
+        }
+      }
+    },
+    {
+      "id": "transit.rotate",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/keys/item/rotate",
+        "result": "passed",
+        "semantics": {
+          "latest_version": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/hbqa-{run_id}-transit/keys/item/rotate",
+        "result": "passed",
+        "semantics": {
+          "latest_version": true
+        }
+      }
+    },
+    {
+      "id": "userpass.login",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/auth/userpass/login/hbqa-{run_id}",
+        "result": "passed",
+        "semantics": {
+          "default_policy": true,
+          "token_issued": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/auth/userpass/login/hbqa-{run_id}",
+        "result": "passed",
+        "semantics": {
+          "default_policy": true,
+          "token_issued": true
+        }
+      }
+    },
+    {
+      "id": "wrapping.create",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/sys/wrapping/wrap",
+        "result": "passed",
+        "semantics": {
+          "response_redacted": true,
+          "ttl_is_bounded": true,
+          "wrapper_token_present": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/sys/wrapping/wrap",
+        "result": "passed",
+        "semantics": {
+          "response_redacted": true,
+          "ttl_is_bounded": true,
+          "wrapper_token_present": true
+        }
+      }
+    },
+    {
+      "id": "wrapping.replay_denied",
+      "candidate": {
+        "expected_http_status": [
+          400
+        ],
+        "http_status": 400,
+        "method": "POST",
+        "path_template": "/v1/sys/wrapping/unwrap",
+        "result": "passed",
+        "semantics": {}
+      },
+      "oracle": {
+        "expected_http_status": [
+          400
+        ],
+        "http_status": 400,
+        "method": "POST",
+        "path_template": "/v1/sys/wrapping/unwrap",
+        "result": "passed",
+        "semantics": {}
+      }
+    },
+    {
+      "id": "wrapping.unwrap",
+      "candidate": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/sys/wrapping/unwrap",
+        "result": "passed",
+        "semantics": {
+          "exact_payload": true
+        }
+      },
+      "oracle": {
+        "expected_http_status": [
+          200
+        ],
+        "http_status": 200,
+        "method": "POST",
+        "path_template": "/v1/sys/wrapping/unwrap",
+        "result": "passed",
+        "semantics": {
+          "exact_payload": true
+        }
+      }
+    }
+  ],
+  "uncovered": [
+    "full_endpoint_error_precedence",
+    "other_auth_methods",
+    "other_secret_engines",
+    "persistent_restart",
+    "ha",
+    "migration",
+    "upgrade",
+    "agent_proxy_cli",
+    "production_security"
+  ],
+  "full_replacement": false,
+  "source_only_derivation": true
+}

@@ -1,0 +1,7 @@
+{
+  "chunk_id": "cb2250",
+  "wall_time_seconds": 0.050085883,
+  "exit_code": 0,
+  "original_token_count": 216,
+  "output": "{\"actual_import_executed\": false, \"all_resource_objects_synthetic\": true, \"candidate_bytes\": 32869, \"candidate_sha256\": \"65ddf987a13a1360dfc706c649c5aa752de3b9b0dd0dd6e82b4175410fc97bb2\", \"candidate_top_level_executed\": false, \"checks\": [\"prior29_selected_component_definitions_byte_identical\", \"existing_source_rejected_before_open_or_git\", \"exclusive_new_directory_registered_and_named_checked\", \"renamed_source_directory_rejected\", \"changed_held_source_fd_rejected\", \"cancel_during_open_registered_before_propagation\", \"open_failure_no_untracked_returned_fd\", \"expired_original_budget_before_directory_creation\"], \"checks_passed\": 8, \"child_processes\": 0, \"filesystem_operations\": 0, \"network_operations\": 0, \"prior29_cases_selected_definitions_unchanged\": true, \"schema\": \"heptabao.phaseb3cb.importer-owned-source-directory-components.v1\", \"status\": \"passed\"}\n"
+}

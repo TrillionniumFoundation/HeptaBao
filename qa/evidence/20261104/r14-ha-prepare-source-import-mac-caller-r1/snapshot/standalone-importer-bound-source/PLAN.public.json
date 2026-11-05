@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.phaseb3cb.importer-final-input-binding-proposal.v1",
+  "status": "source_only_pending_root_admission",
+  "actual_import_executed": false,
+  "base_unbound_tree": "6472d08047524d4dc18cef192849920b5f845574",
+  "base_unbound_blob": "7617da67da0d9036235e9c93fb57e95841b0ac1c",
+  "actual_source_carrier_tree": "1dcb7b7b44c2ead164eaa4fe11821f7d95dd0b49",
+  "actual_slot_projection_blob": "2ff7d6106333e23c0869ffa9dd7d6c3087717704",
+  "candidate": {
+    "bytes": 33102,
+    "sha256": "cdecc828fd13e6fe2509741515c23cab2913931b430ffb1823630975634bafc3",
+    "blob": "06984b4d4911f8dc0f1cecf6888cb5a9801bfa8a"
+  },
+  "change": "Only five previously unresolved metadata fields and ACTUAL_INPUTS_READY. All 30 definitions and other top-level AST are unchanged; exact inverse reproduces the complete unbound source.",
+  "observed_inputs": {
+    "files": [
+      {
+        "name": "canonical-3cb-full.bundle",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/canonical-3cb-full.bundle",
+        "bytes": 23335023,
+        "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
+        "mode": 256,
+        "version": "2050:4330514:23335023:1793841653430023604:1793841653430023604"
+      },
+      {
+        "name": "source-export.result.public.json",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/source-export.result.public.json",
+        "bytes": 39965,
+        "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
+        "mode": 256,
+        "version": "2050:4330516:39965:1793841653590018909:1793841653591018879"
+      }
+    ],
+    "transfer": {
+      "name": "source-carrier.result.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/control/result.public.json",
+      "bytes": 11951,
+      "sha256": "b2bf06c9bc6c38f31cc365d49d23a4af381eae955fceb058737d96953a71c066",
+      "mode": 384,
+      "version": "2050:4330518:11951:1793841653775473547:1793841653775473547"
+    }
+  },
+  "metadata_scope": "Two received versions are derived losslessly from original receiver same-FD identity; the transfer result version is the original read_multiple_files version. No independent postrun file_info is claimed. Actual importer will re-open fixed files with exact versions, whole hashes and held/name custody.",
+  "selected_actual_receipt_predicate": "The bound exact verify_receipts definition accepted both actual raw export/carrier receipts in a pure no-filesystem check. That does not execute future descriptor custody or Git.",
+  "budgets": {
+    "original_import_seconds": 300,
+    "original_git_seconds": 60,
+    "original_clone_seconds": 90,
+    "original_term_seconds": 5,
+    "original_kill_seconds": 5,
+    "proposed_new_outer_seconds": 330
+  },
+  "proposed_dispatch": {
+    "request_path": "dispatch/process_start.proposed.json",
+    "key": "heptabao-phaseb-3cb-standalone-import-cdecc828-20261105-r1",
+    "host": "desktop",
+    "execution_authorized": false
+  },
+  "admission_required": "Root full importer source review plus independently accepted actual carrier terminal and this exact binding/dispatch. No tool invocation is part of this packet.",
+  "no_old_source_or_old_phaseb_replay": true,
+  "no_product_or_provider_or_production": true
+}

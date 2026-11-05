@@ -1,0 +1,1 @@
+{"all_owned_stopped": true, "compiler_started": false, "elapsed_after_publication_seconds": 1.0726062939502299, "git_operations": 0, "publication_within_original_deadline": true, "receipt": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/control/result.public.json", "server_started": false, "status": "transferred"}

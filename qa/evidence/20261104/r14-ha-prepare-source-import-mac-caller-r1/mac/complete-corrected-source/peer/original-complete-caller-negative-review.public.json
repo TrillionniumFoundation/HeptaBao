@@ -1,0 +1,142 @@
+{
+  "schema": "heptabao.mac-current-outer-independent-source-review.v1",
+  "status": "SOURCE_BLOCKED_BY_TWO_CONFIRMED_CROSS_MODULE_GATES",
+  "reviewer": "ha_validation",
+  "source_tree": "0aca624b5d051ed55a62943a06b638c9b3090129",
+  "verification": {
+    "all_18_source_files_whole_sha256_and_git_blob": true,
+    "complete_tree_membership_47_files": true,
+    "seven_tree_hashes_verified": true,
+    "source_tree_unchanged": true,
+    "host_execution": false,
+    "complete_module_execution": false,
+    "credential_or_current_state_reads": false,
+    "proposed_dispatch_not_authorized_by_this_review": true
+  },
+  "read_scope": [
+    "complete outer control flow and proposed dispatch/candidate",
+    "complete four-origin input validation",
+    "complete current-capture entry and materializer",
+    "complete launchd manager",
+    "phase owner admission, worker invocation, typed delivery, and cleanup",
+    "complete cycle, native worker, raw-auth and cache inverse CAS modules",
+    "referenced existing T5, retained-child and observer contracts; earlier reviews retained"
+  ],
+  "findings": [
+    {
+      "id": "MAC-OUTER-001",
+      "kind": "confirmed_pre_ready_gate_failure",
+      "source": "mac_current_phase_owner_r2.py",
+      "function": "main",
+      "line_range": [
+        296,
+        301
+      ],
+      "evidence": "The mandatory qaPins/file-hash loop includes authbus_native_login_custody.py, but the exact outer NAMES, candidate sourcePins and materializer qaPins do not include it. The actual retained owner is imported twice from mac_owned_unreaped_r1; there is no old helper import. The existing run cannot reach ready with its frozen inputs.",
+      "minimal_correction": "Remove only the unused obsolete name from this mandatory list; preserve and re-pin the eight remaining exact helper guards. Do not remove the list or fabricate the missing file.",
+      "component_evidence": "actual_phase_requires_one_missing_frozen_inventory_member; old_name_has_no_actual_import_and_retained_owner_is_imported; proposed_removal_retains_all_other_eight_actual_guards",
+      "author_accepted": true
+    },
+    {
+      "id": "MAC-OUTER-002",
+      "kind": "confirmed_cross_module_hash_contract_failure",
+      "source": "mac_current_fixture_materializer_r1.py",
+      "producer": "mac_guarded_current_capture_r3.py::current_models",
+      "consumer": "Materializer actual_per_agent_model_binding assertion",
+      "evidence": "The frozen capture library computes declaredModelSha256 over its canonical JSON plus one trailing LF. The materializer compares digest(selected), whose canonical JSON excludes LF. Legitimate identical declarations fail before consumer execution.",
+      "minimal_correction": "Change only this consumer comparison to sha(encoded(selected)+b'\\n'). Preserve the actual capture library and global materializer digest, which serves other JSON/CAS contracts.",
+      "component_evidence": "The actual current_models and actual old consumer assertion reject identical string and object declarations for all five agents. The proposed expression accepts the same inputs and still refuses corrupted hash/config/provider/id and a different declaration.",
+      "author_accepted": true
+    }
+  ],
+  "other_known_followups": [
+    {
+      "owner": "authbus_migration",
+      "status": "author_reported_pending_successor",
+      "scope": "outer reserve_port temporary-socket closure",
+      "finding": "The temporary socket needs a once-only close ledger included in unknown/final closure. An exception already fails the run but can otherwise leave unknown false.",
+      "independent_actual_component_claim": false
+    },
+    {
+      "owner": "root",
+      "status": "separate_review_pending_not_closed_here",
+      "scope": "seeded generation versus captured cache generation; exact /usr/bin/openssl req -addext support",
+      "finding": "This peer review does not substitute current evidence for either question."
+    }
+  ],
+  "reviewed_contracts": {
+    "scope": "The proposed workflow uses new owned T5 fixture state and two exact launchd labels. It neither authorizes production service/config/hold changes nor provider/J3160 requests.",
+    "inputs": "Four exact frozen origin files are guarded by expected bytes/hash/owner/path identity; account linkage and credential lifetime are checked before use. Current private stores/config/cache are accessed only by the sandbox capture entry after the actual T5 guard. No provider refresh or fallback is admitted.",
+    "capture": "Actual immutable SQLite queries and sidecar/named/held checks are bounded. This is selected state capture, not an atomic full-database backup. Same-runtime evidence binds the actual Python executable, _sqlite3 module, source hashes and versions, not the full dynamic-library dependency closure.",
+    "materialization": "Initial and cold fixture states are created independently from the captured five local raw stores/stamps, registry, configuration and caches. Inherited effective authentication is recomputed, not persisted as a replacement raw local record.",
+    "manager": "Each bootstrap/bootout is tied to an exact label/generation with once markers. Ready is not execution: the manager also checks birth, executable and observed lifecycle. These launchctl/PID observations are sequential and are not atomic PID custody.",
+    "phase_lifecycle": "The phase uses actual retained direct-child ownership and the reviewed WNOWAIT-before-final-reap ordering. Post-reap survivors cannot be signalled by assuming numeric PGID ownership or reported stopped. Four distinct phases and the initial/cold state baselines remain separate.",
+    "inverse": "The current raw SDK local records, ordering and usage stamps are restored by exact CAS; effective authentication is recomputed for all five agents before restoring the cache. Durable once markers precede inverse writes. A partial or unknown inverse does not authorize replay.",
+    "publication": "Candidate result files written before final closure are not sufficient for success. Final stdout, actual authority exit zero, original deadline, command/descriptor/registration/lineage closure and exact final source/input predicates must all agree.",
+    "privacy": "Public projections contain fixed names, bounded status, counts and hashes. Captured credentials and current values remain private. The source includes exact-secret scans over prospective public output. This is source review, not a new claim that runtime scans have passed."
+  },
+  "budgets": {
+    "new_outer_seconds": 900,
+    "new_supervisor_seconds": 1080,
+    "new_manager_seconds": 600,
+    "new_manager_cleanup_seconds": 60,
+    "new_ready_seconds": 30,
+    "new_exec_observation_seconds": 10,
+    "original_phase_shared_seconds": 120,
+    "original_native_caps_seconds": [
+      15,
+      8,
+      3
+    ],
+    "current_capture_shared_seconds": 45,
+    "t5_subcap_seconds": 30,
+    "http_per_request_seconds": 10,
+    "interpretation": "The shared remaining time is passed to the actual invocation/observation boundaries; cleanup success and final publication are checked separately. New manager/outer envelopes do not increase the original phase/native limits."
+  },
+  "pure_components": {
+    "actual_executor_exit": 0,
+    "total_records": 36,
+    "expected_negative_and_proposed_closure_records_passed": 36,
+    "script": {
+      "bytes": 7912,
+      "sha256": "b431af3c75c62eb1ac04cb5628cf7ca2d3f1ba8232a2842854448e1fabcaf30a",
+      "blob": "fb781241967345fa6e60fc7dfd8814f8bdf118da"
+    },
+    "sources": {
+      "mac_current_fixture_materializer_r1.py": {
+        "blob": "628c3f0af5dc8caccf9a93ed9424fcda89255aeb",
+        "bytes": 23631,
+        "sha256": "9ae14eccdec7742c31df92fede042acac68514b3713ef8cb751cb8f456fb1526"
+      },
+      "mac_current_outer_r3.py": {
+        "blob": "0c19930f4a114ece9bb46cbeb62f26c6806b5f26",
+        "bytes": 58586,
+        "sha256": "986194f0da2d278986589d5ec757fb50a040182db6f610addba9469ee97e1be5"
+      },
+      "mac_current_phase_owner_r2.py": {
+        "blob": "5dcda7880ec4526da5d5bc607debc47cbacffe92",
+        "bytes": 25005,
+        "sha256": "42520fe933e2c0106e6983a282421759b260a2bf48a08f86d0f404caa3f2eb86"
+      },
+      "mac_guarded_current_capture_r3.py": {
+        "blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+        "bytes": 23578,
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693"
+      }
+    },
+    "complete_modules_executed": false,
+    "host_calls": 0,
+    "network_calls": 0,
+    "child_processes": 0,
+    "sqlite_connections": 0,
+    "proposed_expression_only": true,
+    "author_successor_source_qualified": false
+  },
+  "qualification": {
+    "additional_confirmed_blockers_beyond_reported_two_found": false,
+    "full_T5_SQLite_TLS_launchd_consumers_runtime": false,
+    "runtime_go": false,
+    "old_source_must_remain_frozen": true,
+    "successor_requires_exact_delta_and_pin_review": true
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.openbao271.fixed-default-registry-inventory.v1",
+  "official_tag": "v2.7.1",
+  "official_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+  "registry_source_blob": "94af1a84cec148883c926941f50eea138d3644ae",
+  "credential_plugin_names": [
+    "approle",
+    "cert",
+    "jwt",
+    "kubernetes",
+    "oidc",
+    "userpass"
+  ],
+  "secret_plugin_names": [
+    "kubernetes",
+    "kv",
+    "pki",
+    "rabbitmq",
+    "ssh",
+    "totp",
+    "transit"
+  ],
+  "database_plugin_names": [
+    "mysql-database-plugin",
+    "mysql-aurora-database-plugin",
+    "mysql-rds-database-plugin",
+    "mysql-legacy-database-plugin",
+    "cassandra-database-plugin",
+    "influxdb-database-plugin",
+    "postgresql-database-plugin",
+    "redis-database-plugin",
+    "valkey-database-plugin"
+  ],
+  "registry_factory_aliases": {
+    "oidc": "same credJWT.Factory as jwt",
+    "mysql-database-plugin": "dbMysql.New(DefaultUserNameTemplate)",
+    "mysql-aurora-database-plugin": "dbMysql.New(DefaultLegacyUserNameTemplate)",
+    "mysql-rds-database-plugin": "dbMysql.New(DefaultLegacyUserNameTemplate)",
+    "mysql-legacy-database-plugin": "dbMysql.New(DefaultLegacyUserNameTemplate)",
+    "redis-database-plugin": "same dbValkey.New as valkey-database-plugin"
+  },
+  "additional_core_backends": [
+    "token",
+    "identity",
+    "cubbyhole",
+    "system"
+  ],
+  "conditional_or_external_not_asserted_default": [
+    "LDAP",
+    "RADIUS",
+    "Kerberos",
+    "OpenLDAP",
+    "sys/replication operational backend",
+    "sys/raw when rawEnabled is false"
+  ],
+  "counts_are_plugin_names_not_endpoint_or_implementation_denominators": true,
+  "default_extension_function_empty": true,
+  "exhaustive_upstream_surface": false,
+  "product_runtime_started": false
+}

@@ -1,0 +1,70 @@
+{
+  "artifact_transfer_started": false,
+  "compiler_started": false,
+  "files": [
+    {
+      "bytes": 6289,
+      "identity": [
+        2050,
+        2415448,
+        1000,
+        1000,
+        33152,
+        1,
+        6289,
+        1793841160785577923,
+        1793841160790299539
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-controls-r1/sender.py",
+      "publication": "created",
+      "sha256": "8681201f587a3c5d2da07f01404e4b74e1db2e3ada2614f3482915c6543fb650"
+    },
+    {
+      "bytes": 8701,
+      "identity": [
+        2050,
+        2415449,
+        1000,
+        1000,
+        33152,
+        1,
+        8701,
+        1793841160799892890,
+        1793841160808029310
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-controls-r1/receiver.py",
+      "publication": "created",
+      "sha256": "2280d96c79b5e8fe8a0b3a9b601196cc61dbc43c11f4ded31780617f0533a6e5"
+    },
+    {
+      "bytes": 15395,
+      "identity": [
+        2050,
+        2415450,
+        1000,
+        1000,
+        33152,
+        1,
+        15395,
+        1793841160812940035,
+        1793841160817645474
+      ],
+      "mode": "0600",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-controls-r1/relay.py",
+      "publication": "created",
+      "sha256": "f98ef18f25583506e7ff6072b8f383115ea826a399286f22bff1517b6eeb4432"
+    }
+  ],
+  "git_started": false,
+  "python_compile_only": true,
+  "schema": "heptabao.phaseb3cb-source-carrier-inert.v1",
+  "service_started": false,
+  "source_executed": false,
+  "started_ns": 1793841160761259561,
+  "status": "prepared",
+  "stdin_bytes": 40663,
+  "stdin_sha256": "35d33428b71abebb576e94aa767202a0e498204696b4fc7193b22694a69c2538",
+  "terminal_ns": 1793841160822560042
+}

@@ -1,0 +1,14 @@
+--- blocked/candidate-pins.review.diff
++++ corrected/candidate-pins.review.diff
+@@ -20,9 +20,9 @@
+     "sha256": "6fb8f2dbac97730bea706503fb07e9fd5de60e794475d52f32290e374f86d429"
+   },
+   "launch_normal_r10_pocket_postrecovery_cold_r2.py": {
+-    "blob": "285f96d09168cb288fdac5dd522aac66e93e8854",
++    "blob": "6883c794805eb012a21e292a5833fe5a9e39e4c6",
+     "bytes": 24051,
+-    "sha256": "d673b257d0d5180d5bda8d402cdac3c9294ad236ff3840298555af19b4c3df86"
++    "sha256": "515bc76f5c626dc1940cde2c75315b8347c70a97613e3310dad873a401f614a0"
+   },
+   "native_v6_pocket_source_postrecovery_cold_r10_r2.py": {
+     "blob": "9406b7268f9eb07538e5d09ba5c0af23c06b5730",

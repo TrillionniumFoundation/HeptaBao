@@ -1,0 +1,34 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "req",
+      "-help"
+    ],
+    "created_unix_ms": 1793841549110,
+    "cwd": "/Users/qianqi",
+    "env_keys": [],
+    "executable": "/usr/bin/openssl",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1a949cf36-fc05-33c3",
+    "idempotency_key": "heptabao-mac-openssl-req-help-f81b4fce-20261105-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1a949cf36-fc05-33c3",
+    "request_digest": "9d8d73edb6c25c97023b1f7f6b92a8427af7bb5fdbf5f76aa37bc8262ff9eabc",
+    "request_fingerprint": 11352857700481522839,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1a949cf36-fc05-33c3"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 52560,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1a949cf36-fc05-33c3"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

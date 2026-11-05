@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.phaseb-3cb-actual-inputs-dispatch-source.v1",
+  "executable_source_dispatch_only": true,
+  "host": "desktop",
+  "local_input_stage": {
+    "key": "heptabao-phaseb-ingress-observer-inputs-3cb8739-20261104-r2",
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args_template": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "@exact source blob 6740aecbb9ecc53b4efe006d920664b50c8b25ab@",
+      "--external-controller-sha256",
+      "4c9a4755988d486d0adb80b03aecddf8297d884cabf1a52cd8053a82268e992c"
+    ],
+    "stdin": {
+      "blob": "9cc6997190418ab3eccd9446f2417706087d2aa2",
+      "bytes": 273490,
+      "sha256": "2f9f8acb45e66f49b42739e64eac6bf289f06a7d5bc840eab3b2c8ce87ce0fcd"
+    },
+    "inner_seconds": 300,
+    "outer_seconds": 330,
+    "preconditions": [
+      "Root accepted actual canonical3cb desktop source stage terminal",
+      "Root accepted actual public3artifact transport terminal",
+      "Root reviewed this exact local-stager/carrier source packet",
+      "Root grants one stable-key dispatch and a desktop input-I/O window"
+    ]
+  },
+  "prepare": {
+    "key": "heptabao-phaseb-r3-prepare-10816-3cb8739-20261104-r2",
+    "args_template": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/qa/phaseb_controller_r3.py",
+      "--binding",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/binding.private.json",
+      "--binding-sha256",
+      "@actual concrete binding SHA256@",
+      "--prepare-only"
+    ],
+    "outer_seconds": 330,
+    "action_seconds": 300
+  },
+  "live": {
+    "key": "heptabao-phaseb-r3-live-10816-3cb8739-20261104-r2",
+    "args_template": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/qa/phaseb_controller_r3.py",
+      "--binding",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2/binding.private.json",
+      "--binding-sha256",
+      "@actual concrete binding SHA256@",
+      "--run",
+      "--prepare-result-sha256",
+      "@actual root-accepted prepare result SHA256@"
+    ],
+    "outer_seconds": 3000,
+    "outer_scope": "Retain the separately approved NEW aggregate outer envelope used by R3; it does not enlarge any original per-action or request limit"
+  },
+  "unresolved_runtime_fields": [
+    "actual desktop source/transport terminals",
+    "actual concrete binding SHA256",
+    "actual root-accepted prepare result SHA256"
+  ],
+  "no_admission_from_placeholders": true,
+  "source_and_product_execution_authorized_by_this_file": false
+}

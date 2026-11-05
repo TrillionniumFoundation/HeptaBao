@@ -1,0 +1,275 @@
+{
+  "schema": "heptabao.mac-complete-caller-three-finding-successor.v1",
+  "oldSourceTree": "0aca624b5d051ed55a62943a06b638c9b3090129",
+  "oldAppendTree": "283148fd536cb375ab8b80f122cd22d710ec3d02",
+  "sourceOnly": true,
+  "hostActions": 0,
+  "changed": [
+    {
+      "name": "mac_current_outer_r3.py",
+      "before": {
+        "bytes": 58586,
+        "sha256": "986194f0da2d278986589d5ec757fb50a040182db6f610addba9469ee97e1be5",
+        "blob": "0c19930f4a114ece9bb46cbeb62f26c6806b5f26"
+      },
+      "after": {
+        "bytes": 59477,
+        "sha256": "5ecc57805f1fb2b162c38d28d28debe5e035ca3135db6b1b7df55daa6227df50",
+        "blob": "0948e1dd5b7e49fffb13f7ebb23c0ae00c4de252"
+      }
+    },
+    {
+      "name": "mac_current_fixture_materializer_r1.py",
+      "before": {
+        "bytes": 23631,
+        "sha256": "9ae14eccdec7742c31df92fede042acac68514b3713ef8cb751cb8f456fb1526",
+        "blob": "628c3f0af5dc8caccf9a93ed9424fcda89255aeb"
+      },
+      "after": {
+        "bytes": 23643,
+        "sha256": "f766ba33f22230d78e635477b35e527e7815452e591e7bc7a03fa2ae6c902b7f",
+        "blob": "c22afefd15d026017e99ea47a47c0138ed6b469d"
+      }
+    },
+    {
+      "name": "mac_current_phase_owner_r2.py",
+      "before": {
+        "bytes": 25005,
+        "sha256": "42520fe933e2c0106e6983a282421759b260a2bf48a08f86d0f404caa3f2eb86",
+        "blob": "5dcda7880ec4526da5d5bc607debc47cbacffe92"
+      },
+      "after": {
+        "bytes": 24971,
+        "sha256": "bbf3636f4323e3e990204c8ea04c986f8740b3f34fa966a937f947b767ee15c4",
+        "blob": "3aeb6ea8cf638f7915fd268140ad834ce395aad9"
+      }
+    }
+  ],
+  "unchanged": [
+    {
+      "name": "mac_current_outer_inputs_r1.py",
+      "before": {
+        "bytes": 24973,
+        "sha256": "be5da65ce3bd98586d36b11edba6a4619600b74fbabb93050a3325e89e9ed254",
+        "blob": "9c4cdc5816ec67d3822ebb6551982349523beb9b"
+      },
+      "after": {
+        "bytes": 24973,
+        "sha256": "be5da65ce3bd98586d36b11edba6a4619600b74fbabb93050a3325e89e9ed254",
+        "blob": "9c4cdc5816ec67d3822ebb6551982349523beb9b"
+      }
+    },
+    {
+      "name": "mac_current_capture_entry_r1.py",
+      "before": {
+        "bytes": 19011,
+        "sha256": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024",
+        "blob": "d972159225b1d7478746c9296eb9bb69eb99844c"
+      },
+      "after": {
+        "bytes": 19011,
+        "sha256": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024",
+        "blob": "d972159225b1d7478746c9296eb9bb69eb99844c"
+      }
+    },
+    {
+      "name": "mac_owned_launchd_r3.py",
+      "before": {
+        "bytes": 35532,
+        "sha256": "1c18be9069b4f7219a793c88e08a648841bcab992b8947a9064d55712539c09c",
+        "blob": "5ee5950421c69f0aedfaf457a3b75666a902cc57"
+      },
+      "after": {
+        "bytes": 35532,
+        "sha256": "1c18be9069b4f7219a793c88e08a648841bcab992b8947a9064d55712539c09c",
+        "blob": "5ee5950421c69f0aedfaf457a3b75666a902cc57"
+      }
+    },
+    {
+      "name": "mac_current_server_owner_r1.py",
+      "before": {
+        "bytes": 13210,
+        "sha256": "3932ddada69310b700b7b6aafd325202c1deda84c2f12d711e27d022111bdfb6",
+        "blob": "01b5bfc49138aac54b0e4da5b01fe0d8544f9bc0"
+      },
+      "after": {
+        "bytes": 13210,
+        "sha256": "3932ddada69310b700b7b6aafd325202c1deda84c2f12d711e27d022111bdfb6",
+        "blob": "01b5bfc49138aac54b0e4da5b01fe0d8544f9bc0"
+      }
+    },
+    {
+      "name": "mac_native_process_observer_r1.py",
+      "before": {
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+        "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5"
+      },
+      "after": {
+        "bytes": 13423,
+        "sha256": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+        "blob": "6ca7a8debfe9d9a31d19d1237ca3e84176cc40f5"
+      }
+    },
+    {
+      "name": "mac_guarded_current_capture_r3.py",
+      "before": {
+        "bytes": 23578,
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+        "blob": "244f98634ab07e96f70585179a1d155fdb34f34f"
+      },
+      "after": {
+        "bytes": 23578,
+        "sha256": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+        "blob": "244f98634ab07e96f70585179a1d155fdb34f34f"
+      }
+    },
+    {
+      "name": "mac_owned_commands_r1.py",
+      "before": {
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511"
+      },
+      "after": {
+        "bytes": 5965,
+        "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+        "blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511"
+      }
+    },
+    {
+      "name": "mac_t5_volume_guard_r1.py",
+      "before": {
+        "bytes": 13387,
+        "sha256": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99",
+        "blob": "938fd5e5663e004f9f6553548537ab3a931c50d0"
+      },
+      "after": {
+        "bytes": 13387,
+        "sha256": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99",
+        "blob": "938fd5e5663e004f9f6553548537ab3a931c50d0"
+      }
+    },
+    {
+      "name": "mac_owned_unreaped_r1.py",
+      "before": {
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77"
+      },
+      "after": {
+        "bytes": 10990,
+        "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+        "blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77"
+      }
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r1.py",
+      "before": {
+        "bytes": 16476,
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+        "blob": "992fa2b52760e5f3d0b192837053728011e11500"
+      },
+      "after": {
+        "bytes": 16476,
+        "sha256": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+        "blob": "992fa2b52760e5f3d0b192837053728011e11500"
+      }
+    },
+    {
+      "name": "mac_capture_sqlite_synthetic_r2.py",
+      "before": {
+        "bytes": 16915,
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+        "blob": "92930e43caa1b87bc857c642fd545b5b0147226d"
+      },
+      "after": {
+        "bytes": 16915,
+        "sha256": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+        "blob": "92930e43caa1b87bc857c642fd545b5b0147226d"
+      }
+    },
+    {
+      "name": "mac_current_cycle_r2.mjs",
+      "before": {
+        "bytes": 24007,
+        "sha256": "2b982383ce66028159ae84845bf5a0d3515e0308bab6916944bd7195bb948177",
+        "blob": "89b173c3f82b35ffc592a7756cd8058a6d1f6769"
+      },
+      "after": {
+        "bytes": 24007,
+        "sha256": "2b982383ce66028159ae84845bf5a0d3515e0308bab6916944bd7195bb948177",
+        "blob": "89b173c3f82b35ffc592a7756cd8058a6d1f6769"
+      }
+    },
+    {
+      "name": "mac_single_native_r2.mjs",
+      "before": {
+        "bytes": 28527,
+        "sha256": "f90bbb2e9a1fa679d04fbef4328f3a1b9fc512d2b809dacd7eafce67f9cfd93c",
+        "blob": "9408a7d0248ca2658a5c3a3578b9a907f659d680"
+      },
+      "after": {
+        "bytes": 28527,
+        "sha256": "f90bbb2e9a1fa679d04fbef4328f3a1b9fc512d2b809dacd7eafce67f9cfd93c",
+        "blob": "9408a7d0248ca2658a5c3a3578b9a907f659d680"
+      }
+    },
+    {
+      "name": "mac_auth_rows_cas_r1.mjs",
+      "before": {
+        "bytes": 3103,
+        "sha256": "0021fa7539f4fb36e2ac907315da1c9d9e407c9ccac606d1908e0b7a3f7042dd",
+        "blob": "50cf42a76cd313fb4de889e954bb9abe2e716530"
+      },
+      "after": {
+        "bytes": 3103,
+        "sha256": "0021fa7539f4fb36e2ac907315da1c9d9e407c9ccac606d1908e0b7a3f7042dd",
+        "blob": "50cf42a76cd313fb4de889e954bb9abe2e716530"
+      }
+    },
+    {
+      "name": "mac_authbus_cache_cas_r1.mjs",
+      "before": {
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+        "blob": "a318e427095b6c9273f03208620296b57ab59bc0"
+      },
+      "after": {
+        "bytes": 6846,
+        "sha256": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8",
+        "blob": "a318e427095b6c9273f03208620296b57ab59bc0"
+      }
+    }
+  ],
+  "budgetsUnchanged": true,
+  "allTopLevelOuterConstantsByteEquivalent": true,
+  "exactOuterDefinitionsUnchanged": [
+    "Refused",
+    "need",
+    "sha",
+    "encoded",
+    "canonical",
+    "digest",
+    "ident",
+    "valid_pin",
+    "exact_json",
+    "read_public_source",
+    "read_system_tool",
+    "LoopbackHTTP",
+    "add_secrets",
+    "generated_read_fsync",
+    "tls_material",
+    "capture_once",
+    "seed_documents",
+    "exact_data",
+    "bootstrap_api",
+    "canonical_and_inbox",
+    "token_lifecycle",
+    "scan_owned_plaintext"
+  ],
+  "phaseChange": "Only remove one obsolete unused QA list member; all eight actual dependency checks remain.",
+  "materializerChange": "Only declaredModelSha256 comparison uses canonical selected model plus LF; global digest and capture library unchanged.",
+  "outerChange": "One ephemeral socket ledger with protected close-attempt marker, conservative unknown and aggregate closure.",
+  "currentCredentialsProviderServicesUntouched": true
+}

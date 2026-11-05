@@ -1,0 +1,7 @@
+{
+  "chunk_id": "04cac8",
+  "wall_time_seconds": 0.332516747,
+  "exit_code": 0,
+  "original_token_count": 59,
+  "output": "{\"passed_checks\": 130, \"result_sha256\": \"09e0438f10577a1cae02da3091c5a1703efab8f8979f3301fa33207328d0da91\", \"source_sha256\": \"2ad254a115c7463a35b5766fab0673931434d8f0b065f45318b07b646ddf2571\", \"status\": \"passed\", \"total_checks\": 130}\n"
+}

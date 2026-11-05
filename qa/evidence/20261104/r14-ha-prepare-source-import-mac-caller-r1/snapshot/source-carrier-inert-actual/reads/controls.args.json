@@ -1,0 +1,17 @@
+{
+  "idempotency_key": "heptabao-phaseb-source2-inert-1a1a943dbc6-fc05-337e-controls-r1",
+  "operation": {
+    "tool": "read_multiple_files",
+    "arguments": {
+      "host": "desktop",
+      "paths": [
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-controls-r1/sender.py",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-controls-r1/receiver.py",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-controls-r1/relay.py",
+        "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-controls-r1/inert-stage.result.public.json"
+      ],
+      "max_file_bytes": 32768,
+      "max_response_bytes": 131072
+    }
+  }
+}

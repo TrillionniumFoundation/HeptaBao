@@ -1,0 +1,53 @@
+{
+  "bytes": 32869,
+  "candidate_top_level_executed": false,
+  "changed_definitions": [
+    "verify_receipts"
+  ],
+  "compiled_not_executed": true,
+  "fd_open_and_registration_defer_cancellation": true,
+  "git_environment_unchanged": true,
+  "metadata_guard_before_filesystem_or_git": true,
+  "new_definitions": [
+    "check_input_directories",
+    "check_source_directory",
+    "create_source_directory",
+    "directory_key",
+    "hold_fixed_inputs",
+    "hold_input_directories",
+    "recheck_held_inputs"
+  ],
+  "original_absolute300_unchanged": true,
+  "removed_definitions": [
+    "receive_files",
+    "recheck_artifacts"
+  ],
+  "same_definitions": [
+    "Cancelled",
+    "bundle_header",
+    "create",
+    "digest",
+    "freeze",
+    "fsync_dir",
+    "git",
+    "group_members",
+    "identity",
+    "on_signal",
+    "owned",
+    "owned_argv",
+    "persist_command",
+    "process_snapshot",
+    "prove_canonical",
+    "public",
+    "read_file",
+    "remaining",
+    "stable",
+    "stop_active",
+    "stop_owned",
+    "verify_materialized_and_fsync"
+  ],
+  "schema": "heptabao.phaseb3cb.local-importer-source-invariance.v1",
+  "sha256": "65ddf987a13a1360dfc706c649c5aa752de3b9b0dd0dd6e82b4175410fc97bb2",
+  "status": "passed",
+  "unresolved_metadata_fields": 5
+}

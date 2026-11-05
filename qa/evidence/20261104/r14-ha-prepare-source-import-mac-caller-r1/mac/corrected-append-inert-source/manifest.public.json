@@ -1,0 +1,134 @@
+{
+  "schema": "heptabao.mac-corrected-complete-source-append-inert-manifest.r3.v2",
+  "status": "SOURCE_ONLY_NOT_SUBMITTED",
+  "fullCallerTree": "9ed171e68bd0586dcf59830eb1d69448aaf43d80",
+  "predecessorInertTree": "283148fd536cb375ab8b80f122cd22d710ec3d02",
+  "newFixedKey": "heptabao-mac-current-complete-source-inert-5ecc5780-20261105-r4",
+  "originalBudgets": {
+    "inner": 45,
+    "outer": 60,
+    "diskutilClipped": 30
+  },
+  "files": [
+    {
+      "path": "carrier-uncorrected-to-successor.review.diff",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "363aef0a3279253f2b70fa35d4ef2912847fc15d",
+      "bytes": 1875,
+      "sha256": "4e23adb9f9bef5f199ffb8d4f5d36a8c5b7a8c08b216bf297cd44e605add0596"
+    },
+    {
+      "path": "checks/initial-local-argument-assumption-refusal.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1c94d17c543fb0a450fe389e7f65e3faaa93bf33",
+      "bytes": 346,
+      "sha256": "bbff7aef2924b6e68c19982fa740f2b9583563be8fd94349272b0daf9462f983"
+    },
+    {
+      "path": "checks/static-binding-verification.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "322c0c937a26c1b816ad3a07439b62dad602c51a",
+      "bytes": 1148,
+      "sha256": "bcbd272b1244a3c94482cdbacde485dd7a9304cdb39fb76ff1a12a17731f3d5d"
+    },
+    {
+      "path": "inert-start.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "18dcdede236f37830d1640461ad9e65aab82e5e8",
+      "bytes": 530636,
+      "sha256": "338d754e96bdade8bbc417833d696ba48ef430ccafa282eab66ebd0f038d8327"
+    },
+    {
+      "path": "mac_complete_source_append_inert_r3.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0c7b7656c4abe0885e0f0ec70ce0729f130a6e13",
+      "bytes": 14892,
+      "sha256": "7e830ba2a0e85c6ba5e2ff7fdf398d18ef7f8964d2aaf706fac57dd9a7487e0c"
+    },
+    {
+      "path": "payload.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "f91adb0086cda3fcd3c0199b3fb23989f4185b59",
+      "bytes": 514784,
+      "sha256": "1b0f91901d2ca1176429dfdfa3ad5c804aca9ca00efadccf96f41233d98b5556"
+    },
+    {
+      "path": "PLAN.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "946d8f1d0e1a64b58ebd64c6adaed9e0c9e2929e",
+      "bytes": 4598,
+      "sha256": "1b61b7250c3239d1042dfa7daa4dbc0d135f49f4d980c1c800f3b0bf70fb42c1"
+    },
+    {
+      "path": "README.md",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fde87e10fdd44e02130482623887727189e386fb",
+      "bytes": 2223,
+      "sha256": "fd55a7df1893e23bc8296269fc8639355a5d07b56e8a2359835da5f75d08cec6"
+    },
+    {
+      "path": "references/r2-actual-carrier.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d6d9ffc04a93fd18e0dc639cd8271c4ae2359b3f",
+      "bytes": 10622,
+      "sha256": "255bbabe28601cf53d5ea53ff047b8f27b47ac23205043eb14cc132a36b54391"
+    },
+    {
+      "path": "references/r2-inert-authority.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "73364704d46b2b28c9243fa011566a7309835689",
+      "bytes": 731,
+      "sha256": "6c17deb3992e5435fe38e57438ccb8f4d1e7d3ec7d755e46c1be73f30883abb3"
+    },
+    {
+      "path": "references/r2-inert-stdout.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c989d18cd054b9938c9818fc4522b6b07ed26ee7",
+      "bytes": 6723,
+      "sha256": "26bda20f283879acc659f7f44999e580e785fec6105c98612e9d164237f642e7"
+    },
+    {
+      "path": "references/uncorrected-checks-source-check.exec.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "0a4ac5ea0da0a8eb239d8cef998784225ac38aca",
+      "bytes": 752,
+      "sha256": "9418b73bad70c2781ad48438c8e27e7103a16435abc3f9bf2abc186de1f47369"
+    },
+    {
+      "path": "references/uncorrected-checks-source-check.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2d0d45f44b32889fc21c16760215d5a015000c79",
+      "bytes": 36229,
+      "sha256": "8ceefc9db2245cc511155d1ca4f3c0239c3bba1c7c79e46733c2f647e4beca73"
+    },
+    {
+      "path": "references/uncorrected-complete-carrier.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2d53be3ca3c17bbd4086f1e9b7846f8f59e5a2d9",
+      "bytes": 14892,
+      "sha256": "76892da05562599972e52816becb5c39140ec64b38794f7b126611e162963732"
+    }
+  ],
+  "totalBytes": 1140451,
+  "carrierOnlyConstantsChanged": true,
+  "entireCallableSuffixUnchanged": true,
+  "fixedSources": 18,
+  "existingActualSourcesPreserved": 6,
+  "newSourceFiles": 12,
+  "newPublicDocuments": 3,
+  "noPrivateCaptureOrConsumerRuntime": true
+}

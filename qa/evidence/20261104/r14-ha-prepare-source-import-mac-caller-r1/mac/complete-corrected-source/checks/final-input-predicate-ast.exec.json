@@ -1,0 +1,7 @@
+{
+  "chunk_id": "315c4e",
+  "wall_time_seconds": 0.000027852,
+  "exit_code": 0,
+  "original_token_count": 78,
+  "output": "{\"file\": \"mac_current_outer_inputs_r1.py\", \"bytes\": 24973, \"sha256\": \"be5da65ce3bd98586d36b11edba6a4619600b74fbabb93050a3325e89e9ed254\", \"git_blob\": \"9c4cdc5816ec67d3822ebb6551982349523beb9b\", \"ast_compile_only\": true, \"scope\": \"one original frozen_file private-mode predicate alignment; no module executed\"}\n"
+}

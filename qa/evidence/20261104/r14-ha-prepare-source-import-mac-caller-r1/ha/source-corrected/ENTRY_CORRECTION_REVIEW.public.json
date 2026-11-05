@@ -1,0 +1,129 @@
+{
+  "schema": "heptabao.postcold-r2-entry-assertion-correction.v1",
+  "status": "source-only-not-submitted",
+  "blocked_tree": "25525f6aa7ea8c6de5b09a82433053f6d90101d3",
+  "root_rejection": {
+    "blob": "686a2da94c8c1a93fd7b1f17433e56f1bd49901f",
+    "bytes": 1480,
+    "sha256": "66cbe3ab1cbcec4acd5249d1fb0d2c95230c936747b7d760a5349cba6e977ff3"
+  },
+  "change": "One top-level launcher guard basename r1 to r2; no guard removal.",
+  "strict_diffs": [
+    {
+      "before": "before/blocked-launcher.py",
+      "after": "candidate/launch_normal_r10_pocket_postrecovery_cold_r2.py",
+      "diff": "diffs/launcher-entry-assertion.review.diff",
+      "hunks": 1,
+      "before_pin": {
+        "bytes": 24051,
+        "sha256": "d673b257d0d5180d5bda8d402cdac3c9294ad236ff3840298555af19b4c3df86",
+        "blob": "285f96d09168cb288fdac5dd522aac66e93e8854"
+      },
+      "after_pin": {
+        "bytes": 24051,
+        "sha256": "515bc76f5c626dc1940cde2c75315b8347c70a97613e3310dad873a401f614a0",
+        "blob": "6883c794805eb012a21e292a5833fe5a9e39e4c6"
+      },
+      "diff_pin": {
+        "bytes": 634,
+        "sha256": "1ac61bfeb6afb6683a3ad54921f25dc53066c9e092bd7dace47f95e0974bf18b",
+        "blob": "ee3189371efce6fc6ad081e77ca0d1bafa7fac5b"
+      }
+    },
+    {
+      "before": "before/blocked-inert-carrier.py",
+      "after": "inert_carrier_r2.py",
+      "diff": "diffs/carrier-launcher-pin.review.diff",
+      "hunks": 1,
+      "before_pin": {
+        "bytes": 6858,
+        "sha256": "39b8d4c9aadb96db4ce43ad0c067ef505ec210a4f11c901b1176b3e5bfca49bc",
+        "blob": "def340c46ac689a9736303f374456a6df7acd643"
+      },
+      "after_pin": {
+        "bytes": 6858,
+        "sha256": "0ab98eabbbae83e43775e6ff936084f5fa3a8e49273232cc95a725ecab35301c",
+        "blob": "99b1cfd5fdc01188648e9fc3043d388e830344f0"
+      },
+      "diff_pin": {
+        "bytes": 433,
+        "sha256": "e63958e269a89f0062733749d24d1c26fdb61ea0c4c9a28c31067bc897ac01be",
+        "blob": "b4a7861d470e1f33f66cf1e9913744e5f6e6b841"
+      }
+    },
+    {
+      "before": "before/blocked-DISPATCH.proposed.json",
+      "after": "DISPATCH.proposed.json",
+      "diff": "diffs/dispatch-pins.review.diff",
+      "hunks": 4,
+      "before_pin": {
+        "bytes": 5498,
+        "sha256": "224413c1db77bcdb99c9a9c09c147ef6e05e5bf659269ab6829283942aca2b8b",
+        "blob": "bec4a92688216ef8f19c0292bf14337ec3585ed9"
+      },
+      "after_pin": {
+        "bytes": 5498,
+        "sha256": "3a9524dcc82ff001d577ab521b5f25d1cfe1c999cbbbe73a9d79c62ae0eb139d",
+        "blob": "c9d562bed9254e57b5d254b8b63fbb9b0c326ebb"
+      },
+      "diff_pin": {
+        "bytes": 2561,
+        "sha256": "ab22db29240f451512e67d94bf8cc3a26287a7a14bf126bd9edfcae5b6463806",
+        "blob": "b1f0419785cb33d5bdd205890a6b6f4050255d7e"
+      }
+    },
+    {
+      "before": "before/blocked-candidate-pins.public.json",
+      "after": "candidate-pins.public.json",
+      "diff": "diffs/candidate-pins.review.diff",
+      "hunks": 1,
+      "before_pin": {
+        "bytes": 1895,
+        "sha256": "4a68577e5af9783981488c40b4e53c81e54cf95e2ff24ce0472eb3c484a18c7f",
+        "blob": "828fcaafb707b445f0e67f8f809149021f5935c3"
+      },
+      "after_pin": {
+        "bytes": 1895,
+        "sha256": "affc61cf937e0e17f473f56885650b02340a952eb2ad704aa0c412ba94e7f306",
+        "blob": "ed3640cb42b52cd54260c9f69933236984f78521"
+      },
+      "diff_pin": {
+        "bytes": 665,
+        "sha256": "cc54c3d5eabd3af9f797a83deec5b3354587cc477c9b12d689cbcfa452fe9f30",
+        "blob": "9973d22ef7786ca75b10d10ab55d72759a41f099"
+      }
+    }
+  ],
+  "candidate_other_eight_sources_unchanged": true,
+  "original_higher_term_function_unchanged": true,
+  "witness_and_same_leader_logic_unchanged": true,
+  "original_28_fences_original98_additional12_all_budgets_unchanged": true,
+  "old_130_component_record": {
+    "tree": "25525f6aa7ea8c6de5b09a82433053f6d90101d3",
+    "blob": "0939df491b16efa8e35a445a6d86a9da2c70d8fc",
+    "sha256": "09e0438f10577a1cae02da3091c5a1703efab8f8979f3301fa33207328d0da91",
+    "retained_unmodified": true,
+    "not_claimed_to_have_covered_the_entry_guard": true
+  },
+  "new_components": {
+    "pin": {
+      "bytes": 3907,
+      "sha256": "6dc95d0e7b7877c72d57dfd125dedfacdb2abb6bd48457881c8e60da0ed0b5e9",
+      "blob": "81e55f53f87f0404905abfbe583bcfc3f73de91a"
+    },
+    "actual_authority": {
+      "bytes": 4431,
+      "sha256": "875b3f3d8dccd2ac9787773ec334910e3a5b89a8baf56570437bfaeb9ed125a9",
+      "blob": "a5d325c095039a7be4a30b8d038ea4d966974047"
+    },
+    "records": 22,
+    "scope": "Actual AST-selected top-level assert with explicit in-memory Path.resolve(strict=True) adapter; literal-only path bindings, nine source/payload/dispatch pins; complete sources compiled but not imported.",
+    "whole_modules_executed": false,
+    "filesystem_resolve_qualification": false
+  },
+  "all_dispatches_unauthorized": true,
+  "host_calls": 0,
+  "network_or_service_calls": 0,
+  "product_changes": 0,
+  "old_failed_B_and_source_rejection_not_rewritten": true
+}

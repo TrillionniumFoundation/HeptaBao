@@ -1,0 +1,160 @@
+{
+  "schema": "heptabao.postcold-witness-r2-source-binding-review.v1",
+  "source_only": true,
+  "network_calls": 0,
+  "physical_host_calls": 0,
+  "product_processes": 0,
+  "all_dispatches_unsubmitted": true,
+  "root_selected_branch": "original-higher-term-entire-function-preserved-plus-strict-same-committed-leader-witness",
+  "strict_diff_reconstructions": [
+    {
+      "before": "before/native_v6_pocket_source_postrecovery_cold_r10_r1.py",
+      "after": "candidate/native_v6_pocket_source_postrecovery_cold_r10_r2.py",
+      "diff": "native_v6_pocket_source_postrecovery_cold_r10_r2.py.review.diff",
+      "hunks": 9,
+      "before_pin": {
+        "bytes": 54668,
+        "sha256": "06acd60952d5804dd8bd7b67f399216f26df8e04a24d58e2bea7e82383c9ac47",
+        "blob": "33694332d042aa407e77206973fb28328652d720"
+      },
+      "after_pin": {
+        "bytes": 72673,
+        "sha256": "2ad254a115c7463a35b5766fab0673931434d8f0b065f45318b07b646ddf2571",
+        "blob": "9406b7268f9eb07538e5d09ba5c0af23c06b5730"
+      },
+      "diff_pin": {
+        "bytes": 24036,
+        "sha256": "2abfc12ceecc89eecf976bcfc67c989407872f269bad7ff6903feef5a466084d",
+        "blob": "79e6c9a49dc5a012b93c71f23bb8d2d8f10e478c"
+      }
+    },
+    {
+      "before": "before/launch_normal_r10_pocket_postrecovery_cold_r1.py",
+      "after": "candidate/launch_normal_r10_pocket_postrecovery_cold_r2.py",
+      "diff": "launch_normal_r10_pocket_postrecovery_cold_r2.py.review.diff",
+      "hunks": 4,
+      "before_pin": {
+        "bytes": 22623,
+        "sha256": "5c4cd9276a1ddc012547a1106f310f94af409d8d66599ba69369f9861a302b01",
+        "blob": "306fce05dbad9fd4db6d75dcd3a8e79a83af2f1b"
+      },
+      "after_pin": {
+        "bytes": 24051,
+        "sha256": "d673b257d0d5180d5bda8d402cdac3c9294ad236ff3840298555af19b4c3df86",
+        "blob": "285f96d09168cb288fdac5dd522aac66e93e8854"
+      },
+      "diff_pin": {
+        "bytes": 6241,
+        "sha256": "12df9449546c7fa40d09b5b675da264707ce411702bb6b6e5ac2ea3d18e90225",
+        "blob": "1ed6ae32de99aae7b94c687e19b04207cb4b010c"
+      }
+    },
+    {
+      "before": "before/read_stopped_postrecovery_frontier_r1.py",
+      "after": "candidate/read_stopped_postrecovery_frontier_r2.py",
+      "diff": "read_stopped_postrecovery_frontier_r2.py.review.diff",
+      "hunks": 1,
+      "before_pin": {
+        "bytes": 16274,
+        "sha256": "e951cca69fdc9e85dfd68b4af46b2a0cb01f7caae9ba24b9f0d16c985d476f43",
+        "blob": "b503857b2747034aecd2172bcba8cfea649a9cb7"
+      },
+      "after_pin": {
+        "bytes": 16274,
+        "sha256": "5515c6319ab577bed00260caa3bdec9ec730a0c057fb2fdfbfe9debd0afa8d77",
+        "blob": "094fe60e5ed0cc5cedca84fc82efdb2aa2c8d8a5"
+      },
+      "diff_pin": {
+        "bytes": 863,
+        "sha256": "6873672937c39021bd73bca2ee3bfc817228b95adf56f29730878bfec5839df6",
+        "blob": "b7408c8fa9d2432610dd450935dd0f2255d55c5d"
+      }
+    },
+    {
+      "before": "before/read_stopped_recovered_cipher_r1.py",
+      "after": "candidate/read_stopped_recovered_cipher_r2.py",
+      "diff": "read_stopped_recovered_cipher_r2.py.review.diff",
+      "hunks": 1,
+      "before_pin": {
+        "bytes": 13207,
+        "sha256": "096792825beee8577a9cbd33fe039e08a284a2186ce485131ac6b74ee56cc956",
+        "blob": "29b333078d8bac67b2e6a59812fd38de3e9fcd59"
+      },
+      "after_pin": {
+        "bytes": 13207,
+        "sha256": "a0b9685bd28512cefc62e09d2d61717b4a11229ab2e1e1ddc1d9cf7be3a87d64",
+        "blob": "96a98c572ec34de4f2cb4a582a62e6f5cf752b3f"
+      },
+      "diff_pin": {
+        "bytes": 521,
+        "sha256": "eaa255f4144e8f3ab66dd02334abe67c0e40c7bfe753d5c728af8a330c8e2438",
+        "blob": "880e8cc01625667f31ca93e8ee016bbd142fa992"
+      }
+    },
+    {
+      "before": "before/inert_carrier.py",
+      "after": "inert_carrier_r2.py",
+      "diff": "inert-carrier-r1-to-r2.review.diff",
+      "hunks": 1,
+      "before_pin": {
+        "bytes": 6858,
+        "sha256": "cf47218bc182308c150f76c7c5212943196c035a7fa713f414cbcdffbf7c5db2",
+        "blob": "f809869a4a091209b466238b402416751dc290ba"
+      },
+      "after_pin": {
+        "bytes": 6858,
+        "sha256": "39b8d4c9aadb96db4ce43ad0c067ef505ec210a4f11c901b1176b3e5bfca49bc",
+        "blob": "def340c46ac689a9736303f374456a6df7acd643"
+      },
+      "diff_pin": {
+        "bytes": 1584,
+        "sha256": "12378de055c82704228dd5333e5afb43b6a12b9564a5e75ad331b28b9fe73f27",
+        "blob": "f36216148a5c4f290443ce1bf297b7980bbf14e0"
+      }
+    }
+  ],
+  "original_qa5_and_four_deadline_overlay_and_probe_unchanged": true,
+  "original98_and_extra12_not_merged": true,
+  "witness_fixed_suffix": "direction-prepare-witness",
+  "witness_mutation_limit": 2,
+  "scopes": {
+    "original_controller_seconds": 2400,
+    "role_preparation_seconds": 60,
+    "postcold_seconds": 300,
+    "all_new_parent_deadlines_clipped": true,
+    "http_seconds": 15,
+    "native_admission_seconds": 8,
+    "new_outer_seconds": 3000
+  },
+  "failed_B_fences_added": 4,
+  "all_prior_fences": 28,
+  "upstream_source_tree": "fd34be3d1b05d186b0966e0e9562171ae2ace9d9",
+  "root_upstream_review": {
+    "blob": "3d6a2b3c8969fabf14d4ca722e71e4cddd48a09d",
+    "bytes": 2667,
+    "sha256": "7a6768f639f5f8fdf1a5185cb740cccdc53b41d30f61b686440b9671eb85b3ad"
+  },
+  "root_failed_B_review": {
+    "blob": "220bc755ce81649b58b7cdb4d961d6ea485348e0",
+    "bytes": 1592,
+    "sha256": "e5a95a1320c1add4ebbb3e7dbc5ccb982295d217ce824105d08fd5b9918ed412"
+  },
+  "components": {
+    "pin": {
+      "bytes": 17718,
+      "sha256": "09e0438f10577a1cae02da3091c5a1703efab8f8979f3301fa33207328d0da91",
+      "blob": "0939df491b16efa8e35a445a6d86a9da2c70d8fc"
+    },
+    "checks": 130,
+    "actual_run": "local offline AST-selected original method bodies plus in-memory adapters",
+    "actual_product_or_HA_qualification": false
+  },
+  "known_local_preparation_rejection": {
+    "kind": "local_exec_CreateProcess_E2BIG",
+    "process_started": false,
+    "host_action": false,
+    "output": "Argument list too long (os error 7)",
+    "fallback": "smaller sequential local source-only writes"
+  },
+  "inherited_qualification_not_rewritten": true
+}

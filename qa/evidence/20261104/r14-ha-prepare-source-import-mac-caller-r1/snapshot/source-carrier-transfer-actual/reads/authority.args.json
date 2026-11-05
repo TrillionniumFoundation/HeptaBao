@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-phaseb-source2-transfer-1a1a94b59e2-fc05-33df-authority-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1a94b59e2-fc05-33df"
+    }
+  }
+}

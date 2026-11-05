@@ -1,0 +1,7 @@
+{
+  "chunk_id": "7ef81c",
+  "wall_time_seconds": 0.000030917,
+  "exit_code": 0,
+  "original_token_count": 229,
+  "output": "{\"actual_transport_tested\": false, \"candidate_child_processes\": false, \"candidate_filesystem\": false, \"candidate_network\": false, \"candidate_top_level_executed\": false, \"cases\": [{\"accepted\": true, \"case\": \"actual_original_export_receipt\"}, {\"case\": \"wrong_commit\", \"rejected\": true}, {\"case\": \"wrong_source_tree\", \"rejected\": true}, {\"case\": \"wrong_full_history_count\", \"rejected\": true}, {\"case\": \"nonempty_prerequisite\", \"rejected\": true}, {\"case\": \"wrong_controller_pin\", \"rejected\": true}, {\"case\": \"wrong_bundle_pin\", \"rejected\": true}, {\"case\": \"child_remaining\", \"rejected\": true}, {\"case\": \"elapsed_at_deadline\", \"rejected\": true}, {\"case\": \"source_after_changed\", \"rejected\": true}, {\"case\": \"runtime_claim_true\", \"rejected\": true}], \"checks_passed\": 11, \"schema\": \"heptabao.phaseb3cb.source-carrier-export-contract-components.v1\", \"selected_pure_receipt_assertions_executed\": true, \"status\": \"passed\"}\n"
+}

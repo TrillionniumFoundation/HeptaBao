@@ -1,0 +1,94 @@
+{
+  "schema": "heptabao.official271.partial-scope-after-3cb-source-import.v1",
+  "original_partial_tree": "53081eed42653db1b8f51b840b7eb4b89e3bf7cb",
+  "family_erratum_tree": "00457eb96647344bb61944d4aa0e24e1f08e51a3",
+  "exhaustive_denominator_complete": false,
+  "full_replacement": false,
+  "host_operations": 0,
+  "files": [
+    {
+      "path": "default-registry.public.json",
+      "bytes": 1764,
+      "sha256": "a54a77ac64b0fe03b20ca70e4b689a151d85635843ae23e5d9332c6d3b0cceac",
+      "blob": "f6952d21406e51f42d4f22ac15f0e259dd0ff49c"
+    },
+    {
+      "path": "denominator-construction-contract.public.json",
+      "bytes": 2963,
+      "sha256": "8865a05278bb386884b0f6e0ac6b57ff8a940e7538d049e45abb35cbb0f05b4c",
+      "blob": "1ae87abbbe018f420823cf4e7826598af7a8bb72"
+    },
+    {
+      "path": "diffs/current-gap-map-status.review.diff",
+      "bytes": 2875,
+      "sha256": "6b34a974fe4367bef28169c2732525f446fb75528734bb7a81ff820ccd5576b1",
+      "blob": "0ce7d782f3422d1f38657964e3a39ba723dbde43"
+    },
+    {
+      "path": "README.md",
+      "bytes": 8934,
+      "sha256": "19061ae699ceda681f66c7238fbb20c4fc163368c9916c2a50ea546feae1128b",
+      "blob": "38279eab117c9aa4c648cdef0e2ce3ff0fce5abb"
+    },
+    {
+      "path": "reference/builtin-registry.go",
+      "bytes": 6385,
+      "sha256": "aa99d9111b6cdf5a5cea1f9a4873291d6658101c8b556b4ca6267ac9da135600",
+      "blob": "94af1a84cec148883c926941f50eea138d3644ae"
+    },
+    {
+      "path": "reference/legacy-family-erratum.public.json",
+      "bytes": 2294,
+      "sha256": "2ae7f3c0770ab5f6b8c4df1becb03767bd8197e4e91b196da9b4dee7c2c4302b",
+      "blob": "69a55140eac73c8efb5f74b3f3a5e30eab8e6045"
+    },
+    {
+      "path": "reference/original-bounded69-map.public.json",
+      "bytes": 45700,
+      "sha256": "4bc5b847c6ba2df3cb0afbab9e7744167c0bc18dbb95d2c86b7466a15176c2a2",
+      "blob": "57a2563e6f86b4be7695a11758d97a51bbdf8922"
+    },
+    {
+      "path": "reference/original-current-native-gap-map.public.json",
+      "bytes": 17812,
+      "sha256": "db3772b52899347fd82dca9e80402450097a0b275107532320da04f4763c6d5d",
+      "blob": "bb55510d40c7979107beee6b552192be302e05b7"
+    },
+    {
+      "path": "reference/original-scope-manifest.public.json",
+      "bytes": 3607,
+      "sha256": "4d5e7e8e501c40e75480cb07cc8a6a8dc114e0b65f7c71681b68e940bc260a9d",
+      "blob": "55957491ddda1a936efbf240ffbba886a892254d"
+    },
+    {
+      "path": "reference/source-pins.public.json",
+      "bytes": 8261,
+      "sha256": "e3ed3b7c3d8aab5383d5730c91b2d6630927712161d275440bcb9afa619c9ef7",
+      "blob": "89525b3fc20d73386e4cb6e9eb326a0ec0849ccc"
+    },
+    {
+      "path": "review/source-consistency.execution.original.json",
+      "bytes": 4318,
+      "sha256": "11748d1be4b83b9d0d13dcc579ac8f63942e39b8ad33ba192a5004a9b5b5cbee",
+      "blob": "c0a55cdd43a118b7f308a5bf74a86326f1fc3252"
+    },
+    {
+      "path": "review/source-consistency.public.json",
+      "bytes": 818,
+      "sha256": "8303abd287a63c74af26ac1b396e5a81bc0091fb60c05a421c2f2ea850425922",
+      "blob": "38e45a93472da9466d0e43b7cf5fc4ace8c49bef"
+    },
+    {
+      "path": "review/source-consistency.py",
+      "bytes": 2990,
+      "sha256": "118805078442abe722b13b46bf2403dc78d439be5933c6d3e08151166af81c7d",
+      "blob": "1800df585f3c586dfd452756e3b434244084c05d"
+    },
+    {
+      "path": "updated/current-native-gap-map.public.json",
+      "bytes": 19016,
+      "sha256": "cab1bc21fa66194c5c6a90ff80afd4efca9a3e7596b4dc07ab21e028cccbf41f",
+      "blob": "bc19a8471c9765fc0f6f884f7cb64dadfaf9ed01"
+    }
+  ]
+}

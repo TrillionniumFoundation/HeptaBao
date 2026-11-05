@@ -1,0 +1,17 @@
+{
+  "actual_export_and_carrier_receipts_used": true,
+  "actual_import_executed": false,
+  "actual_receipt_shape_predicate_passed": true,
+  "candidate_bytes": 33102,
+  "candidate_sha256": "cdecc828fd13e6fe2509741515c23cab2913931b430ffb1823630975634bafc3",
+  "candidate_top_level_executed": false,
+  "carrier_whole_hash_exact": true,
+  "child_processes": 0,
+  "filesystem_operations": 0,
+  "future_local_fd_custody_not_executed": true,
+  "held_rows_source": "already captured receiver identity facts for predicate test only",
+  "network_operations": 0,
+  "schema": "heptabao.phaseb3cb.bound-importer-actual-receipt-predicate.v1",
+  "status": "passed",
+  "two_received_versions_lossless_exact": true
+}

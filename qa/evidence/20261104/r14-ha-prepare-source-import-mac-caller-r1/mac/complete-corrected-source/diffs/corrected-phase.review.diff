@@ -1,0 +1,12 @@
+diff --git a/mac_current_phase_owner_r2.py b/mac_current_phase_owner_r2.py
+--- a/mac_current_phase_owner_r2.py
++++ b/mac_current_phase_owner_r2.py
+@@ -293,7 +293,7 @@
+              'phase_device_matches_public_startup_anchor')
+         volume_guard.check()
+         need(args.plan==ROOT/'launchd'/(generation+'.private.json'),'immutable_manager_phase_plan')
+-        for name in ('mac_native_process_observer_r1.py','authbus_native_login_custody.py',
++        for name in ('mac_native_process_observer_r1.py',
+                      'mac_owned_unreaped_r1.py',
+                      'mac_current_phase_owner_r2.py','mac_t5_volume_guard_r1.py',
+                      'mac_current_cycle_r2.mjs','mac_single_native_r2.mjs',

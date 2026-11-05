@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.mac-inert-native-and-mcp-envelope-provenance.v1",
+  "nativePayloadsByteExact": true,
+  "nativePayloadFiles": [
+    "start-ack.original.json",
+    "authority.original.json",
+    "process-read.original.json"
+  ],
+  "mcpEnvelopeSnapshots": {
+    "available": true,
+    "count": 3,
+    "cachedProviderReturnObjects": true,
+    "serializedEnvelopeWireBytesClaimed": false,
+    "nativeTextPreservedByteExact": true,
+    "structuredContent": null,
+    "isError": false
+  },
+  "unsafeNativeIntegersNeverParsedAndReserializedIntoOriginalFiles": true,
+  "stdoutHexTextBytesWholeEqual": true,
+  "stdoutRecapNotSubstitutedForRaw": true,
+  "rootTerminalReviewBlob": "41ddd01d76e65490a036fc6e0d9353746524ab7d"
+}

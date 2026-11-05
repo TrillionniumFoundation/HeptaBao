@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.phaseb3cb-source-carrier-inert-root-review.v1",
+  "actual_tree": "85141d6214d92fcfe08cf1717f054b510b964434",
+  "job_id": "1a1a943dbc6-fc05-337e",
+  "exit_code": 0,
+  "state": "succeeded",
+  "complete_durable_terminal": true,
+  "one_original_launch_ack": true,
+  "exact_admitted_request_fields_bound": true,
+  "original_sdk": {
+    "paged_native_sdks": 3,
+    "immutable_pages": 5,
+    "file_texts": 4
+  },
+  "admission_wrappers_verified_separately": 3,
+  "full_stdout_bytes": 1519,
+  "stderr_bytes": 0,
+  "stdout_text_and_hex_exact": true,
+  "core_and_terminal_lossless_equal": true,
+  "source_files": [
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-controls-r1/sender.py",
+      "bytes": 6289,
+      "sha256": "8681201f587a3c5d2da07f01404e4b74e1db2e3ada2614f3482915c6543fb650",
+      "version": "2050:2415448:6289:1793841160785577923:1793841160790299539",
+      "mode": "0600",
+      "publication": "created"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-controls-r1/receiver.py",
+      "bytes": 8701,
+      "sha256": "2280d96c79b5e8fe8a0b3a9b601196cc61dbc43c11f4ded31780617f0533a6e5",
+      "version": "2050:2415449:8701:1793841160799892890:1793841160808029310",
+      "mode": "0600",
+      "publication": "created"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-controls-r1/relay.py",
+      "bytes": 15395,
+      "sha256": "f98ef18f25583506e7ff6072b8f383115ea826a399286f22bff1517b6eeb4432",
+      "version": "2050:2415450:15395:1793841160812940035:1793841160817645474",
+      "mode": "0600",
+      "publication": "created"
+    }
+  ],
+  "elapsed_ns_exact": "61300481",
+  "outer_seconds": 60,
+  "source_executed": false,
+  "git_started": false,
+  "compiler_started": false,
+  "service_started": false,
+  "artifact_transfer_started": false,
+  "local_review_corrections": [
+    "Selected only terminal SDKs for paged reconstruction and separately verified 3 admission wrappers.",
+    "Corrected a pre-execution review-cell syntax error and then used the actual ACK job.id field, after inspecting the immutable ACK schema. These local draft errors did not issue host actions or cause replay."
+  ],
+  "transfer_admitted_once": {
+    "request_blob": "c3767f62e2d3ecd3bfcc317a5cf9f137eebe20cc",
+    "key": "heptabao-phaseb-3cb-source-carrier-f98ef18f-20261105-r1",
+    "outer_seconds": 360,
+    "controller_seconds": 300,
+    "endpoint_seconds": 90
+  },
+  "canonical_import_admitted": false
+}

@@ -1,0 +1,177 @@
+{
+  "schema": "heptabao.mac-complete-caller-source-append-actual-manifest.v1",
+  "classification": "PASS_INERT_ONLY_ROOT_VERIFIED",
+  "jobId": "1a1a95b43fe-fc05-3490",
+  "fixedKey": "heptabao-mac-current-complete-source-inert-5ecc5780-20261105-r4",
+  "sourceTree": "9ed171e68bd0586dcf59830eb1d69448aaf43d80",
+  "carrierTree": "8f71f802396bcd835b7777fc0e2c2de183fbe3a7",
+  "rootTerminalReviewBlob": "41ddd01d76e65490a036fc6e0d9353746524ab7d",
+  "files": [
+    {
+      "path": "author-terminal-review.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "9641766c999e4f4a266eb873a40d1be880ff26cc",
+      "bytes": 2861,
+      "sha256": "6981d204014fbf94384ac2e819304b78c90533a1b8d8b47e1d9475ef3ace909f"
+    },
+    {
+      "path": "authority.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "3054738c2e308d122f81b648ac01b94729b4966a",
+      "bytes": 733,
+      "sha256": "17c4423462c640af7d37f23816f006f9be86a000beb2aac300755e8038f9dad9"
+    },
+    {
+      "path": "bindings/append-plan.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "946d8f1d0e1a64b58ebd64c6adaed9e0c9e2929e",
+      "bytes": 4598,
+      "sha256": "1b61b7250c3239d1042dfa7daa4dbc0d135f49f4d980c1c800f3b0bf70fb42c1"
+    },
+    {
+      "path": "bindings/candidate.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d51a674c9643d349acd81ac043e1cccabb66fdf8",
+      "bytes": 3442,
+      "sha256": "d52eda7e781aae0e5af5aa4edb324271c8b3e4340a38a5a840e60e9dafc62e92"
+    },
+    {
+      "path": "bindings/qa-pins.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "4ac39687d368159b001c0b756521d17908921ece",
+      "bytes": 1846,
+      "sha256": "84860e3108a85650e7a4ec798fa4639b778ca049572bafbc82bee8f3783059a0"
+    },
+    {
+      "path": "intent.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "18dcdede236f37830d1640461ad9e65aab82e5e8",
+      "bytes": 530636,
+      "sha256": "338d754e96bdade8bbc417833d696ba48ef430ccafa282eab66ebd0f038d8327"
+    },
+    {
+      "path": "local-anchor-verifier-refusal.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d3374354288262fd7d3233d1202e03715e877238",
+      "bytes": 334,
+      "sha256": "57e1a3167b52432fe33d0310b705eec381f31d2f96b10b15cd42765522919b40"
+    },
+    {
+      "path": "mcp/native-payload-provenance.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "1a59c702f144f612787a991185289b33c5b8ec1f",
+      "bytes": 722,
+      "sha256": "c0ad59a0e6c03455fb0e0b6ed86caab8ecf5d27c42814f6e06927a82cc043a33"
+    },
+    {
+      "path": "mcp/read-response.snapshot.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "36a32120d2b1953c32c1fd1fcad63445b5e9f226",
+      "bytes": 39178,
+      "sha256": "fead65e1b661e9b87f950edea509671f5d51c632085ad47725e3b752fc9f0aa3"
+    },
+    {
+      "path": "mcp/start-response.snapshot.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "6e7e1b3f306d509c5ff6eef5756d9d9a37a0acb3",
+      "bytes": 17656,
+      "sha256": "dd1af2da5c9342401ca0effbe56296f374934ef9e8d0801101f770bf1ae48096"
+    },
+    {
+      "path": "mcp/status-response.snapshot.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "adeb7022a39092b1f5a0cf8f2f58c7f069d3bbc2",
+      "bytes": 956,
+      "sha256": "734019e72ff2b1b6ff72061297873f6ce1aa4d4056e45ead08d5d1a25e92e87b"
+    },
+    {
+      "path": "process-read.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "da02326d181e52f62e555b7d759961289b5ee08b",
+      "bytes": 36393,
+      "sha256": "f12bdc6a786a01d58ce5d483d2a2fae318270c8662907d3a2a11f92fd1acafa2"
+    },
+    {
+      "path": "reviews/peer-successor-source-review.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "687cbe1184358845b0145567f7770a44f4a31324",
+      "bytes": 4841,
+      "sha256": "f2f79c41edab5ebc730ad7b9c2b2fdc32731e764478064be27262d3dc91ff4ef"
+    },
+    {
+      "path": "reviews/root-complete-source-review.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "b6ece7827f2b46fb394dbd2fd2eb4c01ba0cbfb7",
+      "bytes": 2405,
+      "sha256": "37200a447ef7e0db6ff77513e2a81ac7574ad43b12f78513091e5316e78d7fe5"
+    },
+    {
+      "path": "reviews/root-inert-source-review.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "2201e27a7f7fb9ca13a9b76194962b0d2566fe34",
+      "bytes": 2364,
+      "sha256": "e29c98804cc0d1a5c9478067db5c2c2883a66045a4a958b7659c9d8c1153b1c7"
+    },
+    {
+      "path": "reviews/root-inert-terminal-review.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "41ddd01d76e65490a036fc6e0d9353746524ab7d",
+      "bytes": 1468,
+      "sha256": "99e3d5d6ba139631287ce91e52718b0a46a527bc00aa3aa316fb45ebabda039e"
+    },
+    {
+      "path": "start-ack.original.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "02fd3f7f6ef273acf83f7c897dee4404da1031d8",
+      "bytes": 16590,
+      "sha256": "9dc0548672ad75c11cd68f279cfd4e8fb725bf701daccd5d71b9ad0178324703"
+    },
+    {
+      "path": "stderr.original.txt",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "stdout.original.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "874f00b99728349fcaebd2f89975d31431209993",
+      "bytes": 11589,
+      "sha256": "f91de0fae041b1624f7d7d92479e35845c2c09011d95c902508ce8573729a313"
+    }
+  ],
+  "totalBytes": 678612,
+  "nativePayloadsByteExact": true,
+  "mcpEnvelopeSnapshotsAreCachedObjectsNotOriginalWireSerialization": true,
+  "actualPublications": 15,
+  "existingSourcesPreserved": 6,
+  "oldIdentityStringsVerified": 54,
+  "rootT5IdentityStringsVerified": 27,
+  "innerSeconds": 45,
+  "outerSeconds": 60,
+  "actualControllerSeconds": 0.24171037506312132,
+  "currentCaptureAuthorized": false,
+  "consumerExecuted": false,
+  "serviceStarted": false,
+  "subsequentHostActionsHeldForHaWindow": true
+}

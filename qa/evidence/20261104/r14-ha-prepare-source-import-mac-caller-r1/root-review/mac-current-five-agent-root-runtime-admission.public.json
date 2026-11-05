@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.mac-current-five-agent-root-runtime-admission.v1",
+  "as_of_utc": "2026-11-05 01:52:18 UTC",
+  "status": "ADMITTED_ONCE_NEW_OWNED_RUNTIME",
+  "source_tree": "9ed171e68bd0586dcf59830eb1d69448aaf43d80",
+  "source_root_review": "b6ece7827f2b46fb394dbd2fd2eb4c01ba0cbfb7",
+  "inert_job": "1a1a95b43fe-fc05-3490",
+  "inert_full_tree": "1bd9b5b359543acf6c84ec082dfd7e008491d4e8",
+  "inert_root_review": "41ddd01d76e65490a036fc6e0d9353746524ab7d",
+  "exact_intent_tree": "463cd36a27ad2cf7789286d476795e84c0dafe91",
+  "exact_request_blob": "bd112cd7ea0a9ea34595b03d6e790f1a5a019ae5",
+  "request_equals_frozen_source_proposal": true,
+  "source_and_document_pins_verified": true,
+  "ha_terminal_cleanup_root_review": "5f51b87b2e020c124dda009cb4aee9c92c9ad716",
+  "requires_unmodified_existing_private_custody_and_900s_expiry_guards": true,
+  "new_outer_seconds": 900,
+  "new_supervisor_seconds": 1080,
+  "manager_seconds": 600,
+  "cleanup_seconds": 60,
+  "phase_seconds": 120,
+  "native_seconds": [
+    15,
+    8,
+    3
+  ],
+  "capture_seconds": 45,
+  "owned_launchd_only": true,
+  "production_cutover": false,
+  "production_keepalive_qualified": false,
+  "no_j3160_provider_model_refresh_or_quota": true,
+  "unknown_mutation_stops_no_replay": true,
+  "full_replacement": false
+}

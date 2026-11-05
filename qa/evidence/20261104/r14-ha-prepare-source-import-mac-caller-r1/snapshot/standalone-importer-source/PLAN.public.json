@@ -1,0 +1,185 @@
+{
+  "schema": "heptabao.phaseb3cb.desktop-standalone-importer-source-plan.v1",
+  "status": "source_only_unbound",
+  "ready_for_execution": false,
+  "candidate": {
+    "bytes": 32869,
+    "sha256": "65ddf987a13a1360dfc706c649c5aa752de3b9b0dd0dd6e82b4175410fc97bb2",
+    "blob": "7617da67da0d9036235e9c93fb57e95841b0ac1c"
+  },
+  "canonical": {
+    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+    "parent": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+    "root_commit": "67d79b3b5442ed033d38929eab2010403463e56d",
+    "history_count": 3755,
+    "tracked_file_count": 3911
+  },
+  "fixed_paths": {
+    "base": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "control_root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-import-r1",
+    "control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-import-r1/control",
+    "source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-r1",
+    "source_carrier": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1",
+    "incoming": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming",
+    "transport_result": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/control/result.public.json",
+    "future_phaseb_control": "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-control-r2"
+  },
+  "evidence": {
+    "actual_export_tree": "ed8a68b499ac0643b7ed043ab939fc7a6349232e",
+    "actual_export_core_blob": "312f6dc4e1148e0cb371c67c8413f1002061ec01",
+    "product_transport_tree": "bd70028b078c7c009762e8aacd7cb184f2925235",
+    "source_carrier_proposal_tree": "8fd8ece4a610263c4dc8e7f8e62e0895860ada6f",
+    "source_carrier_inert_actual_tree": "85141d6214d92fcfe08cf1717f054b510b964434",
+    "source_carrier_actual_transfer": null,
+    "reference_receiver_blob": "1e406faf1eaec0dfd14b5d04311c257005bd013c",
+    "reference_receiver_bytes": 24595,
+    "reference_receiver_sha256": "5de344fdae21c1852513f21b891121246cff649b2fff001c2791c026ebb70521"
+  },
+  "input_template": {
+    "files": [
+      {
+        "name": "canonical-3cb-full.bundle",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/canonical-3cb-full.bundle",
+        "bytes": 23335023,
+        "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
+        "mode": 256,
+        "version": null
+      },
+      {
+        "name": "source-export.result.public.json",
+        "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/source-export.result.public.json",
+        "bytes": 39965,
+        "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
+        "mode": 256,
+        "version": null
+      }
+    ],
+    "transfer": {
+      "name": "source-carrier.result.public.json",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/control/result.public.json",
+      "bytes": null,
+      "sha256": null,
+      "mode": 384,
+      "version": null
+    },
+    "actual_inputs_ready": false
+  },
+  "unresolved_fields": [
+    "FILES[0].version",
+    "FILES[1].version",
+    "TRANSFER.bytes",
+    "TRANSFER.sha256",
+    "TRANSFER.version"
+  ],
+  "unbound_gate": "ACTUAL_INPUTS_READY=False. The exact inline source digest/argv and readiness/metadata guards run before any controller filesystem operation, directory creation or Git child. After the one source-carrier transfer is independently qualified, only its exact actual metadata and readiness flag may be filled in a new reviewed binding delta.",
+  "input_custody": {
+    "files_mode": "0400",
+    "carrier_root_mode": "0700",
+    "incoming_mode": "0500",
+    "transport_receipt_mode": "0600",
+    "uid": 1000,
+    "nlink": 1,
+    "directory_handles": "BASE, fixed carrier root, incoming and carrier control are held open. Every child is resolved relative to its held parent fd with O_NOFOLLOW; begin/end checks compare each held inode to its named entry.",
+    "file_handles": "Two source inputs and the raw transport receipt stay open across the import. Exact lossless version/whole SHA/mode/owner/link-count and held/name identity are checked before and after.",
+    "no_input_writes": true,
+    "transport_performed_by_importer": false
+  },
+  "output_custody": {
+    "fresh_control": "ROOT.mkdir creates only a new owned 0700 root; no existing controller or failure root is reused.",
+    "fresh_source": "SOURCE.mkdir creates the sibling source exclusively before Git. Its directory fd is registered under deferred cancellation, checked against the BASE-relative name before clone and after import, and closed in finally.",
+    "source_if_failure": "Partial new control/source directories are retained. There is no automatic delete, retry, replacement or import replay.",
+    "durability": "All tracked source bytes, Git files and directories are fsynced by the original materialization helper; BASE is also fsynced after creating the sibling source and after final receipt publication."
+  },
+  "import_sequence": [
+    "Read exact ready input metadata and full raw receipts from held descriptors; verify actual exporter and source-carrier completion.",
+    "Verify strict bundle v2 header, zero prerequisites and sole canonical HEAD; recheck all inputs.",
+    "Create fresh controls and sibling source; store exact inline controller and intent.",
+    "Run original file-only owned Git clone --no-checkout --no-hardlinks into the exclusively created source directory, then bundle verify/list-heads.",
+    "Detach checkout canonical commit and remove the clone's local origin; prove sole parent, root commit, exact history count and full strict fsck.",
+    "Require Git index equals full canonical tree and verify every one of the 3911 materialized blob bytes/mode; no sparse source, symlink, hardlink or alternates.",
+    "Freeze independent .git/clean state, recheck all held source inputs and source directory name, then close every descriptor and process under original final guards.",
+    "Publish original result and terminal; only authoritative exit0 plus terminal deadline and all-owned closure qualifies this source import."
+  ],
+  "unchanged_definitions": [
+    "Cancelled",
+    "bundle_header",
+    "create",
+    "digest",
+    "freeze",
+    "fsync_dir",
+    "git",
+    "group_members",
+    "identity",
+    "on_signal",
+    "owned",
+    "owned_argv",
+    "persist_command",
+    "process_snapshot",
+    "prove_canonical",
+    "public",
+    "read_file",
+    "remaining",
+    "stable",
+    "stop_active",
+    "stop_owned",
+    "verify_materialized_and_fsync"
+  ],
+  "changed_definition": "verify_receipts: validates exact standalone export and completed source carrier instead of native-build artifacts",
+  "removed_definitions": [
+    "receive_files",
+    "recheck_artifacts"
+  ],
+  "new_definitions": [
+    "check_input_directories",
+    "check_source_directory",
+    "create_source_directory",
+    "directory_key",
+    "hold_fixed_inputs",
+    "hold_input_directories",
+    "recheck_held_inputs"
+  ],
+  "deadlines": {
+    "unchanged_total_seconds": 300,
+    "unchanged_git_seconds": 60,
+    "unchanged_clone_seconds": 90,
+    "unchanged_term_seconds": 5,
+    "unchanged_kill_seconds": 5,
+    "proposed_new_outer_seconds": 330,
+    "original_output_caps_per_stream": 2097152,
+    "maximum_bundle_bytes": 67108864,
+    "maximum_receipt_bytes": 262144
+  },
+  "cleanup_scope": "Original owned Git lifecycle remains byte-identical, including original timeout handling and final TERM/KILL. New fd registration defers cancellation until ownership is recorded. This does not claim a new universal one-signal cleanup protocol.",
+  "validation": {
+    "ast_compile_only": true,
+    "candidate_top_level_executed": false,
+    "unchanged_reference_definitions": 22,
+    "pure_existing_components": 29,
+    "pure_owned_directory_components": 8,
+    "actual_import_tested": false,
+    "first_directory_component_failure": "Synthetic harness omitted UID; original NameError kept, then only synthetic globals were corrected. Candidate unchanged."
+  },
+  "future_dispatch": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "argv_template": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "EXACT_FINAL_BOUND_SOURCE",
+      "EXACT_FINAL_BOUND_SOURCE_SHA256"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 330,
+    "idempotency_key_template": "heptabao-phaseb-3cb-standalone-import-BOUND_DIGEST-20261105-r1",
+    "dispatch_ready": false
+  },
+  "non_goals": [
+    "No binary/seed execution, compiler, HTTP, provider, old B01 replay, production change or source-ref mutation.",
+    "No old desktop repository, object alternates, incremental bundle prerequisite or network Git fetch is used.",
+    "No import qualification is transferred from the old X230 receiver or from the new source-carrier inert result.",
+    "No existing source or product artifact is rewritten."
+  ]
+}

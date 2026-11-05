@@ -1,0 +1,62 @@
+{
+  "schema": "heptabao.mac-complete-outer-original-root-source-review.v1",
+  "source_tree": "0aca624b5d051ed55a62943a06b638c9b3090129",
+  "source_files": 47,
+  "source_bytes": 544457,
+  "merkle": {
+    "root_sha": "0aca624b5d051ed55a62943a06b638c9b3090129",
+    "trees_verified": 7
+  },
+  "whole18_source_binding_review": {
+    "tree": "0aca624b5d051ed55a62943a06b638c9b3090129",
+    "source_count": 18,
+    "all_candidate_contract_dispatch_payload_pins_exact": true,
+    "runtime_admitted": false
+  },
+  "independent_peer_tree": "001b6206a2ebd0a07705f094824e33cc156a0c84",
+  "independent_peer_review_blob": "a9a1d178905711efe5c83da183bb04e4b9ae2fd5",
+  "root_full_reads": [
+    "outer",
+    "four-origin input validator",
+    "materializer",
+    "current-capture entry"
+  ],
+  "peer_full_reads": [
+    "launchd manager",
+    "phase owner",
+    "native worker cycle and retained-child lifecycle",
+    "raw-auth and cache inverse CAS"
+  ],
+  "definite_source_blockers": [
+    {
+      "id": "obsolete-qa-name",
+      "finding": "Phase mandatory inventory includes authbus_native_login_custody.py absent from frozen18; actual owned helper is mac_owned_unreaped_r1.",
+      "minimal_fix": "Remove the single unused name, retain other8 exact checks."
+    },
+    {
+      "id": "model-digest-lf",
+      "finding": "Unchanged actual capture hashes canonical JSON plus LF; materializer compares no-LF global digest.",
+      "minimal_fix": "Correct only model boundary expression to include capture LF; do not change capture library or global digest."
+    },
+    {
+      "id": "temporary-socket-close-unknown",
+      "finding": "Socket close exception fails run but misses unknown/final closure accounting.",
+      "minimal_fix": "Record one close attempt and include failed or unknown closure in final aggregate; no close retry."
+    }
+  ],
+  "peer_pure_component_checks": 36,
+  "actual_host_runtime_executed": false,
+  "source_admission": false,
+  "new_successor_required": true,
+  "public_generation_and_openssl_review_blob": "803093d32e2319e26da2e182863c234e57eb079b",
+  "unchanged_constraints": [
+    "actual_current_config_and_cache_semantics",
+    "four_frozen_credential_provenances",
+    "expiry_margin_900_seconds",
+    "original_phase120_native15_8_3_capture45_http10",
+    "no_J3160_or_provider_requests",
+    "no_production_service_or_config_change",
+    "once_inverse_CAS_with_unknown_stop"
+  ],
+  "full_replacement_qualified": false
+}

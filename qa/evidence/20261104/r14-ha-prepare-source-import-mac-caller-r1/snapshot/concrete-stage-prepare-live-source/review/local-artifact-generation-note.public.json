@@ -1,0 +1,11 @@
+{
+  "stage": "local source artifact construction",
+  "failure": "V8 structuredClone is unavailable",
+  "side_effects": "only request value stored in volatile session; no tool, host, file, or source execution",
+  "correction": "JSON roundtrip of public source-only dispatch metadata; no candidate implementation change",
+  "source_consistency_first_attempt": {
+    "error": "Comparison read f.blob from Git tree rows whose documented key is f.sha",
+    "candidate_changed": false,
+    "correction": "Use Git tree row sha; no helper execution or host operation occurred"
+  }
+}

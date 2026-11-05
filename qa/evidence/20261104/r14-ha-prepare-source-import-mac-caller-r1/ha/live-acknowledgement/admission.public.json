@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.postcold-r2-live.explicit-admission.v1",
+  "status": "authorized_single_submit_not_yet_submitted",
+  "request_blob": "c7c1c53c035910371f54b029b22e73ea04b24a60",
+  "request_sha256": "4d14f34a7e49dc47e09967a0a1f2890ab59b40e4b6267a06a95b4a7fbcc06309",
+  "root_live_admission_blob": "a8a9976f48413deaf17eb357ef1f856b862d898f",
+  "root_prepare_review_blob": "fa1f91cd0cf63efebd1524a4b40d19411ccc254d",
+  "root_import_release_review_blob": "314c5a9d4941d3ffcffc154d5ea34ecd4fe08f9e",
+  "root_mac_inert_release_review_blob": "41ddd01d76e65490a036fc6e0d9353746524ab7d",
+  "frozen_intent_tree": "dab019a5c35f3a0e8691b8ec139f7e077633e02a",
+  "exclusive_hosts": [
+    "desktop",
+    "mac",
+    "rog",
+    "pocket"
+  ],
+  "arguments_changed": false,
+  "unknown_replay_authorized": false
+}

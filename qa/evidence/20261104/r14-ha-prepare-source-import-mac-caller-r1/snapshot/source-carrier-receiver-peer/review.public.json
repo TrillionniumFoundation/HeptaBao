@@ -1,0 +1,75 @@
+{
+  "schema": "heptabao.phaseb3cb-source-receiver-independent-delta-review.v1",
+  "status": "SOURCE_DELTA_PASS_SCOPED",
+  "reviewer": "ha_validation",
+  "before": {
+    "blob": "4ecee801d85bc7aa1eeef93fe45b443f0c9b372d",
+    "bytes": 8275,
+    "sha256": "dd2209577430e4d9b17918f9688453cb3b68ef725032abb6e3f59b6654a34e31"
+  },
+  "after": {
+    "blob": "8d90094b396b50fa34eb91f2b5b75de59030a0b0",
+    "bytes": 8701,
+    "sha256": "2280d96c79b5e8fe8a0b3a9b601196cc61dbc43c11f4ded31780617f0533a6e5"
+  },
+  "diff": {
+    "blob": "c55cbd0dabb57fba8743fd19889d11a8891ef163",
+    "bytes": 6692,
+    "sha256": "8362181d536ec6422f8de6110e64426af0a7cdcdb50fc27aa65b7a95d06ebe6f"
+  },
+  "actual_export_receipt": {
+    "blob": "312f6dc4e1148e0cb371c67c8413f1002061ec01",
+    "bytes": 39965,
+    "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448"
+  },
+  "strict_apply_hunks": 4,
+  "whole_after_bytes_exact": true,
+  "reviewed_scope": "Only the source-file bindings and export-provenance replacement block; existing transport, deadlines, EOF, FD/fsync and cleanup algorithms were not requalified.",
+  "findings": [],
+  "provenance": {
+    "canonical_commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+    "sole_parent": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+    "full_commit_count": 3755,
+    "bundle_bytes": 23335023,
+    "bundle_sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
+    "prerequisites": [],
+    "export_controller_sha256": "7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a",
+    "source_before_after_equal": true,
+    "expected_cleanup_records": 27,
+    "overall_seconds": 300,
+    "git_seconds": 90,
+    "endpoint_seconds_unchanged": 90
+  },
+  "pure_check": {
+    "actual_provenance_assertions": 19,
+    "actual_raw_export_receipt_accepted": true,
+    "bundle_metadata_version_exact_raw_ns": true,
+    "child_processes": 0,
+    "complete_modules_executed": false,
+    "host_calls": 0,
+    "identical_definitions": [
+      "Cancelled",
+      "dir_fsync",
+      "handler",
+      "identity",
+      "read_file",
+      "remaining",
+      "run_and_report",
+      "snapshot",
+      "stop_active"
+    ],
+    "identical_definitions_count": 9,
+    "network_calls": 0,
+    "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "receipt_original_sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
+    "schema": "heptabao.phaseb3cb.source-receiver-peer-pure-check.v1",
+    "status": "passed"
+  },
+  "limitations": [
+    "The receipt is pinned to the known exported bytes; receiver assertions do not replace the independently verified export job authority and publication deadline.",
+    "No source import, Git execution, network transfer, host operation, or whole-module execution was performed by this review.",
+    "The unchanged nine helper/class definitions are byte-identical. The existing receive data loop and EOF/FD/fsync logic remain outside this narrow requalification.",
+    "The author's previous 11 negative cases were not rerun or recounted; this independent check executes the actual 19 provenance assertions once against the frozen actual export receipt and checks the exact raw-nanosecond bundle version."
+  ]
+}

@@ -1,0 +1,653 @@
+{
+  "base_sha256": "06acd60952d5804dd8bd7b67f399216f26df8e04a24d58e2bea7e82383c9ac47",
+  "checks": [
+    {
+      "case": "original_higher_term_function_exact_bytes",
+      "passed": true
+    },
+    {
+      "case": "all_other_existing_runner_method_bytes_preserved",
+      "exact_method_names": [
+        "_capture_postcold_reference",
+        "_direction_read_numeric",
+        "_direction_verify_prepared_frontier",
+        "_postcold_check",
+        "_postcold_frontier",
+        "_postcold_remaining",
+        "_postcold_remote_observation",
+        "_postcold_retired_states",
+        "_postcold_wait_leader",
+        "execute",
+        "post_recovery_cold"
+      ],
+      "passed": true
+    },
+    {
+      "case": "extra12_names_order_identical",
+      "passed": true
+    },
+    {
+      "case": "original_missing_cipher_before_stop_block_exact",
+      "passed": true
+    },
+    {
+      "case": "original_missing_cipher_after_quarantine_block_exact",
+      "passed": true
+    },
+    {
+      "case": "new_prepare_is_min_original60_controller2400",
+      "passed": true
+    },
+    {
+      "case": "mac_and_source_stops_explicit_shared_parent",
+      "passed": true
+    },
+    {
+      "case": "known_witness_and_cleanup_two_exact_mutations",
+      "passed": true
+    },
+    {
+      "case": "same_key_cas0_and_metadata_only_cleanup",
+      "passed": true
+    },
+    {
+      "case": "mac_exact_data_and_both_absences_observed",
+      "passed": true
+    },
+    {
+      "case": "all_new_http_calls_same_absolute_deadline",
+      "passed": true
+    },
+    {
+      "case": "original_history_retired_acknowledged_unmodified",
+      "passed": true
+    },
+    {
+      "case": "actual_original_ledger_records_known_pair",
+      "passed": true
+    },
+    {
+      "case": "same_committed_leader_branch_accepts_strict_index_progress",
+      "passed": true
+    },
+    {
+      "case": "repeat_witness_refused_before_any_request",
+      "error": "direction_witness_would_be_repeated",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "repeat_witness_refused_before_any_request.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "repeat_witness_no_read_or_mutation",
+      "passed": true
+    },
+    {
+      "case": "unknown_first_read",
+      "error": "synthetic-read-no-response",
+      "error_type": "TimeoutError",
+      "passed": true
+    },
+    {
+      "case": "unknown_first_read.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "unknown_first_read.not_completed",
+      "passed": true
+    },
+    {
+      "case": "unknown_first_read.no_second_attempt",
+      "error": "direction_witness_would_be_repeated",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "unknown_first_read.no_cleanup_replay_after_failure",
+      "passed": true
+    },
+    {
+      "case": "unknown_write",
+      "error": "synthetic-write-no-response",
+      "error_type": "TimeoutError",
+      "passed": true
+    },
+    {
+      "case": "unknown_write.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "unknown_write.not_completed",
+      "passed": true
+    },
+    {
+      "case": "unknown_write.exact_original_ledger_marks_unknown",
+      "passed": true
+    },
+    {
+      "case": "unknown_write.no_second_attempt",
+      "error": "direction_witness_would_be_repeated",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "unknown_write.no_cleanup_replay_after_failure",
+      "passed": true
+    },
+    {
+      "case": "known_write_error",
+      "error": "direction_witness_cas0_not_acknowledged_once",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "known_write_error.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "known_write_error.not_completed",
+      "passed": true
+    },
+    {
+      "case": "known_write_error.no_second_attempt",
+      "error": "direction_witness_would_be_repeated",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "known_write_error.no_cleanup_replay_after_failure",
+      "passed": true
+    },
+    {
+      "case": "bool_write_version",
+      "error": "direction_witness_cas0_not_acknowledged_once",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "bool_write_version.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "bool_write_version.not_completed",
+      "passed": true
+    },
+    {
+      "case": "bool_write_version.no_second_attempt",
+      "error": "direction_witness_would_be_repeated",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "bool_write_version.no_cleanup_replay_after_failure",
+      "passed": true
+    },
+    {
+      "case": "wrong_mac_data",
+      "error": "native_exact_read_failed_node_1",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "wrong_mac_data.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "wrong_mac_data.not_completed",
+      "passed": true
+    },
+    {
+      "case": "wrong_mac_data.no_second_attempt",
+      "error": "direction_witness_would_be_repeated",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "wrong_mac_data.no_cleanup_replay_after_failure",
+      "passed": true
+    },
+    {
+      "case": "changed_original_key_list",
+      "error": "direction_witness_changed_original_key_lists",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "changed_original_key_list.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "changed_original_key_list.not_completed",
+      "passed": true
+    },
+    {
+      "case": "changed_original_key_list.no_second_attempt",
+      "error": "direction_witness_would_be_repeated",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "changed_original_key_list.no_cleanup_replay_after_failure",
+      "passed": true
+    },
+    {
+      "case": "unknown_delete",
+      "error": "synthetic-delete-no-response",
+      "error_type": "TimeoutError",
+      "passed": true
+    },
+    {
+      "case": "unknown_delete.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "unknown_delete.not_completed",
+      "passed": true
+    },
+    {
+      "case": "unknown_delete.exact_original_ledger_marks_unknown",
+      "passed": true
+    },
+    {
+      "case": "unknown_delete.no_second_attempt",
+      "error": "direction_witness_would_be_repeated",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "unknown_delete.no_cleanup_replay_after_failure",
+      "passed": true
+    },
+    {
+      "case": "known_delete_error",
+      "error": "direction_witness_metadata_delete_not_acknowledged_once",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "known_delete_error.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "known_delete_error.not_completed",
+      "passed": true
+    },
+    {
+      "case": "known_delete_error.no_second_attempt",
+      "error": "direction_witness_would_be_repeated",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "known_delete_error.no_cleanup_replay_after_failure",
+      "passed": true
+    },
+    {
+      "case": "metadata_remains",
+      "error": "direction_witness_mac_metadata_still_present",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "metadata_remains.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "metadata_remains.not_completed",
+      "passed": true
+    },
+    {
+      "case": "metadata_remains.no_second_attempt",
+      "error": "direction_witness_would_be_repeated",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "metadata_remains.no_cleanup_replay_after_failure",
+      "passed": true
+    },
+    {
+      "case": "leader_changed",
+      "error": "direction_witness_postdelete_frontier_not_observed",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "leader_changed.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "leader_changed.not_completed",
+      "passed": true
+    },
+    {
+      "case": "leader_changed.no_second_attempt",
+      "error": "direction_witness_would_be_repeated",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "leader_changed.no_cleanup_replay_after_failure",
+      "passed": true
+    },
+    {
+      "case": "mac_not_applied",
+      "error": "direction_witness_postdelete_frontier_not_observed",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "mac_not_applied.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "mac_not_applied.not_completed",
+      "passed": true
+    },
+    {
+      "case": "mac_not_applied.no_second_attempt",
+      "error": "direction_witness_would_be_repeated",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "mac_not_applied.no_cleanup_replay_after_failure",
+      "passed": true
+    },
+    {
+      "case": "no_new_frontier",
+      "error": "direction_witness_postdelete_frontier_not_observed",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "no_new_frontier.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "no_new_frontier.not_completed",
+      "passed": true
+    },
+    {
+      "case": "no_new_frontier.no_second_attempt",
+      "error": "direction_witness_would_be_repeated",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "no_new_frontier.no_cleanup_replay_after_failure",
+      "passed": true
+    },
+    {
+      "case": "expiry_during_witness_publication",
+      "error": "direction_witness_publication_after_prepare_deadline",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "expiry_during_witness_publication.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "expiry_during_witness_publication.not_completed",
+      "passed": true
+    },
+    {
+      "case": "expiry_during_witness_publication.no_second_attempt",
+      "error": "direction_witness_would_be_repeated",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "expiry_during_witness_publication.no_cleanup_replay_after_failure",
+      "passed": true
+    },
+    {
+      "case": "expired_before_start_never_dispatches",
+      "error": "parent_deadline_expired_before_dispatch",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "expired_before_start_never_dispatches.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "expired_before_start_no_get_either",
+      "passed": true
+    },
+    {
+      "case": "known_write_at_expiry_never_dispatches_delete",
+      "error": "response_arrived_after_original_http_budget",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "known_write_at_expiry_never_dispatches_delete.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "known_late_write_is_not_reclassified_as_transport_unknown",
+      "passed": true
+    },
+    {
+      "case": "preexisting_unknown_refuses_before_new_request",
+      "error": "direction_witness_requires_all_known_mutations",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "preexisting_unknown_refuses_before_new_request.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "witness_original_key_alias_refused",
+      "error": "direction_witness_must_not_alias_original_keys",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "witness_original_key_alias_refused.mutation_count",
+      "passed": true
+    },
+    {
+      "case": "original_higher_term_branch_still_invoked",
+      "passed": true
+    },
+    {
+      "case": "index_progress_with_lower_term_refused",
+      "error": "direction_full_log_or_committed_vote_regressed",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "same_term_different_higher_node_not_same_branch",
+      "error": "direction_full_log_or_committed_vote_regressed",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "old_committed_different_leader_refused",
+      "error": "direction_full_log_or_committed_vote_regressed",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "old_vote_different_leader_refused",
+      "error": "direction_full_log_or_committed_vote_regressed",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "old_vote_uncommitted_refused",
+      "error": "direction_committed_vote_shape",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "new_vote_uncommitted_refused",
+      "error": "direction_committed_vote_shape",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "vote_regression_refused",
+      "error": "direction_full_log_or_committed_vote_regressed",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "old_committed_beyond_last_refused",
+      "error": "direction_full_log_or_committed_vote_regressed",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "new_last_below_full_committed_refused",
+      "error": "direction_full_log_or_committed_vote_regressed",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "index_no_progress_refused",
+      "error": "direction_full_log_or_committed_vote_regressed",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "prestop_committed_regression_refused",
+      "error": "direction_full_log_or_committed_vote_regressed",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "mac_applied_mismatch_refused",
+      "error": "direction_full_log_or_committed_vote_regressed",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "boolean_numeric_field_refused",
+      "error": "direction_full_log_id_u64",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "negative_u64_refused",
+      "error": "direction_full_log_id_u64",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "overflow_u64_refused",
+      "error": "direction_full_log_id_u64",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "unknown_numeric_field_refused",
+      "error": "direction_full_log_id_shape",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "missing_mac_metadata_absence_cannot_qualify_frontier",
+      "error": "direction_witness_terminal_not_proven",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "stopped_mac_before_delete_frontier_refused",
+      "error": "direction_full_log_or_committed_vote_regressed",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "numeric_publication_past_shared_deadline_refused",
+      "error": "direction_preparation_completion_after_deadline",
+      "error_type": "FixtureError",
+      "passed": true
+    },
+    {
+      "case": "expired_numeric_proof_lacks_within_deadline_flag",
+      "passed": true
+    },
+    {
+      "case": "existing_real_quorum_window_retains_2point2_requirement",
+      "passed": true
+    },
+    {
+      "case": "all_quorum_requests_use_same_parent_and_max2",
+      "passed": true
+    },
+    {
+      "case": "read_stopped_postrecovery_frontier.only_fixed_fresh_root_literals_changed",
+      "passed": true
+    },
+    {
+      "case": "read_stopped_postrecovery_frontier.all_function_bytes_identical",
+      "passed": true
+    },
+    {
+      "case": "read_stopped_recovered_cipher.only_fixed_fresh_root_literals_changed",
+      "passed": true
+    },
+    {
+      "case": "read_stopped_recovered_cipher.all_function_bytes_identical",
+      "passed": true
+    },
+    {
+      "case": "all_original24_fences_exact_plus4_failed_B_fences",
+      "passed": true
+    },
+    {
+      "case": "product_builds_QA5_deadline_QA_and_extra12_unchanged",
+      "passed": true
+    },
+    {
+      "case": "launcher_final_runner_SHA_exact",
+      "passed": true
+    },
+    {
+      "case": "read_stopped_postrecovery_frontier_r2.py.both_callers_exact_SHA",
+      "passed": true
+    },
+    {
+      "case": "read_stopped_recovered_cipher_r2.py.both_callers_exact_SHA",
+      "passed": true
+    },
+    {
+      "case": "inert_carrier_only_BASE_PINS_AST_delta",
+      "passed": true
+    },
+    {
+      "case": "inert_payload_exact_nine_sources_with_size_and_digest",
+      "passed": true
+    },
+    {
+      "case": "original_probe_and_four_QA_full_bytes_unchanged",
+      "passed": true
+    },
+    {
+      "case": "proposed_dispatch_all_unsubmitted_and_original_caps",
+      "passed": true
+    }
+  ],
+  "child_processes": 0,
+  "component_source_sha256": "055824d2426f43240b9a72d22b3e3e690cb93fa99f6969176c8b9c0e44ffc9bd",
+  "host_calls": 0,
+  "network_calls": 0,
+  "no_actual_cas_or_delete": true,
+  "no_runtime_qualification": true,
+  "passed_checks": 130,
+  "product_processes": 0,
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "request_and_ledger_logic_are_original_exact_methods": true,
+  "schema": "heptabao.postcold-witness-r2-offline-components.v1",
+  "scope": "exact AST-selected bodies with in-memory clock/HTTP/ledger storage adapters",
+  "source_sha256": "2ad254a115c7463a35b5766fab0673931434d8f0b065f45318b07b646ddf2571",
+  "status": "passed",
+  "total_checks": 130
+}

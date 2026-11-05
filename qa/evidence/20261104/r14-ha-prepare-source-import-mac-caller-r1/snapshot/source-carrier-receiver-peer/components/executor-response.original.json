@@ -1,0 +1,7 @@
+{
+  "chunk_id": "dc6f1e",
+  "wall_time_seconds": 0.17016642,
+  "exit_code": 0,
+  "original_token_count": 182,
+  "output": "{\n  \"actual_provenance_assertions\": 19,\n  \"actual_raw_export_receipt_accepted\": true,\n  \"bundle_metadata_version_exact_raw_ns\": true,\n  \"child_processes\": 0,\n  \"complete_modules_executed\": false,\n  \"host_calls\": 0,\n  \"identical_definitions\": [\n    \"Cancelled\",\n    \"dir_fsync\",\n    \"handler\",\n    \"identity\",\n    \"read_file\",\n    \"remaining\",\n    \"run_and_report\",\n    \"snapshot\",\n    \"stop_active\"\n  ],\n  \"identical_definitions_count\": 9,\n  \"network_calls\": 0,\n  \"python_version\": \"3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]\",\n  \"receipt_original_sha256\": \"3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448\",\n  \"schema\": \"heptabao.phaseb3cb.source-receiver-peer-pure-check.v1\",\n  \"status\": \"passed\"\n}\n"
+}

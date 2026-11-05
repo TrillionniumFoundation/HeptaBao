@@ -1,0 +1,7 @@
+{
+  "type": "local_verifier_representation_assertion",
+  "error": "anchor closure",
+  "reason": "Compared JSON.stringify on two objects whose field insertion order differs; exact expected anchor path and 27 identity strings are verified separately in the corrected assertion.",
+  "remote_retries": 0,
+  "raw_evidence_edited": false
+}

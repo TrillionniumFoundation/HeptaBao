@@ -1,0 +1,12 @@
+diff --git a/mac_current_fixture_materializer_r1.py b/mac_current_fixture_materializer_r1.py
+--- a/mac_current_fixture_materializer_r1.py
++++ b/mac_current_fixture_materializer_r1.py
+@@ -301,7 +301,7 @@
+                 captured=document['models'][agent]
+                 need(captured['provider']==provider and captured['id']==model_id
+                      and captured['sourceConfigSha256']==CONFIG_SHA
+-                     and captured['declaredModelSha256']==digest(selected),'actual_per_agent_model_binding')
++                     and captured['declaredModelSha256']==sha(encoded(selected)+b'\n'),'actual_per_agent_model_binding')
+                 prefix=work/'workers'/('native-'+agent)
+                 native_workers[agent]={
+                     'model':model,'nativeHome':str(directory/'codex-home'),

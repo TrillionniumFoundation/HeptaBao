@@ -1,0 +1,91 @@
+{
+  "schema": "heptabao.mac-complete-outer-integration-contract.r3",
+  "status": "SOURCE_ONLY_FULL_CALLER_PRESENT_NO_RUNTIME_GO",
+  "fixedRoot": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1",
+  "existingQaSixRemainByteAndIdentityUnchanged": [
+    "mac_guarded_current_capture_r3.py",
+    "mac_capture_sqlite_synthetic_r1.py",
+    "mac_owned_commands_r1.py",
+    "mac_t5_volume_guard_r1.py",
+    "mac_owned_unreaped_r1.py",
+    "mac_capture_sqlite_synthetic_r2.py"
+  ],
+  "newQaAppend": [
+    "mac_current_outer_r3.py",
+    "mac_current_outer_inputs_r1.py",
+    "mac_current_fixture_materializer_r1.py",
+    "mac_current_capture_entry_r1.py",
+    "mac_owned_launchd_r3.py",
+    "mac_current_server_owner_r1.py",
+    "mac_current_phase_owner_r2.py",
+    "mac_native_process_observer_r1.py",
+    "mac_current_cycle_r2.mjs",
+    "mac_single_native_r2.mjs",
+    "mac_auth_rows_cas_r1.mjs",
+    "mac_authbus_cache_cas_r1.mjs"
+  ],
+  "futureInertOnlyCreates": [
+    "qa/<twelve fixed new files>",
+    "proofs",
+    "proofs/synthetic-r2.stdout.public.json",
+    "proofs/synthetic-r2.authority.public.json",
+    "candidate-current-manager-r3.public.json"
+  ],
+  "futureInertMustNotCreate": [
+    "outer-r3",
+    "captures",
+    "launchd",
+    "server",
+    "credentials-consumer",
+    "installed-plugin-copy",
+    "initial",
+    "cold-new-process"
+  ],
+  "runtimeQaPins": {
+    "mac_current_outer_r3.py": "986194f0da2d278986589d5ec757fb50a040182db6f610addba9469ee97e1be5",
+    "mac_current_outer_inputs_r1.py": "be5da65ce3bd98586d36b11edba6a4619600b74fbabb93050a3325e89e9ed254",
+    "mac_current_fixture_materializer_r1.py": "9ae14eccdec7742c31df92fede042acac68514b3713ef8cb751cb8f456fb1526",
+    "mac_current_capture_entry_r1.py": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024",
+    "mac_owned_launchd_r3.py": "1c18be9069b4f7219a793c88e08a648841bcab992b8947a9064d55712539c09c",
+    "mac_current_server_owner_r1.py": "3932ddada69310b700b7b6aafd325202c1deda84c2f12d711e27d022111bdfb6",
+    "mac_current_phase_owner_r2.py": "42520fe933e2c0106e6983a282421759b260a2bf48a08f86d0f404caa3f2eb86",
+    "mac_native_process_observer_r1.py": "cc0fa9917d05c6dc2c295594f980c1f77d089c1196e6279a14f2fdaf2d77ae9b",
+    "mac_guarded_current_capture_r3.py": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+    "mac_owned_commands_r1.py": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+    "mac_t5_volume_guard_r1.py": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99",
+    "mac_owned_unreaped_r1.py": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+    "mac_capture_sqlite_synthetic_r1.py": "108f956eb3779fce31e01d630547344e22362839041afecb3821bf8053ff392c",
+    "mac_capture_sqlite_synthetic_r2.py": "f3c6bb336814411aa4a24490f0904cdbd0fac2bb89dbcc36d6151ada13a51ba2",
+    "mac_current_cycle_r2.mjs": "2b982383ce66028159ae84845bf5a0d3515e0308bab6916944bd7195bb948177",
+    "mac_single_native_r2.mjs": "f90bbb2e9a1fa679d04fbef4328f3a1b9fc512d2b809dacd7eafce67f9cfd93c",
+    "mac_auth_rows_cas_r1.mjs": "0021fa7539f4fb36e2ac907315da1c9d9e407c9ccac606d1908e0b7a3f7042dd",
+    "mac_authbus_cache_cas_r1.mjs": "91644b97ae7deb4ede468832d3f91646bb00cd919149a510bfffe38d23544af8"
+  },
+  "inputBindings": {
+    "syntheticActualTree": "ace9c028fb4bf84a2881adfb2bf6146fff95b2de",
+    "r2InertActualTree": "3ba99bbf5c87c0217d28d5dac1f154c4ed13726f",
+    "toolsActualTree": "dbae8502f28c0384b867ee28ca059558723932c1",
+    "oldR1FailureRetained": true
+  },
+  "sameGenerationRetryAllowed": false,
+  "productionReadOrServiceAuthorityFromThisDocument": false,
+  "componentScope": {
+    "fullPythonAst": 14,
+    "selectedPureRecords": 27,
+    "completeModulesExecuted": false,
+    "actualTLS": false,
+    "actualLaunchd": false
+  },
+  "unimplementedPartsInThisSourcePackage": [],
+  "separateStepsNotYetRun": [
+    "new source/proof append inert staging",
+    "parent acceptance of complete source plus actual inert",
+    "explicit runtime admission",
+    "single complete runtime and final raw authority"
+  ],
+  "notes": [
+    "The future inert carrier is a separate distribution step, not an absent product caller.",
+    "Owner-only private input file mode predicate is the exact old frozen projector predicate.",
+    "Candidate results published before closure require final stdout and actual exit0; none alone is qualification."
+  ]
+}

@@ -1,0 +1,4 @@
+{
+  "reason": "combined local shell argument would be 133029 bytes; refused before exec; split independent checks",
+  "candidate_executed": false
+}

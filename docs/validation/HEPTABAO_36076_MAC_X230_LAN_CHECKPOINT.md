@@ -1,5 +1,54 @@
 # HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
 
+## 当前 R14 检查点：完整源码已独立导入；HA B2 恢复通过后在 node2 解封失败；Mac 当前输入受目录守卫拒绝
+
+更新于 2026-11-05T01:56:28Z。**全量替代 OpenBao 2.7.1 仍未达标。** 本轮把 3cb 的正常构建源码与产物带到 desktop，并完成独立 Git 导入；HA B2 实际原 91/98 通过，真实 Pocket4→Mac 恢复及 17 个大值版本保留通过，随后 node2 冷启动解封得到已知 503，新增 12 项尚未进入。Mac 完整 18 件测试源码的修正、审查、实际落盘与逐字回读已完成，五 agent 当前凭证闭环作业已实际启动并在公开源码父目录校验时拒绝，尚未读取私有凭证或启动消费者。生产初始化、解封、载入、切流及旧资产删除均未进行。
+
+[本轮完整状态](../../qa/evidence/20261104/r14-ha-prepare-source-import-mac-caller-r1/root-review/current-state.public.json)与[原件目录清单](../../qa/evidence/20261104/r14-ha-prepare-source-import-mac-caller-r1/root-review/packet-manifest.public.json)提供确切来源。既有 R13 及更早证据继续保留；下方历史内容中的“当前”均指各自记录时点。
+
+| 门槛 | 本轮实际推进 | 尚未成立的资格 |
+|---|---|---|
+| KV2 正式迁移与恢复 | 23,335,023 B canonical bundle 和原出口收据已传入 desktop；独立源目录实际完整 fsck 3,755 commits、逐件核验 3,911 tracked blobs，21 个 Git 子进程及所有持有 FD 已回收 | 新 Phase B 的 stage、prepare、真实官方 CLI 保存/恢复尚未执行；原 21×3 命令日志的独立归档仍在补齐。当前生产迁移与新异机备份未完成 |
+| Mac / ROG / Pocket4 HA | B2 原 91/98 true；真实自然选举、故障转移、ReadIndex、全节点既有冷启及 Pocket4→空 Mac 主节点密文恢复均有本轮结果；338 个引用文件/35,742,423 B 恢复校验通过 | node2 后续冷解封返回 503，7 项原检查缺失，恢复后另列 12 项未进入。B2 资格为失败；此前独立 98/98 和 128 项结果不相加冒充本轮完成 |
+| AuthBus 脱离 J3160 | 18 件完整源码仅修正 3 处已知连接问题，其他 15 件逐字不变；15 个新文件实际 create-only 落盘、6 件旧源码 54 项身份值不变；实际 OpenSSL help 确认重复 -addext 选项 | Mac 作业 1a1a968c3e6-fc05-3501 已知 exit 1，公开 SDK 父目录校验拒绝，具体哪一层仍待只读定位。当前凭证来源、真实消费者、续期/撤销、冷启与反向恢复仍必须以本轮实际终态为准；QA launchd 不代表生产 KeepAlive 资格 |
+| 逐台切换 | 已有 Mac / ROG / X230 有限观察及本轮源/凭证守卫继续保留；ROG 当前配置变化仍单列 | 全部客户端、服务 wrapper、当前备份与逐台真实凭证读写、重启、回滚未全部完成，尚未正式切流 |
+| 旧版清理 | 历次失败、来源、控制源码与现场证据完整保留 | 清理前提未满足；旧 OpenBao、旧 HeptaBao 服务和二进制均未删除 |
+
+### 1. 真实 HA B2：准备成功，恢复后 node2 解封出现已知 503
+
+B2 先通过独立 inert 与 prepare。prepare 绑定 49503322 / 1d4211f9 的正常 Mac/Linux 二进制、10 个构建文件与 28 个既有比较证据；实际 prepared SHA256 为 9fb7bb1054a554357232c8847e36b1a20d2339455a4f6ea7a2c1f37885c1f5af。唯一 live 作业 1a1a95f8b98-fc05-34b1 返回 exit 1，日志完整、持久化，无超时或自动重试。
+
+准备阶段新增的一次 owned CAS=0 写入和一次 metadata DELETE 分别返回 200/204，Mac 逐值读取和 data/metadata 缺失确认完成。新前沿实际走原 higher-term 分支，从 (term=2,node=2,index=61) 前进到 (3,3,66)，准备耗时 19.7806607009843 s，在原 60 s 内；新 same-leader 分支本轮没有实际覆盖。之后真实选出的空主为 Mac1，密文源为 Pocket4，17 个大值版本和所有引用文件均恢复通过。
+
+随后序号 49 的 node2 /sys/unseal 返回已知 503，耗时 9423.826 ms；错误为 node_2_native_cold_unseal_failed，尚未确定内部原因。49 个已记录变更 intent 对应 49 个已记录响应，unknown transport count 为 0；完整 98 个变更边界原件及 SDK 仍在收集，不能将 summary 事件当作全部 HTTP 或最终提交状态。根审独立核对 16 个启动身份各自有对应停止记录、6 次 Mac 运行的本地和远端 group 均空且 leader 已回收、全部原 5 s 停止期限满足，故释放 HA 窗口。
+
+[B2 终态核心原件](../../qa/evidence/20261104/r14-ha-prepare-source-import-mac-caller-r1/ha/postcold-b2-terminal-core/summary.json) · [根审与清理结论](../../qa/evidence/20261104/r14-ha-prepare-source-import-mac-caller-r1/root-review/ha-b2-terminal-core-root-review.public.json)。原 2400 s、另列 300 s、HTTP 15 s、admission 8 s 均未增加；未强制选举或重放解封。
+
+### 2. 3cb 源码已实际传输并形成独立 canonical 工作树
+
+源码传输作业 1a1a94b59e2-fc05-33df 成功，发送端、接收端及 relay 三个 owned group 全部回收，原 300/90/10 s 边界保留。standalone import 作业 1a1a9579588-fc05-346f 成功，35.39883295306936 s 内完成本地 bundle 导入、完整历史/树/索引/逐文件字节检查与 fsync；独立新目录为 normal-phaseb-ingress-observer-source-r1。21 个 Git 命令中 19 个 exit 0，两个既定 absent-config 查询 exit 1，均属原合同；未联网 Git、未编译或启动产品。
+
+根审已核完整 core、权威终态、输入身份、FD/进程回收和分块 stderr。21×3 命令日志的独立原件归档另行完成，不用重复 import 代替。Phase B stage/prepare/live 的 34 件具体源码及精确请求已冻结，根已全文审查 create-only stager、逐字核对 8 个 carrier 成员和精确请求，并严格逆向验证其 14 处字面量替换还原旧源码。Mac 清理完成后已准许唯一 local stage，截止本记录尚无 ACK；prepare/live 未准入。binding 与 prepare 的两个未来 SHA 必须由实际前置步骤产生。旧 B01 FAIL_UNKNOWN 原件保留，新流程不得重放旧根或放宽原预算。
+
+### 3. Mac 完整源码已审查、落盘；真实运行在公开 SDK 目录校验阶段拒绝
+
+修正的三个问题分别为：临时 socket 的一次性关闭与 unknown 汇总、移除未使用且未包含在 18 件来源中的旧 helper 名、对齐一个 model digest 消费者与原捕获器的末尾换行。原 capture 库、全部私人输入守卫、CAS 和业务期限均未改。13 个 socket 局部检查与原 36 个跨模块检查均只属于源码检查，不当作真实消费者证据。
+
+实际 inert 作业 1a1a95b43fe-fc05-3490 exit 0，0.24171037506312132 s 完成；15 个新文件逐字回读，6 件旧源码不覆写，T5 27 项身份锚与 UUID 保持，唯一 diskutil 子进程及全部 FD 已闭合。三个 MCP response snapshot 明确为缓存对象快照，其中 native payload 原字符串保真，不声称原 RPC wire 序列化。实际 OpenSSL req -help 返回 exit 1、完整 stderr 2459 B，广告了 -addext；这仅证明选项存在，不证明 TLS 证书已生成。
+
+根审之后唯一启动当前五 agent 作业 1a1a968c3e6-fc05-3501，精确请求 bd112cd7 与冻结源码 proposal 完全相同，reused=false。该作业实际在 0.25087299989536405 s 后返回 exit 1/full/durable，无超时或未知结果。19 个公开来源记录、15 个 alias 已通过，InputRefused 堆栈指向 readonly_input_parent_custody_or_exact_held_anchor；原 errorCode 为 null，具体失败目录尚未记录，因此不能说成已证源码 hash 变化。私有冻结输入、生产 SQLite、消费者与服务均未启动。唯一 diskutil 子进程及 T5、输入和外层 FD 全部关闭。四个可信凭证来源、900 s 剩余有效期、不可变 SQLite 捕获、真实 native SDK、QA launchd 冷启和反向恢复仍待实际完成。新外层 900 s / supervisor 1080 s、manager 600 s / cleanup 60 s、每阶段 120 s、捕获 45 s、native 15/8/3 s 均保持原合同。
+
+### 4. 版本、CI 与全量分母
+
+已获限定运行证据的 49503322、单独正常构建 44＋另列 7 通过的 3cb87391、PR152 当前 e5de554f 分开记录，资格不继承。CI 41937740513 在 2026-11-05 01:53:06 UTC 仍为两条 workspace 测试 lane 执行中；fmt 已通过，严格 Clippy、实际新布局大小、后续门禁与完整 CI 尚无通过证据。
+
+OpenBao 2.7.1 范围续稿保留旧 59 项属于 2.6.2、69 项只覆盖 13 个 family 的事实。官方 registry 名单与路线映射只提供下一步依据，仍不是 route × operation × configuration × lifecycle 的完整运行分母。当前 credential/service/backup 迁移、全量替代、生产切流及旧版清理布尔值全部为 false。
+
+本检查点新增 26 个证据包、596 个包内文件条目、11302670 B，逐 blob SHA1/SHA256 和 113 个包内 Merkle tree 已核；原始纳秒整数与原文不通过 JSON.parse/stringify 重写。状态文件和索引新增段是派生说明，旧检查点索引字段保持原值，仅顶层 as_of_utc 更新。
+
+---
+
+## 以前的检查点（按原文保留）
 ## 当前 R13 检查点：Mac owned SQLite 7/7、源码导出与三产物传输通过；完整替代尚未达标
 
 更新于 2026-11-05T01:07:56Z。**本轮完成了 Mac 七项 owned SQLite 回归、六个系统工具的实际文件绑定、3cb 完整 canonical 源码导出，以及三个正常构建产物向 desktop 的传输。ROG 的 46 项固定观察全部完成，但旧配置 pin 已失配，因此该作业仍如实记录为退出 1。全量替代 OpenBao 2.7.1 的资格仍为 false。** 当前未进行生产初始化、解封、载入、切流或旧资产删除。[本轮完整状态](../../qa/evidence/20261104/r13-mac-sqlite7-utilities-source-transfer-r1/root-review/current-state.public.json)保留逐项来源和候选版本。

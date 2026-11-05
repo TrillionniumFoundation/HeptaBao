@@ -1,0 +1,514 @@
+--- reference/x230_standalone_receiver_r2.py
++++ draft/import_standalone_phaseb_3cb_r1.py
+@@ -1,74 +1,76 @@
+ #!/usr/bin/env python3
+-"""Receive fixed R10 public artifacts and one standalone full Git bundle.
+-
+-No old X230 repository is used as a prerequisite. No binary, compiler, provider
+-request, acceptance suite or production service is started.
++"""Import one fixed, already received standalone 3cb public source bundle locally.
++
++This is a new source-only draft: unresolved actual transport metadata refuses
++before any filesystem access or Git child. No old source, binary, compiler,
++provider request, acceptance suite or production service is used or started.
+ """
+ from pathlib import Path
+ import hashlib, json, os, platform, re, select, signal, stat, subprocess, sys, time
+ 
+ os.umask(0o077)
+-BASE=Path('/home/qian')
+-ROOT=BASE/'heptabao-blocker-closure-r10-49503322-20261104-r1'
++BASE=Path('/home/qian-qi/heptabao-ha-closure-20261103-r1')
++ROOT=BASE/'normal-phaseb-ingress-observer-source-import-r1'
+ CONTROL=ROOT/'control'
+-ART=ROOT/'artifacts'
+-SOURCE=ROOT/'source'
+-CANONICAL='49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
+-TREE='1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
+-PARENT='1d12abc45a83d4b32e7185d01a876eb93110b1e2'
++CARRIER=BASE/'normal-phaseb-ingress-observer-source-carrier-r1'
++ART=CARRIER/'incoming'
++SOURCE=BASE/'normal-phaseb-ingress-observer-source-r1'
++CANONICAL='3cb873919170cc77101b27f6a3ab9e98f41f8d93'
++TREE='7f4d48a647a81ca96e8a24a0a057c2c829459060'
++PARENT='bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'
+ ROOT_COMMIT='67d79b3b5442ed033d38929eab2010403463e56d'
+-CANONICAL_COUNT=3752
++CANONICAL_COUNT=3755
+ TRACKED_FILES=3911
+ MAX_BUNDLE=64*1024*1024
+ UID=1000
+ SYSTEM=('Linux','x86_64')
++ACTUAL_INPUTS_READY=False
++SOURCE_FILES=[
++  {
++    "bytes": 23335023,
++    "name": "canonical-3cb-full.bundle",
++    "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/canonical-3cb-full.bundle",
++    "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
++    "source_mode": 384,
++    "target_mode": 256,
++    "version": "66306:28324895:23335023:1793839385060504547:1793839385063504533"
++  },
++  {
++    "bytes": 39965,
++    "name": "source-export.result.public.json",
++    "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/result.public.json",
++    "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
++    "source_mode": 384,
++    "target_mode": 256,
++    "version": "66306:28324969:39965:1793839385327147652:1793839385327147652"
++  }
++]
+ FILES=[
+   {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1/incoming/heptabao-server",
+-    "name": "heptabao-server",
+-    "bytes": 109091112,
+-    "sha256": "67ebb1cd97605fcbebf69d6c2caa730a811900586139f63c0031f933c704d113",
+-    "source_mode": 320,
+-    "target_mode": 320,
+-    "version": "2050:58120239:109091112:1793819286714153802:1793819286714153802"
++    "name": "canonical-3cb-full.bundle",
++    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/canonical-3cb-full.bundle",
++    "bytes": 23335023,
++    "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
++    "mode": 256,
++    "version": None
+   },
+   {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1/incoming/native-build.public.json",
+-    "name": "native-build.public.json",
+-    "bytes": 801,
+-    "sha256": "0e3d1ae800820d33f0d5369968cbccbab8fa62b077b142f87c9f52b31cd09c77",
+-    "source_mode": 256,
+-    "target_mode": 256,
+-    "version": "2050:58120241:801:1793819287399134926:1793819287399134926"
+-  },
+-  {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-shared-artifacts-r1/incoming/normal-release-result.public.json",
+-    "name": "result.public.json",
+-    "bytes": 3227,
+-    "sha256": "75f858b280249dcc981eee3e4340982a58027e8ca40217244ae029bb8e9011ee",
+-    "source_mode": 256,
+-    "target_mode": 256,
+-    "version": "2050:58120242:3227:1793819287404134788:1793819287404134788"
+-  },
+-  {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-x230-source-export-r1/canonical-r10-full.bundle",
+-    "name": "canonical-r10-full.bundle",
+-    "bytes": 20091909,
+-    "sha256": "6fb2b73c52a880475ce8c45c67a4179575834313ee24ed761af94ea3faaaa858",
+-    "source_mode": 384,
+-    "target_mode": 256,
+-    "version": "2050:58372900:20091909:1793819761984976492:1793819761988976381"
+-  },
+-  {
+-    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-r10-x230-source-export-r1/result.public.json",
+     "name": "source-export.result.public.json",
+-    "bytes": 40100,
+-    "sha256": "6342a59b3a953c5e701887cceac8cc7274850f76f65b718b427485bd5b29951e",
+-    "source_mode": 384,
+-    "target_mode": 256,
+-    "version": "2050:58372937:40100:1793819763173944963:1793819763173944963"
++    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming/source-export.result.public.json",
++    "bytes": 39965,
++    "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
++    "mode": 256,
++    "version": None
+   }
+ ]
++TRANSFER={
++  "name": "source-carrier.result.public.json",
++  "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/control/result.public.json",
++  "bytes": None,
++  "sha256": None,
++  "mode": 384,
++  "version": None
++}
+ 
+ START=time.monotonic()
+ UNTIL=START+300
+@@ -77,13 +79,17 @@
+ protected=0
+ pending_signal=None
+ created_control=False
+-result={'schema':'heptabao.r10.x230-standalone-source-receiver.v1','status':'failed',
++input_handles=[]
++input_directories=[]
++source_directory=None
++result={'schema':'heptabao.phaseb3cb.desktop-standalone-source-import.v1','status':'failed',
+  'source_commit':CANONICAL,'source_tree':TREE,'expected_full_commit_count':CANONICAL_COUNT,
+  'expected_prerequisites':[],'network_git_protocols_enabled':False,'old_source_opened':False,
+  'server_started':False,'compiler_started':False,'runtime_qualification':False,
+  'product_tests_executed':0,'overall_seconds':300,'git_command_seconds':60,
+  'clone_seconds':90,'maximum_bundle_bytes':MAX_BUNDLE,'automatic_retry':False,
+- 'production_changed':False,'partial_root_retained_on_failure':True}
++ 'production_changed':False,'partial_root_retained_on_failure':True,
++ 'source_imported':False,'input_transport_performed':False}
+ 
+ class Cancelled(BaseException):pass
+ 
+@@ -251,68 +257,174 @@
+     assert n==size and h.hexdigest()==expected
+     return {'bytes':n,'sha256':h.hexdigest()},b''.join(parts) if retain else None
+ 
+-def receive_files():
+-    results=[];json_bytes={}
+-    for item in FILES:
+-        remaining();path=ART/item['name']
+-        fd=os.open(path,os.O_RDWR|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
++def directory_key(s):
++    return [s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode]
++
++def hold_input_directories():
++    global protected
++    specs=[(BASE,None,None,None),(CARRIER,0,CARRIER.name,0o700),
++           (ART,1,'incoming',0o500),(CARRIER/'control',1,'control',0o700)]
++    for path,parent_index,name,mode in specs:
++        remaining()
++        if parent_index is None:assert path.resolve(strict=True)==path
++        protected+=1
+         try:
+-            count=0;h=hashlib.sha256()
+-            while count<item['bytes']:
+-                assert select.select([0],[],[],remaining())[0]
+-                try:block=os.read(0,min(65536,item['bytes']-count))
+-                except (BlockingIOError,InterruptedError):continue
+-                assert block,'truncated fixed public artifact stream'
+-                count+=len(block);h.update(block);view=memoryview(block)
+-                while view:
+-                    remaining();n=os.write(fd,view);assert n>0;view=view[n:]
+-            assert count==item['bytes'] and h.hexdigest()==item['sha256']
+-            os.fchmod(fd,item['target_mode']);os.fsync(fd)
+-            before=os.fstat(fd)
+-            assert stat.S_ISREG(before.st_mode) and before.st_uid==UID and before.st_nlink==1
+-            assert before.st_size==item['bytes'] and stat.S_IMODE(before.st_mode)==item['target_mode']
+-            same_fd,raw=read_file(fd,item['bytes'],item['sha256'],item['name'].endswith('.json'))
+-            assert identity(before)==identity(os.fstat(fd))==identity(path.lstat())
+-            if raw is not None:json_bytes[item['name']]=raw
+-            results.append({'name':item['name'],'path':str(path),'bytes':count,
+-                'sha256':h.hexdigest(),'mode':item['target_mode'],'create_only':True,
+-                'fsynced':True,'identity':identity(before),'same_fd_readback':same_fd})
+-        finally:os.close(fd)
+-    assert select.select([0],[],[],remaining())[0]
+-    assert os.read(0,1)==b'','unexpected fixed public artifact stream trailer'
+-    assert sorted(os.listdir(ART))==sorted(x['name'] for x in FILES)
+-    fsync_dir(ART);remaining()
+-    return results,json_bytes
+-
+-def verify_receipts(raw):
+-    native=json.loads(raw['native-build.public.json'])
+-    build=json.loads(raw['result.public.json'])
++            if parent_index is None:
++                fd=os.open(path,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
++            else:
++                fd=os.open(name,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW,
++                           dir_fd=input_directories[parent_index]['fd'])
++            row={'path':path,'parent_index':parent_index,'name':name,'fd':fd,'key':None}
++            input_directories.append(row)
++        finally:protected-=1
++        if pending_signal is not None:raise Cancelled()
++        before=os.fstat(fd)
++        assert stat.S_ISDIR(before.st_mode) and before.st_uid==UID
++        if mode is not None:assert stat.S_IMODE(before.st_mode)==mode
++        row['key']=directory_key(before)
++    check_input_directories()
++
++def check_input_directories():
++    for row in input_directories:
++        remaining()
++        parent=row['parent_index']
++        named=(row['path'].lstat() if parent is None else
++               os.stat(row['name'],dir_fd=input_directories[parent]['fd'],follow_symlinks=False))
++        assert row['key']==directory_key(os.fstat(row['fd']))==directory_key(named)
++
++def hold_fixed_inputs():
++    global protected
++    hold_input_directories()
++    raw={}
++    for item in [*FILES,TRANSFER]:
++        remaining()
++        directory_index=2 if item in FILES else 3
++        basename=Path(item['path']).name
++        assert Path(item['path']).parent==input_directories[directory_index]['path']
++        protected+=1
++        try:
++            fd=os.open(basename,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,
++                       dir_fd=input_directories[directory_index]['fd'])
++            row={'item':item,'fd':fd,'directory_index':directory_index,'basename':basename,'identity':None}
++            input_handles.append(row)
++        finally:protected-=1
++        if pending_signal is not None:raise Cancelled()
++        before=os.fstat(fd)
++        assert stat.S_ISREG(before.st_mode) and before.st_uid==UID and before.st_nlink==1
++        assert stat.S_IMODE(before.st_mode)==item['mode'] and before.st_size==item['bytes']
++        version=':'.join(map(str,(before.st_dev,before.st_ino,before.st_size,
++                                  before.st_mtime_ns,before.st_ctime_ns)))
++        assert version==item['version']
++        row['identity']=identity(before)
++        summary,data=read_file(fd,item['bytes'],item['sha256'],item['name'].endswith('.json'))
++        named=os.stat(basename,dir_fd=input_directories[directory_index]['fd'],follow_symlinks=False)
++        assert identity(before)==identity(os.fstat(fd))==identity(named)
++        row['summary']={'name':item['name'],'path':item['path'],'version':version,
++                        'mode':item['mode'],'identity':identity(before),'same_fd_readback':summary}
++        if data is not None:raw[item['name']]=data
++    check_input_directories()
++    return [row['summary'] for row in input_handles],raw
++
++def recheck_held_inputs():
++    check_input_directories()
++    for row in input_handles:
++        remaining();item=row['item'];fd=row['fd']
++        before=os.fstat(fd)
++        assert identity(before)==row['identity']
++        read_file(fd,item['bytes'],item['sha256'])
++        named=os.stat(row['basename'],dir_fd=input_directories[row['directory_index']]['fd'],
++                      follow_symlinks=False)
++        assert identity(before)==identity(os.fstat(fd))==identity(named)
++    check_input_directories()
++
++def create_source_directory():
++    global protected,source_directory
++    remaining()
++    SOURCE.mkdir(mode=0o700)
++    protected+=1
++    try:
++        fd=os.open(SOURCE,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
++        source_directory={'fd':fd,'key':None}
++    finally:protected-=1
++    if pending_signal is not None:raise Cancelled()
++    before=os.fstat(fd)
++    assert stat.S_ISDIR(before.st_mode) and before.st_uid==UID and stat.S_IMODE(before.st_mode)==0o700
++    source_directory['key']=directory_key(before)
++    check_source_directory()
++    fsync_dir(BASE)
++
++def check_source_directory():
++    remaining()
++    assert source_directory is not None
++    named=os.stat(SOURCE.name,dir_fd=input_directories[0]['fd'],follow_symlinks=False)
++    assert source_directory['key']==directory_key(os.fstat(source_directory['fd']))==directory_key(named)
++
++def verify_receipts(raw,input_rows):
+     exported=json.loads(raw['source-export.result.public.json'])
+-    assert native['source_commit']==build['source_commit']==CANONICAL
+-    assert native['source_tree']==build['source_tree']==TREE
+-    assert native['binary_sha256']==build['artifacts']['heptabao-server']['sha256']==FILES[0]['sha256']
+-    assert build['artifacts']['heptabao-server']['bytes']==FILES[0]['bytes']
+-    assert native['provenance']['result_sha256']==FILES[2]['sha256']
+-    assert native['build_exit_code']==build['build_exit_code']==0
+-    assert native['features']==build['artifacts']['heptabao-server']['features']==['default','native-v6-ha','native-v6-storage']
+-    assert native['native_abi']==build['native_abi']=='x86_64-unknown-linux-gnu'
+-    assert native['source_freeze_verified'] and build['source_freeze_verified']
+-    assert build['normal_default_candidate'] and build['build_finished_success']
+-    assert not build['timed_out'] and not build['owned_group_survivors_after_wait']
++    transported=json.loads(raw['source-carrier.result.public.json'])
++    assert exported['schema']=='heptabao.phaseb.rog-3cb-standalone-source-export.v1'
+     assert exported['status']=='exported' and exported['all_owned_stopped']
+     assert exported['canonical_commit']==CANONICAL and exported['canonical_tree']==TREE
+-    assert exported['deadline_before_receipt_passed']
+     assert exported['canonical_proof']=={
+         'commit':CANONICAL,'tree':TREE,'parents':[PARENT],'root':ROOT_COMMIT,
+         'commit_count':CANONICAL_COUNT,'full_fsck_passed':True}
++    assert exported['expected_prerequisites']==[] and exported['expected_full_commit_count']==CANONICAL_COUNT
+     assert exported['source_before']==exported['source_after']
+-    assert exported['bundle']['bytes']==FILES[3]['bytes']
+-    assert exported['bundle']['sha256']==FILES[3]['sha256']
++    assert exported['source_before']['head']==CANONICAL and exported['source_before']['tree']==TREE
++    assert exported['source_before']['clean'] and exported['source_before']['independent_git_directory']
++    assert exported['controller']['bytes']==15352
++    assert exported['controller']['sha256']=='7c8912c99b86742a072329d883d4c28c5f36a6581114197bfd5638b06076a72a'
++    assert exported['bundle']['path']==SOURCE_FILES[0]['path']
++    assert exported['bundle']['bytes']==FILES[0]['bytes'] and exported['bundle']['sha256']==FILES[0]['sha256']
+     assert exported['bundle']['header']['prerequisites']==[]
+     assert exported['bundle']['header']['heads']==[[CANONICAL,'HEAD']]
+-    result['normal_release_provenance_verified']=True
++    assert exported['deadline_before_receipt_passed'] and exported['overall_seconds']==300
++    assert exported['git_command_seconds']==90 and exported['elapsed_seconds']<300
++    assert len(exported['cleanup'])==27 and all(row['direct_child_reaped'] and row['remaining']==[] for row in exported['cleanup'])
++    assert not exported['network_git_protocols_enabled'] and not exported['server_started'] and not exported['compiler_started']
++    assert not exported['source_imported'] and not exported['runtime_qualification'] and exported['product_tests_executed']==0
++    assert transported['schema']=='heptabao.phaseb3cb.public-source-carrier-relay.v1'
++    assert transported['status']=='transferred' and transported['all_owned_stopped']
++    assert transported['all_local_owned_stopped'] and transported['remote_endpoint_completion_verified']
++    assert not transported['remote_cleanup_unknown'] and not transported['cleanup_errors']
++    assert transported['source_commit']==CANONICAL and transported['source_tree']==TREE
++    assert transported['source_alias']=='rog-ts' and transported['destination_host']=='desktop'
++    assert transported['destination_root']==str(CARRIER) and transported['files']==SOURCE_FILES
++    assert transported['overall_seconds']==300 and transported['elapsed_seconds']<300
++    assert transported['ssh_child_seconds']==transported['endpoint_seconds']==90
++    assert transported['git_operations']==0 and not transported['server_started'] and not transported['compiler_started']
++    assert not transported['runtime_qualification'] and not transported['production_changed']
++    assert transported['controller']['bytes']==15395
++    assert transported['controller']['sha256']=='f98ef18f25583506e7ff6072b8f383115ea826a399286f22bff1517b6eeb4432'
++    assert transported['helpers']['sender.py']['sha256']=='8681201f587a3c5d2da07f01404e4b74e1db2e3ada2614f3482915c6543fb650'
++    assert transported['helpers']['receiver.py']['sha256']=='2280d96c79b5e8fe8a0b3a9b601196cc61dbc43c11f4ded31780617f0533a6e5'
++    assert len(transported['cleanup'])==3
++    assert all(row['direct_child_reaped'] and row['remaining']==[] and row['exit_code']==0
++               for row in transported['cleanup'])
++    assert transported['trust_before']==transported['trust_after']
++    assert transported['original_ha_controller_before']==transported['original_ha_controller_after']
++    sender=transported['sender'];receiver=transported['receiver']
++    for endpoint in (sender,receiver):
++        assert endpoint['status']=='complete' and endpoint['all_owned_stopped']
++        assert endpoint['within_original_deadline'] and endpoint['request_seconds']==90
++        assert endpoint['git_operations']==0 and not endpoint['server_started'] and not endpoint['compiler_started']
++        assert endpoint['source_commit']==CANONICAL and endpoint['source_tree']==TREE
++    assert sender['role']=='sender' and receiver['role']=='receiver'
++    assert receiver['source_export_provenance_verified'] and receiver['raw_receipts_preserved']
++    assert receiver['destination_created_exclusive'] and receiver['destination_directory_mode']==0o500
++    assert receiver['destination_fsynced']
++    for item,source,sent,received,held in zip(FILES,SOURCE_FILES,sender['files'],receiver['files'],input_rows[:2],strict=True):
++        assert sent['name']==received['name']==held['name']==item['name']
++        assert sent['source']==source['path'] and sent['source_version']==source['version']
++        assert sent['source_identity_before']==sent['source_identity_after']
++        expected={'bytes':item['bytes'],'sha256':item['sha256']}
++        assert sent['initial_file']==sent['stream']==received['same_fd_readback']==held['same_fd_readback']==expected
++        assert received['bytes']==item['bytes'] and received['sha256']==item['sha256']
++        assert received['path']==item['path'] and received['identity']==held['identity']
++        assert received['mode']==item['mode'] and received['create_only'] and received['fsynced']
+     result['export_receipt_verified']=True
+-    result['raw_receipts_preserved']=True
++    result['transport_receipt_verified']=True
++    result['raw_input_receipts_unchanged']=True
+ 
+ def bundle_header(raw):
+     end=raw.find(b'\n\n',0,65536)
+@@ -403,43 +515,45 @@
+             'no_sparse_checkout':True,'no_symlinks_or_hardlinks':True,
+             'fsynced_files':files,'fsynced_directories':directories}
+ 
+-def recheck_artifacts(before_rows):
+-    for item,before_row in zip(FILES,before_rows,strict=True):
+-        path=ART/item['name']
+-        fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
+-        try:
+-            before=os.fstat(fd)
+-            assert identity(before)==before_row['identity']
+-            read_file(fd,item['bytes'],item['sha256'])
+-            assert identity(before)==identity(os.fstat(fd))==identity(path.lstat())
+-        finally:os.close(fd)
+-
+ try:
+-    assert (platform.system(),platform.machine())==SYSTEM and os.getuid()==UID
+-    assert BASE.resolve(strict=True)==BASE and BASE.is_dir() and BASE.stat().st_uid==UID
+     assert len(sys.argv)==2 and re.fullmatch(r'[0-9a-f]{64}',sys.argv[1])
+     assert sys.orig_argv[:5]==['/usr/bin/python3','-I','-S','-B','-c']
+     assert len(sys.orig_argv)==7 and sys.orig_argv[6]==sys.argv[1]
+     controller_raw=sys.orig_argv[5].encode('utf-8')
+     assert digest(controller_raw)==sys.argv[1]
++    assert ACTUAL_INPUTS_READY is True,'actual source-carrier metadata unresolved'
++    for item in [*FILES,TRANSFER]:
++        assert type(item['bytes']) is int and 0<item['bytes']<=MAX_BUNDLE
++        assert isinstance(item['sha256'],str) and re.fullmatch(r'[0-9a-f]{64}',item['sha256'])
++        assert isinstance(item['version'],str) and re.fullmatch(r'[0-9]+(:[0-9]+){4}',item['version'])
++    assert FILES[1]['bytes']<=262144 and TRANSFER['bytes']<=262144
++    assert (platform.system(),platform.machine())==SYSTEM and os.getuid()==UID
++    assert BASE.resolve(strict=True)==BASE and BASE.is_dir() and BASE.stat().st_uid==UID
+     assert not ROOT.exists() and not ROOT.is_symlink()
+-    remaining();ROOT.mkdir(mode=0o700)
++    assert not SOURCE.exists() and not SOURCE.is_symlink()
++    input_rows,json_bytes=hold_fixed_inputs()
++    result['input_files_before']=input_rows
++    verify_receipts(json_bytes,input_rows)
++    remaining()
++    bundle_fd=input_handles[0]['fd']
++    header=os.pread(bundle_fd,65536,0)
++    result['bundle_header']=bundle_header(header)
++    recheck_held_inputs()
++    ROOT.mkdir(mode=0o700)
+     CONTROL.mkdir(mode=0o700);created_control=True
+-    ART.mkdir(mode=0o700);(CONTROL/'empty-hooks').mkdir(mode=0o700)
++    (CONTROL/'empty-hooks').mkdir(mode=0o700)
+     fsync_dir(BASE);fsync_dir(ROOT)
+-    create(CONTROL/'receiver.py',controller_raw)
++    create(CONTROL/'importer.py',controller_raw)
+     result['controller']={'bytes':len(controller_raw),'sha256':digest(controller_raw)}
+-    public(CONTROL/'intent.public.json',{**result,'files':FILES,'source':str(SOURCE),
+-        'receipt':str(ART/'transfer.result.public.json'),'binary_execution_allowed':False})
+-    file_rows,json_bytes=receive_files()
+-    result['file_results']=file_rows
+-    verify_receipts(json_bytes)
+-    bundle=ART/'canonical-r10-full.bundle'
+-    raw,binding=stable(bundle,MAX_BUNDLE)
+-    assert binding['bytes']==FILES[3]['bytes'] and binding['sha256']==FILES[3]['sha256']
+-    result['bundle_header']=bundle_header(raw)
+-    del raw
++    public(CONTROL/'intent.public.json',{**result,'files':FILES,'transport_receipt':TRANSFER,
++        'source':str(SOURCE),'receipt':str(CONTROL/'result.public.json'),
++        'binary_execution_allowed':False,'existing_source_used':False})
++    create_source_directory()
++    result['created_source_directory_key']=source_directory['key']
++    bundle=Path(FILES[0]['path'])
++    check_source_directory()
+     owned('standalone-clone',ROOT,'clone','--no-checkout','--no-hardlinks','--',str(bundle),str(SOURCE),limit=90)
++    fsync_dir(BASE)
+     owned('bundle-verify',SOURCE,'bundle','verify',str(bundle))
+     _,heads=git('bundle-heads',SOURCE,'bundle','list-heads',str(bundle))
+     assert heads==CANONICAL+' HEAD'
+@@ -448,14 +562,17 @@
+     result['canonical_proof']=prove_canonical()
+     result['materialized']=verify_materialized_and_fsync()
+     result['source_after']=freeze('source-after',SOURCE,CANONICAL,TREE,True)
+-    recheck_artifacts(file_rows)
+-    assert stable(bundle,MAX_BUNDLE)[1]==binding
+-    assert stable(CONTROL/'receiver.py')[0]==controller_raw
++    fsync_dir(SOURCE);fsync_dir(BASE)
++    check_source_directory()
++    recheck_held_inputs()
++    result['input_files_after']=[row['summary'] for row in input_handles]
++    result['input_sources_unchanged']=True
++    assert stable(CONTROL/'importer.py')[0]==controller_raw
+     remaining()
+-    result['transfer_passed']=True
++    result['source_imported']=True
+     result['status']='complete'
+ except BaseException as error:
+-    result['status']='failed';result['transfer_passed']=False
++    result['status']='failed';result['source_imported']=False
+     result['error_type']=type(error).__name__
+     frames=[];tb=error.__traceback__
+     while tb is not None:
+@@ -481,19 +598,34 @@
+     result['commands']=commands;result['cleanup']=cleanup
+     result['all_owned_stopped']=not errors and snapshot_error is None and all(
+         row['direct_child_reaped'] and row['remaining']==[] for row in cleanup)
+-    result['within_original_deadline']=time.monotonic()<UNTIL
+-    result['elapsed_seconds']=time.monotonic()-START
+-    if pending_signal is not None or not result['all_owned_stopped'] or not result['within_original_deadline']:
+-        result['status']='failed';result['transfer_passed']=False
++    close_errors=[];closed_files=0;closed_directories=0;source_directory_closed=source_directory is None
++    if source_directory is not None:
++        try:os.close(source_directory['fd']);source_directory_closed=True
++        except BaseException as error:close_errors.append({'kind':'created-source-directory','path':str(SOURCE),'error_type':type(error).__name__})
++    for row in reversed(input_handles):
++        try:os.close(row['fd']);closed_files+=1
++        except BaseException as error:close_errors.append({'kind':'input-file','path':row['item']['path'],'error_type':type(error).__name__})
++    for row in reversed(input_directories):
++        try:os.close(row['fd']);closed_directories+=1
++        except BaseException as error:close_errors.append({'kind':'input-directory','path':str(row['path']),'error_type':type(error).__name__})
++    result['input_fd_closure']={'opened_files':len(input_handles),'closed_files':closed_files,
++        'opened_directories':len(input_directories),'closed_directories':closed_directories,
++        'created_source_directory_opened':source_directory is not None,'created_source_directory_closed':source_directory_closed,
++        'errors':close_errors,'complete':not close_errors and closed_files==len(input_handles) and closed_directories==len(input_directories) and source_directory_closed}
++    completed=time.monotonic()
++    result['within_original_deadline']=completed<UNTIL
++    result['elapsed_seconds']=completed-START
++    if pending_signal is not None or not result['all_owned_stopped'] or not result['input_fd_closure']['complete'] or not result['within_original_deadline']:
++        result['status']='failed';result['source_imported']=False
+     result['success_requires_authoritative_exit_zero']=True
+     result['success_requires_terminal_publication_within_original_deadline']=True
+     if created_control:
+         receipt=(json.dumps(result,sort_keys=True,indent=2)+'\n').encode()
+-        public_path=ART/'transfer.result.public.json'
+-        create(public_path,receipt);fsync_dir(ART);fsync_dir(ROOT)
++        public_path=CONTROL/'result.public.json'
++        create(public_path,receipt);fsync_dir(CONTROL);fsync_dir(ROOT);fsync_dir(BASE)
+         result['receipt']={'path':str(public_path),'bytes':len(receipt),'sha256':digest(receipt)}
+     result['publication_within_original_deadline']=time.monotonic()<UNTIL
+     if not result['publication_within_original_deadline']:
+-        result['status']='failed';result['transfer_passed']=False
++        result['status']='failed';result['source_imported']=False
+     sys.stderr.write(json.dumps(result,sort_keys=True)+'\n');sys.stderr.flush()
+ sys.exit(0 if result['status']=='complete' and time.monotonic()<UNTIL else 1)

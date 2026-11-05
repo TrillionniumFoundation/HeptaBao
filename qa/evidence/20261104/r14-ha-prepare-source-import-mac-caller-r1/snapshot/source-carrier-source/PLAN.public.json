@@ -1,0 +1,140 @@
+{
+  "schema": "heptabao.phaseb3cb.standalone-source-carrier-plan.v1",
+  "status": "source_only_pending_root_review",
+  "host_operations_executed": 0,
+  "purpose": "Create one fixed two-file public source carrier on desktop from the actual completed ROG standalone exporter. No source import or product execution occurs in this controller.",
+  "product_source": {
+    "commit": "3cb873919170cc77101b27f6a3ab9e98f41f8d93",
+    "tree": "7f4d48a647a81ca96e8a24a0a057c2c829459060",
+    "parent": "bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24",
+    "root_commit": "67d79b3b5442ed033d38929eab2010403463e56d",
+    "commits": 3755,
+    "tracked_files": 3911
+  },
+  "actual_input_evidence": {
+    "export_tree": "ed8a68b499ac0643b7ed043ab939fc7a6349232e",
+    "export_core_blob": "312f6dc4e1148e0cb371c67c8413f1002061ec01",
+    "export_authority_blob": "4951ca2ec364031b126040b1096db151530c83a0",
+    "lossless_source_pins_blob": "882e751dbf62535fd4c637d3e296adc23ef69389",
+    "original_completed_transport_tree": "bd70028b078c7c009762e8aacd7cb184f2925235"
+  },
+  "files": [
+    {
+      "bytes": 23335023,
+      "name": "canonical-3cb-full.bundle",
+      "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/canonical-3cb-full.bundle",
+      "sha256": "25020ee42fe92f95c9408cb937dc507430f18b84fdaef7ec438a0a233de1438b",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28324895:23335023:1793839385060504547:1793839385063504533"
+    },
+    {
+      "bytes": 39965,
+      "name": "source-export.result.public.json",
+      "path": "/home/qian-qi/heptabao-phaseb-ingress-observer-source-export-20261104-r1/result.public.json",
+      "sha256": "3619fafe30f3a025b193139e55800d19cc5d4e8772c6388cbd3f3c170d4bf448",
+      "source_mode": 384,
+      "target_mode": 256,
+      "version": "66306:28324969:39965:1793839385327147652:1793839385327147652"
+    }
+  ],
+  "paths": {
+    "controls": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-controls-r1",
+    "root": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1",
+    "incoming": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-carrier-r1/incoming",
+    "future_source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-phaseb-ingress-observer-source-r1"
+  },
+  "source_pins": {
+    "sender": {
+      "bytes": 6289,
+      "sha256": "8681201f587a3c5d2da07f01404e4b74e1db2e3ada2614f3482915c6543fb650",
+      "blob": "f195571246af15633b20ac84a8b1fc19864de11a"
+    },
+    "receiver": {
+      "bytes": 8701,
+      "sha256": "2280d96c79b5e8fe8a0b3a9b601196cc61dbc43c11f4ded31780617f0533a6e5",
+      "blob": "8d90094b396b50fa34eb91f2b5b75de59030a0b0"
+    },
+    "relay": {
+      "bytes": 15395,
+      "sha256": "f98ef18f25583506e7ff6072b8f383115ea826a399286f22bff1517b6eeb4432",
+      "blob": "a794d2098e8986cdb73a3b0bf55988ffdf82a98d"
+    },
+    "inert": {
+      "bytes": 5049,
+      "sha256": "46d1d644882fc064ff34f3141d036e8580126b9b0d7c479dc3659b115492eaa2",
+      "blob": "31297722805be956745f9f39507539f2719f8b13"
+    },
+    "carrier": {
+      "bytes": 40663,
+      "sha256": "35d33428b71abebb576e94aa767202a0e498204696b4fc7193b22694a69c2538",
+      "blob": "1fff5955bce5e9552dca3c096a318f89e29c12e3"
+    }
+  },
+  "changes": {
+    "sender": "actual two-file pins and endpoint schema only; all definitions byte-identical",
+    "relay": "two-file pins, fresh roots, dependent helper digests, schema/provenance label only; all definitions byte-identical",
+    "receiver": "same byte stream and custody code; replaces native-build receipt predicates with exact completed standalone export provenance predicates",
+    "inert": "fresh controls, three-script pins and carrier schema only; all five definitions byte-identical"
+  },
+  "deadlines": {
+    "unchanged_parent_seconds": 300,
+    "unchanged_endpoint_seconds": 90,
+    "unchanged_child_seconds": 90,
+    "unchanged_ssh_connect_seconds": 10,
+    "unchanged_term_seconds": 5,
+    "unchanged_kill_seconds": 5,
+    "new_inert_outer_seconds": 60,
+    "new_transfer_outer_seconds": 360
+  },
+  "custody": {
+    "source_mode": "0600",
+    "received_file_mode": "0400",
+    "received_directory_mode": "0500",
+    "owner_uid": 1000,
+    "source_exact_version": true,
+    "source_same_fd_before_after": true,
+    "stream_fixed_lengths_and_eof": true,
+    "received_whole_hash_and_same_fd_fsync": true,
+    "source_receipt_original_bytes": true
+  },
+  "execution_order": [
+    "Root reviews this complete immutable source packet.",
+    "One exact inert request may be separately admitted; it publishes only three fixed controls and compile-checks without executing them.",
+    "After actual inert terminal and source readback review, one exact transfer request may be separately admitted.",
+    "Verify authoritative terminal plus both endpoint receipts, original deadline results and every owned process group before releasing I/O.",
+    "Only later, a separately reviewed local importer may clone and verify the public standalone source."
+  ],
+  "unknown_rule": "A missing or invalid endpoint reply never proves a clean transfer. Preserve created partial files and original job; reconcile the same stable key without replaying a business or transport mutation.",
+  "retained_limits": [
+    "Transport proof is scoped to the exact completed exporter receipt and input bytes; it is not a source import or product qualification.",
+    "Source identity strings come from Python lossless parsing of actual original receipt integers.",
+    "No recipient version metadata is invented before the new transfer executes.",
+    "The existing transport lifecycle and its publication semantics are retained without claiming new asynchronous-failure coverage."
+  ],
+  "offline_evidence": {
+    "source_invariance_checks": 41,
+    "export_predicate_cases": 11,
+    "carrier_cases": 3,
+    "candidate_top_level_executed": false,
+    "actual_transfer_tested": false
+  },
+  "proposed_dispatch": {
+    "inert": {
+      "request_path": "dispatch/inert.process_start.json",
+      "bytes": 46188,
+      "sha256": "c172bd7b3167c678049d4b84ce37cd74549265a54b84817f7924df240a2c6601",
+      "blob": "05ed5ef187b73b5766038c10e400fe0ef2fd699e"
+    },
+    "transfer": {
+      "request_path": "dispatch/transfer.process_start.json",
+      "bytes": 390,
+      "sha256": "54e67225f92d99f29b41995d4cda28b315a62d54fd3bfac1510bebeb5ec8ecef",
+      "blob": "c3767f62e2d3ecd3bfcc317a5cf9f137eebe20cc"
+    }
+  },
+  "runtime_qualification": false,
+  "production_changed": false,
+  "provider_calls": 0,
+  "source_imported": false
+}

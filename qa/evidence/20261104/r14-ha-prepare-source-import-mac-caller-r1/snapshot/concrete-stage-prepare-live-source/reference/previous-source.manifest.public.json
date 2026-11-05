@@ -1,0 +1,164 @@
+{
+  "schema": "heptabao.phaseb-3cb-actual-input-source-manifest.v1",
+  "scope": "source_only_local_input_stage_candidate; actual ROG normal proof included, desktop source/artifact/prepare/live not executed",
+  "reference_plan_tree": "3d3cb2d88cf5f3dee64a31f65a4db3d76f360581",
+  "reference_local_stager_blob": "80549c6b3a8aa05efaa2abf66e4177239e0b9134",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 5899,
+      "sha256": "cdd3233abae96b828fa7f116a66a22dce9458a823973a23ffc23f375baa20892",
+      "blob": "8e1cc8ba12e67cc6f7d5e338fd5f3f7c1a9e19a2"
+    },
+    {
+      "path": "PLAN.public.json",
+      "bytes": 21177,
+      "sha256": "3342471d6d9bff64188a9c647751548832388cedda73039b3534ca91c858bc36",
+      "blob": "ac96616eab13078193d58afcaf5f739439ed4805"
+    },
+    {
+      "path": "DISPATCH.public.json",
+      "bytes": 2712,
+      "sha256": "55c6cd1ccc37fe9eeb5c3337488e394660d9f1074e381adfaa91182ca69eb64e",
+      "blob": "0cf53279c62193e9d6a430cfdc4ddd55cd33bf2e"
+    },
+    {
+      "path": "binding.partial.public.json",
+      "bytes": 6656,
+      "sha256": "26ffaf3fd669fcf83bf78af275fc38512b1f8b6b467693b371b8c61a0f53f69c",
+      "blob": "8907aba48b8df82a433b8436b7372316feaa2130"
+    },
+    {
+      "path": "source/stage_phaseb_r3_local_inputs_r2.py",
+      "bytes": 23279,
+      "sha256": "4c9a4755988d486d0adb80b03aecddf8297d884cabf1a52cd8053a82268e992c",
+      "blob": "6740aecbb9ecc53b4efe006d920664b50c8b25ab"
+    },
+    {
+      "path": "carrier/local-inputs.carrier.json",
+      "bytes": 273490,
+      "sha256": "2f9f8acb45e66f49b42739e64eac6bf289f06a7d5bc840eab3b2c8ce87ce0fcd",
+      "blob": "9cc6997190418ab3eccd9446f2417706087d2aa2"
+    },
+    {
+      "path": "qa/phaseb_controller_r3.py",
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+      "blob": "03497f1ee45be3228de99ab4872ae2f9ca869de0"
+    },
+    {
+      "path": "qa/phaseb_binding_r3.py",
+      "bytes": 23664,
+      "sha256": "73736dbcfe951cf666f8413190958aff38d68e95457f1f969b0e47f8c0266c25",
+      "blob": "3565e0d507d8adcd9d249b75d9f97c24f7c4bf0a"
+    },
+    {
+      "path": "qa/phaseb_evidence_r3.py",
+      "bytes": 15201,
+      "sha256": "4fb452f9eabbbc9f66913e0b824f7f3db5b2a75848b2adf4186e76078f2c9024",
+      "blob": "e507fef5b87305f4b8e8a0d729aecec6da284bed"
+    },
+    {
+      "path": "qa/native_fixture_reference_r8.py",
+      "bytes": 68149,
+      "sha256": "a0bac9972fbb9d65ed3edf537f732a08b5177864516b33ada0a6e98c4c6a0416",
+      "blob": "7e465b3ea72814726ed2e01355ab91412190a747"
+    },
+    {
+      "path": "qa/official_cli_reference_r4.py",
+      "bytes": 46586,
+      "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9",
+      "blob": "4a4a60d1d52a0fd835b467f1e4687ee95314d1de"
+    },
+    {
+      "path": "actual-build/normal-release-tests-result.public.json",
+      "bytes": 35178,
+      "sha256": "8899a7acc647505c230430b35771ae1eccaf48cc5aea27a034906d513fd0b0f7",
+      "blob": "6532d79e69bcb4572b3dafb84b01c99b276cc4f3"
+    },
+    {
+      "path": "actual-build/normal-release-result.public.json",
+      "bytes": 3200,
+      "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f",
+      "blob": "22a3dfca9dab25a1b15e8b520ae0b965d904ed66"
+    },
+    {
+      "path": "actual-build/native-build.public.json",
+      "bytes": 794,
+      "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce",
+      "blob": "db7838a99b3f98637dd5e257c427cdb02158a0ff"
+    },
+    {
+      "path": "actual-build/groups.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f"
+    },
+    {
+      "path": "actual-build/root-review.public.json",
+      "bytes": 9781,
+      "sha256": "20fcd665668ba59b7ee8a80dbf207d446e67197be307251f3bfae09106791ba2",
+      "blob": "cff97c2f0e3c845d64c7f1c28277ba4ff748c1c2"
+    },
+    {
+      "path": "reference/stage_phaseb_r3_local_inputs_r1.py",
+      "bytes": 22935,
+      "sha256": "c8ecd9daf62a7f38fa3940cd6bb3a0400f3a6d6ad39ab206c1d007031da128ed",
+      "blob": "80549c6b3a8aa05efaa2abf66e4177239e0b9134"
+    },
+    {
+      "path": "reference/PLAN.v3.public.json",
+      "bytes": 13374,
+      "sha256": "cdda8c6322436f510fabfc9ab39254c6881135225a315a3399061415ebf11424",
+      "blob": "e25ab256d6acde18d4094feb005e717c67b1bf39"
+    },
+    {
+      "path": "reference/binding.partial.public.json",
+      "bytes": 6403,
+      "sha256": "6c0edd9858e8b532561933034ebb929efc7826a9587803ff8dd8135fd2fa784b",
+      "blob": "481ea7681934d07cda51b67dad198b779674d951"
+    },
+    {
+      "path": "diffs/local-stager.review.diff",
+      "bytes": 4623,
+      "sha256": "03bf36cce62ae4b5af51e0cc767253693af0da6ae2cc1aae7c417805170bc607",
+      "blob": "5e8527b26772f7ce932bf681ec165d7bd1e90556"
+    },
+    {
+      "path": "diffs/actual-artifact-pins.review.diff",
+      "bytes": 1613,
+      "sha256": "323ba46191373e56987fd5f91c124dcc3004473e4464869823815ab14c5fe14c",
+      "blob": "3397396963607aeb9b828cd8b015fb8acd175e9e"
+    },
+    {
+      "path": "diffs/plan-actual-build.review.diff",
+      "bytes": 15952,
+      "sha256": "c3350e05564ca9ff58fa7fdb8d7a84db6a0fb9dd7bd637bf2ec849265ba04476",
+      "blob": "ffe0beb733915e99777169155515a4ba91716178"
+    },
+    {
+      "path": "offline/source-check.py",
+      "bytes": 1069,
+      "sha256": "e149aa41c3afb627f486ed1efa3b556618230b28435186b8b19c88a70ba03282",
+      "blob": "dc30e44bdd9831045085e0dcdd585a473d6a7ef2"
+    },
+    {
+      "path": "offline/source-check.stdout.original.json",
+      "bytes": 24498,
+      "sha256": "6a7b68646ee506010b846ce5ab9eb0436941c264eaefe5b0869b8924dddfa090",
+      "blob": "6e873466fa72bb777c884c79d75daf966d694430"
+    },
+    {
+      "path": "offline/source-check.execution.original.json",
+      "bytes": 26937,
+      "sha256": "ea945dffcf508336c4b6d8ec81730915c01070982addd1e585cd27bda1e75c57",
+      "blob": "13f11bda84fdeb15fa08f6f03c3d5905f07055f8"
+    },
+    {
+      "path": "review/exact-substitution-inverse.public.json",
+      "bytes": 6248,
+      "sha256": "f0d9f9506321c6d8c99b2effe303705188f3eae79f4551d07e42909b99905164",
+      "blob": "861e41d1298ed5143533d2d717263700319f38d1"
+    }
+  ]
+}
