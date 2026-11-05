@@ -1,0 +1,77 @@
+{
+  "schema": "heptabao.evidence-manifest.v1",
+  "files": [
+    {
+      "path": "root-go.original.json",
+      "bytes": 23877,
+      "sha256": "fe106a32226b54c0cbac72ea01435231891d7240e47a12d018f148c30cb7c4d8",
+      "blob": "3003569517e33855bf6ab72aa9a4f0b61e361982"
+    },
+    {
+      "path": "source-review.original.json",
+      "bytes": 2532,
+      "sha256": "fee86318e9f64b9ac316be3d8c03aef9e502a718251ec353060734855a29e5dd",
+      "blob": "950454544c3893f38ab010e73b02e58bb41ba068"
+    },
+    {
+      "path": "request.original.json",
+      "bytes": 22911,
+      "sha256": "224d8e61cdfc07d5b4744251c82f1e10ac9090e37aec45e186517105ec02df57",
+      "blob": "83e7c42168f95be5b9f2c440d742e13a9ef20bab"
+    },
+    {
+      "path": "intent.public.json",
+      "bytes": 1221,
+      "sha256": "3232e7b9bb1dcb0e4375f24fcdf56d4c97455caab383caac323fc1749b1e4e2b",
+      "blob": "7f948328b023b66b028942ab616a209d60af0994"
+    },
+    {
+      "path": "source/effect_fence_active.py",
+      "bytes": 21479,
+      "sha256": "3419846a745c8d3df32a09f74bf84461a0e9cde90296f7e555437faf3b2c6e89",
+      "blob": "abcbde6b6defd3376d0c2cc2c490c45303c78896"
+    },
+    {
+      "path": "sdk/process-start.original.json",
+      "bytes": 23686,
+      "sha256": "0e8cc280428d67c86f8c1be09e965bb45e8ae945176dab8d28001f93940a4946",
+      "blob": "f3e59a64f44a57e52f29fd3b6776a24f3e731cba"
+    },
+    {
+      "path": "sdk/process-status.original.json",
+      "bytes": 728,
+      "sha256": "283c95cff31c460cb082418e3f9f38d8fa1eae69b970ceedeb8dd05d6ce2cd41",
+      "blob": "c01ccddb53166dc2ec926e7a5a68da4f3a2b572a"
+    },
+    {
+      "path": "sdk/process-read.original.json",
+      "bytes": 6914,
+      "sha256": "a675e4daa06bd04130e8f89572090947cb3dc022775f002aec951bd3e25da383",
+      "blob": "b60682de3872d4a8eceb3b3938e6e38054930da4"
+    },
+    {
+      "path": "result.public.json",
+      "bytes": 2142,
+      "sha256": "fdeac59f20b0e14fe481ee09c7c96ad4fdd02807eae7ef0fffbf8d6c9eb9d8e2",
+      "blob": "0949dfed58f0d9bfc469103e44037ecc8d2ee9a0"
+    },
+    {
+      "path": "terminal.stdout",
+      "bytes": 2142,
+      "sha256": "fdeac59f20b0e14fe481ee09c7c96ad4fdd02807eae7ef0fffbf8d6c9eb9d8e2",
+      "blob": "0949dfed58f0d9bfc469103e44037ecc8d2ee9a0"
+    },
+    {
+      "path": "terminal.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "assessment.public.json",
+      "bytes": 1764,
+      "sha256": "fc5405d75b7bb9a9b7d581382748f2924887e720aca5eee3c2f67158f99f9f0b",
+      "blob": "2a4c470ef125a00dd2621415b21d133283e29bd9"
+    }
+  ]
+}

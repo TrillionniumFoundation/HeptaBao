@@ -1,0 +1,19 @@
+{
+  "schema": "heptabao.root.native-h2-qa-inert-go.r21",
+  "status": "GO_EXACT_INERT_ONCE_ONLY",
+  "request": {
+    "blob": "12ef83dfd02325974103f0a318ecac83ad3f52f5",
+    "bytes": 376962,
+    "sha256": "1a6e7dcf2ddb22f498a4c2cd31690db72548e4b318b9843c8ec6b4d69f76f7a1"
+  },
+  "source_review": {
+    "name": "r21_qa_actual_bound_root_review",
+    "blob": "2b4e9886035f2a6914b590bf63e36f922b1818f6",
+    "bytes": 2952,
+    "sha256": "6c74af3e283e492dc182f47342fbba5356546c9f42d20776224a55eb4fe8e169"
+  },
+  "key": "heptabao-df026-native-h2-qa-inert-cf7460ca-20261105-r1",
+  "outer_seconds": 60,
+  "scope": "Create only the fixed QA control root and exact eight reviewed source/binding files. Run compile-only admission. Return authoritative terminal, complete public receipt and actual file identity/readback. No source main, Cargo, service or artifact transfer execution in this step.",
+  "subsequent_build_go": false
+}

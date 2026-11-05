@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.df026-node2-stopped-log-metadata-intent.v1",
+  "tool": "heptaruntime_mac_controller.file_info",
+  "request": {
+    "host": "rog",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/cold-h2-pocket3-mac1-postrecovery-cold-node2-r1/process.log"
+  },
+  "scope": "One fixed stopped owned fixture log, metadata and whole-file SHA only; no raw log text emitted, no product request/restart/configuration changes.",
+  "fixture_run_id": "a24bc55a048fafdb81feaf5cbd9c39b3",
+  "failure_summary_sha256": "532967541d5b611665b41286109c459565f24cc29eddef3d4a64b65466afcf8b",
+  "root_closed_review_blob": "431c6fdc2c6ffe1d6e224df2f9105252ce9b1e1f",
+  "single_submission": true,
+  "body_projection_not_yet_authorized": true
+}

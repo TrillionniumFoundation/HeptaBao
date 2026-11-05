@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.root.native-h2-qa-actual-bound-source-review.r21",
+  "status": "SOURCE_AND_EXACT_INERT_REQUEST_ROOT_CLOSED",
+  "packet": {
+    "tree": "28ba0d7fce5ba1c3d62b4ce0720fabe916027c37",
+    "files": 41,
+    "bytes": 1828912,
+    "merkle_trees": 9
+  },
+  "root_checks": [
+    "exact actual metadata source python",
+    "exact actual metadata source git",
+    "exact actual metadata source cargo",
+    "exact actual metadata source rustc",
+    "all actual binding fields derived; all other fields unchanged",
+    "exact binding diff reconstructs",
+    "exact publisher two-hunk reconstructs",
+    "exact8 carrier",
+    "source exists build_native_h2_client_r1.py",
+    "whole carrier/source exact build_native_h2_client_r1.py",
+    "source exists inputs/native_h2_client.rs",
+    "whole carrier/source exact inputs/native_h2_client.rs",
+    "source exists inputs/native_h2_client_tests.rs",
+    "whole carrier/source exact inputs/native_h2_client_tests.rs",
+    "source exists inputs/Cargo.toml",
+    "whole carrier/source exact inputs/Cargo.toml",
+    "source exists inputs/canonical.Cargo.lock",
+    "whole carrier/source exact inputs/canonical.Cargo.lock",
+    "source exists inputs/owned_reference_phaseb_r3.py",
+    "whole carrier/source exact inputs/owned_reference_phaseb_r3.py",
+    "source exists inputs/official_cli_reference_r4.py",
+    "whole carrier/source exact inputs/official_cli_reference_r4.py",
+    "source exists build-binding.private.json",
+    "whole carrier/source exact build-binding.private.json",
+    "inert exact runtime scope",
+    "actual reviewed publisher exact argv",
+    "carrier and single key exact",
+    "original build limits retained",
+    "future exact self/binding arguments complete"
+  ],
+  "pure_ast_result": {
+    "argv_contract": {
+      "binding": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1/build-binding.private.json",
+      "binding_sha256": "8807a51468c42c09d68058e9ba63313676e69f99b8d922dca11083b920581b1d",
+      "self_sha256": "2e2ea6edd029b3d7164fbe6a85826ef3523a0ec60586d330b539761d870c0a35"
+    },
+    "carrier_pins": 8,
+    "host_calls": 0,
+    "main_executed": false,
+    "ok": true,
+    "original_parser_statements": 4,
+    "publisher_definitions_exact": 5
+  },
+  "publisher": {
+    "blob": "0869acc619b740fe95ab2ce1d700c10ffa40dfd4",
+    "bytes": 6097,
+    "sha256": "cf7460cad71ace000d61760c225da9cdac13236fe33f63212958fbefe4bbc345"
+  },
+  "binding": {
+    "blob": "92273e8301a15d208c995d00a30963f07127f294",
+    "bytes": 4039,
+    "sha256": "8807a51468c42c09d68058e9ba63313676e69f99b8d922dca11083b920581b1d"
+  },
+  "reviewed_inputs_unchanged": 7,
+  "tracked_publication_files": 8,
+  "actual_metadata_root_review": "b1cf6bcdc6a50800702ea80fe4cb8c9cad9a4c3c",
+  "historical_target_identity_only": true,
+  "current_target_admission_required_in_builder": true,
+  "source_main_executed_by_root": false,
+  "build_executed": false,
+  "live_h2_qualified": false
+}

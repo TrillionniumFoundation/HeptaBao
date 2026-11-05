@@ -1,0 +1,41 @@
+{
+  "schema": "heptabao.evidence-manifest.v1",
+  "files": [
+    {
+      "path": "exit.public.json",
+      "bytes": 624,
+      "sha256": "d2b5da49333eb27caf6d7a33956f0cda45e37690001a03aeee669bfe348f72a0",
+      "blob": "97dfd2de8d17ec788cf082fb0e7b7dfb6ebe6045"
+    },
+    {
+      "path": "launch.public.json",
+      "bytes": 3964,
+      "sha256": "1ca6ac5326d0cb723c2b2b3d3613cd1a29d3f2de2c12e39694948bce559dd709",
+      "blob": "0b2635a9230798d844ad3b9307171b29e9b56947"
+    },
+    {
+      "path": "summary.json",
+      "bytes": 71409,
+      "sha256": "532967541d5b611665b41286109c459565f24cc29eddef3d4a64b65466afcf8b",
+      "blob": "5ccdf644cc6171f8286cfc0d38dfaf82e025ad29"
+    },
+    {
+      "path": "authority.original.json",
+      "bytes": 726,
+      "sha256": "4c9acca15bdd51037ce8c20c14d577c72e774269fbacbca24151cdb156596706",
+      "blob": "78fd1d9cbf59d794fdb1d45c7adcbb5bcc8429d3"
+    },
+    {
+      "path": "terminal.original.json",
+      "bytes": 2108,
+      "sha256": "826a04ab69c731ea9270e469f91fee07b34693320f32c19be8029f38d4e85055",
+      "blob": "e94377eb0e8f00909fea058589796c4c54a4c94a"
+    },
+    {
+      "path": "assessment.public.json",
+      "bytes": 3671,
+      "sha256": "f1b5e9ee1e7c77143259d599fd22da70f43d529e00b2f2afc29a07aee4bfe9a2",
+      "blob": "80f549442322884bf21e31d31e630b8aede53905"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "host": "mac",
+  "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-current-registry-readonly-wal-synthetic-r1/qa/mac_wal_owned_synthetic_r1.py",
+  "expected_version": "16777244:72584344:28281:1793862714451863743:1793862714451870284",
+  "offset": 0,
+  "limit": 65536
+}

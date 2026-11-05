@@ -1,0 +1,1156 @@
+{
+  "schema": "heptabao.df026-lan-boundary-whole-proof.v1",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "fixture_run_id": "a24bc55a048fafdb81feaf5cbd9c39b3",
+  "files": 98,
+  "pairs": [
+    {
+      "sequence": 1,
+      "intent": {
+        "bytes": 442,
+        "sha256": "9a2472e1faa09a925e1ee9e2e66116d238c4395f113fc8b4f69d6e011d2031b7",
+        "blob": "6b968c82ee036e5fb1aee68846db4ccd8347f38f"
+      },
+      "outcome": {
+        "bytes": 425,
+        "sha256": "ab526fbcf7ea512ed412de63239029697280d99c00a0c0fefd26650d0bec95a5",
+        "blob": "f01a21493f870011159168deb75978163f15206f"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "sys/init",
+      "stage": "fresh_standalone_v5_seed",
+      "status": 200,
+      "elapsed_ms": 66.613,
+      "budget": 15,
+      "response_sha256": "3ebe511394b5f070833c046dd3c40558a82c7a1c5ee5175895cea5d4694a34f4"
+    },
+    {
+      "sequence": 2,
+      "intent": {
+        "bytes": 444,
+        "sha256": "1105f52de76d3c8e1f92eaca8104f211096db750b148d2f1eefe0799b0a5d599",
+        "blob": "256ff96ee8ee40228d1da2db368da30017fe862e"
+      },
+      "outcome": {
+        "bytes": 425,
+        "sha256": "30891b6b96614d59fdcef6ca64fab6681ed073aab0261b61f0f55cdabf62d6ae",
+        "blob": "67c6836358cf1234ffb08f90cf582a9d5598ed47"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "sys/unseal",
+      "stage": "fresh_standalone_v5_seed",
+      "status": 200,
+      "elapsed_ms": 73.289,
+      "budget": 15,
+      "response_sha256": "c39cb7afc476b2df952ec4188a7dc921ce1801f08f79dce33959362666d1f3fc"
+    },
+    {
+      "sequence": 3,
+      "intent": {
+        "bytes": 451,
+        "sha256": "12a049a5bde608bd9a81630084745da1faa6e4093612bf68876dbba6e5aaf0ee",
+        "blob": "c15d0a553f5f8d57ea155ce86c6f8e6a5ca73bb0"
+      },
+      "outcome": {
+        "bytes": 425,
+        "sha256": "39f7c1275b57b84082b599d2df660ab851c36a69671c15051ed74556660b7ae3",
+        "blob": "3e8e783d6b5807064658b017450734b4c61fa201"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "sys/mounts/secret",
+      "stage": "fresh_standalone_v5_seed",
+      "status": 204,
+      "elapsed_ms": 60.267,
+      "budget": 12,
+      "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "sequence": 4,
+      "intent": {
+        "bytes": 447,
+        "sha256": "4f26ebf4babbfdde6e9bc6e66f4af80a8e60b345800eab01e28c208ecd588d1a",
+        "blob": "633ca68a5cc0016276bf975674409f248bdad2bd"
+      },
+      "outcome": {
+        "bytes": 425,
+        "sha256": "6add629dfa76ea5c95b460d486ab3397e3a667bd5d38994af1308bf29c64bc3d",
+        "blob": "89dab9fd76d159bdc0bce93f05edadd459ca04eb"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/config",
+      "stage": "fresh_standalone_v5_seed",
+      "status": 204,
+      "elapsed_ms": 59.853,
+      "budget": 15,
+      "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "sequence": 5,
+      "intent": {
+        "bytes": 624,
+        "sha256": "44c6e0aa41b493fba6ee1d61d85931fae01b6388d8a42441339c707c47224e60",
+        "blob": "cd0a8705017880523494659472cf5f487dcc5f9d"
+      },
+      "outcome": {
+        "bytes": 451,
+        "sha256": "a846cefe0583eae58d2944fa05c2e090b0f7c69362d75fedd2bda7f7911a3588",
+        "blob": "3701af3201781f5d98a8f0fe242209a90fc07c55"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "fresh_standalone_v5_seed",
+      "status": 200,
+      "elapsed_ms": 39.041,
+      "budget": 15,
+      "response_sha256": "e423c4697e7f69177b871f42e630b8a5596016ba7f0244021c8b19e2065247ad"
+    },
+    {
+      "sequence": 6,
+      "intent": {
+        "bytes": 624,
+        "sha256": "a92332120868961336f4ac0f63b8a81ff9ebd7c22c42bcdcd3b3062b89623cb6",
+        "blob": "a964348e6837376cc3d205ca24b650c57d396c78"
+      },
+      "outcome": {
+        "bytes": 451,
+        "sha256": "d0e8fd9750a33967ea173d19d6d739b098e761136cc1696c1b2011da1347a4ba",
+        "blob": "59795ec69b35f7d4663211cd63a9a837a1b5a043"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "fresh_standalone_v5_seed",
+      "status": 200,
+      "elapsed_ms": 42.188,
+      "budget": 15,
+      "response_sha256": "4831d5d05eb134317e0e035f1bee849c9c10abc0821812c36791b7bfc24cc931"
+    },
+    {
+      "sequence": 7,
+      "intent": {
+        "bytes": 443,
+        "sha256": "162e1dfb73f5a548f26c1a9532c43a3d7a36b2581cf5412d60521f60bab0584a",
+        "blob": "3c8edf3c41a9fdebefe0345f492b6f25f8c75f29"
+      },
+      "outcome": {
+        "bytes": 426,
+        "sha256": "f60b3022431bbd27bf2980aa16fbf5d0ce682a59c25d396a92fcf655c6fedf6e",
+        "blob": "2f1da0a32c045a92e5f409bebb16c982d3e628b4"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "sys/unseal",
+      "stage": "native_ha_initial_start",
+      "status": 200,
+      "elapsed_ms": 332.017,
+      "budget": 15,
+      "response_sha256": "c69f8d099898188adaeca99b7adf0a49a88bcbe9a063dcd52e18c291444ba6a1"
+    },
+    {
+      "sequence": 8,
+      "intent": {
+        "bytes": 443,
+        "sha256": "4609630acae0b95fbd6ed36b28acad06d7b8c73f8fb16f3219654bf60b10647b",
+        "blob": "ed97010a268030bf31ebebf3ebaff42da7f7c648"
+      },
+      "outcome": {
+        "bytes": 424,
+        "sha256": "28b5a90e367d8793279ea648ff263a94912a6a3feb600422e652e9994f23f32b",
+        "blob": "d3e9fcee874d0be0cb532cf3aaa2426bf9b5be4d"
+      },
+      "node": 2,
+      "method": "POST",
+      "route": "sys/unseal",
+      "stage": "native_ha_initial_start",
+      "status": 200,
+      "elapsed_ms": 68.16,
+      "budget": 15,
+      "response_sha256": "c69f8d099898188adaeca99b7adf0a49a88bcbe9a063dcd52e18c291444ba6a1"
+    },
+    {
+      "sequence": 9,
+      "intent": {
+        "bytes": 443,
+        "sha256": "6ec476997c536025691ebfabae1959d24f9353dfc5a3814a2722c0f04c5b2ee0",
+        "blob": "a7e12b0c4b53e1857c4ef58be23b7e0d02cd03de"
+      },
+      "outcome": {
+        "bytes": 425,
+        "sha256": "7a250be6fe0a6e6955022a215b7085c6aaa892042b5d7644a720ea46ecd551df",
+        "blob": "86e7f61f6c68e37a8a2cf006db7692db79cf9ca9"
+      },
+      "node": 3,
+      "method": "POST",
+      "route": "sys/unseal",
+      "stage": "native_ha_initial_start",
+      "status": 200,
+      "elapsed_ms": 41.024,
+      "budget": 15,
+      "response_sha256": "c69f8d099898188adaeca99b7adf0a49a88bcbe9a063dcd52e18c291444ba6a1"
+    },
+    {
+      "sequence": 10,
+      "intent": {
+        "bytes": 468,
+        "sha256": "0181e14601c5ac26edaa31a5c6b51e788192e3c615abf17f9cf96baa4adc2860",
+        "blob": "e37f7e07387928f484ce535bfd884b6030b1ea78"
+      },
+      "outcome": {
+        "bytes": 427,
+        "sha256": "d2796a67b0ed537c29bafe68106b223fab285c5f6556503f0e266da6ade401cd",
+        "blob": "9da50319e9a491194a72474f40ede215d49204f4"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "sys/storage/native-v6/activate",
+      "stage": "actual_native_ha_activation",
+      "status": 204,
+      "elapsed_ms": 765.425,
+      "budget": 15,
+      "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "sequence": 11,
+      "intent": {
+        "bytes": 451,
+        "sha256": "c0c92800601c3f93469a96ddf6bc7169ae71828156f17f4b9740e4ea1cbb0300",
+        "blob": "d9530edd801f3afd259f9b917cfc863e93f707e8"
+      },
+      "outcome": {
+        "bytes": 427,
+        "sha256": "c4cc640317074462841247ca31f4d2c952d779d605d2eff1faa7eb126f1150dd",
+        "blob": "064bec137e691e5963c658b63e02dfa6c90b1fd9"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/config",
+      "stage": "actual_native_ha_activation",
+      "status": 204,
+      "elapsed_ms": 198.771,
+      "budget": 15,
+      "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "sequence": 12,
+      "intent": {
+        "bytes": 511,
+        "sha256": "76c64c4ca5877b98f28d07389e52c3c644455d09563cdf57fa6a89282f611583",
+        "blob": "f872e4b0367636d451dc923c7996ebde10f090bb"
+      },
+      "outcome": {
+        "bytes": 427,
+        "sha256": "a0bcde7e81444f5f7f6fc067715bf0571837acfeacb474709f5a4c7c4e75eebf",
+        "blob": "baad6672bdb030a22a36428c6d372d5ec721ee07"
+      },
+      "node": 1,
+      "method": "DELETE",
+      "route": "secret/metadata/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/never-created",
+      "stage": "actual_native_ha_activation",
+      "status": 204,
+      "elapsed_ms": 216.919,
+      "budget": 15,
+      "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "sequence": 13,
+      "intent": {
+        "bytes": 639,
+        "sha256": "15fa74cb9d32574f7b7b1fcd3c8c02b2246708a37800d8bd3d41cd9e80d486ce",
+        "blob": "5aef8cd1fb0b0473f4bdbb034b2dcc159ba7002b"
+      },
+      "outcome": {
+        "bytes": 453,
+        "sha256": "7fa045e5aa2faebaa40e4ee32d3997fe62ec0c82748302e177ba8516cc0eb278",
+        "blob": "c38ce4d4bcbfcf15906cfbc36a378485cbf9bdde"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 1307.24,
+      "budget": 15,
+      "response_sha256": "33ddf8d4ee53ebc48c75f2b889cdf31770e3f73f1af8594d8480447db7fc407c"
+    },
+    {
+      "sequence": 14,
+      "intent": {
+        "bytes": 639,
+        "sha256": "87cc403a1173aef851abaabfc310cab1822c624e3252c58b4c512936c596b608",
+        "blob": "905f4fceaaa4a088c53fad7fec521f180ce5a708"
+      },
+      "outcome": {
+        "bytes": 454,
+        "sha256": "a2db612e171d40bd8d5da0a91f1d85e2319211db6d4d96593a575eb5d6fd96a6",
+        "blob": "dc50adb7f09e948f7bdfa9a752f0f8fb6ff50af2"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 1420.451,
+      "budget": 15,
+      "response_sha256": "5a7b7d0d4a36ceeb4f130a2bf8d98d82659cf240b2a7141ef2f4f20066505d15"
+    },
+    {
+      "sequence": 15,
+      "intent": {
+        "bytes": 638,
+        "sha256": "99a889e955e2a96ccb9387dfaf13dd34617310038250a524acc37871373e5fe8",
+        "blob": "7163bb08fb4fe29e78a2f8dc098949bcf305d6e5"
+      },
+      "outcome": {
+        "bytes": 454,
+        "sha256": "254f65781fe6813790ea50ba187b19342ceae264a3da3b0dea6c20f1a9415318",
+        "blob": "1d28aa0ca03d32e39e36480557d6cf4cf3305027"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 1704.435,
+      "budget": 15,
+      "response_sha256": "5ce4be30cdc7c59506d620ba48ed734ead18ca45a4d15ae277a9dd79e1259584"
+    },
+    {
+      "sequence": 16,
+      "intent": {
+        "bytes": 638,
+        "sha256": "f6553be6c4ab8625f9e389bb227657f63dfc9cbb1b918afb0deb5110ba8ec25a",
+        "blob": "5989ba7a2441898672f3c1dc7313bcf1c7bcfb56"
+      },
+      "outcome": {
+        "bytes": 454,
+        "sha256": "ee725cb579c6588e8090ef0f768ad13572c5bf9c0172d57f8006793065053f73",
+        "blob": "39932015d7db78d02322758a6ce1fc92d3d19fcf"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 1802.375,
+      "budget": 15,
+      "response_sha256": "0593117a35d00fef216400a99257b8207959da796af69f863181e3af222010e1"
+    },
+    {
+      "sequence": 17,
+      "intent": {
+        "bytes": 638,
+        "sha256": "c84ca7ed427d9cc8b2299c677e972a6799f52e34156ac3b9ec6598879a628068",
+        "blob": "9247d7d0d4190677e5a6fe03d1c72e2d45f9a820"
+      },
+      "outcome": {
+        "bytes": 454,
+        "sha256": "359197edd00933e9ffcac8b4a29860aeac6d0dcbb1cc036f86a593caf1b83c25",
+        "blob": "b47e15b924ff0c82c28bd9dddd11c00784cb3be8"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 1679.404,
+      "budget": 15,
+      "response_sha256": "98e4286c411a87cc99e151e5457792c1cf7ee5ec6ccbc7963256251b2b94cc5d"
+    },
+    {
+      "sequence": 18,
+      "intent": {
+        "bytes": 638,
+        "sha256": "938025f02ec121d26a9f8aed6d12fa1fa344df0bbf30e2df7b47a87550a5b93a",
+        "blob": "1fd3e7135b5498d16e3e73c50da147779b95132a"
+      },
+      "outcome": {
+        "bytes": 454,
+        "sha256": "6ca97fe1c01b1bbcf9aa407e30a3b1646dcc0ad5468aecaf5d6a94ca02e5d5ce",
+        "blob": "10b64721b45f0ecc67ec5ae0de2c8c3488322e10"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 1730.569,
+      "budget": 15,
+      "response_sha256": "dc6c30a2c3faf2d8bc38d1a52fc0581e44fa65c80387c062935c5b5fb5fc3875"
+    },
+    {
+      "sequence": 19,
+      "intent": {
+        "bytes": 639,
+        "sha256": "91766d89ba0fbcc312779943b49aa0ca285f1da8fe5ec93f9541b987cb1effed",
+        "blob": "d796160848b046c891ede20f5cfb8eadc3f8d669"
+      },
+      "outcome": {
+        "bytes": 454,
+        "sha256": "0d7785695f243ed1dc65b5752b3c5af0e69795479bb9f2b0e4a550bbf8aaddbb",
+        "blob": "11907f2eb4abfc7cd7bbd483a8ad738fb82ef18a"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 1982.847,
+      "budget": 15,
+      "response_sha256": "d8a9a31729f2b41ecdf6a7668f42c1064daf537d8ca8fb7a8839bc4eaaf5438e"
+    },
+    {
+      "sequence": 20,
+      "intent": {
+        "bytes": 640,
+        "sha256": "8b6ed2b93fae1bd77e8159c52160195805a0e63a13b2f875235ff2e83ed982b9",
+        "blob": "9660b5b01b34a7248e2efb18ac4d8e9e5e7f499b"
+      },
+      "outcome": {
+        "bytes": 455,
+        "sha256": "d556f9cc0ce4d90634a5bce6b38ff5772774f7b6a810f8d59ea10820ede41581",
+        "blob": "56faa89b23484a965e851b0ffd21dbdf3016e98b"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 2337.129,
+      "budget": 15,
+      "response_sha256": "f8a2f072345878495d04b5988f7a0272f6990a7dfc9a96388b32669e45578e31"
+    },
+    {
+      "sequence": 21,
+      "intent": {
+        "bytes": 640,
+        "sha256": "c43f44705d2e66c7b9e265565c446e1a4116a9cac44821fe251867f3574fb74b",
+        "blob": "20ac53c8b91ca3c1b127924696080e9e2eabfc50"
+      },
+      "outcome": {
+        "bytes": 455,
+        "sha256": "e8c4261f0d7077284e428a47aeb14fafc93ee85bedd72025da924272d5f67b1b",
+        "blob": "ddc385c01f2e1c4faee8c56fa20d6f914d98fce4"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 2227.641,
+      "budget": 15,
+      "response_sha256": "504ca5464e691ef12d296734cf68de9402bc58174bf60105ed0cd3824052f5de"
+    },
+    {
+      "sequence": 22,
+      "intent": {
+        "bytes": 641,
+        "sha256": "f1964a90a1a916225d5b4da74afe0b867f2bc4a0f67c39fd818cccf3ef060761",
+        "blob": "46fdd304553c1a1a20f20a79631697bb986ff677"
+      },
+      "outcome": {
+        "bytes": 455,
+        "sha256": "8a04e04f8a4d191a806c33a42f9d200598a1426326c9bae756ddef991ecbe107",
+        "blob": "1d13bb8736632f7decb8235ab9426a8b30ab9ddd"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 2380.814,
+      "budget": 15,
+      "response_sha256": "e1df4aca4346917cf650bd07f5191839edd612f85d64e6a6c85f571ab6246e54"
+    },
+    {
+      "sequence": 23,
+      "intent": {
+        "bytes": 640,
+        "sha256": "1bac15fa413edf19d21a3d9847018b6b0b80e38500f056f2e26ca07de367ed7c",
+        "blob": "cd4d1553d94606b3d21e8903dc865efa1fc0878c"
+      },
+      "outcome": {
+        "bytes": 455,
+        "sha256": "2db6cac5155ee5ea4be1fc1e2e87deb83419809686f88709dc92d955aeac18f5",
+        "blob": "452f1239bb7d376efd42a136984efadda3870719"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 2487.178,
+      "budget": 15,
+      "response_sha256": "4fd8dba5787a670d48b5a737dda992339faa13917ab63d4dbc47c9c672e8a3f1"
+    },
+    {
+      "sequence": 24,
+      "intent": {
+        "bytes": 640,
+        "sha256": "7afe418659264417ff94eb7b9b15c5a337e2da9b1021f2e31e4c12caec79234e",
+        "blob": "38994cc6b2b7384350d7e58a0c9dc0b44cbac5b6"
+      },
+      "outcome": {
+        "bytes": 454,
+        "sha256": "2063a62bb0036f44be9532a75f11862b5e3fd01db3031954b04565bbaf36915e",
+        "blob": "a05d8c44f36613ae2e3226a8edaa9a3aeca17abc"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 2709.47,
+      "budget": 15,
+      "response_sha256": "71e4d430a67516df3cfbb601009f323c866ddeea334a6916d9e9e8b35bf04a88"
+    },
+    {
+      "sequence": 25,
+      "intent": {
+        "bytes": 641,
+        "sha256": "c8f0e728fc8eb6421b3aa96a15d1beefbcaf806032e0c8fe10d17bbdb7ea0a7f",
+        "blob": "273b66393b90742bd31c3a0d12a01455302e877c"
+      },
+      "outcome": {
+        "bytes": 455,
+        "sha256": "e3cf1d3cbd503c2f5c0d4c010b5744dcf3f7876cf04840e5a88dbd5e4b8b9206",
+        "blob": "d46da6323bcd1c4820cd2dbf65aab0c10cdae352"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 3276.861,
+      "budget": 15,
+      "response_sha256": "17a18013f10f077c1ce89190a482c8ec0244162f5a8f94ada1b2ecb9f4058472"
+    },
+    {
+      "sequence": 26,
+      "intent": {
+        "bytes": 641,
+        "sha256": "89c932e2b40953a403145fa2f7de913b13b94a86992c04183eb79ae493a698e6",
+        "blob": "7ee7db7ead248359243a5a8cd433fa3e9e656a35"
+      },
+      "outcome": {
+        "bytes": 454,
+        "sha256": "de27633a980b0a7f46352df8168024172577d97a26f0a42bcf9fdb3076da1d66",
+        "blob": "b01ecde68e1e35b80c9f9846b189524b37b6a49a"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 3051.78,
+      "budget": 15,
+      "response_sha256": "4f3493b5628409027110f6ec2dba4125d3be1eddb53e0a5922d06919b40582fe"
+    },
+    {
+      "sequence": 27,
+      "intent": {
+        "bytes": 641,
+        "sha256": "2e716304a88a69e2d4cbccc610f17c0eb7df21bec9b3b7b442fc9e33ea6703d5",
+        "blob": "e0211193159b9938e3053382d5d62e018a68f553"
+      },
+      "outcome": {
+        "bytes": 455,
+        "sha256": "e9ce72fbaac0c4d642851c595571d6c34d0041402152665bfb856e78f445b740",
+        "blob": "049644894910fa90647aeaaecc7711f865af0e17"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 3468.794,
+      "budget": 15,
+      "response_sha256": "ba818cf05bfe98702c5fdceb84788a56944dd707b1815d58ade784efc1d1033e"
+    },
+    {
+      "sequence": 28,
+      "intent": {
+        "bytes": 641,
+        "sha256": "5a6510c55c628cdbb06804c4349d34cd84364c2d78a145cc49817dffc5df5c90",
+        "blob": "5937e36491d8ea1f27c1016fbc7cd621d7465536"
+      },
+      "outcome": {
+        "bytes": 455,
+        "sha256": "fdc24cec679aa75c88b0688817870bfa2d854b32447c3e609c0327c8df9482fd",
+        "blob": "5393893e712111a258782189dc95c58175846ca3"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 3572.302,
+      "budget": 15,
+      "response_sha256": "f043396c9e9f7513591eef151d5077a1dbd3101eb5bc798d935c5a8d5eebde37"
+    },
+    {
+      "sequence": 29,
+      "intent": {
+        "bytes": 640,
+        "sha256": "2ee6b37ef79946e5d0398aa49dde638be31cabda170a5bfddc4f147e2b6a06ff",
+        "blob": "3a53b90be5be40bc0cd99fbaddfcb015641fbeb5"
+      },
+      "outcome": {
+        "bytes": 455,
+        "sha256": "b7ba4d737a777c603880141d70917d0346074d09cf07fdd7574d9a50426839e3",
+        "blob": "433cc8ce2ca030c15b5f19806496e112f2228418"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 3339.331,
+      "budget": 15,
+      "response_sha256": "5e8b7c021d473976f636a68f763135d828f93b240035c9588340350e1570fb96"
+    },
+    {
+      "sequence": 30,
+      "intent": {
+        "bytes": 513,
+        "sha256": "dc10b301e523a3b31633f83ba2595761e756d3614dfa166af66ba87b50f0d684",
+        "blob": "dfd8e996df50afebc9c019de90c71fb898011453"
+      },
+      "outcome": {
+        "bytes": 427,
+        "sha256": "d2d8d44d1f3dbb4a7040521c6e471efbc5c4fb5763104da76d88baec502b4ced",
+        "blob": "b8f25cb0b0ca2ab6f028fe3bfe1b92cc67de5260"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/delete/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 204,
+      "elapsed_ms": 3030.77,
+      "budget": 15,
+      "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "sequence": 31,
+      "intent": {
+        "bytes": 514,
+        "sha256": "30ff786688dd60ec12b73dc73dc5864b25fda1e58ddb4e74b47c0c3c576898e2",
+        "blob": "1823c95f3c7c4bacc7ba6e82145798d3a89b8fad"
+      },
+      "outcome": {
+        "bytes": 428,
+        "sha256": "eb04492ae99c6c073225b7e398ea5f611b9075266884ca8f211b06dda33d18e2",
+        "blob": "d11d0b1681d714845bfc5e1074e498cd074e76aa"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "secret/destroy/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/history",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 204,
+      "elapsed_ms": 2936.874,
+      "budget": 15,
+      "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "sequence": 32,
+      "intent": {
+        "bytes": 649,
+        "sha256": "4cdfa31400118ff1689301852173b4932e25128833d2a86b5f3d20148f103853",
+        "blob": "4451efa9bfbd9b9119b921230425241872578a5f"
+      },
+      "outcome": {
+        "bytes": 454,
+        "sha256": "4b7e11abc9f893172303d7db5d43454776d69cb4f2d602b94a65a94eb62289cb",
+        "blob": "5385d1075eb9eca04e0898494a6eb650260b2332"
+      },
+      "node": 2,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/standby-forwarded",
+      "stage": "seventeen_actual_native_history_writes",
+      "status": 200,
+      "elapsed_ms": 7545.581,
+      "budget": 15,
+      "response_sha256": "c65fc4a4d97b94ec2822c3aed8d9c36a1a04fb69dd9c7a92a249fbf039793d68"
+    },
+    {
+      "sequence": 33,
+      "intent": {
+        "bytes": 636,
+        "sha256": "279514918ab2de44fe2064ecc31678b27ead278a83ba8b299dd7b8e35394b434",
+        "blob": "32d38b444d1a3b91f1db1184dbf030c080c0fc06"
+      },
+      "outcome": {
+        "bytes": 454,
+        "sha256": "5e4d71590ae5883ff4c9192e94e4dccd03c9da54f981263ab288f7a89894b9f8",
+        "blob": "ba55e1e9f98028032e71747c3047ab5d7aacd611"
+      },
+      "node": 2,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/after-failover",
+      "stage": "actual_native_leader_sigkill",
+      "status": 200,
+      "elapsed_ms": 1395.027,
+      "budget": 15,
+      "response_sha256": "a11c898a5a7f69252f080c041ebe29de7001b811f935adb5812f3797781dbbd3"
+    },
+    {
+      "sequence": 34,
+      "intent": {
+        "bytes": 448,
+        "sha256": "2a7dcc5d18281ec5abce6f8d76906eb303acbf7996043a61c13a0ebd146c47b5",
+        "blob": "5e59d29c9b9a3d695c887a94963d05f883528ee2"
+      },
+      "outcome": {
+        "bytes": 428,
+        "sha256": "9ae02a36c5813f1d1d57e62dc8af993460bd0d10ed59cc3a255bfaaf4b42590d",
+        "blob": "66abeac981b4e86056ba7c8d43831318a843d2ce"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "sys/unseal",
+      "stage": "actual_native_leader_sigkill",
+      "status": 200,
+      "elapsed_ms": 2846.996,
+      "budget": 15,
+      "response_sha256": "c69f8d099898188adaeca99b7adf0a49a88bcbe9a063dcd52e18c291444ba6a1"
+    },
+    {
+      "sequence": 35,
+      "intent": {
+        "bytes": 632,
+        "sha256": "56c8cc47d9340f3490411b879af5972460160bd2f33880f09f23fb92589c0f00",
+        "blob": "7a6865f8c798d2ab00b1d659bf3165cb21fade0b"
+      },
+      "outcome": {
+        "bytes": 429,
+        "sha256": "39d82a34f81a0fec900e508b67f17e68a6cb23a3e37424c77135e2e15a9411fa",
+        "blob": "00de62292c07a5d0ed2117e71b0048dd0e62bc9a"
+      },
+      "node": 2,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/quorum-denied",
+      "stage": "actual_native_quorum_loss",
+      "status": 503,
+      "elapsed_ms": 14021.837,
+      "budget": 15,
+      "response_sha256": "73d995a1441d87424f8ce1ce6ee962482ee14cfd19bdcfa107222dce1784c577"
+    },
+    {
+      "sequence": 36,
+      "intent": {
+        "bytes": 445,
+        "sha256": "c023c7797e7dff9b0b3058b7cc38cc5636e03ebfbe95c6b11b820a7122c26d74",
+        "blob": "18edbdac341c093386a72c55f3273398847becac"
+      },
+      "outcome": {
+        "bytes": 427,
+        "sha256": "10e39e5b7e156dd548fae999a16691391e593507def15d35503f52301f744045",
+        "blob": "2d4864ff3991ad8c483435ed45e9e28d91dd4465"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "sys/unseal",
+      "stage": "actual_native_quorum_loss",
+      "status": 200,
+      "elapsed_ms": 635.537,
+      "budget": 15,
+      "response_sha256": "c69f8d099898188adaeca99b7adf0a49a88bcbe9a063dcd52e18c291444ba6a1"
+    },
+    {
+      "sequence": 37,
+      "intent": {
+        "bytes": 446,
+        "sha256": "0891076c4a680fe948213b3e11e7b609980ee40266a96be3776c7687d29d9cfc",
+        "blob": "21461dfde1949ee7a4237a8a691e7af6df0fbffb"
+      },
+      "outcome": {
+        "bytes": 427,
+        "sha256": "f9583e94ae6bd38e732723564dc746a87513aac7422cd75fa25d7773459cb6b2",
+        "blob": "130274429d527e38d245d6b98027fa8ebdd7c7a4"
+      },
+      "node": 3,
+      "method": "POST",
+      "route": "sys/unseal",
+      "stage": "actual_native_quorum_loss",
+      "status": 200,
+      "elapsed_ms": 383.711,
+      "budget": 15,
+      "response_sha256": "c69f8d099898188adaeca99b7adf0a49a88bcbe9a063dcd52e18c291444ba6a1"
+    },
+    {
+      "sequence": 38,
+      "intent": {
+        "bytes": 640,
+        "sha256": "3bc48d8b4ba7dc4cce89a58649d6f0579ab6cf7cae738f3f581bd6103b09497b",
+        "blob": "8c22efda620390f6090f25a0ca8bb853f90994fe"
+      },
+      "outcome": {
+        "bytes": 454,
+        "sha256": "bb2ad773d8d22c7c46944517e8c5dd46dab45e697806b830a7db39d758bbb188",
+        "blob": "8b21e7ed29f363e88f462ae4a6525ed53f43793f"
+      },
+      "node": 2,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/after-quorum-recovery",
+      "stage": "actual_native_quorum_loss",
+      "status": 200,
+      "elapsed_ms": 1453.558,
+      "budget": 15,
+      "response_sha256": "729a09989794aecef88fceb40da280bac90ac8203a54740174fd9f1147f69639"
+    },
+    {
+      "sequence": 39,
+      "intent": {
+        "bytes": 454,
+        "sha256": "b923a1de54228fd3bf0e2a55b02762a9b1999b86ee0d749c6c7a489bd6e1b4c2",
+        "blob": "68648891b1bf1a53f7faf384dee04e07d6aba5f0"
+      },
+      "outcome": {
+        "bytes": 427,
+        "sha256": "308a0334fb9a03e70c0ff06b37839a3b4220eb6a9177b41303bc3aa21956d5a7",
+        "blob": "121cee21a2afe6d1039e5bbc525bad08631798ee"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "sys/unseal",
+      "stage": "all_three_persistent_cold_restart",
+      "status": 200,
+      "elapsed_ms": 615.993,
+      "budget": 15,
+      "response_sha256": "c69f8d099898188adaeca99b7adf0a49a88bcbe9a063dcd52e18c291444ba6a1"
+    },
+    {
+      "sequence": 40,
+      "intent": {
+        "bytes": 454,
+        "sha256": "974ff29f04deaf6f7e528fec3f03619f6cb0a3e8ad975caa9f2efbf0cf3b6060",
+        "blob": "bb12df08d6c3db5df0944d9c54bdf41c6b18754c"
+      },
+      "outcome": {
+        "bytes": 427,
+        "sha256": "5a0374af9f603e41f13934d2ac165cb8939c50b147a41649987bd554e25b9dca",
+        "blob": "f1fe0b6bdf12754227e18ebac23a2f50bcf7e8cd"
+      },
+      "node": 2,
+      "method": "POST",
+      "route": "sys/unseal",
+      "stage": "all_three_persistent_cold_restart",
+      "status": 200,
+      "elapsed_ms": 345.318,
+      "budget": 15,
+      "response_sha256": "c69f8d099898188adaeca99b7adf0a49a88bcbe9a063dcd52e18c291444ba6a1"
+    },
+    {
+      "sequence": 41,
+      "intent": {
+        "bytes": 454,
+        "sha256": "48847a8fbf38b09d0a4bf60233ae7a6012a0d13ac8475e55bf458c28505638b1",
+        "blob": "9ed03754799bde28ad4835b460239450062054cb"
+      },
+      "outcome": {
+        "bytes": 427,
+        "sha256": "205fac26465595c4e09a2c8de73100e5964a43639a19545b45c871fd94789d57",
+        "blob": "ced3e871608a0ec649e42735f6475d55dc5ddab1"
+      },
+      "node": 3,
+      "method": "POST",
+      "route": "sys/unseal",
+      "stage": "all_three_persistent_cold_restart",
+      "status": 200,
+      "elapsed_ms": 377.966,
+      "budget": 15,
+      "response_sha256": "c69f8d099898188adaeca99b7adf0a49a88bcbe9a063dcd52e18c291444ba6a1"
+    },
+    {
+      "sequence": 42,
+      "intent": {
+        "bytes": 648,
+        "sha256": "322b15817ee7265acda2e5135f6d6bc743b30bf1997655e9cab202e4fddad831",
+        "blob": "a289f506c18ceb16198a5d222b002e8855a06bef"
+      },
+      "outcome": {
+        "bytes": 454,
+        "sha256": "ae4ba5bdc60e5f97aa3d0729f5fffb5455ce30b4531f81c9aab0b037526159b8",
+        "blob": "22fa0dee983ef419406b480b43bb943731f0be5e"
+      },
+      "node": 2,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/after-all-cold-restart",
+      "stage": "all_three_persistent_cold_restart",
+      "status": 200,
+      "elapsed_ms": 1602.306,
+      "budget": 15,
+      "response_sha256": "2513377fd00bb39c2ef168e50e38a8f03e172c4787b8b87e0e98dd7692799d8b"
+    },
+    {
+      "sequence": 43,
+      "intent": {
+        "bytes": 457,
+        "sha256": "f453a8f4bbbb170171cec91eb381ba9800df6d6a38a881e347609fd7069ee7c1",
+        "blob": "a5121ba124f78166fa0407653ad687d8e155da13"
+      },
+      "outcome": {
+        "bytes": 427,
+        "sha256": "04fc8d00556741610719d8a4ca8c1712020db857b833e51b23486fa6ba88b726",
+        "blob": "7d5f9f6d2bd9ff23716d768db1ca198901a39d0f"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "sys/unseal",
+      "stage": "owned_missing_cipher_leader_recovery",
+      "status": 200,
+      "elapsed_ms": 595.723,
+      "budget": 15,
+      "response_sha256": "c69f8d099898188adaeca99b7adf0a49a88bcbe9a063dcd52e18c291444ba6a1"
+    },
+    {
+      "sequence": 44,
+      "intent": {
+        "bytes": 457,
+        "sha256": "b2c678be47891e08e0d97cb537026f671cd11ae8bdaec078aea3128a0e6c265a",
+        "blob": "4fd423cfddc0cd83f32238404a5880f24afe2230"
+      },
+      "outcome": {
+        "bytes": 427,
+        "sha256": "4f707f5b9b3dcf200b06d9e1c442a3c46d97d10fbafed10b9377fec6d92409b6",
+        "blob": "3ab22cf4f04269fe7f6e30c8b18a2bafe70d60ff"
+      },
+      "node": 2,
+      "method": "POST",
+      "route": "sys/unseal",
+      "stage": "owned_missing_cipher_leader_recovery",
+      "status": 200,
+      "elapsed_ms": 328.574,
+      "budget": 15,
+      "response_sha256": "c69f8d099898188adaeca99b7adf0a49a88bcbe9a063dcd52e18c291444ba6a1"
+    },
+    {
+      "sequence": 45,
+      "intent": {
+        "bytes": 457,
+        "sha256": "3c2aa427ef641a0c3806c47a7a29ab3538e846e756d617c8d67ec9cbc76b7563",
+        "blob": "088a3c9e9d014d06030fa208ccb697ad438e3487"
+      },
+      "outcome": {
+        "bytes": 426,
+        "sha256": "702157ad0aa85e45bfcd06ae618a558bae82c90d6679af585f1efe619aabfb2d",
+        "blob": "fcc34e40ebcf35d6150c23aa77358e09de29a6eb"
+      },
+      "node": 3,
+      "method": "POST",
+      "route": "sys/unseal",
+      "stage": "owned_missing_cipher_leader_recovery",
+      "status": 200,
+      "elapsed_ms": 304.27,
+      "budget": 15,
+      "response_sha256": "c69f8d099898188adaeca99b7adf0a49a88bcbe9a063dcd52e18c291444ba6a1"
+    },
+    {
+      "sequence": 46,
+      "intent": {
+        "bytes": 656,
+        "sha256": "8438b2b0847d05295bdcbdc54a6f8ef05e7bc42e3974caf6b5641584e09b0e31",
+        "blob": "c43639fd85f401352e5353c0187a5d5f353e32be"
+      },
+      "outcome": {
+        "bytes": 456,
+        "sha256": "6a7771df00d5193d46c34500e1f4fa4219d560203b4eb51f4d38687b407a0c55",
+        "blob": "cfbc37ba286d88028e8369d491f34b97d922e924"
+      },
+      "node": 3,
+      "method": "POST",
+      "route": "secret/data/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/direction-prepare-witness",
+      "stage": "owned_missing_cipher_leader_recovery",
+      "status": 200,
+      "elapsed_ms": 2409.227,
+      "budget": 15,
+      "response_sha256": "68bbfaf3c083a195a4cf5679f6843aaa4d46b8c00017a41267f7ea7171a6d546"
+    },
+    {
+      "sequence": 47,
+      "intent": {
+        "bytes": 535,
+        "sha256": "904da07855e12452906c37e44bc287a894ea06939dbe366ad2505f074a3df3b0",
+        "blob": "d7ae699c24dcce47751188ae4883360bacf0f9fd"
+      },
+      "outcome": {
+        "bytes": 430,
+        "sha256": "ae844c4a28d80aacd86c0b97ec3adf95cd209fcc02e4c3ef3aa07f772ea98550",
+        "blob": "e74f4b1e3ae91bce1c6e0e523f4542b66188ace6"
+      },
+      "node": 3,
+      "method": "DELETE",
+      "route": "secret/metadata/native-ha-a24bc55a048fafdb81feaf5cbd9c39b3/direction-prepare-witness",
+      "stage": "owned_missing_cipher_leader_recovery",
+      "status": 204,
+      "elapsed_ms": 2569.614,
+      "budget": 15,
+      "response_sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "sequence": 48,
+      "intent": {
+        "bytes": 456,
+        "sha256": "d33cdf554d05c41982534e7dac22b5d2f512c22a68a3d4a12544cf4ff668c51b",
+        "blob": "cb8d3ff723ab53469368cb81234411e0daeccc11"
+      },
+      "outcome": {
+        "bytes": 429,
+        "sha256": "1c03a2e7b04c63242ccde03fa5d6e29f094d3e1fba8596a26264a4f47a723891",
+        "blob": "0b3f1797a80cc1dad3651b21c63207f789777f31"
+      },
+      "node": 1,
+      "method": "POST",
+      "route": "sys/unseal",
+      "stage": "owned_missing_cipher_leader_recovery",
+      "status": 200,
+      "elapsed_ms": 10115.765,
+      "budget": 15,
+      "response_sha256": "c69f8d099898188adaeca99b7adf0a49a88bcbe9a063dcd52e18c291444ba6a1"
+    },
+    {
+      "sequence": 49,
+      "intent": {
+        "bytes": 457,
+        "sha256": "745d099efedc7590119434eece9224d927a51fcf8a18043f6034c0944ac9b23f",
+        "blob": "a9f4d7100434298da38fca072b7d17a453fda741"
+      },
+      "outcome": {
+        "bytes": 429,
+        "sha256": "86479c07a2bedbb6296c1e66d545b2789452b746e32fedef3a9892c976800cc7",
+        "blob": "fcf1c7046f1d153af6092372422df2cd223afc52"
+      },
+      "node": 2,
+      "method": "POST",
+      "route": "sys/unseal",
+      "stage": "owned_missing_cipher_leader_recovery",
+      "status": 503,
+      "elapsed_ms": 10289.344,
+      "budget": 15,
+      "response_sha256": "f05273faea0480ecda3965f3233bc523ad2cc6da20482368438d12da340599e1"
+    }
+  ],
+  "statuses": {
+    "200": 39,
+    "204": 8,
+    "503": 2
+  },
+  "budgets": {
+    "12": 1,
+    "15": 48
+  },
+  "body_scope": "Only exact public intent/outcome metadata; no private credential/session body read; response bodies are not saved by this ledger.",
+  "original98_source_match": {
+    "original_names_from_canonical_native_and_direct": true,
+    "original98": [
+      "all_voters_cold_unsealed",
+      "all_voters_local_raft_persistent",
+      "all_voters_stopped_for_cold_restart",
+      "candidate_binary_digest",
+      "cold_leader_retained_history_exact",
+      "cold_restart_all_hosts_readindex",
+      "cold_restart_new_write_once",
+      "denied_quorum_write_absent",
+      "different_leader_after_sigkill",
+      "direct_lan_api_leaf_1",
+      "direct_lan_api_leaf_2",
+      "direct_lan_api_leaf_3",
+      "direct_lan_endpoints_configured",
+      "direct_lan_mtls_1_to_2",
+      "direct_lan_mtls_1_to_3",
+      "direct_lan_mtls_2_to_1",
+      "direct_lan_mtls_2_to_3",
+      "direct_lan_mtls_3_to_1",
+      "direct_lan_mtls_3_to_2",
+      "failover_survivors_readindex",
+      "failover_write_once",
+      "leader_sigkill_identity_verified",
+      "missing_cipher_actual_leaves_rebuilt",
+      "missing_cipher_all_hosts_readindex",
+      "missing_cipher_leader_empty_before_unseal",
+      "missing_cipher_leader_exact_history",
+      "missing_cipher_leader_unsealed",
+      "missing_cipher_remaining_nodes_unsealed",
+      "missing_cipher_sealed_pair_elected",
+      "missing_cipher_source_rejoined",
+      "missing_cipher_targets_stopped",
+      "missing_cipher_two_targets_quarantined",
+      "native.complete",
+      "native_activate_once",
+      "native_delete_missing_accepted",
+      "native_history_34mib_capacity",
+      "native_history_all_retained_exact",
+      "native_history_destroy_once",
+      "native_history_retention_states",
+      "native_history_soft_delete_once",
+      "native_history_write_01",
+      "native_history_write_02",
+      "native_history_write_03",
+      "native_history_write_04",
+      "native_history_write_05",
+      "native_history_write_06",
+      "native_history_write_07",
+      "native_history_write_08",
+      "native_history_write_09",
+      "native_history_write_10",
+      "native_history_write_11",
+      "native_history_write_12",
+      "native_history_write_13",
+      "native_history_write_14",
+      "native_history_write_15",
+      "native_history_write_16",
+      "native_history_write_17",
+      "native_noop_config_accepted",
+      "native_standby_small_readindex",
+      "native_standby_small_write_once",
+      "native_v5_history_preserved",
+      "new_leader_retained_history_exact",
+      "node_1_binary_digest",
+      "node_1_build_receipt",
+      "node_1_initial_unseal",
+      "node_1_new_private_root",
+      "node_2_binary_digest",
+      "node_2_build_receipt",
+      "node_2_cold_clone",
+      "node_2_initial_unseal",
+      "node_2_new_private_root",
+      "node_3_binary_digest",
+      "node_3_build_receipt",
+      "node_3_cold_clone",
+      "node_3_initial_unseal",
+      "node_3_new_private_root",
+      "old_leader_cold_restart",
+      "old_leader_forwarded_readindex",
+      "old_leader_local_raft_caught_up",
+      "owned_mesh_stopped",
+      "owned_processes_stopped",
+      "quorum_loss_read_denied_no_payload",
+      "quorum_loss_write_denied_no_ack",
+      "quorum_recovery_write_once",
+      "quorum_restored",
+      "report_excludes_runtime_secrets",
+      "same_source_native_abis",
+      "seed_fresh_uninitialized",
+      "seed_initialized_once",
+      "seed_stopped_cold_archive",
+      "seed_unsealed",
+      "seed_v5_and_kv2_history",
+      "single_survivor_loses_authority",
+      "source_and_binaries_unchanged",
+      "synthetic_metadata_absent",
+      "synthetic_metadata_cleanup_once",
+      "three_distinct_physical_hosts",
+      "three_raft_elected_before_unseal"
+    ],
+    "extra12_exact_prepared": true
+  },
+  "all_inputs_complete_utf8_whole_sha_verified": true,
+  "all_independent_versions_preserved": true,
+  "all_pairs_once_and_within_original_budget": true,
+  "mutation_unknown_transport_outcomes": 0,
+  "not_a_proof_of_all_GET_outcomes": true
+}

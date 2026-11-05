@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.df026-node2-stopped-log-public-input-binding.v1",
+  "native_response": {
+    "bytes": 493,
+    "sha256": "1a09ab90d0beca1be28a56f99e1cef3a6506b90af6d9474932a8e04e3199548e",
+    "blob": "70f23409670945e31cd9554dcb02a2613ff1b3a4"
+  },
+  "request": {
+    "host": "rog",
+    "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/cold-h2-pocket3-mac1-postrecovery-cold-node2-r1/process.log"
+  },
+  "actual_whole_sha256": "26d1f51d7ecd03920c9808dd510e67eead687d9492781fa2d11ad380a2c84474",
+  "actual_size": 42620,
+  "actual_version": "66306:38977537:42620:1793863384030652703:1793863384030652703",
+  "expected_identity_fields": [
+    "device",
+    "inode",
+    "uid",
+    "gid",
+    "mode",
+    "type",
+    "nlink",
+    "bytes",
+    "mtime_ns",
+    "ctime_ns"
+  ],
+  "expected_identity": [
+    "66306",
+    "38977537",
+    "1000",
+    "1000",
+    "384",
+    "32768",
+    "1",
+    "42620",
+    "1793863384030652703",
+    "1793863384030652703"
+  ],
+  "derivation": {
+    "device_inode_bytes_mtime_ctime": "Exact decimal components of native immutable-read version; no JavaScript Number conversion.",
+    "uid_gid_mode_nlink": "Native metadata fields.",
+    "type": "32768 regular-file type from file_info regular-target API contract; proposed projector additionally requires actual fstat S_ISREG and exact value."
+  },
+  "raw_log_body_emitted": false,
+  "product_requests": 0,
+  "body_projection_executed": false
+}

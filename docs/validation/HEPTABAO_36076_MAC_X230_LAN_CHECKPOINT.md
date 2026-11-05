@@ -1,5 +1,108 @@
 # HeptaBao：正式存储、三机 HA、AuthBus 与完整替代检查点
 
+## 当前 R21 检查点：完整源码导入闭合；三机失败定位到同根游标；WAL 惰性落盘完成
+
+状态截点为 **2026-11-05T07:40:18Z**。此处冻结该时点之前的主机终态和 CI 观察，之后完成的原件回读与根核验随包保存。R22 的新元数据观察、WAL 十场景实际执行和后继修复不回填本节。**完整替代 OpenBao 2.7.1 仍未达标；尚未正式切流，也没有删除旧版资产。**
+
+本包将先前分散的源代码、请求、权威终态、完整输出、不可变读取页和独立核验收束为 **16 个证据子树、914 件文件、15,138,112 B、102 个子树 Merkle**，另附 62 件根证据、状态及清单。入口为 [R21 状态](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/state.public.json) 与 [R21 清单](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/manifest.public.json)。R20 和更早记录保留其原始失败、UNKNOWN、时间、整数和作用范围。
+
+### 一、资格按源码和产物分别绑定
+
+本轮 Mac、ROG 与 Pocket4 的实际服务产物仍绑定提交 `df026fe323dd7cf0f0ec57d7d2d9c5a79897053c`、树 `424463ccd2310ddc1e7b2bbcd7b7af29ae58c825`。Mac/ROG 原 60 项正常构建资格沿用已闭合的各自证据，但不能赋予后继代码。
+
+新 CI 候选为 `6d02ceca629163e1c07480fa1f21520434407143`、树 `09aa45b9439741780961c2af76680c27e0773d08`，唯一父提交为 `19ba09ab5c494f25a3531749b0b99fc5c651d56c`。其增量只是最终 cold gate 调用后的 rustfmt 换行：3,912 个文件不变，唯一文件增加 9 B，仍按值传入 `gate`。该候选的 CI、原生构建、LAN 和 X230 资格均须单独成立。
+
+### 二、正式源码导入的完整证据已闭合
+
+导入作业 `1a1aa422e15-fc05-3ffa` 的 R2 完整包包含 291 件原件。根核验覆盖 22 个已关闭的读取操作、99 页原始不可变 SDK、21 条命令记录及 42 份完整 stdout/stderr，并从实际 Git tree 与 stage-0 index 的 NUL 分隔记录重建全部 3,913 个文件、358 个 Merkle、62,212,769 B，精确得到 df026 源码树。
+
+原 21 个子进程全部回收，公开源代码和独立目录描述符均已关闭；原 clone/Git/总时限不变。根侧 1,068 项读取来源检查与 11,821 项命令、对象、索引及树检查通过。首次 index 分块请求未带 expected_version；随后分块显式绑定，所有返回版本与完整重组字节、独立元数据及 canonical Git 树相符。证据没有把首次请求改写成已预绑定。
+
+详见 [完整源码包](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/source-import-r2-full/manifest.public.json) 与 [根核验](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/r21_source_import_r2_full_root_review.public.json)。
+
+### 三、三机实际断主、恢复及冷启动：91/98，后续 0/12
+
+LAN 唯一实际作业 `1a1aa914172-fc05-4473` 已权威终止：exit 1、完整持久输出、无外层超时。本轮观察到真实自然选举；Pocket4 节点 3 提供密文，Mac 节点 1 成为实际空数据 leader 并恢复。Mac 已读回 17 个有效大版本、19 个历史版本对应的 35,651,584 B 载荷；从本轮实际集合重建 338 个密文 leaf、35,742,486 B，并验证各 leaf 的大小和 SHA。
+
+方向准备 witness 的 CAS=0 写入返回 200，同 scope 删除返回 204，Mac 精确读和删除后缺失也已确认。该 witness 既不计入原 98 项，也不计入后续 12 项。
+
+ROG 节点 2 随后的一次 `sys/unseal` 在 **10,289.344 ms** 返回 503；原请求预算为 15 s。原 98 项中 91 项已执行且通过，缺失 7 项如下，未用后来的根检查替代：
+
+- `missing_cipher_all_hosts_readindex`
+- `missing_cipher_remaining_nodes_unsealed`
+- `native.complete`
+- `report_excludes_runtime_secrets`
+- `source_and_binaries_unchanged`
+- `synthetic_metadata_absent`
+- `synthetic_metadata_cleanup_once`
+
+后续冷重启 12 项未进入。49 次变更意图均有唯一返回：39×200、8×204、2×503，无 transport UNKNOWN，无变更重试。98 份意图及结果公开原件经 7 个读取批次逐字、SHA、版本与序号闭合；这不等于所有 GET 都已有独立原件，也不把 HTTP 返回解释为持久提交证明。
+
+16 次服务启动与 16 次停止按节点和 PID 一一对应；6 次 Mac 前台会话的远端与本地直接子进程均回收，观测到的受控进程组为空，原 5 s 停止预算满足，隧道子进程为 0。测试独占窗口已释放。详见 [实际 summary](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/lan-live-actual/core/summary.json)、[受控进程闭合](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/r21_lan_owned_closure_root_review.public.json) 和 [49 对请求边界根核验](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/r21_lan_boundary_root_review.public.json)。
+
+#### 公开阶段日志给出了可修复的具体分支
+
+在服务已停止后，只读取本轮 ROG 节点 2 固定日志的元数据，再用源代码绑定的封闭字段提取器投影正常构建的公开阶段码。作业 `1a1aaa6142c-fc05-4599` exit 0、完整持久 stdout 55,402 B，输入 42,620 B，6 个描述符均关闭，耗时约 1.4 ms；原 15 s、2 MiB 输入、128 marker、64 KiB 输出及 64 bucket 上限保留。
+
+最后一个完整 timing scope 的 12 个 bucket 未触及上限。`committed_root`、`local_selection`、`local_root_binding`、`local_root_identity` 均完成，`current_cursor` 在 5 µs 失败，出口仍余 3,717,085,098 ns；该 scope 没有进入 replica install 或 materialization。
+
+这是对精确 df026 源码的分支推断：LocalSelection 已成功解码并配对相同的本地 HA cursor，通过较宽的 covered_by；随后同根快速路径仍因更严格的当前 publication/generation 相等检查拒绝。该证据没有读取私有 cursor 值，也没有 request ID，不能仅凭相邻顺序把日志行与 mutation 49 做密码学绑定。后继修复应保留最终 strict cursor、真实 owner、ReadIndex、CAS、持久化和原时限，专门验证同内容根被较新提交再次选中的情况。本时点尚无修复实际资格。
+
+详见 [提取器实际原件](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/lan-cold-projector-actual/stdout.original.json) 与 [独立根分析](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/r21_lan_cold_projector_actual_root_review.public.json)。
+
+### 四、H2 验证客户端：惰性落盘通过，构建在 Cargo 前被拒绝
+
+8 份固定输入的惰性落盘与独立读取已闭合：作业 `1a1aa7c3dff-fc05-439c` exit 0，80 件完整包、7 个读取操作、26 页不可变 SDK、268 项根检查。Cargo.lock 首块请求未预带版本，完整字节、各返回版本及独立 file_info 相符；其余源码的独立版本读取与 producer 的完整身份分开记录。
+
+随后唯一构建作业 `1a1aa9fa851-fc05-4547` 在 `canonical_before` 阶段失败：第二个短 Git 命令读取 tree 时，原进程身份守卫观察到空 cmdline 并拒绝。`source-before-tree` 仍记为 incomplete，原 `command_outcome_unknown=true` 保留。两个直接 Popen 子进程实际 wait 返回 0、已回收且组为空；这不能把原身份守卫改判为通过。
+
+Cargo、六个客户端组件和任何产品 HTTP 请求均未开始。原 600/660 s 总预算、各阶段和清理预算保持，后继需修复短命令 custody 的证明顺序。详见 [失败原件](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/qa-build-known-failure/actual/result.public.json) 与 [根核验](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/r21_qa_build_failure_root_review.public.json)。
+
+### 五、Mac AuthBus：WAL 读取实现与惰性落盘完整闭合，实际信任证明仍待后续
+
+新方案只增加固定 registry 表的 WAL-aware 只读路径；原五个 agent 数据库的 immutable 查询实现和原零 WAL 约束保持。新 registry 路径要求真实只读 VFS/SHM、精确单键与 indexed SEARCH，保留原 1 MiB 单行、8 MiB 显式读取及返回量、3 s 查询和 45 s 捕获限制。SQLite 内部页面 I/O、全部 ABA 与跨库原子性仍未被这些边界证明。
+
+53 件最终源码包修复了返回行拒绝前的预算记账、公共代码 FD 的失败闭包，以及 synthetic 父进程实际接入已验证 native ownership 链的问题。根侧四类纯账本重放与作者完整输出逐字相同；该纯重放不代替真实 SQLite 测试。
+
+惰性作业 `1a1aa8cc28f-fc05-444b` exit 0，耗时 0.222805 s。唯一 diskutil 子进程已回收，全部 T5 描述符关闭，原 27 个 anchor 身份字符串一致。13 个实际文件完成 **13 份独立 file_info + 13 份显式 expected_version 的完整正文读取，共 176,462 B**，与原 carrier 源码/文档及回执逐字对应。完整实际包 112 件、7 个 Merkle，根侧 64 项核心及 107 项补充检查通过。
+
+原候选回执在 final cleanup 前写出，`ok=false`；最终 stdout 与权威 exit 0 记录 `ok=true`。共同的 26 个 JSON 值保留原始 token 并完全相同，候选回执从未被当作最终资格。一次 SSH capacity 拒绝明确没有提交子进程，原件保留，之后只完成同版本的公开读取，未重放 publisher。
+
+截至本节时点，W01–W10 真实 synthetic 和新的当前私有凭证捕获尚未提交；原 current capture 的失败、未完整返回的库账本和更早 UNKNOWN 保持。AppRole、TLS、KV、Policy、续期、撤销及五个实际客户端的当前完整链尚未完成。详见 [最终源码](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/mac-wal-final-source/manifest.public.json)、[完整实际读取](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/mac-wal-inert-full/manifest.public.json) 与 [根核验](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/r21_mac_wal_full_root_review.public.json)。
+
+### 六、X230：原运输 UNKNOWN 不变；独立 effect fence 已知在写入前失败
+
+原运输作业 `1a1aa57458d-fc05-4156` 仍为 UNKNOWN，未改 key 重放。固定元数据观察已完成 42 次 metadata 调用及 8 个 FD 关闭，未读取正文；两次顺序缺失观察不等于原子预留。
+
+独立 fence 作业 `1a1aa8a6fb0-fc05-4428` 权威 exit 1，在 `bind_fixed_directory` 的完整身份比对拒绝。原代码顺序将该拒绝定位到首次读取 `/home/qian-qi`，但原结果没有给出当时改变的具体字段。仅打开并关闭 `/` 与 `/home` 两个 FD，7 次 metadata 调用、0 正文、0 mkdir 尝试、0 marker、0 子进程与网络。原 ROOT 未被该次执行观察，不能据此声称其当前缺失或旧运输从未运行。
+
+该失败的写入前终态已完整闭合，后继需新的有限观察与单独绑定请求；截至本节时点仍无新运输准入。旧 495 源码上的 full34/69 成果不转授给 df026。详见 [fence 失败包](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/x230-effect-fence-known-failure/manifest.public.json) 与 [根核验](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/r21_x230_fence_failure_root_review.public.json)。
+
+### 七、CI 原始失败与新候选分别保留
+
+| 对象 | 实际结果 | 当前证据含义 |
+|---|---|---|
+| PR154 head | server lib 3,720 通过、2 失败、8 ignored | 两项 503 的内部唯一原因仍未确定 |
+| PR154 merge | workspace 通过，Clippy 失败 | 不覆盖 head 的原失败 |
+| PR155 head / merge | 两条完整 workspace 都通过，Clippy 都失败 | head 为 3,722 通过、0 失败、8 ignored；不据此倒推历史失败根因已修 |
+| PR156 head / merge | 相同一处 rustfmt 失败 | 编译、workspace 和 Clippy 均未执行 |
+| PR157 | 新 head 6d02、新 merge 4741ed；run 41987962107 最近观察为 queued | 只有源码增量审查，尚无新 CI 通过结论 |
+
+PR157 的完整源码树、父提交、生成 merge、唯一 9 B 差异及两份原 formatter 日志均已核对，并有独立 peer。没有本地 Rust/rustfmt 执行声明。详见 [CI 根观察](../../qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/r21_ci_root_observation.public.json) 与 [PR157](https://github.com/TrillionniumFoundation/HeptaBao/pull/157)。
+
+### 八、剩余五道门槛的当前结论
+
+| 用户门槛 | R21 结论 |
+|---|---|
+| KV2 正式迁移与可恢复存储 | 完整源码与正常构建基础已闭合；同根 publication 进度缺口待修复，新候选跨主机回归仍缺 |
+| Mac / ROG / Pocket4 HA | 本轮 91/98、后续 0/12，ROG 冷解封失败；仍未完成全三机冷重启和 ReadIndex |
+| 不依赖 J3160 的 AuthBus | 固定 WAL 路径与实际惰性读取闭合；十场景、当前真实凭证及 AppRole 全链仍待后续 |
+| 逐台切流 | 每台当前真实凭证读写、重启、完整逆操作和精确生产目标绑定尚未全部完成 |
+| 清理旧版 | 客户端及备份路径迁移未全部证明，清理资格未成立，实际删除为 0 |
+
+OpenBao 2.7.1 的完整行为分母仍在补齐。固定的 69 项、416 个词法 route 声明或旧 2.6.2 corpus 都不能替代 2.7.1 全部注册条件、字段、操作和语义。结构性准入清单的 15 个安全维度、11 个正确性维度与 11 道必需 gate 仍有未闭合项。
+
+
 ## 当前 R20 检查点：导入核心证据闭合；X230 运输保留 UNKNOWN；QA 元数据完成
 
 更新于 2026-11-05T06:29:38Z。**全量替代 OpenBao 2.7.1 仍未达标，尚未正式切流，也没有删除旧版。** 主机实际验证仍绑定 `df026fe323dd7cf0f0ec57d7d2d9c5a79897053c`／树 `424463ccd2310ddc1e7b2bbcd7b7af29ae58c825`。本轮进一步区分已核实的导入、发布和元数据事实，与尚不能取得权威结论的 X230 运输；没有把成功的准备步骤当成业务资格。

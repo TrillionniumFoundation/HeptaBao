@@ -1,0 +1,57 @@
+{
+  "schema": "heptabao.root.x230-fence-known-premutation-failure.r21",
+  "status": "KNOWN_FAILURE_ROOT_CLOSED_NO_RESERVATION",
+  "packet": {
+    "tree": "cde110c2bfc58a78f38c91993253279807872494",
+    "files": 13,
+    "bytes": 112056,
+    "merkle_trees": 3
+  },
+  "job": "1a1aa8a6fb0-fc05-4428",
+  "core": {
+    "blob": "0949dfed58f0d9bfc469103e44037ecc8d2ee9a0",
+    "bytes": 2142,
+    "sha256": "fdeac59f20b0e14fe481ee09c7c96ad4fdd02807eae7ef0fffbf8d6c9eb9d8e2"
+  },
+  "root_checks": [
+    "ACK exact host",
+    "ACK exact executable",
+    "ACK exact cwd",
+    "ACK exact args",
+    "ACK exact idempotency_key",
+    "unique actual fence launch",
+    "authoritative known failed complete durable",
+    "whole exact stdout",
+    "authority bytes durable stdout",
+    "whole exact stderr",
+    "authority bytes durable stderr",
+    "known fixed directory identity refusal",
+    "only two directory FD once closed",
+    "closure and original bound",
+    "pre-mutation/source-body/target-observation refusal",
+    "no transport or existing-root mutation",
+    "original relay unknown preserved"
+  ],
+  "source_control_flow_inference": "Two completed bind calls account for six metadata operations; the seventh fixed call is the first named stat for /home/qian-qi, where the full-nine identity comparison refused. The actual mismatching tuple and field were not reported, so the reason for the change is not established.",
+  "actual_effects": {
+    "opened_directories": [
+      "/",
+      "/home"
+    ],
+    "metadata_calls": 7,
+    "body_bytes": 0,
+    "mkdir_attempted": false,
+    "tombstone_created": false,
+    "children": 0,
+    "network": false,
+    "signals": false,
+    "all_registered_descriptors_closed": true,
+    "elapsed_ns": 538160
+  },
+  "original_relay_state": "UNKNOWN",
+  "original_root_current_absence_proven": false,
+  "new_x230_transport_go": false,
+  "pins_refreshed": false,
+  "replay_performed": false,
+  "independent_lan_disposition": "The temporary scheduling hold existed only to avoid changing a directory while this fixed metadata admission was active. This new fence is now conclusively terminal before mutation. The already-prepared LAN uses disjoint roots, ports and Mac/ROG/Pocket4 nodes and does not depend on the X230 reservation. It may be reviewed separately; any later X230 fence needs fresh explicit metadata evidence and a new reviewed request, without rewriting this failure."
+}

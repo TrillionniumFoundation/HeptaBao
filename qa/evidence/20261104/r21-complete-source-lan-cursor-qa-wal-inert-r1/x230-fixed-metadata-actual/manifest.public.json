@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.public-evidence-manifest.v1",
+  "files": [
+    {
+      "path": "root-go.original.json",
+      "bytes": 2666,
+      "sha256": "6730c49ebde7273f02d5480e0e41613ac43760b1d9c37f290491f466d7930ab2",
+      "blob": "12e906f4aad3cfbd8e5bbd584fb240a969ebedfe"
+    },
+    {
+      "path": "request.original.json",
+      "bytes": 11117,
+      "sha256": "f436a80bffaee97bde7d1a2bf6377124389851c9388fd44339ac91d878a66632",
+      "blob": "abc5e5c2cfd34e97aa603b1fe79d383a6ea06953"
+    },
+    {
+      "path": "intent.public.json",
+      "bytes": 1114,
+      "sha256": "427faf8dc43b0df739a1bd2039139fed315c323c221fe9b9c38208df0d78d4af",
+      "blob": "fa76d615213050f660bdff9b6fe864f0eb510a58"
+    },
+    {
+      "path": "source/fixed_metadata.py",
+      "bytes": 10224,
+      "sha256": "52a60fad1531ebb5bcc05bef3261ef7e83f68956fa476b71c008a98412b49aaf",
+      "blob": "ad852419c3217db37ce6cf1ede5e1ec219a60d80"
+    },
+    {
+      "path": "sdk/process-start.original.json",
+      "bytes": 11891,
+      "sha256": "a4928f45ad13e72c5e96b39ae7db54d4ad610d93da627b90efcd73a7079b660a",
+      "blob": "e1b8ac10faa1735bcc8c0dd5f356c75f9021ecd9"
+    },
+    {
+      "path": "sdk/process-status.original.json",
+      "bytes": 731,
+      "sha256": "0e8aac9cba13faebcc5080e34c00706ce1494b2f334b4e2e176f37d5e66493bc",
+      "blob": "498e5b59398d4ddcec926c4bcfba66bd208551ad"
+    },
+    {
+      "path": "sdk/process-read.original.json",
+      "bytes": 17646,
+      "sha256": "248b69d9b8deae17d2d5ea60a461fcc646b9aa6610f30a458f1bbe6cb08aff68",
+      "blob": "3fbbd0fa46a15b396c807406b71db8f3847d378e"
+    },
+    {
+      "path": "terminal.stdout",
+      "bytes": 5656,
+      "sha256": "da22041ad211aadaedf50655aff25284c3f361020a15416ee4e065c7a9d4a088",
+      "blob": "77c33aadcd4a589fabb44943355614260e8213ca"
+    },
+    {
+      "path": "terminal.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "result.public.json",
+      "bytes": 5656,
+      "sha256": "da22041ad211aadaedf50655aff25284c3f361020a15416ee4e065c7a9d4a088",
+      "blob": "77c33aadcd4a589fabb44943355614260e8213ca"
+    },
+    {
+      "path": "assessment.public.json",
+      "bytes": 2194,
+      "sha256": "98f2d4f5daca7ca90560512e8c9cddc229819346547d75e0b9531ac920c44564",
+      "blob": "e3ef18c4e6615e27948c609abfde6f9d894a9a53"
+    }
+  ]
+}

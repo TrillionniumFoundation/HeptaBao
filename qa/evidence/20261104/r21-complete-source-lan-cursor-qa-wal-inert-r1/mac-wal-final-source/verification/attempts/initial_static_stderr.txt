@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/tmp/authbus_readonly_wal_r1/static_verify.py", line 49, in <module>
+  File "/tmp/authbus_readonly_wal_r1/static_verify.py", line 10, in check
+AssertionError: t5-only-one-root-literal

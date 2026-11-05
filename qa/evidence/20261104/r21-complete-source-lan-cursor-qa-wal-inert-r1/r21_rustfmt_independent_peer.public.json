@@ -1,0 +1,86 @@
+{
+  "schema": "heptabao.peer.final-cold-gate-format-only.v1",
+  "reviewer": "authbus_migration",
+  "status": "PASS_SOURCE_ONLY_NO_NEW_BLOCKER",
+  "candidate_commit": "6d02ceca629163e1c07480fa1f21520434407143",
+  "sole_parent": "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+  "candidate_tree": "09aa45b9439741780961c2af76680c27e0773d08",
+  "file": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+  "before": {
+    "bytes": 31461,
+    "sha256": "52ad58f830e16dbbf2145accc3e615adc177e561219ea24c797973cf1965de26",
+    "git_blob": "f991d6a25979ea350d60b2621b80ae2dcab760e0"
+  },
+  "after": {
+    "bytes": 31470,
+    "sha256": "b241236a714862c37da2767d5f0c52214cc6395df937b4035205fd990574aabf",
+    "git_blob": "8c67a106e6a9628ad77214e09656cf73b050dcbe"
+  },
+  "verification": {
+    "whole_sources_sha256_and_git_blob": true,
+    "commit_and_parent_metadata_independently_read": true,
+    "recursive_trees": [
+      {
+        "name": "parent",
+        "tree": "73ba0c7fdf333b41d3944c5ee58b477026ff2d82",
+        "leaves": 3913,
+        "merkle_trees": 358,
+        "all_recomputed_exact": true
+      },
+      {
+        "name": "candidate",
+        "tree": "09aa45b9439741780961c2af76680c27e0773d08",
+        "leaves": 3913,
+        "merkle_trees": 358,
+        "all_recomputed_exact": true
+      }
+    ],
+    "unchanged_leaves": 3912,
+    "changed_leaves": 1,
+    "mode_unchanged": "100644",
+    "strict_diff_hunks": 1,
+    "strict_apply_reproduced_whole_after": true,
+    "exact_byte_delta": 9,
+    "only_replacement": {
+      "before": "observe_cold_native_ha(ColdNativeHaPhase::FinalGate, deadline, gate).map_err(storage_rejected)?;",
+      "after": "observe_cold_native_ha(ColdNativeHaPhase::FinalGate, deadline, gate)\n        .map_err(storage_rejected)?;",
+      "occurrences": 1,
+      "bytes_delta": 9,
+      "hunks": 1,
+      "strict_apply_equal": true
+    },
+    "other_source_bytes_unchanged": true
+  },
+  "semantic_scope": [
+    "The sole change inserts one LF and eight spaces before .map_err(storage_rejected)?; after the FinalGate observe call.",
+    "gate remains the same by-value argument. No &mut reborrow is introduced, removed or otherwise changed by this child commit.",
+    "Call order, original deadline value, error mapper and ? propagation, preceding FinalLocalGeneration checks, and following diagnostic phase.finish calls are byte-identical.",
+    "No thresholds, feature gates, test sets, dependencies, workflow files, host paths, candidate artifact pins or runtime budgets changed."
+  ],
+  "observed_ci_logs": [
+    {
+      "bytes": 110860,
+      "sha256": "fc64f0d6fa91010109de660d547f82be440a88589825ba7a47b75778e3d2c69c",
+      "git_blob": "51bed4f462f7521a099493dc908cc5591f09645b",
+      "format_diff_file_line": 461,
+      "observed_failure_exit": 1
+    },
+    {
+      "bytes": 111390,
+      "sha256": "44356b83082a8776fd4951693beefad8484d847f4e7a0fd4e45ec0146467ea28",
+      "git_blob": "52f4b09f6d468ceb0c17fc203ab428df9c54a13b",
+      "format_diff_file_line": 461,
+      "observed_failure_exit": 1
+    }
+  ],
+  "ci_evidence_scope": "Both entire immutable logs were fetched and whole-hash verified. Their printed rustfmt requested replacement is exactly this one hunk. This review does not claim a new formatter, Clippy, test or CI execution passed.",
+  "boundaries": {
+    "git_read_and_pure_v8_only": true,
+    "local_rust_or_formatter_executed": false,
+    "host_commands_executed": false,
+    "private_inputs_read": false,
+    "host_qualification_inherited": false,
+    "previous_artifact_and_failure_evidence_unchanged": true,
+    "approval_scope": "format-only source delta; new CI and any actual host qualification remain separate"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.x230-create-only-fence-known-failure.v1",
+  "job_id": "1a1aa8a6fb0-fc05-4428",
+  "status": "KNOWN_PRE_MUTATION_REFUSAL_NO_FENCE_ESTABLISHED",
+  "source": {
+    "bytes": 21479,
+    "sha256": "3419846a745c8d3df32a09f74bf84461a0e9cde90296f7e555437faf3b2c6e89",
+    "blob": "abcbde6b6defd3376d0c2cc2c490c45303c78896"
+  },
+  "authority_exit_code": 1,
+  "output_complete": true,
+  "output_durable": true,
+  "terminal_hex_text_exact": true,
+  "stdout": {
+    "bytes": 2142,
+    "sha256": "fdeac59f20b0e14fe481ee09c7c96ad4fdd02807eae7ef0fffbf8d6c9eb9d8e2",
+    "blob": "0949dfed58f0d9bfc469103e44037ecc8d2ee9a0"
+  },
+  "stderr_bytes": 0,
+  "actual_reason": {
+    "errno": null,
+    "phase": "bind_fixed_directory",
+    "reason": "fixed_identity_mismatch",
+    "type": "Refused"
+  },
+  "metadata_calls": 7,
+  "descriptors_registered": 2,
+  "descriptors_once_closed": 2,
+  "bytes_read": 0,
+  "mkdir_attempted": false,
+  "tombstone_create_attempted": false,
+  "root_absence_observed_in_this_attempt": false,
+  "original_relay_state": "unknown",
+  "historical_or_current_original_root_absence_proven": false,
+  "locator": {
+    "status": "source-derived position, not an additional observation",
+    "exact_path": "/home/qian-qi",
+    "method": "Two completed bind calls consume 3 metadata observations each and hold / and /home. Observation 7 is the first no-follow named stat of qian-qi under held /home; its full 9 tuple failed before opening that directory.",
+    "which_field_changed": "not captured",
+    "cause_of_change": "not established"
+  },
+  "elapsed_ns": 538160,
+  "transport_started": false,
+  "new_fence_replayed": false,
+  "lan_live_started": false,
+  "failed_source_and_pins_unchanged": true,
+  "next_host_action_authorized": false
+}

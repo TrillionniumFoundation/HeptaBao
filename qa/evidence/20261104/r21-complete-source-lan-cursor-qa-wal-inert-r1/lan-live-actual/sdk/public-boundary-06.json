@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"atomic_snapshot\":false,\"encoding\":\"utf-8\",\"files\":[{\"eof\":true,\"path\":\"/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-cold-h2-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00049.intent.json\",\"sha256\":\"745d099efedc7590119434eece9224d927a51fcf8a18043f6034c0944ac9b23f\",\"size\":457,\"text\":\"{\\\"automatic_retry\\\":false,\\\"dispatch_attempts_allowed\\\":1,\\\"fixture_run_id\\\":\\\"a24bc55a048fafdb81feaf5cbd9c39b3\\\",\\\"method\\\":\\\"POST\\\",\\\"node_id\\\":2,\\\"original_http_budget_seconds\\\":15,\\\"recorded_before_dispatch_unix_seconds\\\":1793863373.6493537,\\\"request_body_sha256\\\":\\\"9efb54113ca03c76c248821781561c1415dbb7a7f91d3f36877642bc841337b5\\\",\\\"route\\\":\\\"sys/unseal\\\",\\\"schema\\\":\\\"heptabao.synthetic-fixture-mutation-intent.v1\\\",\\\"sequence\\\":49,\\\"stage\\\":\\\"owned_missing_cipher_leader_recovery\\\"}\\n\",\"version\":\"2050:7256399:457:1793863373650318611:1793863373650318611\"},{\"eof\":true,\"path\":\"/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-cold-h2-pocket3-mac1-postrecovery-cold-r1/private-recovery/mutation-00049.outcome.json\",\"sha256\":\"86479c07a2bedbb6296c1e66d545b2789452b746e32fedef3a9892c976800cc7\",\"size\":429,\"text\":\"{\\\"automatic_retry\\\":false,\\\"elapsed_ms\\\":10289.344,\\\"fixture_run_id\\\":\\\"a24bc55a048fafdb81feaf5cbd9c39b3\\\",\\\"http_status\\\":503,\\\"original_http_budget_seconds\\\":15,\\\"response_sha256\\\":\\\"f05273faea0480ecda3965f3233bc523ad2cc6da20482368438d12da340599e1\\\",\\\"schema\\\":\\\"heptabao.synthetic-fixture-mutation-outcome.v1\\\",\\\"sequence\\\":49,\\\"storage_commit_outcome\\\":\\\"not_inferred_from_http_or_transport\\\",\\\"transport_returned\\\":true,\\\"within_original_budget\\\":true}\\n\",\"version\":\"2050:7256400:429:1793863384027493085:1793863384027493085\"}],\"snapshot_scope\":\"independent_file\",\"truncated\":false}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

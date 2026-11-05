@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "source_operation": "d86714a7865268ccd0b19e84f183f7e83bca27132a630df79bd98d9a4a837eab",
+  "atomic_snapshot": false,
+  "files": [
+    {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r1/source-before-commit.intent.public.json",
+      "bytes": 437,
+      "sha256": "c3f15152955d4484fcaa85a4c205ebd22f96a5eaa38e79fec290a6f77caaf299",
+      "version": "66306:33846230:437:1793863957305208667:1793863957305208667",
+      "eof": true,
+      "blob": "32364909596b282aa604fa17cab44aad7acce55d"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r1/source-before-commit.public.json",
+      "bytes": 842,
+      "sha256": "f27f3c965bcc95679d7758ec8ecd7fa20dc1f8655ad3de641e50f85c397c101f",
+      "version": "66306:33846233:842:1793863957321208584:1793863957321208584",
+      "eof": true,
+      "blob": "e68d34676d37ce4d100d98a4ce77033443edad10"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r1/source-before-commit.stdout",
+      "bytes": 41,
+      "sha256": "e9b96b7f6bbedaf9cd3370a345472f36b285d02796266cd14f1a37fbcbd077aa",
+      "version": "66306:33846231:41:1793863957308208651:1793863957308208651",
+      "eof": true,
+      "blob": "2ae518bd5866cc1f8635f610c6d94f44398ef6cc"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r1/source-before-commit.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "66306:33846232:0:1793863957306208661:1793863957306208661",
+      "eof": true,
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r1/source-before-tree.intent.public.json",
+      "bytes": 442,
+      "sha256": "71f0c49e224dbe07f1112aa5c21cd4f4ff5b8275be6c525eebb17ab0cc0f4552",
+      "version": "66306:33846234:442:1793863957322208579:1793863957322208579",
+      "eof": true,
+      "blob": "19bb9a4721244f7982fc66da85d5c2d0951f7318"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r1/source-before-tree.stdout",
+      "bytes": 41,
+      "sha256": "b2cec45720e59e9218f487ebb8b965b1f1fc5fccb8430d61c3a660fab40ead36",
+      "version": "66306:33846235:41:1793863957324208568:1793863957324208568",
+      "eof": true,
+      "blob": "0032c1e672135bf333e906ae2c5e50f29899eec2"
+    },
+    {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r1/source-before-tree.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "version": "66306:33846236:0:1793863957323208573:1793863957323208573",
+      "eof": true,
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.df026.native-h2-qa.actual-bound-publication-plan.v1",
+  "status": "source_review_only_not_dispatched",
+  "candidate_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "candidate_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "prior_reviewed_source_tree": "1262d0c035246c05bbab3a630be8c658a86901a4",
+  "actual_metadata_tree": "1282c1e2e6f4eaf90e231e899aaa816cb8652ac4",
+  "normal60_full_original_tree": "b37af5b9eaf430a78267facfd29c403bfdf68a09",
+  "retained_source_pins": {
+    "builder": {
+      "bytes": 35155,
+      "sha256": "2e2ea6edd029b3d7164fbe6a85826ef3523a0ec60586d330b539761d870c0a35"
+    },
+    "rust_source": {
+      "bytes": 19382,
+      "sha256": "41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd"
+    },
+    "test_source": {
+      "bytes": 8942,
+      "sha256": "7f23470287fe953f0271e974d6eda759b7daf9f15bc363d522a02d3633e012c2"
+    },
+    "cargo_manifest": {
+      "bytes": 957,
+      "sha256": "960de7b19776cda4bd8a00561a417f72b08ca320efb93ec05028a3be0e7315e5"
+    },
+    "canonical_lock": {
+      "bytes": 101193,
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5"
+    },
+    "owner_reference": {
+      "bytes": 61210,
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c"
+    },
+    "cli_reference": {
+      "bytes": 46586,
+      "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9"
+    }
+  },
+  "binding": {
+    "bytes": 4039,
+    "sha256": "8807a51468c42c09d68058e9ba63313676e69f99b8d922dca11083b920581b1d",
+    "contains_credentials": false,
+    "target_fields_are_historical_preflight": true,
+    "current_target_reverification_by_builder_required": true
+  },
+  "steps": [
+    {
+      "name": "inert",
+      "request": "requests/inert.exact.json",
+      "bytes": 376962,
+      "sha256": "1a6e7dcf2ddb22f498a4c2cd31690db72548e4b318b9843c8ec6b4d69f76f7a1",
+      "required_authorization": "root exact single inert GO",
+      "outer_seconds": 60,
+      "stage_files": 8,
+      "python_sources_compile_only": 3,
+      "source_execution": false,
+      "Cargo": false,
+      "HTTP": false
+    },
+    {
+      "name": "QA_build",
+      "request": "requests/build.exact.json",
+      "bytes": 647,
+      "sha256": "75cabd8864a3d1d429dc6f43c6e5f634b35ee2b0407c79af1835381950f7b207",
+      "required_authorization": "root review of actual inert terminal/readback, then separate exact single build GO",
+      "outer_seconds": 660,
+      "inner_caps": {
+        "total_seconds": 600,
+        "git_seconds": 15,
+        "tool_seconds": 15,
+        "lock_seconds": 20,
+        "build_seconds": 180,
+        "components_build_seconds": 180,
+        "list_seconds": 15,
+        "components_seconds": 30,
+        "cleanup_term_seconds": 5,
+        "cleanup_kill_seconds": 5
+      },
+      "private_owned_project": true,
+      "canonical_source_cargo_cwd": false,
+      "offline_lock_subset_required": true,
+      "normal60_counts_unchanged": true,
+      "component_tests_separate": 6,
+      "product_fixture_http_requests": 0
+    }
+  ],
+  "unknown_replay": false,
+  "no_runtime_qualification_from_source": true
+}

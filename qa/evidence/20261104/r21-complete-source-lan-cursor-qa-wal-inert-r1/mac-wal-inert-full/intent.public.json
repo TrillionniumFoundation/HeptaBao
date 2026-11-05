@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.mac-registry-readonly-wal-inert.submit-intent.v1",
+  "recorded_at_utc": "2026-11-05 07:10:37 UTC",
+  "request_blob": "33b41c7cabe54b1236bfecb1c7ab61f2e3cf77ad",
+  "request_bytes": 241878,
+  "request_sha256": "123da41e45aa43620573bd3e9614feef14e7c9ad6f9177444f6d62314a3bda9e",
+  "idempotency_key": "heptabao-mac-registry-readonly-wal-inert-6488b70c-20261105-r1",
+  "root_go_blob": "6a62be0e6241c818da7c09eb3632811276aaa30f",
+  "source_tree": "701600af314e16b99601ce1643c6011d19f0db8b",
+  "action": "One exact process_start after persistence of this intent",
+  "synthetic_authorized": false,
+  "private_capture_authorized": false
+}

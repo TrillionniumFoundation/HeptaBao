@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-df026-qa-inert-streams-1a1aa7c3dff-20261105-r1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1aa7c3dff-fc05-439c",
+      "limit": 16384,
+      "stdout_offset": 0,
+      "stderr_offset": 0
+    }
+  }
+}

@@ -1,0 +1,283 @@
+{
+  "actualChildProcesses": 0,
+  "actualDescriptorsOpenedByComponents": 0,
+  "actualSqliteConnections": 0,
+  "allPassed": true,
+  "candidateModulesImported": false,
+  "families": [
+    {
+      "family": "L01-connect-unreturned",
+      "newAttemptRecordedBeforeCall": true,
+      "oldAttemptCountIsNull": true,
+      "passed": true,
+      "returnedAccountingAddendum": [
+        "overflow-row-counted-before-count-refusal",
+        "schema-info-plan-and-oversize-data-counted-before-row-cap",
+        "insufficient-remaining-refused-before-cursor"
+      ],
+      "variants": 2
+    },
+    {
+      "family": "L02-unified-connection-before-fd-close",
+      "passed": true,
+      "publicCodeFdCloseFailureVisible": true,
+      "successfulOrderControlPassed": true,
+      "variants": [
+        {
+          "closeAttempts": 1,
+          "heldFdCloseAttempts": 0,
+          "route": "old-immutable",
+          "unknown": true
+        },
+        {
+          "closeAttempts": 1,
+          "heldFdCloseAttempts": 0,
+          "route": "new-runtime",
+          "unknown": true
+        },
+        {
+          "closeAttempts": 1,
+          "heldFdCloseAttempts": 0,
+          "route": "new-registry",
+          "unknown": true
+        }
+      ]
+    },
+    {
+      "family": "L03-original-completion-deadlines",
+      "lateCaptureAfterFdCloseRefused": true,
+      "passed": true,
+      "query": [
+        {
+          "completed": 2.999,
+          "success": true
+        },
+        {
+          "completed": 3.0,
+          "success": false
+        },
+        {
+          "completed": 3.001,
+          "success": false
+        }
+      ]
+    },
+    {
+      "baselinePassed": true,
+      "drifts": [
+        {
+          "fieldIndex": 0,
+          "kind": "parent",
+          "refused": true
+        },
+        {
+          "fieldIndex": 1,
+          "kind": "parent",
+          "refused": true
+        },
+        {
+          "fieldIndex": 2,
+          "kind": "parent",
+          "refused": true
+        },
+        {
+          "fieldIndex": 3,
+          "kind": "parent",
+          "refused": true
+        },
+        {
+          "fieldIndex": 4,
+          "kind": "parent",
+          "refused": true
+        },
+        {
+          "fieldIndex": 5,
+          "kind": "parent",
+          "refused": true
+        },
+        {
+          "fieldIndex": 6,
+          "kind": "parent",
+          "refused": true
+        },
+        {
+          "fieldIndex": 7,
+          "kind": "parent",
+          "refused": true
+        },
+        {
+          "fieldIndex": 8,
+          "kind": "parent",
+          "refused": true
+        },
+        {
+          "fieldIndex": 0,
+          "kind": "main",
+          "refused": true
+        },
+        {
+          "fieldIndex": 1,
+          "kind": "main",
+          "refused": true
+        },
+        {
+          "fieldIndex": 2,
+          "kind": "main",
+          "refused": true
+        },
+        {
+          "fieldIndex": 3,
+          "kind": "main",
+          "refused": true
+        },
+        {
+          "fieldIndex": 4,
+          "kind": "main",
+          "refused": true
+        },
+        {
+          "fieldIndex": 5,
+          "kind": "main",
+          "refused": true
+        },
+        {
+          "fieldIndex": 6,
+          "kind": "main",
+          "refused": true
+        },
+        {
+          "fieldIndex": 7,
+          "kind": "main",
+          "refused": true
+        },
+        {
+          "fieldIndex": 8,
+          "kind": "main",
+          "refused": true
+        },
+        {
+          "fieldIndex": 0,
+          "kind": "wal",
+          "refused": true
+        },
+        {
+          "fieldIndex": 1,
+          "kind": "wal",
+          "refused": true
+        },
+        {
+          "fieldIndex": 2,
+          "kind": "wal",
+          "refused": true
+        },
+        {
+          "fieldIndex": 3,
+          "kind": "wal",
+          "refused": true
+        },
+        {
+          "fieldIndex": 4,
+          "kind": "wal",
+          "refused": true
+        },
+        {
+          "fieldIndex": 5,
+          "kind": "wal",
+          "refused": true
+        },
+        {
+          "fieldIndex": 6,
+          "kind": "wal",
+          "refused": true
+        },
+        {
+          "fieldIndex": 7,
+          "kind": "wal",
+          "refused": true
+        },
+        {
+          "fieldIndex": 8,
+          "kind": "wal",
+          "refused": true
+        },
+        {
+          "fieldIndex": 0,
+          "kind": "shm",
+          "refused": true
+        },
+        {
+          "fieldIndex": 1,
+          "kind": "shm",
+          "refused": true
+        },
+        {
+          "fieldIndex": 2,
+          "kind": "shm",
+          "refused": true
+        },
+        {
+          "fieldIndex": 3,
+          "kind": "shm",
+          "refused": true
+        },
+        {
+          "fieldIndex": 4,
+          "kind": "shm",
+          "refused": true
+        },
+        {
+          "fieldIndex": 5,
+          "kind": "shm",
+          "refused": true
+        },
+        {
+          "fieldIndex": 6,
+          "kind": "shm",
+          "refused": true
+        },
+        {
+          "fieldIndex": 7,
+          "kind": "shm",
+          "refused": true
+        },
+        {
+          "fieldIndex": 8,
+          "kind": "shm",
+          "refused": true
+        }
+      ],
+      "family": "L04-full-nine-field-fences",
+      "passed": true
+    }
+  ],
+  "familyCount": 4,
+  "hostAccess": false,
+  "ioAuditGuardInstalled": true,
+  "networkActions": 0,
+  "schema": "heptabao.mac-registry-wal-four-ledger-components.r1",
+  "selectedDefinitionSha256": {
+    "base.CaptureRefused": "7995ef992f84cb07383f57df72f86ac2d48782edfd475261cd89c68f02eab51e",
+    "base.FixedInputs": "6277f953b8b2cac693bc3e5d0edb79fb00ac130234eb99eecef1a4be616d733e",
+    "base.encoded": "f37bd4cf34b34b97204b7d3336bca1ceec060bc06744a0e6a81a97321164799e",
+    "base.identity": "3d9b248ec6da8dc2e67479a6197100793eae812934360352f291dca46a4e40cf",
+    "base.immutable_query": "f05c89ca2287f68d2a67994b0bced02989206147db26da7cbc916a11cbed2934",
+    "base.need": "14b80495680d4fdfbf488b5372c3a36485cce826129256c701ae0c2218639cff",
+    "base.parent_identity": "3d31f2f2eb859f043bb088a0dba1ee42fb136c76ab2ece8d67bda645d8782159",
+    "base.sha": "b982bd233c85810c521cadcca10064970241839919eb0af431ee7512034bd15c",
+    "new.CaptureAttemptFailure": "70b75153e2fd1600ef71239e37a1f72a468a6a61b774649b86aaa19da0672c8f",
+    "new.WalInputs": "b0356b8f8e9d47a47e6ff0ddb3418d2e90901df0fac33ad44b486fae9653848c",
+    "new._full_parent": "804a4cec22a57856ee16e1ba9431f84ecba7a4fc5c89da2540ca6a155e3adee7",
+    "new.attempt_registry": "a7535de81cfd091ee3bb009afdced99eb12c72dcb5aeffec6a017d7745cb2dcd",
+    "new.capture_current_with_wal": "53a1ff6d3b2bb83e46ab2b85921fc31447076b9d87b031e8c91081d1e1f78414",
+    "new.configure_connection": "25bcb8194aba2802f54edfd2e17c3c87335ea391681c26f7b5ea7656e0c9b530",
+    "new.failure_record": "3e40892565516536206622e681a79ecb07d7ccc4e3b1b2032b7195a6944088f8",
+    "new.observed_runtime": "2862845a0bdf29da38819505d53a9df191496f880bcd0b29a04aedec26ac95fc",
+    "new.read_registry": "8384853e620988e75a46196e295d7066e969ce4e32705048e6c8f83d49c19d15",
+    "new.readonly_wal_query": "aed49a8c2cff6c99411f15599bc49dc68f100caa1f6fd4ad1c6cd4a1927c3cc0",
+    "new.verify_bundle": "898c08a0fc7c23a281994b249836638878195d99b51ed7694c1f12cf20d7bbe0"
+  },
+  "sourceSha256": {
+    "mac_guarded_current_capture_r3.py": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+    "mac_registry_readonly_wal_r1.py": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
+  }
+}

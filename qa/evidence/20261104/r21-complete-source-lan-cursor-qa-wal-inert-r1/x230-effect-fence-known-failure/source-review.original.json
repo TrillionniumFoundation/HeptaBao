@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.root.x230-original-relay-create-only-fence-source-review.r21",
+  "status": "SOURCE_SCOPE_AND_EXACT_REQUEST_ROOT_CLOSED",
+  "packet": {
+    "tree": "c9e752194fc092a0c920949386b2f09ded97896b",
+    "files": 27,
+    "bytes": 157254,
+    "merkle_trees": 6
+  },
+  "source": {
+    "blob": "abcbde6b6defd3376d0c2cc2c490c45303c78896",
+    "bytes": 21479,
+    "sha256": "3419846a745c8d3df32a09f74bf84461a0e9cde90296f7e555437faf3b2c6e89"
+  },
+  "inactive_source_blob": "f5ba32352b5221d8d4573eacbde32b5876573ecc",
+  "active_delta": {
+    "hunks": 2,
+    "only": "ready false to true plus module docstring; all executable function bodies and other constants unchanged",
+    "strict_reconstruction": true
+  },
+  "metadata_actual_root_review": "d7eaa68cf63d0d47aad38a1796b9e995f591e9b7",
+  "pure_root_check": {
+    "exact_control_full_identities": 3,
+    "exact_directories": 5,
+    "false_ready_negative_refuses": true,
+    "filesystem_or_main_executed": false,
+    "mkdir_call_sites": 1,
+    "negative_invocations": 3,
+    "ok": true,
+    "original_job_outcome": "UNKNOWN",
+    "positive_invocation": 1,
+    "source_only_ready_pure_guard_passes": true
+  },
+  "reviewed_limits": {
+    "soft_seconds": 15,
+    "outer_proposed_seconds": 60,
+    "max_fd": 10,
+    "max_metadata": 128,
+    "public_read_bytes": 131072,
+    "marker_bytes": 8192,
+    "stdout_bytes": 32768
+  },
+  "manual_control_flow": "Exact relay b076da8a has mandatory ROOT.mkdir before control creation, inspect_config and either transport child. The new fence only claims that future crossing is prevented while the same namespace occupancy remains. The old finally can still run read-only ps and worker output.",
+  "safety_of_mutation": "Held exact parent chain, exact three public source identities and whole hashes before creation. Existing ROOT refuses. Single mkdirat creates previously absent ROOT, parent fsync, O_EXCL marker, whole same-FD readback, directory fsync, second full source scan and final named/held checks, then once-only close ledger. Never opens or alters an existing original ROOT, never removes any path or sends a signal.",
+  "limitations": [
+    "No retroactive proof of original job terminal state or owned-child cleanup.",
+    "Not a perpetual namespace lock or proof against adversarial same-UID deletion/recreation.",
+    "A nonzero or unknown result is not permission to replay, clear the tombstone or refresh identity pins."
+  ],
+  "original_relay_outcome": "UNKNOWN",
+  "new_transport_go": false,
+  "live_lan_go": false
+}

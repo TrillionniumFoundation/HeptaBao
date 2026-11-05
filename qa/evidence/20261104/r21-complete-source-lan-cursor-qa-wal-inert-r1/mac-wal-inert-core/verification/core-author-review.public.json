@@ -1,0 +1,178 @@
+{
+  "schema": "heptabao.mac-wal-inert-core-author-verification.v1",
+  "status": "PASS_INERT_CORE_ONLY",
+  "job_id": "1a1aa8cc28f-fc05-444b",
+  "checks": [
+    {
+      "name": "known_success",
+      "passed": true
+    },
+    {
+      "name": "deadline",
+      "passed": true
+    },
+    {
+      "name": "source_count",
+      "passed": true
+    },
+    {
+      "name": "source_compile_order",
+      "passed": true
+    },
+    {
+      "name": "public_document_count",
+      "passed": true
+    },
+    {
+      "name": "payload",
+      "passed": true
+    },
+    {
+      "name": "t5_27_strings",
+      "passed": true
+    },
+    {
+      "name": "t5_closure",
+      "passed": true
+    },
+    {
+      "name": "file.qa/mac_guarded_current_capture_r3.py",
+      "passed": true
+    },
+    {
+      "name": "file.qa/mac_registry_readonly_wal_r1.py",
+      "passed": true
+    },
+    {
+      "name": "file.qa/mac_wal_owned_reader_r1.py",
+      "passed": true
+    },
+    {
+      "name": "file.qa/mac_wal_owned_synthetic_r1.py",
+      "passed": true
+    },
+    {
+      "name": "file.qa/mac_t5_volume_guard_r1.py",
+      "passed": true
+    },
+    {
+      "name": "file.qa/mac_darwin_owned_projection_r1.py",
+      "passed": true
+    },
+    {
+      "name": "file.qa/mac_native_owned_unreaped_r1.py",
+      "passed": true
+    },
+    {
+      "name": "file.qa/mac_native_owned_commands_r1.py",
+      "passed": true
+    },
+    {
+      "name": "file.qa/mac_owned_unreaped_r1.py",
+      "passed": true
+    },
+    {
+      "name": "file.qa/mac_owned_commands_r1.py",
+      "passed": true
+    },
+    {
+      "name": "file.anchor.public.json",
+      "passed": true
+    },
+    {
+      "name": "file.candidate.public.json",
+      "passed": true
+    },
+    {
+      "name": "receipt_metadata",
+      "passed": true
+    },
+    {
+      "name": "fresh_root_absence",
+      "passed": true
+    },
+    {
+      "name": "no_side_effect.currentPrivateInputsOpened",
+      "passed": true
+    },
+    {
+      "name": "no_side_effect.productionSqliteOpened",
+      "passed": true
+    },
+    {
+      "name": "no_side_effect.sqliteExecuted",
+      "passed": true
+    },
+    {
+      "name": "no_side_effect.consumerExecuted",
+      "passed": true
+    },
+    {
+      "name": "no_side_effect.serviceStarted",
+      "passed": true
+    },
+    {
+      "name": "no_side_effect.gitStarted",
+      "passed": true
+    },
+    {
+      "name": "no_side_effect.cargoStarted",
+      "passed": true
+    },
+    {
+      "name": "no_side_effect.inputEntrypointsExecuted",
+      "passed": true
+    },
+    {
+      "name": "one_diskutil",
+      "passed": true
+    },
+    {
+      "name": "diskutil_command",
+      "passed": true
+    },
+    {
+      "name": "owned_cleanup",
+      "passed": true
+    },
+    {
+      "name": "original_cleanup_caps",
+      "passed": true
+    },
+    {
+      "name": "overall_closure",
+      "passed": true
+    },
+    {
+      "name": "independent_info.qa/mac_guarded_current_capture_r3.py",
+      "passed": true
+    },
+    {
+      "name": "independent_info.qa/mac_registry_readonly_wal_r1.py",
+      "passed": true
+    },
+    {
+      "name": "independent_info.qa/mac_wal_owned_reader_r1.py",
+      "passed": true
+    },
+    {
+      "name": "independent_info.qa/mac_wal_owned_synthetic_r1.py",
+      "passed": true
+    },
+    {
+      "name": "independent_info.qa/mac_t5_volume_guard_r1.py",
+      "passed": true
+    }
+  ],
+  "checks_passed": 40,
+  "carrier_internal_held_whole_readbacks": 13,
+  "independent_file_info_completed": 5,
+  "independent_binary_reads_completed": 0,
+  "remaining_public_readback_held_for_LAN_quiet": true,
+  "authoritative_exit_zero": true,
+  "stdout_bytes": 8948,
+  "stderr_bytes": 0,
+  "no_synthetic_started": true,
+  "no_private_capture_started": true,
+  "previous_capture_unknown_unchanged": true
+}

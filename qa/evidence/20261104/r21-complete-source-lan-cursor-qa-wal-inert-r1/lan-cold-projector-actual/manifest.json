@@ -1,0 +1,114 @@
+{
+  "schema": "heptabao.git-evidence-packet.v1",
+  "scope": "df026 node2 stopped-log public projection actual only",
+  "files": [
+    {
+      "path": "submission/intent.json",
+      "bytes": 769,
+      "sha256": "9bbe2f282a5f8fca42bedb54fead46b74d9b372148d3b387d6cfa11b1ceef20d",
+      "blob": "c0a05e0dffb4c5a69d07b57a923fc5f8dcb0e07c"
+    },
+    {
+      "path": "submission/request.json",
+      "bytes": 26844,
+      "sha256": "0a4d8a8dd8b569f8201c55eb981bbe396ae8ed0331004f0ba81746972520f873",
+      "blob": "188a9c3632779369272c56ec5766c4cffdbc09ff"
+    },
+    {
+      "path": "submission/root-go.json",
+      "bytes": 3102,
+      "sha256": "7cd37a320bd9ad9a27f04192195f1d7cdd8af5c1743c856ac16f61ef29156977",
+      "blob": "3be3d3973a5cfa69a4dc2404ccafc6ccf4f21378"
+    },
+    {
+      "path": "submission/ack.original.json",
+      "bytes": 27614,
+      "sha256": "f928990d77a0958a3ed1bee293fed250ebd15ce6dce68e82d5c9585e8e5e05ec",
+      "blob": "a347def18af0fde57df6e01d634b795ccae41b2d"
+    },
+    {
+      "path": "authority.original.json",
+      "bytes": 733,
+      "sha256": "4b397299f8c4df03206a9510771543218354e1c3c68b108993d83dd1fc3405fe",
+      "blob": "1feae0c7b721fad920e13f917fd3c1376410add6"
+    },
+    {
+      "path": "stdout.original.json",
+      "bytes": 55402,
+      "sha256": "e780e0681a8f8b5ca8b1ca84a1fabc4e014e74042cfe70c55e88c6b12e84448d",
+      "blob": "c100cfff1cf7a89c7796d79856dbe5790b57d425"
+    },
+    {
+      "path": "stderr.original.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "sdk/terminal-0.payload.json",
+      "bytes": 51307,
+      "sha256": "f5fc5aef04367cc439041434be5948926aa44d32f086fe4ad5fcaabe4d3315a7",
+      "blob": "2d0da34a73235f8c79ae6c7043d84c0f337071dd"
+    },
+    {
+      "path": "sdk/terminal-0.envelope.json",
+      "bytes": 55149,
+      "sha256": "47e909dc0b06e55ccd9dd4c252267006f7ec47c13dda086fdd763f2d5cee3850",
+      "blob": "57484c63c18a2e8ba7686a6abe3f6b63d760b1e2"
+    },
+    {
+      "path": "sdk/terminal-16384.payload.json",
+      "bytes": 51222,
+      "sha256": "30ed1c0f272f5ddee7ab1dde7d925dd6645d5ce48144dfb835867ed5b6874064",
+      "blob": "cc3677567d04510b2cd586a11a6317fb56997e7c"
+    },
+    {
+      "path": "sdk/terminal-16384.envelope.json",
+      "bytes": 54886,
+      "sha256": "3a1ff94fb8f3a078fe058752a9ccaff3b1ccd4ca84d7bf50df982d574f2c875a",
+      "blob": "30e224bc5ed7e9e05d22879a9396a17f5f8ebfb5"
+    },
+    {
+      "path": "sdk/terminal-32768.payload.json",
+      "bytes": 51169,
+      "sha256": "1e2cf5311ae6d9e2a19a77fe6984fab2379680a555eaa91cfa47514b14e30202",
+      "blob": "7d1aabe6cc537dc84b5f3e81bb9419a27191389e"
+    },
+    {
+      "path": "sdk/terminal-32768.envelope.json",
+      "bytes": 54727,
+      "sha256": "b146561d33a3e01c336badba46d657efd67068fc755731917f79479f0cdf22ee",
+      "blob": "34cd9e07765550cf4b27b27b7152912c57b995c3"
+    },
+    {
+      "path": "sdk/terminal-49152.payload.json",
+      "bytes": 19840,
+      "sha256": "5f38620489b5678583479dc9c231302995f83095a33a1fb9d182a691afde8e46",
+      "blob": "2d845df5f082c23eb65d4356516fd81be9c809b7"
+    },
+    {
+      "path": "sdk/terminal-49152.envelope.json",
+      "bytes": 21545,
+      "sha256": "4a3f56942d9d6a1cf2c7dcd52196e12d98a60e3fa21b06bb8caa394d64eb9fb1",
+      "blob": "a041f09180043d655636b7b576532809f39e4161"
+    },
+    {
+      "path": "sdk/ack.envelope.json",
+      "bytes": 30660,
+      "sha256": "3d7f0c9d63f256d61eb90b019275d9684bf27d10c1ed8ff6a650528a527de0c4",
+      "blob": "9f1a802e372ae86c1be3c04a0055fb3b66ba3319"
+    },
+    {
+      "path": "sdk/authority.envelope.json",
+      "bytes": 956,
+      "sha256": "735aad3453b8a2a60c52686d53476112db84daa96856d6be5a02bea19d567986",
+      "blob": "98d8174f949e5d106fafc8904f4bf371bd46eb20"
+    },
+    {
+      "path": "assessment.json",
+      "bytes": 9447,
+      "sha256": "c54864c04024426e07549c6aa7389c10a97b155f28fcb3080000645c41d97c8f",
+      "blob": "201c88f57121b6849e0a27ae12db0e822d208ac5"
+    }
+  ]
+}

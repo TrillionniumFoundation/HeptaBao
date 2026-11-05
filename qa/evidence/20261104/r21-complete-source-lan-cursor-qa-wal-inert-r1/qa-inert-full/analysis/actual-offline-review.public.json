@@ -1,0 +1,518 @@
+{
+  "cargo_executed": false,
+  "checks": [
+    {
+      "name": "exact_dispatch_whole",
+      "passed": true
+    },
+    {
+      "name": "exact_dispatch_fields",
+      "passed": true
+    },
+    {
+      "name": "publisher_bytes",
+      "passed": true
+    },
+    {
+      "name": "carrier_bytes",
+      "passed": true
+    },
+    {
+      "name": "fixed_eight_names",
+      "passed": true
+    },
+    {
+      "name": "single_ack",
+      "passed": true
+    },
+    {
+      "name": "ack_exact_invocation",
+      "passed": true
+    },
+    {
+      "name": "authority_success",
+      "passed": true
+    },
+    {
+      "name": "authority_complete_durable",
+      "passed": true
+    },
+    {
+      "name": "streams_job",
+      "passed": true
+    },
+    {
+      "name": "stdout_lossless_hex_text",
+      "passed": true
+    },
+    {
+      "name": "stdout_complete",
+      "passed": true
+    },
+    {
+      "name": "stderr_lossless_hex_text",
+      "passed": true
+    },
+    {
+      "name": "stderr_complete",
+      "passed": true
+    },
+    {
+      "name": "stderr_preserved_original_warnings",
+      "passed": true
+    },
+    {
+      "name": "core_and_stdout_equal_lossless",
+      "passed": true
+    },
+    {
+      "name": "inert_only_status",
+      "passed": true
+    },
+    {
+      "name": "receipt_carrier_binding",
+      "passed": true
+    },
+    {
+      "details": {
+        "elapsed_ns": 34527104,
+        "scope": "source publication interval; actual authority also confirms outer not timed out"
+      },
+      "name": "reported_inert_interval_positive_under_outer",
+      "passed": true
+    },
+    {
+      "name": "exact_eight_published",
+      "passed": true
+    },
+    {
+      "name": "published_build_native_h2_client_r1.py",
+      "passed": true
+    },
+    {
+      "name": "identity_build_native_h2_client_r1.py",
+      "passed": true
+    },
+    {
+      "name": "whole_readback_build_native_h2_client_r1.py",
+      "passed": true
+    },
+    {
+      "name": "published_inputs/native_h2_client.rs",
+      "passed": true
+    },
+    {
+      "name": "identity_inputs/native_h2_client.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_readback_inputs/native_h2_client.rs",
+      "passed": true
+    },
+    {
+      "name": "published_inputs/native_h2_client_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "identity_inputs/native_h2_client_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "whole_readback_inputs/native_h2_client_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "published_inputs/Cargo.toml",
+      "passed": true
+    },
+    {
+      "name": "identity_inputs/Cargo.toml",
+      "passed": true
+    },
+    {
+      "name": "whole_readback_inputs/Cargo.toml",
+      "passed": true
+    },
+    {
+      "name": "published_inputs/canonical.Cargo.lock",
+      "passed": true
+    },
+    {
+      "name": "identity_inputs/canonical.Cargo.lock",
+      "passed": true
+    },
+    {
+      "name": "whole_readback_inputs/canonical.Cargo.lock",
+      "passed": true
+    },
+    {
+      "name": "published_inputs/owned_reference_phaseb_r3.py",
+      "passed": true
+    },
+    {
+      "name": "identity_inputs/owned_reference_phaseb_r3.py",
+      "passed": true
+    },
+    {
+      "name": "whole_readback_inputs/owned_reference_phaseb_r3.py",
+      "passed": true
+    },
+    {
+      "name": "published_inputs/official_cli_reference_r4.py",
+      "passed": true
+    },
+    {
+      "name": "identity_inputs/official_cli_reference_r4.py",
+      "passed": true
+    },
+    {
+      "name": "whole_readback_inputs/official_cli_reference_r4.py",
+      "passed": true
+    },
+    {
+      "name": "published_build-binding.private.json",
+      "passed": true
+    },
+    {
+      "name": "identity_build-binding.private.json",
+      "passed": true
+    },
+    {
+      "name": "whole_readback_build-binding.private.json",
+      "passed": true
+    },
+    {
+      "name": "files-a_complete_batch",
+      "passed": true
+    },
+    {
+      "name": "file_record_inert-stage.result.public.json",
+      "passed": true
+    },
+    {
+      "name": "raw_file_text_inert-stage.result.public.json",
+      "passed": true
+    },
+    {
+      "name": "file_record_build_native_h2_client_r1.py",
+      "passed": true
+    },
+    {
+      "name": "raw_file_text_build_native_h2_client_r1.py",
+      "passed": true
+    },
+    {
+      "name": "file_record_build-binding.private.json",
+      "passed": true
+    },
+    {
+      "name": "raw_file_text_build-binding.private.json",
+      "passed": true
+    },
+    {
+      "name": "file_record_inputs/native_h2_client.rs",
+      "passed": true
+    },
+    {
+      "name": "raw_file_text_inputs/native_h2_client.rs",
+      "passed": true
+    },
+    {
+      "name": "file_record_inputs/native_h2_client_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "raw_file_text_inputs/native_h2_client_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "file_record_inputs/Cargo.toml",
+      "passed": true
+    },
+    {
+      "name": "raw_file_text_inputs/Cargo.toml",
+      "passed": true
+    },
+    {
+      "name": "files-b_complete_batch",
+      "passed": true
+    },
+    {
+      "name": "file_record_inputs/owned_reference_phaseb_r3.py",
+      "passed": true
+    },
+    {
+      "name": "raw_file_text_inputs/owned_reference_phaseb_r3.py",
+      "passed": true
+    },
+    {
+      "name": "file_record_inputs/official_cli_reference_r4.py",
+      "passed": true
+    },
+    {
+      "name": "raw_file_text_inputs/official_cli_reference_r4.py",
+      "passed": true
+    },
+    {
+      "name": "lock_chunk_0",
+      "passed": true
+    },
+    {
+      "name": "lock_chunk_1",
+      "passed": true
+    },
+    {
+      "name": "lock_reassembled_whole",
+      "passed": true
+    },
+    {
+      "name": "lock_independent_file_info",
+      "passed": true
+    },
+    {
+      "name": "exact_version_build_native_h2_client_r1.py",
+      "passed": true
+    },
+    {
+      "name": "exact_version_inputs/native_h2_client.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_version_inputs/native_h2_client_tests.rs",
+      "passed": true
+    },
+    {
+      "name": "exact_version_inputs/Cargo.toml",
+      "passed": true
+    },
+    {
+      "name": "exact_version_inputs/canonical.Cargo.lock",
+      "passed": true
+    },
+    {
+      "name": "exact_version_inputs/owned_reference_phaseb_r3.py",
+      "passed": true
+    },
+    {
+      "name": "exact_version_inputs/official_cli_reference_r4.py",
+      "passed": true
+    },
+    {
+      "name": "exact_version_build-binding.private.json",
+      "passed": true
+    },
+    {
+      "name": "authority_closed_read_operation",
+      "passed": true
+    },
+    {
+      "name": "authority_immutable_page_0",
+      "passed": true
+    },
+    {
+      "name": "authority_sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "authority_native_original",
+      "passed": true
+    },
+    {
+      "name": "streams_closed_read_operation",
+      "passed": true
+    },
+    {
+      "name": "streams_immutable_page_0",
+      "passed": true
+    },
+    {
+      "name": "streams_sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "streams_native_original",
+      "passed": true
+    },
+    {
+      "name": "files-a_closed_read_operation",
+      "passed": true
+    },
+    {
+      "name": "files-a_immutable_page_0",
+      "passed": true
+    },
+    {
+      "name": "files-a_immutable_page_16384",
+      "passed": true
+    },
+    {
+      "name": "files-a_immutable_page_32768",
+      "passed": true
+    },
+    {
+      "name": "files-a_immutable_page_49152",
+      "passed": true
+    },
+    {
+      "name": "files-a_immutable_page_65536",
+      "passed": true
+    },
+    {
+      "name": "files-a_immutable_page_81920",
+      "passed": true
+    },
+    {
+      "name": "files-a_sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "files-a_native_original",
+      "passed": true
+    },
+    {
+      "name": "files-b_closed_read_operation",
+      "passed": true
+    },
+    {
+      "name": "files-b_immutable_page_0",
+      "passed": true
+    },
+    {
+      "name": "files-b_immutable_page_16384",
+      "passed": true
+    },
+    {
+      "name": "files-b_immutable_page_32768",
+      "passed": true
+    },
+    {
+      "name": "files-b_immutable_page_49152",
+      "passed": true
+    },
+    {
+      "name": "files-b_immutable_page_65536",
+      "passed": true
+    },
+    {
+      "name": "files-b_immutable_page_81920",
+      "passed": true
+    },
+    {
+      "name": "files-b_immutable_page_98304",
+      "passed": true
+    },
+    {
+      "name": "files-b_immutable_page_114688",
+      "passed": true
+    },
+    {
+      "name": "files-b_sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "files-b_native_original",
+      "passed": true
+    },
+    {
+      "name": "lock-info_closed_read_operation",
+      "passed": true
+    },
+    {
+      "name": "lock-info_immutable_page_0",
+      "passed": true
+    },
+    {
+      "name": "lock-info_sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "lock-info_native_original",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-000000_closed_read_operation",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-000000_immutable_page_0",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-000000_immutable_page_16384",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-000000_immutable_page_32768",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-000000_immutable_page_49152",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-000000_immutable_page_65536",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-000000_immutable_page_81920",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-000000_sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-000000_native_original",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-065536_closed_read_operation",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-065536_immutable_page_0",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-065536_immutable_page_16384",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-065536_immutable_page_32768",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-065536_sdk_whole",
+      "passed": true
+    },
+    {
+      "name": "lock-chunk-065536_native_original",
+      "passed": true
+    },
+    {
+      "name": "original_authority_unknown_observation_retained",
+      "passed": true
+    }
+  ],
+  "checks_passed": 122,
+  "child_processes_started_by_publisher": 0,
+  "immutable_pages": 26,
+  "inert_publication_elapsed_ns": 34527104,
+  "inputs_published_and_whole_readback": 8,
+  "job_id": "1a1aa7c3dff-fc05-439c",
+  "limits": [
+    "Current target identity is not rechecked by this inert step. The separately gated builder must perform its existing check.",
+    "This checker only analyzes retained original bytes and does not import or execute any candidate source.",
+    "The source publication result does not qualify Rust compilation, receiver components, real TLS/H2, native archive semantics or official CLI behavior."
+  ],
+  "lossless_integer_json": true,
+  "qa_build_authorized_by_this_check": false,
+  "read_operations": 7,
+  "schema": "heptabao.df026.h2-qa-inert-actual-offline-review.v1",
+  "service_started": false,
+  "source_executed": false,
+  "status": "PASS_INERT_ONLY",
+  "stderr_bytes": 173,
+  "stdout_bytes": 3168,
+  "warnings_preserved": 2
+}

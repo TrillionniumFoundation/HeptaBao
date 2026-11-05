@@ -1,0 +1,13 @@
+{
+  "schema": "heptabao.root.mac-wal-accounting-closure-components.r21",
+  "runner_blob": "679159deca5ede6c993a23bdd4e12b779c78be11",
+  "input_blob": "b683ff3edb5466872ac61d6c0647f6e126064da2",
+  "library_blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",
+  "stdout_blob": "6191f52ced2192b41bc459e38c3305dd2c607794",
+  "root_exit_code": 0,
+  "whole_stdout_identical": true,
+  "pure_components_only": true,
+  "original_database_and_immutable_query_unchanged": true,
+  "actual_runtime_qualification": false,
+  "synthetic_host_go": false
+}

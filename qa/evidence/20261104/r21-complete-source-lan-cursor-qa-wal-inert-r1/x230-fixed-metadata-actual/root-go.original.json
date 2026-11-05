@@ -1,0 +1,69 @@
+{
+  "schema": "heptabao.root.x230-fixed-fence-input-metadata-go.r21",
+  "status": "GO_EXACT_READONLY_METADATA_ONCE_NO_FENCE_OR_REPLAY",
+  "as_of_utc": "2026-11-05 06:33:51 UTC",
+  "source_packet": {
+    "tree": "2584a3d13fd5216a7efad75bfc2573f268fcf82e",
+    "files": 12,
+    "bytes": 64509,
+    "merkle_trees": 5
+  },
+  "source": {
+    "blob": "ad852419c3217db37ce6cf1ede5e1ec219a60d80",
+    "bytes": 10224,
+    "sha256": "52a60fad1531ebb5bcc05bef3261ef7e83f68956fa476b71c008a98412b49aaf"
+  },
+  "exact_request": {
+    "blob": "abc5e5c2cfd34e97aa603b1fe79d383a6ea06953",
+    "bytes": 11117,
+    "sha256": "f436a80bffaee97bde7d1a2bf6377124389851c9388fd44339ac91d878a66632",
+    "key": "heptabao-x230-original-relay-fence-input-metadata-r1-52a60fad",
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "outer_seconds": 60
+  },
+  "root_verification": {
+    "source_read_whole": true,
+    "whole_byte_git_and_sha_verified": true,
+    "compile_only_and_actual_invocation_guard_pure_evaluation": {
+      "name": "r21_x230_metadata_root_verifier_result",
+      "blob": "f448721af6320c0ff9381a9a36e9e47bfbac85cd",
+      "bytes": 858,
+      "sha256": "b23c7eba9969e44585111b38bcd5f55339acd5bc689f6f9db6ff7f9aca33c0bb"
+    },
+    "checks": 17,
+    "metadata_main_or_OS_call_executed_locally": false,
+    "all_three_expected_nine_field_identities_match_qualified_inert_originals": true
+  },
+  "scope": {
+    "fixed_directories": [
+      "/",
+      "/home",
+      "/home/qian-qi",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1"
+    ],
+    "fixed_files": [
+      "sender.py",
+      "receiver.py",
+      "relay.py"
+    ],
+    "held_parent_absence_observations": 2,
+    "original_root_name": "normal-cold-h2-x230-transfer-r1",
+    "existing_root": "refuse without opening or modifying",
+    "registered_fd_bound": 8,
+    "metadata_call_bound": 42,
+    "shared_soft_seconds": 5,
+    "final_post_flush_deadline_enforced": true,
+    "output_bytes_bound": 32768,
+    "app_file_body_read": false,
+    "listing_child_network_filesystem_write_or_signal": false
+  },
+  "limits": [
+    "This is sequential metadata observation, not atomic namespace reservation or absence of old execution.",
+    "Original relay job1a1aa57458d-fc05-4156 and all-owned-stopped remain UNKNOWN.",
+    "No tombstone/fence, retry, new transport, X230 product run or production change authorized.",
+    "Record unique ACK, authoritative terminal and complete original stream bytes. Unknown stops this diagnostic without replay."
+  ]
+}

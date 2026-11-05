@@ -1,0 +1,38 @@
+{
+  "schema": "heptabao.native-h2-qa-inert.independent-source-peer.r1",
+  "status": "PASS_SOURCE_ONLY_SCOPED",
+  "reviewer": "ha_validation",
+  "before": {
+    "bytes": 5049,
+    "sha256": "46d1d644882fc064ff34f3141d036e8580126b9b0d7c479dc3659b115492eaa2",
+    "blob": "31297722805be956745f9f39507539f2719f8b13"
+  },
+  "after": {
+    "bytes": 6036,
+    "sha256": "b3211781c902467214b2b84e41ac13d12a6b1adce0296abd66c59343f9040c5f",
+    "blob": "acc8518cca405fcbc7f61bdd12b5c33767bdd24b"
+  },
+  "diff": {
+    "bytes": 5333,
+    "sha256": "bb46dec4d2792ee15a0b614e073f2b7f0dde2f18f6f99662d36d7bff001c6b3c",
+    "blob": "2387f99cdf2c0ba4988f478c4131a73cfa7ec5f5"
+  },
+  "strict_hunks": 4,
+  "whole_forward_and_reverse_exact": true,
+  "reviewed_scope": [
+    "The complete 6,036-byte candidate and 5,333-byte diff were read. The unique inverse diff produced the 5,049-byte base, then the exact immutable base blob 31297722805be956745f9f39507539f2719f8b13 was independently fetched and matched byte for byte. The author independently confirmed that base identity.",
+    "The unbound readiness refusal runs before umask, stdin processing, directory creation and publication. Missing private-binding length/hash also cannot pass decode/hash validation before BASE.mkdir.",
+    "Exactly eight PINS names are accepted, including only the fixed inputs/ descendants and the fixed top-level build-binding.private.json. No caller-provided arbitrary name or path can reach publish.",
+    "All payload base64, lengths and SHA256 are checked before directory creation. Only the three fixed .py files are passed to compile(...,'exec'); no compile result is evaluated or module imported.",
+    "Fresh BASE is checked absent and created 0700; inputs is created 0700 under it. sync_dir(BASE) persists the inputs directory entry and fsync(PARENT) persists the fresh BASE entry.",
+    "Each nested payload's temporary file is in its own fixed destination directory. O_EXCL publication, ownership/mode/readback/nine-field checks, exclusive link, same-inode temporary unlink and fsync(destination.parent) preserve the existing atomic file publication mechanism for inputs/ as well as BASE.",
+    "The fixed receipt remains under BASE. The candidate records no Git, compiler, artifact transfer or service start. No child, network, Cargo or source execution is introduced."
+  ],
+  "limits_and_qualification": [
+    "The 524288-byte stdin cap is a new explicitly bounded public transport size, not an inherited 262144 cap.",
+    "This publisher itself has no new internal clock enforcement; the future exact dispatched outer deadline and whole request remain separate root admission requirements.",
+    "The existing same-UID fresh-directory/exact-file design is preserved; this review does not upgrade it into held-parent-FD directory custody.",
+    "No host execution, AST run, payload execution, Rust build or eight-input final-bound qualification was performed in this peer review.",
+    "The final actual private-binding pins, ACTUAL_INPUTS_READY change, payload, dispatcher argv and root GO remain outstanding before execution."
+  ]
+}

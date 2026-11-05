@@ -1,0 +1,219 @@
+diff --git a/mac_registry_readonly_wal_r1.py b/mac_registry_readonly_wal_r1.py
+--- a/mac_registry_readonly_wal_r1.py
++++ b/mac_registry_readonly_wal_r1.py
+@@ -8,7 +8,7 @@
+ and bind an actual same-runtime owned proof before any current capture.
+ """
+ from __future__ import annotations
+-import base64, json, os, re, sqlite3, stat, sys, time
++import base64, hashlib, json, os, re, sqlite3, stat, sys, time
+ from pathlib import Path
+ from urllib.parse import quote
+ import mac_guarded_current_capture_r3 as base
+@@ -63,6 +63,7 @@
+         self.fds=[];self.parents={};self.files={};self.absent={};self.connections=[]
+         self.byte_count=0;self.closed=False;self.close_errors=[];self.verified=False
+         self.connect_attempts=[];self.cursors=[];self.queries=[];self.bundles=[]
++        self.code_fds=[];self.returned_rows=[]
+         self.current_phase='before_input_admission';self.failure=None
+         self.original_immutable_route_invoked=False
+     def connect(self,uri,*,until,label):
+@@ -96,18 +97,79 @@
+             except BaseException as error:
+                 row['closeError']=failure_record(error);self.close_errors.append(type(error).__name__)
+         return row['closed']
++    def close_code_fd_once(self,row):
++        if row['closeAttempted']:return row['closed']
++        with self.critical():
++            row['closeAttempted']=True
++            try:os.close(row['fd']);row['closed']=True
++            except BaseException as error:
++                row['closeError']=failure_record(error);self.close_errors.append(type(error).__name__)
++        return row['closed']
++    def code_pin(self,path,*,until=None):
++        self.remaining(until);path=Path(path).resolve(strict=True);row=None;result=None
++        with self.critical():
++            fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
++            row={'fd':fd,'path':str(path),'closeAttempted':False,'closed':False,'closeError':None}
++            self.code_fds.append(row)
++        try:
++            before=os.fstat(fd)
++            need(stat.S_ISREG(before.st_mode) and 0<before.st_size<=64*base.MIB
++                 and not stat.S_IMODE(before.st_mode)&0o022,'public_runtime_code_custody')
++            h=hashlib.sha256();count=0
++            while count<=before.st_size:
++                self.remaining(until)
++                raw=os.read(fd,min(base.MIB,before.st_size+1-count))
++                if not raw:break
++                count+=len(raw);h.update(raw)
++            need(count==before.st_size and identity(before)==identity(os.fstat(fd))==identity(path.lstat()),
++                 'public_runtime_code_changed')
++            self.remaining(until)
++            result={'path':str(path),'bytes':count,'sha256':h.hexdigest()}
++        finally:self.close_code_fd_once(row)
++        need(row['closed'],'public_code_fd_close_unconfirmed')
++        self.remaining(until)
++        return result
+     def execute(self,connection,sql,args=(),*,until,limit=16,label):
+         self.remaining(until);row=None;answer=None;error=None
+         try:
++            # SQLite LENGTH bounds a complete encoded SQL row. Before prepare
++            # and each fetch, reserve sixfold JSON escaping plus fixed framing
++            # for these fixed queries (at most thirteen result columns). The
++            # limit stays fixed through the cursor, including SQLite prefetch.
++            available=base.MAX_RETURNED_AND_READ_BYTES-self.byte_count
++            sql_row_limit=min(base.MAX_ROW_BYTES+65536,(available-4096)//6)
++            need(sql_row_limit>0,'returned_budget_pre_execute_admission')
++            reserve=6*sql_row_limit+4096
++            connection['db'].setlimit(sqlite3.SQLITE_LIMIT_LENGTH,sql_row_limit)
+             with self.critical():
+                 cursor=connection['db'].cursor()
+-                row={'cursor':cursor,'label':label,'closeAttempted':False,'closed':False,'closeError':None}
++                row={'cursor':cursor,'label':label,'closeAttempted':False,'closed':False,'closeError':None,
++                     'rowsReturned':0,'returnedBytes':0,'sqliteRowLimit':sql_row_limit,'perFetchReservation':reserve}
+                 self.cursors.append(row)
+             cursor.execute(sql,args)
++            answer=[]
+             if cursor.description is not None:
+-                answer=cursor.fetchmany(limit+1)
+-                need(len(answer)<=limit,'fixed_sql_result_count')
+-            else:answer=[]
++                while True:
++                    self.remaining(until)
++                    need(base.MAX_RETURNED_AND_READ_BYTES-self.byte_count>=reserve,
++                         'returned_budget_pre_fetch_admission')
++                    fetched=cursor.fetchone()
++                    if fetched is None:break
++                    # These are actual default sqlite3 scalar types. BLOBs are
++                    # counted even though the registry's later shape rejects
++                    # them. No returned value is put in the public ledger.
++                    normalized=[{'sqliteBlobBase64':base64.b64encode(x).decode('ascii')} if isinstance(x,bytes)
++                                else x for x in fetched]
++                    raw=encoded(normalized)
++                    item={'label':label,'ordinal':row['rowsReturned'],'bytes':len(raw),'countedInAggregate':False}
++                    with self.critical():
++                        self.returned_rows.append(item);row['rowsReturned']+=1;row['returnedBytes']+=len(raw)
++                        before_count=self.byte_count
++                        try:self.account(len(raw))
++                        finally:item['countedInAggregate']=self.byte_count==before_count+len(raw)
++                    need(len(fetched)<=13,'fixed_sql_maximum_columns')
++                    answer.append(fetched)
++                    need(len(answer)<=limit,'fixed_sql_result_count')
+         except BaseException as caught:error=caught
+         finally:
+             if row is not None:self.close_cursor_once(row)
+@@ -121,6 +183,9 @@
+         # consumes its one attempt; it is not retried by the cleanup pass.
+         for row in reversed(self.cursors):self.close_cursor_once(row)
+         for row in reversed(self.connections):self.close_connection_once(row)
++        # Public code is a distinct inode scope and may be closed even when
++        # an unrelated SQLite connection's close is unconfirmed.
++        for row in reversed(self.code_fds):self.close_code_fd_once(row)
+         connections_closed=all(row['closed'] for row in self.connections)
+         for row in reversed(self.fds):
+             if row['closeAttempted']:continue
+@@ -143,15 +208,22 @@
+             allReturnedConnectionsClosed=all(row['closed'] for row in self.connections),
+             allExplicitCursorsClosed=all(row['closed'] for row in self.cursors),
+             internalSqliteDescriptorsIndividuallyObserved=False,
+-            publicCodeHashDescriptorsIndividuallyEnumerated=False,
++            publicCodeHashDescriptorsIndividuallyEnumerated=True,
++            allPublicCodeDescriptorsClosed=all(row['closed'] for row in self.code_fds),
++            publicCodeDescriptors=[dict(row) for row in self.code_fds],
++            sqlReturnedRows=[dict(row) for row in self.returned_rows],
++            sqlReturnedAccounting='canonical_json_per_returned_row_before_shape_count_and_row_cap_checks',
++            sqliteInternalOrPageReadBytesMeasured=False,
+             connectAttempts=[dict(row) for row in self.connect_attempts],
+             descriptors=[{key:row.get(key) for key in ('fd','path','closeAttempted','closed',
+                 'closeError','closeBlockedByUnconfirmedConnection')} for row in self.fds],
+             connections=[{key:row.get(key) for key in ('label','closeAttempted','closed','closeError')}
+                 for row in self.connections],
+-            cursors=[{key:row.get(key) for key in ('label','closeAttempted','closed','closeError')}
++            cursors=[{key:row.get(key) for key in ('label','closeAttempted','closed','closeError',
++                'rowsReturned','returnedBytes','sqliteRowLimit','perFetchReservation')}
+                 for row in self.cursors],queries=[dict(row) for row in self.queries])
+-        value['allOwnedDescriptorsClosed']=value['allHeldDescriptorsClosed'] and value['allReturnedConnectionsClosed'] and value['allExplicitCursorsClosed']
++        value['allOwnedDescriptorsClosed']=(value['allHeldDescriptorsClosed'] and value['allReturnedConnectionsClosed']
++            and value['allExplicitCursorsClosed'] and value['allPublicCodeDescriptorsClosed'])
+         return value
+ 
+ def _full_parent(row):
+@@ -242,12 +314,13 @@
+     need(isinstance(detail,str) and re.fullmatch(
+         r'SEARCH installed_plugin_index USING (?:COVERING )?INDEX [A-Za-z0-9_]+ \(index_key=\?\)',detail),
+         'fixed_key_search_required_no_data_scan')
+-    inputs.account(len(encoded(plan)))
+     rows=inputs.execute(connection,sql,args,until=until,limit=2,label='registry-fixed-row')
+     need(len(rows)==1 and len(rows[0])==13,'one_actual_installed_registry_row')
+     need(all(x is None or type(x) in (str,int,float) for x in rows[0]),'registry_scalar_columns')
+     record={'schema':schema[0][0],'columns':names,'row':list(rows[0]),'tableInfo':[list(x) for x in info]}
+-    raw=encoded(record);need(len(raw)<=base.MIB,'registry_returned_byte_cap');inputs.account(len(raw))
++    # execute() already counted every returned schema/info/plan/data row,
++    # including rows later refused. Do not count this assembly a second time.
++    raw=encoded(record);need(len(raw)<=base.MIB,'registry_returned_byte_cap')
+     return record
+ 
+ def readonly_wal_query(inputs,bundle,*,after_read=None):
+@@ -300,6 +373,32 @@
+     row['success']=True
+     return value
+ 
++def public_runtime_identity(inputs,*,until=None):
++    return {'pythonExecutable':inputs.code_pin(sys.executable,until=until),
++            'sqliteExtension':inputs.code_pin(base._sqlite3.__file__,until=until),
++            'pythonVersion':sys.version,'sqliteVersion':sqlite3.sqlite_version,
++            'sqliteVersionInfo':list(sqlite3.sqlite_version_info)}
++
++def validate_original_immutable_proof(inputs,raw,expected_sha):
++    # The original predicates are retained, with tracked public code readers.
++    # The original module and database()/immutable_query() remain byte-identical.
++    inputs.remaining()
++    need(isinstance(raw,bytes) and len(raw)<=65536 and base.sha(raw)==expected_sha,
++         'actual_synthetic_proof_original_bytes')
++    proof=json.loads(raw)
++    need(isinstance(proof,dict)
++         and proof.get('schema')=='heptabao.mac-immutable-capture-synthetic.r1'
++         and proof.get('ok') is True and proof.get('runtime')==public_runtime_identity(inputs)
++         and proof.get('captureSourceSha256')==inputs.code_pin(base.__file__)['sha256'],
++         'actual_same_runtime_synthetic_proof_required')
++    need(proof.get('ownedDatabaseOnly') is True and proof.get('productionOpened') is False
++         and proof.get('sameHeldFdUriCode') is True and proof.get('readonlyImmutableConnection') is True
++         and proof.get('absentSidecarsStayedAbsent') is True and proof.get('emptyWalStayedEmpty') is True
++         and proof.get('nonemptyWalRefusedBeforeConnect') is True and proof.get('journalRefusedBeforeConnect') is True
++         and proof.get('oversizeRowRefused') is True and proof.get('driftRefused') is True
++         and proof.get('allOwnedDescriptorsClosed') is True,'synthetic_negative_boundaries_required')
++    inputs.remaining()
++
+ def observed_runtime(inputs):
+     started=time.monotonic();until=min(inputs.until,started+base.MAX_QUERY_SECONDS)
+     connection=None;error=None;value=None
+@@ -310,7 +409,7 @@
+         source_id=rows[0][0]
+         need(re.fullmatch(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [0-9a-f]{64}',source_id)
+              and source_id.endswith(' '+SQLITE_SOURCE_UUID),'actual_sqlite_source_uuid')
+-        runtime=base.runtime_identity(remaining=lambda:inputs.remaining(until),critical=inputs.critical)
++        runtime=public_runtime_identity(inputs,until=until)
+         need(runtime['sqliteVersion']=='3.53.4' and runtime['sqliteVersionInfo']==[3,53,4],'actual_sqlite_version')
+         value={'schema':SOURCE_SCHEMA,'runtime':runtime,'sqliteSourceId':source_id,
+                'uriOptions':URI_OPTIONS,'dylibDependencyClosureClaimed':False}
+@@ -352,7 +451,7 @@
+     need(isinstance(proof,dict) and proof.get('schema')=='heptabao.mac-owned-registry-wal-synthetic.r1'
+          and proof.get('ok') is True and proof.get('outcomeUnknown') is False
+          and proof.get('runtime')==runtime and proof.get('sourcePins',{}).get('mac_registry_readonly_wal_r1.py')==
+-             base.public_code_pin(__file__,remaining=inputs.remaining,critical=inputs.critical)['sha256']
++             inputs.code_pin(__file__)['sha256']
+          and proof.get('caseIds')==list(CASES) and proof.get('allCasesMatched') is True
+          and proof.get('allOwnedClosed') is True and proof.get('originalDeadlineAfterClosure') is True
+          and proof.get('productionInputsRead') is False and proof.get('privateCaptureAuthorized') is False,
+@@ -369,10 +468,7 @@
+     document=None;error=None;runtime=None
+     try:
+         inputs.current_phase='public_proof_admission'
+-        # This invokes the exact old module's validator, so its __file__ still
+-        # identifies the original, byte-identical 606b source qualification.
+-        base.validate_synthetic_proof(synthetic_proof,synthetic_proof_sha,
+-            remaining=inputs.remaining,critical=critical)
++        validate_original_immutable_proof(inputs,synthetic_proof,synthetic_proof_sha)
+         runtime=observed_runtime(inputs)
+         validate_wal_proof(inputs,wal_proof,wal_proof_sha,runtime)
+         inputs.current_phase='current_config'

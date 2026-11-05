@@ -1,0 +1,34 @@
+{
+  "files": [
+    {
+      "path": "intent.json",
+      "bytes": 740,
+      "sha256": "c5d2fa9ff1f37807238253213a886f9a65a0bd71c10a075bf1356b9b93f23ace",
+      "blob": "3beec81e538fc8de5ed4db467104215e97454a64"
+    },
+    {
+      "path": "request.json",
+      "bytes": 139,
+      "sha256": "7e50f49b73c49bf8a60213b1e2ca4c4b1154be6dcf2d0dfe4d8b63c3edd59485",
+      "blob": "f22cb97da1f22c9c35ba3e47d81db873a42a45ff"
+    },
+    {
+      "path": "file-info.original.json",
+      "bytes": 493,
+      "sha256": "1a09ab90d0beca1be28a56f99e1cef3a6506b90af6d9474932a8e04e3199548e",
+      "blob": "70f23409670945e31cd9554dcb02a2613ff1b3a4"
+    },
+    {
+      "path": "sdk.file-info.original.json",
+      "bytes": 654,
+      "sha256": "e45e629f31df305b9f8cafe3c734e5de4684b8adcc75483129eb802cdd2ac70b",
+      "blob": "18bce53c00813cfd61ffcd459348c01251049afe"
+    },
+    {
+      "path": "input-binding.public.json",
+      "bytes": 1432,
+      "sha256": "f643c7d4e393af13564c1ee152e6cf2ff562bfa63e031a3db3489371d2b41e37",
+      "blob": "f02d91f51db243c34719be16941d78a8bf46a97a"
+    }
+  ]
+}

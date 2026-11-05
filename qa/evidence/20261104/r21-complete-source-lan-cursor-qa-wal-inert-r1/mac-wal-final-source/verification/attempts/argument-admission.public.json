@@ -1,0 +1,9 @@
+{
+  "stage": "local source-only static-input carrier",
+  "mechanism": "exec_command shell argument",
+  "error": "Argument list too long (os error 7)",
+  "process_created": false,
+  "candidate_executed": false,
+  "remote_host_submitted": false,
+  "recovery": "apply_patch API writes exact public input instead; no business replay"
+}

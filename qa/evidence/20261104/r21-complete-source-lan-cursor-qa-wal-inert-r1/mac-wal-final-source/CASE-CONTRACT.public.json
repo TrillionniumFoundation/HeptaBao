@@ -1,0 +1,80 @@
+{
+  "schema": "heptabao.mac-registry-wal-ten-owned-cases.r1",
+  "cases": [
+    {
+      "id": "W01",
+      "input": "Required WAL and SHM; indexed fixed row; WAL-only committed sentinel",
+      "expected": "Exact row SHA plus original four kernel write/network refusals and existing WAL/SHM write-open refusals",
+      "engineControlOnly": false
+    },
+    {
+      "id": "W02",
+      "input": "Owned SHM absent",
+      "expected": "registry_wal_required_shm before named registry connect",
+      "engineControlOnly": false
+    },
+    {
+      "id": "W03",
+      "input": "Fresh reader, explicit unix-posix, existing SHM literal read denied",
+      "expected": "Actual O_RDONLY denial and SQLITE_CANTOPEN primary code, no row, known closure",
+      "engineControlOnly": true
+    },
+    {
+      "id": "W04",
+      "input": "Present zero-length owned journal",
+      "expected": "registry_wal_journal_refused before named registry connect",
+      "engineControlOnly": false
+    },
+    {
+      "id": "W05",
+      "input": "Second public writer commit after reader fixed row",
+      "expected": "registry_wal_full_leaf_changed under original query deadline",
+      "engineControlOnly": false
+    },
+    {
+      "id": "W06",
+      "input": "Owned main mtime changes after fixed row",
+      "expected": "registry_wal_full_leaf_changed",
+      "engineControlOnly": false
+    },
+    {
+      "id": "W07",
+      "input": "Owned SHM mtime changes after fixed row",
+      "expected": "registry_wal_full_leaf_changed",
+      "engineControlOnly": false
+    },
+    {
+      "id": "W08",
+      "input": "Fixed owned sibling created after fixed row",
+      "expected": "registry_wal_full_parent_changed",
+      "engineControlOnly": false
+    },
+    {
+      "id": "W09",
+      "input": "Fixed-key table has no supporting index",
+      "expected": "fixed_key_search_required_no_data_scan before data-row SELECT",
+      "engineControlOnly": false
+    },
+    {
+      "id": "W10",
+      "input": "Public data cell is 1 MiB+1",
+      "expected": "registry_returned_byte_cap after returned bytes are counted; no result publication",
+      "engineControlOnly": false
+    }
+  ],
+  "only_owned_data": true,
+  "fresh_root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-current-registry-readonly-wal-synthetic-r1",
+  "actual_run_authorized": false,
+  "private_capture_authorized": false,
+  "application_fallbacks": 0,
+  "application_retries": 0,
+  "ten_separate_reader_processes": true,
+  "one_absolute_parent_deadline_seconds": 45,
+  "query_success_deadline_seconds": 3,
+  "supervisor_seconds": 60,
+  "W03_is_not_standalone_parameter_recognition": true,
+  "unreturned_original_connect_attempts": "null/unobserved; not zero",
+  "same_inode_connection_before_held_fd_close": true,
+  "native_runtime_owner": true,
+  "inert_uses_original_outside_sandbox_ps_owner": true
+}

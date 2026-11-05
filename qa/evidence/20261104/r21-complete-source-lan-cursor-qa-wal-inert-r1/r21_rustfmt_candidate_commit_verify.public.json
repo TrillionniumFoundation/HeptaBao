@@ -1,0 +1,22 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "content": "{\"sha\":\"6d02ceca629163e1c07480fa1f21520434407143\",\"node_id\":\"C_kwDOUGncwNoAKDZkMDJjZWNhNjI5MTYzZTFjMDc0ODBmYTFmMjE1MjA0MzQ0MDcxNDM\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/6d02ceca629163e1c07480fa1f21520434407143\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/6d02ceca629163e1c07480fa1f21520434407143\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T07:20:28Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T07:20:28Z\"},\"tree\":{\"sha\":\"09aa45b9439741780961c2af76680c27e0773d08\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/09aa45b9439741780961c2af76680c27e0773d08\"},\"message\":\"style: preserve rustfmt layout for final cold HA gate\",\"parents\":[{\"sha\":\"19ba09ab5c494f25a3531749b0b99fc5c651d56c\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/19ba09ab5c494f25a3531749b0b99fc5c651d56c\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/19ba09ab5c494f25a3531749b0b99fc5c651d56c\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+    "title": "6d02ceca629163e1c07480fa1f21520434407143",
+    "modified_date": null,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/6d02ceca629163e1c07480fa1f21520434407143",
+    "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/6d02ceca629163e1c07480fa1f21520434407143",
+    "display_title": "6d02ceca629163e1c07480fa1f21520434407143",
+    "structuredContent": {
+      "title": "6d02ceca629163e1c07480fa1f21520434407143",
+      "content": "{\"sha\":\"6d02ceca629163e1c07480fa1f21520434407143\",\"node_id\":\"C_kwDOUGncwNoAKDZkMDJjZWNhNjI5MTYzZTFjMDc0ODBmYTFmMjE1MjA0MzQ0MDcxNDM\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/6d02ceca629163e1c07480fa1f21520434407143\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/6d02ceca629163e1c07480fa1f21520434407143\",\"author\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T07:20:28Z\"},\"committer\":{\"name\":\"Franksudoman\",\"email\":\"273670192+Franksudoman@users.noreply.github.com\",\"date\":\"2026-11-05T07:20:28Z\"},\"tree\":{\"sha\":\"09aa45b9439741780961c2af76680c27e0773d08\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/trees/09aa45b9439741780961c2af76680c27e0773d08\"},\"message\":\"style: preserve rustfmt layout for final cold HA gate\",\"parents\":[{\"sha\":\"19ba09ab5c494f25a3531749b0b99fc5c651d56c\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/19ba09ab5c494f25a3531749b0b99fc5c651d56c\",\"html_url\":\"https://github.com/TrillionniumFoundation/HeptaBao/commit/19ba09ab5c494f25a3531749b0b99fc5c651d56c\"}],\"verification\":{\"verified\":false,\"reason\":\"unsigned\",\"signature\":null,\"payload\":null,\"verified_at\":null}}",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/6d02ceca629163e1c07480fa1f21520434407143"
+    }
+  },
+  "isError": false
+}

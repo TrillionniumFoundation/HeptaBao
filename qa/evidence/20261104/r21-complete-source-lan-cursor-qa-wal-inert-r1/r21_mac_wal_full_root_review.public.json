@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.root.mac-wal-inert-complete-independent-readback.v1",
+  "status": "PASS_INERT_AND_WHOLE_INDEPENDENT_PUBLIC_READBACK",
+  "tree": "53314426bb134ede7f031545d5d4646a26d6d9e9",
+  "files": 112,
+  "bytes": 1077011,
+  "merkle_trees": 7,
+  "core_checks_repeated_against_full_packet": 64,
+  "additional_checks": 107,
+  "job_id": "1a1aa8cc28f-fc05-444b",
+  "exit_code": 0,
+  "independent_file_infos": 13,
+  "independent_whole_bodies": 13,
+  "independent_body_bytes": 176462,
+  "all_request_versions_explicit": true,
+  "exact_original_payload_and_sources": true,
+  "receipt": {
+    "blob": "593413256bea49dfb510b3cb619d0338b0331fca",
+    "bytes": 6549,
+    "sha256": "bee9751c3152e8711a4b09a4d2a934ae9e2d23b39d9dd9859a053961d087960d",
+    "raw_common_fields": 26,
+    "ok_before_cleanup": false,
+    "final_stdout_ok": true,
+    "candidate_is_not_qualification": true
+  },
+  "retained_capacity_refusal": {
+    "count": 1,
+    "no_child_submitted": true,
+    "same_version_read_only_completion": true,
+    "publisher_replayed": false
+  },
+  "synthetic_actual_verified": false,
+  "private_capture_actual_verified": false
+}

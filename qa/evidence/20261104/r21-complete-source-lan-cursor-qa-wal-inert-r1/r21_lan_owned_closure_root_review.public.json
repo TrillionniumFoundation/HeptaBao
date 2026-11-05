@@ -1,0 +1,45 @@
+{
+  "schema": "heptabao.root.lan-actual-owned-closure-and-quiet-release.v1",
+  "status": "KNOWN_PRODUCT_FAILURE_OWNED_SCOPES_CLOSED",
+  "tree": "e76233189ab4f9827d1a9d939d10bb73c6417873",
+  "files": 129,
+  "bytes": 448431,
+  "merkle_trees": 5,
+  "checks_passed": 55,
+  "job_id": "1a1aa914172-fc05-4473",
+  "summary_blob": "5ccdf644cc6171f8286cfc0d38dfaf82e025ad29",
+  "original98": {
+    "passed": 91,
+    "missing": 7
+  },
+  "postcold12": {
+    "passed": 0,
+    "entered": false
+  },
+  "terminal": {
+    "exit_code": 1,
+    "stdout_bytes": 584,
+    "stderr_bytes": 0,
+    "full": true,
+    "durable": true,
+    "timed_out": false
+  },
+  "owned": {
+    "starts": 16,
+    "matching_stops": 16,
+    "mac_foreground": 6,
+    "all_direct_children_reaped": true,
+    "all_observed_groups_empty": true,
+    "original_5s_stop_deadlines": true,
+    "tunnels": 0
+  },
+  "quiet_released": true,
+  "product_retry_authorized": false,
+  "production_cutover_authorized": false,
+  "full_openbao_compatibility": false,
+  "limitations": [
+    "This closure does not claim unobserved GET records are independently archived.",
+    "The 503 inner product cause remains unestablished; original failed evidence is immutable.",
+    "The original X230 launch-unknown remains unresolved and is not implied terminal by this LAN closure."
+  ]
+}

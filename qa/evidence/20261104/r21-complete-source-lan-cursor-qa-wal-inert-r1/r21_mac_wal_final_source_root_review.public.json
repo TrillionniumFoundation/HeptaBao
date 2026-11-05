@@ -1,0 +1,125 @@
+{
+  "schema": "heptabao.root.mac-registry-readonly-wal-final-source-review.r21",
+  "status": "SOURCE_AND_EXACT_INERT_REQUEST_ROOT_CLOSED",
+  "packet": {
+    "tree": "701600af314e16b99601ce1643c6011d19f0db8b",
+    "files": 53,
+    "bytes": 1844267,
+    "merkle_trees": 9
+  },
+  "original_design_tree": "3ca90e98f2dd69b250f07993844bc6b59cef499c",
+  "library": {
+    "blob": "c97d95b735bb4d76bf90d4c2b78d7b1bbcaa0920",
+    "bytes": 31776,
+    "sha256": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed"
+  },
+  "reader": {
+    "blob": "f94c1025887d732fbf5d66a2d3016493232deda3",
+    "bytes": 17861,
+    "sha256": "6bc5939de4b2b64ea771b2003efb20e9bbf5f2c56be49a1b0c227919c8f39833"
+  },
+  "parent": {
+    "blob": "82c99d26734bd80d168ec7834d1a544c731c2a5d",
+    "bytes": 28281,
+    "sha256": "88a6abdc02c71b0cb25f6b85a4494f0b44a30c2f8a4936bb511948f258737cdc"
+  },
+  "root_binding_checks": [
+    "bound prior/final source mac_guarded_current_capture_r3.py",
+    "whole exact source mac_guarded_current_capture_r3.py",
+    "candidate sourcepin mac_guarded_current_capture_r3.py",
+    "bound prior/final source mac_registry_readonly_wal_r1.py",
+    "whole exact source mac_registry_readonly_wal_r1.py",
+    "candidate sourcepin mac_registry_readonly_wal_r1.py",
+    "bound prior/final source mac_wal_owned_reader_r1.py",
+    "whole exact source mac_wal_owned_reader_r1.py",
+    "candidate sourcepin mac_wal_owned_reader_r1.py",
+    "bound prior/final source mac_wal_owned_synthetic_r1.py",
+    "whole exact source mac_wal_owned_synthetic_r1.py",
+    "candidate sourcepin mac_wal_owned_synthetic_r1.py",
+    "bound prior/final source mac_t5_volume_guard_r1.py",
+    "whole exact source mac_t5_volume_guard_r1.py",
+    "candidate sourcepin mac_t5_volume_guard_r1.py",
+    "bound prior/final source mac_darwin_owned_projection_r1.py",
+    "whole exact source mac_darwin_owned_projection_r1.py",
+    "candidate sourcepin mac_darwin_owned_projection_r1.py",
+    "bound prior/final source mac_native_owned_unreaped_r1.py",
+    "whole exact source mac_native_owned_unreaped_r1.py",
+    "candidate sourcepin mac_native_owned_unreaped_r1.py",
+    "bound prior/final source mac_native_owned_commands_r1.py",
+    "whole exact source mac_native_owned_commands_r1.py",
+    "candidate sourcepin mac_native_owned_commands_r1.py",
+    "bound prior/final source mac_owned_unreaped_r1.py",
+    "whole exact source mac_owned_unreaped_r1.py",
+    "candidate sourcepin mac_owned_unreaped_r1.py",
+    "bound prior/final source mac_owned_commands_r1.py",
+    "whole exact source mac_owned_commands_r1.py",
+    "candidate sourcepin mac_owned_commands_r1.py",
+    "exactsourceorder",
+    "whole actual candidate",
+    "one exact original T5 anchor",
+    "actual original SQLite/Python runtime exact",
+    "actual native R2 identity exact",
+    "native R2 authoritative success",
+    "exact inert script/stdin/args",
+    "inert fixed scope60"
+  ],
+  "pure_root_ast": {
+    "compiled_without_execution": 4,
+    "native_runtime_owner_imports": true,
+    "no_host_or_main_execution": true,
+    "ok": true,
+    "one_native_bind": true,
+    "original_candidate_argparse_statements": 2,
+    "public_documents": 2,
+    "self_before_and_after_reader_calls": true,
+    "source_pins": 10,
+    "synthetic_argv_exact": true
+  },
+  "root_ledger_replay": {
+    "name": "r21_mac_wal_ledger_root_result",
+    "blob": "55dbb4724319a5098aa7f762fb39ae63de2eda78",
+    "bytes": 537,
+    "sha256": "343b929a00348a1e510d61638d074cfc8c2dfd775819b8bb56f80ceaec63618f"
+  },
+  "exact_diffs": {
+    "accounting_and_public_code_fd": {
+      "library_hunks": 10,
+      "parent_hunks": 2,
+      "exact": true,
+      "base_old_immutable_library_blob": "244f98634ab07e96f70585179a1d155fdb34f34f"
+    },
+    "native_runtime_wiring": {
+      "exact": true,
+      "hunks": 5
+    }
+  },
+  "resolved_findings": [
+    "Every returned SQL row is accounted before result-count, shape and final record-size refusal; conservative SQLite length/remaining-byte admission does not increase the 1MiB/8MiB caps.",
+    "Public code hash descriptors have an explicit once-close ledger and contaminate overall closure on a close failure.",
+    "The synthetic runtime parent actually uses the already qualified native projection/retained child owner, with before/after self birth verification and one bind; old ps owner is only the separately reviewed inert publisher dependency."
+  ],
+  "preserved": {
+    "old_capture_module_blob": "244f98634ab07e96f70585179a1d155fdb34f34f",
+    "old_database_immutable_query_and_five_agent_route": true,
+    "actual_original_immutable_proof_predicates": true,
+    "registry_wal_cap": 5969912,
+    "row_bytes": 1048576,
+    "aggregate_returned_bytes": 8388608,
+    "query_seconds": 3,
+    "shared_seconds": 45,
+    "outer_seconds": 60,
+    "retry_count": 0
+  },
+  "source_semantics": [
+    "Registry named readonly WAL route uses mode=ro, cache=private, unix-posix and readonly_shm=1; no immutable or nolock fallback.",
+    "Fixed 13-column single-key query is gated by indexed SEARCH. Main/WAL/SHM and complete parent full identities are sampled without refresh; connection close precedes corresponding held-FD close.",
+    "Three literal public-document reads are added to synthetic profiles, plus W03 exact owned SHM data-read denial. This is not a claim the whole effective profile is byte-identical.",
+    "SQLite internal page I/O and failed-connect internal descriptors are not individually measured; elapsed deadline refusal plus separately proved process retirement remain necessary.",
+    "Ten owned fixtures and four pure ledger families are separate. Pure fake-handle success is not actual SQLite, native API or private capture qualification."
+  ],
+  "actual_runtime_proof_required": true,
+  "private_capture_go": false,
+  "synthetic_host_go": false,
+  "production_changed": false,
+  "original_capture_unknown_preserved": true
+}

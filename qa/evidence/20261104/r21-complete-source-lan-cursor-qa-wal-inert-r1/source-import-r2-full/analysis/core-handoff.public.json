@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.df026.desktop-standalone-source-import-r2.core-handoff.v1",
+  "status": "actual_source_import_complete__raw_command_log_archive_pending",
+  "job": "1a1aa422e15-fc05-3ffa",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "target_source": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-validation-source-r1",
+  "actual": {
+    "core_blob": "db8fc8982977ced35666ade66e7272bdda38c601",
+    "authority_blob": "b6f7ea1d7fbfa3c328516c799e419ca5ed664ef7",
+    "terminal_stderr_blob": "db5739d6057e2d0f12aafa86f7d1fce2f9d73109",
+    "authoritative_exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "original_stderr_bytes": 27827,
+    "original_stdout_bytes": 0,
+    "source_count": 3913,
+    "history_count": 3757,
+    "full_fsck_passed": true,
+    "known_owned_git_commands": 21,
+    "all_direct_children_reaped": true,
+    "all_groups_empty": true,
+    "closed_file_fds": 3,
+    "closed_input_directory_fds": 4,
+    "closed_created_source_directory": true,
+    "elapsed_seconds": 52.56719151802827,
+    "original_total_seconds": 300
+  },
+  "archive_scope": {
+    "complete_ack_and_four_original_sdk_payloads": true,
+    "complete_immutable_pages": true,
+    "complete_core_and_intent_with_actual_versions": true,
+    "complete_terminal_both_streams": true,
+    "all_twenty_one_command_records_embedded_in_core": true,
+    "twenty_one_separate_command_records_not_yet_retrieved": true,
+    "forty_two_command_stdout_stderr_files_not_yet_retrieved": true
+  },
+  "prior_failure": {
+    "packet": "1c9ca3cf3d48d1f03051663260712c95b22965a7",
+    "job": "1a1aa39910d-fc05-3f68",
+    "status": "known_first_guard_failure_preserved",
+    "not_relabelled": true
+  },
+  "qualification": "Source import only. No compiler, server, acceptance suite, provider or production action.",
+  "runtime_qualification": false
+}

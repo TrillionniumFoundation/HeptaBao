@@ -1,0 +1,349 @@
+{
+  "schema": "heptabao.df026-import-r2-binary-assembly.v1",
+  "chunks": [
+    {
+      "label": "tree-chunk-000000",
+      "operation": "3a4081a517e468655d7a882899e6f41b7f09f712f05cfa38ad9a30c3f8d8f604",
+      "offset": 0,
+      "bytes": 65536,
+      "sha256": "8efcefd70806afee481d1ba20e5ebe1bea1311b2670856ab37c06b2c2711ab06",
+      "size": 450325,
+      "version": "2050:5022773:450325:1793857836996483630:1793857836996653018",
+      "eof": false,
+      "pages": 6,
+      "sdk": {
+        "path": "sdk/tree-chunk-000000-original.json",
+        "bytes": 87840,
+        "sha256": "8ff602f0838505d9a027342af6f1efd25445493cffe91ece77316ea21c2fae36",
+        "blob": "3efefbbafcbf357e8c1dbaab2210061ed47586b1"
+      },
+      "body": {
+        "path": "native/tree-chunk-000000.json",
+        "bytes": 87737,
+        "sha256": "23abdc24b0caf9b1d517e0e4b3bcac4c28d9f358dbe72b8aa5a417d4b0c63b35",
+        "blob": "dfe8ab78bcb6dd0a680f73f29d44dac2c24f6641"
+      }
+    },
+    {
+      "label": "tree-chunk-065536",
+      "operation": "b06dc92cc971288cd8d996bf803df5372c93049dc39507177b647cb382c8596f",
+      "offset": 65536,
+      "bytes": 65536,
+      "sha256": "ed6b371f209a3608a02004ff22d0ad92c0aca38082d0b886ea1662ade7f69ac0",
+      "size": 450325,
+      "version": "2050:5022773:450325:1793857836996483630:1793857836996653018",
+      "eof": false,
+      "pages": 6,
+      "sdk": {
+        "path": "sdk/tree-chunk-065536-original.json",
+        "bytes": 87845,
+        "sha256": "6f05a6ef1a6d928c80776fae3c902fe3a1bb005aaf21bee0b6b18406c845b592",
+        "blob": "b1db72976fdcd91d3fc8f460922a5b06d9e787f1"
+      },
+      "body": {
+        "path": "native/tree-chunk-065536.json",
+        "bytes": 87742,
+        "sha256": "9cc465c1905d8a994e14852d072394ddf0999cf156c563ab2be352352dad809f",
+        "blob": "a5c010cb37a6bfd0d4ef1380885fe77d65980a6c"
+      }
+    },
+    {
+      "label": "index-chunk-000000",
+      "operation": "8ed4ffd65b6472ec891e34e94de561ed60e7386f64f91e8a18a01c764145903e",
+      "offset": 0,
+      "bytes": 65536,
+      "sha256": "43df2f119b199998f2581536d8ae79eb7fb82d55b38d376416a3f12901cf4099",
+      "size": 438586,
+      "version": "2050:5022776:438586:1793857837064243882:1793857837064243882",
+      "eof": false,
+      "pages": 6,
+      "sdk": {
+        "path": "sdk/index-chunk-000000-original.json",
+        "bytes": 87841,
+        "sha256": "371a0cb25f926fa32bab40e1674de776d6d544ba49325f34d1bbc361f11bec50",
+        "blob": "7a5ce73688d7defa2086d73e214ddb458eb6c5db"
+      },
+      "body": {
+        "path": "native/index-chunk-000000.json",
+        "bytes": 87738,
+        "sha256": "74d13ff2dd8c69fa32d9e21a7653776e2f912fcd733976610ce58f3e0c56ae81",
+        "blob": "92321498b928c2ea09bedc15509d0ed8c88c36fd"
+      }
+    },
+    {
+      "label": "tree-chunk-131072",
+      "operation": "939daef55e5d243ccb9cb4d5bdb4284f2b325d0fb3a9bf1025b91a54412982a3",
+      "offset": 131072,
+      "bytes": 65536,
+      "sha256": "97ba81c4d4ce8de0fcd0f23c6e408d005ca21f5b0ca6f10157c30464e6cd922e",
+      "size": 450325,
+      "version": "2050:5022773:450325:1793857836996483630:1793857836996653018",
+      "eof": false,
+      "pages": 6,
+      "sdk": {
+        "path": "sdk/tree-chunk-131072-original.json",
+        "bytes": 87846,
+        "sha256": "bfd027a733ccdce95ce939248b7a7b4636a29565e634ce6982f8872b0e81cd02",
+        "blob": "0b96f74c8528eaa4a416743bc42018920719bb69"
+      },
+      "body": {
+        "path": "native/tree-chunk-131072.json",
+        "bytes": 87743,
+        "sha256": "95921b70c1a4a0c305af364a92dbee1e3d534b3329a5d7781f8ea6cffd4aa908",
+        "blob": "d7d82b8fa0b9689dd08359cc9aff04d8b1fcb4df"
+      }
+    },
+    {
+      "label": "tree-chunk-196608",
+      "operation": "280fbd3dc57933a737e09e33e318f445f710f5b0530076ab72ceb3a084d8ec71",
+      "offset": 196608,
+      "bytes": 65536,
+      "sha256": "1e79f06ceaa8d272d140b8ca704b61f57f04df6a368329ce6abb9bc3008a77ed",
+      "size": 450325,
+      "version": "2050:5022773:450325:1793857836996483630:1793857836996653018",
+      "eof": false,
+      "pages": 6,
+      "sdk": {
+        "path": "sdk/tree-chunk-196608-original.json",
+        "bytes": 87846,
+        "sha256": "ca75369abdf9cee128f8b1a4bb8a4aa232d82db16c764ba3607939f6a1ff6c2c",
+        "blob": "6ee0052a706b0492dbb685f16de5825bf7ba9d3f"
+      },
+      "body": {
+        "path": "native/tree-chunk-196608.json",
+        "bytes": 87743,
+        "sha256": "7b67b862018fcafa9e3b252afe0c0342f8c0fc2eba3d6ed8b19790f77943f82a",
+        "blob": "8e2425c0cffea424a53ddf17b0a3a41634bbacf2"
+      }
+    },
+    {
+      "label": "tree-chunk-262144",
+      "operation": "e227d7a4ec5f70a1858239386cbe2f47b2ff7d4ce36d1219aee9f89534d64055",
+      "offset": 262144,
+      "bytes": 65536,
+      "sha256": "ffbe19335440377d9fe2387ec16046d45b2cb82c0ad6448e830560a783738a03",
+      "size": 450325,
+      "version": "2050:5022773:450325:1793857836996483630:1793857836996653018",
+      "eof": false,
+      "pages": 6,
+      "sdk": {
+        "path": "sdk/tree-chunk-262144-original.json",
+        "bytes": 87846,
+        "sha256": "365be5428fdf3e472a8833c559182a0342db23725d171dddd728fcc3cc85fce0",
+        "blob": "5984b5d38f81a37005ecf19fd3cd249b8eb006b9"
+      },
+      "body": {
+        "path": "native/tree-chunk-262144.json",
+        "bytes": 87743,
+        "sha256": "13dd12f7a6504f2143005bfdcc4d465cf9ad89ae439ca4cab49d9103d20e14e9",
+        "blob": "726ab0254a42ec196c1cfc017c5f08066027f92c"
+      }
+    },
+    {
+      "label": "tree-chunk-327680",
+      "operation": "2a911d14cf3d50e2451fc4927c5d4fc49407323b4ff8ba312e8d9140de6482bf",
+      "offset": 327680,
+      "bytes": 65536,
+      "sha256": "1d9c9a9e3a3050db2062f7c3051dfd5797c09d43854aa1b6865039c9877a8cfd",
+      "size": 450325,
+      "version": "2050:5022773:450325:1793857836996483630:1793857836996653018",
+      "eof": false,
+      "pages": 6,
+      "sdk": {
+        "path": "sdk/tree-chunk-327680-original.json",
+        "bytes": 87846,
+        "sha256": "4963c7c5b636683bb8e41f0114368c7017a3871a2cc6feaf9b317bc303629062",
+        "blob": "723a5f6bd87b2ea5f5b63a6dffbbcc02bc76d08c"
+      },
+      "body": {
+        "path": "native/tree-chunk-327680.json",
+        "bytes": 87743,
+        "sha256": "1ff76516c4eb5fbba5804621d0c7fc4f1f9615fb7176ab690421c6e9a4a65ba8",
+        "blob": "30e38b27e5faa147765be77c3035dd68edc283fa"
+      }
+    },
+    {
+      "label": "tree-chunk-393216",
+      "operation": "ac026266c59912838e9d35122c32b63c37c73bc6a97c1894c81ec4c54b7b6d86",
+      "offset": 393216,
+      "bytes": 57109,
+      "sha256": "86ba320b2eee37f2a518f12704f91f644ceea214028b762778fd1ccf91e37a50",
+      "size": 450325,
+      "version": "2050:5022773:450325:1793857836996483630:1793857836996653018",
+      "eof": true,
+      "pages": 5,
+      "sdk": {
+        "path": "sdk/tree-chunk-393216-original.json",
+        "bytes": 76609,
+        "sha256": "712e63de11ceed4afb4258974747b5893b97895e6c8ced3cf1f1fbbb26a19579",
+        "blob": "12f73bc76a9120c7658ff5f8d14d854bdee098e7"
+      },
+      "body": {
+        "path": "native/tree-chunk-393216.json",
+        "bytes": 76506,
+        "sha256": "c70b20b5a4228301ab391f5b0418386779c7320c02e5ad8cfc62047d4dd6c18c",
+        "blob": "ae7d87af424c03f39dad09632d4df00abedc9ca5"
+      }
+    },
+    {
+      "label": "index-chunk-065536",
+      "operation": "330e918138398667f05807dc3e28d5dbd1e93ff3ca524a985de7b03169c4bb29",
+      "offset": 65536,
+      "bytes": 65536,
+      "sha256": "1307558997eeb63fb6667702533aa40a6e7d341dc84ae18c8fb9709db1acb7dc",
+      "size": 438586,
+      "version": "2050:5022776:438586:1793857837064243882:1793857837064243882",
+      "eof": false,
+      "pages": 6,
+      "sdk": {
+        "path": "sdk/index-chunk-065536-original.json",
+        "bytes": 87846,
+        "sha256": "eb8812fa7c1f76190710b7f42a28dda024ac3f3fd08fe46d07a6acbf2d3e4ad2",
+        "blob": "c97a336137ceaf493ff138faf018bc6e3ef53efc"
+      },
+      "body": {
+        "path": "native/index-chunk-065536.json",
+        "bytes": 87743,
+        "sha256": "fad5a28e64986c04da89ea53ff33e35130e76519002a3f8ea568e251e90b6f08",
+        "blob": "145c56677b04f93b1db40280e9be07bf1f9255db"
+      }
+    },
+    {
+      "label": "index-chunk-131072",
+      "operation": "5997a0fef13df23328c2f3719291e8dbe609508c217cab26b338fca35a7a1138",
+      "offset": 131072,
+      "bytes": 65536,
+      "sha256": "e52ee48edf2b009343c0d30868b40daaae2e93ed7ec6875aa0050d439a4a47c5",
+      "size": 438586,
+      "version": "2050:5022776:438586:1793857837064243882:1793857837064243882",
+      "eof": false,
+      "pages": 6,
+      "sdk": {
+        "path": "sdk/index-chunk-131072-original.json",
+        "bytes": 87847,
+        "sha256": "6c532ae52bcbeeda5fcba3968f777dc97ac9c8bb29b312798fdd17fa7b5d54a8",
+        "blob": "17a72edbd36acdd2a6d0d7c7f83420da8e2754b0"
+      },
+      "body": {
+        "path": "native/index-chunk-131072.json",
+        "bytes": 87744,
+        "sha256": "3b028c3df251d30464443bb8a865b964009233385741c465cee5245149e6d951",
+        "blob": "d06187eab0778da9508fba40fd15696419109c30"
+      }
+    },
+    {
+      "label": "index-chunk-196608",
+      "operation": "a670658bc88fb1dd6f18ac6de996f3090cf07ce5f70249974ee2744527b618b0",
+      "offset": 196608,
+      "bytes": 65536,
+      "sha256": "5b17240b26dc00a072f13507198f26a6d44f1548fbebf609154087aaece1663a",
+      "size": 438586,
+      "version": "2050:5022776:438586:1793857837064243882:1793857837064243882",
+      "eof": false,
+      "pages": 6,
+      "sdk": {
+        "path": "sdk/index-chunk-196608-original.json",
+        "bytes": 87847,
+        "sha256": "a3ab36030876529aa9f5484667c5a688577616d590bb2982ec0609b63a2c2d0b",
+        "blob": "a80fb79e03a19ccb23e7ed9b77f0a9a59d3866ee"
+      },
+      "body": {
+        "path": "native/index-chunk-196608.json",
+        "bytes": 87744,
+        "sha256": "c40f2408e2e0201f8c2e043fbea9a26869a1803298defa2e9e2aa393e0d67221",
+        "blob": "0888819451e7b3a227d2f99b86cd7f169a0000e9"
+      }
+    },
+    {
+      "label": "index-chunk-262144",
+      "operation": "f6f8128b327f0c78e619e6947c1a84ec00794fabf4b814d48c779a76edbddce8",
+      "offset": 262144,
+      "bytes": 65536,
+      "sha256": "5ad5a7b43352e57ddf416a66d7a5501941c1098c87e09257c121f2662f82246c",
+      "size": 438586,
+      "version": "2050:5022776:438586:1793857837064243882:1793857837064243882",
+      "eof": false,
+      "pages": 6,
+      "sdk": {
+        "path": "sdk/index-chunk-262144-original.json",
+        "bytes": 87847,
+        "sha256": "fee6537a4a11931c8e5b8189d958d63487a140e965cb064cb1749b986a24d77d",
+        "blob": "ea27f17ef70d800a74e68c0e73656a7a36706529"
+      },
+      "body": {
+        "path": "native/index-chunk-262144.json",
+        "bytes": 87744,
+        "sha256": "3532f31973624bbbac9776b84894ac2d82f9b8546a7506c100813ec1ba3e66dc",
+        "blob": "697aa1eebe34b4780fd3baa9f9b015a46da295cc"
+      }
+    },
+    {
+      "label": "index-chunk-327680",
+      "operation": "08765cdac34ec9a27dc0b7fa59b25892dcc354f3370fbcd4c062803a2f72820d",
+      "offset": 327680,
+      "bytes": 65536,
+      "sha256": "910fc52e9bd673df6dd8349331131f4e8e12c16898050afe05aaa623bf1b215f",
+      "size": 438586,
+      "version": "2050:5022776:438586:1793857837064243882:1793857837064243882",
+      "eof": false,
+      "pages": 6,
+      "sdk": {
+        "path": "sdk/index-chunk-327680-original.json",
+        "bytes": 87847,
+        "sha256": "fc72641b7c5a1adcef939be2f25b3b150d56c84a22b83785f790159196930d54",
+        "blob": "93c91b05ebef76aedac36ea022f5acfcf20d424e"
+      },
+      "body": {
+        "path": "native/index-chunk-327680.json",
+        "bytes": 87744,
+        "sha256": "72deee87dd3cdb99ec246029a655b3417b35d0e568334ca6503544628d63f05d",
+        "blob": "2c4540017b48d8b54e866d87509aeeb849f30891"
+      }
+    },
+    {
+      "label": "index-chunk-393216",
+      "operation": "4f083e72658495b8d8b7268468fe6771bdc1606d0590f3fcc67bd81dc2fa4d8d",
+      "offset": 393216,
+      "bytes": 45370,
+      "sha256": "99559243ee004e190a6a5ba06611a5c0cbb17e76e232e55203f2c57364579c5b",
+      "size": 438586,
+      "version": "2050:5022776:438586:1793857837064243882:1793857837064243882",
+      "eof": true,
+      "pages": 4,
+      "sdk": {
+        "path": "sdk/index-chunk-393216-original.json",
+        "bytes": 60958,
+        "sha256": "6d9ce633616b91714a8013d77be6e35380d60147664901c03e007125fcc72b2c",
+        "blob": "9e85b18ce7133b3218cabbab361fd312e0b85791"
+      },
+      "body": {
+        "path": "native/index-chunk-393216.json",
+        "bytes": 60855,
+        "sha256": "aba65d75bf4988eb7d028e09d2c5eec7c5a9ddb08a1540147dac13533ad834b7",
+        "blob": "44235b66b3b175a25dddeb90435d1cb2828fed57"
+      }
+    }
+  ],
+  "whole_files": [
+    {
+      "path": "commands/011-materialized-tree.stdout",
+      "bytes": 450325,
+      "sha256": "26cded6036297c4bf23fa3531badd14d2cabd877d6b8e64fc766fb41259c04ad",
+      "blob": "b835411cf9c0f98c081302ce9605fa7ab81b862a",
+      "host_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-import-r1/control/011-materialized-tree.stdout",
+      "version": "2050:5022773:450325:1793857836996483630:1793857836996653018"
+    },
+    {
+      "path": "commands/012-materialized-index.stdout",
+      "bytes": 438586,
+      "sha256": "58636c03d1281c28aec3963cedb04b999b2e7685d4482313ff8545cbab5e2f26",
+      "blob": "285ca8d0945cf6969ded09ab818e9e3121784922",
+      "host_path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-import-r1/control/012-materialized-index.stdout",
+      "version": "2050:5022776:438586:1793857837064243882:1793857837064243882"
+    }
+  ],
+  "total_chunks": 14,
+  "immutable_pages": 81,
+  "request_reexecution": false,
+  "host_reads_pending": 0
+}

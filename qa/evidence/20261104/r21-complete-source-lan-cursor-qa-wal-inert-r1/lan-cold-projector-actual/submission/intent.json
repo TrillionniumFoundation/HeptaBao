@@ -1,0 +1,16 @@
+{
+  "schema": "heptabao.df026-fixed-public-log-projector-intent.v1",
+  "root_go_blob": "3be3d3973a5cfa69a4dc2404ccafc6ccf4f21378",
+  "request_blob": "188a9c3632779369272c56ec5766c4cffdbc09ff",
+  "request_sha256": "0a4d8a8dd8b569f8201c55eb981bbe396ae8ed0331004f0ba81746972520f873",
+  "key": "heptabao-df026-node2-cold-log-projector-r1-5cc8995b",
+  "source": {
+    "bytes": 24839,
+    "sha256": "5cc8995ba637c452140250168856c965d0486ea05b2c7cbc1a4db0a2af796ef8",
+    "blob": "96e158f78f47313e5708a922869d4f43688ebae1"
+  },
+  "scope": "One fixed stopped log public projection; no business operation, retry, raw unknown line, file write, network request or child.",
+  "original_lan_failure_preserved": true,
+  "single_submission": true,
+  "unknown_will_not_replay": true
+}

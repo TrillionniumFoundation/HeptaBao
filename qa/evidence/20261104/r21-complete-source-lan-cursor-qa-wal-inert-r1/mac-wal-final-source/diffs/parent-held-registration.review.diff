@@ -1,0 +1,27 @@
+diff --git a/mac_wal_owned_synthetic_r1.py b/mac_wal_owned_synthetic_r1.py
+--- a/mac_wal_owned_synthetic_r1.py
++++ b/mac_wal_owned_synthetic_r1.py
+@@ -160,8 +160,9 @@
+     sql(writer,'INSERT INTO installed_plugin_index VALUES('+','.join('?' for _ in range(13))+')',baseline)
+     checkpoint=sql(writer,'PRAGMA wal_checkpoint(TRUNCATE)',limit=1)
+     need(len(checkpoint)==1 and checkpoint[0][0]==0,'owned_initial_checkpoint')
+-    main=open_fd(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,label=case+'-main')
+-    writer['held'].append(main);writer['fileRows']['']=main
++    with critical():
++        main=open_fd(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,label=case+'-main')
++        writer['held'].append(main);writer['fileRows']['']=main
+     main_before_commit=fixture_hash(main)
+     sentinel='wal-only-committed-'+case
+     if case=='W10':sentinel='P'*(1024*1024+1)
+@@ -174,8 +175,9 @@
+         if case=='W02' and suffix=='-shm':
+             with guard.parent(Path(str(path)+suffix)) as (parent,name):os.unlink(name,dir_fd=parent)
+             writer['absent'].append(suffix);continue
+-        row=open_fd(Path(str(path)+suffix),os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,label=case+suffix)
+-        writer['held'].append(row);writer['fileRows'][suffix]=row
++        with critical():
++            row=open_fd(Path(str(path)+suffix),os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,label=case+suffix)
++            writer['held'].append(row);writer['fileRows'][suffix]=row
+     if case=='W04':guard.write_new(Path(str(path)+'-journal'),b'')
+     else:writer['absent'].append('-journal')
+     need(32<=os.fstat(writer['fileRows']['-wal']['fd']).st_size<=5969912,'owned_actual_wal_size')

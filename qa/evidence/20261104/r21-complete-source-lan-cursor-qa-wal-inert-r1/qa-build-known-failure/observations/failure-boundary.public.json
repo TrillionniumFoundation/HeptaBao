@@ -1,0 +1,213 @@
+{
+  "schema": "heptabao-h2-qa-build-failed-boundary-v1",
+  "job_id": "1a1aa9fa851-fc05-4547",
+  "status": "FAILED_BUILD_BEFORE_CARGO",
+  "original_result_blob": "f871b29a3c207e23ba996eccecb73077f78c4275",
+  "original_failure_code": "owned_child_identity_changed_while_cmdline_pending",
+  "original_failure_stage": "canonical_before",
+  "original_command_outcome_unknown": true,
+  "complete_command_records": 1,
+  "command_intents": 2,
+  "cargo_commands": 0,
+  "component_execution": 0,
+  "product_or_http_requests": 0,
+  "owned_children": [
+    {
+      "pid": 2025040,
+      "start_ticks": 19416656,
+      "direct_child_reaped": true,
+      "wait_returncode": 0,
+      "remaining": []
+    },
+    {
+      "pid": 2025039,
+      "start_ticks": 19416654,
+      "direct_child_reaped": true,
+      "wait_returncode": 0,
+      "remaining": []
+    }
+  ],
+  "original_guard_semantics": {
+    "second_child_guard_accepted": false,
+    "second_child_empty_cmdline_observed": true,
+    "second_child_later_wait0_is_not_guard_pass": true,
+    "exact_identity_subcondition_that_changed_not_observed": true,
+    "empty_cmdline_not_a_success_predicate": true
+  },
+  "elapsed_nanoseconds": "119305982",
+  "read_operations": [
+    {
+      "label": "authority",
+      "operation_id": "53d71e7b4d45bc1ffc5bf94224e362ac3681d53a2589cbacd23f32d9fd487038",
+      "pages": 1,
+      "bytes": 905,
+      "sha256": "cddf3d73e5e22827085a9b816e13380d6c150194b0c184efeb15a03b0802c2ea",
+      "sdk_meta": {
+        "path": "original-sdk/authority.json",
+        "bytes": 905,
+        "sha256": "cddf3d73e5e22827085a9b816e13380d6c150194b0c184efeb15a03b0802c2ea",
+        "blob": "03a18269f86f4028efb536f2e387b0fec388d668"
+      },
+      "native_meta": {
+        "path": "native/authority.original.json",
+        "bytes": 726,
+        "sha256": "c44c272f75ff693dfafab941b60dbcb27bb17f5048902a63f24304e1c771a74e",
+        "blob": "4a9ebc535e7340df756dfc3ba6a31453c2ae7c8e"
+      },
+      "completed": true,
+      "active": false
+    },
+    {
+      "label": "streams",
+      "operation_id": "562ce9fa9ae35e3a04b72ab3fd0b9bb0066b5a60c9158dcb0e222cef61e936c3",
+      "pages": 1,
+      "bytes": 1513,
+      "sha256": "372e1fd1c2dd7b3b4a4a7a390c8bda789cac3d73738e1cfbe222a77922bbea7f",
+      "sdk_meta": {
+        "path": "original-sdk/streams.json",
+        "bytes": 1513,
+        "sha256": "372e1fd1c2dd7b3b4a4a7a390c8bda789cac3d73738e1cfbe222a77922bbea7f",
+        "blob": "941d79672197a9c3a3b235dd1e0e45e20b107e71"
+      },
+      "native_meta": {
+        "path": "native/streams.original.json",
+        "bytes": 1332,
+        "sha256": "524f16f14386c173981e47111435f2fadd3cb63cc0f82365f497a4fc0e9e7930",
+        "blob": "7c9fafbba6c7e20c22f2c160a22d9cd2ab03db03"
+      },
+      "completed": true,
+      "active": false
+    },
+    {
+      "label": "core",
+      "operation_id": "9711af396826a8967e47786861e3e121aa9f8465f09da3eaf46477716782d8a9",
+      "pages": 1,
+      "bytes": 12451,
+      "sha256": "a30fe34a39fe9e8226ef3eedfba5577e00d4011d48c81a349d8b2646f4d8c934",
+      "sdk_meta": {
+        "path": "original-sdk/core.json",
+        "bytes": 12451,
+        "sha256": "a30fe34a39fe9e8226ef3eedfba5577e00d4011d48c81a349d8b2646f4d8c934",
+        "blob": "828a104262af820d189b6b29345be630dc5ad543"
+      },
+      "native_meta": {
+        "path": "native/core.original.json",
+        "bytes": 10915,
+        "sha256": "59bf0a2bc187e98cfbfc5a0e2755804875a8e9a0d69d33bb80995ed60370f5e3",
+        "blob": "27022aa1edb0dc2f37a0a2f049da3b616838e7eb"
+      },
+      "completed": true,
+      "active": false
+    },
+    {
+      "label": "command-logs",
+      "operation_id": "d86714a7865268ccd0b19e84f183f7e83bca27132a630df79bd98d9a4a837eab",
+      "pages": 1,
+      "bytes": 4569,
+      "sha256": "4eed9025829aad46c8fee80fdd641cf3a525c6f13894647d53c903047b60b16e",
+      "sdk_meta": {
+        "path": "original-sdk/command-logs.json",
+        "bytes": 4569,
+        "sha256": "4eed9025829aad46c8fee80fdd641cf3a525c6f13894647d53c903047b60b16e",
+        "blob": "50379d97a969c09cdd84b34b1450613781245f59"
+      },
+      "native_meta": {
+        "path": "native/command-logs.original.json",
+        "bytes": 4018,
+        "sha256": "9382480141643f444243d0da7058f4ed608b5d606da893ea9e61c5c1b4b52a4c",
+        "blob": "d5a190f59c88291c91690f7c162e4ab2e0391b0b"
+      },
+      "completed": true,
+      "active": false
+    }
+  ],
+  "command_file_read_scope": "independent_file_not_atomic_snapshot",
+  "all_requested_original_files_archived": true,
+  "checks": [
+    {
+      "name": "authority_failed_exit1_complete_durable",
+      "passed": true
+    },
+    {
+      "name": "stdout_full_hex_text_eof",
+      "passed": true
+    },
+    {
+      "name": "stderr_full_hex_text_eof",
+      "passed": true
+    },
+    {
+      "name": "stdout_core_digest",
+      "passed": true
+    },
+    {
+      "name": "original_unknown_preserved",
+      "passed": true
+    },
+    {
+      "name": "failure_before_cargo",
+      "passed": true
+    },
+    {
+      "name": "input_fds_closed",
+      "passed": true
+    },
+    {
+      "name": "two_owned_reaped_empty",
+      "passed": true
+    },
+    {
+      "name": "original_guard_not_rewritten",
+      "passed": true
+    },
+    {
+      "name": "within_original_600s",
+      "passed": true
+    },
+    {
+      "name": "no_product_or_http",
+      "passed": true
+    },
+    {
+      "name": "embedded_whole_source-before-commit.intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "embedded_whole_source-before-commit.public.json",
+      "passed": true
+    },
+    {
+      "name": "embedded_whole_source-before-commit.stdout",
+      "passed": true
+    },
+    {
+      "name": "embedded_whole_source-before-commit.stderr",
+      "passed": true
+    },
+    {
+      "name": "embedded_whole_source-before-tree.intent.public.json",
+      "passed": true
+    },
+    {
+      "name": "embedded_whole_source-before-tree.stdout",
+      "passed": true
+    },
+    {
+      "name": "embedded_whole_source-before-tree.stderr",
+      "passed": true
+    },
+    {
+      "name": "intent_source-before-commit",
+      "passed": true
+    },
+    {
+      "name": "intent_source-before-tree",
+      "passed": true
+    },
+    {
+      "name": "complete_record_matches_core",
+      "passed": true
+    }
+  ],
+  "interpretation": "The unique QA attempt failed in the original CLI reference child guard during its second read-only Git command. Two captured Popen children were later reaped with exit 0 and no remaining group members. The original incomplete guard and command_outcome_unknown=true remain unchanged; no Cargo, component, or product request was dispatched. No replay, new process, source edit, or budget change occurred while collecting this packet."
+}

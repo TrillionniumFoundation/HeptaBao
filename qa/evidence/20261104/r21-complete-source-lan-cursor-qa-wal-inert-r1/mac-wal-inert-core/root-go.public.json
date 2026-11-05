@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.root.mac-registry-wal-public-inert-go.r21",
+  "status": "GO_EXACT_INERT_ONCE_ONLY",
+  "request": {
+    "blob": "33b41c7cabe54b1236bfecb1c7ab61f2e3cf77ad",
+    "bytes": 241878,
+    "sha256": "123da41e45aa43620573bd3e9614feef14e7c9ad6f9177444f6d62314a3bda9e"
+  },
+  "key": "heptabao-mac-registry-readonly-wal-inert-6488b70c-20261105-r1",
+  "root_source_review": {
+    "name": "r21_mac_wal_final_source_root_review",
+    "blob": "8616e294014af403b0d9cbb47ad3af8f85791152",
+    "bytes": 5907,
+    "sha256": "e423b8663ac930b75ebb6db9b484a926eddacbaf94c11627645222429595ee2c"
+  },
+  "root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-current-registry-readonly-wal-synthetic-r1",
+  "scope": "One create-only publisher invocation, ten reviewed source files plus two public documents and public receipt, compile-only admission, fixed diskutil/T5 custody. Preserve 45 shared/30 clipped volume/60 supervisor. Collect authoritative terminal, full streams, receipt and all file identities/readback before synthetic execution.",
+  "unknown_no_replay": true,
+  "synthetic_host_go": false,
+  "new_private_capture_go": false,
+  "consumer_or_service_go": false
+}

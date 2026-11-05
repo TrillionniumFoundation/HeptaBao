@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.root.final-gate-rustfmt-successor.v1",
+  "status": "PASS_EXACT_FORMAT_ONLY_SOURCE",
+  "commit": "6d02ceca629163e1c07480fa1f21520434407143",
+  "tree": "09aa45b9439741780961c2af76680c27e0773d08",
+  "sole_parent": "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+  "after": {
+    "name": "r21_rustfmt_candidate_source",
+    "blob": "8c67a106e6a9628ad77214e09656cf73b050dcbe",
+    "bytes": 31470,
+    "sha256": "b241236a714862c37da2767d5f0c52214cc6395df937b4035205fd990574aabf"
+  },
+  "peer": {
+    "blob": "1438f095af416511489ceaab2690ca002789fe32",
+    "bytes": 3687,
+    "sha256": "91f8862961785467d9b47ff5adafefcaf15565e2e21bf3f554c25994b5f89aef"
+  },
+  "leaf_count": 3913,
+  "merkle_trees": 358,
+  "unchanged_leaves": 3912,
+  "changed_leaves": 1,
+  "bytes_delta": 9,
+  "exact_ci_requested_diff": true,
+  "local_rustfmt_executed": false,
+  "new_ci_pass": false,
+  "host_qualification_inherited": false,
+  "base_observation": "7b4a59bdd72218c1e779eb32754a682cf465af7a",
+  "branch": "codex/heptabao-finalgate-rustfmt-6d02ceca-20261105-r1"
+}

@@ -1,0 +1,137 @@
+{
+  "actual_bucket_cap": 64,
+  "after_sha256": "5cc8995ba637c452140250168856c965d0486ea05b2c7cbc1a4db0a2af796ef8",
+  "allowed_pairs_after": 70,
+  "allowed_pairs_before": 50,
+  "before_sha256": "213251facd4baf26e1be10c5939d551e7920ea825d3b35a85c37f59ce9fd2cce",
+  "checks": [
+    {
+      "case": "new_static_pair_committed_root",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_current_cursor",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_final_gate",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_final_local_generation",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_installed_local_selection",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_load",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_local_root_binding",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_local_root_identity",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_local_selection",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_materialize_after_repair",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_materialize_full",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_original_cold_owner",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_original_deadline",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_original_read_witness",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_owner_bytes",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_physical_repair",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_repair_source",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_replica_install",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_replica_source",
+      "passed": true
+    },
+    {
+      "case": "new_static_pair_root_namespace",
+      "passed": true
+    },
+    {
+      "case": "old_source_rejects_new_pair",
+      "passed": true
+    },
+    {
+      "case": "cross_scope_label_rejected",
+      "passed": true
+    },
+    {
+      "case": "unknown_cold_label_rejected",
+      "passed": true
+    },
+    {
+      "case": "original_64_bucket_cap_accepts_64",
+      "passed": true
+    },
+    {
+      "case": "70_allowed_pairs_does_not_allow_65_buckets",
+      "passed": true
+    },
+    {
+      "case": "normal_fixture_classes_do_not_expand_to_ci_test_class",
+      "passed": true
+    }
+  ],
+  "checks_passed": 26,
+  "diff_hunks": 5,
+  "full_sources_ast_compiled": 2,
+  "functions_and_classes_unchanged_except_main": [
+    "Refused",
+    "on_signal",
+    "remaining",
+    "facts",
+    "same_directory",
+    "same_file",
+    "timing_object_pairs",
+    "timing_integer",
+    "timing_noninteger",
+    "checked_timing_uint",
+    "parse_timing_marker",
+    "parse_marker"
+  ],
+  "host_actions": 0,
+  "literal_replacements_exact_inverse": 13,
+  "native_files_read": 0,
+  "passed": true,
+  "product_requests": 0,
+  "schema": "heptabao.df026-cold-log-projector-source-components.v1",
+  "whole_module_executed": false
+}

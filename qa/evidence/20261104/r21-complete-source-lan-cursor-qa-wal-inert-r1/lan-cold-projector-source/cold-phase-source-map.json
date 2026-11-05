@@ -1,0 +1,172 @@
+{
+  "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+  "source": {
+    "bytes": 31475,
+    "sha256": "298824c635fdbf759adc46583271438e856f395571668f1f7e9f324e7b55d951",
+    "blob": "b09e57362d53ce207b255d713d7aa7c126215691"
+  },
+  "labels": [
+    {
+      "variant": "Load",
+      "label": "load",
+      "scope": "cold_native_ha",
+      "calls": [
+        168
+      ]
+    },
+    {
+      "variant": "CommittedRoot",
+      "label": "committed_root",
+      "scope": "cold_native_ha",
+      "calls": [
+        244
+      ]
+    },
+    {
+      "variant": "LocalSelection",
+      "label": "local_selection",
+      "scope": "cold_native_ha",
+      "calls": [
+        269
+      ]
+    },
+    {
+      "variant": "LocalRootBinding",
+      "label": "local_root_binding",
+      "scope": "cold_native_ha",
+      "calls": [
+        273
+      ]
+    },
+    {
+      "variant": "LocalRootIdentity",
+      "label": "local_root_identity",
+      "scope": "cold_native_ha",
+      "calls": [
+        302
+      ]
+    },
+    {
+      "variant": "OriginalColdOwner",
+      "label": "original_cold_owner",
+      "scope": "cold_native_ha",
+      "calls": [
+        287
+      ]
+    },
+    {
+      "variant": "OriginalReadWitness",
+      "label": "original_read_witness",
+      "scope": "cold_native_ha",
+      "calls": [
+        292
+      ]
+    },
+    {
+      "variant": "OriginalDeadline",
+      "label": "original_deadline",
+      "scope": "cold_native_ha",
+      "calls": [
+        297
+      ]
+    },
+    {
+      "variant": "ReplicaSource",
+      "label": "replica_source",
+      "scope": "cold_native_ha",
+      "calls": [
+        321
+      ]
+    },
+    {
+      "variant": "ReplicaInstall",
+      "label": "replica_install",
+      "scope": "cold_native_ha",
+      "calls": [
+        323
+      ]
+    },
+    {
+      "variant": "InstalledLocalSelection",
+      "label": "installed_local_selection",
+      "scope": "cold_native_ha",
+      "calls": [
+        352
+      ]
+    },
+    {
+      "variant": "CurrentCursor",
+      "label": "current_cursor",
+      "scope": "cold_native_ha",
+      "calls": [
+        357
+      ]
+    },
+    {
+      "variant": "MaterializeFull",
+      "label": "materialize_full",
+      "scope": "cold_native_ha",
+      "calls": [
+        372
+      ]
+    },
+    {
+      "variant": "RepairSource",
+      "label": "repair_source",
+      "scope": "cold_native_ha",
+      "calls": [
+        396
+      ]
+    },
+    {
+      "variant": "PhysicalRepair",
+      "label": "physical_repair",
+      "scope": "cold_native_ha",
+      "calls": [
+        398
+      ]
+    },
+    {
+      "variant": "MaterializeAfterRepair",
+      "label": "materialize_after_repair",
+      "scope": "cold_native_ha",
+      "calls": [
+        421
+      ]
+    },
+    {
+      "variant": "RootNamespace",
+      "label": "root_namespace",
+      "scope": "cold_native_ha",
+      "calls": [
+        443
+      ]
+    },
+    {
+      "variant": "OwnerBytes",
+      "label": "owner_bytes",
+      "scope": "cold_native_ha",
+      "calls": [
+        447
+      ]
+    },
+    {
+      "variant": "FinalLocalGeneration",
+      "label": "final_local_generation",
+      "scope": "cold_native_ha",
+      "calls": [
+        459
+      ]
+    },
+    {
+      "variant": "FinalGate",
+      "label": "final_gate",
+      "scope": "cold_native_ha",
+      "calls": [
+        464
+      ]
+    }
+  ]
+}

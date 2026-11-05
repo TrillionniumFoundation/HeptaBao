@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.root.lan-prepare-go.r21",
+  "as_of_utc": "2026-11-05 06:48:40 UTC",
+  "status": "GO_EXACT_PREPARE_ONCE_ONLY",
+  "request_blob": "43509c69abd176551395e86800d24a584196d042",
+  "request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_cold_h2_pocket_postrecovery_cold_r1.py",
+      "--prepare-only"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-df026-postcold-prepare-r1-664df513-83046e6f"
+  },
+  "launcher": {
+    "blob": "aeeb6d3d0c0b7e896679a0cf4d344a724870ef3c",
+    "bytes": 24819,
+    "sha256": "664df513a89bec9484b52206b934bd95a9b37d67ac5fc3cde2a6f4bdeea481c3"
+  },
+  "actual_inert_root_review": "c64db77d3ce05195cf1333a13ace65ceca1d1d9e",
+  "normal_artifact_transfer_root_review": "264e900dfc4cc6ea114d6815dad45b96ed63aa92",
+  "source_import_root_review": {
+    "name": "r21_source_import_r2_full_root_review",
+    "blob": "6ed56d22b2e1a71dc53c1edbd7146fdd98fb5d2b",
+    "bytes": 3536,
+    "sha256": "c5fdd156e2ef0a791ef651ba534cec6dbd404f96c661caad494210741bbcc55d"
+  },
+  "scope": "Run the exact --prepare-only request once. Preserve original limits, fixed sources and fresh fixture roots. Collect authoritative terminal, whole public prepared receipt and owned execution evidence before any live request.",
+  "live_ha_go": false,
+  "x230_unknown_replay": false,
+  "production_cutover": false
+}

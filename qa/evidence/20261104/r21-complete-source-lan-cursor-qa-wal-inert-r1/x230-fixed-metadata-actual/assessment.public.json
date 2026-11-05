@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.x230-relay-fence-input-metadata-actual-assessment.v1",
+  "status": "PASS_FIXED_METADATA_ONLY",
+  "job_id": "1a1aa6b1640-fc05-42c8",
+  "request": {
+    "bytes": 11117,
+    "sha256": "f436a80bffaee97bde7d1a2bf6377124389851c9388fd44339ac91d878a66632",
+    "blob": "abc5e5c2cfd34e97aa603b1fe79d383a6ea06953"
+  },
+  "source": {
+    "bytes": 10224,
+    "sha256": "52a60fad1531ebb5bcc05bef3261ef7e83f68956fa476b71c008a98412b49aaf",
+    "blob": "ad852419c3217db37ce6cf1ede5e1ec219a60d80"
+  },
+  "authoritative_exit0_full_durable": true,
+  "stream_hex_text_exact": true,
+  "metadata_calls": 42,
+  "registered_and_closed_descriptors": 8,
+  "body_and_cleanup_elapsed_ns": 694112,
+  "original_soft_seconds": 5,
+  "outer_seconds": 60,
+  "original_source_file_nine_fields_exact": true,
+  "five_directory_nine_fields_stable": true,
+  "full_directory_pins": {
+    "/": [
+      2050,
+      2,
+      0,
+      0,
+      16877,
+      26,
+      4096,
+      "1792626742716890237",
+      "1792626742716890237"
+    ],
+    "/home": [
+      2050,
+      49807361,
+      0,
+      0,
+      16877,
+      4,
+      4096,
+      "1783933443288708081",
+      "1783933443288708081"
+    ],
+    "/home/qian-qi": [
+      2050,
+      49938433,
+      1000,
+      1000,
+      16872,
+      605,
+      147456,
+      "1793857598066648108",
+      "1793857598066648108"
+    ],
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1": [
+      2050,
+      52559902,
+      1000,
+      1000,
+      16832,
+      194,
+      20480,
+      "1793858713862347110",
+      "1793858713862347110"
+    ],
+    "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-x230-transfer-controls-r1": [
+      2050,
+      7241098,
+      1000,
+      1000,
+      16832,
+      2,
+      4096,
+      "1793858714901317289",
+      "1793858714901317289"
+    ]
+  },
+  "absence_observations": 2,
+  "absence_is_atomic_reservation": false,
+  "original_job": "1a1aa57458d-fc05-4156",
+  "original_job_state": "unknown",
+  "original_owned_cleanup": "unknown",
+  "fence_created": false,
+  "product_or_transport_execution": false,
+  "actual_public_source_bodies_read": false,
+  "future_fence_requires_separate_source_review_binding_and_execution_go": true
+}

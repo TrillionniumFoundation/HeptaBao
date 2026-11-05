@@ -1,0 +1,10 @@
+{
+  "schema": "heptabao.qa-inert-read-observation.v1",
+  "business_request_replayed": false,
+  "first_authority_admission_call": "The first concurrent admission batch returned a rejected Promise without a serialized Error payload in its model-visible result. That absent payload is not reconstructed.",
+  "same_key_reconciliation": "The exact original read key returned reused=true and async_state=unknown; the preserved admission is the original available evidence.",
+  "original_operation_id": "491e06fa21f9ac93a3eb97ecd59033ca36c862a13772fa8dd9c475d916f25c7e",
+  "later_state": "The same operation subsequently reported completed/stored_observed and supplied the complete original native SDK payload.",
+  "fresh_later_read_dispatched": false,
+  "source_warning": "Two original retained references emit SyntaxWarning for return in finally when compiled by the inert publisher. Full stderr is retained; no source was changed."
+}

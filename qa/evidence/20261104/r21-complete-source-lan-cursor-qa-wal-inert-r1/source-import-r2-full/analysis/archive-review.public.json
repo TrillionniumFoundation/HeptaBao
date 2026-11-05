@@ -1,0 +1,1832 @@
+{
+  "schema": "heptabao.df026-import-r2-offline-archive-review.v1",
+  "status": "passed",
+  "scope": "original public archive only; no host process or product action",
+  "checks": 43391,
+  "commands": 21,
+  "individual_original_logs": 63,
+  "original_log_bytes": 911711,
+  "command_exit_codes": {
+    "zero": 19,
+    "expected_one": 2
+  },
+  "canonical_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "canonical_tree_recomputed": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "tracked_leaves": 3913,
+  "canonical_trees_recomputed": 358,
+  "nul_files": [
+    {
+      "path": "commands/011-materialized-tree.stdout",
+      "bytes": 450325,
+      "sha256": "26cded6036297c4bf23fa3531badd14d2cabd877d6b8e64fc766fb41259c04ad",
+      "git_blob": "b835411cf9c0f98c081302ce9605fa7ab81b862a"
+    },
+    {
+      "path": "commands/012-materialized-index.stdout",
+      "bytes": 438586,
+      "sha256": "58636c03d1281c28aec3963cedb04b999b2e7685d4482313ff8545cbab5e2f26",
+      "git_blob": "285ca8d0945cf6969ded09ab818e9e3121784922"
+    }
+  ],
+  "binary_chunks": 14,
+  "immutable_binary_pages": 81,
+  "same_file_version_per_complete_file": true,
+  "lossless_input_fences_equal": true,
+  "all_owned_processes_stopped": true,
+  "all_eight_owned_fds_closed": true,
+  "source_only": true,
+  "runtime_qualification_added": false,
+  "core_original_sha256": "afdfccd3a380b1fdc56dd4a1833f073c8d69add409ea0a46604eb54bfaa6226e",
+  "merkle": [
+    {
+      "path": ".github/workflows/",
+      "sha": "91cfb6ca4aee20e7423689fc501bd7ad9f113c38",
+      "entries": 40
+    },
+    {
+      "path": ".github/",
+      "sha": "aaf5b76ee57eef512e15eccf01e1d5d5846523b8",
+      "entries": 3
+    },
+    {
+      "path": "bootstrap/plan-v1-1-generator/",
+      "sha": "4c3849153e29137f31faaedd7d3b2e151c3a9876",
+      "entries": 5
+    },
+    {
+      "path": "bootstrap/postgresql/",
+      "sha": "54be3676166c3d6837eb5aef1e95d1b259579b0d",
+      "entries": 7
+    },
+    {
+      "path": "bootstrap/",
+      "sha": "d96114833378440c3cc319a17959cca19d50c296",
+      "entries": 2
+    },
+    {
+      "path": "clients/python/heptabao/",
+      "sha": "f043d71b469580e7510b2b10c0c092a0e4306053",
+      "entries": 14
+    },
+    {
+      "path": "clients/python/tests/",
+      "sha": "fd8ac2ae8d12fc8fd93c0a939bd3e61cb49cc540",
+      "entries": 16
+    },
+    {
+      "path": "clients/python/",
+      "sha": "fb6de660a4da8902bd83c41d5fd805fed5393366",
+      "entries": 4
+    },
+    {
+      "path": "clients/",
+      "sha": "8764ae809c89318303fa9ca709b005dc96119154",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-agent/src/",
+      "sha": "3074bf6a6cb415581a5e5624658839ab53fe301a",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-agent/",
+      "sha": "3b83acc0ae41a323b26898f50b028d26bfdbf1f1",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-authbus-contracts/src/",
+      "sha": "7a3777628fd806edbbe6cb989cb302de96c7705f",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-authbus-contracts/",
+      "sha": "979e371100f5044821834b06cebaf08e735481aa",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-barrier-api/src/",
+      "sha": "7a8355f172d9804daa740547bdb2dcb446d0fe89",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-barrier-api/",
+      "sha": "e534794b3426c9a2995b95b12d5c6cc9f49e5a1e",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-cli-contracts/src/",
+      "sha": "fa474fbd9177e9f41d90443e4a9e0aee7155cbc0",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-cli-contracts/",
+      "sha": "76194ebd979ef3e188aaeb645a659b157adf7b7c",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-client-contracts/src/",
+      "sha": "4c10585d1b3b6a7053dc32e84a2e275305f9ef24",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-client-contracts/",
+      "sha": "eac1562a30bc858e8c3e4f80297bc962414f9a54",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-compatibility/src/",
+      "sha": "b089f01cd8cbfeb0d893c674a31285fe49928463",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-compatibility/",
+      "sha": "a8be9bd19227514daf3ecba4de0ee62715fd7d4f",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-darwin-vnode-events/src/",
+      "sha": "0adecb1987ddc414b5f38a7c4cc1c19004f6a8cc",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-darwin-vnode-events/",
+      "sha": "ca6b7e847288b0ac485ab5d1b844c2ffe782eb21",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-domain/src/",
+      "sha": "fb5fce20490667706037b0d0aeeff703bea34fd4",
+      "entries": 4
+    },
+    {
+      "path": "crates/heptabao-domain/",
+      "sha": "fbcaae485ee17b84862b0ce08b0bf12d4efe7ecb",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-durable-core/src/",
+      "sha": "93acfaced615f8129d139efa863d39041f7c7e5f",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-durable-core/",
+      "sha": "2e3a31555ce58a1027342428b863ff1f64e13571",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-durable-service/src/backend/",
+      "sha": "99c43873d5671064c691849766f267130f36bcd1",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-durable-service/src/immutable_publication/",
+      "sha": "462ab7ae94d652212e015e231969f11516b5fc03",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-durable-service/src/prepared_restore/",
+      "sha": "675d8364ec81d87d48ff07e60e88418621187eb5",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-durable-service/src/restore_transaction/",
+      "sha": "e2f91da58e6ec3ba33d25de060db33c4e0776a47",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-durable-service/src/",
+      "sha": "d5e8df82397c3ccdff095a8ebfb8d27df4c1d553",
+      "entries": 57
+    },
+    {
+      "path": "crates/heptabao-durable-service/",
+      "sha": "6db72aad7d53f1d52f4cea7cdc92cd286b898f74",
+      "entries": 3
+    },
+    {
+      "path": "crates/heptabao-filesystem-guard/src/",
+      "sha": "376aa3664ee1863f3208ce3e9e228f451aaac8a1",
+      "entries": 13
+    },
+    {
+      "path": "crates/heptabao-filesystem-guard/",
+      "sha": "39522fcc4c6007f6bf509dbe29fafeb3851219c0",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-governance/src/",
+      "sha": "2c259146314312c7f9b7c935bb0c08bf33dbd5f6",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-governance/",
+      "sha": "8f5498d2fb2dd961f67cdc2bae30823d45148f67",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-ha-contracts/src/",
+      "sha": "3515529c49ed7153888e9625165da5efa6f46de6",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-ha-contracts/",
+      "sha": "867e3e70da5b076b77085063205eee51fe718893",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-ha-service/examples/",
+      "sha": "ea5aeb172d79957c7ca7a01e539dde4c1d996f77",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-ha-service/src/",
+      "sha": "0bba13379c5594a4356b432e2bd5d3116c39cd34",
+      "entries": 31
+    },
+    {
+      "path": "crates/heptabao-ha-service/",
+      "sha": "2f8f5b8175eb8674b19b0426db003a8896e126a4",
+      "entries": 3
+    },
+    {
+      "path": "crates/heptabao-identity/src/",
+      "sha": "8497e04dbc73f6f325506668838a1b83e4509adc",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-identity/",
+      "sha": "40424fdd28f45ea3e8b31a60c0f13d9d55fcbb1e",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-journal-api/src/",
+      "sha": "78e85d473b896b53b8c1138bba036c42fa06122d",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-journal-api/",
+      "sha": "2db8871dc7498504c6835b5401b0caa372fdd6b6",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-journaled-core/src/",
+      "sha": "780075ee3efb6032800720aecb828e9c71b84348",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-journaled-core/tests/",
+      "sha": "f3c99b3cdbf785a640cf77a7a2fe57d5a39e48b4",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-journaled-core/",
+      "sha": "4929da2c5fc8798fcf54270be2b4de241eb8e299",
+      "entries": 3
+    },
+    {
+      "path": "crates/heptabao-key-lifecycle/src/",
+      "sha": "b32ec179cba230581d2dc9707281f180cc0a1ffb",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-key-lifecycle/",
+      "sha": "c49ccdc4671421709d0b37c8acc967b6129f8796",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-kms-contracts/src/",
+      "sha": "7ac9d43740f8fe3b231ac18ebfa4bee58f3d5524",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-kms-contracts/",
+      "sha": "2b6c55a6f3c6d6139a1c6dcfb7da3f99dd9ea2fa",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-kv-engine/src/",
+      "sha": "fe23eb805cb5e8c30cd49fc3821ac67a5fadfd45",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-kv-engine/",
+      "sha": "4121372b2af71eb7cbe2ac99aba940722f87ea27",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-lease/src/",
+      "sha": "849b34da00e78b8299b3883e37c4b74670011fa9",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-lease/",
+      "sha": "249ae31e1a721f7a4877b48cddfb179545fb0ed3",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-linux-parent-death/src/",
+      "sha": "7e8eab6d4afea8ac1cb204032755aac288c7ef99",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-linux-parent-death/",
+      "sha": "95aa229357c7e45655139fc4012a8898041b85b4",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-migration/src/bin/",
+      "sha": "991fed0a479ebf4d1711ceafa108ddb6aea65f99",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-migration/src/",
+      "sha": "5320774e1bee53225cc40cb4fa3d5236c6dc589a",
+      "entries": 5
+    },
+    {
+      "path": "crates/heptabao-migration/",
+      "sha": "56969cdd2b65fc1183b76fa264ced7b88a54898c",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-mount-router/src/",
+      "sha": "b62769ca5a18f7c84315644bfbf27c413978f1be",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-mount-router/",
+      "sha": "8fb9995a41e559ce6b4a913b1627e394a3f62e0f",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-namespace/src/",
+      "sha": "32dee37ad4975e6ce447103799fce481c27aa337",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-namespace/",
+      "sha": "6ffe0024662f9c4fd81d968dd4249dcd9c6691f9",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-openbao-grpc/proto/",
+      "sha": "70f0bc6d98f88148c95a788fe970861988f9fac3",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-openbao-grpc/src/linux_identity/",
+      "sha": "5e51df5b38fde83c04cd5218ff6a7f7c5e0bce25",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-openbao-grpc/src/",
+      "sha": "763dd7fc816ae0fe564b8dc6e9f00e37a3eecbd5",
+      "entries": 9
+    },
+    {
+      "path": "crates/heptabao-openbao-grpc/",
+      "sha": "ee0a332b1533e5b9590f4ee8535eaed1d14e89de",
+      "entries": 4
+    },
+    {
+      "path": "crates/heptabao-operation-ledger/src/",
+      "sha": "72e7fb1efd3367260724039d657d21c7fc76f1e5",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-operation-ledger/",
+      "sha": "cb2b22f25a7945b61f32df82f0284e1c24f86b60",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-operator-api/src/",
+      "sha": "c7734bc21d50f8193190e4cdea738a4861fa19f7",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-operator-api/",
+      "sha": "0e1410c9241583cd2ce0a14509ba46c97a4d2995",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-oracle-observer/src/",
+      "sha": "51f9ec69e5506f1edff22ff885ac5ea6938b2e4a",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-oracle-observer/",
+      "sha": "b9a991ed1d20fe96e56aaa69e93859c8c2baaf9a",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-p0-server/src/",
+      "sha": "a702367764c4fe13bbbf568417ea0f64e7c9e8e8",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-p0-server/",
+      "sha": "152cae2bc8a5d059c4b5da067f23e99c03666931",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-platform-bakeoff/src/",
+      "sha": "7e6ac12759d923d180b047e4c9be375819641fa9",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-platform-bakeoff/",
+      "sha": "3b3aa1493fa1bfa1adc78abe0cacf733815f557c",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-platform-contracts/src/",
+      "sha": "c3e25ece4bfb960b6464bbc5529622c7c9e65271",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-platform-contracts/",
+      "sha": "93858ecff29ac6211c79a7565858ba67e9bcc4ad",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-plugin-contracts/src/",
+      "sha": "42135f801251cb2152f2a8c2fa74c7023305bc30",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-plugin-contracts/",
+      "sha": "b6c6338ccbb845cb2964839666fec1fc62078f58",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-plugin-host/bridges/kms_v270/",
+      "sha": "b28fc213bf771d28f948d300b7d42cc4a4a6b133",
+      "entries": 16
+    },
+    {
+      "path": "crates/heptabao-plugin-host/bridges/",
+      "sha": "f1c0430e480f61cae7e0dc7e0849ec018f032ea7",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-plugin-host/examples/",
+      "sha": "30d9af1c353807c235fd4e73ba8eac29eaec0ade",
+      "entries": 6
+    },
+    {
+      "path": "crates/heptabao-plugin-host/fixtures/sdk_v270/",
+      "sha": "4d6cf0a3fdf337ac3f9c7af03ad199f0d2ab3c1a",
+      "entries": 4
+    },
+    {
+      "path": "crates/heptabao-plugin-host/fixtures/",
+      "sha": "14fb97dc48c56dbac85a0ed62f9cd5c89702815c",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-plugin-host/src/bin/",
+      "sha": "1517ea330f45e12461656827fe4965bc637ab62e",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-plugin-host/src/",
+      "sha": "fbdb947e1547c1e5cd4060a92a9dcaa51e110984",
+      "entries": 15
+    },
+    {
+      "path": "crates/heptabao-plugin-host/tests/",
+      "sha": "7aaf196ccc199cdb6974fac2df0f8a34a08cc04f",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-plugin-host/",
+      "sha": "88d4c496a2822666f054f85ef2b121f726d2712e",
+      "entries": 6
+    },
+    {
+      "path": "crates/heptabao-policy/src/",
+      "sha": "e5cbad2b68804c8515f91dcd4796ce0d9af71cbe",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-policy/",
+      "sha": "a0f941477156baa91bd6248b4c0a82d0c04a3911",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-protocol/src/",
+      "sha": "e9724fd0ce6a9cebf5e6d3ba533a26da81fa6eae",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-protocol/",
+      "sha": "ee71320389f8f8f58a96f9ea8dd24379dc2e689a",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-proxy/src/",
+      "sha": "ee933edde7b6304d3637cc08f52be318502e15d2",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-proxy/",
+      "sha": "388f5e04ea542ce65fd6ffbe92dc405786881836",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/process/",
+      "sha": "d3d07ff2a7998b10507a158a122e274d8036b39c",
+      "entries": 29
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/src/",
+      "sha": "089304388fb69ef95947c554113ec68f0639096f",
+      "entries": 40
+    },
+    {
+      "path": "crates/heptabao-raft-runtime/",
+      "sha": "0d2c82966c0823094e67289e93b21b1760b485ae",
+      "entries": 3
+    },
+    {
+      "path": "crates/heptabao-recovery-core/src/",
+      "sha": "642996ade6569b8890c4daf382c08147f797abb0",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-recovery-core/",
+      "sha": "05bd8701933287def5733a009cf41ca4f88766c7",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-retention/src/",
+      "sha": "120b7fec14c6743cb8afeb4cb09e66980d9c0a03",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-retention/",
+      "sha": "5ba28950d69e14269e2ab6b0c13d6d3436dc8de0",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-rollback-anchor/src/",
+      "sha": "e703093bdf79bf621ff27feef193907473cd1e3d",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-rollback-anchor/",
+      "sha": "2416b83bd4e7b7cccba2338db43ffcb4925d3e3b",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-runtime-service/src/",
+      "sha": "2d4a5163f3bf6b272d7dc4985760f01fa3b47518",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-runtime-service/",
+      "sha": "0d8e5daff6d61f4b1ac806215205fd9e5d8b0db8",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-server/examples/",
+      "sha": "9226bcae25368813989f8d1e2ef5f2a75cf39b03",
+      "entries": 3
+    },
+    {
+      "path": "crates/heptabao-server/fixtures/",
+      "sha": "3fba1c4086359e0114043fa805bc1972dc68bae7",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-server/src/bin/",
+      "sha": "9741130fd4138924428e9f671648b1692d165af4",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-server/src/engines/",
+      "sha": "4ecfccbe2a62fe5272888afb21489b5505a6d715",
+      "entries": 116
+    },
+    {
+      "path": "crates/heptabao-server/src/help_templates/",
+      "sha": "c1d76b203447d37bd50c75ed5b63a81eba7c154e",
+      "entries": 16
+    },
+    {
+      "path": "crates/heptabao-server/src/service_openbao_wrapper_linux/",
+      "sha": "eb654cdc6c5a6fc481645cf2c2f03ab175ebfdea",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-server/src/state_records/",
+      "sha": "7eec741295e44a2466590b752802689e30be5953",
+      "entries": 5
+    },
+    {
+      "path": "crates/heptabao-server/src/testdata/",
+      "sha": "b25210267cff408ff5394010fcee13f42d106e50",
+      "entries": 5
+    },
+    {
+      "path": "crates/heptabao-server/src/",
+      "sha": "57441dff8f7c5a6b18f2e00aac16bb44930a80c3",
+      "entries": 779
+    },
+    {
+      "path": "crates/heptabao-server/testdata/",
+      "sha": "158c460d16d01d21e72cc8009130289f6ae11109",
+      "entries": 5
+    },
+    {
+      "path": "crates/heptabao-server/",
+      "sha": "e27bad611a4d836b91d0859d84dc152191ec767e",
+      "entries": 8
+    },
+    {
+      "path": "crates/heptabao-service-core/src/",
+      "sha": "a0b8e25b641003c598c9ed534772ad3b0440cd4d",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-service-core/",
+      "sha": "bea1ce3ae8dbc2214d9241d465707f97c0d70d4d",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-single-node-journal/src/",
+      "sha": "57467a555673a9b9f0527f4256a1c80334e6def4",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-single-node-journal/",
+      "sha": "dc8caf08a3d9d0065bdcf1611387d81b73482f49",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-single-node-store/src/",
+      "sha": "ff13f68704ac1e12b8d34f8a0f5dbaa8bef20c25",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-single-node-store/",
+      "sha": "87dedec3f8f57406cf22a3ca741d4773d5ef5422",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-storage-api/src/",
+      "sha": "f8c11401c84d6a865b6949160f6a16651cea909e",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-storage-api/",
+      "sha": "ef1cf2ff59d6b4161179342143d908f057e61ac1",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-telemetry/src/",
+      "sha": "a8e6077b3233db20a40257452653aa5cc09a2708",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-telemetry/",
+      "sha": "7787630d19592f0d75a4784bfe853c51d4d68ada",
+      "entries": 2
+    },
+    {
+      "path": "crates/heptabao-token/src/",
+      "sha": "c020a71353daf08709e74c3c7d6bf708e231e0ed",
+      "entries": 1
+    },
+    {
+      "path": "crates/heptabao-token/",
+      "sha": "e2f4c7c49b12234a0e59a7f72f1d20f72b573fa9",
+      "entries": 2
+    },
+    {
+      "path": "crates/",
+      "sha": "ff2f75231dad8ad25bdd88f024007103b182e3a0",
+      "entries": 49
+    },
+    {
+      "path": "docs/acceptance/",
+      "sha": "94352d42a9f41102d72d49abf5cf294fb0f71581",
+      "entries": 1
+    },
+    {
+      "path": "docs/architecture/",
+      "sha": "828d3f5fcbb80d1541de0cc413a247ba67c25b08",
+      "entries": 12
+    },
+    {
+      "path": "docs/audit/",
+      "sha": "1e91a9bae1a84e53e83658d6354527e95dfd9dff",
+      "entries": 3
+    },
+    {
+      "path": "docs/auth/",
+      "sha": "9b4e7380503e2ec8c4fb67ea12c0638c72509ba3",
+      "entries": 9
+    },
+    {
+      "path": "docs/compat/",
+      "sha": "e63d206e17955ea90a874198f8311765e0c16af6",
+      "entries": 1
+    },
+    {
+      "path": "docs/compatibility/",
+      "sha": "e3e1059e9ec3ff1cc7ae8fb4f376c086c9c8a0d9",
+      "entries": 11
+    },
+    {
+      "path": "docs/engineering/",
+      "sha": "77e73f48893a0dc8e9b3abc1629de61d85af3b78",
+      "entries": 6
+    },
+    {
+      "path": "docs/engines/",
+      "sha": "1b8217d5e8b6246cc00bde2b742b5f3d7d105cd6",
+      "entries": 8
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/authbus-native-openai-actual-r1/fixture/sdk/reports/",
+      "sha": "8ca710c3643c7136b3a8e11888fb953530a9c824",
+      "entries": 3
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/authbus-native-openai-actual-r1/fixture/sdk/",
+      "sha": "ba2fe8cfcb1c79370c8f68cedf2cd6a0e6049abe",
+      "entries": 1
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/authbus-native-openai-actual-r1/fixture/",
+      "sha": "349781626cbddaaca54f0ed4e661d7e322493fdb",
+      "entries": 2
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/authbus-native-openai-actual-r1/",
+      "sha": "43f8b4cb2756ebe57591bb63fdbb206d30a9fa9b",
+      "entries": 5
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/ha-history-scaling-phase-r1/",
+      "sha": "0c48f03b62e7563af3c43c30cee180ffd3f8cbc0",
+      "entries": 5
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/ha-read-witness-failure-r1/",
+      "sha": "a7334c5bc68554813a22e990d9f44d4a298e537f",
+      "entries": 1
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r10-ha-missing-only/",
+      "sha": "4edae0f8c70fc79670a3965f72cf9c066549c4df",
+      "entries": 1
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r10-mount-v5-source/mac-r1/",
+      "sha": "6f99bdf22bfa42fc882f74e692d6d95f04e10c30",
+      "entries": 3
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r10-mount-v5-source/mac-r2/",
+      "sha": "bc2d7f55971c2a90b493f1c7cf98a9349dde486d",
+      "entries": 7
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r10-mount-v5-source/",
+      "sha": "48fe979505f0b83b144ca58582d428c179adda65",
+      "entries": 4
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r10-x230-artifact58-contract-local-r1/",
+      "sha": "210e873c3443aa60fe09c2dc0fdf3e4b76e9ba87",
+      "entries": 2
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r5-actual/ci-api-r1/",
+      "sha": "fafcbeef0ac305be68e4255aeb2ce0ff05008678",
+      "entries": 1
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r5-actual/ci-linux-r1/",
+      "sha": "1e30ee3ddc3949ffb06f1dbb5dd38df332a632e4",
+      "entries": 53
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r5-actual/ci-mac-r1/",
+      "sha": "06165fee8cdd86461070eacdce3a6c9e49f51805",
+      "entries": 53
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r5-actual/lan98-failure-r1/",
+      "sha": "e321218c9de7325d9270c1912a8c1bb8b1e0720e",
+      "entries": 11
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r5-actual/mac-full34-r1/",
+      "sha": "cd7e4358abdbbbf38ef30f1345bbf08f35c2dbf8",
+      "entries": 3
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r5-actual/mac-http3-failure-r1/",
+      "sha": "0feec6ac80c4379176725339f9ddb38f1fe803da",
+      "entries": 10
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r5-actual/mac-lan-build-projection-r1/",
+      "sha": "ecd86d933f691ee354d626acf7f7aa587de21f87",
+      "entries": 3
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r5-actual/mac-native55-r1/",
+      "sha": "182a4128d5b7c5b3a9d45fdc600417f9b634e3d8",
+      "entries": 44
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r5-actual/main-artifact-pack-r1/",
+      "sha": "2d91d19dea39208eabdd39e9a3484116ab5937f3",
+      "entries": 2
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r5-actual/main-lan-build-projection-r1/",
+      "sha": "28ff15ee6b4573ffa8214511fbf487d17fb560ac",
+      "entries": 3
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r5-actual/main-native55-r1/",
+      "sha": "b6d4aad3697b9760907e1da548a11ddb3fe87858",
+      "entries": 43
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r5-actual/x230-transferred55-r1/",
+      "sha": "597ba84c8c732f9e96937c685d37e7e497fe86a0",
+      "entries": 38
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r5-actual/",
+      "sha": "3cc161c1248cdf159c57e8250f178e5fe1bb6ec6",
+      "entries": 12
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r5-full34-wrapper-r1/",
+      "sha": "d77f141bd83bf8dc8ecc7859fa36dc24c93537e6",
+      "entries": 1
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r5-lan98-orchestration-r1/",
+      "sha": "873c6600af9238ec21d03e6854e75c8c639c278a",
+      "entries": 1
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r5-source-orchestration-r1/",
+      "sha": "f73b80c8ed2049644d036b57cfd0aca0a8dd06df",
+      "entries": 3
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r6-selection-r1/",
+      "sha": "3e6652029efb56c366e065835ca637ff427b6002",
+      "entries": 1
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/r6-source-orchestration-r1/",
+      "sha": "817d2cab066bd542b2e88380b925ed14f9674ad7",
+      "entries": 4
+    },
+    {
+      "path": "docs/evidence/continuation-20261019/",
+      "sha": "3094cffc57b8bd34b87f163a690f96825e202346",
+      "entries": 12
+    },
+    {
+      "path": "docs/evidence/",
+      "sha": "98cac388746698638aa8db2d02c4d05180bb4086",
+      "entries": 1
+    },
+    {
+      "path": "docs/execution/",
+      "sha": "e5832ab87a28d3f0e76f6be81340a9c5e12dedca",
+      "entries": 12
+    },
+    {
+      "path": "docs/governance/",
+      "sha": "aa9004505d02dc62f5aedee5f8ac4f805c8da2f5",
+      "entries": 4
+    },
+    {
+      "path": "docs/licenses/",
+      "sha": "b4b20c60529b3a51ca6b76e24149cdb6c443a625",
+      "entries": 1
+    },
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-openai-controller-r1-20261019/",
+      "sha": "37ab502847e3d2e6fe9d58a84f8dda30989290b8",
+      "entries": 4
+    },
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-openai-r1-20261019/",
+      "sha": "de97e6f0d5ba2a5ca10a459d4d1e28c6a5aab790",
+      "entries": 6
+    },
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-r2-and-openai-r4-20261019/native-r2/",
+      "sha": "f550093c1c43377d5b3d428fdcd1d2e7f2bcdb2c",
+      "entries": 7
+    },
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-r2-and-openai-r4-20261019/openai-r4/fixture/",
+      "sha": "43fe34bf9c9415f7d1b1f534d187aa861fe68b6e",
+      "entries": 1
+    },
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-r2-and-openai-r4-20261019/openai-r4/",
+      "sha": "ea72d3967326f5597da8d7b727963a63411e4d85",
+      "entries": 4
+    },
+    {
+      "path": "docs/migration/evidence/authbus-r5-native-r2-and-openai-r4-20261019/",
+      "sha": "1f18471db606379827799d4568482621fc5d1b34",
+      "entries": 4
+    },
+    {
+      "path": "docs/migration/evidence/",
+      "sha": "a3bd721c150c84b28ed997fb1d59aa103cb5b2cc",
+      "entries": 3
+    },
+    {
+      "path": "docs/migration/",
+      "sha": "0261e8f6d86d397340409621d9be2242f48aea80",
+      "entries": 12
+    },
+    {
+      "path": "docs/module-closure/",
+      "sha": "d0d39caaa523fc900efce308aa525c42a832fd53",
+      "entries": 49
+    },
+    {
+      "path": "docs/modules/",
+      "sha": "c88648718eb59c50d3c7ffb3a3c772d81a6eadbb",
+      "entries": 55
+    },
+    {
+      "path": "docs/operations/history/",
+      "sha": "d0a4c70dee8a64f243b629d3465a1c4a0b579a29",
+      "entries": 1
+    },
+    {
+      "path": "docs/operations/",
+      "sha": "87a0bfa5813d8daff7bebc5a7cd0de030896ad76",
+      "entries": 32
+    },
+    {
+      "path": "docs/plan/",
+      "sha": "fcbabc597f5b1bfbb66a92d0d6f3026d305ecfed",
+      "entries": 30
+    },
+    {
+      "path": "docs/protocol/",
+      "sha": "4c07b93714837d213a833184a1067f838d2614b7",
+      "entries": 1
+    },
+    {
+      "path": "docs/recovery/",
+      "sha": "9e20ffea5229e70161cee431e3b044dc0f517884",
+      "entries": 2
+    },
+    {
+      "path": "docs/security/",
+      "sha": "efb57a98a5c54015496bb72a82d51f47669ea742",
+      "entries": 4
+    },
+    {
+      "path": "docs/storage/",
+      "sha": "922f6fae9db03322738ea6ecd8ac40db10f19729",
+      "entries": 11
+    },
+    {
+      "path": "docs/",
+      "sha": "0c559b3d32ccaefb85e7e437c86baec576dd30b1",
+      "entries": 50
+    },
+    {
+      "path": "oracle/advisories/",
+      "sha": "e2025ea2b74f2c249010b7ee607d9505d2dfa118",
+      "entries": 1
+    },
+    {
+      "path": "oracle/baselines/",
+      "sha": "a9ca27602691b7e5b08e3c0c8efa298e58ff9799",
+      "entries": 1
+    },
+    {
+      "path": "oracle/fixtures/synthetic/",
+      "sha": "0ee6ee1ae15df3c1f7f5163a2691573e752c0112",
+      "entries": 3
+    },
+    {
+      "path": "oracle/fixtures/",
+      "sha": "bd5be8e6bab3f291dda47c33cb4de2b993571ea7",
+      "entries": 1
+    },
+    {
+      "path": "oracle/inventory/openbao-v2.6.2/",
+      "sha": "132a3ebf76e76a8ffca474d4dac4ea35f7fad6e7",
+      "entries": 8
+    },
+    {
+      "path": "oracle/inventory/openbao-v2.7.0/",
+      "sha": "70897f9b8060e03de7a29e63f77181d39e683150",
+      "entries": 1
+    },
+    {
+      "path": "oracle/inventory/",
+      "sha": "15ad237ea4ea264b28f4c95ef16927d43a127a9d",
+      "entries": 2
+    },
+    {
+      "path": "oracle/normalization/",
+      "sha": "00587b20b74f468b8b85ed897ac42752cb6e61ac",
+      "entries": 1
+    },
+    {
+      "path": "oracle/",
+      "sha": "c4799f88712d0849f119d61486034a5aad149d72",
+      "entries": 6
+    },
+    {
+      "path": "planning/evidence/h02/byte-rehash/macos-15-arm64/",
+      "sha": "6e27debb87d58fae48e0988b9eb67ce7e7b002d9",
+      "entries": 4
+    },
+    {
+      "path": "planning/evidence/h02/byte-rehash/windows-2025-x64/",
+      "sha": "678dc715e5272650db128011c063da7b05da7e83",
+      "entries": 4
+    },
+    {
+      "path": "planning/evidence/h02/byte-rehash/",
+      "sha": "a659a13e85dfe5f5bddc8a6d9ce54fd793c766fe",
+      "entries": 3
+    },
+    {
+      "path": "planning/evidence/h02/reference-model/local/",
+      "sha": "a7d0730d6eab3cd274d66883944aea9acf75853e",
+      "entries": 4
+    },
+    {
+      "path": "planning/evidence/h02/reference-model/",
+      "sha": "0ff53daa8c3f1ad3aa3a6baa5cc4c6d51e86d854",
+      "entries": 1
+    },
+    {
+      "path": "planning/evidence/h02/registry/",
+      "sha": "5332b65b1dcc3fc90ac59a5e906e7f293ecdc6ff",
+      "entries": 3
+    },
+    {
+      "path": "planning/evidence/h02/",
+      "sha": "82001e21af0d7308d07477604339948c645407cb",
+      "entries": 6
+    },
+    {
+      "path": "planning/evidence/repository/",
+      "sha": "93c66f9024d341e8626e44e486cfbe113d984d7e",
+      "entries": 1
+    },
+    {
+      "path": "planning/evidence/",
+      "sha": "58a76d7a41dd017ee3c5f2640fab93305305659d",
+      "entries": 2
+    },
+    {
+      "path": "planning/",
+      "sha": "f0c41bc376c62b482f4d46a7e7b31bf682befa82",
+      "entries": 99
+    },
+    {
+      "path": "probes/h02/openraft-tokio/src/bin/durable_store_lab/",
+      "sha": "359274dfc0577a109928467bb6f3e1f47e39f482",
+      "entries": 3
+    },
+    {
+      "path": "probes/h02/openraft-tokio/src/bin/inmemory_cluster/",
+      "sha": "a7c2387e5441bd715891d817f826e079a291fe81",
+      "entries": 2
+    },
+    {
+      "path": "probes/h02/openraft-tokio/src/bin/openraft_fault_lab/",
+      "sha": "1a481c20b561b2243650958353d1d728459c7b74",
+      "entries": 5
+    },
+    {
+      "path": "probes/h02/openraft-tokio/src/bin/",
+      "sha": "ade315ab9baa393836bc6cbf4a1dec3b4a4f4ffd",
+      "entries": 7
+    },
+    {
+      "path": "probes/h02/openraft-tokio/src/",
+      "sha": "c0a043b52042300548b681d1586305f2177dfa44",
+      "entries": 2
+    },
+    {
+      "path": "probes/h02/openraft-tokio/",
+      "sha": "fcaa851382995742d88222fabe4eaeb62dec77d2",
+      "entries": 4
+    },
+    {
+      "path": "probes/h02/rustls-aws-lc/src/",
+      "sha": "5f01757c18edff6554bc4949fa2c582e8c3c3219",
+      "entries": 1
+    },
+    {
+      "path": "probes/h02/rustls-aws-lc/",
+      "sha": "40e30df57944d79ff0d18fb2a2e2a3caf3eadd6b",
+      "entries": 3
+    },
+    {
+      "path": "probes/h02/rustls-ring/src/",
+      "sha": "e5efadb8dbc18bffd9b20915dae7d24ca51b7929",
+      "entries": 1
+    },
+    {
+      "path": "probes/h02/rustls-ring/",
+      "sha": "f8663e6d1eb67c0263d6f92d910cc28305dc20f7",
+      "entries": 3
+    },
+    {
+      "path": "probes/h02/tokio-minimal/src/",
+      "sha": "984e91da31cbd2bd904636ae43542c9f0ae6387f",
+      "entries": 1
+    },
+    {
+      "path": "probes/h02/tokio-minimal/",
+      "sha": "65e16956f26f9bc3c2723a67b6c82f96c895127f",
+      "entries": 2
+    },
+    {
+      "path": "probes/h02/",
+      "sha": "71c6699f86dc6c09dcb2cce03b68307c96af5559",
+      "entries": 5
+    },
+    {
+      "path": "probes/",
+      "sha": "f2669068061bcbcfa54fc01a22502ef39488fea4",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/native-cold-r1-actual-main-20261019/",
+      "sha": "92c3aeb14bda6dc682162b835bb209ed01f2917d",
+      "entries": 6
+    },
+    {
+      "path": "qa/openbao-acceptance/authbus/",
+      "sha": "2d31045ed4809227a1e6822f736621ac27456997",
+      "entries": 61
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-inbox-pagination-20261103/",
+      "sha": "887fe2aaaacde92acf57cdd7a289ddb73a8c5407",
+      "entries": 7
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-native-four-repeat-r2/",
+      "sha": "c816f048c5fce3ac205acf34acb75401ebe03a89",
+      "entries": 5
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-openai-connect-r4/actual-r3-02/fixture/",
+      "sha": "56a122ea5effc81d924ce8e84809498b70f28141",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-openai-connect-r4/actual-r3-02/",
+      "sha": "251d4075119d6c9369d109c3bcc217cd4e5f710e",
+      "entries": 3
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-openai-connect-r4/local/",
+      "sha": "761b5dc12913715d819a88f765064bac7dd17159",
+      "entries": 9
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-openai-connect-r4/",
+      "sha": "84c995d7930b4b4f4875bf676eda0983ae2a2248",
+      "entries": 7
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-openai-r3-outer-r2/actual-main-r1/",
+      "sha": "08ada2488fffe093c5ad159792912284d2f89ca5",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/authbus-openai-r3-outer-r2/",
+      "sha": "ee02eb028ece1d2ce77f513558690f6c54d99c1e",
+      "entries": 6
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/continuation-20261018/",
+      "sha": "08c60d18fddf76c1f725c69f23fd6889b05f37b2",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/controlgroups271-20261014/",
+      "sha": "ef35922b5586dbbb3091e488b1c7ebecd89be14f",
+      "entries": 3
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-ha-cold-readindex-20261019-r1/actual-original/",
+      "sha": "27d16821c0b76e92e488ffef05af812578772351",
+      "entries": 4
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-ha-cold-readindex-20261019-r1/",
+      "sha": "a89644842962f822ca8666f7c0af0f65bfcda34a",
+      "entries": 3
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-ha-cold-readindex-r1/",
+      "sha": "7c01e06ff443b226d781e6a5672f9f82879797ee",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-kv2-mount-compile-r4/",
+      "sha": "c7d36e428ad17f253d5cf212d088a28327428ea0",
+      "entries": 5
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-kv2-mount-owner-20261019-r1/",
+      "sha": "e7d94b597ff4d2d23e2ed8126c220def6e5a98b0",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-kv2-mount-owner-20261019-r2/",
+      "sha": "20ff55e5f226134b3ca89f1c8ddd58ce7bd58ac3",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-kv2-mount-owner-20261019-r3/",
+      "sha": "cb991a27d5e5949040a74d01785188abe991799e",
+      "entries": 3
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-service-only-compile-9770bdd-r1/",
+      "sha": "9d0d02f151b6a7403d0bfad2f8fc642942b7e4eb",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-service-only-darwin-controller-r2/",
+      "sha": "927e59fa4a653f07c8f93c3f516a8cc3a0962c67",
+      "entries": 5
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-service-only-darwin-controller-r3/actual-mac-r1/test_actual_mac_exited_leader_keeps_live_descendant_visible_until_cleanup/",
+      "sha": "83a7c96b50b95c4a3af7317166fd15873bb94d6b",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-service-only-darwin-controller-r3/actual-mac-r1/test_actual_mac_normal_exit_is_reaped_without_a_signal/",
+      "sha": "9d03158fab8aa4377b44b9b649b0d535dc8aa85a",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-service-only-darwin-controller-r3/actual-mac-r1/",
+      "sha": "d13185621e69123f069c5911a9df1f80bad316f6",
+      "entries": 6
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-service-only-darwin-controller-r3/local-mock-r1/",
+      "sha": "06196d67265ea39a214ba5ab92e0d94db32472d0",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-service-only-darwin-controller-r3/prior-r2-actual-mac-r1/test_actual_mac_exited_leader_keeps_live_descendant_visible_until_cleanup/",
+      "sha": "861a6d8854b2a66dbac957ce017f35b5342d2d51",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-service-only-darwin-controller-r3/prior-r2-actual-mac-r1/test_actual_mac_normal_exit_is_reaped_without_a_signal/",
+      "sha": "28fd029ae7649ffd5d49f8221f89cb4d22db93cf",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-service-only-darwin-controller-r3/prior-r2-actual-mac-r1/",
+      "sha": "154c70533ba1db3024320e88fc872f6227f0dda9",
+      "entries": 5
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-service-only-darwin-controller-r3/",
+      "sha": "ce6b069e56674deb78cd9ae7b57885621f255117",
+      "entries": 8
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-snapshot-http-negative-zero-20261019-r2/actual-b24c6de-mac/",
+      "sha": "06a5a3baed26497f6fbe70eef1e860dd6de29c8e",
+      "entries": 3
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-snapshot-http-negative-zero-20261019-r2/",
+      "sha": "288633f769f75d0222629ef9a13b2d3306232ae8",
+      "entries": 6
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/native-snapshot-json-accept-http-20261019-r1/",
+      "sha": "cfa851d823575912ece8cd7a4e7e926831078908",
+      "entries": 3
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/next-9770-20261019/artifact55-9770-main-pack-r1/",
+      "sha": "adde913bb5992f7c3f801cf41307662128cae618",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/next-9770-20261019/artifact55-9770-x230-handoff-r1/",
+      "sha": "b4b1c11f89080247e69e49233d3a982e74571d6c",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/next-9770-20261019/artifact55-9770-x230-r1/",
+      "sha": "a8ce65a55b4d3d575a3ebab51a42f25d544d2677",
+      "entries": 16
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/next-9770-20261019/darwin-zombie-identity-r1/",
+      "sha": "cfa7b8351ecfeae3063f3191ef1aa7fa97924319",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/next-9770-20261019/native-only-9770-mac-r1-original/",
+      "sha": "6e6efc29c43b0ba9ff2e00b2f361f6e63bbdb3c1",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/next-9770-20261019/native-tcp-0f1c-r1/",
+      "sha": "9049abd7c7a235673ce43bb8a7dbc426aef6957f",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/next-9770-20261019/native55-9770-mac-r2/",
+      "sha": "f564ce4e2747006fab3a6303311a62c98fc6ed89",
+      "entries": 18
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/next-9770-20261019/native55-9770-main-r1/",
+      "sha": "be87014eae4749d346b27c72c6e91e29270393ea",
+      "entries": 18
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/next-9770-20261019/official271-full34-9770-mac-r1/",
+      "sha": "cbf638e77192e99d38955c64891900cafc727eba",
+      "entries": 4
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/next-9770-20261019/openai-r3-outer-r2-actual-main-r2/fixture/",
+      "sha": "56a122ea5effc81d924ce8e84809498b70f28141",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/next-9770-20261019/openai-r3-outer-r2-actual-main-r2/",
+      "sha": "e2198d2ab8cd3ba83b405ca4e8134fa2c54cb9fb",
+      "entries": 4
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/next-9770-20261019/",
+      "sha": "b92bb6f941ee60b937c985ddc746450386c19249",
+      "entries": 10
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/next-gates-20261017/",
+      "sha": "45add71b69a4c625611e784ef379d603d476fe94",
+      "entries": 99
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/per-host-migration-local-review-20261019-r1/",
+      "sha": "935ed6e67e7dc89d8ff7b7ffc84c5153f2377be3",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261018/",
+      "sha": "76c914b2b86f6ccb55b17f74a7f05ef5e6dc1beb",
+      "entries": 20
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/artifact55-main-pack-r1/",
+      "sha": "e3e47730dfcf8de03bddab4b6c4001688b40eac7",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/artifact55-x230-execute-r1/",
+      "sha": "55c77b0ecbc6c377d6b4d5826581d0f6231dd5f2",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/artifact55-x230-handoff-r1/",
+      "sha": "99ad3f58c46b204b6ff7ecb161ff2d3501eaab69",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/artifact55-x230-handoff-r2/",
+      "sha": "f7e75234b93c003dc2c9284f1422270b50d3a4cd",
+      "entries": 3
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/authbus-sdk-caller-r1/",
+      "sha": "5f17aa58e17b59859ef6fefe921ffcf2d9ff773b",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/authbus-sdk-owner-r1/",
+      "sha": "2bf86f5465a958acf9e65c4d13d096abbb170b87",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/authbus-sdk-owner-r3/",
+      "sha": "e09ee35393caedeeb89cd81fafdcd5921f85bd17",
+      "entries": 3
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/authbus-sdk-owner-r5/",
+      "sha": "3d4e46e29384d560609793f4f0ff5b5bd4b4fae9",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ci0f1c-actual/",
+      "sha": "e5e9e7667f1d791dc42ba3b107ea06f4a33d5540",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ci22cd-native43/",
+      "sha": "4b689388624d7f36138bdb12cac604b4425d1a97",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/ee5-physical-and-ci/",
+      "sha": "2df6547e021bf4a42fb3a89a74948ff821798f90",
+      "entries": 17
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/lan98-0f1c-actual-r1/",
+      "sha": "980049924f6e879968756952a9cd19c1a782c960",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/lan98-0f1c-main-stream-projector/",
+      "sha": "b8a390c397f16cdfa785db82ebfa3e5e0981a4c7",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/lan98-preflight-r1/",
+      "sha": "5957182f0eb27d16d84225dace21074d1a488028",
+      "entries": 10
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/mac0f1c-native55/",
+      "sha": "d9bb86c7ccb6fa9a295127e150f412fcacb1c31d",
+      "entries": 4
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/mac22cd-historical6/",
+      "sha": "8cec93bf5f78eb83d51e8972c2dac45dde45e05b",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/mac36ee-diagnostic13-actual-r1/",
+      "sha": "50a52f84d6ca404a91c6820d29ce00fa8b87e8d4",
+      "entries": 3
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/main0f1c-actual-r1/",
+      "sha": "f72eccd11cadcc13adcf35952418ce3598292719",
+      "entries": 10
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/native-artifact-bounds-r1/",
+      "sha": "f3788f4e4f871b3062748fe648b0dc2ea1f9866f",
+      "entries": 3
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/native-linux-artifact-r1/",
+      "sha": "0112938e52dbec10c7f20d4ddd64c5d5086d519d",
+      "entries": 5
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/native-snapshot-clock-r4/",
+      "sha": "9de853caf4515649719e8785de485bc8856c4939",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/native-snapshot-r4-independent-review/",
+      "sha": "1d92b8fe58ef8e40589697034f03042fed91ddb1",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/numeric-integration-host-r1/",
+      "sha": "2d2acfb478b35b0a79d135c15715b06039ac503f",
+      "entries": 5
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/numeric-raw-actual-r1/",
+      "sha": "9bbf6a32d8f24067a972a1f8b6d2b2c58fbbcfc2",
+      "entries": 3
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/numeric-raw-official-mac-r1/",
+      "sha": "3b43dff130cb095412c42576aaec4552524f0528",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/snapshot-http3-config-r1/",
+      "sha": "0fef010c59cc95c4250ee514f273027f4ab98a63",
+      "entries": 3
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/snapshot-http3-runner-r1/local-checks-r1/",
+      "sha": "fa3898b0897287129a8c537a28558dd4c1dc1257",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/snapshot-http3-runner-r1/local-checks-r2/",
+      "sha": "60453335d63e6818c2f4342ac1f22b0563c68bdc",
+      "entries": 2
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/snapshot-http3-runner-r1/local-checks-r3/",
+      "sha": "4c51740a924c91c1d1c4de1534df2ccd3c3b1559",
+      "entries": 4
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/snapshot-http3-runner-r1/local-helper-diagnostic-r1/",
+      "sha": "84da2144e2adf973294fa011901616fdf3155734",
+      "entries": 3
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/snapshot-http3-runner-r1/",
+      "sha": "6d981b5b7922095c741c4c2db2a9dd3570ff65ba",
+      "entries": 6
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/x23022cd-lowmem/",
+      "sha": "c68518633176a31e4cc7e2f1daaa200ee2d65633",
+      "entries": 3
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/resumed-20261019/",
+      "sha": "796d42b88850fbf498b62b5827868d8f46ff20bb",
+      "entries": 45
+    },
+    {
+      "path": "qa/openbao-acceptance/evidence/",
+      "sha": "5838b8472ea6241d851528b0c50fc656434dae8c",
+      "entries": 312
+    },
+    {
+      "path": "qa/openbao-acceptance/fixtures/",
+      "sha": "223137d7e9d64bfb40f96f16b87ff2b4ca8efdeb",
+      "entries": 5
+    },
+    {
+      "path": "qa/openbao-acceptance/operators/next_gates_20261018/frozen_qa/",
+      "sha": "dd2f42760ae2c2cff54bdef66e71fcdfc71d7743",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/operators/next_gates_20261018/",
+      "sha": "695f3049c6b9b039fd214f17b5dab621013372b7",
+      "entries": 27
+    },
+    {
+      "path": "qa/openbao-acceptance/operators/",
+      "sha": "2555b5e43f7d0aa04dc641a4499739adfa085dbd",
+      "entries": 1
+    },
+    {
+      "path": "qa/openbao-acceptance/patches/",
+      "sha": "2406b26b90ff0b0a21eed23cbd57b7afdb3bb415",
+      "entries": 6
+    },
+    {
+      "path": "qa/openbao-acceptance/tests/",
+      "sha": "402b380454a21173a4b1a7610c81811c857e1a2b",
+      "entries": 223
+    },
+    {
+      "path": "qa/openbao-acceptance/",
+      "sha": "910b1184042d7528a1abb3cf3de57b2529928719",
+      "entries": 381
+    },
+    {
+      "path": "qa/single-node/",
+      "sha": "4ea832c24ba4b4bac8e873b9b049598e75d95047",
+      "entries": 1
+    },
+    {
+      "path": "qa/",
+      "sha": "957b153fe7d81fd014df78fdea679b060240aaf6",
+      "entries": 2
+    },
+    {
+      "path": "qualifications/H00/",
+      "sha": "d50988353b34474e0122701d64dc584bef11a015",
+      "entries": 1
+    },
+    {
+      "path": "qualifications/H01-H02/",
+      "sha": "fe09fd0db26951019811b3696e76d79b15ebf76a",
+      "entries": 1
+    },
+    {
+      "path": "qualifications/H01/",
+      "sha": "0d15fb8acb3a3cd51c1cc96fc91de36f4988d7bc",
+      "entries": 1
+    },
+    {
+      "path": "qualifications/H02/",
+      "sha": "78f16cb387383fc0800ebb80c069c8e8d71f86c9",
+      "entries": 8
+    },
+    {
+      "path": "qualifications/external/templates/",
+      "sha": "d478dffd5e6ef28c47e6fcde7b4cf08ed522a105",
+      "entries": 9
+    },
+    {
+      "path": "qualifications/external/",
+      "sha": "3fa7b02468d5fd288db66f7d3291b878b9edcf49",
+      "entries": 2
+    },
+    {
+      "path": "qualifications/",
+      "sha": "8b198a51007a912292b56d49c0e4e9aa5664f13b",
+      "entries": 5
+    },
+    {
+      "path": "schemas/",
+      "sha": "79c0cf7269179f652b0477f6e0d9a69c1c29e9e0",
+      "entries": 52
+    },
+    {
+      "path": "scripts/",
+      "sha": "c9e6ddb0e898c3d80de692be961ec31ceb058460",
+      "entries": 94
+    },
+    {
+      "path": "specs/",
+      "sha": "9bf04f6fb0ea061c0790bc54af95e168a62e2933",
+      "entries": 4
+    },
+    {
+      "path": "tests/fixtures/retired-workflows/",
+      "sha": "b47c4c4e834a63b7b05220724b2df7e11890e135",
+      "entries": 8
+    },
+    {
+      "path": "tests/fixtures/",
+      "sha": "fe3a64ba0d191b453e19de9b4235aa2d07e017e1",
+      "entries": 1
+    },
+    {
+      "path": "tests/oracle/",
+      "sha": "755d142803bd5c4adef431ba5d694fac7b7ea6b0",
+      "entries": 3
+    },
+    {
+      "path": "tests/plan/",
+      "sha": "9da55ccbb5099835ed41d05ce71026c25e30ae8f",
+      "entries": 35
+    },
+    {
+      "path": "tests/platform/",
+      "sha": "2889fdeacb3c0a0bddb3d611a1c0c549d90ce836",
+      "entries": 14
+    },
+    {
+      "path": "tests/repository/",
+      "sha": "fff47b3b644e278eeb9c5d50623fba7c788d42bb",
+      "entries": 44
+    },
+    {
+      "path": "tests/security/",
+      "sha": "1a42c839bbbc9d7a489ea085997beae110d5bf2b",
+      "entries": 3
+    },
+    {
+      "path": "tests/",
+      "sha": "bedc1888647fa4a3c707d9b411b4a20956cd13f0",
+      "entries": 7
+    },
+    {
+      "path": "third_party/workflow-gotmpl/src/html/",
+      "sha": "07bcf1aa83e859b1fe69e52776f1be320192f12b",
+      "entries": 8
+    },
+    {
+      "path": "third_party/workflow-gotmpl/src/parse/",
+      "sha": "f0de2a66539dc3b674864e2c18dc00dbcb03fbf6",
+      "entries": 4
+    },
+    {
+      "path": "third_party/workflow-gotmpl/src/",
+      "sha": "33ccd6c672f561f3966e7f239583c21e7c0aa512",
+      "entries": 9
+    },
+    {
+      "path": "third_party/workflow-gotmpl/",
+      "sha": "c1bc8d1dd91807cf5cb24266c02d0e06325d55bb",
+      "entries": 4
+    },
+    {
+      "path": "third_party/",
+      "sha": "9867ff0717c9d3a282e4b3e443a2f4ec4e5e3287",
+      "entries": 1
+    },
+    {
+      "path": "tools/authbus/production-transport/plugin/",
+      "sha": "7c0c05256a2043b37fedaed5cc99cdd3697b96d6",
+      "entries": 4
+    },
+    {
+      "path": "tools/authbus/production-transport/qualification/lifecycle-20261103/",
+      "sha": "aec98f61d19a1eca52ae12e4715063a55d155427",
+      "entries": 3
+    },
+    {
+      "path": "tools/authbus/production-transport/qualification/",
+      "sha": "f06dfdd0e62d4ff01e1872b54b31026632e4a8eb",
+      "entries": 7
+    },
+    {
+      "path": "tools/authbus/production-transport/tests/",
+      "sha": "292829fd2e61ca94778f55cc5999fa177bd8cfcd",
+      "entries": 7
+    },
+    {
+      "path": "tools/authbus/production-transport/",
+      "sha": "191c6c8f5fe538bcc3fa0dde079f4b1687622e47",
+      "entries": 6
+    },
+    {
+      "path": "tools/authbus/",
+      "sha": "bebd72fd171feacb5182e6ff7fdd74380465ec85",
+      "entries": 3
+    },
+    {
+      "path": "tools/migration/",
+      "sha": "33a6d07685bbd5fbd10660f175374fa666f08249",
+      "entries": 7
+    },
+    {
+      "path": "tools/openbao-sdk-bridge/",
+      "sha": "679fac33f7387d1bb91353babab44120e3cc3a73",
+      "entries": 9
+    },
+    {
+      "path": "tools/",
+      "sha": "b753567bcbcaeb99a41d07b8a9f5808bed1b057d",
+      "entries": 7
+    },
+    {
+      "path": "vendor/bcrypt-0.19.3/src/",
+      "sha": "870c9edb34dbc1a8955b67cfd512a05825cf7f9d",
+      "entries": 3
+    },
+    {
+      "path": "vendor/bcrypt-0.19.3/",
+      "sha": "5d81bb74551d679b207a891ce01b0b3586e4c1c7",
+      "entries": 6
+    },
+    {
+      "path": "vendor/qrcode-0.14.1/src/bin/",
+      "sha": "14c3c1ed9b36a7f0ed47ec60467d7ee0cf2c5486",
+      "entries": 1
+    },
+    {
+      "path": "vendor/qrcode-0.14.1/src/render/",
+      "sha": "a8473d4708145bb3af051926bc27384b21af9386",
+      "entries": 6
+    },
+    {
+      "path": "vendor/qrcode-0.14.1/src/",
+      "sha": "6019c8849fcd5330e6025ab0d07cc76cd5951e8a",
+      "entries": 15
+    },
+    {
+      "path": "vendor/qrcode-0.14.1/",
+      "sha": "572098c7f3c9132c01cf1fb02854afabddc25037",
+      "entries": 5
+    },
+    {
+      "path": "vendor/",
+      "sha": "30cd6f9c1f3e5b2b77f9103a9f8916083b929d85",
+      "entries": 2
+    },
+    {
+      "path": "verification/",
+      "sha": "7ff30c8540ebc1a15dacb185be373023c7c307fa",
+      "entries": 1
+    },
+    {
+      "path": "",
+      "sha": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+      "entries": 26
+    }
+  ]
+}

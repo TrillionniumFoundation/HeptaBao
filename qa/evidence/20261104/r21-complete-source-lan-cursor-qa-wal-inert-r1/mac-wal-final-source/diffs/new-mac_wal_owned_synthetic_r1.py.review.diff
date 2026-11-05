@@ -1,0 +1,428 @@
+--- /dev/null
++++ b/mac_wal_owned_synthetic_r1.py
+@@ -0,0 +1,425 @@
++#!/usr/bin/env python3
++"""One finite public-only SQLite WAL qualification under the capture sandbox.
++
++The parent creates ten fresh owned fixtures. Each reader is a distinct retained
++direct child. No current database, credential, consumer or service is opened.
++"""
++from __future__ import annotations
++import argparse, hashlib, json, os, re, select, signal, sqlite3, stat, subprocess, sys, time
++from pathlib import Path
++
++START=time.monotonic();UNTIL=START+45.0
++ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-current-registry-readonly-wal-synthetic-r1')
++QA=ROOT/'qa';PROFILES=ROOT/'profiles';OUTPUT=ROOT/'outputs';CASES=ROOT/'cases'
++NAMES=('mac_guarded_current_capture_r3.py','mac_registry_readonly_wal_r1.py',
++ 'mac_wal_owned_reader_r1.py','mac_wal_owned_synthetic_r1.py',
++ 'mac_t5_volume_guard_r1.py','mac_darwin_owned_projection_r1.py',
++ 'mac_native_owned_unreaped_r1.py','mac_native_owned_commands_r1.py',
++ 'mac_owned_unreaped_r1.py','mac_owned_commands_r1.py')
++CASE_IDS=tuple('W%02d'%x for x in range(1,11))
++DRIFT_IDS=('W05','W06','W07','W08')
++UTILITY_PATHS=('/usr/bin/sandbox-exec','/usr/sbin/diskutil')
++PROBE_CONTENT=b'owned-readonly-wal-kernel-probe-r1\n'
++signals=None;fd_ledger=[];writers=[];writer_attempts=[];children=[];hashed_bytes=0
++capture_child=None;exit_observation=None;stop_once_unreaped=None;observed_returncode=None
++
++class Refused(RuntimeError):pass
++def need(value,code):
++    if not value:raise Refused(code)
++def digest(raw):return hashlib.sha256(raw).hexdigest()
++def encoded(value):return (json.dumps(value,sort_keys=True,separators=(',',':'))+'\n').encode()
++def ident(s):return tuple(str(v) for v in (s.st_dev,s.st_ino,s.st_uid,s.st_gid,s.st_mode,s.st_nlink,s.st_size,s.st_mtime_ns,s.st_ctime_ns))
++def remaining(until=UNTIL):
++    need(signals is None or signals.pending is None,'synthetic_cancelled')
++    n=min(UNTIL,until)-time.monotonic();need(n>0,'original_synthetic_deadline_exhausted');return n
++def critical():return signals.critical()
++def close_fd(row):
++    if row['closeAttempted']:return row['closed']
++    with critical():
++        row['closeAttempted']=True
++        try:os.close(row['fd']);row['closed']=True
++        except BaseException as error:row['closeErrorType']=type(error).__name__
++    return row['closed']
++def open_fd(path,flags,*,mode=0o600,label):
++    remaining()
++    with critical():
++        fd=os.open(path,flags,mode)
++        row={'fd':fd,'label':label,'path':str(path),'closeAttempted':False,'closed':False}
++        fd_ledger.append(row)
++    return row
++def read_public(path,maximum,expected=None):
++    need(path.resolve(strict=True)==path,'public_path_has_no_alias')
++    fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK)
++    try:
++        before=os.fstat(fd)
++        need(stat.S_ISREG(before.st_mode) and before.st_uid==501 and before.st_gid==20
++             and stat.S_IMODE(before.st_mode)==0o600 and before.st_nlink==1 and 0<=before.st_size<=maximum,
++             'public_file_custody')
++        raw=b''
++        while len(raw)<=maximum:
++            remaining();block=os.read(fd,min(65536,maximum+1-len(raw)))
++            if not block:break
++            raw+=block
++        need(len(raw)==before.st_size and ident(before)==ident(os.fstat(fd))==ident(path.lstat()),'public_file_changed')
++        if expected is not None:need(digest(raw)==expected,'public_file_whole_pin')
++        result=raw,ident(before)
++    finally:os.close(fd)
++    return result
++def utility_fingerprint(base,path):
++    path=Path(path);need(path.resolve(strict=True)==path,'fixed_utility_no_alias')
++    before=path.lstat();value=base.public_code_pin(path,remaining=remaining,critical=critical)
++    need(ident(before)==ident(path.lstat()) and before.st_uid==0 and before.st_gid==0 and before.st_nlink==1,
++         'fixed_utility_identity')
++    expected_mode=0o4755 if str(path)=='/bin/ps' else 0o755
++    need(stat.S_IMODE(before.st_mode)==expected_mode,'actual_fixed_utility_mode')
++    return dict(value,identity=list(ident(before)))
++def sql(writer,statement,args=(),*,limit=16):
++    remaining();row=None;error=None;value=None
++    try:
++        with critical():
++            cursor=writer['db'].cursor();row={'cursor':cursor,'closeAttempted':False,'closed':False};writer['cursors'].append(row)
++        cursor.execute(statement,args)
++        value=[] if cursor.description is None else cursor.fetchmany(limit+1)
++        need(len(value)<=limit,'owned_writer_finite_result')
++    except BaseException as caught:error=caught
++    finally:
++        if row is not None and not row['closeAttempted']:
++            with critical():
++                row['closeAttempted']=True
++                try:row['cursor'].close();row['closed']=True
++                except BaseException as caught:row['closeErrorType']=type(caught).__name__
++    if error is not None:raise error
++    need(row is not None and row['closed'],'owned_writer_cursor_close')
++    remaining();return value
++def close_writer(writer):
++    if not writer['closeAttempted']:
++        with critical():
++            writer['closeAttempted']=True
++            try:writer['db'].close();writer['closed']=True
++            except BaseException as error:writer['closeErrorType']=type(error).__name__
++    # No held descriptor on the same inode is closed while the writer's close
++    # is unconfirmed; leaving that scope unknown is safer than dropping locks.
++    if writer['closed']:
++        for row in reversed(writer['held']):close_fd(row)
++    else:
++        for row in writer['held']:row['closeBlockedByUnconfirmedConnection']=True
++    return writer['closed'] and all(row['closed'] for row in writer['held'])
++def fixture_hash(row):
++    global hashed_bytes
++    remaining();fd=row['fd'];before=os.fstat(fd)
++    need(stat.S_ISREG(before.st_mode) and before.st_uid==501 and before.st_gid==20
++         and stat.S_IMODE(before.st_mode)==0o600 and before.st_nlink==1 and before.st_size<=2*1024*1024,
++         'owned_fixture_hash_custody_and_bound')
++    os.lseek(fd,0,os.SEEK_SET);h=hashlib.sha256();n=0
++    while n<=before.st_size:
++        remaining();raw=os.read(fd,min(65536,before.st_size+1-n))
++        if not raw:break
++        n+=len(raw);hashed_bytes+=len(raw);need(hashed_bytes<=8*1024*1024,'owned_fixture_total_hash_bound');h.update(raw)
++    need(n==before.st_size and ident(before)==ident(os.fstat(fd))==ident(Path(row['path']).lstat()),'owned_fixture_changed_during_hash')
++    return {'identity':list(ident(before)),'bytes':n,'sha256':h.hexdigest()}
++def fixture_snapshot(writer):
++    values={}
++    for suffix,row in writer['fileRows'].items():values[suffix]=fixture_hash(row)
++    for suffix in writer['absent']:
++        path=Path(str(writer['path'])+suffix)
++        for _ in range(2):
++            try:path.lstat()
++            except FileNotFoundError:pass
++            else:raise Refused('owned_expected_absence_changed')
++        values[suffix]={'absent':True}
++    values['parentIdentity']=list(ident(writer['path'].parent.lstat()))
++    return values
++def prepare_fixture(guard,case):
++    root=CASES/case;live=root/'live';state=live/'state';path=state/'openclaw.sqlite'
++    for directory in (root,live,state,root/'captures',root/'captures/before',root/'captures/before/output',root/'captures/before/probe'):
++        guard.mkdir_new(directory)
++    guard.write_new(root/'captures/before/probe/writable-owned-main',PROBE_CONTENT)
++    with guard.parent(path) as (parent,name):
++        for _ in range(2):
++            try:os.stat(name,dir_fd=parent,follow_symlinks=False)
++            except FileNotFoundError:pass
++            else:raise Refused('owned_database_not_fresh')
++    with critical():
++        attempt={'case':case,'started':True,'handleReturned':False,'errorType':None};writer_attempts.append(attempt)
++        try:db=sqlite3.connect('file:'+str(path)+'?mode=rwc&cache=private&vfs=unix-posix',uri=True,timeout=0.0,isolation_level=None)
++        except BaseException as error:
++            attempt['errorType']=type(error).__name__;raise
++        attempt['handleReturned']=True
++        writer={'case':case,'path':path,'db':db,'cursors':[],'held':[],'fileRows':{},'absent':[],
++                'closeAttempted':False,'closed':False,'mutationAttempted':False,'mutationCompleted':False}
++        writers.append(writer)
++    sql(writer,'PRAGMA temp_store=MEMORY')
++    sql(writer,'PRAGMA page_size=4096')
++    need(sql(writer,'PRAGMA journal_mode=WAL',limit=1)==[('wal',)],'owned_fixture_wal_mode')
++    sql(writer,'PRAGMA synchronous=FULL')
++    sql(writer,'PRAGMA wal_autocheckpoint=0',limit=1)
++    key='index_key TEXT'+('' if case=='W09' else ' PRIMARY KEY')
++    columns=[key]+['c_'+letter+' TEXT' for letter in 'abcdefghijkl']
++    sql(writer,'CREATE TABLE installed_plugin_index('+','.join(columns)+')')
++    baseline=['installed-plugin-index','checkpointed-baseline']+['fixed-public-%02d'%i for i in range(2,13)]
++    sql(writer,'INSERT INTO installed_plugin_index VALUES('+','.join('?' for _ in range(13))+')',baseline)
++    checkpoint=sql(writer,'PRAGMA wal_checkpoint(TRUNCATE)',limit=1)
++    need(len(checkpoint)==1 and checkpoint[0][0]==0,'owned_initial_checkpoint')
++    with critical():
++        main=open_fd(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,label=case+'-main')
++        writer['held'].append(main);writer['fileRows']['']=main
++    main_before_commit=fixture_hash(main)
++    sentinel='wal-only-committed-'+case
++    if case=='W10':sentinel='P'*(1024*1024+1)
++    sql(writer,'UPDATE installed_plugin_index SET c_a=? WHERE index_key=?',(sentinel,'installed-plugin-index'))
++    main_after_commit=fixture_hash(main)
++    need(main_after_commit==main_before_commit,'owned_sentinel_changed_checkpointed_main')
++    writer['mainUnchangedAcrossWalCommit']=True
++    writer['mainBeforeCommit']=main_before_commit
++    for suffix in ('-wal','-shm'):
++        if case=='W02' and suffix=='-shm':
++            with guard.parent(Path(str(path)+suffix)) as (parent,name):os.unlink(name,dir_fd=parent)
++            writer['absent'].append(suffix);continue
++        with critical():
++            row=open_fd(Path(str(path)+suffix),os.O_RDONLY|os.O_NOFOLLOW|os.O_NONBLOCK,label=case+suffix)
++            writer['held'].append(row);writer['fileRows'][suffix]=row
++    if case=='W04':guard.write_new(Path(str(path)+'-journal'),b'')
++    else:writer['absent'].append('-journal')
++    need(32<=os.fstat(writer['fileRows']['-wal']['fd']).st_size<=5969912,'owned_actual_wal_size')
++    if case=='W01':
++        schema=sql(writer,"SELECT sql FROM sqlite_master WHERE type='table' AND name=? LIMIT 2",('installed_plugin_index',),limit=2)
++        info=sql(writer,'PRAGMA table_info(installed_plugin_index)',limit=13);names=[r[1] for r in info]
++        rows=sql(writer,'SELECT '+','.join(names)+' FROM installed_plugin_index WHERE index_key=? LIMIT 2',('installed-plugin-index',),limit=2)
++        record={'schema':schema[0][0],'columns':names,'row':list(rows[0]),'tableInfo':[list(r) for r in info]}
++        writer['expectedResultSha256']=digest(encoded(record))
++    writer['before']=fixture_snapshot(writer)
++    return writer
++def mutate_owned(writer,until):
++    remaining(until);need(not writer['mutationAttempted'],'one_owned_mutation')
++    writer['mutationAttempted']=True;case=writer['case'];path=writer['path']
++    if case=='W05':sql(writer,'UPDATE installed_plugin_index SET c_a=? WHERE index_key=?',('second-owned-commit','installed-plugin-index'))
++    elif case in ('W06','W07'):
++        target=path if case=='W06' else Path(str(path)+'-shm');before=target.lstat()
++        os.utime(target,ns=(before.st_atime_ns,before.st_mtime_ns+1000000000),follow_symlinks=False)
++    elif case=='W08':
++        row=open_fd(path.parent/'fixed-owned-parent-drift',os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,label='parent-drift')
++        need(close_fd(row),'parent_drift_fd_close')
++    else:raise Refused('not_a_drift_case')
++    remaining(until);writer['mutationCompleted']=True
++
++def run_reader(writer,argv_prefix,candidate_sha,volume_sha):
++    # This is the qualified native retained-owner graph with two bounded anonymous
++    # control pipes; its child is never poll()/wait()/communicate() reaped early.
++    case=writer['case'];pipe_rows=[];row=None;streams={};out=bytearray();err=bytearray();events=bytearray()
++    started=time.monotonic();barriers=0
++    try:
++        for label in ('event','control'):
++            with critical():
++                a,b=os.pipe()
++                one={'fd':a,'label':case+'-'+label+'-read','closeAttempted':False,'closed':False}
++                two={'fd':b,'label':case+'-'+label+'-write','closeAttempted':False,'closed':False}
++                fd_ledger.extend((one,two));pipe_rows.extend((one,two))
++        er,ew,cr,cw=pipe_rows
++        argv=list(argv_prefix)+['--case',case,'--candidate-sha256',candidate_sha,'--volume-sha256',volume_sha,
++            '--until',repr(UNTIL),'--event-fd',str(ew['fd']),'--control-fd',str(cr['fd'])]
++        with critical():
++            remaining()
++            process=subprocess.Popen(argv,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,
++                env={'PATH':'/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin','LANG':'C','LC_ALL':'C'},
++                start_new_session=True,close_fds=True,pass_fds=(ew['fd'],cr['fd']))
++            row={'case':case,'process':process,'custody':None,'stopAttempted':False,'streamCloseAttempted':False,
++                 'streamsClosed':False,'completeBeforeDeadline':False,'errorType':None,'errorCode':None}
++            children.append(row)
++        need(close_fd(ew) and close_fd(cr),'parent_child_pipe_ends_closed')
++        row['custody']=capture_child(process,until=UNTIL)
++        streams={process.stdout.fileno():out,process.stderr.fileno():err,er['fd']:events}
++        for fd in streams:os.set_blocking(fd,False)
++        os.set_blocking(cw['fd'],False);event=None
++        while streams or event is None:
++            left=remaining();ready,_,_=select.select(list(streams),[],[],min(left,0.025))
++            for fd in ready:
++                data=os.read(fd,65536)
++                if not data:del streams[fd]
++                else:
++                    target=streams[fd];target.extend(data)
++                    need(len(target)<=(256 if target is events else 128*1024),'owned_reader_stream_bound')
++                    if target is events and b'\n' in events:
++                        need(barriers==0 and case in DRIFT_IDS,'one_expected_barrier')
++                        value=json.loads(bytes(events));need(set(value)=={'event','case','queryUntil'}
++                            and value['event']=='after_fixed_read' and value['case']==case
++                            and type(value['queryUntil']) in (int,float) and time.monotonic()<value['queryUntil']<=UNTIL,
++                            'fixed_barrier_shape_and_deadline')
++                        barriers+=1;mutate_owned(writer,value['queryUntil'])
++                        response=('continue:'+case+'\n').encode();sent=0
++                        while sent<len(response):
++                            _,writable,_=select.select([],[cw['fd']],[],remaining(value['queryUntil']))
++                            need(writable,'barrier_ack_timeout');sent+=os.write(cw['fd'],response[sent:])
++            event=exit_observation(process)
++        remaining();need(barriers==(1 if case in DRIFT_IDS else 0),'fixed_barrier_count')
++        row['observedExit']=event;row['observedExitCode']=observed_returncode(event);row['completeBeforeDeadline']=True
++    except BaseException as error:
++        if row is None:raise
++        row['errorType']=type(error).__name__;row['errorCode']=str(error) if isinstance(error,Refused) else None
++    finally:
++        if row is not None:
++            with critical():
++                row['stopAttempted']=True
++                try:row['cleanup']=stop_once_unreaped(row['process'],row['custody'])
++                except BaseException as error:row['cleanup']={'ok':False,'outcomeUnknown':True,
++                    'errorType':type(error).__name__,'directChildReaped':row['process'].returncode is not None,
++                    'allGroupRowsEmptyAfterReap':False}
++                row['streamCloseAttempted']=True;close_errors=[]
++                for stream in (row['process'].stdout,row['process'].stderr):
++                    try:stream.close()
++                    except BaseException as error:close_errors.append(type(error).__name__)
++                row['streamsClosed']=not close_errors;row['streamCloseErrors']=close_errors
++        for item in reversed(pipe_rows):close_fd(item)
++    if row is None:raise Refused('reader_not_started')
++    cleanup=row['cleanup'];public={key:row.get(key) for key in ('case','completeBeforeDeadline','errorType','errorCode','observedExitCode','streamsClosed')}
++    public.update(pid=row['process'].pid,exitCode=row['process'].returncode,cleanup=cleanup,
++        stdoutBytes=len(out),stdoutSha256=digest(out),stderrBytes=len(err),stderrSha256=digest(err),
++        barriers=barriers,elapsedSeconds=time.monotonic()-started,
++        controlPipesClosed=all(x['closed'] for x in pipe_rows))
++    public['outcomeUnknown']=not(row['completeBeforeDeadline'] and cleanup.get('ok') is True
++        and cleanup.get('directChildReaped') is True and cleanup.get('allGroupRowsEmptyAfterReap') is True
++        and row['streamsClosed'] and public['controlPipesClosed'] and row['errorType'] is None)
++    row['public']=public
++    return public,bytes(out),bytes(err)
++
++def main():
++    global signals,capture_child,exit_observation,stop_once_unreaped,observed_returncode
++    os.umask(0o077)
++    parser=argparse.ArgumentParser();parser.add_argument('--candidate-sha256',required=True);args=parser.parse_args()
++    need(sys.platform=='darwin' and os.getuid()==501 and re.fullmatch('[0-9a-f]{64}',args.candidate_sha256),'exact_public_mac_request')
++    candidate_raw,_=read_public(ROOT/'candidate.public.json',65536,args.candidate_sha256);candidate=json.loads(candidate_raw)
++    need(candidate['schema']=='heptabao.mac-owned-registry-wal-candidate.r1' and candidate['sourceOrder']==list(NAMES)
++         and set(candidate['sourcePins'])==set(NAMES),'exact_candidate_sources')
++    source_ids={}
++    for name in NAMES:_,source_ids[name]=read_public(QA/name,128*1024,candidate['sourcePins'][name])
++    sys.path.insert(0,str(QA))
++    import mac_guarded_current_capture_r3 as base
++    import mac_wal_owned_reader_r1 as reader
++    from mac_darwin_owned_projection_r1 import NativeProjection
++    from mac_native_owned_commands_r1 import Signals,Commands
++    from mac_native_owned_unreaped_r1 import bind_projection,require_waitid,capture_child as cc,exit_observation as eo,stop_once_unreaped as su,observed_returncode as rc
++    from mac_t5_volume_guard_r1 import HeldT5
++    capture_child=cc;exit_observation=eo;stop_once_unreaped=su;observed_returncode=rc
++    signals=Signals();signals.install();require_waitid();commands=Commands(signals);guard=None;native_api=None
++    report={'schema':'heptabao.mac-owned-registry-wal-synthetic.r1','ok':False,'outcomeUnknown':True,
++        'caseIds':list(CASE_IDS),'cases':[],'sourcePins':candidate['sourcePins'],
++        'productionInputsRead':False,'privateCaptureAuthorized':False,'applicationRetries':0,
++        'sharedSeconds':45,'querySeconds':3,'supervisorSeconds':60,
++        'sameProcessWriterAndReader':False,'wholeDatabaseBackupQualified':False}
++    try:
++        native_api=NativeProjection(until=UNTIL)
++        report['nativeSelfBefore']=native_api.qualify_self(until=UNTIL)
++        need(native_api.public()['identity']==candidate['nativeIdentityExpected'],
++             'same_qualified_actual_native_abi_os_and_symbol_images')
++        bind_projection(native_api)
++        report['nativeActualReference']=candidate['nativeActualReference']
++        runtime=base.runtime_identity(remaining=remaining,critical=critical)
++        need(runtime==candidate['runtimeExpected'],'same_observed_installed_runtime')
++        utility_before={}
++        for path in UTILITY_PATHS:
++            value=utility_fingerprint(base,path)
++            need(value['sha256']==candidate['utilityPins'][path],'fixed_public_utility_pin');utility_before[path]=value
++        report['utilityPinsBefore']=utility_before
++        anchor,_=read_public(ROOT/'anchor.public.json',8192,candidate['documentPins']['anchor.public.json'])
++        guard=HeldT5(anchor,candidate['documentPins']['anchor.public.json'],remaining,critical)
++        query,volume,stderr=commands.run('owned-wal-volume',['/usr/sbin/diskutil','info','-plist','/Volumes/T5'],
++            until=min(UNTIL,time.monotonic()+30),maximum=262144)
++        need(query['exitCode']==0 and not query['outcomeUnknown'] and not stderr,'owned_volume_terminal')
++        guard.accept_diskutil(volume);report['volumeProbe']=query
++        for path in (PROFILES,OUTPUT,CASES,ROOT/'volume.public.plist',ROOT/'result.public.json'):
++            with guard.parent(path) as (parent,name):
++                for _ in range(2):
++                    try:os.stat(name,dir_fd=parent,follow_symlinks=False)
++                    except FileNotFoundError:pass
++                    else:raise Refused('owned_synthetic_path_not_fresh')
++        for path in (PROFILES,OUTPUT,CASES):guard.mkdir_new(path)
++        guard.write_new(ROOT/'volume.public.plist',volume)
++        report['volumeSha256']=digest(volume)
++        for case in CASE_IDS:
++            remaining();writer=prepare_fixture(guard,case)
++            reader.ROOT=CASES/case;reader.LIVE=reader.ROOT/'live';reader.AGENTS=base.AGENTS;reader.CACHE_NAMES=base.CACHE_NAMES
++            profile=reader.capture_profile('before')
++            # Three public admission documents are outside the case's exact
++            # LIVE namespace. These are explicit literal read additions; they
++            # grant no private-file, write or network permission.
++            for public_name in ('candidate.public.json','anchor.public.json','volume.public.plist'):
++                profile+=('(allow file-read* (literal '+json.dumps(str(ROOT/public_name))+'))\n').encode()
++            if case=='W03':profile+=('(deny file-read-data (literal '+json.dumps(str(writer['path'])+'-shm')+'))\n').encode()
++            profile_path=PROFILES/(case+'.sb');guard.write_new(profile_path,profile)
++            argv=['/usr/bin/sandbox-exec','-f',str(profile_path),runtime['pythonExecutable']['path'],
++                  '-I','-S','-B',str(QA/'mac_wal_owned_reader_r1.py')]
++            command,out,err=run_reader(writer,argv,args.candidate_sha256,digest(volume))
++            guard.write_new(OUTPUT/(case+'.stdout.public.json'),out)
++            guard.write_new(OUTPUT/(case+'.stderr'),err)
++            need(command['exitCode']==0 and not command['outcomeUnknown'] and not err,'reader_actual_terminal')
++            child=json.loads(out)
++            need(isinstance(child,dict) and child.get('schema')=='heptabao.mac-owned-registry-wal-reader.r1'
++                 and child.get('case')==case and child.get('ok') is True and child.get('outcomeUnknown') is False
++                 and child.get('expectedResultMatched') is True and child.get('allOwnedClosed') is True
++                 and child.get('originalDeadlineAfterClosure') is True and child.get('productionInputsRead') is False,
++                 'exact_child_case_and_closure')
++            actual_runtime=child['attempt']['runtime']
++            need(actual_runtime['runtime']==runtime,'actual_reader_same_installed_runtime')
++            if 'runtime' not in report:report['runtime']=actual_runtime
++            else:need(report['runtime']==actual_runtime,'same_runtime_and_source_id_all_cases')
++            after=fixture_snapshot(writer)
++            if case not in DRIFT_IDS:need(after==writer['before'],'readonly_fixture_whole_bytes_and_identity_changed')
++            else:need(after!=writer['before'] and writer['mutationCompleted'],'expected_actual_fixture_drift')
++            if case=='W01':need(child['resultSha256']==writer['expectedResultSha256'],'wal_only_actual_sentinel')
++            need(close_writer(writer),'owned_writer_and_hash_descriptor_close')
++            report['cases'].append({'case':case,'matched':True,'command':command,'profileSha256':digest(profile),
++                'readerStdoutSha256':digest(out),'readerStdoutBytes':len(out),
++                'before':writer['before'],'after':after,'writerClosedBeforeHeldFdClose':True,
++                'mainUnchangedAcrossWalCommit':writer['mainUnchangedAcrossWalCommit'],
++                'expectedOwnedPostReadCheckpointOnWriterClose':True})
++        for name in NAMES:
++            _,after=read_public(QA/name,128*1024,candidate['sourcePins'][name]);need(after==source_ids[name],'all_sources_same_after')
++        for path in UTILITY_PATHS:need(utility_fingerprint(base,path)==utility_before[path],'public_utility_same_after')
++        need(base.runtime_identity(remaining=remaining,critical=critical)==runtime,'actual_runtime_same_after')
++        report['nativeSelfAfter']=native_api.qualify_self(until=UNTIL)
++        before_self=report['nativeSelfBefore']['first'];after_self=report['nativeSelfAfter']['last']
++        need(all(before_self[key]==after_self[key] for key in
++             ('pid','ppid','pgid','uid','birthSeconds','birthMicroseconds')),
++             'same_parent_native_self_birth_after_owned_readers')
++        guard.check();report['sourceAndRuntimeAfterVerified']=True
++        report['allCasesMatched']=len(report['cases'])==10
++        report['ok']=report['allCasesMatched']
++    except BaseException as error:
++        report['errorType']=type(error).__name__;report['errorCode']=str(error) if isinstance(error,Refused) else None
++        report['ok']=False
++    finally:
++        signal.signal(signal.SIGTERM,signal.SIG_IGN);signal.signal(signal.SIGINT,signal.SIG_IGN)
++        for writer in reversed(writers):close_writer(writer)
++        # run_reader owns exactly one cleanup per started child. It returns
++        # even on failure; the final pass reports, never re-signals that PID.
++        for row in reversed(fd_ledger):
++            if not row.get('closeBlockedByUnconfirmedConnection'):close_fd(row)
++        report['ownedReaders']=[r.get('public') for r in children]
++        report['ownedCommands']=commands.public()
++        if native_api is not None:report['nativeProjection']=native_api.public()
++        report['writerConnectAttempts']=writer_attempts
++        report['writerConnections']=[{'case':w['case'],'closeAttempted':w['closeAttempted'],'closed':w['closed'],
++             'cursorCount':len(w['cursors']),'cursorsClosed':all(r['closed'] for r in w['cursors']),
++             'heldDescriptorsClosed':all(r['closed'] for r in w['held']),
++             'closeErrorType':w.get('closeErrorType')} for w in writers]
++        report['ownedFdLedger']=[{k:v for k,v in r.items()} for r in fd_ledger]
++        if guard is not None:guard.close();report['heldT5Final']=guard.public_state()
++        closed=(guard is not None and report['heldT5Final']['allDescriptorsClosed']
++            and report['heldT5Final']['lastAnchorCheckPassed'] and report['heldT5Final']['closeErrors']==[]
++            and all(r['closed'] for r in fd_ledger) and all(w['closed'] and all(c['closed'] for c in w['cursors']) for w in writers))
++        stopped=(report['ownedCommands']['allOwnedCommandsStopped'] and report['ownedCommands']['unknownCommandCount']==0
++            and all(r is not None and not r['outcomeUnknown'] for r in report['ownedReaders']))
++        public_code_closed=report.get('sourceAndRuntimeAfterVerified') is True
++        completed=time.monotonic();report['allOwnedClosed']=closed and stopped and public_code_closed
++        report['originalDeadlineAfterClosure']=completed<UNTIL;report['elapsedSeconds']=completed-START
++        report['ownedFixtureHashBytes']=hashed_bytes
++        report['outcomeUnknown']=not(closed and stopped and public_code_closed and signals.pending is None
++            and all(a['handleReturned'] for a in writer_attempts))
++        report['proofPublishedToStdoutOnly']=True;report['resultFileWritten']=False
++        report['ok']=report['ok'] and not report['outcomeUnknown'] and completed<UNTIL
++        raw=encoded(report);need(len(raw)<=256*1024,'public_proof_bound')
++        # This complete public stdout is authoritative only with actual exit 0.
++        # The parent/transport receipt is not inferred from an earlier file.
++        sys.stdout.buffer.write(raw);sys.stdout.buffer.flush()
++    return 0 if report['ok'] and time.monotonic()<UNTIL else 1
++
++if __name__=='__main__':sys.exit(main())

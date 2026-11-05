@@ -1,0 +1,96 @@
+{
+  "schema": "heptabao.root.source-import-r2-complete-closure.r21",
+  "as_of_utc": "2026-11-05 06:48:40 UTC",
+  "status": "COMPLETE_ORIGINAL_IMPORT_ROOT_CLOSED",
+  "packet": {
+    "tree": "bfc089565be71f54867c8082668d56243df582c0",
+    "files": 291,
+    "bytes": 6149680,
+    "merkle_trees": 9
+  },
+  "original_job": "1a1aa422e15-fc05-3ffa",
+  "request_blob": "44d6e3dc9773637744d1805f3f57f32540fc168d",
+  "prior_core_review_blob": "faf8cac3f7aa46bcf238e863703bde9ae984385b",
+  "core": {
+    "blob": "db8fc8982977ced35666ade66e7272bdda38c601",
+    "bytes": 35428,
+    "sha256": "afdfccd3a380b1fdc56dd4a1833f073c8d69add409ea0a46604eb54bfaa6226e"
+  },
+  "authority": {
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true
+  },
+  "custody": {
+    "elapsed_seconds": 52.56719151802827,
+    "original_seconds": 300,
+    "owned_children": 21,
+    "exit_zero": 19,
+    "expected_config_absence_exit_one": 2,
+    "all_reaped_empty": true,
+    "held_files_closed": 3,
+    "held_directories_closed": 4,
+    "created_source_directory_closed": true,
+    "full_history_commits": 3757,
+    "tracked_files": 3913,
+    "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825"
+  },
+  "command_logs": {
+    "tree": "2851295e6c6e8f08c40b131d9dc5ba0cc0f38a98",
+    "files": 63,
+    "bytes": 911711,
+    "root_checks": 11821,
+    "command_json_exact_core": 21,
+    "whole_stdout_stderr": 42
+  },
+  "original_read_provenance": {
+    "check_count": 1068,
+    "operations": 22,
+    "pages": 99,
+    "small_command_files": 61,
+    "whole_source_reads": 1,
+    "binary_chunks": 14,
+    "assemblies": [
+      {
+        "kind": "tree",
+        "chunks": 7,
+        "bytes": 450325,
+        "sha256": "26cded6036297c4bf23fa3531badd14d2cabd877d6b8e64fc766fb41259c04ad",
+        "blob": "b835411cf9c0f98c081302ce9605fa7ab81b862a",
+        "version": "2050:5022773:450325:1793857836996483630:1793857836996653018",
+        "initial_unpinned_requests": 0
+      },
+      {
+        "kind": "index",
+        "chunks": 7,
+        "bytes": 438586,
+        "sha256": "58636c03d1281c28aec3963cedb04b999b2e7685d4482313ff8545cbab5e2f26",
+        "blob": "285ca8d0945cf6969ded09ab818e9e3121784922",
+        "version": "2050:5022776:438586:1793857837064243882:1793857837064243882",
+        "initial_unpinned_requests": 1
+      }
+    ],
+    "all_success": true
+  },
+  "materialized_source": {
+    "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "files": 3913,
+    "bytes": 62212769,
+    "independent_merkle_trees": 358,
+    "tree_and_stage_zero_index_exact_canonical": true
+  },
+  "limitations": [
+    "Small file reads are independent, not an atomic multi-file snapshot.",
+    "The first index binary chunk had no expected_version; all later chunks used the first observed version, and all seven returned versions and the whole byte/hash stream matched.",
+    "Completed source import does not qualify LAN HA, H2, X230, AuthBus or production replacement."
+  ],
+  "offline_checker_correction": {
+    "error": "record commands/importer.py",
+    "scope": "Offline root checker assumed every small-read path was a command log; logs-3 also includes the importer source. No host request or artifact mutation.",
+    "corrective_action": "Resolve actual importer.py to actual/importer.py, then check the exact count of command-log bodies plus the source separately."
+  },
+  "full_replacement": false,
+  "production_changed": false
+}

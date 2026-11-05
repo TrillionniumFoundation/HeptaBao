@@ -1,0 +1,29 @@
+{
+  "schema": "heptabao.root.r20.complete-tree-publication-review.v1",
+  "expected_tree": "eee3302e2e1921f42858cea20cf5311f4b12bb3d",
+  "base_tree": "5a75008a74521860370c90bf588ace5f52804dd1",
+  "base_blobs": 11777,
+  "after_blobs": 11994,
+  "new_files": 217,
+  "prior_non_document_leaves_whole_unchanged": 11775,
+  "prior_files_deleted": 0,
+  "document_files_updated": 2,
+  "new_packet_count": 6,
+  "new_root_leaf_count": 25,
+  "all_new_paths_whole_verified": true,
+  "old_raw_index_tokens_preserved_except_top_asof": true,
+  "old_document_body_preserved": true,
+  "commit": "fb6f3cba5384e6687eace2d2ac2071b20247e69b",
+  "tree": "eee3302e2e1921f42858cea20cf5311f4b12bb3d",
+  "parent": "ca5f3066f3c432ee1c3dff913be47a70e1ba63db",
+  "merkle": {
+    "root_sha": "eee3302e2e1921f42858cea20cf5311f4b12bb3d",
+    "trees_verified": 1634
+  },
+  "actual_nonrecursive_root_entries": 26,
+  "full_tree_verification": "Complete R19 verified leaves plus six verified packet trees, 25 root leaves and two exact document replacements; reconstruction matches created root and all actual immediate root entries. No new recursive fetch was requested.",
+  "compare_and_swap_ref_verified": true,
+  "full_replacement_qualified": false,
+  "production_changed": false,
+  "old_assets_deleted": false
+}

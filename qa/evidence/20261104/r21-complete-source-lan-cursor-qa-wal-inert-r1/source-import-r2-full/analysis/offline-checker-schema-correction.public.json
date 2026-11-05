@@ -1,0 +1,24 @@
+{
+  "scope": "local offline archive checker only",
+  "condition": "core.status == passed",
+  "actual_status": "complete",
+  "source_imported": true,
+  "cause": "checker guessed status literal instead of reading frozen importer schema",
+  "product_or_host_execution": false,
+  "original_source_result_unchanged": true,
+  "corrected_from_original_source_contract": {
+    "status": "complete",
+    "product_tests_executed": {
+      "type": "int",
+      "value": 0
+    },
+    "expected_exit_one_labels": [
+      "013-no-sparse-config",
+      "020-source-after-partial-config"
+    ]
+  },
+  "later_run": {
+    "exit_code": 0,
+    "scope": "same immutable original files; no native program execution"
+  }
+}

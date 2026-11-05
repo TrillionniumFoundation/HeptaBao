@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"backend\": \"systemd\",\n  \"job_id\": \"1a1aa914172-fc05-4473\",\n  \"state\": \"running\",\n  \"systemd\": {\n    \"ActiveState\": \"active\",\n    \"Description\": \"Hepta Runtime job 1a1aa914172-fc05-4473 fe0aef17517192c787e11ba4ed8b6e45\",\n    \"ExecMainCode\": \"0\",\n    \"ExecMainPID\": \"1799691\",\n    \"ExecMainStatus\": \"0\",\n    \"InvocationID\": \"e07135819d0a4d369579c19f0e6cbe63\",\n    \"LoadState\": \"loaded\",\n    \"Result\": \"success\",\n    \"SubState\": \"running\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

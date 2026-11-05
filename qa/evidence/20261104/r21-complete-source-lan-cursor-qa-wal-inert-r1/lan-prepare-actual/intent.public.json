@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.df026-lan-prepare-intent.v1",
+  "time_before_submission": "2026-11-05 06:49:40 UTC",
+  "root_go": {
+    "bytes": 1598,
+    "sha256": "02fab7ae7f6c2aaf6082f5fc3c178a233437af840361e1a5ee0198ad5a28ba3c",
+    "blob": "7e127495ae4b8bfc8bc0b9b01c785ecfafcaf716"
+  },
+  "exact_request": {
+    "bytes": 452,
+    "sha256": "9283382f0dffa619cf96959748848b551a4c12c24807c510c6973e6d3cd23cbc",
+    "blob": "43509c69abd176551395e86800d24a584196d042"
+  },
+  "request": {
+    "host": "desktop",
+    "executable": "/usr/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-pocket3-mac1-postrecovery-cold-control-r1/launch_normal_cold_h2_pocket_postrecovery_cold_r1.py",
+      "--prepare-only"
+    ],
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "timeout_seconds": 360,
+    "idempotency_key": "heptabao-df026-postcold-prepare-r1-664df513-83046e6f"
+  },
+  "mode": "prepare-only",
+  "single_submission": true,
+  "automatic_retry": false,
+  "live_go": false,
+  "x230_original_unknown_replay": false,
+  "fence_execution": false,
+  "production_changed": false
+}

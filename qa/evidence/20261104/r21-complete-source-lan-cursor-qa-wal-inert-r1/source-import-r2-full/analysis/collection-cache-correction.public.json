@@ -1,0 +1,8 @@
+{
+  "kind": "local_page_cache_key_collision",
+  "cell": "g2:634",
+  "cause": "collector keyed pages by shared op.prefix instead of prefix plus operation label",
+  "result": "one immutable page retained at shared cache key; two same-offset responses rejected by local duplicate guard",
+  "native_operation_reexecution": false,
+  "correction": "key by prefix+label; retain and re-use matching saved frame, re-fetch only immutable operation_result pages if not retained"
+}

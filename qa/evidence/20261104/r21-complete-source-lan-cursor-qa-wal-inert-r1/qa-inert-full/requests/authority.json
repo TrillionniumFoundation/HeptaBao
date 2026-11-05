@@ -1,0 +1,10 @@
+{
+  "idempotency_key": "heptabao-df026-qa-inert-authority-1a1aa7c3dff-20261105-r1",
+  "operation": {
+    "tool": "process_status",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1aa7c3dff-fc05-439c"
+    }
+  }
+}

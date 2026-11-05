@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.df026-lan-live-request-proposal.v1",
+  "status": "SOURCE_ONLY_NOT_SUBMITTED",
+  "request": {
+    "bytes": 543,
+    "sha256": "0465a65320220bb33a4143a3d0ba691ffaf3de96150c2e9ff87531fa223e3815",
+    "blob": "12c1e2ef069187f92513b03d4341f55ba8a55fab"
+  },
+  "prepared": {
+    "bytes": 42456,
+    "sha256": "89418a152b5b23db976cc88de4d8eabca3f53aeb66ed632534bf057672bc58bb",
+    "blob": "1d69f5fd529a30c86afbe1e9799ef3705c15b898",
+    "version": "2050:5019606:42456:1793861479426342539:1793861479426342539"
+  },
+  "prepare_complete_tree": "3a9f069c9c0d4e4142e681fa70eef33beb3fee53",
+  "prepare_root_review": {
+    "bytes": 3923,
+    "sha256": "13e32e14d74e7cdf44ce3975f9b1ea1ee624d2568145e64b048efac27a60e414",
+    "blob": "3abbf51a04d8fb9fb904cd652903e2df854f4f88"
+  },
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "changes_from_actual_prepare_request": {
+    "action": "--prepare-only to --run-once",
+    "add_arguments": [
+      "--prepared-sha256",
+      "89418a152b5b23db976cc88de4d8eabca3f53aeb66ed632534bf057672bc58bb"
+    ],
+    "outer_seconds": 3000,
+    "idempotency_key": "heptabao-df026-postcold-live-r1-664df513-83046e6f"
+  },
+  "limits_unchanged": {
+    "original_controller_seconds": 2400,
+    "postrecovery_shared_seconds": 300,
+    "role_prepare_shared_seconds": 60,
+    "http_seconds": 15,
+    "native_admission_seconds": 8
+  },
+  "original_checks": 98,
+  "extra_checks_separate": 12,
+  "comparison_fences": 32,
+  "requires_before_submission": [
+    "root exact live GO",
+    "accepted effect-fence terminal/full report/closure before this run creates sibling fixture roots",
+    "root exclusive physical resource window"
+  ],
+  "old_x230_job_state": "unknown",
+  "old_x230_job_replay": false,
+  "fence_proves_old_terminal_or_cleanup": false,
+  "host_calls_in_this_package": 0,
+  "production_cutover": false
+}

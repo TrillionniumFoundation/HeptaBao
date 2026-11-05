@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.df026-lan-live-intent.v1",
+  "before_submission_utc": "2026-11-05 07:16:09 UTC",
+  "root_go": {
+    "bytes": 2209,
+    "sha256": "88c0c4565fc6f7e77055cff85309f12da793dc333e53ca71b44b2ca367b5104e",
+    "blob": "e94e628e3da417768d8cf75e3057a853d3b0585d"
+  },
+  "exact_request": {
+    "bytes": 543,
+    "sha256": "0465a65320220bb33a4143a3d0ba691ffaf3de96150c2e9ff87531fa223e3815",
+    "blob": "12c1e2ef069187f92513b03d4341f55ba8a55fab"
+  },
+  "host": "desktop",
+  "idempotency_key": "heptabao-df026-postcold-live-r1-664df513-83046e6f",
+  "prepared_sha256": "89418a152b5b23db976cc88de4d8eabca3f53aeb66ed632534bf057672bc58bb",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "original_checks": 98,
+  "separate_extra_checks": 12,
+  "comparison_fences": 32,
+  "limits": {
+    "outer": 3000,
+    "controller": 2400,
+    "postrecovery_cold": 300,
+    "role": 60,
+    "http": 15,
+    "native_admission": 8
+  },
+  "single_submission": true,
+  "automatic_retry": false,
+  "quiet_confirmations": {
+    "compatibility_agent": "0 pending host / 0 Cargo; Git only",
+    "authbus_agent": "five prior public file_info calls all completed before this submission; 0 pending host; Git only"
+  },
+  "scheduling_hold_released_by_root_after_known_fence_refusal": true,
+  "fence_root_review": {
+    "bytes": 2419,
+    "sha256": "1f67dba89ce0ea1d150109593cd520c18cd12ea2f57a56b994d00a8e10494ffe",
+    "blob": "2d36c337939f6b57fd402902c38a851104d01208"
+  },
+  "original_x230_relay_state": "unknown",
+  "original_x230_relay_replayed": false,
+  "new_x230_transport": false,
+  "forced_leader": false,
+  "production_cutover": false
+}

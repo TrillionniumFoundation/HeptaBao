@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.root.lan-actual-boundary-review.v1",
+  "status": "PASS_EVIDENCE_OF_KNOWN_FAILED_RUN",
+  "tree": "e76233189ab4f9827d1a9d939d10bb73c6417873",
+  "checks_passed": 562,
+  "whole_originals": 98,
+  "original_sdk_batches": 7,
+  "unique_pairs": 49,
+  "versions_preserved_as_decimal_strings": true,
+  "statuses": {
+    "200": 39,
+    "204": 8,
+    "503": 2
+  },
+  "budgets_seconds": {
+    "12": 1,
+    "15": 48
+  },
+  "last_failure": {
+    "sequence": 49,
+    "node": 2,
+    "route": "sys/unseal",
+    "status": 503,
+    "elapsed_ms": 10289.344,
+    "response_sha256": "f05273faea0480ecda3965f3233bc523ad2cc6da20482368438d12da340599e1"
+  },
+  "original98": {
+    "passed": 91,
+    "missing": 7
+  },
+  "extra12": {
+    "executed": 0,
+    "original_order_matches_prepared": true
+  },
+  "scope_limits": [
+    "No request or response credential bodies were retrieved; only public SHA records and public CAS/version metadata are checked.",
+    "No storage commit outcome is inferred from HTTP or transport outcomes.",
+    "The original run remains failed; missing assertions were not substituted with later root checks.",
+    "Individual original98 names were source-audited in the producer and earlier source qualification; this additional verifier directly checks the unchanged denominator, unique 91+7 union and exact prepared extra12 order."
+  ],
+  "owned_closure": {
+    "name": "r21_lan_owned_closure_root_review",
+    "blob": "431c6fdc2c6ffe1d6e224df2f9105252ce9b1e1f",
+    "bytes": 1318,
+    "sha256": "63862573b680d66e44a5b81d81c4a78cdd346a0e8e0039ba085574efceca15b8"
+  },
+  "root_verifier_correction": "Initial public-field allowlist omitted pre-existing numeric CAS/version and SHA-only expected-data fields. Inspected actual schema, added and type-checked those fields; retained the initial offline failure. No product or host replay."
+}

@@ -1,0 +1,89 @@
+{
+  "schema": "heptabao.x230-relay-effect-fence-source-proof.v1",
+  "relay": {
+    "bytes": 21085,
+    "sha256": "732fa7e74d859c48cd3844967409254e6f7cd44d4ceb148a20d2ea89ed07388f",
+    "blob": "b076da8a629694e0dc988c57c13e03fa1b2ec548"
+  },
+  "metadata": {
+    "bytes": 10224,
+    "sha256": "52a60fad1531ebb5bcc05bef3261ef7e83f68956fa476b71c008a98412b49aaf",
+    "blob": "ad852419c3217db37ce6cf1ede5e1ec219a60d80"
+  },
+  "decision": "SOURCE_SPECIFIC_CAS_POSSIBLE_WITH_EXPLICIT_LIMITS",
+  "original_flow": [
+    {
+      "line": 246,
+      "operation": "ROOT absence assertion"
+    },
+    {
+      "line": 247,
+      "operation": "CONTROL absence assertion"
+    },
+    {
+      "line": 260,
+      "operation": "mandatory ROOT.mkdir, exist_ok default False; fsync BASE"
+    },
+    {
+      "line": 261,
+      "operation": "CONTROL.mkdir, created=True; fsync ROOT"
+    },
+    {
+      "line": 262,
+      "operation": "public intent"
+    },
+    {
+      "line": 267,
+      "operation": "inspect_config -> first start_child"
+    },
+    {
+      "line": 269,
+      "operation": "receiver start_child"
+    },
+    {
+      "line": 272,
+      "operation": "sender start_child"
+    },
+    {
+      "line": 364,
+      "operation": "finally snapshot, including blocked early failures"
+    },
+    {
+      "line": 378,
+      "operation": "result publication only if created=True"
+    }
+  ],
+  "races": [
+    {
+      "case": "fence mkdir wins before old absence test",
+      "result": "old assert refuses; no transport child"
+    },
+    {
+      "case": "old absence test passed but fence mkdir wins",
+      "result": "old mandatory mkdir raises; no transport child"
+    },
+    {
+      "case": "old mkdir wins first",
+      "result": "fence must refuse; no claim of isolation"
+    },
+    {
+      "case": "ancestor/reservation later renamed or removed",
+      "result": "persistent effect-isolation claim no longer justified"
+    }
+  ],
+  "nonclaims": [
+    "original terminal",
+    "original nonexecution",
+    "original child cleanup",
+    "no later ps",
+    "permanent namespace lock",
+    "product qualification"
+  ],
+  "metadata_source_unsubmitted": true,
+  "fence_ready": false,
+  "fence_request": null,
+  "original_unknown_packets": [
+    "e836f3d7ef058cf539daaa9030025151a6f27fde",
+    "a6ac5db43375143d877da029da353807bf13600f"
+  ]
+}

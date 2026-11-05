@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-df026-import-r2-streams-1a1aa422e15-20261105-r1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1aa422e15-fc05-3ffa",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

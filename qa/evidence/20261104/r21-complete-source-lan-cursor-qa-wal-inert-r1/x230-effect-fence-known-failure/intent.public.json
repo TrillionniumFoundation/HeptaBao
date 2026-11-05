@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.x230-original-relay-create-only-fence-intent.v1",
+  "before_submission_utc": "2026-11-05 07:08:42 UTC",
+  "root_go": {
+    "bytes": 23877,
+    "sha256": "fe106a32226b54c0cbac72ea01435231891d7240e47a12d018f148c30cb7c4d8",
+    "blob": "3003569517e33855bf6ab72aa9a4f0b61e361982"
+  },
+  "request": {
+    "bytes": 22911,
+    "sha256": "224d8e61cdfc07d5b4744251c82f1e10ac9090e37aec45e186517105ec02df57",
+    "blob": "83e7c42168f95be5b9f2c440d742e13a9ef20bab"
+  },
+  "host": "desktop",
+  "idempotency_key": "heptabao-x230-original-relay-effect-fence-r1-3419846a",
+  "source": {
+    "bytes": 21479,
+    "sha256": "3419846a745c8d3df32a09f74bf84461a0e9cde90296f7e555437faf3b2c6e89",
+    "blob": "abcbde6b6defd3376d0c2cc2c490c45303c78896"
+  },
+  "original_job": "1a1aa57458d-fc05-4156",
+  "original_execution_state": "unknown",
+  "original_relay_replay": false,
+  "scope": "one exact new create-only directory reservation and public tombstone; no transport",
+  "single_submission": true,
+  "automatic_retry": false,
+  "soft_seconds": 15,
+  "outer_seconds": 60,
+  "new_transport_go": false,
+  "live_lan_go": false,
+  "existing_root_means_refusal": true,
+  "failure_retained_no_cleanup_or_pin_refresh": true
+}

@@ -1,0 +1,110 @@
+{
+  "schema": "heptabao.root.r21-ci-observation.v1",
+  "observation_cutoff_utc": "2026-11-05T07:40:18Z",
+  "candidate_lineage": [
+    "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+    "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+    "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+    "6d02ceca629163e1c07480fa1f21520434407143"
+  ],
+  "pr154": {
+    "run": 41969050046,
+    "head_job": 127052736848,
+    "head_workspace": "failed",
+    "serverlib": {
+      "passed": 3720,
+      "failed": 2,
+      "ignored": 8
+    },
+    "failures": [
+      "service::native_seed::offline_import::ha_import::tests::maintenance_ha_import_real_quorum_writer_and_cold_readindex_preserve_history",
+      "service::native_v6_ha_pipeline_tests::native_large_import_tests::native_ha_large_kv2_full34_pre_activation_mount_lagging_v5_follower_kill_restore_cold"
+    ],
+    "merge_job": 127052736696,
+    "merge_workspace": "passed",
+    "merge_clippy": "failed",
+    "inner_causes_not_uniquely_established": true
+  },
+  "pr155": {
+    "run": 41971995724,
+    "jobs": [
+      {
+        "id": 127062153929,
+        "name": "OpenBao replacement / head",
+        "status": "completed",
+        "conclusion": "failure",
+        "steps": [
+          {
+            "name": "Test the complete locked Rust workspace",
+            "conclusion": "success"
+          },
+          {
+            "name": "Check strict first-party workspace Clippy",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "id": 127062154166,
+        "name": "OpenBao replacement / merge",
+        "status": "completed",
+        "conclusion": "failure",
+        "steps": [
+          {
+            "name": "Test the complete locked Rust workspace",
+            "conclusion": "success"
+          },
+          {
+            "name": "Check strict first-party workspace Clippy",
+            "conclusion": "failure"
+          }
+        ]
+      },
+      {
+        "id": 127109596073,
+        "name": "OpenBao replacement / exact-head-and-merge verdict",
+        "status": "completed",
+        "conclusion": "failure"
+      }
+    ],
+    "both_complete_workspaces_passed": true,
+    "both_clippy_failed": true,
+    "head_serverlib": {
+      "passed": 3722,
+      "failed": 0,
+      "ignored": 8,
+      "seconds": 2924.69
+    },
+    "historical_pr154_failure_cause_not_proven_fixed": true
+  },
+  "pr156": {
+    "run": 41976736304,
+    "head_job": 127077221194,
+    "merge_job": 127077220873,
+    "both_rustfmt_failed": true,
+    "workspace_and_clippy_skipped": true,
+    "exact_same_one_hunk_format_request": true
+  },
+  "pr157": {
+    "number": 157,
+    "url": "https://github.com/TrillionniumFoundation/HeptaBao/pull/157",
+    "head": "6d02ceca629163e1c07480fa1f21520434407143",
+    "merge": "4741ed09a6ebfe49b67d33798718ca2d0f18f2c9",
+    "tree": "09aa45b9439741780961c2af76680c27e0773d08",
+    "base": "7b4a59bdd72218c1e779eb32754a682cf465af7a",
+    "run": 41987962107,
+    "latest_observed_status": "queued",
+    "new_ci_pass": false,
+    "local_rustfmt_executed": false,
+    "delta_from_parent": {
+      "files": 1,
+      "bytes": 9,
+      "whitespace_only": true
+    },
+    "independent_peer": "1438f095af416511489ceaab2690ca002789fe32",
+    "host_qualification_inherited": false
+  },
+  "full_openbao_compatibility_qualified": false,
+  "production_cutover": false
+}

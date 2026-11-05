@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.source-only-manifest.v1",
+  "files": [
+    {
+      "path": "dispatch/request.public.json",
+      "bytes": 543,
+      "sha256": "0465a65320220bb33a4143a3d0ba691ffaf3de96150c2e9ff87531fa223e3815",
+      "blob": "12c1e2ef069187f92513b03d4341f55ba8a55fab"
+    },
+    {
+      "path": "PLAN.public.json",
+      "bytes": 1929,
+      "sha256": "3551d722fc0865d2f1d62818c0916622dfb4fb6ee02af830529b27949bb658b0",
+      "blob": "7a413c2851e2310162adeb5e68393794a19bbbc5"
+    },
+    {
+      "path": "references/launcher.executed.py",
+      "bytes": 24819,
+      "sha256": "664df513a89bec9484b52206b934bd95a9b37d67ac5fc3cde2a6f4bdeea481c3",
+      "blob": "aeeb6d3d0c0b7e896679a0cf4d344a724870ef3c"
+    },
+    {
+      "path": "references/prepare-request.original.json",
+      "bytes": 452,
+      "sha256": "9283382f0dffa619cf96959748848b551a4c12c24807c510c6973e6d3cd23cbc",
+      "blob": "43509c69abd176551395e86800d24a584196d042"
+    },
+    {
+      "path": "references/prepared.actual.public.json",
+      "bytes": 42456,
+      "sha256": "89418a152b5b23db976cc88de4d8eabca3f53aeb66ed632534bf057672bc58bb",
+      "blob": "1d69f5fd529a30c86afbe1e9799ef3705c15b898"
+    },
+    {
+      "path": "references/prepare-root-review.original.json",
+      "bytes": 3923,
+      "sha256": "13e32e14d74e7cdf44ce3975f9b1ea1ee624d2568145e64b048efac27a60e414",
+      "blob": "3abbf51a04d8fb9fb904cd652903e2df854f4f88"
+    },
+    {
+      "path": "references/terminal-read-operation.closed-status.original.json",
+      "bytes": 803,
+      "sha256": "08fc7008ee8c2076b47e254dc104d3d9d6a686168ec678a371f2951963aad3ba",
+      "blob": "b394308bf2a61fd9f09523fa6a513a921b8ed4c9"
+    },
+    {
+      "path": "verification/request_checks.py",
+      "bytes": 2513,
+      "sha256": "7aa5644c999247a3795df2ecb0c69d74ecadc4c187bb1764465ab5c6ffcd60ef",
+      "blob": "aee6aef0a1a20843c1aba6d03839923e52815528"
+    },
+    {
+      "path": "verification/stdout.original.json",
+      "bytes": 601,
+      "sha256": "c2efc78d99eb487d920ba1f8207b26aa9385e59716c72eec46fb781f7e6739b4",
+      "blob": "180ef616578706ed328f1dba4d82f43fe91942b7"
+    },
+    {
+      "path": "verification/executor.original.json",
+      "bytes": 764,
+      "sha256": "6aa414b108b52e7f437f13d2949c2b86a764dffc6459fa8a43e4ec07c81fb7f9",
+      "blob": "6597f64cb86d21d3d90e379ac3eea39f5f7f29aa"
+    }
+  ]
+}

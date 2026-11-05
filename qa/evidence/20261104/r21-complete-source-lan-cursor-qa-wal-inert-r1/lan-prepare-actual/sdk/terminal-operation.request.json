@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "ha-df026-lan-prepare-terminal-r1-1a1aa797d2f",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1aa797d2f-fc05-4377",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

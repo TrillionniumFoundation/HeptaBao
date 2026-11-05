@@ -1,0 +1,22 @@
+--- reference/qa_inert.unbound.py
++++ source/qa_inert.actual.py
+@@ -3,7 +3,7 @@
+ from pathlib import Path
+ import base64, hashlib, json, os, stat, sys, time
+ 
+-ACTUAL_INPUTS_READY = False
++ACTUAL_INPUTS_READY = True
+ if not ACTUAL_INPUTS_READY:
+     raise RuntimeError('actual_qa_build_binding_unresolved')
+ os.umask(0o077)
+@@ -41,8 +41,8 @@
+         "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9"
+     ],
+     "build-binding.private.json": [
+-        None,
+-        None
++        4039,
++        "8807a51468c42c09d68058e9ba63313676e69f99b8d922dca11083b920581b1d"
+     ]
+ }
+ def sha(raw):

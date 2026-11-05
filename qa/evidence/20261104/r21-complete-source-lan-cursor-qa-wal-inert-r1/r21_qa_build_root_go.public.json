@@ -1,0 +1,54 @@
+{
+  "schema": "heptabao.root.qa-build-once-go.v1",
+  "scope": "Original reviewed isolated H2 QA builder including its six component checks; no product service launch or qualification inheritance",
+  "request": {
+    "path": "requests/build.exact.json",
+    "blob": "de920eb559aa9b190284280eb58576c7db76e25c",
+    "bytes": 647,
+    "sha256": "75cabd8864a3d1d429dc6f43c6e5f634b35ee2b0407c79af1835381950f7b207",
+    "mode": "100644"
+  },
+  "exact_request": {
+    "host": "rog",
+    "executable": "/usr/bin/python3.12",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1/build_native_h2_client_r1.py",
+      "--binding",
+      "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1/build-binding.private.json",
+      "--binding-sha256",
+      "8807a51468c42c09d68058e9ba63313676e69f99b8d922dca11083b920581b1d",
+      "--self-sha256",
+      "2e2ea6edd029b3d7164fbe6a85826ef3523a0ec60586d330b539761d870c0a35"
+    ],
+    "cwd": "/home/qian-qi",
+    "timeout_seconds": 660,
+    "idempotency_key": "heptabao-df026-native-h2-qa-build-2e2ea6ed-8807a514-20261105-r1"
+  },
+  "root_inert_review": {
+    "name": "r21_qa_inert_full_root_review",
+    "blob": "62cb9fe439b5ed282941941eb897d7937330e197",
+    "bytes": 2381,
+    "sha256": "14000ae42818abe93fec1b6f80d82a681113d9c9aa8dc0fb1b7fd258fb68747e"
+  },
+  "source_root_review": {
+    "name": "r21_qa_actual_bound_root_review",
+    "blob": "2b4e9886035f2a6914b590bf63e36f922b1818f6",
+    "bytes": 2952,
+    "sha256": "6c74af3e283e492dc182f47342fbba5356546c9f42d20776224a55eb4fe8e169"
+  },
+  "lan_owned_closure": {
+    "name": "r21_lan_owned_closure_root_review",
+    "blob": "431c6fdc2c6ffe1d6e224df2f9105252ce9b1e1f",
+    "bytes": 1318,
+    "sha256": "63862573b680d66e44a5b81d81c4a78cdd346a0e8e0039ba085574efceca15b8"
+  },
+  "quiet_released": true,
+  "original_build_seconds": 600,
+  "outer_seconds": 660,
+  "reset_deadlines": false,
+  "replay_on_unknown": false,
+  "product_qualification": false
+}

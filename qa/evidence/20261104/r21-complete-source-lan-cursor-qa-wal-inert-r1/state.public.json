@@ -1,0 +1,576 @@
+{
+  "schema": "heptabao.full-replacement-checkpoint.r21",
+  "as_of_utc": "2026-11-05T07:40:18Z",
+  "observation_scope": "Host events and CI observations through this cutoff; subsequent immutable readbacks and root verification complete this evidence package. Later R22 observations are not folded into this frozen state.",
+  "full_openbao_271_replacement_qualified": false,
+  "production_cutover_performed": false,
+  "production_config_changed": false,
+  "old_assets_deleted": false,
+  "previous_checkpoint": "fb6f3cba5384e6687eace2d2ac2071b20247e69b",
+  "evidence": {
+    "prefix": "qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1",
+    "manifest_path": "qa/evidence/20261104/r21-complete-source-lan-cursor-qa-wal-inert-r1/manifest.public.json",
+    "packets": [
+      {
+        "name": "source-import-r2-full",
+        "tree": "bfc089565be71f54867c8082668d56243df582c0",
+        "cache": "r21_source_import_r2_full_actual_tree",
+        "files": 291,
+        "bytes": 6149680,
+        "merkle_trees": 9
+      },
+      {
+        "name": "qa-bound-source",
+        "tree": "28ba0d7fce5ba1c3d62b4ce0720fabe916027c37",
+        "cache": "r21_qa_actual_bound_source_tree",
+        "files": 41,
+        "bytes": 1828912,
+        "merkle_trees": 9
+      },
+      {
+        "name": "qa-inert-full",
+        "tree": "3e4d2c2df45a1b41b6b847aa6889bb2cc94e64f8",
+        "cache": "r21_qa_inert_full_actual_tree",
+        "files": 80,
+        "bytes": 1897526,
+        "merkle_trees": 13
+      },
+      {
+        "name": "qa-build-known-failure",
+        "tree": "fa98f537f52e0eb75c8d26a53084a79a87564878",
+        "cache": "r21_qa_build_failed_actual_tree",
+        "files": 42,
+        "bytes": 109205,
+        "merkle_trees": 13
+      },
+      {
+        "name": "x230-fixed-metadata-source",
+        "tree": "2584a3d13fd5216a7efad75bfc2573f268fcf82e",
+        "cache": "r21_x230_fence_metadata_source_tree",
+        "files": 12,
+        "bytes": 64509,
+        "merkle_trees": 5
+      },
+      {
+        "name": "x230-fixed-metadata-actual",
+        "tree": "f177477024a1dec8d4fb4dba8d049a14e70500e5",
+        "cache": "r21_x230_fence_metadata_actual_tree",
+        "files": 12,
+        "bytes": 71337,
+        "merkle_trees": 3
+      },
+      {
+        "name": "x230-effect-fence-source",
+        "tree": "c9e752194fc092a0c920949386b2f09ded97896b",
+        "cache": "r21_x230_fence_active_source_tree",
+        "files": 27,
+        "bytes": 157254,
+        "merkle_trees": 6
+      },
+      {
+        "name": "x230-effect-fence-known-failure",
+        "tree": "cde110c2bfc58a78f38c91993253279807872494",
+        "cache": "r21_x230_fence_failed_actual_tree",
+        "files": 13,
+        "bytes": 112056,
+        "merkle_trees": 3
+      },
+      {
+        "name": "lan-prepare-actual",
+        "tree": "3a9f069c9c0d4e4142e681fa70eef33beb3fee53",
+        "cache": "r21_lan_prepare_full_actual_tree",
+        "files": 22,
+        "bytes": 124127,
+        "merkle_trees": 3
+      },
+      {
+        "name": "lan-live-request",
+        "tree": "5444d97bb4aec39ce55152a10298cdc78fb75561",
+        "cache": "r21_lan_live_bound_request_tree",
+        "files": 11,
+        "bytes": 81155,
+        "merkle_trees": 4
+      },
+      {
+        "name": "lan-live-actual",
+        "tree": "e76233189ab4f9827d1a9d939d10bb73c6417873",
+        "cache": "r21_lan_live_actual_full",
+        "files": 129,
+        "bytes": 448431,
+        "merkle_trees": 5
+      },
+      {
+        "name": "lan-cold-projector-source",
+        "tree": "0250348ad2151e7831676dfc3cc9be04aa35d2c5",
+        "cache": "r21_lan_cold_projector_bound_source_tree",
+        "files": 20,
+        "bytes": 289741,
+        "merkle_trees": 6
+      },
+      {
+        "name": "lan-cold-projector-actual",
+        "tree": "c246a6c981853b70873462564e6d32fbfebdb164",
+        "cache": "r21_lan_cold_projector_actual_tree",
+        "files": 19,
+        "bytes": 519452,
+        "merkle_trees": 3
+      },
+      {
+        "name": "mac-wal-final-source",
+        "tree": "701600af314e16b99601ce1643c6011d19f0db8b",
+        "cache": "r21_mac_wal_final_source_tree",
+        "files": 53,
+        "bytes": 1844267,
+        "merkle_trees": 9
+      },
+      {
+        "name": "mac-wal-inert-core",
+        "tree": "9140bcd650de1a37ad6237a5731576421d00a1ff",
+        "cache": "r21_mac_wal_inert_actual_core",
+        "files": 30,
+        "bytes": 363449,
+        "merkle_trees": 4
+      },
+      {
+        "name": "mac-wal-inert-full",
+        "tree": "53314426bb134ede7f031545d5d4646a26d6d9e9",
+        "cache": "r21_mac_wal_inert_full_actual_tree",
+        "files": 112,
+        "bytes": 1077011,
+        "merkle_trees": 7
+      }
+    ],
+    "packet_files": 914,
+    "packet_bytes": 15138112,
+    "packet_merkle_trees": 102,
+    "root_files_including_state_and_manifest": 62
+  },
+  "host_candidate": {
+    "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "mac_and_rog_normal60": "previously root-qualified; exact original60 only",
+    "mac_server_sha256": "ef8ec2e21c8c610e34489695a6c0efa126d39dfda5eddbd36db01870d1d4a1f0",
+    "linux_server_sha256": "7540cfb7e691fe5bea2515df3c35d8f31cdc42f05d5c9f2199c8464182de40b2",
+    "successor_qualification_inherited": false
+  },
+  "canonical_source_import": {
+    "status": "PASS_COMPLETE_ACTUAL_EVIDENCE",
+    "job": "1a1aa422e15-fc05-3ffa",
+    "packet_tree": "bfc089565be71f54867c8082668d56243df582c0",
+    "files": 291,
+    "read_operations_closed": 22,
+    "immutable_sdk_pages": 99,
+    "command_records": 21,
+    "owned_children_reaped": 21,
+    "materialized_files": 3913,
+    "materialized_bytes": 62212769,
+    "materialized_merkle_trees": 358,
+    "tree_reconstructed": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "root_review": {
+      "name": "r21_source_import_r2_full_root_review",
+      "blob": "6ed56d22b2e1a71dc53c1edbd7146fdd98fb5d2b",
+      "bytes": 3536,
+      "sha256": "c5fdd156e2ef0a791ef651ba534cec6dbd404f96c661caad494210741bbcc55d"
+    },
+    "root_command_checks": 11821,
+    "root_provenance_checks": 1068,
+    "first_index_chunk_request_was_unversioned": true,
+    "whole_reassembled_index_and_all_returned_versions_verified": true
+  },
+  "lan": {
+    "preparation_job": "1a1aa797d2f-fc05-4377",
+    "prepare_root_review": {
+      "name": "r21_lan_prepare_full_root_review",
+      "blob": "3abbf51a04d8fb9fb904cd652903e2df854f4f88",
+      "bytes": 3923,
+      "sha256": "13e32e14d74e7cdf44ce3975f9b1ea1ee624d2568145e64b048efac27a60e414"
+    },
+    "actual_job": "1a1aa914172-fc05-4473",
+    "status": "KNOWN_PRODUCT_FAILURE",
+    "source": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "original98": {
+      "required": 98,
+      "passed": 91,
+      "missing": [
+        "missing_cipher_all_hosts_readindex",
+        "missing_cipher_remaining_nodes_unsealed",
+        "native.complete",
+        "report_excludes_runtime_secrets",
+        "source_and_binaries_unchanged",
+        "synthetic_metadata_absent",
+        "synthetic_metadata_cleanup_once"
+      ]
+    },
+    "postcold12": {
+      "required": 12,
+      "passed": 0,
+      "entered": false
+    },
+    "failure": {
+      "stage": "owned_missing_cipher_leader_recovery",
+      "code": "node_2_native_cold_unseal_failed",
+      "last_mutation_sequence": 49,
+      "node": 2,
+      "http_status": 503,
+      "elapsed_ms": 10289.344,
+      "request_budget_seconds": 15,
+      "supervisor_timed_out": false
+    },
+    "actual_empty_mac1_recovery": {
+      "observed": true,
+      "source_node": 3,
+      "retained_payload_bytes": 35651584,
+      "active_versions": 17,
+      "lifetime_versions": 19,
+      "recovered_cipher_leaves": 338,
+      "recovered_cipher_bytes": 35742486,
+      "forced_election": false
+    },
+    "witness": {
+      "write_cas": 0,
+      "write_status": 200,
+      "delete_status": 204,
+      "mac_exact_read_and_absence_confirmed": true,
+      "in_original98_or_postcold12_denominators": false
+    },
+    "public_boundaries": {
+      "intent_outcome_pairs": 49,
+      "whole_originals": 98,
+      "statuses": {
+        "200": 39,
+        "204": 8,
+        "503": 2
+      },
+      "transport_unknown": 0,
+      "root_review": {
+        "name": "r21_lan_boundary_root_review",
+        "blob": "124e6412fa9ffb654794fbee21d8cb1187baccb3",
+        "bytes": 1859,
+        "sha256": "56388e0454fa405e7d11df27f968a3e03ae944a631ccbed9a9f27ad8393fdfec"
+      }
+    },
+    "owned": {
+      "starts": 16,
+      "matched_stops": 16,
+      "mac_foreground_sessions": 6,
+      "direct_children_reaped": true,
+      "groups_empty": true,
+      "original_5s_stop_deadlines": true,
+      "tunnel_children": 0,
+      "quiet_released": true,
+      "root_review": {
+        "name": "r21_lan_owned_closure_root_review",
+        "blob": "431c6fdc2c6ffe1d6e224df2f9105252ce9b1e1f",
+        "bytes": 1318,
+        "sha256": "63862573b680d66e44a5b81d81c4a78cdd346a0e8e0039ba085574efceca15b8"
+      }
+    },
+    "fixed_readonly_diagnostic": {
+      "job": "1a1aaa6142c-fc05-4599",
+      "exit_code": 0,
+      "full_durable": true,
+      "input_bytes": 42620,
+      "stdout_bytes": 55402,
+      "owned_fds_closed": 6,
+      "root_review": {
+        "name": "r21_lan_cold_projector_actual_root_review",
+        "blob": "c462f66b9cddedd14b84218a906255abf25fbe6c",
+        "bytes": 7535,
+        "sha256": "e1cbc252937a2c766ef929b524d2eed7154a98f5450c9428d4de17ab43d89ab4"
+      },
+      "last_scope": {
+        "line": 184,
+        "request_class": "ordinary",
+        "http_status": 503,
+        "buckets": 12,
+        "bucket_bound_reached": false,
+        "current_cursor_failed": true,
+        "current_cursor_elapsed_us": 5,
+        "exit_remaining_ns": "3717085098",
+        "replica_install_entered": false,
+        "materialization_entered": false
+      },
+      "source_inference": "Exact source and successful LocalSelection plus no install phase narrow the same-scope failure to strict current publication/generation matching on a same-root fast path. Private cursor values and a cryptographic link to mutation49 remain unobserved.",
+      "product_repair_executed": false
+    }
+  },
+  "h2_qa": {
+    "inert": {
+      "job": "1a1aa7c3dff-fc05-439c",
+      "exit_code": 0,
+      "packet": "3e4d2c2df45a1b41b6b847aa6889bb2cc94e64f8",
+      "root_checks": 268,
+      "read_operations_closed": 7,
+      "immutable_sdk_pages": 26,
+      "first_lock_chunk_request_was_unversioned": true,
+      "whole_lock_and_returned_versions_exact": true,
+      "root_review": {
+        "name": "r21_qa_inert_full_root_review",
+        "blob": "62cb9fe439b5ed282941941eb897d7937330e197",
+        "bytes": 2381,
+        "sha256": "14000ae42818abe93fec1b6f80d82a681113d9c9aa8dc0fb1b7fd258fb68747e"
+      }
+    },
+    "build": {
+      "job": "1a1aa9fa851-fc05-4547",
+      "status": "KNOWN_FAILURE_BEFORE_CARGO",
+      "exit_code": 1,
+      "stdout_bytes": 330,
+      "stderr_bytes": 0,
+      "packet": "fa98f537f52e0eb75c8d26a53084a79a87564878",
+      "failure_stage": "canonical_before",
+      "failure_code": "owned_child_identity_changed_while_cmdline_pending",
+      "command_intents": 2,
+      "complete_command_records": 1,
+      "original_second_command_outcome_unknown": true,
+      "two_direct_children_reaped": true,
+      "groups_empty": true,
+      "all_input_fds_closed": true,
+      "cargo_or_components_started": false,
+      "root_review": {
+        "name": "r21_qa_build_failure_root_review",
+        "blob": "86d74c4e8be73e6cea7a00de60e94663861af59f",
+        "bytes": 1099,
+        "sha256": "e5306bab3c60e9b1ed783decc40f32105e52f716ecdac707178b2be153099303"
+      }
+    },
+    "components_required": 6,
+    "client_qualified": false,
+    "service_requests_performed": 0,
+    "official_cli_phase_b_qualified": false
+  },
+  "mac_registry_wal": {
+    "final_source_tree": "701600af314e16b99601ce1643c6011d19f0db8b",
+    "source_root_review": {
+      "name": "r21_mac_wal_final_source_root_review",
+      "blob": "8616e294014af403b0d9cbb47ad3af8f85791152",
+      "bytes": 5907,
+      "sha256": "e423b8663ac930b75ebb6db9b484a926eddacbaf94c11627645222429595ee2c"
+    },
+    "root_fake_ledger_replay": "55dbb4724319a5098aa7f762fb39ae63de2eda78",
+    "selected_registry_only": true,
+    "original_five_agent_immutable_query_path_unchanged": true,
+    "private_reads_in_this_step": false,
+    "synthetic_cases_required": 10,
+    "synthetic_executed_as_of_cutoff": false,
+    "original_limits": {
+      "registry_wal_bytes": 5969912,
+      "row_bytes": 1048576,
+      "explicit_and_returned_bytes": 8388608,
+      "query_seconds": 3,
+      "capture_seconds": 45
+    },
+    "sqlite_internal_page_io_measured": false,
+    "all_ABA_or_cross_database_atomicity_proven": false,
+    "inert": {
+      "job": "1a1aa8cc28f-fc05-444b",
+      "exit_code": 0,
+      "stdout_bytes": 8948,
+      "stderr_bytes": 0,
+      "elapsed_seconds": 0.2228050408884883,
+      "packet": "53314426bb134ede7f031545d5d4646a26d6d9e9",
+      "independent_infos": 13,
+      "independent_whole_bodies": 13,
+      "independent_body_bytes": 176462,
+      "core_root_checks": 64,
+      "full_additional_root_checks": 107,
+      "sole_diskutil_closed": true,
+      "all_held_descriptors_closed": true,
+      "t5_anchor_strings_unchanged": 27,
+      "root_review": {
+        "name": "r21_mac_wal_full_root_review",
+        "blob": "b53535b1bf773792587dfbbcd8ea37bbff052027",
+        "bytes": 1133,
+        "sha256": "ca69425eb448ff5002d1e1b1630acab3ae275646c620705f820a821c34442182"
+      },
+      "candidate_receipt_ok_before_cleanup": false,
+      "final_stdout_ok_after_cleanup": true,
+      "common_raw_fields_equal": 26,
+      "capacity_refusal_preserved": 1,
+      "publisher_replayed": false
+    },
+    "original_current_capture_failure_and_unknown_preserved": true,
+    "new_current_capture_authorized_as_of_cutoff": false,
+    "approle_tls_kv_policy_renew_revoke_current_proof_complete": false
+  },
+  "x230": {
+    "original_relay_job": "1a1aa57458d-fc05-4156",
+    "original_relay_state": "UNKNOWN",
+    "original_owned_closure": "UNKNOWN",
+    "relay_replayed": false,
+    "metadata_r1": {
+      "job": "1a1aa6b1640-fc05-42c8",
+      "exit_code": 0,
+      "metadata_calls": 42,
+      "owned_fds_closed": 8,
+      "body_bytes": 0,
+      "root_review": {
+        "name": "r21_x230_fence_metadata_root_review",
+        "blob": "d7eaa68cf63d0d47aad38a1796b9e995f591e9b7",
+        "bytes": 2531,
+        "sha256": "da705f5d5cc5495b1b1fb63af575446ff6408b49b25ba5001a5d1742405777e4"
+      }
+    },
+    "effect_fence_r1": {
+      "job": "1a1aa8a6fb0-fc05-4428",
+      "exit_code": 1,
+      "status": "KNOWN_PRE_MUTATION_FAILURE",
+      "phase": "bind_fixed_directory",
+      "reason": "fixed_identity_mismatch",
+      "source_inferred_first_rejected_path": "/home/qian-qi",
+      "actual_changed_tuple_not_reported": true,
+      "metadata_calls": 7,
+      "opened_fds": 2,
+      "owned_fds_closed": 2,
+      "mkdir_attempted": false,
+      "marker_created": false,
+      "source_body_bytes": 0,
+      "root_current_absence_proven": false,
+      "root_review": {
+        "name": "r21_x230_fence_failure_root_review",
+        "blob": "2d36c337939f6b57fd402902c38a851104d01208",
+        "bytes": 2419,
+        "sha256": "1f67dba89ce0ea1d150109593cd520c18cd12ea2f57a56b994d00a8e10494ffe"
+      }
+    },
+    "new_transport_authorized_as_of_cutoff": false,
+    "current_df026_full34_and69_not_run": true,
+    "historical_495_results_not_transferred": true
+  },
+  "ci": {
+    "schema": "heptabao.root.r21-ci-observation.v1",
+    "observation_cutoff_utc": "2026-11-05T07:40:18Z",
+    "candidate_lineage": [
+      "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+      "c133d7e7b8a1df5f0be8f4337893f234c6ccede2",
+      "e69e52f28c653d28c5ae36dbbf6eb51b844536bc",
+      "19ba09ab5c494f25a3531749b0b99fc5c651d56c",
+      "6d02ceca629163e1c07480fa1f21520434407143"
+    ],
+    "pr154": {
+      "run": 41969050046,
+      "head_job": 127052736848,
+      "head_workspace": "failed",
+      "serverlib": {
+        "passed": 3720,
+        "failed": 2,
+        "ignored": 8
+      },
+      "failures": [
+        "service::native_seed::offline_import::ha_import::tests::maintenance_ha_import_real_quorum_writer_and_cold_readindex_preserve_history",
+        "service::native_v6_ha_pipeline_tests::native_large_import_tests::native_ha_large_kv2_full34_pre_activation_mount_lagging_v5_follower_kill_restore_cold"
+      ],
+      "merge_job": 127052736696,
+      "merge_workspace": "passed",
+      "merge_clippy": "failed",
+      "inner_causes_not_uniquely_established": true
+    },
+    "pr155": {
+      "run": 41971995724,
+      "jobs": [
+        {
+          "id": 127062153929,
+          "name": "OpenBao replacement / head",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Test the complete locked Rust workspace",
+              "conclusion": "success"
+            },
+            {
+              "name": "Check strict first-party workspace Clippy",
+              "conclusion": "failure"
+            }
+          ]
+        },
+        {
+          "id": 127062154166,
+          "name": "OpenBao replacement / merge",
+          "status": "completed",
+          "conclusion": "failure",
+          "steps": [
+            {
+              "name": "Test the complete locked Rust workspace",
+              "conclusion": "success"
+            },
+            {
+              "name": "Check strict first-party workspace Clippy",
+              "conclusion": "failure"
+            }
+          ]
+        },
+        {
+          "id": 127109596073,
+          "name": "OpenBao replacement / exact-head-and-merge verdict",
+          "status": "completed",
+          "conclusion": "failure"
+        }
+      ],
+      "both_complete_workspaces_passed": true,
+      "both_clippy_failed": true,
+      "head_serverlib": {
+        "passed": 3722,
+        "failed": 0,
+        "ignored": 8,
+        "seconds": 2924.69
+      },
+      "historical_pr154_failure_cause_not_proven_fixed": true
+    },
+    "pr156": {
+      "run": 41976736304,
+      "head_job": 127077221194,
+      "merge_job": 127077220873,
+      "both_rustfmt_failed": true,
+      "workspace_and_clippy_skipped": true,
+      "exact_same_one_hunk_format_request": true
+    },
+    "pr157": {
+      "number": 157,
+      "url": "https://github.com/TrillionniumFoundation/HeptaBao/pull/157",
+      "head": "6d02ceca629163e1c07480fa1f21520434407143",
+      "merge": "4741ed09a6ebfe49b67d33798718ca2d0f18f2c9",
+      "tree": "09aa45b9439741780961c2af76680c27e0773d08",
+      "base": "7b4a59bdd72218c1e779eb32754a682cf465af7a",
+      "run": 41987962107,
+      "latest_observed_status": "queued",
+      "new_ci_pass": false,
+      "local_rustfmt_executed": false,
+      "delta_from_parent": {
+        "files": 1,
+        "bytes": 9,
+        "whitespace_only": true
+      },
+      "independent_peer": "1438f095af416511489ceaab2690ca002789fe32",
+      "host_qualification_inherited": false
+    },
+    "full_openbao_compatibility_qualified": false,
+    "production_cutover": false
+  },
+  "migration_and_cleanup": {
+    "all_clients_and_backups_migrated": false,
+    "per_host_true_credentials_restart_rollback_complete": false,
+    "production_target_contract_complete": false,
+    "old_assets_deleted": false,
+    "j3160_used_for_new_trust": false,
+    "provider_model_refresh_or_quota_changed": false,
+    "rule": "Only after current credentials, restart, rollback and every client/backup path are proven may production traffic and eventual cleanup proceed."
+  },
+  "full_271_denominator": {
+    "status": "OPEN",
+    "official_version": "2.7.1",
+    "official_commit": "a5db72cef75c24b920ade02065b18dd8eb666bac",
+    "structural_admission_manifest": "planning/OPENBAO_271_ADMISSION_SUPERSET_V1.json",
+    "security_dimensions": 15,
+    "correctness_dimensions": 11,
+    "required_gates": 11,
+    "all_gates_closed": false,
+    "route_declaration_count_is_not_complete_behavior_denominator": true,
+    "legacy_262_corpus_not_relabelled": true
+  },
+  "immutable_history": {
+    "original_failures_unknowns_and_attempts_preserved": true,
+    "previous_checkpoint_files_unchanged_except_two_append_updated_documents": true,
+    "raw_historical_index_integer_tokens_preserved": true
+  }
+}

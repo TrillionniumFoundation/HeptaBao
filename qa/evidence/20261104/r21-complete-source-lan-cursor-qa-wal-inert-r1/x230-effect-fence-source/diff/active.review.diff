@@ -1,0 +1,18 @@
+--- effect_fence_inactive.py
++++ effect_fence_active.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Inactive, source-only proposal: reserve one exact old relay name; never replay."""
++"""Reviewable source proposal: reserve one exact old relay name; never replay."""
+ import errno
+ import hashlib
+ import json
+@@ -17,7 +17,7 @@
+ ORIGINAL_KEY = "heptabao-df026-x230-source-artifacts-relay-r1-732fa7e7"
+ ORIGINAL_REQUEST_SHA256 = "2243e731b0878b8a0ba724674371a541fc89142ee59af80da5535f18262dc280"
+ ORIGINAL_REQUEST_DIGEST = "aaec19b4b6de67f3cf58d898ee388396d73f4b3409fbba972df5f2de3f5f2b47"
+-BINDING_READY = False
++BINDING_READY = True
+ METADATA_EVIDENCE_SHA256 = "da22041ad211aadaedf50655aff25284c3f361020a15416ee4e065c7a9d4a088"
+ EXPECTED_DIRECTORIES = {
+     "/": [2050, 2, 0, 0, 16877, 26, 4096, 1792626742716890237, 1792626742716890237],

@@ -1,0 +1,47 @@
+{
+  "schema": "heptabao.df026-lan-preparation-evidence.v1",
+  "job_id": "1a1aa797d2f-fc05-4377",
+  "request_blob": "43509c69abd176551395e86800d24a584196d042",
+  "single_launch": true,
+  "authority_exit_code": 0,
+  "output_complete": true,
+  "output_durable": true,
+  "stdout_bytes": 283,
+  "stderr_bytes": 0,
+  "prepared": {
+    "bytes": 42456,
+    "sha256": "89418a152b5b23db976cc88de4d8eabca3f53aeb66ed632534bf057672bc58bb",
+    "blob": "1d69f5fd529a30c86afbe1e9799ef3705c15b898",
+    "version": "2050:5019606:42456:1793861479426342539:1793861479426342539"
+  },
+  "checks": [
+    "exact canonical",
+    "exact launcher runner",
+    "98 and extra12",
+    "32 unchanged fences",
+    "original and scoped limits",
+    "preparation only",
+    "source/default features linux",
+    "embedded exact saved bytes linux/native-build.public.json",
+    "embedded exact saved bytes linux/normal-release-result.public.json",
+    "source/default features mac",
+    "embedded exact saved bytes mac/native-build.public.json",
+    "embedded exact saved bytes mac/normal-release-result.public.json"
+  ],
+  "four_build_receipts_whole_and_embedded_equal": true,
+  "prepared_independent_file_info_version_mode_uid_gid_nlink_verified": true,
+  "terminal_hex_text_and_authority_counts_exact": true,
+  "first_terminal_read_mcp_timeout_retained": true,
+  "immutable_read_operation": {
+    "operation_id": "295ed05433137d82ca8ab2677499adce05f25355e92cd4e69dad5ffeadb7d648",
+    "payload_bytes": 1354,
+    "payload_sha256": "ec53d1a80a8f90868931f2a38e4299351d41610205854751d0e9d6196e4f9330",
+    "whole_payload_verified": true
+  },
+  "fixture_started": false,
+  "formal_qualification": false,
+  "live_go": false,
+  "production_changed": false,
+  "x230_original_relay_execution_state": "unknown",
+  "fence_executed": false
+}

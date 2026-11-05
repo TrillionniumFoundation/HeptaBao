@@ -1,0 +1,30 @@
+[package]
+name = "heptabao-native-h2-qa"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+# This independent owned project is never placed in a frozen product tree.
+[workspace]
+
+[[bin]]
+name = "heptabao-native-h2-qa"
+path = "native_h2_client.rs"
+
+[dependencies]
+bytes = "=1.12.1"
+h2 = "=0.4.19"
+http = "=1.5.0"
+libc = "=0.2.189"
+rustls = { version = "=0.23.44", default-features = false, features = ["ring", "aws_lc_rs", "prefer-post-quantum", "std", "tls12"] }
+serde_json = { version = "=1.0.151", features = ["raw_value", "arbitrary_precision"] }
+sha2 = { version = "=0.10.9", default-features = false, features = ["std"] }
+tokio = { version = "=1.53.1", default-features = false, features = ["rt-multi-thread", "sync", "time", "net", "io-util"] }
+tokio-rustls = { version = "=0.26.6", default-features = false, features = ["ring", "tls12"] }
+zeroize = "=1.8.1"
+
+[profile.release]
+opt-level = 3
+debug = 0
+debug-assertions = true
+overflow-checks = true

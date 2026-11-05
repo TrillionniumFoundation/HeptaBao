@@ -1,0 +1,54 @@
+[
+  [
+    "\"\"\"One fixed stopped 3cb Phase B node1 log; exact metadata and normal markers.\"\"\"",
+    "\"\"\"One fixed stopped df026 LAN node2 log; exact metadata and normal cold phases.\"\"\""
+  ],
+  [
+    "ROOT = \"/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r2/node1\"",
+    "ROOT = \"/home/qian-qi/heptabao-ha-closure-20261103-r1/cold-h2-pocket3-mac1-postrecovery-cold-node2-r1\""
+  ],
+  [
+    "LEAF = \"native-start0.stderr.private.log\"",
+    "LEAF = \"process.log\""
+  ],
+  [
+    "FIXTURE_RESULT_SHA256 = \"15a07dca63299bbfb7f871c5d1611a22713382a85cd9f8acc917569d9044600e\"",
+    "FIXTURE_RESULT_SHA256 = \"532967541d5b611665b41286109c459565f24cc29eddef3d4a64b65466afcf8b\""
+  ],
+  [
+    "CANDIDATE_COMMIT = \"3cb873919170cc77101b27f6a3ab9e98f41f8d93\"",
+    "CANDIDATE_COMMIT = \"df026fe323dd7cf0f0ec57d7d2d9c5a79897053c\""
+  ],
+  [
+    "RUNTIME_SOURCE_BLOB = \"3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3\"",
+    "RUNTIME_SOURCE_BLOB = \"3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3\"\nCOLD_READ_SOURCE_BLOB = \"b09e57362d53ce207b255d713d7aa7c126215691\""
+  ],
+  [
+    "TIMING_PAIRS = frozenset([\n",
+    "TIMING_PAIRS = frozenset([\n    (\"cold_native_ha\", \"load\"),\n    (\"cold_native_ha\", \"committed_root\"),\n    (\"cold_native_ha\", \"local_selection\"),\n    (\"cold_native_ha\", \"local_root_binding\"),\n    (\"cold_native_ha\", \"local_root_identity\"),\n    (\"cold_native_ha\", \"original_cold_owner\"),\n    (\"cold_native_ha\", \"original_read_witness\"),\n    (\"cold_native_ha\", \"original_deadline\"),\n    (\"cold_native_ha\", \"replica_source\"),\n    (\"cold_native_ha\", \"replica_install\"),\n    (\"cold_native_ha\", \"installed_local_selection\"),\n    (\"cold_native_ha\", \"current_cursor\"),\n    (\"cold_native_ha\", \"materialize_full\"),\n    (\"cold_native_ha\", \"repair_source\"),\n    (\"cold_native_ha\", \"physical_repair\"),\n    (\"cold_native_ha\", \"materialize_after_repair\"),\n    (\"cold_native_ha\", \"root_namespace\"),\n    (\"cold_native_ha\", \"owner_bytes\"),\n    (\"cold_native_ha\", \"final_local_generation\"),\n    (\"cold_native_ha\", \"final_gate\"),\n"
+  ],
+  [
+    "EXPECTED_INPUT_IDENTITY = (\n    \"2050\",\n    \"4755604\",\n    \"1000\",\n    \"1000\",\n    \"384\",\n    \"32768\",\n    \"1\",\n    \"4577\",\n    \"1793845333664873175\",\n    \"1793845333664873175\",\n)",
+    "EXPECTED_INPUT_IDENTITY = (\n    \"66306\",\n    \"38977537\",\n    \"1000\",\n    \"1000\",\n    \"384\",\n    \"32768\",\n    \"1\",\n    \"42620\",\n    \"1793863384030652703\",\n    \"1793863384030652703\",\n)"
+  ],
+  [
+    "EXPECTED_INPUT_SHA256 = \"eba3c5cd478789d77caad907fc50629130f450c8018de94c8e8af540be3c5201\"",
+    "EXPECTED_INPUT_SHA256 = \"26d1f51d7ecd03920c9808dd510e67eead687d9492781fa2d11ad380a2c84474\""
+  ],
+  [
+    "METADATA_RECEIPT_SHA256 = \"f65018a0a1e44d25c82ac6f2fbe8d8825c18aa66f2db33d119a5fc306933f2c2\"",
+    "METADATA_RECEIPT_SHA256 = \"1a09ab90d0beca1be28a56f99e1cef3a6506b90af6d9474932a8e04e3199548e\""
+  ],
+  [
+    "\"schema\": \"heptabao.phaseb-3cb-stopped-native-node1-log-projection.v1\"",
+    "\"schema\": \"heptabao.df026-stopped-native-node2-cold-log-projection.v1\""
+  ],
+  [
+    "\"fixture_result_sha256\": FIXTURE_RESULT_SHA256, \"node_id\": 1,",
+    "\"fixture_result_sha256\": FIXTURE_RESULT_SHA256, \"node_id\": 2,"
+  ],
+  [
+    "\"candidate_commit\": CANDIDATE_COMMIT, \"runtime_source_blob\": RUNTIME_SOURCE_BLOB,",
+    "\"candidate_commit\": CANDIDATE_COMMIT, \"runtime_source_blob\": RUNTIME_SOURCE_BLOB,\n        \"cold_read_source_blob\": COLD_READ_SOURCE_BLOB,"
+  ]
+]

@@ -1,0 +1,92 @@
+--- base-phaseb3cb-node1-projector.py
++++ candidate-df026-node2-projector.py
+@@ -1,4 +1,4 @@
+-"""One fixed stopped 3cb Phase B node1 log; exact metadata and normal markers."""
++"""One fixed stopped df026 LAN node2 log; exact metadata and normal cold phases."""
+ import hashlib
+ import json
+ import os
+@@ -8,11 +8,12 @@
+ import sys
+ import time
+ 
+-ROOT = "/home/qian-qi/heptabao-ha-closure-20261103-r1/official271-native-cli-phaseb-r3-live-r2/node1"
+-LEAF = "native-start0.stderr.private.log"
+-FIXTURE_RESULT_SHA256 = "15a07dca63299bbfb7f871c5d1611a22713382a85cd9f8acc917569d9044600e"
+-CANDIDATE_COMMIT = "3cb873919170cc77101b27f6a3ab9e98f41f8d93"
++ROOT = "/home/qian-qi/heptabao-ha-closure-20261103-r1/cold-h2-pocket3-mac1-postrecovery-cold-node2-r1"
++LEAF = "process.log"
++FIXTURE_RESULT_SHA256 = "532967541d5b611665b41286109c459565f24cc29eddef3d4a64b65466afcf8b"
++CANDIDATE_COMMIT = "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c"
+ RUNTIME_SOURCE_BLOB = "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3"
++COLD_READ_SOURCE_BLOB = "b09e57362d53ce207b255d713d7aa7c126215691"
+ MAX_INPUT = 2 * 1024 * 1024
+ MAX_MARKERS = 128
+ MAX_OUTPUT = 65536
+@@ -41,6 +42,26 @@
+     "last_exit_remaining_ns", "minimum_entry_remaining_ns", "minimum_exit_remaining_ns",
+ )
+ TIMING_PAIRS = frozenset([
++    ("cold_native_ha", "load"),
++    ("cold_native_ha", "committed_root"),
++    ("cold_native_ha", "local_selection"),
++    ("cold_native_ha", "local_root_binding"),
++    ("cold_native_ha", "local_root_identity"),
++    ("cold_native_ha", "original_cold_owner"),
++    ("cold_native_ha", "original_read_witness"),
++    ("cold_native_ha", "original_deadline"),
++    ("cold_native_ha", "replica_source"),
++    ("cold_native_ha", "replica_install"),
++    ("cold_native_ha", "installed_local_selection"),
++    ("cold_native_ha", "current_cursor"),
++    ("cold_native_ha", "materialize_full"),
++    ("cold_native_ha", "repair_source"),
++    ("cold_native_ha", "physical_repair"),
++    ("cold_native_ha", "materialize_after_repair"),
++    ("cold_native_ha", "root_namespace"),
++    ("cold_native_ha", "owner_bytes"),
++    ("cold_native_ha", "final_local_generation"),
++    ("cold_native_ha", "final_gate"),
+     ("codec", "open_committed_read"),
+     ("committed_read_entry", "committed_changed_root_recover"),
+     ("committed_read_entry", "committed_enrollment"),
+@@ -97,19 +118,19 @@
+     "nlink", "bytes", "mtime_ns", "ctime_ns",
+ )
+ EXPECTED_INPUT_IDENTITY = (
+-    "2050",
+-    "4755604",
++    "66306",
++    "38977537",
+     "1000",
+     "1000",
+     "384",
+     "32768",
+     "1",
+-    "4577",
+-    "1793845333664873175",
+-    "1793845333664873175",
++    "42620",
++    "1793863384030652703",
++    "1793863384030652703",
+ )
+-EXPECTED_INPUT_SHA256 = "eba3c5cd478789d77caad907fc50629130f450c8018de94c8e8af540be3c5201"
+-METADATA_RECEIPT_SHA256 = "f65018a0a1e44d25c82ac6f2fbe8d8825c18aa66f2db33d119a5fc306933f2c2"
++EXPECTED_INPUT_SHA256 = "26d1f51d7ecd03920c9808dd510e67eead687d9492781fa2d11ad380a2c84474"
++METADATA_RECEIPT_SHA256 = "1a09ab90d0beca1be28a56f99e1cef3a6506b90af6d9474932a8e04e3199548e"
+ 
+ INTERRUPTED = False
+ 
+@@ -319,9 +340,10 @@
+     descriptors = []
+     directories = []
+     result = {
+-        "schema": "heptabao.phaseb-3cb-stopped-native-node1-log-projection.v1",
+-        "fixture_result_sha256": FIXTURE_RESULT_SHA256, "node_id": 1,
++        "schema": "heptabao.df026-stopped-native-node2-cold-log-projection.v1",
++        "fixture_result_sha256": FIXTURE_RESULT_SHA256, "node_id": 2,
+         "candidate_commit": CANDIDATE_COMMIT, "runtime_source_blob": RUNTIME_SOURCE_BLOB,
++        "cold_read_source_blob": COLD_READ_SOURCE_BLOB,
+         "root": ROOT, "leaf": LEAF, "status": "refused", "complete": False,
+         "read_only": True, "product_requests": 0, "children_started": 0,
+         "files_written": 0, "new_shared_seconds": TOTAL_SECONDS,

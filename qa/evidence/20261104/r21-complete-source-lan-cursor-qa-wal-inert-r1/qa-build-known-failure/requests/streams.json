@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-df026-h2-qa-build-4547-streams-r1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "rog",
+      "job_id": "1a1aa9fa851-fc05-4547",
+      "stdout_offset": 0,
+      "stderr_offset": 0,
+      "limit": 16384
+    }
+  }
+}

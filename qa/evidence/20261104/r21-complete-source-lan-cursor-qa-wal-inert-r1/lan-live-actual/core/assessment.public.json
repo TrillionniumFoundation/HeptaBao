@@ -1,0 +1,111 @@
+{
+  "schema": "heptabao.df026-lan-postcold-known-failure-core-assessment.v1",
+  "scope": "Actual single run evidence; no retry, no change to old failures or X230 unknown",
+  "job_id": "1a1aa914172-fc05-4473",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "summary": {
+    "bytes": 71409,
+    "sha256": "532967541d5b611665b41286109c459565f24cc29eddef3d4a64b65466afcf8b",
+    "blob": "5ccdf644cc6171f8286cfc0d38dfaf82e025ad29"
+  },
+  "summary_version": "2050:7256403:71409:1793863387164149673:1793863387164149673",
+  "authority": {
+    "exit_code": 1,
+    "output_complete": true,
+    "output_durable": true,
+    "timed_out": false,
+    "stdout_bytes": 584,
+    "stderr_bytes": 0
+  },
+  "original98": {
+    "required": 98,
+    "observed": 91,
+    "passed": 91,
+    "missing": [
+      "missing_cipher_all_hosts_readindex",
+      "missing_cipher_remaining_nodes_unsealed",
+      "native.complete",
+      "report_excludes_runtime_secrets",
+      "source_and_binaries_unchanged",
+      "synthetic_metadata_absent",
+      "synthetic_metadata_cleanup_once"
+    ],
+    "exact_union_cardinality": 98,
+    "missing_and_observed_disjoint": true
+  },
+  "extra12": {
+    "required": 12,
+    "observed": 0,
+    "completed": false,
+    "phase_entered": false
+  },
+  "failure": {
+    "code": "node_2_native_cold_unseal_failed",
+    "stage": "owned_missing_cipher_leader_recovery",
+    "type": "FixtureError",
+    "known_last_mutation": {
+      "at": 1793863384.206553,
+      "elapsed_ms": 10289.344,
+      "event": "mutation_attempted_once",
+      "method": "POST",
+      "node": 2,
+      "path_kind": [
+        "sys",
+        "unseal"
+      ],
+      "status": 503
+    },
+    "inner_cause": "not established by HTTP 503 alone"
+  },
+  "actual_direction": {
+    "actual_empty_leader_node": 1,
+    "leader_selection_forced": false,
+    "requested_pair_observed": true,
+    "source_node": 3
+  },
+  "owned_witness": {
+    "write_status": 200,
+    "delete_status": 204,
+    "known_mutations": 2,
+    "completed": true,
+    "within_shared_prepare_deadline": true,
+    "original_key_lists_unchanged": true,
+    "witness_added_to_history_or_acknowledged": false
+  },
+  "mutation_ledger": {
+    "automatic_resume_or_retry": false,
+    "initialization_custody_saved": true,
+    "mutation_intents": 49,
+    "mutation_responses": 49,
+    "relative_root": "private-recovery",
+    "schema": "heptabao.synthetic-fixture-recovery-public.v1",
+    "secret_values_emitted": false,
+    "synthetic_only": true,
+    "unknown_transport_outcomes": 0
+  },
+  "owned_cleanup": {
+    "starts": 16,
+    "stops": 16,
+    "all_started_node_pid_pairs_match_one_stop": true,
+    "mac_foreground_sessions": 6,
+    "all_remote_and_local_direct_children_reaped": true,
+    "all_owned_groups_empty_before_leader_reap": true,
+    "all_original_stop_deadlines_satisfied": true,
+    "owned_processes_stopped_check": true,
+    "owned_mesh_stopped_check": true,
+    "tunnel_children": 0
+  },
+  "qualification": {
+    "overall_pass": false,
+    "postrecovery_cold_verified": false,
+    "original98_pass": false,
+    "actual_empty_mac1_leader_observed": true,
+    "mac1_recovered_history_check_passed": true
+  },
+  "retained_limitations": [
+    "Mutation ledger has 49 known terminal responses and no transport unknown; this is not a claim that every GET has an independently archived response.",
+    "Exit flags preserve source, runner, deadline QA, build files and prior receipts; no missing original check is promoted to passed.",
+    "Current run failure is not yet assigned an internal product cause. No product retry or deadline extension."
+  ]
+}

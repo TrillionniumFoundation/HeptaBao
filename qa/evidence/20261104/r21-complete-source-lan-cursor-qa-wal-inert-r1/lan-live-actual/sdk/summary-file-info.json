@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/qian-qi/heptabao-ha-closure-20261103-r1/formal-cold-h2-pocket3-mac1-postrecovery-cold-r1/summary.json\",\"sha256\":\"532967541d5b611665b41286109c459565f24cc29eddef3d4a64b65466afcf8b\",\"size\":71409,\"version\":\"2050:7256403:71409:1793863387164149673:1793863387164149673\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

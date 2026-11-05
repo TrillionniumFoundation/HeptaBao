@@ -1,0 +1,7 @@
+{
+  "chunk_id": "373081",
+  "wall_time_seconds": 0.00002695,
+  "exit_code": 0,
+  "original_token_count": 48,
+  "output": "{\"nonmain_definitions_byte_equal\": 12, \"old_pairs\": 50, \"new_pairs\": 20, \"total_allowed_pairs\": 70, \"fixed_caps_equal\": true, \"closed_parser_constants_equal\": true, \"module_executed\": false}\n"
+}

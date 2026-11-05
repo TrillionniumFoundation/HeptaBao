@@ -1,0 +1,34 @@
+{
+  "schema": "heptabao.x230-relay-fence-input-metadata-intent.v1",
+  "created_utc": "2026-11-05T06:34:48.532Z",
+  "admission": {
+    "bytes": 2666,
+    "sha256": "6730c49ebde7273f02d5480e0e41613ac43760b1d9c37f290491f466d7930ab2",
+    "blob": "12e906f4aad3cfbd8e5bbd584fb240a969ebedfe"
+  },
+  "request": {
+    "bytes": 11117,
+    "sha256": "f436a80bffaee97bde7d1a2bf6377124389851c9388fd44339ac91d878a66632",
+    "blob": "abc5e5c2cfd34e97aa603b1fe79d383a6ea06953"
+  },
+  "source": {
+    "bytes": 10224,
+    "sha256": "52a60fad1531ebb5bcc05bef3261ef7e83f68956fa476b71c008a98412b49aaf",
+    "blob": "ad852419c3217db37ce6cf1ede5e1ec219a60d80"
+  },
+  "key": "heptabao-x230-original-relay-fence-input-metadata-r1-52a60fad",
+  "host": "desktop",
+  "outer_seconds": 60,
+  "soft_seconds": 5,
+  "metadata_cap": 42,
+  "registered_descriptor_cap": 8,
+  "submit_count_intended": 1,
+  "original_unknown_job": "1a1aa57458d-fc05-4156",
+  "original_job_replay": false,
+  "body_reads": false,
+  "listing": false,
+  "filesystem_writes": false,
+  "children": false,
+  "fence_creation": false,
+  "unknown_stops_without_replay": true
+}

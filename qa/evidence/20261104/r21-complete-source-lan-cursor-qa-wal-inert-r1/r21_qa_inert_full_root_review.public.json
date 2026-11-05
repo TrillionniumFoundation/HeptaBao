@@ -1,0 +1,46 @@
+{
+  "schema": "heptabao.root.native-h2-qa-inert-full-actual-closure.r21",
+  "status": "PASS_INERT_ONLY_ROOT_CLOSED",
+  "packet": {
+    "tree": "3e4d2c2df45a1b41b6b847aa6889bb2cc94e64f8",
+    "files": 80,
+    "bytes": 1897526,
+    "merkle_trees": 13
+  },
+  "job": "1a1aa7c3dff-fc05-439c",
+  "request_blob": "12ef83dfd02325974103f0a318ecac83ad3f52f5",
+  "source_root_review": "2b4e9886035f2a6914b590bf63e36f922b1818f6",
+  "result": {
+    "check_count": 268,
+    "operations": 7,
+    "pages": 26,
+    "source_files": 8,
+    "receipt_files": 1,
+    "stdout_bytes": 3168,
+    "stderr_bytes": 173,
+    "body_interval_ns": "34527104",
+    "initial_unpinned_lock_reads": 1,
+    "output_complete": true,
+    "output_durable": true,
+    "exit_code": 0,
+    "status": "PASS_INERT_ONLY"
+  },
+  "core": {
+    "blob": "8b7de0ec7cbdf0bba044f4fd884e94e449741652",
+    "bytes": 4208,
+    "sha256": "3bbe3953e58d737687d7ad88ae2f64eb9c0177261ce6b283374451384817d18b"
+  },
+  "root_check_count": 268,
+  "semantics": "The eight full source/binding bodies match the reviewed Git blobs; compact stdout equals the pretty disk receipt losslessly. Producer full-nine identities are bound to independently returned five-field versions. Cargo.lock additionally has independent owner/mode/nlink file_info and two complete chunks.",
+  "read_admission_history": "Original authority admission Promise error had no serialized payload available; it was not fabricated. The same exact read key returned reused/unknown, then the same operation completed with its immutable original SDK. No fresh authority read or business replay was needed.",
+  "limits": [
+    "Two exact SyntaxWarning lines for return in finally are retained in full 173-byte stderr; sources were not changed.",
+    "The first lock binary request was unpinned; both returned versions equal the independent file_info version and the full canonical lock bytes/hash.",
+    "34,527,104 ns is the publisher receipt body interval, not a claim about complete supervisor duration.",
+    "Successful source publication and compile-only admission do not qualify Cargo build, six components, TLS/H2, product traffic or replacement."
+  ],
+  "current_scheduler": "QA build deferred during the active isolated LAN fixture window; no host work is in flight for this QA readback.",
+  "build_go": false,
+  "live_h2_qualified": false,
+  "production_changed": false
+}

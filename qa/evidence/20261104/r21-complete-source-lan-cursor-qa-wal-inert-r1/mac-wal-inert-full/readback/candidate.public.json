@@ -1,0 +1,211 @@
+{
+  "schema": "heptabao.mac-owned-registry-wal-candidate.r1",
+  "sourceOrder": [
+    "mac_guarded_current_capture_r3.py",
+    "mac_registry_readonly_wal_r1.py",
+    "mac_wal_owned_reader_r1.py",
+    "mac_wal_owned_synthetic_r1.py",
+    "mac_t5_volume_guard_r1.py",
+    "mac_darwin_owned_projection_r1.py",
+    "mac_native_owned_unreaped_r1.py",
+    "mac_native_owned_commands_r1.py",
+    "mac_owned_unreaped_r1.py",
+    "mac_owned_commands_r1.py"
+  ],
+  "sourcePins": {
+    "mac_guarded_current_capture_r3.py": "606b5df58909ebedc035ebbff6a4aa5e754d19c6a7e0f5e4e88c9ddfc57c2693",
+    "mac_registry_readonly_wal_r1.py": "60d5e5874c281af2e19fee55bc4b2242627f69b500f1af1d6b5b22e16120bfed",
+    "mac_wal_owned_reader_r1.py": "6bc5939de4b2b64ea771b2003efb20e9bbf5f2c56be49a1b0c227919c8f39833",
+    "mac_wal_owned_synthetic_r1.py": "88a6abdc02c71b0cb25f6b85a4494f0b44a30c2f8a4936bb511948f258737cdc",
+    "mac_t5_volume_guard_r1.py": "6cd665616c79a6d4e519e7ef0f9dda92e929f1e70479b2d65cc1f0520bb244ff",
+    "mac_darwin_owned_projection_r1.py": "77b63286d79827671009d56d238494c472f37e3674bf903ab2da092b42733740",
+    "mac_native_owned_unreaped_r1.py": "880794d5e0f01f45e9c559688b2ebd33c2c96399124ea3ecb9e58720a2424d0c",
+    "mac_native_owned_commands_r1.py": "717feff0a8719a6c208b14aa1598cefd59881fffa09d19c781a89689b025b9cd",
+    "mac_owned_unreaped_r1.py": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+    "mac_owned_commands_r1.py": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+  },
+  "publicVolumeAnchorSha256": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8",
+  "documentPins": {
+    "anchor.public.json": "dd6dce82fb0276d7c0fd181152aef07bb2857e47506311f70ae67cce41b1eab8"
+  },
+  "runtimeExpected": {
+    "pythonExecutable": {
+      "bytes": 34640,
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+      "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+    },
+    "pythonVersion": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+    "sqliteExtension": {
+      "bytes": 165632,
+      "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/lib-dynload/_sqlite3.cpython-314-darwin.so",
+      "sha256": "8b751990131722185775f5d532c89d4588285c88b23112d2758a4594721aa3ac"
+    },
+    "sqliteVersion": "3.53.4",
+    "sqliteVersionInfo": [
+      3,
+      53,
+      4
+    ]
+  },
+  "utilityPins": {
+    "/usr/bin/sandbox-exec": "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a",
+    "/usr/sbin/diskutil": "624a8601b97ddfaa4b18dd2854c299e084cd45eb18fc152011c97615c3b9da1f"
+  },
+  "caseIds": [
+    "W01",
+    "W02",
+    "W03",
+    "W04",
+    "W05",
+    "W06",
+    "W07",
+    "W08",
+    "W09",
+    "W10"
+  ],
+  "budget": {
+    "shared_seconds": 45,
+    "query_seconds": 3,
+    "outer_seconds": 60,
+    "volume_seconds": 30,
+    "row_bytes": 1048576,
+    "aggregate_returned_and_read_bytes": 8388608,
+    "registry_wal_maximum_bytes": 5969912,
+    "application_retries": 0
+  },
+  "sqliteSourceReference": {
+    "repository": "sqlite/sqlite",
+    "tag": "version-3.53.4",
+    "commit": "b09c88c14082339b66c7b7158d609a771e64ca69",
+    "fossil_source_uuid": "bf7c7f30031888f4e796e429ab3978879485813aaca6f641c7b33e4e09459bcc",
+    "source_id_must_be_actually_read": true,
+    "dylib_dependency_closure_claimed": false
+  },
+  "qualification": {
+    "actual_owned_cases_passed": false,
+    "production_capture_authorized": false,
+    "consumer_authorized": false,
+    "service_authorized": false
+  },
+  "publicProfileAdditions": [
+    "candidate.public.json",
+    "anchor.public.json",
+    "volume.public.plist"
+  ],
+  "W03": {
+    "fresh_reader": true,
+    "vfs": "unix-posix",
+    "readonly_shm": 1,
+    "no_reused_shm": true,
+    "extra_policy": "deny file-read-data exact owned -shm",
+    "expected_primary_sqlite_error": "SQLITE_CANTOPEN",
+    "proves_parameter_recognition_alone": false,
+    "read_only_cantinit_heap_branch_not_forbidden": true
+  },
+  "nativeIdentityExpected": {
+    "abi": {
+      "alignment": 8,
+      "endianness": "little",
+      "offsets": {
+        "e_tdev": 108,
+        "e_tpgid": 112,
+        "pbi_comm": 48,
+        "pbi_flags": 0,
+        "pbi_gid": 24,
+        "pbi_name": 64,
+        "pbi_nfiles": 96,
+        "pbi_nice": 116,
+        "pbi_pgid": 100,
+        "pbi_pid": 12,
+        "pbi_pjobc": 104,
+        "pbi_ppid": 16,
+        "pbi_rgid": 32,
+        "pbi_ruid": 28,
+        "pbi_start_tvsec": 120,
+        "pbi_start_tvusec": 128,
+        "pbi_status": 4,
+        "pbi_svgid": 40,
+        "pbi_svuid": 36,
+        "pbi_uid": 20,
+        "pbi_xstatus": 8,
+        "rfu_1": 44
+      },
+      "sizes": {
+        "Dl_info": 32,
+        "int": 4,
+        "int32": 4,
+        "pointer": 8,
+        "proc_bsdinfo": 136,
+        "size_t": 8,
+        "uint32": 4,
+        "uint64": 8
+      }
+    },
+    "actualKernel": {
+      "machine": "arm64",
+      "release": "25.6.0",
+      "sysname": "Darwin",
+      "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:16:20 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8142"
+    },
+    "actualOsBuild": "25G83",
+    "dylibHandlesRetainedUntilProcessExit": true,
+    "libraryWholeFileHashClaimed": false,
+    "loadedSymbolImages": {
+      "dladdr": {
+        "addressesPublished": false,
+        "imageWholeBytesPinned": false,
+        "observedImagePath": "/usr/lib/system/libdyld.dylib",
+        "observedSymbolName": "dladdr",
+        "requestedSymbol": "dladdr"
+      },
+      "proc_listpids": {
+        "addressesPublished": false,
+        "imageWholeBytesPinned": false,
+        "observedImagePath": "/usr/lib/system/libsystem_kernel.dylib",
+        "observedSymbolName": "proc_listpids",
+        "requestedSymbol": "proc_listpids"
+      },
+      "proc_pidinfo": {
+        "addressesPublished": false,
+        "imageWholeBytesPinned": false,
+        "observedImagePath": "/usr/lib/system/libsystem_kernel.dylib",
+        "observedSymbolName": "proc_pidinfo",
+        "requestedSymbol": "proc_pidinfo"
+      },
+      "sysctlbyname": {
+        "addressesPublished": false,
+        "imageWholeBytesPinned": false,
+        "observedImagePath": "/usr/lib/system/libsystem_c.dylib",
+        "observedSymbolName": "sysctlbyname",
+        "requestedSymbol": "sysctlbyname"
+      }
+    },
+    "referenceDyldCommit": "fd8d0c4d52320ebf64db34f3cb280310d905c5ae",
+    "referenceIsInstalledWholePin": false,
+    "referenceXnuCommit": "f6217f891ac0bb64f3d375211650a4c1ff8ca1ea",
+    "requestedInstallNames": [
+      "/usr/lib/system/libsystem_kernel.dylib",
+      "/usr/lib/libSystem.B.dylib"
+    ],
+    "sharedCacheMaterializationAttempted": false
+  },
+  "nativeActualReference": {
+    "stdout": {
+      "bytes": 24032,
+      "sha256": "7a1b715e595a2badf18e4f01506cca2ee7c4c0a760c5ef3c86708a435ace9c4f",
+      "git_blob": "08056cb82289a44037c771b0ea03982ea11064be"
+    },
+    "authority": {
+      "bytes": 733,
+      "sha256": "411ea26371219c49547abc014464585551ba4a69b70bb906b92561a8d5bddf23",
+      "git_blob": "da54efb279857250790f0ed946c55aaad405d505"
+    },
+    "child": {
+      "bytes": 11066,
+      "sha256": "bb5717753866c0d7e647e4fd5c18a3342db0f530016cc7d92cb508c955ff8644",
+      "git_blob": "b5277782c948051b4483afe62c9951a1aa80096b"
+    },
+    "root_review": "994f79e2b74e92c123eddfddc2b32a8c8406dd2b",
+    "runtime_owner": "native-proc scoped numeric projection and retained WNOWAIT"
+  }
+}

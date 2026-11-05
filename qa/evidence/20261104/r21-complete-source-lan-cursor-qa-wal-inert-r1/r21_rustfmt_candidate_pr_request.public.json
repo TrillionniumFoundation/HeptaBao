@@ -1,0 +1,9 @@
+{
+  "repository_full_name": "TrillionniumFoundation/HeptaBao",
+  "base": "main",
+  "head": "codex/heptabao-finalgate-rustfmt-6d02ceca-20261105-r1",
+  "body": "## Why\n\nPR #156 fails in both CI channels before compilation because rustfmt requires the final cold-admission observation and its error mapping on separate lines. The failed jobs are 127077221194 and 127077220873 in run 41976736304; their complete logs show the same single formatting difference.\n\n## Change\n\nThis successor keeps the final `gate` argument passed by value and applies exactly the requested line wrap in `crates/heptabao-server/src/service_native_v6_ha_read.rs`. Relative to parent `19ba09ab5c494f25a3531749b0b99fc5c651d56c`, the change is one LF and eight spaces. The other 3,912 files are unchanged. Call order, deadline, error propagation, validation gates, runtime budgets and tests are unchanged by this commit.\n\n## Validation and scope\n\n- Candidate: `6d02ceca629163e1c07480fa1f21520434407143`; tree: `09aa45b9439741780961c2af76680c27e0773d08`.\n- Root and independent peer reconstructed both complete trees, verified all 358 Merkle trees, and matched the single hunk to both complete CI logs.\n- Peer evidence: Git blob `1438f095af416511489ceaab2690ca002789fe32`, SHA256 `91f8862961785467d9b47ff5adafefcaf15565e2e21bf3f554c25994b5f89aef`.\n- No local Rust/formatter execution is claimed. This PR requires fresh CI for its own head and generated merge commit.\n- Previous failures remain recorded. The two PR #154 runtime failures and the df026 three-host cold-unseal failure are unresolved by this whitespace change. Existing host qualification is not transferred to this successor.\n\nThis is a draft validation candidate. It does not authorize production traffic migration, deletion of old services, or a full OpenBao 2.7.1 replacement claim.\n",
+  "draft": true,
+  "maintainer_can_modify": false,
+  "title": "fix(native-ha): match rustfmt for the final cold gate"
+}

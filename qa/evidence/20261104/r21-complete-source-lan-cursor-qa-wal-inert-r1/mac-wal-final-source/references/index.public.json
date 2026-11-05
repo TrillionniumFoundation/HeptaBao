@@ -1,0 +1,42 @@
+{
+  "schema": "heptabao.mac-registry-wal-source-references.r1",
+  "accepted_design": {
+    "tree": "3ca90e98f2dd69b250f07993844bc6b59cef499c",
+    "design_blob": "630aee179bda1f8d043238224f78aa90d3008f39"
+  },
+  "metadata_actual": {
+    "tree": "d851530bf16d6bde7ef4c8c0246009b2d46428ad",
+    "stdout_blob": "be19181c81f081d935a601460c76d305c31ebadf",
+    "root_review": "49a0bfa8265d634b393670a908e26116df438a52",
+    "registry_wal_observed_bytes": 5969912,
+    "historical_failed_path_not_inferred": true
+  },
+  "old_failed_capture": {
+    "tree": "304926750268d0718d695146742de6d9c576df70",
+    "status": "UNKNOWN/library failure ledger unavailable remains unchanged"
+  },
+  "sqlite": {
+    "repository": "sqlite/sqlite",
+    "tag": "version-3.53.4",
+    "commit": "b09c88c14082339b66c7b7158d609a771e64ca69",
+    "source_uuid": "bf7c7f30031888f4e796e429ab3978879485813aaca6f641c7b33e4e09459bcc",
+    "os_unix_blob": "927b8ebfcbce355934dbf3671497057f67ba9cb2",
+    "wal_blob": "33fa038dba32b388c0662f34102ff4b96edd0b5a",
+    "upstream_urls": [
+      "https://github.com/sqlite/sqlite/blob/b09c88c14082339b66c7b7158d609a771e64ca69/src/os_unix.c",
+      "https://github.com/sqlite/sqlite/blob/b09c88c14082339b66c7b7158d609a771e64ca69/src/wal.c",
+      "https://www.sqlite.org/limits.html",
+      "https://www.sqlite.org/uri.html",
+      "https://www.sqlite.org/wal.html#read_only_databases"
+    ],
+    "installed_dylib_whole_closure_claimed": false
+  },
+  "W03_reviews": {
+    "peer": "1e2064192f1da5ad8fbceb2a68a65e7e30a07323",
+    "root": "f618de9fbd4c22571a5f23ddc8618d7464c55926"
+  },
+  "component_predecessor_tree": "2e0ac4261f165dcefc9dbdd7e4187d870a8986b8",
+  "accounting_correction_tree": "186a36ea40cfa93e3c7a065d87fac248b2bfdc86",
+  "root_affected_components_recheck": "55dbb4724319a5098aa7f762fb39ae63de2eda78",
+  "native_actual_root_review": "994f79e2b74e92c123eddfddc2b32a8c8406dd2b"
+}

@@ -1,0 +1,1 @@
+{"all_input_fds_closed": true, "all_owned_stopped": true, "completed_within_original_build_deadline": true, "product_or_http_requests": 0, "result": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r1/result.public.json", "result_sha256": "cc333fc026e0716c037cbabf1ca786430a6800fa72a5964c3a4266a43c6b6e6c", "status": "failed"}

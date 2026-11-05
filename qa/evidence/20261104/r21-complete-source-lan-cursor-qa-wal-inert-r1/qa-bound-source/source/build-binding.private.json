@@ -1,0 +1,115 @@
+{
+  "schema": "heptabao.native-h2-qa.build-binding.v1",
+  "ready": true,
+  "candidate_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "candidate_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "source": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/source",
+  "root": "/home/qian-qi/heptabao-native-h2-qa-df026-20261105-r1",
+  "control": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1",
+  "target": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/target-normal-r3",
+  "target_identity": {
+    "device": 66306,
+    "inode": 31606588,
+    "uid": 1000,
+    "gid": 1000,
+    "mode": 448
+  },
+  "cargo_home": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home",
+  "host": {
+    "uid": 1000,
+    "machine_id_sha256": "c67efd30ee6bcef9fbbdedce3e127151262d01a4ee23068cdf9c4136d9b9421b"
+  },
+  "tools": {
+    "python": {
+      "path": "/usr/bin/python3.12",
+      "sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+      "bytes": 8020928,
+      "uid": 0,
+      "mode": 493
+    },
+    "git": {
+      "path": "/usr/bin/git",
+      "sha256": "ed8b2df973b28c0fb773b9c0dc0816d3ee2b3835bb932d9153c21417bb51b362",
+      "bytes": 4547768,
+      "uid": 0,
+      "mode": 493
+    },
+    "cargo": {
+      "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/cargo",
+      "sha256": "ff3022fcbd13b08434ea7afde9a0ef9d5b3f5c17b5fc7a40031be3ee000a6a24",
+      "bytes": 40688400,
+      "uid": 1000,
+      "mode": 493
+    },
+    "rustc": {
+      "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustc",
+      "sha256": "3690cc576ede140504698405d5d8fa3826aaadbe71699c6c4ed0a565d6f493e2",
+      "bytes": 645016,
+      "uid": 1000,
+      "mode": 493
+    }
+  },
+  "inputs": {
+    "rust_source": {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1/inputs/native_h2_client.rs",
+      "sha256": "41347a71055e5c7086a256549f25f20d52ba8361e16926b4470f3448425f90dd",
+      "bytes": 19382,
+      "uid": 1000,
+      "mode": 384
+    },
+    "test_source": {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1/inputs/native_h2_client_tests.rs",
+      "sha256": "7f23470287fe953f0271e974d6eda759b7daf9f15bc363d522a02d3633e012c2",
+      "bytes": 8942,
+      "uid": 1000,
+      "mode": 384
+    },
+    "cargo_manifest": {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1/inputs/Cargo.toml",
+      "sha256": "960de7b19776cda4bd8a00561a417f72b08ca320efb93ec05028a3be0e7315e5",
+      "bytes": 957,
+      "uid": 1000,
+      "mode": 384
+    },
+    "canonical_lock": {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1/inputs/canonical.Cargo.lock",
+      "sha256": "d2d07ea13e42a8d4ba65fafc642ca98ae1a7de68f6cd46a69043332267f378d5",
+      "bytes": 101193,
+      "uid": 1000,
+      "mode": 384
+    },
+    "owner_reference": {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1/inputs/owned_reference_phaseb_r3.py",
+      "sha256": "10816d06fd5ad59175872ccb7db1337d7677e92405a26a7ab1cae2796ee0a86c",
+      "bytes": 61210,
+      "uid": 1000,
+      "mode": 384
+    },
+    "cli_reference": {
+      "path": "/home/qian-qi/heptabao-native-h2-qa-controls-df026-20261105-r1/inputs/official_cli_reference_r4.py",
+      "sha256": "18318841d3538e60fddf951708055a206402f5bf1ecdacc2bfceabec4f998dd9",
+      "bytes": 46586,
+      "uid": 1000,
+      "mode": 384
+    }
+  },
+  "normal_product_result": {
+    "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/normal-release-tests-r3/result.public.json",
+    "sha256": "84d763e6ff948df27964f373e834f869d7b22eeb0d7efb929fbd5c299c528f1b",
+    "bytes": 48188,
+    "uid": 1000,
+    "mode": 384
+  },
+  "caps": {
+    "total_seconds": 600,
+    "git_seconds": 15,
+    "tool_seconds": 15,
+    "lock_seconds": 20,
+    "build_seconds": 180,
+    "components_build_seconds": 180,
+    "list_seconds": 15,
+    "components_seconds": 30,
+    "cleanup_term_seconds": 5,
+    "cleanup_kill_seconds": 5
+  }
+}

@@ -1,0 +1,69 @@
+diff --git a/mac_wal_owned_synthetic_r1.py b/mac_wal_owned_synthetic_r1.py
+--- a/mac_wal_owned_synthetic_r1.py
++++ b/mac_wal_owned_synthetic_r1.py
+@@ -18,7 +18,7 @@
+  'mac_owned_unreaped_r1.py','mac_owned_commands_r1.py')
+ CASE_IDS=tuple('W%02d'%x for x in range(1,11))
+ DRIFT_IDS=('W05','W06','W07','W08')
+-UTILITY_PATHS=('/usr/bin/sandbox-exec','/usr/sbin/diskutil','/bin/ps')
++UTILITY_PATHS=('/usr/bin/sandbox-exec','/usr/sbin/diskutil')
+ PROBE_CONTENT=b'owned-readonly-wal-kernel-probe-r1\n'
+ signals=None;fd_ledger=[];writers=[];writer_attempts=[];children=[];hashed_bytes=0
+ capture_child=None;exit_observation=None;stop_once_unreaped=None;observed_returncode=None
+@@ -203,7 +203,7 @@
+     remaining(until);writer['mutationCompleted']=True
+ 
+ def run_reader(writer,argv_prefix,candidate_sha,volume_sha):
+-    # This is the old retained-owner command graph with two bounded anonymous
++    # This is the qualified native retained-owner graph with two bounded anonymous
+     # control pipes; its child is never poll()/wait()/communicate() reaped early.
+     case=writer['case'];pipe_rows=[];row=None;streams={};out=bytearray();err=bytearray();events=bytearray()
+     started=time.monotonic();barriers=0
+@@ -294,17 +294,24 @@
+     sys.path.insert(0,str(QA))
+     import mac_guarded_current_capture_r3 as base
+     import mac_wal_owned_reader_r1 as reader
+-    from mac_owned_commands_r1 import Signals,Commands
+-    from mac_owned_unreaped_r1 import require_waitid,capture_child as cc,exit_observation as eo,stop_once_unreaped as su,observed_returncode as rc
++    from mac_darwin_owned_projection_r1 import NativeProjection
++    from mac_native_owned_commands_r1 import Signals,Commands
++    from mac_native_owned_unreaped_r1 import bind_projection,require_waitid,capture_child as cc,exit_observation as eo,stop_once_unreaped as su,observed_returncode as rc
+     from mac_t5_volume_guard_r1 import HeldT5
+     capture_child=cc;exit_observation=eo;stop_once_unreaped=su;observed_returncode=rc
+-    signals=Signals();signals.install();require_waitid();commands=Commands(signals);guard=None
++    signals=Signals();signals.install();require_waitid();commands=Commands(signals);guard=None;native_api=None
+     report={'schema':'heptabao.mac-owned-registry-wal-synthetic.r1','ok':False,'outcomeUnknown':True,
+         'caseIds':list(CASE_IDS),'cases':[],'sourcePins':candidate['sourcePins'],
+         'productionInputsRead':False,'privateCaptureAuthorized':False,'applicationRetries':0,
+         'sharedSeconds':45,'querySeconds':3,'supervisorSeconds':60,
+         'sameProcessWriterAndReader':False,'wholeDatabaseBackupQualified':False}
+     try:
++        native_api=NativeProjection(until=UNTIL)
++        report['nativeSelfBefore']=native_api.qualify_self(until=UNTIL)
++        need(native_api.public()['identity']==candidate['nativeIdentityExpected'],
++             'same_qualified_actual_native_abi_os_and_symbol_images')
++        bind_projection(native_api)
++        report['nativeActualReference']=candidate['nativeActualReference']
+         runtime=base.runtime_identity(remaining=remaining,critical=critical)
+         need(runtime==candidate['runtimeExpected'],'same_observed_installed_runtime')
+         utility_before={}
+@@ -368,6 +375,11 @@
+             _,after=read_public(QA/name,128*1024,candidate['sourcePins'][name]);need(after==source_ids[name],'all_sources_same_after')
+         for path in UTILITY_PATHS:need(utility_fingerprint(base,path)==utility_before[path],'public_utility_same_after')
+         need(base.runtime_identity(remaining=remaining,critical=critical)==runtime,'actual_runtime_same_after')
++        report['nativeSelfAfter']=native_api.qualify_self(until=UNTIL)
++        before_self=report['nativeSelfBefore']['first'];after_self=report['nativeSelfAfter']['last']
++        need(all(before_self[key]==after_self[key] for key in
++             ('pid','ppid','pgid','uid','birthSeconds','birthMicroseconds')),
++             'same_parent_native_self_birth_after_owned_readers')
+         guard.check();report['sourceAndRuntimeAfterVerified']=True
+         report['allCasesMatched']=len(report['cases'])==10
+         report['ok']=report['allCasesMatched']
+@@ -383,6 +395,7 @@
+             if not row.get('closeBlockedByUnconfirmedConnection'):close_fd(row)
+         report['ownedReaders']=[r.get('public') for r in children]
+         report['ownedCommands']=commands.public()
++        if native_api is not None:report['nativeProjection']=native_api.public()
+         report['writerConnectAttempts']=writer_attempts
+         report['writerConnections']=[{'case':w['case'],'closeAttempted':w['closeAttempted'],'closed':w['closed'],
+              'cursorCount':len(w['cursors']),'cursorsClosed':all(r['closed'] for r in w['cursors']),

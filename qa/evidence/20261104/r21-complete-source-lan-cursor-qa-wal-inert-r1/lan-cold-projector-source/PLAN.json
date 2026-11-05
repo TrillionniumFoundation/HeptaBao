@@ -1,0 +1,99 @@
+{
+  "schema": "heptabao.df026-node2-cold-projector-source-plan.v1",
+  "status": "SOURCE_ONLY_AWAITING_EXACT_PROJECTOR_GO",
+  "purpose": "Identify normal-build cold-loader public phase outcomes from the existing failed df026 node2 log, without replaying any request or changing any deadline.",
+  "candidate": {
+    "bytes": 24839,
+    "sha256": "5cc8995ba637c452140250168856c965d0486ea05b2c7cbc1a4db0a2af796ef8",
+    "blob": "96e158f78f47313e5708a922869d4f43688ebae1"
+  },
+  "exact_request": {
+    "bytes": 26844,
+    "sha256": "0a4d8a8dd8b569f8201c55eb981bbe396ae8ed0331004f0ba81746972520f873",
+    "blob": "188a9c3632779369272c56ec5766c4cffdbc09ff"
+  },
+  "key": "heptabao-df026-node2-cold-log-projector-r1-5cc8995b",
+  "metadata_tree": "94cc926410bc8af096fa3438d18605aaf34f18b2",
+  "closed_lan_core_tree": "dd428dcbd0039c1792cda4a675fd3d50cad82991",
+  "closed_lan_full_tree": "e76233189ab4f9827d1a9d939d10bb73c6417873",
+  "closed_lan_root_review": "431c6fdc2c6ffe1d6e224df2f9105252ce9b1e1f",
+  "binding": {
+    "schema": "heptabao.df026-node2-stopped-log-public-input-binding.v1",
+    "native_response": {
+      "bytes": 493,
+      "sha256": "1a09ab90d0beca1be28a56f99e1cef3a6506b90af6d9474932a8e04e3199548e",
+      "blob": "70f23409670945e31cd9554dcb02a2613ff1b3a4"
+    },
+    "request": {
+      "host": "rog",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/cold-h2-pocket3-mac1-postrecovery-cold-node2-r1/process.log"
+    },
+    "actual_whole_sha256": "26d1f51d7ecd03920c9808dd510e67eead687d9492781fa2d11ad380a2c84474",
+    "actual_size": 42620,
+    "actual_version": "66306:38977537:42620:1793863384030652703:1793863384030652703",
+    "expected_identity_fields": [
+      "device",
+      "inode",
+      "uid",
+      "gid",
+      "mode",
+      "type",
+      "nlink",
+      "bytes",
+      "mtime_ns",
+      "ctime_ns"
+    ],
+    "expected_identity": [
+      "66306",
+      "38977537",
+      "1000",
+      "1000",
+      "384",
+      "32768",
+      "1",
+      "42620",
+      "1793863384030652703",
+      "1793863384030652703"
+    ],
+    "derivation": {
+      "device_inode_bytes_mtime_ctime": "Exact decimal components of native immutable-read version; no JavaScript Number conversion.",
+      "uid_gid_mode_nlink": "Native metadata fields.",
+      "type": "32768 regular-file type from file_info regular-target API contract; proposed projector additionally requires actual fstat S_ISREG and exact value."
+    },
+    "raw_log_body_emitted": false,
+    "product_requests": 0,
+    "body_projection_executed": false
+  },
+  "bounds": {
+    "inner_seconds": 15,
+    "outer_seconds": 45,
+    "max_input_bytes": 2097152,
+    "max_markers": 128,
+    "max_output_bytes": 65536,
+    "max_timing_line_bytes": 65536,
+    "actual_bucket_limit": 64,
+    "allowed_static_pairs": 70,
+    "child_processes": 0,
+    "file_writes": 0,
+    "network_requests": 0,
+    "product_calls": 0
+  },
+  "source_delta": {
+    "base": "74cdbee3ced0d4e0a891e62485d87d5f7b0b1cc2",
+    "strict_diff_hunks": 5,
+    "literal_changes": 13,
+    "nonmain_definitions_unchanged": 12,
+    "added_pairs": 20,
+    "old_pairs_preserved": 50
+  },
+  "diagnostic_interpretation": [
+    "The 20 new labels come exactly from the candidate's normal-build ColdNativeHaPhase and use the existing bounded timing schema. The existing 50 source-bound pairs, static sync labels, closed JSON keys/types/count checks and 64-bucket maximum stay intact.",
+    "A failed materialize_full can be a recoverable first attempt; only later repair/materialize-after-repair and final outcomes distinguish terminal failure.",
+    "The outer replica_source or repair_source can complete with an inner Result error. The independently observed replica_install or physical_repair must be read alongside it.",
+    "Repeated owner/read-witness/deadline phase counts describe the same original gate calls, not added checks. A completed local_root_identity records result production, not equality or branch choice.",
+    "If only the outer load bucket fails before any finer phase, initial durable read/format probe or cold environment/process construction remains unresolved; do not invent an inner cause.",
+    "Line order, request_class and remaining time do not create a request ID. The exact ledger seq49 response SHA is retained separately and cannot be cryptographically matched to a timing marker by proximity alone.",
+    "No matching marker, empty phase array or bounded-output refusal is not product success.",
+    "Actual acceptance still requires authoritative exit0, complete durable stdout, matching metadata/whole SHA, all descriptors closed and post-flush original-deadline success. Source component success is not runtime qualification."
+  ]
+}

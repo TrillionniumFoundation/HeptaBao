@@ -1,0 +1,7 @@
+{
+  "chunk_id": "844c83",
+  "wall_time_seconds": 0.000034732,
+  "exit_code": 0,
+  "original_token_count": 151,
+  "output": "{\"candidate_filesystem_calls\": 0, \"checks\": [\"whole AST compile without importing module\", \"actual parser declarations selected unchanged\", \"exact new request accepted as run-once\", \"actual prepared guard accepts whole-SHA binding\", \"actual prepared guard rejects missing\", \"actual prepared guard rejects wrong SHA\", \"actual parser refuses both actions\"], \"checks_passed\": 7, \"main_executed\": false, \"physical_host_calls\": 0, \"runtime_admission\": false, \"schema\": \"heptabao.df026-lan-live-request-source-checks.v1\", \"source_sha256\": \"664df513a89bec9484b52206b934bd95a9b37d67ac5fc3cde2a6f4bdeea481c3\"}\n"
+}

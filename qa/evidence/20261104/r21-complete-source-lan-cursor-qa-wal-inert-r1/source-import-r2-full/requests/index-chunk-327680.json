@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-df026-import-r2-index-chunk-327680-1a1aa422e15-20261105-r1",
+  "operation": {
+    "tool": "binary_read",
+    "arguments": {
+      "host": "desktop",
+      "path": "/home/qian-qi/heptabao-ha-closure-20261103-r1/normal-cold-h2-source-import-r1/control/012-materialized-index.stdout",
+      "offset": 327680,
+      "limit": 65536,
+      "expected_version": "2050:5022776:438586:1793857837064243882:1793857837064243882"
+    }
+  }
+}

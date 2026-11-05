@@ -1,0 +1,72 @@
+{
+  "schema": "heptabao.public-source-manifest.v1",
+  "status": "SOURCE_ONLY_NO_HOST_SUBMISSION",
+  "files": [
+    {
+      "path": "candidate/fixed_metadata.py",
+      "bytes": 10224,
+      "sha256": "52a60fad1531ebb5bcc05bef3261ef7e83f68956fa476b71c008a98412b49aaf",
+      "blob": "ad852419c3217db37ce6cf1ede5e1ec219a60d80"
+    },
+    {
+      "path": "dispatch/request.public.json",
+      "bytes": 11117,
+      "sha256": "f436a80bffaee97bde7d1a2bf6377124389851c9388fd44339ac91d878a66632",
+      "blob": "abc5e5c2cfd34e97aa603b1fe79d383a6ea06953"
+    },
+    {
+      "path": "PLAN.md",
+      "bytes": 6126,
+      "sha256": "d902dcc9e63967d473aa9afd1320d0152ec17efc22460d15cde873c0cb124153",
+      "blob": "3035f749d1924509a8ec522c0478726b387ba44d"
+    },
+    {
+      "path": "source-control-flow-proof.public.json",
+      "bytes": 2317,
+      "sha256": "8777054686e2e30d4ec7629781e5f0d77950943a615f82e9d901fdfdbef31539",
+      "blob": "3d68b80d422b8321b97a2ed33227be8cf6c091ef"
+    },
+    {
+      "path": "references/original-relay.py",
+      "bytes": 21085,
+      "sha256": "732fa7e74d859c48cd3844967409254e6f7cd44d4ceb148a20d2ea89ed07388f",
+      "blob": "b076da8a629694e0dc988c57c13e03fa1b2ec548"
+    },
+    {
+      "path": "verification/source_checks.py",
+      "bytes": 6273,
+      "sha256": "74cf86dc20527fb476130a83ada376c32640ee8142c1a4a8ff0a0c65a54a6f9e",
+      "blob": "617b2c3eb8505ee7d57e57a7e5d3661347c39287"
+    },
+    {
+      "path": "verification/stdout.original.json",
+      "bytes": 1551,
+      "sha256": "16a429bc914ccb0223f24fd845cdfeed669622ab2332553aa1a0f00e6f67995b",
+      "blob": "f149cd1d8f66f201f24be017878d49371b148bd6"
+    },
+    {
+      "path": "verification/executor.original.json",
+      "bytes": 1766,
+      "sha256": "8e743fc7ab63dd848e9dac24b4ed867d936747c0f7a56d19b54652ae10431da2",
+      "blob": "3bd8098b0b09090c09530c35e6fa839a8fc7a0bd"
+    },
+    {
+      "path": "references/sender.inert-file-info.original.json",
+      "bytes": 480,
+      "sha256": "529c696af0e98ee43299dfc218529246cc4bccae4349cfdf386f1e0ebb6150ef",
+      "blob": "89a4c8d9dd1123c4ff879bb1b2f7028ca03bbca1"
+    },
+    {
+      "path": "references/receiver.inert-file-info.original.json",
+      "bytes": 484,
+      "sha256": "01198af32ef3805f3ff71ba66d434680ec0e44cc893a8be25fccc0a460f9e51e",
+      "blob": "2c14f90bde2b8af253ca9e146201ffe6fd08d8f2"
+    },
+    {
+      "path": "references/relay.inert-file-info.original.json",
+      "bytes": 481,
+      "sha256": "08931f02ea5c43baa48a0548ff56dc9ec48978b0526107edfabbd6e375334b73",
+      "blob": "6c4d8354386184d18506041d632aedb63e5ae0f1"
+    }
+  ]
+}

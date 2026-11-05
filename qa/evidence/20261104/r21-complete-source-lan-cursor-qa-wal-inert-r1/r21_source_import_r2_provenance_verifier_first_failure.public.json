@@ -1,0 +1,5 @@
+{
+  "error": "record commands/importer.py",
+  "scope": "Offline root checker assumed every small-read path was a command log; logs-3 also includes the importer source. No host request or artifact mutation.",
+  "corrective_action": "Resolve actual importer.py to actual/importer.py, then check the exact count of command-log bodies plus the source separately."
+}
