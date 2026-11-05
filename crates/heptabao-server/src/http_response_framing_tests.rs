@@ -325,6 +325,7 @@ fn response_write_observation_retains_short_write_and_partial_error_semantics() 
         writer: &mut observed,
         accepted_plaintext_bytes: 0,
         flush_attempted: false,
+        status: None,
     };
     let observed_error = write_response(&mut observation, Response::error(400, "negative"), false)
         .err()
