@@ -1,0 +1,64 @@
+{
+  "schema": "heptabao.cold-h2-normal-controls-source-review.v2",
+  "status": "SOURCE_ONLY_PROPOSED_NOT_EXECUTED",
+  "candidate": {
+    "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "parent": "6304a898192bfdf7eabec3c4ea40f7166e59a137"
+  },
+  "source_history_expected": 3757,
+  "source_tree_expected": {
+    "count": 3913,
+    "bytes": 62212769,
+    "index_sha256": "e7fee633b64acffd6520587c85ff6f4206e0b12c7db42a0cdeb36dff66350d54"
+  },
+  "counts": {
+    "original": 44,
+    "existing_ingress": 7,
+    "incremental_cold_h2": 9
+  },
+  "normal_outer_seconds": {
+    "mac": 8280,
+    "rog": 12000
+  },
+  "source_inner_seconds": 300,
+  "new_source_outer_seconds": 360,
+  "source_ref_receipt": "4ac29eba26f7b88176239c32fbc0a9bef68136fc",
+  "normal_build_started": false,
+  "source_stage_started": false,
+  "artifact_transfer_started": false,
+  "qualification_inherited": false,
+  "original_failure_evidence_unchanged": true,
+  "source_review_pending_root": true,
+  "local_components": {
+    "syntax": 6,
+    "runner_actual_selected": [
+      27,
+      27
+    ],
+    "path_actual_selected": [
+      26,
+      28
+    ],
+    "initial_path_harness_failed_reports_retained": true,
+    "actual_host_operations": 0
+  },
+  "input_binding": {
+    "rog_source": true,
+    "mac_source": false,
+    "rog_build": false,
+    "mac_build": false
+  },
+  "limits": [
+    "No full module execution in the component checks.",
+    "No new Rust compilation or libtest execution.",
+    "Mac bundle transport is a later separately reviewed actual operation.",
+    "The carried launcher monotonic outer cap is additionally bounded by the original earlier external supervisor."
+  ],
+  "revision": 2,
+  "production_deployment_changed": false,
+  "source_code_identity_changed": true,
+  "previous_source_only_tree": "f0062d97b9e9396e985dcfbb1c9e2ab95365179b",
+  "actual_components_remain_bound_to_draft1": true,
+  "behavioral_function_bodies_identical": true
+}

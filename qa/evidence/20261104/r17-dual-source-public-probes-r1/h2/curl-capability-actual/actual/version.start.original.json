@@ -1,0 +1,35 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-q",
+      "--version"
+    ],
+    "created_unix_ms": 1793849681924,
+    "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+    "env_keys": [
+      "LC_ALL"
+    ],
+    "executable": "/usr/bin/curl",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1a9c5e804-fc05-378c",
+    "idempotency_key": "heptabao-h2-curl-capability-version-20261105-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1a9c5e804-fc05-378c",
+    "request_digest": "9210e41d134b91e60963eac9d67ea929915bf9ebed3f0f25afdd55edc4a621c0",
+    "request_fingerprint": 10525163142693753318,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1a9c5e804-fc05-378c"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1a9c5e804-fc05-378c"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

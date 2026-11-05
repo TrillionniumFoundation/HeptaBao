@@ -1,0 +1,417 @@
+diff --git a/probe.py b/probe.py
+--- a/probe.py
++++ b/probe.py
+@@ -1,26 +1,27 @@
+ #!/usr/bin/env python3
+-"""One fresh owned sandbox plumbing probe; no current DB or credential inputs.
++"""Fresh public ps launch comparison under the same patched capture sandbox.
+ 
+-The parent is admitted through the frozen stdin source loader. It creates only
+-ROOT below the existing owned fixture root, then runs two exact sandbox cases.
+-The child modes never import SQLite, the capture library, SDK, or a consumer.
+-Original profile generation is an exact source copy. The four kernel checks
+-only rebind their owned probe-directory expression. The generated profile
+-relocates three captures/before references to a new owned sibling of captures;
+-no existing captures path is opened by this probe.
++No current database, credential, SQLite, SDK, or consumer is opened. The two
++numeric-only ps invocations keep start_new_session=False and remain within the
++outer owner's retained sandbox PGID. No diskutil runs inside either sandbox.
++The owned ps copy has original whole bytes and mode0500; no policy exception,
++system chmod, code-signing change, or no-sandbox execution is introduced.
++A source/path/signature refusal is evidence, not proof of a unique setuid cause.
+ """
+ from __future__ import annotations
+-import argparse, base64, errno, hashlib, json, math, os, signal, socket, stat, sys, time
++import argparse, base64, errno, hashlib, json, math, os, signal, socket, stat, subprocess, sys, time
+ from contextlib import contextmanager
+ from pathlib import Path
+ 
+ SOURCE_ROOT=Path('/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1')
+ ROOT=SOURCE_ROOT
+ PROBE_STAGE='before'
+-PROBE_ROOT=ROOT/'devnull-sandbox-probe-r1'
++PROBE_ROOT=ROOT/'ps-sandbox-probe-r1'
+ QA=SOURCE_ROOT/'qa'
+ BASE=PROBE_ROOT
+ WORKER=BASE/'probe.py'
++COPIED_PS=BASE/'ps-owned-no-setuid'
++PS_SECONDS=4.0
+ LIVE=Path('/Users/qianqi/.openclaw')
+ AGENTS=('main','trnm','hepta-ui','hepta','hepta-backend')
+ CACHE_NAMES=('applied-profiles.json','publish-baseline.json','bad-refresh-quarantine.json',
+@@ -35,6 +36,7 @@
+ pending=None
+ fds=[]
+ sockets=[]
++ps_launches=[]
+ hashed_bytes=0
+ 
+ ANCHOR_RAW=base64.b64decode("ewogICJzY2hlbWEiOiAiaGVwdGFiYW8ubWFjLWN1cnJlbnQtdDUtcHVibGljLWFuY2hvci5yMSIsCiAgInNvdXJjZV9pbnZlbnRvcnlfc2hhMjU2IjogIjAwMWQ5ZDMzODRmMWI4YzAwZmEzY2JhOGFmN2YzMDIwYmVkYzU0ZjI2Njc4NjExYWIzY2QzYTUyNGNlMjM5MDIiLAogICJ2b2x1bWVVVUlEIjogIkZCODA0RDFCLTI0Q0ItNEQ2RS1BRUE3LUE5RTE4MDgwNzc1OCIsCiAgImV4cGVjdGVkVm9sdW1lRGV2aWNlIjogIjE2Nzc3MjQ0IiwKICAiYW5jaG9ycyI6IFsKICAgIHsKICAgICAgInBhdGgiOiAiLyIsCiAgICAgICJpZGVudGl0eSI6IFsKICAgICAgICAiMTY3NzcyMzMiLAogICAgICAgICIyIiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjIyIiwKICAgICAgICAiNzA0IiwKICAgICAgICAiMTc4NjU4OTUxNTAwMDAwMDAwMCIsCiAgICAgICAgIjE3ODY1ODk1MTUwMDAwMDAwMDAiCiAgICAgIF0KICAgIH0sCiAgICB7CiAgICAgICJwYXRoIjogIi9Wb2x1bWVzIiwKICAgICAgImlkZW50aXR5IjogWwogICAgICAgICIxNjc3NzIzMyIsCiAgICAgICAgIjE4MzM2IiwKICAgICAgICAiMCIsCiAgICAgICAgIjAiLAogICAgICAgICIxNjg3NyIsCiAgICAgICAgIjUiLAogICAgICAgICIxNjAiLAogICAgICAgICIxNzkzMTAwNTk3NzU2NTE1NTkxIiwKICAgICAgICAiMTc5MzEwMDU5Nzc1NjUxNTU5MSIKICAgICAgXQogICAgfSwKICAgIHsKICAgICAgInBhdGgiOiAiL1ZvbHVtZXMvVDUiLAogICAgICAiaWRlbnRpdHkiOiBbCiAgICAgICAgIjE2Nzc3MjQ0IiwKICAgICAgICAiMiIsCiAgICAgICAgIjAiLAogICAgICAgICIwIiwKICAgICAgICAiMTY4OTMiLAogICAgICAgICIxMiIsCiAgICAgICAgIjM4NCIsCiAgICAgICAgIjE3OTMxNTI5NzMxNDQyNjA0OTUiLAogICAgICAgICIxNzkzMTUyOTczMTQ0MjYwNDk1IgogICAgICBdCiAgICB9CiAgXQp9Cg==",validate=True)
+@@ -76,7 +78,7 @@
+     global hashed_bytes
+     path=Path(path)
+     allowed={QA/name for name in PUBLIC_SOURCES}|{Path(x['path']) for x in UTILITY_PINS}
+-    allowed|={WORKER,BASE/'original.sb',BASE/'patched.sb'}
++    allowed|={WORKER,COPIED_PS,BASE/'original.sb',BASE/'patched.sb'}
+     need(path in allowed,'closed_public_read_set')
+     remaining();row=None
+     try:
+@@ -88,7 +90,9 @@
+         need(stat.S_ISREG(before.st_mode) and before.st_nlink==1
+              and 0<before.st_size<=4*1024*1024,'bounded_regular_public_file')
+         if expected_identity is None:
+-            need(before.st_uid==501 and stat.S_IMODE(before.st_mode)==0o600,
++            wanted=0o500 if path==COPIED_PS else 0o600
++            need(before.st_uid==501 and before.st_gid==20
++                 and stat.S_IMODE(before.st_mode)==wanted,
+                  'owned_public_source_mode_owner')
+         else:
+             need(ident(before)==tuple(expected_identity),'frozen_public_tool_identity')
+@@ -258,15 +262,148 @@
+     remaining()
+     return observed
+ 
++def copy_public_ps(guard):
++    """Copy only the already whole-pinned public binary into one fresh inode."""
++    global hashed_bytes
++    expected=next(pin for pin in UTILITY_PINS if pin['path']=='/bin/ps')
++    raw,source_before=public_read('/bin/ps',expected['sha256'],
++                                 int(expected['identity'][6]),expected['identity'])
++    row=None
++    with guard.parent(COPIED_PS) as (parent,name):
++        try:
++            with critical():
++                fd=os.open(name,os.O_RDWR|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,
++                           0o500,dir_fd=parent)
++                row={'fd':fd,'closeAttempted':False,'closed':False};fds.append(row)
++            before=os.fstat(fd)
++            need(stat.S_ISREG(before.st_mode) and before.st_uid==501
++                 and before.st_gid==20 and before.st_nlink==1
++                 and before.st_dev==int(json.loads(ANCHOR_RAW)['expectedVolumeDevice']),
++                 'new_owned_ps_inode')
++            offset=0
++            while offset<len(raw):
++                remaining()
++                n=os.write(fd,raw[offset:offset+65536])
++                need(n>0,'owned_ps_copy_progress');offset+=n
++            os.fchmod(fd,0o500);os.fsync(fd)
++            after=os.fstat(fd)
++            need(ident(before)[:4]==ident(after)[:4]
++                 and stat.S_IMODE(after.st_mode)==0o500 and after.st_nlink==1
++                 and after.st_size==len(raw),'owned_ps_no_privilege_bits')
++            os.lseek(fd,0,os.SEEK_SET);readback=bytearray()
++            while True:
++                remaining()
++                block=os.read(fd,min(65536,len(raw)+1-len(readback)))
++                if not block:break
++                readback.extend(block);hashed_bytes+=len(block)
++                need(len(readback)<=len(raw) and hashed_bytes<=PUBLIC_HASH_BOUND,
++                     'owned_ps_readback_bound')
++            named=os.stat(name,dir_fd=parent,follow_symlinks=False)
++            need(bytes(readback)==raw and sha(readback)==expected['sha256']
++                 and ident(after)==ident(os.fstat(fd))==ident(named),'owned_ps_same_fd_whole_readback')
++            os.fsync(parent);guard.check()
++            target={'path':str(COPIED_PS),'bytes':len(raw),'sha256':sha(raw),
++                    'identity':list(ident(after))}
++        finally:
++            if row is not None:need(close_fd(row),'owned_ps_copy_descriptor_close')
++    _,source_after=public_read('/bin/ps',expected['sha256'],
++                              int(expected['identity'][6]),expected['identity'])
++    need(source_after==source_before,'original_ps_copy_source_unchanged')
++    return {'source':source_before,'target':target,
++            'system_source_modified':False,'target_mode':0o500,
++            'source_bytes_identical':True,'setuid_removed_only_in_new_owned_copy':True}
++
++def observe_ps_launch(variant):
++    """One Popen/communicate observation; any unresolved child stays in outer PGID."""
++    need(variant in ('system','owned-copy'),'fixed_ps_variant')
++    expected_self={'pid':os.getpid(),'ppid':os.getppid(),'pgid':os.getpgrp(),'uid':os.geteuid()}
++    need(expected_self['pid']==expected_self['pgid'] and expected_self['uid']==501,
++         'outer_owned_sandbox_session_leader')
++    executable='/bin/ps' if variant=='system' else str(COPIED_PS)
++    argv=[executable,'-p',str(expected_self['pid']),'-o','pid=,ppid=,pgid=,uid=,stat=,lstart=']
++    row={'variant':variant,'argv':argv,'startNewSession':False,'closeFds':True,
++         'sandboxOwner':expected_self,'popenReturned':False,'communicateReturned':False,
++         'directChildReaped':None,'childPid':None,'exitCode':None,
++         'streamsCloseAttempted':False,'streamsClosed':True,'streamCloseErrors':[],
++         'signalsSent':[],'cleanupDelegatedToOuterRetainedGroup':False,
++         'knownObservation':False,'executionSucceeded':False,'outcomeUnknown':False,
++         'errorStage':None,'errorType':None,'errorErrno':None,'errorCode':None,
++         'stdoutBytes':0,'stderrBytes':0,'stdoutSha256':sha(b''),'stderrSha256':sha(b''),
++         'dispatchEligibilityOnly':{
++             'usePosixSpawnFlag':getattr(subprocess,'_USE_POSIX_SPAWN',None),
++             'havePosixSpawnCloseFromFlag':getattr(subprocess,'_HAVE_POSIX_SPAWN_CLOSEFROM',None)},
++         'actualSpawnBranchObserved':False}
++    ps_launches.append(row)
++    p=None;out=b'';err=b'';step='popen'
++    deadline=min(until,time.monotonic()+PS_SECONDS)
++    row['originalPsDeadlineMonotonic']=deadline
++    def left():
++        value=min(remaining(),deadline-time.monotonic())
++        need(value>0,'original_ps_four_second_deadline')
++        return value
++    try:
++        left()
++        with critical():
++            p=subprocess.Popen(argv,stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,
++                               stderr=subprocess.PIPE,env=dict(os.environ,LC_ALL='C'),
++                               close_fds=True,start_new_session=False)
++            row['popenReturned']=True;row['childPid']=p.pid
++        step='communicate'
++        out,err=p.communicate(timeout=left())
++        row['communicateReturned']=True
++        row['directChildReaped']=p.returncode is not None;row['exitCode']=p.returncode
++        left()
++        row['stdoutBytes']=len(out);row['stdoutSha256']=sha(out)
++        row['stderrBytes']=len(err);row['stderrSha256']=sha(err)
++        step='bounded_numeric_projection'
++        need(len(out)<=2*1024*1024 and len(err)<=65536,'original_ps_output_bounds')
++        need(p.returncode==0,'ps_process_nonzero_exit')
++        rows=[]
++        for line in out.decode('ascii').splitlines():
++            fields=line.split(None,5)
++            need(len(fields)==6,'process_projection_malformed')
++            rows.append({'pid':int(fields[0]),'ppid':int(fields[1]),'pgid':int(fields[2]),
++                         'uid':int(fields[3]),'state':fields[4],'start':fields[5]})
++        need(len(rows)==1 and all(rows[0][k]==v for k,v in expected_self.items()),
++             'numeric_self_projection_identity')
++        row['selectedSelf']=rows[0]
++        left()
++        row['knownObservation']=True;row['executionSucceeded']=True
++    except BaseException as error:
++        safe_error(row,error,step)
++        if p is None:
++            row['knownObservation']=isinstance(error,PermissionError) and row['errorErrno'] in (1,13)
++        else:
++            row['directChildReaped']=p.returncode is not None;row['exitCode']=p.returncode
++            row['knownObservation']=bool(row['communicateReturned'] and row['directChildReaped']
++                                         and not isinstance(error,KeyboardInterrupt))
++        row['outcomeUnknown']=bool(isinstance(error,KeyboardInterrupt)
++            or (p is not None and p.returncode is None))
++    finally:
++        if p is not None:
++            with critical():
++                row['streamsCloseAttempted']=True
++                for stream in (p.stdout,p.stderr):
++                    try:stream.close()
++                    except BaseException as error:row['streamCloseErrors'].append(type(error).__name__)
++                row['streamsClosed']=not row['streamCloseErrors']
++                row['directChildReaped']=p.returncode is not None;row['exitCode']=p.returncode
++        row['cleanupDelegatedToOuterRetainedGroup']=bool(p is not None and p.returncode is None)
++        row['outcomeUnknown']=bool(row['outcomeUnknown'] or not row['streamsClosed']
++            or row['cleanupDelegatedToOuterRetainedGroup'])
++        row['completedBeforeOriginalPsDeadline']=time.monotonic()<deadline
++        if not row['completedBeforeOriginalPsDeadline']:row['knownObservation']=False
++    return row
++
+ def typed_child(raw,variant,source_sha):
+     try:value=json.loads(raw)
+     except (ValueError,UnicodeError) as error:raise Refused('child_json_unavailable') from error
+-    need(isinstance(value,dict) and value.get('schema')=='heptabao.mac-capture-devnull-sandbox-child.r1'
++    need(isinstance(value,dict) and value.get('schema')=='heptabao.mac-ps-sandbox-child.r1'
+          and value.get('variant')==variant and value.get('sourceSha256')==source_sha
+          and type(value.get('ok')) is bool and type(value.get('outcomeUnknown')) is bool,
+          'child_report_protocol_unavailable')
+     for key in ('productionReadAttempted','productionWriteAttempted','sqliteImported',
+-                'consumerStarted','providerRequested','j3160Contacted'):
++                'consumerStarted','providerRequested','j3160Contacted','sandboxDiskutilStarted'):
+         need(value.get(key) is False,'child_scope_field')
+     count=value.get('boundedPublicPinReadBytesThisProcess')
+     need(type(count) is int and 0<=count<=PUBLIC_HASH_BOUND
+@@ -278,30 +415,57 @@
+         need(not value['outcomeUnknown'] and value['allOwnedDescriptorsClosed']
+              and value['originalDeadlineMetAfterClosure']
+              and value.get('ownedCommands',{}).get('allOwnedCommandsStopped') is True
++             and value.get('ownedCommands',{}).get('commands')==[]
+              and value.get('ownedCommands',{}).get('unknownCommandCount')==0,
+              'child_success_closure_consistency')
+         null=value.get('devNullRead')
+-        need(isinstance(null,dict) and type(null.get('opened')) is bool
+-             and null.get('descriptorClosed') is True
+-             and null.get('expectedReadRefused') is (variant=='original'),
+-             'child_success_devnull_protocol')
++        need(isinstance(null,dict) and null.get('opened') is True
++             and null.get('descriptorClosed') is True and null.get('readReturnedEof') is True
++             and null.get('expectedReadRefused') is False,'child_success_devnull_protocol')
++        launches=value.get('psLaunches')
++        need(isinstance(launches,list) and len(launches)==1,'one_ps_observation')
++        row=launches[0]
++        need(isinstance(row,dict) and all(type(row.get(k)) is bool for k in
++             ('popenReturned','communicateReturned','executionSucceeded','streamsClosed',
++              'knownObservation','outcomeUnknown','completedBeforeOriginalPsDeadline')),
++             'ps_typed_boolean_protocol')
++        need(row.get('variant')==variant
++             and row.get('knownObservation') is True and row.get('outcomeUnknown') is False
++             and row.get('startNewSession') is False and row.get('closeFds') is True
++             and row.get('streamsClosed') is True and row.get('signalsSent')==[]
++             and row.get('completedBeforeOriginalPsDeadline') is True,
++             'ps_known_observation_protocol')
++        if row.get('executionSucceeded') is True:
++            need(row.get('popenReturned') is True and row.get('communicateReturned') is True
++                 and row.get('directChildReaped') is True
++                 and type(row.get('exitCode')) is int and row.get('exitCode')==0,
++                 'ps_success_terminal_protocol')
++        else:
++            need((row.get('popenReturned') is False and row.get('errorStage')=='popen'
++                  and row.get('errorType')=='PermissionError'
++                  and type(row.get('errorErrno')) is int and row.get('errorErrno') in (1,13))
++                 or (row.get('popenReturned') is True and row.get('communicateReturned') is True
++                     and row.get('directChildReaped') is True and type(row.get('exitCode')) is int),
++                 'ps_known_failure_protocol')
+     return value
+ 
+ def main():
+     global until
+     parser=argparse.ArgumentParser()
+-    parser.add_argument('--child',choices=('original','patched'))
++    parser.add_argument('--child',choices=('system','owned-copy'))
+     parser.add_argument('--absolute-until',type=float)
+     parser.add_argument('--source-sha256')
+     args=parser.parse_args()
+     os.umask(0o077)
+     for sig in (signal.SIGTERM,signal.SIGINT):signal.signal(sig,interrupted)
+     is_child=args.child is not None
+-    report={'schema':'heptabao.mac-capture-devnull-sandbox-child.r1' if is_child else
+-            'heptabao.mac-capture-devnull-sandbox-probe.r1',
++    report={'schema':'heptabao.mac-ps-sandbox-child.r1' if is_child else
++            'heptabao.mac-ps-sandbox-probe.r1',
+         'variant':args.child,'ok':False,'outcomeUnknown':False,
+         'productionReadAttempted':False,'productionWriteAttempted':False,
+         'sqliteImported':False,'consumerStarted':False,'providerRequested':False,
++        'sandboxDiskutilStarted':False,'systemPsModified':False,'systemPsChmod':False,
++        'samePatchedPolicyBothVariants':True,'independentSandboxGrandchildSessions':0,
+         'j3160Contacted':False,'failedCaptureBeforePathUsed':False,'freshOwnedProbeOnly':True,'businessReplay':False,
+         'newOwnedRoot':str(PROBE_ROOT),'originalCaptureSeconds':45,
+         'cases':[],'newFiles':[],'newDirectories':[],
+@@ -343,27 +507,31 @@
+         report['profileSha256']={name:sha(raw) for name,raw in policy.items()}
+         if is_child:
+             step='public_profile_before'
+-            _,profile_before=public_read(BASE/(args.child+'.sb'),sha(policy[args.child]),len(policy[args.child]))
++            _,profile_before=public_read(BASE/'patched.sb',sha(policy['patched']),len(policy['patched']))
++            expected=next(pin for pin in UTILITY_PINS if pin['path']=='/bin/ps')
++            executable=Path('/bin/ps') if args.child=='system' else COPIED_PS
++            expected_identity=expected['identity'] if args.child=='system' else None
++            _,ps_before=public_read(executable,expected['sha256'],int(expected['identity'][6]),expected_identity)
++            report['selectedPsBefore']=ps_before
+             step='devnull_read_open'
+-            report['devNullRead']=null_read_case(args.child)
+-            if args.child=='patched':
+-                step='child_diskutil_command'
+-                row,out,err=commands.run('patched-sandbox-t5-volume',
+-                    ['/usr/sbin/diskutil','info','-plist','/Volumes/T5'],
+-                    until=min(until,time.monotonic()+30),maximum=262144)
+-                need(row['exitCode']==0 and row['completeBeforeDeadline']
+-                     and not row['outcomeUnknown'] and not err,'patched_diskutil_known_complete')
+-                step='child_diskutil_identity';guard.accept_diskutil(out)
++            report['devNullRead']=null_read_case('patched')
++            step='ps_launch_and_collect'
++            launch=observe_ps_launch(args.child)
++            need(launch['knownObservation'] and not launch['outcomeUnknown'],'ps_observation_incomplete')
++            if args.child=='owned-copy' and launch['executionSucceeded']:
+                 step='owned_write_sidecar_loopback_refusals'
+                 report['kernelSandboxProof']=kernel_refusals(guard,PROBE_STAGE)
+             step='public_profile_after'
+-            _,profile_after=public_read(BASE/(args.child+'.sb'),sha(policy[args.child]),len(policy[args.child]))
++            _,profile_after=public_read(BASE/'patched.sb',sha(policy['patched']),len(policy['patched']))
+             need(profile_after==profile_before,'public_profile_unchanged')
++            _,ps_after=public_read(executable,expected['sha256'],int(expected['identity'][6]),expected_identity)
++            report['selectedPsAfter']=ps_after
++            need(ps_after==ps_before,'selected_ps_before_after_whole_identity')
+             _,self_after=public_read(WORKER,args.source_sha256)
+             need(self_after==self_pin,'child_source_unchanged')
+         else:
+             step='parent_diskutil_command'
+-            row,out,err=commands.run('probe-parent-t5-volume',
++            row,out,err=commands.run('ps-probe-parent-t5-volume',
+                 ['/usr/sbin/diskutil','info','-plist','/Volumes/T5'],
+                 until=min(until,time.monotonic()+30),maximum=262144)
+             need(row['exitCode']==0 and row['completeBeforeDeadline']
+@@ -381,9 +549,12 @@
+                 pin=guard.write_new(path,raw)
+                 need(guard.read(path,max(4096,len(raw)))==raw,'created_owned_whole_readback')
+                 report['newFiles'].append({'path':str(path),**pin})
+-            for variant in ('original','patched'):
++            step='copy_public_ps_nonsetuid'
++            report['psCopy']=copy_public_ps(guard)
++            report['newFiles'].append(report['psCopy']['target'])
++            for variant in ('system','owned-copy'):
+                 step='launch_'+variant+'_sandbox_child'
+-                argv=['/usr/bin/sandbox-exec','-f',str(BASE/(variant+'.sb')),
++                argv=['/usr/bin/sandbox-exec','-f',str(BASE/'patched.sb'),
+                     '/opt/homebrew/bin/python3','-I','-S','-B',str(WORKER),
+                     '--child',variant,'--absolute-until',repr(until),
+                     '--source-sha256',sha(self_raw)]
+@@ -402,19 +573,34 @@
+                      and not row['outcomeUnknown'] and not err and value['ok']
+                      and not value['outcomeUnknown'] and value.get('originalDeadlineMetAfterClosure') is True
+                      and value.get('allOwnedDescriptorsClosed') is True,'child_known_expected_terminal')
+-                need(value['devNullRead']['expectedReadRefused']==(variant=='original')
+-                     and value['devNullRead']['descriptorClosed'],'actual_devnull_variant_result')
+-                if variant=='patched':
+-                    need(value.get('kernelSandboxProof',{}).get('allFourDenied') is True
+-                         and value.get('heldT5Final',{}).get('volumeUUIDVerified') is True,
+-                         'patched_other_kernel_fences_and_volume')
++                need(value['devNullRead']['expectedReadRefused'] is False
++                     and value['devNullRead']['descriptorClosed'],'actual_devnull_patched_result')
++                need(value['heldT5Final']['volumeUUIDVerified'] is False,
++                     'no_sandbox_diskutil_or_uuid_claim')
++                external_owner=row['cleanup']['custody']['ps']
++                observed_owner=value['psLaunches'][0]['sandboxOwner']
++                need(all(observed_owner[k]==external_owner[k] for k in ('pid','ppid','pgid','uid')),
++                     'sandbox_report_matches_retained_outer_owner')
++                source_pin=report['utilityBefore']['/bin/ps'] if variant=='system' else report['psCopy']['target']
++                need(value['selectedPsBefore']==value['selectedPsAfter']
++                     and all(value['selectedPsBefore'][k]==source_pin[k] for k in ('bytes','sha256','identity')),
++                     'child_exact_selected_ps_input')
++                if variant=='owned-copy':
++                    report['copyExecutionSucceeded']=value['psLaunches'][0]['executionSucceeded']
++                    if report['copyExecutionSucceeded']:
++                        need(value.get('kernelSandboxProof',{}).get('allFourDenied') is True,
++                             'copied_ps_other_kernel_fences')
+             step='owned_after_fences'
+             need(guard.read(BASE/'probe/writable-owned-main',4096)==PROBE_CONTENT,
+                  'owned_main_after_whole_bytes')
+             for suffix in ('-wal','-shm'):
+                 absence_twice(guard,BASE/'probe'/('writable-owned-main'+suffix))
+             for record in report['newFiles']:
+-                raw=guard.read(Path(record['path']),max(4096,record['bytes']))
++                if Path(record['path'])==COPIED_PS:
++                    raw,pin=public_read(COPIED_PS,record['sha256'],record['bytes'],record['identity'])
++                    need(pin['identity']==record['identity'],'owned_ps_after_identity')
++                else:
++                    raw=guard.read(Path(record['path']),max(4096,record['bytes']))
+                 need(len(raw)==record['bytes'] and sha(raw)==record['sha256']
+                      and list(ident(Path(record['path']).lstat()))==record['identity'],
+                      'owned_new_file_full_identity_after')
+@@ -422,7 +608,10 @@
+             need(report['utilityAfter']==report['utilityBefore'],'fixed_public_tools_before_after')
+         step='public_source_after';report['sourceAfter']=source_snapshot()
+         need(report['sourceAfter']==before_sources,'original_public_sources_before_after')
+-        step='final_anchor';guard.check();remaining();complete=True
++        step='final_anchor';guard.check();remaining()
++        if not is_child:
++            need(report.get('copyExecutionSucceeded') is True,'owned_copy_execution_not_successful')
++        complete=True
+     except BaseException as error:
+         safe_error(report,error,step)
+         report['outcomeUnknown']=bool(report['outcomeUnknown'] or isinstance(error,KeyboardInterrupt))
+@@ -436,6 +625,7 @@
+                     try:row['socket'].close();row['closed']=True
+                     except BaseException as error:row['closeErrorType']=type(error).__name__
+         if commands is not None:report['ownedCommands']=commands.public()
++        report['psLaunches']=ps_launches
+         if guard is not None:
+             guard.close();report['heldT5Final']=guard.public_state()
+         closed=(all(row['closed'] for row in fds) and all(row['closed'] for row in sockets)
+@@ -443,7 +633,9 @@
+              and report['heldT5Final']['lastAnchorCheckPassed']
+              and report['heldT5Final']['closeErrors']==[])
+         stopped=(commands is not None and report['ownedCommands']['allOwnedCommandsStopped']
+-                 and report['ownedCommands']['unknownCommandCount']==0)
++                 and report['ownedCommands']['unknownCommandCount']==0
++                 and all(not row['outcomeUnknown'] and row['streamsClosed']
++                         and (not row['popenReturned'] or row['directChildReaped']) for row in ps_launches))
+         report['outcomeUnknown']=bool(report['outcomeUnknown'] or pending is not None or not closed or not stopped)
+         report['allOwnedDescriptorsClosed']=closed
+         report['boundedPublicPinReadBytesThisProcess']=hashed_bytes

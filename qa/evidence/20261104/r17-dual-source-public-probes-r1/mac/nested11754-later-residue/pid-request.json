@@ -1,0 +1,17 @@
+{
+  "host": "mac",
+  "executable": "/bin/ps",
+  "args": [
+    "-p",
+    "11754",
+    "-o",
+    "pid=,ppid=,pgid=,uid=,stat=,lstart="
+  ],
+  "cwd": "/Users/qianqi",
+  "env": {
+    "LC_ALL": "C",
+    "LANG": "C"
+  },
+  "timeout_seconds": 4,
+  "idempotency_key": "heptabao-mac-devnull-probe-r1-nested11754-readonly-ps-20261105-r1"
+}

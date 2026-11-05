@@ -1,0 +1,187 @@
+--- before/rog-stager.py
++++ after/rog-stager.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Create one independent 3cb8739 ROG checkout and inert controls; no Cargo or product."""
++"""Create one independent exact cold/H2 ROG checkout; no Cargo or product."""
+ from pathlib import Path, PurePosixPath
+ import argparse
+ import hashlib
+@@ -19,23 +19,29 @@
+ parser.add_argument('--carrier-sha256', required=True)
+ args = parser.parse_args()
+ args.host = 'rog'
+-ROOT = Path('/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3')
++ROOT = Path('/home/qian-qi/heptabao-cold-h2-normal-20261105-r1')
+ SOURCE = ROOT / 'source'
+ CONTROL = ROOT / 'control'
+ OLD = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source')
+ OLD_COMMIT = '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
+ OLD_TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
+-COMMIT = '3cb873919170cc77101b27f6a3ab9e98f41f8d93'
+-TREE = '7f4d48a647a81ca96e8a24a0a057c2c829459060'
+-PARENT = 'bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'
+-GRANDPARENT = '6d3040a2dbd06661a67f5c62df259ff446eb8515'
++COMMIT = 'df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
++TREE = '424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
++PARENT = '6304a898192bfdf7eabec3c4ea40f7166e59a137'
++ANCESTRY = (
++    ('df026fe323dd7cf0f0ec57d7d2d9c5a79897053c', '6304a898192bfdf7eabec3c4ea40f7166e59a137'),
++    ('6304a898192bfdf7eabec3c4ea40f7166e59a137', 'e5de554f5dfe99f0de30012122fe3e248fb60532'),
++    ('e5de554f5dfe99f0de30012122fe3e248fb60532', 'fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd'),
++    ('fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd', '6d3040a2dbd06661a67f5c62df259ff446eb8515'),
++    ('6d3040a2dbd06661a67f5c62df259ff446eb8515', '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'),
++)
+ ROOT_COMMIT = '67d79b3b5442ed033d38929eab2010403463e56d'
+ ORIGIN = 'https://github.com/TrillionniumFoundation/HeptaBao.git'
+ EXPECTED_CONTROLS = {
+-    "normal_phaseb_observer_build.py": (20791, "5ba3e0152b1b84510ef7740b1e5d863e1464e4eaee04a4b772747a4db86dcb2b"),
+-    "launch_normal_phaseb_observer.py": (28425, "230597bdf2e67f617428355fd0cae4c4b587c397409e02e0395ee96c8e4cee03"),
++    "normal_cold_h2_build.py": (26658, "71d57dfd549337231bd1160ff3008374a473b305f662178609cf61e5ab300f5b"),
++    "launch_normal_cold_h2.py": (31962, "9ce815ccfa8a9c8c5158c1cf76d55966f07c2c095537bc91726e0cebfe1aa0a8"),
++    "normal-test-groups.public.json": (6249, "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"),
+     "prior-observer-build-authority.public.json": (726, "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6"),
+-    "normal-test-groups.public.json": (6249, "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"),
+ }
+ FAILED_ROOT = Path('/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1')
+ FAILED_SOURCE = FAILED_ROOT / 'source'
+@@ -348,7 +354,7 @@
+         assert kind == 'blob' and mode in ('100644', '100755')
+         assert not p.is_absolute() and '..' not in p.parts and str(p) == relative
+         entries.append((relative, mode, object_id))
+-    assert len(entries) == 3911 and len({x[0] for x in entries}) == 3911
++    assert len(entries) == 3913 and len({x[0] for x in entries}) == 3913
+     indexed = []
+     for item in git(SOURCE, 'ls-files', '--stage', '-z').split(b'\0'):
+         if not item:
+@@ -381,6 +387,27 @@
+             'all_tracked_worktree_blobs_and_modes_match': True}
+ 
+ 
++
++def canonical_bundle_header(raw):
++    end = raw.find(b'\n\n', 0, 65536)
++    assert end > 0 and raw[end + 2:end + 6] == b'PACK'
++    lines = raw[:end].split(b'\n')
++    assert lines.pop(0) == b'# v2 git bundle'
++    prerequisites, heads = [], []
++    for line in lines:
++        if line.startswith(b'-'):
++            object_id, separator, _message = line[1:].partition(b' ')
++            assert separator
++            prerequisites.append(object_id.decode('ascii'))
++        else:
++            object_id, separator, name = line.partition(b' ')
++            assert separator
++            heads.append([object_id.decode('ascii'), name.decode('ascii')])
++    assert prerequisites == [OLD_COMMIT]
++    assert heads == [[COMMIT, 'HEAD']]
++    return {'version': 2, 'prerequisites': prerequisites, 'heads': heads,
++            'header_sha256': digest(raw[:end + 2])}
++
+ assert (os.uname().sysname, os.uname().machine, os.getuid()) == ('Linux', 'x86_64', 1000)
+ assert ROOT.parent.resolve(strict=True) == ROOT.parent and ROOT.parent.stat().st_uid == os.getuid()
+ assert OLD.resolve(strict=True) == OLD
+@@ -390,7 +417,7 @@
+ carrier = sys.stdin.buffer.read(262145)
+ assert len(carrier) <= 262144 and digest(carrier) == args.carrier_sha256
+ data = json.loads(carrier)
+-assert set(data) == {'schema', 'controls'} and data['schema'] == 'heptabao.phaseb-observer-inert-controls.v2'
++assert set(data) == {'schema', 'controls'} and data['schema'] == 'heptabao.cold-h2-inert-controls.v1'
+ assert set(data['controls']) == set(EXPECTED_CONTROLS)
+ for name, (size, expected_sha) in EXPECTED_CONTROLS.items():
+     raw = data['controls'][name].encode()
+@@ -402,13 +429,15 @@
+     ('ssh25', 25), ('mount1', 1), ('redirect5', 5), ('actor2', 2), ('ordinary5', 5), ('no_forward6', 6)]
+ assert sum(len(g['tests']) for g in groups) == 44 and all(g['runtime_seconds'] == 600 for g in groups)
+ assert not os.path.lexists(ROOT)
+-result = {'schema': 'heptabao.phaseb-observer-independent-source-stage.v2', 'status': 'failed',
++result = {'schema': 'heptabao.cold-h2-independent-source-stage.v1', 'status': 'failed',
+           'source_commit': COMMIT, 'source_tree': TREE, 'sole_parent': PARENT,
+           'root': str(ROOT), 'source': str(SOURCE), 'host': 'rog',
+           'stager_sha256': args.self_sha256, 'carrier_sha256': args.carrier_sha256,
+           'original_git_leaf_cap_seconds': 90, 'original_clone_cap_seconds': 180,
+-          'new_stage_total_seconds': 300, 'new_supervisor_seconds': 330,
+-          'server_started': False, 'compiler_started': False, 'production_changed': False,
++          'new_stage_total_seconds': 300, 'new_supervisor_seconds': 360,
++          'server_started': False, 'compiler_started': False, 'production_changed': True,
++          'source_ref': 'refs/heads/codex/heptabao-cold-h2-normal-20261105-r1',
++          'canonical_history_count': 3757, 'actual_build_qualification': False,
+           'controls': {}, 'started_ns': time.time_ns()}
+ before = None
+ try:
+@@ -418,7 +447,7 @@
+     created_control = True
+     (CONTROL / 'empty-hooks').mkdir(mode=0o700)
+     (CONTROL / 'empty-template').mkdir(mode=0o700)
+-    create(CONTROL / 'stage_source_phaseb_observer.py', self_source.encode())
++    create(CONTROL / 'stage_source_cold_h2.py', self_source.encode())
+     for name in EXPECTED_CONTROLS:
+         create(CONTROL / name, data['controls'][name].encode())
+         result['controls'][name] = {'sha256': EXPECTED_CONTROLS[name][1],
+@@ -440,21 +469,48 @@
+     git(SOURCE, 'remote', 'set-url', 'origin', ORIGIN)
+     assert git(SOURCE, 'remote', 'get-url', 'origin').decode().strip() == ORIGIN
+     git(SOURCE, '-c', 'fetch.fsckObjects=true', '-c', 'transfer.fsckObjects=true',
+-        'fetch', '--no-tags', '--no-recurse-submodules', 'origin', COMMIT)
++        'fetch', '--no-tags', '--no-recurse-submodules', '--no-write-fetch-head', 'origin', COMMIT)
+     assert git(SOURCE, 'rev-parse', COMMIT + '^{tree}').decode().strip() == TREE
+-    assert git(SOURCE, 'show', '-s', '--format=%P', COMMIT).decode().strip() == PARENT
+-    assert git(SOURCE, 'show', '-s', '--format=%P', PARENT).decode().strip() == GRANDPARENT
+-    assert git(SOURCE, 'show', '-s', '--format=%P', GRANDPARENT).decode().strip() == OLD_COMMIT
++    for child_commit, parent_commit in ANCESTRY:
++        assert git(SOURCE, 'show', '-s', '--format=%P', child_commit).decode().strip() == parent_commit
++    added = git(SOURCE, 'rev-list', COMMIT, '^' + OLD_COMMIT).decode().splitlines()
++    assert len(added) == 5 and set(added) == {row[0] for row in ANCESTRY}
++    result['new_commits_since_actual_495'] = added
+     assert git(SOURCE, 'rev-list', '--count', OLD_COMMIT).decode().strip() == '3752'
+-    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3755'
++    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3757'
+     assert git(SOURCE, 'rev-list', '--max-parents=0', COMMIT).decode().strip() == ROOT_COMMIT
+     git(SOURCE, 'checkout', '--detach', COMMIT)
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+     git(SOURCE, 'fsck', '--full', '--strict', '--no-reflogs', '--no-dangling', COMMIT)
+     result.update(independent_git())
+     result['full_worktree'] = verify_full_worktree()
+-    assert result['full_worktree']['tracked_bytes'] == 62194197
+-    assert result['full_worktree']['full_leaf_index_sha256'] == '5cb27cb400dc0896da98a5d4c740f2d5c9a83b6c60eb59dbec4eb7acd1a6ce00'
++    assert result['full_worktree']['tracked_bytes'] == 62212769
++    assert result['full_worktree']['full_leaf_index_sha256'] == 'e7fee633b64acffd6520587c85ff6f4206e0b12c7db42a0cdeb36dff66350d54'
++    assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
++
++    canonical_path = CONTROL / 'canonical-cold-h2-from495.bundle'
++    assert not os.path.lexists(canonical_path)
++    git(SOURCE, 'bundle', 'create', '--version=2', str(canonical_path), 'HEAD', '^' + OLD_COMMIT)
++    canonical_raw = stable_read(canonical_path, 4 * 1024 * 1024)
++    assert 0 < len(canonical_raw) <= 4 * 1024 * 1024
++    canonical_identity = identity(canonical_path.lstat())
++    assert stat.S_IMODE(canonical_path.lstat().st_mode) == 0o600
++    canonical_header = canonical_bundle_header(canonical_raw)
++    fd = os.open(canonical_path, os.O_RDONLY | os.O_NOFOLLOW)
++    try:
++        assert identity(os.fstat(fd)) == canonical_identity
++        os.fsync(fd)
++    finally:
++        os.close(fd)
++    fsync_dir(CONTROL)
++    git(SOURCE, 'bundle', 'verify', str(canonical_path))
++    assert git(SOURCE, 'bundle', 'list-heads', str(canonical_path)).decode().strip() == COMMIT + ' HEAD'
++    assert identity(canonical_path.lstat()) == canonical_identity
++    assert stable_read(canonical_path, 4 * 1024 * 1024) == canonical_raw
++    result['canonical_bundle'] = {'path': str(canonical_path), 'bytes': len(canonical_raw),
++                                  'sha256': digest(canonical_raw), 'header': canonical_header,
++                                  'identity': list(canonical_identity),
++                                  'public_network_import_required_on_mac': False}
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+     result['old_source_after'] = freeze(OLD)
+     assert result['old_source_after'] == before
+@@ -464,7 +520,8 @@
+     result.update(status='prepared', source_clean=True, old_source_unchanged=True,
+                   exact_test_count=44,
+                   exact_groups=[[g['label'], len(g['tests'])] for g in groups],
+-                  additional_existing_tests=7, full_strict_fsck_passed=True)
++                  additional_existing_tests=7, additional_cold_h2_tests=9,
++                  public_network_fetch_used=True, full_strict_fsck_passed=True)
+ except BaseException as error:
+     result['error_type'] = type(error).__name__
+     # All raw Git stderr remains in new private files; no exception text is published.

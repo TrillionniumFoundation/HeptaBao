@@ -1,0 +1,49 @@
+{
+  "schema": "heptabao.r10.mac-normal-build-review-plan.v1",
+  "source_stage_job": "1a1a7cfbba3-fc05-2c9b",
+  "source_stage_sha256": "3e054b497219332a6124d7faa2b4cdad5e6870436113a438cfa2d7662ee04f65",
+  "source_status": "prepared",
+  "build_started": false,
+  "build_approval": "pending_root_actual_source_review",
+  "launcher_sha256": "d1542351492f9efb41ba18c3b25e9548be7eb658db5cb13c5b4bf80f097a55ad",
+  "budgets": {
+    "outer": 8280,
+    "release": 1800,
+    "libtest": 1800,
+    "list": 30,
+    "each_group": 600
+  },
+  "jobs": 2,
+  "exact_tests": 44,
+  "process_start": {
+    "host": "mac",
+    "executable": "/opt/homebrew/bin/python3",
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "/Volumes/T5/hepta-vnext-recovery-20261013/normal-r10-launcher-r1.py",
+      "--host",
+      "mac",
+      "--commit",
+      "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+      "--tree",
+      "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+      "--stage-sha256",
+      "3e054b497219332a6124d7faa2b4cdad5e6870436113a438cfa2d7662ee04f65",
+      "--runner-sha256",
+      "f925684275b42215300fa91f9b90478c75b822ce2d6f2e4be165b5e8e44e353d",
+      "--groups-sha256",
+      "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "--r9-resume-sha256",
+      "d3c26b8b78c41915421e1972c4eaeea47eb14ec5ad581568206047e89ac9ab7d",
+      "--r9-resume-terminal-sha256",
+      "8f03915cf7fce1dc2eb92cdce9933e663dbe40ccc5c104e7d2c97e8f364abd28",
+      "--r9-resume-authority-sha256",
+      "24deb356103c8210bb76751122aaa0c19fc6ab5ec6a9e09a62f0cc68e326a57e"
+    ],
+    "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013",
+    "timeout_seconds": 8280,
+    "idempotency_key": "heptabao-normal-r10-495033-mac-build44-20261104-r1"
+  }
+}

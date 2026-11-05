@@ -1,0 +1,25 @@
+{
+  "schema": "heptabao.r16.checkpoint-prepublication-tree-review.v1",
+  "as_of_utc": "2026-11-05T03:34:14Z",
+  "parent_commit": "4b0a2812b1eef6bb50340bc31a899a9567095d8a",
+  "parent_tree": "88c4fed431c12fbcf2ac1c14fc7b448c0cc9dea6",
+  "candidate_tree": "9f177a7f071b4df6a6075c8a2755219c4c37918b",
+  "full_blob_leaves": 9523,
+  "previous_leaves": 8988,
+  "previous_non_document_leaves_unchanged": 8986,
+  "document_edits": 2,
+  "new_packet_and_root_leaves": 535,
+  "merkle": {
+    "root_sha": "9f177a7f071b4df6a6075c8a2755219c4c37918b",
+    "trees_verified": 1233
+  },
+  "old_index_fields": 78,
+  "new_index_fields": 79,
+  "historical_index_fields_except_top_asof_preserved_without_reserializing": true,
+  "historical_document_body_preserved": true,
+  "source_ref_separate_from_pr152": true,
+  "full_replacement_qualified": false,
+  "production_cutover": false,
+  "legacy_deletion": false,
+  "decision": "PUBLISH_CHECKPOINT_ONLY"
+}

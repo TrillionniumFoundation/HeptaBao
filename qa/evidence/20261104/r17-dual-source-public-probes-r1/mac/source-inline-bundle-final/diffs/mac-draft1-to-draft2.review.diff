@@ -1,0 +1,22 @@
+--- before/mac-stager.py
++++ after/mac-stager.py
+@@ -41,8 +41,8 @@
+ ROOT_COMMIT = '67d79b3b5442ed033d38929eab2010403463e56d'
+ ORIGIN = 'https://github.com/TrillionniumFoundation/HeptaBao.git'
+ EXPECTED_CONTROLS = {
+-    "mac_normal_cold_h2_build.py": (26541, "b57a333cf3f6ab96ae03460f66cd1d0cb351bea9cbc4755bf5f5045427e69985"),
++    "mac_normal_cold_h2_build.py": (26542, "186168747811b86e9f7205928e7b0a8fbc5d105354f725a4d02db33335b2c862"),
+-    "launch_normal_cold_h2.py": (23773, "5144d2f61418f16966439f9563615f23a2859c0401e90b0d7d8187f109821eeb"),
++    "launch_normal_cold_h2.py": (23774, "5af8319e841f659a7123057baeed270d474b011332ade303b4c2cb5b942d02ff"),
+     "normal-test-groups.public.json": (6249, "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"),
+ }
+ 
+@@ -410,7 +410,7 @@
+           'stager_sha256': args.self_sha256, 'carrier_sha256': args.carrier_sha256,
+           'original_git_leaf_cap_seconds': 90, 'original_clone_cap_seconds': 180,
+           'new_stage_total_seconds': 300, 'new_supervisor_seconds': 360,
+-          'server_started': False, 'compiler_started': False, 'production_changed': True,
++          'server_started': False, 'compiler_started': False, 'production_changed': False,
+           'source_ref': 'refs/heads/codex/heptabao-cold-h2-normal-20261105-r1',
+           'canonical_history_count': 3757, 'actual_build_qualification': False,
+           'controls': {}, 'started_ns': time.time_ns()}

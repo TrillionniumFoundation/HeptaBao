@@ -1,0 +1,2 @@
+Previous HEAD position was 49503322c test: witness authenticated native state in NoForward HA regressions
+HEAD is now at df026fe32 Run H2 native requests outside Tokio and observe cold recovery

@@ -1,0 +1,9 @@
+{
+  "ast_and_compile_only": true,
+  "bytes": 23773,
+  "file": "mac_launcher.py",
+  "host_calls": 0,
+  "module_executed": false,
+  "sha256": "5144d2f61418f16966439f9563615f23a2859c0401e90b0d7d8187f109821eeb",
+  "syntax": "passed"
+}

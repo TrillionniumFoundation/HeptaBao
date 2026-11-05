@@ -1,0 +1,36 @@
+{
+  "schema": "heptabao.root.rog-df026-full-source-command-review.v1",
+  "tree": "c0b2060ef92f22fb3f7f5fda70c04bcf715dc440",
+  "files": 181,
+  "bytes": 2667309,
+  "merkle_trees": 4,
+  "original_mcp_snapshots_verified": 27,
+  "complete_original_file_payloads": 150,
+  "command_receipts": 50,
+  "stdout_stderr_files": 100,
+  "all_50_command_pid_exit_reap_empty_group_and_original_leaf_caps_match_core": true,
+  "source_job": "1a1a9d1642a-fc05-383f",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "binary_read_chunks_version_and_whole_hash_verified": 14,
+  "base64_archives_recomputed_from_original_chunks": 2,
+  "lists": [
+    {
+      "name": "030-git-ls-tree.stdout",
+      "bytes": 450325,
+      "sha256": "26cded6036297c4bf23fa3531badd14d2cabd877d6b8e64fc766fb41259c04ad",
+      "rows": 3913,
+      "canonical_path_mode_blob_exact": true
+    },
+    {
+      "name": "031-git-ls-files.stdout",
+      "bytes": 438586,
+      "sha256": "58636c03d1281c28aec3963cedb04b999b2e7685d4482313ff8545cbab5e2f26",
+      "rows": 3913,
+      "canonical_path_mode_blob_exact": true
+    }
+  ],
+  "canonical_blob_bytes": 62212769,
+  "original_core_archival_pending_field_preserved_historically": true,
+  "normal_compile_or_product_runtime_qualification_conferred": false
+}

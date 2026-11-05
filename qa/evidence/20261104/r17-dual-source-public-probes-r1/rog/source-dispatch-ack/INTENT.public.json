@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.cold-h2-rog-source-stage-once-intent.v1",
+  "created_utc": "2026-11-05T03:46:50.405Z",
+  "host": "rog",
+  "key": "heptabao-cold-h2-df026-rog-source-20261105-r2-b0b3d2e4",
+  "request_blob": "7de047a6c027957f13916be02a74f740f432637f",
+  "request_bytes": 97553,
+  "request_sha256": "95ecb02dc52f9a3c714c7d2a757f26fca3088f92266834506506a7df5389d570",
+  "source_blob": "fc3786c199c07435cb3f9e2072768a8282750448",
+  "source_sha256": "b0b3d2e41316b657d25143438f18150b217eefb0d28f960054e7719000c27a98",
+  "root_admission_blob": "9e94740f2c7dca4104d02039ff6a0b6d0b59a12b",
+  "root_admission_sha256": "5df688d24219856f7213267c4f8362f1665da914444b8859f72c80ecfa40b7eb",
+  "candidate": {
+    "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "parent": "6304a898192bfdf7eabec3c4ea40f7166e59a137"
+  },
+  "scope": "SOURCE_STAGE_ONLY",
+  "normal_cargo_started": false,
+  "product_started": false,
+  "old_roots_modified": false,
+  "internal_stage_seconds": 300,
+  "git_seconds": 90,
+  "clone_seconds": 180,
+  "new_supervisor_seconds": 360,
+  "automatic_retry": false
+}

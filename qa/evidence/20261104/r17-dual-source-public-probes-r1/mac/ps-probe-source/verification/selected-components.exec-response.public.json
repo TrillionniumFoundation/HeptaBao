@@ -1,0 +1,7 @@
+{
+  "chunk_id": "023255",
+  "wall_time_seconds": 0.034054235,
+  "exit_code": 0,
+  "original_token_count": 199,
+  "output": "{\"candidate_main_executed\": false, \"checks\": [\"permission-1\", \"permission-13\", \"successful-numeric-projection\", \"known-nonzero-no-success\", \"wrong-numeric-identity-rejected\", \"timeout-unreaped-unknown-outer-delegation\", \"stream-close-error-unknown-no-retry\", \"same-four-second-deadline-not-reset\", \"nonpermission-launch-error-not-admitted\", \"cancel-before-popen-return-unknown\", \"typed-success-report\", \"bool-exitcode-not-zero\", \"nonbool-success-rejected\"], \"network_operations\": 0, \"passed\": 13, \"real_descriptors\": 0, \"real_processes\": 0, \"schema\": \"heptabao.public-ps-probe-selected-fake-components.r1\", \"selected_definitions\": [\"Refused\", \"need\", \"observe_ps_launch\", \"safe_error\", \"sha\", \"typed_child\"], \"source_sha256\": \"c694655f3cf6835bdc8d507afef10764b0d2c41601f60de9466705c93efb39fe\"}\n"
+}

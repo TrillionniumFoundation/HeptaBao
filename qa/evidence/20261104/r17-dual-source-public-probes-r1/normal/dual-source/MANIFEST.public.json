@@ -1,0 +1,582 @@
+{
+  "schema": "heptabao.cold-h2-normal-controls-manifest.v2",
+  "files": [
+    {
+      "path": "ASSESSMENT.public.json",
+      "bytes": 1996,
+      "sha256": "c87ea8b99b22753c1bb16c9aecf60cf4b0162f0d0f999d9d6988b3d02554282d",
+      "blob": "0e585deacc4b4ba28c653d777e7ac643d853e19e"
+    },
+    {
+      "path": "candidate/mac/launch_normal_cold_h2.py",
+      "bytes": 23774,
+      "sha256": "5af8319e841f659a7123057baeed270d474b011332ade303b4c2cb5b942d02ff",
+      "blob": "470e442492a91eb7366ed882aab5535e595e9a23"
+    },
+    {
+      "path": "candidate/mac/mac_normal_cold_h2_build.py",
+      "bytes": 26542,
+      "sha256": "186168747811b86e9f7205928e7b0a8fbc5d105354f725a4d02db33335b2c862",
+      "blob": "e9560c948992baad57cf911d179e065f49a6a4ca"
+    },
+    {
+      "path": "candidate/mac/stage_source_cold_h2.py",
+      "bytes": 24624,
+      "sha256": "e4e0a04338a56aac53e0ccede3d0e5d47e962a8cbbb963b0996eb037af7067b0",
+      "blob": "eac5c7ab452ed4f12914bcc952a6c3d34f4dd20e"
+    },
+    {
+      "path": "candidate/rog/launch_normal_cold_h2.py",
+      "bytes": 31963,
+      "sha256": "7c3dbf522f51931aaa5c1947ec0742883bdcc1405913d45f8b43f217983acb98",
+      "blob": "b7579b87de15982431ce3608f01e1a2913c1c63b"
+    },
+    {
+      "path": "candidate/rog/normal_cold_h2_build.py",
+      "bytes": 26659,
+      "sha256": "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+      "blob": "23fb2b80070879f6a00fe3dfbb9ed7d1ee069555"
+    },
+    {
+      "path": "candidate/rog/stage_source_cold_h2.py",
+      "bytes": 27544,
+      "sha256": "b0b3d2e41316b657d25143438f18150b217eefb0d28f960054e7719000c27a98",
+      "blob": "fc3786c199c07435cb3f9e2072768a8282750448"
+    },
+    {
+      "path": "components/path/actual-selected-r1.py",
+      "bytes": 5404,
+      "sha256": "828d203b14bd36d6af967dbc97963c33fe47b0b09b3c84c97b57c3e7f1257e18",
+      "blob": "a10d58b1d00eca326681205a47a72df067607c76"
+    },
+    {
+      "path": "components/path/actual-selected-r2.py",
+      "bytes": 5528,
+      "sha256": "6865febbcb13ceaf3f0a3dd0f7f280916a42c1d4430e48672804fa075c997dc3",
+      "blob": "1816a0e3554fe1aaccdcb6e575809d03f58277bb"
+    },
+    {
+      "path": "components/path/harness-correction-r2.public.json",
+      "bytes": 665,
+      "sha256": "aada12f041dd79786068d5d88cce39c53b547e2c5084639d2862bcc8251c1ebe",
+      "blob": "3bf2768e51c9fee63638ded31c82ea87500e6f66"
+    },
+    {
+      "path": "components/path/mac.input.json",
+      "bytes": 50800,
+      "sha256": "bfacdce82faf478a828acdbdba5c1f99ddf23917638b3f4abe97ff2d81522242",
+      "blob": "9877f56ab9bf1a83806c010df40de2d3f9119481"
+    },
+    {
+      "path": "components/path/mac.r1-failed.executor.public.json",
+      "bytes": 279,
+      "sha256": "d25a3f5d3b1d5fc19b29f300bd216f2b572399518aeca07d0f266e2b81d61000",
+      "blob": "63d71f28f97866c180b67e3f4eaa799990477e24"
+    },
+    {
+      "path": "components/path/mac.r2.executor.public.json",
+      "bytes": 1605,
+      "sha256": "769c7229ce6c9152196ecf6a2f6d03db31961021f71e0a4d1cebed22724378ca",
+      "blob": "66659054d3d9c3c1be71431d70b9892224fa34bf"
+    },
+    {
+      "path": "components/path/mac.r2.result.public.json",
+      "bytes": 1528,
+      "sha256": "b2a7c5c8dbeded784a529f7069370853b5208839b81a3d17f1246b40248d03ac",
+      "blob": "fd9ee0f44de83bd83c29587b60bba548424e6dcc"
+    },
+    {
+      "path": "components/path/rog.input.json",
+      "bytes": 62166,
+      "sha256": "5a8dac85d5ee0ec21fee04010c72e78ab5ada5cf3f5faf17d402c98e42b4bb96",
+      "blob": "8bdb54cd5a9f4d98db51c94f05fbbd42598d4473"
+    },
+    {
+      "path": "components/path/rog.r1-failed.executor.public.json",
+      "bytes": 278,
+      "sha256": "c3337f22b4ea130bba74d70b8c8bcd699c1380b1b5439cb121f71a044a4afdc8",
+      "blob": "93a8319f987a67fdc08b0bdd90c6bcf890320c78"
+    },
+    {
+      "path": "components/path/rog.r2.executor.public.json",
+      "bytes": 1532,
+      "sha256": "638002b97b8377a277da3e96172a04e1a29121a9fd9405e3925b560bf27e6796",
+      "blob": "84ab4cf1920122794213e543f6745f170989a769"
+    },
+    {
+      "path": "components/path/rog.r2.result.public.json",
+      "bytes": 1451,
+      "sha256": "65e13d56a9ffcf0830856be9b962bd7af206f9cc88c43ec316925d3d4f6197fd",
+      "blob": "9705d60a6f70e1753c2145a08eeb204e3834d63f"
+    },
+    {
+      "path": "components/runner/actual-selected-components.py",
+      "bytes": 6782,
+      "sha256": "ab6502b5958a8b417d523d6cb66d0dd393c69d2e2a4bd0d5ecbd37d2d2ae06bb",
+      "blob": "1be349c44a72edaa22a4396f7828ee0aa58bf6bc"
+    },
+    {
+      "path": "components/runner/mac.executor.public.json",
+      "bytes": 1678,
+      "sha256": "e927acfa07528b9e17f7b2c195233c16e4b32a3cf81d22a692f50badd125209c",
+      "blob": "c20731440548d8fd40f157444eabac8adec476a7"
+    },
+    {
+      "path": "components/runner/mac.input.json",
+      "bytes": 51466,
+      "sha256": "8094b87805c00ee31e5f8c9cabd898d979550a417e1c4a505b04104223c34ef2",
+      "blob": "a27577ba448ffe389e65cd23557109b56f00cf72"
+    },
+    {
+      "path": "components/runner/mac.result.public.json",
+      "bytes": 1599,
+      "sha256": "bb2277a10fed61d443dc82915cf9367b311c688c53db6bbb45d6e4906a3d8908",
+      "blob": "08f028f225d1e04d08ef23fc6b51ee34cd99c8e7"
+    },
+    {
+      "path": "components/runner/rog.executor.public.json",
+      "bytes": 1678,
+      "sha256": "9decef7bd7e0180ea9f337e2464472f7384e739a621651f055381f2508bc7465",
+      "blob": "aac06a6c293d66f0f38711746284ca4d7d39b909"
+    },
+    {
+      "path": "components/runner/rog.input.json",
+      "bytes": 55551,
+      "sha256": "f66a9c4dd64cc7051afe129d0820e988403a370ddf99f7ec718ce321f0b1336e",
+      "blob": "b06a9d3793051c0819a8556ad7edc8f9fe9fd226"
+    },
+    {
+      "path": "components/runner/rog.result.public.json",
+      "bytes": 1599,
+      "sha256": "c1148336b66232d27f751d1978d98abecd85b3c396d67ac78b7232beb407fd49",
+      "blob": "16e5e4c67267a962b73c38844bdb48963285f6a4"
+    },
+    {
+      "path": "components/syntax/mac-launcher.executor.public.json",
+      "bytes": 363,
+      "sha256": "8b4f0dc84f6abec283de2d861f2ee9691153ab68dfc2c24fb4224c09736f1ec1",
+      "blob": "5327fc1d5947594441e855ee24ea4e7dee881c06"
+    },
+    {
+      "path": "components/syntax/mac-launcher.py",
+      "bytes": 32180,
+      "sha256": "d46062a54a293190c4537b2c4b8b87a8527b65273b8d5d74cc50e9ab427d5e42",
+      "blob": "01b8d3c9bede4c67a5f1c78dfcdf6ea0ca01134a"
+    },
+    {
+      "path": "components/syntax/mac-launcher.result.public.json",
+      "bytes": 231,
+      "sha256": "a960ef9fb5f8fa376dd7c2fc771e30a0b1fbb91a1b2f9acb86c0d44412e215ac",
+      "blob": "0c3926823ca81ce3ea146780b2519a09dc088509"
+    },
+    {
+      "path": "components/syntax/mac-runner.executor.public.json",
+      "bytes": 361,
+      "sha256": "41fbd16116faa6531cf11c2af2e2f4afe04457cead9943f21266d0f2b8791287",
+      "blob": "1906a4bc0b5c290a52e748d943145c18616b53bd"
+    },
+    {
+      "path": "components/syntax/mac-runner.py",
+      "bytes": 35862,
+      "sha256": "575c10584b460fb40c8793fa7ba29fbed73fa9e29a8fdda8a65493aa11a5b1cd",
+      "blob": "6fef043b440eedc90e2dcc82c6c14a71e70024d7"
+    },
+    {
+      "path": "components/syntax/mac-runner.result.public.json",
+      "bytes": 229,
+      "sha256": "334a5522391962555afc15b254c27bc86ae88e2d3f257d42c58d6eb65c243801",
+      "blob": "89ad8f591b6ffe752c8f49ac222f2fe1ec6b4ae8"
+    },
+    {
+      "path": "components/syntax/mac-stager.executor.public.json",
+      "bytes": 361,
+      "sha256": "dee4978f4c3afb2a22da6fe6a3be5c47f76cac3e28d065a596076a23389887ef",
+      "blob": "8afe016defc793e85edeb9d5d8e640ebd39924d7"
+    },
+    {
+      "path": "components/syntax/mac-stager.py",
+      "bytes": 33306,
+      "sha256": "c059e17db78c6b9a3d63f69462af44bc402e302d8679e3313cc0ca911d6d1f82",
+      "blob": "0555d67e41d7f5e698dcc5512bb5d1a778a221c0"
+    },
+    {
+      "path": "components/syntax/mac-stager.result.public.json",
+      "bytes": 229,
+      "sha256": "4435a34e61bc0302415a376b73115275c836c3f1542fed6fffe412f8902cb2dd",
+      "blob": "27f5084b82855733cc139a2f2dfc3bd8e99351e7"
+    },
+    {
+      "path": "components/syntax/rog-launcher.executor.public.json",
+      "bytes": 363,
+      "sha256": "9452cf70686ddd3025e0128cb9f69b6d8ed541ab0fc61d74f8fda3868795bf73",
+      "blob": "b62ae03e2880709a1234ab86588b4f0bf3ad8a09"
+    },
+    {
+      "path": "components/syntax/rog-launcher.py",
+      "bytes": 43096,
+      "sha256": "eee860ce9d502cd3b9eb1ac24d8ceaf938c938840752b6384bac4bdd7976897f",
+      "blob": "0d3dac736f20a39c1ca93fd6ec346b05380777f2"
+    },
+    {
+      "path": "components/syntax/rog-launcher.result.public.json",
+      "bytes": 231,
+      "sha256": "38ce52917442ec57744a1a29e519821979922f669258b4f28582bebdf29f0db6",
+      "blob": "2090b02abcc8b5572d00df99065d45827948c46c"
+    },
+    {
+      "path": "components/syntax/rog-runner.executor.public.json",
+      "bytes": 361,
+      "sha256": "1d45a908650b1d41364298e79ec3835dbebd1fb7548a417ee6109d246374ca23",
+      "blob": "b2d62c8f5b4796a5d7eb543cff59bf01789328b2"
+    },
+    {
+      "path": "components/syntax/rog-runner.py",
+      "bytes": 36018,
+      "sha256": "2f768ab60ba0fadeccb2221529dbf95f38a5484e1cc9f35e59efcf284653b216",
+      "blob": "d361f68dbbfe876b4a571038aa450176c1f0a5cb"
+    },
+    {
+      "path": "components/syntax/rog-runner.result.public.json",
+      "bytes": 229,
+      "sha256": "26fabeab35d43167ed3fff09531db7d2fda1228c82689b96f4e2dbd8f89b8284",
+      "blob": "b1565ca986e1a37909c9ef1f270d6995753f1bc6"
+    },
+    {
+      "path": "components/syntax/rog-stager.executor.public.json",
+      "bytes": 361,
+      "sha256": "6e9a591d4597201615f11c8b0f399501cbfaf9d47f2ac715a1e137559c7c54f5",
+      "blob": "be6d8888045c987d93da541597b25277a3b828f4"
+    },
+    {
+      "path": "components/syntax/rog-stager.py",
+      "bytes": 37198,
+      "sha256": "c252f998add5190f83118c78bb4a5027116b287bfafb450277b7e2e895025ce3",
+      "blob": "64d538cf0626b9110f47e51b1ee845a024cb30dc"
+    },
+    {
+      "path": "components/syntax/rog-stager.result.public.json",
+      "bytes": 229,
+      "sha256": "33b5e31e5b3d58d385a791e2b1042cc6b2c5798fdaa6f8e6b2b0f0c941295cc1",
+      "blob": "777b7359d36e4f6387967c32f03cc9a069908a94"
+    },
+    {
+      "path": "DEPLOYMENT_FIELD_CORRECTION.public.json",
+      "bytes": 5193,
+      "sha256": "e3f2da0d42e7bca0ff16642252714657e55cfed0ef48bbe9b9aac4927722b873",
+      "blob": "25b03548e147991e69fac1928497cf26b1e57b1f"
+    },
+    {
+      "path": "diffs/draft1-to-draft2/mac-launcher.review.diff",
+      "bytes": 625,
+      "sha256": "6fde9c8acba517e95bcbe4a088d2337d0d1698d14831dfeec6659c94caf1de7c",
+      "blob": "d51c77974fa3de290ae336351a682efaf75bee3d"
+    },
+    {
+      "path": "diffs/draft1-to-draft2/mac-runner.review.diff",
+      "bytes": 700,
+      "sha256": "e79f066853e346f590c2493869a1b50f3d0d8c48c8d51085d879b42fee1d8ee6",
+      "blob": "755b9717aab263f894e2e9f7271b41e601557bc8"
+    },
+    {
+      "path": "diffs/draft1-to-draft2/mac-stager.review.diff",
+      "bytes": 1445,
+      "sha256": "47daa8823d75277b8db3bde8efb64dd73573d70ae1ccb20933e532e69613c8b7",
+      "blob": "f1ffdb3e8468e160e3ceddc468c43a27927745ed"
+    },
+    {
+      "path": "diffs/draft1-to-draft2/rog-launcher.review.diff",
+      "bytes": 625,
+      "sha256": "799089bf09867f026935bb9fde5e717e69f67524d57b01f9b9f92dcad8545640",
+      "blob": "96f95c137892607a8555bf0b14734499cf0f228a"
+    },
+    {
+      "path": "diffs/draft1-to-draft2/rog-runner.review.diff",
+      "bytes": 700,
+      "sha256": "cd85a4160c6362ddb3829b7f37b617023b1e10d8e77276773fcccce2724c2a58",
+      "blob": "a76249e67bf59db1049ff39dee5b0c640ee1cf5b"
+    },
+    {
+      "path": "diffs/draft1-to-draft2/rog-stager.review.diff",
+      "bytes": 1561,
+      "sha256": "a632bb169022c9abd97e1ce4481885bf7edf47916dda3eddbc2b980987b85b9b",
+      "blob": "71998d072b98356208a790fdbb2b687df8082139"
+    },
+    {
+      "path": "diffs/mac-launcher.review.diff",
+      "bytes": 10053,
+      "sha256": "cb859fd2308256c1c31579d6bae63b279cad58e780c8b8123cda10d252d3b7b0",
+      "blob": "779e84438a2efd57ac323f52d8a91a0427a042a8"
+    },
+    {
+      "path": "diffs/mac-runner.review.diff",
+      "bytes": 14901,
+      "sha256": "b702497c7fa8b534980d4f8135bb0aa17341f401820fc658966f2629f6df952a",
+      "blob": "75b9eb54bb9f19ac71f7b0e3d042ea56964d1320"
+    },
+    {
+      "path": "diffs/mac-stager.review.diff",
+      "bytes": 20397,
+      "sha256": "c43ce95b602abbe1c617f6360b6a26f5fd6bb781e74e172e68ca85fcd3f34638",
+      "blob": "431e9b197495531d51fb0a5b46b5589721c0f5e9"
+    },
+    {
+      "path": "diffs/rog-launcher.review.diff",
+      "bytes": 9225,
+      "sha256": "7b9f73be39ceae0daa0fe30c2326ff97928c9054495f4a8ba976eaa53eee7303",
+      "blob": "774c87c11b25c55286dca4634fcc4258d810ef9c"
+    },
+    {
+      "path": "diffs/rog-runner.review.diff",
+      "bytes": 13122,
+      "sha256": "2010df553af1530692f46e31a7584217e177a1731458b6bfe076d9fd9adbfc52",
+      "blob": "aa30b7539cfcc21e1912710fc330f0d7d6bd0424"
+    },
+    {
+      "path": "diffs/rog-stager.review.diff",
+      "bytes": 11321,
+      "sha256": "39b56b259abf8f3c7cdea1bbc61a564d64bb52dc803139adb4a1de07178bcb91",
+      "blob": "ba4906a813444dd6f4dabbbfd4122f7f3093397e"
+    },
+    {
+      "path": "dispatch/mac-normal-build.UNBOUND.request.json",
+      "bytes": 1126,
+      "sha256": "9fb956181dd725f053d75bf473281bf924036653034f61d4aab63c9715f2b436",
+      "blob": "0055bdaac74728070590f60bfc86c03e5f68ca87"
+    },
+    {
+      "path": "dispatch/mac-source.UNBOUND.request.json",
+      "bytes": 85178,
+      "sha256": "f3b360b888783770cf4de690cc7b66cdfbf4522525d782ea090128d906474644",
+      "blob": "2cf4edbee0feb9628a36fcabab1b4185e0bf166b"
+    },
+    {
+      "path": "dispatch/rog-normal-build.UNBOUND.request.json",
+      "bytes": 745,
+      "sha256": "bef4c491f4726427b0dd268cd65b499620c873b8017751a5a185ba5f7606cfd8",
+      "blob": "11848e9fa999f3f3d48712a602e1ad3c8b828bf3"
+    },
+    {
+      "path": "dispatch/rog-source.request.json",
+      "bytes": 97553,
+      "sha256": "95ecb02dc52f9a3c714c7d2a757f26fca3088f92266834506506a7df5389d570",
+      "blob": "7de047a6c027957f13916be02a74f740f432637f"
+    },
+    {
+      "path": "normal-test-groups.public.json",
+      "bytes": 6249,
+      "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+      "blob": "302e5d5a5bfe501dcaf75f8c4cfc166acd58ea5f"
+    },
+    {
+      "path": "payload/mac-controls.stdin.json",
+      "bytes": 57937,
+      "sha256": "02efacb013fb4108914d174afeee3c57501c33e8cecb4a04ba97d67de7b93605",
+      "blob": "16712d945a29eee285130f5afa59e4a088b7d15f"
+    },
+    {
+      "path": "payload/rog-controls.stdin.json",
+      "bytes": 67242,
+      "sha256": "748706a227441b7348f6d4217ffb39b25c50384df8d86289655577104b816d26",
+      "blob": "edc0347ec0343dc3e3a557cc38ae1bef499f68e3"
+    },
+    {
+      "path": "README.md",
+      "bytes": 10711,
+      "sha256": "2531cd785115f9f2b4fa2898020a9ba7410186ecf5aea45df78010d3f640db43",
+      "blob": "48eed884ba8fb2fa1e3ae6d7a3c7689150029319"
+    },
+    {
+      "path": "references/actual-formatter-assessment.public.json",
+      "bytes": 7531,
+      "sha256": "46c65f1becff614c3b3b709a37e8bf4b3a3c8f212502519f31691f432a5fb634",
+      "blob": "2e6a5332ad3afc33cf2aebd95e2df51dadc0231e"
+    },
+    {
+      "path": "references/ancestry/6304a898192bfdf7eabec3c4ea40f7166e59a137.api.json",
+      "bytes": 1556,
+      "sha256": "d71c299966b0f9596a50ef09c645fe33a23cc1c9f35e80818b4115472302abc5",
+      "blob": "3f53880f8cba21dda4d2c46ff29ac1664beb208a"
+    },
+    {
+      "path": "references/ancestry/6d3040a2dbd06661a67f5c62df259ff446eb8515.api.json",
+      "bytes": 1701,
+      "sha256": "ef01bdbe143f1aeb3eb277b0af5eea321043e522b61bf12bc4e4f21efff0e0a8",
+      "blob": "925e64f8981e1b0af3a20cc67da3dfdf84261605"
+    },
+    {
+      "path": "references/ancestry/e5de554f5dfe99f0de30012122fe3e248fb60532.api.json",
+      "bytes": 1489,
+      "sha256": "9fe8a6b61da076b8e32807fdee85a784f65a375f1cc197b78469b63d2d80baa0",
+      "blob": "b3cd1e34be132557bfae7791347102a5d13a1360"
+    },
+    {
+      "path": "references/ancestry/fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd.api.json",
+      "bytes": 1637,
+      "sha256": "a7e9c27149443e4826693b03c44f2dd329084d010e938d0be18da27db8d77729",
+      "blob": "a2f6f9e869f2d40b60f5c405eb8afdacd27ed4ad"
+    },
+    {
+      "path": "references/canonical-commit.api.json",
+      "bytes": 1909,
+      "sha256": "89dc2721778d9ec352dd7ca793c0e13b86ddeae07738944e7c7979708bf97dc1",
+      "blob": "863ac5a2f7837d4d2164fa10708fa74303feeffd"
+    },
+    {
+      "path": "references/canonical-provenance.public.json",
+      "bytes": 2596,
+      "sha256": "d0816f43bd5b9d71ef70343c097ec3e07ef307eee197d343698a09f8d8a255b5",
+      "blob": "aa322732b5fd39bc4a6284c52b28fa43bbe573c9"
+    },
+    {
+      "path": "references/canonical-worktree-expected.public.json",
+      "bytes": 127,
+      "sha256": "764d3bb1b493d78d7ecbdd55f3eeeab9078dcb71fe9e3fa0588d0d5a4487c6b6",
+      "blob": "43eb45b94efdaed80e2794c6431a882e02d4ecd8"
+    },
+    {
+      "path": "references/draft1/mac/launch_normal_cold_h2.py",
+      "bytes": 23773,
+      "sha256": "5144d2f61418f16966439f9563615f23a2859c0401e90b0d7d8187f109821eeb",
+      "blob": "5af92c4cd1558c48f5241eab200ef72c4458d737"
+    },
+    {
+      "path": "references/draft1/mac/mac_normal_cold_h2_build.py",
+      "bytes": 26541,
+      "sha256": "b57a333cf3f6ab96ae03460f66cd1d0cb351bea9cbc4755bf5f5045427e69985",
+      "blob": "04df9d9a23079f4f2d780655db7e6c5a55f56803"
+    },
+    {
+      "path": "references/draft1/mac/stage_source_cold_h2.py",
+      "bytes": 24623,
+      "sha256": "a2e005425bc9511c0aca793094daf19c4aa2bf87299cf9f32b3c04bf4fc11ebe",
+      "blob": "fae887eff72b366a99efc19147be231ebcef5978"
+    },
+    {
+      "path": "references/draft1/rog/launch_normal_cold_h2.py",
+      "bytes": 31962,
+      "sha256": "9ce815ccfa8a9c8c5158c1cf76d55966f07c2c095537bc91726e0cebfe1aa0a8",
+      "blob": "f7a22413ff2e075b52f21c01d0e0ee7d5220010b"
+    },
+    {
+      "path": "references/draft1/rog/normal_cold_h2_build.py",
+      "bytes": 26658,
+      "sha256": "71d57dfd549337231bd1160ff3008374a473b305f662178609cf61e5ab300f5b",
+      "blob": "2d8aadc2d32a8f81ac1d94981a8548b22a7fa961"
+    },
+    {
+      "path": "references/draft1/rog/stage_source_cold_h2.py",
+      "bytes": 27543,
+      "sha256": "78ef9c323259aa0e84000003c28a7250e213ae4f8420264055819f49292c3efe",
+      "blob": "7484f0800728eaa8847367ed170fb86bee2ed31e"
+    },
+    {
+      "path": "references/mac_native.public.json",
+      "bytes": 798,
+      "sha256": "16fa488ed8d7a9a46541b5aea5007e27b538e5c37f9246c14de0e5fe24b05ad1",
+      "blob": "3daa9c7e0537b066502606430b9289b39a249712"
+    },
+    {
+      "path": "references/mac_plan.public.json",
+      "bytes": 1729,
+      "sha256": "b5aaac7a02554751d59b60319c18c8c458aafd5ee3c65d038d5e3d9cf998c9c2",
+      "blob": "bac47837b106a5407ddea119a75b22e790f6e7fb"
+    },
+    {
+      "path": "references/mac_preflight.public.json",
+      "bytes": 10406,
+      "sha256": "830c2b3d543ef055a1db25e70834c98285e67dd78b5b0d2ac47af668040febb5",
+      "blob": "40d190c69f2feee7a648cdd6425f1ebc37654ef2"
+    },
+    {
+      "path": "references/mac_release.public.json",
+      "bytes": 3326,
+      "sha256": "f5746eaf7fd79c8001ac927c9738922297d6e5e575cbd12bc092aafa2c13f544",
+      "blob": "5d0f6fd01dfd4415610e6f30afe4b2ea203a4297"
+    },
+    {
+      "path": "references/mac_result.public.json",
+      "bytes": 24522,
+      "sha256": "28f47931ad644e610d45af00545b343a8d5867546ea8d00a44cae0a3de13c961",
+      "blob": "f1721688e97951506f728bc7ae639e8107641696"
+    },
+    {
+      "path": "references/mac-r10-launcher.py",
+      "bytes": 20167,
+      "sha256": "d1542351492f9efb41ba18c3b25e9548be7eb658db5cb13c5b4bf80f097a55ad",
+      "blob": "af34201f8930265a8813028ba6cc21a07166e43d"
+    },
+    {
+      "path": "references/mac-r10-runner.py",
+      "bytes": 16894,
+      "sha256": "f925684275b42215300fa91f9b90478c75b822ce2d6f2e4be165b5e8e44e353d",
+      "blob": "031ab151262f50ed7db4ecad16cb9c04750c5930"
+    },
+    {
+      "path": "references/mac-r10-stager.py",
+      "bytes": 27150,
+      "sha256": "90bc84593ba4a2845cbce6141277e22e01dfc9be3fce126a31448a9428f8c990",
+      "blob": "3b012a9df21060bf582e97da537ff9c9bcc9027d"
+    },
+    {
+      "path": "references/prior-observer-build-authority.public.json",
+      "bytes": 726,
+      "sha256": "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6",
+      "blob": "971f9ee47142e65ce39b05834e7bc647b08e655b"
+    },
+    {
+      "path": "references/rog_3cb_result.public.json",
+      "bytes": 35178,
+      "sha256": "8899a7acc647505c230430b35771ae1eccaf48cc5aea27a034906d513fd0b0f7",
+      "blob": "6532d79e69bcb4572b3dafb84b01c99b276cc4f3"
+    },
+    {
+      "path": "references/rog_native.public.json",
+      "bytes": 794,
+      "sha256": "51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce",
+      "blob": "db7838a99b3f98637dd5e257c427cdb02158a0ff"
+    },
+    {
+      "path": "references/rog_release.public.json",
+      "bytes": 3200,
+      "sha256": "6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f",
+      "blob": "22a3dfca9dab25a1b15e8b520ae0b965d904ed66"
+    },
+    {
+      "path": "references/rog-3cb-launcher.py",
+      "bytes": 28425,
+      "sha256": "230597bdf2e67f617428355fd0cae4c4b587c397409e02e0395ee96c8e4cee03",
+      "blob": "8909a7add36d43e3be7a5175adb4f184e72f7fed"
+    },
+    {
+      "path": "references/rog-3cb-runner.py",
+      "bytes": 20791,
+      "sha256": "5ba3e0152b1b84510ef7740b1e5d863e1464e4eaee04a4b772747a4db86dcb2b",
+      "blob": "7fd97c088c538c7b4d1968964b8d8eaa67826885"
+    },
+    {
+      "path": "references/rog-3cb-stager.py",
+      "bytes": 24552,
+      "sha256": "b3cb8165499fc668fc5c9c5eb1a43f31a7c79bd7d915e6f22df2e04d28c6a5f6",
+      "blob": "7087d818c7913dcf502e3cf253c439f42f7becf1"
+    },
+    {
+      "path": "references/source-ref.public.json",
+      "bytes": 2356,
+      "sha256": "30c4f8ee8792926d1eca123a5f65614ff339fea08cf074753cef2cdf486ead66",
+      "blob": "4ac29eba26f7b88176239c32fbc0a9bef68136fc"
+    },
+    {
+      "path": "STRICT_DIFF_PROOF.public.json",
+      "bytes": 4362,
+      "sha256": "148aac256c682b174164a97d33021a3e8ea9e20766f81c7bde987ba13bace120",
+      "blob": "1acc215651bc736c1d33dd1214ca2d15f01f083d"
+    },
+    {
+      "path": "TEST_INVENTORY.public.json",
+      "bytes": 9334,
+      "sha256": "b054febd8c6c1d8ddfe130ad3c0260515c2c58a545b4305efd376ce750b77aa6",
+      "blob": "6ae69406eae7829f21accb6347d38551e6a2e168"
+    }
+  ],
+  "manifest_self_excluded": true
+}

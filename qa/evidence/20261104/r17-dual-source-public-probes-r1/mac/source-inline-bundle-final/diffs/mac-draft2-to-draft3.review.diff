@@ -1,0 +1,56 @@
+--- before/mac-stage-r2.py
++++ after/mac-stage-r3.py
+@@ -2,6 +2,7 @@
+ """Create one independent exact cold/H2 MAC checkout; no Cargo or product."""
+ from pathlib import Path, PurePosixPath
+ import argparse
++import base64
+ import hashlib
+ import json
+ import os
+@@ -392,7 +393,8 @@
+ carrier = sys.stdin.buffer.read(262145)
+ assert len(carrier) <= 262144 and digest(carrier) == args.carrier_sha256
+ data = json.loads(carrier)
+-assert set(data) == {'schema', 'controls'} and data['schema'] == 'heptabao.cold-h2-inert-controls.v1'
++assert set(data) == {'schema', 'controls', 'canonical_bundle_base64'}
++assert data['schema'] == 'heptabao.cold-h2-mac-inert-controls.v1'
+ assert set(data['controls']) == set(EXPECTED_CONTROLS)
+ for name, (size, expected_sha) in EXPECTED_CONTROLS.items():
+     raw = data['controls'][name].encode()
+@@ -403,6 +405,13 @@
+ assert [(g['label'], len(g['tests'])) for g in groups] == [
+     ('ssh25', 25), ('mount1', 1), ('redirect5', 5), ('actor2', 2), ('ordinary5', 5), ('no_forward6', 6)]
+ assert sum(len(g['tests']) for g in groups) == 44 and all(g['runtime_seconds'] == 600 for g in groups)
++assert isinstance(data['canonical_bundle_base64'], str)
++canonical_raw = base64.b64decode(data['canonical_bundle_base64'], validate=True)
++assert args.canonical_bundle_bytes == 24337
++assert args.canonical_bundle_sha256 == '5e5e662ad369f3f94bdb0a844507d0305ebd0b4a661845c16be50475a4df16e2'
++assert len(canonical_raw) == args.canonical_bundle_bytes
++assert digest(canonical_raw) == args.canonical_bundle_sha256
++canonical_header = canonical_bundle_header(canonical_raw)
+ assert not os.path.lexists(ROOT)
+ result = {'schema': 'heptabao.cold-h2-independent-source-stage.v1', 'status': 'failed',
+           'source_commit': COMMIT, 'source_tree': TREE, 'sole_parent': PARENT,
+@@ -419,13 +428,16 @@
+     stage_remaining()
+     result['external_volume_uuid'] = prewrite_volume_guard()
+     canonical_path = ROOT.parent / 'canonical-cold-h2-df026-from495.bundle'
+-    assert 0 < args.canonical_bundle_bytes <= 4 * 1024 * 1024
+-    assert isinstance(args.canonical_bundle_sha256, str) and len(args.canonical_bundle_sha256) == 64
+-    canonical_raw = stable_read(canonical_path, 4 * 1024 * 1024,
+-                                args.canonical_bundle_bytes, args.canonical_bundle_sha256)
++    stage_remaining()
++    assert not os.path.lexists(canonical_path)
++    create(canonical_path, canonical_raw)
++    fsync_dir(ROOT.parent)
++    assert stable_read(canonical_path, 4 * 1024 * 1024,
++                       args.canonical_bundle_bytes, args.canonical_bundle_sha256) == canonical_raw
+     canonical_identity = identity(canonical_path.lstat())
+     assert stat.S_IMODE(canonical_path.lstat().st_mode) == 0o600
+-    canonical_header = canonical_bundle_header(canonical_raw)
++    result['canonical_bundle_published_after_volume_guard'] = True
++    stage_remaining()
+     ROOT.mkdir(mode=0o700)
+     CONTROL.mkdir(mode=0o700)
+     created_control = True

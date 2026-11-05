@@ -1,0 +1,37 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-I",
+      "-S",
+      "-B",
+      "-c",
+      "import hashlib,json,sys,time\nraw=sys.stdin.buffer.read(10991)\nif len(raw)!=10990 or hashlib.sha256(raw).hexdigest()!='a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d': raise SystemExit(2)\nns={'__name__':'frozen_public_numeric_process_projection'}\nexec(compile(raw,'<frozen-mac-owned-unreaped-r1>','exec'),ns)\nstarted=time.monotonic();until=started+8.0;views=[]\nfor ordinal in (1,2):\n rows=ns['ps_rows'](seconds=4.0,until=until)\n selected=[row for row in rows if row['pid']==11754 or row['ppid']==11754 or row['pgid']==11754]\n views.append({'ordinal':ordinal,'allNumericRowsCount':len(rows),'selectedRows':selected,'observedMonotonic':time.monotonic()})\nreport={'schema':'heptabao.mac-nested11754-current-readonly-projection.r1','originalProbeJob':'1a1a9c8632a-fc05-37bc','originalOutcomeRemainsUnknown':True,'originalCustodyOrExitRecovered':False,'fixedHelperSha256':hashlib.sha256(raw).hexdigest(),'selection':['pid=11754','ppid=11754','pgid=11754'],'views':views,'currentSelectedRowsAbsentTwice':all(not view['selectedRows'] for view in views),'signalsSent':0,'processCommandsOrArgumentsRequested':False,'sharedSeconds':8,'elapsedSeconds':time.monotonic()-started}\nprint(json.dumps(report,sort_keys=True,separators=(',',':')))\nraise SystemExit(0 if report['currentSelectedRowsAbsentTwice'] and time.monotonic()<until else 1)\n"
+    ],
+    "created_unix_ms": 1793850064108,
+    "cwd": "/Users/qianqi",
+    "env_keys": [],
+    "executable": "/opt/homebrew/bin/python3",
+    "execution_mode": "operator",
+    "host": "mac",
+    "id": "1a1a9cbbcec-fc05-37e8",
+    "idempotency_key": "heptabao-mac-devnull-probe-r1-nested11754-numeric-projection-20261105-r1",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1a9cbbcec-fc05-37e8",
+    "request_digest": "c97e215b10ccbf416a2eb96c0a9577bbd6e0705ec8e06f675e8edef471cc6ce2",
+    "request_fingerprint": 14519078923696652097,
+    "ssh_target": "hepta-mac-local",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1a9cbbcec-fc05-37e8"
+  },
+  "launch": {
+    "backend": "detached",
+    "launcher_pid": 14415,
+    "ok": true,
+    "systemd_error": "systemd user units unavailable on this platform",
+    "unit": "hepta-runtime-job-1a1a9cbbcec-fc05-37e8"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "heptabao.root.rog-fixed-target-metadata-review.v1",
+  "source_tree": "cf30b3efa122d795096f46d7d2fd28e6a866faf0",
+  "actual_tree": "d7570930ea9aa7b1114c792dd795c29782440293",
+  "job": "1a1a9e48b01-fc05-392b",
+  "complete_original_native_ack_authority_stream_verified": true,
+  "original_fixed_paths": 25,
+  "missing_paths": [
+    "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target",
+    "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release",
+    "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/.cargo-lock"
+  ],
+  "existing_runtime_parent_cargo_home_toolchain_and_retained_artifacts": true,
+  "three_original_public_receipts_whole_unchanged": true,
+  "bytes_read": 39172,
+  "all_three_fds_closed": true,
+  "child_write_directory_listing_counts": [
+    0,
+    0,
+    0
+  ],
+  "inner_seconds": 15,
+  "outer_seconds": 45,
+  "actual_seconds": 0.001746986003126949,
+  "missing_target_cause_unknown": true,
+  "cache_or_compile_target_created": false
+}

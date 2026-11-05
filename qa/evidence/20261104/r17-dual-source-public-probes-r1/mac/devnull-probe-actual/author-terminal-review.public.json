@@ -1,0 +1,140 @@
+{
+  "schema": "heptabao.mac-devnull-sandbox-author-actual-review.r1",
+  "verdict": "FAILED_NESTED_CHILD_CUSTODY_UNKNOWN",
+  "job_id": "1a1a9c8632a-fc05-37bc",
+  "idempotency_key": "heptabao-mac-owned-capture-devnull-sandbox-5229fa70-20261105-r1",
+  "source_packet_tree": "2b5f9f05aaa013259b56eb259ca33cc5ac0d6cd0",
+  "source_sha256": "5229fa7089b9164e853dec4628c31969e39a212253618573f38b8a26df3d29a5",
+  "authority": {
+    "exit_code": 1,
+    "complete": true,
+    "durable": true,
+    "timed_out": false,
+    "automatic_retry": false,
+    "stdout_bytes": 18275,
+    "stderr_bytes": 0
+  },
+  "raw_logs": {
+    "pages": 2,
+    "contiguous_offsets": [
+      0,
+      16384,
+      18275
+    ],
+    "hex_text_exact": true,
+    "eof": true,
+    "core": [
+      {
+        "path": "stdout.public.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dea943bf06f9609e4206ee59acb7747344c9221b",
+        "bytes": 18275,
+        "sha256": "916c8081f1b04455f638ef90f5f2eb9544c8f07f76bc0a73d7b88743a001439e"
+      },
+      {
+        "path": "authority.original.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1c669b7987346957121d47ead9b4eda0390f6f9e",
+        "bytes": 730,
+        "sha256": "8875370fdff548645941c25e13b41b37937c5689cc58601b28146381917f5831"
+      }
+    ]
+  },
+  "results": {
+    "original_devnull_read": {
+      "child_exit": 0,
+      "child_ok": true,
+      "unknown": false,
+      "opened": false,
+      "errno": 1,
+      "expected_denial": true,
+      "all_owned_descriptors_closed": true
+    },
+    "patched_devnull_read": {
+      "opened": true,
+      "character_device": true,
+      "one_byte_read_eof": true,
+      "closed": true,
+      "errno": null,
+      "scope": "Only this /dev/null read fact passed; the patched variant as a whole failed."
+    },
+    "patched_followup": {
+      "child_exit": 1,
+      "child_error_stage": "child_diskutil_command",
+      "child_error_code": "patched_diskutil_known_complete",
+      "child_unknown": true,
+      "nested_pid": 11754,
+      "nested_pgid": 11754,
+      "nested_argv": [
+        "/usr/sbin/diskutil",
+        "info",
+        "-plist",
+        "/Volumes/T5"
+      ],
+      "custody": null,
+      "error_type": "PermissionError",
+      "cleanup_error_type": "PermissionError",
+      "direct_child_reaped": false,
+      "group_empty_proven": false,
+      "post_reap_signal_sent": false,
+      "signals": [],
+      "unknown_command_count": 1,
+      "volume_uuid_verified": false,
+      "four_kernel_refusal_tests_reached": false
+    },
+    "outer": {
+      "ok": false,
+      "unknown": true,
+      "error_stage": "read_patched_public_report",
+      "error_code": "child_known_expected_terminal",
+      "elapsed_seconds": 0.45210850005969405,
+      "original_45s_met": true,
+      "top_level_owned_commands": 3,
+      "top_level_all_reaped_empty_streams_closed": true,
+      "all_outer_and_T5_descriptors_closed": true
+    }
+  },
+  "qualification": {
+    "whole_probe_passed": false,
+    "aggregate_nested_cleanup_qualified": false,
+    "source_and_tool_final_after_fences_reached": false,
+    "new_owned_files_final_after_fences_reached": false,
+    "source_original_child_before_after_matched": true,
+    "production_database_read": false,
+    "credential_read": false,
+    "sqlite_import": false,
+    "consumer": false,
+    "manager": false,
+    "provider": false,
+    "j3160": false,
+    "business_replay": false
+  },
+  "interpretation": [
+    "The actual original sandbox denies a new /dev/null O_RDONLY open with EPERM. The single-literal patched sandbox permits open, EOF read and close.",
+    "After that fix, diskutil Popen returns PID 11754 but capture_child fails before recording custody; its cleanup repeats the same observation path and fails. The inner command report does not record errno or the exact failing syscall. The next unqualified candidate is ps_rows, not a uniquely proven cause.",
+    "All three top-level commands are reaped with empty groups and closed streams. These facts cannot be used to infer that the nested independently sessioned PID 11754 was reaped or absent.",
+    "The two child reports are separately recovered from exact original outer JSON token spans plus LF. Their complete byte counts and SHA256 match the parent-recorded original child stdout; no unsafe-number reserialization was used.",
+    "No test or job is replayed, no numeric-PID signal was issued. Parent/root owns any subsequent read-only residual observation; this packet does not authorize it or rewrite the original unknown."
+  ],
+  "child_stdout_reconstruction": [
+    {
+      "variant": "original",
+      "bytes": 3939,
+      "sha256": "f21646109ced857b8b34b31141360ea4abd6252cd617bfe81ae5e8e37853168e",
+      "git_blob": "2a1fe33899125dd672f7b33b918a45d689d9029b",
+      "method": "Exact report object token span from original outer stdout plus original one LF; no numeric reserialization.",
+      "matches_actual_child_stdout_bytes_and_sha256": true
+    },
+    {
+      "variant": "patched",
+      "bytes": 4052,
+      "sha256": "730e759e0fa80c40a53a4c45f17405969b02fed5ebf1139f69ef4dc62c28759c",
+      "git_blob": "04a2cd079fca0a917e580a2fe77046644685dddf",
+      "method": "Exact report object token span from original outer stdout plus original one LF; no numeric reserialization.",
+      "matches_actual_child_stdout_bytes_and_sha256": true
+    }
+  ],
+  "available_mcp_snapshots_are_not_transport_wire_bytes": true
+}

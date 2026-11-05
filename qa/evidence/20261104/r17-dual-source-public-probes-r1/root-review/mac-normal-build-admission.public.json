@@ -1,0 +1,53 @@
+{
+  "schema": "heptabao.root.mac-df026-normal-build-admission.v1",
+  "source_packet": "5f0e4ef4abf2a0ca6d514d9ee7fc88bf8effee25",
+  "source_actual_core_packet": "25f8e29ae2dbb5d711b4a934d638923d66d6a2ac",
+  "source_job": "1a1a9e58987-fc05-393c",
+  "source_core_blob": "11996df6270ef129e41efdd76476f87602644165",
+  "source_core_bytes": 9199,
+  "source_core_sha256": "34c7be755ee8120ac383370fec9557c1b42b2ab5bb19a6e74c1b5516a031ca4e",
+  "source_authority_full_durable_exit0": true,
+  "source_core_native_whole_and_terminal_hex_text_verified": true,
+  "source_35_children_reaped_groups_empty": true,
+  "source_whole_3913_leaves_62212769_bytes_index_bound": true,
+  "source_full_strict_fsck": true,
+  "old495_source_unchanged": true,
+  "t5_uuid_before_bundle_write": true,
+  "normal_runner_blob": "e9560c948992baad57cf911d179e065f49a6a4ca",
+  "normal_runner_sha256": "186168747811b86e9f7205928e7b0a8fbc5d105354f725a4d02db33335b2c862",
+  "launcher_blob": "470e442492a91eb7366ed882aab5535e595e9a23",
+  "launcher_sha256": "5af8319e841f659a7123057baeed270d474b011332ade303b4c2cb5b942d02ff",
+  "strict_original_runner_chain_hunks": [
+    9,
+    1
+  ],
+  "strict_original_launcher_chain_hunks": [
+    10,
+    1
+  ],
+  "original_44_group_bytes_unchanged": true,
+  "additional7_and_new9_separate_each600_clipped_outer": true,
+  "budgets_seconds": {
+    "release": 1800,
+    "libtest": 1800,
+    "list": 30,
+    "each_original_group": 600,
+    "outer": 8280
+  },
+  "same_pid_exec_and_absolute_outer_start_preserved": true,
+  "normal_default_features_no_fixture_features": true,
+  "original_r8_r9_and_r10_actual_source_and_artifact_fences_retained": true,
+  "original_r9_three_request_pins_unchanged": true,
+  "existing_target_lock_info_blob": "42e4b267a42524a3ff9cadab544389090f992684",
+  "target_lock_exists_regular_nlink1_uid501_zero_bytes": true,
+  "target_idle_and_exclusive_lock_probe_still_required_by_launcher": true,
+  "request_blob": "d6e0362f84dd2f9636dc741683fcedfadc477277",
+  "request_bytes": 1152,
+  "request_sha256": "fd745e069b74dfcf13025c673085205c78cd1d168cc70b8c7e482748aa368d62",
+  "request_only_stage_placeholder_bound": true,
+  "idempotency_key": "heptabao-cold-h2-df026-mac-normal60-20261105-r2-5af8319e-18616874",
+  "decision": "GO_ONCE_EXACT_MAC_NORMAL_BUILD_AND_ORIGINAL44_PLUS7_PLUS9",
+  "known_prior_failures_and_unknowns_replayed": false,
+  "production_current_credentials_lan_or_service_transition_admitted": false,
+  "actual_new_build_or_tests_qualified_yet": false
+}

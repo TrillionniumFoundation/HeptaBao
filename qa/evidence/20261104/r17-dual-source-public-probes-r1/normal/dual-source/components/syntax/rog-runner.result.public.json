@@ -1,0 +1,9 @@
+{
+  "ast_and_compile_only": true,
+  "bytes": 26658,
+  "file": "rog_runner.py",
+  "host_calls": 0,
+  "module_executed": false,
+  "sha256": "71d57dfd549337231bd1160ff3008374a473b305f662178609cf61e5ab300f5b",
+  "syntax": "passed"
+}

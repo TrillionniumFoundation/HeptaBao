@@ -1,0 +1,204 @@
+{
+  "schema": "heptabao.cold-h2-pureformat-actual-assessment.r1",
+  "status": "PASS_FORMAT_ONLY",
+  "job_id": "1a1a9b4f704-fc05-36e5",
+  "idempotency_key": "heptabao-cold-h2-inputs-rustfmt-20261105-r1-94554877",
+  "exactly_one_submit": true,
+  "reused": false,
+  "request": {
+    "bytes": 68646,
+    "sha256": "68ddcd0c37d8344aba57a9984550cfb9a1d0437ddc1660772a37996e1ca98c16",
+    "blob": "85f6684c3a2039fb1f3dc6889ad69b9bc31d7681"
+  },
+  "source_packet": "6590500fe878fd54c349da6eb38b88ed9f1ea5fc",
+  "root_admission": "c894aa8718cd998146f7408fb9e43a72759b667e",
+  "authority": {
+    "state": "succeeded",
+    "exit_code": 0,
+    "complete": true,
+    "durable": true,
+    "publication_confirmed": true,
+    "automatic_retry": false,
+    "timed_out": false,
+    "cancelled": false
+  },
+  "result_pin": {
+    "path": "/home/qian-qi/heptabao-cold-h2-normal-format-20261105-r1/result.public.json",
+    "bytes": 5779,
+    "sha256": "14f815a79c772057db565f903d9bed1572e3efdbc4d228c7d8dc13f812620565",
+    "blob": "1f9dd1c4406b93bc5333bbd188ea5cdc589a5cb0",
+    "version": "66306:27299345:5779:1793848572810957337:1793848572810957337"
+  },
+  "terminal_pin": {
+    "bytes": 1636,
+    "sha256": "9ae3d391efb3b0dedee0f1adf7d4060f5670f235d7588d91b3708535e1f33bc9",
+    "blob": "315db5a563313cf63029a9ffb29644f6d55fac19"
+  },
+  "internal_elapsed_seconds": 0.11176179797621444,
+  "published_stdout_elapsed_seconds": 0.11325935399509035,
+  "internal_seconds": 50,
+  "child_seconds": 10,
+  "supervisor_seconds": 60,
+  "within_deadline": true,
+  "direct_children": [
+    {
+      "pid": 857807,
+      "pgid": 857799,
+      "supervisor_group": 857799,
+      "exit_code": 0,
+      "reaped": true,
+      "stopped": true,
+      "timeout_seconds": 10,
+      "new_process_group_created": false
+    },
+    {
+      "pid": 857818,
+      "pgid": 857799,
+      "supervisor_group": 857799,
+      "exit_code": 0,
+      "reaped": true,
+      "stopped": true,
+      "timeout_seconds": 10,
+      "new_process_group_created": false
+    },
+    {
+      "pid": 857825,
+      "pgid": 857799,
+      "supervisor_group": 857799,
+      "exit_code": 0,
+      "reaped": true,
+      "stopped": true,
+      "timeout_seconds": 10,
+      "new_process_group_created": false
+    },
+    {
+      "pid": 857834,
+      "pgid": 857799,
+      "supervisor_group": 857799,
+      "exit_code": 0,
+      "reaped": true,
+      "stopped": true,
+      "timeout_seconds": 10,
+      "new_process_group_created": false
+    }
+  ],
+  "all_direct_children_stopped": true,
+  "tool_before_after_exact": true,
+  "tool": {
+    "bytes": 5255144,
+    "identity": [
+      66306,
+      28970682,
+      5255144,
+      "1791677524979153708",
+      "1791677525080580886",
+      33261,
+      1000,
+      1000,
+      1
+    ],
+    "path": "/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "sha256": "5005cdcd39ded526dca8fa6ccd716d42fc7da54469034e055dbf54649bec7877"
+  },
+  "outputs": {
+    "result.public.json": {
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-format-20261105-r1/result.public.json",
+      "bytes": 5779,
+      "sha256": "14f815a79c772057db565f903d9bed1572e3efdbc4d228c7d8dc13f812620565",
+      "blob": "1f9dd1c4406b93bc5333bbd188ea5cdc589a5cb0",
+      "version": "66306:27299345:5779:1793848572810957337:1793848572810957337"
+    },
+    "formatted/service_native_v6_ha_read.rs": {
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-format-20261105-r1/formatted/service_native_v6_ha_read.rs",
+      "bytes": 31475,
+      "sha256": "298824c635fdbf759adc46583271438e856f395571668f1f7e9f324e7b55d951",
+      "blob": "b09e57362d53ce207b255d713d7aa7c126215691",
+      "version": "66306:27299332:31475:1793848572744956580:1793848572744956580"
+    },
+    "formatted/service_native_v6_ha_cold_timing_tests.rs": {
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-format-20261105-r1/formatted/service_native_v6_ha_cold_timing_tests.rs",
+      "bytes": 5225,
+      "sha256": "5b21ae81267e3063767ca63038816767af4d0919e229c7d97ecf0060400f3538",
+      "blob": "a8d9a60bad3424c038e7144028a4561daa14a130",
+      "version": "66306:27299336:5225:1793848572759956752:1793848572759956752"
+    },
+    "formatted/http_h2.rs": {
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-format-20261105-r1/formatted/http_h2.rs",
+      "bytes": 14691,
+      "sha256": "4db2b72314f7f8c0fd7b271d57d359156bc6add9fdd25e8206d44eee45d20ed1",
+      "blob": "70db7e9c37f057ddb7a1a146e57d1697928d33ce",
+      "version": "66306:27299340:14691:1793848572782957016:1793848572782957016"
+    },
+    "formatted/http_h2_sync_worker_tests.rs": {
+      "path": "/home/qian-qi/heptabao-cold-h2-normal-format-20261105-r1/formatted/http_h2_sync_worker_tests.rs",
+      "bytes": 6157,
+      "sha256": "d84bd0249f9c388e1555e4a6d9095b5f9e4a43cbf0519dbdf881d170f91c57ba",
+      "blob": "7e69476f7a09b19fdb62c0022494ccc23e2c7f69",
+      "version": "66306:27299344:6157:1793848572801957234:1793848572801957234"
+    }
+  },
+  "all_five_outputs_whole_bytes_verified": true,
+  "all_five_file_reads_version_pinned": true,
+  "terminal_stdout_hex_text_exact": true,
+  "stderr_bytes": 0,
+  "source_format_diff_checks": [
+    {
+      "name": "service_native_v6_ha_read.rs",
+      "kind": "input-to-formatted",
+      "hunks": 3,
+      "whole_equal": true
+    },
+    {
+      "name": "service_native_v6_ha_read.rs",
+      "kind": "base-to-formatted",
+      "hunks": 10,
+      "whole_equal": true
+    },
+    {
+      "name": "service_native_v6_ha_cold_timing_tests.rs",
+      "kind": "input-to-formatted",
+      "hunks": 1,
+      "whole_equal": true
+    },
+    {
+      "name": "http_h2.rs",
+      "kind": "input-to-formatted",
+      "hunks": 0,
+      "whole_equal": true
+    },
+    {
+      "name": "http_h2.rs",
+      "kind": "base-to-formatted",
+      "hunks": 2,
+      "whole_equal": true
+    },
+    {
+      "name": "http_h2_sync_worker_tests.rs",
+      "kind": "input-to-formatted",
+      "hunks": 5,
+      "whole_equal": true
+    }
+  ],
+  "h2_production_byte_identical": true,
+  "interpretation": [
+    "This is actual formatting only, not Rust type checking, compilation, Clippy or test execution.",
+    "Three files were reformatted; http_h2.rs is byte-identical. Explicit formatter diffs are retained, including closure block/trailing-comma normalization.",
+    "The four source pins are uncommitted candidate inputs. The recorded 3cb identity is their original source base, not a new candidate commit or inherited qualification.",
+    "The final candidate base is still being reviewed by root against current CI source. No commit or ref was created by this formatter.",
+    "Original host repository and shared Cargo target were neither read nor written by the controller. Only the fixed rustfmt executable and new owned formatting directory were used."
+  ],
+  "local_postprocessing_observations": [
+    {
+      "kind": "ACK_shape_processing",
+      "details": "Original SDK ACK was saved before a local attempted store of an undefined top-level job_id failed. The actual job id was recovered from the same ACK job.id; no second submit occurred."
+    },
+    {
+      "status": "known_local_source_harness_rejected_before_process_creation",
+      "error": "exec-server rejected request: Argument list too long (os error 7)",
+      "candidate_modified": false,
+      "host_calls": 0,
+      "followup": "Separate bounded source-only diff invocations; no formatter or product rerun."
+    }
+  ],
+  "next": "Root review of complete formatted source and provenance before binding fresh ROG/Mac normal build controls."
+}

@@ -1,0 +1,44 @@
+412:             continue
+413:     return matches
+414: 
+415: 
+416: assert (os.uname().sysname, os.uname().machine) == expected_system
+417: assert os.getuid() == expected_uid == ROOT.stat().st_uid
+418: assert ROOT.resolve(strict=True) == ROOT and TARGET.resolve(strict=True) == TARGET
+419: assert not ADMISSION.exists() and not ADMISSION.is_symlink()
+420: assert not OUTPUT.exists() and not OUTPUT.is_symlink()
+421: stage_raw, stage_pin = read_bound(CONTROL / 'stage-result.public.json', args.stage_sha256, 150000)
+422: stage = json.loads(stage_raw)
+423: assert stage['schema'] == 'heptabao.cold-h2-independent-source-stage.v1'
+424: assert stage['status'] == 'prepared' and stage['source_commit'] == args.commit and stage['source_tree'] == args.tree
+425: assert stage['source_clean'] and stage['independent_git_directory'] and stage['old_source_unchanged']
+426: assert all(x['direct_child_reaped'] and not x['remaining'] for x in stage['cleanup'])
+427: runner = CONTROL / RUNNER_NAME
+428: _, runner_pin = read_bound(runner, args.runner_sha256, 40000)
+429: groups_raw, groups_pin = read_bound(CONTROL / 'normal-test-groups.public.json', args.groups_sha256, 20000)
+430: groups = json.loads(groups_raw)
+431: assert stage['controls'][RUNNER_NAME]['sha256'] == args.runner_sha256
+432: assert stage['controls']['normal-test-groups.public.json']['sha256'] == args.groups_sha256
+433: assert stage['controls'][FAILED_AUTHORITY_NAME] == {'bytes': 726, 'sha256': FAILED_AUTHORITY_SHA}
+434: assert stage['failed_observer_before'] == stage['failed_observer_after']
+435: assert [[g['label'], len(g['tests'])] for g in groups] == stage['exact_groups']
+436: assert sum(len(g['tests']) for g in groups) == stage['exact_test_count']
+437: assert all(g['runtime_seconds'] == 600 for g in groups)
+438: ADMISSION.mkdir(mode=0o700)
+439: result = {'schema': 'heptabao.cold-h2-normal-target-admission.v1', 'status': 'failed',
+440:           'host': args.host, 'source_commit': args.commit, 'source_tree': args.tree,
+441:           'stage': stage_pin, 'runner': runner_pin, 'groups': groups_pin,
+442:           'target': str(TARGET), 'production_changed': False, 'normal_runner_started': False,
+443:           'started_ns': time.time_ns()}
+444: public(ADMISSION / 'launch-intent.public.json', result)
+445: lock_fd = None
+446: try:
+447:     before, old_before = freeze(SOURCE), freeze(OLD_SOURCE)
+448:     assert before == {'commit': args.commit, 'tree': args.tree, 'status': ''}
+449:     assert old_before == {'commit': OLD_COMMIT, 'tree': OLD_TREE, 'status': ''}
+450:     result.update(source_before=before, old_source_before=old_before)
+451:     result['compiler_holders_before_lock'] = holders()
+452:     assert not result['compiler_holders_before_lock']
+453:     lock_fd = os.open(TARGET / 'release/.cargo-lock', os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK)
+454:     info = os.fstat(lock_fd)
+455:     assert stat.S_ISREG(info.st_mode) and info.st_uid == os.getuid() and info.st_nlink == 1

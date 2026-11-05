@@ -1,0 +1,13 @@
+diff --git a/mac_current_capture_entry_r1.py b/mac_current_capture_entry_r1.py
+--- a/mac_current_capture_entry_r1.py
++++ b/mac_current_capture_entry_r1.py
+@@ -106,7 +106,8 @@
+         lines.append('(allow file-read* (subpath '+q(path)+'))')
+     for path in sorted(read_paths,key=str):
+         lines.append('(allow file-read* (literal '+q(path)+'))')
+-    lines.extend(['(allow file-read* (literal "/dev/urandom"))',
++    lines.extend(['(allow file-read* (literal "/dev/null"))',
++        '(allow file-read* (literal "/dev/urandom"))',
+         '(allow file-read* (literal "/dev/random"))',
+         '(allow file-write* (subpath '+q(ROOT/'captures'/stage/'output')+'))',
+         '(allow file-write* (literal "/dev/null"))'])

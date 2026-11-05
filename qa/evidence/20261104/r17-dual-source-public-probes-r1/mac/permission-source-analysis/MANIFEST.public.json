@@ -1,0 +1,73 @@
+{
+  "schema": "heptabao.mac-nested-permission-source-analysis-packet.r1",
+  "actual_tree": "767a66d03d2f96a14d016baaaa10e86665bd0ccd",
+  "new_host_actions": 0,
+  "new_component_tests": 0,
+  "official_cpython_is_reference_not_installed_stdlib_proof": true,
+  "files": [
+    {
+      "path": "source-analysis.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "fc023d2d215b22ff0b14a7269a0110a2fb334b19",
+      "bytes": 10110,
+      "sha256": "3f7680e4da4868ea2fb080cf6631487361bc4948db0ddaaae07e50d75021a6e7"
+    },
+    {
+      "path": "reference/cpython-v3.14.3-subprocess.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "578d7b95d05d7b5d4e97a6ffa9b1b5e415e83f1a",
+      "bytes": 90781,
+      "sha256": "26b3db4e83c14b624f11907ee81f1fc76d54c3bb56617d6888af60c066d21dcd"
+    },
+    {
+      "path": "reference/mac_owned_commands_r1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511",
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867"
+    },
+    {
+      "path": "reference/mac_owned_unreaped_r1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "53cddd9243f9f890d9a1b9975b435280ff58ab77",
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d"
+    },
+    {
+      "path": "reference/mac_current_capture_entry_r1.py",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "d972159225b1d7478746c9296eb9bb69eb99844c",
+      "bytes": 19011,
+      "sha256": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024"
+    },
+    {
+      "path": "evidence/prior-synthetic.stdout.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "781d085d4fdc52ada91ea796572099137c87cd55",
+      "bytes": 16228,
+      "sha256": "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5"
+    },
+    {
+      "path": "evidence/probe.stdout.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "dea943bf06f9609e4206ee59acb7747344c9221b",
+      "bytes": 18275,
+      "sha256": "916c8081f1b04455f638ef90f5f2eb9544c8f07f76bc0a73d7b88743a001439e"
+    },
+    {
+      "path": "evidence/patched-child.recovered-stdout.public.json",
+      "mode": "100644",
+      "type": "blob",
+      "sha": "04a2cd079fca0a917e580a2fe77046644685dddf",
+      "bytes": 4052,
+      "sha256": "730e759e0fa80c40a53a4c45f17405969b02fed5ebf1139f69ef4dc62c28759c"
+    }
+  ]
+}

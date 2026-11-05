@@ -1,0 +1,25 @@
+{
+  "pages": [
+    {
+      "offset": 0,
+      "bytes": 16384,
+      "eof": false
+    },
+    {
+      "offset": 16384,
+      "bytes": 7957,
+      "eof": true
+    }
+  ],
+  "stdout": {
+    "bytes": 24341,
+    "sha256": "80f4842e6f823b5b607604ce19b9a91aa20031ec0ffcbb60eb876c1bfa0755ba",
+    "git_blob": "1c7b24fcc119d84cbd6a9a93235f9a4823911b65"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "hex_text_byte_equal": true,
+  "eof": true
+}

@@ -1,0 +1,25 @@
+{
+  "host": "rog",
+  "executable": "/usr/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/launch_normal_cold_h2.py",
+    "--host",
+    "rog",
+    "--commit",
+    "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "--tree",
+    "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "--stage-sha256",
+    "7364fb449d5c46afa65507469b88427c8acc088fe4ef166cd1c5a436e56be9be",
+    "--runner-sha256",
+    "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+    "--groups-sha256",
+    "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+  ],
+  "cwd": "/home/qian-qi",
+  "timeout_seconds": 12000,
+  "idempotency_key": "heptabao-cold-h2-df026-rog-normal60-20261105-r2-7c3dbf52-1a3fdc3a"
+}

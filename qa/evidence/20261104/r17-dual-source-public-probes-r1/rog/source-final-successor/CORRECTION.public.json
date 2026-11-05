@@ -1,0 +1,90 @@
+{
+  "schema": "heptabao.cold-h2-controls-deployment-field-correction.v1",
+  "status": "SOURCE_ONLY_NOT_EXECUTED",
+  "prior_priority_tree": "ce5ca40b22ba634f7794b0bf02ea943efa06ecad",
+  "prior_complete_tree": "f0062d97b9e9396e985dcfbb1c9e2ab95365179b",
+  "reason": "production_changed records deployment facts and must remain false for isolated source/build controls. Candidate code changes are already bound by exact commit/tree.",
+  "changes": [
+    {
+      "host": "rog",
+      "kind": "runner",
+      "hunks": 1,
+      "changed_lines": 1,
+      "whole_strict_apply_equal": true,
+      "whole_inverse_equal": true,
+      "allowed_change": "production_changed remains deployment fact false; stager pinned control size/SHA cascade only"
+    },
+    {
+      "host": "rog",
+      "kind": "launcher",
+      "hunks": 1,
+      "changed_lines": 1,
+      "whole_strict_apply_equal": true,
+      "whole_inverse_equal": true,
+      "allowed_change": "production_changed remains deployment fact false; stager pinned control size/SHA cascade only"
+    },
+    {
+      "host": "rog",
+      "kind": "stager",
+      "hunks": 2,
+      "changed_lines": 3,
+      "whole_strict_apply_equal": true,
+      "whole_inverse_equal": true,
+      "allowed_change": "production_changed remains deployment fact false; stager pinned control size/SHA cascade only"
+    }
+  ],
+  "controls": [
+    {
+      "host": "rog",
+      "kind": "runner",
+      "before": {
+        "bytes": 26658,
+        "sha256": "71d57dfd549337231bd1160ff3008374a473b305f662178609cf61e5ab300f5b",
+        "blob": "2d8aadc2d32a8f81ac1d94981a8548b22a7fa961"
+      },
+      "after": {
+        "bytes": 26659,
+        "sha256": "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+        "blob": "23fb2b80070879f6a00fe3dfbb9ed7d1ee069555"
+      }
+    },
+    {
+      "host": "rog",
+      "kind": "launcher",
+      "before": {
+        "bytes": 31962,
+        "sha256": "9ce815ccfa8a9c8c5158c1cf76d55966f07c2c095537bc91726e0cebfe1aa0a8",
+        "blob": "f7a22413ff2e075b52f21c01d0e0ee7d5220010b"
+      },
+      "after": {
+        "bytes": 31963,
+        "sha256": "7c3dbf522f51931aaa5c1947ec0742883bdcc1405913d45f8b43f217983acb98",
+        "blob": "b7579b87de15982431ce3608f01e1a2913c1c63b"
+      }
+    },
+    {
+      "host": "rog",
+      "kind": "stager",
+      "before": {
+        "bytes": 27543,
+        "sha256": "78ef9c323259aa0e84000003c28a7250e213ae4f8420264055819f49292c3efe",
+        "blob": "7484f0800728eaa8847367ed170fb86bee2ed31e"
+      },
+      "after": {
+        "bytes": 27544,
+        "sha256": "b0b3d2e41316b657d25143438f18150b217eefb0d28f960054e7719000c27a98",
+        "blob": "fc3786c199c07435cb3f9e2072768a8282750448"
+      }
+    }
+  ],
+  "source_request": {
+    "bytes": 97553,
+    "sha256": "95ecb02dc52f9a3c714c7d2a757f26fca3088f92266834506506a7df5389d570",
+    "blob": "7de047a6c027957f13916be02a74f740f432637f"
+  },
+  "key": "heptabao-cold-h2-df026-rog-source-20261105-r2-b0b3d2e4",
+  "previous_requests_submitted": false,
+  "component_checks_not_repeated": true,
+  "all_behavioral_function_bodies_unchanged": true,
+  "normal_build_and_product_execution_authorized": false
+}

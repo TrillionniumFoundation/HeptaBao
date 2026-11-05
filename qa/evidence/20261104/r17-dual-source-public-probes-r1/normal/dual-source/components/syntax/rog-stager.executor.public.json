@@ -1,0 +1,7 @@
+{
+  "chunk_id": "6cccd9",
+  "wall_time_seconds": 0.000038198,
+  "exit_code": 0,
+  "original_token_count": 54,
+  "output": "{\"ast_and_compile_only\": true, \"bytes\": 27543, \"file\": \"rog_stager.py\", \"host_calls\": 0, \"module_executed\": false, \"sha256\": \"78ef9c323259aa0e84000003c28a7250e213ae4f8420264055819f49292c3efe\", \"syntax\": \"passed\"}\n"
+}

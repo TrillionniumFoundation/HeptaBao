@@ -1,0 +1,57 @@
+{
+  "schema": "heptabao.root.mac-inline-bundle-source-admission.v1",
+  "source_packet_tree": "8b90afa595793f257fd8c7d838880083d7a54098",
+  "whole_files_verified": 22,
+  "whole_bytes_verified": 519142,
+  "merkle_trees_verified": 7,
+  "source_blob": "0e5e200b68f5d1cd8c7527ad58fbbc7406956b15",
+  "source_bytes": 25136,
+  "source_sha256": "c6115506aa4020160e96926582eccd2abc2dc9ba5184ac121112701c280a2e90",
+  "request_blob": "e228257adf8d28131a3ffac464ea6f643e632d7b",
+  "request_bytes": 118210,
+  "request_sha256": "7e2f42f13859f698490f160ab202224cd769bb71c0c6474b872504dd47af9ea1",
+  "idempotency_key": "heptabao-cold-h2-df026-mac-source-20261105-r3-c6115506",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "source_provenance": {
+    "primary_executed_rog_lifecycle": "7087d818c7913dcf502e3cf253c439f42f7becf1",
+    "actual_mac_base": "3b012a9df21060bf582e97da537ff9c9bcc9027d",
+    "strict_chain_hunks": [
+      9,
+      2,
+      4
+    ],
+    "strict_direct_actual_mac_hunks": 7,
+    "claim_actual_mac_entire_lifecycle_byte_unchanged": false
+  },
+  "inert_controls_all_three_whole_exact": true,
+  "stdin_bytes": 90426,
+  "stdin_sha256": "9768f8945c60e55b5504757e53050832f9258e5541bc5cbe5ee3b49a2c0db0ec",
+  "canonical_bundle": {
+    "bytes": 24337,
+    "sha256": "5e5e662ad369f3f94bdb0a844507d0305ebd0b4a661845c16be50475a4df16e2",
+    "header_matches_actual_rog": true,
+    "only_prerequisite": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "only_head": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c HEAD",
+    "publication_after_actual_t5_uuid_guard": true,
+    "exclusive_create_mode": "0600",
+    "whole_readback_and_parent_fsync": true
+  },
+  "new_root": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1",
+  "t5_uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+  "budgets_seconds": {
+    "stage_total_including_cleanup": 300,
+    "git_leaf": 90,
+    "clone": 180,
+    "diskutil": 30,
+    "new_outer": 360
+  },
+  "selected_mock_assertions": 29,
+  "mock_host_io": 0,
+  "requires_public_ps_probe_known_terminal_and_window_release": true,
+  "decision": "GO_ONCE_EXACT_MAC_SOURCE_STAGE_AFTER_PROBE_WINDOW_RELEASE",
+  "standalone_binary_write_admitted": false,
+  "cargo_or_product_server_admitted": false,
+  "current_credentials_production_consumer_cutover_cleanup_admitted": false,
+  "original_unknowns_preserved": true
+}

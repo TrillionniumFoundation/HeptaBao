@@ -1,0 +1,110 @@
+{
+  "schema": "heptabao.public-artifact-manifest.v1",
+  "files": {
+    "README.md": {
+      "bytes": 3045,
+      "sha256": "83a999348e32fbcae82a04640314b5d9e2132150afd8cf088703185d25b71a92",
+      "blob": "659897fc0fb8ed84fac7b653e24444cf2b0e36fb"
+    },
+    "candidate/stage_source_cold_h2.py": {
+      "bytes": 25136,
+      "sha256": "c6115506aa4020160e96926582eccd2abc2dc9ba5184ac121112701c280a2e90",
+      "blob": "0e5e200b68f5d1cd8c7527ad58fbbc7406956b15"
+    },
+    "payload/mac-controls-and-bundle.stdin.json": {
+      "bytes": 90426,
+      "sha256": "9768f8945c60e55b5504757e53050832f9258e5541bc5cbe5ee3b49a2c0db0ec",
+      "blob": "40d50fc28f5fc0b66b8d7077da291a20c69c643a"
+    },
+    "dispatch/mac-source.request.json": {
+      "bytes": 118210,
+      "sha256": "7e2f42f13859f698490f160ab202224cd769bb71c0c6474b872504dd47af9ea1",
+      "blob": "e228257adf8d28131a3ffac464ea6f643e632d7b"
+    },
+    "references/actual-rog-7087-stager.py": {
+      "bytes": 24552,
+      "sha256": "b3cb8165499fc668fc5c9c5eb1a43f31a7c79bd7d915e6f22df2e04d28c6a5f6",
+      "blob": "7087d818c7913dcf502e3cf253c439f42f7becf1"
+    },
+    "references/actual-mac-3b012-stager.py": {
+      "bytes": 27150,
+      "sha256": "90bc84593ba4a2845cbce6141277e22e01dfc9be3fce126a31448a9428f8c990",
+      "blob": "3b012a9df21060bf582e97da537ff9c9bcc9027d"
+    },
+    "references/draft1-mac-stager.py": {
+      "bytes": 24623,
+      "sha256": "a2e005425bc9511c0aca793094daf19c4aa2bf87299cf9f32b3c04bf4fc11ebe",
+      "blob": "fae887eff72b366a99efc19147be231ebcef5978"
+    },
+    "references/draft2-mac-stager.py": {
+      "bytes": 24624,
+      "sha256": "e4e0a04338a56aac53e0ccede3d0e5d47e962a8cbbb963b0996eb037af7067b0",
+      "blob": "eac5c7ab452ed4f12914bcc952a6c3d34f4dd20e"
+    },
+    "diffs/actual-rog-to-mac-draft1.review.diff": {
+      "bytes": 20397,
+      "sha256": "c43ce95b602abbe1c617f6360b6a26f5fd6bb781e74e172e68ca85fcd3f34638",
+      "blob": "431e9b197495531d51fb0a5b46b5589721c0f5e9"
+    },
+    "diffs/mac-draft1-to-draft2.review.diff": {
+      "bytes": 1445,
+      "sha256": "47daa8823d75277b8db3bde8efb64dd73573d70ae1ccb20933e532e69613c8b7",
+      "blob": "f1ffdb3e8468e160e3ceddc468c43a27927745ed"
+    },
+    "diffs/mac-draft2-to-draft3.review.diff": {
+      "bytes": 2963,
+      "sha256": "4be7da5a1531d4c6b1d938d74ac4ceebf35297a2090d567340b8e7a5d0359a84",
+      "blob": "034be3ccf3b0da5333bc8892a5b3dacdef9ab665"
+    },
+    "diffs/actual-mac-to-draft3.review.diff": {
+      "bytes": 36449,
+      "sha256": "0ef30f21d4d84c5f41be8cb1d32f6fbdfb6499d2fda00712a3962c1b468ba761",
+      "blob": "e47ea9c133d45b1452c061b27244147d3e9704fe"
+    },
+    "references/actual-rog-bundle-file-info.public.json": {
+      "bytes": 478,
+      "sha256": "17a457faae50b3a02d1f6e6e338a720654309e68f8f7c379ad23ce7368da00cc",
+      "blob": "278bd4238e88904b78693fedb1ded652b4a57ba4"
+    },
+    "references/actual-rog-bundle-header.txt": {
+      "bytes": 174,
+      "sha256": "3f086ee36a95e0116fe1d54682c8f61dc8a2b4da1ca26b5dce883f0aaa1c61da",
+      "blob": "d641ee2fe12c75f26e20b87281547dd4cfbc4dc8"
+    },
+    "components/guard_components.py": {
+      "bytes": 5990,
+      "sha256": "3f12569b178c987b30e70045d838c314d646b4d30613d81b5ac3893f9553c21b",
+      "blob": "20ccc1d131821cdacb35d6ec040efb4d94ebe04e"
+    },
+    "components/guard_input.public.json": {
+      "bytes": 58196,
+      "sha256": "a843dedcd81ab80c68ac9710cb5c6c8fbf3de2b09b4dab0737973484e3f4c609",
+      "blob": "c23042fea3ce1da443fef690e3aa21bfc48202b7"
+    },
+    "components/guard.stdout": {
+      "bytes": 2473,
+      "sha256": "21210234dcc84679e5d38d03240733ebe11e2fe27be7effab25a4428d9cfab7d",
+      "blob": "268af97b551124cc1f65fc8dc973ed378ef1f294"
+    },
+    "components/guard.executor.json": {
+      "bytes": 2808,
+      "sha256": "55e71d1a03593cfe0229f819d1d80b577b8434a9f516ff9b83cb50a51df08824",
+      "blob": "f18e62f244559ff04ba4e7b32c859df5464e8c6a"
+    },
+    "components/ast_diff_check.py": {
+      "bytes": 1043,
+      "sha256": "6edd86f8a475f1fc9dc65cc1b4a5758c2a52e400c893493142bd789ac70e6c6e",
+      "blob": "6234545bb56bd3ed202c80eded5980d0fc9787ed"
+    },
+    "components/ast_diff.executor.json": {
+      "bytes": 41402,
+      "sha256": "08a001d96d7ef663b22324c8c6daa691aaf763f56662830189134f6411686e6c",
+      "blob": "ec8134ee06d950d34477bf680db670366fb58b94"
+    },
+    "ASSESSMENT.public.json": {
+      "bytes": 3021,
+      "sha256": "d4eca0f2b0a519e16badf83631783b2ce382a5ab33926edaa70ea6ec0dc2efc4",
+      "blob": "2042bcbd8b8fbeb3611b90734dbb13f16d30556e"
+    }
+  }
+}

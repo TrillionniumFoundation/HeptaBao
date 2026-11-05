@@ -1,0 +1,347 @@
+{
+  "compiler_holders_before_lock": [],
+  "compiler_holders_under_lock": [
+    38649
+  ],
+  "each_listing_cap_seconds": 30,
+  "each_runtime_group_cap_seconds": 600,
+  "exact_test_count": 44,
+  "groups": {
+    "bytes": 6249,
+    "identity": [
+      16777244,
+      72486202,
+      501,
+      20,
+      33152,
+      1,
+      6249,
+      1793816771932335186,
+      1793816771932340061
+    ],
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/control/normal-test-groups.public.json",
+    "sha256": "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+  },
+  "host": "mac",
+  "normal_runner_argv": [
+    "/opt/homebrew/bin/python3",
+    "-I",
+    "-S",
+    "-B",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/control/mac_normal_exact_tests_r10.py",
+    "--source",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/source",
+    "--output",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/normal-release-tests-r1",
+    "--commit",
+    "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "--tree",
+    "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+    "--toolchain",
+    "/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin",
+    "--cargo-home",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/r13-full-native-cargo-home-r1",
+    "--target",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2",
+    "--groups",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/control/normal-test-groups.public.json",
+    "--groups-sha256",
+    "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"
+  ],
+  "normal_runner_started": false,
+  "old_build_receipt": {
+    "bytes": 3222,
+    "identity": [
+      16777244,
+      72446278,
+      501,
+      20,
+      33152,
+      1,
+      3222,
+      1793802975811841559,
+      1793802975811841559
+    ],
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-http-r8/build-normal-r1/result.public.json",
+    "sha256": "31e5bb7905b11a4bad1bf9df34360cc0443f70455a047ac06914208d2bfe3a54"
+  },
+  "old_exact_test_receipt": {
+    "bytes": 16516,
+    "identity": [
+      16777244,
+      72446613,
+      501,
+      20,
+      33152,
+      1,
+      16516,
+      1793804186356083655,
+      1793804186356083655
+    ],
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-http-r8/normal-exact33-r1/result.public.json",
+    "sha256": "fc6677c0f65ba0e2050f0fe20d25356cba33a20ab2c287de5e0e0c7d4dd56557"
+  },
+  "old_native_receipt": {
+    "bytes": 778,
+    "identity": [
+      16777244,
+      72446279,
+      501,
+      20,
+      33152,
+      1,
+      778,
+      1793802975813304498,
+      1793802975813304498
+    ],
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-http-r8/build-normal-r1/native-build.public.json",
+    "sha256": "c372ef673bd3dd70daaf2791f4d0ba18893fb7235137c2ad0ce452b6b3fad5bd"
+  },
+  "old_source_before": {
+    "commit": "2d9a2efd4cfc3a9ee60a450eee58866828a3f5ad",
+    "status": "",
+    "tree": "d5a0f91a4d47f7c8d5f34170ea167d10dc036e04"
+  },
+  "original_libtest_build_cap_seconds": 1800,
+  "original_release_build_cap_seconds": 1800,
+  "prior_r8_failure_replayed": false,
+  "production_changed": false,
+  "retained_r8_artifacts": [
+    {
+      "bytes": 86187696,
+      "identity": [
+        16777244,
+        72446276,
+        501,
+        20,
+        33216,
+        1,
+        86187696,
+        1793802974650722390,
+        1793802975719225628
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-http-r8/build-normal-r1/artifacts/heptabao-seed",
+      "sha256": "7b405f649aae9cef1125ba44e456ef6698edbbca250b8d09a54cc3b9a52ef10e"
+    },
+    {
+      "bytes": 91774416,
+      "identity": [
+        16777244,
+        72446275,
+        501,
+        20,
+        33216,
+        1,
+        91774416,
+        1793802974724544489,
+        1793802975252832608
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-http-r8/build-normal-r1/artifacts/heptabao-server",
+      "sha256": "e4d06288fdc516d4b5750cf00883a2de9cef40a2ab1c8c442e0ce555366d9350"
+    },
+    {
+      "bytes": 154048544,
+      "identity": [
+        16777244,
+        72446626,
+        501,
+        20,
+        33088,
+        1,
+        154048544,
+        1793805761793999247,
+        1793805761793999247
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-ssh-http-r8/mac-tls-einval-diagnostic-r1/retained-r8-libtest",
+      "sha256": "648236a59ebf23aee2ebd02039e6045fb491cebff80ac8d4e564b78b3e316aab"
+    }
+  ],
+  "retained_r9_evidence": {
+    "canonical_resume": {
+      "bytes": 73389,
+      "identity": [
+        16777244,
+        72486159,
+        501,
+        20,
+        33152,
+        1,
+        73389,
+        1793816237322999078,
+        1793816237323006203
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r9/control/canonical-resume-r2/result.public.json",
+      "sha256": "d3c26b8b78c41915421e1972c4eaeea47eb14ec5ad581568206047e89ac9ab7d"
+    },
+    "canonical_resume_authority": {
+      "bytes": 730,
+      "identity": [
+        16777244,
+        72492796,
+        501,
+        20,
+        33152,
+        1,
+        730,
+        1793816996937850641,
+        1793816996941283772
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/control/r9-canonical-resume-r2.authority.public.json",
+      "sha256": "24deb356103c8210bb76751122aaa0c19fc6ab5ec6a9e09a62f0cc68e326a57e"
+    },
+    "canonical_resume_terminal": {
+      "bytes": 534,
+      "identity": [
+        16777244,
+        72492792,
+        501,
+        20,
+        33152,
+        1,
+        534,
+        1793816995655189829,
+        1793816995658592876
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/control/r9-canonical-resume-r2.terminal.public.json",
+      "sha256": "8f03915cf7fce1dc2eb92cdce9933e663dbe40ccc5c104e7d2c97e8f364abd28"
+    },
+    "failed_stage_fences": {
+      "021-git-fetch.public.json": {
+        "bytes": 836,
+        "identity": [
+          16777244,
+          72453346,
+          501,
+          20,
+          33152,
+          1,
+          836,
+          1793810734349296711,
+          1793810734349308670
+        ],
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r9/control/021-git-fetch.public.json",
+        "sha256": "89e4865c8bb30bc500b05cd1fd0a79d0d39bb49fbe1830250d155f9797ff19a5"
+      },
+      "021-git-fetch.stderr": {
+        "bytes": 64,
+        "identity": [
+          16777244,
+          72451590,
+          501,
+          20,
+          33152,
+          1,
+          64,
+          1793810734314519461,
+          1793810734314519461
+        ],
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r9/control/021-git-fetch.stderr",
+        "sha256": "dbcc4dce38066a3223043b215a80a7acdd2dd1e2f52063de42801d63d931e5ff"
+      },
+      "021-git-fetch.stdout": {
+        "bytes": 0,
+        "identity": [
+          16777244,
+          72451589,
+          501,
+          20,
+          33152,
+          1,
+          0,
+          1793810644303521472,
+          1793810644303521472
+        ],
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r9/control/021-git-fetch.stdout",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stage-result.public.json": {
+        "bytes": 4499,
+        "identity": [
+          16777244,
+          72453347,
+          501,
+          20,
+          33152,
+          1,
+          4499,
+          1793810734527392273,
+          1793810734527402815
+        ],
+        "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r9/control/stage-result.public.json",
+        "sha256": "1f60d0bbdab00feee4e0d5d1593fa3543b74ff05fae8ec60f9d17b3ddd381166"
+      }
+    },
+    "no_r9_artifact_claim": true,
+    "prior_failures_replayed": false,
+    "r9_build_artifacts_required": false,
+    "source_after": {
+      "commit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+      "status": "",
+      "tree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907"
+    },
+    "source_before": {
+      "commit": "1d12abc45a83d4b32e7185d01a876eb93110b1e2",
+      "status": "",
+      "tree": "e1faeaa3ed49d26fb01a7617a8879cb693a12907"
+    }
+  },
+  "runner": {
+    "bytes": 16894,
+    "identity": [
+      16777244,
+      72486200,
+      501,
+      20,
+      33152,
+      1,
+      16894,
+      1793816771931824971,
+      1793816771931830304
+    ],
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/control/mac_normal_exact_tests_r10.py",
+    "sha256": "f925684275b42215300fa91f9b90478c75b822ce2d6f2e4be165b5e8e44e353d"
+  },
+  "schema": "heptabao.r10-normal-target-admission.v1",
+  "source_and_retained_artifacts_unchanged": true,
+  "source_before": {
+    "commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+    "status": "",
+    "tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9"
+  },
+  "source_commit": "49503322c7f446e5eb41e7744f1fdbd7f1192ecc",
+  "source_tree": "1d4211f91e1b34a2ed087a3bbef2e2884bac88e9",
+  "stage": {
+    "bytes": 10690,
+    "identity": [
+      16777244,
+      72491129,
+      501,
+      20,
+      33152,
+      1,
+      10690,
+      1793816775587589133,
+      1793816775587598050
+    ],
+    "path": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/control/stage-result.public.json",
+    "sha256": "3e054b497219332a6124d7faa2b4cdad5e6870436113a438cfa2d7662ee04f65"
+  },
+  "started_ns": 1793817354373513000,
+  "status": "admitted",
+  "target": "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2",
+  "target_lock": {
+    "identity": [
+      16777244,
+      70144723,
+      501,
+      20,
+      33204,
+      1,
+      0,
+      1793282756600660774,
+      1793282756600660774
+    ],
+    "nonblocking_exclusive_probe": true
+  },
+  "terminal_ns": 1793817355170796000
+}

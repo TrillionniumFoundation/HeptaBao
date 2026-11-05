@@ -1,0 +1,13 @@
+{
+  "idempotency_key": "heptabao-h2-curl-capability-streams-20261105-r1",
+  "operation": {
+    "tool": "process_read",
+    "arguments": {
+      "host": "desktop",
+      "job_id": "1a1a9c5e804-fc05-378c",
+      "limit": 16384,
+      "stdout_offset": 0,
+      "stderr_offset": 0
+    }
+  }
+}

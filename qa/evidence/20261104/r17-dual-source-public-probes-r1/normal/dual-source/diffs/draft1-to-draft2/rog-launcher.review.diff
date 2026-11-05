@@ -1,0 +1,11 @@
+--- before/rog-launcher.py
++++ after/rog-launcher.py
+@@ -439,7 +439,7 @@
+ result = {'schema': 'heptabao.cold-h2-normal-target-admission.v1', 'status': 'failed',
+           'host': args.host, 'source_commit': args.commit, 'source_tree': args.tree,
+           'stage': stage_pin, 'runner': runner_pin, 'groups': groups_pin,
+-          'target': str(TARGET), 'production_changed': True, 'normal_runner_started': False,
++          'target': str(TARGET), 'production_changed': False, 'normal_runner_started': False,
+           'started_ns': time.time_ns()}
+ public(ADMISSION / 'launch-intent.public.json', result)
+ lock_fd = None

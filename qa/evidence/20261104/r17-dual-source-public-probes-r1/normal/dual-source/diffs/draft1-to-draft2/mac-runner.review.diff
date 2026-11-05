@@ -1,0 +1,11 @@
+--- before/mac-runner.py
++++ after/mac-runner.py
+@@ -209,7 +209,7 @@
+           'source_tree': args.tree, 'normal_default_features': True, 'fixture_features': [],
+           'profile': profile, 'groups': groups, 'test_count': len(all_names),
+           'groups_sha256': args.groups_sha256, 'controller_sha256': sha(__file__),
+-          'production_changed': True, 'started_ns': time.time_ns(),
++          'production_changed': False, 'started_ns': time.time_ns(),
+           'selected_test_total': 60, 'additional_test_counts': {'ingress_observer': 7, 'cold_h2': 9},
+           'original_outer_seconds': ORIGINAL_OUTER_SECONDS,
+           'launcher_started_monotonic': args.outer_started_monotonic,

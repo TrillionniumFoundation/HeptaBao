@@ -1,0 +1,221 @@
+{
+  "schema": "heptabao.mac-public-ps-sandbox-author-terminal-review.r1",
+  "verdict": "KNOWN_COMPARISON_FAILURE_COPY_EXIT_MINUS9",
+  "job_id": "1a1a9e1e367-fc05-390e",
+  "idempotency_key": "heptabao-mac-owned-ps-sandbox-c694655f-20261105-r1",
+  "source_packet_tree": "595c10ddc6b8c22959e1d6f0eccea058f5319310",
+  "request": {
+    "bytes": 41378,
+    "sha256": "86b336682afcb6848dd546b1536ce2b356da4ed89b93a3bcce076589dd4adbf1",
+    "git_blob": "fc26f5db6c3d4914b9d450947dee71c7953eece1"
+  },
+  "source": {
+    "bytes": 39810,
+    "sha256": "c694655f3cf6835bdc8d507afef10764b0d2c41601f60de9466705c93efb39fe",
+    "git_blob": "3b4d4a323532a11d67cb104de8586e3d2e2de3d1"
+  },
+  "authority": {
+    "bytes": 730,
+    "sha256": "6e0d97c82f217682a41eaa8cc7aece23f65c476617b2c26655e6332bffe89774",
+    "git_blob": "eef5e20963ec8289bc82d3ee26f48d61595fb41f"
+  },
+  "stdout": {
+    "bytes": 24341,
+    "sha256": "80f4842e6f823b5b607604ce19b9a91aa20031ec0ffcbb60eb876c1bfa0755ba",
+    "git_blob": "1c7b24fcc119d84cbd6a9a93235f9a4823911b65"
+  },
+  "original_stdout_hex_text_eof_verified": true,
+  "read_offsets": [
+    0,
+    16384,
+    24341
+  ],
+  "stderr_bytes": 0,
+  "authoritative_exit_code": 1,
+  "output_complete": true,
+  "output_durable": true,
+  "timed_out": false,
+  "outcome_unknown": false,
+  "elapsed_seconds": 0.3726029167883098,
+  "original_shared_deadline_seconds": 45,
+  "deadline_after_closure": true,
+  "actual_system_ps": {
+    "popen_returned": false,
+    "error_stage": "popen",
+    "error_type": "PermissionError",
+    "errno": 1,
+    "child_pid": null,
+    "execution_succeeded": false,
+    "known_observation": true
+  },
+  "actual_owned_copy_ps": {
+    "popen_returned": true,
+    "child_pid": 26981,
+    "communicate_returned": true,
+    "exit_code": -9,
+    "direct_child_reaped": true,
+    "streams_closed": true,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0,
+    "execution_succeeded": false,
+    "known_observation": true,
+    "signals_sent_by_inner_observer": []
+  },
+  "actual_copy": {
+    "setuid_removed_only_in_new_owned_copy": true,
+    "source": {
+      "bytes": 170432,
+      "identity": [
+        "16777233",
+        "1152921500312571399",
+        "0",
+        "0",
+        "35309",
+        "1",
+        "170432",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+    },
+    "source_bytes_identical": true,
+    "system_source_modified": false,
+    "target": {
+      "bytes": 170432,
+      "identity": [
+        "16777244",
+        "72552996",
+        "501",
+        "20",
+        "33088",
+        "1",
+        "170432",
+        "1793851516192813486",
+        "1793851516192819028"
+      ],
+      "path": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/ps-sandbox-probe-r1/ps-owned-no-setuid",
+      "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+    },
+    "target_mode": 320
+  },
+  "final_guard": {
+    "stage": "final_anchor",
+    "error_type": "Refused",
+    "code": "owned_copy_execution_not_successful",
+    "ok": false,
+    "copy_execution_succeeded": false
+  },
+  "outer_owned_commands": [
+    {
+      "label": "ps-probe-parent-t5-volume",
+      "pid": 26960,
+      "exit_code": 0,
+      "complete_before_deadline": true,
+      "streams_closed": true,
+      "custody": {
+        "captured_exit": null,
+        "ps": {
+          "pgid": 26960,
+          "pid": 26960,
+          "ppid": 26958,
+          "start": "Thu Nov  5 12:05:16 2026    ",
+          "uid": 501
+        },
+        "sid_observed_while_live": 26960
+      },
+      "direct_child_reaped": true,
+      "live_group_empty_before_reap": true,
+      "all_group_rows_empty_after_reap": true,
+      "signals": [],
+      "post_reap_signal_sent": false,
+      "outcome_unknown": false
+    },
+    {
+      "label": "sandbox-system",
+      "pid": 26969,
+      "exit_code": 0,
+      "complete_before_deadline": true,
+      "streams_closed": true,
+      "custody": {
+        "captured_exit": null,
+        "ps": {
+          "pgid": 26969,
+          "pid": 26969,
+          "ppid": 26958,
+          "start": "Thu Nov  5 12:05:16 2026    ",
+          "uid": 501
+        },
+        "sid_observed_while_live": 26969
+      },
+      "direct_child_reaped": true,
+      "live_group_empty_before_reap": true,
+      "all_group_rows_empty_after_reap": true,
+      "signals": [],
+      "post_reap_signal_sent": false,
+      "outcome_unknown": false
+    },
+    {
+      "label": "sandbox-owned-copy",
+      "pid": 26979,
+      "exit_code": 0,
+      "complete_before_deadline": true,
+      "streams_closed": true,
+      "custody": {
+        "captured_exit": null,
+        "ps": {
+          "pgid": 26979,
+          "pid": 26979,
+          "ppid": 26958,
+          "start": "Thu Nov  5 12:05:16 2026    ",
+          "uid": 501
+        },
+        "sid_observed_while_live": 26979
+      },
+      "direct_child_reaped": true,
+      "live_group_empty_before_reap": true,
+      "all_group_rows_empty_after_reap": true,
+      "signals": [],
+      "post_reap_signal_sent": false,
+      "outcome_unknown": false
+    }
+  ],
+  "all_outer_commands_stopped": true,
+  "unknown_command_count": 0,
+  "all_owned_descriptors_closed": true,
+  "t5_anchors_and_uuid_unchanged": true,
+  "system_tools_before_after_whole_equal": true,
+  "original_qa_sources_before_after_whole_equal": true,
+  "all_new_file_after_fences_reached": true,
+  "copy_original_mode_not_changed": true,
+  "kernel_negative_checks_executed": false,
+  "kernel_negative_checks_passed": false,
+  "interpretation": {
+    "copy_launch_returned_but_execution_failed": true,
+    "no_unique_setuid_or_signature_cause_proven": true,
+    "actual_spawn_branch_observed": false,
+    "eligibility_flags_only": {
+      "use_posix_spawn": true,
+      "have_posix_spawn_closefrom": false
+    },
+    "child_ok_means_known_complete_observation_not_ps_execution_success": true,
+    "no_current_capture_or_consumer_qualification": true,
+    "no_production_database_or_sqlite_or_credentials_or_provider_or_j3160_access": true
+  },
+  "historical_unknown": {
+    "job": "1a1a9c8632a-fc05-37bc",
+    "nested_pid": 11754,
+    "unchanged": true,
+    "later_absence_not_reap_or_exit_proof": true
+  },
+  "custody_window": {
+    "author_all_closed_check_complete": true,
+    "no_new_host_requests_after_terminal": true,
+    "next_host_action_requires_existing_or_new_root_authorization": true
+  },
+  "provenance": {
+    "native_sdk_text_saved_verbatim": true,
+    "stdout_reconstructed_from_original_hex": true,
+    "child_json_number_tokens_preserved": true,
+    "mcp_response_json_snapshots_are_not_wire_bytes": true
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "heptabao.root.mac-devnull-probe-actual-review.v1",
+  "actual_packet_tree": "767a66d03d2f96a14d016baaaa10e86665bd0ccd",
+  "whole_files_verified": 19,
+  "bytes": 195116,
+  "merkle_trees_verified": 3,
+  "available_sdk_native_payloads_exact": 4,
+  "contiguous_log_offsets": [
+    0,
+    16384,
+    18275
+  ],
+  "reconstructed_children_exact_raw_tokens_and_full_hashes": 2,
+  "job_id": "1a1a9c8632a-fc05-37bc",
+  "original_exit": 1,
+  "original_known_outer_terminal": true,
+  "whole_probe_qualified": false,
+  "nested_child_custody_unknown": true,
+  "nested_pid": 11754,
+  "original_devnull_read_refused_errno": 1,
+  "patched_devnull_read_open_eof_close_passed": true,
+  "patched_variant_overall_failed": true,
+  "four_other_kernel_refusals_reached": false,
+  "final_source_tool_after_fences_reached": false,
+  "all_three_outer_children_reaped_empty_streams_closed": true,
+  "all_probe_fds_closed": true,
+  "original_nested_exit_or_reap_not_inferred": true,
+  "current_residue_observation": {
+    "pid_query_job": "1a1a9ca7862-fc05-37d7",
+    "pid_query_exit": 1,
+    "pid_query_stdout_stderr_bytes": 0,
+    "two_projection_job": "1a1a9cbbcec-fc05-37e8",
+    "projection_exit": 0,
+    "projection_stdout_blob": "845d9c8b6b764a298dd18b651e2b763f3db5d719",
+    "selection": [
+      "pid=11754",
+      "ppid=11754",
+      "pgid=11754"
+    ],
+    "two_snapshots_selected_empty": true,
+    "original_custody_or_exit_recovered": false,
+    "numeric_pid_signal_sent": false
+  },
+  "mac_window_currently_released": true,
+  "current_credential_reads_or_consumers": 0,
+  "business_replay": false,
+  "qualification_or_cutover_admitted": false
+}

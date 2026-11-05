@@ -1,0 +1,21 @@
+{
+  "schema": "heptabao.fixed-readonly-once-intent.v1",
+  "recorded_before_submission": true,
+  "recorded_at": "2026-11-05T04:07:03.427Z",
+  "source": {
+    "bytes": 5429,
+    "sha256": "ebc399742a69093ca8d3d34dfd503e617c216f5976ee8f3593fda36ff9026fca",
+    "blob": "919404a9d2212acde91120340eb894a703819bd9"
+  },
+  "request": {
+    "bytes": 5794,
+    "sha256": "dd00c76546f0d11058ee44da8603ef1fd96b26b84774aa1dbb9f0825b7ad17c7",
+    "blob": "da83bb7fad62f9d074c5d8ecd4008a2f8cbe7c37"
+  },
+  "idempotency_key": "heptabao-cold-h2-rog-target-metadata-20261105-r1-ebc39974",
+  "scope": "25 exact metadata paths plus3 fixed prior public build receipts; no children/filesystem mutation/scan/payload-directory reads.",
+  "inner_seconds": 15,
+  "outer_seconds": 45,
+  "prior_failed_build_job": "1a1a9d78f65-fc05-3884",
+  "replays_prior_job": false
+}

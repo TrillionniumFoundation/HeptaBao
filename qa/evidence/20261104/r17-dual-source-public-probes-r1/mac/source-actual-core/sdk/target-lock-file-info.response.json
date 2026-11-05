@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":20,\"link_count\":1,\"metadata_platform\":\"darwin\",\"mode\":436,\"uid\":501,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":436,\"path\":\"/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2/release/.cargo-lock\",\"sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"size\":0,\"version\":\"16777244:70144723:0:1793282756600660774:1793282756600660774\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

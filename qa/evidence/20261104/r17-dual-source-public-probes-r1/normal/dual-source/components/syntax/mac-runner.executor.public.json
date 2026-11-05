@@ -1,0 +1,7 @@
+{
+  "chunk_id": "9a0fe5",
+  "wall_time_seconds": 0.000909597,
+  "exit_code": 0,
+  "original_token_count": 54,
+  "output": "{\"ast_and_compile_only\": true, \"bytes\": 26541, \"file\": \"mac_runner.py\", \"host_calls\": 0, \"module_executed\": false, \"sha256\": \"b57a333cf3f6ab96ae03460f66cd1d0cb351bea9cbc4755bf5f5045427e69985\", \"syntax\": \"passed\"}\n"
+}

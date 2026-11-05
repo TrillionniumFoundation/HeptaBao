@@ -1,0 +1,71 @@
+{
+  "schema": "heptabao.public-evidence-manifest.v1",
+  "files": [
+    {
+      "path": "stage-result.public.json",
+      "bytes": 9199,
+      "sha256": "34c7be755ee8120ac383370fec9557c1b42b2ab5bb19a6e74c1b5516a031ca4e",
+      "blob": "11996df6270ef129e41efdd76476f87602644165"
+    },
+    {
+      "path": "authority.original.json",
+      "bytes": 729,
+      "sha256": "4c969a3933a5ac4162afd7e82b1bc855fbd36b69eb2c7ee98a9e0d6405276808",
+      "blob": "dae1d54b0cf120134f00f0a93fcb1cd1244b0701"
+    },
+    {
+      "path": "terminal.stdout",
+      "bytes": 390,
+      "sha256": "5eb373cb71c964f6f4aae98bbd2dc793d39607e76febc0c5e77160716b38e4d4",
+      "blob": "7f441ad3d9e7d014b35bd39d3bea3b8986e90efd"
+    },
+    {
+      "path": "terminal.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    {
+      "path": "target-lock.file-info.original.json",
+      "bytes": 521,
+      "sha256": "093351cf1dda4d0ec7f1b31877839a9aace1c989376e8c2dac293ec56f52e1cf",
+      "blob": "42e4b267a42524a3ff9cadab544389090f992684"
+    },
+    {
+      "path": "build-request.bound.json",
+      "bytes": 1152,
+      "sha256": "fd745e069b74dfcf13025c673085205c78cd1d168cc70b8c7e482748aa368d62",
+      "blob": "d6e0362f84dd2f9636dc741683fcedfadc477277"
+    },
+    {
+      "path": "assessment.public.json",
+      "bytes": 1520,
+      "sha256": "15cc04311becb6974b6d68e832d0a134e0ecfbf5b496d4b9bd10be32435f58fe",
+      "blob": "97206798a93e4c7f216a37899508e338d47c31b9"
+    },
+    {
+      "path": "sdk/core-read.response.json",
+      "bytes": 12478,
+      "sha256": "c0f086d316ff0b2707b782f8718484b99381b65e744b9a6ef693ee116049efdd",
+      "blob": "2e8d3a43ba3b8e4b1feab74c1be1f64c6808a25f"
+    },
+    {
+      "path": "sdk/authority.response.json",
+      "bytes": 952,
+      "sha256": "1e110a78af838d3627357a08352febb12a004552a3d0854400a6850f89e92cdf",
+      "blob": "25ccd96800d08a995b02c26c37c021b7b443e1c5"
+    },
+    {
+      "path": "sdk/terminal.response.json",
+      "bytes": 1749,
+      "sha256": "7ce36a277c4bc53c8dd74eb5150b367a6492044c8e1a82829787be05b69b20af",
+      "blob": "b3772138962ec22b1ef374afc7cbd762495d7e94"
+    },
+    {
+      "path": "sdk/target-lock-file-info.response.json",
+      "bytes": 682,
+      "sha256": "68de4683f09a0057c2c06b672e6872f71f1a877296dfdf5523e276b485e4a25f",
+      "blob": "48669349cc59a048040c96f36cc57302d38565ac"
+    }
+  ]
+}

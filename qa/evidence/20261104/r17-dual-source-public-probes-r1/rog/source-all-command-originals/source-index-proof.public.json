@@ -1,0 +1,10 @@
+{
+  "tree_rows": 3913,
+  "index_rows": 3913,
+  "canonical_github_rows": 3913,
+  "all_path_mode_blob_exact": true,
+  "all_unique": true,
+  "total_canonical_blob_bytes": 62212769,
+  "actual_ls_tree_bytes": 450325,
+  "actual_ls_files_bytes": 438586
+}

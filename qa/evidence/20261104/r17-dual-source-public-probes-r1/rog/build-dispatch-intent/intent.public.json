@@ -1,0 +1,26 @@
+{
+  "schema": "heptabao.cold-h2-normal-build-once-intent.v1",
+  "recorded_before_submission": true,
+  "recorded_at": "2026-11-05T03:53:50.920Z",
+  "host": "rog",
+  "request": {
+    "bytes": 771,
+    "sha256": "b3c9448980bed756455ff78b1a090975b27abf6c3ca720ddb9278d39c32ca9c4",
+    "blob": "f54c8a0618b39fc046a0a6ab30e248f0d83751a5"
+  },
+  "request_idempotency_key": "heptabao-cold-h2-df026-rog-normal60-20261105-r2-7c3dbf52-1a3fdc3a",
+  "root_admission_blob": "f661d49d0325eea20e99097f1d9f93d4875cf312",
+  "source_stage_core_tree": "a76884245b94252f7dadc363949b40d35cffa776",
+  "source_stage_result_sha256": "7364fb449d5c46afa65507469b88427c8acc088fe4ef166cd1c5a436e56be9be",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "source_leaf_count": 3913,
+  "scope": "One normal release plus libtest compilation and original44, existing7, new9; no LAN/product deployment.",
+  "outer_seconds": 12000,
+  "release_seconds": 1800,
+  "libtest_seconds": 3600,
+  "original_runtime_group_seconds": 600,
+  "each_extra_group_seconds": 600,
+  "production_changed": false,
+  "submitted": false
+}

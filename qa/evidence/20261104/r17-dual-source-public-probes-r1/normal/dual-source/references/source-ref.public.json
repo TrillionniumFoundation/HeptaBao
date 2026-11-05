@@ -1,0 +1,40 @@
+{
+  "schema": "heptabao.source_ref_receipt.v1",
+  "sourceRef": "refs/heads/codex/heptabao-cold-h2-normal-20261105-r1",
+  "sourceCommit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "createOriginal": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "branch": "codex/heptabao-cold-h2-normal-20261105-r1"
+    },
+    "isError": false
+  },
+  "readbackOriginal": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "content": "{\"ref\":\"refs/heads/codex/heptabao-cold-h2-normal-20261105-r1\",\"node_id\":\"REF_kwDOUGncwNoANHJlZnMvaGVhZHMvY29kZXgvaGVwdGFiYW8tY29sZC1oMi1ub3JtYWwtMjAyNjExMDUtcjE\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/refs/heads/codex/heptabao-cold-h2-normal-20261105-r1\",\"object\":{\"sha\":\"df026fe323dd7cf0f0ec57d7d2d9c5a79897053c\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/df026fe323dd7cf0f0ec57d7d2d9c5a79897053c\"}}",
+      "title": "heptabao-cold-h2-normal-20261105-r1",
+      "modified_date": null,
+      "url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/ref/heads/codex/heptabao-cold-h2-normal-20261105-r1",
+      "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/ref/heads/codex/heptabao-cold-h2-normal-20261105-r1",
+      "display_title": "heptabao-cold-h2-normal-20261105-r1",
+      "structuredContent": {
+        "title": "heptabao-cold-h2-normal-20261105-r1",
+        "content": "{\"ref\":\"refs/heads/codex/heptabao-cold-h2-normal-20261105-r1\",\"node_id\":\"REF_kwDOUGncwNoANHJlZnMvaGVhZHMvY29kZXgvaGVwdGFiYW8tY29sZC1oMi1ub3JtYWwtMjAyNjExMDUtcjE\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/refs/heads/codex/heptabao-cold-h2-normal-20261105-r1\",\"object\":{\"sha\":\"df026fe323dd7cf0f0ec57d7d2d9c5a79897053c\",\"type\":\"commit\",\"url\":\"https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/commits/df026fe323dd7cf0f0ec57d7d2d9c5a79897053c\"}}",
+        "display_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/git/ref/heads/codex/heptabao-cold-h2-normal-20261105-r1"
+      }
+    },
+    "isError": false
+  },
+  "ciBranchMoved": false
+}

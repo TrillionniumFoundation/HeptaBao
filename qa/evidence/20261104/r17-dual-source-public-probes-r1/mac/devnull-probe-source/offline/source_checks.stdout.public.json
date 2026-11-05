@@ -1,0 +1,29 @@
+{
+  "actual_failed_capture_profile_sha256": "de74f118ead7f9769dd12e692b116fc80aaaa5953d559c8f63b0f8c3125cf387",
+  "ast_compile_only_sources": [
+    "entry.before.py",
+    "entry.policy-after.py",
+    "mac_capture_devnull_probe_r1.py"
+  ],
+  "capture_profile_ast_exact": true,
+  "fixed_errno_diagnostic_omits_exception_message_and_filename": true,
+  "fresh_root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/devnull-sandbox-probe-r1",
+  "full_modules_executed": false,
+  "host_calls": 0,
+  "kernel_refusals_only_owned_directory_binding_changed": true,
+  "original_profile": {
+    "bytes": 7716,
+    "sha256": "ff1fdfc92e4981fb39bf132fdf1926e445ec81bcefc60dff6be60d670e7ca664"
+  },
+  "patched_profile": {
+    "bytes": 7757,
+    "sha256": "07177c7a7d042f11f20faecd9694ae215ca7bd598475b71a4a0dc326ee41bfa1"
+  },
+  "private_inputs_opened": 0,
+  "private_literals_write_network_rules_unchanged": true,
+  "profile_delta_exactly_one_devnull_literal": true,
+  "schema": "heptabao.mac-devnull-probe-pure-source-check.r1",
+  "sockets": 0,
+  "sqlite_connections": 0,
+  "subprocesses": 0
+}

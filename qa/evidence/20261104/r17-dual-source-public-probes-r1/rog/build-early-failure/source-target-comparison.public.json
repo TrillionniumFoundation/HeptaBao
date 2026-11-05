@@ -1,0 +1,118 @@
+[
+  {
+    "label": "actualROG3cb",
+    "selected": [
+      {
+        "line": 52,
+        "text": "    TARGET = BASE / 'continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2'"
+      },
+      {
+        "line": 53,
+        "text": "    TOOLCHAIN = '/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin'"
+      },
+      {
+        "line": 54,
+        "text": "    CARGO_HOME = str(BASE / 'r13-full-native-cargo-home-r1')"
+      },
+      {
+        "line": 75,
+        "text": "    TARGET = Path('/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target')"
+      },
+      {
+        "line": 76,
+        "text": "    TOOLCHAIN = '/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin'"
+      },
+      {
+        "line": 77,
+        "text": "    CARGO_HOME = '/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home'"
+      }
+    ]
+  },
+  {
+    "label": "newROG",
+    "selected": [
+      {
+        "line": 55,
+        "text": "    TARGET = BASE / 'continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2'"
+      },
+      {
+        "line": 56,
+        "text": "    TOOLCHAIN = '/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin'"
+      },
+      {
+        "line": 57,
+        "text": "    CARGO_HOME = str(BASE / 'r13-full-native-cargo-home-r1')"
+      },
+      {
+        "line": 78,
+        "text": "    TARGET = Path('/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target')"
+      },
+      {
+        "line": 79,
+        "text": "    TOOLCHAIN = '/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin'"
+      },
+      {
+        "line": 80,
+        "text": "    CARGO_HOME = '/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home'"
+      }
+    ]
+  },
+  {
+    "label": "actualMacR10",
+    "selected": [
+      {
+        "line": 52,
+        "text": "    TARGET = BASE / 'continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2'"
+      },
+      {
+        "line": 53,
+        "text": "    TOOLCHAIN = '/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin'"
+      },
+      {
+        "line": 54,
+        "text": "    CARGO_HOME = str(BASE / 'r13-full-native-cargo-home-r1')"
+      },
+      {
+        "line": 75,
+        "text": "    TARGET = Path('/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target')"
+      },
+      {
+        "line": 76,
+        "text": "    TOOLCHAIN = '/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin'"
+      },
+      {
+        "line": 77,
+        "text": "    CARGO_HOME = '/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home'"
+      }
+    ]
+  },
+  {
+    "label": "newMac",
+    "selected": [
+      {
+        "line": 55,
+        "text": "    TARGET = BASE / 'continuation-20261029-joint2dbb-full6-r1/runtime.noindex/target-native-full-r2'"
+      },
+      {
+        "line": 56,
+        "text": "    TOOLCHAIN = '/Users/qianqi/.rustup/toolchains/1.98.0-aarch64-apple-darwin/bin'"
+      },
+      {
+        "line": 57,
+        "text": "    CARGO_HOME = str(BASE / 'r13-full-native-cargo-home-r1')"
+      },
+      {
+        "line": 78,
+        "text": "    TARGET = Path('/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target')"
+      },
+      {
+        "line": 79,
+        "text": "    TOOLCHAIN = '/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin'"
+      },
+      {
+        "line": 80,
+        "text": "    CARGO_HOME = '/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home'"
+      }
+    ]
+  }
+]

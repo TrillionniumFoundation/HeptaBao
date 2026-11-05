@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/030-git-ls-tree.stdout\",\"sha256\":\"26cded6036297c4bf23fa3531badd14d2cabd877d6b8e64fc766fb41259c04ad\",\"size\":450325,\"version\":\"66306:27301101:450325:1793850455965090262:1793850455965090262\"}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

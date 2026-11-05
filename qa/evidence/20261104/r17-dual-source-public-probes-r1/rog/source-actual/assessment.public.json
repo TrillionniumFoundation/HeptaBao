@@ -1,0 +1,113 @@
+{
+  "schema": "heptabao.cold-h2-rog-source-actual-review.v1",
+  "status": "PASS_SOURCE_STAGE_ONLY",
+  "job_id": "1a1a9d1642a-fc05-383f",
+  "canonical": {
+    "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "parent": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+    "history_count": 3757
+  },
+  "source_result": {
+    "bytes": 25754,
+    "sha256": "7364fb449d5c46afa65507469b88427c8acc088fe4ef166cd1c5a436e56be9be",
+    "blob": "d3e0f506ffaf761c3692e2ebe317010fabb5c61f"
+  },
+  "authority": {
+    "bytes": 729,
+    "sha256": "1637106ba6dbc51be937abb061c3722d936a6e354afab3b1f15ef5184c9c9b75",
+    "blob": "7f7f71bf7b1fae8238b0edcab20e6019ecf9c09e"
+  },
+  "stdout": {
+    "bytes": 358,
+    "sha256": "ff3ec0ea59e9179fe6e762972aff0cc5961577253407b57faa5d9141ad8524fa",
+    "blob": "849e4009f87b5792e606466db3e0a804fb731f99"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "stream_hex_text_exact": true,
+  "source_proof": {
+    "strict_fsck": true,
+    "independent_git": true,
+    "no_alternates": true,
+    "no_shared_object_links": true,
+    "object_files_checked": 207,
+    "full_worktree": {
+      "all_tracked_worktree_blobs_and_modes_match": true,
+      "full_leaf_index_sha256": "e7fee633b64acffd6520587c85ff6f4206e0b12c7db42a0cdeb36dff66350d54",
+      "index_matches_tree": true,
+      "tracked_bytes": 62212769,
+      "tracked_leaf_count": 3913
+    },
+    "new_commits": [
+      "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+      "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+      "e5de554f5dfe99f0de30012122fe3e248fb60532",
+      "fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd",
+      "6d3040a2dbd06661a67f5c62df259ff446eb8515"
+    ],
+    "old_source_unchanged": true,
+    "failed_observer_all_fences_unchanged": true
+  },
+  "owned_commands": {
+    "count": 50,
+    "all_reaped": true,
+    "all_exit_zero": true,
+    "all_groups_empty": true,
+    "per_command_raw_receipts_archival_pending": true
+  },
+  "bounds": {
+    "internal_seconds": 300,
+    "git_seconds": 90,
+    "clone_seconds": 180,
+    "outer_seconds": 360,
+    "elapsed_seconds_after_cleanup": 16.223208014998818,
+    "actual_final_within_deadline": true
+  },
+  "bundle": {
+    "bytes": 24337,
+    "header": {
+      "header_sha256": "3f086ee36a95e0116fe1d54682c8f61dc8a2b4da1ca26b5dce883f0aaa1c61da",
+      "heads": [
+        [
+          "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+          "HEAD"
+        ]
+      ],
+      "prerequisites": [
+        "49503322c7f446e5eb41e7744f1fdbd7f1192ecc"
+      ],
+      "version": 2
+    },
+    "identity": [
+      66306,
+      27301118,
+      1000,
+      1000,
+      33152,
+      1,
+      24337,
+      "1793850456449999850",
+      "1793850456450999848"
+    ],
+    "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/canonical-cold-h2-from495.bundle",
+    "public_network_import_required_on_mac": false,
+    "sha256": "5e5e662ad369f3f94bdb0a844507d0305ebd0b4a661845c16be50475a4df16e2",
+    "version": "66306:27301118:24337:1793850456449999850:1793850456450999848",
+    "independent_full_read_verified": true,
+    "header_exact": true
+  },
+  "bound_build_request": {
+    "bytes": 771,
+    "sha256": "b3c9448980bed756455ff78b1a090975b27abf6c3ca720ddb9278d39c32ca9c4",
+    "blob": "f54c8a0618b39fc046a0a6ab30e248f0d83751a5"
+  },
+  "build_submitted": false,
+  "compiler_started": false,
+  "server_started": false,
+  "production_changed": false,
+  "scope": "Successful independent canonical source preparation only; no new build or product qualification."
+}

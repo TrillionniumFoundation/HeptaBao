@@ -1,0 +1,9 @@
+{
+  "ast_and_compile_only": true,
+  "bytes": 24623,
+  "file": "mac_stager.py",
+  "host_calls": 0,
+  "module_executed": false,
+  "sha256": "a2e005425bc9511c0aca793094daf19c4aa2bf87299cf9f32b3c04bf4fc11ebe",
+  "syntax": "passed"
+}

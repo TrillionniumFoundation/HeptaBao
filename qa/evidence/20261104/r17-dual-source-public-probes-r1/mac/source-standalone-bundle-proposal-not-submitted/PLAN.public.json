@@ -1,0 +1,44 @@
+{
+  "schema": "heptabao.cold-h2-mac-offline-source-bound-plan.v1",
+  "status": "SOURCE_PROPOSAL_NOT_DISPATCHED",
+  "source_packet": {
+    "tree": "5f0e4ef4abf2a0ca6d514d9ee7fc88bf8effee25",
+    "whole_files": 97,
+    "merkle": 17
+  },
+  "bundle_source": {
+    "metadata": {
+      "acl_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "gid": 1000,
+      "link_count": 1,
+      "metadata_platform": "linux",
+      "mode": 384,
+      "uid": 1000,
+      "xattr_names": [],
+      "xattr_sha256": {}
+    },
+    "mode": 384,
+    "path": "/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/canonical-cold-h2-from495.bundle",
+    "sha256": "5e5e662ad369f3f94bdb0a844507d0305ebd0b4a661845c16be50475a4df16e2",
+    "size": 24337,
+    "version": "66306:27301118:24337:1793850456449999850:1793850456450999848"
+  },
+  "bundle_expected_destination": "/Volumes/T5/hepta-vnext-recovery-20261013/canonical-cold-h2-df026-from495.bundle",
+  "transfer": "One existing binary_write call with expected_version=absent, then independent file_info and fixed-version full binary_read; if ACK unknown reconcile destination without replay/overwrite.",
+  "mode_required": 384,
+  "uid_required": 501,
+  "nlink_required": 1,
+  "full_bundle_sha256": "5e5e662ad369f3f94bdb0a844507d0305ebd0b4a661845c16be50475a4df16e2",
+  "full_bundle_bytes": 24337,
+  "mac_source_request": {
+    "bytes": 85192,
+    "sha256": "865ce4ea919568c0ec1837f0f51a52f6ec051ff69f3e6149abcff9b0d3bcec65",
+    "blob": "efdcd9d276b98c132609495dea6c91be3cd26839"
+  },
+  "mac_stage_scope": "Exact T5 UUID before new candidate directory/control writes, local file-only bundle fetch, full3757/3913/fsck/independence, old495 source unchanged, no Cargo/server.",
+  "bundle_destination_write_precedes_mac_stage_volume_guard": true,
+  "source_stage_only": true,
+  "transfer_submitted": false,
+  "stage_submitted": false,
+  "build_submitted": false
+}

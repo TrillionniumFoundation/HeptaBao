@@ -1,0 +1,33 @@
+{
+  "schema": "heptabao.cold-h2-rog-target-metadata-assessment.v1",
+  "status": "PASS_LIMITED_READONLY_DIAGNOSTIC",
+  "job_id": "1a1a9e48b01-fc05-392b",
+  "stdout": {
+    "bytes": 13741,
+    "sha256": "e4e062eacfb4b6080f973d053d301504b90b27d0782172c227745488ec826a6a",
+    "blob": "54e665b8eec967fc561820d337ad5bb14f621e32"
+  },
+  "authority": {
+    "bytes": 733,
+    "sha256": "70a9289777c626b8ea795ae017161f923638a74459b79c350f94b5650ef72752",
+    "blob": "84c19eed8f67e2cc324b7e84f92da6089ecfec5e"
+  },
+  "fixed_paths": 25,
+  "exact_missing_paths": [
+    "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target",
+    "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release",
+    "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target/release/.cargo-lock"
+  ],
+  "remaining22_paths_observed": true,
+  "prior3cb_receipts_all_exact": true,
+  "receipt_bytes": 39172,
+  "owned_fd_count": 3,
+  "all_owned_fd_closed": true,
+  "no_children": true,
+  "no_writes": true,
+  "no_directory_listing": true,
+  "elapsed_seconds": 0.001746986003126949,
+  "original15s_publication": true,
+  "scope": "Current fixed-path metadata only. Missing target cause and alternative cache locations remain unestablished; no full binary hashes or general host inventory performed.",
+  "next_source_proposal": "Create one new owned target under the new candidate root, preserve the missing old target and all old receipts, retain original build/test budgets; not yet authorized/executed."
+}

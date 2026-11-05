@@ -1,0 +1,22 @@
+{
+  "schema": "heptabao.mac-devnull-sandbox-single-submission-intent.r1",
+  "root_admission_blob": "398777fa0b93ac4755b60c526f740a41354422e7",
+  "request_blob": "c50641b7e691e3b2b7e98325190b7b208b716828",
+  "request_sha256": "38d0007a099e7fb2c15dfb4ab65d8bda1fe95b24161a7d9e8837f62fd46a27a1",
+  "request_bytes": 29584,
+  "source_blob": "7f3114022a5fb142af0082af0eca641c1464ee63",
+  "source_sha256": "5229fa7089b9164e853dec4628c31969e39a212253618573f38b8a26df3d29a5",
+  "source_bytes": 28201,
+  "idempotency_key": "heptabao-mac-owned-capture-devnull-sandbox-5229fa70-20261105-r1",
+  "source_packet_tree": "2b5f9f05aaa013259b56eb259ca33cc5ac0d6cd0",
+  "fresh_owned_root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/devnull-sandbox-probe-r1",
+  "limits": {
+    "shared_inner": 45,
+    "supervisor": 60
+  },
+  "old_r4_replayed": false,
+  "current_credentials_or_db_capture": false,
+  "consumer_or_manager": false,
+  "automatic_retry": false,
+  "created_unix_ms": 1793849831834
+}

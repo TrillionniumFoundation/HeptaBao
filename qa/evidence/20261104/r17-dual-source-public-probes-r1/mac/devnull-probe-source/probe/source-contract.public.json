@@ -1,0 +1,128 @@
+{
+  "schema": "heptabao.mac-capture-devnull-sandbox-source-contract.r1",
+  "source": {
+    "bytes": 28201,
+    "sha256": "5229fa7089b9164e853dec4628c31969e39a212253618573f38b8a26df3d29a5",
+    "git_blob": "7f3114022a5fb142af0082af0eca641c1464ee63"
+  },
+  "request": {
+    "bytes": 29584,
+    "sha256": "38d0007a099e7fb2c15dfb4ab65d8bda1fe95b24161a7d9e8837f62fd46a27a1",
+    "git_blob": "c50641b7e691e3b2b7e98325190b7b208b716828"
+  },
+  "idempotency_key": "heptabao-mac-owned-capture-devnull-sandbox-5229fa70-20261105-r1",
+  "proposed_only": true,
+  "submitted": false,
+  "failed_runtime": {
+    "job": "1a1a9af7832-fc05-36bb",
+    "packet_tree": "eb341a5dd61c31e2e5ff4396b009e95cbbbd2a81",
+    "outer_stdout_blob": "3f4abf4c42497da38c486a623e4330314bef5471",
+    "child_stdout_blob": "bd6fdb84fefc995a8c579d7dd299b1e66af014e6",
+    "known_exit": 1,
+    "automatic_replay": false
+  },
+  "root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/devnull-sandbox-probe-r1",
+  "new_directories": 3,
+  "new_files": 4,
+  "existing_qa_written": false,
+  "existing_captures_opened": false,
+  "original_public_sources": {
+    "mac_current_capture_entry_r1.py": {
+      "bytes": 19011,
+      "sha256": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024",
+      "git_blob": "d972159225b1d7478746c9296eb9bb69eb99844c"
+    },
+    "mac_t5_volume_guard_r1.py": {
+      "bytes": 13387,
+      "sha256": "10e140b37a17b5f7fd5cc569b1632da99b61fd544ec732a8806ff402d4ee0d99",
+      "git_blob": "938fd5e5663e004f9f6553548537ab3a931c50d0"
+    },
+    "mac_owned_commands_r1.py": {
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+      "git_blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511"
+    },
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+      "git_blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77"
+    }
+  },
+  "public_utilities": [
+    {
+      "identity": [
+        "16777233",
+        "1152921500312572700",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "102368",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "path": "/usr/bin/sandbox-exec",
+      "resolved": "/usr/bin/sandbox-exec",
+      "sha256": "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
+    },
+    {
+      "identity": [
+        "16777233",
+        "1152921500312575979",
+        "0",
+        "0",
+        "33261",
+        "1",
+        "1937776",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "path": "/usr/sbin/diskutil",
+      "resolved": "/usr/sbin/diskutil",
+      "sha256": "624a8601b97ddfaa4b18dd2854c299e084cd45eb18fc152011c97615c3b9da1f"
+    },
+    {
+      "identity": [
+        "16777233",
+        "1152921500312571399",
+        "0",
+        "0",
+        "35309",
+        "1",
+        "170432",
+        "1786589515000000000",
+        "1786589515000000000"
+      ],
+      "path": "/bin/ps",
+      "resolved": "/bin/ps",
+      "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+    }
+  ],
+  "limits": {
+    "shared_parent_and_children": 45,
+    "outer": 60,
+    "diskutil_clipped": 30,
+    "cleanup": {
+      "term": 1,
+      "wait": 5,
+      "group": 3,
+      "ps": 4
+    },
+    "public_pin_read_bytes": 8388608,
+    "each_public_read_max": 4194304,
+    "each_child_stdout_stderr_max": 262144,
+    "final_stdout_max": 262144
+  },
+  "profile_delta": "One literal file-read* /dev/null rule only, after the three fixed fresh owned path substitutions shared by both policies.",
+  "child_cases": [
+    "original_devnull_O_RDONLY_denied",
+    "patched_devnull_O_RDONLY_open_eof_close_then_held_T5_diskutil_and_four_original_kernel_refusals"
+  ],
+  "no_current_database_or_credential_io": true,
+  "no_sqlite_import": true,
+  "no_sdk_or_consumer": true,
+  "no_provider_or_j3160": true,
+  "no_launchd": true,
+  "publication_verdict_requires_authoritative_exit_zero": true,
+  "source_only_entry_patch_does_not_install": true
+}

@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1a9d1642a-fc05-383f\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b22616c6c5f6f776e65645f73746f70706564223a20747275652c2022636f6d70696c65725f73746172746564223a2066616c73652c2022726573756c745f70617468223a20222f686f6d652f7169616e2d71692f686570746162616f2d636f6c642d68322d6e6f726d616c2d32303236313130352d72312f636f6e74726f6c2f73746167652d726573756c742e7075626c69632e6a736f6e222c20227365727665725f73746172746564223a2066616c73652c2022736f757263655f636f6d6d6974223a202264663032366665333233646437636630663065633537643764326439633561373938393730353363222c2022736f757263655f74726565223a202234323434363363636432333130646463316537623262626364376237616632396165353863383235222c2022737461747573223a20227072657061726564222c202277697468696e5f6e65775f73746167655f646561646c696e65223a20747275657d0a\",\n    \"eof\": true,\n    \"next_offset\": 358,\n    \"offset\": 0,\n    \"size\": 358,\n    \"text\": \"{\\\"all_owned_stopped\\\": true, \\\"compiler_started\\\": false, \\\"result_path\\\": \\\"/home/qian-qi/heptabao-cold-h2-normal-20261105-r1/control/stage-result.public.json\\\", \\\"server_started\\\": false, \\\"source_commit\\\": \\\"df026fe323dd7cf0f0ec57d7d2d9c5a79897053c\\\", \\\"source_tree\\\": \\\"424463ccd2310ddc1e7b2bbcd7b7af29ae58c825\\\", \\\"status\\\": \\\"prepared\\\", \\\"within_new_stage_deadline\\\": true}\\n\"\n  }\n}"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

@@ -1,0 +1,37 @@
+{
+  "schema": "heptabao.cold-h2-mac-source-stage-independent-assessment.v1",
+  "scope": "SOURCE_STAGE_ONLY",
+  "job_id": "1a1a9e58987-fc05-393c",
+  "core": {
+    "bytes": 9199,
+    "sha256": "34c7be755ee8120ac383370fec9557c1b42b2ab5bb19a6e74c1b5516a031ca4e",
+    "blob": "11996df6270ef129e41efdd76476f87602644165"
+  },
+  "actual_exit": 0,
+  "commands": 35,
+  "all_direct_children_reaped": true,
+  "all_remaining_groups_empty": true,
+  "publication_within_300": true,
+  "elapsed_seconds_after_cleanup": 4.181446874979883,
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "actual_history_count": 3757,
+  "actual_leaf_count": 3913,
+  "full_strict_fsck_passed": true,
+  "all_tracked_worktree_blobs_and_modes_match": true,
+  "old_source_unchanged": true,
+  "canonical_bundle_published_after_volume_guard": true,
+  "public_network_fetch_used": false,
+  "compiler_started": false,
+  "server_started": false,
+  "production_changed": false,
+  "old_target_lock_present_zero_byte_regular": true,
+  "build_dispatch_held_for_root": true,
+  "raw_commands_archival_pending": true,
+  "prior_r9_arguments_source": "Actual R10 launcher/preflight/ACK originals already frozen; preserved exactly, not new measurements",
+  "r9_resume_pins": [
+    "d3c26b8b78c41915421e1972c4eaeea47eb14ec5ad581568206047e89ac9ab7d",
+    "8f03915cf7fce1dc2eb92cdce9933e663dbe40ccc5c104e7d2c97e8f364abd28",
+    "24deb356103c8210bb76751122aaa0c19fc6ab5ec6a9e09a62f0cc68e326a57e"
+  ]
+}

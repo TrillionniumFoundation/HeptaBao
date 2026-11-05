@@ -1,0 +1,33 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "workflow_runs": [
+      {
+        "id": 41964140419,
+        "name": "Codex OpenBao replacement full qualification",
+        "status": "in_progress",
+        "conclusion": null,
+        "run_number": 842,
+        "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/actions/runs/41964140419/jobs",
+        "logs_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/actions/runs/41964140419/logs",
+        "workflow_id": 352702699
+      },
+      {
+        "id": 41964140401,
+        "name": "HeptaBao workflow trust boundary",
+        "status": "in_progress",
+        "conclusion": null,
+        "run_number": 922,
+        "jobs_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/actions/runs/41964140401/jobs",
+        "logs_url": "https://api.github.com/repos/TrillionniumFoundation/HeptaBao/actions/runs/41964140401/logs",
+        "workflow_id": 351753000
+      }
+    ]
+  },
+  "isError": false
+}

@@ -1,0 +1,176 @@
+{
+  "schema": "heptabao.mac-capture-nested-permission-source-analysis.r1",
+  "scope": "Read-only analysis of exact prior public source and immutable actual reports. No new host request, signal, process, sandbox change, or business replay.",
+  "actual_packet_tree": "767a66d03d2f96a14d016baaaa10e86665bd0ccd",
+  "actual_job_id": "1a1a9c8632a-fc05-37bc",
+  "actual_verdict_unchanged": "FAILED_NESTED_CHILD_CUSTODY_UNKNOWN",
+  "exact_source_pins": {
+    "mac_owned_commands_r1.py": {
+      "bytes": 5965,
+      "sha256": "eb676e6dedb6d594d944e921738cf9b384f2a98a37ee2bd1fa5433b848a36867",
+      "git_blob": "c102dfdc565484421bf7dbbb04b7c8b9e4cd5511"
+    },
+    "mac_owned_unreaped_r1.py": {
+      "bytes": 10990,
+      "sha256": "a143ba334159931d530b49a55c24471f56fa1b62f1e1012e12c75e21f3c22b1d",
+      "git_blob": "53cddd9243f9f890d9a1b9975b435280ff58ab77"
+    },
+    "mac_current_capture_entry_r1.py": {
+      "bytes": 19011,
+      "sha256": "fe56d9676aacf5cf4feb373130be93c4a17fab2589a1439da4ebe96a4cad4024",
+      "git_blob": "d972159225b1d7478746c9296eb9bb69eb99844c"
+    }
+  },
+  "input_proofs": {
+    "actual_stdout": {
+      "git_blob": "dea943bf06f9609e4206ee59acb7747344c9221b",
+      "bytes": 18275,
+      "sha256": "916c8081f1b04455f638ef90f5f2eb9544c8f07f76bc0a73d7b88743a001439e"
+    },
+    "patched_child": {
+      "git_blob": "04a2cd079fca0a917e580a2fe77046644685dddf",
+      "bytes": 4052,
+      "sha256": "730e759e0fa80c40a53a4c45f17405969b02fed5ebf1139f69ef4dc62c28759c"
+    },
+    "prior_same_runtime_synthetic": {
+      "bytes": 16228,
+      "sha256": "6c14a7f95e4f059090da2e88a3fff80eac79c1d83ef58a29df3cc67a610cd8f5",
+      "git_blob": "781d085d4fdc52ada91ea796572099137c87cd55",
+      "binding": "Prior successful owned synthetic, not a new observation of installed subprocess.py."
+    }
+  },
+  "observations": [
+    "Original sandbox rejected a direct O_RDONLY open of /dev/null with errno=1; patched sandbox allowed that open, character-device check, EOF and close. This is the exact scope of the direct-open comparison.",
+    "Patched nested diskutil Popen returned PID 11754 and Commands appended its row. The observed PermissionError is later than that Popen registration.",
+    "Commands stores row.custody only after capture_child returns. A null custody therefore leaves multiple possible failing system calls; it is not proof that the first ps_rows call failed.",
+    "Both command capture and the once-only cleanup recorded PermissionError. Nested signals=[], directChildReaped=false, allGroupRowsEmptyAfterReap=false, exitCode=null remain unchanged.",
+    "The parent top-level three direct children were reaped and empty. That does not establish the nested child's original custody, exit status or reap.",
+    "Final source/tool after-fences and the patched child's four kernel-refusal checks were not reached. They are not reported as passed."
+  ],
+  "source_control_flow": [
+    {
+      "location": "mac_owned_commands_r1.py:47-54",
+      "operation": "Popen diskutil; record Popen; capture_child",
+      "classification": "Popen and row registration completed. Failure occurred before capture_child returned."
+    },
+    {
+      "location": "mac_owned_unreaped_r1.py:73-79 -> 39-71",
+      "operation": "First ps_rows(child.pid)",
+      "classification": "Calls subprocess.run for /bin/ps with DEVNULL and two pipes. close_fds/start_new_session are omitted and take runtime defaults. Only TimeoutExpired is translated locally."
+    },
+    {
+      "location": "mac_owned_unreaped_r1.py:55-70",
+      "operation": "ps return-code/output/parse guards",
+      "classification": "A normal returned nonzero ps status maps to Refusal (or empty projection then Refusal), not the recorded PermissionError. An OS error thrown inside subprocess.run can propagate unchanged."
+    },
+    {
+      "location": "mac_owned_unreaped_r1.py:83 -> 23-34",
+      "operation": "os.waitid(P_PID, WEXITED|WNOHANG|WNOWAIT)",
+      "classification": "Reached only if first ps and scope checks passed. Any OS PermissionError here propagates before custody assignment."
+    },
+    {
+      "location": "mac_owned_unreaped_r1.py:84-93",
+      "operation": "os.getpgid / os.getsid on the still-live branch",
+      "classification": "Only ProcessLookupError is handled. Other OSError subclasses, including PermissionError, propagate. This is a source possibility, not an observation that these calls ran."
+    },
+    {
+      "location": "mac_owned_unreaped_r1.py:94-102",
+      "operation": "Retained-exit branch repeats waitid and ps",
+      "classification": "A later observation can also fail before the final custody object is returned."
+    },
+    {
+      "location": "mac_owned_unreaped_r1.py:133-146,201-210",
+      "operation": "Once cleanup with owner=None",
+      "classification": "Attempts the same capture path within the original TERM1 bound. Its PermissionError leaves unknown and sends no signal. It cannot recover a successful custody from the numeric PID alone."
+    }
+  ],
+  "possible_failure_sites_not_a_root_cause_claim": [
+    "Inside the first or repeated ps_rows subprocess.run: DEVNULL/pipe preparation, process creation or exec, communication/wait/close. No ps-specific errno, frame or completed-process record was exposed.",
+    "After a successful first ps_rows: WNOWAIT waitid, live getpgid/getsid, or the retained-exit repeat. The current report cannot distinguish these.",
+    "The executable's setuid bit is observed metadata and a relevant discriminator for a future narrowly approved diagnostic; it does not establish which sandbox authorization failed."
+  ],
+  "ps_observed_public_pin": {
+    "bytes": 170432,
+    "identity": [
+      "16777233",
+      "1152921500312571399",
+      "0",
+      "0",
+      "35309",
+      "1",
+      "170432",
+      "1786589515000000000",
+      "1786589515000000000"
+    ],
+    "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+  },
+  "cpython_reference": {
+    "origin_url": "https://api.github.com/repos/python/cpython/contents/Lib/subprocess.py?ref=v3.14.3",
+    "source": {
+      "bytes": 90781,
+      "sha256": "26b3db4e83c14b624f11907ee81f1fc76d54c3bb56617d6888af60c066d21dcd",
+      "git_blob": "578d7b95d05d7b5d4e97a6ffa9b1b5e415e83f1a"
+    },
+    "exact_prior_observed_runtime": {
+      "pythonExecutable": {
+        "bytes": 34640,
+        "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+        "sha256": "cebfcc4ac431ff7a2179bc6eff7e5c6bdae48b564eeab2d504bef6173a2cfc13"
+      },
+      "pythonVersion": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+      "sqliteExtension": {
+        "bytes": 165632,
+        "path": "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/lib-dynload/_sqlite3.cpython-314-darwin.so",
+        "sha256": "8b751990131722185775f5d532c89d4588285c88b23112d2758a4594721aa3ac"
+      },
+      "sqliteVersion": "3.53.4",
+      "sqliteVersionInfo": [
+        3,
+        53,
+        4
+      ]
+    },
+    "installed_stdlib_file_read_or_hash_performed": false,
+    "observed_spawn_branch": false,
+    "limited_findings": [
+      "Upstream v3.14.3 Popen._get_devnull uses os.open(os.devnull, os.O_RDWR) at 1146-1149. The actual direct-open probe used O_RDONLY; diskutil Popen returning is additional evidence beyond that direct-open case.",
+      "The upstream Popen default is close_fds=True and start_new_session=False. The posix_spawn branch at 1859-1878 additionally requires the runtime CLOSEFROM capability when close_fds is true, and rejects start_new_session=True.",
+      "Thus source-level ps and diskutil invocations have different eligibility: diskutil explicitly requests a new session; ps does not. Actual installed stdlib bytes, capability and branch were not observed.",
+      "Upstream run uses Popen and communicate. Exceptions may precede a CompletedProcess, while returned nonzero status is available to the helper's own Refusal checks."
+    ],
+    "limitations": "The official same-version source is a reference, not a whole-hash qualification of Homebrew's installed standard library or its chosen launch path."
+  },
+  "parent_reported_later_observations_not_rewritten_into_original": {
+    "pid_request_blob": "0b73d856fa3dd1d40f21753cd05f14c23c34258a",
+    "pid_authority_blob": "d1067af869bdb96e877a94762329fc50967ad9aa",
+    "numeric_projection_request_blob": "784943858c43acc70b14638f57d5f5b44f3e8f02",
+    "numeric_projection_authority_blob": "06bf0c927a937c7e2d7b92b8876faadc7449a8d7",
+    "numeric_projection_stdout_blob": "845d9c8b6b764a298dd18b651e2b763f3db5d719",
+    "scope": "Parent reported PID absent, followed by two numeric-only PGID/PPID/PID projections selecting no rows. These are later observations, not the original missing reap/exit receipt. This author has not reread those host jobs.",
+    "new_author_host_reads": 0,
+    "new_author_signals": 0
+  },
+  "bounded_diagnostic_design_only": {
+    "proposed_public_fields": [
+      "fixed operation identifier",
+      "fixed function identifier",
+      "source line number",
+      "exception class",
+      "bounded errno integer or null",
+      "whether Popen returned",
+      "whether a CompletedProcess was obtained",
+      "fixed command tag",
+      "stdout/stderr byte counts and hashes only"
+    ],
+    "private_exception_messages_or_filename_or_stderr_text": false,
+    "goal": "Distinguish the first ps launch from later child-identity system calls without executing any production capture.",
+    "prohibited_inference_or_change": [
+      "Do not call known PermissionError a confirmed setuid or posix_spawn rejection.",
+      "Do not add no-sandbox execution, relax file or network policy, disable close_fds, change UID/mode, copy a system binary, or skip retained-child identity guards.",
+      "Do not replay R4 or the existing probe. Any later diagnostic needs a separately reviewed source/request, fresh owned path and original deadline contract."
+    ]
+  },
+  "runtime_qualification": false,
+  "new_component_tests": 0,
+  "new_host_actions": 0
+}

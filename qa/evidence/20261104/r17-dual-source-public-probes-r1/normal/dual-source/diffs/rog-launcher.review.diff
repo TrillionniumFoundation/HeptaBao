@@ -1,0 +1,161 @@
+--- before/rog-launcher.py
++++ after/rog-launcher.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Preserve exact R8/R9/R10 and failed bf0 evidence; admit one new normal build."""
++"""Preserve prior evidence and admit one exact cold/H2 canonical normal build."""
+ from pathlib import Path
+ import argparse
+ import fcntl
+@@ -11,6 +11,9 @@
+ import subprocess
+ import time
+ 
++OUTER_STARTED = time.monotonic()
++ORIGINAL_OUTER_SECONDS = 12000
++OUTER_UNTIL = OUTER_STARTED + ORIGINAL_OUTER_SECONDS
+ os.umask(0o077)
+ parser = argparse.ArgumentParser()
+ parser.add_argument('--host', choices=('rog',), required=True)
+@@ -19,8 +22,8 @@
+ for name in ('r9-resume-sha256', 'r9-resume-terminal-sha256', 'r9-resume-authority-sha256'):
+     parser.add_argument('--' + name)
+ args = parser.parse_args()
+-assert args.commit == '3cb873919170cc77101b27f6a3ab9e98f41f8d93'
+-assert args.tree == '7f4d48a647a81ca96e8a24a0a057c2c829459060'
++assert args.commit == 'df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
++assert args.tree == '424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
+ for name in ('r9_resume_sha256', 'r9_resume_terminal_sha256', 'r9_resume_authority_sha256'):
+     value = getattr(args, name)
+     if args.host == 'mac':
+@@ -57,7 +60,7 @@
+     expected_system, expected_uid = ('Darwin', 'arm64'), 501
+ else:
+     BASE = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1')
+-    ROOT = Path('/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3')
++    ROOT = Path('/home/qian-qi/heptabao-cold-h2-normal-20261105-r1')
+     R9 = BASE / 'r9-http-routing-r1'
+     OLD = BASE / 'normal-release-tests-r8-r1'
+     OLD_SOURCE = BASE / 'source-r8-test-fixtures-r1'
+@@ -76,7 +79,7 @@
+     TOOLCHAIN = '/home/qian-qi/.rustup/toolchains/1.98.0-x86_64-unknown-linux-gnu/bin'
+     CARGO_HOME = '/home/qian-qi/heptabao-native-20261029-c1bd-r1/cargo-home'
+     PYTHON = '/usr/bin/python3'
+-    RUNNER_NAME = 'normal_phaseb_observer_build.py'
++    RUNNER_NAME = 'normal_cold_h2_build.py'
+     expected_system, expected_uid = ('Linux', 'x86_64'), 1000
+ 
+ SOURCE = ROOT / 'source'
+@@ -286,6 +289,52 @@
+     return evidence
+ 
+ 
++def preserve_successful_observer():
++    root = Path('/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3')
++    source = root / 'source'
++    output = root / 'normal-release-tests-r1'
++    before = freeze(source)
++    assert before == {'commit': '3cb873919170cc77101b27f6a3ab9e98f41f8d93',
++                      'tree': '7f4d48a647a81ca96e8a24a0a057c2c829459060', 'status': ''}
++    evidence = {'source_before': before, 'prior_failures_replayed': False}
++    build_raw, evidence['normal_release'] = read_bound(output / 'normal-release-result.public.json',
++        '6313b4eaad68ac882d0891e14bd9d1632e138e635e3626b1b2b774e6be8f243f', 30000)
++    native_raw, evidence['native_build'] = read_bound(output / 'native-build.public.json',
++        '51d0d83956a82e532b1f576a904bd1d5708ccc8991eaa6572b7435d8e57aebce', 5000)
++    tests_raw, evidence['exact44'] = read_bound(output / 'result.public.json',
++        '8899a7acc647505c230430b35771ae1eccaf48cc5aea27a034906d513fd0b0f7', 40000)
++    build, native, tests = map(json.loads, (build_raw, native_raw, tests_raw))
++    assert all(x['source_commit'] == before['commit'] and x['source_tree'] == before['tree']
++               for x in (build, native, tests))
++    assert build['source_freeze_verified'] and build['build_exit_code'] == 0 and build['build_finished_success']
++    assert not build['timed_out'] and not build['owned_group_survivors_after_wait']
++    assert tests['status'] == 'passed' and tests['test_count'] == 44
++    assert tests['binary']['sha256'] == '94e2daa8448807079472264fb19d39d00619ac6a046c59ac7849aa39a70161fa'
++    assert tests['binary']['bytes'] == 187656088
++    assert tests['original_44_status'] == 'passed'
++    assert tests['ingress_observer_regression']['status'] == 'passed'
++    assert tests['ingress_observer_regression']['test_count'] == 7
++    assert len(tests['cleanup']) == 28
++    assert all(x['direct_child_reaped'] and x['remaining'] == [] and not x.get('cleanup_error_type') for x in tests['cleanup'])
++    retained = []
++    for name in ('heptabao-server', 'heptabao-seed'):
++        item = build['artifacts'][name]
++        path = output / 'artifacts' / name
++        assert item['path'] == str(path) and not path.is_relative_to(TARGET)
++        _, fact = read_bound(path, item['sha256'], item['bytes'], retain=False)
++        assert fact['bytes'] == item['bytes']
++        assert sorted(item['features']) == ['default', 'native-v6-ha', 'native-v6-storage']
++        retained.append(fact)
++    _, fact = read_bound(output / 'retained-heptabao-server-libtest',
++        tests['binary']['sha256'], tests['binary']['bytes'], retain=False)
++    assert fact['bytes'] == tests['binary']['bytes']
++    retained.append(fact)
++    assert freeze(source) == before
++    evidence.update(source_after=before, retained=retained, all_unchanged=True)
++    return evidence
++
++
++
+ def preserve_failed_observer():
+     before = freeze(FAILED_SOURCE)
+     assert before == {'commit': FAILED_COMMIT, 'tree': FAILED_TREE, 'status': ''}
+@@ -371,7 +420,7 @@
+ assert not OUTPUT.exists() and not OUTPUT.is_symlink()
+ stage_raw, stage_pin = read_bound(CONTROL / 'stage-result.public.json', args.stage_sha256, 150000)
+ stage = json.loads(stage_raw)
+-assert stage['schema'] == 'heptabao.phaseb-observer-independent-source-stage.v2'
++assert stage['schema'] == 'heptabao.cold-h2-independent-source-stage.v1'
+ assert stage['status'] == 'prepared' and stage['source_commit'] == args.commit and stage['source_tree'] == args.tree
+ assert stage['source_clean'] and stage['independent_git_directory'] and stage['old_source_unchanged']
+ assert all(x['direct_child_reaped'] and not x['remaining'] for x in stage['cleanup'])
+@@ -387,10 +436,10 @@
+ assert sum(len(g['tests']) for g in groups) == stage['exact_test_count']
+ assert all(g['runtime_seconds'] == 600 for g in groups)
+ ADMISSION.mkdir(mode=0o700)
+-result = {'schema': 'heptabao.phaseb-observer-normal-target-admission.v2', 'status': 'failed',
++result = {'schema': 'heptabao.cold-h2-normal-target-admission.v1', 'status': 'failed',
+           'host': args.host, 'source_commit': args.commit, 'source_tree': args.tree,
+           'stage': stage_pin, 'runner': runner_pin, 'groups': groups_pin,
+-          'target': str(TARGET), 'production_changed': False, 'normal_runner_started': False,
++          'target': str(TARGET), 'production_changed': True, 'normal_runner_started': False,
+           'started_ns': time.time_ns()}
+ public(ADMISSION / 'launch-intent.public.json', result)
+ lock_fd = None
+@@ -435,6 +484,7 @@
+     assert freeze(SOURCE) == before and freeze(OLD_SOURCE) == old_before
+     result['retained_r9_evidence'] = preserve_r9()
+     result['retained_r10_evidence'] = preserve_r10()
++    result['retained_successful_observer'] = preserve_successful_observer()
+     result['retained_failed_observer'] = preserve_failed_observer()
+     assert result['retained_failed_observer'] == stage['failed_observer_after']
+     assert freeze(SOURCE) == before and freeze(OLD_SOURCE) == old_before
+@@ -442,14 +492,19 @@
+             '--output', str(OUTPUT), '--commit', args.commit, '--tree', args.tree,
+             '--toolchain', TOOLCHAIN, '--cargo-home', CARGO_HOME, '--target', str(TARGET),
+             '--groups', str(CONTROL / 'normal-test-groups.public.json'),
+-            '--groups-sha256', args.groups_sha256]
++            '--groups-sha256', args.groups_sha256,
++            '--outer-started-monotonic', repr(OUTER_STARTED), '--launcher-pid', str(os.getpid())]
++    assert time.monotonic() < OUTER_UNTIL, 'original outer deadline expired before exec admission'
+     result.update(status='admitted', retained_r8_artifacts=retained,
+                   prior_r8_failure_replayed=False, source_and_retained_artifacts_unchanged=True,
+                   normal_runner_argv=argv, original_release_build_cap_seconds=1800,
+                   original_libtest_build_cap_seconds=1800 if args.host == 'mac' else 3600,
+                   each_listing_cap_seconds=30, each_runtime_group_cap_seconds=600,
+                   exact_test_count=stage['exact_test_count'],
+-                  additional_existing_ingress_tests=7, new_additional_group_total_cap_seconds=600)
++                  additional_existing_ingress_tests=7, additional_cold_h2_tests=9,
++                  each_additional_group_total_cap_seconds=600,
++                  original_supervisor_seconds=ORIGINAL_OUTER_SECONDS,
++                  outer_started_monotonic=OUTER_STARTED, outer_until_monotonic=OUTER_UNTIL)
+ except BaseException as error:
+     result.update(error_type=type(error).__name__, error=str(error))
+ finally:
+@@ -466,5 +521,7 @@
+                   'retained_r8_artifacts_verified': True, 'retained_r9_evidence_verified': True,
+                   'retained_r10_evidence_verified': True,
+                   'retained_failed_observer_verified': True,
++                  'retained_successful_observer_verified': True,
+                   'original_budgets_preserved': True}), flush=True)
++assert time.monotonic() < OUTER_UNTIL, 'original outer deadline expired before same-PID exec'
+ os.execv(argv[0], argv)

@@ -1,0 +1,14 @@
+{
+  "schema": "heptabao.exact-once-build-intent.v1",
+  "created_at_utc": "2026-11-05T04:15:04.181Z",
+  "scope": "MAC_NORMAL_RELEASE_LIBTEST_44_PLUS_7_PLUS_9_ONLY",
+  "root_admission_blob": "afe04fbadd646bd3072daf40757a5b3b13fe6572",
+  "request_blob": "d6e0362f84dd2f9636dc741683fcedfadc477277",
+  "request_sha256": "fd745e069b74dfcf13025c673085205c78cd1d168cc70b8c7e482748aa368d62",
+  "idempotency_key": "heptabao-cold-h2-df026-mac-normal60-20261105-r2-5af8319e-18616874",
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "stage_result_sha256": "34c7be755ee8120ac383370fec9557c1b42b2ab5bb19a6e74c1b5516a031ca4e",
+  "submitted": false,
+  "unknown_replay": false,
+  "production_changed": false
+}

@@ -1,0 +1,345 @@
+--- before/mac-stager.py
++++ after/mac-stager.py
+@@ -1,10 +1,11 @@
+ #!/usr/bin/env python3
+-"""Create one independent 3cb8739 ROG checkout and inert controls; no Cargo or product."""
++"""Create one independent exact cold/H2 MAC checkout; no Cargo or product."""
+ from pathlib import Path, PurePosixPath
+ import argparse
+ import hashlib
+ import json
+ import os
++import plistlib
+ import signal
+ import stat
+ import subprocess
+@@ -17,51 +18,39 @@
+ parser = argparse.ArgumentParser()
+ parser.add_argument('--self-sha256', required=True)
+ parser.add_argument('--carrier-sha256', required=True)
++parser.add_argument('--canonical-bundle-bytes', required=True, type=int)
++parser.add_argument('--canonical-bundle-sha256', required=True)
+ args = parser.parse_args()
+-args.host = 'rog'
+-ROOT = Path('/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r3')
++args.host = 'mac'
++ROOT = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1')
+ SOURCE = ROOT / 'source'
+ CONTROL = ROOT / 'control'
+-OLD = Path('/home/qian-qi/heptabao-native-ssh-owner-20261104-r1/r10-native-state-helper-r1/source')
++OLD = Path('/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261104-native-http-r10/source')
+ OLD_COMMIT = '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'
+ OLD_TREE = '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
+-COMMIT = '3cb873919170cc77101b27f6a3ab9e98f41f8d93'
+-TREE = '7f4d48a647a81ca96e8a24a0a057c2c829459060'
+-PARENT = 'bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'
+-GRANDPARENT = '6d3040a2dbd06661a67f5c62df259ff446eb8515'
++COMMIT = 'df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
++TREE = '424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
++PARENT = '6304a898192bfdf7eabec3c4ea40f7166e59a137'
++ANCESTRY = (
++    ('df026fe323dd7cf0f0ec57d7d2d9c5a79897053c', '6304a898192bfdf7eabec3c4ea40f7166e59a137'),
++    ('6304a898192bfdf7eabec3c4ea40f7166e59a137', 'e5de554f5dfe99f0de30012122fe3e248fb60532'),
++    ('e5de554f5dfe99f0de30012122fe3e248fb60532', 'fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd'),
++    ('fab39e28c7d0b6d0d1482e98cde1c291b6fc88cd', '6d3040a2dbd06661a67f5c62df259ff446eb8515'),
++    ('6d3040a2dbd06661a67f5c62df259ff446eb8515', '49503322c7f446e5eb41e7744f1fdbd7f1192ecc'),
++)
+ ROOT_COMMIT = '67d79b3b5442ed033d38929eab2010403463e56d'
+ ORIGIN = 'https://github.com/TrillionniumFoundation/HeptaBao.git'
+ EXPECTED_CONTROLS = {
+-    "normal_phaseb_observer_build.py": (20791, "5ba3e0152b1b84510ef7740b1e5d863e1464e4eaee04a4b772747a4db86dcb2b"),
+-    "launch_normal_phaseb_observer.py": (28425, "230597bdf2e67f617428355fd0cae4c4b587c397409e02e0395ee96c8e4cee03"),
+-    "prior-observer-build-authority.public.json": (726, "820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6"),
++    "mac_normal_cold_h2_build.py": (26541, "b57a333cf3f6ab96ae03460f66cd1d0cb351bea9cbc4755bf5f5045427e69985"),
++    "launch_normal_cold_h2.py": (23773, "5144d2f61418f16966439f9563615f23a2859c0401e90b0d7d8187f109821eeb"),
+     "normal-test-groups.public.json": (6249, "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1"),
+-}
+-FAILED_ROOT = Path('/home/qian-qi/heptabao-phaseb-fresh-ingress-observer-normal-20261104-r1')
+-FAILED_SOURCE = FAILED_ROOT / 'source'
+-FAILED_COMMIT = 'bf0aaec1dcafbf476c0ab3a75544bb0eafaeff24'
+-FAILED_TREE = 'ac4027db88fec69381ea0c6bba953d9a99c4e82a'
+-FAILED_AUTHORITY_NAME = 'prior-observer-build-authority.public.json'
+-FAILED_AUTHORITY_SHA = '820a3243ba5be87f4d8fdf3d47d68361a2f2d6a95043d38c0086afab1cf559b6'
+-FAILED_FILES = {
+-    'control/stage-result.public.json': (6838, 'bb2bd7b46974dc18bcb87325ea55c46383e17f2f8a521f2eaa77b1fc9fba8d2b'),
+-    'build-control-r1/launch-preflight.public.json': (12914, '91b8fe2e1d6e34d1e0b885a9bbb81c27e83e1d6f3f07cb4235cb2314b27e29d4'),
+-    'normal-release-tests-r1/intent.public.json': (7838, 'ad7adbf410217af34555e9b9135505cb8f70309facfa748f4fb1c3f0614eedb2'),
+-    'normal-release-tests-r1/result.public.json': (9233, '2947b177c2b7ca145a499175567aec632c76d12641c8afa4276ae900dda3a122'),
+-    'normal-release-tests-r1/normal-release-build.public.json': (710, '654c0e9dd676855d585746275be3dc92188c843e576d873d6b3607141fb9f412'),
+-    'normal-release-tests-r1/normal-release-build.stderr': (27914, 'd47156c8828983229eccec58c9a4cd5f1535b653c7d59fab9ddf4db72839ee3e'),
+-    'normal-release-tests-r1/normal-release-build.stdout': (384196, '324a6b59e740e1ed2dc0c447ce638557d5cbd53cdec2c5b3afaa0a701cee3c92'),
+-    'control/stage_source_phaseb_observer.py': (18774, '2cfc47c230d7a4780e758ee8736e4cd6f1412a2f65174c5581be48038581b32a'),
+-    'control/launch_normal_phaseb_observer.py': (22961, '56c7b06d4329e4fdb72079a089ad2f1509e856357328d849d58844236b86fd63'),
+-    'control/normal_phaseb_observer_build.py': (20791, 'c46efcee52b0b836f8c6539e86a02114c10828b0a295f4571178643dcc0f0273'),
+-    'control/normal-test-groups.public.json': (6249, '0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1'),
+-    'source/crates/heptabao-server/src/ha_native_v6_runtime.rs': (61578, 'cf0e9e69bf295591d3a904458500bfcf7b01acaa0987ae1da8761f76b9ee136d'),
+ }
+ 
+ children = []
+ protected = 0
+ pending_signal = None
+ created_control = False
++prewrite_guard_record = None
+ 
+ class Cancelled(BaseException):
+     pass
+@@ -255,56 +244,6 @@
+             'status': git(path, 'status', '--porcelain=v1', '--untracked-files=all').decode()}
+ 
+ 
+-def preserve_failed_observer():
+-    stage_remaining()
+-    before = freeze(FAILED_SOURCE)
+-    assert before == {'commit': FAILED_COMMIT, 'tree': FAILED_TREE, 'status': ''}
+-    rows, loaded = {}, {}
+-    for relative, (size, expected_sha) in FAILED_FILES.items():
+-        stage_remaining()
+-        path = FAILED_ROOT / relative
+-        info = path.lstat()
+-        raw = stable_read(path, size, size, expected_sha)
+-        assert identity(info) == identity(path.lstat())
+-        rows[relative] = {'path': str(path), 'bytes': size, 'sha256': expected_sha,
+-                          'identity': list(identity(info))}
+-        if relative in ('normal-release-tests-r1/result.public.json',
+-                        'normal-release-tests-r1/normal-release-build.public.json'):
+-            loaded[relative] = json.loads(raw)
+-    authority_path = CONTROL / FAILED_AUTHORITY_NAME
+-    authority_info = authority_path.lstat()
+-    authority_raw = stable_read(authority_path, 726, 726, FAILED_AUTHORITY_SHA)
+-    assert identity(authority_info) == identity(authority_path.lstat())
+-    authority = json.loads(authority_raw)
+-    assert authority['job_id'] == '1a1a87f578a-fc05-2ee0'
+-    assert authority['state'] == 'failed' and authority['exit_code'] == 1
+-    assert authority['output_complete'] and authority['output_durable']
+-    assert authority['terminal_publication_confirmed']
+-    assert not authority['timed_out'] and not authority['cancelled'] and not authority['automatic_retry']
+-    assert all(value is False for value in authority['log_truncated'].values())
+-    assert all(value is None for value in authority['log_errors'].values())
+-    failed = loaded['normal-release-tests-r1/result.public.json']
+-    child = loaded['normal-release-tests-r1/normal-release-build.public.json']
+-    assert failed['source_commit'] == FAILED_COMMIT and failed['source_tree'] == FAILED_TREE
+-    assert failed['status'] == 'failed' and failed['failure_type'] == 'AssertionError'
+-    assert failed['failure'] == 'normal production binary compilation failed'
+-    assert failed['runtime_tests_started'] is False and failed['group_results'] == []
+-    assert failed['test_count'] == 44 and failed['normal_release_build'] == child
+-    assert child['exit_code'] == 101 and not child['timed_out']
+-    assert child['outer_cap_seconds'] == 1800 and child['elapsed_seconds'] < 1800
+-    assert child['direct_child_reaped'] and child['remaining'] == []
+-    assert len(failed['cleanup']) == 1
+-    assert all(row['direct_child_reaped'] and row['remaining'] == []
+-               and row['exit_code'] == 101 and not row.get('cleanup_error_type')
+-               for row in failed['cleanup'])
+-    assert freeze(FAILED_SOURCE) == before
+-    stage_remaining()
+-    return {'source_before': before, 'source_after': before, 'files': rows,
+-            'authority': {'path': str(authority_path), 'bytes': 726,
+-                          'sha256': FAILED_AUTHORITY_SHA,
+-                          'identity': list(identity(authority_info)),
+-                          'source': 'exact cached authoritative terminal receipt'},
+-            'prior_failed_build_replayed': False}
+ 
+ 
+ def walk_error(error):
+@@ -348,7 +287,7 @@
+         assert kind == 'blob' and mode in ('100644', '100755')
+         assert not p.is_absolute() and '..' not in p.parts and str(p) == relative
+         entries.append((relative, mode, object_id))
+-    assert len(entries) == 3911 and len({x[0] for x in entries}) == 3911
++    assert len(entries) == 3913 and len({x[0] for x in entries}) == 3913
+     indexed = []
+     for item in git(SOURCE, 'ls-files', '--stage', '-z').split(b'\0'):
+         if not item:
+@@ -381,7 +320,70 @@
+             'all_tracked_worktree_blobs_and_modes_match': True}
+ 
+ 
+-assert (os.uname().sysname, os.uname().machine, os.getuid()) == ('Linux', 'x86_64', 1000)
++
++def canonical_bundle_header(raw):
++    end = raw.find(b'\n\n', 0, 65536)
++    assert end > 0 and raw[end + 2:end + 6] == b'PACK'
++    lines = raw[:end].split(b'\n')
++    assert lines.pop(0) == b'# v2 git bundle'
++    prerequisites, heads = [], []
++    for line in lines:
++        if line.startswith(b'-'):
++            object_id, separator, _message = line[1:].partition(b' ')
++            assert separator
++            prerequisites.append(object_id.decode('ascii'))
++        else:
++            object_id, separator, name = line.partition(b' ')
++            assert separator
++            heads.append([object_id.decode('ascii'), name.decode('ascii')])
++    assert prerequisites == [OLD_COMMIT]
++    assert heads == [[COMMIT, 'HEAD']]
++    return {'version': 2, 'prerequisites': prerequisites, 'heads': heads,
++            'header_sha256': digest(raw[:end + 2])}
++
++def prewrite_volume_guard():
++    # Original diskutil 30-second cap, with the same protected Popen/owned group.
++    # No path on the candidate volume is written until its exact UUID is known.
++    global protected, prewrite_guard_record
++    argv = ['/usr/sbin/diskutil', 'info', '-plist', '/Volumes/T5']
++    prefix = '%03d-t5-volume-identity' % len(children)
++    start = time.monotonic()
++    timed_out = False
++    stage_remaining()
++    protected += 1
++    try:
++        process = subprocess.Popen(argv, env=environment, stdin=subprocess.DEVNULL,
++                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE,
++                                   start_new_session=True)
++        children.append((prefix, process))
++    finally:
++        protected -= 1
++    if pending_signal is not None:
++        raise Cancelled()
++    try:
++        out, err = process.communicate(timeout=min(30, stage_remaining()))
++    except subprocess.TimeoutExpired:
++        timed_out = True
++        stop_owned(process)
++        out, err = process.communicate(timeout=5)
++    finally:
++        if process.poll() is None:
++            stop_owned(process)
++    remaining = group_members(process.pid)
++    assert len(out) <= 65536 and len(err) <= 65536
++    receipt = {'argv': argv, 'exit_code': process.returncode, 'timed_out': timed_out,
++               'elapsed_seconds': time.monotonic() - start, 'limit_seconds': 30,
++               'pid': process.pid, 'direct_child_reaped': process.returncode is not None,
++               'remaining': remaining, 'stdout_sha256': digest(out), 'stderr_sha256': digest(err)}
++    prewrite_guard_record = (prefix, out, err, receipt)
++    assert process.returncode == 0 and not timed_out and not remaining
++    info = plistlib.loads(out)
++    assert info.get('VolumeUUID') == 'FB804D1B-24CB-4D6E-AEA7-A9E180807758'
++    stage_remaining()
++    return info['VolumeUUID']
++
++
++assert (os.uname().sysname, os.uname().machine, os.getuid()) == ('Darwin', 'arm64', 501)
+ assert ROOT.parent.resolve(strict=True) == ROOT.parent and ROOT.parent.stat().st_uid == os.getuid()
+ assert OLD.resolve(strict=True) == OLD
+ source_index = sys.orig_argv.index('-c') + 1
+@@ -390,7 +392,7 @@
+ carrier = sys.stdin.buffer.read(262145)
+ assert len(carrier) <= 262144 and digest(carrier) == args.carrier_sha256
+ data = json.loads(carrier)
+-assert set(data) == {'schema', 'controls'} and data['schema'] == 'heptabao.phaseb-observer-inert-controls.v2'
++assert set(data) == {'schema', 'controls'} and data['schema'] == 'heptabao.cold-h2-inert-controls.v1'
+ assert set(data['controls']) == set(EXPECTED_CONTROLS)
+ for name, (size, expected_sha) in EXPECTED_CONTROLS.items():
+     raw = data['controls'][name].encode()
+@@ -402,23 +404,34 @@
+     ('ssh25', 25), ('mount1', 1), ('redirect5', 5), ('actor2', 2), ('ordinary5', 5), ('no_forward6', 6)]
+ assert sum(len(g['tests']) for g in groups) == 44 and all(g['runtime_seconds'] == 600 for g in groups)
+ assert not os.path.lexists(ROOT)
+-result = {'schema': 'heptabao.phaseb-observer-independent-source-stage.v2', 'status': 'failed',
++result = {'schema': 'heptabao.cold-h2-independent-source-stage.v1', 'status': 'failed',
+           'source_commit': COMMIT, 'source_tree': TREE, 'sole_parent': PARENT,
+-          'root': str(ROOT), 'source': str(SOURCE), 'host': 'rog',
++          'root': str(ROOT), 'source': str(SOURCE), 'host': 'mac',
+           'stager_sha256': args.self_sha256, 'carrier_sha256': args.carrier_sha256,
+           'original_git_leaf_cap_seconds': 90, 'original_clone_cap_seconds': 180,
+-          'new_stage_total_seconds': 300, 'new_supervisor_seconds': 330,
+-          'server_started': False, 'compiler_started': False, 'production_changed': False,
++          'new_stage_total_seconds': 300, 'new_supervisor_seconds': 360,
++          'server_started': False, 'compiler_started': False, 'production_changed': True,
++          'source_ref': 'refs/heads/codex/heptabao-cold-h2-normal-20261105-r1',
++          'canonical_history_count': 3757, 'actual_build_qualification': False,
+           'controls': {}, 'started_ns': time.time_ns()}
+ before = None
+ try:
+     stage_remaining()
++    result['external_volume_uuid'] = prewrite_volume_guard()
++    canonical_path = ROOT.parent / 'canonical-cold-h2-df026-from495.bundle'
++    assert 0 < args.canonical_bundle_bytes <= 4 * 1024 * 1024
++    assert isinstance(args.canonical_bundle_sha256, str) and len(args.canonical_bundle_sha256) == 64
++    canonical_raw = stable_read(canonical_path, 4 * 1024 * 1024,
++                                args.canonical_bundle_bytes, args.canonical_bundle_sha256)
++    canonical_identity = identity(canonical_path.lstat())
++    assert stat.S_IMODE(canonical_path.lstat().st_mode) == 0o600
++    canonical_header = canonical_bundle_header(canonical_raw)
+     ROOT.mkdir(mode=0o700)
+     CONTROL.mkdir(mode=0o700)
+     created_control = True
+     (CONTROL / 'empty-hooks').mkdir(mode=0o700)
+     (CONTROL / 'empty-template').mkdir(mode=0o700)
+-    create(CONTROL / 'stage_source_phaseb_observer.py', self_source.encode())
++    create(CONTROL / 'stage_source_cold_h2.py', self_source.encode())
+     for name in EXPECTED_CONTROLS:
+         create(CONTROL / name, data['controls'][name].encode())
+         result['controls'][name] = {'sha256': EXPECTED_CONTROLS[name][1],
+@@ -426,11 +439,15 @@
+     fsync_dir(CONTROL)
+     fsync_dir(ROOT)
+     fsync_dir(ROOT.parent)
++    if prewrite_guard_record is not None:
++        prefix, out, err, receipt = prewrite_guard_record
++        create(CONTROL / (prefix + '.stdout'), out)
++        create(CONTROL / (prefix + '.stderr'), err)
++        public(CONTROL / (prefix + '.public.json'), receipt)
+     public(CONTROL / 'stage-intent.public.json', result)
+     before = freeze(OLD)
+     assert before == {'commit': OLD_COMMIT, 'tree': OLD_TREE, 'status': ''}
+     result['old_source_before'] = before
+-    result['failed_observer_before'] = preserve_failed_observer()
+     owned('independent-local-clone',
+           ['/usr/bin/git', '-c', 'gc.auto=0', '-c', 'maintenance.auto=false',
+            '-c', 'core.hooksPath=' + str(CONTROL / 'empty-hooks'),
+@@ -439,32 +456,45 @@
+            '--template=' + str(CONTROL / 'empty-template'), str(OLD), str(SOURCE)], 180)
+     git(SOURCE, 'remote', 'set-url', 'origin', ORIGIN)
+     assert git(SOURCE, 'remote', 'get-url', 'origin').decode().strip() == ORIGIN
++    assert identity(canonical_path.lstat()) == canonical_identity
++    assert stable_read(canonical_path, 4 * 1024 * 1024,
++                       args.canonical_bundle_bytes, args.canonical_bundle_sha256) == canonical_raw
++    git(SOURCE, 'bundle', 'verify', str(canonical_path))
++    assert git(SOURCE, 'bundle', 'list-heads', str(canonical_path)).decode().strip() == COMMIT + ' HEAD'
+     git(SOURCE, '-c', 'fetch.fsckObjects=true', '-c', 'transfer.fsckObjects=true',
+-        'fetch', '--no-tags', '--no-recurse-submodules', 'origin', COMMIT)
++        'fetch', '--no-tags', '--no-recurse-submodules', '--no-write-fetch-head', str(canonical_path), 'HEAD')
++    assert identity(canonical_path.lstat()) == canonical_identity
++    assert stable_read(canonical_path, 4 * 1024 * 1024,
++                       args.canonical_bundle_bytes, args.canonical_bundle_sha256) == canonical_raw
++    result['canonical_bundle'] = {'path': str(canonical_path), 'bytes': len(canonical_raw),
++                                  'sha256': digest(canonical_raw), 'header': canonical_header,
++                                  'identity': list(canonical_identity),
++                                  'public_network_import_required_on_mac': False}
+     assert git(SOURCE, 'rev-parse', COMMIT + '^{tree}').decode().strip() == TREE
+-    assert git(SOURCE, 'show', '-s', '--format=%P', COMMIT).decode().strip() == PARENT
+-    assert git(SOURCE, 'show', '-s', '--format=%P', PARENT).decode().strip() == GRANDPARENT
+-    assert git(SOURCE, 'show', '-s', '--format=%P', GRANDPARENT).decode().strip() == OLD_COMMIT
++    for child_commit, parent_commit in ANCESTRY:
++        assert git(SOURCE, 'show', '-s', '--format=%P', child_commit).decode().strip() == parent_commit
++    added = git(SOURCE, 'rev-list', COMMIT, '^' + OLD_COMMIT).decode().splitlines()
++    assert len(added) == 5 and set(added) == {row[0] for row in ANCESTRY}
++    result['new_commits_since_actual_495'] = added
+     assert git(SOURCE, 'rev-list', '--count', OLD_COMMIT).decode().strip() == '3752'
+-    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3755'
++    assert git(SOURCE, 'rev-list', '--count', COMMIT).decode().strip() == '3757'
+     assert git(SOURCE, 'rev-list', '--max-parents=0', COMMIT).decode().strip() == ROOT_COMMIT
+     git(SOURCE, 'checkout', '--detach', COMMIT)
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+     git(SOURCE, 'fsck', '--full', '--strict', '--no-reflogs', '--no-dangling', COMMIT)
+     result.update(independent_git())
+     result['full_worktree'] = verify_full_worktree()
+-    assert result['full_worktree']['tracked_bytes'] == 62194197
+-    assert result['full_worktree']['full_leaf_index_sha256'] == '5cb27cb400dc0896da98a5d4c740f2d5c9a83b6c60eb59dbec4eb7acd1a6ce00'
++    assert result['full_worktree']['tracked_bytes'] == 62212769
++    assert result['full_worktree']['full_leaf_index_sha256'] == 'e7fee633b64acffd6520587c85ff6f4206e0b12c7db42a0cdeb36dff66350d54'
+     assert freeze(SOURCE) == {'commit': COMMIT, 'tree': TREE, 'status': ''}
+     result['old_source_after'] = freeze(OLD)
+     assert result['old_source_after'] == before
+-    result['failed_observer_after'] = preserve_failed_observer()
+-    assert result['failed_observer_after'] == result['failed_observer_before']
+     stage_remaining()
+     result.update(status='prepared', source_clean=True, old_source_unchanged=True,
+                   exact_test_count=44,
+                   exact_groups=[[g['label'], len(g['tests'])] for g in groups],
+-                  additional_existing_tests=7, full_strict_fsck_passed=True)
++                  additional_existing_tests=7, additional_cold_h2_tests=9,
++                  public_network_fetch_used=False, full_strict_fsck_passed=True)
+ except BaseException as error:
+     result['error_type'] = type(error).__name__
+     # All raw Git stderr remains in new private files; no exception text is published.

@@ -1,0 +1,6 @@
+{
+  "reason": "The first harness ast.walk counted local argv assignments inside the unchanged holders helper; narrow the assertion to the actual PYTHON-list runner argv. No candidate source changed.",
+  "before": "argv_nodes=[n for n in ast.walk(lt) if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id==\"argv\" for t in n.targets)]",
+  "after": "argv_nodes=[n for n in ast.walk(lt) if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id==\"argv\" for t in n.targets) and isinstance(n.value,ast.List) and n.value.elts and isinstance(n.value.elts[0],ast.Name) and n.value.elts[0].id==\"PYTHON\"]",
+  "previous_failures_retained": true
+}

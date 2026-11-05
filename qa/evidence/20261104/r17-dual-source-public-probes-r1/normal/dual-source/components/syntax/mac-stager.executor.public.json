@@ -1,0 +1,7 @@
+{
+  "chunk_id": "6716d4",
+  "wall_time_seconds": 0.000023115,
+  "exit_code": 0,
+  "original_token_count": 54,
+  "output": "{\"ast_and_compile_only\": true, \"bytes\": 24623, \"file\": \"mac_stager.py\", \"host_calls\": 0, \"module_executed\": false, \"sha256\": \"a2e005425bc9511c0aca793094daf19c4aa2bf87299cf9f32b3c04bf4fc11ebe\", \"syntax\": \"passed\"}\n"
+}

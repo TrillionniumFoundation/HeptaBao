@@ -1,0 +1,7 @@
+{
+  "chunk_id": "922b6f",
+  "wall_time_seconds": 0.005330712,
+  "exit_code": 0,
+  "original_token_count": 54,
+  "output": "{\"ast_and_compile_only\": true, \"bytes\": 31962, \"file\": \"rog_launcher.py\", \"host_calls\": 0, \"module_executed\": false, \"sha256\": \"9ce815ccfa8a9c8c5158c1cf76d55966f07c2c095537bc91726e0cebfe1aa0a8\", \"syntax\": \"passed\"}\n"
+}

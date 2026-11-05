@@ -1,0 +1,81 @@
+{
+  "schema": "heptabao.mac-source-inband-bundle-review.v1",
+  "status": "SOURCE_READY_NOT_DISPATCHED",
+  "canonical": {
+    "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "history": 3757,
+    "leaves": 3913
+  },
+  "source": {
+    "bytes": 25136,
+    "sha256": "c6115506aa4020160e96926582eccd2abc2dc9ba5184ac121112701c280a2e90",
+    "blob": "0e5e200b68f5d1cd8c7527ad58fbbc7406956b15"
+  },
+  "request": {
+    "bytes": 118210,
+    "sha256": "7e2f42f13859f698490f160ab202224cd769bb71c0c6474b872504dd47af9ea1",
+    "blob": "e228257adf8d28131a3ffac464ea6f643e632d7b"
+  },
+  "stdin": {
+    "bytes": 90426,
+    "sha256": "9768f8945c60e55b5504757e53050832f9258e5541bc5cbe5ee3b49a2c0db0ec",
+    "blob": "40d50fc28f5fc0b66b8d7077da291a20c69c643a"
+  },
+  "provenance": {
+    "primary_executed_base": {
+      "host": "rog",
+      "bytes": 24552,
+      "sha256": "b3cb8165499fc668fc5c9c5eb1a43f31a7c79bd7d915e6f22df2e04d28c6a5f6",
+      "blob": "7087d818c7913dcf502e3cf253c439f42f7becf1"
+    },
+    "platform_reference": {
+      "host": "mac",
+      "bytes": 27150,
+      "sha256": "90bc84593ba4a2845cbce6141277e22e01dfc9be3fce126a31448a9428f8c990",
+      "blob": "3b012a9df21060bf582e97da537ff9c9bcc9027d"
+    },
+    "actual_rog_to_r1_hunks": 9,
+    "r1_to_r2_hunks": 2,
+    "r2_to_r3_hunks": 4,
+    "actual_mac_to_r3_hunks": 7,
+    "all_strict_whole_reconstructions_exact": true,
+    "previous_mac_stager_diff_true_base": "Executed ROG3cb stager7087, with explicit Mac T5/platform/file-only adaptation; not claimed byte-preserving derivation from actual Mac3b012."
+  },
+  "changes": [
+    "Only Mac source carrier gains one fixed base64 public bundle field, fully verified before any write.",
+    "Exact T5 prewrite guard remains before create-only bundle publication, parent fsync, stable full readback, then candidate ROOT creation.",
+    "No standalone binary_write; old proposal unexecuted and preserved.",
+    "Three inert control payload bodies are byte-identical to reviewed R2; runner/launcher/groups are unchanged."
+  ],
+  "guards": {
+    "bundle_bytes": 24337,
+    "bundle_sha256": "5e5e662ad369f3f94bdb0a844507d0305ebd0b4a661845c16be50475a4df16e2",
+    "bundle_destination": "/Volumes/T5/hepta-vnext-recovery-20261013/canonical-cold-h2-df026-from495.bundle",
+    "t5_uuid": "FB804D1B-24CB-4D6E-AEA7-A9E180807758",
+    "t5_before_first_volume_write": true,
+    "create_only": true,
+    "stdin_cap_bytes": 262144
+  },
+  "budgets": {
+    "internal_total_seconds": 300,
+    "git_seconds": 90,
+    "clone_seconds": 180,
+    "diskutil_seconds": 30,
+    "outer_seconds": 360
+  },
+  "components": {
+    "whole_ast_compile_only": 3,
+    "unchanged_defs_r2_to_r3": 20,
+    "new_guard_and_payload_assertions": 29,
+    "mock_io": true,
+    "host_io": 0,
+    "children": 0,
+    "whole_module_executed": false
+  },
+  "compiler_started": false,
+  "server_started": false,
+  "production_changed": false,
+  "mac_request_submitted": false,
+  "mac_bundle_written": false
+}

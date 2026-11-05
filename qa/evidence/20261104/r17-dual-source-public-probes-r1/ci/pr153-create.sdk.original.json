@@ -1,0 +1,47 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "url": "https://github.com/TrillionniumFoundation/HeptaBao/pull/153",
+    "number": 153,
+    "state": "open",
+    "merged": false,
+    "mergeable": false,
+    "draft": true,
+    "body": "## Problem\n\nThe normal native HA path has two remaining, independently observed blockers. The original LAN B2 run stopped at the final ROG cold unseal (91/98 original assertions). The official OpenBao 2.7.1 CLI snapshot B01 run returned 503 and produced no archive; its server completion boundary remains unknown. Source analysis identifies an entered-Tokio-context rejection inside fresh-ingress selection, but the old request logs do not establish its negotiated ALPN.\n\n## Candidate changes\n\nThis draft freezes `df026fe323dd7cf0f0ec57d7d2d9c5a79897053c`, tree `424463ccd2310ddc1e7b2bbcd7b7af29ae58c825`, on top of #152's current `6304a898192bfdf7eabec3c4ea40f7166e59a137`.\n\n- Keep the existing blocking-worker guard and original request deadline. Run the unchanged H2 synchronous Service dispatch on an owned scoped OS thread outside Tokio's entered context, while retaining the parent blocking task's capacity until the child is actually joined.\n- Add twenty bounded static observation labels to the existing cold loader. Preserve its original control flow, result types, repair paths, deadlines and publication guards. These observations do not themselves repair or qualify the cold-unseal failure.\n- Add two cold-timing component cases and six H2 execution-context, cancellation and ownership cases. Select the existing actual cold-missing/corrupt-file repair test separately; preserve the original 44 and existing 7 regression denominators.\n- Include the already reviewed CI test cleanups and the normal fresh-ingress observation source in one candidate. Three existing files change and two test files are added relative to 6304; all other 3,908 parent leaves are unchanged.\n\n## Validation state\n\nThe complete 3,913-file candidate and all 358 Git Merkle directories were independently verified. Four source files completed an actual pinned rustfmt pass on ROG. A fresh independent ROG source checkout and canonical offline bundle preparation completed with authoritative exit 0; compilation and the new tests are not yet qualified.\n\nMac/Linux builds, explicitly negotiated H2 KV2 and native-snapshot checks, the independent official 2.7.1 CLI save/restore/restart windows, and the real Mac/ROG/Pocket4 HA regression are being prepared against this exact source. They retain their original request and fixture budgets. Existing 495/3cb evidence is retained in its original scope and does not qualify df026.\n\nThe full qualification workflow runs for this draft's exact head and prospective merge. #152 remains unchanged so its current jobs can finish and their evidence is retained. This draft is not ready to merge.\n\n## Evidence and remaining gates\n\nThe durable [R16 checkpoint](https://github.com/TrillionniumFoundation/HeptaBao/blob/1d2d96ce8e44ec9b448c07651220dfecd111f3e5/docs/validation/HEPTABAO_36076_MAC_X230_LAN_CHECKPOINT.md) includes the complete [state and evidence index](https://github.com/TrillionniumFoundation/HeptaBao/blob/1d2d96ce8e44ec9b448c07651220dfecd111f3e5/qa/evidence/20261104/r16-cold-h2-candidate-mac-sandbox-r1/root-review/current-state.public.json).\n\nFull OpenBao 2.7.1 replacement remains unqualified. Current trusted AuthBus credentials, every installed consumer and backup path, per-host restart and inverse rollback, the exact production target and the full 2.7.1 compatibility denominator still require completion. No production traffic cutover or legacy service/binary deletion is included in this draft.\n",
+    "title": "Draft: unify native cold-recovery and H2 qualification candidate",
+    "base": "main",
+    "base_sha": "7b4a59bdd72218c1e779eb32754a682cf465af7a",
+    "head": "codex/heptabao-cold-h2-normal-20261105-r1",
+    "head_sha": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "head_repo_id": 1349115072,
+    "head_repo_full_name": "TrillionniumFoundation/HeptaBao",
+    "merge_commit_sha": null,
+    "user": {
+      "login": "Franksudoman",
+      "name": "Franksudoman",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/273670192?v=4",
+      "id": 273670192
+    },
+    "requested_reviewers": null,
+    "requested_team_reviewers": null,
+    "diff": null,
+    "comments": null,
+    "created_at": "2026-11-05T03:51:01Z",
+    "updated_at": "2026-11-05T03:51:01Z",
+    "closed_at": null,
+    "merged_at": null,
+    "commits": 2042,
+    "changed_files": 3483,
+    "additions": 1085232,
+    "deletions": 8830,
+    "display_url": "https://github.com/TrillionniumFoundation/HeptaBao/pull/153",
+    "display_title": "Draft: unify native cold-recovery and H2 qualification candidate"
+  },
+  "isError": false
+}

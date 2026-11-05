@@ -1,0 +1,60 @@
+{
+  "schema": "heptabao.public-artifact-manifest.v1",
+  "files": {
+    "result.stdout.json": {
+      "bytes": 13741,
+      "sha256": "e4e062eacfb4b6080f973d053d301504b90b27d0782172c227745488ec826a6a",
+      "blob": "54e665b8eec967fc561820d337ad5bb14f621e32"
+    },
+    "terminal.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+    },
+    "authority.original.json": {
+      "bytes": 733,
+      "sha256": "70a9289777c626b8ea795ae017161f923638a74459b79c350f94b5650ef72752",
+      "blob": "84c19eed8f67e2cc324b7e84f92da6089ecfec5e"
+    },
+    "ack.original.json": {
+      "bytes": 6562,
+      "sha256": "28f3b99a515fd718c4c8838f8bab4e772258674a8d5958199cb328557e112fc1",
+      "blob": "c5c705b7f0aec9d0858cdae8e9387098c7b0069f"
+    },
+    "intent.public.json": {
+      "bytes": 843,
+      "sha256": "3da8f0b73beaf43fe7c483a7b71900aaa253870461bcf484a355e4f2fc0653a4",
+      "blob": "e7b01337877792c40eb8b280871c175ff0d13323"
+    },
+    "source.py": {
+      "bytes": 5429,
+      "sha256": "ebc399742a69093ca8d3d34dfd503e617c216f5976ee8f3593fda36ff9026fca",
+      "blob": "919404a9d2212acde91120340eb894a703819bd9"
+    },
+    "request.json": {
+      "bytes": 5794,
+      "sha256": "dd00c76546f0d11058ee44da8603ef1fd96b26b84774aa1dbb9f0825b7ad17c7",
+      "blob": "da83bb7fad62f9d074c5d8ecd4008a2f8cbe7c37"
+    },
+    "assessment.public.json": {
+      "bytes": 1493,
+      "sha256": "2e8a2def834228189f7e97d721518234b0a25c7b993e24360654c09c2c82a186",
+      "blob": "889cadbc67a588f190455215ab9b6090a3ff44a2"
+    },
+    "sdk/ack.response.json": {
+      "bytes": 6927,
+      "sha256": "2c4c9abbf51a140e80a024ec47a2d0f20a1f00b182e7ec92314ec985ed7c46fa",
+      "blob": "b9da78dc67410887cb06b47707ab7a26b022daae"
+    },
+    "sdk/authority.response.json": {
+      "bytes": 956,
+      "sha256": "a3122f4b06000a7356e31cfcdfaf8cc8586ecc46285a0ab004346b064777a35d",
+      "blob": "17e68a4dcabd00bcef86f7dd1ce5a716db45024a"
+    },
+    "sdk/terminal.response.json": {
+      "bytes": 44098,
+      "sha256": "cb5fa66c5ffbb80406fcfc4cd02fe226cb38b3f479f02c27aca4a0c794637712",
+      "blob": "2312df5385d0ee4cdb96eceb738fa1265b2c49d6"
+    }
+  }
+}

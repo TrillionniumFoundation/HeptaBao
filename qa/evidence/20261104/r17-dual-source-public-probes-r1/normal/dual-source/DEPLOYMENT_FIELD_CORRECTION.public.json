@@ -1,0 +1,153 @@
+{
+  "schema": "heptabao.cold-h2-controls-all-hosts-deployment-field-correction.v1",
+  "previous_complete_source_tree": "f0062d97b9e9396e985dcfbb1c9e2ab95365179b",
+  "previous_priority_tree": "ce5ca40b22ba634f7794b0bf02ea943efa06ecad",
+  "revised_rog_priority_tree": "823d6d0a232ca5ceee0f4cef38aaac0c234aefe2",
+  "description": "All six production_changed fields remain false: candidate code differs, but no deployed production changes are performed by these isolated source/build controls.",
+  "rows": [
+    {
+      "host": "rog",
+      "kind": "runner",
+      "before": {
+        "bytes": 26658,
+        "sha256": "71d57dfd549337231bd1160ff3008374a473b305f662178609cf61e5ab300f5b",
+        "blob": "2d8aadc2d32a8f81ac1d94981a8548b22a7fa961"
+      },
+      "after": {
+        "bytes": 26659,
+        "sha256": "1a3fdc3a7cf6504447feb7d7dadf2f365b292512f6d0cf8cdfb4a2ea63d33d40",
+        "blob": "23fb2b80070879f6a00fe3dfbb9ed7d1ee069555"
+      }
+    },
+    {
+      "host": "rog",
+      "kind": "launcher",
+      "before": {
+        "bytes": 31962,
+        "sha256": "9ce815ccfa8a9c8c5158c1cf76d55966f07c2c095537bc91726e0cebfe1aa0a8",
+        "blob": "f7a22413ff2e075b52f21c01d0e0ee7d5220010b"
+      },
+      "after": {
+        "bytes": 31963,
+        "sha256": "7c3dbf522f51931aaa5c1947ec0742883bdcc1405913d45f8b43f217983acb98",
+        "blob": "b7579b87de15982431ce3608f01e1a2913c1c63b"
+      }
+    },
+    {
+      "host": "rog",
+      "kind": "stager",
+      "before": {
+        "bytes": 27543,
+        "sha256": "78ef9c323259aa0e84000003c28a7250e213ae4f8420264055819f49292c3efe",
+        "blob": "7484f0800728eaa8847367ed170fb86bee2ed31e"
+      },
+      "after": {
+        "bytes": 27544,
+        "sha256": "b0b3d2e41316b657d25143438f18150b217eefb0d28f960054e7719000c27a98",
+        "blob": "fc3786c199c07435cb3f9e2072768a8282750448"
+      }
+    },
+    {
+      "host": "mac",
+      "kind": "runner",
+      "before": {
+        "bytes": 26541,
+        "sha256": "b57a333cf3f6ab96ae03460f66cd1d0cb351bea9cbc4755bf5f5045427e69985",
+        "blob": "04df9d9a23079f4f2d780655db7e6c5a55f56803"
+      },
+      "after": {
+        "bytes": 26542,
+        "sha256": "186168747811b86e9f7205928e7b0a8fbc5d105354f725a4d02db33335b2c862",
+        "blob": "e9560c948992baad57cf911d179e065f49a6a4ca"
+      }
+    },
+    {
+      "host": "mac",
+      "kind": "launcher",
+      "before": {
+        "bytes": 23773,
+        "sha256": "5144d2f61418f16966439f9563615f23a2859c0401e90b0d7d8187f109821eeb",
+        "blob": "5af92c4cd1558c48f5241eab200ef72c4458d737"
+      },
+      "after": {
+        "bytes": 23774,
+        "sha256": "5af8319e841f659a7123057baeed270d474b011332ade303b4c2cb5b942d02ff",
+        "blob": "470e442492a91eb7366ed882aab5535e595e9a23"
+      }
+    },
+    {
+      "host": "mac",
+      "kind": "stager",
+      "before": {
+        "bytes": 24623,
+        "sha256": "a2e005425bc9511c0aca793094daf19c4aa2bf87299cf9f32b3c04bf4fc11ebe",
+        "blob": "fae887eff72b366a99efc19147be231ebcef5978"
+      },
+      "after": {
+        "bytes": 24624,
+        "sha256": "e4e0a04338a56aac53e0ccede3d0e5d47e962a8cbbb963b0996eb037af7067b0",
+        "blob": "eac5c7ab452ed4f12914bcc952a6c3d34f4dd20e"
+      }
+    }
+  ],
+  "inverse_proof": [
+    {
+      "host": "rog",
+      "kind": "runner",
+      "hunks": 1,
+      "changed_lines": 1,
+      "whole_strict_apply_equal": true,
+      "whole_inverse_equal": true,
+      "allowed_change": "production_changed remains deployment fact false; stager pinned control size/SHA cascade only"
+    },
+    {
+      "host": "rog",
+      "kind": "launcher",
+      "hunks": 1,
+      "changed_lines": 1,
+      "whole_strict_apply_equal": true,
+      "whole_inverse_equal": true,
+      "allowed_change": "production_changed remains deployment fact false; stager pinned control size/SHA cascade only"
+    },
+    {
+      "host": "rog",
+      "kind": "stager",
+      "hunks": 2,
+      "changed_lines": 3,
+      "whole_strict_apply_equal": true,
+      "whole_inverse_equal": true,
+      "allowed_change": "production_changed remains deployment fact false; stager pinned control size/SHA cascade only"
+    },
+    {
+      "host": "mac",
+      "kind": "runner",
+      "hunks": 1,
+      "changed_lines": 1,
+      "whole_strict_apply_equal": true,
+      "whole_inverse_equal": true,
+      "allowed_change": "production_changed remains deployment fact false; stager pinned control size/SHA cascade only"
+    },
+    {
+      "host": "mac",
+      "kind": "launcher",
+      "hunks": 1,
+      "changed_lines": 1,
+      "whole_strict_apply_equal": true,
+      "whole_inverse_equal": true,
+      "allowed_change": "production_changed remains deployment fact false; stager pinned control size/SHA cascade only"
+    },
+    {
+      "host": "mac",
+      "kind": "stager",
+      "hunks": 2,
+      "changed_lines": 3,
+      "whole_strict_apply_equal": true,
+      "whole_inverse_equal": true,
+      "allowed_change": "production_changed remains deployment fact false; stager pinned control size/SHA cascade only"
+    }
+  ],
+  "draft1_no_host_submissions": true,
+  "short_stage_only_unpublished_draft_never_submitted": true,
+  "tests_not_repeated": true,
+  "functions_paths_budgets_names_unchanged": true
+}

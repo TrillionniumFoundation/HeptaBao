@@ -1,0 +1,132 @@
+{
+  "schema": "heptabao.cold-h2-normal-controls-strict-diff.v1",
+  "scope": "source-only",
+  "rows": [
+    {
+      "host": "rog",
+      "kind": "runner",
+      "before": {
+        "bytes": 20791,
+        "sha256": "5ba3e0152b1b84510ef7740b1e5d863e1464e4eaee04a4b772747a4db86dcb2b",
+        "blob": "7fd97c088c538c7b4d1968964b8d8eaa67826885"
+      },
+      "after": {
+        "bytes": 26658,
+        "sha256": "71d57dfd549337231bd1160ff3008374a473b305f662178609cf61e5ab300f5b",
+        "blob": "2d8aadc2d32a8f81ac1d94981a8548b22a7fa961"
+      },
+      "diff": {
+        "bytes": 13122,
+        "sha256": "2010df553af1530692f46e31a7584217e177a1731458b6bfe076d9fd9adbfc52",
+        "blob": "aa30b7539cfcc21e1912710fc330f0d7d6bd0424"
+      },
+      "hunks": 11,
+      "strict_reconstructed_whole_match": true
+    },
+    {
+      "host": "rog",
+      "kind": "launcher",
+      "before": {
+        "bytes": 28425,
+        "sha256": "230597bdf2e67f617428355fd0cae4c4b587c397409e02e0395ee96c8e4cee03",
+        "blob": "8909a7add36d43e3be7a5175adb4f184e72f7fed"
+      },
+      "after": {
+        "bytes": 31962,
+        "sha256": "9ce815ccfa8a9c8c5158c1cf76d55966f07c2c095537bc91726e0cebfe1aa0a8",
+        "blob": "f7a22413ff2e075b52f21c01d0e0ee7d5220010b"
+      },
+      "diff": {
+        "bytes": 9225,
+        "sha256": "7b9f73be39ceae0daa0fe30c2326ff97928c9054495f4a8ba976eaa53eee7303",
+        "blob": "774c87c11b25c55286dca4634fcc4258d810ef9c"
+      },
+      "hunks": 11,
+      "strict_reconstructed_whole_match": true
+    },
+    {
+      "host": "rog",
+      "kind": "stager",
+      "before": {
+        "bytes": 24552,
+        "sha256": "b3cb8165499fc668fc5c9c5eb1a43f31a7c79bd7d915e6f22df2e04d28c6a5f6",
+        "blob": "7087d818c7913dcf502e3cf253c439f42f7becf1"
+      },
+      "after": {
+        "bytes": 27543,
+        "sha256": "78ef9c323259aa0e84000003c28a7250e213ae4f8420264055819f49292c3efe",
+        "blob": "7484f0800728eaa8847367ed170fb86bee2ed31e"
+      },
+      "diff": {
+        "bytes": 11321,
+        "sha256": "39b56b259abf8f3c7cdea1bbc61a564d64bb52dc803139adb4a1de07178bcb91",
+        "blob": "ba4906a813444dd6f4dabbbfd4122f7f3093397e"
+      },
+      "hunks": 9,
+      "strict_reconstructed_whole_match": true
+    },
+    {
+      "host": "mac",
+      "kind": "runner",
+      "before": {
+        "bytes": 16894,
+        "sha256": "f925684275b42215300fa91f9b90478c75b822ce2d6f2e4be165b5e8e44e353d",
+        "blob": "031ab151262f50ed7db4ecad16cb9c04750c5930"
+      },
+      "after": {
+        "bytes": 26541,
+        "sha256": "b57a333cf3f6ab96ae03460f66cd1d0cb351bea9cbc4755bf5f5045427e69985",
+        "blob": "04df9d9a23079f4f2d780655db7e6c5a55f56803"
+      },
+      "diff": {
+        "bytes": 14901,
+        "sha256": "b702497c7fa8b534980d4f8135bb0aa17341f401820fc658966f2629f6df952a",
+        "blob": "75b9eb54bb9f19ac71f7b0e3d042ea56964d1320"
+      },
+      "hunks": 9,
+      "strict_reconstructed_whole_match": true
+    },
+    {
+      "host": "mac",
+      "kind": "launcher",
+      "before": {
+        "bytes": 20167,
+        "sha256": "d1542351492f9efb41ba18c3b25e9548be7eb658db5cb13c5b4bf80f097a55ad",
+        "blob": "af34201f8930265a8813028ba6cc21a07166e43d"
+      },
+      "after": {
+        "bytes": 23773,
+        "sha256": "5144d2f61418f16966439f9563615f23a2859c0401e90b0d7d8187f109821eeb",
+        "blob": "5af92c4cd1558c48f5241eab200ef72c4458d737"
+      },
+      "diff": {
+        "bytes": 10053,
+        "sha256": "cb859fd2308256c1c31579d6bae63b279cad58e780c8b8123cda10d252d3b7b0",
+        "blob": "779e84438a2efd57ac323f52d8a91a0427a042a8"
+      },
+      "hunks": 10,
+      "strict_reconstructed_whole_match": true
+    },
+    {
+      "host": "mac",
+      "kind": "stager",
+      "before": {
+        "bytes": 24552,
+        "sha256": "b3cb8165499fc668fc5c9c5eb1a43f31a7c79bd7d915e6f22df2e04d28c6a5f6",
+        "blob": "7087d818c7913dcf502e3cf253c439f42f7becf1"
+      },
+      "after": {
+        "bytes": 24623,
+        "sha256": "a2e005425bc9511c0aca793094daf19c4aa2bf87299cf9f32b3c04bf4fc11ebe",
+        "blob": "fae887eff72b366a99efc19147be231ebcef5978"
+      },
+      "diff": {
+        "bytes": 20397,
+        "sha256": "c43ce95b602abbe1c617f6360b6a26f5fd6bb781e74e172e68ca85fcd3f34638",
+        "blob": "431e9b197495531d51fb0a5b46b5589721c0f5e9"
+      },
+      "hunks": 9,
+      "strict_reconstructed_whole_match": true
+    }
+  ]
+}

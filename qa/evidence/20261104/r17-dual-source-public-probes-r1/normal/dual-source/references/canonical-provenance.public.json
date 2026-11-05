@@ -1,0 +1,65 @@
+{
+  "schema": "heptabao.unified-cold-h2-normal-candidate-source.r1",
+  "commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "parent": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+  "tree_verification": {
+    "tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "leaves": 3913,
+    "merkle": {
+      "root_sha": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+      "trees_verified": 358
+    },
+    "unchanged_original_leaves": 3908,
+    "existing_source_changes": 3,
+    "new_test_modules": 2,
+    "all_other_leaves_exact": true,
+    "parent": "6304a898192bfdf7eabec3c4ea40f7166e59a137",
+    "elements": [
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_read.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b09e57362d53ce207b255d713d7aa7c126215691"
+      },
+      {
+        "path": "crates/heptabao-server/src/service_native_v6_ha_cold_timing_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a8d9a60bad3424c038e7144028a4561daa14a130"
+      },
+      {
+        "path": "crates/heptabao-server/src/http_h2.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "70db7e9c37f057ddb7a1a146e57d1697928d33ce"
+      },
+      {
+        "path": "crates/heptabao-server/src/http_h2_sync_worker_tests.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7e69476f7a09b19fdb62c0022494ccc23e2c7f69"
+      },
+      {
+        "path": "crates/heptabao-server/src/ha_native_v6_runtime.rs",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3289da21ebb25a1efd04ae0d0fd1013ac7ac8fb3"
+      }
+    ]
+  },
+  "formatter_actual_tree": "e97ec2f9b232ad4aa8062a360b314c65f80ef7f2",
+  "formatter_root_review": "3dfc1a1ad77be2c72f4343d9dffdcc1cc9e68582",
+  "h2_source_root_review": "05e4fa999503227f51c9362a38bd6f5f95e3f327",
+  "cold_source_root_review": "8d0dd3a354b957fd51dfefda77949d3f06cfa77a",
+  "cold_test_root_review": "9b8233ec6a92fa4396a98026879a47e32b065e17",
+  "source_reason_root_review": "2256dc9f3932002fad81d898dba825e4d42e0ae8",
+  "base_integration_reason": "Preserve existing reviewed CI fixes and avoid replacing the candidate after platform qualification. The old cold-read and H2 sources are identical on 3cb and6304; exact3cb normal fresh-ingress runtime observations are carried forward.",
+  "normal_source_compiled": false,
+  "tests_executed": false,
+  "real_h2_native_qualified": false,
+  "full_replacement_qualified": false,
+  "source_ref_updated": false,
+  "pr152_unchanged": true,
+  "current6304_ci_kept_running": true
+}

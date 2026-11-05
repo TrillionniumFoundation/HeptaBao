@@ -1,0 +1,23 @@
+{
+  "schema": "heptabao.cold-h2-mac-source-once-intent.v1",
+  "recorded_before_submission": true,
+  "recorded_at": "2026-11-05T04:09:05.445Z",
+  "request": {
+    "bytes": 118210,
+    "sha256": "7e2f42f13859f698490f160ab202224cd769bb71c0c6474b872504dd47af9ea1",
+    "blob": "e228257adf8d28131a3ffac464ea6f643e632d7b"
+  },
+  "key": "heptabao-cold-h2-df026-mac-source-20261105-r3-c6115506",
+  "root_admission_blob": "aa9e509f30935d79dc90c5ffdb727279bf8fb4ce",
+  "window_released_by_root_after_known_ps_probe": "1a1a9e1e367-fc05-390e",
+  "old_nested11754_historical_unknown_unchanged": true,
+  "source_commit": "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+  "source_tree": "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+  "scope": "One inline-public-bundle/T5 guarded independent source stage only; no Cargo/server.",
+  "inner_seconds": 300,
+  "outer_seconds": 360,
+  "bundle_bytes": 24337,
+  "bundle_sha256": "5e5e662ad369f3f94bdb0a844507d0305ebd0b4a661845c16be50475a4df16e2",
+  "standalone_binary_write": false,
+  "submitted": false
+}

@@ -1,0 +1,52 @@
+{
+  "schema": "heptabao.cold-h2-normal-build-early-failure.v1",
+  "status": "FAIL_PRECOMPILATION_TARGET_PATH",
+  "job_id": "1a1a9d78f65-fc05-3884",
+  "authority": {
+    "bytes": 726,
+    "sha256": "9188213431c349616ecd8dd329f930d909fb3b973ff27848ae3afb7957e2bfae",
+    "blob": "fbd4bd712283922334a30cc8767c94a97a3b7582"
+  },
+  "stdout": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "stderr": {
+    "bytes": 693,
+    "sha256": "bb032403580f205d6e15f90da809c666b4accec08a0acf00f0a83611ecbbe01e",
+    "blob": "5851a2b4296af66b5e1fe01e0c7cbd1e00da31f4"
+  },
+  "stream_hex_text_exact": true,
+  "authority_terminal_created_span_ms": 4023,
+  "span_is_outer_observation_not_controller_elapsed": true,
+  "failed_source_blob": "b7579b87de15982431ce3608f01e1a2913c1c63b",
+  "failure": {
+    "line": 418,
+    "call": "TARGET.resolve(strict=True)",
+    "error": "FileNotFoundError",
+    "target": "/home/qian-qi/heptabao-native-20261029-c1bd-r1/runtime/target",
+    "interpretation": "The fixed path could not be resolved on this host at this invocation. The failing component, removal cause and any replacement target are not established."
+  },
+  "source_order": {
+    "same_target_literal_in_actual_prior_launcher": "8909a7add36d43e3be7a5175adb4f184e72f7fed",
+    "new_literal_unchanged": true,
+    "guard_precedes_admission_mkdir": true,
+    "guard_precedes_source_freeze_git_children": true,
+    "guard_precedes_same_pid_runner_exec": true,
+    "normal_release_output_file_info": "known FileNotFoundError for normal-release-tests-r1"
+  },
+  "qualification": {
+    "release": false,
+    "libtest_compile": false,
+    "original44_not_executed": 44,
+    "existing7_not_executed": 7,
+    "new9_not_executed": 9
+  },
+  "cleanup_scope": "Authoritative launcher exit1 and exact source guard before any child dispatch; no new normal runner/Cargo/server was reached. This is not a general host process inventory.",
+  "prior_source_stage_still_recorded_separately": true,
+  "no_retry": true,
+  "no_target_creation_or_replacement": true,
+  "mac_stage_submitted": false,
+  "production_changed": false
+}

@@ -1,0 +1,7 @@
+{
+  "chunk_id": "17b69d",
+  "wall_time_seconds": 0.100166282,
+  "exit_code": 0,
+  "original_token_count": 37,
+  "output": "{\"ast_compile_only\": true, \"bytes\": 39810, \"module_executed\": false, \"sha256\": \"c694655f3cf6835bdc8d507afef10764b0d2c41601f60de9466705c93efb39fe\"}\n"
+}

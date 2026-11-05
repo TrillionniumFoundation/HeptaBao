@@ -1,0 +1,31 @@
+{
+  "host": "mac",
+  "executable": "/opt/homebrew/bin/python3",
+  "args": [
+    "-I",
+    "-S",
+    "-B",
+    "/Volumes/T5/hepta-vnext-recovery-20261013/continuation-20261105-cold-h2-normal-r1/control/launch_normal_cold_h2.py",
+    "--host",
+    "mac",
+    "--commit",
+    "df026fe323dd7cf0f0ec57d7d2d9c5a79897053c",
+    "--tree",
+    "424463ccd2310ddc1e7b2bbcd7b7af29ae58c825",
+    "--stage-sha256",
+    "34c7be755ee8120ac383370fec9557c1b42b2ab5bb19a6e74c1b5516a031ca4e",
+    "--runner-sha256",
+    "186168747811b86e9f7205928e7b0a8fbc5d105354f725a4d02db33335b2c862",
+    "--groups-sha256",
+    "0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1",
+    "--r9-resume-sha256",
+    "d3c26b8b78c41915421e1972c4eaeea47eb14ec5ad581568206047e89ac9ab7d",
+    "--r9-resume-terminal-sha256",
+    "8f03915cf7fce1dc2eb92cdce9933e663dbe40ccc5c104e7d2c97e8f364abd28",
+    "--r9-resume-authority-sha256",
+    "24deb356103c8210bb76751122aaa0c19fc6ab5ec6a9e09a62f0cc68e326a57e"
+  ],
+  "cwd": "/Volumes/T5/hepta-vnext-recovery-20261013",
+  "timeout_seconds": 8280,
+  "idempotency_key": "heptabao-cold-h2-df026-mac-normal60-20261105-r2-5af8319e-18616874"
+}

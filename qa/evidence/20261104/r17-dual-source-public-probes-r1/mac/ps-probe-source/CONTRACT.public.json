@@ -1,0 +1,153 @@
+{
+  "schema": "heptabao.mac-public-ps-sandbox-source-contract.r1",
+  "source_only": true,
+  "submitted": false,
+  "source": {
+    "bytes": 39810,
+    "sha256": "c694655f3cf6835bdc8d507afef10764b0d2c41601f60de9466705c93efb39fe",
+    "git_blob": "3b4d4a323532a11d67cb104de8586e3d2e2de3d1"
+  },
+  "loader": {
+    "bytes": 308,
+    "sha256": "4f24cab7f16512276823401bd8015e849952769776954ac79f57d1bdd0b58ca3",
+    "git_blob": "65d08025c937d6f77cd6bdd653cf1788dd697b9f"
+  },
+  "request": {
+    "bytes": 41378,
+    "sha256": "86b336682afcb6848dd546b1536ce2b356da4ed89b93a3bcce076589dd4adbf1",
+    "git_blob": "fc26f5db6c3d4914b9d450947dee71c7953eece1"
+  },
+  "idempotency_key": "heptabao-mac-owned-ps-sandbox-c694655f-20261105-r1",
+  "original_source": {
+    "git_blob": "7f3114022a5fb142af0082af0eca641c1464ee63",
+    "bytes": 28201,
+    "sha256": "5229fa7089b9164e853dec4628c31969e39a212253618573f38b8a26df3d29a5"
+  },
+  "fresh_root": "/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/ps-sandbox-probe-r1",
+  "retained_historical_unknown": {
+    "actual_packet_tree": "767a66d03d2f96a14d016baaaa10e86665bd0ccd",
+    "job": "1a1a9c8632a-fc05-37bc",
+    "nested_pid": 11754,
+    "original_reap_and_exit_unknown": true,
+    "later_absence_does_not_rewrite_history": true
+  },
+  "deadlines": {
+    "shared_seconds": 45,
+    "outer_seconds": 60,
+    "ps_seconds": 4,
+    "ps_clipped_to_original_shared_deadline": true,
+    "outer_diskutil_seconds": 30,
+    "outer_diskutil_clipped_to_shared": true,
+    "original_owned_cleanup_unchanged": true
+  },
+  "exact_ps_arguments": [
+    "-p",
+    "<the sandbox parent's actual own PID>",
+    "-o",
+    "pid=,ppid=,pgid=,uid=,stat=,lstart="
+  ],
+  "inner_ps": {
+    "count": 2,
+    "start_new_session": false,
+    "close_fds": true,
+    "stdin": "subprocess.DEVNULL",
+    "stdout": "PIPE",
+    "stderr": "PIPE",
+    "signals": [],
+    "new_independent_session": false,
+    "outer_retained_sandbox_pgid": true,
+    "unknown_stops_sequence": true,
+    "no_inner_diskutil": true
+  },
+  "original_ps": {
+    "identity": [
+      "16777233",
+      "1152921500312571399",
+      "0",
+      "0",
+      "35309",
+      "1",
+      "170432",
+      "1786589515000000000",
+      "1786589515000000000"
+    ],
+    "path": "/bin/ps",
+    "resolved": "/bin/ps",
+    "sha256": "3bbba882e30d91fc4ff6e6844ca7c59fef4351b9a3fea35dca55708d6d487d1c"
+  },
+  "owned_copy": {
+    "basename": "ps-owned-no-setuid",
+    "mode": "0500",
+    "uid": 501,
+    "gid": 20,
+    "nlink": 1,
+    "create_only": true,
+    "source_whole_bytes_identical": true,
+    "same_fd_write_fchmod_fsync_readback": true,
+    "original_system_file_unchanged": true,
+    "code_signing_operations": 0
+  },
+  "policies": {
+    "original": {
+      "bytes": 7701,
+      "sha256": "909cfac6f7d2e4122157dcf79ef6d8c8563aea37a59025b77a52075fff791578"
+    },
+    "patched": {
+      "bytes": 7742,
+      "sha256": "4d7a78c70a187ab8dc56d481c47decd5c8d697ce15c9a708068627524f5c75f3"
+    }
+  },
+  "policy_delta": {
+    "extra_rule": "(allow file-read* (literal \"/dev/null\"))\n",
+    "extra_bytes": 41,
+    "both_variants": "patched.sb",
+    "old_capture_path_relocation_count": 3,
+    "no_no_sandbox": true,
+    "no_general_policy_expansion": true
+  },
+  "kernel_negative_checks": {
+    "executed_only_after_owned_copy_success": true,
+    "unchanged_body": true,
+    "cases": [
+      "owned_main_write",
+      "owned_wal_create",
+      "owned_shm_create",
+      "loopback_127.0.0.1_port9"
+    ],
+    "all_four_required": true
+  },
+  "evidence_rules": {
+    "only_fixed_stage_class_and_bounded_errno": true,
+    "no_exception_message": true,
+    "no_dynamic_filename": true,
+    "child_stderr_hash_and_size_only": true,
+    "source_runtime_flags_are_not_observed_spawn_branch": true,
+    "system_success_does_not_imply_setuid_cause": true,
+    "copy_success_does_not_prove_full_capture_child_path": true,
+    "known_observation_is_not_execution_success": true,
+    "final_success_requires_actual_copy_execution": true,
+    "actual_exit_zero_and_complete_original_stdout_required": true
+  },
+  "forbidden": {
+    "production_database_reads": true,
+    "credential_reads": true,
+    "sqlite_import_or_connections": true,
+    "sdk_or_consumer_start": true,
+    "provider_or_j3160": true,
+    "current_fixture_replay": true,
+    "existing_capture_path_reuse": true,
+    "original_tool_chmod_or_mutation": true
+  },
+  "verification": {
+    "strict_diff": {
+      "hunks": 12,
+      "whole_equal": true
+    },
+    "selected_fake_components": 13,
+    "real_test_processes": 0,
+    "real_test_descriptors": 0,
+    "real_test_network_operations": 0,
+    "byte_equal_original_functions": 16,
+    "host_runtime": false
+  }
+}

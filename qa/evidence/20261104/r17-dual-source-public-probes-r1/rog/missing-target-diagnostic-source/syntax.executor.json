@@ -1,0 +1,7 @@
+{
+  "chunk_id": "ab82a0",
+  "wall_time_seconds": 0.042056331,
+  "exit_code": 0,
+  "original_token_count": 19,
+  "output": "{\"syntax_compile_only\": true, \"module_executed\": false, \"host_calls\": 0}\n"
+}

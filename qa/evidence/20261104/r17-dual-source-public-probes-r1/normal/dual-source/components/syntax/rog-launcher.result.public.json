@@ -1,0 +1,9 @@
+{
+  "ast_and_compile_only": true,
+  "bytes": 31962,
+  "file": "rog_launcher.py",
+  "host_calls": 0,
+  "module_executed": false,
+  "sha256": "9ce815ccfa8a9c8c5158c1cf76d55966f07c2c095537bc91726e0cebfe1aa0a8",
+  "syntax": "passed"
+}

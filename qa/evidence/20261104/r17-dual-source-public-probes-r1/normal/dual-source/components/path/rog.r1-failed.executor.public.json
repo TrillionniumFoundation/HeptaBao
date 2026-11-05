@@ -1,0 +1,7 @@
+{
+  "chunk_id": "7ce45c",
+  "wall_time_seconds": 0.02730247,
+  "exit_code": 1,
+  "original_token_count": 36,
+  "output": "Traceback (most recent call last):\n  File \"<stdin>\", line 44, in <module>\n  File \"<stdin>\", line 6, in check\nAssertionError: unique_runner_argv\n"
+}

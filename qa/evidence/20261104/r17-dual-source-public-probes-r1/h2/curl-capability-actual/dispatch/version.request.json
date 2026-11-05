@@ -1,0 +1,14 @@
+{
+  "host": "desktop",
+  "executable": "/usr/bin/curl",
+  "args": [
+    "-q",
+    "--version"
+  ],
+  "cwd": "/home/qian-qi/heptabao-ha-closure-20261103-r1",
+  "env": {
+    "LC_ALL": "C"
+  },
+  "idempotency_key": "heptabao-h2-curl-capability-version-20261105-r1",
+  "timeout_seconds": 15
+}

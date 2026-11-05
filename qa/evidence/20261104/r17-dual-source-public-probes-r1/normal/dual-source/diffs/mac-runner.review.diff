@@ -1,0 +1,237 @@
+--- before/mac-runner.py
++++ after/mac-runner.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Build frozen Mac R10 normal server/seed and libtest with original budgets."""
++"""Build the exact cold/H2 canonical source; qualify original 44, existing 7, then new 9."""
+ from pathlib import Path
+ import argparse
+ import hashlib
+@@ -14,8 +14,37 @@
+ parser = argparse.ArgumentParser()
+ for name in ('source', 'output', 'commit', 'tree', 'toolchain', 'cargo-home', 'target', 'groups', 'groups-sha256'):
+     parser.add_argument('--' + name, required=True)
++parser.add_argument('--outer-started-monotonic', required=True, type=float)
++parser.add_argument('--launcher-pid', required=True, type=int)
+ args = parser.parse_args()
++ORIGINAL_OUTER_SECONDS = 8280
++assert args.launcher_pid == os.getpid(), 'same-PID launcher exec required'
++assert 0 < args.outer_started_monotonic <= time.monotonic()
++OUTER_UNTIL = args.outer_started_monotonic + ORIGINAL_OUTER_SECONDS
++assert time.monotonic() < OUTER_UNTIL, 'original outer deadline expired before runner'
+ source, output = Path(args.source), Path(args.output)
++DIAGNOSTIC_COMMIT = 'df026fe323dd7cf0f0ec57d7d2d9c5a79897053c'
++DIAGNOSTIC_TREE = '424463ccd2310ddc1e7b2bbcd7b7af29ae58c825'
++INGRESS_OBSERVER_TESTS = (
++    "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_is_affine_and_resumed_binding_never_arms",
++    "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_permission_rejects_actual_new_request_nonce_or_selected_root",
++    "service::native_v6_ha_install::tests::ingress_selection_tests::fresh_ingress_actual_failed_repair_closes_reselection_before_any_result",
++    "ha::native_v6_runtime::request_timing_tests::native_request_timing_failure_has_only_bounded_static_metadata",
++    "ha::native_v6_runtime::request_timing_tests::native_request_timing_sixty_four_buckets_preserve_existing_aggregates",
++    "ha::native_v6_runtime::request_timing_tests::native_request_timing_observes_deadlines_but_preserves_once_only_results",
++    "ha::native_v6_runtime::request_timing_tests::native_request_timing_phase_advance_is_distinct_from_operation_success",
++)
++COLD_H2_TESTS = (
++    "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_once_and_owned_result_identity",
++    "service::native_v6_ha_install::read::cold_timing_tests::cold_native_ha_timing_preserves_nested_source_and_inner_results",
++    "service::native_v6_ha_install::tests::native_ha_install_batches_actual_readindex_cold_missing_and_corrupt_file",
++    "http::h2_transport::sync_worker_tests::h2_sync_worker_is_unentered_and_retains_outer_context",
++    "http::h2_transport::sync_worker_tests::h2_sync_worker_expired_deadline_never_calls_work",
++    "http::h2_transport::sync_worker_tests::h2_sync_worker_preserves_inner_result",
++    "http::h2_transport::sync_worker_tests::h2_sync_worker_joins_panicked_work_and_drops_capture",
++    "http::h2_transport::sync_worker_tests::h2_sync_worker_does_not_authorize_nested_runtime_context",
++    "http::h2_transport::sync_worker_tests::h2_sync_worker_cancelled_waiter_retains_blocking_capacity",
++)
+ children = []
+ protected = 0
+ pending_signal = None
+@@ -99,14 +128,25 @@
+ environment.update(profile)
+ environment.pop('CARGO_ENCODED_RUSTFLAGS', None)
+ 
+-def owned(label, command, limit):
++def bounded_remaining(until):
++    value = until - time.monotonic()
++    assert value > 0, 'bounded extra-group child deadline'
++    return value
++
++
++def owned(label, command, limit, *, deadline=None):
+     global protected
+     started = time.monotonic()
++    absolute_until = None if deadline is None else min(started + limit, deadline, OUTER_UNTIL)
++    if absolute_until is not None:
++        bounded_remaining(absolute_until)
+     timed_out = False
+     with (output / (label + '.stdout')).open('xb') as out, (output / (label + '.stderr')).open('xb') as err:
+         process = None
+         protected += 1
+         try:
++            if absolute_until is not None:
++                bounded_remaining(absolute_until)
+             process = subprocess.Popen(command, cwd=source, env=environment,
+                                        stdin=subprocess.DEVNULL, stdout=out, stderr=err,
+                                        start_new_session=True)
+@@ -116,7 +156,7 @@
+         if pending_signal is not None:
+             raise Cancelled()
+         try:
+-            code = process.wait(timeout=limit)
++            code = process.wait(timeout=limit if absolute_until is None else bounded_remaining(absolute_until))
+         except subprocess.TimeoutExpired:
+             timed_out = True
+             terminate_owned(process)
+@@ -129,6 +169,8 @@
+             os.fsync(out.fileno())
+             os.fsync(err.fileno())
+     remaining = group_members(process.pid)
++    if absolute_until is not None and time.monotonic() >= absolute_until:
++        timed_out = True
+     record = {'label': label, 'argv': command, 'exit_code': code, 'timed_out': timed_out,
+               'elapsed_seconds': time.monotonic() - started, 'outer_cap_seconds': limit,
+               'owned_pgid': process.pid, 'direct_child_reaped': process.returncode is not None,
+@@ -140,7 +182,7 @@
+ 
+ assert os.uname().sysname == 'Darwin' and os.uname().machine == 'arm64'
+ # Physical commit is pinned by the reviewed launcher and the clean-tree freeze below.
+-assert args.tree == '1d4211f91e1b34a2ed087a3bbef2e2884bac88e9'
++assert args.commit == DIAGNOSTIC_COMMIT and args.tree == DIAGNOSTIC_TREE
+ assert args.groups_sha256 == '0566f7f98ea16a4c1df43ebaf992172646ad91623c18f68fcc59f7c08b53d1f1'
+ assert sha(args.groups) == args.groups_sha256
+ groups = json.loads(Path(args.groups).read_text())
+@@ -156,15 +198,23 @@
+     assert group['label'].replace('-', '').replace('_', '').isalnum()
+     all_names.extend(group['tests'])
+ assert len(all_names) == len(set(all_names)) == sum(n for _, n in EXPECTED_GROUP_SHAPES), 'reviewed disjoint names required'
++assert len(INGRESS_OBSERVER_TESTS) == len(set(INGRESS_OBSERVER_TESTS)) == 7
++assert len(COLD_H2_TESTS) == len(set(COLD_H2_TESTS)) == 9
++assert len(set(all_names) | set(INGRESS_OBSERVER_TESTS) | set(COLD_H2_TESTS)) == 60
+ assert not output.exists() and not output.is_symlink()
+ before = freeze()
+ assert before == {'commit': args.commit, 'tree': args.tree, 'status': ''}
+ output.mkdir(mode=0o700)
+-intent = {'schema': 'heptabao.mac-normal-release-and-exact-libtest-r10.v1', 'source_commit': args.commit,
++intent = {'schema': 'heptabao.mac-normal-cold-h2-exact-tests.v1', 'source_commit': args.commit,
+           'source_tree': args.tree, 'normal_default_features': True, 'fixture_features': [],
+           'profile': profile, 'groups': groups, 'test_count': len(all_names),
+           'groups_sha256': args.groups_sha256, 'controller_sha256': sha(__file__),
+-          'production_changed': False, 'started_ns': time.time_ns(),
++          'production_changed': True, 'started_ns': time.time_ns(),
++          'selected_test_total': 60, 'additional_test_counts': {'ingress_observer': 7, 'cold_h2': 9},
++          'original_outer_seconds': ORIGINAL_OUTER_SECONDS,
++          'launcher_started_monotonic': args.outer_started_monotonic,
++          'same_pid_launcher': args.launcher_pid,
++          'additional_group_caps_seconds': {'ingress_observer': 600, 'cold_h2': 600},
+           'outer_phase_caps_seconds': {'normal_release_build': 1800, 'normal_libtest_build': 1800,
+                                        'each_listing': 30, 'each_runtime_group': 600}}
+ write('intent.public.json', intent)
+@@ -292,6 +342,94 @@
+     result['source_unchanged'] = freeze() == before
+     result['status'] = 'passed' if (result['binary_unchanged'] and result['release_artifacts_unchanged'] and result['source_unchanged']
+             and all(x['tests']['exit_code'] == 0 and not x['tests']['timed_out'] for x in result['group_results'])) else 'failed'
++    if result['status'] == 'passed':
++        # Preserve the original 44 denominator and its completed result. The new
++        # bounded group executes only after those original checks succeeded.
++        result['original_44_status'] = 'passed'
++        result['status'] = 'failed'
++        extra_started = time.monotonic()
++        extra_until = min(extra_started + 600.0, OUTER_UNTIL)
++        extra = {'schema': 'heptabao.normal-ingress-observer-regression.v1',
++                 'status': 'failed', 'test_count': len(INGRESS_OBSERVER_TESTS),
++                 'original_44_denominator_unchanged': True,
++                 'new_total_group_cap_seconds': 600,
++                 'clamped_to_original_outer_deadline': True,
++                 'actual_test_names': [], 'tests': []}
++        result['ingress_observer_regression'] = extra
++        def extra_remaining():
++            value = extra_until - time.monotonic()
++            assert value > 0, 'ingress observer group deadline'
++            return value
++        for index, name in enumerate(INGRESS_OBSERVER_TESTS):
++            label = 'ingress-observer-' + str(index + 1)
++            listing = owned(label + '-list', [str(binary), name, '--exact', '--list'],
++                            min(30.0, extra_remaining()), deadline=extra_until)
++            assert listing['exit_code'] == 0 and not listing['timed_out']
++            selected = [line[:-6] for line in (output / (label + '-list.stdout')).read_text().splitlines()
++                        if line.endswith(': test')]
++            assert selected == [name], 'exact original ingress/timing testcase missing'
++            extra_remaining()
++            tests = owned(label, [str(binary), name, '--exact', '--nocapture', '--test-threads=1'],
++                          extra_remaining(), deadline=extra_until)
++            extra['actual_test_names'].append(name)
++            extra['tests'].append({'name': name, 'tests': tests})
++            assert tests['exit_code'] == 0 and not tests['timed_out']
++            summary = (output / (label + '.stdout')).read_text()
++            assert 'test result: ok. 1 passed; 0 failed; 0 ignored;' in summary, 'actual testcase not executed'
++            extra_remaining()
++        result['binary_unchanged'] = sha(binary) == binary_sha
++        result['release_artifacts_unchanged'] = all(sha(v['path']) == v['sha256'] for v in release_artifacts.values())
++        result['source_unchanged'] = freeze() == before
++        assert result['binary_unchanged'] and result['release_artifacts_unchanged'] and result['source_unchanged']
++        extra_completed = time.monotonic()
++        assert extra_completed < extra_until, 'ingress observer group deadline'
++        extra['elapsed_seconds'] = extra_completed - extra_started
++        extra['status'] = 'passed'
++        result['status'] = 'passed'
++    if result['status'] == 'passed':
++        # This separate nine-test group never changes either prior denominator.
++        result['original_44_and_ingress_7_status'] = 'passed'
++        result['status'] = 'failed'
++        increment_started = time.monotonic()
++        increment_until = min(increment_started + 600.0, OUTER_UNTIL)
++        increment = {'schema': 'heptabao.normal-cold-h2-regression.v1',
++                     'status': 'failed', 'test_count': len(COLD_H2_TESTS),
++                     'original_44_denominator_unchanged': True,
++                     'existing_ingress_7_denominator_unchanged': True,
++                     'new_total_group_cap_seconds': 600,
++                     'clamped_to_original_outer_deadline': True,
++                     'actual_test_names': [], 'tests': []}
++        result['cold_h2_regression'] = increment
++        def increment_remaining():
++            value = increment_until - time.monotonic()
++            assert value > 0, 'cold H2 group deadline'
++            return value
++        for index, name in enumerate(COLD_H2_TESTS):
++            label = 'cold-h2-' + str(index + 1)
++            listing = owned(label + '-list', [str(binary), name, '--exact', '--list'],
++                            min(30.0, increment_remaining()), deadline=increment_until)
++            assert listing['exit_code'] == 0 and not listing['timed_out']
++            selected = [line[:-6] for line in (output / (label + '-list.stdout')).read_text().splitlines()
++                        if line.endswith(': test')]
++            assert selected == [name], 'exact reviewed cold/H2 testcase missing'
++            increment_remaining()
++            tests = owned(label, [str(binary), name, '--exact', '--nocapture', '--test-threads=1'],
++                          increment_remaining(), deadline=increment_until)
++            increment['actual_test_names'].append(name)
++            increment['tests'].append({'name': name, 'tests': tests})
++            assert tests['exit_code'] == 0 and not tests['timed_out']
++            summary = (output / (label + '.stdout')).read_text()
++            assert 'test result: ok. 1 passed; 0 failed; 0 ignored;' in summary, 'actual testcase not executed'
++            increment_remaining()
++        result['binary_unchanged'] = sha(binary) == binary_sha
++        result['release_artifacts_unchanged'] = all(sha(v['path']) == v['sha256'] for v in release_artifacts.values())
++        result['source_unchanged'] = freeze() == before
++        assert result['binary_unchanged'] and result['release_artifacts_unchanged'] and result['source_unchanged']
++        increment_completed = time.monotonic()
++        assert increment_completed < increment_until, 'cold H2 group deadline'
++        increment['elapsed_seconds'] = increment_completed - increment_started
++        increment['status'] = 'passed'
++        result['status'] = 'passed'
+ except BaseException as error:
+     result['failure_type'] = type(error).__name__
+     result['failure'] = str(error)
+@@ -313,9 +451,13 @@
+     if pending_signal is not None or any(x.get('cleanup_error_type') or x['remaining'] or not x['direct_child_reaped'] for x in cleanup):
+         result['status'] = 'failed'
+     result['terminal_ns'] = time.time_ns()
++    result['within_original_outer_before_receipt'] = time.monotonic() < OUTER_UNTIL
++    if not result['within_original_outer_before_receipt']:
++        result['status'] = 'failed'
+     write('result.public.json', result)
+     print(json.dumps({'status': result['status'], 'source_commit': args.commit, 'source_tree': args.tree,
+                       'result_path': str(output / 'result.public.json'),
+                       'result_sha256': sha(output / 'result.public.json'),
++                      'publication_within_original_outer': time.monotonic() < OUTER_UNTIL,
+                       'all_owned_stopped': all(not x.get('cleanup_error_type') and not x['remaining'] and x['direct_child_reaped'] for x in cleanup)}), flush=True)
+-raise SystemExit(0 if result['status'] == 'passed' else 1)
++raise SystemExit(0 if result['status'] == 'passed' and time.monotonic() < OUTER_UNTIL else 1)

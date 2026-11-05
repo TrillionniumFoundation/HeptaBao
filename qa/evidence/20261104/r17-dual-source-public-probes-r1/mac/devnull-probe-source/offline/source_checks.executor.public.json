@@ -1,0 +1,7 @@
+{
+  "chunk_id": "743df8",
+  "wall_time_seconds": 0.049077602,
+  "exit_code": 0,
+  "original_token_count": 278,
+  "output": "{\n  \"actual_failed_capture_profile_sha256\": \"de74f118ead7f9769dd12e692b116fc80aaaa5953d559c8f63b0f8c3125cf387\",\n  \"ast_compile_only_sources\": [\n    \"entry.before.py\",\n    \"entry.policy-after.py\",\n    \"mac_capture_devnull_probe_r1.py\"\n  ],\n  \"capture_profile_ast_exact\": true,\n  \"fixed_errno_diagnostic_omits_exception_message_and_filename\": true,\n  \"fresh_root\": \"/Volumes/T5/hepta-vnext-recovery-20261013/mac-authbus-r10-current-consumer-r1/devnull-sandbox-probe-r1\",\n  \"full_modules_executed\": false,\n  \"host_calls\": 0,\n  \"kernel_refusals_only_owned_directory_binding_changed\": true,\n  \"original_profile\": {\n    \"bytes\": 7716,\n    \"sha256\": \"ff1fdfc92e4981fb39bf132fdf1926e445ec81bcefc60dff6be60d670e7ca664\"\n  },\n  \"patched_profile\": {\n    \"bytes\": 7757,\n    \"sha256\": \"07177c7a7d042f11f20faecd9694ae215ca7bd598475b71a4a0dc326ee41bfa1\"\n  },\n  \"private_inputs_opened\": 0,\n  \"private_literals_write_network_rules_unchanged\": true,\n  \"profile_delta_exactly_one_devnull_literal\": true,\n  \"schema\": \"heptabao.mac-devnull-probe-pure-source-check.r1\",\n  \"sockets\": 0,\n  \"sqlite_connections\": 0,\n  \"subprocesses\": 0\n}\n"
+}

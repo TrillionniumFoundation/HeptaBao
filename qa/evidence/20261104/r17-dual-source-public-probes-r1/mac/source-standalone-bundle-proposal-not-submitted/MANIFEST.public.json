@@ -1,0 +1,35 @@
+{
+  "schema": "heptabao.public-artifact-manifest.v1",
+  "files": {
+    "dispatch/mac-source.BOUND.request.json": {
+      "bytes": 85192,
+      "sha256": "865ce4ea919568c0ec1837f0f51a52f6ec051ff69f3e6149abcff9b0d3bcec65",
+      "blob": "efdcd9d276b98c132609495dea6c91be3cd26839"
+    },
+    "dispatch/mac-bundle-create-only.request.json": {
+      "bytes": 32619,
+      "sha256": "011d4f4e15c823bebfe9cb1e9bdfa7b00a2a6340d48b21f694a1b2187e92b107",
+      "blob": "c038b867745a59b3064c1cfa7c9ce85bfeb216db"
+    },
+    "bundle/canonical-cold-h2-from495.bundle.base64": {
+      "bytes": 32453,
+      "sha256": "bf8fae5b7555e5ace10be424c54b49c102221f5d29a238972b164f02d6188c61",
+      "blob": "4df52dce522f378217f3f1cdad120a9b0d1b520d"
+    },
+    "references/rog-bundle-file-info.public.json": {
+      "bytes": 478,
+      "sha256": "17a457faae50b3a02d1f6e6e338a720654309e68f8f7c379ad23ce7368da00cc",
+      "blob": "278bd4238e88904b78693fedb1ded652b4a57ba4"
+    },
+    "references/rog-bundle-header.txt": {
+      "bytes": 174,
+      "sha256": "3f086ee36a95e0116fe1d54682c8f61dc8a2b4da1ca26b5dce883f0aaa1c61da",
+      "blob": "d641ee2fe12c75f26e20b87281547dd4cfbc4dc8"
+    },
+    "PLAN.public.json": {
+      "bytes": 1918,
+      "sha256": "f58de1514e1b37019d4dd60625de9890160d871aa4c7b2d183bb330025280c7c",
+      "blob": "e71bf68d499c7ca283f37b469249b74095abdce3"
+    }
+  }
+}

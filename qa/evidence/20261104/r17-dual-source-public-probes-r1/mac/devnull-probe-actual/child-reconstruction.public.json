@@ -1,0 +1,24 @@
+{
+  "schema": "heptabao.exact-child-stdout-raw-token-reconstruction.r1",
+  "outer_stdout_blob": "dea943bf06f9609e4206ee59acb7747344c9221b",
+  "lossless_tokens": true,
+  "no_number_reserialization": true,
+  "records": [
+    {
+      "variant": "original",
+      "bytes": 3939,
+      "sha256": "f21646109ced857b8b34b31141360ea4abd6252cd617bfe81ae5e8e37853168e",
+      "git_blob": "2a1fe33899125dd672f7b33b918a45d689d9029b",
+      "method": "Exact report object token span from original outer stdout plus original one LF; no numeric reserialization.",
+      "matches_actual_child_stdout_bytes_and_sha256": true
+    },
+    {
+      "variant": "patched",
+      "bytes": 4052,
+      "sha256": "730e759e0fa80c40a53a4c45f17405969b02fed5ebf1139f69ef4dc62c28759c",
+      "git_blob": "04a2cd079fca0a917e580a2fe77046644685dddf",
+      "method": "Exact report object token span from original outer stdout plus original one LF; no numeric reserialization.",
+      "matches_actual_child_stdout_bytes_and_sha256": true
+    }
+  ]
+}
